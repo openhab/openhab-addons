@@ -1,0 +1,2253 @@
+{
+	"deviceMapping": {
+		"id": [
+			"xiaomi.vacuum.c107"
+		],
+		"propertyMethod": "get_properties",
+		"maxProperties": 1,
+		"channels": [
+			{
+				"property": "",
+				"friendlyName": "Actions",
+				"channel": "actions",
+				"type": "String",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "vacuum-start-sweep",
+							"label": "Start Cleaning"
+						},
+						{
+							"value": "vacuum-stop-sweeping",
+							"label": "Stop Cleaning"
+						},
+						{
+							"value": "vacuum-pause-sweeping",
+							"label": "Pause Cleaning"
+						},
+						{
+							"value": "vacuum-continue-sweep",
+							"label": "Resume Cleaning"
+						},
+						{
+							"value": "vacuum-stop-and-gocharge",
+							"label": "Stop And Go Charging"
+						},
+						{
+							"value": "vacuum-start-build-map",
+							"label": "Start Mapping"
+						},
+						{
+							"value": "vacuum-pause-build-map",
+							"label": "Pause Mapping"
+						},
+						{
+							"value": "vacuum-continue-build-map",
+							"label": "Resume Mapping"
+						},
+						{
+							"value": "vacuum-stop-build-map-and-gocharge",
+							"label": "Stop Mapping And Go Charging"
+						},
+						{
+							"value": "vacuum-start-dust-arrest",
+							"label": "Start Dust Collection"
+						},
+						{
+							"value": "vacuum-start-cut-hair",
+							"label": "Start Cutting Tangled Hair"
+						},
+						{
+							"value": "vacuum-stop-cut-hair",
+							"label": "Stop Cutting Tangled Hair"
+						},
+						{
+							"value": "vacuum-start-mop-wash",
+							"label": "Start Mop Washing"
+						},
+						{
+							"value": "vacuum-stop-mop-wash",
+							"label": "Stop Mop Washing"
+						},
+						{
+							"value": "vacuum-back-mop-wash",
+							"label": "Return To Wash Mop"
+						},
+						{
+							"value": "vacuum-start-dry",
+							"label": "Start Mop Drying"
+						},
+						{
+							"value": "vacuum-stop-dry",
+							"label": "Stop Mop Drying"
+						},
+						{
+							"value": "vacuum-start-water-self-check",
+							"label": "Start Water Self Check"
+						},
+						{
+							"value": "vacuum-cancel-water-self-check",
+							"label": "Cancel Water Self Check"
+						},
+						{
+							"value": "vacuum-try-listen",
+							"label": "Test Voice"
+						},
+						{
+							"value": "identify-identify",
+							"label": "Find Robot"
+						},
+						{
+							"value": "mop-reset-mop-life",
+							"label": "Reset Mop Life"
+						},
+						{
+							"value": "brush-cleaner-reset-brush-life",
+							"label": "Reset Main Brush Life"
+						},
+						{
+							"value": "brush-cleaner-reset-brush-life1",
+							"label": "Reset Side Brush Life"
+						},
+						{
+							"value": "filter-reset-filter-life",
+							"label": "Reset Filter Life"
+						}
+					]
+				},
+				"refresh": false,
+				"actions": [
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 2,
+						"aiid": 1,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "vacuum-start-sweep"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 2,
+						"aiid": 2,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "vacuum-stop-sweeping"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 2,
+						"aiid": 7,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "vacuum-pause-sweeping"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 2,
+						"aiid": 8,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "vacuum-continue-sweep"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 2,
+						"aiid": 3,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "vacuum-stop-and-gocharge"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 2,
+						"aiid": 17,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "vacuum-start-build-map"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 2,
+						"aiid": 35,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "vacuum-pause-build-map"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 2,
+						"aiid": 33,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "vacuum-continue-build-map"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 2,
+						"aiid": 34,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "vacuum-stop-build-map-and-gocharge"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 2,
+						"aiid": 18,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "vacuum-start-dust-arrest"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 2,
+						"aiid": 43,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "vacuum-start-cut-hair"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 2,
+						"aiid": 44,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "vacuum-stop-cut-hair"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 2,
+						"aiid": 19,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "vacuum-start-mop-wash"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 2,
+						"aiid": 31,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "vacuum-stop-mop-wash"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 2,
+						"aiid": 36,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "vacuum-back-mop-wash"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 2,
+						"aiid": 20,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "vacuum-start-dry"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 2,
+						"aiid": 32,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "vacuum-stop-dry"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 2,
+						"aiid": 45,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "vacuum-start-water-self-check"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 2,
+						"aiid": 46,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "vacuum-cancel-water-self-check"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 2,
+						"aiid": 27,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "vacuum-try-listen"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 6,
+						"aiid": 1,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "identify-identify"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 9,
+						"aiid": 1,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "mop-reset-mop-life"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 12,
+						"aiid": 1,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "brush-cleaner-reset-brush-life"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 13,
+						"aiid": 1,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "brush-cleaner-reset-brush-life1"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 14,
+						"aiid": 1,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "filter-reset-filter-life"
+								}
+							]
+						}
+					}
+				],
+				"category": "cleaningrobot",
+				"readmeComment": "Start Cleaning uses the cleaning type set with the `sweep_mop_type` channel. Value mapping `[\"vacuum-start-sweep\"\u003d\"Start Cleaning\",\"vacuum-stop-sweeping\"\u003d\"Stop Cleaning\",\"vacuum-pause-sweeping\"\u003d\"Pause Cleaning\",\"vacuum-continue-sweep\"\u003d\"Resume Cleaning\",\"vacuum-stop-and-gocharge\"\u003d\"Stop And Go Charging\",\"vacuum-start-build-map\"\u003d\"Start Mapping\",\"vacuum-pause-build-map\"\u003d\"Pause Mapping\",\"vacuum-continue-build-map\"\u003d\"Resume Mapping\",\"vacuum-stop-build-map-and-gocharge\"\u003d\"Stop Mapping And Go Charging\",\"vacuum-start-dust-arrest\"\u003d\"Start Dust Collection\",\"vacuum-start-cut-hair\"\u003d\"Start Cutting Tangled Hair\",\"vacuum-stop-cut-hair\"\u003d\"Stop Cutting Tangled Hair\",\"vacuum-start-mop-wash\"\u003d\"Start Mop Washing\",\"vacuum-stop-mop-wash\"\u003d\"Stop Mop Washing\",\"vacuum-back-mop-wash\"\u003d\"Return To Wash Mop\",\"vacuum-start-dry\"\u003d\"Start Mop Drying\",\"vacuum-stop-dry\"\u003d\"Stop Mop Drying\",\"vacuum-start-water-self-check\"\u003d\"Start Water Self Check\",\"vacuum-cancel-water-self-check\"\u003d\"Cancel Water Self Check\",\"vacuum-try-listen\"\u003d\"Test Voice\",\"identify-identify\"\u003d\"Find Robot\",\"mop-reset-mop-life\"\u003d\"Reset Mop Life\",\"brush-cleaner-reset-brush-life\"\u003d\"Reset Main Brush Life\",\"brush-cleaner-reset-brush-life1\"\u003d\"Reset Side Brush Life\",\"filter-reset-filter-life\"\u003d\"Reset Filter Life\"]`"
+			},
+			{
+				"property": "vacuum-frameware-version",
+				"siid": 2,
+				"piid": 1,
+				"friendlyName": "Robot Cleaner - Firmware Version",
+				"channel": "vacuum_frameware_version",
+				"type": "String",
+				"stateDescription": {
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "text",
+				"tags": [
+					"Status",
+					"Info"
+				]
+			},
+			{
+				"property": "status",
+				"siid": 2,
+				"piid": 2,
+				"friendlyName": "Robot Cleaner - Status",
+				"channel": "status",
+				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "1",
+							"label": "Idle"
+						},
+						{
+							"value": "2",
+							"label": "Charging"
+						},
+						{
+							"value": "3",
+							"label": "Charging Paused"
+						},
+						{
+							"value": "4",
+							"label": "Sweeping"
+						},
+						{
+							"value": "5",
+							"label": "Paused"
+						},
+						{
+							"value": "6",
+							"label": "Go Charging"
+						},
+						{
+							"value": "7",
+							"label": "Go Washing"
+						},
+						{
+							"value": "8",
+							"label": "Remote Control"
+						},
+						{
+							"value": "9",
+							"label": "Charging Completed"
+						},
+						{
+							"value": "10",
+							"label": "Building Map"
+						},
+						{
+							"value": "11",
+							"label": "Updating"
+						},
+						{
+							"value": "12",
+							"label": "Multi Task Station Working"
+						},
+						{
+							"value": "13",
+							"label": "Multi Task Recharge"
+						},
+						{
+							"value": "14",
+							"label": "Station Working"
+						},
+						{
+							"value": "15",
+							"label": "Error"
+						},
+						{
+							"value": "16",
+							"label": "Sweeping And Mopping"
+						},
+						{
+							"value": "17",
+							"label": "Mopping"
+						},
+						{
+							"value": "18",
+							"label": "Mapping Paused"
+						},
+						{
+							"value": "19",
+							"label": "Go Charging Paused"
+						},
+						{
+							"value": "20",
+							"label": "Washing Paused"
+						},
+						{
+							"value": "21",
+							"label": "Go Charging While Building Map"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "cleaningrobot",
+				"tags": [
+					"Status"
+				],
+				"readmeComment": "Value mapping `[\"1\"\u003d\"Idle\",\"2\"\u003d\"Charging\",\"3\"\u003d\"Charging Paused\",\"4\"\u003d\"Sweeping\",\"5\"\u003d\"Paused\",\"6\"\u003d\"Go Charging\",\"7\"\u003d\"Go Washing\",\"8\"\u003d\"Remote Control\",\"9\"\u003d\"Charging Completed\",\"10\"\u003d\"Building Map\",\"11\"\u003d\"Updating\",\"12\"\u003d\"Multi Task Station Working\",\"13\"\u003d\"Multi Task Recharge\",\"14\"\u003d\"Station Working\",\"15\"\u003d\"Error\",\"16\"\u003d\"Sweeping And Mopping\",\"17\"\u003d\"Mopping\",\"18\"\u003d\"Mapping Paused\",\"19\"\u003d\"Go Charging Paused\",\"20\"\u003d\"Washing Paused\",\"21\"\u003d\"Go Charging While Building Map\"]`"
+			},
+			{
+				"property": "fault",
+				"siid": 2,
+				"piid": 3,
+				"friendlyName": "Robot Cleaner - Device Fault",
+				"channel": "fault",
+				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "0",
+							"label": "No Fault"
+						},
+						{
+							"value": "210001",
+							"label": "Robot Stuck (Move To New Location)"
+						},
+						{
+							"value": "210002",
+							"label": "Wheels Suspended"
+						},
+						{
+							"value": "210003",
+							"label": "Slope Detected"
+						},
+						{
+							"value": "210004",
+							"label": "Robot Stuck (Clear Surroundings)"
+						},
+						{
+							"value": "210005",
+							"label": "Target Location Unreachable"
+						},
+						{
+							"value": "210007",
+							"label": "Positioning Failed"
+						},
+						{
+							"value": "210008",
+							"label": "In Restricted Area"
+						},
+						{
+							"value": "210009",
+							"label": "Return To Station Failed"
+						},
+						{
+							"value": "210013",
+							"label": "Dust Box Not Installed"
+						},
+						{
+							"value": "210014",
+							"label": "Mop Tray Fell Off"
+						},
+						{
+							"value": "210024",
+							"label": "Robot Water Tank Empty"
+						},
+						{
+							"value": "210025",
+							"label": "Mop Pad May Be Dirty"
+						},
+						{
+							"value": "210026",
+							"label": "Mop Tray Missing"
+						},
+						{
+							"value": "210030",
+							"label": "Clean Water Tank Low"
+						},
+						{
+							"value": "210040",
+							"label": "Cleaning Tray Not Installed"
+						},
+						{
+							"value": "210050",
+							"label": "Clean Water Tank Not Installed"
+						},
+						{
+							"value": "210060",
+							"label": "Dirty Water Tank Full"
+						},
+						{
+							"value": "210070",
+							"label": "Dirty Water Tank Not Installed"
+						},
+						{
+							"value": "210080",
+							"label": "Dust Bag Not Installed"
+						},
+						{
+							"value": "320001",
+							"label": "Battery Temperature Error"
+						},
+						{
+							"value": "320002",
+							"label": "Main Brush Error"
+						},
+						{
+							"value": "320003",
+							"label": "Side Brush Error"
+						},
+						{
+							"value": "320004",
+							"label": "Right Drive Wheel Error"
+						},
+						{
+							"value": "320006",
+							"label": "Cliff Sensor Error"
+						},
+						{
+							"value": "320007",
+							"label": "Fan Error"
+						},
+						{
+							"value": "320008",
+							"label": "Bumper Error"
+						},
+						{
+							"value": "320009",
+							"label": "Charging Error"
+						},
+						{
+							"value": "320010",
+							"label": "Laser Sensor Error"
+						},
+						{
+							"value": "320011",
+							"label": "Edge Sensor Error"
+						},
+						{
+							"value": "320012",
+							"label": "Line Laser Sensor Error"
+						},
+						{
+							"value": "320013",
+							"label": "Mop Pad Holder Stuck"
+						},
+						{
+							"value": "320016",
+							"label": "Laser Sensor Protective Cap Error"
+						},
+						{
+							"value": "320017",
+							"label": "Cannot Start On Carpet"
+						},
+						{
+							"value": "320020",
+							"label": "Cleaning Tray Water Level Too High"
+						},
+						{
+							"value": "320030",
+							"label": "Tangled Hair Cutting Error"
+						},
+						{
+							"value": "320031",
+							"label": "Residue Box Not Cleaned"
+						},
+						{
+							"value": "320032",
+							"label": "Station Pairing Error"
+						},
+						{
+							"value": "320040",
+							"label": "Water Inlet System Error"
+						},
+						{
+							"value": "320050",
+							"label": "Water Outlet System Error"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "error",
+				"tags": [
+					"Status"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"No Fault\",\"210001\"\u003d\"Robot Stuck (Move To New Location)\",\"210002\"\u003d\"Wheels Suspended\",\"210003\"\u003d\"Slope Detected\",\"210004\"\u003d\"Robot Stuck (Clear Surroundings)\",\"210005\"\u003d\"Target Location Unreachable\",\"210007\"\u003d\"Positioning Failed\",\"210008\"\u003d\"In Restricted Area\",\"210009\"\u003d\"Return To Station Failed\",\"210013\"\u003d\"Dust Box Not Installed\",\"210014\"\u003d\"Mop Tray Fell Off\",\"210024\"\u003d\"Robot Water Tank Empty\",\"210025\"\u003d\"Mop Pad May Be Dirty\",\"210026\"\u003d\"Mop Tray Missing\",\"210030\"\u003d\"Clean Water Tank Low\",\"210040\"\u003d\"Cleaning Tray Not Installed\",\"210050\"\u003d\"Clean Water Tank Not Installed\",\"210060\"\u003d\"Dirty Water Tank Full\",\"210070\"\u003d\"Dirty Water Tank Not Installed\",\"210080\"\u003d\"Dust Bag Not Installed\",\"320001\"\u003d\"Battery Temperature Error\",\"320002\"\u003d\"Main Brush Error\",\"320003\"\u003d\"Side Brush Error\",\"320004\"\u003d\"Right Drive Wheel Error\",\"320006\"\u003d\"Cliff Sensor Error\",\"320007\"\u003d\"Fan Error\",\"320008\"\u003d\"Bumper Error\",\"320009\"\u003d\"Charging Error\",\"320010\"\u003d\"Laser Sensor Error\",\"320011\"\u003d\"Edge Sensor Error\",\"320012\"\u003d\"Line Laser Sensor Error\",\"320013\"\u003d\"Mop Pad Holder Stuck\",\"320016\"\u003d\"Laser Sensor Protective Cap Error\",\"320017\"\u003d\"Cannot Start On Carpet\",\"320020\"\u003d\"Cleaning Tray Water Level Too High\",\"320030\"\u003d\"Tangled Hair Cutting Error\",\"320031\"\u003d\"Residue Box Not Cleaned\",\"320032\"\u003d\"Station Pairing Error\",\"320040\"\u003d\"Water Inlet System Error\",\"320050\"\u003d\"Water Outlet System Error\"]`"
+			},
+			{
+				"property": "sweep-mop-type",
+				"siid": 2,
+				"piid": 4,
+				"friendlyName": "Robot Cleaner - Cleaning Type",
+				"channel": "sweep_mop_type",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "1",
+							"label": "Sweep"
+						},
+						{
+							"value": "2",
+							"label": "Mop"
+						},
+						{
+							"value": "3",
+							"label": "Sweep And Mop"
+						},
+						{
+							"value": "4",
+							"label": "Sweep Before Mopping"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "cleaningrobot",
+				"tags": [
+					"Control",
+					"Mode"
+				],
+				"readmeComment": "Value mapping `[\"1\"\u003d\"Sweep\",\"2\"\u003d\"Mop\",\"3\"\u003d\"Sweep And Mop\",\"4\"\u003d\"Sweep Before Mopping\"]`"
+			},
+			{
+				"property": "sweep-type",
+				"siid": 2,
+				"piid": 5,
+				"friendlyName": "Robot Cleaner - Cleaning Scope",
+				"channel": "sweep_type",
+				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "1",
+							"label": "Whole House"
+						},
+						{
+							"value": "2",
+							"label": "Zone"
+						},
+						{
+							"value": "3",
+							"label": "Room"
+						},
+						{
+							"value": "4",
+							"label": "Edge"
+						},
+						{
+							"value": "5",
+							"label": "Custom"
+						},
+						{
+							"value": "6",
+							"label": "Spot"
+						},
+						{
+							"value": "7",
+							"label": "Custom Area"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "cleaningrobot",
+				"tags": [
+					"Status",
+					"Mode"
+				],
+				"readmeComment": "Value mapping `[\"1\"\u003d\"Whole House\",\"2\"\u003d\"Zone\",\"3\"\u003d\"Room\",\"4\"\u003d\"Edge\",\"5\"\u003d\"Custom\",\"6\"\u003d\"Spot\",\"7\"\u003d\"Custom Area\"]`"
+			},
+			{
+				"property": "cleaning-area",
+				"siid": 2,
+				"piid": 6,
+				"friendlyName": "Robot Cleaner - Cleaning Area",
+				"channel": "cleaning_area",
+				"type": "Number:Area",
+				"unit": "square_meter",
+				"stateDescription": {
+					"readOnly": true,
+					"minimum": 0,
+					"maximum": 42949672.95,
+					"step": 0.01,
+					"pattern": "%.1f %unit%"
+				},
+				"refresh": true,
+				"transformation": "/100",
+				"actions": [],
+				"category": "cleaningrobot",
+				"tags": [
+					"Measurement"
+				]
+			},
+			{
+				"property": "cleaning-time",
+				"siid": 2,
+				"piid": 7,
+				"friendlyName": "Robot Cleaner - Cleaning Time",
+				"channel": "cleaning_time",
+				"type": "Number:Time",
+				"unit": "seconds",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 4294967295,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "time",
+				"tags": [
+					"Measurement",
+					"Duration"
+				]
+			},
+			{
+				"property": "mode",
+				"siid": 2,
+				"piid": 9,
+				"friendlyName": "Robot Cleaner - Suction Level",
+				"channel": "mode",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "1",
+							"label": "Silent"
+						},
+						{
+							"value": "2",
+							"label": "Standard"
+						},
+						{
+							"value": "3",
+							"label": "Strong"
+						},
+						{
+							"value": "4",
+							"label": "Turbo"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "fan",
+				"tags": [
+					"Control",
+					"Mode"
+				],
+				"readmeComment": "Value mapping `[\"1\"\u003d\"Silent\",\"2\"\u003d\"Standard\",\"3\"\u003d\"Strong\",\"4\"\u003d\"Turbo\"]`"
+			},
+			{
+				"property": "mop-water-output-level",
+				"siid": 2,
+				"piid": 10,
+				"friendlyName": "Robot Cleaner - Mop Water Level",
+				"channel": "mop_water_output_level",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "Off"
+						},
+						{
+							"value": "1",
+							"label": "Level 1"
+						},
+						{
+							"value": "2",
+							"label": "Level 2"
+						},
+						{
+							"value": "3",
+							"label": "Level 3"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "water",
+				"tags": [
+					"Control",
+					"Level"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Off\",\"1\"\u003d\"Level 1\",\"2\"\u003d\"Level 2\",\"3\"\u003d\"Level 3\"]`"
+			},
+			{
+				"property": "mop-status",
+				"siid": 2,
+				"piid": 11,
+				"friendlyName": "Robot Cleaner - Mop Installed",
+				"channel": "mop_status",
+				"type": "Switch",
+				"stateDescription": {
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "water",
+				"tags": [
+					"Status"
+				]
+			},
+			{
+				"property": "last-clean-time",
+				"siid": 2,
+				"piid": 17,
+				"friendlyName": "Robot Cleaner - Last Clean Time",
+				"channel": "last_clean_time",
+				"type": "Number",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 4294967295,
+					"step": 1,
+					"pattern": "%.0f",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "time",
+				"tags": [
+					"Status",
+					"Timestamp"
+				],
+				"readmeComment": "Unix timestamp in seconds"
+			},
+			{
+				"property": "carpet-boost",
+				"siid": 2,
+				"piid": 20,
+				"friendlyName": "Robot Cleaner - Carpet Boost",
+				"channel": "carpet_boost",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch",
+					"Enabled"
+				]
+			},
+			{
+				"property": "sweep-break-switch",
+				"siid": 2,
+				"piid": 23,
+				"friendlyName": "Robot Cleaner - Resume After Charging",
+				"channel": "sweep_break_switch",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch",
+					"Enabled"
+				]
+			},
+			{
+				"property": "enable-mop-wash",
+				"siid": 2,
+				"piid": 28,
+				"friendlyName": "Robot Cleaner - Wash Mop At Station",
+				"channel": "enable_mop_wash",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch",
+					"Enabled"
+				]
+			},
+			{
+				"property": "hot-water-mop-wash",
+				"siid": 2,
+				"piid": 41,
+				"friendlyName": "Robot Cleaner - Hot Water Mop Washing",
+				"channel": "hot_water_mop_wash",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch",
+					"Enabled"
+				]
+			},
+			{
+				"property": "water-output-for-washing-mop",
+				"siid": 2,
+				"piid": 30,
+				"friendlyName": "Robot Cleaner - Mop Washing Water Output",
+				"channel": "water_output_for_washing_mop",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "Deep"
+						},
+						{
+							"value": "1",
+							"label": "Daily"
+						},
+						{
+							"value": "2",
+							"label": "Save Water"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "water",
+				"tags": [
+					"Control",
+					"Mode"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Deep\",\"1\"\u003d\"Daily\",\"2\"\u003d\"Save Water\"]`"
+			},
+			{
+				"property": "frequency-mop-wash-no-tank",
+				"siid": 2,
+				"piid": 61,
+				"friendlyName": "Robot Cleaner - Mop Washing Frequency",
+				"channel": "frequency_mop_wash_no_tank",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "Every 5 Square Meters"
+						},
+						{
+							"value": "1",
+							"label": "Every 10 Square Meters"
+						},
+						{
+							"value": "2",
+							"label": "Every 8 Square Meters"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "water",
+				"tags": [
+					"Control",
+					"Mode"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Every 5 Square Meters\",\"1\"\u003d\"Every 10 Square Meters\",\"2\"\u003d\"Every 8 Square Meters\"]`"
+			},
+			{
+				"property": "auto-mop-dry",
+				"siid": 2,
+				"piid": 34,
+				"friendlyName": "Robot Cleaner - Auto Mop Drying",
+				"channel": "auto_mop_dry",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch",
+					"Enabled"
+				]
+			},
+			{
+				"property": "drying-time",
+				"siid": 2,
+				"piid": 31,
+				"friendlyName": "Robot Cleaner - Mop Drying Time",
+				"channel": "drying_time",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "1",
+							"label": "2 Hours"
+						},
+						{
+							"value": "2",
+							"label": "3 Hours"
+						},
+						{
+							"value": "3",
+							"label": "4 Hours"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "time",
+				"tags": [
+					"Control",
+					"Duration"
+				],
+				"readmeComment": "Value mapping `[\"1\"\u003d\"2 Hours\",\"2\"\u003d\"3 Hours\",\"3\"\u003d\"4 Hours\"]`"
+			},
+			{
+				"property": "auto-dust-arrest",
+				"siid": 2,
+				"piid": 32,
+				"friendlyName": "Robot Cleaner - Auto Dust Collection",
+				"channel": "auto_dust_arrest",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch",
+					"Enabled"
+				]
+			},
+			{
+				"property": "dust-arrest-frequency",
+				"siid": 2,
+				"piid": 33,
+				"friendlyName": "Robot Cleaner - Dust Collection Frequency",
+				"channel": "dust_arrest_frequency",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "1",
+							"label": "Once"
+						},
+						{
+							"value": "2",
+							"label": "Twice"
+						},
+						{
+							"value": "3",
+							"label": "Three Times"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "settings",
+				"tags": [
+					"Control"
+				],
+				"readmeComment": "Value mapping `[\"1\"\u003d\"Once\",\"2\"\u003d\"Twice\",\"3\"\u003d\"Three Times\"]`"
+			},
+			{
+				"property": "cut-hair-config",
+				"siid": 2,
+				"piid": 63,
+				"friendlyName": "Robot Cleaner - Auto Cutting Tangled Hair",
+				"channel": "cut_hair_config",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch",
+					"Enabled"
+				]
+			},
+			{
+				"property": "frequency-cut-hair-config",
+				"siid": 2,
+				"piid": 64,
+				"friendlyName": "Robot Cleaner - Tangled Hair Cutting Frequency",
+				"channel": "frequency_cut_hair_config",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "1",
+							"label": "Every Cleaning"
+						},
+						{
+							"value": "2",
+							"label": "Every 2 Cleanings"
+						},
+						{
+							"value": "3",
+							"label": "Every 3 Cleanings"
+						},
+						{
+							"value": "4",
+							"label": "During And After Cleaning"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "settings",
+				"tags": [
+					"Control"
+				],
+				"readmeComment": "Value mapping `[\"1\"\u003d\"Every Cleaning\",\"2\"\u003d\"Every 2 Cleanings\",\"3\"\u003d\"Every 3 Cleanings\",\"4\"\u003d\"During And After Cleaning\"]`"
+			},
+			{
+				"property": "use-detergent",
+				"siid": 2,
+				"piid": 36,
+				"friendlyName": "Robot Cleaner - Use Detergent",
+				"channel": "use_detergent",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch",
+					"Enabled"
+				]
+			},
+			{
+				"property": "detergent-depletion-reminder",
+				"siid": 2,
+				"piid": 71,
+				"friendlyName": "Robot Cleaner - Detergent Depletion Reminder",
+				"channel": "detergent_depletion_reminder",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch",
+					"Enabled"
+				]
+			},
+			{
+				"property": "detergent-left-level",
+				"siid": 18,
+				"piid": 1,
+				"friendlyName": "Detergent - Detergent Level",
+				"channel": "detergent_left_level",
+				"type": "Number:Dimensionless",
+				"unit": "percentage",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 100,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "status",
+				"tags": [
+					"Measurement",
+					"Level"
+				]
+			},
+			{
+				"property": "detergent-left-time",
+				"siid": 18,
+				"piid": 4,
+				"friendlyName": "Detergent - Detergent Left Time",
+				"channel": "detergent_left_time",
+				"type": "Number:Time",
+				"unit": "hours",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 9999,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "time",
+				"tags": [
+					"Measurement",
+					"Duration"
+				]
+			},
+			{
+				"property": "auto-water-change-installed",
+				"siid": 2,
+				"piid": 62,
+				"friendlyName": "Robot Cleaner - Auto Water Refill And Drain Installed",
+				"channel": "auto_water_change_installed",
+				"type": "Switch",
+				"stateDescription": {
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "water",
+				"tags": [
+					"Status",
+					"Enabled"
+				]
+			},
+			{
+				"property": "water-check-status",
+				"siid": 2,
+				"piid": 54,
+				"friendlyName": "Robot Cleaner - Water Self Check Status",
+				"channel": "water_check_status",
+				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "0",
+							"label": "Not Checked"
+						},
+						{
+							"value": "1",
+							"label": "Checking"
+						},
+						{
+							"value": "2",
+							"label": "Check Successful"
+						},
+						{
+							"value": "3",
+							"label": "Check Failed"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "water",
+				"tags": [
+					"Status"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Not Checked\",\"1\"\u003d\"Checking\",\"2\"\u003d\"Check Successful\",\"3\"\u003d\"Check Failed\"]`"
+			},
+			{
+				"property": "carpet-discriminate",
+				"siid": 2,
+				"piid": 77,
+				"friendlyName": "Robot Cleaner - Carpet Detection",
+				"channel": "carpet_discriminate",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch",
+					"Enabled"
+				]
+			},
+			{
+				"property": "edge-swing-tail-sweep",
+				"siid": 2,
+				"piid": 55,
+				"friendlyName": "Robot Cleaner - Corners And Edges Focus",
+				"channel": "edge_swing_tail_sweep",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch",
+					"Enabled"
+				]
+			},
+			{
+				"property": "edge-sweep-frequency",
+				"siid": 2,
+				"piid": 68,
+				"friendlyName": "Robot Cleaner - Corners And Edges Focus Frequency",
+				"channel": "edge_sweep_frequency",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "1",
+							"label": "Every 7 Cleanings"
+						},
+						{
+							"value": "2",
+							"label": "Every Cleaning"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "settings",
+				"tags": [
+					"Control"
+				],
+				"readmeComment": "Value mapping `[\"1\"\u003d\"Every 7 Cleanings\",\"2\"\u003d\"Every Cleaning\"]`"
+			},
+			{
+				"property": "sweep-ai-detection",
+				"siid": 2,
+				"piid": 45,
+				"friendlyName": "Robot Cleaner - AI Recognition",
+				"channel": "sweep_ai_detection",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch",
+					"Enabled"
+				]
+			},
+			{
+				"property": "ai-cleaning",
+				"siid": 2,
+				"piid": 37,
+				"friendlyName": "Robot Cleaner - AI Obstacle Avoidance",
+				"channel": "ai_cleaning",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch",
+					"Enabled"
+				]
+			},
+			{
+				"property": "solid-dirt-detection",
+				"siid": 2,
+				"piid": 52,
+				"friendlyName": "Robot Cleaner - Solid Dirt Recognition",
+				"channel": "solid_dirt_detection",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch",
+					"Enabled"
+				]
+			},
+			{
+				"property": "dirt-detection",
+				"siid": 2,
+				"piid": 46,
+				"friendlyName": "Robot Cleaner - Key Stain Recognition",
+				"channel": "dirt_detection",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch",
+					"Enabled"
+				]
+			},
+			{
+				"property": "object-detection",
+				"siid": 2,
+				"piid": 47,
+				"friendlyName": "Robot Cleaner - Obstacle Recognition",
+				"channel": "object_detection",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch",
+					"Enabled"
+				]
+			},
+			{
+				"property": "room-detection",
+				"siid": 2,
+				"piid": 48,
+				"friendlyName": "Robot Cleaner - Room Recognition",
+				"channel": "room_detection",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch",
+					"Enabled"
+				]
+			},
+			{
+				"property": "floor-material-detection",
+				"siid": 2,
+				"piid": 49,
+				"friendlyName": "Robot Cleaner - Floor Material Recognition",
+				"channel": "floor_material_detection",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch",
+					"Enabled"
+				]
+			},
+			{
+				"property": "ai-managed-cleaning",
+				"siid": 2,
+				"piid": 69,
+				"friendlyName": "Robot Cleaner - AI Hosted Cleanup",
+				"channel": "ai_managed_cleaning",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch",
+					"Enabled"
+				]
+			},
+			{
+				"property": "dust-bag-life-level",
+				"siid": 19,
+				"piid": 1,
+				"friendlyName": "Dust Bag - Dust Bag Life Level",
+				"channel": "dust_bag_life_level",
+				"type": "Number:Dimensionless",
+				"unit": "percentage",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 100,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "status",
+				"tags": [
+					"Measurement",
+					"Level"
+				]
+			},
+			{
+				"property": "dust-bag-left-time",
+				"siid": 19,
+				"piid": 2,
+				"friendlyName": "Dust Bag - Dust Bag Left Time",
+				"channel": "dust_bag_left_time",
+				"type": "Number:Time",
+				"unit": "hours",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 9999,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "time",
+				"tags": [
+					"Measurement",
+					"Duration"
+				]
+			},
+			{
+				"property": "carpet-cleaning-method",
+				"siid": 2,
+				"piid": 73,
+				"friendlyName": "Robot Cleaner - Carpet Cleaning Method",
+				"channel": "carpet_cleaning_method",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "Adaptive"
+						},
+						{
+							"value": "1",
+							"label": "Avoid"
+						},
+						{
+							"value": "2",
+							"label": "Ignore"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "settings",
+				"tags": [
+					"Control",
+					"Mode"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Adaptive\",\"1\"\u003d\"Avoid\",\"2\"\u003d\"Ignore\"]`"
+			},
+			{
+				"property": "sweep-route",
+				"siid": 2,
+				"piid": 74,
+				"friendlyName": "Robot Cleaner - Cleaning Path",
+				"channel": "sweep_route",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "1",
+							"label": "Quick"
+						},
+						{
+							"value": "2",
+							"label": "Standard"
+						},
+						{
+							"value": "3",
+							"label": "Deep"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "settings",
+				"tags": [
+					"Control",
+					"Mode"
+				],
+				"readmeComment": "Value mapping `[\"1\"\u003d\"Quick\",\"2\"\u003d\"Standard\",\"3\"\u003d\"Deep\"]`"
+			},
+			{
+				"property": "obstacle-avoidance-strategy",
+				"siid": 2,
+				"piid": 75,
+				"friendlyName": "Robot Cleaner - Obstacle Avoidance Strategy",
+				"channel": "obstacle_avoidance_strategy",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "Less Collisions"
+						},
+						{
+							"value": "1",
+							"label": "High Coverage"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "settings",
+				"tags": [
+					"Control",
+					"Mode"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Less Collisions\",\"1\"\u003d\"High Coverage\"]`"
+			},
+			{
+				"property": "battery-level",
+				"siid": 3,
+				"piid": 1,
+				"friendlyName": "Battery - Battery Level",
+				"channel": "battery_level",
+				"type": "Number:Dimensionless",
+				"unit": "percentage",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 100,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "battery",
+				"tags": [
+					"Measurement",
+					"StateOfCharge"
+				]
+			},
+			{
+				"property": "charging-state",
+				"siid": 3,
+				"piid": 2,
+				"friendlyName": "Battery - Charging State",
+				"channel": "charging_state",
+				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "1",
+							"label": "Charging"
+						},
+						{
+							"value": "2",
+							"label": "Not Charging"
+						},
+						{
+							"value": "3",
+							"label": "Not Chargeable"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "battery",
+				"tags": [
+					"Status"
+				],
+				"readmeComment": "Value mapping `[\"1\"\u003d\"Charging\",\"2\"\u003d\"Not Charging\",\"3\"\u003d\"Not Chargeable\"]`"
+			},
+			{
+				"property": "voltage",
+				"siid": 3,
+				"piid": 3,
+				"friendlyName": "Battery - Voltage",
+				"channel": "voltage",
+				"type": "Number",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 65535,
+					"step": 1,
+					"pattern": "%.0f",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "energy",
+				"tags": [
+					"Measurement",
+					"Voltage"
+				]
+			},
+			{
+				"property": "volume",
+				"siid": 4,
+				"piid": 2,
+				"friendlyName": "Audio - Volume",
+				"channel": "volume",
+				"type": "Number:Dimensionless",
+				"unit": "percentage",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 100,
+					"step": 1,
+					"pattern": "%.0f %unit%"
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "soundvolume",
+				"tags": [
+					"Control",
+					"SoundVolume"
+				]
+			},
+			{
+				"property": "physical-controls-locked",
+				"siid": 5,
+				"piid": 1,
+				"friendlyName": "Child Lock",
+				"channel": "physical_controls_locked",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "lock",
+				"tags": [
+					"Switch",
+					"Enabled"
+				]
+			},
+			{
+				"property": "current-physical-control-lock",
+				"siid": 5,
+				"piid": 2,
+				"friendlyName": "Child Lock - Current State",
+				"channel": "current_physical_control_lock",
+				"type": "Switch",
+				"stateDescription": {
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "lock",
+				"tags": [
+					"Status",
+					"Enabled"
+				]
+			},
+			{
+				"property": "mop-life-level",
+				"siid": 9,
+				"piid": 1,
+				"friendlyName": "Mop - Mop Life Level",
+				"channel": "mop_life_level",
+				"type": "Number:Dimensionless",
+				"unit": "percentage",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 100,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "status",
+				"tags": [
+					"Measurement",
+					"Level"
+				]
+			},
+			{
+				"property": "mop-left-time",
+				"siid": 9,
+				"piid": 2,
+				"friendlyName": "Mop - Mop Left Time",
+				"channel": "mop_left_time",
+				"type": "Number:Time",
+				"unit": "hours",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 9999,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "time",
+				"tags": [
+					"Measurement",
+					"Duration"
+				]
+			},
+			{
+				"property": "no-disturb",
+				"siid": 11,
+				"piid": 1,
+				"friendlyName": "Do Not Disturb",
+				"channel": "no_disturb",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch",
+					"Enabled"
+				]
+			},
+			{
+				"property": "current-no-disturb",
+				"siid": 11,
+				"piid": 3,
+				"friendlyName": "Do Not Disturb - Active",
+				"channel": "current_no_disturb",
+				"type": "Switch",
+				"stateDescription": {
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "switch",
+				"tags": [
+					"Status",
+					"Enabled"
+				]
+			},
+			{
+				"property": "brush-life-level",
+				"siid": 12,
+				"piid": 1,
+				"friendlyName": "Main Cleaning Brush - Brush Life Level",
+				"channel": "brush_life_level",
+				"type": "Number:Dimensionless",
+				"unit": "percentage",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 100,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "status",
+				"tags": [
+					"Measurement",
+					"Level"
+				]
+			},
+			{
+				"property": "brush-left-time",
+				"siid": 12,
+				"piid": 2,
+				"friendlyName": "Main Cleaning Brush - Brush Left Time",
+				"channel": "brush_left_time",
+				"type": "Number:Time",
+				"unit": "hours",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 9999,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "time",
+				"tags": [
+					"Measurement",
+					"Duration"
+				]
+			},
+			{
+				"property": "brush-life-level1",
+				"siid": 13,
+				"piid": 1,
+				"friendlyName": "Side Cleaning Brush - Brush Life Level",
+				"channel": "brush_life_level1",
+				"type": "Number:Dimensionless",
+				"unit": "percentage",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 100,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "status",
+				"tags": [
+					"Measurement",
+					"Level"
+				]
+			},
+			{
+				"property": "brush-left-time1",
+				"siid": 13,
+				"piid": 2,
+				"friendlyName": "Side Cleaning Brush - Brush Left Time",
+				"channel": "brush_left_time1",
+				"type": "Number:Time",
+				"unit": "hours",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 9999,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "time",
+				"tags": [
+					"Measurement",
+					"Duration"
+				]
+			},
+			{
+				"property": "filter-life-level",
+				"siid": 14,
+				"piid": 1,
+				"friendlyName": "Filter - Filter Life Level",
+				"channel": "filter_life_level",
+				"type": "Number:Dimensionless",
+				"unit": "percentage",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 100,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "status",
+				"tags": [
+					"Measurement",
+					"Level"
+				]
+			},
+			{
+				"property": "filter-left-time",
+				"siid": 14,
+				"piid": 2,
+				"friendlyName": "Filter - Filter Left Time",
+				"channel": "filter_left_time",
+				"type": "Number:Time",
+				"unit": "hours",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 1000,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "time",
+				"tags": [
+					"Measurement",
+					"Duration"
+				]
+			}
+		],
+		"experimental": true
+	}
+}

@@ -19,6 +19,11 @@
 			<description>Doorbird user password</description>
 			<context>password</context>
 		</parameter>
+		<parameter name="webhookIpWhitelist" type="text" multiple="true" required="false">
+			<label>Allowed Webhook IPs</label>
+			<description>Whitelist of IP addresses allowed to trigger webhooks (Doorbird host/IP is always allowed)</description>
+			<context>network-address</context>
+		</parameter>
 		<parameter name="imageRefreshRate" type="integer" min="2" max="600">
 			<label>Image Refresh Rate</label>
 			<description>Image refresh rate in seconds (blank to disable)</description>

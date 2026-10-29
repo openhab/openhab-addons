@@ -102,7 +102,7 @@ public class ValloxMVWebSocket {
 
     public void connectionError(Exception e) {
         logger.debug("Error connecting vallox unit.", e);
-        voHandler.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR);
+        voHandler.updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR);
     }
 
     @WebSocket
@@ -331,7 +331,7 @@ public class ValloxMVWebSocket {
 
         @OnWebSocketError
         public void onError(Throwable cause) {
-            voHandler.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            voHandler.updateStatus(ThingStatusDetail.COMMUNICATION_ERROR);
             logger.debug("Connection failed: {}", cause.getMessage());
         }
 

@@ -23,9 +23,24 @@
 			<channel id="expected-temperature" typeId="it600-expected-temp-channel"/>
 			<channel id="work-type" typeId="it600-work-type-channel"/>
 			<channel id="running-state" typeId="it600-running-state"/>
+			<channel id="cooling-setpoint" typeId="it600-cooling-setpoint"/>
+			<channel id="system-mode" typeId="it600-system-mode"/>
+			<channel id="keypad-lock" typeId="it600-keypad-lock"/>
+			<channel id="allow-local-unlock" typeId="it600-allow-local-unlock"/>
+			<channel id="temperature-offset" typeId="it600-temperature-offset"/>
+			<channel id="frost-temperature" typeId="it600-frost-temperature"/>
+			<channel id="minimum-setpoint" typeId="it600-minimum-setpoint"/>
+			<channel id="maximum-setpoint" typeId="it600-maximum-setpoint"/>
+			<channel id="valve-protection" typeId="it600-valve-protection"/>
+			<channel id="display-off" typeId="it600-display-off"/>
+			<channel id="display-unit" typeId="it600-display-unit"/>
+			<channel id="clock-format" typeId="it600-clock-format"/>
+			<channel id="active-errors" typeId="it600-active-errors"/>
+			<channel id="rssi" typeId="it600-rssi"/>
+			<channel id="lqi" typeId="it600-lqi"/>
 		</channels>
 		<properties>
-			<property name="thingTypeVersion">1</property>
+			<property name="thingTypeVersion">2</property>
 		</properties>
 		<representation-property>dsn</representation-property>
 		<config-description>
@@ -82,7 +97,7 @@
 			<options>
 				<option value="OFF">OFF</option>
 				<option value="MANUAL">Manual</option>
-				<option value="AUTO">Automatic</option>
+				<option value="AUTOMATIC">Automatic</option>
 				<option value="TEMPORARY_MANUAL">Temporary Manual</option>
 			</options>
 		</state>
@@ -95,5 +110,166 @@
 			<tag>Status</tag>
 			<tag>Power</tag>
 		</tags>
+	</channel-type>
+
+	<channel-type id="it600-cooling-setpoint">
+		<item-type unitHint="°C">Number:Temperature</item-type>
+		<label>Cooling Setpoint</label>
+		<description>Requested cooling temperature. Supported only by cooling-capable thermostats.</description>
+		<category>Temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state min="5" max="35" step="0.5" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="it600-system-mode">
+		<item-type>String</item-type>
+		<label>System Mode</label>
+		<description>Selects heating, cooling or off independently of the schedule/hold mode.</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
+		<state>
+			<options>
+				<option value="HEAT">Heating</option>
+				<option value="COOL">Cooling</option>
+				<option value="OFF">Off</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="it600-keypad-lock">
+		<item-type>Switch</item-type>
+		<label>Keypad Lock</label>
+		<description>Locks the thermostat keypad when ON.</description>
+		<tags>
+			<tag>Control</tag>
+		</tags>
+	</channel-type>
+	<channel-type id="it600-allow-local-unlock" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Allow Local Unlock</label>
+		<description>Allows the keypad to be unlocked on the thermostat when ON.</description>
+		<tags>
+			<tag>Control</tag>
+		</tags>
+	</channel-type>
+	<channel-type id="it600-temperature-offset" advanced="true">
+		<item-type unitHint="°C">Number:Temperature</item-type>
+		<label>Temperature Offset</label>
+		<description>Calibration offset added to the measured room temperature.</description>
+		<category>Temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state min="-3" max="3" step="0.5" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="it600-frost-temperature" advanced="true">
+		<item-type unitHint="°C">Number:Temperature</item-type>
+		<label>Frost Temperature</label>
+		<description>Temperature maintained by frost protection.</description>
+		<category>Temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state min="5" max="17" step="0.5" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="it600-minimum-setpoint" advanced="true">
+		<item-type unitHint="°C">Number:Temperature</item-type>
+		<label>Minimum Heating Setpoint</label>
+		<description>Lowest allowed heating setpoint.</description>
+		<category>Temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state min="5" max="35" step="0.5" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="it600-maximum-setpoint" advanced="true">
+		<item-type unitHint="°C">Number:Temperature</item-type>
+		<label>Maximum Heating Setpoint</label>
+		<description>Highest allowed heating setpoint.</description>
+		<category>Temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state min="5" max="35" step="0.5" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="it600-valve-protection" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Valve Protection</label>
+		<description>Enables the thermostat valve-protection function.</description>
+		<tags>
+			<tag>Control</tag>
+		</tags>
+	</channel-type>
+	<channel-type id="it600-display-off" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Display Off</label>
+		<description>Switches the thermostat display off when ON.</description>
+		<tags>
+			<tag>Control</tag>
+		</tags>
+	</channel-type>
+	<channel-type id="it600-display-unit" advanced="true">
+		<item-type>String</item-type>
+		<label>Display Unit</label>
+		<description>Temperature unit shown on the physical thermostat.</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
+		<state>
+			<options>
+				<option value="CELSIUS">Celsius</option>
+				<option value="FAHRENHEIT">Fahrenheit</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="it600-clock-format" advanced="true">
+		<item-type>String</item-type>
+		<label>Clock Format</label>
+		<description>Time format shown on the physical thermostat.</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
+		<state>
+			<options>
+				<option value="12H">12 Hour</option>
+				<option value="24H">24 Hour</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="it600-active-errors" advanced="true">
+		<item-type>String</item-type>
+		<label>Active Errors</label>
+		<description>Comma-separated reported error codes, or NONE when all reported flags are clear.</description>
+		<tags>
+			<tag>Alarm</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="it600-rssi" advanced="true">
+		<item-type unitHint="dBm">Number:Power</item-type>
+		<label>Received Signal Strength</label>
+		<description>Signal strength of the last thermostat radio message.</description>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+	<channel-type id="it600-lqi" advanced="true">
+		<item-type>Number</item-type>
+		<label>Link Quality</label>
+		<description>Link quality of the last thermostat radio message.</description>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
+		<state min="0" max="255" step="1" readOnly="true" pattern="%d"/>
 	</channel-type>
 </thing:thing-descriptions>

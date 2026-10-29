@@ -93,7 +93,7 @@ public interface CommonInterface {
     }
 
     default ScheduledFuture<?> schedule(Runnable arg0, Duration delay) {
-        return getScheduler().schedule(arg0, delay.getSeconds(), TimeUnit.SECONDS);
+        return getScheduler().schedule(arg0, delay.toMillis(), TimeUnit.MILLISECONDS);
     }
 
     default @Nullable ApiBridgeHandler getAccountHandler() {

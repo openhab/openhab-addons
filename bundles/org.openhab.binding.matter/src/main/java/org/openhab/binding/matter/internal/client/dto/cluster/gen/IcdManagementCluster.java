@@ -49,12 +49,12 @@ public class IcdManagementCluster extends BaseCluster {
      * Indicates the maximum interval in seconds the server can stay in idle mode. The IdleModeDuration shall NOT be
      * smaller than the ActiveModeDuration.
      */
-    public Integer idleModeDuration; // 0 uint32 R V
+    public Long idleModeDuration; // 0 uint32 R V
     /**
      * Indicates the minimum interval in milliseconds the server typically will stay in active mode after initial
      * transition out of idle mode. The ActiveModeDuration does not include the ActiveModeThreshold.
      */
-    public Integer activeModeDuration; // 1 uint32 R V
+    public Long activeModeDuration; // 1 uint32 R V
     /**
      * Indicates the minimum amount of time in milliseconds the server typically will stay active after network activity
      * when in active mode.
@@ -70,7 +70,7 @@ public class IcdManagementCluster extends BaseCluster {
      * Indicates the value of the ICD Counter. The ICD Counter is used as the Check-In Counter to encrypt the check-in
      * message for this client.
      */
-    public Integer icdCounter; // 4 uint32 R A
+    public Long icdCounter; // 4 uint32 R A
     /**
      * Indicates the maximum number of entries that the server is able to store for each fabric in the RegisteredClients
      * attribute.
@@ -121,7 +121,7 @@ public class IcdManagementCluster extends BaseCluster {
      * MaximumCheckInBackoff shall NOT be smaller than the IdleModeDuration.
      * If the MaximumCheckInBackoff is equal to the IdleModeDuration, it means the ICD does not back-off.
      */
-    public Integer maximumCheckInBackoff; // 9 uint32 R V
+    public Long maximumCheckInBackoff; // 9 uint32 R V
 
     // Structs
     public static class MonitoringRegistrationStruct {
@@ -150,7 +150,7 @@ public class IcdManagementCluster extends BaseCluster {
         /**
          * This field is deprecated. Use the RegisterClient command to set the ICDToken.
          */
-        public String key;
+        public OctetString key; // octstr
         /**
          * This field shall indicate the client's type to inform the ICD of the availability for communication of the
          * client.
@@ -158,7 +158,7 @@ public class IcdManagementCluster extends BaseCluster {
         public ClientTypeEnum clientType; // ClientTypeEnum
         public Integer fabricIndex; // FabricIndex
 
-        public MonitoringRegistrationStruct(BigInteger checkInNodeId, BigInteger monitoredSubject, String key,
+        public MonitoringRegistrationStruct(BigInteger checkInNodeId, BigInteger monitoredSubject, OctetString key,
                 ClientTypeEnum clientType, Integer fabricIndex) {
             this.checkInNodeId = checkInNodeId;
             this.monitoredSubject = monitoredSubject;
@@ -354,7 +354,7 @@ public class IcdManagementCluster extends BaseCluster {
      * exchanges during that period. The client may slightly overestimate the duration it wants the ICD to be active
      * for, in order to account for network delays.
      */
-    public static ClusterCommand stayActiveRequest(Integer stayActiveDuration) {
+    public static ClusterCommand stayActiveRequest(Long stayActiveDuration) {
         Map<String, Object> map = new LinkedHashMap<>();
         if (stayActiveDuration != null) {
             map.put("stayActiveDuration", stayActiveDuration);

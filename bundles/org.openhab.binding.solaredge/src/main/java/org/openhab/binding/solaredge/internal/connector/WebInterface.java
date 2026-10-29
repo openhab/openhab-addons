@@ -130,26 +130,23 @@ public class WebInterface implements AtomicReferenceTrait {
 
             switch (status.getHttpCode()) {
                 case OK:
-                    handler.setStatusInfo(ThingStatus.ONLINE, ThingStatusDetail.NONE, null);
+                    handler.setStatusInfo(ThingStatus.ONLINE, null);
                     setAuthenticated(true);
                     break;
                 case FOUND:
-                    handler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                            errorMessageCodeFound);
+                    handler.setStatusInfo(ThingStatusDetail.CONFIGURATION_ERROR, errorMessageCodeFound);
                     setAuthenticated(false);
                     break;
                 case FORBIDDEN:
-                    handler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                            errorMessgaeCodeForbidden);
+                    handler.setStatusInfo(ThingStatusDetail.CONFIGURATION_ERROR, errorMessgaeCodeForbidden);
                     setAuthenticated(false);
                     break;
                 case SERVICE_UNAVAILABLE:
-                    handler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, status.getMessage());
+                    handler.setStatusInfo(ThingStatusDetail.BRIDGE_OFFLINE, status.getMessage());
                     setAuthenticated(false);
                     break;
                 default:
-                    handler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            status.getMessage());
+                    handler.setStatusInfo(ThingStatusDetail.COMMUNICATION_ERROR, status.getMessage());
                     setAuthenticated(false);
             }
         }
@@ -214,7 +211,7 @@ public class WebInterface implements AtomicReferenceTrait {
                 return true;
             }
 
-            handler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, preCheckStatusMessage);
+            handler.setStatusInfo(ThingStatusDetail.CONFIGURATION_ERROR, preCheckStatusMessage);
             return false;
         }
 

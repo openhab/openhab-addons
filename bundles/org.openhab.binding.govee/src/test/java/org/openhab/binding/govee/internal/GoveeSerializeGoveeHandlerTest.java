@@ -133,6 +133,24 @@ public class GoveeSerializeGoveeHandlerTest {
     }
 
     @Test
+    public void testOnlyStatusResponseMarksThingOnline() {
+        final Thing thing = mockThing(true);
+        final ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
+        final GoveeHandlerMock handler = createAndInitHandler(callback, thing);
+
+        try {
+            verify(callback, never()).statusUpdated(eq(thing),
+                    argThat(arg -> arg.getStatus().equals(ThingStatus.ONLINE)));
+
+            handler.handleIncomingStatus(invalidValueJsonString);
+
+            verify(callback).statusUpdated(eq(thing), argThat(arg -> arg.getStatus().equals(ThingStatus.ONLINE)));
+        } finally {
+            handler.dispose();
+        }
+    }
+
+    @Test
     public void testInvalidResponseMessage() {
         final Thing thing = mockThing(true);
         final ThingHandlerCallback callback = mock(ThingHandlerCallback.class);

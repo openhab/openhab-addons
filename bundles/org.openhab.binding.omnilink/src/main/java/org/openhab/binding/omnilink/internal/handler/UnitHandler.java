@@ -28,7 +28,6 @@ import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
-import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
@@ -69,7 +68,7 @@ public class UnitHandler extends AbstractOmnilinkStatusHandler<ExtendedUnitStatu
         if (bridgeHandler != null) {
             updateUnitProperties(bridgeHandler);
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+            updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                     "Received null bridge while initializing Unit!");
         }
     }
@@ -99,8 +98,8 @@ public class UnitHandler extends AbstractOmnilinkStatusHandler<ExtendedUnitStatu
         logger.debug("handleCommand called for channel: {}, command: {}", channelUID, command);
 
         if (command instanceof RefreshType) {
-            retrieveStatus().ifPresentOrElse(this::updateChannels, () -> updateStatus(ThingStatus.OFFLINE,
-                    ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, "Received null status update!"));
+            retrieveStatus().ifPresentOrElse(this::updateChannels,
+                    () -> updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, "Received null status update!"));
             return;
         }
 

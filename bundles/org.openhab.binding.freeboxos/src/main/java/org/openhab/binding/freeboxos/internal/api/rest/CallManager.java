@@ -64,11 +64,13 @@ public class CallManager extends RestManager {
     public List<Call> getCallEntries() throws FreeboxException {
         List<Call> callList = new ArrayList<>(
                 get(Calls.class, LOG_SUB_PATH).stream().sorted(Comparator.comparing(Call::datetime)).toList());
-        Call last = callList.get(callList.size() - 1);
-        // The INCOMING type call can only be set on the last call if its duration is 0;
-        if (last.type == Type.MISSED && last.duration == 0) {
-            callList.remove(callList.size() - 1);
-            callList.add(new Call(Type.INCOMING, last.datetime, last.number, 0, last.name));
+        if (!callList.isEmpty()) {
+            Call last = callList.get(callList.size() - 1);
+            // The INCOMING type call can only be set on the last call if its duration is 0;
+            if (last.type == Type.MISSED && last.duration == 0) {
+                callList.remove(callList.size() - 1);
+                callList.add(new Call(Type.INCOMING, last.datetime, last.number, 0, last.name));
+            }
         }
         return callList;
     }

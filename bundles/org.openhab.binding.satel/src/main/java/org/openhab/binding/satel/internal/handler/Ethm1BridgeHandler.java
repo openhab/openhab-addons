@@ -26,7 +26,6 @@ import org.openhab.binding.satel.internal.protocol.Ethm1Module;
 import org.openhab.binding.satel.internal.protocol.SatelModule;
 import org.openhab.core.config.core.status.ConfigStatusMessage;
 import org.openhab.core.thing.Bridge;
-import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingTypeUID;
 import org.slf4j.Logger;
@@ -59,7 +58,7 @@ public class Ethm1BridgeHandler extends SatelBridgeHandler {
                     config.getEncryptionKey(), config.hasExtCommandsSupport());
             super.initialize(satelModule);
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
+            updateStatus(ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
                     "Cannot connect to Satel ETHM-1 module. IP address or host name not set.");
         }
     }

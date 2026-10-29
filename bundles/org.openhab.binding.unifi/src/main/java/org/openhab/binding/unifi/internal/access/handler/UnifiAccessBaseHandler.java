@@ -53,8 +53,8 @@ public abstract class UnifiAccessBaseHandler extends BaseThingHandler {
     }
 
     @Override
-    protected void updateStatus(ThingStatus status, ThingStatusDetail statusDetail, @Nullable String description) {
-        super.updateStatus(status, statusDetail, description);
+    protected void updateStatus(ThingStatusDetail statusDetail, @Nullable String description) {
+        super.updateStatus(statusDetail, description);
     }
 
     @Override
@@ -62,7 +62,7 @@ public abstract class UnifiAccessBaseHandler extends BaseThingHandler {
         if (bridgeStatusInfo.getStatus() == ThingStatus.ONLINE) {
             updateStatus(ThingStatus.UNKNOWN);
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
         }
     }
 
@@ -129,8 +129,7 @@ public abstract class UnifiAccessBaseHandler extends BaseThingHandler {
                 updateStatus(ThingStatus.ONLINE);
             }
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                    "@text/offline.device-offline");
+            updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, "@text/offline.device-offline");
         }
     }
 

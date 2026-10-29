@@ -20,6 +20,7 @@ import static java.util.Objects.requireNonNull;
 import static java.util.Optional.empty;
 import static java.util.stream.Collectors.toMap;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -29,6 +30,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.SortedMap;
 import java.util.TreeMap;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import javax.validation.constraints.NotNull;
@@ -36,6 +38,7 @@ import javax.validation.constraints.NotNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.salus.internal.cloud.rest.AuthToken;
+import org.openhab.binding.salus.internal.rest.exceptions.SalusApiException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,6 +52,7 @@ import com.google.gson.reflect.TypeToken;
  * and error messages.
  *
  * @author Martin Grześlowski - Initial contribution
+ * @author Martin Grześlowski - AWS thermostat command mapping
  */
 @NonNullByDefault
 public class GsonMapper {
@@ -59,6 +63,10 @@ public class GsonMapper {
     private static final TypeToken<List<Object>> LIST_TYPE_REFERENCE = new TypeToken<>() {
     };
     private final Gson gson = new Gson();
+    private static final Pattern AWS_COMMAND_PROPERTY = Pattern
+            .compile("ep_?\\d+:sIT600TH:Set(?:HeatingSetpoint_x100|CoolingSetpoint_x100|HoldType|LockKey"
+                    + "|AllowUnlockFromDevice|TemperatureOffset|FrostSetpoint_x100|MinHeatSetpoint_x100"
+                    + "|MaxHeatSetpoint_x100|ValveProtection|ShutOffDisplay|TemperatureDisplayMode|TimeFormat24Hour|SystemMode)");
 
     public String loginParam(String username, byte[] password) {
         return gson.toJson(Map.of("user", Map.of("email", username, "password", new String(password))));
@@ -268,15 +276,26 @@ public class GsonMapper {
 
         var deviceProperties = new ArrayList<DeviceProperty<?>>();
         var rawProperties = eleven.get("properties");
-        Map<String, Object> properties;
+        Map<String, ?> properties;
         if (rawProperties instanceof Map<?, ?> propertiesMap) {
-            properties = (Map<String, Object>) propertiesMap;
+            properties = (Map<String, ?>) propertiesMap;
         } else {
             properties = tryParseBody(rawProperties.toString(), MAP_TYPE_REFERENCE, Map.of());
         }
         for (var entry : properties.entrySet()) {
-            var deviceProperty = parseAwsDeviceProperty(entry.getKey(), entry.getValue());
-            deviceProperties.add(deviceProperty);
+            var value = entry.getValue();
+            if (value == null) {
+                continue;
+            }
+            deviceProperties.add(parseAwsDeviceProperty(entry.getKey(), value));
+            // Set commands need not appear in reported state. Expose verified commands alongside their readbacks.
+            var name = entry.getKey();
+            var separator = name.lastIndexOf(':') + 1;
+            var commandName = name.substring(0, separator) + "Set" + name.substring(separator);
+            if (value instanceof Number && AWS_COMMAND_PROPERTY.matcher(commandName).matches()
+                    && !properties.containsKey(commandName)) {
+                deviceProperties.add(parseAwsDeviceProperty(commandName, value));
+            }
         }
         return Collections.unmodifiableList(deviceProperties);
     }
@@ -350,13 +369,14 @@ public class GsonMapper {
 
     private DeviceProperty<?> parseAwsDeviceProperty(String key, Object value) {
         if (value instanceof Boolean booleanValue) {
-            return new DeviceProperty.BooleanDeviceProperty(key, true, null, null, null, null, booleanValue, null);
+            return new DeviceProperty.BooleanDeviceProperty(key, true, "output", null, null, null, booleanValue, null);
         }
         if (value instanceof Number numberValue) {
-            return new DeviceProperty.LongDeviceProperty(key, true, null, null, null, null, numberValue.longValue(),
-                    null);
+            var writable = AWS_COMMAND_PROPERTY.matcher(key).matches();
+            return new DeviceProperty.LongDeviceProperty(key, !writable, writable ? "input" : "output", null, null,
+                    null, numberValue.longValue(), null);
         }
-        return new DeviceProperty.StringDeviceProperty(key, true, null, null, null, null, value.toString(), null);
+        return new DeviceProperty.StringDeviceProperty(key, true, "output", null, null, null, value.toString(), null);
     }
 
     private DeviceProperty<?> buildDeviceProperty(String name, @Nullable String baseType, @Nullable Object value,
@@ -439,6 +459,38 @@ public class GsonMapper {
             return null;
         }
         return map.get(name);
+    }
+
+    public String awsShadowUpdate(String propertyName, Object value) throws SalusApiException {
+        if (!AWS_COMMAND_PROPERTY.matcher(propertyName).matches()) {
+            throw new SalusApiException("Unsupported AWS command property: " + propertyName);
+        }
+        if (!(value instanceof Number number)) {
+            throw new SalusApiException("AWS thermostat commands require an integer value");
+        }
+        long integer;
+        try {
+            integer = new BigDecimal(number.toString()).longValueExact();
+        } catch (NumberFormatException | ArithmeticException e) {
+            throw new SalusApiException("AWS thermostat commands require an integer value", e);
+        }
+        boolean valid = switch (propertyName.substring(propertyName.lastIndexOf(':') + 1)) {
+            case "SetHoldType" -> integer == 0 || integer == 1 || integer == 2 || integer == 7;
+            case "SetSystemMode" -> integer == 0 || integer == 3 || integer == 4;
+            case "SetLockKey", "SetAllowUnlockFromDevice", "SetValveProtection", "SetShutOffDisplay",
+                    "SetTemperatureDisplayMode", "SetTimeFormat24Hour" ->
+                integer == 0 || integer == 1;
+            case "SetTemperatureOffset" -> integer >= -300 && integer <= 300 && integer % 50 == 0;
+            case "SetFrostSetpoint_x100" -> integer >= 500 && integer <= 1700 && integer % 50 == 0;
+            case "SetMinHeatSetpoint_x100", "SetMaxHeatSetpoint_x100" ->
+                integer >= 500 && integer <= 3500 && integer % 50 == 0;
+            default -> true;
+        };
+        if (!valid) {
+            throw new SalusApiException("Unsupported value for AWS thermostat property: " + propertyName);
+        }
+        return gson.toJson(
+                Map.of("state", Map.of("desired", Map.of("11", Map.of("properties", Map.of(propertyName, integer))))));
     }
 
     public String datapointParam(Object value) {

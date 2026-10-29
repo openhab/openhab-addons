@@ -44,11 +44,11 @@ public class BaseCluster {
     public static final String ATTRIBUTE_GENERATED_COMMAND_LIST = "generatedCommandList";
 
     // Global cluster attributes (present in all clusters per Matter spec)
-    public List<Integer> acceptedCommandList; // 65529 list
-    public List<Integer> attributeList; // 65531 list
+    public List<Long> acceptedCommandList; // 65529 list
+    public List<Long> attributeList; // 65531 list
     public Integer clusterRevision; // 65533 uint16
     public List<Integer> eventList; // 65530
-    public List<Integer> generatedCommandList; // 65528 list
+    public List<Long> generatedCommandList; // 65528 list
 
     public interface MatterEnum {
         Integer getValue();
@@ -116,10 +116,10 @@ public class BaseCluster {
 
     // Structs
     public static class AtomicAttributeStatusStruct {
-        public Integer attributeId; // attrib-id
+        public Long attributeId; // attrib-id
         public Status statusCode; // status
 
-        public AtomicAttributeStatusStruct(Integer attributeId, Status statusCode) {
+        public AtomicAttributeStatusStruct(Long attributeId, Status statusCode) {
             this.attributeId = attributeId;
             this.statusCode = statusCode;
         }
@@ -563,7 +563,6 @@ public class BaseCluster {
         UNSUPPORTED_WRITE(136, "UnsupportedWrite"),
         RESOURCE_EXHAUSTED(137, "ResourceExhausted"),
         NOT_FOUND(139, "NotFound"),
-        UNREPORTABLE_ATTRIBUTE(140, "UnreportableAttribute"),
         INVALID_DATA_TYPE(141, "InvalidDataType"),
         UNSUPPORTED_READ(143, "UnsupportedRead"),
         DATA_VERSION_MISMATCH(146, "DataVersionMismatch"),
@@ -572,7 +571,6 @@ public class BaseCluster {
         BUSY(156, "Busy"),
         ACCESS_RESTRICTED(157, "AccessRestricted"),
         UNSUPPORTED_CLUSTER(195, "UnsupportedCluster"),
-        NO_UPSTREAM_SUBSCRIPTION(197, "NoUpstreamSubscription"),
         NEEDS_TIMED_INTERACTION(198, "NeedsTimedInteraction"),
         UNSUPPORTED_EVENT(199, "UnsupportedEvent"),
         PATHS_EXHAUSTED(200, "PathsExhausted"),

@@ -141,7 +141,7 @@ public abstract class LGThinQAbstractDeviceHandler<@NonNull C extends Capability
             } catch (LGThinqException e) {
                 getLogger().error("Error executing Command {} to the channel {}. Thing goes offline until retry",
                         params.command, params.channelUID, e);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             } catch (Exception e) {
                 getLogger().error("System error executing Command {} to the channel {}. Ignoring command",
                         params.command, params.channelUID, e);
@@ -260,9 +260,21 @@ public abstract class LGThinQAbstractDeviceHandler<@NonNull C extends Capability
     }
 
     @Override
-    protected void updateStatus(ThingStatus newStatus, ThingStatusDetail statusDetail, @Nullable String description) {
-        handleStatusChanged(newStatus, statusDetail);
-        super.updateStatus(newStatus, statusDetail, description);
+    protected void updateStatus(ThingStatus newStatus) {
+        super.updateStatus(newStatus);
+        handleStatusChanged(newStatus, ThingStatusDetail.NONE);
+    }
+
+    @Override
+    protected void updateStatus(ThingStatus newStatus, @Nullable String description) {
+        super.updateStatus(newStatus, description);
+        handleStatusChanged(newStatus, ThingStatusDetail.NONE);
+    }
+
+    @Override
+    protected void updateStatus(ThingStatusDetail statusDetail, @Nullable String description) {
+        super.updateStatus(statusDetail, description);
+        handleStatusChanged(thing.getStatus(), statusDetail);
     }
 
     @Override
@@ -294,8 +306,7 @@ public abstract class LGThinQAbstractDeviceHandler<@NonNull C extends Capability
                     }
                     getLogger().trace("{}", message);
                 }
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "@text/error.handler.device-cmd-queue-busy");
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/error.handler.device-cmd-queue-busy");
             }
         }
     }
@@ -352,12 +363,15 @@ public abstract class LGThinQAbstractDeviceHandler<@NonNull C extends Capability
         getLogger().debug("Initializing Thinq thing.");
 
         final Bridge bridge = getBridge();
-        if (bridge != null && bridge.getHandler() instanceof LGThinQBridgeHandler bridgeHandler) {
+        if (bridge == null) {
+            getLogger().debug("Bridge unavailable while initializing Thing: {}", thing.getUID());
+            return;
+        }
+        if (bridge.getHandler() instanceof LGThinQBridgeHandler bridgeHandler) {
             this.account = bridgeHandler;
             this.bridgeId = bridge.getUID().getId();
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/error.communication-error.no-bridge-set");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.communication-error.no-bridge-set");
             return;
         }
 
@@ -382,12 +396,11 @@ public abstract class LGThinQAbstractDeviceHandler<@NonNull C extends Capability
             // registry this thing to the bridge
             var account = this.account;
             if (account == null) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "@text/error.communication-error.no-bridge-set");
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.communication-error.no-bridge-set");
             } else {
                 account.registryListenerThing(this);
                 if (bridgeStatus == null) {
-                    updateStatus(ThingStatus.UNINITIALIZED);
+                    updateStatus(ThingStatus.UNKNOWN);
                 } else {
                     switch (bridgeStatus) {
                         case ONLINE:
@@ -395,20 +408,19 @@ public abstract class LGThinQAbstractDeviceHandler<@NonNull C extends Capability
                             break;
                         case INITIALIZING:
                         case UNINITIALIZED:
-                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
+                            updateStatus(ThingStatus.UNKNOWN);
                             break;
                         case UNKNOWN:
-                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR);
                             break;
                         default:
-                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+                            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
                             break;
                     }
                 }
             }
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.conf-error-no-device-id");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.conf-error-no-device-id");
         }
         // finally, start command queue, regardless of the thing state, since we can still try to send commands without
         // property ONLINE (the successful result from command request can put the thing in ONLINE status).
@@ -508,7 +520,7 @@ public abstract class LGThinQAbstractDeviceHandler<@NonNull C extends Capability
                 if (getThing().getStatus() != ThingStatus.OFFLINE) {
                     // only update channels if the device has just gone OFFLINE.
                     updateDeviceChannelsWrapper(shot);
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "@text/offline.device-disconnected");
+                    updateStatus(ThingStatus.OFFLINE, "@text/offline.device-disconnected");
                     onDeviceDisconnected();
                 }
             } else {
@@ -519,7 +531,7 @@ public abstract class LGThinQAbstractDeviceHandler<@NonNull C extends Capability
                 }
             }
         } catch (LGThinqAccessException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         } catch (LGThinqApiExhaustionException e) {
             fetchMonitorRetries++;
             getLogger().warn("LG API returns null monitoring data for the thing {}/{}. No data available yet ?",
@@ -528,12 +540,12 @@ public abstract class LGThinQAbstractDeviceHandler<@NonNull C extends Capability
                 getLogger().error(
                         "The thing {}/{} reach maximum retries for monitor data. Thing goes OFFLINE until next retry.",
                         getDeviceAlias(), getDeviceId(), e);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
         } catch (LGThinqException e) {
             getLogger().error("Error updating thing {}/{} from LG API. Thing goes OFFLINE until next retry: {}",
                     getDeviceAlias(), getDeviceId(), e.getMessage(), e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         } catch (Exception e) {
             getLogger().error(
                     "System error in pooling thread (UpdateDevice) for device {}/{}. Filtering to do not stop the thread",
@@ -664,12 +676,13 @@ public abstract class LGThinQAbstractDeviceHandler<@NonNull C extends Capability
     }
 
     protected String getBridgeId() {
-        if (bridgeId.isBlank() && getBridge() == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/error.communication-error.no-bridge-set");
-            return "UNKNOWN";
-        } else if (bridgeId.isBlank() && getBridge() != null) {
-            bridgeId = Objects.requireNonNull(getBridge()).getUID().getId();
+        if (bridgeId.isBlank()) {
+            Bridge bridge = getBridge();
+            if (bridge == null) {
+                getLogger().debug("Bridge unavailable for Thing: {}", thing.getUID());
+                return "UNKNOWN";
+            }
+            bridgeId = bridge.getUID().getId();
         }
         return bridgeId;
     }

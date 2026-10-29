@@ -130,7 +130,7 @@ public class TuyaDeviceHandler extends BaseTuyaDeviceHandler implements DeviceIn
         } else {
             logger.debug("{}: disconnected", thing.getUID().getId());
 
-            updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, "@text/online.wait-for-device");
+            updateStatus(ThingStatus.ONLINE, "@text/online.wait-for-device");
 
             onCommunicationLost();
         }
@@ -154,13 +154,13 @@ public class TuyaDeviceHandler extends BaseTuyaDeviceHandler implements DeviceIn
     @Override
     protected void initializeTransport() {
         if (!configuration.ip.isBlank()) {
-            updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, "@text/online.wait-for-device");
+            updateStatus(ThingStatus.ONLINE, "@text/online.wait-for-device");
 
             this.tuyaDevice = new TuyaDevice(gson, this, eventLoopGroup, configuration.deviceId,
                     configuration.localKey.getBytes(StandardCharsets.UTF_8), configuration.ip, configuration.port,
                     configuration.protocol, getAllDpIds());
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, "@text/offline.wait-for-ip");
+            updateStatus(ThingStatus.UNKNOWN);
         }
 
         udpDiscoveryListener.registerListener(configuration.deviceId, this);
@@ -186,14 +186,14 @@ public class TuyaDeviceHandler extends BaseTuyaDeviceHandler implements DeviceIn
                 configuration.ip = deviceInfo.ip;
                 configuration.protocol = deviceInfo.protocolVersion;
 
-                updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, "@text/online.wait-for-device");
+                updateStatus(ThingStatus.ONLINE, "@text/online.wait-for-device");
 
                 this.tuyaDevice = new TuyaDevice(gson, this, eventLoopGroup, configuration.deviceId,
                         configuration.localKey.getBytes(StandardCharsets.UTF_8), configuration.ip, configuration.port,
                         configuration.protocol, getAllDpIds());
             } catch (IllegalArgumentException e) {
                 logger.warn("{}", e.getMessage());
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
         }
     }

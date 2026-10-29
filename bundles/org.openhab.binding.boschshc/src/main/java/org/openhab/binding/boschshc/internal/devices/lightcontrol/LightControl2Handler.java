@@ -43,7 +43,6 @@ import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
-import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
@@ -118,7 +117,7 @@ public class LightControl2Handler extends BoschSHCDeviceHandler {
     }
 
     private void updateStatusChildDeviceIDsNotObtainable() {
-        super.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+        super.updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                 "@text/offline.conf-error.child-device-ids-not-obtainable");
     }
 

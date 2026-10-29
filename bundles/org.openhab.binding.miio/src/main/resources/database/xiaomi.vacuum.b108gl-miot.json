@@ -486,6 +486,7 @@
 						}
 					}
 				],
+				"category": "cleaningrobot",
 				"readmeComment": "Value mapping `[\"vacuum-start-sweep\"\u003d\"Start Cleaning\",\"vacuum-stop-sweeping\"\u003d\"Stop Cleaning\",\"vacuum-start-only-sweep\"\u003d\"Start Vacuuming Only\",\"vacuum-start-mop\"\u003d\"Start Mopping Only\",\"vacuum-start-sweep-mop\"\u003d\"Start Vacuuming And Mopping\",\"vacuum-pause-sweeping\"\u003d\"Pause\",\"vacuum-start-build-map\"\u003d\"Start Mapping\",\"battery-start-charge\"\u003d\"Go Charging\",\"main-brush-reset-brush-life\"\u003d\"Reset Main Brush Life\",\"side-brush-reset-brush-life\"\u003d\"Reset Side Brush Life\",\"filter-reset-filter-life\"\u003d\"Reset Filter Life\",\"mop-reset-mop-life\"\u003d\"Reset Mop Life\",\"vacuum-extend-continue-sweep\"\u003d\"Resume Cleaning\",\"vacuum-extend-remote-control\"\u003d\"Start Remote Control\",\"vacuum-extend-find-vacuum\"\u003d\"Find Robot\",\"vacuum-extend-start-custom-sweep\"\u003d\"Start Custom Cleaning\",\"vacuum-extend-try-listen\"\u003d\"Test Voice\",\"vacuum-extend-start-remote-up\"\u003d\"Remote Control Forward\",\"vacuum-extend-start-remote-left\"\u003d\"Remote Control Left\",\"vacuum-extend-start-remote-right\"\u003d\"Remote Control Right\",\"vacuum-extend-start-remote-down\"\u003d\"Remote Control Backward\",\"vacuum-extend-stop-remote\"\u003d\"Remote Control Stop\",\"vacuum-extend-exit-remote\"\u003d\"Exit Remote Control\",\"vacuum-extend-stop-and-gocharge\"\u003d\"Stop And Go Charging\",\"vacuum-map-save-permanent-map\"\u003d\"Save Map\",\"vacuum-map-auto-room-partition\"\u003d\"Auto Room Partition\"]`"
 			},
 			{
@@ -732,6 +733,7 @@
 						"parameterType": "NUMBER"
 					}
 				],
+				"category": "cleaningrobot",
 				"tags": [
 					"Control"
 				],
@@ -774,7 +776,7 @@
 				"category": "fan",
 				"tags": [
 					"Control",
-					"Level"
+					"Mode"
 				],
 				"readmeComment": "Value mapping `[\"1\"\u003d\"Silent\",\"2\"\u003d\"Basic\",\"3\"\u003d\"Strong\",\"4\"\u003d\"Full Speed\"]`"
 			},
@@ -830,7 +832,11 @@
 					"readOnly": true
 				},
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"category": "text",
+				"tags": [
+					"Status"
+				]
 			},
 			{
 				"property": "mode",
@@ -840,6 +846,7 @@
 				"channel": "mode",
 				"type": "Number",
 				"stateDescription": {
+					"readOnly": true,
 					"options": [
 						{
 							"value": "1",
@@ -856,17 +863,13 @@
 					]
 				},
 				"refresh": true,
-				"actions": [
-					{
-						"command": "set_properties",
-						"parameterType": "NUMBER"
-					}
-				],
+				"actions": [],
+				"category": "fan",
 				"tags": [
-					"Control",
+					"Status",
 					"Mode"
 				],
-				"readmeComment": "Value mapping `[\"1\"\u003d\"Silent\",\"2\"\u003d\"Basic\",\"3\"\u003d\"Strong\"]`"
+				"readmeComment": "Not used by the Mi Home app, which sets the suction level with `suction_level`. Value mapping `[\"1\"\u003d\"Silent\",\"2\"\u003d\"Basic\",\"3\"\u003d\"Strong\"]`"
 			},
 			{
 				"property": "edge-swing-tail-sweep",
@@ -882,6 +885,7 @@
 						"parameterType": "ONOFFBOOL"
 					}
 				],
+				"category": "switch",
 				"tags": [
 					"Switch",
 					"Enabled"
@@ -913,6 +917,7 @@
 						"parameterType": "NUMBER"
 					}
 				],
+				"category": "settings",
 				"tags": [
 					"Control"
 				],
@@ -929,7 +934,11 @@
 					"readOnly": true
 				},
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"category": "text",
+				"tags": [
+					"Status"
+				]
 			},
 			{
 				"property": "carpet-cleaning-method",
@@ -961,6 +970,7 @@
 						"parameterType": "NUMBER"
 					}
 				],
+				"category": "settings",
 				"tags": [
 					"Control",
 					"Mode"
@@ -981,6 +991,7 @@
 						"parameterType": "ONOFFBOOL"
 					}
 				],
+				"category": "switch",
 				"tags": [
 					"Switch",
 					"Enabled"
@@ -1077,6 +1088,7 @@
 						"parameterType": "ONOFFBOOL"
 					}
 				],
+				"category": "soundvolume",
 				"tags": [
 					"Switch",
 					"Enabled"
@@ -1105,7 +1117,7 @@
 				],
 				"category": "soundvolume",
 				"tags": [
-					"Setpoint",
+					"Control",
 					"SoundVolume"
 				]
 			},
@@ -1187,6 +1199,7 @@
 				},
 				"refresh": true,
 				"actions": [],
+				"category": "status",
 				"tags": [
 					"Measurement",
 					"Level"
@@ -1232,6 +1245,7 @@
 				},
 				"refresh": true,
 				"actions": [],
+				"category": "status",
 				"tags": [
 					"Measurement",
 					"Level"
@@ -1277,6 +1291,7 @@
 				},
 				"refresh": true,
 				"actions": [],
+				"category": "status",
 				"tags": [
 					"Measurement",
 					"Level"
@@ -1322,6 +1337,7 @@
 				},
 				"refresh": true,
 				"actions": [],
+				"category": "status",
 				"tags": [
 					"Measurement",
 					"Level"
@@ -1339,6 +1355,7 @@
 				},
 				"refresh": true,
 				"actions": [],
+				"category": "water",
 				"tags": [
 					"Status"
 				]
@@ -1355,6 +1372,7 @@
 				},
 				"refresh": true,
 				"actions": [],
+				"category": "text",
 				"tags": [
 					"Status",
 					"Info"
@@ -1374,6 +1392,7 @@
 						"parameterType": "ONOFFBOOL"
 					}
 				],
+				"category": "switch",
 				"tags": [
 					"Switch",
 					"Enabled"
@@ -1393,6 +1412,7 @@
 						"parameterType": "ONOFFBOOL"
 					}
 				],
+				"category": "switch",
 				"tags": [
 					"Switch",
 					"Enabled"
@@ -1410,6 +1430,7 @@
 				},
 				"refresh": true,
 				"actions": [],
+				"category": "status",
 				"tags": [
 					"Status"
 				]
@@ -1426,6 +1447,7 @@
 				},
 				"refresh": true,
 				"actions": [],
+				"category": "status",
 				"tags": [
 					"Status"
 				]
@@ -1456,6 +1478,7 @@
 				},
 				"refresh": true,
 				"actions": [],
+				"category": "status",
 				"tags": [
 					"Status"
 				],
@@ -1472,7 +1495,11 @@
 					"readOnly": true
 				},
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"category": "text",
+				"tags": [
+					"Status"
+				]
 			},
 			{
 				"property": "sweep-break-switch",
@@ -1488,6 +1515,7 @@
 						"parameterType": "ONOFFBOOL"
 					}
 				],
+				"category": "switch",
 				"tags": [
 					"Switch",
 					"Enabled"
@@ -1505,6 +1533,7 @@
 				},
 				"refresh": true,
 				"actions": [],
+				"category": "text",
 				"tags": [
 					"Status",
 					"Position"
@@ -1525,7 +1554,11 @@
 					"readOnly": true
 				},
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"category": "status",
+				"tags": [
+					"Status"
+				]
 			},
 			{
 				"property": "map-control-switch",
@@ -1541,6 +1574,7 @@
 						"parameterType": "ONOFFBOOL"
 					}
 				],
+				"category": "switch",
 				"tags": [
 					"Switch",
 					"Enabled"

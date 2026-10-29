@@ -61,6 +61,12 @@ public class ChannelConfig {
     public @Nullable String stop;
     public @Nullable String onState;
     public @Nullable String offState;
+    public @Nullable String play;
+    public @Nullable String pause;
+    public @Nullable String next;
+    public @Nullable String previous;
+    public @Nullable String rewind;
+    public @Nullable String fastforward;
     public @Nullable String nullValue;
     public @Nullable String ignoreValue;
 

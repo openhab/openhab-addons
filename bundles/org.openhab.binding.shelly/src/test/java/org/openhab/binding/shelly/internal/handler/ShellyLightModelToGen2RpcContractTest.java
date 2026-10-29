@@ -393,7 +393,7 @@ class ShellyLightModelToGen2RpcContractTest {
             try {
                 return classOfT.getDeclaredConstructor().newInstance();
             } catch (ReflectiveOperationException e) {
-                throw new RuntimeException("Unable to create fallback instance", e);
+                throw new IllegalStateException("Unable to create fallback instance", e);
             }
         }
     }

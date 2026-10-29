@@ -17,8 +17,10 @@ import static org.openhab.binding.samsungtv.internal.SamsungTvBindingConstants.*
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -75,6 +77,9 @@ public class RemoteControllerService implements SamsungTvService {
     private final int keyTiming = 300;
 
     private long busyUntil = System.currentTimeMillis();
+    private CompletableFuture<@Nullable Void> powerUpdate = CompletableFuture.completedFuture(null);
+    // incremented by stop(), so queued power updates from before it are dropped
+    private final AtomicInteger powerGeneration = new AtomicInteger();
 
     public boolean artMode = false;
     public boolean justStarted = true;
@@ -145,8 +150,19 @@ public class RemoteControllerService implements SamsungTvService {
         previousApp = "";
     }
 
+    /**
+     * Check the websockets when the TV comes online. A TV that restarted does not close them, and they would otherwise
+     * only be found dead at the next write or periodic ping.
+     */
+    public void pingConnections() {
+        if (remoteController instanceof RemoteControllerWebSocket webSocket) {
+            webSocket.ping();
+        }
+    }
+
     @Override
     public void stop() {
+        powerGeneration.incrementAndGet();
         try {
             remoteController.close();
         } catch (RemoteControllerException ignore) {
@@ -160,6 +176,7 @@ public class RemoteControllerService implements SamsungTvService {
      */
     @Override
     public void clearCache() {
+        retryCount = 0;
         start();
     }
 
@@ -175,7 +192,7 @@ public class RemoteControllerService implements SamsungTvService {
         boolean result = false;
         if (!checkConnection() && !SET_ART_MODE.equals(channel)) {
             logger.debug("{}: RemoteController is not connected", host);
-            if (getArtMode2022() && retryCount < 4) {
+            if (retryCount < 4) {
                 retryCount += 1;
                 logger.debug("{}: Reconnecting RemoteController, retry: {}", host, retryCount);
                 start();
@@ -237,11 +254,16 @@ public class RemoteControllerService implements SamsungTvService {
 
             case POWER:
                 if (command instanceof OnOffType) {
+                    handler.clearModeOnWake();
                     if (!isUpnp()) {
                         // websocket uses KEY_POWER
                         if (OnOffType.ON.equals(command) != getPowerState()) {
                             // send key only to toggle state
                             sendKeys(KeyCode.KEY_POWER);
+                            if (OnOffType.ON.equals(command) && !artMode && getArtModeSupported()) {
+                                // waking from standby, see requestModeIfWaking()
+                                handler.setModeOnWake(false);
+                            }
                             if (getArtMode2022()) {
                                 if (!getPowerState() & !artMode) {
                                     // second key press to get out of art mode, once tv online
@@ -288,14 +310,21 @@ public class RemoteControllerService implements SamsungTvService {
                         if (OnOffType.ON.equals(command)) {
                             if (!artMode) {
                                 sendKeys(KeyCode.KEY_POWER);
+                                handler.setModeOnWake(true);
                             }
                         } else if (artMode) {
-                            // really switch off (long press of power)
-                            sendKeys(KeyCode.KEY_POWER, 4000);
+                            handler.clearModeOnWake();
+                            if (!handler.ipControlPowerOff()) {
+                                // really switch off (long press of power), newer Frame TV's ignore this
+                                sendKeys(KeyCode.KEY_POWER, 4000);
+                            }
                         }
-                    } else {
-                        // switch TV off
+                    } else if (OnOffType.ON.equals(command)) {
+                        // KEY_POWER switches a Frame TV from TV mode to art mode
                         sendKeys(KeyCode.KEY_POWER);
+                    } else if (!handler.ipControlPowerOff()) {
+                        // switch off from TV mode, a short KEY_POWER would switch to art mode instead
+                        sendKeys(KeyCode.KEY_POWER, 4000);
                     }
                     if (getArtMode2022()) {
                         if (OnOffType.ON.equals(command)) {
@@ -559,8 +588,59 @@ public class RemoteControllerService implements SamsungTvService {
         }
     }
 
+    /**
+     * {@link #powerUpdated(boolean, boolean)} for callers on the websocket receive thread. Fetching the power state
+     * blocks on HTTP, so it runs on the scheduler instead, one update at a time in the order they were reported.
+     */
+    public synchronized void powerUpdatedAsync(boolean on, boolean artMode) {
+        ScheduledExecutorService scheduler = getScheduler();
+        if (scheduler == null) {
+            powerUpdated(on, artMode);
+            return;
+        }
+        int generation = powerGeneration.get();
+        powerUpdate = powerUpdate.thenRunAsync(() -> powerUpdated(on, artMode, generation), scheduler)
+                .exceptionally(e -> {
+                    logger.debug("{}: Power update failed: {}", host, e.getMessage());
+                    return null;
+                });
+    }
+
+    /**
+     * Requests the commanded mode if the TV woke from standby in the other one, as a Frame TV wakes in the mode it was
+     * switched off from. The TV reports art mode status on wakeup and when the art channel reconnects.
+     *
+     * @param artMode the art mode the TV reports
+     */
+    public void requestModeIfWaking(boolean artMode) {
+        if (handler.takeModeOnWake(artMode)) {
+            logger.debug("{}: TV woke up in {} mode, requesting {} mode", host, artMode ? "art" : "TV",
+                    artMode ? "TV" : "art");
+            remoteController.getArtmodeStatus(
+                    String.format("{\"request\":\"set_artmode_status\",\"value\":\"%s\"}", artMode ? "off" : "on"));
+        }
+    }
+
     public void powerUpdated(boolean on, boolean artMode) {
+        powerUpdated(on, artMode, powerGeneration.get());
+    }
+
+    private void powerUpdated(boolean on, boolean artMode, int generation) {
+        if (generation != powerGeneration.get()) {
+            logger.debug("{}: Service stopped, dropping power update", host);
+            return;
+        }
         String powerState = fetchPowerState();
+        // the service may have been stopped during the fetch
+        if (generation != powerGeneration.get()) {
+            logger.debug("{}: Service stopped, dropping power update", host);
+            return;
+        }
+        if (artMode && "standby".equals(powerState) && handler.getModelYear() >= 25) {
+            // 2025 and later Frame TV's report PowerState standby in art mode, 2022 to 2024 report on
+            logger.debug("{}: PowerState standby in art mode, treating as art mode", host);
+            powerState = "on";
+        }
         if (!getArtMode2022()) {
             setArtModeSupported(true);
         }
@@ -571,6 +651,10 @@ public class RemoteControllerService implements SamsungTvService {
         }
         setPowerState(on);
         this.artMode = artMode;
+        if (on && !artMode) {
+            // IP Control pairing only works when the TV is on and not in art mode
+            handler.pairIpControl();
+        }
         // order of state updates is important to prevent extraneous transitions in overall state
         if (on) {
             handler.valueReceived(POWER, OnOffType.from(on));

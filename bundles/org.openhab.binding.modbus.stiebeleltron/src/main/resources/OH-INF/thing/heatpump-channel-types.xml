@@ -516,7 +516,7 @@
 			<tag>Control</tag>
 			<tag>Mode</tag>
 		</tags>
-		<state readOnly="true">
+		<state>
 			<options>
 				<option value="0">Emergency</option>
 				<option value="1">Ready</option>
@@ -582,7 +582,7 @@
 			<tag>Control</tag>
 			<tag>Mode</tag>
 		</tags>
-		<state readOnly="true">
+		<state>
 			<options>
 				<option value="0">Emergency</option>
 				<option value="1">Ready</option>

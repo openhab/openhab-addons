@@ -13,6 +13,7 @@
 package org.openhab.binding.enphase.internal.discovery;
 
 import static org.openhab.binding.enphase.internal.EnphaseBindingConstants.CONFIG_SERIAL_NUMBER;
+import static org.openhab.binding.enphase.internal.EnphaseBindingConstants.THING_TYPE_ENPHASE_BATTERY;
 import static org.openhab.binding.enphase.internal.EnphaseBindingConstants.THING_TYPE_ENPHASE_INVERTER;
 import static org.openhab.binding.enphase.internal.EnphaseBindingConstants.THING_TYPE_ENPHASE_RELAY;
 
@@ -52,7 +53,9 @@ public class EnphaseDevicesDiscoveryService extends AbstractThingHandlerDiscover
     private final Logger logger = LoggerFactory.getLogger(EnphaseDevicesDiscoveryService.class);
 
     public EnphaseDevicesDiscoveryService() {
-        super(EnvoyBridgeHandler.class, Set.of(THING_TYPE_ENPHASE_INVERTER), TIMEOUT_SECONDS, false);
+        super(EnvoyBridgeHandler.class,
+                Set.of(THING_TYPE_ENPHASE_INVERTER, THING_TYPE_ENPHASE_RELAY, THING_TYPE_ENPHASE_BATTERY),
+                TIMEOUT_SECONDS, false);
     }
 
     @Override
@@ -98,6 +101,8 @@ public class EnphaseDevicesDiscoveryService extends AbstractThingHandlerDiscover
 
                 if (type == EnphaseDeviceType.NSRB) {
                     discover(bridgeID, entry.getKey(), THING_TYPE_ENPHASE_RELAY, "Relay ");
+                } else if (type == EnphaseDeviceType.ENCHARGE) {
+                    discover(bridgeID, entry.getKey(), THING_TYPE_ENPHASE_BATTERY, "Battery ");
                 }
             }
         }

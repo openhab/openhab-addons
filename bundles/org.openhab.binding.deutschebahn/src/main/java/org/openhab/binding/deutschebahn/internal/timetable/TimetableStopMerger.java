@@ -31,28 +31,31 @@ final class TimetableStopMerger {
     /**
      * Merges the {@link TimetableStop} inplace to the first TimetableStop.
      */
-    public static void merge(final TimetableStop first, final TimetableStop second) {
-        mergeStopAttributes(first, second);
+    public static void merge(final TimetableStop first, final TimetableStop second,
+            TimetableTimeConverter timeConverter) {
+        mergeStopAttributes(first, second, timeConverter);
     }
 
     /**
      * Updates all values from the second {@link TimetableStop} into the first one.
      */
-    private static void mergeStopAttributes(final TimetableStop first, final TimetableStop second) {
-        mergeEventAttributes(first.getAr(), second.getAr());
-        mergeEventAttributes(first.getDp(), second.getDp());
+    private static void mergeStopAttributes(final TimetableStop first, final TimetableStop second,
+            TimetableTimeConverter timeConverter) {
+        mergeEventAttributes(first.getAr(), second.getAr(), timeConverter);
+        mergeEventAttributes(first.getDp(), second.getDp(), timeConverter);
     }
 
     /**
      * Updates all values from the second Event into the first one.
      */
-    private static void mergeEventAttributes(@Nullable final Event first, @Nullable final Event second) {
+    private static void mergeEventAttributes(@Nullable final Event first, @Nullable final Event second,
+            TimetableTimeConverter timeConverter) {
         if ((first == null) || (second == null)) {
             return;
         }
 
         for (final EventAttribute<?, ?> attribute : EventAttribute.ALL_ATTRIBUTES) {
-            updateAttribute(attribute, first, second);
+            updateAttribute(attribute, first, second, timeConverter);
         }
     }
 
@@ -61,10 +64,10 @@ final class TimetableStopMerger {
      * <code>null</code>.
      */
     private static <VALUE_TYPE> void updateAttribute(final EventAttribute<VALUE_TYPE, ?> attribute, final Event first,
-            final Event second) {
-        final @Nullable VALUE_TYPE value = attribute.getValue(second);
+            final Event second, TimetableTimeConverter timeConverter) {
+        final @Nullable VALUE_TYPE value = attribute.getValue(second, timeConverter);
         if (value != null) {
-            attribute.setValue(first, value);
+            attribute.setValue(first, value, timeConverter);
         }
     }
 }

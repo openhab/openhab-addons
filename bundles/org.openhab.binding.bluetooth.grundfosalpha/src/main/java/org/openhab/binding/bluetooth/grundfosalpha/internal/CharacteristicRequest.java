@@ -20,7 +20,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.bluetooth.BluetoothCharacteristic;
 import org.openhab.binding.bluetooth.BluetoothDevice;
-import org.openhab.binding.bluetooth.grundfosalpha.internal.protocol.MessageType;
+import org.openhab.binding.bluetooth.grundfosalpha.internal.protocol.GeniReadRequest;
 import org.openhab.core.util.HexUtils;
 
 /**
@@ -39,11 +39,11 @@ public class CharacteristicRequest {
      * Creates a new request object.
      *
      * @param uuid The UUID of the characteristic
-     * @param messageType The {@link MessageType} containing the data to write
+     * @param readRequest The {@link GeniReadRequest} containing the data to write
      */
-    public CharacteristicRequest(UUID uuid, MessageType messageType) {
+    public CharacteristicRequest(UUID uuid, GeniReadRequest readRequest) {
         this.uuid = uuid;
-        this.value = messageType.request();
+        this.value = readRequest.request();
     }
 
     /**

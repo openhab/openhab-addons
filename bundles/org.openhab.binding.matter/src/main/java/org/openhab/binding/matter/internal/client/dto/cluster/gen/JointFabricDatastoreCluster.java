@@ -125,14 +125,14 @@ public class JointFabricDatastoreCluster extends BaseCluster {
         /**
          * This field shall contain the timestamp of the last update.
          */
-        public Integer updateTimestamp; // epoch-s
+        public Long updateTimestamp; // epoch-s
         /**
          * This field shall contain the Status Code of the last failed operation where the State field is set to
          * CommitFailure.
          */
         public Status failureCode; // status
 
-        public DatastoreStatusEntryStruct(DatastoreStateEnum state, Integer updateTimestamp, Status failureCode) {
+        public DatastoreStatusEntryStruct(DatastoreStateEnum state, Long updateTimestamp, Status failureCode) {
             this.state = state;
             this.updateTimestamp = updateTimestamp;
             this.failureCode = failureCode;
@@ -230,9 +230,9 @@ public class JointFabricDatastoreCluster extends BaseCluster {
          * is present, the client cluster shall also exist on this endpoint (with this Binding cluster). If this field
          * is present, the target shall be this cluster on the target endpoint(s).
          */
-        public Integer cluster; // cluster-id
+        public Long cluster; // cluster-id
 
-        public DatastoreBindingTargetStruct(BigInteger node, Integer group, Integer endpoint, Integer cluster) {
+        public DatastoreBindingTargetStruct(BigInteger node, Integer group, Integer endpoint, Long cluster) {
             this.node = node;
             this.group = group;
             this.endpoint = endpoint;
@@ -336,11 +336,11 @@ public class JointFabricDatastoreCluster extends BaseCluster {
     }
 
     public static class DatastoreAccessControlTargetStruct {
-        public Integer cluster; // cluster-id
+        public Long cluster; // cluster-id
         public Integer endpoint; // endpoint-no
-        public Integer deviceType; // devtype-id
+        public Long deviceType; // devtype-id
 
-        public DatastoreAccessControlTargetStruct(Integer cluster, Integer endpoint, Integer deviceType) {
+        public DatastoreAccessControlTargetStruct(Long cluster, Integer endpoint, Long deviceType) {
             this.cluster = cluster;
             this.endpoint = endpoint;
             this.deviceType = deviceType;

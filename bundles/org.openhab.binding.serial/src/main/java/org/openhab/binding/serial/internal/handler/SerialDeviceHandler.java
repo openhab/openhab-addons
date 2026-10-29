@@ -85,8 +85,7 @@ public class SerialDeviceHandler extends BaseThingHandler {
         try {
             devicePattern = Pattern.compile(config.patternMatch);
         } catch (final PatternSyntaxException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Invalid device pattern: " + e.getMessage());
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Invalid device pattern: " + e.getMessage());
             return;
         }
 
@@ -108,7 +107,7 @@ public class SerialDeviceHandler extends BaseThingHandler {
                         }
                     }
                 } catch (final IllegalArgumentException e) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                             "Configuration error for channel " + c.getUID().getId() + ": " + e.getMessage());
                     return;
                 }
@@ -118,7 +117,7 @@ public class SerialDeviceHandler extends BaseThingHandler {
         if (getBridgeStatus().getStatus() == ThingStatus.ONLINE) {
             updateStatus(ThingStatus.ONLINE);
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
         }
     }
 

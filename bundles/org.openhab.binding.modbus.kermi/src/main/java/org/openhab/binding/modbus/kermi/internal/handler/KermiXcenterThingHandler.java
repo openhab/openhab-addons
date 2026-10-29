@@ -222,13 +222,12 @@ public class KermiXcenterThingHandler extends BaseBridgeHandler {
             config = localConfig;
 
             if (config == null) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Kermi Configuration missing");
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Kermi Configuration missing");
                 return;
             }
             ModbusCommunicationInterface localComms = connectEndpoint();
             if (localComms == null) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "Connection failure on initialize...");
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "Connection failure on initialize...");
                 return;
             }
 
@@ -309,7 +308,7 @@ public class KermiXcenterThingHandler extends BaseBridgeHandler {
 
         ModbusEndpointThingHandler slaveEndpointThingHandler = getEndpointThingHandler();
         if (slaveEndpointThingHandler == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
             logger.debug("SlaveEndpointThingHandler is null, Thing & Bridge are offline");
             return null;
         }
@@ -317,12 +316,12 @@ public class KermiXcenterThingHandler extends BaseBridgeHandler {
             slaveId = slaveEndpointThingHandler.getSlaveId();
             comms = slaveEndpointThingHandler.getCommunicationInterface();
         } catch (EndpointNotInitializedException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Slave Endpoint not initialized");
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "Slave Endpoint not initialized");
             logger.debug("Slave Endpoint not initialized, Thing is offline");
             return null;
         }
         if (comms == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
             logger.debug("CommunicationInterface is null, Thing & Bridge are offline");
             return null;
         } else {
@@ -586,25 +585,22 @@ public class KermiXcenterThingHandler extends BaseBridgeHandler {
             if (stateRead == ReadStatus.READ_SUCCESS) {
                 updateStatus(ThingStatus.ONLINE);
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        KermiBindingConstants.STATE_READ_ERROR);
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, KermiBindingConstants.STATE_READ_ERROR);
             }
             if (stateRead == alarmRead) {
                 // both reads are ok or else both failed
                 if (stateRead == ReadStatus.READ_SUCCESS) {
                     updateStatus(ThingStatus.ONLINE);
                 } else {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                             KermiBindingConstants.STATE_AND_ALARM_READ_ERRORS);
                 }
             } else {
                 // either info or data read failed - update status with details
                 if (stateRead == ReadStatus.READ_FAILED) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            KermiBindingConstants.STATE_READ_ERROR);
+                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, KermiBindingConstants.STATE_READ_ERROR);
                 } else {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            KermiBindingConstants.DATA_READ_ERROR);
+                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, KermiBindingConstants.DATA_READ_ERROR);
                 }
             }
         }

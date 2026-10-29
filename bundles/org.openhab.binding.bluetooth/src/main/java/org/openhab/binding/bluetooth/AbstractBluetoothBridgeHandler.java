@@ -13,6 +13,7 @@
 package org.openhab.binding.bluetooth;
 
 import java.time.ZonedDateTime;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -137,15 +138,16 @@ public abstract class AbstractBluetoothBridgeHandler<BD extends BaseBluetoothDev
     /**
      * Performs the given action on every device currently known to this bridge. Subclasses use this
      * to propagate adapter-wide events (e.g. the adapter going away) to all of their devices without
-     * needing their own copy of the device registry. The action runs while holding the device lock,
-     * so it should be quick and must not call back into device-registry-mutating methods.
+     * needing their own copy of the device registry.
      *
      * @param action the action to perform on each known device
      */
     protected void forEachDevice(Consumer<BD> action) {
+        List<BD> deviceSnapshot;
         synchronized (devices) {
-            devices.values().forEach(action);
+            deviceSnapshot = List.copyOf(devices.values());
         }
+        deviceSnapshot.forEach(action);
     }
 
     private boolean shouldRemove(BD device) {

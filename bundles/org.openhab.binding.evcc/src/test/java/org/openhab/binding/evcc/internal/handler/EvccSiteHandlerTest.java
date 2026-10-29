@@ -57,6 +57,7 @@ public class EvccSiteHandlerTest {
     private ThingStatus lastThingStatus = ThingStatus.UNKNOWN;
     private boolean updateStateCalled = false;
     private final Set<String> linkedChannelIdsChecked = new HashSet<>();
+    private final Set<String> updatedChannelIds = new HashSet<>();
     private final List<String> requestedUrls = new ArrayList<>();
 
     private EvccSiteHandler createHandler() {
@@ -89,6 +90,7 @@ public class EvccSiteHandlerTest {
             @Override
             protected void updateState(ChannelUID channelUID, State state) {
                 updateStateCalled = true;
+                updatedChannelIds.add(channelUID.getId());
             }
 
             @Override
@@ -113,6 +115,7 @@ public class EvccSiteHandlerTest {
         lastThingStatus = ThingStatus.UNKNOWN;
         updateStateCalled = false;
         linkedChannelIdsChecked.clear();
+        updatedChannelIds.clear();
         requestedUrls.clear();
     }
 
@@ -135,6 +138,20 @@ public class EvccSiteHandlerTest {
         handler.handleUpdate("someNewField", new JsonPrimitive(42));
         assertSame(ThingStatus.ONLINE, lastThingStatus);
         assertSame(true, updateStateCalled);
+    }
+
+    @Test
+    public void authProviderNamesWithInvalidCharactersShouldUpdateThroughSiteHandler() {
+        JsonObject providers = new JsonObject();
+        providers.addProperty("home assistant (home)", true);
+        providers.addProperty("other.provider:/#", false);
+
+        handler.handleUpdate("authProviders", providers);
+
+        assertSame(ThingStatus.ONLINE, lastThingStatus);
+        assertSame(true, updateStateCalled);
+        assertEquals(Set.of("site-auth-providers-home-assistant-home", "site-auth-providers-other-provider"),
+                updatedChannelIds);
     }
 
     @Test

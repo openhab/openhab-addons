@@ -52,6 +52,7 @@ import org.openhab.core.config.core.ConfigDescriptionParameterGroupBuilder;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.config.core.ParameterOption;
 import org.openhab.core.library.CoreItemFactory;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.thing.Channel;
@@ -113,7 +114,7 @@ public class DoorLockConverter extends GenericConverter<DoorLockCluster> {
     private int numberOfTotalUsersSupported = 0;
     private int minPinCodeLength = 0;
     private int maxPinCodeLength = 255; // Maximum length of a PIN code if not specified is 255
-    private int autoRelockTime = 0;
+    private long autoRelockTime = 0;
     private boolean pinCredentialSupported = false;
     private boolean userFeatureSupported = false;
     private boolean requirePinForRemoteOperation = false;
@@ -197,6 +198,19 @@ public class DoorLockConverter extends GenericConverter<DoorLockCluster> {
             channels.put(boltStateChannel, null);
         }
 
+        if (initializingCluster.soundVolume != null) {
+            Channel soundVolumeChannel = ChannelBuilder
+                    .create(new ChannelUID(channelGroupUID, CHANNEL_ID_DOORLOCK_SOUNDVOLUME), CoreItemFactory.NUMBER)
+                    .withType(CHANNEL_DOORLOCK_SOUNDVOLUME).build();
+            List<StateOption> soundVolumeOptions = new ArrayList<>();
+            for (DoorLockCluster.SoundVolumeEnum e : DoorLockCluster.SoundVolumeEnum.values()) {
+                soundVolumeOptions.add(new StateOption(e.getValue().toString(), e.getLabel()));
+            }
+            StateDescription stateDescriptionSoundVolume = StateDescriptionFragmentBuilder.create()
+                    .withOptions(soundVolumeOptions).build().toStateDescription();
+            channels.put(soundVolumeChannel, stateDescriptionSoundVolume);
+        }
+
         return channels;
     }
 
@@ -217,6 +231,13 @@ public class DoorLockConverter extends GenericConverter<DoorLockCluster> {
                         : DoorLockCluster.unlockDoor(pinCode);
             }
             handler.sendClusterCommand(endpointNumber, DoorLockCluster.CLUSTER_NAME, doorLockCommand);
+        } else if (command instanceof DecimalType decimalType
+                && channelUID.getIdWithoutGroup().equals(CHANNEL_ID_DOORLOCK_SOUNDVOLUME)) {
+            handler.writeAttribute(endpointNumber, DoorLockCluster.CLUSTER_NAME, DoorLockCluster.ATTRIBUTE_SOUND_VOLUME,
+                    String.valueOf(decimalType.intValue())).exceptionally(e -> {
+                        logger.debug("Failed to set sound volume: {}", e.getMessage());
+                        return Void.TYPE.cast(null);
+                    });
         }
         super.handleCommand(channelUID, command);
     }
@@ -245,7 +266,7 @@ public class DoorLockConverter extends GenericConverter<DoorLockCluster> {
                 break;
             case DoorLockCluster.ATTRIBUTE_AUTO_RELOCK_TIME:
                 if (message.value instanceof Number autoRelockTime) {
-                    this.autoRelockTime = autoRelockTime.intValue();
+                    this.autoRelockTime = autoRelockTime.longValue();
                     handler.updateConfiguration(
                             Map.of(MatterBindingConstants.CONFIG_DOORLOCK_AUTO_RELOCK_TIME, this.autoRelockTime));
                 }
@@ -260,6 +281,11 @@ public class DoorLockConverter extends GenericConverter<DoorLockCluster> {
             case DoorLockCluster.ATTRIBUTE_REQUIRE_PIN_FOR_REMOTE_OPERATION:
                 if (message.value instanceof Boolean requirePin) {
                     requirePinForRemoteOperation = requirePin;
+                }
+                break;
+            case DoorLockCluster.ATTRIBUTE_SOUND_VOLUME:
+                if (message.value instanceof DoorLockCluster.SoundVolumeEnum soundVolume) {
+                    updateState(CHANNEL_ID_DOORLOCK_SOUNDVOLUME, new DecimalType(soundVolume.getValue()));
                 }
                 break;
             default:
@@ -300,6 +326,10 @@ public class DoorLockConverter extends GenericConverter<DoorLockCluster> {
             updateState(CHANNEL_ID_DOORLOCK_DOORSTATE,
                     initializingCluster.doorState == DoorLockCluster.DoorStateEnum.DOOR_CLOSED ? OpenClosedType.CLOSED
                             : OpenClosedType.OPEN);
+        }
+        DoorLockCluster.SoundVolumeEnum soundVolume = initializingCluster.soundVolume;
+        if (soundVolume != null) {
+            updateState(CHANNEL_ID_DOORLOCK_SOUNDVOLUME, new DecimalType(soundVolume.getValue()));
         }
         Map<String, Object> entries = new HashMap<>();
         if (initializingCluster.operatingMode != null) {
@@ -363,8 +393,8 @@ public class DoorLockConverter extends GenericConverter<DoorLockCluster> {
 
         Object autoRelockTimeValue = config.get(MatterBindingConstants.CONFIG_DOORLOCK_AUTO_RELOCK_TIME);
         if (autoRelockTimeValue instanceof Number number) {
-            int configuredTime = number.intValue();
-            final int currentTime = autoRelockTime;
+            long configuredTime = number.longValue();
+            final long currentTime = autoRelockTime;
             if (currentTime != configuredTime) {
                 logger.debug("Updating auto relock time from {} to {}", currentTime, configuredTime);
                 handler.writeAttribute(endpointNumber, DoorLockCluster.CLUSTER_NAME,
@@ -714,7 +744,7 @@ public class DoorLockConverter extends GenericConverter<DoorLockCluster> {
             UserStatusEnum status = userStatus != null ? userStatus : UserStatusEnum.OCCUPIED_ENABLED;
             UserTypeEnum type = userType != null ? userType : UserTypeEnum.UNRESTRICTED_USER;
             String name = userName != null ? userName : "User " + userIndex;
-            command = DoorLockCluster.setUser(operationType, userIndex, name, 0, status, type,
+            command = DoorLockCluster.setUser(operationType, userIndex, name, 0L, status, type,
                     DoorLockCluster.CredentialRuleEnum.SINGLE);
         }
 

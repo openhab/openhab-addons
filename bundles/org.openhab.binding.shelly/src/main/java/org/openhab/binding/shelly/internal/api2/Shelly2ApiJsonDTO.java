@@ -25,6 +25,7 @@ import org.openhab.binding.shelly.internal.api2.ShellyBluJsonDTO.Shelly2NotifyBl
 import org.openhab.binding.shelly.internal.api2.dto.ShellyCoverJsonDTO.Shelly2CoverStatus;
 import org.openhab.binding.shelly.internal.api2.dto.ShellyCoverJsonDTO.Shelly2DevConfigCover;
 import org.openhab.binding.shelly.internal.api2.dto.ShellyPresenceJsonDTO.Shelly2DevConfigPresence;
+import org.openhab.binding.shelly.internal.api2.dto.ShellyThermostatJsonDTO.Shelly2DeviceStatusThermostat;
 import org.openhab.binding.shelly.internal.util.ShellyUtils;
 
 import com.google.gson.Gson;
@@ -108,6 +109,7 @@ public class Shelly2ApiJsonDTO {
     public static final String SHELLYRPC_METHOD_SCRIPT_PUTCODE = "Script.PutCode";
     public static final String SHELLYRPC_METHOD_SCRIPT_START = "Script.Start";
     public static final String SHELLYRPC_METHOD_SCRIPT_STOP = "Script.Stop";
+    public static final String SHELLYRPC_METHOD_THERMOSTAT_SETCONFIG = "Thermostat.SetConfig";
 
     public static final String SHELLYRPC_METHOD_NOTIFYSTATUS = "NotifyStatus"; // inbound status
     public static final String SHELLYRPC_METHOD_NOTIFYFULLSTATUS = "NotifyFullStatus"; // inbound status from bat device
@@ -394,6 +396,11 @@ public class Shelly2ApiJsonDTO {
             public Double reactionDelay;
         }
 
+        public static class Shelly2DevConfigVoltmeter {
+            public Integer id;
+            public String name;
+        }
+
         public static class Shelly2DevConfigEm {
             public Integer id;
             public String name;
@@ -552,12 +559,12 @@ public class Shelly2ApiJsonDTO {
 
             @SerializedName("cb:0")
             ShellyDeviceConfigCB cb0;
-            @SerializedName("cb:1")
-            ShellyDeviceConfigCB cb1;
-            @SerializedName("cb:2")
-            ShellyDeviceConfigCB cb2;
-            @SerializedName("cb:3")
-            ShellyDeviceConfigCB cb3;
+            @SerializedName("voltmeter:0")
+            Shelly2DevConfigVoltmeter voltmeter0;
+            @SerializedName("voltmeter:1")
+            Shelly2DevConfigVoltmeter voltmeter1;
+            @SerializedName("voltmeter:2")
+            Shelly2DevConfigVoltmeter voltmeter2;
 
             @SerializedName("em:0")
             public Shelly2DevConfigEm em0; // 3-phase config or Gen3 per-phase channel 0
@@ -950,12 +957,6 @@ public class Shelly2ApiJsonDTO {
 
             @SerializedName("cb:0")
             Shelly2CBStatus cb0;
-            @SerializedName("cb:1")
-            Shelly2CBStatus cb1;
-            @SerializedName("cb:2")
-            Shelly2CBStatus cb2;
-            @SerializedName("cb:3")
-            Shelly2CBStatus cb3;
 
             @SerializedName("pm1:0")
             public Shelly2RelayStatus pm10;
@@ -1037,19 +1038,22 @@ public class Shelly2ApiJsonDTO {
             public @Nullable Shelly2DeviceStatusVoltage voltmeter1;
             @SerializedName("voltmeter:2")
             public @Nullable Shelly2DeviceStatusVoltage voltmeter2;
-            @SerializedName("voltmeter:3")
-            public @Nullable Shelly2DeviceStatusVoltage voltmeter3;
             @SerializedName("voltmeter:100")
             public @Nullable Shelly2DeviceStatusVoltage voltmeter100;
 
             @SerializedName("devicepower:0")
             public Shelly2DeviceStatusPower devicepower0;
+            @SerializedName("devicepower:1")
+            public @Nullable Shelly2DeviceStatusPower devicepower1;
 
             @SerializedName("lora:100")
             public Shelly2DeviceStatusLora lora100;
 
             @SerializedName("dali")
             public @Nullable Shelly2DaliStatus dali;
+
+            @SerializedName("thermostat:0")
+            public @Nullable Shelly2DeviceStatusThermostat thermostat0;
         }
 
         public class Shelly2DeviceStatusSys {
@@ -1082,6 +1086,12 @@ public class Shelly2ApiJsonDTO {
             public Shelly2DeviceStatusWakeup wakeUpReason;
             @SerializedName("wakeup_period")
             public Integer wakeupPeriod;
+
+            // Wall Display: reported inside sys, not as a top level component
+            @SerializedName("relay_in_thermostat")
+            public @Nullable Boolean relayInThermostat;
+            @SerializedName("sensor_in_thermostat")
+            public @Nullable Boolean sensorInThermostat;
         }
 
         public class Shelly2DeviceStatusSysWiFi {
@@ -1209,6 +1219,10 @@ public class Shelly2ApiJsonDTO {
         public @Nullable String alarmMode;
         @SerializedName("report_holdoff")
         public @Nullable Integer reportHoldoff;
+
+        // Thermostat.SetConfig
+        @SerializedName("target_C")
+        public @Nullable Double targetC;
     }
 
     public static class Shelly2RpcRequest {
@@ -1390,7 +1404,6 @@ public class Shelly2ApiJsonDTO {
         @SerializedName("auth_type")
         public String authType;
         public String nonce;
-        public String nc;
         public String realm;
         public String algorithm;
     }

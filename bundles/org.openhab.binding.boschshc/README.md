@@ -7,6 +7,7 @@ Binding for Bosch Smart Home devices.
     - [Smart Home Controller](#smart-home-controller)
     - [In-Wall Switch](#in-wall-switch)
     - [Compact Smart Plug](#compact-smart-plug)
+    - [Compact Smart Plug [+M]](#compact-smart-plug-m)
     - [Twinguard Smoke Detector](#twinguard-smoke-detector)
     - [Door/Window Contact](#door-window-contact)
     - [Door/Window Contact II](#door-window-contact-ii)
@@ -70,6 +71,18 @@ A simple light control.
 A compact smart plug with energy monitoring capabilities.
 
 **Thing Type ID**: `smart-plug-compact`
+
+| Channel ID         | Item Type     | Writable | Description                                      |
+| ------------------ | ------------- | :------: | ------------------------------------------------ |
+| power-switch       | Switch        | yes      | Current state of the switch.                     |
+| power-consumption  | Number:Power  | no       | Current power consumption (W) of the device.     |
+| energy-consumption | Number:Energy | no       | Cumulated energy consumption (Wh) of the device. |
+
+### Compact Smart Plug [+M]<a id="compact-smart-plug-m"></a>
+
+A compact smart plug with energy monitoring capabilities. This version of the plug supports the Matter standard.
+
+**Thing Type ID**: `smart-plug-compact-matter`
 
 | Channel ID         | Item Type     | Writable | Description                                      |
 | ------------------ | ------------- | :------: | ------------------------------------------------ |

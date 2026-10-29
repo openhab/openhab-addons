@@ -26,11 +26,21 @@ module.exports = {
             {
                 test: /\.tsx?$/,
                 use: 'ts-loader'
+            },
+            // Certificate list files of @matter/dcl-data, built in as strings
+            {
+                test: /\.jsonl$/,
+                type: 'asset/source'
             }
         ]
     },
     resolve: {
-        extensions: ['.tsx', '.ts', '.js']
+        extensions: ['.tsx', '.ts', '.js'],
+        // The package only exports its file loader, which reads the files from disk next to it. matter.js is
+        // shipped as a single file, so its data files are imported directly.
+        alias: {
+            'dcl-data': path.resolve(__dirname, 'node_modules/@matter/dcl-data')
+        }
     },
     output: {
         filename: 'matter.js', // single output JS file

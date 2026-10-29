@@ -27,6 +27,7 @@ import org.openhab.core.thing.binding.ThingHandler;
  * {@link VehicleActions} which can be sent to a vehicle
  *
  * @author Bernd Weymann - Initial contribution
+ * @author Bernd Weymann - Added forceUpdate action
  */
 @ThingActionsScope(name = "mercedesme")
 @NonNullByDefault
@@ -77,6 +78,24 @@ public class VehicleActions implements ThingActions {
 
     public static void sendPoi(ThingActions actions, String title, double lat, double lon, String... args) {
         ((VehicleActions) actions).sendPoi(title, lat, lon, args);
+    }
+
+    /**
+     * Requests vehicle data immediately, outside the configured refresh interval.
+     * The refresh interval restarts afterwards, so the next regular update happens again after the configured
+     * interval.
+     */
+    @RuleAction(label = "@text/actionForceUpdateLabel", description = "@text/actionForceUpdateDescription")
+    public void forceUpdate() {
+        VehicleHandler localVehicleHandler = thingHandler;
+        if (localVehicleHandler == null) {
+            return;
+        }
+        localVehicleHandler.forceUpdate();
+    }
+
+    public static void forceUpdate(ThingActions actions) {
+        ((VehicleActions) actions).forceUpdate();
     }
 
     @Override

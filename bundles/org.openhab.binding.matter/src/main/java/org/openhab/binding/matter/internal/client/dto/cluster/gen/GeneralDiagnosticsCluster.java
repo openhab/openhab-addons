@@ -71,7 +71,7 @@ public class GeneralDiagnosticsCluster extends BaseCluster {
      * for the periods of time that a Node is in a low-power or sleep state. The TotalOperationalHours attribute shall
      * only be reset upon a factory reset of the Node.
      */
-    public Integer totalOperationalHours; // 3 uint32 R V
+    public Long totalOperationalHours; // 3 uint32 R V
     /**
      * The BootReason attribute shall indicate the reason for the Node's most recent boot.
      */
@@ -277,23 +277,23 @@ public class GeneralDiagnosticsCluster extends BaseCluster {
          * This field shall indicate the total number of Interaction Model subscriptions successfully established across
          * all fabrics on the node since start-up.
          */
-        public Integer totalSubscriptionsEstablished; // uint32
+        public Long totalSubscriptionsEstablished; // uint32
         /**
          * This field shall indicate the number of outgoing Interaction Model protocol messages sent since start-up.
          * These are messages that have the Protocol ID set to PROTOCOL_ID_INTERACTION_MODEL, excluding any retries of
          * such messages.
          */
-        public Integer totalInteractionModelMessagesSent; // uint32
+        public Long totalInteractionModelMessagesSent; // uint32
         /**
          * This field shall indicate the number of incoming Interaction Model protocol messages received since start-up.
          * These are messages that have the Protocol ID set to PROTOCOL_ID_INTERACTION_MODEL, excluding any retries of
          * such messages.
          */
-        public Integer totalInteractionModelMessagesReceived; // uint32
+        public Long totalInteractionModelMessagesReceived; // uint32
 
         public DeviceLoadStruct(Integer currentSubscriptions, Integer currentSubscriptionsForFabric,
-                Integer totalSubscriptionsEstablished, Integer totalInteractionModelMessagesSent,
-                Integer totalInteractionModelMessagesReceived) {
+                Long totalSubscriptionsEstablished, Long totalInteractionModelMessagesSent,
+                Long totalInteractionModelMessagesReceived) {
             this.currentSubscriptions = currentSubscriptions;
             this.currentSubscriptionsForFabric = currentSubscriptionsForFabric;
             this.totalSubscriptionsEstablished = totalSubscriptionsEstablished;

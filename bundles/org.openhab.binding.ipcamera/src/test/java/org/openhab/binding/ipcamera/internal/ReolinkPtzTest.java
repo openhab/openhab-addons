@@ -104,4 +104,13 @@ public class ReolinkPtzTest {
     public void parsePresetsRejectsMissingList() {
         assertNull(ReolinkPtz.parsePresets("[{\"cmd\":\"GetPtzPreset\",\"code\":0,\"value\":{}}]"));
     }
+
+    @Test
+    public void onlyTheReplyToTheStopRequestIsAccepted() {
+        String stopId = "&rs=stop1a2b";
+        assertTrue(ReolinkPtz.isReplyTo("/api.cgi?cmd=PtzCtrl&token=abc" + stopId, stopId));
+        assertFalse(ReolinkPtz.isReplyTo("/api.cgi?cmd=PtzCtrl&token=abc", stopId));
+        assertFalse(ReolinkPtz.isReplyTo("/api.cgi?cmd=PtzCtrl&token=abc&rs=stop9f", stopId));
+        assertFalse(ReolinkPtz.isReplyTo("/api.cgi?cmd=PtzCtrl&token=abc", ""));
+    }
 }

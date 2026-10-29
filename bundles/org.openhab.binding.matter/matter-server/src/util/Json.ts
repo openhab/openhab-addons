@@ -10,6 +10,10 @@ export function convertJsonDataWithModel(model: ValueModel, data: any): any {
     logger.debug("convertJsonDataWithModel: type {}", definingModel.effectiveMetatype);
     logger.debug("convertJsonDataWithModel: data {}", data);
     logger.debug("convertJsonDataWithModel: model {}", model);
+    // Nullable and optional fields arrive as null. matter.js decides later whether that is allowed.
+    if (data === null || data === undefined) {
+        return data;
+    }
     switch (definingModel.effectiveMetatype) {
         case "array":
             if (!Array.isArray(data)) {

@@ -15,7 +15,8 @@ package org.openhab.binding.bluetooth.grundfosalpha.internal.protocol;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Utility class for checksum calculation using the CRC-16-CCITT algorithm.
+ * Utility class for CRC-16/GENIBUS (polynomial 0x1021, initial value and final XOR 0xffff, non-reflected).
+ * The checksum excludes the start delimiter and is transmitted high byte first.
  *
  * @author Jacob Laursen - Initial contribution
  */
@@ -80,8 +81,8 @@ public class CRC16Calculator {
      *            bytes)
      */
     public static void put(byte[] data, int length) {
-        int dataLength = (data[1] & BYTE_MASK);
-        if (dataLength + 4 > data.length) {
+        if (data.length < 4 || length < 0 || length > BYTE_MASK || length != (data[1] & BYTE_MASK)
+                || length > data.length - 4) {
             throw new IllegalArgumentException("Invalid data length specified in the array.");
         }
         int crcValue = calculate(data, 1, length + 1);

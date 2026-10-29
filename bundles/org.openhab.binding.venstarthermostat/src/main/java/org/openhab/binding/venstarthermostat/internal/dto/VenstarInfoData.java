@@ -19,8 +19,8 @@ package org.openhab.binding.venstarthermostat.internal.dto;
  * @author Matthew Davies - added VenstarAwayMode to include away mode in binding
  */
 public class VenstarInfoData {
-    private double cooltemp;
-    private double heattemp;
+    private Double cooltemp;
+    private Double heattemp;
 
     private VenstarSystemState state;
     private VenstarSystemMode mode;
@@ -29,7 +29,7 @@ public class VenstarInfoData {
     private VenstarFanState fanstate;
     private VenstarScheduleMode schedule;
     private VenstarSchedulePart schedulepart;
-    private int tempunits;
+    private Integer tempunits;
 
     public VenstarInfoData() {
     }
@@ -46,6 +46,11 @@ public class VenstarInfoData {
         this.fanstate = fanstate;
         this.schedule = schedule;
         this.schedulepart = schedulepart;
+    }
+
+    public boolean isComplete() {
+        return cooltemp != null && heattemp != null && state != null && mode != null && away != null && fan != null
+                && fanstate != null && schedule != null && schedulepart != null && tempunits != null;
     }
 
     public double getCooltemp() {

@@ -289,17 +289,17 @@ public class AutelisHandler extends BaseThingHandler {
         String password = configuration.password;
 
         if (username.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "username must not be empty");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "username must not be empty");
             return;
         }
 
         if (password.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "password must not be empty");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "password must not be empty");
             return;
         }
 
         if (host.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "hostname must not be empty");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "hostname must not be empty");
             return;
         }
 
@@ -359,7 +359,7 @@ public class AutelisHandler extends BaseThingHandler {
             if (response == null) {
                 // all models and versions have the status.xml endpoint
                 if ("status".equals(status)) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR);
+                    updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR);
                     return;
                 } else {
                     // not all models have the other endpoints, so we ignore errors

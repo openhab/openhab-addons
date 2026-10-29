@@ -86,7 +86,6 @@ public class BoilerHandler extends BaseThingHandler {
          * Register poll task This is where we set up our regular poller
          */
         public synchronized void registerPollTask(int address, int length, ModbusReadFunctionCode readFunctionCode) {
-            logger.debug("Setting up regular polling Address: {}", address);
 
             ModbusCommunicationInterface mycomms = BoilerHandler.this.comms;
             BoilerConfiguration myconfig = Objects.requireNonNull(BoilerHandler.this.config);
@@ -248,8 +247,7 @@ public class BoilerHandler extends BaseThingHandler {
                 String cls = error.getClass().getName();
                 String msg = error.getMessage();
 
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        String.format("Error with: %s: %s", cls, msg));
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, String.format("Error with: %s: %s", cls, msg));
             }
         }
     }
@@ -281,7 +279,7 @@ public class BoilerHandler extends BaseThingHandler {
 
         ModbusEndpointThingHandler slaveEndpointThingHandler = getEndpointThingHandler();
         if (slaveEndpointThingHandler == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
             return;
         }
 
@@ -293,7 +291,7 @@ public class BoilerHandler extends BaseThingHandler {
         }
 
         if (comms == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
             logger.debug("CommunicationInterface of boiler is null, Thing & Bridge are offline");
             return;
         }
@@ -476,8 +474,7 @@ public class BoilerHandler extends BaseThingHandler {
         }
         String msg = failure.getCause().getMessage();
         String cls = failure.getCause().getClass().getName();
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                String.format("Error with read: %s: %s", cls, msg));
+        updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, String.format("Error with read: %s: %s", cls, msg));
     }
 
     /**
@@ -490,8 +487,7 @@ public class BoilerHandler extends BaseThingHandler {
         }
         String msg = failure.getCause().getMessage();
         String cls = failure.getCause().getClass().getName();
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                String.format("Error with write: %s: %s", cls, msg));
+        updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, String.format("Error with write: %s: %s", cls, msg));
     }
 
     /**

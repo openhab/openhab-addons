@@ -57,8 +57,7 @@ public class SceneHandler extends BaseHandler {
             handleUpdate(values);
 
             if (values.isEmpty()) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.GONE,
-                        "@text/dirigera.scene.status.scene-not-found");
+                updateStatus(ThingStatusDetail.GONE, "@text/dirigera.scene.status.scene-not-found");
             } else {
                 updateStatus(ThingStatus.ONLINE);
             }

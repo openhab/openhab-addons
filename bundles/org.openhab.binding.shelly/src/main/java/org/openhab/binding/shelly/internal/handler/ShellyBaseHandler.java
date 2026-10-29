@@ -29,6 +29,8 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -59,6 +61,7 @@ import org.openhab.binding.shelly.internal.config.ShellyThingConfiguration;
 import org.openhab.binding.shelly.internal.discovery.ShellyBasicDiscoveryService;
 import org.openhab.binding.shelly.internal.discovery.ShellyThingCreator;
 import org.openhab.binding.shelly.internal.handler.ShellyDeviceStats.ShellyDeviceAlarm;
+import org.openhab.binding.shelly.internal.handler.component.ShellyComponentThermostat;
 import org.openhab.binding.shelly.internal.provider.ShellyChannelDefinitions;
 import org.openhab.binding.shelly.internal.provider.ShellyStateDescriptionProvider;
 import org.openhab.binding.shelly.internal.provider.ShellyTranslationProvider;
@@ -129,20 +132,23 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
     private volatile ShellyDeviceStats stats = new ShellyDeviceStats();
     private volatile boolean channelsCreated = false;
     private volatile boolean stopping = false;
-    private int vibrationFilter = 0;
-    private String lastWakeupReason = "";
+    private final AtomicInteger vibrationFilter = new AtomicInteger();
+    private final AtomicReference<String> lastWakeupReason = new AtomicReference<>("");
     private volatile boolean updateMarkerSet;
 
     // Scheduler
     private volatile double watchdog = now();
     private volatile double lastReport = 0;
     protected volatile int scheduledUpdates = 0;
+    private volatile boolean throttleRetryPending = false;
     private int skipCount = UPDATE_SKIP_COUNT;
     private int skipUpdate = 0;
     private volatile boolean refreshSettings;
-    private final Object channelLock = new Object();
-    private @Nullable ScheduledFuture<?> statusJob;
-    private @Nullable ScheduledFuture<?> initJob;
+    // guards read-modify-write of the Thing's channel list
+    protected final Object channelLock = new Object();
+    private final Object initLock = new Object();
+    private volatile @Nullable ScheduledFuture<?> statusJob;
+    private volatile @Nullable ScheduledFuture<?> initJob;
 
     /**
      * Constructor
@@ -220,6 +226,8 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
      */
     @Override
     public void initialize() {
+        // core re-initializes the same instance after dispose() on thingUpdated() and handleConfigurationUpdate()
+        stopping = false;
         // start background initialization:
         initJob = scheduler.schedule(() -> {
             boolean start = false;
@@ -260,6 +268,15 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
             status = profile.isBlu ? "offline.status-error-blu-timeout" : "offline.status-error-watchdog";
         } else if (res.isNotCalibrated()) {
             calibrationError = true; // device needs calibration; don't go offline, keep retrying
+        } else if (res.isHttpTooManyRequests()) {
+            // retry once after the device's ~2s throttle window; if the retry is throttled too, wait for the next poll
+            if (!throttleRetryPending) {
+                throttleRetryPending = true;
+                logger.debug("{}: Device is throttling requests (429), retrying in {}s", thingName,
+                        UPDATE_STATUS_INTERVAL_SECONDS);
+                scheduleThrottleRetry();
+            }
+            return true;
         } else if (res.httpCode >= 400) {
             logger.debug("{}: Unexpected API result: {}/{}", thingName, res.httpCode, res.httpReason, e);
             status = "offline.status-error-unexpected-api-result";
@@ -320,7 +337,6 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         }
         config = getConfigAs(ShellyThingConfiguration.class);
         updateApiConfig();
-        stopping = false;
         reinitializeThing();// force re-initialization
     }
 
@@ -334,9 +350,19 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
      * @throws ShellyApiException e.g. http returned non-ok response, check e.getMessage() for details.
      */
     public boolean initializeThing() throws ShellyApiException {
+        // init job, command and status threads may all trigger it; dedicated lock as it does blocking I/O
+        synchronized (initLock) {
+            if (stopping) {
+                return false;
+            }
+            return initializeThingSerialized();
+        }
+    }
+
+    private boolean initializeThingSerialized() throws ShellyApiException {
         // Init from thing type to have a basic profile, gets updated when device info is received from API
         refreshSettings = false;
-        lastWakeupReason = "";
+        lastWakeupReason.set("");
         cache.setThingName(thingName);
         cache.clear();
         resetStats();
@@ -360,8 +386,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         if (!isThingOffline() && (profile.alwaysOn || !profile.isInitialized() && !isThingOnline())) {
             ThingStatusDetail detail = getThingStatusDetail();
             if (detail != ThingStatusDetail.DUTY_CYCLE) {
-                updateStatus(ThingStatus.ONLINE, ThingStatusDetail.CONFIGURATION_PENDING,
-                        messages.get("status.config_pending"));
+                updateStatus(ThingStatusDetail.CONFIGURATION_PENDING, messages.get("status.config_pending"));
             }
         }
 
@@ -544,7 +569,11 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
                     break;
                 case CHANNEL_CONTROL_SETTEMP:
                     logger.debug("{}: Set temperature to {}", thingName, command);
-                    api.setValveTemperature(0, getNumber(command).doubleValue());
+                    if (profile.isTRV) {
+                        api.setValveTemperature(0, getNumber(command).doubleValue());
+                    } else {
+                        ShellyComponentThermostat.handleCommand(this, CHANNEL_CONTROL_SETTEMP, command);
+                    }
                     break;
                 case CHANNEL_CONTROL_POSITION:
                     logger.debug("{}: Set position to {}", thingName, command);
@@ -651,10 +680,10 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
             return;
         }
         try {
-            if (vibrationFilter > 0) {
-                vibrationFilter--;
+            int vibrationRemaining = vibrationFilter.getAndUpdate(v -> Math.max(v - 1, 0)) - 1;
+            if (vibrationRemaining >= 0) {
                 logger.debug("{}: Vibration events are absorbed for {} more seconds", thingName,
-                        vibrationFilter * UPDATE_STATUS_INTERVAL_SECONDS);
+                        vibrationRemaining * UPDATE_STATUS_INTERVAL_SECONDS);
             }
 
             skipUpdate++;
@@ -679,10 +708,11 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
                     initializeThing(); // may fire an exception if initialization failed
                 }
                 ShellySettingsStatus status = api.getStatus();
+                throttleRetryPending = false;
                 boolean restarted = checkRestarted(status);
-                profile = getProfile(refreshSettings || restarted);
-                profile.status = status;
-                profile.updateFromStatus(status);
+                ShellyDeviceProfile prf = getProfile(refreshSettings || restarted);
+                prf.status = status;
+                prf.updateFromStatus(status);
                 if (stopping) {
                     // dispose() may have run while the blocking calls above were in flight
                     return;
@@ -701,7 +731,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
                     // set or clear the update available marker
                     boolean updateAvailable = getBool(status.update.hasUpdate);
                     if (updateAvailable && !updateMarkerSet) {
-                        updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE,
+                        updateStatus(ThingStatus.ONLINE,
                                 messages.get("manager.action.checkupd.new", getString(status.update.newVersion)));
                         updateMarkerSet = true; // specifically set update marker flag only in this case
                     } else if (!updateAvailable && updateMarkerSet) {
@@ -733,13 +763,51 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
     }
 
     @Override
-    protected void updateStatus(ThingStatus status, ThingStatusDetail statusDetail, @Nullable String description) {
-        // overloaded updateStatus() methods always call this so we clear the update marker flag by default here
-        updateMarkerSet = false;
-        if (stopping) {
-            return;
+    protected void updateStatus(ThingStatus status) {
+        if (shouldUpdateStatus()) {
+            super.updateStatus(status);
         }
-        super.updateStatus(status, statusDetail, description);
+    }
+
+    @Override
+    protected void updateStatus(ThingStatus status, @Nullable String description) {
+        if (shouldUpdateStatus()) {
+            super.updateStatus(status, description);
+        }
+    }
+
+    @Override
+    protected void updateStatus(ThingStatusDetail statusDetail, @Nullable String description) {
+        if (shouldUpdateStatus()) {
+            super.updateStatus(statusDetail, description);
+        }
+    }
+
+    private boolean shouldUpdateStatus() {
+        updateMarkerSet = false;
+        return !stopping;
+    }
+
+    // WebSocket events and in-flight polls may still arrive after dispose(), core would reject and log them
+    @Override
+    protected void triggerChannel(ChannelUID channelUID, String event) {
+        if (!stopping) {
+            super.triggerChannel(channelUID, event);
+        }
+    }
+
+    @Override
+    protected void updateThing(Thing thing) {
+        if (!stopping) {
+            super.updateThing(thing);
+        }
+    }
+
+    @Override
+    protected void updateProperties(@Nullable Map<String, String> properties) {
+        if (!stopping) {
+            super.updateProperties(properties);
+        }
     }
 
     /**
@@ -886,7 +954,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
     @Override
     public void setThingOfflineAndDisconnect(ThingStatusDetail detail, String messageKey, Object... arguments) {
         if (!isThingOffline()) {
-            updateStatus(ThingStatus.OFFLINE, detail, messages.get(messageKey, arguments));
+            updateStatus(detail, messages.get(messageKey, arguments));
         }
         api.close(); // Gen2: disconnect WS/close http sessions
         watchdog = 0;
@@ -899,8 +967,8 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
     }
 
     @Override
-    public void setThingStatus(ThingStatus status, ThingStatusDetail detail, String messageKey, Object... arguments) {
-        updateStatus(status, detail, messages.get(messageKey, arguments));
+    public void setThingStatus(ThingStatusDetail detail, String messageKey, Object... arguments) {
+        updateStatus(detail, messages.get(messageKey, arguments));
     }
 
     @Override
@@ -940,8 +1008,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
             logger.debug("{}: Handler is shutting down, ignore", thingName);
             return;
         }
-        updateStatus(ThingStatus.ONLINE, ThingStatusDetail.CONFIGURATION_PENDING,
-                messages.get("offline.status-error-restarted"));
+        updateStatus(ThingStatusDetail.CONFIGURATION_PENDING, messages.get("offline.status-error-restarted"));
         requestUpdates(0, true);
     }
 
@@ -1378,7 +1445,11 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
     /**
      * Start the background updates
      */
-    protected void startUpdateJob() {
+    protected synchronized void startUpdateJob() {
+        if (stopping) {
+            // the init job may complete after dispose() cancelled the jobs
+            return;
+        }
         ScheduledFuture<?> statusJob = this.statusJob;
         if ((statusJob == null) || statusJob.isCancelled()) {
             this.statusJob = scheduler.scheduleWithFixedDelay(this::refreshStatus, 2, UPDATE_STATUS_INTERVAL_SECONDS,
@@ -1386,6 +1457,11 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
             logger.debug("{}: Update status job started, interval={}*{}={}sec.", thingName, skipCount,
                     UPDATE_STATUS_INTERVAL_SECONDS, skipCount * UPDATE_STATUS_INTERVAL_SECONDS);
         }
+    }
+
+    // refreshStatus() consumes one pending update in its finally block, at least one has to remain for the retry
+    private synchronized void scheduleThrottleRetry() {
+        scheduledUpdates = Math.max(scheduledUpdates, 2);
     }
 
     // Command threads request updates while the status job consumes them
@@ -1467,11 +1543,11 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
             String reason = getString((String) valueArray.get(0));
             String newVal = valueArray.toString();
             changed = updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_WAKEUP, getStringType(reason));
-            changed |= !lastWakeupReason.isEmpty() && !lastWakeupReason.equals(newVal);
+            String previous = getString(lastWakeupReason.getAndSet(newVal));
+            changed |= !previous.isEmpty() && !previous.equals(newVal);
             if (changed) {
                 postEvent(reason.toUpperCase(Locale.ROOT), true);
             }
-            lastWakeupReason = newVal;
         }
         return changed;
     }
@@ -1834,13 +1910,13 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         String triggerCh = mkChannelId(group, channel);
         logger.debug("{}: Send event {} to channel {}", thingName, triggerCh, payload);
         if (EVENT_TYPE_VIBRATION.contentEquals(payload)) {
-            if (vibrationFilter == 0) {
-                vibrationFilter = VIBRATION_FILTER_SEC / UPDATE_STATUS_INTERVAL_SECONDS + 1;
+            int filterCycles = VIBRATION_FILTER_SEC / UPDATE_STATUS_INTERVAL_SECONDS + 1;
+            if (vibrationFilter.compareAndSet(0, filterCycles)) {
                 logger.debug("{}: Duplicate vibration events will be absorbed for the next {} sec", thingName,
-                        vibrationFilter * UPDATE_STATUS_INTERVAL_SECONDS);
+                        filterCycles * UPDATE_STATUS_INTERVAL_SECONDS);
             } else {
                 logger.debug("{}: Vibration event absorbed, {} sec remaining", thingName,
-                        vibrationFilter * UPDATE_STATUS_INTERVAL_SECONDS);
+                        vibrationFilter.get() * UPDATE_STATUS_INTERVAL_SECONDS);
                 return;
             }
         }
@@ -1850,6 +1926,16 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
 
     public void stop() {
         logger.debug("{}: Shutting down", thingName);
+        cancelJobs();
+        Shelly1CoapHandler coap = this.coap;
+        if (coap != null) {
+            coap.stop();
+        }
+        api.close();
+        profile.initialized = false;
+    }
+
+    private synchronized void cancelJobs() {
         ScheduledFuture<?> job = this.initJob;
         if (job != null) {
             job.cancel(true);
@@ -1861,8 +1947,6 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
             statusJob = null;
             logger.debug("{}: Shelly statusJob stopped", thingName);
         }
-        api.close();
-        profile.initialized = false;
     }
 
     /**

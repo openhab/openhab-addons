@@ -169,9 +169,8 @@ public class SecondGenerationHandler extends BaseThingHandler {
                 refresh();
                 updateStatus(ThingStatus.ONLINE);
             } catch (RuntimeException scheduleWithFixedDelayException) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        scheduleWithFixedDelayException.getClass().getName() + ":"
-                                + scheduleWithFixedDelayException.getMessage());
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, scheduleWithFixedDelayException.getClass().getName()
+                        + ":" + scheduleWithFixedDelayException.getMessage());
             }
         }, 0, inverterConfig.refreshInterval, TimeUnit.SECONDS);
     }
