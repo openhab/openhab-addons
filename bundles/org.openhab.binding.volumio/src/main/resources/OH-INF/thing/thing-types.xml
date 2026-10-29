@@ -13,7 +13,9 @@
 			<channel id="artist" typeId="artist"/>
 			<channel id="album" typeId="album"/>
 			<channel id="volume" typeId="volume"/>
+			<channel id="mute" typeId="mute"/>
 			<channel id="player" typeId="player"/>
+			<channel id="album-art" typeId="album-art"/>
 			<channel id="track-type" typeId="track-type"/>
 			<channel id="play-radiostream" typeId="play-radiostream"/>
 			<channel id="play-playlist" typeId="play-playlist"/>
@@ -24,6 +26,23 @@
 			<channel id="repeat" typeId="play-repeat"/>
 			<channel id="system-command" typeId="system-command"/>
 			<channel id="stop-command" typeId="stop-command"/>
+			<channel id="seek" typeId="seek"/>
+			<channel id="duration" typeId="duration"/>
+			<channel id="queue-position" typeId="queue-position"/>
+			<channel id="queue-size" typeId="queue-size"/>
+			<channel id="current-uri" typeId="current-uri"/>
+			<channel id="service" typeId="service"/>
+			<channel id="samplerate" typeId="samplerate"/>
+			<channel id="bitdepth" typeId="bitdepth"/>
+			<channel id="audio-channels" typeId="audio-channels"/>
+			<channel id="streaming" typeId="streaming"/>
+			<channel id="library-update" typeId="library-update"/>
+			<channel id="repeat-single" typeId="repeat-single"/>
+			<channel id="add-to-queue" typeId="add-to-queue"/>
+			<channel id="remove-from-queue" typeId="remove-from-queue"/>
+			<channel id="enqueue-playlist" typeId="enqueue-playlist"/>
+			<channel id="add-to-favourites" typeId="add-to-favourites"/>
+			<channel id="remove-from-favourites" typeId="remove-from-favourites"/>
 		</channels>
 
 		<config-description>
@@ -118,6 +137,16 @@
 		<state max="100" min="0" step="10"/>
 	</channel-type>
 
+	<channel-type id="mute">
+		<item-type>Switch</item-type>
+		<label>Mute</label>
+		<description>Mute or unmute the master volume</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>SoundVolume</tag>
+		</tags>
+	</channel-type>
+
 	<channel-type id="player">
 		<item-type>Player</item-type>
 		<label>Media Control</label>
@@ -189,6 +218,120 @@
 		<description>Play a file, located on your Volumio device at the given absolute path, e.g.
 			"mnt/INTERNAL/song.mp3"
 		</description>
+	</channel-type>
+
+	<channel-type id="seek" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>Seek</label>
+		<description>Jump to the given position in the current track. Plain numbers are interpreted as seconds. Write only.</description>
+		<state pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="duration" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>Track Duration</label>
+		<description>Duration of the current track. 0 if the item has no duration, for example a web radio.</description>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="queue-position" advanced="true">
+		<item-type>Number</item-type>
+		<label>Queue Position</label>
+		<description>Position of the current track in the play queue, 0 for the first track</description>
+		<state readOnly="true" pattern="%d"/>
+	</channel-type>
+
+	<channel-type id="queue-size" advanced="true">
+		<item-type>Number</item-type>
+		<label>Queue Size</label>
+		<description>Number of tracks in the play queue</description>
+		<state readOnly="true" pattern="%d"/>
+	</channel-type>
+
+	<channel-type id="current-uri" advanced="true">
+		<item-type>String</item-type>
+		<label>Current URI</label>
+		<description>Unique URI of the item currently playing</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="service" advanced="true">
+		<item-type>String</item-type>
+		<label>Playback Service</label>
+		<description>Volumio service that plays the current item, for example mpd or spop</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="samplerate" advanced="true">
+		<item-type>String</item-type>
+		<label>Sample Rate</label>
+		<description>Sample rate of the current item, as reported by Volumio</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="bitdepth" advanced="true">
+		<item-type>String</item-type>
+		<label>Bit Depth</label>
+		<description>Bit depth of the current item, as reported by Volumio</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="audio-channels" advanced="true">
+		<item-type>String</item-type>
+		<label>Audio Channels</label>
+		<description>Channel layout of the current item, as reported by Volumio</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="streaming" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Streaming</label>
+		<description>ON if Volumio is playing a stream, for example a web radio</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="library-update" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Library Update</label>
+		<description>ON while Volumio is updating its music database</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="repeat-single" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Repeat Single</label>
+		<description>ON if the current track is repeated in a loop</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="add-to-queue" advanced="true">
+		<item-type>String</item-type>
+		<label>Add to Queue</label>
+		<description>Add the item with the given URI to the end of the play queue</description>
+	</channel-type>
+
+	<channel-type id="remove-from-queue" advanced="true">
+		<item-type>Number</item-type>
+		<label>Remove from Queue</label>
+		<description>Remove the track at the given position from the play queue, 0 for the first track</description>
+	</channel-type>
+
+	<channel-type id="enqueue-playlist" advanced="true">
+		<item-type>String</item-type>
+		<label>Enqueue Playlist</label>
+		<description>Add all tracks of the playlist with the given name to the play queue</description>
+	</channel-type>
+
+	<channel-type id="add-to-favourites" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Add to Favourites</label>
+		<description>Send ON to add the current item to the Volumio favourites</description>
+	</channel-type>
+
+	<channel-type id="remove-from-favourites" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Remove from Favourites</label>
+		<description>Send ON to remove the current item from the Volumio favourites</description>
 	</channel-type>
 
 </thing:thing-descriptions>

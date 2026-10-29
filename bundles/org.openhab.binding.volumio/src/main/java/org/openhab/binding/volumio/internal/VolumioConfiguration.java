@@ -16,6 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * The {@link VolumioConfiguration} class contains fields mapping thing configuration parameters.
+ * Field names must match the parameter names in the thing type description.
  *
  * @author Patrick Sernetz - Initial contribution
  * @author Chris Wohlbrecht - Adapt for openHAB 3
@@ -24,20 +25,20 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class VolumioConfiguration {
 
-    private String hostName = "";
+    public String hostname = "";
 
-    private int port;
+    public int port = 3000;
 
-    private String protocol = "";
+    public String protocol = "http";
 
-    private int timeout;
+    public int timeout = 5000;
 
     public String getHost() {
-        return hostName;
+        return hostname;
     }
 
     public void setHost(String host) {
-        this.hostName = host;
+        this.hostname = host;
     }
 
     public int getPort() {
