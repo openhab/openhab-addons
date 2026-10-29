@@ -367,38 +367,6 @@
 				]
 			},
 			{
-				"property": "button_pressed",
-				"siid": 2,
-				"piid": 10,
-				"friendlyName": "Button Pressed",
-				"channel": "button_pressed",
-				"type": "Number",
-				"stateDescription": {
-					"options": [
-						{
-							"value": "0",
-							"label": "None"
-						},
-						{
-							"value": "1",
-							"label": "LED"
-						},
-						{
-							"value": "2",
-							"label": "Power"
-						}
-					],
-					"readOnly": true
-				},
-				"refresh": true,
-				"actions": [],
-				"category": "status",
-				"tags": [
-					"Status"
-				],
-				"readmeComment": "Value mapping `[\"0\"\u003d\"None\",\"1\"\u003d\"LED\",\"2\"\u003d\"Power\"]`"
-			},
-			{
 				"property": "clean",
 				"siid": 7,
 				"piid": 5,
