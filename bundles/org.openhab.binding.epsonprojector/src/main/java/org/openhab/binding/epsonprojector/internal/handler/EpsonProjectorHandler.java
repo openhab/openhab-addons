@@ -389,6 +389,16 @@ public class EpsonProjectorHandler extends BaseThingHandler {
                 case POWER:
                     remoteController.setPower((OnOffType) command);
                     isPowerOn = (OnOffType) command == OnOffType.ON;
+
+                    // Set Freeze and Mute states to Off when power switched Off
+                    if ((OnOffType) command == OnOffType.OFF) {
+                        if (isLinked(CHANNEL_TYPE_FREEZE)) {
+                            updateState(CHANNEL_TYPE_FREEZE, OnOffType.OFF);
+                        }
+                        if (isLinked(CHANNEL_TYPE_MUTE)) {
+                            updateState(CHANNEL_TYPE_MUTE, OnOffType.OFF);
+                        }
+                    }
                     break;
                 case SOURCE:
                     remoteController.setSource(command.toString());
