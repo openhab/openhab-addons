@@ -3,6 +3,7 @@
 		"id": [
 			"dmaker.fan.p5"
 		],
+		"experimental": false,
 		"channels": [
 			{
 				"property": "power",
@@ -13,104 +14,221 @@
 				"actions": [
 					{
 						"command": "s_power",
-						"parameterType": "ONOFF"
+						"parameterType": "ONOFFBOOL"
 					}
 				],
 				"category": "switch",
 				"tags": [
-					"Switch"
+					"Switch",
+					"Power"
 				]
 			},
 			{
-				"property": "roll",
-				"friendlyName": "Rotation",
-				"channel": "roll",
-				"type": "Switch",
+				"property": "speed",
+				"friendlyName": "Fan Speed",
+				"channel": "speed",
+				"type": "Dimmer",
+				"stateDescription": {
+					"minimum": 1,
+					"maximum": 100,
+					"step": 1,
+					"pattern": "%.0f %%"
+				},
 				"refresh": true,
 				"actions": [
 					{
-						"command": "s_roll",
-						"parameterType": "ONOFF"
+						"command": "s_speed",
+						"parameterType": "NUMBER"
 					}
+				],
+				"category": "fan",
+				"tags": [
+					"Control",
+					"Speed"
 				]
 			},
 			{
 				"property": "mode",
 				"friendlyName": "Mode",
 				"channel": "mode",
-				"type": "Number",
+				"type": "String",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "normal",
+							"label": "Standard"
+						},
+						{
+							"value": "nature",
+							"label": "Natural"
+						}
+					]
+				},
 				"refresh": true,
-				"ChannelGroup": "actions",
 				"actions": [
 					{
 						"command": "s_mode",
 						"parameterType": "STRING"
 					}
 				],
+				"category": "flow",
 				"tags": [
-					"Control"
+					"Control",
+					"Mode"
+				],
+				"readmeComment": "Value mapping `[\"normal\"\u003d\"Standard\",\"nature\"\u003d\"Natural\"]`"
+			},
+			{
+				"property": "roll_enable",
+				"friendlyName": "Oscillation",
+				"channel": "roll",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "s_roll",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "fan",
+				"tags": [
+					"Switch",
+					"Airflow"
 				]
 			},
 			{
 				"property": "roll_angle",
-				"friendlyName": "Angle",
+				"friendlyName": "Oscillation Angle",
 				"channel": "angle",
-				"type": "Number",
+				"type": "Number:Angle",
+				"unit": "degree",
 				"stateDescription": {
-					"minimum": 0,
-					"maximum": 360,
-					"step": 1,
-					"pattern": "%.0f"
+					"pattern": "%.0f %unit%",
+					"options": [
+						{
+							"value": "30",
+							"label": "30"
+						},
+						{
+							"value": "60",
+							"label": "60"
+						},
+						{
+							"value": "90",
+							"label": "90"
+						},
+						{
+							"value": "120",
+							"label": "120"
+						},
+						{
+							"value": "140",
+							"label": "140"
+						}
+					]
 				},
 				"refresh": true,
-				"ChannelGroup": "actions",
 				"actions": [
 					{
 						"command": "s_angle",
 						"parameterType": "NUMBER"
 					}
-				]
+				],
+				"category": "incline",
+				"tags": [
+					"Setpoint",
+					"Airflow"
+				],
+				"readmeComment": "Value mapping `[\"30\"\u003d\"30\",\"60\"\u003d\"60\",\"90\"\u003d\"90\",\"120\"\u003d\"120\",\"140\"\u003d\"140\"]`"
 			},
 			{
-				"property": "timer_off",
-				"friendlyName": "Timer",
+				"property": "",
+				"friendlyName": "Move Direction",
+				"channel": "move",
+				"type": "String",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "left",
+							"label": "Left"
+						},
+						{
+							"value": "right",
+							"label": "Right"
+						}
+					]
+				},
+				"actions": [
+					{
+						"command": "m_roll",
+						"parameterType": "STRING"
+					}
+				],
+				"category": "movecontrol",
+				"tags": [
+					"Control"
+				],
+				"readmeComment": "Write only. Turns the fan head a step"
+			},
+			{
+				"property": "time_off",
+				"friendlyName": "Power-Off Timer",
 				"channel": "timer",
-				"type": "Number",
+				"type": "Number:Time",
+				"unit": "minutes",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 480,
+					"step": 1,
+					"pattern": "%.0f min"
+				},
 				"refresh": true,
-				"ChannelGroup": "actions",
 				"actions": [
 					{
 						"command": "s_t_off",
 						"parameterType": "NUMBER"
 					}
+				],
+				"category": "time",
+				"tags": [
+					"Setpoint",
+					"Duration"
 				]
 			},
 			{
 				"property": "beep_sound",
-				"friendlyName": "Beep Sound",
+				"friendlyName": "Notification Sound",
 				"channel": "beep",
 				"type": "Switch",
 				"refresh": true,
-				"ChannelGroup": "actions",
 				"actions": [
 					{
-						"command": "s_beep_sound",
-						"parameterType": "ONOFF"
+						"command": "s_sound",
+						"parameterType": "ONOFFBOOL"
 					}
+				],
+				"category": "soundvolume",
+				"tags": [
+					"Switch",
+					"Enabled"
 				]
 			},
 			{
 				"property": "light",
-				"friendlyName": "Light",
+				"friendlyName": "Indicator Light",
 				"channel": "light",
-				"type": "Number",
+				"type": "Switch",
 				"refresh": true,
-				"ChannelGroup": "actions",
 				"actions": [
 					{
 						"command": "s_light",
-						"parameterType": "NUMBER"
+						"parameterType": "ONOFFBOOL"
 					}
+				],
+				"category": "light",
+				"tags": [
+					"Switch",
+					"Light"
 				]
 			},
 			{
@@ -119,29 +237,16 @@
 				"channel": "child_lock",
 				"type": "Switch",
 				"refresh": true,
-				"ChannelGroup": "actions",
 				"actions": [
 					{
 						"command": "s_lock",
-						"parameterType": "ONOFF"
+						"parameterType": "ONOFFBOOL"
 					}
-				]
-			},
-			{
-				"property": "speed",
-				"friendlyName": "Speed",
-				"channel": "speed",
-				"type": "Number",
-				"stateDescription": {
-					"pattern": "%.0f"
-				},
-				"refresh": true,
-				"ChannelGroup": "actions",
-				"actions": [
-					{
-						"command": "s_speed",
-						"parameterType": "NUMBER"
-					}
+				],
+				"category": "lock",
+				"tags": [
+					"Switch",
+					"Enabled"
 				]
 			}
 		]

@@ -1,0 +1,501 @@
+{
+	"deviceMapping": {
+		"id": [
+			"xiaomi.fan.p90"
+		],
+		"propertyMethod": "get_properties",
+		"maxProperties": 1,
+		"experimental": true,
+		"readmeComment": "The Mi Home app sets the oscillation angles and the symmetrical flag in one command; here each is sent on its own.",
+		"channels": [
+			{
+				"property": "on",
+				"siid": 2,
+				"piid": 1,
+				"friendlyName": "Power",
+				"channel": "power",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch",
+					"Power"
+				]
+			},
+			{
+				"property": "fan-level1",
+				"siid": 11,
+				"piid": 7,
+				"friendlyName": "Fan Speed",
+				"channel": "speed_level",
+				"type": "Dimmer",
+				"stateDescription": {
+					"minimum": 1,
+					"maximum": 100,
+					"step": 1,
+					"pattern": "%.0f %%"
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "fan",
+				"tags": [
+					"Control",
+					"Speed"
+				],
+				"readmeComment": "Used in standard mode"
+			},
+			{
+				"property": "fan-level",
+				"siid": 2,
+				"piid": 4,
+				"friendlyName": "Natural Wind Preset",
+				"channel": "fan_level",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "25",
+							"label": "Lakeside"
+						},
+						{
+							"value": "50",
+							"label": "Putting Green"
+						},
+						{
+							"value": "75",
+							"label": "Camping"
+						},
+						{
+							"value": "100",
+							"label": "Beach"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "fan",
+				"tags": [
+					"Control",
+					"Speed"
+				],
+				"readmeComment": "Used in natural mode"
+			},
+			{
+				"property": "mode",
+				"siid": 2,
+				"piid": 3,
+				"friendlyName": "Mode",
+				"channel": "mode",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "Standard"
+						},
+						{
+							"value": "1",
+							"label": "Natural"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "flow",
+				"tags": [
+					"Control",
+					"Mode"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Standard\",\"1\"\u003d\"Natural\"]`"
+			},
+			{
+				"property": "horizontal-swing",
+				"siid": 2,
+				"piid": 6,
+				"friendlyName": "Oscillation",
+				"channel": "horizontal_swing",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "fan",
+				"tags": [
+					"Switch",
+					"Airflow"
+				]
+			},
+			{
+				"property": "symmetrical-swing-h",
+				"siid": 11,
+				"piid": 1,
+				"friendlyName": "Symmetrical Oscillation",
+				"channel": "horizontal_symmetrical",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "fan",
+				"tags": [
+					"Switch",
+					"Enabled"
+				]
+			},
+			{
+				"property": "left-angle",
+				"siid": 11,
+				"piid": 2,
+				"friendlyName": "Oscillation Left Angle",
+				"channel": "horizontal_left_angle",
+				"type": "Number:Angle",
+				"unit": "degree",
+				"stateDescription": {
+					"minimum": 10,
+					"maximum": 120,
+					"step": 10,
+					"pattern": "%.0f %unit%"
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "incline",
+				"tags": [
+					"Setpoint",
+					"Airflow"
+				]
+			},
+			{
+				"property": "right-angle",
+				"siid": 11,
+				"piid": 3,
+				"friendlyName": "Oscillation Right Angle",
+				"channel": "horizontal_right_angle",
+				"type": "Number:Angle",
+				"unit": "degree",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 110,
+					"step": 10,
+					"pattern": "%.0f %unit%"
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "incline",
+				"tags": [
+					"Setpoint",
+					"Airflow"
+				]
+			},
+			{
+				"property": "vertical-swing",
+				"siid": 2,
+				"piid": 8,
+				"friendlyName": "Vertical Oscillation",
+				"channel": "vertical_swing",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "fan",
+				"tags": [
+					"Switch",
+					"Airflow"
+				]
+			},
+			{
+				"property": "symmetrical-swing-v",
+				"siid": 11,
+				"piid": 4,
+				"friendlyName": "Symmetrical Vertical Oscillation",
+				"channel": "vertical_symmetrical",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "fan",
+				"tags": [
+					"Switch",
+					"Enabled"
+				]
+			},
+			{
+				"property": "up-angle",
+				"siid": 11,
+				"piid": 5,
+				"friendlyName": "Oscillation Up Angle",
+				"channel": "vertical_up_angle",
+				"type": "Number:Angle",
+				"unit": "degree",
+				"stateDescription": {
+					"minimum": 10,
+					"maximum": 100,
+					"step": 10,
+					"pattern": "%.0f %unit%"
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "incline",
+				"tags": [
+					"Setpoint",
+					"Airflow"
+				]
+			},
+			{
+				"property": "down-angle",
+				"siid": 11,
+				"piid": 6,
+				"friendlyName": "Oscillation Down Angle",
+				"channel": "vertical_down_angle",
+				"type": "Number:Angle",
+				"unit": "degree",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 90,
+					"step": 10,
+					"pattern": "%.0f %unit%"
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "incline",
+				"tags": [
+					"Setpoint",
+					"Airflow"
+				]
+			},
+			{
+				"property": "off-to-center",
+				"siid": 2,
+				"piid": 13,
+				"friendlyName": "Back to Center at Power-Off",
+				"channel": "off_to_center",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "fan",
+				"tags": [
+					"Switch",
+					"Enabled"
+				]
+			},
+			{
+				"property": "delay",
+				"siid": 9,
+				"piid": 1,
+				"friendlyName": "Power-Off Timer Enabled",
+				"channel": "off_delay",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "time",
+				"tags": [
+					"Switch",
+					"Enabled"
+				]
+			},
+			{
+				"property": "delay-time",
+				"siid": 9,
+				"piid": 2,
+				"friendlyName": "Power-Off Timer",
+				"channel": "off_delay_time",
+				"type": "Number:Time",
+				"unit": "minutes",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 720,
+					"step": 1,
+					"pattern": "%.0f min"
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "time",
+				"tags": [
+					"Setpoint",
+					"Duration"
+				]
+			},
+			{
+				"property": "delay-remain-time",
+				"siid": 9,
+				"piid": 3,
+				"friendlyName": "Power-Off Timer Remaining",
+				"channel": "off_delay_remaining",
+				"type": "Number:Time",
+				"unit": "minutes",
+				"stateDescription": {
+					"pattern": "%.0f min",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "time",
+				"tags": [
+					"Status",
+					"Duration"
+				]
+			},
+			{
+				"property": "alarm",
+				"siid": 7,
+				"piid": 1,
+				"friendlyName": "Notification Sound",
+				"channel": "buzzer",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "soundvolume",
+				"tags": [
+					"Switch",
+					"Enabled"
+				]
+			},
+			{
+				"property": "on1",
+				"siid": 6,
+				"piid": 1,
+				"friendlyName": "Screen",
+				"channel": "led",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "light",
+				"tags": [
+					"Switch",
+					"Light"
+				]
+			},
+			{
+				"property": "physical-controls-locked",
+				"siid": 8,
+				"piid": 1,
+				"friendlyName": "Child Lock",
+				"channel": "child_lock",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "lock",
+				"tags": [
+					"Switch",
+					"Enabled"
+				]
+			},
+			{
+				"property": "fault",
+				"siid": 2,
+				"piid": 2,
+				"friendlyName": "Device Fault",
+				"channel": "fault",
+				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "0",
+							"label": "No Faults"
+						},
+						{
+							"value": "1",
+							"label": "Motor Stuck"
+						},
+						{
+							"value": "2",
+							"label": "Insufficient Power"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "error",
+				"tags": [
+					"Status"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"No Faults\",\"1\"\u003d\"Motor Stuck\",\"2\"\u003d\"Insufficient Power\"]`"
+			}
+		]
+	}
+}
