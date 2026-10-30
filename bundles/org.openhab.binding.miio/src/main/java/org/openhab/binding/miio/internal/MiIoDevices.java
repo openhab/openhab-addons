@@ -486,6 +486,8 @@ public enum MiIoDevices {
     XIAOMI_FAN_P76("xiaomi.fan.p76", "Xiaomi Smart Standing Air Circulation Fan", THING_TYPE_BASIC),
     XIAOMI_FAN_P85("xiaomi.fan.p85", "Mijia Smart Standing Fan Pro Slim", THING_TYPE_BASIC),
     XIAOMI_FAN_P90("xiaomi.fan.p90", "Mijia Smart Air Circulation Fan Pro", THING_TYPE_BASIC),
+    XIAOMI_DERH_13L("xiaomi.derh.13l", "Mijia Smart Dehumidifier 13L", THING_TYPE_BASIC),
+    XIAOMI_DERH_LITE("xiaomi.derh.lite", "Xiaomi Smart Dehumidifier Lite", THING_TYPE_BASIC),
     XIAOMI_HUMIDIFIER_JSQ2W("xiaomi.humidifier.jsq2w", "Xiaomi Smart Humidifier 2", THING_TYPE_BASIC),
     XIAOMI_REPEATER_V2("xiaomi.repeater.v2", "Mi Wi-Fi Repeater 2", THING_TYPE_UNSUPPORTED),
     XIAOMI_VACUUM_B106BK("xiaomi.vacuum.b106bk", "Xiaomi Robot Vacuum T12", THING_TYPE_BASIC),
