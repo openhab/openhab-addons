@@ -16,6 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
+import org.openhab.binding.samsungtv.internal.config.SamsungTvConfiguration;
 
 /**
  * Tests for {@link Utils}
@@ -32,5 +33,13 @@ public class UtilsTest {
         assertEquals(0, Utils.getModelYear(""));
         assertEquals(0, Utils.getModelYear("PONTUSM"));
         assertEquals(0, Utils.getModelYear("_PONTUSM"));
+    }
+
+    @Test
+    public void loggableConfigValueHidesCredentials() {
+        assertEquals("***", Utils.loggableConfigValue(SamsungTvConfiguration.WEBSOCKET_TOKEN, "12345678"));
+        assertEquals("***", Utils.loggableConfigValue(SamsungTvConfiguration.SMARTTHINGS_API, "abcd-1234"));
+        assertEquals("192.168.1.10", Utils.loggableConfigValue(SamsungTvConfiguration.HOST_NAME, "192.168.1.10"));
+        assertEquals(8002, Utils.loggableConfigValue(SamsungTvConfiguration.PORT, 8002));
     }
 }

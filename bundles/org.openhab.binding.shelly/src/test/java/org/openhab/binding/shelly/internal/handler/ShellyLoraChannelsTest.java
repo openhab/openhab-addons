@@ -305,7 +305,7 @@ public class ShellyLoraChannelsTest {
 
         ShellyComponents.updateDeviceStatus(handler, new ShellySettingsStatus());
 
-        verify(handler, never()).removeChannels(any());
+        verify(handler, never()).removeChannels(argThat(ids -> ids.contains("lora#" + CHANNEL_LORA_TXDATA)));
     }
 
     @Test

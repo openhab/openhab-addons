@@ -311,6 +311,8 @@ Note that **formatBeforePublish** will be ignored for these values, in case your
 
 You can connect this channel to a Rollershutter or Dimmer item.
 
+If you want to invert percentages or commands you can do this on the item link to this channel.
+
 ### Channel Type "player"
 
 You can connect this channel to a Player item.

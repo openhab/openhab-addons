@@ -254,11 +254,16 @@ public class RemoteControllerService implements SamsungTvService {
 
             case POWER:
                 if (command instanceof OnOffType) {
+                    handler.clearModeOnWake();
                     if (!isUpnp()) {
                         // websocket uses KEY_POWER
                         if (OnOffType.ON.equals(command) != getPowerState()) {
                             // send key only to toggle state
                             sendKeys(KeyCode.KEY_POWER);
+                            if (OnOffType.ON.equals(command) && !artMode && getArtModeSupported()) {
+                                // waking from standby, see requestModeIfWaking()
+                                handler.setModeOnWake(false);
+                            }
                             if (getArtMode2022()) {
                                 if (!getPowerState() & !artMode) {
                                     // second key press to get out of art mode, once tv online
@@ -305,14 +310,21 @@ public class RemoteControllerService implements SamsungTvService {
                         if (OnOffType.ON.equals(command)) {
                             if (!artMode) {
                                 sendKeys(KeyCode.KEY_POWER);
+                                handler.setModeOnWake(true);
                             }
-                        } else if (artMode && !handler.ipControlPowerOff()) {
-                            // really switch off (long press of power), newer Frame TV's ignore this
-                            sendKeys(KeyCode.KEY_POWER, 4000);
+                        } else if (artMode) {
+                            handler.clearModeOnWake();
+                            if (!handler.ipControlPowerOff()) {
+                                // really switch off (long press of power), newer Frame TV's ignore this
+                                sendKeys(KeyCode.KEY_POWER, 4000);
+                            }
                         }
-                    } else {
-                        // switch TV off
+                    } else if (OnOffType.ON.equals(command)) {
+                        // KEY_POWER switches a Frame TV from TV mode to art mode
                         sendKeys(KeyCode.KEY_POWER);
+                    } else if (!handler.ipControlPowerOff()) {
+                        // switch off from TV mode, a short KEY_POWER would switch to art mode instead
+                        sendKeys(KeyCode.KEY_POWER, 4000);
                     }
                     if (getArtMode2022()) {
                         if (OnOffType.ON.equals(command)) {
@@ -592,6 +604,21 @@ public class RemoteControllerService implements SamsungTvService {
                     logger.debug("{}: Power update failed: {}", host, e.getMessage());
                     return null;
                 });
+    }
+
+    /**
+     * Requests the commanded mode if the TV woke from standby in the other one, as a Frame TV wakes in the mode it was
+     * switched off from. The TV reports art mode status on wakeup and when the art channel reconnects.
+     *
+     * @param artMode the art mode the TV reports
+     */
+    public void requestModeIfWaking(boolean artMode) {
+        if (handler.takeModeOnWake(artMode)) {
+            logger.debug("{}: TV woke up in {} mode, requesting {} mode", host, artMode ? "art" : "TV",
+                    artMode ? "TV" : "art");
+            remoteController.getArtmodeStatus(
+                    String.format("{\"request\":\"set_artmode_status\",\"value\":\"%s\"}", artMode ? "off" : "on"));
+        }
     }
 
     public void powerUpdated(boolean on, boolean artMode) {

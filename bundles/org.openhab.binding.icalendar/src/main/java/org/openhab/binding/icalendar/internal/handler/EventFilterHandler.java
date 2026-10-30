@@ -140,12 +140,15 @@ public class EventFilterHandler extends BaseThingHandler implements CalendarUpda
         ChannelUID beginChannel;
         ChannelUID endChannel;
         ChannelUID titleChannel;
+        ChannelUID locationChannel;
 
-        public ResultChannelSet(ChannelGroupUID group, ChannelUID begin, ChannelUID end, ChannelUID title) {
+        public ResultChannelSet(ChannelGroupUID group, ChannelUID begin, ChannelUID end, ChannelUID title,
+                ChannelUID location) {
             resultGroup = group;
             beginChannel = begin;
             endChannel = end;
             titleChannel = title;
+            locationChannel = location;
         }
     }
 
@@ -190,7 +193,8 @@ public class EventFilterHandler extends BaseThingHandler implements CalendarUpda
                         RESULT_GROUP_ID_PREFIX + position);
                 ResultChannelSet current = new ResultChannelSet(currentGroup,
                         new ChannelUID(currentGroup, RESULT_BEGIN_ID), new ChannelUID(currentGroup, RESULT_END_ID),
-                        new ChannelUID(currentGroup, RESULT_TITLE_ID));
+                        new ChannelUID(currentGroup, RESULT_TITLE_ID),
+                        new ChannelUID(currentGroup, RESULT_LOCATION_ID));
                 resultChannels.add(current);
             }
         }

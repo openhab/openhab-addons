@@ -25,6 +25,7 @@ import org.openhab.binding.shelly.internal.api2.ShellyBluJsonDTO.Shelly2NotifyBl
 import org.openhab.binding.shelly.internal.api2.dto.ShellyCoverJsonDTO.Shelly2CoverStatus;
 import org.openhab.binding.shelly.internal.api2.dto.ShellyCoverJsonDTO.Shelly2DevConfigCover;
 import org.openhab.binding.shelly.internal.api2.dto.ShellyPresenceJsonDTO.Shelly2DevConfigPresence;
+import org.openhab.binding.shelly.internal.api2.dto.ShellyThermostatJsonDTO.Shelly2DeviceStatusThermostat;
 import org.openhab.binding.shelly.internal.util.ShellyUtils;
 
 import com.google.gson.Gson;
@@ -108,6 +109,7 @@ public class Shelly2ApiJsonDTO {
     public static final String SHELLYRPC_METHOD_SCRIPT_PUTCODE = "Script.PutCode";
     public static final String SHELLYRPC_METHOD_SCRIPT_START = "Script.Start";
     public static final String SHELLYRPC_METHOD_SCRIPT_STOP = "Script.Stop";
+    public static final String SHELLYRPC_METHOD_THERMOSTAT_SETCONFIG = "Thermostat.SetConfig";
 
     public static final String SHELLYRPC_METHOD_NOTIFYSTATUS = "NotifyStatus"; // inbound status
     public static final String SHELLYRPC_METHOD_NOTIFYFULLSTATUS = "NotifyFullStatus"; // inbound status from bat device
@@ -1041,12 +1043,17 @@ public class Shelly2ApiJsonDTO {
 
             @SerializedName("devicepower:0")
             public Shelly2DeviceStatusPower devicepower0;
+            @SerializedName("devicepower:1")
+            public @Nullable Shelly2DeviceStatusPower devicepower1;
 
             @SerializedName("lora:100")
             public Shelly2DeviceStatusLora lora100;
 
             @SerializedName("dali")
             public @Nullable Shelly2DaliStatus dali;
+
+            @SerializedName("thermostat:0")
+            public @Nullable Shelly2DeviceStatusThermostat thermostat0;
         }
 
         public class Shelly2DeviceStatusSys {
@@ -1079,6 +1086,12 @@ public class Shelly2ApiJsonDTO {
             public Shelly2DeviceStatusWakeup wakeUpReason;
             @SerializedName("wakeup_period")
             public Integer wakeupPeriod;
+
+            // Wall Display: reported inside sys, not as a top level component
+            @SerializedName("relay_in_thermostat")
+            public @Nullable Boolean relayInThermostat;
+            @SerializedName("sensor_in_thermostat")
+            public @Nullable Boolean sensorInThermostat;
         }
 
         public class Shelly2DeviceStatusSysWiFi {
@@ -1206,6 +1219,10 @@ public class Shelly2ApiJsonDTO {
         public @Nullable String alarmMode;
         @SerializedName("report_holdoff")
         public @Nullable Integer reportHoldoff;
+
+        // Thermostat.SetConfig
+        @SerializedName("target_C")
+        public @Nullable Double targetC;
     }
 
     public static class Shelly2RpcRequest {

@@ -75,18 +75,22 @@ The channels of `eventfilter` are generated using following scheme, all are read
 | `result_<no>#begin` | DateTime  | The begin of an event  |
 | `result_<no>#end`   | DateTime  | The end of an event    |
 | `result_<no>#title` | String    | The title of an event  |
+| `result_<no>#location` | String    | The location of an event  |
 
 The scheme replaces `<no>` by the results index, beginning at `0`. An `eventfilter` having `maxEvents` set to 3 will have following channels:
 
 - `result_0#begin`
 - `result_0#end`
 - `result_0#title`
+- `result_0#location`
 - `result_1#begin`
 - `result_1#end`
 - `result_1#title`
+- `result_1#location`
 - `result_2#begin`
 - `result_2#end`
 - `result_2#title`
+- `result_2#location`
 
 ## Command Tags
 
