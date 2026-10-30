@@ -36,6 +36,8 @@ import com.google.gson.JsonObject;
 @NonNullByDefault
 public class FreeAtHomeDeviceChannel {
 
+    private static final int STATE_INDICATION_ECO_MODE_BIT = 0x04;
+
     private final Logger logger = LoggerFactory.getLogger(FreeAtHomeDeviceChannel.class);
 
     private String channelLabel = "";
@@ -180,8 +182,12 @@ public class FreeAtHomeDeviceChannel {
                 addDatapointGroup(newDatapointGroup);
 
                 newDatapointGroup = new FreeAtHomeDatapointGroup();
-                newDatapointGroup.addDatapointToGroup(DatapointDirection.OUTPUT, 68, channelId, channelObject);
                 newDatapointGroup.addDatapointToGroup(DatapointDirection.INPUT, 58, channelId, channelObject);
+                if (!newDatapointGroup.addDatapointToGroup(DatapointDirection.OUTPUT, 68, channelId, channelObject)
+                        && newDatapointGroup.getInputDatapoint() != null) {
+                    newDatapointGroup.addMaskedOutputToGroup(54, STATE_INDICATION_ECO_MODE_BIT, channelId,
+                            channelObject);
+                }
                 addDatapointGroup(newDatapointGroup);
 
                 newDatapointGroup = new FreeAtHomeDatapointGroup();

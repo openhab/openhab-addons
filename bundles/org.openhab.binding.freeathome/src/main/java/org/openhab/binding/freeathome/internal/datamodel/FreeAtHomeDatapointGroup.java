@@ -17,6 +17,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.freeathome.internal.datamodel.FreeAtHomeDatapoint.DatapointDirection;
 import org.openhab.binding.freeathome.internal.util.FreeAtHomeGeneralException;
 import org.openhab.binding.freeathome.internal.util.PidTranslationUtils;
+import org.openhab.binding.freeathome.internal.valuestateconverter.BinaryValueStateConverter;
 import org.openhab.binding.freeathome.internal.valuestateconverter.BooleanValueStateConverter;
 import org.openhab.binding.freeathome.internal.valuestateconverter.DecimalValueStateConverter;
 import org.openhab.binding.freeathome.internal.valuestateconverter.ShuttercontrolValueStateConverter;
@@ -50,6 +51,7 @@ public class FreeAtHomeDatapointGroup {
     private String functionString = "";
     private @Nullable FreeAtHomeDatapoint inputDatapoint;
     private @Nullable FreeAtHomeDatapoint outputDatapoint;
+    private @Nullable ValueStateConverter maskedOutputConverter;
 
     FreeAtHomeDatapointGroup() {
         datapointGroupDirection = DatapointGroupDirection.UNDEFINED;
@@ -110,7 +112,21 @@ public class FreeAtHomeDatapointGroup {
         return resultingDirection != DatapointDirection.UNKNOWN;
     }
 
+    boolean addMaskedOutputToGroup(int neededPairingId, int mask, String channelId, JsonObject jsonObjectOfChannel) {
+        boolean found = addDatapointToGroup(DatapointDirection.OUTPUT, neededPairingId, channelId, jsonObjectOfChannel);
+        if (found) {
+            maskedOutputConverter = new BinaryValueStateConverter(mask);
+        }
+        return found;
+    }
+
     public void applyChangesForVirtualDevice() {
+        // after the swap below an eco command would write into the state indication of the virtual device
+        if (maskedOutputConverter != null) {
+            outputDatapoint = null;
+            maskedOutputConverter = null;
+        }
+
         // The input and output datapoints are meant from the device point of view. Because the virtual devices are
         // outside of the free@home system the input and output datapoint must be switched
         @Nullable
@@ -206,6 +222,11 @@ public class FreeAtHomeDatapointGroup {
     }
 
     public ValueStateConverter getValueStateConverter() throws FreeAtHomeGeneralException {
+        ValueStateConverter maskedConverter = maskedOutputConverter;
+        if (maskedConverter != null) {
+            return maskedConverter;
+        }
+
         ValueStateConverter valueStateConverter = new BooleanValueStateConverter();
 
         functionString = PidTranslationUtils.getValueTypeForPairingId(String.format("0x%04X", pairingId));
