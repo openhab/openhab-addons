@@ -1,0 +1,19 @@
+{
+  "id": 10,
+  "type": "event",
+  "event": {
+    "a": {
+      "cover.pergola_roof": {
+        "s": "closed",
+        "a": {
+          "is_closed": true,
+          "current_tilt_position": 60,
+          "friendly_name": "Pergola Roof",
+          "supported_features": 240
+        },
+        "c": "01M3201RG54PSYC4BNGFEJ7Z2C",
+        "lc": 1789994787.3338897
+      }
+    }
+  }
+}

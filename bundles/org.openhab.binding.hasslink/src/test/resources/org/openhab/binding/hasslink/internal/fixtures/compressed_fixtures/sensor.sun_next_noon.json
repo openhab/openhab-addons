@@ -1,0 +1,17 @@
+{
+  "id": 10,
+  "type": "event",
+  "event": {
+    "a": {
+      "sensor.sun_next_noon": {
+        "s": "2026-09-22T11:33:21+00:00",
+        "a": {
+          "device_class": "timestamp",
+          "friendly_name": "Sun Next noon"
+        },
+        "c": "01M3202YVSY3P8JNB69YBP3ZX9",
+        "lc": 1789994826.6175308
+      }
+    }
+  }
+}

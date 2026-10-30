@@ -1,0 +1,20 @@
+{
+  "id": 10,
+  "type": "event",
+  "event": {
+    "a": {
+      "text.text": {
+        "s": "Hello world",
+        "a": {
+          "mode": "text",
+          "min": 0,
+          "max": 255,
+          "pattern": null,
+          "friendly_name": "Text"
+        },
+        "c": "01M3201RGVKHQSCZ0SC1MZ72SK",
+        "lc": 1789994787.3552065
+      }
+    }
+  }
+}

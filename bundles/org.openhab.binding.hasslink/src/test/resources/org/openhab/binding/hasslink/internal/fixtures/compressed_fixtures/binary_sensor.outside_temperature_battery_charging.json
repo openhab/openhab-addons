@@ -1,0 +1,17 @@
+{
+  "id": 10,
+  "type": "event",
+  "event": {
+    "a": {
+      "binary_sensor.outside_temperature_battery_charging": {
+        "s": "off",
+        "a": {
+          "device_class": "battery_charging",
+          "friendly_name": "Outside Temperature Battery Charging"
+        },
+        "c": "01M3201RG0WF9EE44GR0J6NCEX",
+        "lc": 1789994787.3285186
+      }
+    }
+  }
+}
