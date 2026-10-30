@@ -62,6 +62,17 @@ public record E3DCChannelSpec(int tag, int container, double divisor, int bitMas
         return new E3DCChannelSpec(RscpTag.EMS_GET_IDLE_PERIODS_2, 0, 1, 0, -1, 0, NO_INDEX, true, false);
     }
 
+    /**
+     * A channel that reports the messages of the energy manager, which come as one container per message.
+     *
+     * <p>
+     * The messages are a list of containers rather than one value, so the handler publishes them itself: the
+     * text channel as a JSON array, the switch channel as whether the list holds anything.
+     */
+    public static E3DCChannelSpec messages() {
+        return new E3DCChannelSpec(RscpTag.EMS_STORED_ERRORS, 0, 1, 0, -1, 0, NO_INDEX, true, false);
+    }
+
     /** Whether this channel renders a list of containers instead of one value. */
     public boolean isList() {
         return list;
@@ -234,7 +245,10 @@ public record E3DCChannelSpec(int tag, int container, double divisor, int bitMas
                 entry("powersave",
                         E3DCChannelSpec.bitIn(RscpTag.EMS_GET_POWER_SETTINGS, RscpTag.EMS_POWERSAVE_ENABLED, 1)), //
                 entry("derate-at-percent", E3DCChannelSpec.of(RscpTag.EMS_DERATE_AT_PERCENT_VALUE)), //
-                entry("derate-at-power", E3DCChannelSpec.of(RscpTag.EMS_DERATE_AT_POWER_VALUE))));
+                entry("derate-at-power", E3DCChannelSpec.of(RscpTag.EMS_DERATE_AT_POWER_VALUE)), //
+                // both channels read the same answer; the handler tells them apart by their id
+                entry(E3DCBindingConstants.CHANNEL_HAS_MESSAGES, E3DCChannelSpec.messages()), //
+                entry(E3DCBindingConstants.CHANNEL_MESSAGES, E3DCChannelSpec.messages())));
 
         registry.group(E3DCBindingConstants.GROUP_BATTERY_CONTROL, Map.ofEntries(//
                 entry("charging-lock", E3DCChannelSpec.bit(RscpTag.EMS_STATUS, 1)), //
