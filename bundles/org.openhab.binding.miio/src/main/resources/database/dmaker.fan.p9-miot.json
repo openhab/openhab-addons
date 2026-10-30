@@ -13,7 +13,7 @@
 				"siid": 2,
 				"piid": 1,
 				"friendlyName": "Power",
-				"channel": "power",
+				"channel": "On",
 				"type": "Switch",
 				"refresh": true,
 				"actions": [
@@ -33,7 +33,7 @@
 				"siid": 2,
 				"piid": 11,
 				"friendlyName": "Fan Speed",
-				"channel": "speed_level",
+				"channel": "SpeedLevel",
 				"type": "Dimmer",
 				"stateDescription": {
 					"minimum": 1,
@@ -59,7 +59,7 @@
 				"siid": 2,
 				"piid": 2,
 				"friendlyName": "Fan Level",
-				"channel": "fan_level",
+				"channel": "FanLevel",
 				"type": "Number",
 				"stateDescription": {
 					"options": [
@@ -100,7 +100,7 @@
 				"siid": 2,
 				"piid": 4,
 				"friendlyName": "Mode",
-				"channel": "mode",
+				"channel": "Mode",
 				"type": "Number",
 				"stateDescription": {
 					"options": [
@@ -137,7 +137,7 @@
 				"siid": 2,
 				"piid": 5,
 				"friendlyName": "Oscillation",
-				"channel": "horizontal_swing",
+				"channel": "HorizontalSwing",
 				"type": "Switch",
 				"refresh": true,
 				"actions": [
@@ -157,7 +157,7 @@
 				"siid": 2,
 				"piid": 6,
 				"friendlyName": "Oscillation Angle",
-				"channel": "horizontal_angle",
+				"channel": "HorizontalAngle",
 				"type": "Number:Angle",
 				"unit": "degree",
 				"stateDescription": {
@@ -204,7 +204,7 @@
 				"siid": 2,
 				"piid": 10,
 				"friendlyName": "Move Direction",
-				"channel": "move",
+				"channel": "MotorControl",
 				"type": "String",
 				"stateDescription": {
 					"options": [
@@ -257,7 +257,7 @@
 				"siid": 2,
 				"piid": 8,
 				"friendlyName": "Power-Off Timer",
-				"channel": "off_delay_time",
+				"channel": "OffDelayTime",
 				"type": "Number:Time",
 				"unit": "minutes",
 				"stateDescription": {
@@ -284,7 +284,7 @@
 				"siid": 2,
 				"piid": 7,
 				"friendlyName": "Notification Sound",
-				"channel": "buzzer",
+				"channel": "Alarm",
 				"type": "Switch",
 				"refresh": true,
 				"actions": [
@@ -304,7 +304,7 @@
 				"siid": 2,
 				"piid": 9,
 				"friendlyName": "Indicator Light",
-				"channel": "led",
+				"channel": "Brightness",
 				"type": "Switch",
 				"refresh": true,
 				"actions": [
@@ -324,7 +324,7 @@
 				"siid": 3,
 				"piid": 1,
 				"friendlyName": "Child Lock",
-				"channel": "child_lock",
+				"channel": "PhysicalControlsLocked",
 				"type": "Switch",
 				"refresh": true,
 				"actions": [

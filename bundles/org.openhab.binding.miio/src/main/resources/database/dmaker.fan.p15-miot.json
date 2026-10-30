@@ -14,7 +14,7 @@
 				"siid": 2,
 				"piid": 1,
 				"friendlyName": "Power",
-				"channel": "power",
+				"channel": "on",
 				"type": "Switch",
 				"refresh": true,
 				"actions": [
@@ -34,7 +34,7 @@
 				"siid": 2,
 				"piid": 6,
 				"friendlyName": "Fan Speed",
-				"channel": "speed_level",
+				"channel": "status",
 				"type": "Dimmer",
 				"stateDescription": {
 					"minimum": 1,
@@ -281,7 +281,7 @@
 				"siid": 5,
 				"piid": 1,
 				"friendlyName": "Notification Sound",
-				"channel": "buzzer",
+				"channel": "alarm",
 				"type": "Switch",
 				"refresh": true,
 				"actions": [
@@ -301,7 +301,7 @@
 				"siid": 4,
 				"piid": 1,
 				"friendlyName": "Indicator Light",
-				"channel": "led",
+				"channel": "on1",
 				"type": "Switch",
 				"refresh": true,
 				"actions": [
@@ -321,7 +321,7 @@
 				"siid": 7,
 				"piid": 1,
 				"friendlyName": "Child Lock",
-				"channel": "child_lock",
+				"channel": "physical_controls_locked",
 				"type": "Switch",
 				"refresh": true,
 				"actions": [

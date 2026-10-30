@@ -28,7 +28,7 @@
 			{
 				"property": "speed_level",
 				"friendlyName": "Fan Speed",
-				"channel": "speed_level",
+				"channel": "speedLevel",
 				"type": "Dimmer",
 				"stateDescription": {
 					"minimum": 1,
@@ -52,7 +52,7 @@
 			{
 				"property": "natural_level",
 				"friendlyName": "Natural Wind Speed",
-				"channel": "natural_level",
+				"channel": "naturalLevel",
 				"type": "Dimmer",
 				"stateDescription": {
 					"minimum": 1,
@@ -77,7 +77,7 @@
 			{
 				"property": "angle_enable",
 				"friendlyName": "Oscillation",
-				"channel": "horizontal_swing",
+				"channel": "angleEnable",
 				"type": "Switch",
 				"refresh": true,
 				"actions": [
@@ -95,7 +95,7 @@
 			{
 				"property": "angle",
 				"friendlyName": "Oscillation Angle",
-				"channel": "horizontal_angle",
+				"channel": "angle",
 				"type": "Number:Angle",
 				"unit": "degree",
 				"stateDescription": {
@@ -165,7 +165,7 @@
 			{
 				"property": "poweroff_time",
 				"friendlyName": "Power-Off Timer",
-				"channel": "off_delay_time",
+				"channel": "poweroffTime",
 				"type": "Number:Time",
 				"unit": "seconds",
 				"stateDescription": {
@@ -208,7 +208,7 @@
 			{
 				"property": "led_b",
 				"friendlyName": "Indicator Light",
-				"channel": "led_brightness",
+				"channel": "led_b",
 				"type": "Number",
 				"stateDescription": {
 					"options": [
@@ -261,7 +261,7 @@
 			{
 				"property": "temp_dec",
 				"friendlyName": "Temperature",
-				"channel": "temperature",
+				"channel": "temp_dec",
 				"type": "Number:Temperature",
 				"unit": "CELSIUS",
 				"stateDescription": {
@@ -312,7 +312,7 @@
 			{
 				"property": "ac_power",
 				"friendlyName": "AC Power",
-				"channel": "ac_power",
+				"channel": "acPower",
 				"type": "Switch",
 				"stateDescription": {
 					"readOnly": true
@@ -328,7 +328,7 @@
 			{
 				"property": "bat_charge",
 				"friendlyName": "Battery Charge State",
-				"channel": "battery_charge",
+				"channel": "mode",
 				"type": "String",
 				"stateDescription": {
 					"readOnly": true
@@ -361,7 +361,7 @@
 			{
 				"property": "use_time",
 				"friendlyName": "Run Time",
-				"channel": "use_time",
+				"channel": "usedhours",
 				"type": "Number:Time",
 				"unit": "hours",
 				"stateDescription": {

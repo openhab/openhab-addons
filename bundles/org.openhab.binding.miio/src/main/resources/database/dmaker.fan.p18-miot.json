@@ -13,7 +13,7 @@
 				"siid": 2,
 				"piid": 1,
 				"friendlyName": "Power",
-				"channel": "power",
+				"channel": "on",
 				"type": "Switch",
 				"refresh": true,
 				"actions": [
@@ -200,7 +200,7 @@
 				"siid": 2,
 				"piid": 9,
 				"friendlyName": "Move Direction",
-				"channel": "move",
+				"channel": "motor_control",
 				"type": "String",
 				"stateDescription": {
 					"options": [
@@ -280,7 +280,7 @@
 				"siid": 2,
 				"piid": 8,
 				"friendlyName": "Notification Sound",
-				"channel": "buzzer",
+				"channel": "alarm",
 				"type": "Switch",
 				"refresh": true,
 				"actions": [
@@ -300,7 +300,7 @@
 				"siid": 2,
 				"piid": 7,
 				"friendlyName": "Indicator Light",
-				"channel": "led",
+				"channel": "brightness",
 				"type": "Switch",
 				"refresh": true,
 				"actions": [
@@ -320,7 +320,7 @@
 				"siid": 3,
 				"piid": 1,
 				"friendlyName": "Child Lock",
-				"channel": "child_lock",
+				"channel": "physical_controls_locked",
 				"type": "Switch",
 				"refresh": true,
 				"actions": [

@@ -1387,124 +1387,124 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 
 | Channel                    | Type                 | Description                              | Comment    |
 |----------------------------|----------------------|------------------------------------------|------------|
-| power                      | Switch               | Power                                    |            |
-| fan_level                  | Number               | Fan Level                                | Value mapping `["1"="Level 1","2"="Level 2","3"="Level 3"]` |
-| mode                       | Number               | Mode                                     | Value mapping `["0"="Standard","1"="Sleep"]` |
-| horizontal_swing           | Switch               | Oscillation                              |            |
-| off_delay_time             | Number:Time          | Power-Off Timer                          |            |
-| buzzer                     | Switch               | Notification Sound                       |            |
-| led                        | Switch               | Indicator Light                          |            |
-| child_lock                 | Switch               | Child Lock                               |            |
+| On                         | Switch               | Power                                    |            |
+| FanLevel                   | Number               | Fan Level                                | Value mapping `["1"="Level 1","2"="Level 2","3"="Level 3"]` |
+| Mode                       | Number               | Mode                                     | Value mapping `["0"="Standard","1"="Sleep"]` |
+| HorizontalSwing            | Switch               | Oscillation                              |            |
+| OffDelayTime               | Number:Time          | Power-Off Timer                          |            |
+| Alarm                      | Switch               | Notification Sound                       |            |
+| Brightness                 | Switch               | Indicator Light                          |            |
+| PhysicalControlsLocked     | Switch               | Child Lock                               |            |
 
 ### Mi Smart Standing Fan 1X (<a name="dmaker-fan-p5">dmaker.fan.p5</a>) Channels
 
 | Channel                    | Type                 | Description                              | Comment    |
 |----------------------------|----------------------|------------------------------------------|------------|
 | power                      | Switch               | Power                                    |            |
-| speed_level                | Dimmer               | Fan Speed                                |            |
+| speed                      | Dimmer               | Fan Speed                                |            |
 | mode                       | String               | Mode                                     | Value mapping `["normal"="Standard","nature"="Natural"]` |
-| horizontal_swing           | Switch               | Oscillation                              |            |
-| horizontal_angle           | Number:Angle         | Oscillation Angle                        | Value mapping `["30"="30","60"="60","90"="90","120"="120","140"="140"]` |
+| roll                       | Switch               | Oscillation                              |            |
+| angle                      | Number:Angle         | Oscillation Angle                        | Value mapping `["30"="30","60"="60","90"="90","120"="120","140"="140"]` |
 | move                       | String               | Move Direction                           | Write only. Turns the fan head a step |
-| off_delay_time             | Number:Time          | Power-Off Timer                          |            |
-| buzzer                     | Switch               | Notification Sound                       |            |
-| led                        | Switch               | Indicator Light                          |            |
+| timer                      | Number:Time          | Power-Off Timer                          |            |
+| beep                       | Switch               | Notification Sound                       |            |
+| light                      | Switch               | Indicator Light                          |            |
 | child_lock                 | Switch               | Child Lock                               |            |
 
 ### Mi Smart Standing Fan 1C (<a name="dmaker-fan-p8">dmaker.fan.p8</a>) Channels
 
 | Channel                    | Type                 | Description                              | Comment    |
 |----------------------------|----------------------|------------------------------------------|------------|
-| power                      | Switch               | Power                                    |            |
-| fan_level                  | Number               | Fan Level                                | Value mapping `["1"="Level 1","2"="Level 2","3"="Level 3"]` |
-| mode                       | Number               | Mode                                     | Value mapping `["0"="Standard","1"="Sleep"]` |
-| horizontal_swing           | Switch               | Oscillation                              |            |
-| off_delay_time             | Number:Time          | Power-Off Timer                          |            |
-| buzzer                     | Switch               | Notification Sound                       |            |
-| led                        | Switch               | Indicator Light                          |            |
-| child_lock                 | Switch               | Child Lock                               |            |
+| On                         | Switch               | Power                                    |            |
+| FanLevel                   | Number               | Fan Level                                | Value mapping `["1"="Level 1","2"="Level 2","3"="Level 3"]` |
+| Mode                       | Number               | Mode                                     | Value mapping `["0"="Standard","1"="Sleep"]` |
+| HorizontalSwing            | Switch               | Oscillation                              |            |
+| OffDelayTime               | Number:Time          | Power-Off Timer                          |            |
+| Alarm                      | Switch               | Notification Sound                       |            |
+| Brightness                 | Switch               | Indicator Light                          |            |
+| PhysicalControlsLocked     | Switch               | Child Lock                               |            |
 
 ### Mi Smart Tower Fan (<a name="dmaker-fan-p9">dmaker.fan.p9</a>) Channels
 
 | Channel                    | Type                 | Description                              | Comment    |
 |----------------------------|----------------------|------------------------------------------|------------|
-| power                      | Switch               | Power                                    |            |
-| speed_level                | Dimmer               | Fan Speed                                |            |
-| fan_level                  | Number               | Fan Level                                | Value mapping `["1"="Level 1","2"="Level 2","3"="Level 3","4"="Level 4"]` |
-| mode                       | Number               | Mode                                     | Value mapping `["0"="Standard","1"="Natural","2"="Sleep"]` |
-| horizontal_swing           | Switch               | Oscillation                              |            |
-| horizontal_angle           | Number:Angle         | Oscillation Angle                        | Value mapping `["30"="30","60"="60","90"="90","120"="120","150"="150"]` |
-| move                       | String               | Move Direction                           | Write only. Turns the fan head a step; sends 2 for left and 1 for right, as the Mi Home app does |
-| off_delay_time             | Number:Time          | Power-Off Timer                          |            |
-| buzzer                     | Switch               | Notification Sound                       |            |
-| led                        | Switch               | Indicator Light                          |            |
-| child_lock                 | Switch               | Child Lock                               |            |
+| On                         | Switch               | Power                                    |            |
+| SpeedLevel                 | Dimmer               | Fan Speed                                |            |
+| FanLevel                   | Number               | Fan Level                                | Value mapping `["1"="Level 1","2"="Level 2","3"="Level 3","4"="Level 4"]` |
+| Mode                       | Number               | Mode                                     | Value mapping `["0"="Standard","1"="Natural","2"="Sleep"]` |
+| HorizontalSwing            | Switch               | Oscillation                              |            |
+| HorizontalAngle            | Number:Angle         | Oscillation Angle                        | Value mapping `["30"="30","60"="60","90"="90","120"="120","150"="150"]` |
+| MotorControl               | String               | Move Direction                           | Write only. Turns the fan head a step; sends 2 for left and 1 for right, as the Mi Home app does |
+| OffDelayTime               | Number:Time          | Power-Off Timer                          |            |
+| Alarm                      | Switch               | Notification Sound                       |            |
+| Brightness                 | Switch               | Indicator Light                          |            |
+| PhysicalControlsLocked     | Switch               | Child Lock                               |            |
 
 ### Mi Smart Standing Fan 2 (<a name="dmaker-fan-p10">dmaker.fan.p10</a>) Channels
 
 | Channel                    | Type                 | Description                              | Comment    |
 |----------------------------|----------------------|------------------------------------------|------------|
-| power                      | Switch               | Power                                    |            |
+| on                         | Switch               | Power                                    |            |
 | speed_level                | Dimmer               | Fan Speed                                |            |
 | fan_level                  | Number               | Fan Level                                | Value mapping `["1"="Level 1","2"="Level 2","3"="Level 3","4"="Level 4"]` |
 | mode                       | Number               | Mode                                     | Value mapping `["0"="Standard","1"="Natural"]` |
 | horizontal_swing           | Switch               | Oscillation                              |            |
 | horizontal_angle           | Number:Angle         | Oscillation Angle                        | Value mapping `["30"="30","60"="60","90"="90","120"="120","140"="140"]` |
-| move                       | String               | Move Direction                           | Write only. Turns the fan head a step |
+| motor_control              | String               | Move Direction                           | Write only. Turns the fan head a step |
 | off_delay_time             | Number:Time          | Power-Off Timer                          |            |
-| buzzer                     | Switch               | Notification Sound                       |            |
-| led                        | Switch               | Indicator Light                          |            |
-| child_lock                 | Switch               | Child Lock                               |            |
+| alarm                      | Switch               | Notification Sound                       |            |
+| brightness                 | Switch               | Indicator Light                          |            |
+| physical_controls_locked   | Switch               | Child Lock                               |            |
 
 ### Mi Smart Standing Fan Pro (<a name="dmaker-fan-p11">dmaker.fan.p11</a>) Channels
 
 | Channel                    | Type                 | Description                              | Comment    |
 |----------------------------|----------------------|------------------------------------------|------------|
-| power                      | Switch               | Power                                    |            |
-| speed_level                | Dimmer               | Fan Speed                                |            |
+| on                         | Switch               | Power                                    |            |
+| status                     | Dimmer               | Fan Speed                                |            |
 | fan_level                  | Number               | Fan Level                                | Value mapping `["1"="Level 1","2"="Level 2","3"="Level 3","4"="Level 4"]` |
 | mode                       | Number               | Mode                                     | Value mapping `["0"="Standard","1"="Natural"]` |
 | horizontal_swing           | Switch               | Oscillation                              |            |
 | horizontal_angle           | Number:Angle         | Oscillation Angle                        | Value mapping `["30"="30","60"="60","90"="90","120"="120","140"="140"]` |
 | move                       | String               | Move Direction                           | Write only. Turns the fan head a step |
 | off_delay_time             | Number:Time          | Power-Off Timer                          |            |
-| buzzer                     | Switch               | Notification Sound                       |            |
-| led                        | Switch               | Indicator Light                          |            |
-| child_lock                 | Switch               | Child Lock                               |            |
+| alarm                      | Switch               | Notification Sound                       |            |
+| on1                        | Switch               | Indicator Light                          |            |
+| physical_controls_locked   | Switch               | Child Lock                               |            |
 | fault                      | Number               | Device Fault                             | Value mapping `["0"="No Faults"]` |
 
 ### Mi Smart Standing Fan Pro (<a name="dmaker-fan-p15">dmaker.fan.p15</a>) Channels
 
 | Channel                    | Type                 | Description                              | Comment    |
 |----------------------------|----------------------|------------------------------------------|------------|
-| power                      | Switch               | Power                                    |            |
-| speed_level                | Dimmer               | Fan Speed                                |            |
+| on                         | Switch               | Power                                    |            |
+| status                     | Dimmer               | Fan Speed                                |            |
 | fan_level                  | Number               | Fan Level                                | Value mapping `["1"="Level 1","2"="Level 2","3"="Level 3","4"="Level 4"]` |
 | mode                       | Number               | Mode                                     | Value mapping `["0"="Standard","1"="Natural"]` |
 | horizontal_swing           | Switch               | Oscillation                              |            |
 | horizontal_angle           | Number:Angle         | Oscillation Angle                        | Value mapping `["30"="30","60"="60","90"="90","120"="120","140"="140"]` |
 | move                       | String               | Move Direction                           | Write only. Turns the fan head a step |
 | off_delay_time             | Number:Time          | Power-Off Timer                          |            |
-| buzzer                     | Switch               | Notification Sound                       |            |
-| led                        | Switch               | Indicator Light                          |            |
-| child_lock                 | Switch               | Child Lock                               |            |
+| alarm                      | Switch               | Notification Sound                       |            |
+| on1                        | Switch               | Indicator Light                          |            |
+| physical_controls_locked   | Switch               | Child Lock                               |            |
 | fault                      | Number               | Device Fault                             | Value mapping `["0"="No Faults"]` |
 
 ### Mi Smart Standing Fan 2 (<a name="dmaker-fan-p18">dmaker.fan.p18</a>) Channels
 
 | Channel                    | Type                 | Description                              | Comment    |
 |----------------------------|----------------------|------------------------------------------|------------|
-| power                      | Switch               | Power                                    |            |
+| on                         | Switch               | Power                                    |            |
 | speed_level                | Dimmer               | Fan Speed                                |            |
 | fan_level                  | Number               | Fan Level                                | Value mapping `["1"="Level 1","2"="Level 2","3"="Level 3","4"="Level 4"]` |
 | mode                       | Number               | Mode                                     | Value mapping `["0"="Standard","1"="Natural"]` |
 | horizontal_swing           | Switch               | Oscillation                              |            |
 | horizontal_angle           | Number:Angle         | Oscillation Angle                        | Value mapping `["30"="30","60"="60","90"="90","120"="120","140"="140"]` |
-| move                       | String               | Move Direction                           | Write only. Turns the fan head a step |
+| motor_control              | String               | Move Direction                           | Write only. Turns the fan head a step |
 | off_delay_time             | Number:Time          | Power-Off Timer                          |            |
-| buzzer                     | Switch               | Notification Sound                       |            |
-| led                        | Switch               | Indicator Light                          |            |
-| child_lock                 | Switch               | Child Lock                               |            |
+| alarm                      | Switch               | Notification Sound                       |            |
+| brightness                 | Switch               | Indicator Light                          |            |
+| physical_controls_locked   | Switch               | Child Lock                               |            |
 
 ### Mijia Smart Standing Air Circulation Fan (<a name="dmaker-fan-p28">dmaker.fan.p28</a>) Channels
 
@@ -1534,34 +1534,34 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 
 | Channel                    | Type                 | Description                              | Comment    |
 |----------------------------|----------------------|------------------------------------------|------------|
-| power                      | Switch               | Power                                    |            |
-| speed_level                | Dimmer               | Fan Speed                                |            |
+| on                         | Switch               | Power                                    |            |
+| status                     | Dimmer               | Fan Speed                                |            |
 | fan_level                  | Number               | Fan Level                                | Value mapping `["1"="Level 1","2"="Level 2","3"="Level 3","4"="Level 4"]` |
 | mode                       | Number               | Mode                                     | Value mapping `["0"="Standard","1"="Natural"]` |
 | horizontal_swing           | Switch               | Oscillation                              |            |
 | horizontal_angle           | Number:Angle         | Oscillation Angle                        | Value mapping `["30"="30","60"="60","90"="90","120"="120","140"="140"]` |
 | move                       | String               | Move Direction                           | Write only. Turns the fan head a step |
 | off_delay_time             | Number:Time          | Power-Off Timer                          |            |
-| buzzer                     | Switch               | Notification Sound                       |            |
-| led                        | Switch               | Indicator Light                          |            |
-| child_lock                 | Switch               | Child Lock                               |            |
+| alarm                      | Switch               | Notification Sound                       |            |
+| on1                        | Switch               | Indicator Light                          |            |
+| physical_controls_locked   | Switch               | Child Lock                               |            |
 | fault                      | Number               | Device Fault                             | Value mapping `["0"="No Faults"]` |
 
 ### Xiaomi Smart Tower Fan (<a name="dmaker-fan-p39">dmaker.fan.p39</a>) Channels
 
 | Channel                    | Type                 | Description                              | Comment    |
 |----------------------------|----------------------|------------------------------------------|------------|
-| power                      | Switch               | Power                                    |            |
-| speed_level                | Dimmer               | Fan Speed                                |            |
-| fan_level                  | Number               | Fan Level                                | Value mapping `["1"="Level 1","2"="Level 2","3"="Level 3","4"="Level 4"]` |
-| mode                       | Number               | Mode                                     | Value mapping `["0"="Standard","1"="Natural","2"="Sleep"]` |
-| horizontal_swing           | Switch               | Oscillation                              |            |
-| horizontal_angle           | Number:Angle         | Oscillation Angle                        | Value mapping `["30"="30","60"="60","90"="90","120"="120","150"="150"]` |
-| move                       | String               | Move Direction                           | Write only. Turns the fan head a step; sends 2 for left and 1 for right, as the Mi Home app does |
-| off_delay_time             | Number:Time          | Power-Off Timer                          |            |
-| buzzer                     | Switch               | Notification Sound                       |            |
-| led                        | Switch               | Indicator Light                          |            |
-| child_lock                 | Switch               | Child Lock                               |            |
+| On                         | Switch               | Power                                    |            |
+| SpeedLevel                 | Dimmer               | Fan Speed                                |            |
+| FanLevel                   | Number               | Fan Level                                | Value mapping `["1"="Level 1","2"="Level 2","3"="Level 3","4"="Level 4"]` |
+| Mode                       | Number               | Mode                                     | Value mapping `["0"="Standard","1"="Natural","2"="Sleep"]` |
+| HorizontalSwing            | Switch               | Oscillation                              |            |
+| HorizontalAngle            | Number:Angle         | Oscillation Angle                        | Value mapping `["30"="30","60"="60","90"="90","120"="120","150"="150"]` |
+| MotorControl               | String               | Move Direction                           | Write only. Turns the fan head a step; sends 2 for left and 1 for right, as the Mi Home app does |
+| OffDelayTime               | Number:Time          | Power-Off Timer                          |            |
+| Alarm                      | Switch               | Notification Sound                       |            |
+| Brightness                 | Switch               | Indicator Light                          |            |
+| PhysicalControlsLocked     | Switch               | Child Lock                               |            |
 
 ### Mijia Smart Tower Fan 2 (<a name="dmaker-fan-p45">dmaker.fan.p45</a>) Channels
 
@@ -13717,157 +13717,157 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | Channel                    | Type                 | Description                              | Comment    |
 |----------------------------|----------------------|------------------------------------------|------------|
 | power                      | Switch               | Power                                    |            |
-| speed_level                | Dimmer               | Fan Speed                                |            |
-| natural_level              | Dimmer               | Natural Wind Speed                       | Setting a value switches to natural wind; 0 while in standard mode |
-| horizontal_swing           | Switch               | Oscillation                              |            |
-| horizontal_angle           | Number:Angle         | Oscillation Angle                        | Value mapping `["30"="30","60"="60","90"="90","120"="120"]` |
+| speedLevel                 | Dimmer               | Fan Speed                                |            |
+| naturalLevel               | Dimmer               | Natural Wind Speed                       | Setting a value switches to natural wind; 0 while in standard mode |
+| angleEnable                | Switch               | Oscillation                              |            |
+| angle                      | Number:Angle         | Oscillation Angle                        | Value mapping `["30"="30","60"="60","90"="90","120"="120"]` |
 | move                       | String               | Move Direction                           | Write only. Turns the fan head a step; only accepted while oscillation is off |
-| off_delay_time             | Number:Time          | Power-Off Timer                          |            |
+| poweroffTime               | Number:Time          | Power-Off Timer                          |            |
 | buzzer                     | Switch               | Notification Sound                       |            |
-| led_brightness             | Number               | Indicator Light                          | Value mapping `["0"="Bright","1"="Dim","2"="Off"]` |
+| led_b                      | Number               | Indicator Light                          | Value mapping `["0"="Bright","1"="Dim","2"="Off"]` |
 | child_lock                 | Switch               | Child Lock                               |            |
-| ac_power                   | Switch               | AC Power                                 |            |
+| acPower                    | Switch               | AC Power                                 |            |
 | speed                      | Number               | Motor Speed                              |            |
-| use_time                   | Number:Time          | Run Time                                 |            |
+| usedhours                  | Number:Time          | Run Time                                 |            |
 
 ### Mi Smart Fan (<a name="zhimi-fan-v1">zhimi.fan.v1</a>) Channels
 
 | Channel                    | Type                 | Description                              | Comment    |
 |----------------------------|----------------------|------------------------------------------|------------|
 | power                      | Switch               | Power                                    |            |
-| speed_level                | Dimmer               | Fan Speed                                |            |
-| natural_level              | Dimmer               | Natural Wind Speed                       | Setting a value switches to natural wind; 0 while in standard mode |
-| horizontal_swing           | Switch               | Oscillation                              |            |
-| horizontal_angle           | Number:Angle         | Oscillation Angle                        | Value mapping `["30"="30","60"="60","90"="90","120"="120"]` |
+| speedLevel                 | Dimmer               | Fan Speed                                |            |
+| naturalLevel               | Dimmer               | Natural Wind Speed                       | Setting a value switches to natural wind; 0 while in standard mode |
+| angleEnable                | Switch               | Oscillation                              |            |
+| angle                      | Number:Angle         | Oscillation Angle                        | Value mapping `["30"="30","60"="60","90"="90","120"="120"]` |
 | move                       | String               | Move Direction                           | Write only. Turns the fan head a step; only accepted while oscillation is off |
-| off_delay_time             | Number:Time          | Power-Off Timer                          |            |
+| poweroffTime               | Number:Time          | Power-Off Timer                          |            |
 | buzzer                     | Switch               | Notification Sound                       |            |
-| led_brightness             | Number               | Indicator Light                          | Value mapping `["0"="Bright","1"="Dim","2"="Off"]` |
+| led_b                      | Number               | Indicator Light                          | Value mapping `["0"="Bright","1"="Dim","2"="Off"]` |
 | child_lock                 | Switch               | Child Lock                               |            |
-| temperature                | Number:Temperature   | Temperature                              |            |
+| temp_dec                   | Number:Temperature   | Temperature                              |            |
 | humidity                   | Number:Dimensionless | Humidity                                 |            |
 | battery                    | Number               | Battery                                  |            |
-| ac_power                   | Switch               | AC Power                                 |            |
-| battery_charge             | String               | Battery Charge State                     |            |
+| acPower                    | Switch               | AC Power                                 |            |
+| mode                       | String               | Battery Charge State                     |            |
 | speed                      | Number               | Motor Speed                              |            |
-| use_time                   | Number:Time          | Run Time                                 |            |
+| usedhours                  | Number:Time          | Run Time                                 |            |
 
 ### Smartmi DC Pedestal Fan (<a name="zhimi-fan-v2">zhimi.fan.v2</a>) Channels
 
 | Channel                    | Type                 | Description                              | Comment    |
 |----------------------------|----------------------|------------------------------------------|------------|
 | power                      | Switch               | Power                                    |            |
-| speed_level                | Dimmer               | Fan Speed                                |            |
-| natural_level              | Dimmer               | Natural Wind Speed                       | Setting a value switches to natural wind; 0 while in standard mode |
-| horizontal_swing           | Switch               | Oscillation                              |            |
-| horizontal_angle           | Number:Angle         | Oscillation Angle                        | Value mapping `["30"="30","60"="60","90"="90","120"="120"]` |
+| speedLevel                 | Dimmer               | Fan Speed                                |            |
+| naturalLevel               | Dimmer               | Natural Wind Speed                       | Setting a value switches to natural wind; 0 while in standard mode |
+| angleEnable                | Switch               | Oscillation                              |            |
+| angle                      | Number:Angle         | Oscillation Angle                        | Value mapping `["30"="30","60"="60","90"="90","120"="120"]` |
 | move                       | String               | Move Direction                           | Write only. Turns the fan head a step; only accepted while oscillation is off |
-| off_delay_time             | Number:Time          | Power-Off Timer                          |            |
+| poweroffTime               | Number:Time          | Power-Off Timer                          |            |
 | buzzer                     | Switch               | Notification Sound                       |            |
-| led_brightness             | Number               | Indicator Light                          | Value mapping `["0"="Bright","1"="Dim","2"="Off"]` |
+| led_b                      | Number               | Indicator Light                          | Value mapping `["0"="Bright","1"="Dim","2"="Off"]` |
 | child_lock                 | Switch               | Child Lock                               |            |
-| temperature                | Number:Temperature   | Temperature                              |            |
+| temp_dec                   | Number:Temperature   | Temperature                              |            |
 | humidity                   | Number:Dimensionless | Humidity                                 |            |
 | battery                    | Number               | Battery                                  |            |
-| ac_power                   | Switch               | AC Power                                 |            |
-| battery_charge             | String               | Battery Charge State                     |            |
+| acPower                    | Switch               | AC Power                                 |            |
+| mode                       | String               | Battery Charge State                     |            |
 | speed                      | Number               | Motor Speed                              |            |
-| use_time                   | Number:Time          | Run Time                                 |            |
+| usedhours                  | Number:Time          | Run Time                                 |            |
 
 ### Smartmi DC Pedestal Fan (<a name="zhimi-fan-v3">zhimi.fan.v3</a>) Channels
 
 | Channel                    | Type                 | Description                              | Comment    |
 |----------------------------|----------------------|------------------------------------------|------------|
 | power                      | Switch               | Power                                    |            |
-| speed_level                | Dimmer               | Fan Speed                                |            |
-| natural_level              | Dimmer               | Natural Wind Speed                       | Setting a value switches to natural wind; 0 while in standard mode |
-| horizontal_swing           | Switch               | Oscillation                              |            |
-| horizontal_angle           | Number:Angle         | Oscillation Angle                        | Value mapping `["30"="30","60"="60","90"="90","120"="120"]` |
+| speedLevel                 | Dimmer               | Fan Speed                                |            |
+| naturalLevel               | Dimmer               | Natural Wind Speed                       | Setting a value switches to natural wind; 0 while in standard mode |
+| angleEnable                | Switch               | Oscillation                              |            |
+| angle                      | Number:Angle         | Oscillation Angle                        | Value mapping `["30"="30","60"="60","90"="90","120"="120"]` |
 | move                       | String               | Move Direction                           | Write only. Turns the fan head a step; only accepted while oscillation is off |
-| off_delay_time             | Number:Time          | Power-Off Timer                          |            |
+| poweroffTime               | Number:Time          | Power-Off Timer                          |            |
 | buzzer                     | Switch               | Notification Sound                       |            |
-| led_brightness             | Number               | Indicator Light                          | Value mapping `["0"="Bright","1"="Dim","2"="Off"]` |
+| led_b                      | Number               | Indicator Light                          | Value mapping `["0"="Bright","1"="Dim","2"="Off"]` |
 | child_lock                 | Switch               | Child Lock                               |            |
-| temperature                | Number:Temperature   | Temperature                              |            |
+| temp_dec                   | Number:Temperature   | Temperature                              |            |
 | humidity                   | Number:Dimensionless | Humidity                                 |            |
 | battery                    | Number               | Battery                                  |            |
-| ac_power                   | Switch               | AC Power                                 |            |
-| battery_charge             | String               | Battery Charge State                     |            |
+| acPower                    | Switch               | AC Power                                 |            |
+| mode                       | String               | Battery Charge State                     |            |
 | speed                      | Number               | Motor Speed                              |            |
-| use_time                   | Number:Time          | Run Time                                 |            |
+| usedhours                  | Number:Time          | Run Time                                 |            |
 
 ### Smartmi Inverter Pedestal Fan (<a name="zhimi-fan-za1">zhimi.fan.za1</a>) Channels
 
 | Channel                    | Type                 | Description                              | Comment    |
 |----------------------------|----------------------|------------------------------------------|------------|
 | power                      | Switch               | Power                                    |            |
-| speed_level                | Dimmer               | Fan Speed                                |            |
-| natural_level              | Dimmer               | Natural Wind Speed                       | Setting a value switches to natural wind; 0 while in standard mode |
-| horizontal_swing           | Switch               | Oscillation                              |            |
-| horizontal_angle           | Number:Angle         | Oscillation Angle                        | Value mapping `["30"="30","60"="60","90"="90","120"="120"]` |
+| speedLevel                 | Dimmer               | Fan Speed                                |            |
+| naturalLevel               | Dimmer               | Natural Wind Speed                       | Setting a value switches to natural wind; 0 while in standard mode |
+| angleEnable                | Switch               | Oscillation                              |            |
+| angle                      | Number:Angle         | Oscillation Angle                        | Value mapping `["30"="30","60"="60","90"="90","120"="120"]` |
 | move                       | String               | Move Direction                           | Write only. Turns the fan head a step; only accepted while oscillation is off |
-| off_delay_time             | Number:Time          | Power-Off Timer                          |            |
+| poweroffTime               | Number:Time          | Power-Off Timer                          |            |
 | buzzer                     | Switch               | Notification Sound                       |            |
-| led_brightness             | Number               | Indicator Light                          | Value mapping `["0"="Bright","1"="Dim","2"="Off"]` |
+| led_b                      | Number               | Indicator Light                          | Value mapping `["0"="Bright","1"="Dim","2"="Off"]` |
 | child_lock                 | Switch               | Child Lock                               |            |
-| ac_power                   | Switch               | AC Power                                 |            |
+| acPower                    | Switch               | AC Power                                 |            |
 | speed                      | Number               | Motor Speed                              |            |
-| use_time                   | Number:Time          | Run Time                                 |            |
+| usedhours                  | Number:Time          | Run Time                                 |            |
 
 ### Smartmi Standing Fan 2 (<a name="zhimi-fan-za3">zhimi.fan.za3</a>) Channels
 
 | Channel                    | Type                 | Description                              | Comment    |
 |----------------------------|----------------------|------------------------------------------|------------|
 | power                      | Switch               | Power                                    |            |
-| speed_level                | Dimmer               | Fan Speed                                |            |
-| natural_level              | Dimmer               | Natural Wind Speed                       | Setting a value switches to natural wind; 0 while in standard mode |
-| horizontal_swing           | Switch               | Oscillation                              |            |
-| horizontal_angle           | Number:Angle         | Oscillation Angle                        | Value mapping `["30"="30","60"="60","90"="90","120"="120"]` |
+| speedLevel                 | Dimmer               | Fan Speed                                |            |
+| naturalLevel               | Dimmer               | Natural Wind Speed                       | Setting a value switches to natural wind; 0 while in standard mode |
+| angleEnable                | Switch               | Oscillation                              |            |
+| angle                      | Number:Angle         | Oscillation Angle                        | Value mapping `["30"="30","60"="60","90"="90","120"="120"]` |
 | move                       | String               | Move Direction                           | Write only. Turns the fan head a step; only accepted while oscillation is off |
-| off_delay_time             | Number:Time          | Power-Off Timer                          |            |
+| poweroffTime               | Number:Time          | Power-Off Timer                          |            |
 | buzzer                     | Switch               | Notification Sound                       |            |
-| led_brightness             | Number               | Indicator Light                          | Value mapping `["0"="Bright","1"="Dim","2"="Off"]` |
+| led_b                      | Number               | Indicator Light                          | Value mapping `["0"="Bright","1"="Dim","2"="Off"]` |
 | child_lock                 | Switch               | Child Lock                               |            |
 | speed                      | Number               | Motor Speed                              |            |
-| use_time                   | Number:Time          | Run Time                                 |            |
+| usedhours                  | Number:Time          | Run Time                                 |            |
 
 ### Smartmi Standing Fan 2S (<a name="zhimi-fan-za4">zhimi.fan.za4</a>) Channels
 
 | Channel                    | Type                 | Description                              | Comment    |
 |----------------------------|----------------------|------------------------------------------|------------|
 | power                      | Switch               | Power                                    |            |
-| speed_level                | Dimmer               | Fan Speed                                |            |
-| natural_level              | Dimmer               | Natural Wind Speed                       | Setting a value switches to natural wind; 0 while in standard mode |
-| horizontal_swing           | Switch               | Oscillation                              |            |
-| horizontal_angle           | Number:Angle         | Oscillation Angle                        | Value mapping `["30"="30","60"="60","90"="90","120"="120"]` |
+| speedLevel                 | Dimmer               | Fan Speed                                |            |
+| naturalLevel               | Dimmer               | Natural Wind Speed                       | Setting a value switches to natural wind; 0 while in standard mode |
+| angleEnable                | Switch               | Oscillation                              |            |
+| angle                      | Number:Angle         | Oscillation Angle                        | Value mapping `["30"="30","60"="60","90"="90","120"="120"]` |
 | move                       | String               | Move Direction                           | Write only. Turns the fan head a step; only accepted while oscillation is off |
-| off_delay_time             | Number:Time          | Power-Off Timer                          |            |
+| poweroffTime               | Number:Time          | Power-Off Timer                          |            |
 | buzzer                     | Switch               | Notification Sound                       |            |
-| led_brightness             | Number               | Indicator Light                          | Value mapping `["0"="Bright","1"="Dim","2"="Off"]` |
+| led_b                      | Number               | Indicator Light                          | Value mapping `["0"="Bright","1"="Dim","2"="Off"]` |
 | child_lock                 | Switch               | Child Lock                               |            |
 | speed                      | Number               | Motor Speed                              |            |
-| use_time                   | Number:Time          | Run Time                                 |            |
+| usedhours                  | Number:Time          | Run Time                                 |            |
 
 ### Smartmi Standing Fan 3 (<a name="zhimi-fan-za5">zhimi.fan.za5</a>) Channels
 
 | Channel                    | Type                 | Description                              | Comment    |
 |----------------------------|----------------------|------------------------------------------|------------|
-| power                      | Switch               | Power                                    |            |
+| on                         | Switch               | Power                                    |            |
 | speed_level                | Dimmer               | Fan Speed                                |            |
 | fan_level                  | Number               | Fan Level                                | Value mapping `["1"="Level 1","2"="Level 2","3"="Level 3","4"="Level 4"]` |
 | mode                       | Number               | Mode                                     | Value mapping `["0"="Natural","1"="Standard"]` |
 | horizontal_swing           | Switch               | Oscillation                              |            |
 | horizontal_angle           | Number:Angle         | Oscillation Angle                        | Value mapping `["30"="30","60"="60","90"="90","120"="120"]` |
 | move                       | String               | Move Direction                           | Write only. Turns the fan head a step; only accepted while oscillation is off |
-| off_delay_time             | Number:Time          | Power-Off Timer                          |            |
-| buzzer                     | Switch               | Notification Sound                       |            |
-| led_brightness             | Dimmer               | Screen Brightness                        |            |
-| child_lock                 | Switch               | Child Lock                               |            |
+| off_delay                  | Number:Time          | Power-Off Timer                          |            |
+| alarm                      | Switch               | Notification Sound                       |            |
+| brightness                 | Dimmer               | Screen Brightness                        |            |
+| physical_controls_locked   | Switch               | Child Lock                               |            |
 | anion                      | Switch               | Negative Ion Mode                        |            |
 | temperature_sensing        | Switch               | Temperature-Sensing Mode                 |            |
 | temperature                | Number:Temperature   | Temperature                              |            |
-| humidity                   | Number:Dimensionless | Humidity                                 |            |
-| speed                      | Number               | Motor Speed                              |            |
+| relative_humidity          | Number:Dimensionless | Humidity                                 |            |
+| speed_now                  | Number               | Motor Speed                              |            |
 
 ### Mi Smart Space Heater S (<a name="zhimi-heater-ma2">zhimi.heater.ma2</a>) Channels
 
@@ -14667,14 +14667,14 @@ note: Autogenerated example. Replace the id (fan) in the channel with your own. 
 
 ```java
 Group G_fan "Mi Smart Standing Fan 2 Lite" <status>
-Switch power "Power" (G_fan) {channel="miio:basic:fan:power"}
-Number fan_level "Fan Level" (G_fan) {channel="miio:basic:fan:fan_level"}
-Number mode "Mode" (G_fan) {channel="miio:basic:fan:mode"}
-Switch horizontal_swing "Oscillation" (G_fan) {channel="miio:basic:fan:horizontal_swing"}
-Number:Time off_delay_time "Power-Off Timer" (G_fan) {channel="miio:basic:fan:off_delay_time"}
-Switch buzzer "Notification Sound" (G_fan) {channel="miio:basic:fan:buzzer"}
-Switch led "Indicator Light" (G_fan) {channel="miio:basic:fan:led"}
-Switch child_lock "Child Lock" (G_fan) {channel="miio:basic:fan:child_lock"}
+Switch On "Power" (G_fan) {channel="miio:basic:fan:On"}
+Number FanLevel "Fan Level" (G_fan) {channel="miio:basic:fan:FanLevel"}
+Number Mode "Mode" (G_fan) {channel="miio:basic:fan:Mode"}
+Switch HorizontalSwing "Oscillation" (G_fan) {channel="miio:basic:fan:HorizontalSwing"}
+Number:Time OffDelayTime "Power-Off Timer" (G_fan) {channel="miio:basic:fan:OffDelayTime"}
+Switch Alarm "Notification Sound" (G_fan) {channel="miio:basic:fan:Alarm"}
+Switch Brightness "Indicator Light" (G_fan) {channel="miio:basic:fan:Brightness"}
+Switch PhysicalControlsLocked "Child Lock" (G_fan) {channel="miio:basic:fan:PhysicalControlsLocked"}
 ```
 
 ### Mi Smart Standing Fan 1X (dmaker.fan.p5) item file lines
@@ -14684,14 +14684,14 @@ note: Autogenerated example. Replace the id (fan) in the channel with your own. 
 ```java
 Group G_fan "Mi Smart Standing Fan 1X" <status>
 Switch power "Power" (G_fan) {channel="miio:basic:fan:power"}
-Dimmer speed_level "Fan Speed" (G_fan) {channel="miio:basic:fan:speed_level"}
+Dimmer speed "Fan Speed" (G_fan) {channel="miio:basic:fan:speed"}
 String mode "Mode" (G_fan) {channel="miio:basic:fan:mode"}
-Switch horizontal_swing "Oscillation" (G_fan) {channel="miio:basic:fan:horizontal_swing"}
-Number:Angle horizontal_angle "Oscillation Angle" (G_fan) {channel="miio:basic:fan:horizontal_angle"}
+Switch roll "Oscillation" (G_fan) {channel="miio:basic:fan:roll"}
+Number:Angle angle "Oscillation Angle" (G_fan) {channel="miio:basic:fan:angle"}
 String move "Move Direction" (G_fan) {channel="miio:basic:fan:move"}
-Number:Time off_delay_time "Power-Off Timer" (G_fan) {channel="miio:basic:fan:off_delay_time"}
-Switch buzzer "Notification Sound" (G_fan) {channel="miio:basic:fan:buzzer"}
-Switch led "Indicator Light" (G_fan) {channel="miio:basic:fan:led"}
+Number:Time timer "Power-Off Timer" (G_fan) {channel="miio:basic:fan:timer"}
+Switch beep "Notification Sound" (G_fan) {channel="miio:basic:fan:beep"}
+Switch light "Indicator Light" (G_fan) {channel="miio:basic:fan:light"}
 Switch child_lock "Child Lock" (G_fan) {channel="miio:basic:fan:child_lock"}
 ```
 
@@ -14701,14 +14701,14 @@ note: Autogenerated example. Replace the id (fan) in the channel with your own. 
 
 ```java
 Group G_fan "Mi Smart Standing Fan 1C" <status>
-Switch power "Power" (G_fan) {channel="miio:basic:fan:power"}
-Number fan_level "Fan Level" (G_fan) {channel="miio:basic:fan:fan_level"}
-Number mode "Mode" (G_fan) {channel="miio:basic:fan:mode"}
-Switch horizontal_swing "Oscillation" (G_fan) {channel="miio:basic:fan:horizontal_swing"}
-Number:Time off_delay_time "Power-Off Timer" (G_fan) {channel="miio:basic:fan:off_delay_time"}
-Switch buzzer "Notification Sound" (G_fan) {channel="miio:basic:fan:buzzer"}
-Switch led "Indicator Light" (G_fan) {channel="miio:basic:fan:led"}
-Switch child_lock "Child Lock" (G_fan) {channel="miio:basic:fan:child_lock"}
+Switch On "Power" (G_fan) {channel="miio:basic:fan:On"}
+Number FanLevel "Fan Level" (G_fan) {channel="miio:basic:fan:FanLevel"}
+Number Mode "Mode" (G_fan) {channel="miio:basic:fan:Mode"}
+Switch HorizontalSwing "Oscillation" (G_fan) {channel="miio:basic:fan:HorizontalSwing"}
+Number:Time OffDelayTime "Power-Off Timer" (G_fan) {channel="miio:basic:fan:OffDelayTime"}
+Switch Alarm "Notification Sound" (G_fan) {channel="miio:basic:fan:Alarm"}
+Switch Brightness "Indicator Light" (G_fan) {channel="miio:basic:fan:Brightness"}
+Switch PhysicalControlsLocked "Child Lock" (G_fan) {channel="miio:basic:fan:PhysicalControlsLocked"}
 ```
 
 ### Mi Smart Tower Fan (dmaker.fan.p9) item file lines
@@ -14717,17 +14717,17 @@ note: Autogenerated example. Replace the id (fan) in the channel with your own. 
 
 ```java
 Group G_fan "Mi Smart Tower Fan" <status>
-Switch power "Power" (G_fan) {channel="miio:basic:fan:power"}
-Dimmer speed_level "Fan Speed" (G_fan) {channel="miio:basic:fan:speed_level"}
-Number fan_level "Fan Level" (G_fan) {channel="miio:basic:fan:fan_level"}
-Number mode "Mode" (G_fan) {channel="miio:basic:fan:mode"}
-Switch horizontal_swing "Oscillation" (G_fan) {channel="miio:basic:fan:horizontal_swing"}
-Number:Angle horizontal_angle "Oscillation Angle" (G_fan) {channel="miio:basic:fan:horizontal_angle"}
-String move "Move Direction" (G_fan) {channel="miio:basic:fan:move"}
-Number:Time off_delay_time "Power-Off Timer" (G_fan) {channel="miio:basic:fan:off_delay_time"}
-Switch buzzer "Notification Sound" (G_fan) {channel="miio:basic:fan:buzzer"}
-Switch led "Indicator Light" (G_fan) {channel="miio:basic:fan:led"}
-Switch child_lock "Child Lock" (G_fan) {channel="miio:basic:fan:child_lock"}
+Switch On "Power" (G_fan) {channel="miio:basic:fan:On"}
+Dimmer SpeedLevel "Fan Speed" (G_fan) {channel="miio:basic:fan:SpeedLevel"}
+Number FanLevel "Fan Level" (G_fan) {channel="miio:basic:fan:FanLevel"}
+Number Mode "Mode" (G_fan) {channel="miio:basic:fan:Mode"}
+Switch HorizontalSwing "Oscillation" (G_fan) {channel="miio:basic:fan:HorizontalSwing"}
+Number:Angle HorizontalAngle "Oscillation Angle" (G_fan) {channel="miio:basic:fan:HorizontalAngle"}
+String MotorControl "Move Direction" (G_fan) {channel="miio:basic:fan:MotorControl"}
+Number:Time OffDelayTime "Power-Off Timer" (G_fan) {channel="miio:basic:fan:OffDelayTime"}
+Switch Alarm "Notification Sound" (G_fan) {channel="miio:basic:fan:Alarm"}
+Switch Brightness "Indicator Light" (G_fan) {channel="miio:basic:fan:Brightness"}
+Switch PhysicalControlsLocked "Child Lock" (G_fan) {channel="miio:basic:fan:PhysicalControlsLocked"}
 ```
 
 ### Mi Smart Standing Fan 2 (dmaker.fan.p10) item file lines
@@ -14736,17 +14736,17 @@ note: Autogenerated example. Replace the id (fan) in the channel with your own. 
 
 ```java
 Group G_fan "Mi Smart Standing Fan 2" <status>
-Switch power "Power" (G_fan) {channel="miio:basic:fan:power"}
+Switch on "Power" (G_fan) {channel="miio:basic:fan:on"}
 Dimmer speed_level "Fan Speed" (G_fan) {channel="miio:basic:fan:speed_level"}
 Number fan_level "Fan Level" (G_fan) {channel="miio:basic:fan:fan_level"}
 Number mode "Mode" (G_fan) {channel="miio:basic:fan:mode"}
 Switch horizontal_swing "Oscillation" (G_fan) {channel="miio:basic:fan:horizontal_swing"}
 Number:Angle horizontal_angle "Oscillation Angle" (G_fan) {channel="miio:basic:fan:horizontal_angle"}
-String move "Move Direction" (G_fan) {channel="miio:basic:fan:move"}
+String motor_control "Move Direction" (G_fan) {channel="miio:basic:fan:motor_control"}
 Number:Time off_delay_time "Power-Off Timer" (G_fan) {channel="miio:basic:fan:off_delay_time"}
-Switch buzzer "Notification Sound" (G_fan) {channel="miio:basic:fan:buzzer"}
-Switch led "Indicator Light" (G_fan) {channel="miio:basic:fan:led"}
-Switch child_lock "Child Lock" (G_fan) {channel="miio:basic:fan:child_lock"}
+Switch alarm "Notification Sound" (G_fan) {channel="miio:basic:fan:alarm"}
+Switch brightness "Indicator Light" (G_fan) {channel="miio:basic:fan:brightness"}
+Switch physical_controls_locked "Child Lock" (G_fan) {channel="miio:basic:fan:physical_controls_locked"}
 ```
 
 ### Mi Smart Standing Fan Pro (dmaker.fan.p11) item file lines
@@ -14755,17 +14755,17 @@ note: Autogenerated example. Replace the id (fan) in the channel with your own. 
 
 ```java
 Group G_fan "Mi Smart Standing Fan Pro" <status>
-Switch power "Power" (G_fan) {channel="miio:basic:fan:power"}
-Dimmer speed_level "Fan Speed" (G_fan) {channel="miio:basic:fan:speed_level"}
+Switch on "Power" (G_fan) {channel="miio:basic:fan:on"}
+Dimmer status "Fan Speed" (G_fan) {channel="miio:basic:fan:status"}
 Number fan_level "Fan Level" (G_fan) {channel="miio:basic:fan:fan_level"}
 Number mode "Mode" (G_fan) {channel="miio:basic:fan:mode"}
 Switch horizontal_swing "Oscillation" (G_fan) {channel="miio:basic:fan:horizontal_swing"}
 Number:Angle horizontal_angle "Oscillation Angle" (G_fan) {channel="miio:basic:fan:horizontal_angle"}
 String move "Move Direction" (G_fan) {channel="miio:basic:fan:move"}
 Number:Time off_delay_time "Power-Off Timer" (G_fan) {channel="miio:basic:fan:off_delay_time"}
-Switch buzzer "Notification Sound" (G_fan) {channel="miio:basic:fan:buzzer"}
-Switch led "Indicator Light" (G_fan) {channel="miio:basic:fan:led"}
-Switch child_lock "Child Lock" (G_fan) {channel="miio:basic:fan:child_lock"}
+Switch alarm "Notification Sound" (G_fan) {channel="miio:basic:fan:alarm"}
+Switch on1 "Indicator Light" (G_fan) {channel="miio:basic:fan:on1"}
+Switch physical_controls_locked "Child Lock" (G_fan) {channel="miio:basic:fan:physical_controls_locked"}
 Number fault "Device Fault" (G_fan) {channel="miio:basic:fan:fault"}
 ```
 
@@ -14775,17 +14775,17 @@ note: Autogenerated example. Replace the id (fan) in the channel with your own. 
 
 ```java
 Group G_fan "Mi Smart Standing Fan Pro" <status>
-Switch power "Power" (G_fan) {channel="miio:basic:fan:power"}
-Dimmer speed_level "Fan Speed" (G_fan) {channel="miio:basic:fan:speed_level"}
+Switch on "Power" (G_fan) {channel="miio:basic:fan:on"}
+Dimmer status "Fan Speed" (G_fan) {channel="miio:basic:fan:status"}
 Number fan_level "Fan Level" (G_fan) {channel="miio:basic:fan:fan_level"}
 Number mode "Mode" (G_fan) {channel="miio:basic:fan:mode"}
 Switch horizontal_swing "Oscillation" (G_fan) {channel="miio:basic:fan:horizontal_swing"}
 Number:Angle horizontal_angle "Oscillation Angle" (G_fan) {channel="miio:basic:fan:horizontal_angle"}
 String move "Move Direction" (G_fan) {channel="miio:basic:fan:move"}
 Number:Time off_delay_time "Power-Off Timer" (G_fan) {channel="miio:basic:fan:off_delay_time"}
-Switch buzzer "Notification Sound" (G_fan) {channel="miio:basic:fan:buzzer"}
-Switch led "Indicator Light" (G_fan) {channel="miio:basic:fan:led"}
-Switch child_lock "Child Lock" (G_fan) {channel="miio:basic:fan:child_lock"}
+Switch alarm "Notification Sound" (G_fan) {channel="miio:basic:fan:alarm"}
+Switch on1 "Indicator Light" (G_fan) {channel="miio:basic:fan:on1"}
+Switch physical_controls_locked "Child Lock" (G_fan) {channel="miio:basic:fan:physical_controls_locked"}
 Number fault "Device Fault" (G_fan) {channel="miio:basic:fan:fault"}
 ```
 
@@ -14795,17 +14795,17 @@ note: Autogenerated example. Replace the id (fan) in the channel with your own. 
 
 ```java
 Group G_fan "Mi Smart Standing Fan 2" <status>
-Switch power "Power" (G_fan) {channel="miio:basic:fan:power"}
+Switch on "Power" (G_fan) {channel="miio:basic:fan:on"}
 Dimmer speed_level "Fan Speed" (G_fan) {channel="miio:basic:fan:speed_level"}
 Number fan_level "Fan Level" (G_fan) {channel="miio:basic:fan:fan_level"}
 Number mode "Mode" (G_fan) {channel="miio:basic:fan:mode"}
 Switch horizontal_swing "Oscillation" (G_fan) {channel="miio:basic:fan:horizontal_swing"}
 Number:Angle horizontal_angle "Oscillation Angle" (G_fan) {channel="miio:basic:fan:horizontal_angle"}
-String move "Move Direction" (G_fan) {channel="miio:basic:fan:move"}
+String motor_control "Move Direction" (G_fan) {channel="miio:basic:fan:motor_control"}
 Number:Time off_delay_time "Power-Off Timer" (G_fan) {channel="miio:basic:fan:off_delay_time"}
-Switch buzzer "Notification Sound" (G_fan) {channel="miio:basic:fan:buzzer"}
-Switch led "Indicator Light" (G_fan) {channel="miio:basic:fan:led"}
-Switch child_lock "Child Lock" (G_fan) {channel="miio:basic:fan:child_lock"}
+Switch alarm "Notification Sound" (G_fan) {channel="miio:basic:fan:alarm"}
+Switch brightness "Indicator Light" (G_fan) {channel="miio:basic:fan:brightness"}
+Switch physical_controls_locked "Child Lock" (G_fan) {channel="miio:basic:fan:physical_controls_locked"}
 ```
 
 ### Mijia Smart Standing Air Circulation Fan (dmaker.fan.p28) item file lines
@@ -14841,17 +14841,17 @@ note: Autogenerated example. Replace the id (fan) in the channel with your own. 
 
 ```java
 Group G_fan "Xiaomi Smart Standing Fan 2 Pro" <status>
-Switch power "Power" (G_fan) {channel="miio:basic:fan:power"}
-Dimmer speed_level "Fan Speed" (G_fan) {channel="miio:basic:fan:speed_level"}
+Switch on "Power" (G_fan) {channel="miio:basic:fan:on"}
+Dimmer status "Fan Speed" (G_fan) {channel="miio:basic:fan:status"}
 Number fan_level "Fan Level" (G_fan) {channel="miio:basic:fan:fan_level"}
 Number mode "Mode" (G_fan) {channel="miio:basic:fan:mode"}
 Switch horizontal_swing "Oscillation" (G_fan) {channel="miio:basic:fan:horizontal_swing"}
 Number:Angle horizontal_angle "Oscillation Angle" (G_fan) {channel="miio:basic:fan:horizontal_angle"}
 String move "Move Direction" (G_fan) {channel="miio:basic:fan:move"}
 Number:Time off_delay_time "Power-Off Timer" (G_fan) {channel="miio:basic:fan:off_delay_time"}
-Switch buzzer "Notification Sound" (G_fan) {channel="miio:basic:fan:buzzer"}
-Switch led "Indicator Light" (G_fan) {channel="miio:basic:fan:led"}
-Switch child_lock "Child Lock" (G_fan) {channel="miio:basic:fan:child_lock"}
+Switch alarm "Notification Sound" (G_fan) {channel="miio:basic:fan:alarm"}
+Switch on1 "Indicator Light" (G_fan) {channel="miio:basic:fan:on1"}
+Switch physical_controls_locked "Child Lock" (G_fan) {channel="miio:basic:fan:physical_controls_locked"}
 Number fault "Device Fault" (G_fan) {channel="miio:basic:fan:fault"}
 ```
 
@@ -14861,17 +14861,17 @@ note: Autogenerated example. Replace the id (fan) in the channel with your own. 
 
 ```java
 Group G_fan "Xiaomi Smart Tower Fan" <status>
-Switch power "Power" (G_fan) {channel="miio:basic:fan:power"}
-Dimmer speed_level "Fan Speed" (G_fan) {channel="miio:basic:fan:speed_level"}
-Number fan_level "Fan Level" (G_fan) {channel="miio:basic:fan:fan_level"}
-Number mode "Mode" (G_fan) {channel="miio:basic:fan:mode"}
-Switch horizontal_swing "Oscillation" (G_fan) {channel="miio:basic:fan:horizontal_swing"}
-Number:Angle horizontal_angle "Oscillation Angle" (G_fan) {channel="miio:basic:fan:horizontal_angle"}
-String move "Move Direction" (G_fan) {channel="miio:basic:fan:move"}
-Number:Time off_delay_time "Power-Off Timer" (G_fan) {channel="miio:basic:fan:off_delay_time"}
-Switch buzzer "Notification Sound" (G_fan) {channel="miio:basic:fan:buzzer"}
-Switch led "Indicator Light" (G_fan) {channel="miio:basic:fan:led"}
-Switch child_lock "Child Lock" (G_fan) {channel="miio:basic:fan:child_lock"}
+Switch On "Power" (G_fan) {channel="miio:basic:fan:On"}
+Dimmer SpeedLevel "Fan Speed" (G_fan) {channel="miio:basic:fan:SpeedLevel"}
+Number FanLevel "Fan Level" (G_fan) {channel="miio:basic:fan:FanLevel"}
+Number Mode "Mode" (G_fan) {channel="miio:basic:fan:Mode"}
+Switch HorizontalSwing "Oscillation" (G_fan) {channel="miio:basic:fan:HorizontalSwing"}
+Number:Angle HorizontalAngle "Oscillation Angle" (G_fan) {channel="miio:basic:fan:HorizontalAngle"}
+String MotorControl "Move Direction" (G_fan) {channel="miio:basic:fan:MotorControl"}
+Number:Time OffDelayTime "Power-Off Timer" (G_fan) {channel="miio:basic:fan:OffDelayTime"}
+Switch Alarm "Notification Sound" (G_fan) {channel="miio:basic:fan:Alarm"}
+Switch Brightness "Indicator Light" (G_fan) {channel="miio:basic:fan:Brightness"}
+Switch PhysicalControlsLocked "Child Lock" (G_fan) {channel="miio:basic:fan:PhysicalControlsLocked"}
 ```
 
 ### Mijia Smart Tower Fan 2 (dmaker.fan.p45) item file lines
@@ -28389,18 +28389,18 @@ note: Autogenerated example. Replace the id (fan) in the channel with your own. 
 ```java
 Group G_fan "Mi Standing Fan" <status>
 Switch power "Power" (G_fan) {channel="miio:basic:fan:power"}
-Dimmer speed_level "Fan Speed" (G_fan) {channel="miio:basic:fan:speed_level"}
-Dimmer natural_level "Natural Wind Speed" (G_fan) {channel="miio:basic:fan:natural_level"}
-Switch horizontal_swing "Oscillation" (G_fan) {channel="miio:basic:fan:horizontal_swing"}
-Number:Angle horizontal_angle "Oscillation Angle" (G_fan) {channel="miio:basic:fan:horizontal_angle"}
+Dimmer speedLevel "Fan Speed" (G_fan) {channel="miio:basic:fan:speedLevel"}
+Dimmer naturalLevel "Natural Wind Speed" (G_fan) {channel="miio:basic:fan:naturalLevel"}
+Switch angleEnable "Oscillation" (G_fan) {channel="miio:basic:fan:angleEnable"}
+Number:Angle angle "Oscillation Angle" (G_fan) {channel="miio:basic:fan:angle"}
 String move "Move Direction" (G_fan) {channel="miio:basic:fan:move"}
-Number:Time off_delay_time "Power-Off Timer" (G_fan) {channel="miio:basic:fan:off_delay_time"}
+Number:Time poweroffTime "Power-Off Timer" (G_fan) {channel="miio:basic:fan:poweroffTime"}
 Switch buzzer "Notification Sound" (G_fan) {channel="miio:basic:fan:buzzer"}
-Number led_brightness "Indicator Light" (G_fan) {channel="miio:basic:fan:led_brightness"}
+Number led_b "Indicator Light" (G_fan) {channel="miio:basic:fan:led_b"}
 Switch child_lock "Child Lock" (G_fan) {channel="miio:basic:fan:child_lock"}
-Switch ac_power "AC Power" (G_fan) {channel="miio:basic:fan:ac_power"}
+Switch acPower "AC Power" (G_fan) {channel="miio:basic:fan:acPower"}
 Number speed "Motor Speed" (G_fan) {channel="miio:basic:fan:speed"}
-Number:Time use_time "Run Time" (G_fan) {channel="miio:basic:fan:use_time"}
+Number:Time usedhours "Run Time" (G_fan) {channel="miio:basic:fan:usedhours"}
 ```
 
 ### Mi Smart Fan (zhimi.fan.v1) item file lines
@@ -28410,22 +28410,22 @@ note: Autogenerated example. Replace the id (fan) in the channel with your own. 
 ```java
 Group G_fan "Mi Smart Fan" <status>
 Switch power "Power" (G_fan) {channel="miio:basic:fan:power"}
-Dimmer speed_level "Fan Speed" (G_fan) {channel="miio:basic:fan:speed_level"}
-Dimmer natural_level "Natural Wind Speed" (G_fan) {channel="miio:basic:fan:natural_level"}
-Switch horizontal_swing "Oscillation" (G_fan) {channel="miio:basic:fan:horizontal_swing"}
-Number:Angle horizontal_angle "Oscillation Angle" (G_fan) {channel="miio:basic:fan:horizontal_angle"}
+Dimmer speedLevel "Fan Speed" (G_fan) {channel="miio:basic:fan:speedLevel"}
+Dimmer naturalLevel "Natural Wind Speed" (G_fan) {channel="miio:basic:fan:naturalLevel"}
+Switch angleEnable "Oscillation" (G_fan) {channel="miio:basic:fan:angleEnable"}
+Number:Angle angle "Oscillation Angle" (G_fan) {channel="miio:basic:fan:angle"}
 String move "Move Direction" (G_fan) {channel="miio:basic:fan:move"}
-Number:Time off_delay_time "Power-Off Timer" (G_fan) {channel="miio:basic:fan:off_delay_time"}
+Number:Time poweroffTime "Power-Off Timer" (G_fan) {channel="miio:basic:fan:poweroffTime"}
 Switch buzzer "Notification Sound" (G_fan) {channel="miio:basic:fan:buzzer"}
-Number led_brightness "Indicator Light" (G_fan) {channel="miio:basic:fan:led_brightness"}
+Number led_b "Indicator Light" (G_fan) {channel="miio:basic:fan:led_b"}
 Switch child_lock "Child Lock" (G_fan) {channel="miio:basic:fan:child_lock"}
-Number:Temperature temperature "Temperature" (G_fan) {channel="miio:basic:fan:temperature"}
+Number:Temperature temp_dec "Temperature" (G_fan) {channel="miio:basic:fan:temp_dec"}
 Number:Dimensionless humidity "Humidity" (G_fan) {channel="miio:basic:fan:humidity"}
 Number battery "Battery" (G_fan) {channel="miio:basic:fan:battery"}
-Switch ac_power "AC Power" (G_fan) {channel="miio:basic:fan:ac_power"}
-String battery_charge "Battery Charge State" (G_fan) {channel="miio:basic:fan:battery_charge"}
+Switch acPower "AC Power" (G_fan) {channel="miio:basic:fan:acPower"}
+String mode "Battery Charge State" (G_fan) {channel="miio:basic:fan:mode"}
 Number speed "Motor Speed" (G_fan) {channel="miio:basic:fan:speed"}
-Number:Time use_time "Run Time" (G_fan) {channel="miio:basic:fan:use_time"}
+Number:Time usedhours "Run Time" (G_fan) {channel="miio:basic:fan:usedhours"}
 ```
 
 ### Smartmi DC Pedestal Fan (zhimi.fan.v2) item file lines
@@ -28435,22 +28435,22 @@ note: Autogenerated example. Replace the id (fan) in the channel with your own. 
 ```java
 Group G_fan "Smartmi DC Pedestal Fan" <status>
 Switch power "Power" (G_fan) {channel="miio:basic:fan:power"}
-Dimmer speed_level "Fan Speed" (G_fan) {channel="miio:basic:fan:speed_level"}
-Dimmer natural_level "Natural Wind Speed" (G_fan) {channel="miio:basic:fan:natural_level"}
-Switch horizontal_swing "Oscillation" (G_fan) {channel="miio:basic:fan:horizontal_swing"}
-Number:Angle horizontal_angle "Oscillation Angle" (G_fan) {channel="miio:basic:fan:horizontal_angle"}
+Dimmer speedLevel "Fan Speed" (G_fan) {channel="miio:basic:fan:speedLevel"}
+Dimmer naturalLevel "Natural Wind Speed" (G_fan) {channel="miio:basic:fan:naturalLevel"}
+Switch angleEnable "Oscillation" (G_fan) {channel="miio:basic:fan:angleEnable"}
+Number:Angle angle "Oscillation Angle" (G_fan) {channel="miio:basic:fan:angle"}
 String move "Move Direction" (G_fan) {channel="miio:basic:fan:move"}
-Number:Time off_delay_time "Power-Off Timer" (G_fan) {channel="miio:basic:fan:off_delay_time"}
+Number:Time poweroffTime "Power-Off Timer" (G_fan) {channel="miio:basic:fan:poweroffTime"}
 Switch buzzer "Notification Sound" (G_fan) {channel="miio:basic:fan:buzzer"}
-Number led_brightness "Indicator Light" (G_fan) {channel="miio:basic:fan:led_brightness"}
+Number led_b "Indicator Light" (G_fan) {channel="miio:basic:fan:led_b"}
 Switch child_lock "Child Lock" (G_fan) {channel="miio:basic:fan:child_lock"}
-Number:Temperature temperature "Temperature" (G_fan) {channel="miio:basic:fan:temperature"}
+Number:Temperature temp_dec "Temperature" (G_fan) {channel="miio:basic:fan:temp_dec"}
 Number:Dimensionless humidity "Humidity" (G_fan) {channel="miio:basic:fan:humidity"}
 Number battery "Battery" (G_fan) {channel="miio:basic:fan:battery"}
-Switch ac_power "AC Power" (G_fan) {channel="miio:basic:fan:ac_power"}
-String battery_charge "Battery Charge State" (G_fan) {channel="miio:basic:fan:battery_charge"}
+Switch acPower "AC Power" (G_fan) {channel="miio:basic:fan:acPower"}
+String mode "Battery Charge State" (G_fan) {channel="miio:basic:fan:mode"}
 Number speed "Motor Speed" (G_fan) {channel="miio:basic:fan:speed"}
-Number:Time use_time "Run Time" (G_fan) {channel="miio:basic:fan:use_time"}
+Number:Time usedhours "Run Time" (G_fan) {channel="miio:basic:fan:usedhours"}
 ```
 
 ### Smartmi DC Pedestal Fan (zhimi.fan.v3) item file lines
@@ -28460,22 +28460,22 @@ note: Autogenerated example. Replace the id (fan) in the channel with your own. 
 ```java
 Group G_fan "Smartmi DC Pedestal Fan" <status>
 Switch power "Power" (G_fan) {channel="miio:basic:fan:power"}
-Dimmer speed_level "Fan Speed" (G_fan) {channel="miio:basic:fan:speed_level"}
-Dimmer natural_level "Natural Wind Speed" (G_fan) {channel="miio:basic:fan:natural_level"}
-Switch horizontal_swing "Oscillation" (G_fan) {channel="miio:basic:fan:horizontal_swing"}
-Number:Angle horizontal_angle "Oscillation Angle" (G_fan) {channel="miio:basic:fan:horizontal_angle"}
+Dimmer speedLevel "Fan Speed" (G_fan) {channel="miio:basic:fan:speedLevel"}
+Dimmer naturalLevel "Natural Wind Speed" (G_fan) {channel="miio:basic:fan:naturalLevel"}
+Switch angleEnable "Oscillation" (G_fan) {channel="miio:basic:fan:angleEnable"}
+Number:Angle angle "Oscillation Angle" (G_fan) {channel="miio:basic:fan:angle"}
 String move "Move Direction" (G_fan) {channel="miio:basic:fan:move"}
-Number:Time off_delay_time "Power-Off Timer" (G_fan) {channel="miio:basic:fan:off_delay_time"}
+Number:Time poweroffTime "Power-Off Timer" (G_fan) {channel="miio:basic:fan:poweroffTime"}
 Switch buzzer "Notification Sound" (G_fan) {channel="miio:basic:fan:buzzer"}
-Number led_brightness "Indicator Light" (G_fan) {channel="miio:basic:fan:led_brightness"}
+Number led_b "Indicator Light" (G_fan) {channel="miio:basic:fan:led_b"}
 Switch child_lock "Child Lock" (G_fan) {channel="miio:basic:fan:child_lock"}
-Number:Temperature temperature "Temperature" (G_fan) {channel="miio:basic:fan:temperature"}
+Number:Temperature temp_dec "Temperature" (G_fan) {channel="miio:basic:fan:temp_dec"}
 Number:Dimensionless humidity "Humidity" (G_fan) {channel="miio:basic:fan:humidity"}
 Number battery "Battery" (G_fan) {channel="miio:basic:fan:battery"}
-Switch ac_power "AC Power" (G_fan) {channel="miio:basic:fan:ac_power"}
-String battery_charge "Battery Charge State" (G_fan) {channel="miio:basic:fan:battery_charge"}
+Switch acPower "AC Power" (G_fan) {channel="miio:basic:fan:acPower"}
+String mode "Battery Charge State" (G_fan) {channel="miio:basic:fan:mode"}
 Number speed "Motor Speed" (G_fan) {channel="miio:basic:fan:speed"}
-Number:Time use_time "Run Time" (G_fan) {channel="miio:basic:fan:use_time"}
+Number:Time usedhours "Run Time" (G_fan) {channel="miio:basic:fan:usedhours"}
 ```
 
 ### Smartmi Inverter Pedestal Fan (zhimi.fan.za1) item file lines
@@ -28485,18 +28485,18 @@ note: Autogenerated example. Replace the id (fan) in the channel with your own. 
 ```java
 Group G_fan "Smartmi Inverter Pedestal Fan" <status>
 Switch power "Power" (G_fan) {channel="miio:basic:fan:power"}
-Dimmer speed_level "Fan Speed" (G_fan) {channel="miio:basic:fan:speed_level"}
-Dimmer natural_level "Natural Wind Speed" (G_fan) {channel="miio:basic:fan:natural_level"}
-Switch horizontal_swing "Oscillation" (G_fan) {channel="miio:basic:fan:horizontal_swing"}
-Number:Angle horizontal_angle "Oscillation Angle" (G_fan) {channel="miio:basic:fan:horizontal_angle"}
+Dimmer speedLevel "Fan Speed" (G_fan) {channel="miio:basic:fan:speedLevel"}
+Dimmer naturalLevel "Natural Wind Speed" (G_fan) {channel="miio:basic:fan:naturalLevel"}
+Switch angleEnable "Oscillation" (G_fan) {channel="miio:basic:fan:angleEnable"}
+Number:Angle angle "Oscillation Angle" (G_fan) {channel="miio:basic:fan:angle"}
 String move "Move Direction" (G_fan) {channel="miio:basic:fan:move"}
-Number:Time off_delay_time "Power-Off Timer" (G_fan) {channel="miio:basic:fan:off_delay_time"}
+Number:Time poweroffTime "Power-Off Timer" (G_fan) {channel="miio:basic:fan:poweroffTime"}
 Switch buzzer "Notification Sound" (G_fan) {channel="miio:basic:fan:buzzer"}
-Number led_brightness "Indicator Light" (G_fan) {channel="miio:basic:fan:led_brightness"}
+Number led_b "Indicator Light" (G_fan) {channel="miio:basic:fan:led_b"}
 Switch child_lock "Child Lock" (G_fan) {channel="miio:basic:fan:child_lock"}
-Switch ac_power "AC Power" (G_fan) {channel="miio:basic:fan:ac_power"}
+Switch acPower "AC Power" (G_fan) {channel="miio:basic:fan:acPower"}
 Number speed "Motor Speed" (G_fan) {channel="miio:basic:fan:speed"}
-Number:Time use_time "Run Time" (G_fan) {channel="miio:basic:fan:use_time"}
+Number:Time usedhours "Run Time" (G_fan) {channel="miio:basic:fan:usedhours"}
 ```
 
 ### Smartmi Standing Fan 2 (zhimi.fan.za3) item file lines
@@ -28506,17 +28506,17 @@ note: Autogenerated example. Replace the id (fan) in the channel with your own. 
 ```java
 Group G_fan "Smartmi Standing Fan 2" <status>
 Switch power "Power" (G_fan) {channel="miio:basic:fan:power"}
-Dimmer speed_level "Fan Speed" (G_fan) {channel="miio:basic:fan:speed_level"}
-Dimmer natural_level "Natural Wind Speed" (G_fan) {channel="miio:basic:fan:natural_level"}
-Switch horizontal_swing "Oscillation" (G_fan) {channel="miio:basic:fan:horizontal_swing"}
-Number:Angle horizontal_angle "Oscillation Angle" (G_fan) {channel="miio:basic:fan:horizontal_angle"}
+Dimmer speedLevel "Fan Speed" (G_fan) {channel="miio:basic:fan:speedLevel"}
+Dimmer naturalLevel "Natural Wind Speed" (G_fan) {channel="miio:basic:fan:naturalLevel"}
+Switch angleEnable "Oscillation" (G_fan) {channel="miio:basic:fan:angleEnable"}
+Number:Angle angle "Oscillation Angle" (G_fan) {channel="miio:basic:fan:angle"}
 String move "Move Direction" (G_fan) {channel="miio:basic:fan:move"}
-Number:Time off_delay_time "Power-Off Timer" (G_fan) {channel="miio:basic:fan:off_delay_time"}
+Number:Time poweroffTime "Power-Off Timer" (G_fan) {channel="miio:basic:fan:poweroffTime"}
 Switch buzzer "Notification Sound" (G_fan) {channel="miio:basic:fan:buzzer"}
-Number led_brightness "Indicator Light" (G_fan) {channel="miio:basic:fan:led_brightness"}
+Number led_b "Indicator Light" (G_fan) {channel="miio:basic:fan:led_b"}
 Switch child_lock "Child Lock" (G_fan) {channel="miio:basic:fan:child_lock"}
 Number speed "Motor Speed" (G_fan) {channel="miio:basic:fan:speed"}
-Number:Time use_time "Run Time" (G_fan) {channel="miio:basic:fan:use_time"}
+Number:Time usedhours "Run Time" (G_fan) {channel="miio:basic:fan:usedhours"}
 ```
 
 ### Smartmi Standing Fan 2S (zhimi.fan.za4) item file lines
@@ -28526,17 +28526,17 @@ note: Autogenerated example. Replace the id (fan) in the channel with your own. 
 ```java
 Group G_fan "Smartmi Standing Fan 2S" <status>
 Switch power "Power" (G_fan) {channel="miio:basic:fan:power"}
-Dimmer speed_level "Fan Speed" (G_fan) {channel="miio:basic:fan:speed_level"}
-Dimmer natural_level "Natural Wind Speed" (G_fan) {channel="miio:basic:fan:natural_level"}
-Switch horizontal_swing "Oscillation" (G_fan) {channel="miio:basic:fan:horizontal_swing"}
-Number:Angle horizontal_angle "Oscillation Angle" (G_fan) {channel="miio:basic:fan:horizontal_angle"}
+Dimmer speedLevel "Fan Speed" (G_fan) {channel="miio:basic:fan:speedLevel"}
+Dimmer naturalLevel "Natural Wind Speed" (G_fan) {channel="miio:basic:fan:naturalLevel"}
+Switch angleEnable "Oscillation" (G_fan) {channel="miio:basic:fan:angleEnable"}
+Number:Angle angle "Oscillation Angle" (G_fan) {channel="miio:basic:fan:angle"}
 String move "Move Direction" (G_fan) {channel="miio:basic:fan:move"}
-Number:Time off_delay_time "Power-Off Timer" (G_fan) {channel="miio:basic:fan:off_delay_time"}
+Number:Time poweroffTime "Power-Off Timer" (G_fan) {channel="miio:basic:fan:poweroffTime"}
 Switch buzzer "Notification Sound" (G_fan) {channel="miio:basic:fan:buzzer"}
-Number led_brightness "Indicator Light" (G_fan) {channel="miio:basic:fan:led_brightness"}
+Number led_b "Indicator Light" (G_fan) {channel="miio:basic:fan:led_b"}
 Switch child_lock "Child Lock" (G_fan) {channel="miio:basic:fan:child_lock"}
 Number speed "Motor Speed" (G_fan) {channel="miio:basic:fan:speed"}
-Number:Time use_time "Run Time" (G_fan) {channel="miio:basic:fan:use_time"}
+Number:Time usedhours "Run Time" (G_fan) {channel="miio:basic:fan:usedhours"}
 ```
 
 ### Smartmi Standing Fan 3 (zhimi.fan.za5) item file lines
@@ -28545,22 +28545,22 @@ note: Autogenerated example. Replace the id (fan) in the channel with your own. 
 
 ```java
 Group G_fan "Smartmi Standing Fan 3" <status>
-Switch power "Power" (G_fan) {channel="miio:basic:fan:power"}
+Switch on "Power" (G_fan) {channel="miio:basic:fan:on"}
 Dimmer speed_level "Fan Speed" (G_fan) {channel="miio:basic:fan:speed_level"}
 Number fan_level "Fan Level" (G_fan) {channel="miio:basic:fan:fan_level"}
 Number mode "Mode" (G_fan) {channel="miio:basic:fan:mode"}
 Switch horizontal_swing "Oscillation" (G_fan) {channel="miio:basic:fan:horizontal_swing"}
 Number:Angle horizontal_angle "Oscillation Angle" (G_fan) {channel="miio:basic:fan:horizontal_angle"}
 String move "Move Direction" (G_fan) {channel="miio:basic:fan:move"}
-Number:Time off_delay_time "Power-Off Timer" (G_fan) {channel="miio:basic:fan:off_delay_time"}
-Switch buzzer "Notification Sound" (G_fan) {channel="miio:basic:fan:buzzer"}
-Dimmer led_brightness "Screen Brightness" (G_fan) {channel="miio:basic:fan:led_brightness"}
-Switch child_lock "Child Lock" (G_fan) {channel="miio:basic:fan:child_lock"}
+Number:Time off_delay "Power-Off Timer" (G_fan) {channel="miio:basic:fan:off_delay"}
+Switch alarm "Notification Sound" (G_fan) {channel="miio:basic:fan:alarm"}
+Dimmer brightness "Screen Brightness" (G_fan) {channel="miio:basic:fan:brightness"}
+Switch physical_controls_locked "Child Lock" (G_fan) {channel="miio:basic:fan:physical_controls_locked"}
 Switch anion "Negative Ion Mode" (G_fan) {channel="miio:basic:fan:anion"}
 Switch temperature_sensing "Temperature-Sensing Mode" (G_fan) {channel="miio:basic:fan:temperature_sensing"}
 Number:Temperature temperature "Temperature" (G_fan) {channel="miio:basic:fan:temperature"}
-Number:Dimensionless humidity "Humidity" (G_fan) {channel="miio:basic:fan:humidity"}
-Number speed "Motor Speed" (G_fan) {channel="miio:basic:fan:speed"}
+Number:Dimensionless relative_humidity "Humidity" (G_fan) {channel="miio:basic:fan:relative_humidity"}
+Number speed_now "Motor Speed" (G_fan) {channel="miio:basic:fan:speed_now"}
 ```
 
 ### Mi Smart Space Heater S (zhimi.heater.ma2) item file lines

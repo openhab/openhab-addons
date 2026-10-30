@@ -13,7 +13,7 @@
 				"siid": 2,
 				"piid": 1,
 				"friendlyName": "Power",
-				"channel": "power",
+				"channel": "On",
 				"type": "Switch",
 				"refresh": true,
 				"actions": [
@@ -33,7 +33,7 @@
 				"siid": 2,
 				"piid": 2,
 				"friendlyName": "Fan Level",
-				"channel": "fan_level",
+				"channel": "FanLevel",
 				"type": "Number",
 				"stateDescription": {
 					"options": [
@@ -70,7 +70,7 @@
 				"siid": 2,
 				"piid": 7,
 				"friendlyName": "Mode",
-				"channel": "mode",
+				"channel": "Mode",
 				"type": "Number",
 				"stateDescription": {
 					"options": [
@@ -103,7 +103,7 @@
 				"siid": 2,
 				"piid": 3,
 				"friendlyName": "Oscillation",
-				"channel": "horizontal_swing",
+				"channel": "HorizontalSwing",
 				"type": "Switch",
 				"refresh": true,
 				"actions": [
@@ -123,7 +123,7 @@
 				"siid": 2,
 				"piid": 10,
 				"friendlyName": "Power-Off Timer",
-				"channel": "off_delay_time",
+				"channel": "OffDelayTime",
 				"type": "Number:Time",
 				"unit": "minutes",
 				"stateDescription": {
@@ -150,7 +150,7 @@
 				"siid": 2,
 				"piid": 11,
 				"friendlyName": "Notification Sound",
-				"channel": "buzzer",
+				"channel": "Alarm",
 				"type": "Switch",
 				"refresh": true,
 				"actions": [
@@ -170,7 +170,7 @@
 				"siid": 2,
 				"piid": 12,
 				"friendlyName": "Indicator Light",
-				"channel": "led",
+				"channel": "Brightness",
 				"type": "Switch",
 				"refresh": true,
 				"actions": [
@@ -190,7 +190,7 @@
 				"siid": 3,
 				"piid": 1,
 				"friendlyName": "Child Lock",
-				"channel": "child_lock",
+				"channel": "PhysicalControlsLocked",
 				"type": "Switch",
 				"refresh": true,
 				"actions": [

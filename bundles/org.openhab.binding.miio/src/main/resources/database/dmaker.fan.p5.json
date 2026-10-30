@@ -26,7 +26,7 @@
 			{
 				"property": "speed",
 				"friendlyName": "Fan Speed",
-				"channel": "speed_level",
+				"channel": "speed",
 				"type": "Dimmer",
 				"stateDescription": {
 					"minimum": 1,
@@ -81,7 +81,7 @@
 			{
 				"property": "roll_enable",
 				"friendlyName": "Oscillation",
-				"channel": "horizontal_swing",
+				"channel": "roll",
 				"type": "Switch",
 				"refresh": true,
 				"actions": [
@@ -99,7 +99,7 @@
 			{
 				"property": "roll_angle",
 				"friendlyName": "Oscillation Angle",
-				"channel": "horizontal_angle",
+				"channel": "angle",
 				"type": "Number:Angle",
 				"unit": "degree",
 				"stateDescription": {
@@ -173,7 +173,7 @@
 			{
 				"property": "time_off",
 				"friendlyName": "Power-Off Timer",
-				"channel": "off_delay_time",
+				"channel": "timer",
 				"type": "Number:Time",
 				"unit": "minutes",
 				"stateDescription": {
@@ -198,7 +198,7 @@
 			{
 				"property": "beep_sound",
 				"friendlyName": "Notification Sound",
-				"channel": "buzzer",
+				"channel": "beep",
 				"type": "Switch",
 				"refresh": true,
 				"actions": [
@@ -216,7 +216,7 @@
 			{
 				"property": "light",
 				"friendlyName": "Indicator Light",
-				"channel": "led",
+				"channel": "light",
 				"type": "Switch",
 				"refresh": true,
 				"actions": [

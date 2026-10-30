@@ -12,7 +12,7 @@
 				"siid": 2,
 				"piid": 1,
 				"friendlyName": "Power",
-				"channel": "power",
+				"channel": "on",
 				"type": "Switch",
 				"refresh": true,
 				"actions": [
@@ -226,7 +226,7 @@
 				"siid": 2,
 				"piid": 10,
 				"friendlyName": "Power-Off Timer",
-				"channel": "off_delay_time",
+				"channel": "off_delay",
 				"type": "Number:Time",
 				"unit": "seconds",
 				"stateDescription": {
@@ -253,7 +253,7 @@
 				"siid": 5,
 				"piid": 1,
 				"friendlyName": "Notification Sound",
-				"channel": "buzzer",
+				"channel": "alarm",
 				"type": "Switch",
 				"refresh": true,
 				"actions": [
@@ -273,7 +273,7 @@
 				"siid": 4,
 				"piid": 3,
 				"friendlyName": "Screen Brightness",
-				"channel": "led_brightness",
+				"channel": "brightness",
 				"type": "Dimmer",
 				"stateDescription": {
 					"minimum": 0,
@@ -299,7 +299,7 @@
 				"siid": 3,
 				"piid": 1,
 				"friendlyName": "Child Lock",
-				"channel": "child_lock",
+				"channel": "physical_controls_locked",
 				"type": "Switch",
 				"refresh": true,
 				"actions": [
@@ -379,7 +379,7 @@
 				"siid": 7,
 				"piid": 1,
 				"friendlyName": "Humidity",
-				"channel": "humidity",
+				"channel": "relative_humidity",
 				"type": "Number:Dimensionless",
 				"unit": "percentage",
 				"stateDescription": {
@@ -399,7 +399,7 @@
 				"siid": 6,
 				"piid": 4,
 				"friendlyName": "Motor Speed",
-				"channel": "speed",
+				"channel": "speed_now",
 				"type": "Number",
 				"stateDescription": {
 					"pattern": "%.0f RPM",
