@@ -139,6 +139,56 @@ class FroniusHttpUtilTest {
     }
 
     @Test
+    void exclusiveOperationsKeepOtherRequestsOut() throws Exception {
+        FroniusHttpUtil httpUtil = new FroniusHttpUtil();
+        CountDownLatch operationStarted = new CountDownLatch(1);
+        CountDownLatch releaseOperation = new CountDownLatch(1);
+        AtomicReference<String> nestedResponse = new AtomicReference<>();
+        AtomicReference<Throwable> backgroundFailure = new AtomicReference<>();
+        AtomicInteger skippedExecutorCalls = new AtomicInteger();
+
+        Thread operation = new Thread(() -> {
+            try {
+                httpUtil.executeExclusively(() -> {
+                    operationStarted.countDown();
+                    try {
+                        assertTrue(releaseOperation.await(5, TimeUnit.SECONDS));
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                        throw new FroniusCommunicationException("Interrupted", e);
+                    }
+                    // requests issued by the operation itself must not block on the lock held by the operation
+                    nestedResponse.set(httpUtil.executeUrl(HttpMethod.GET, "http://fronius-f", null, null, null, 5000,
+                            (httpMethod, url, httpHeaders, content, contentType, timeout) -> "nested-ok"));
+                    return null;
+                });
+            } catch (Throwable t) {
+                backgroundFailure.set(t);
+            }
+        });
+
+        operation.start();
+        try {
+            assertTrue(operationStarted.await(5, TimeUnit.SECONDS));
+
+            assertThrows(FroniusPollingSkipException.class,
+                    () -> httpUtil.executePollingUrl(HttpMethod.GET, "http://fronius-g", null, null, null, 5000,
+                            (httpMethod, url, httpHeaders, content, contentType, timeout) -> {
+                                skippedExecutorCalls.incrementAndGet();
+                                return "unexpected";
+                            }));
+            assertEquals(0, skippedExecutorCalls.get());
+        } finally {
+            releaseOperation.countDown();
+            operation.join(5000);
+        }
+
+        assertFalse(operation.isAlive());
+        assertNull(backgroundFailure.get());
+        assertEquals("nested-ok", nestedResponse.get());
+    }
+
+    @Test
     void requestsOnDifferentInstancesDoNotShareLock() throws Exception {
         FroniusHttpUtil firstBridgeHttpUtil = new FroniusHttpUtil();
         FroniusHttpUtil secondBridgeHttpUtil = new FroniusHttpUtil();

@@ -12,7 +12,10 @@
  */
 package org.openhab.binding.fronius.internal.handler;
 
+import java.time.DayOfWeek;
 import java.time.Instant;
+import java.time.LocalTime;
+import java.time.ZonedDateTime;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -20,6 +23,8 @@ import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.function.UnaryOperator;
+
+import javax.measure.quantity.Power;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -31,11 +36,16 @@ import org.openhab.binding.fronius.internal.api.FroniusBatteryControl;
 import org.openhab.binding.fronius.internal.api.FroniusBatteryControl.BatterySettings;
 import org.openhab.binding.fronius.internal.api.FroniusCommunicationException;
 import org.openhab.binding.fronius.internal.api.FroniusUnauthorizedException;
+import org.openhab.binding.fronius.internal.api.dto.inverter.batterycontrol.ScheduleType;
+import org.openhab.binding.fronius.internal.api.dto.inverter.batterycontrol.TimeOfUseRecord;
+import org.openhab.binding.fronius.internal.api.dto.inverter.batterycontrol.TimeOfUseRecords;
+import org.openhab.binding.fronius.internal.api.dto.inverter.batterycontrol.WeekdaysRecord;
 import org.openhab.binding.fronius.internal.api.dto.storage.StorageController;
 import org.openhab.binding.fronius.internal.api.dto.storage.StorageDetails;
 import org.openhab.binding.fronius.internal.api.dto.storage.StorageRealtimeBody;
 import org.openhab.binding.fronius.internal.api.dto.storage.StorageRealtimeBodyData;
 import org.openhab.binding.fronius.internal.api.dto.storage.StorageRealtimeResponse;
+import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -69,16 +79,19 @@ import org.slf4j.LoggerFactory;
 public class FroniusBatteryHandler extends FroniusBaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(FroniusBatteryHandler.class);
+    private final TimeZoneProvider timeZoneProvider;
 
     private @Nullable StorageController controller;
     private @Nullable FroniusBatteryConfiguration config;
     private @Nullable FroniusBatteryControl batteryControl;
     private @Nullable BatterySettings lastBatterySettings;
     private @Nullable Integer lastNightPreservationLimit;
+    private @Nullable TimeOfUseRecords lastTimeOfUse;
     private @Nullable ScheduledFuture<?> batterySettingsRefreshJob;
 
-    public FroniusBatteryHandler(Thing thing) {
+    public FroniusBatteryHandler(Thing thing, TimeZoneProvider timeZoneProvider) {
         super(thing);
+        this.timeZoneProvider = timeZoneProvider;
     }
 
     @Override
@@ -172,6 +185,41 @@ public class FroniusBatteryHandler extends FroniusBaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         String channelId = channelUID.getIdWithoutGroup();
+        if (FroniusBindingConstants.BATTERY_TIME_OF_USE_CHANNELS.contains(channelId)) {
+            FroniusBatteryControl control = getBatteryControl();
+            if (control == null) {
+                return;
+            }
+            try {
+                if (command instanceof RefreshType) {
+                    refreshTimeOfUseChannels(control);
+                    return;
+                }
+                QuantityType<Power> power;
+                if (command instanceof QuantityType<?> quantity) {
+                    power = new QuantityType<>(quantity.intValue(), Units.WATT);
+                    QuantityType<?> inWatt = quantity.toUnit(Units.WATT);
+                    if (inWatt != null) {
+                        power = new QuantityType<>(inWatt.intValue(), Units.WATT);
+                    }
+                } else if (command instanceof DecimalType decimal) {
+                    power = new QuantityType<>(decimal.intValue(), Units.WATT);
+                } else {
+                    logger.warn("Unsupported command {} for channel {}", command, channelId);
+                    return;
+                }
+                control.setAllTimeSchedule(switch (channelId) {
+                    case FroniusBindingConstants.BATTERY_MIN_CHARGE_POWER_CHANNEL -> ScheduleType.CHARGE_MIN;
+                    case FroniusBindingConstants.BATTERY_MAX_CHARGE_POWER_CHANNEL -> ScheduleType.CHARGE_MAX;
+                    case FroniusBindingConstants.BATTERY_MIN_DISCHARGE_POWER_CHANNEL -> ScheduleType.DISCHARGE_MIN;
+                    default -> ScheduleType.DISCHARGE_MAX;
+                }, power);
+                refreshTimeOfUseChannels(control);
+            } catch (FroniusCommunicationException | FroniusUnauthorizedException | IllegalArgumentException e) {
+                logger.warn("Failed to handle command for channel {}: {}", channelId, e.getMessage());
+            }
+            return;
+        }
         if (FroniusBindingConstants.BATTERY_SETTINGS_CHANNELS.contains(channelId)) {
             FroniusBatteryControl control = getBatteryControl();
             if (control == null) {
@@ -181,6 +229,7 @@ public class FroniusBatteryHandler extends FroniusBaseThingHandler {
                 if (command instanceof RefreshType) {
                     updateBatterySettingsChannels(control);
                     refreshNightPreservationLimit(control);
+                    refreshTimeOfUseChannels(control);
                     return;
                 }
                 switch (channelId) {
@@ -290,6 +339,81 @@ public class FroniusBatteryHandler extends FroniusBaseThingHandler {
         }
     }
 
+    /**
+     * Reads the time of use table and updates the charge/discharge power limit channels with the limits in effect
+     * right now: of the active entries whose weekday and time range match the current time, the most restrictive one
+     * determines the value; without a matching entry the channel is UNDEF.
+     */
+    private void refreshTimeOfUseChannels(FroniusBatteryControl control) {
+        if (FroniusBindingConstants.BATTERY_TIME_OF_USE_CHANNELS.stream().noneMatch(this::isLinked)) {
+            return;
+        }
+        try {
+            lastTimeOfUse = control.getTimeOfUse();
+        } catch (FroniusUnauthorizedException e) {
+            logger.warn("Failed to read time of use settings: {}", e.getMessage());
+            return;
+        } catch (FroniusCommunicationException e) {
+            // Expected to happen from time to time, e.g. when the inverter is unreachable, so only log at debug
+            logger.debug("Failed to read time of use settings: {}", e.getMessage());
+            return;
+        }
+        updateState(FroniusBindingConstants.BATTERY_MIN_CHARGE_POWER_CHANNEL, effectiveLimit(ScheduleType.CHARGE_MIN));
+        updateState(FroniusBindingConstants.BATTERY_MAX_CHARGE_POWER_CHANNEL, effectiveLimit(ScheduleType.CHARGE_MAX));
+        updateState(FroniusBindingConstants.BATTERY_MIN_DISCHARGE_POWER_CHANNEL,
+                effectiveLimit(ScheduleType.DISCHARGE_MIN));
+        updateState(FroniusBindingConstants.BATTERY_MAX_DISCHARGE_POWER_CHANNEL,
+                effectiveLimit(ScheduleType.DISCHARGE_MAX));
+    }
+
+    private State effectiveLimit(ScheduleType type) {
+        TimeOfUseRecords records = lastTimeOfUse;
+        if (records == null) {
+            return UnDefType.UNDEF;
+        }
+        // the time of use schedules are in local time, so evaluate them in the time zone configured in openHAB
+        return effectiveLimit(records, type, ZonedDateTime.now(timeZoneProvider.getTimeZone()));
+    }
+
+    static State effectiveLimit(TimeOfUseRecords records, ScheduleType type, ZonedDateTime dateTime) {
+        LocalTime now = dateTime.toLocalTime();
+        DayOfWeek today = dateTime.getDayOfWeek();
+        // when multiple entries of the same type are active (which the inverter web UI rejects, but its config API
+        // accepts), the inverter applies the most restrictive one: the smallest maximum resp. the largest minimum
+        boolean maximumLimit = type == ScheduleType.CHARGE_MAX || type == ScheduleType.DISCHARGE_MAX;
+        Integer limit = null;
+        for (TimeOfUseRecord record : records.records()) {
+            if (!record.active() || record.scheduleType() != type || !isActiveOn(record.weekdays(), today)) {
+                continue;
+            }
+            LocalTime start = record.timeTable().startTime();
+            LocalTime end = record.timeTable().endTime();
+            if (start == null || end == null) {
+                // the inverter does not apply entries with an invalid time
+                continue;
+            }
+            // the inverter applies an entry up to, but excluding, its end time, even when it ends at 23:59, so an entry
+            // ending at 23:59 is not in effect during the last minute of the day
+            if (!now.isBefore(start) && now.isBefore(end)
+                    && (limit == null || (maximumLimit ? record.power() < limit : record.power() > limit))) {
+                limit = record.power();
+            }
+        }
+        return limit == null ? UnDefType.UNDEF : new QuantityType<>(limit, Units.WATT);
+    }
+
+    private static boolean isActiveOn(WeekdaysRecord weekdays, DayOfWeek day) {
+        return switch (day) {
+            case MONDAY -> weekdays.monday();
+            case TUESDAY -> weekdays.tuesday();
+            case WEDNESDAY -> weekdays.wednesday();
+            case THURSDAY -> weekdays.thursday();
+            case FRIDAY -> weekdays.friday();
+            case SATURDAY -> weekdays.saturday();
+            case SUNDAY -> weekdays.sunday();
+        };
+    }
+
     private void refreshNightPreservationLimit(FroniusBatteryControl control) {
         if (!isLinked(FroniusBindingConstants.BATTERY_NIGHT_PRESERVATION_LIMIT_CHANNEL)) {
             return;
@@ -317,8 +441,18 @@ public class FroniusBatteryHandler extends FroniusBaseThingHandler {
         }
         batterySettingsRefreshJob = scheduler.scheduleWithFixedDelay(() -> {
             FroniusBatteryControl control = batteryControl;
-            if (control == null
-                    || FroniusBindingConstants.BATTERY_SETTINGS_CHANNELS.stream().noneMatch(this::isLinked)) {
+            boolean settingsLinked = FroniusBindingConstants.BATTERY_SETTINGS_CHANNELS.stream()
+                    .anyMatch(this::isLinked);
+            boolean timeOfUseLinked = FroniusBindingConstants.BATTERY_TIME_OF_USE_CHANNELS.stream()
+                    .anyMatch(this::isLinked);
+            if (control == null || (!settingsLinked && !timeOfUseLinked)) {
+                return;
+            }
+            if (!timeOfUseLinked) {
+                lastTimeOfUse = null;
+            }
+            if (!settingsLinked) {
+                refreshTimeOfUseChannels(control);
                 return;
             }
             try {
@@ -330,6 +464,7 @@ public class FroniusBatteryHandler extends FroniusBaseThingHandler {
                 logger.debug("Failed to read battery settings: {}", e.getMessage());
             }
             refreshNightPreservationLimit(control);
+            refreshTimeOfUseChannels(control);
         }, 0, config.batterySettingsRefreshInterval, TimeUnit.MINUTES);
     }
 
@@ -365,6 +500,14 @@ public class FroniusBatteryHandler extends FroniusBaseThingHandler {
         if (FroniusBindingConstants.BATTERY_NIGHT_PRESERVATION_LIMIT_CHANNEL.equals(channelId)) {
             Integer limit = lastNightPreservationLimit;
             return limit == null ? null : new QuantityType<>(limit, Units.PERCENT);
+        }
+        if (FroniusBindingConstants.BATTERY_TIME_OF_USE_CHANNELS.contains(channelId)) {
+            return lastTimeOfUse == null ? null : effectiveLimit(switch (channelId) {
+                case FroniusBindingConstants.BATTERY_MIN_CHARGE_POWER_CHANNEL -> ScheduleType.CHARGE_MIN;
+                case FroniusBindingConstants.BATTERY_MAX_CHARGE_POWER_CHANNEL -> ScheduleType.CHARGE_MAX;
+                case FroniusBindingConstants.BATTERY_MIN_DISCHARGE_POWER_CHANNEL -> ScheduleType.DISCHARGE_MIN;
+                default -> ScheduleType.DISCHARGE_MAX;
+            });
         }
 
         StorageController local = controller;
