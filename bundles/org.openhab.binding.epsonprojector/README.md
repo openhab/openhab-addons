@@ -42,10 +42,10 @@ The `projector-tcp` thing has the following configuration parameters:
 Some notes:
 
 - The binding should work on all Epson projectors that support the ESC/VP21 protocol, however not all binding channels will be useable on all projectors.
-- The _source_ channel includes a dropdown with the most common source inputs.
+- The _source_ channel includes state options with the most common source inputs.
 - When the `loadSourceList` configuration option is set to true, the binding attempts to retrieve the available sources list from the projector and loads them into the _source_ channel.
 - The command to retrieve the sources list is not supported by older projectors and in this case the pre-defined sources list is used instead.
-- If your projector has a source input that is not in the dropdown, the two-character hex code to access that input will be displayed by the _source_ channel when that input is selected by the remote control.
+- If your projector has a source input that is not in the available state options, the two-character hex code to access that input will be displayed by the _source_ channel when that input is selected by the remote control.
 - By using the sitemap mapping or a rule to send the input's code back to the _source_ channel, any source on the projector can be accessed by the binding.
 - The following channels _aspectratio_, _colormode_, _luminance_, _gamma_ and _background_ are pre-populated with a full set of options but not every option will be useable on all projectors.
 - If your projector has an option in one of the above-mentioned channels that is not recognized by the binding, the channel will display 'UNKNOWN' if that un-recognized option is selected by the remote control.
@@ -167,14 +167,14 @@ sitemap epson label="Epson Projector"
     Frame label="Controls" {
         Switch     item=epsonPower   label="Power"
         // Uncomment mappings below to override the Source state options
-        Selection  item=epsonSource  label="Source" // mappings=["30"="HDMI1", "A0"="HDMI2", "14"="Component", "20"="PC DSUB", "41"="Video", "42"="S-Video", "52"="USB", "53"="LAN", "56"="WiFi Direct"]
+        Selection  item=epsonSource  label="Source" // mappings=["30"="HDMI1", "A0"="HDMI2", "14"="Component", "20"="PC DSUB", "41"="Video", "42"="S-Video", "52"="USB", "53"="LAN", "56"="Wi-Fi Direct"]
         Switch     item=epsonFreeze  label="Freeze"
         Switch     item=epsonMute    label="AV Mute"
         // Volume can be a Setpoint also
         Slider     item=epsonVolume  label="Volume" minValue=0 maxValue=100 step=1 icon="soundvolume"
         // This Switch is deprecated in favor of the Buttongrid element below
-        Switch     item=epsonKeyCode label="Navigation" icon="screen" mappings=["03"="Menu", "35"="˄", "36"="˅", "37"="<", "38"=">", "16"="Enter"]
-        Buttongrid item=epsonKeyCode label="Navigation" staticIcon=material:tv_remote buttons=[1:1:"03"="Menu", 1:2:"35"="Up"=f7:arrowtriangle_up, 3:2:"36"="Down"=f7:arrowtriangle_down, 2:1:"37"="Left"=f7:arrowtriangle_left, 2:3:"38"="Right"=f7:arrowtriangle_right, 2:2:"16"="Enter"]
+        Switch     item=epsonKeyCode label="Navigation" icon="screen" mappings=["03"="Menu", "05"="Esc", "35"="˄", "36"="˅", "37"="<", "38"=">", "16"="Enter"]
+        Buttongrid item=epsonKeyCode label="Navigation" staticIcon=material:tv_remote buttons=[1:1:"03"="Menu", 3:1:"05"="Esc", 1:2:"35"="Up"=f7:arrowtriangle_up, 3:2:"36"="Down"=f7:arrowtriangle_down, 2:1:"37"="Left"=f7:arrowtriangle_left, 2:3:"38"="Right"=f7:arrowtriangle_right, 2:2:"16"="Enter"]
     }
     Frame label="Adjust Image" {
         Selection  item=epsonAspectRatio
