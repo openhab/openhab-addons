@@ -1436,8 +1436,8 @@ class AirqHandlerTest {
         String channel = key.toLowerCase(Locale.ROOT).replace('_', '-');
         Document metadata = xml("thing/thing-types.xml");
         Document upgrades = xml("update/update.xml");
-        for (String[] groupedChannel : new String[][] { { "measurements", channel, "advanced-measurements" },
-                { "maxerr", channel + "-maxerr", "advanced-maxerr" } }) {
+        for (String[] groupedChannel : new String[][] { { "measurements", channel },
+                { "maxerr", channel + "-maxerr" } }) {
             String groupId = groupedChannel[0];
             String id = groupedChannel[1];
             Element definition = element(metadata,
@@ -1450,13 +1450,9 @@ class AirqHandlerTest {
             assertThat(element(type, "state").getAttribute("readOnly"), is("true"));
             String hint = element(type, "item-type").getAttribute("unitHint");
             assertThat(QuantityType.valueOf("1 " + hint).getUnit(), is(unit));
-            Element upgrade = element(upgrades, "//instruction-set[@targetVersion='5']/add-channel[@id='" + id + "']");
-            assertThat(upgrade.getAttribute("groupIds"), is(groupedChannel[2]));
-            assertThat(element(upgrade, "type").getTextContent(), is("airq:" + typeId));
-            // version 6 moves the channel from its group of version 5
-            Element move = element(upgrades, "//instruction-set[@targetVersion='6']/add-channel[@id='" + id
+            Element upgrade = element(upgrades, "//instruction-set[@targetVersion='5']/add-channel[@id='" + id
                     + "' and @groupIds='" + groupId + "']");
-            assertThat(element(move, "type").getTextContent(), is("airq:" + typeId));
+            assertThat(element(upgrade, "type").getTextContent(), is("airq:" + typeId));
         }
     }
 
@@ -1465,7 +1461,7 @@ class AirqHandlerTest {
         Document metadata = xml("thing/thing-types.xml");
         Document upgrades = xml("update/update.xml");
         assertThat(element(metadata, "//thing-type[@id='airq']/properties/property[@name='thingTypeVersion']")
-                .getTextContent(), is("6"));
+                .getTextContent(), is("5"));
         String[] groupIds = { "status", "measurements", "events", "maxerr", "settings" };
         List<Element> channels = new ArrayList<>();
         for (String groupId : groupIds) {
@@ -1497,69 +1493,38 @@ class AirqHandlerTest {
                     findElement(metadata, "//channel-type[@id='" + typeId + "']"), notNullValue());
         }
 
-        assertThat(elements(upgrades, "//instruction-set[@targetVersion='5']/remove-channel"), empty());
-        assertThat(elements(upgrades, "//instruction-set[@targetVersion='5']/update-channel"), empty());
-        List<String> changes = new ArrayList<>();
-        for (Element instruction : elements(upgrades, "//instruction-set[@targetVersion='6']/*")) {
+        // version 5 adds each grouped channel once and changes only these flat channels of the released version 4
+        List<String> flatChanges = new ArrayList<>();
+        Map<String, Element> upgraded = new LinkedHashMap<>();
+        for (Element instruction : elements(upgrades, "//instruction-set[@targetVersion='5']/*")) {
+            String groupId = instruction.getAttribute("groupIds");
             Element type = findElement(instruction, "type");
-            changes.add(instruction.getTagName() + " " + instruction.getAttribute("groupIds") + "#"
-                    + instruction.getAttribute("id") + (type != null ? " " + type.getTextContent() : ""));
-        }
-        // version 6 changes the item types of channels that keep their group, moves the channels of version 5 to the
-        // groups status, measurements, events, maxerr and settings, and adds the new channels
-        assertThat(changes, hasSize(258));
-        assertThat(changes, hasItems("update-channel measurements#so2 airq:so2", "update-channel #so2 airq:so2-number",
-                "update-channel measurements#health airq:health-raw",
-                "update-channel measurements#performance airq:performance-raw",
-                "update-channel measurements#temperature system:indoor-temperature",
-                "update-channel maxerr#co-maxerr airq:co-maxerr", "remove-channel general#sound-pressure",
-                "remove-channel general#password", "remove-channel #password", "remove-channel general#delete-key",
-                "remove-channel #deleteKey", "remove-channel general#error-bars", "remove-channel #errorBars",
-                "remove-channel general#auto-update", "add-channel settings#auto-update airq:auto-update",
-                "remove-channel general#status", "add-channel status#status airq:status",
-                "remove-channel measurements#door-event", "add-channel events#door-event airq:door",
-                "remove-channel advanced-measurements#c2h4o", "add-channel measurements#c2h4o airq:c2h4o",
-                "remove-channel advanced-maxerr#c2h4o-maxerr", "add-channel maxerr#c2h4o-maxerr airq:density-maxerr",
-                "add-channel events#person airq:person", "add-channel settings#country-code airq:country-code"));
-        // only removals refer to the groups of version 5
-        assertThat(changes.stream().filter(change -> !change.startsWith("remove-channel"))
-                .filter(change -> Stream.of("general#", "advanced-measurements#", "advanced-maxerr#")
-                        .anyMatch(group -> change.contains(" " + group)))
-                .toList(), empty());
-        assertThat(elements(upgrades, "//instruction-set[@targetVersion='7']"), empty());
-
-        List<Element> additions = elements(upgrades, "//instruction-set[@targetVersion='5']/add-channel");
-        assertThat(additions, hasSize(162));
-        // channels after applying the instructions of version 5 and version 6
-        Map<String, String> upgraded = new LinkedHashMap<>();
-        for (Element addition : additions) {
-            upgraded.put(addition.getAttribute("groupIds") + "#" + addition.getAttribute("id"),
-                    element(addition, "type").getTextContent());
-        }
-        assertThat(upgraded.size(), is(additions.size()));
-        for (Element instruction : elements(upgrades, "//instruction-set[@targetVersion='6']/*")) {
-            String channel = instruction.getAttribute("groupIds") + "#" + instruction.getAttribute("id");
-            if (instruction.getAttribute("groupIds").isEmpty()) {
-                // a retained flat channel of thing type version 4, which is not part of the grouped channels
-                assertThat(channel, instruction.getTagName(),
-                        is("#so2".equals(channel) ? "update-channel" : "remove-channel"));
-            } else if ("remove-channel".equals(instruction.getTagName())) {
-                assertThat(upgraded.remove(channel), notNullValue());
+            if (groupId.isEmpty()) {
+                flatChanges.add(instruction.getTagName() + " " + instruction.getAttribute("id")
+                        + (type != null ? " " + type.getTextContent() : ""));
             } else {
-                // add-channel and update-channel
-                assertThat(channel, "add-channel".equals(instruction.getTagName()), is(!upgraded.containsKey(channel)));
-                upgraded.put(channel, element(instruction, "type").getTextContent());
+                assertThat(instruction.getAttribute("id"), instruction.getTagName(), is("add-channel"));
+                assertThat(upgraded.put(groupId + "#" + instruction.getAttribute("id"), instruction), nullValue());
             }
         }
+        assertThat(flatChanges, contains("update-channel so2 airq:so2-number", "remove-channel password",
+                "remove-channel deleteKey", "remove-channel errorBars"));
+        assertThat(elements(upgrades, "//instruction-set[@targetVersion='6']"), empty());
         assertThat(upgraded.size(), is(channels.size()));
-        for (Entry<String, String> channel : upgraded.entrySet()) {
+        for (Entry<String, Element> channel : upgraded.entrySet()) {
             String[] id = channel.getKey().split("#");
             Element definition = element(metadata,
                     "//channel-group-type[@id='" + id[0] + "']/channels/channel[@id='" + id[1] + "']");
-            assertThat(channel.getValue(),
-                    is(definition.getAttribute("typeId").startsWith("system.")
-                            ? definition.getAttribute("typeId").replace("system.", "system:")
-                            : "airq:" + definition.getAttribute("typeId")));
+            String typeId = definition.getAttribute("typeId");
+            assertThat(channel.getKey(), element(channel.getValue(), "type").getTextContent(),
+                    is(typeId.startsWith("system.") ? typeId.replace("system.", "system:") : "airq:" + typeId));
+            // a channel added by the instruction gets the label and description of the thing type
+            for (String text : List.of("label", "description")) {
+                Element expected = findElement(definition, text);
+                Element actual = findElement(channel.getValue(), text);
+                assertThat(channel.getKey() + " " + text, actual != null ? actual.getTextContent() : null,
+                        is(expected != null ? expected.getTextContent() : null));
+            }
         }
         assertThat(channels, hasSize(191));
     }
@@ -1768,7 +1733,7 @@ class AirqHandlerTest {
         // the flat error channels keep their item type and receive the number in the unit of the grouped channel
         Document thingTypes = xml("thing/thing-types.xml");
         List<Element> flatTypes = elements(thingTypes, "//channel-type[contains(@id, '_maxerr')]");
-        assertThat(flatTypes, hasSize(27));
+        assertThat(flatTypes, hasSize(26));
         for (Element flatType : flatTypes) {
             String typeId = flatType.getAttribute("id");
             String groupedId = typeId.replace("_maxerr", "-maxerr").replace('_', '-');
@@ -1859,7 +1824,7 @@ class AirqHandlerTest {
     void newUpdateInstructionsUseTheMicroSign() throws Exception {
         // released instruction sets (up to version 4) must not be changed and keep their labels
         List<Element> instructionSets = elements(xml("update/update.xml"), "//instruction-set[@targetVersion >= 5]");
-        assertThat(instructionSets, hasSize(2));
+        assertThat(instructionSets, hasSize(1));
         for (Element instructionSet : instructionSets) {
             assertThat(instructionSet.getAttribute("targetVersion"), instructionSet.getTextContent(),
                     not(containsString("μ")));
@@ -2058,8 +2023,8 @@ class AirqHandlerTest {
         // the released flat channel of thing type version 4
         assertThat(element(thingTypes, "//channel-type[@id='" + index + "']/item-type").getTextContent(),
                 is("Number:Dimensionless"));
-        Element upgrade = element(xml("update/update.xml"), "//instruction-set[@targetVersion='6']/update-channel[@id='"
-                + index + "' and @groupIds='measurements']");
+        Element upgrade = element(xml("update/update.xml"),
+                "//instruction-set[@targetVersion='5']/add-channel[@id='" + index + "' and @groupIds='measurements']");
         assertThat(element(upgrade, "type").getTextContent(), is("airq:" + index + "-raw"));
     }
 
@@ -2070,11 +2035,7 @@ class AirqHandlerTest {
         assertThat(findElement(xml("thing/thing-types.xml"),
                 "//channel-group-type[@id='measurements']/channels/channel[@id='uptime']"), nullValue());
         assertThat(element(xml("update/update.xml"), "//instruction-set[@targetVersion='5']/add-channel[@id='uptime']")
-                .getAttribute("groupIds"), is("general"));
-        assertThat(
-                findElement(xml("update/update.xml"),
-                        "//instruction-set[@targetVersion='6']/add-channel[@id='uptime' and @groupIds='status']"),
-                notNullValue());
+                .getAttribute("groupIds"), is("status"));
     }
 
     private static Document xml(String resource) throws Exception {
