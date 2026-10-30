@@ -152,6 +152,19 @@ public final class RscpTag {
      * list. The vendor header names the response with a {@code RES_} segment while the request is named
      * {@code REQ_GET_}, so both variants are declared.
      */
+    /**
+     * The messages the energy manager keeps. The request is answered with one {@link #EMS_ERROR_CONTAINER} per
+     * message, which holds the fields below.
+     */
+    public static final int EMS_REQ_STORED_ERRORS = 0x0100000A;
+    public static final int EMS_STORED_ERRORS = 0x0180000A;
+    public static final int EMS_ERROR_CONTAINER = 0x0180000B;
+    public static final int EMS_ERROR_TYPE = 0x0180000C;
+    public static final int EMS_ERROR_SOURCE = 0x0180000D;
+    public static final int EMS_ERROR_MESSAGE = 0x0180000E;
+    public static final int EMS_ERROR_CODE = 0x0180000F;
+    public static final int EMS_ERROR_TIMESTAMP = 0x01800010;
+
     public static final int EMS_REQ_GET_IDLE_PERIODS_2 = 0x01000033;
     public static final int EMS_GET_IDLE_PERIODS_2 = 0x01800033;
 
@@ -575,6 +588,14 @@ public final class RscpTag {
         NAMES.put(EMS_RES_POWER_LIMITS_USED, "EMS_RES_POWER_LIMITS_USED");
         NAMES.put(EMS_GET_WALLBOX_ENFORCE_POWER_ASSIGNMENT, "EMS_GET_WALLBOX_ENFORCE_POWER_ASSIGNMENT");
         NAMES.put(EMS_GET_WB_DISCHARGE_BAT_UNTIL, "EMS_GET_WB_DISCHARGE_BAT_UNTIL");
+        NAMES.put(EMS_REQ_STORED_ERRORS, "EMS_REQ_STORED_ERRORS");
+        NAMES.put(EMS_STORED_ERRORS, "EMS_STORED_ERRORS");
+        NAMES.put(EMS_ERROR_CONTAINER, "EMS_ERROR_CONTAINER");
+        NAMES.put(EMS_ERROR_TYPE, "EMS_ERROR_TYPE");
+        NAMES.put(EMS_ERROR_SOURCE, "EMS_ERROR_SOURCE");
+        NAMES.put(EMS_ERROR_MESSAGE, "EMS_ERROR_MESSAGE");
+        NAMES.put(EMS_ERROR_CODE, "EMS_ERROR_CODE");
+        NAMES.put(EMS_ERROR_TIMESTAMP, "EMS_ERROR_TIMESTAMP");
         NAMES.put(EMS_REQ_GET_IDLE_PERIODS_2, "EMS_REQ_GET_IDLE_PERIODS_2");
         NAMES.put(EMS_GET_IDLE_PERIODS_2, "EMS_GET_IDLE_PERIODS_2");
         NAMES.put(EMS_IDLE_PERIOD_2, "EMS_IDLE_PERIOD_2");

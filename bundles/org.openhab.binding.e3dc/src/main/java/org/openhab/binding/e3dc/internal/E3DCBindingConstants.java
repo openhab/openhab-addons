@@ -54,6 +54,11 @@ public final class E3DCBindingConstants {
     public static final String GROUP_INVERTER = "inverter";
     public static final String GROUP_GRID = "grid";
     public static final String GROUP_SYSTEM = "system";
+
+    /** The switch of the group {@code system} that tells whether the energy manager holds any message. */
+    public static final String CHANNEL_HAS_MESSAGES = "has-messages";
+    /** The text channel of the group {@code system} that lists the messages as a JSON array. */
+    public static final String CHANNEL_MESSAGES = "messages";
     /** The battery controls and states: locks, power mode, idle periods and the block switches. */
     public static final String GROUP_BATTERY_CONTROL = "battery-control";
 

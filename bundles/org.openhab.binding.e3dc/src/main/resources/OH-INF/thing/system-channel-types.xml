@@ -228,4 +228,18 @@
 		<state readOnly="false"/>
 	</channel-type>
 
+	<channel-type id="system-has-messages">
+		<item-type>Switch</item-type>
+		<label>Has Messages</label>
+		<description>The energy manager holds at least one message</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="system-messages">
+		<item-type>String</item-type>
+		<label>Messages</label>
+		<description>Messages of the energy manager as a JSON array</description>
+		<state readOnly="true"/>
+	</channel-type>
+
 </thing:thing-descriptions>

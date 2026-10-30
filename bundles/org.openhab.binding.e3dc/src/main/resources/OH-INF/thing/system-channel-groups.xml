@@ -20,6 +20,8 @@
 			<channel id="powersave" typeId="system-powersave"/>
 			<channel id="derate-at-percent" typeId="system-derate-at-percent"/>
 			<channel id="derate-at-power" typeId="system-derate-at-power"/>
+			<channel id="has-messages" typeId="system-has-messages"/>
+			<channel id="messages" typeId="system-messages"/>
 		</channels>
 	</channel-group-type>
 

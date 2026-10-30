@@ -24,12 +24,14 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.e3dc.internal.E3DCBindingConstants;
 import org.openhab.binding.e3dc.internal.E3DCChannelRegistry;
 import org.openhab.binding.e3dc.internal.E3DCChannelSpec;
 import org.openhab.binding.e3dc.internal.E3DCCommandRegistry;
 import org.openhab.binding.e3dc.internal.E3DCCommandSpec;
 import org.openhab.binding.e3dc.internal.E3DCDataListener;
 import org.openhab.binding.e3dc.internal.E3DCIdlePeriod;
+import org.openhab.binding.e3dc.internal.E3DCMessages;
 import org.openhab.binding.e3dc.internal.rscp.RscpTag;
 import org.openhab.binding.e3dc.internal.rscp.RscpType;
 import org.openhab.binding.e3dc.internal.rscp.RscpValue;
@@ -368,9 +370,30 @@ public abstract class E3DCThingHandler extends BaseThingHandler implements E3DCD
                 if (channel.getValue().isList()) {
                     ChannelUID channelUID = new ChannelUID(getThing().getUID(),
                             group.getKey() + "#" + channel.getKey());
-                    updateState(channelUID, new StringType(E3DCIdlePeriod.toTextFromResponse(response)));
+                    if (channel.getValue().tag() == RscpTag.EMS_STORED_ERRORS) {
+                        updateMessages(channelUID, channel.getKey(), response);
+                    } else {
+                        updateState(channelUID, new StringType(E3DCIdlePeriod.toTextFromResponse(response)));
+                    }
                 }
             }
+        }
+    }
+
+    /**
+     * Publishes the messages of the energy manager, as the JSON array or as the switch that says whether there
+     * are any. A poll that carries no answer to the request leaves both as they were, because an answer that
+     * did not come says nothing about the messages.
+     */
+    private void updateMessages(ChannelUID channelUID, String channelId, RscpValue response) {
+        List<E3DCMessages.Message> messages = E3DCMessages.fromResponse(response);
+        if (messages == null) {
+            return;
+        }
+        if (E3DCBindingConstants.CHANNEL_HAS_MESSAGES.equals(channelId)) {
+            updateState(channelUID, OnOffType.from(!messages.isEmpty()));
+        } else {
+            updateState(channelUID, new StringType(E3DCMessages.toJson(messages)));
         }
     }
 
