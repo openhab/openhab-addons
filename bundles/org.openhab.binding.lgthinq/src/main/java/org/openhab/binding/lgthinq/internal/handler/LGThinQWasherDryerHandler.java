@@ -20,7 +20,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -34,11 +33,11 @@ import org.openhab.binding.lgthinq.lgservices.model.DevicePowerState;
 import org.openhab.binding.lgthinq.lgservices.model.DeviceTypes;
 import org.openhab.binding.lgthinq.lgservices.model.FeatureDefinition;
 import org.openhab.binding.lgthinq.lgservices.model.devices.commons.washers.CourseDefinition;
-import org.openhab.binding.lgthinq.lgservices.model.devices.commons.washers.CourseFunction;
 import org.openhab.binding.lgthinq.lgservices.model.devices.commons.washers.CourseType;
 import org.openhab.binding.lgthinq.lgservices.model.devices.washerdryer.WasherDryerCapability;
 import org.openhab.binding.lgthinq.lgservices.model.devices.washerdryer.WasherDryerSnapshot;
 import org.openhab.core.io.net.http.HttpClientFactory;
+import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Channel;
@@ -46,8 +45,6 @@ import org.openhab.core.thing.ChannelGroupUID;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
-import org.openhab.core.thing.binding.ThingHandlerCallback;
-import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.thing.link.ItemChannelLinkRegistry;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.StateOption;
@@ -81,7 +78,6 @@ public class LGThinQWasherDryerHandler
     private final ChannelUID standByModeChannelUID;
     private final ChannelUID remoteStartFlagChannelUID;
     private final ChannelUID remoteStartCourseChannelUID;
-    private final List<Channel> remoteStartEnabledChannels = new CopyOnWriteArrayList<>();
     private volatile @Nullable WasherDryerSnapshot remoteStartShot;
     private volatile boolean remoteStartValuesInitialized;
 
@@ -116,10 +112,6 @@ public class LGThinQWasherDryerHandler
     @Override
     protected void initializeThing(@Nullable ThingStatus bridgeStatus) {
         super.initializeThing(bridgeStatus);
-        ThingBuilder builder = editThing()
-                .withoutChannels(this.getThing().getChannelsOfGroup(channelGroupRemoteStartUID.getId()));
-        updateThing(builder.build());
-        remoteStartEnabledChannels.clear();
         remoteStartShot = null;
         remoteStartValuesInitialized = false;
     }
@@ -175,6 +167,31 @@ public class LGThinQWasherDryerHandler
         wmCap.getDryLevel().getValuesMapping()
                 .forEach((k, v) -> optionsDryLevel.add(new StateOption(k, keyIfValueNotFound(CAP_DR_DRY_LEVEL, v))));
         stateDescriptionProvider.setStateOptions(dryLevelChannelUID, optionsDryLevel);
+
+        // the remote start channels are always present; earlier versions removed them while remote start was off
+        addRemoteStartChannel(CHANNEL_WMD_REMOTE_START_START_STOP, CoreItemFactory.SWITCH);
+        addRemoteStartChannel(CHANNEL_WMD_REMOTE_COURSE, CoreItemFactory.STRING);
+        loadOptionsCourse(wmCap, remoteStartCourseChannelUID);
+        if (!FeatureDefinition.NULL_DEFINITION.equals(wmCap.getTemperatureFeat())) {
+            stateDescriptionProvider.setStateOptions(
+                    addRemoteStartChannel(CHANNEL_WMD_REMOTE_START_TEMP, CoreItemFactory.STRING), optionsTemp);
+        }
+        if (!FeatureDefinition.NULL_DEFINITION.equals(wmCap.getSpinFeat())) {
+            stateDescriptionProvider.setStateOptions(
+                    addRemoteStartChannel(CHANNEL_WMD_REMOTE_START_SPIN, CoreItemFactory.STRING), optionsSpin);
+        }
+        if (!FeatureDefinition.NULL_DEFINITION.equals(wmCap.getRinseFeat())) {
+            stateDescriptionProvider.setStateOptions(
+                    addRemoteStartChannel(CHANNEL_WMD_REMOTE_START_RINSE, CoreItemFactory.STRING), optionsRinse);
+        }
+    }
+
+    private ChannelUID addRemoteStartChannel(String channelId, String itemType) {
+        ChannelUID channelUID = new ChannelUID(channelGroupRemoteStartUID, channelId);
+        if (getThing().getChannel(channelUID) == null && getCallback() != null) {
+            createDynChannel(channelId, channelUID, itemType);
+        }
+        return channelUID;
     }
 
     @Override
@@ -205,84 +222,23 @@ public class LGThinQWasherDryerHandler
         updateState(spinChannelUID, new StringType(shot.getSpin()));
         updateState(rinseChannelUID, new StringType(shot.getRinse()));
         // in standby the machine reports no course, so keep the settings it had while remote start was enabled
+        WasherDryerCapability cap = getCapabilities();
         if (!shot.isRemoteStartEnabled()) {
             remoteStartShot = null;
             remoteStartValuesInitialized = false;
-        } else if (hasSelectedCourse(getCapabilities(), shot)) {
+        } else if (hasSelectedCourse(cap, shot)) {
             remoteStartShot = shot;
-        }
-        Channel rsStartStopChannel = getThing().getChannel(remoteStartStopChannelUID);
-        final List<Channel> dynChannels = new ArrayList<>();
-        // only can have remote start channel is the WM is not in sleep mode, and remote start is enabled.
-        if (shot.isRemoteStartEnabled() && !shot.isStandBy()) {
-            ThingHandlerCallback callback = getCallback();
-            if (rsStartStopChannel == null && callback != null) {
-                // === creating channel LaunchRemote
-                dynChannels.add(
-                        createDynChannel(CHANNEL_WMD_REMOTE_START_START_STOP, remoteStartStopChannelUID, "Switch"));
-                dynChannels.add(createDynChannel(CHANNEL_WMD_REMOTE_COURSE, remoteStartCourseChannelUID, "String"));
-                // Just enabled remote start. Then is Off
-                updateState(remoteStartStopChannelUID, OnOffType.OFF);
-                // === creating selectable channels for the Course (if any)
-                WasherDryerCapability cap = getCapabilities();
-                WasherDryerSnapshot rsShot = selectRemoteStartShot(cap, shot, remoteStartShot);
-                loadOptionsCourse(cap, remoteStartCourseChannelUID);
-                String currentCourse = getCurrentCourse(cap, rsShot);
-                // the items keep their values when the channels are recreated after standby, and also after a
-                // restart while the washer is in standby and reports no course
-                boolean initValues = !remoteStartValuesInitialized && hasSelectedCourse(cap, rsShot);
-                if (initValues) {
-                    updateState(remoteStartCourseChannelUID, new StringType(currentCourse));
-                }
-
-                CourseDefinition courseDef = cap.getCourses().get(currentCourse);
-                if (WMD_COURSE_NOT_SELECTED_VALUE.equals(rsShot.getSmartCourse()) && courseDef != null) {
-                    // only create selectable channels if the course is not a smart course. Smart courses have
-                    // already predefined
-                    // the functions values
-                    for (CourseFunction f : courseDef.getFunctions()) {
-                        if (!f.isSelectable()) {
-                            // only for selectable features
-                            continue;
-                        }
-                        // handle well know dynamic fields
-                        FeatureDefinition fd = cap.getFeatureDefinition(f.getValue());
-                        ChannelUID targetChannel;
-                        if (!FeatureDefinition.NULL_DEFINITION.equals(fd)) {
-                            targetChannel = new ChannelUID(channelGroupRemoteStartUID, fd.getChannelId());
-                            dynChannels.add(createDynChannel(fd.getChannelId(), targetChannel,
-                                    translateFeatureToItemType(fd.getDataType())));
-                            if (CAP_WM_DICT_V2.containsKey(f.getValue())) {
-                                // if the function has translation dictionary (I hope so), then the values in
-                                // the selectable channel will be translated to something more readable
-                                List<StateOption> options = new ArrayList<>();
-                                for (String v : f.getSelectableValues()) {
-                                    Map<String, String> values = CAP_WM_DICT_V2.get(f.getValue());
-                                    if (values != null) {
-                                        // Canonical Value is the KEY (@...) that represents a constant in the
-                                        // definition
-                                        // that can be translated to a human description
-                                        String canonicalValue = Objects.requireNonNullElse(fd.getValuesMapping().get(v),
-                                                v);
-                                        options.add(new StateOption(v, keyIfValueNotFound(values, canonicalValue)));
-                                        stateDescriptionProvider.setStateOptions(targetChannel, options);
-                                    }
-                                }
-                            }
-                            if (initValues) {
-                                updateState(targetChannel, new StringType(getFeatureValue(fd.getChannelId(), rsShot)));
-                            }
-                        }
-                    }
-                }
-
-                remoteStartEnabledChannels.addAll(dynChannels);
+            // fill the remote start items once with the washer's settings, afterwards they keep the user's values
+            if (!remoteStartValuesInitialized) {
                 remoteStartValuesInitialized = true;
+                updateState(remoteStartStopChannelUID, OnOffType.OFF);
+                updateState(remoteStartCourseChannelUID, new StringType(shot.getCourse()));
+                for (String channelId : List.of(CHANNEL_WMD_REMOTE_START_TEMP, CHANNEL_WMD_REMOTE_START_SPIN,
+                        CHANNEL_WMD_REMOTE_START_RINSE)) {
+                    updateState(new ChannelUID(channelGroupRemoteStartUID, channelId),
+                            new StringType(getFeatureValue(channelId, shot)));
+                }
             }
-        } else if (!remoteStartEnabledChannels.isEmpty()) {
-            ThingBuilder builder = editThing().withoutChannels(remoteStartEnabledChannels);
-            updateThing(builder.build());
-            remoteStartEnabledChannels.clear();
         }
     }
 
@@ -340,7 +296,7 @@ public class LGThinQWasherDryerHandler
             selectedCourse = getCurrentCourse(cap, rsShot);
         }
         Map<String, String> selectedFeatures = new HashMap<>();
-        for (Channel c : remoteStartEnabledChannels) {
+        for (Channel c : getThing().getChannelsOfGroup(CHANNEL_WMD_REMOTE_START_GRP_ID)) {
             String simpleChannelUID = getSimpleChannelUID(c.getUID().getId());
             String featureName;
             switch (simpleChannelUID) {
@@ -406,7 +362,9 @@ public class LGThinQWasherDryerHandler
             case CHANNEL_WMD_REMOTE_START_START_STOP: {
                 if (command instanceof OnOffType ooCmd) {
                     if (ooCmd == OnOffType.ON) {
-                        if (!lastShot.isStandBy()) {
+                        if (!lastShot.isRemoteStartEnabled()) {
+                            logger.warn("Remote start is not enabled on the washer. Ignoring command");
+                        } else if (!lastShot.isStandBy()) {
                             Map<String, Object> data = getRemoteStartData();
                             if (data.isEmpty()) {
                                 logger.warn("No data available for remote start. Ignoring command");
