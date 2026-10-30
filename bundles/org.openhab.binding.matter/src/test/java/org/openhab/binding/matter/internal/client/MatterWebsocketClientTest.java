@@ -44,6 +44,7 @@ import org.eclipse.jetty.websocket.api.RemoteEndpoint;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.WebSocketAdapter;
 import org.eclipse.jetty.websocket.api.WebSocketPolicy;
+import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.eclipse.jetty.websocket.servlet.WebSocketServlet;
 import org.eclipse.jetty.websocket.servlet.WebSocketServletFactory;
 import org.junit.jupiter.api.BeforeEach;
@@ -467,6 +468,31 @@ class MatterWebsocketClientTest {
         } finally {
             server.stop();
         }
+    }
+
+    @Test
+    void testDisconnectDuringStartupReleasesTheClient() throws Exception {
+        int port;
+        try (ServerSocket socket = new ServerSocket(0)) {
+            port = socket.getLocalPort();
+        }
+        long threadsBefore = webSocketClientThreads();
+        Thread disconnectThread = new Thread(() -> client.disconnect());
+        disconnectThread.setDaemon(true);
+        client = new MatterWebsocketClient() {
+            @Override
+            void startWebSocketClient(WebSocketClient webSocketClient) throws Exception {
+                // A disconnect lands after the new client is registered but before it has started
+                disconnectThread.start();
+                Thread.sleep(500);
+                super.startWebSocketClient(webSocketClient);
+            }
+        };
+
+        client.onNodeReady(port);
+        disconnectThread.join(10000);
+
+        assertThreadsReleased(threadsBefore);
     }
 
     /**
