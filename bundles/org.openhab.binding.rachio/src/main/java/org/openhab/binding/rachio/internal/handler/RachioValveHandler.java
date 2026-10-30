@@ -580,6 +580,13 @@ public class RachioValveHandler extends AbstractRachioThingHandler implements Ra
         renewWebhookRegistration(RequestPurpose.USER_COMMAND);
     }
 
+    @Nullable
+    String getWebhookRegistrationTargetId(RachioBridgeHandler expectedBridge) {
+        RachioValve currentValve = valve;
+        return isSameInstance(cloudHandler, expectedBridge) && getHandlerLifecycleGeneration() >= 0
+                && currentValve != null ? currentValve.id : null;
+    }
+
     void renewWebhookRegistration(RequestPurpose requestPurpose) {
         RachioBridgeHandler handler = cloudHandler;
         RachioValve currentValve = valve;
