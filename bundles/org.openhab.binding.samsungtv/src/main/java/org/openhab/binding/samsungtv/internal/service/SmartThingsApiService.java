@@ -1025,6 +1025,10 @@ public class SmartThingsApiService implements SamsungTvService {
     }
 
     private void updateState(String channel, Object value) {
+        if (SOURCE_NAME.equals(channel) && handler.findServiceInstance(IpControlService.SERVICE_NAME)
+                .filter(s -> s instanceof IpControlService ipControl && ipControl.isReportingInput()).isPresent()) {
+            return;
+        }
         if (!stateMap.getOrDefault(channel, "None").equals(value)) {
             switch (channel) {
                 case CHANNEL:
