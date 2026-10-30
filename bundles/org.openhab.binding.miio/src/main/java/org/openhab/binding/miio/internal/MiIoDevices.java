@@ -671,6 +671,7 @@ public enum MiIoDevices {
     ZHIMI_HEATER_ZB1("zhimi.heater.zb1", "Smartmi Smart Convector Heater 1S", THING_TYPE_BASIC),
     ZHIMI_HUMIDIFIER_CA1("zhimi.humidifier.ca1", "Smartmi Evaporative Humidifier", THING_TYPE_BASIC),
     ZHIMI_HUMIDIFIER_CA4("zhimi.humidifier.ca4", "Smartmi Evaporative Humidifer 2", THING_TYPE_BASIC),
+    ZHIMI_HUMIDIFIER_CA6("zhimi.humidifier.ca6", "Smartmi Evaporative Humidifier 3", THING_TYPE_BASIC),
     ZHIMI_HUMIDIFIER_CB1("zhimi.humidifier.cb1", "Smartmi Evaporative Humidifier", THING_TYPE_BASIC),
     ZHIMI_HUMIDIFIER_CB2("zhimi.humidifier.cb2", "Smartmi Evaporative Humidifier", THING_TYPE_BASIC),
     ZHIMI_HUMIDIFIER_V1("zhimi.humidifier.v1", "Smartmi Humidifier", THING_TYPE_BASIC),
