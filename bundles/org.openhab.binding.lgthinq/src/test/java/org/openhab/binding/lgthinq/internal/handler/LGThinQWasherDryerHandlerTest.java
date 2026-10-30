@@ -104,6 +104,27 @@ class LGThinQWasherDryerHandlerTest {
     }
 
     @Test
+    void standbyUsesSettingsRememberedBeforeStandby() throws JsonProcessingException {
+        WasherDryerSnapshot remembered = snapshot("COTTON");
+        WasherDryerSnapshot rsShot = LGThinQWasherDryerHandler.selectRemoteStartShot(cap, snapshot("NOT_SELECTED"),
+                remembered);
+        Map<String, Object> data = LGThinQWasherDryerHandler.buildRemoteStartData(cap, cmdTemplate, rsShot, "COTTON",
+                Map.of());
+
+        assertSame(remembered, rsShot);
+        assertEquals("TEMP_60", data.get("temp"));
+        assertEquals("STEAM_ON", data.get("steam"));
+    }
+
+    @Test
+    void currentSnapshotPreferredWhenCourseSelected() throws JsonProcessingException {
+        WasherDryerSnapshot current = snapshot("EASYCARE");
+
+        assertSame(current, LGThinQWasherDryerHandler.selectRemoteStartShot(cap, current, snapshot("COTTON")));
+        assertSame(current, LGThinQWasherDryerHandler.selectRemoteStartShot(cap, current, null));
+    }
+
+    @Test
     void templateValuesUsedWhenMissingInSnapshot() throws JsonProcessingException {
         Map<String, Object> data = LGThinQWasherDryerHandler.buildRemoteStartData(cap, cmdTemplate, snapshot("COTTON"),
                 "COTTON", Map.of());

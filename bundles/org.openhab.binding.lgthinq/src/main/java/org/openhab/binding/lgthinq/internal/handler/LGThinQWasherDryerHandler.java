@@ -82,6 +82,7 @@ public class LGThinQWasherDryerHandler
     private final ChannelUID remoteStartFlagChannelUID;
     private final ChannelUID remoteStartCourseChannelUID;
     private final List<Channel> remoteStartEnabledChannels = new CopyOnWriteArrayList<>();
+    private volatile @Nullable WasherDryerSnapshot remoteStartShot;
 
     private final Logger logger = LoggerFactory.getLogger(LGThinQWasherDryerHandler.class);
     private final LGThinQWMApiClientService lgThinqWMApiClientService;
@@ -118,6 +119,7 @@ public class LGThinQWasherDryerHandler
                 .withoutChannels(this.getThing().getChannelsOfGroup(channelGroupRemoteStartUID.getId()));
         updateThing(builder.build());
         remoteStartEnabledChannels.clear();
+        remoteStartShot = null;
     }
 
     private void loadOptionsCourse(WasherDryerCapability cap, ChannelUID courseChannel) {
@@ -200,6 +202,12 @@ public class LGThinQWasherDryerHandler
         updateState(remoteStartFlagChannelUID, OnOffType.from(shot.isRemoteStartEnabled()));
         updateState(spinChannelUID, new StringType(shot.getSpin()));
         updateState(rinseChannelUID, new StringType(shot.getRinse()));
+        // in standby the machine reports no course, so keep the settings it had while remote start was enabled
+        if (!shot.isRemoteStartEnabled()) {
+            remoteStartShot = null;
+        } else if (hasSelectedCourse(getCapabilities(), shot)) {
+            remoteStartShot = shot;
+        }
         Channel rsStartStopChannel = getThing().getChannel(remoteStartStopChannelUID);
         final List<Channel> dynChannels = new ArrayList<>();
         // only can have remote start channel is the WM is not in sleep mode, and remote start is enabled.
@@ -214,12 +222,13 @@ public class LGThinQWasherDryerHandler
                 updateState(remoteStartStopChannelUID, OnOffType.OFF);
                 // === creating selectable channels for the Course (if any)
                 WasherDryerCapability cap = getCapabilities();
+                WasherDryerSnapshot rsShot = selectRemoteStartShot(cap, shot, remoteStartShot);
                 loadOptionsCourse(cap, remoteStartCourseChannelUID);
-                String currentCourse = getCurrentCourse(cap, shot);
+                String currentCourse = getCurrentCourse(cap, rsShot);
                 updateState(remoteStartCourseChannelUID, new StringType(currentCourse));
 
                 CourseDefinition courseDef = cap.getCourses().get(currentCourse);
-                if (WMD_COURSE_NOT_SELECTED_VALUE.equals(shot.getSmartCourse()) && courseDef != null) {
+                if (WMD_COURSE_NOT_SELECTED_VALUE.equals(rsShot.getSmartCourse()) && courseDef != null) {
                     // only create selectable channels if the course is not a smart course. Smart courses have
                     // already predefined
                     // the functions values
@@ -231,10 +240,8 @@ public class LGThinQWasherDryerHandler
                         // handle well know dynamic fields
                         FeatureDefinition fd = cap.getFeatureDefinition(f.getValue());
                         ChannelUID targetChannel;
-                        ChannelUID refChannel;
                         if (!FeatureDefinition.NULL_DEFINITION.equals(fd)) {
                             targetChannel = new ChannelUID(channelGroupRemoteStartUID, fd.getChannelId());
-                            refChannel = new ChannelUID(channelGroupDashboardUID, fd.getRefChannelId());
                             dynChannels.add(createDynChannel(fd.getChannelId(), targetChannel,
                                     translateFeatureToItemType(fd.getDataType())));
                             if (CAP_WM_DICT_V2.containsKey(f.getValue())) {
@@ -254,8 +261,7 @@ public class LGThinQWasherDryerHandler
                                     }
                                 }
                             }
-                            // update state with the default referenced channel
-                            updateState(targetChannel, new StringType(getItemLinkedValue(refChannel)));
+                            updateState(targetChannel, new StringType(getFeatureValue(fd.getChannelId(), rsShot)));
                         }
                     }
                 }
@@ -283,10 +289,27 @@ public class LGThinQWasherDryerHandler
         }
     }
 
-    private static String getCurrentCourse(WasherDryerCapability cap, WasherDryerSnapshot shot) {
+    private static boolean hasSelectedCourse(WasherDryerCapability cap, WasherDryerSnapshot shot) {
         String course = shot.getCourse();
-        return !WMD_COURSE_NOT_SELECTED_VALUE.equals(course) && cap.getCourses().containsKey(course) ? course
-                : cap.getDefaultCourseId();
+        return !WMD_COURSE_NOT_SELECTED_VALUE.equals(course) && cap.getCourses().containsKey(course);
+    }
+
+    private static String getCurrentCourse(WasherDryerCapability cap, WasherDryerSnapshot shot) {
+        return hasSelectedCourse(cap, shot) ? shot.getCourse() : cap.getDefaultCourseId();
+    }
+
+    static WasherDryerSnapshot selectRemoteStartShot(WasherDryerCapability cap, WasherDryerSnapshot shot,
+            @Nullable WasherDryerSnapshot remembered) {
+        return remembered != null && !hasSelectedCourse(cap, shot) ? remembered : shot;
+    }
+
+    private static String getFeatureValue(String remoteStartChannelId, WasherDryerSnapshot shot) {
+        return switch (remoteStartChannelId) {
+            case CHANNEL_WMD_REMOTE_START_TEMP -> shot.getTemperatureLevel();
+            case CHANNEL_WMD_REMOTE_START_SPIN -> shot.getSpin();
+            case CHANNEL_WMD_REMOTE_START_RINSE -> shot.getRinse();
+            default -> "";
+        };
     }
 
     private Map<String, Object> getRemoteStartData() throws LGThinqApiException {
@@ -300,9 +323,10 @@ public class LGThinQWasherDryerHandler
             logger.error("Command for Remote Start not found in the Washer descriptor. It's most likely a bug");
             return Collections.emptyMap();
         }
+        WasherDryerSnapshot rsShot = selectRemoteStartShot(cap, lastShot, remoteStartShot);
         String selectedCourse = getItemLinkedValue(remoteStartCourseChannelUID);
         if (selectedCourse == null || !cap.getCourses().containsKey(selectedCourse)) {
-            selectedCourse = getCurrentCourse(cap, lastShot);
+            selectedCourse = getCurrentCourse(cap, rsShot);
         }
         Map<String, String> selectedFeatures = new HashMap<>();
         for (Channel c : remoteStartEnabledChannels) {
@@ -330,7 +354,7 @@ public class LGThinQWasherDryerHandler
                 selectedFeatures.put(featureName, value);
             }
         }
-        return buildRemoteStartData(cap, cmd.getData(), lastShot, selectedCourse, selectedFeatures);
+        return buildRemoteStartData(cap, cmd.getData(), rsShot, selectedCourse, selectedFeatures);
     }
 
     static Map<String, Object> buildRemoteStartData(WasherDryerCapability cap, Map<String, Object> cmdTemplate,
@@ -372,8 +396,13 @@ public class LGThinQWasherDryerHandler
                 if (command instanceof OnOffType ooCmd) {
                     if (ooCmd == OnOffType.ON) {
                         if (!lastShot.isStandBy()) {
-                            lgThinqWMApiClientService.remoteStart(getBridgeId(), getCapabilities(), getDeviceId(),
-                                    getRemoteStartData());
+                            Map<String, Object> data = getRemoteStartData();
+                            if (data.isEmpty()) {
+                                logger.warn("No data available for remote start. Ignoring command");
+                            } else {
+                                lgThinqWMApiClientService.remoteStart(getBridgeId(), getCapabilities(), getDeviceId(),
+                                        data);
+                            }
                         } else {
                             logger.warn(
                                     "WM is in StandBy mode. Command START can't be sent to Remote Start channel. Ignoring");

@@ -139,6 +139,8 @@ This Channel Group is only available if the Washer is configured to Remote Start
 | rs-spin              | Spin              | String             | The pre-programmed spin (or default) is shown. You can change-it if you want before remote start        |
 | rs-rinse             | Rinse             | String             | The pre-programmed rinse (or default) is shown. You can change-it if you want before remote start       |
 
+If the Washer goes to stand-by while waiting for remote start, the course and options it had before are kept for the remote start.
+
 ### Dryer Machine
 
 LG ThinQ Dryer Machine supports the following channels
