@@ -277,6 +277,16 @@ Follow these steps to add the Shelly BLU Device to openHAB:
 
 Try moving the device to force status updates.
 
+#### BLU Device does not show up in the Inbox
+
+The script on a gateway only announces a BLU device the first time it sees it after the script has been started.
+If you deleted the Thing of a BLU device and want it back in the Inbox, start a manual scan in the Inbox.
+The binding restarts the script on every Shelly gateway with enabled "BLU Gateway Support", so the gateways announce the BLU devices again.
+Then wake the BLU device (press its button, open the door/window, or move in front of the motion sensor).
+The Thing shows up in the Inbox when the device sends its next packet, which can be after the scan indicator in the UI has finished.
+
+`Note:` The gateway Thing must be ONLINE for the scan to restart the script.
+
 #### Custom oh-blu-scanner.js
 
 The binding automatically manages the installation of `oh-blu-scanner.js` on the gateway device.
