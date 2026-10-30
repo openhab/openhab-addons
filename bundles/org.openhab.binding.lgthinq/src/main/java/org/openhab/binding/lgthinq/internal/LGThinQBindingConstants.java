@@ -13,8 +13,12 @@
 package org.openhab.binding.lgthinq.internal;
 
 import java.io.File;
+import java.util.Collections;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.lgthinq.lgservices.LGServicesConstants;
@@ -155,6 +159,13 @@ public class LGThinQBindingConstants extends LGServicesConstants {
     public static final String CHANNEL_WMD_REMOTE_START_RINSE = "rs-rinse";
     public static final String CHANNEL_WMD_REMOTE_START_SPIN = "rs-spin";
     public static final String CHANNEL_WMD_REMOTE_START_TEMP = "rs-temperature-level";
+    public static final String CHANNEL_WMD_REMOTE_START_PREFIX = "rs-";
+    // V2 washer options mapped to their dashboard channel (the remote start channel has the prefix above),
+    // sorted so that the dynamic channels are always created in the same order
+    public static final SortedMap<String, String> WMD_OPTION_CHANNELS = Collections
+            .unmodifiableSortedMap(new TreeMap<>(Map.of("dryLevel", CHANNEL_WMD_DRY_LEVEL_ID, "ecoHybrid", "eco-hybrid",
+                    "steam", "steam", "preWash", "pre-wash", "turboWash", "turbo-wash", "medicRinse", "medic-rinse",
+                    "soilWash", "soil-wash", "steamSoftener", "steam-softener")));
 
     // ==============================================================================
     // DIGEST CONSTANTS

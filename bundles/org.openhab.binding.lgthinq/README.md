@@ -126,18 +126,38 @@ LG ThinQ Washer Machine supports the following channels
 | remain-time        | Remaining Time    | String     | Remaining time to finish the course                                                                        |
 | stand-by           | Stand By Mode     | Switch     | If the Washer is in stand-by-mode                                                                          |
 | rs-flag            | Remote Start      | Switch     | If the Washer is in remote start mode waiting to be remotely started                                       |
+| dry-level          | Dry Level         | String     | Dry level set for the course                                                                               |
+| eco-hybrid         | Eco Hybrid        | String     | Eco hybrid drying option set for the course                                                                |
+| steam              | Steam             | String     | Steam option set for the course                                                                            |
+| pre-wash           | Pre-Wash          | String     | Pre-wash option set for the course                                                                         |
+| turbo-wash         | TurboWash         | String     | TurboWash option set for the course                                                                        |
+| medic-rinse        | Medic Rinse       | String     | Medic rinse option set for the course                                                                      |
+| soil-wash          | Soil Level        | String     | Soil level set for the course                                                                              |
+| steam-softener     | Steam Softener    | String     | Steam softener option set for the course                                                                   |
+
+The channels `dry-level` to `steam-softener` only exist on V2 washers that support the option.
 
 #### Washer Machine Remote Start Option
 
 These channels are always present, but a remote start only works while it is enabled on the washer (`rs-flag` is ON).
 
-| channel #            | channel           | type               | description                         |
-|----------------------|-------------------|--------------------|-------------------------------------|
-| rs-start-stop        | Remote Start/Stop | Switch             | `ON` starts the washer              |
-| rs-course            | Course to Run     | String (Selection) | Course to use for the remote start  |
-| rs-temperature-level | Temperature Level | String (Selection) | Temperature for the remote start    |
-| rs-spin              | Spin              | String             | Spin speed for the remote start     |
-| rs-rinse             | Rinse             | String             | Rinse option for the remote start   |
+| channel #            | channel           | type               | description                                |
+|----------------------|-------------------|--------------------|--------------------------------------------|
+| rs-start-stop        | Remote Start/Stop | Switch             | `ON` starts the washer                     |
+| rs-course            | Course to Run     | String (Selection) | Course to use for the remote start         |
+| rs-temperature-level | Temperature Level | String (Selection) | Temperature for the remote start           |
+| rs-spin              | Spin              | String             | Spin speed for the remote start            |
+| rs-rinse             | Rinse             | String             | Rinse option for the remote start          |
+| rs-dry-level         | Dry Level         | String (Selection) | Dry level for the remote start             |
+| rs-eco-hybrid        | Eco Hybrid        | String (Selection) | Eco hybrid option for the remote start     |
+| rs-steam             | Steam             | String (Selection) | Steam option for the remote start          |
+| rs-pre-wash          | Pre-Wash          | String (Selection) | Pre-wash option for the remote start       |
+| rs-turbo-wash        | TurboWash         | String (Selection) | TurboWash option for the remote start      |
+| rs-medic-rinse       | Medic Rinse       | String (Selection) | Medic rinse option for the remote start    |
+| rs-soil-wash         | Soil Level        | String (Selection) | Soil level for the remote start            |
+| rs-steam-softener    | Steam Softener    | String (Selection) | Steam softener option for the remote start |
+
+`rs-dry-level` to `rs-steam-softener` only exist if the washer supports setting the option for a remote start.
 
 When remote start gets enabled on the washer, these channels take over its current settings once.
 After that they keep your values, also while the washer is in stand-by. Changing `rs-course` doesn't change the other channels.
@@ -171,6 +191,8 @@ These channels are always present, but a remote start only works while it is ena
 |---------------|-------------------|--------------------|------------------------------------|
 | rs-start-stop | Remote Start/Stop | Switch             | `ON` starts the dryer              |
 | rs-course     | Course to Run     | String (Selection) | Course to use for the remote start |
+
+V2 dryers also get the option channels of the washer for the options they support.
 
 ### Dryer/Washer Tower
 
