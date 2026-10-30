@@ -271,7 +271,11 @@ public abstract class JablotronAlarmHandler extends BaseThingHandler {
     }
 
     public void setStatus(ThingStatus status, ThingStatusDetail detail, String message) {
-        updateStatus(status, detail, message);
+        if (detail == ThingStatusDetail.NONE) {
+            updateStatus(status, message);
+        } else {
+            updateStatus(detail, message);
+        }
     }
 
     public void triggerAlarm(JablotronDiscoveredService service) {

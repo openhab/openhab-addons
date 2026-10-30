@@ -86,7 +86,7 @@ public class HeosPlayerHandler extends HeosThingBaseHandler {
     private synchronized void delayedInitialize() {
         String pid = this.pid;
         if (pid == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Player ID is missing");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Player ID is missing");
             return;
         }
         try {
@@ -97,9 +97,9 @@ public class HeosPlayerHandler extends HeosThingBaseHandler {
             updateStatus(ThingStatus.ONLINE);
         } catch (HeosFunctionalException e) {
             if (e.getCode() == HeosErrorCode.INVALID_ID) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.GONE, e.getCode().toString());
+                updateStatus(ThingStatusDetail.GONE, e.getCode().toString());
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getCode().toString());
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getCode().toString());
             }
         } catch (IOException | ReadException e) {
             logger.debug("Failed to initialize, will try again", e);

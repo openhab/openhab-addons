@@ -33,9 +33,13 @@ import java.time.Instant;
 import java.util.Base64;
 import java.util.HexFormat;
 import java.util.Locale;
+import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 
 import javax.crypto.Cipher;
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -57,13 +61,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonParser;
+import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSyntaxException;
 
 /**
  * Password login for the EU region via the OneApp/CCI API used by the current Kia/Hyundai/Genesis apps.
  * <p>
  * The CCI access token is exchanged for a CCS token that the legacy API accepts as bearer token. This avoids the
- * legacy authorize endpoint, which is blocked for third-party clients since August 2026.
+ * legacy authorize endpoint, which is blocked for third-party clients since August 2026. Since October 2026 the token
+ * requests have to carry the same X-Fingerprint signature as the Android app.
  *
  * @author Carlo Dischler - Initial contribution
  */
@@ -71,11 +80,18 @@ import com.google.gson.JsonSyntaxException;
 class CciAuthenticator {
 
     record Config(String clientId, String redirectUri, String apiBaseUrl, String packageId, String clientName,
-            String osVersion, String notificationProvider) {
+            String osVersion, String notificationProvider, @Nullable Fingerprint fingerprint) {
 
         Config withApiBaseUrl(final String url) {
-            return new Config(clientId, redirectUri, url, packageId, clientName, osVersion, notificationProvider);
+            return new Config(clientId, redirectUri, url, packageId, clientName, osVersion, notificationProvider,
+                    fingerprint);
         }
+    }
+
+    /**
+     * Client name, signing key and brand label the app signs its token requests with.
+     */
+    record Fingerprint(String clientName, String key, String brand) {
     }
 
     record CcsToken(String accessToken, Instant expiry) {
@@ -91,6 +107,17 @@ class CciAuthenticator {
     private static final Duration DEFAULT_TOKEN_LIFETIME = Duration.ofHours(1);
     private static final Duration MAX_TOKEN_LIFETIME = Duration.ofHours(24);
     private static final CciTokens EMPTY = new CciTokens("", "", "", "", "", "", "");
+
+    // the Android app build the signing keys belong to
+    private static final String SIGNED_CLIENT_VERSION = "1.4.0";
+    private static final String SIGNED_OS_CODE = "android";
+    private static final String SIGNED_OS_VERSION = "14";
+    private static final String SIGNED_DEVICE_MODEL = "SM-S918B";
+    private static final String SIGNED_NOTIFICATION_PROVIDER = "FCM";
+    private static final String SIGNED_USER_AGENT = "okhttp/4.12.0";
+    // fingerprint missing, invalid signature, timestamp out of range
+    private static final Set<Integer> FINGERPRINT_REJECTED = Set.of(9035, 9036, 9037);
+    private static final int TIMESTAMP_REJECTED = 9037;
 
     private final Logger logger = LoggerFactory.getLogger(CciAuthenticator.class);
     private final Gson gson = new Gson();
@@ -134,10 +161,12 @@ class CciAuthenticator {
         if (current == null) {
             throw new IllegalStateException("not logged in");
         }
-        final String url = config.apiBaseUrl() + "/domain/api/v2/auth/token-refresh";
-        final Request request = cciRequest(url, current.deviceId(), current.tokens())
-                .content(new StringContentProvider(gson.toJson(current.tokens())), "application/json");
-        final ContentResponse response = send(request, "CCI token refresh");
+        final String body = gson.toJson(current.tokens());
+        final Request unsigned = cciRequest(config.apiBaseUrl() + "/domain/api/v2/auth/token-refresh",
+                current.deviceId(), current.tokens()).content(new StringContentProvider(body), "application/json");
+        final ContentResponse response = sendSigned(
+                signedRequest(config.apiBaseUrl() + "/auth/v2/token-refresh", current.deviceId(), null, body), unsigned,
+                "CCI token refresh");
         final CciTokens tokens = merge(current.tokens(), parseJson(response, CciTokens.class, "CCI token refresh"),
                 cookieValue(response, "t"));
         // the refresh token has been rotated at this point, keep it even if the exchange below fails
@@ -261,20 +290,117 @@ class CciAuthenticator {
     }
 
     private CciTokens exchangeCode(final String deviceId, final String code) throws BluelinkApiException {
-        final String url = config.apiBaseUrl() + "/domain/api/v1/auth/token?code="
-                + URLEncoder.encode(code, StandardCharsets.UTF_8);
-        return sendJson(cciRequest(url, deviceId, null), CciTokens.class, "CCI token exchange");
+        final String query = "?code=" + URLEncoder.encode(code, StandardCharsets.UTF_8);
+        final ContentResponse response = sendSigned(
+                signedRequest(config.apiBaseUrl() + "/auth/v1/token" + query, deviceId, null, ""),
+                cciRequest(config.apiBaseUrl() + "/domain/api/v1/auth/token" + query, deviceId, null),
+                "CCI token exchange");
+        return parseJson(response, CciTokens.class, "CCI token exchange");
     }
 
     private CcsToken exchangeCcsToken(final String deviceId, final CciTokens tokens) throws BluelinkApiException {
-        final String url = config.apiBaseUrl() + "/domain/api/v1/auth/token-exchange?serviceType=CCS";
-        final CcsTokenResponse response = sendJson(cciRequest(url, deviceId, tokens), CcsTokenResponse.class,
+        final String query = "?serviceType=CCS";
+        final ContentResponse response = sendSigned(
+                signedRequest(config.apiBaseUrl() + "/auth/v1/token-exchange" + query, deviceId, tokens, ""),
+                cciRequest(config.apiBaseUrl() + "/domain/api/v1/auth/token-exchange" + query, deviceId, tokens),
                 "CCS token exchange");
-        final String accessToken = response.accessToken();
+        final CcsTokenResponse ccsToken = parseJson(response, CcsTokenResponse.class, "CCS token exchange");
+        final String accessToken = ccsToken.accessToken();
         if (accessToken == null || accessToken.isEmpty()) {
             throw new BluelinkApiException("Invalid token response");
         }
-        return new CcsToken(accessToken, tokenExpiry(response.expiresTime()));
+        return new CcsToken(accessToken, tokenExpiry(ccsToken.expiresTime()));
+    }
+
+    // the unsigned route stays as fallback for brands without a known signing key and in case the check is reverted
+    private ContentResponse sendSigned(final @Nullable Request signed, final Request unsigned, final String op)
+            throws BluelinkApiException {
+        int signedRejection = 0;
+        if (signed != null) {
+            final ContentResponse response = send(signed, op);
+            signedRejection = fingerprintRejection(response);
+            if (signedRejection == 0) {
+                return response;
+            }
+            logger.debug("{}: signed request rejected, using the unsigned route: {}", op,
+                    response.getContentAsString());
+        }
+        final ContentResponse response = send(unsigned, op);
+        if (fingerprintRejection(response) != 0) {
+            logger.debug("{}: unsigned request rejected: {}", op, response.getContentAsString());
+            throw signedRejection == TIMESTAMP_REJECTED
+                    ? new LoginRejectedException(Reason.TIMESTAMP_REJECTED, op + ": timestamp rejected")
+                    : new LoginRejectedException(Reason.SIGNATURE_REJECTED, op + ": signature required");
+        }
+        return response;
+    }
+
+    // the rejection code of the fingerprint check, or 0
+    private static int fingerprintRejection(final ContentResponse response) {
+        if (!HttpStatus.isClientError(response.getStatus())) {
+            return 0;
+        }
+        try {
+            final JsonElement json = JsonParser.parseString(response.getContentAsString());
+            if (json.isJsonObject() && json.getAsJsonObject().get("code") instanceof JsonPrimitive code
+                    && code.isNumber() && FINGERPRINT_REJECTED.contains(code.getAsInt())) {
+                return code.getAsInt();
+            }
+        } catch (final JsonParseException | NumberFormatException e) {
+            // not a fingerprint rejection
+        }
+        return 0;
+    }
+
+    private @Nullable Request signedRequest(final String url, final String deviceId, final @Nullable CciTokens tokens,
+            final String body) {
+        final Fingerprint fingerprint = config.fingerprint();
+        if (fingerprint == null) {
+            return null;
+        }
+        final String timestamp = String.valueOf(System.currentTimeMillis());
+        final Request request = httpClient.newRequest(url).method(HttpMethod.POST)
+                .header("client-id", config.packageId()).header("client-name", fingerprint.clientName())
+                .header("client-version", SIGNED_CLIENT_VERSION).header("client-os-code", SIGNED_OS_CODE)
+                .header("client-os-version", SIGNED_OS_VERSION).header("client-device-id", deviceId)
+                .header("client-device-model", SIGNED_DEVICE_MODEL)
+                .header("client-notification-provider-type", SIGNED_NOTIFICATION_PROVIDER)
+                .header("locale", LANGUAGE.toUpperCase(Locale.ROOT)).header("timezone", timeZoneOffset())
+                .header("App-Request-Id", requestId(deviceId)).header("X-Brand", fingerprint.brand())
+                .header("X-Region", "eu").header(HttpHeader.ACCEPT, "*/*").header(HttpHeader.ACCEPT_LANGUAGE, LANGUAGE)
+                .header(HttpHeader.USER_AGENT, SIGNED_USER_AGENT).header("X-Timestamp", timestamp)
+                .header("X-Fingerprint", fingerprint(config.packageId(), fingerprint, timestamp, body));
+        if (body.isEmpty()) {
+            request.content(new StringContentProvider(""));
+        } else {
+            request.content(new StringContentProvider(body), "application/json");
+        }
+        if (tokens != null) {
+            addTokenHeaders(request, tokens);
+        }
+        return request;
+    }
+
+    // HMAC-SHA256 keyed with the client identity and the signing key, over the identity, OS version, timestamp and the
+    // body without whitespace, as the Android app computes it
+    static String fingerprint(final String packageId, final Fingerprint fingerprint, final String timestamp,
+            final String body) {
+        final String identity = packageId + fingerprint.clientName() + SIGNED_CLIENT_VERSION + SIGNED_OS_CODE;
+        final String message = identity + SIGNED_OS_VERSION + timestamp + body.replaceAll("\\s", "");
+        try {
+            final Mac mac = Mac.getInstance("HmacSHA256");
+            mac.init(new SecretKeySpec((identity + fingerprint.key()).getBytes(StandardCharsets.UTF_8), "HmacSHA256"));
+            return HexFormat.of().formatHex(mac.doFinal(message.getBytes(StandardCharsets.UTF_8)));
+        } catch (final GeneralSecurityException e) {
+            // HmacSHA256 is a mandatory JDK algorithm
+            throw new IllegalStateException(e);
+        }
+    }
+
+    private static String requestId(final String deviceId) {
+        final byte[] random = new byte[12];
+        ThreadLocalRandom.current().nextBytes(random);
+        return HexFormat.of().withUpperCase().formatHex(random) + "_" + deviceId.replace("-", "") + "_AOS";
     }
 
     // expiresTime is the token lifetime in seconds; fall back to a fixed lifetime if it looks wrong
@@ -298,14 +424,18 @@ class CciAuthenticator {
                 .header(HttpHeader.ACCEPT, "application/json").header(HttpHeader.ACCEPT_LANGUAGE, LANGUAGE)
                 .header(HttpHeader.USER_AGENT, USER_AGENT);
         if (tokens != null) {
-            if (!tokens.accessToken().isEmpty()) {
-                request.header(HttpHeader.AUTHORIZATION, "Bearer " + tokens.accessToken());
-            }
-            header(request, "Authentication", tokens.nonCcsToken());
-            header(request, "exchangeable-token", tokens.exchangeableAccessToken());
-            header(request, "non-ccs-token", tokens.nonCcsToken());
+            addTokenHeaders(request, tokens);
         }
         return request;
+    }
+
+    private static void addTokenHeaders(final Request request, final CciTokens tokens) {
+        if (!tokens.accessToken().isEmpty()) {
+            request.header(HttpHeader.AUTHORIZATION, "Bearer " + tokens.accessToken());
+        }
+        header(request, "Authentication", tokens.nonCcsToken());
+        header(request, "exchangeable-token", tokens.exchangeableAccessToken());
+        header(request, "non-ccs-token", tokens.nonCcsToken());
     }
 
     private static void header(final Request request, final String name, final String value) {

@@ -171,7 +171,7 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
         }
 
         if (configError != null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, configError);
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, configError);
             return;
         }
 
@@ -181,7 +181,7 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
         } else if (port != null) {
             connector = new OppoIpConnector(host, port, isBdpIP, model.isDvd(), getThing().getUID().getAsString());
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.port-select");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.port-select");
             return;
         }
 
@@ -350,7 +350,7 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
                 }
             } catch (OppoException e) {
                 logger.debug("Command {} from channel {} failed: {}", command, channel, e.getMessage());
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Sending command failed");
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "Sending command failed");
                 closeConnection();
                 scheduleReconnectJob();
             }
@@ -787,7 +787,7 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
                     }
 
                     if (!connected) {
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                        updateStatus(ThingStatusDetail.COMMUNICATION_ERROR);
                         closeConnection();
                     }
                 }
@@ -910,8 +910,7 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
                     // the player is not responding even though the connection is still good
                     if ((System.currentTimeMillis() - lastEventReceived) > (POLLING_INTERVAL_SEC * 1.25 * 1000)) {
                         logger.debug("Player not responding to status requests");
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                "Player not responding to status requests");
+                        updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "Player not responding to status requests");
                         closeConnection();
                         scheduleReconnectJob();
                     }

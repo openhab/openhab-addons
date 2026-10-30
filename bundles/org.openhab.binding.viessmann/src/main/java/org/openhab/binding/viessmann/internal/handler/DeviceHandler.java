@@ -35,6 +35,7 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -47,6 +48,8 @@ import org.openhab.binding.viessmann.internal.dto.device.StoredChannelValues;
 import org.openhab.binding.viessmann.internal.dto.features.FeatureCommand;
 import org.openhab.binding.viessmann.internal.dto.features.FeatureCommandParams;
 import org.openhab.binding.viessmann.internal.dto.features.FeatureDataDTO;
+import org.openhab.binding.viessmann.internal.dto.features.FeatureErrorEntries;
+import org.openhab.binding.viessmann.internal.dto.features.FeatureErrorValue;
 import org.openhab.binding.viessmann.internal.dto.features.FeatureProperties;
 import org.openhab.binding.viessmann.internal.dto.schedule.DaySchedule;
 import org.openhab.binding.viessmann.internal.dto.schedule.ScheduleDTO;
@@ -127,8 +130,7 @@ public class DeviceHandler extends ViessmannThingHandler {
         ThingsConfig config = getConfigAs(ThingsConfig.class);
         this.config = config;
         if (config.deviceId.isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.conf-error.device-id");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.conf-error.device-id");
             return;
         }
         updateProperty(PROPERTY_ID, config.deviceId); // set representation property used by discovery
@@ -265,8 +267,7 @@ public class DeviceHandler extends ViessmannThingHandler {
     public void initChannelState() {
         BridgeInterface bridgeInterface = getBridgeInterface();
         if (bridgeInterface == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.conf-error.bridge-type");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.conf-error.bridge-type");
             return;
         }
         bridgeInterface.setConfigInstallationGatewayIdToDevice(this);
@@ -515,8 +516,7 @@ public class DeviceHandler extends ViessmannThingHandler {
     private void sendChannelCommand(String uri, String param, int delaySeconds, boolean reloadFeatures) {
         BridgeInterface bridge = getBridgeInterface();
         if (bridge == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.conf-error.bridge-type");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.conf-error.bridge-type");
             return;
         }
 
@@ -525,7 +525,7 @@ public class DeviceHandler extends ViessmannThingHandler {
                 scheduler.schedule(this::initChannelState, delaySeconds, TimeUnit.SECONDS);
             }
         } catch (ViessmannCommunicationException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 
@@ -683,6 +683,10 @@ public class DeviceHandler extends ViessmannThingHandler {
                     msg.setSuffix("schedule");
                     typeEntry = prop.entries.type;
                     valueEntry = new Gson().toJson(prop.entries.value);
+                    break;
+                case "errorEntries":
+                    typeEntry = "array";
+                    valueEntry = joinErrorCodes(prop.errorEntries);
                     break;
                 case "overlapAllowed":
                     typeEntry = prop.overlapAllowed.type;
@@ -900,6 +904,10 @@ public class DeviceHandler extends ViessmannThingHandler {
                 default:
                     AdditionalProperty additionalProperty = resolveAdditionalProperty(prop, entry);
                     if (additionalProperty == null) {
+                        JsonElement additional = prop.additionalProperties.get(entry);
+                        if (additional != null) {
+                            logger.trace("Skipping unsupported additional property '{}': {}", entry, additional);
+                        }
                         continue;
                     }
                     typeEntry = additionalProperty.type();
@@ -1151,9 +1159,21 @@ public class DeviceHandler extends ViessmannThingHandler {
         }
     }
 
-    private @Nullable AdditionalProperty resolveAdditionalProperty(FeatureProperties properties, String entry) {
+    /**
+     * Joins the codes of the messages of a feature such as {@code device.messages.status.raw} into a comma separated
+     * list. The list is empty if the feature has no active message.
+     */
+    static String joinErrorCodes(@Nullable FeatureErrorEntries errorEntries) {
+        List<FeatureErrorValue> values = errorEntries == null ? null : errorEntries.value;
+        if (values == null) {
+            return "";
+        }
+        return values.stream().map(v -> v.errorCode).filter(Objects::nonNull).collect(Collectors.joining(","));
+    }
+
+    static @Nullable AdditionalProperty resolveAdditionalProperty(FeatureProperties properties, String entry) {
         JsonElement additional = properties.additionalProperties.get(entry);
-        if (additional == null) {
+        if (additional == null || "vin".equals(entry) || "materialId".equals(entry)) {
             return null;
         }
         String typeEntry = "string";
@@ -1208,7 +1228,7 @@ public class DeviceHandler extends ViessmannThingHandler {
         return new AdditionalProperty(typeEntry, valueEntry, unit, boolValue);
     }
 
-    private record AdditionalProperty(String type, String value, @Nullable String unit, boolean boolValue) {
+    record AdditionalProperty(String type, String value, @Nullable String unit, boolean boolValue) {
     }
 
     /**

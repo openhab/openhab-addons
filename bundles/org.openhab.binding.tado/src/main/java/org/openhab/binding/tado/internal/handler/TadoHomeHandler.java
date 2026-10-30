@@ -24,6 +24,7 @@ import javax.measure.Unit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.tado.internal.TadoBindingConstants;
 import org.openhab.binding.tado.internal.TadoBindingConstants.TemperatureUnit;
 import org.openhab.binding.tado.internal.api.HomeApiFactory;
@@ -138,13 +139,13 @@ public class TadoHomeHandler extends BaseBridgeHandler implements AccessTokenRef
                 // Get user info to verify successful authentication and connection to server
                 User user = api.showUser();
                 if (user == null) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, confPendingText);
+                    updateStatus(ThingStatusDetail.AUTHORIZATION_PENDING, confPendingText);
                     return;
                 }
 
                 List<UserHomes> homes = user.getHomes();
                 if (homes == null || homes.isEmpty()) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, CONF_ERROR_NO_HOME);
+                    updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, CONF_ERROR_NO_HOME);
                     return;
                 }
 
@@ -167,7 +168,7 @@ public class TadoHomeHandler extends BaseBridgeHandler implements AccessTokenRef
                 }
 
                 if (firstHomeId == null) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, CONF_ERROR_NO_HOME_ID);
+                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, CONF_ERROR_NO_HOME_ID);
                     return;
                 }
 
@@ -181,7 +182,11 @@ public class TadoHomeHandler extends BaseBridgeHandler implements AccessTokenRef
             updateProperty(PROPERTY_HOME_TEMPERATURE_UNIT, temperatureUnit.name());
         } catch (IOException | ApiException e) {
             logger.debug("Error accessing tado server: {}", e.getMessage());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, confPendingText);
+            boolean authorizationRequired = e instanceof ApiException apiException
+                    && (apiException.getCode() == HttpStatus.UNAUTHORIZED_401
+                            || apiException.getCode() == HttpStatus.FORBIDDEN_403);
+            updateStatus(authorizationRequired ? ThingStatusDetail.AUTHORIZATION_PENDING
+                    : ThingStatusDetail.COMMUNICATION_ERROR, confPendingText);
             return;
         }
 

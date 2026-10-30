@@ -150,7 +150,7 @@ public class AirGradientLocalHandler extends BaseThingHandler {
     public void initialize() {
         apiConfig = getConfigAs(AirGradientAPIConfiguration.class);
         if (!apiConfig.isValid()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                     "Need to set hostname to a valid URL. Refresh interval needs to be a positive integer.");
             return;
         }
@@ -217,7 +217,7 @@ public class AirGradientLocalHandler extends BaseThingHandler {
             cachedDeviceSignature = deviceSignature;
 
         } catch (AirGradientCommunicationException agce) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, agce.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, agce.getMessage());
         }
     }
 
@@ -228,7 +228,7 @@ public class AirGradientLocalHandler extends BaseThingHandler {
             apiController.setConfig(config);
             updateStatus(ThingStatus.ONLINE);
         } catch (AirGradientCommunicationException agce) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, agce.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, agce.getMessage());
         }
     }
 

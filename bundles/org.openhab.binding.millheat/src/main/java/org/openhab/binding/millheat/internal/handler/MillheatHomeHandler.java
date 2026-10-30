@@ -67,7 +67,7 @@ public class MillheatHomeHandler extends MillheatBaseThingHandler {
     protected void handleCommand(final ChannelUID channelUID, final Command command, final MillheatModel model) {
         final Optional<Home> optionalHome = model.findHomeById(homeId);
         if (optionalHome.isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.GONE);
+            updateStatus(ThingStatusDetail.GONE);
             return;
         }
         updateStatus(ThingStatus.ONLINE);
@@ -132,7 +132,7 @@ public class MillheatHomeHandler extends MillheatBaseThingHandler {
         logger.debug("Initializing Mill home using config {}", config);
         final String configuredHomeId = config.homeId;
         if (configuredHomeId == null || configuredHomeId.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                     "Home ID is required. Identifiers changed to UUIDs with the new Mill cloud API, so a numeric ID from an older configuration will not work; re-run discovery.");
             return;
         }

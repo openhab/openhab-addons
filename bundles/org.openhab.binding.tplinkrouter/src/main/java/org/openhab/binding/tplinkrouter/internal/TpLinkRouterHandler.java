@@ -183,7 +183,7 @@ public class TpLinkRouterHandler extends BaseThingHandler implements TpLinkRoute
                 updateState(channelUIDCommand.getChannelUID(), (State) channelUIDCommand.getCommand());
             }
         } else if ("Login incorrect. Try again.".equals(line)) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Login or password incorrect");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Login or password incorrect");
         }
     }
 
@@ -209,7 +209,7 @@ public class TpLinkRouterHandler extends BaseThingHandler implements TpLinkRoute
 
     @Override
     public void onCommunicationUnavailable() {
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+        updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                 "Connection not available. Check if there is not another open connection.");
     }
 }

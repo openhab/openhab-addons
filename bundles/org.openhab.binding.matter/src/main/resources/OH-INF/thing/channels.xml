@@ -1048,4 +1048,30 @@
 		<state readOnly="true"/>
 	</channel-type>
 
+	<!-- ICD Management Channels -->
+	<channel-type id="icdmanagement-checkinregistered" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Check-In Registered</label>
+		<description>Indicates if openHAB is registered to receive check-ins from this sleepy device. The device then
+			wakes up
+			regularly to check in with openHAB.</description>
+		<category>Status</category>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="icdmanagement-lastcheckin" advanced="true">
+		<item-type>DateTime</item-type>
+		<label>Last Check-In</label>
+		<description>The time this sleepy device last checked in with openHAB.</description>
+		<category>Time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
 </thing:thing-descriptions>

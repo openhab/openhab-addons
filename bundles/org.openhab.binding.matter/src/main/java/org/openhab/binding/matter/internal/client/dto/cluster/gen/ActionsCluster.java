@@ -47,7 +47,7 @@ public class ActionsCluster extends BaseCluster {
     public List<EndpointListStruct> endpointLists; // 1 list R V
     /**
      * The SetupURL attribute (when provided) shall indicate a URL; its syntax shall follow the syntax as specified in
-     * RFC 1738, max. 512 ASCII characters and shall use the https scheme. The location referenced by this URL shall
+     * RFC1738, max. 512 ASCII characters and shall use the https scheme. The location referenced by this URL shall
      * provide additional information for the actions provided:
      * - When used without suffix, it shall provide information about the various actions which the cluster provides.
      * - Example: SetupURL could take the value of example://Actions or https://domain.example/Matter/bridgev1/Actions

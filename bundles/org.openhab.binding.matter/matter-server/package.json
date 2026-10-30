@@ -33,9 +33,9 @@
         "webpack-cli": "^5.1.4"
     },
     "dependencies": {
-        "@matter/main": "0.17.9",
-        "@matter/node": "0.17.9",
-        "@project-chip/matter.js": "0.17.9",
+        "@matter/dcl-data": "2026.10.21",
+        "@matter/main": "0.18.0",
+        "@matter/node": "0.18.0",
         "ws": "^8.18.0",
         "yargs": "^17.7.2"
     },

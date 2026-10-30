@@ -21,6 +21,8 @@ import static org.openhab.binding.shelly.internal.ShellyDevices.*;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.now;
 
 import java.lang.reflect.Field;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -135,7 +137,9 @@ class ShellyBaseHandlerWatchdogTest {
         setField(handler, "stopping", true);
         handler.setCallback(callback);
 
-        handler.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "gone");
+        handler.updateStatus(ThingStatus.OFFLINE);
+        handler.updateStatus(ThingStatus.OFFLINE, "gone");
+        handler.updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "gone");
 
         verify(callback, never()).statusUpdated(any(), any());
     }
@@ -195,8 +199,7 @@ class ShellyBaseHandlerWatchdogTest {
 
         assertThrows(ShellyApiException.class, () -> handler.initializeThing());
 
-        verify(handler, times(expectPending ? 1 : 0)).updateStatus(eq(ThingStatus.ONLINE),
-                eq(ThingStatusDetail.CONFIGURATION_PENDING), any());
+        verify(handler, times(expectPending ? 1 : 0)).updateStatus(eq(ThingStatusDetail.CONFIGURATION_PENDING), any());
     }
 
     private static ShellyBaseHandler prepareHandler(ShellyApiInterface api, ThingTypeUID thingType) throws Exception {
@@ -211,6 +214,9 @@ class ShellyBaseHandlerWatchdogTest {
         setField(handler, "logger", LoggerFactory.getLogger(ShellyBaseHandler.class));
         setField(handler, "messages", mock(ShellyTranslationProvider.class));
         setField(handler, "stats", new ShellyDeviceStats());
+        setField(handler, "vibrationFilter", new AtomicInteger());
+        setField(handler, "lastWakeupReason", new AtomicReference<>(""));
+        setField(handler, "initLock", new Object());
         setField(handler, "skipCount", 1);
         setField(handler, "watchdog", now());
         setField(handler, "thing", thing);
@@ -219,7 +225,7 @@ class ShellyBaseHandlerWatchdogTest {
         when(thing.getStatus()).thenReturn(ThingStatus.ONLINE);
         when(thing.getThingTypeUID()).thenReturn(thingType);
         doReturn(ThingStatusDetail.NONE).when(handler).getThingStatusDetail();
-        doNothing().when(handler).updateStatus(any(ThingStatus.class), any(ThingStatusDetail.class), any());
+        doNothing().when(handler).updateStatus(any(ThingStatusDetail.class), any());
         return handler;
     }
 

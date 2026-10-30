@@ -95,7 +95,7 @@ public class OneWireGPIOHandler extends BaseThingHandler {
     private boolean checkConfiguration() {
         if (gpioBusFile == null || gpioBusFile.isEmpty()) {
             logger.debug("GPIO_BUS_FILE not set. Please check configuration, and set proper path to w1_slave file.");
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                     "The path to the w1_slave sensor data file is missing.");
             return false;
         }
@@ -169,7 +169,7 @@ public class OneWireGPIOHandler extends BaseThingHandler {
             }
         } catch (IOException | InvalidPathException e) {
             logger.debug("error reading GPIO bus file. File path is: {}.  Check if path is proper.", gpioFile, e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Error reading GPIO bus file.");
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "Error reading GPIO bus file.");
             return null;
         }
     }

@@ -27,6 +27,7 @@ import org.openhab.binding.melcloud.internal.api.dto.Device;
 import org.openhab.binding.melcloud.internal.exceptions.MelCloudCommException;
 import org.openhab.binding.melcloud.internal.exceptions.MelCloudLoginException;
 import org.openhab.binding.melcloud.internal.handler.MelCloudAccountHandler;
+import org.openhab.binding.melcloud.internal.logging.SensitiveDataMasker;
 import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.thing.Thing;
@@ -119,7 +120,8 @@ public class MelCloudDiscoveryService extends AbstractThingHandlerDiscoveryServi
                     deviceProperties.put("buildingID", device.getBuildingID().toString());
 
                     String label = createLabel(device);
-                    logger.debug("Found device: {} : {}", label, deviceProperties);
+                    logger.debug("Found device: {} (id={})", label,
+                            SensitiveDataMasker.maskId(device.getDeviceID().toString()));
 
                     thingDiscovered(
                             DiscoveryResultBuilder.create(deviceThing).withLabel(label).withProperties(deviceProperties)

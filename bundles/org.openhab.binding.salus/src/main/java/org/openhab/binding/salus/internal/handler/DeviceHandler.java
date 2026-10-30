@@ -16,7 +16,6 @@ import static java.math.RoundingMode.HALF_EVEN;
 import static java.util.Objects.requireNonNull;
 import static org.openhab.binding.salus.internal.SalusBindingConstants.BINDING_ID;
 import static org.openhab.binding.salus.internal.SalusBindingConstants.SalusDevice.DSN;
-import static org.openhab.core.thing.ThingStatus.OFFLINE;
 import static org.openhab.core.thing.ThingStatus.ONLINE;
 import static org.openhab.core.thing.ThingStatusDetail.*;
 import static org.openhab.core.types.RefreshType.REFRESH;
@@ -75,12 +74,12 @@ public class DeviceHandler extends BaseThingHandler {
     public void initialize() {
         var bridge = getBridge();
         if (bridge == null) {
-            updateStatus(OFFLINE, BRIDGE_UNINITIALIZED, "@text/device-handler.initialize.errors.no-bridge");
+            logger.debug("Bridge unavailable for Thing {}", getThing().getUID());
             return;
         }
         var bridgeHandler = bridge.getHandler();
         if (!(bridgeHandler instanceof AbstractBridgeHandler<?> cloudHandler)) {
-            updateStatus(OFFLINE, BRIDGE_UNINITIALIZED, "@text/device-handler.initialize.errors.bridge-wrong-type");
+            updateStatus(CONFIGURATION_ERROR, "@text/device-handler.initialize.errors.bridge-wrong-type");
             return;
         }
         this.cloudApi = cloudHandler;
@@ -88,32 +87,31 @@ public class DeviceHandler extends BaseThingHandler {
         dsn = (String) getConfig().get(DSN);
 
         if ("".equals(dsn)) {
-            updateStatus(OFFLINE, CONFIGURATION_ERROR,
-                    "@text/device-handler.initialize.errors.no-dsn [\"" + DSN + "\"]");
+            updateStatus(CONFIGURATION_ERROR, "@text/device-handler.initialize.errors.no-dsn [\"" + DSN + "\"]");
             return;
         }
 
         try {
             var device = this.cloudApi.findDevice(dsn);
             if (device.isEmpty()) {
-                updateStatus(OFFLINE, COMMUNICATION_ERROR,
+                updateStatus(COMMUNICATION_ERROR,
                         "@text/device-handler.initialize.errors.dsn-not-found [\"" + dsn + "\"]");
                 return;
             }
             if (!device.get().connected()) {
-                updateStatus(OFFLINE, COMMUNICATION_ERROR,
+                updateStatus(COMMUNICATION_ERROR,
                         "@text/device-handler.initialize.errors.dsn-not-connected [\"" + dsn + "\"]");
                 return;
             }
             var channels = findDeviceProperties().stream().map(this::buildChannel).toList();
             if (channels.isEmpty()) {
-                updateStatus(OFFLINE, CONFIGURATION_ERROR,
+                updateStatus(CONFIGURATION_ERROR,
                         "@text/device-handler.initialize.errors.no-channels [\"" + dsn + "\"]");
                 return;
             }
             updateChannels(channels);
         } catch (Exception e) {
-            updateStatus(OFFLINE, COMMUNICATION_ERROR, "@text/device-handler.initialize.errors.general-error");
+            updateStatus(COMMUNICATION_ERROR, "@text/device-handler.initialize.errors.general-error");
             return;
         }
 
@@ -207,9 +205,6 @@ public class DeviceHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (command != REFRESH && cloudApi.isReadOnly()) {
-            return;
-        }
         try {
             if (command instanceof RefreshType) {
                 handleRefreshCommand(channelUID);
@@ -229,7 +224,7 @@ public class DeviceHandler extends BaseThingHandler {
             }
         } catch (AuthSalusApiException | SalusApiException e) {
             logger.debug("Error while handling command `{}` on channel `{}`", command, channelUID, e);
-            updateStatus(OFFLINE, COMMUNICATION_ERROR, e.getLocalizedMessage());
+            updateStatus(COMMUNICATION_ERROR, e.getLocalizedMessage());
         }
     }
 
@@ -280,6 +275,7 @@ public class DeviceHandler extends BaseThingHandler {
             return;
         }
         updateState(channelUID, state);
+        updateStatus(ONLINE);
     }
 
     private SortedSet<DeviceProperty<?>> findDeviceProperties() throws SalusApiException, AuthSalusApiException {
@@ -296,7 +292,9 @@ public class DeviceHandler extends BaseThingHandler {
             logger.warn("Channel {} not found in channelUidMap!", id);
             return;
         }
-        cloudApi.setValueForProperty(dsn, salusId, command);
+        if (cloudApi.setValueForProperty(dsn, salusId, command)) {
+            updateStatus(ONLINE);
+        }
         handleCommand(channelUID, REFRESH);
     }
 
@@ -307,18 +305,27 @@ public class DeviceHandler extends BaseThingHandler {
         }
         var id = channelUID.getId();
         String salusId;
-        long value;
+        var decimalValue = command.toBigDecimal();
         if (channelUidMap.containsKey(id)) {
             salusId = requireNonNull(channelUidMap.get(id));
-            value = command.toBigDecimal().longValue();
         } else if (channelX100UidMap.containsKey(id)) {
             salusId = requireNonNull(channelX100UidMap.get(id));
-            value = command.toBigDecimal().multiply(ONE_HUNDRED).longValue();
+            decimalValue = decimalValue.multiply(ONE_HUNDRED);
         } else {
             logger.warn("Channel {} not found in channelUidMap and channelX100UidMap!", id);
             return;
         }
-        cloudApi.setValueForProperty(dsn, salusId, value);
+        long value;
+        try {
+            value = decimalValue.longValueExact();
+        } catch (ArithmeticException e) {
+            logger.debug("Ignoring command {} on channel {}: scaled value must be a 64-bit integer", command,
+                    channelUID);
+            return;
+        }
+        if (cloudApi.setValueForProperty(dsn, salusId, value)) {
+            updateStatus(ONLINE);
+        }
         handleCommand(channelUID, REFRESH);
     }
 
@@ -333,7 +340,9 @@ public class DeviceHandler extends BaseThingHandler {
             return;
         }
         var value = command.toFullString();
-        cloudApi.setValueForProperty(dsn, salusId, value);
+        if (cloudApi.setValueForProperty(dsn, salusId, value)) {
+            updateStatus(ONLINE);
+        }
         handleCommand(channelUID, REFRESH);
     }
 }

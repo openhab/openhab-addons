@@ -115,7 +115,11 @@ public abstract class BaseEvohomeHandler extends BaseThingHandler {
     protected void updateEvohomeThingStatus(ThingStatus newStatus, ThingStatusDetail detail, @Nullable String message) {
         // Prevent spamming the log file
         if (!newStatus.equals(getThing().getStatus())) {
-            updateStatus(newStatus, detail, message);
+            if (detail == ThingStatusDetail.NONE) {
+                updateStatus(newStatus, message);
+            } else {
+                updateStatus(detail, message);
+            }
         }
     }
 
@@ -126,7 +130,7 @@ public abstract class BaseEvohomeHandler extends BaseThingHandler {
      */
     private void checkConfig() {
         if (configuration.id.isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Id not configured");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Id not configured");
         }
     }
 }

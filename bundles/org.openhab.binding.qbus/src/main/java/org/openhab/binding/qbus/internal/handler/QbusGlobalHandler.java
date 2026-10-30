@@ -20,9 +20,10 @@ import org.openhab.binding.qbus.internal.QbusBridgeHandler;
 import org.openhab.binding.qbus.internal.protocol.QbusCommunication;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
-import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link QbusGlobalHandler} is used in other handlers, to share the functions.
@@ -32,6 +33,7 @@ import org.openhab.core.thing.binding.BaseThingHandler;
 
 @NonNullByDefault
 public abstract class QbusGlobalHandler extends BaseThingHandler {
+    private final Logger logger = LoggerFactory.getLogger(QbusGlobalHandler.class);
 
     public QbusGlobalHandler(Thing thing) {
         super(thing);
@@ -51,8 +53,11 @@ public abstract class QbusGlobalHandler extends BaseThingHandler {
         }
 
         if (qBridgeHandler == null) {
-            updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.BRIDGE_UNINITIALIZED,
-                    "No bridge handler initialized for " + type + " with id " + globalId + ".");
+            if (globalId == null) {
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "No global ID configured for " + type + ".");
+            } else {
+                logger.debug("Bridge handler unavailable for Thing {}", getThing().getUID());
+            }
             return null;
         }
         return qBridgeHandler.getCommunication();
@@ -68,8 +73,8 @@ public abstract class QbusGlobalHandler extends BaseThingHandler {
     public @Nullable QbusBridgeHandler getBridgeHandler(String type, @Nullable Integer globalId) {
         Bridge qBridge = getBridge();
         if (qBridge == null) {
-            updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.BRIDGE_UNINITIALIZED,
-                    "No bridge initialized for " + type + " with ID " + globalId);
+            logger.debug("Bridge unavailable for Thing {} (type {}, global ID {})", getThing().getUID(), type,
+                    globalId);
             return null;
         }
         return (QbusBridgeHandler) qBridge.getHandler();
@@ -86,10 +91,10 @@ public abstract class QbusGlobalHandler extends BaseThingHandler {
             qComm.restartCommunication();
         } catch (InterruptedException e) {
             String message = e.toString();
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message);
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, message);
         } catch (IOException e) {
             String message = e.toString();
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message);
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, message);
         }
 
         QbusBridgeHandler qBridgeHandler = getBridgeHandler(type, globalId);
@@ -107,6 +112,6 @@ public abstract class QbusGlobalHandler extends BaseThingHandler {
      * @param message
      */
     public void thingOffline(ThingStatusDetail detail, String message) {
-        updateStatus(ThingStatus.OFFLINE, detail, message);
+        updateStatus(detail, message);
     }
 }

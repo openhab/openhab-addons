@@ -69,6 +69,20 @@
 			<default>true</default>
 			<advanced>true</advanced>
 		</parameter>
+		<parameter name="ipControl" type="boolean">
+			<label>Use IP Control</label>
+			<description>Use Samsung IP Control (port 1516) for power state, the input source and to switch off from art mode.
+				Enable IP Remote on the TV first. The TV asks you to accept the connection the next time it
+				is on and not in art
+				mode.</description>
+			<default>false</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="ipControlToken" type="text" readOnly="true">
+			<label>IP Control Token</label>
+			<description>Security token for IP Control, received when the connection is accepted on the TV</description>
+			<advanced>true</advanced>
+		</parameter>
 		<parameter name="smartThingsApiKey" type="text" groupName="Cloud Connection">
 			<label>Smartthings PAT</label>
 			<description>Go to https://account.smartthings.com/tokens and obtain a Personal Access Token, enter it here.</description>

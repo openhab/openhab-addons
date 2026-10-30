@@ -28,9 +28,11 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.jupnp.UpnpService;
 import org.jupnp.model.meta.Device;
 import org.jupnp.model.meta.LocalDevice;
@@ -41,8 +43,11 @@ import org.openhab.binding.samsungtv.internal.Utils;
 import org.openhab.binding.samsungtv.internal.WakeOnLanUtility;
 import org.openhab.binding.samsungtv.internal.WolSend;
 import org.openhab.binding.samsungtv.internal.config.SamsungTvConfiguration;
+import org.openhab.binding.samsungtv.internal.protocol.IpControl;
+import org.openhab.binding.samsungtv.internal.protocol.IpControlException;
 import org.openhab.binding.samsungtv.internal.protocol.RemoteControllerException;
 import org.openhab.binding.samsungtv.internal.protocol.RemoteControllerLegacy;
+import org.openhab.binding.samsungtv.internal.service.IpControlService;
 import org.openhab.binding.samsungtv.internal.service.MainTVServerService;
 import org.openhab.binding.samsungtv.internal.service.MediaRendererService;
 import org.openhab.binding.samsungtv.internal.service.RemoteControllerService;
@@ -78,6 +83,8 @@ import com.google.gson.JsonSyntaxException;
  * @author Arjan Mels - Remove RegistryListener, manually create RemoteService in all circumstances, add sending of WOL
  *         package to power on TV
  * @author Nick Waterton - Improve Frame TV handling and some refactoring
+ * @author Nick Waterton - Keep art mode when 2025 Frame TV's report standby
+ * @author Nick Waterton - Added IP Control power state
  */
 @NonNullByDefault
 public class SamsungTvHandler extends BaseThingHandler implements RegistryListener {
@@ -88,16 +95,25 @@ public class SamsungTvHandler extends BaseThingHandler implements RegistryListen
     // common Samsung TV remote control ports
     private static final List<Integer> PORTS = List.of(55000, 1515, 7001, 15500);
 
+    // time to wait before asking for another IP Control token after a failed attempt
+    private static final long IP_CONTROL_PAIRING_HOLDOFF_MS = TimeUnit.MINUTES.toMillis(5);
+
     private final Logger logger = LoggerFactory.getLogger(SamsungTvHandler.class);
 
     private final UpnpIOService upnpIOService;
     private final UpnpService upnpService;
     private final WebSocketFactory webSocketFactory;
+    private final HttpClient ipControlHttpClient;
+
+    private volatile @Nullable IpControl ipControl;
+    private final AtomicBoolean ipControlPairing = new AtomicBoolean();
+    private volatile long ipControlPairingAllowedAt = 0;
 
     public SamsungTvConfiguration configuration;
 
     public String host = "";
     private String modelName = "";
+    private int modelYear = 0;
     public int artApiVersion = 0;
 
     /* Samsung TV services */
@@ -115,6 +131,7 @@ public class SamsungTvHandler extends BaseThingHandler implements RegistryListen
 
     private Optional<ScheduledFuture<?>> pollingJob = Optional.empty();
     private WolSend wolTask = new WolSend(this);
+    private final ModeOnWake modeOnWake = new ModeOnWake();
 
     /** Description of the json returned for the information endpoint */
     @NonNullByDefault({})
@@ -172,14 +189,22 @@ public class SamsungTvHandler extends BaseThingHandler implements RegistryListen
         public String getModelName() {
             return Optional.ofNullable(device).map(a -> a.modelName).orElse("");
         }
+
+        /**
+         * @return model year, eg model "22_PONTUSM_FTV" is 22, 0 if unknown
+         */
+        public int getModelYear() {
+            return Utils.getModelYear(getModel());
+        }
     }
 
     public SamsungTvHandler(Thing thing, UpnpIOService upnpIOService, UpnpService upnpService,
-            WebSocketFactory webSocketFactory) {
+            WebSocketFactory webSocketFactory, HttpClient ipControlHttpClient) {
         super(thing);
         this.upnpIOService = upnpIOService;
         this.upnpService = upnpService;
         this.webSocketFactory = webSocketFactory;
+        this.ipControlHttpClient = ipControlHttpClient;
         this.configuration = getConfigAs(SamsungTvConfiguration.class);
         this.host = configuration.getHostName();
         logger.debug("{}: Create a Samsung TV Handler for thing '{}'", host, getThing().getUID());
@@ -313,9 +338,9 @@ public class SamsungTvHandler extends BaseThingHandler implements RegistryListen
     public void updateSettings(TVProperties properties) {
         setPowerState("on".equals(properties.getPowerState()));
         setModelName(properties.getModelName());
-        int year = Integer.parseInt(properties.getModel().substring(0, 2));
+        int year = properties.getModelYear();
         if (properties.getFrameTVSupport() && year >= 22) {
-            logger.warn("{}: Art Mode MAY NOT BE SUPPORTED on Frame TV's after 2021 model year", host);
+            logger.debug("{}: Art Mode MAY NOT BE SUPPORTED on Frame TV's after 2021 model year", host);
             setArtMode2022(true);
             artApiVersion = 1;
         }
@@ -326,8 +351,8 @@ public class SamsungTvHandler extends BaseThingHandler implements RegistryListen
     }
 
     public void showConfiguration() {
-        logger.debug("{}: Configuration: {}, port: {}, token: {}, MAC: {}, subscription: {}", host,
-                configuration.getProtocol(), configuration.getPort(), configuration.getWebsocketToken(),
+        logger.debug("{}: Configuration: {}, port: {}, token set: {}, MAC: {}, subscription: {}", host,
+                configuration.getProtocol(), configuration.getPort(), !configuration.getWebsocketToken().isBlank(),
                 configuration.getMacAddress(), configuration.getSubscription());
         if (configuration.isWebsocketProtocol()) {
             if (configuration.getSmartThingsApiKey().isBlank()) {
@@ -339,18 +364,189 @@ public class SamsungTvHandler extends BaseThingHandler implements RegistryListen
     }
 
     /**
-     * get PowerState from TVProperties
+     * get PowerState from IP Control if enabled, otherwise from TVProperties
      * Note: Series 7 TV's do not have the PowerState value
      *
      * @return String giving power state (TV can be on or standby, off if unreachable)
      */
     public String fetchPowerState() {
         logger.trace("{}: fetching TV Power State", host);
-        TVProperties properties = fetchTVProperties(0, 2);
-        String powerState = properties.getPowerState();
+        String powerState = fetchIpControlPowerState().orElseGet(() -> {
+            TVProperties properties = fetchTVProperties(0, 2);
+            if (properties.getModelYear() > 0) {
+                modelYear = properties.getModelYear();
+            }
+            return properties.getPowerState();
+        });
         setPowerState("on".equals(powerState));
         logger.debug("{}: PowerState is: {}", host, powerState);
         return powerState;
+    }
+
+    /**
+     * IP Control reports art mode as power on, unlike REST on some TV's. If IP Control does not answer (2021 TV's
+     * refuse the connection in standby), the caller falls back to REST.
+     *
+     * @return "on" or "standby", empty if IP Control is not enabled, not paired or did not answer
+     */
+    private Optional<String> fetchIpControlPowerState() {
+        IpControl ipControl = this.ipControl;
+        String token = configuration.getIpControlToken();
+        if (ipControl == null || token.isBlank()) {
+            return Optional.empty();
+        }
+        try {
+            return Optional.of(ipControl.isPowerOn(token) ? "on" : "standby");
+        } catch (IpControlException e) {
+            handleIpControlError(e);
+            return Optional.empty();
+        }
+    }
+
+    /**
+     * @return art mode state from IP Control, empty if IP Control is not available or the TV is not on
+     */
+    private Optional<Boolean> fetchIpControlArtMode() {
+        IpControl ipControl = this.ipControl;
+        String token = configuration.getIpControlToken();
+        if (ipControl == null || token.isBlank()) {
+            return Optional.empty();
+        }
+        try {
+            // art mode stays on in standby on some TV's, so check power first
+            return ipControl.isPowerOn(token) ? Optional.of(ipControl.isArtModeOn(token)) : Optional.empty();
+        } catch (IpControlException e) {
+            handleIpControlError(e);
+            return Optional.empty();
+        }
+    }
+
+    /**
+     * Wake the TV using IP Control, which works from network standby where WOL may not
+     *
+     * @return true if the TV accepted the command, false if IP Control is not available
+     */
+    public boolean ipControlPowerOn() {
+        IpControl ipControl = this.ipControl;
+        String token = configuration.getIpControlToken();
+        if (ipControl == null || token.isBlank()) {
+            return false;
+        }
+        try {
+            ipControl.powerOn(token);
+            logger.debug("{}: IP Control powerOn sent", host);
+            return true;
+        } catch (IpControlException e) {
+            handleIpControlError(e);
+            return false;
+        }
+    }
+
+    /**
+     * Switch the TV to standby using IP Control
+     *
+     * @return true if the TV accepted the command, false if IP Control is not available
+     */
+    public boolean ipControlPowerOff() {
+        IpControl ipControl = this.ipControl;
+        String token = configuration.getIpControlToken();
+        if (ipControl == null || token.isBlank()) {
+            return false;
+        }
+        try {
+            ipControl.powerOff(token);
+            logger.debug("{}: IP Control powerOff sent", host);
+            return true;
+        } catch (IpControlException e) {
+            handleIpControlError(e);
+            return false;
+        }
+    }
+
+    /**
+     * @return true if IP Control is enabled and paired
+     */
+    public boolean isIpControlReady() {
+        return ipControl != null && !configuration.getIpControlToken().isBlank();
+    }
+
+    /**
+     * @return the input source from IP Control, empty if IP Control is not available or did not answer
+     */
+    public Optional<String> ipControlInputSource() {
+        IpControl ipControl = this.ipControl;
+        String token = configuration.getIpControlToken();
+        if (ipControl == null || token.isBlank()) {
+            return Optional.empty();
+        }
+        try {
+            String source = ipControl.getInputSource(token);
+            return source.isBlank() ? Optional.empty() : Optional.of(source);
+        } catch (IpControlException e) {
+            handleIpControlError(e);
+            return Optional.empty();
+        }
+    }
+
+    /**
+     * Select an input source using IP Control
+     *
+     * @return true if the TV accepted the input, false if IP Control is not available or the TV refused it
+     */
+    public boolean ipControlSetInputSource(String source) {
+        IpControl ipControl = this.ipControl;
+        String token = configuration.getIpControlToken();
+        if (ipControl == null || token.isBlank()) {
+            return false;
+        }
+        try {
+            ipControl.setInputSource(token, source);
+            logger.debug("{}: IP Control input set to {}", host, source);
+            return true;
+        } catch (IpControlException e) {
+            handleIpControlError(e);
+            return false;
+        }
+    }
+
+    /**
+     * Request an IP Control token if IP Control is enabled and there is no token yet.
+     * Only call this when the TV is on and not in art mode, the user has to accept the request on the TV.
+     */
+    public void pairIpControl() {
+        IpControl ipControl = this.ipControl;
+        if (ipControl == null || !configuration.getIpControlToken().isBlank()
+                || System.currentTimeMillis() < ipControlPairingAllowedAt
+                || !ipControlPairing.compareAndSet(false, true)) {
+            return;
+        }
+        scheduler.execute(() -> {
+            try {
+                logger.info("{}: Requesting IP Control token, please accept the connection on the TV within 30 seconds",
+                        host);
+                String token = ipControl.createAccessToken();
+                if (ipControl.equals(this.ipControl)) {
+                    putConfig(IP_CONTROL_TOKEN, token);
+                    logger.info("{}: IP Control token received", host);
+                }
+            } catch (IpControlException e) {
+                ipControlPairingAllowedAt = System.currentTimeMillis() + IP_CONTROL_PAIRING_HOLDOFF_MS;
+                logger.info("{}: IP Control pairing failed, will retry when the TV is next on: {}", host,
+                        e.getMessage());
+            } finally {
+                ipControlPairing.set(false);
+            }
+        });
+    }
+
+    private void handleIpControlError(IpControlException e) {
+        if (e.isTokenRejected()) {
+            logger.info("{}: IP Control token rejected, a new one will be requested when the TV is next on: {}", host,
+                    e.getMessage());
+            putConfig(IP_CONTROL_TOKEN, "");
+        } else {
+            logger.debug("{}: IP Control: {}", host, e.getMessage());
+        }
     }
 
     public boolean handleCommand(String channel, Command command, int ms) {
@@ -369,6 +565,10 @@ public class SamsungTvHandler extends BaseThingHandler implements RegistryListen
     public void handleCommand(String channel, Command command) {
         logger.trace("{}: Received: {}, command: {}", host, channel, Utils.truncCmd(command));
 
+        if (OnOffType.OFF.equals(command) && (ART_MODE.equals(channel) || POWER.equals(channel))) {
+            // a later OFF command overrides the mode requested by an ON command that is still waking the TV
+            clearModeOnWake();
+        }
         // Delegate command to correct service
         for (SamsungTvService service : services) {
             for (String s : service.getSupportedChannelNames(command == RefreshType.REFRESH)) {
@@ -379,8 +579,13 @@ public class SamsungTvHandler extends BaseThingHandler implements RegistryListen
                 }
             }
         }
-        // if power on/artmode on command try WOL if command failed:
-        if (!wolTask.send(channel, command)) {
+        if (OnOffType.ON.equals(command) && (ART_MODE.equals(channel) || POWER.equals(channel))) {
+            setModeOnWake(ART_MODE.equals(channel));
+        }
+        // if power on/artmode on command failed, try IP Control and WOL (WOL also resends the command):
+        boolean ipControlWoke = (POWER.equals(channel) || ART_MODE.equals(channel)) && OnOffType.ON.equals(command)
+                && ipControlPowerOn();
+        if (!wolTask.send(channel, command) && !ipControlWoke) {
             if (getThing().getStatus() != ThingStatus.ONLINE) {
                 logger.warn("{}: TV is {}", host, getThing().getStatus());
             } else {
@@ -399,7 +604,7 @@ public class SamsungTvHandler extends BaseThingHandler implements RegistryListen
         if (Arrays.asList(ART_COLOR_TEMPERATURE, ART_IMAGE).contains(channelUID.getId())) {
             // refresh channel as it's not polled
             services.stream().filter(a -> a.getServiceName().equals(RemoteControllerService.SERVICE_NAME))
-                    .map(a -> a.handleCommand(channelUID.getId(), RefreshType.REFRESH));
+                    .forEach(a -> a.handleCommand(channelUID.getId(), RefreshType.REFRESH));
         }
     }
 
@@ -411,6 +616,13 @@ public class SamsungTvHandler extends BaseThingHandler implements RegistryListen
 
     public String getModelName() {
         return modelName;
+    }
+
+    /**
+     * @return model year from the last REST reply, eg 22 for 2022, 0 if unknown
+     */
+    public int getModelYear() {
+        return modelYear;
     }
 
     public synchronized void setPowerState(boolean state) {
@@ -430,6 +642,26 @@ public class SamsungTvHandler extends BaseThingHandler implements RegistryListen
         return artMode2022;
     }
 
+    /**
+     * Remember that a power or artMode ON command is waking the TV, see {@link ModeOnWake}
+     *
+     * @param artMode true for an artMode ON command, false for a power ON command
+     */
+    public void setModeOnWake(boolean artMode) {
+        modeOnWake.set(artMode);
+    }
+
+    public void clearModeOnWake() {
+        modeOnWake.clear();
+    }
+
+    /**
+     * Called with each art mode report, see {@link ModeOnWake#take(boolean)}
+     */
+    public boolean takeModeOnWake(boolean artMode) {
+        return modeOnWake.take(artMode);
+    }
+
     public boolean getArtModeSupported() {
         return artModeSupported;
     }
@@ -447,13 +679,16 @@ public class SamsungTvHandler extends BaseThingHandler implements RegistryListen
 
         logger.debug("{}: Initializing Samsung TV handler for uid '{}'", host, getThing().getUID());
         if (host.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "host ip address or name is blank");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "host ip address or name is blank");
             return;
         }
 
         // note this can take up to 500ms to return if TV is off
         discoverConfiguration();
+
+        if (configuration.getIpControl()) {
+            ipControl = new IpControl(host, ipControlHttpClient);
+        }
 
         upnpService.getRegistry().addListener(this);
 
@@ -484,6 +719,7 @@ public class SamsungTvHandler extends BaseThingHandler implements RegistryListen
         logger.debug("{}: Disposing SamsungTvHandler", host);
         stopPolling();
         wolTask.cancel();
+        ipControl = null;
         setArtMode2022(false);
         setArtModeSupported(false);
         artApiVersion = 0;
@@ -514,15 +750,27 @@ public class SamsungTvHandler extends BaseThingHandler implements RegistryListen
     public synchronized void putOnline() {
         if (getThing().getStatus() != ThingStatus.ONLINE) {
             updateStatus(ThingStatus.ONLINE);
+            findServiceInstance(RemoteControllerService.SERVICE_NAME)
+                    .ifPresent(s -> ((RemoteControllerService) s).pingConnections());
             startPolling();
             if (!getArtModeSupported()) {
                 if (getArtMode2022()) {
-                    handleCommand(SET_ART_MODE, OnOffType.ON, 4000);
+                    // TV's with the art API restored clear artMode2022 once the art websocket answers
+                    scheduler.schedule(() -> {
+                        if (getArtMode2022()) {
+                            // assume art mode unless IP Control says otherwise
+                            boolean artMode = fetchIpControlArtMode().orElse(true);
+                            handleCommand(SET_ART_MODE, OnOffType.from(artMode));
+                        }
+                    }, 4000, TimeUnit.MILLISECONDS);
                 } else if (configuration.isWebsocketProtocol()) {
                     // if TV is registered to SmartThings it wakes up regularly (every 5 minutes or so), even if it's in
                     // standby, so check the power state locally to see if it's actually on
                     fetchPowerState();
                     valueReceived(POWER, OnOffType.from(getPowerState()));
+                    if (getPowerState()) {
+                        pairIpControl();
+                    }
                 } else {
                     valueReceived(POWER, OnOffType.ON);
                 }
@@ -590,7 +838,7 @@ public class SamsungTvHandler extends BaseThingHandler implements RegistryListen
         } else {
             logger.debug("{}: Error was reported: {}, {}", host, message, (e != null) ? e.getMessage() : "");
         }
-        updateStatus(ThingStatus.OFFLINE, statusDetail, message);
+        updateStatus(statusDetail, message);
     }
 
     /**
@@ -618,6 +866,10 @@ public class SamsungTvHandler extends BaseThingHandler implements RegistryListen
         // Websocket services and Smartthings service
         if ((isOnline | getArtMode2022()) && configuration.isWebsocketProtocol()) {
             createService(RemoteControllerService.SERVICE_NAME, "");
+            // before SmartThings, so it handles sourceName first
+            if (configuration.getIpControl()) {
+                createService(IpControlService.SERVICE_NAME, "");
+            }
             if (!configuration.getSmartThingsApiKey().isBlank()) {
                 createService(SmartThingsApiService.SERVICE_NAME, "");
             }
@@ -689,6 +941,9 @@ public class SamsungTvHandler extends BaseThingHandler implements RegistryListen
                 } catch (RemoteControllerException e) {
                     logger.warn("{}: Not creating remote controller service: {}", host, e.getMessage());
                 }
+                break;
+            case IpControlService.SERVICE_NAME:
+                service = Optional.of(new IpControlService(host, this));
                 break;
             case SmartThingsApiService.SERVICE_NAME:
                 service = Optional.of(new SmartThingsApiService(host, this));
@@ -780,7 +1035,7 @@ public class SamsungTvHandler extends BaseThingHandler implements RegistryListen
             Configuration config = editConfiguration();
             config.put(key, value);
             updateConfiguration(config);
-            logger.debug("{}: Updated Configuration {}:{}", host, key, value);
+            logger.debug("{}: Updated Configuration {}:{}", host, key, Utils.loggableConfigValue(key, value));
             configuration = getConfigAs(SamsungTvConfiguration.class);
         }
     }

@@ -238,7 +238,7 @@ public abstract class AbstractPrinterHandler extends BaseThingHandler {
     }
 
     protected void markOffline(String message) {
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message);
+        updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, message);
     }
 
     /**
@@ -253,10 +253,9 @@ public abstract class AbstractPrinterHandler extends BaseThingHandler {
         if (status < 0) {
             markOffline("@text/offline.comm-error-unreachable");
         } else if (status == HttpStatus.UNAUTHORIZED_401 || status == HttpStatus.FORBIDDEN_403) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.comm-error-auth");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.comm-error-auth");
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/offline.comm-error-http [\"" + status + "\"]");
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/offline.comm-error-http [\"" + status + "\"]");
         }
     }
 

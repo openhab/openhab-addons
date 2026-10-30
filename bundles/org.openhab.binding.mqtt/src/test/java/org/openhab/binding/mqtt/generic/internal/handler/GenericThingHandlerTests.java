@@ -57,6 +57,7 @@ import org.openhab.core.thing.binding.ThingHandlerCallback;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.type.ChannelKind;
 import org.openhab.core.types.RefreshType;
+import org.openhab.core.types.StateDescription;
 import org.openhab.core.types.UnDefType;
 
 /**
@@ -73,6 +74,7 @@ public class GenericThingHandlerTests {
     private @Mock @NonNullByDefault({}) Thing thingMock;
     private @Mock @NonNullByDefault({}) AbstractBrokerHandler bridgeHandlerMock;
     private @Mock @NonNullByDefault({}) MqttBrokerConnection connectionMock;
+    private @Mock @NonNullByDefault({}) MqttChannelStateDescriptionProvider stateDescProvider;
 
     private @NonNullByDefault({}) GenericMQTTThingHandler thingHandler;
 
@@ -98,8 +100,7 @@ public class GenericThingHandlerTests {
         doReturn(CompletableFuture.completedFuture(true)).when(connectionMock).publish(any(), any(), anyInt(),
                 anyBoolean());
 
-        thingHandler = spy(
-                new GenericMQTTThingHandler(thingMock, mock(MqttChannelStateDescriptionProvider.class), 1500));
+        thingHandler = spy(new GenericMQTTThingHandler(thingMock, stateDescProvider, 1500));
         thingHandler.setCallback(callbackMock);
 
         // Return the bridge handler if the thing handler asks for it
@@ -159,6 +160,29 @@ public class GenericThingHandlerTests {
     }
 
     @Test
+    public void initializeContactWithLegacyCommandTopicIsReadOnly() {
+        Channel channel = cb("contact", "Contact",
+                new Configuration(Map.of("stateTopic", "test/contact", "commandTopic", "test/command")),
+                CONTACT_CHANNEL);
+        when(thingMock.getChannels()).thenReturn(List.of(channel));
+
+        thingHandler.initialize();
+
+        ArgumentCaptor<StateDescription> descriptionCaptor = ArgumentCaptor.forClass(StateDescription.class);
+        verify(stateDescProvider).setDescription(eq(channel.getUID()), descriptionCaptor.capture());
+        assertThat(descriptionCaptor.getValue().isReadOnly(), is(true));
+        verify(connectionMock).subscribe(eq("test/contact"), any());
+    }
+
+    @Test
+    public void initializeRejectsContactWithOnlyCommandTopic() {
+        Channel channel = cb("commandOnlyContact", "Contact", new Configuration(Map.of("commandTopic", "test/command")),
+                CONTACT_CHANNEL);
+
+        assertConfigurationError(channel);
+    }
+
+    @Test
     public void initializeRejectsChannelWithUnknownPropertiesInsteadOfTopics() {
         Channel channel = cb("invalid", "String",
                 new Configuration(Map.of("status", "test/state", "trans", "JSONPATH:$.value")), TEXT_CHANNEL);
@@ -197,6 +221,20 @@ public class GenericThingHandlerTests {
         assertThat(updatedChannel.getKind(), is(ChannelKind.TRIGGER));
         assertThat(updatedChannel.getChannelTypeUID(), is(ON_OFF_CHANNEL));
         assertThat(updatedChannel.getAcceptedItemType(), is("Switch"));
+    }
+
+    @Test
+    public void initializeMarksContactTriggerWithLegacyCommandTopicAsTriggerChannel() {
+        Configuration configuration = new Configuration(
+                Map.of("stateTopic", "test/contact", "commandTopic", "test/command", "trigger", true));
+        Channel channel = cb("contact", "Contact", configuration, CONTACT_CHANNEL);
+        when(thingMock.getChannels()).thenReturn(List.of(channel));
+
+        thingHandler.initialize();
+
+        ArgumentCaptor<Thing> thingCaptor = ArgumentCaptor.forClass(Thing.class);
+        verify(callbackMock).thingUpdated(thingCaptor.capture());
+        assertThat(thingCaptor.getValue().getChannel(channel.getUID()).getKind(), is(ChannelKind.TRIGGER));
     }
 
     @Test

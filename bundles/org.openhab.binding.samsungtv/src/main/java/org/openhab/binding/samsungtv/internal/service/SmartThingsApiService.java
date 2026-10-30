@@ -99,11 +99,19 @@ public class SmartThingsApiService implements SamsungTvService {
     private int RATE_LIMIT = 1000;
     private int TIMEOUT = 1000; // connection timeout in ms
     private long prevUpdate = 0;
+    private long backoff = 0;
+    // SmartThings rate limits are per minute
+    private static final long ERROR_BACKOFF = 60000;
+    private static final int TOO_MANY_REQUESTS = 429;
+    // SmartThings sends no Retry-After, this is the time in ms until the rate limit window resets
+    private static final String RATE_LIMIT_RESET = "X-RateLimit-Reset";
+    private long rateLimitReset = 0;
     private boolean online = false;
     private int errorCount = 0;
     private int MAX_ERRORS = 100;
 
     private final SamsungTvHandler handler;
+    private final HttpClient httpClient = HttpClient.newBuilder().connectTimeout(Duration.ofMillis(TIMEOUT)).build();
 
     private Optional<TvValues> tvInfo = Optional.empty();
     private boolean subscriptionRunning = false;
@@ -531,6 +539,35 @@ public class SmartThingsApiService implements SamsungTvService {
     }
 
     /**
+     * GET from the Smartthings API, recording when a rate limited request may be retried
+     *
+     * @param uri as a URI
+     * @return response body, which describes the error for an error status
+     */
+    private Optional<String> getUrl(URI uri) throws IOException {
+        logger.trace("{}: Sending {}", host, uri);
+        HttpRequest request = HttpRequest.newBuilder(uri).timeout(Duration.ofMillis(TIMEOUT))
+                .header("Authorization", "Bearer " + this.apiKey).GET().build();
+        HttpResponse<String> response;
+        try {
+            response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new IOException("Interrupted", e);
+        }
+        rateLimitReset = 0;
+        if (response.statusCode() == TOO_MANY_REQUESTS) {
+            try {
+                rateLimitReset = response.headers().firstValueAsLong(RATE_LIMIT_RESET).orElse(0);
+            } catch (NumberFormatException e) {
+                logger.debug("{}: Invalid {} header: {}", host, RATE_LIMIT_RESET, e.getMessage());
+            }
+        }
+        logger.trace("{}: Got response {}: {}", host, response.statusCode(), response.body());
+        return Optional.ofNullable(response.body()).filter(b -> !b.isBlank());
+    }
+
+    /**
      * Smartthings API HTTP getter
      * Currently rate limited to 350 requests/minute
      *
@@ -545,7 +582,7 @@ public class SmartThingsApiService implements SamsungTvService {
         try {
             String api = API_ENDPOINT_V1 + ((deviceId.isBlank()) ? "" : "devices/") + deviceId + value;
             URI uri = new URI("https", null, SMARTTHINGS_URL, 443, api, null, null);
-            Optional<String> response = sendUrl(HttpMethod.GET, uri, null);
+            Optional<String> response = getUrl(uri);
             tvValues = response.map(r -> new Gson().fromJson(r, TvValues.class));
             if (!tvValues.isPresent()) {
                 throw new IOException("No Data - is DeviceID correct?");
@@ -837,7 +874,7 @@ public class SmartThingsApiService implements SamsungTvService {
     }
 
     public boolean fetchdata() {
-        if (System.currentTimeMillis() >= prevUpdate + RATE_LIMIT) {
+        if (System.currentTimeMillis() >= prevUpdate + RATE_LIMIT + backoff) {
             if (deviceId.isBlank()) {
                 tvInfo = fetchTVProperties(DEVICES);
                 boolean found = false;
@@ -865,8 +902,16 @@ public class SmartThingsApiService implements SamsungTvService {
                     return false;
                 }
             }
-            tvInfo = fetchTVProperties(COMPONENTS);
+            Optional<TvValues> values = fetchTVProperties(COMPONENTS);
             prevUpdate = System.currentTimeMillis();
+            if (values.map(TvValues::isError).orElse(false)) {
+                // e.g. TooManyRequestError: keep the last values and pause, as polling on would keep failing
+                backoff = rateLimitReset > 0 ? Math.min(rateLimitReset, ERROR_BACKOFF) : ERROR_BACKOFF;
+                logger.debug("{}: Next SmartThings update in {} s", host, (RATE_LIMIT + backoff) / 1000);
+            } else {
+                tvInfo = values;
+                backoff = 0;
+            }
         }
         return (tvInfo.isPresent());
     }
@@ -980,6 +1025,10 @@ public class SmartThingsApiService implements SamsungTvService {
     }
 
     private void updateState(String channel, Object value) {
+        if (SOURCE_NAME.equals(channel) && handler.findServiceInstance(IpControlService.SERVICE_NAME)
+                .filter(s -> s instanceof IpControlService ipControl && ipControl.isReportingInput()).isPresent()) {
+            return;
+        }
         if (!stateMap.getOrDefault(channel, "None").equals(value)) {
             switch (channel) {
                 case CHANNEL:

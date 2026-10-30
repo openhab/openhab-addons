@@ -91,7 +91,7 @@ public abstract class MSpaBaseAccount extends BaseBridgeHandler {
             startDiscovery();
         } else {
             token = MSpaUtils.getInvalidToken();
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "@text/status.mspa.invalid-token");
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/status.mspa.invalid-token");
         }
     }
 
@@ -127,7 +127,7 @@ public abstract class MSpaBaseAccount extends BaseBridgeHandler {
                 return extractList(responseJson);
             } else {
                 String responseMessage = responseJson.optString("message", responseJson.toString());
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                         "@text/status.mspa.pool.request-failed [\"" + responseMessage + "\"]");
                 if (responseCode == 10001 && retry) {
                     // make one retry to get new token - success will switch thing back to ONLINE
@@ -158,18 +158,18 @@ public abstract class MSpaBaseAccount extends BaseBridgeHandler {
             if (status == HttpStatus.OK_200) {
                 Optional<JSONObject> responseJsonOpt = MSpaUtils.toJson(response);
                 if (responseJsonOpt.isEmpty()) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                             "@text/status.mspa.pool.request-failed [\"" + response + "\"]");
                     return Optional.empty();
                 } else {
                     return responseJsonOpt;
                 }
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                         "@text/status.mspa.pool.request-failed [\"" + response + "\"]");
             }
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/status.mspa.pool.request-failed [\"" + e.toString() + "\"]");
             handlePossibleInterrupt(e);
         }

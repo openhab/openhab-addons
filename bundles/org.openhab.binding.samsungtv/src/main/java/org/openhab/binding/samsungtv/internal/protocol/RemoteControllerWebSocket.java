@@ -194,6 +194,15 @@ public class RemoteControllerWebSocket extends RemoteController implements Liste
         return sslContextFactory;
     }
 
+    /**
+     * Ping all websockets, so sessions left half-open by a TV restart are detected and reconnected
+     */
+    public void ping() {
+        webSocketRemote.ping();
+        webSocketArt.ping();
+        webSocketV2.ping();
+    }
+
     public boolean isConnected() {
         if (callback.getArtModeSupported()) {
             return webSocketRemote.isConnected() && webSocketArt.isConnected();
@@ -301,7 +310,7 @@ public class RemoteControllerWebSocket extends RemoteController implements Liste
         }
         previousUpdateCurrentApp = Instant.now();
         if (webSocketV2.isNotConnected()) {
-            logger.warn("{}: Cannot retrieve current app webSocketV2 is not connected", host);
+            logger.debug("{}: Cannot retrieve current app webSocketV2 is not connected", host);
             return;
         }
         // if noapps by this point, start file app service

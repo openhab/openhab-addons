@@ -268,7 +268,7 @@ public abstract class PLCCommonHandler extends BaseThingHandler {
             final var client = handler.getLogoClient();
             if ((client == null) || NOT_SUPPORTED.equalsIgnoreCase(family)) {
                 final var message = "Can not initialize LOGO! block handler.";
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, message);
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, message);
 
                 final var thing = getThing();
                 logger.warn("Can not initialize thing {} for LOGO! {}.", thing.getUID(), thing.getBridgeUID());

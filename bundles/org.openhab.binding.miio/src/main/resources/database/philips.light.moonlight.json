@@ -75,18 +75,44 @@
 				"ChannelGroup": "actions",
 				"actions": [
 					{
-						"command": "apply_scene",
+						"command": "apply_fixed_scene",
 						"parameterType": "NUMBER"
 					}
 				],
 				"tags": [
 					"Control",
 					"Mode"
-				]
+				],
+				"stateDescription": {
+					"options": [
+						{
+							"value": "1",
+							"label": "Forest Bathing"
+						},
+						{
+							"value": "2",
+							"label": "Pink Romance"
+						},
+						{
+							"value": "3",
+							"label": "Sunset Glow"
+						},
+						{
+							"value": "4",
+							"label": "Ocean and Sky"
+						},
+						{
+							"value": "5",
+							"label": "Screen Reading"
+						}
+					]
+				},
+				"category": "light",
+				"readmeComment": "Value mapping `[\"1\"\u003d\"Forest Bathing\",\"2\"\u003d\"Pink Romance\",\"3\"\u003d\"Sunset Glow\",\"4\"\u003d\"Ocean and Sky\",\"5\"\u003d\"Screen Reading\"]`"
 			},
 			{
 				"property": "bl",
-				"friendlyName": "Night Light",
+				"friendlyName": "Smart Midnight Light",
 				"channel": "bl",
 				"type": "Switch",
 				"refresh": true,
@@ -99,12 +125,13 @@
 				],
 				"category": "switch",
 				"tags": [
-					"Switch"
+					"Switch",
+					"Enabled"
 				]
 			},
 			{
 				"property": "ms",
-				"friendlyName": "MiBand Notifications",
+				"friendlyName": "Auto Power Off when Asleep (Mi Band)",
 				"channel": "ms",
 				"type": "Switch",
 				"refresh": true,
@@ -117,12 +144,13 @@
 				],
 				"category": "switch",
 				"tags": [
-					"Switch"
+					"Switch",
+					"Enabled"
 				]
 			},
 			{
 				"property": "mb",
-				"friendlyName": "MiBand",
+				"friendlyName": "Auto On/Off when Mi Band is Nearby",
 				"channel": "mb",
 				"type": "Switch",
 				"refresh": true,
@@ -135,12 +163,13 @@
 				],
 				"category": "switch",
 				"tags": [
-					"Switch"
+					"Switch",
+					"Enabled"
 				]
 			},
 			{
 				"property": "",
-				"friendlyName": "Go Night",
+				"friendlyName": "Midnight Mode",
 				"channel": "gonight",
 				"type": "Switch",
 				"refresh": false,
@@ -151,23 +180,12 @@
 						"parameterType": "EMPTY"
 					}
 				],
-				"category": "switch"
-			},
-			{
-				"property": "",
-				"friendlyName": "Toggle",
-				"channel": "toggle",
-				"type": "Switch",
-				"refresh": false,
-				"ChannelGroup": "actions",
-				"actions": [
-					{
-						"command": "toggle",
-						"parameterType": "EMPTY"
-					}
-				],
-				"category": "switch"
+				"category": "light",
+				"tags": [
+					"Switch"
+				]
 			}
-		]
+		],
+		"experimental": false
 	}
 }

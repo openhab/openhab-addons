@@ -25,7 +25,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
@@ -63,9 +62,10 @@ import com.google.gson.reflect.TypeToken;
 class NodeJSRuntimeManager {
     private final Logger logger = LoggerFactory.getLogger(NodeJSRuntimeManager.class);
 
-    private static final String NODE_BASE_VERSION = "v22";
-    private static final String NODE_DEFAULT_VERSION = "v22.12.0";
-    private static final String NODE_MIN_VERSION = "v22.0.0";
+    private static final String NODE_BASE_VERSION = "v24";
+    private static final String NODE_DEFAULT_VERSION = "v24.21.0";
+    // matter.js does not support 22.0 - 22.12
+    private static final String NODE_MIN_VERSION = "v22.13.0";
 
     private static final String NODE_INDEX_URL = "https://nodejs.org/dist/index.json";
 
@@ -146,7 +146,7 @@ class NodeJSRuntimeManager {
             List<NodeVersion> versions = gson.fromJson(json, listType);
             if (versions != null) {
                 NodeVersion latest = versions.stream().filter(v -> v.version.startsWith(NODE_BASE_VERSION + "."))
-                        .max(Comparator.comparing(v -> v.version)).orElse(null);
+                        .max((a, b) -> compareVersions(a.version, b.version)).orElse(null);
                 if (latest != null) {
                     return latest.version;
                 } else {

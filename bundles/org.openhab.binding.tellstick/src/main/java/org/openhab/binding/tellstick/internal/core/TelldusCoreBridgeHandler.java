@@ -184,7 +184,7 @@ public class TelldusCoreBridgeHandler extends BaseBridgeHandler
 
     public void onConnectionLost() {
         logger.debug("Bridge connection lost. Updating thing status to OFFLINE.");
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+        updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
     }
 
     public void onConnection() {

@@ -137,6 +137,10 @@ The call-types are the same as provided by the FritzBox, i.e. `1` (inbound), `2`
 | `macSpeed1`          | `Number:DataTransferRate` |    x     | Wi-Fi Speed of the device with the given MAC. This is set in case the Device is connected to 2.4GHz           |
 | `macSignalStrength2` | `Number`                  |    x     | Wi-Fi Signal Strength of the device with the given MAC. This is set in case the Device is connected to 5GHz   |
 | `macSpeed2`          | `Number:DataTransferRate` |    x     | Wi-Fi Speed of the device with the given MAC. This is set in case the Device is connected to 5GHz             |
+| `macSignalStrength3` | `Number`                  |    x     | Wi-Fi Signal Strength of the device with the given MAC. Set if the Device is connected to Wi-Fi #3            |
+| `macSpeed3`          | `Number:DataTransferRate` |    x     | Wi-Fi Speed of the device with the given MAC. Set if the Device is connected to Wi-Fi #3                      |
+| `macSignalStrength4` | `Number`                  |    x     | Wi-Fi Signal Strength of the device with the given MAC. Set if the Device is connected to Wi-Fi #4            |
+| `macSpeed4`          | `Number:DataTransferRate` |    x     | Wi-Fi Speed of the device with the given MAC. Set if the Device is connected to Wi-Fi #4                      |
 
 _Note:_ The `wifi24GHzEnable`, `wifi5GHzEnable` and `wifiGuestEnable` channels have been deprecated and will be removed in future versions.
 They are replaced by `wifiXEnable` (with `X` being a number between `1` and `4`).
@@ -144,6 +148,12 @@ They are replaced by `wifiXEnable` (with `X` being a number between `1` and `4`)
 - FritzBoxes which do not support 5 GHz use `wifi1Enable` for the standard Wi-Fi and `wifi2Enable` for the guest Wi-Fi.
 - FritzBoxes which support 5 GHz use `wifi1Enable` for the 2.4 GHz Wi-Fi, `wifi2Enable` for the 5 GHz Wi-Fi and `wifi3Enable` for the guest Wi-Fi.
 - FritzBoxes which support two 5 GHz networks use `wifi1Enable` for the 2.4 GHz Wi-Fi, `wifi2Enable` and `wifi3Enable` for the 5 GHz Wi-Fis and `wifi4Enable` for the guest Wi-Fi.
+- FritzBoxes which support a 6 GHz network use `wifi1Enable` for the 2.4 GHz Wi-Fi, `wifi2Enable` for the 5 GHz Wi-Fi, `wifi3Enable` for the 6 GHz Wi-Fi and `wifi4Enable` for the guest Wi-Fi.
+
+The `macSignalStrengthX` and `macSpeedX` channels follow the same numbering.
+Which network a number stands for depends on the model, see the list above.
+For example, `macSignalStrength3` and `macSpeed3` report the devices connected to the 6 GHz Wi-Fi on FritzBoxes with a 6 GHz band, but to the guest Wi-Fi on FritzBoxes with only 2.4 GHz and 5 GHz.
+`macSignalStrength4` and `macSpeed4` are only available if the FritzBox has a fourth Wi-Fi.
 
 ### WANConnection `subdevice` channels
 
@@ -245,6 +255,9 @@ tr064Actions.createConfigurationBackup()
 Textual configuration through a `.things` file is possible but, at present, strongly discouraged because it is significantly more error-prone than the configuration through Main User Interface.
 
 If an advanced user is really motivated to define a textual configuration, it is suggested to perform an automatic scan through the user interface first in order to extract the required parameters (namely the different `uuid` of the needed subdevices).
+
+Each `uuid` must belong to a device of the matching type: a `subdeviceLan` Thing needs the `uuid` of the LAN device (`deviceType` `urn:dslforum-org:device:LANDevice:1`).
+If it belongs to another device, the Thing goes `OFFLINE` with a configuration error.
 
 The definition of the bridge and of the subdevices things is the following:
 

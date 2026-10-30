@@ -41,6 +41,7 @@ import org.osgi.service.http.HttpService;
  * found on port 8080
  *
  * @author Matthew Skinner - Initial contribution
+ * @author Kai Kreuzer - Clean up MJPEG client streams
  */
 @NonNullByDefault
 public class CameraServlet extends IpCameraServlet {
@@ -174,23 +175,27 @@ public class CameraServlet extends IpCameraServlet {
                 handler.startSnapshotPolling();
                 StreamOutput output = new StreamOutput(resp);
                 openSnapshotStreams.addStream(output);
-                do {
-                    try {
+                try {
+                    do {
                         output.sendSnapshotBasedFrame(handler.getSnapshot());
                         Thread.sleep(handler.cameraConfig.getPollTime());
-                    } catch (InterruptedException | IOException e) {
-                        // Never stop streaming until IOException. Occurs when browser stops the stream.
-                        openSnapshotStreams.removeStream(output);
-                        logger.debug("Now there are {} snapshots.mjpeg streams open.",
-                                openSnapshotStreams.getNumberOfStreams());
-                        if (openSnapshotStreams.isEmpty()) {
-                            handler.streamingSnapshotMjpeg = false;
-                            handler.stopSnapshotPolling();
-                            logger.debug("All snapshots.mjpeg streams have stopped.");
-                        }
-                        return;
+                    } while (true);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                } catch (IOException e) {
+                    logger.debug("Snapshot MJPEG client disconnected.");
+                } finally {
+                    output.close();
+                    openSnapshotStreams.removeStream(output);
+                    logger.debug("Now there are {} snapshots.mjpeg streams open.",
+                            openSnapshotStreams.getNumberOfStreams());
+                    if (openSnapshotStreams.isEmpty()) {
+                        handler.streamingSnapshotMjpeg = false;
+                        handler.stopSnapshotPolling();
+                        logger.debug("All snapshots.mjpeg streams have stopped.");
                     }
-                } while (true);
+                }
+                return;
             case "/ipcamera.mjpeg":
                 if (openStreams.isEmpty()) {
                     logger.debug("First stream requested, opening up stream from camera");
@@ -211,37 +216,41 @@ public class CameraServlet extends IpCameraServlet {
                     output = new StreamOutput(resp, handler.mjpegContentType);
                 }
                 openStreams.addStream(output);
-                do {
-                    try {
+                try {
+                    while (!openStreams.isEmpty()) {
                         output.sendFrame();
-                    } catch (InterruptedException | IOException e) {
-                        // Never stop streaming until IOException. Occurs when browser stops the stream.
-                        openStreams.removeStream(output);
-                        logger.debug("Now there are {} ipcamera.mjpeg streams open.", openStreams.getNumberOfStreams());
-                        if (openStreams.isEmpty()) {
-                            if (output.isSnapshotBased) {
-                                Ffmpeg localMjpeg = handler.ffmpegMjpeg;
-                                if (localMjpeg != null) {
-                                    localMjpeg.stopConverting();
-                                    // Set reference to ffmpegMjpeg to null to prevent automatic reconnection
-                                    // in handler's pollCameraRunnable() check for frozen camera
-                                    handler.ffmpegMjpeg = null;
-                                }
-                            } else {
-                                handler.closeChannel(handler.getTinyUrl(handler.mjpegUri));
-                            }
-                            logger.debug("All ipcamera.mjpeg streams have stopped.");
-                        }
-                        return;
                     }
-                } while (!openStreams.isEmpty());
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                } catch (IOException e) {
+                    logger.debug("MJPEG client disconnected or camera stream became idle.");
+                } finally {
+                    output.close();
+                    openStreams.removeStream(output);
+                    logger.debug("Now there are {} ipcamera.mjpeg streams open.", openStreams.getNumberOfStreams());
+                    if (openStreams.isEmpty()) {
+                        if (output.isSnapshotBased) {
+                            Ffmpeg localMjpeg = handler.ffmpegMjpeg;
+                            if (localMjpeg != null) {
+                                localMjpeg.stopConverting();
+                                // Set reference to ffmpegMjpeg to null to prevent automatic reconnection
+                                // in handler's pollCameraRunnable() check for frozen camera
+                                handler.ffmpegMjpeg = null;
+                            }
+                        } else {
+                            handler.closeChannel(handler.getTinyUrl(handler.mjpegUri));
+                        }
+                        logger.debug("All ipcamera.mjpeg streams have stopped.");
+                    }
+                }
+                return;
             case "/autofps.mjpeg":
                 handler.streamingAutoFps = true;
                 output = new StreamOutput(resp);
                 openAutoFpsStreams.addStream(output);
                 int counter = 0;
-                do {
-                    try {
+                try {
+                    do {
                         if (handler.motionDetected) {
                             output.sendSnapshotBasedFrame(handler.getSnapshot());
                         } // every 8 seconds if no motion or the first three snapshots to fill any FIFO
@@ -250,18 +259,22 @@ public class CameraServlet extends IpCameraServlet {
                         }
                         counter++;
                         Thread.sleep(1000);
-                    } catch (InterruptedException | IOException e) {
-                        // Never stop streaming until IOException. Occurs when browser stops the stream.
-                        openAutoFpsStreams.removeStream(output);
-                        logger.debug("Now there are {} autofps.mjpeg streams open.",
-                                openAutoFpsStreams.getNumberOfStreams());
-                        if (openAutoFpsStreams.isEmpty()) {
-                            handler.streamingAutoFps = false;
-                            logger.debug("All autofps.mjpeg streams have stopped.");
-                        }
-                        return;
+                    } while (true);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                } catch (IOException e) {
+                    logger.debug("Auto-FPS MJPEG client disconnected.");
+                } finally {
+                    output.close();
+                    openAutoFpsStreams.removeStream(output);
+                    logger.debug("Now there are {} autofps.mjpeg streams open.",
+                            openAutoFpsStreams.getNumberOfStreams());
+                    if (openAutoFpsStreams.isEmpty()) {
+                        handler.streamingAutoFps = false;
+                        logger.debug("All autofps.mjpeg streams have stopped.");
                     }
-                } while (true);
+                }
+                return;
             case "/instar":
                 InstarHandler instar = new InstarHandler(handler);
                 instar.alarmTriggered(pathInfo + "?" + req.getQueryString());

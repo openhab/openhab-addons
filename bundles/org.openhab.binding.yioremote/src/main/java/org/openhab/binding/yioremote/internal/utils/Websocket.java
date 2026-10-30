@@ -12,12 +12,9 @@
  */
 package org.openhab.binding.yioremote.internal.utils;
 
-import java.io.IOException;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.websocket.api.Session;
-import org.eclipse.jetty.websocket.api.StatusCode;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketConnect;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketError;
@@ -27,77 +24,59 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link Websocket} is responsible for the Websocket Connection
+ * The {@link Websocket} represents a single WebSocket connection to the YIO Dock. A new instance is created for every
+ * connection attempt.
  *
  * @author Michael Loercher - Initial contribution
  */
-
 @NonNullByDefault
 @WebSocket
 public class Websocket {
 
-    private @Nullable Session session;
     private final Logger logger = LoggerFactory.getLogger(Websocket.class);
-    private @Nullable WebsocketInterface websocketHandler;
+    private final WebsocketInterface listener;
+    private volatile @Nullable Session session;
 
-    public void addMessageHandler(WebsocketInterface yioremotedockwebsocketinterfacehandler) {
-        this.websocketHandler = yioremotedockwebsocketinterfacehandler;
-    }
-
-    @OnWebSocketMessage
-    public void onText(Session session, String receivedMessage) {
-        if (websocketHandler != null) {
-            websocketHandler.onMessage(receivedMessage);
-        }
+    public Websocket(WebsocketInterface listener) {
+        this.listener = listener;
     }
 
     @OnWebSocketConnect
     public void onConnect(Session session) {
         this.session = session;
-        if (websocketHandler != null) {
-            websocketHandler.onConnect(true);
-        }
+        listener.onConnect(this);
+    }
+
+    @OnWebSocketMessage
+    public void onText(Session session, String message) {
+        listener.onMessage(this, message);
     }
 
     @OnWebSocketError
     public void onError(Throwable cause) {
-        logger.debug("WebSocketError {}", cause.getMessage());
-        if (websocketHandler != null) {
-            websocketHandler.onError(cause);
-        }
+        listener.onError(this, cause);
     }
 
     @OnWebSocketClose
-    public void onClose(int statusCode, String reason) {
-        if (statusCode != StatusCode.NORMAL) {
-            logger.debug("WebSocket Connection closed: {} - {}", statusCode, reason);
-        }
-        if (session != null) {
-            if (!session.isOpen()) {
-                if (session != null) {
-                    session.close();
-                }
-            }
-            session = null;
-        }
-        if (websocketHandler != null) {
-            websocketHandler.onClose();
+    public void onClose(int statusCode, @Nullable String reason) {
+        session = null;
+        listener.onClose(this, statusCode, reason);
+    }
+
+    public void sendMessage(String message) {
+        Session localSession = session;
+        if (localSession != null && localSession.isOpen()) {
+            localSession.getRemote().sendStringByFuture(message);
+        } else {
+            logger.debug("WebSocket is not connected, message not sent");
         }
     }
 
-    public void sendMessage(String str) {
-        if (session != null) {
-            try {
-                session.getRemote().sendString(str);
-            } catch (IOException e) {
-                logger.warn("Error during sendMessage function {}", e.getMessage());
-            }
-        }
-    }
-
-    public void closeWebsocketSession() {
-        if (session != null) {
-            session.close();
+    public void close() {
+        Session localSession = session;
+        session = null;
+        if (localSession != null) {
+            localSession.close();
         }
     }
 }

@@ -128,8 +128,7 @@ public class WeatherCompanyForecastHandler extends WeatherCompanyAbstractHandler
             case CONFIG_LOCATION_TYPE_POSTAL_CODE:
                 String postalCode = config.postalCode;
                 if (postalCode == null || postalCode.isBlank()) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                            "@text/offline.config-error-unset-postal-code");
+                    updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.config-error-unset-postal-code");
                 } else {
                     locationQueryString = "&postalKey=" + postalCode.replace(" ", "");
                     validLocation = true;
@@ -138,8 +137,7 @@ public class WeatherCompanyForecastHandler extends WeatherCompanyAbstractHandler
             case CONFIG_LOCATION_TYPE_GEOCODE:
                 String geocode = config.geocode;
                 if (geocode == null || geocode.isBlank()) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                            "@text/offline.config-error-unset-geocode");
+                    updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.config-error-unset-geocode");
                 } else {
                     locationQueryString = "&geocode=" + geocode.replace(" ", "");
                     validLocation = true;
@@ -148,16 +146,14 @@ public class WeatherCompanyForecastHandler extends WeatherCompanyAbstractHandler
             case CONFIG_LOCATION_TYPE_IATA_CODE:
                 String iataCode = config.iataCode;
                 if (iataCode == null || iataCode.isBlank()) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                            "@text/offline.config-error-unset-iata-code");
+                    updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.config-error-unset-iata-code");
                 } else {
                     locationQueryString = "&iataCode=" + iataCode.replace(" ", "").toUpperCase();
                     validLocation = true;
                 }
                 break;
             default:
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "@text/offline.config-error-unset-location-type");
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.config-error-unset-location-type");
                 break;
         }
         return validLocation;
@@ -220,8 +216,7 @@ public class WeatherCompanyForecastHandler extends WeatherCompanyAbstractHandler
             updateDaypartForecast(forecast.daypart);
         } catch (JsonSyntaxException e) {
             logger.debug("Handler: Error parsing daily forecast response object", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/offline.comm-error-parsing-daily-forecast");
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/offline.comm-error-parsing-daily-forecast");
             return;
         }
     }
@@ -249,8 +244,7 @@ public class WeatherCompanyForecastHandler extends WeatherCompanyAbstractHandler
             logger.debug("Handler: Successfully parsed daypart forecast object");
         } catch (JsonSyntaxException e) {
             logger.debug("Handler: Error parsing daypart forecast object: {}", e.getMessage(), e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/offline.comm-error-parsing-daypart-forecast");
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/offline.comm-error-parsing-daypart-forecast");
             return;
         }
         logger.debug("There are {} daypart forecast entries", dayparts.length);

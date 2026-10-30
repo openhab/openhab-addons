@@ -127,6 +127,9 @@ public class FeatureProperties {
         if (entries != null) {
             list.add("entries");
         }
+        if (errorEntries != null) {
+            list.add("errorEntries");
+        }
         if (overlapAllowed != null) {
             list.add("overlapAllowed");
         }

@@ -56,14 +56,36 @@
 				"ChannelGroup": "actions",
 				"actions": [
 					{
-						"command": "apply_scene",
+						"command": "apply_fixed_scene",
 						"parameterType": "NUMBER"
 					}
 				],
 				"tags": [
 					"Control",
 					"Mode"
-				]
+				],
+				"stateDescription": {
+					"options": [
+						{
+							"value": "1",
+							"label": "Teens Study"
+						},
+						{
+							"value": "2",
+							"label": "Screen Reading"
+						},
+						{
+							"value": "3",
+							"label": "Concentration"
+						},
+						{
+							"value": "4",
+							"label": "AA Grade Illuminance"
+						}
+					]
+				},
+				"category": "light",
+				"readmeComment": "Value mapping `[\"1\"\u003d\"Teens Study\",\"2\"\u003d\"Screen Reading\",\"3\"\u003d\"Concentration\",\"4\"\u003d\"AA Grade Illuminance\"]`"
 			},
 			{
 				"property": "flm",
@@ -80,7 +102,8 @@
 				],
 				"category": "switch",
 				"tags": [
-					"Switch"
+					"Switch",
+					"Enabled"
 				],
 				"readmeComment": "Turns the lamp on automatically based on ambient light and desk vibration"
 			},
@@ -93,7 +116,7 @@
 					"options": [
 						{
 							"value": "2",
-							"label": "Medium"
+							"label": "Low"
 						},
 						{
 							"value": "3",
@@ -110,9 +133,11 @@
 					}
 				],
 				"tags": [
-					"Control"
+					"Control",
+					"Level"
 				],
-				"readmeComment": "Value mapping `[\"2\"\u003d\"Medium\",\"3\"\u003d\"High\"]`"
+				"category": "settings",
+				"readmeComment": "Value mapping `[\"2\"\u003d\"Low\",\"3\"\u003d\"High\"]`"
 			},
 			{
 				"property": "chl",
@@ -127,9 +152,10 @@
 						"parameterType": "ONOFFNUMBER"
 					}
 				],
-				"category": "switch",
+				"category": "lock",
 				"tags": [
-					"Switch"
+					"Switch",
+					"Enabled"
 				]
 			},
 			{
@@ -159,7 +185,7 @@
 				"unit": "seconds",
 				"stateDescription": {
 					"minimum": 0,
-					"maximum": 21600,
+					"maximum": 3600,
 					"step": 1,
 					"pattern": "%.0f %unit%"
 				},
@@ -178,6 +204,7 @@
 				],
 				"readmeComment": "Turns the light off after the set time, 0 cancels the timer"
 			}
-		]
+		],
+		"experimental": false
 	}
 }

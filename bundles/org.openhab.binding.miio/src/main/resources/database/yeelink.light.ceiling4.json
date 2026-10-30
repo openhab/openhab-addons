@@ -3,7 +3,12 @@
 		"id": [
 			"yeelink.light.ceiling4",
 			"yeelink.light.ceiling10",
-			"yeelink.light.ceiling4.ambi"
+			"yeelink.light.ceiling19",
+			"yeelink.light.ceiling20",
+			"yeelink.light.ceiling4.ambi",
+			"yeelink.light.ceiling10.ambi",
+			"yeelink.light.ceiling19.ambi",
+			"yeelink.light.ceiling20.ambi"
 		],
 		"channels": [
 			{
@@ -15,13 +20,15 @@
 				"actions": [
 					{
 						"command": "set_power",
-						"parameterType": "ONOFF"
+						"parameterType": "ONOFF",
+						"parameters": [
+							"$value$",
+							"smooth",
+							500
+						]
 					}
 				],
-				"category": "switch",
-				"tags": [
-					"Switch"
-				]
+				"category": "switch"
 			},
 			{
 				"property": "bright",
@@ -33,6 +40,11 @@
 					{
 						"command": "set_bright",
 						"parameterType": "NUMBER",
+						"parameters": [
+							"$value$",
+							"smooth",
+							500
+						],
 						"condition": {
 							"name": "BrightnessExisting"
 						}
@@ -40,6 +52,11 @@
 					{
 						"command": "set_power",
 						"parameterType": "ONOFF",
+						"parameters": [
+							"$value$",
+							"smooth",
+							500
+						],
 						"condition": {
 							"name": "BrightnessOnOff"
 						}
@@ -47,8 +64,8 @@
 				],
 				"category": "light",
 				"tags": [
-					"Setpoint",
-					"Light"
+					"Control",
+					"Brightness"
 				]
 			},
 			{
@@ -57,22 +74,36 @@
 				"channel": "ambientBrightness",
 				"type": "Dimmer",
 				"refresh": true,
-				"ChannelGroup": "actions",
 				"actions": [
 					{
 						"command": "bg_set_bright",
 						"parameterType": "NUMBER",
+						"parameters": [
+							"$value$",
+							"smooth",
+							500
+						],
 						"condition": {
 							"name": "BrightnessExisting"
 						}
 					},
 					{
-						"command": "set_power",
+						"command": "bg_set_power",
 						"parameterType": "ONOFF",
+						"parameters": [
+							"$value$",
+							"smooth",
+							500
+						],
 						"condition": {
 							"name": "BrightnessOnOff"
 						}
 					}
+				],
+				"category": "light",
+				"tags": [
+					"Control",
+					"Brightness"
 				]
 			},
 			{
@@ -105,7 +136,8 @@
 				"property": "ct",
 				"friendlyName": "Color Temperature",
 				"channel": "colorTemperature",
-				"type": "Number",
+				"type": "Number:Temperature",
+				"unit": "kelvin",
 				"stateDescription": {
 					"minimum": 2700,
 					"maximum": 6500,
@@ -124,11 +156,7 @@
 						]
 					}
 				],
-				"category": "colorlight",
-				"tags": [
-					"Setpoint",
-					"Temperature"
-				]
+				"category": "colorlight"
 			},
 			{
 				"property": "color_mode",
@@ -165,23 +193,6 @@
 				"refresh": true,
 				"actions": [
 					{
-						"command": "set_rgb",
-						"parameterType": "NONE",
-						"parameters": [
-							"$rgb$",
-							"smooth",
-							500
-						],
-						"condition": {
-							"name": "matchValue",
-							"parameters": [
-								{
-									"matchValue": "1"
-								}
-							]
-						}
-					},
-					{
 						"command": "set_power",
 						"parameterType": "NUMBER",
 						"parameters": [
@@ -201,12 +212,12 @@
 						}
 					}
 				],
-				"category": "settings",
+				"category": "light",
 				"tags": [
 					"Control",
-					"Light"
+					"Mode"
 				],
-				"readmeComment": "Note, currently only supporting switching to RGB or CT mode, use the nightlightMode channel for Night Light mode. Value mapping `[\"0\"\u003d\"Default\",\"2\"\u003d\"CT mode\",\"1\"\u003d\"RGB mode\",\"3\"\u003d\"HSV mode\",\"4\"\u003d\"Color Flow mode\"]`"
+				"readmeComment": "Only CT mode can be set here, use the nightlightMode channel for the night light. Value mapping `[\"0\"\u003d\"Default\",\"2\"\u003d\"CT mode\",\"1\"\u003d\"RGB mode\",\"3\"\u003d\"HSV mode\",\"4\"\u003d\"Color Flow mode\"]`"
 			},
 			{
 				"property": "name",
@@ -214,7 +225,6 @@
 				"channel": "name",
 				"type": "String",
 				"refresh": true,
-				"ChannelGroup": "actions",
 				"actions": [
 					{
 						"command": "set_name",
@@ -229,13 +239,18 @@
 				"channel": "ambientPower",
 				"type": "Switch",
 				"refresh": true,
-				"ChannelGroup": "actions",
 				"actions": [
 					{
 						"command": "bg_set_power",
-						"parameterType": "ONOFF"
+						"parameterType": "ONOFF",
+						"parameters": [
+							"$value$",
+							"smooth",
+							500
+						]
 					}
-				]
+				],
+				"category": "switch"
 			},
 			{
 				"property": "bg_rgb",
@@ -243,21 +258,63 @@
 				"channel": "ambientColor",
 				"type": "Color",
 				"refresh": true,
-				"ChannelGroup": "actions",
 				"actions": [
 					{
 						"command": "bg_set_rgb",
-						"parameterType": "COLOR"
+						"parameterType": "COLOR",
+						"parameters": [
+							"$value$",
+							"smooth",
+							500
+						],
+						"condition": {
+							"name": "HSBOnly"
+						}
+					},
+					{
+						"command": "bg_set_bright",
+						"parameterType": "NUMBER",
+						"parameters": [
+							"$value$",
+							"smooth",
+							500
+						],
+						"condition": {
+							"name": "BrightnessExisting"
+						}
+					},
+					{
+						"command": "bg_set_power",
+						"parameterType": "ONOFF",
+						"parameters": [
+							"$value$",
+							"smooth",
+							500
+						],
+						"condition": {
+							"name": "BrightnessOnOff"
+						}
 					}
+				],
+				"category": "colorlight",
+				"tags": [
+					"Control",
+					"Color"
 				]
 			},
 			{
 				"property": "bg_ct",
 				"friendlyName": "Ambient Color Temperature",
 				"channel": "ambientColorTemperature",
-				"type": "Number",
+				"type": "Number:Temperature",
+				"unit": "kelvin",
+				"stateDescription": {
+					"minimum": 1700,
+					"maximum": 6500,
+					"step": 1,
+					"pattern": "%.0f K"
+				},
 				"refresh": true,
-				"ChannelGroup": "actions",
 				"actions": [
 					{
 						"command": "bg_set_ct_abx",
@@ -268,7 +325,8 @@
 							500
 						]
 					}
-				]
+				],
+				"category": "colorlight"
 			},
 			{
 				"property": "bg_flowing",
@@ -276,7 +334,6 @@
 				"channel": "ambientColorflow",
 				"type": "Switch",
 				"refresh": true,
-				"ChannelGroup": "actions",
 				"actions": [
 					{
 						"command": "bg_start_cf",
@@ -308,6 +365,10 @@
 							]
 						}
 					}
+				],
+				"category": "colorlight",
+				"tags": [
+					"Switch"
 				]
 			},
 			{
@@ -400,7 +461,6 @@
 					]
 				},
 				"refresh": false,
-				"ChannelGroup": "actions",
 				"actions": [
 					{
 						"command": "bg_start_cf",
@@ -763,25 +823,12 @@
 						}
 					}
 				],
+				"category": "colorlight",
 				"tags": [
 					"Control",
-					"Light"
+					"Mode"
 				],
 				"readmeComment": "Value mapping `[\"sunrise\"\u003d\"Sunrise\",\"sunset\"\u003d\"Sunset\",\"home\"\u003d\"Home\",\"tea_time\"\u003d\"Tea Time\",\"date_night\"\u003d\"Date Night\",\"movie\"\u003d\"Movie\",\"romance\"\u003d\"Romance\",\"night_mode\"\u003d\"Night Mode\",\"candle_flicker\"\u003d\"Candle Flicker\",\"happy_birthday\"\u003d\"Happy Birthday\",\"christmas\"\u003d\"Christmas\",\"disco\"\u003d\"Disco\",\"rgb\"\u003d\"RGB\",\"lsd\"\u003d\"Psychedelic\",\"temp\"\u003d\"Color Temperature Cycle\",\"strobe\"\u003d\"Strobe\",\"strobe_color\"\u003d\"Color Strobe\",\"alarm\"\u003d\"Alarm\",\"police\"\u003d\"Police\",\"police2\"\u003d\"Police 2\"]`"
-			},
-			{
-				"property": "",
-				"friendlyName": "Set Scene",
-				"channel": "customScene",
-				"type": "String",
-				"refresh": false,
-				"ChannelGroup": "actions",
-				"actions": [
-					{
-						"command": "set_scene",
-						"parameterType": "CUSTOMSTRING"
-					}
-				]
 			},
 			{
 				"property": "bg_lmode",
@@ -834,10 +881,10 @@
 						}
 					}
 				],
-				"category": "settings",
+				"category": "light",
 				"tags": [
 					"Control",
-					"Light"
+					"Mode"
 				],
 				"readmeComment": "Value mapping `[\"1\"\u003d\"RGB mode\",\"2\"\u003d\"CT mode\",\"3\"\u003d\"HSV mode\"]`"
 			},
@@ -847,12 +894,62 @@
 				"channel": "nightlightBrightness",
 				"type": "Dimmer",
 				"refresh": true,
-				"actions": [],
+				"actions": [
+					{
+						"command": "set_scene",
+						"parameterType": "NUMBER",
+						"parameters": [
+							"nightlight",
+							"$value$"
+						],
+						"condition": {
+							"name": "BrightnessExisting"
+						}
+					},
+					{
+						"command": "set_power",
+						"parameterType": "ONOFF",
+						"parameters": [
+							"$value$",
+							"smooth",
+							500
+						],
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "OFF|0(\\.0*)?",
+									"returnValue": "off"
+								}
+							]
+						}
+					},
+					{
+						"command": "set_power",
+						"parameterType": "ONOFF",
+						"parameters": [
+							"$value$",
+							"smooth",
+							500,
+							5
+						],
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "ON",
+									"returnValue": "on"
+								}
+							]
+						}
+					}
+				],
 				"category": "light",
 				"tags": [
-					"Setpoint",
-					"Light"
-				]
+					"Control",
+					"Brightness"
+				],
+				"readmeComment": "Setting a value switches the light to night light mode"
 			},
 			{
 				"property": "active_mode",
@@ -886,8 +983,14 @@
 					}
 				],
 				"category": "light",
+				"tags": [
+					"Control",
+					"Mode"
+				],
 				"readmeComment": "Switching off returns the light to CT mode"
 			}
-		]
+		],
+		"experimental": false,
+		"readmeComment": "Other scenes can be sent with the `commands` channel, for example `set_scene[\"ct\",3000,50]` or `set_scene[\"auto_delay_off\",50,10]` (brightness 50%, off after 10 minutes)"
 	}
 }

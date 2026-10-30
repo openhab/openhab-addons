@@ -20,6 +20,8 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.naming.CommunicationException;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.homewizard.internal.HomeWizardBindingConstants;
@@ -114,7 +116,7 @@ public class HomeWizardKwhMeterHandlerTest extends HomeWizardHandlerTest {
             doReturn(DataUtil.fromFile("response-measurement-kwh-meter.json")).when(handler).getMeasurementData();
             doReturn(DataUtil.fromFile("response-batteries.json")).when(handler).getBatteriesData();
             doReturn(DataUtil.fromFile("response-system.json")).when(handler).getSystemData();
-        } catch (IOException ex) {
+        } catch (IOException | CommunicationException ex) {
             assertFalse(true);
         }
 

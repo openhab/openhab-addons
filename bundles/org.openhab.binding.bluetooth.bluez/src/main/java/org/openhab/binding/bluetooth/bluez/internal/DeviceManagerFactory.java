@@ -72,20 +72,18 @@ public class DeviceManagerFactory {
         logger.debug("initializing DeviceManagerFactory");
 
         var stage1 = this.deviceManagerFuture = RetryFuture.callWithRetry(() -> {
+            DeviceManager existing = getConnectedInstance();
+            if (existing != null) {
+                logger.debug("Reusing connected DeviceManager");
+                return existing;
+            }
             try {
-                // if this is the first call to the library, this call
-                // should throw an exception (that we are catching)
-                return DeviceManager.getInstance();
-                // Experimental - seems reuse does not work
-            } catch (IllegalStateException e) {
-                // Exception caused by first call to the library
-                try {
-                    return DeviceManager.createInstance(false);
-                } catch (DBusException | UnsatisfiedLinkError ex) {
-                    // we might be on a system without DBus, such as macOS or Windows
-                    logger.debug("Failed to initialize DeviceManager: {}", ex.getMessage());
-                    return null;
-                }
+                // either the first call to the library, or the previous instance was disconnected on dispose
+                return DeviceManager.createInstance(false);
+            } catch (DBusException | UnsatisfiedLinkError ex) {
+                // we might be on a system without DBus, such as macOS or Windows
+                logger.debug("Failed to initialize DeviceManager: {}", ex.getMessage());
+                return null;
             }
         }, scheduler);
 
@@ -121,6 +119,21 @@ public class DeviceManagerFactory {
         });
     }
 
+    /**
+     * The bluez-dbus library keeps a static {@link DeviceManager} instance. Its D-Bus connection is closed when this
+     * factory is deactivated, e.g. when the bundle is restarted. Reusing that instance would make every D-Bus call fail
+     * with NotConnected, so it is only reused while its connection is still open.
+     */
+    private static @Nullable DeviceManager getConnectedInstance() {
+        try {
+            DeviceManager deviceManager = DeviceManager.getInstance();
+            return deviceManager.getDbusConnection().isConnected() ? deviceManager : null;
+        } catch (IllegalStateException e) {
+            // no instance created yet
+            return null;
+        }
+    }
+
     @Deactivate
     public void dispose() {
         var stage1 = this.deviceManagerFuture;
@@ -129,6 +142,11 @@ public class DeviceManagerFactory {
                 // a failure to cancel means that the stage completed normally
                 stage1.thenAccept(devManager -> {
                     if (devManager != null) {
+                        try {
+                            devManager.unRegisterPropertyHandler(changeHandler);
+                        } catch (DBusException e) {
+                            logger.debug("Failed to unregister property handler: {}", e.getMessage());
+                        }
                         devManager.closeConnection();
                     }
                 });
