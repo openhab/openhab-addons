@@ -49,6 +49,7 @@ import org.openhab.binding.matter.internal.client.dto.ws.NodeDataMessage;
 import org.openhab.binding.matter.internal.client.dto.ws.NodeState;
 import org.openhab.binding.matter.internal.client.dto.ws.NodeStateMessage;
 import org.openhab.binding.matter.internal.client.dto.ws.OtaUpdateAvailableMessage;
+import org.openhab.binding.matter.internal.client.dto.ws.OtaUpdateInfo;
 import org.openhab.binding.matter.internal.client.dto.ws.OtaUpdateStatusMessage;
 import org.openhab.binding.matter.internal.client.dto.ws.PhysicalDeviceProperties;
 import org.openhab.binding.matter.internal.config.ControllerConfiguration;
@@ -343,11 +344,15 @@ public class ControllerHandler extends BaseBridgeHandler implements MatterClient
     @Override
     public void onEvent(OtaUpdateAvailableMessage message) {
         logger.debug("OtaUpdateAvailableMessage onEvent: node {} is {}", message.nodeId, message);
-        firmwareProvider.updateFirmwareInfo(message.nodeId, message);
         NodeHandler handler = linkedNodes.get(message.nodeId);
         if (handler != null) {
+            firmwareProvider.updateFirmwareInfo(handler.getThing().getUID(), message);
             handler.handleOtaUpdateAvailable(message);
         }
+    }
+
+    public void updateFirmwareInfo(ThingUID thingUID, @Nullable OtaUpdateInfo updateInfo) {
+        firmwareProvider.updateFirmwareInfo(thingUID, updateInfo);
     }
 
     @Override
@@ -422,7 +427,10 @@ public class ControllerHandler extends BaseBridgeHandler implements MatterClient
         connectionStates.remove(nodeId);
         pendingPhysicalProperties.remove(nodeId);
         enumeratedNodes.remove(nodeId);
-        linkedNodes.remove(nodeId);
+        NodeHandler handler = linkedNodes.remove(nodeId);
+        if (handler != null) {
+            firmwareProvider.removeFirmwareInfo(handler.getThing().getUID());
+        }
     }
 
     /**

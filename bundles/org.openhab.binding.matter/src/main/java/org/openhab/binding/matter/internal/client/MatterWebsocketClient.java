@@ -39,6 +39,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.WebSocketListener;
 import org.eclipse.jetty.websocket.api.WebSocketPolicy;
+import org.eclipse.jetty.websocket.api.WriteCallback;
 import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.openhab.binding.matter.internal.client.dto.Endpoint;
@@ -476,7 +477,22 @@ public class MatterWebsocketClient implements WebSocketListener, MatterWebsocket
         Request message = new Request(requestId, namespace, functionName, args);
         String jsonMessage = gson.toJson(message);
         logger.debug("sendMessage: {}", jsonMessage);
-        session.getRemote().sendStringByFuture(jsonMessage);
+        session.getRemote().sendString(jsonMessage, new WriteCallback() {
+            @Override
+            public void writeFailed(@Nullable Throwable cause) {
+                logger.debug("Failed to send {} {} with id {}", namespace, functionName, requestId, cause);
+                CompletableFuture<JsonElement> future = pendingRequests.remove(requestId);
+                if (future != null) {
+                    future.completeExceptionally(new MatterRequestException(
+                            "Failed to send request: " + (cause != null ? cause.getMessage() : "unknown"), null,
+                            false));
+                }
+            }
+
+            @Override
+            public void writeSuccess() {
+            }
+        });
 
         // timeout handling
         scheduler.schedule(() -> {
