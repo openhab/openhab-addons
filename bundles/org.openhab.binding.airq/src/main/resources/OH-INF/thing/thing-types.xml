@@ -9,11 +9,11 @@
 		<category>Sensor</category>
 		<semantic-equipment-tag>AirQualitySensor</semantic-equipment-tag>
 		<channel-groups>
-			<channel-group id="general" typeId="general"/>
+			<channel-group id="status" typeId="status"/>
 			<channel-group id="measurements" typeId="measurements"/>
-			<channel-group id="advanced-measurements" typeId="advanced-measurements"/>
+			<channel-group id="events" typeId="events"/>
 			<channel-group id="maxerr" typeId="maxerr"/>
-			<channel-group id="advanced-maxerr" typeId="advanced-maxerr"/>
+			<channel-group id="settings" typeId="settings"/>
 		</channel-groups>
 		<properties>
 			<property name="id">Unknown Device ID</property>
@@ -35,11 +35,154 @@
 				<label>Password</label>
 				<description>Password of air-Q Device.</description>
 			</parameter>
+			<parameter name="removeUnsupportedChannels" type="boolean">
+				<label>Remove Unsupported Channels</label>
+				<description>Removes the channels of measurements and settings that the device does not have. They are added again
+					when the device reports them.</description>
+				<default>true</default>
+				<advanced>true</advanced>
+			</parameter>
 		</config-description>
 	</thing-type>
-	<channel-group-type id="advanced-maxerr">
-		<label>Advanced Maximum Errors</label>
+	<channel-group-type id="status">
+		<label>Status</label>
 		<channels>
+			<channel id="status" typeId="status"/>
+			<channel id="uptime" typeId="uptime"/>
+			<channel id="boots" typeId="boots"/>
+			<channel id="timestamp" typeId="timestamp"/>
+			<channel id="measure-time" typeId="mtime"/>
+			<channel id="daytime" typeId="daytime"/>
+			<channel id="initial-cal-finished" typeId="initial-cal-finished"/>
+			<channel id="user-calib" typeId="usercalib"/>
+			<channel id="wifi-rssi" typeId="wifi-rssi"/>
+			<channel id="wlan-config-ssid" typeId="wlan-config-ssid"/>
+			<channel id="wlan-config-ip-address" typeId="wlan-config-ip-address"/>
+			<channel id="wlan-config-net-mask" typeId="wlan-config-net-mask"/>
+			<channel id="wlan-config-gateway" typeId="wlan-config-gateway"/>
+			<channel id="wlan-config-mac" typeId="wlan-config-mac"/>
+			<channel id="wlan-config-bssid" typeId="wlan-config-bssid"/>
+			<channel id="cloud-connection" typeId="cloud-connection"/>
+		</channels>
+	</channel-group-type>
+	<channel-group-type id="measurements">
+		<label>Measurements</label>
+		<channels>
+			<channel id="temperature" typeId="system.indoor-temperature"/>
+			<channel id="humidity-relative" typeId="system.atmospheric-humidity"/>
+			<channel id="humidity-absolute" typeId="humidity-abs"/>
+			<channel id="dewpt" typeId="dewpt"/>
+			<channel id="d-hdt" typeId="dhdt"/>
+			<channel id="pressure" typeId="system.barometric-pressure">
+				<description>Absolute air pressure at the location of the device.</description>
+			</channel>
+			<channel id="pressure-rel" typeId="pressure-rel"/>
+			<channel id="health-index" typeId="health-index"/>
+			<channel id="health" typeId="health-raw"/>
+			<channel id="performance-index" typeId="performance-index"/>
+			<channel id="performance" typeId="performance-raw"/>
+			<channel id="virus-free" typeId="virus-free"/>
+			<channel id="mold-free" typeId="mold-free"/>
+			<channel id="co2" typeId="co2"/>
+			<channel id="d-co2dt" typeId="dco2dt"/>
+			<channel id="tvoc" typeId="tvoc"/>
+			<channel id="tvoc-ionsc" typeId="tvoc-ionsc"/>
+			<channel id="co" typeId="co"/>
+			<channel id="no2" typeId="no2"/>
+			<channel id="o3" typeId="o3"/>
+			<channel id="o2" typeId="oxygen"/>
+			<channel id="so2" typeId="so2"/>
+			<channel id="h2s" typeId="h2s"/>
+			<channel id="c2h4o" typeId="c2h4o"/>
+			<channel id="nh3-mr100" typeId="nh3-mr100"/>
+			<channel id="ash3" typeId="ash3"/>
+			<channel id="br2" typeId="br2"/>
+			<channel id="ch4s" typeId="ch4s"/>
+			<channel id="cl2-m20" typeId="cl2-m20"/>
+			<channel id="clo2" typeId="clo2"/>
+			<channel id="cs2" typeId="cs2"/>
+			<channel id="ethanol" typeId="ethanol"/>
+			<channel id="c2h4" typeId="c2h4"/>
+			<channel id="ch2o-m10" typeId="ch2o-m10"/>
+			<channel id="f2" typeId="f2"/>
+			<channel id="hcl" typeId="hcl"/>
+			<channel id="hcn" typeId="hcn"/>
+			<channel id="hf" typeId="hf"/>
+			<channel id="h2-m1000" typeId="h2-m1000"/>
+			<channel id="h2o2" typeId="h2o2"/>
+			<channel id="n2o" typeId="n2o"/>
+			<channel id="no-m250" typeId="no-m250"/>
+			<channel id="acid-m100" typeId="acid-m100"/>
+			<channel id="ph3" typeId="ph3"/>
+			<channel id="sih4" typeId="sih4"/>
+			<channel id="ch4-mipex" typeId="ch4-mipex"/>
+			<channel id="c3h8-mipex" typeId="c3h8-mipex"/>
+			<channel id="r32" typeId="r32"/>
+			<channel id="r454b" typeId="r454b"/>
+			<channel id="r454c" typeId="r454c"/>
+			<channel id="radon" typeId="radon"/>
+			<channel id="fine-dust-conc01" typeId="pm1"/>
+			<channel id="fine-dust-conc02-5" typeId="pm2-5"/>
+			<channel id="fine-dust-conc10" typeId="pm10"/>
+			<channel id="fine-dust-cnt00-3" typeId="cnt0-3"/>
+			<channel id="fine-dust-cnt00-5" typeId="cnt0-5"/>
+			<channel id="fine-dust-cnt01" typeId="cnt1"/>
+			<channel id="fine-dust-cnt02-5" typeId="cnt2-5"/>
+			<channel id="fine-dust-cnt05" typeId="cnt5"/>
+			<channel id="fine-dust-cnt10" typeId="cnt10"/>
+			<channel id="avg-fine-dust-size" typeId="typps"/>
+			<channel id="pm1-sps30" typeId="pm1-sps30"/>
+			<channel id="pm2-5-sps30" typeId="pm2-5-sps30"/>
+			<channel id="pm4-sps30" typeId="pm4-sps30"/>
+			<channel id="pm10-sps30" typeId="pm10-sps30"/>
+			<channel id="cnt0-5-sps30" typeId="cnt0-5-sps30"/>
+			<channel id="cnt1-sps30" typeId="cnt1-sps30"/>
+			<channel id="cnt2-5-sps30" typeId="cnt2-5-sps30"/>
+			<channel id="cnt4-sps30" typeId="cnt4-sps30"/>
+			<channel id="cnt10-sps30" typeId="cnt10-sps30"/>
+			<channel id="avg-fine-dust-size-sps30" typeId="typps-sps30"/>
+			<channel id="sound" typeId="sound"/>
+			<channel id="sound-max" typeId="sound-max"/>
+			<channel id="flow1" typeId="flow1"/>
+			<channel id="flow2" typeId="flow2"/>
+			<channel id="flow3" typeId="flow3"/>
+			<channel id="flow4" typeId="flow4"/>
+		</channels>
+	</channel-group-type>
+	<channel-group-type id="events">
+		<label>Events</label>
+		<channels>
+			<channel id="fire-alarm-active" typeId="fire-alarm-active"/>
+			<channel id="gas-alarm-active" typeId="gas-alarm-active"/>
+			<channel id="door-event" typeId="door"/>
+			<channel id="window-event" typeId="window-event"/>
+			<channel id="window-open" typeId="window-open"/>
+			<channel id="person" typeId="person"/>
+		</channels>
+	</channel-group-type>
+	<channel-group-type id="maxerr">
+		<label>Maximum Errors</label>
+		<description>Worst-case error (±) of each measurement, in the unit of the measurement.</description>
+		<channels>
+			<channel id="temperature-maxerr" typeId="temperature-maxerr"/>
+			<channel id="humidity-relative-maxerr" typeId="humidity-maxerr"/>
+			<channel id="humidity-absolute-maxerr" typeId="humidity-abs-maxerr"/>
+			<channel id="dewpt-maxerr" typeId="dewpt-maxerr"/>
+			<channel id="pressure-maxerr" typeId="pressure-maxerr"/>
+			<channel id="pressure-rel-maxerr" typeId="pressure-rel-maxerr"/>
+			<channel id="virus-free-maxerr" typeId="virus-free-maxerr"/>
+			<channel id="mold-free-maxerr" typeId="mold-free-maxerr"/>
+			<channel id="co2-maxerr" typeId="co2-maxerr"/>
+			<channel id="tvoc-maxerr" typeId="tvoc-maxerr"/>
+			<channel id="tvoc-ionsc-maxerr" typeId="ppb-maxerr">
+				<label>Max. Error Industrial VOC</label>
+			</channel>
+			<channel id="co-maxerr" typeId="co-maxerr"/>
+			<channel id="no2-maxerr" typeId="no2-maxerr"/>
+			<channel id="o3-maxerr" typeId="o3-maxerr"/>
+			<channel id="o2-maxerr" typeId="oxygen-maxerr"/>
+			<channel id="so2-maxerr" typeId="so2-maxerr"/>
+			<channel id="h2s-maxerr" typeId="h2s-maxerr"/>
 			<channel id="c2h4o-maxerr" typeId="density-maxerr">
 				<label>Max. Error Acetaldehyde</label>
 			</channel>
@@ -106,11 +249,6 @@
 			<channel id="sih4-maxerr" typeId="density-maxerr">
 				<label>Max. Error Silane</label>
 			</channel>
-			<channel id="tvoc-ionsc-maxerr" typeId="ppb-maxerr">
-				<label>Max. Error Industrial VOC</label>
-			</channel>
-			<channel id="pressure-rel-maxerr" typeId="pressure-rel-maxerr"/>
-			<channel id="sound-max-maxerr" typeId="sound-max-maxerr"/>
 			<channel id="ch4-mipex-maxerr" typeId="percent-maxerr">
 				<label>Max. Error Methane</label>
 			</channel>
@@ -126,243 +264,224 @@
 			<channel id="r454c-maxerr" typeId="percent-maxerr">
 				<label>Max. Error Refrigerant R454C</label>
 			</channel>
-		</channels>
-	</channel-group-type>
-	<channel-group-type id="maxerr">
-		<label>Maximum Errors</label>
-		<channels>
+			<channel id="radon-maxerr" typeId="radon-maxerr"/>
+			<channel id="fine-dust-conc01-maxerr" typeId="pm1-maxerr"/>
+			<channel id="fine-dust-conc02-5-maxerr" typeId="pm2-5-maxerr"/>
+			<channel id="fine-dust-conc10-maxerr" typeId="pm10-maxerr"/>
 			<channel id="fine-dust-cnt00-3-maxerr" typeId="cnt0-3-maxerr"/>
 			<channel id="fine-dust-cnt00-5-maxerr" typeId="cnt0-5-maxerr"/>
 			<channel id="fine-dust-cnt01-maxerr" typeId="cnt1-maxerr"/>
 			<channel id="fine-dust-cnt02-5-maxerr" typeId="cnt2-5-maxerr"/>
 			<channel id="fine-dust-cnt05-maxerr" typeId="cnt5-maxerr"/>
 			<channel id="fine-dust-cnt10-maxerr" typeId="cnt10-maxerr"/>
-			<channel id="co-maxerr" typeId="co-maxerr"/>
-			<channel id="co2-maxerr" typeId="co2-maxerr"/>
-			<channel id="dewpt-maxerr" typeId="dewpt-maxerr"/>
-			<channel id="h2s-maxerr" typeId="h2s-maxerr"/>
-			<channel id="humidity-relative-maxerr" typeId="humidity-maxerr"/>
-			<channel id="humidity-absolute-maxerr" typeId="humidity-abs-maxerr"/>
-			<channel id="no2-maxerr" typeId="no2-maxerr"/>
-			<channel id="o3-maxerr" typeId="o3-maxerr"/>
-			<channel id="o2-maxerr" typeId="oxygen-maxerr"/>
-			<channel id="fine-dust-conc01-maxerr" typeId="pm1-maxerr"/>
-			<channel id="fine-dust-conc02-5-maxerr" typeId="pm2-5-maxerr"/>
-			<channel id="fine-dust-conc10-maxerr" typeId="pm10-maxerr"/>
-			<channel id="pressure-maxerr" typeId="pressure-maxerr"/>
-			<channel id="so2-maxerr" typeId="so2-maxerr"/>
 			<channel id="sound-maxerr" typeId="sound-maxerr"/>
-			<channel id="temperature-maxerr" typeId="temperature-maxerr"/>
-			<channel id="tvoc-maxerr" typeId="tvoc-maxerr"/>
-			<channel id="virus-free-maxerr" typeId="virus-free-maxerr"/>
-			<channel id="mold-free-maxerr" typeId="mold-free-maxerr"/>
-			<channel id="radon-maxerr" typeId="radon-maxerr"/>
+			<channel id="sound-max-maxerr" typeId="sound-max-maxerr"/>
 		</channels>
 	</channel-group-type>
-	<channel-group-type id="advanced-measurements">
-		<label>Advanced Measurements</label>
+	<channel-group-type id="settings">
+		<label>Settings</label>
 		<channels>
-			<channel id="c2h4o" typeId="c2h4o"/>
-			<channel id="nh3-mr100" typeId="nh3-mr100"/>
-			<channel id="ash3" typeId="ash3"/>
-			<channel id="br2" typeId="br2"/>
-			<channel id="ch4s" typeId="ch4s"/>
-			<channel id="cl2-m20" typeId="cl2-m20"/>
-			<channel id="clo2" typeId="clo2"/>
-			<channel id="cs2" typeId="cs2"/>
-			<channel id="ethanol" typeId="ethanol"/>
-			<channel id="c2h4" typeId="c2h4"/>
-			<channel id="ch2o-m10" typeId="ch2o-m10"/>
-			<channel id="f2" typeId="f2"/>
-			<channel id="hcl" typeId="hcl"/>
-			<channel id="hcn" typeId="hcn"/>
-			<channel id="hf" typeId="hf"/>
-			<channel id="h2-m1000" typeId="h2-m1000"/>
-			<channel id="h2o2" typeId="h2o2"/>
-			<channel id="n2o" typeId="n2o"/>
-			<channel id="no-m250" typeId="no-m250"/>
-			<channel id="acid-m100" typeId="acid-m100"/>
-			<channel id="ph3" typeId="ph3"/>
-			<channel id="sih4" typeId="sih4"/>
-			<channel id="tvoc-ionsc" typeId="tvoc-ionsc"/>
-			<channel id="pressure-rel" typeId="pressure-rel"/>
-			<channel id="sound-max" typeId="sound-max"/>
-			<channel id="ch4-mipex" typeId="ch4-mipex"/>
-			<channel id="c3h8-mipex" typeId="c3h8-mipex"/>
-			<channel id="r32" typeId="r32"/>
-			<channel id="r454b" typeId="r454b"/>
-			<channel id="r454c" typeId="r454c"/>
-		</channels>
-	</channel-group-type>
-	<channel-group-type id="measurements">
-		<label>Measurements</label>
-		<channels>
-			<channel id="avg-fine-dust-size" typeId="typps"/>
-			<channel id="fine-dust-cnt00-3" typeId="cnt0-3"/>
-			<channel id="fine-dust-cnt00-5" typeId="cnt0-5"/>
-			<channel id="fine-dust-cnt01" typeId="cnt1"/>
-			<channel id="fine-dust-cnt02-5" typeId="cnt2-5"/>
-			<channel id="fine-dust-cnt05" typeId="cnt5"/>
-			<channel id="fine-dust-cnt10" typeId="cnt10"/>
-			<channel id="co" typeId="co"/>
-			<channel id="co2" typeId="co2"/>
-			<channel id="d-co2dt" typeId="dco2dt"/>
-			<channel id="d-hdt" typeId="dhdt"/>
-			<channel id="dewpt" typeId="dewpt"/>
-			<channel id="door-event" typeId="door"/>
-			<channel id="h2s" typeId="h2s"/>
-			<channel id="health-index" typeId="health-index"/>
-			<channel id="health" typeId="health"/>
-			<channel id="humidity-relative" typeId="humidity"/>
-			<channel id="humidity-absolute" typeId="humidity-abs"/>
-			<channel id="measure-time" typeId="mtime"/>
-			<channel id="no2" typeId="no2"/>
-			<channel id="o3" typeId="o3"/>
-			<channel id="o2" typeId="oxygen"/>
-			<channel id="performance-index" typeId="performance-index"/>
-			<channel id="performance" typeId="performance"/>
-			<channel id="fine-dust-conc01" typeId="pm1"/>
-			<channel id="fine-dust-conc02-5" typeId="pm2-5"/>
-			<channel id="fine-dust-conc10" typeId="pm10"/>
-			<channel id="pressure" typeId="pressure"/>
-			<channel id="radon" typeId="radon"/>
-			<channel id="so2" typeId="so2"/>
-			<channel id="sound" typeId="sound"/>
-			<channel id="temperature" typeId="temperature"/>
-			<channel id="timestamp" typeId="timestamp"/>
-			<channel id="tvoc" typeId="tvoc"/>
-			<channel id="virus-free" typeId="virus-free"/>
-			<channel id="mold-free" typeId="mold-free"/>
-		</channels>
-	</channel-group-type>
-	<channel-group-type id="general">
-		<label>General</label>
-		<channels>
-			<channel id="status" typeId="status"/>
-			<channel id="uptime" typeId="uptime"/>
+			<channel id="device-name" typeId="device-name"/>
+			<channel id="room-type" typeId="room-type"/>
+			<channel id="room-height" typeId="room-height"/>
+			<channel id="room-area" typeId="room-area"/>
+			<channel id="location" typeId="geopos"/>
+			<channel id="altitude" typeId="altitude"/>
+			<channel id="altitude-error" typeId="altitude-error"/>
+			<channel id="country-code" typeId="country-code"/>
+			<channel id="time-server" typeId="time-server"/>
+			<channel id="log-level" typeId="logging"/>
 			<channel id="wifi" typeId="wifi"/>
 			<channel id="ssid" typeId="wla-nssid"/>
-			<channel id="password" typeId="pass"/>
 			<channel id="wifi-info" typeId="wifi-info"/>
-			<channel id="time-server" typeId="time-server"/>
-			<channel id="location" typeId="geopos"/>
+			<channel id="night-mode-activated" typeId="nightmode-activated"/>
 			<channel id="night-mode-start-day" typeId="nightmode-start-day"/>
 			<channel id="night-mode-start-night" typeId="nightmode-start-night"/>
 			<channel id="night-mode-brightness-day" typeId="nightmode-brightness-day"/>
 			<channel id="night-mode-brightness-night" typeId="nightmode-brightness-night"/>
 			<channel id="night-mode-fan-night-off" typeId="nightmode-fan-night-off"/>
 			<channel id="night-mode-wifi-night-off" typeId="nightmode-wifi-night-off"/>
-			<channel id="device-name" typeId="device-name"/>
-			<channel id="room-type" typeId="room-type"/>
-			<channel id="log-level" typeId="logging"/>
-			<channel id="delete-key" typeId="delete-key"/>
-			<channel id="fire-alarm" typeId="fire-alarm"/>
-			<channel id="wlan-config-gateway" typeId="wlan-config-gateway"/>
-			<channel id="wlan-config-mac" typeId="wlan-config-mac"/>
-			<channel id="wlan-config-ssid" typeId="wlan-config-ssid"/>
-			<channel id="wlan-config-ip-address" typeId="wlan-config-ip-address"/>
-			<channel id="wlan-config-net-mask" typeId="wlan-config-net-mask"/>
-			<channel id="wlan-config-bssid" typeId="wlan-config-bssid"/>
-			<channel id="cloud-upload" typeId="cloud-upload"/>
+			<channel id="night-mode-alarm-night-off" typeId="nightmode-alarm-night-off"/>
+			<channel id="night-mode-last-time-switch" typeId="nightmode-last-time-switch"/>
+			<channel id="fire-alarm-enabled" typeId="fire-alarm"/>
+			<channel id="gas-alarm-enabled" typeId="gas-alarm"/>
+			<channel id="alarm-forwarding" typeId="alarm-forwarding"/>
+			<channel id="sound-info" typeId="sound-info"/>
+			<channel id="averaging" typeId="averaging"/>
 			<channel id="averaging-rhythm" typeId="seconds-measurement-delay"/>
 			<channel id="power-freq-suppression" typeId="rejection"/>
 			<channel id="auto-drift-compensation" typeId="auto-drift-compensation"/>
-			<channel id="auto-update" typeId="auto-update"/>
 			<channel id="advanced-data-processing" typeId="advanced-data-processing"/>
+			<channel id="building-standard" typeId="building-standard"/>
 			<channel id="ppm-and-ppb" typeId="ppm-and-ppb"/>
-			<channel id="gas-alarm" typeId="gas-alarm"/>
-			<channel id="sound-pressure" typeId="sound-info"/>
-			<channel id="alarm-forwarding" typeId="alarm-forwarding"/>
-			<channel id="user-calib" typeId="usercalib"/>
-			<channel id="initial-cal-finished" typeId="initial-cal-finished"/>
-			<channel id="averaging" typeId="averaging"/>
-			<channel id="error-bars" typeId="error-bars"/>
 			<channel id="warmup-phase" typeId="warmup-phase"/>
+			<channel id="cloud-upload" typeId="cloud-upload"/>
+			<channel id="auto-update" typeId="auto-update"/>
 		</channels>
 	</channel-group-type>
 	<channel-type id="status" advanced="false">
 		<item-type>String</item-type>
 		<label>Status of Sensors</label>
+		<description>OK, or a message for each sensor without reliable data, e.g. during the warm-up phase.</description>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="typps" advanced="false">
 		<item-type unitHint="µm">Number:Length</item-type>
 		<label>Average Size of Fine Dust</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>ParticulateMatter</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"></state>
 	</channel-type>
 	<channel-type id="cnt0-3" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Fine Dust Count 0.3μm</label>
+		<label>Fine Dust Count 0.3 µm</label>
+		<description>Number of particles larger than 0.3 µm per 100 ml of air.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>ParticulateMatter</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f"></state>
 	</channel-type>
 	<channel-type id="cnt0-5" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Fine Dust Count 0.5 μm</label>
+		<label>Fine Dust Count 0.5 µm</label>
+		<description>Number of particles larger than 0.5 µm per 100 ml of air.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>ParticulateMatter</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f"></state>
 	</channel-type>
 	<channel-type id="cnt1" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Fine Dust Count 1μm</label>
+		<label>Fine Dust Count 1 µm</label>
+		<description>Number of particles larger than 1 µm per 100 ml of air.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>ParticulateMatter</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f"></state>
 	</channel-type>
 	<channel-type id="cnt2-5" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Fine Dust Count 2.5μm</label>
+		<label>Fine Dust Count 2.5 µm</label>
+		<description>Number of particles larger than 2.5 µm per 100 ml of air.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>ParticulateMatter</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f"></state>
 	</channel-type>
 	<channel-type id="cnt5" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Fine Dust Count 5μm</label>
+		<label>Fine Dust Count 5 µm</label>
+		<description>Number of particles larger than 5 µm per 100 ml of air.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>ParticulateMatter</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f"></state>
 	</channel-type>
 	<channel-type id="cnt10" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Fine Dust Count 10μm</label>
+		<label>Fine Dust Count 10 µm</label>
+		<description>Number of particles larger than 10 µm per 100 ml of air.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>ParticulateMatter</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f"></state>
 	</channel-type>
 	<channel-type id="co" advanced="false">
 		<item-type unitHint="mg/m³">Number:Density</item-type>
 		<label>Carbon Monoxide (CO)</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>CO</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"></state>
 	</channel-type>
 	<channel-type id="co2" advanced="false">
 		<item-type unitHint="ppm">Number:Dimensionless</item-type>
 		<label>Carbon Dioxide (CO₂)</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>CO2</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"></state>
 	</channel-type>
 	<channel-type id="dco2dt" advanced="false">
 		<item-type>Number</item-type>
-		<label>Change of CO₂ Concentr.</label>
-		<state readOnly="true" pattern="%.2f ppm/s"></state>
+		<label>Change of CO₂ Concentration</label>
+		<description>Change of the CO₂ concentration in ppb/s; 0 during the first 200 seconds.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>CO2</tag>
+		</tags>
+		<state readOnly="true" pattern="%.2f ppb/s"></state>
 	</channel-type>
 	<channel-type id="dhdt" advanced="false">
 		<item-type>Number</item-type>
 		<label>Change of Humidity</label>
-		<state readOnly="true" pattern="%.2f g/m³/s"></state>
+		<description>Change of the absolute humidity in mg/m³/s.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Humidity</tag>
+		</tags>
+		<state readOnly="true" pattern="%.2f mg/m³/s"></state>
 	</channel-type>
 	<channel-type id="dewpt" advanced="false">
 		<item-type>Number:Temperature</item-type>
 		<label>Dew Point</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"></state>
 	</channel-type>
 	<channel-type id="door" advanced="false">
 		<item-type>Number</item-type>
-		<label>Door Event (exp)</label>
+		<label>Door Event</label>
+		<description>Experimental, may not be reliable; requires advanced data processing.</description>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="h2s" advanced="false">
 		<item-type unitHint="µg/m³">Number:Density</item-type>
 		<label>Hydrogen Sulfide (H₂S)</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Gas</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"></state>
 	</channel-type>
 	<channel-type id="health-index" advanced="false">
 		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Health Index</label>
+		<description>0 to 100 % for a normal rating, -20 % during a gas alarm and -80 % during a fire alarm.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>AirQuality</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"></state>
 	</channel-type>
 	<channel-type id="health" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Health Index Raw</label>
+		<description>0 to 1000 for a normal rating, -200 during a gas alarm and -800 during a fire alarm.</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="fire-alarm-active" advanced="false">
+		<item-type>Switch</item-type>
+		<label>Fire Alarm Active</label>
+		<description>ON while the device raises a fire alarm, UNDEF while the fire alarm is disabled.</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="gas-alarm-active" advanced="false">
+		<item-type>Switch</item-type>
+		<label>Gas Alarm Active</label>
+		<description>ON while the device raises a gas alarm, UNDEF while the gas alarm is disabled.</description>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="humidity" advanced="false">
@@ -373,56 +492,116 @@
 	<channel-type id="humidity-abs" advanced="false">
 		<item-type unitHint="g/m³">Number:Density</item-type>
 		<label>Absolute Humidity</label>
+		<description>Mass of water vapour per volume of air.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Humidity</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"></state>
 	</channel-type>
 	<channel-type id="mtime" advanced="true">
 		<item-type unitHint="ms">Number:Time</item-type>
 		<label>Time Needed for Measurement</label>
+		<description>Duration of one measurement cycle; grows with the number of sensors.</description>
 		<state readOnly="true" pattern="%d %unit%"></state>
 	</channel-type>
 	<channel-type id="no2" advanced="false">
-		<item-type unitHint="μg/m³">Number:Density</item-type>
+		<item-type unitHint="µg/m³">Number:Density</item-type>
 		<label>Nitrogen Dioxide (NO₂)</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Gas</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"></state>
 	</channel-type>
 	<channel-type id="o3" advanced="false">
 		<item-type unitHint="µg/m³">Number:Density</item-type>
 		<label>Ozone (O₃)</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Ozone</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"></state>
 	</channel-type>
 	<channel-type id="oxygen" advanced="false">
 		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Oxygen (O₂)</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Gas</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"></state>
 	</channel-type>
 	<channel-type id="performance-index" advanced="false">
 		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Performance Index</label>
+		<description>0 to 100 % for a normal rating.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>AirQuality</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"></state>
 	</channel-type>
 	<channel-type id="performance" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Performance Index Raw</label>
+		<description>0 to 1000 for a normal rating.</description>
 		<state readOnly="true"></state>
 	</channel-type>
+	<channel-type id="health-raw" advanced="true">
+		<item-type>Number</item-type>
+		<label>Health Index Raw</label>
+		<description>0 to 1000 for a normal rating, -200 during a gas alarm and -800 during a fire alarm.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>AirQuality</tag>
+		</tags>
+		<state readOnly="true" pattern="%.0f"/>
+	</channel-type>
+	<channel-type id="performance-raw" advanced="true">
+		<item-type>Number</item-type>
+		<label>Performance Index Raw</label>
+		<description>0 to 1000 for a normal rating.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>AirQuality</tag>
+		</tags>
+		<state readOnly="true" pattern="%.0f"/>
+	</channel-type>
 	<channel-type id="pm1" advanced="false">
-		<item-type unitHint="μg/m³">Number:Density</item-type>
-		<label>Fine Dust 1μm</label>
+		<item-type unitHint="µg/m³">Number:Density</item-type>
+		<label>Fine Dust 1 µm</label>
+		<description>Mass concentration of particles up to 1 µm.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>ParticulateMatter</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"></state>
 	</channel-type>
 	<channel-type id="pm10" advanced="false">
-		<item-type unitHint="μg/m³">Number:Density</item-type>
-		<label>Fine Dust 10μm</label>
+		<item-type unitHint="µg/m³">Number:Density</item-type>
+		<label>Fine Dust 10 µm</label>
+		<description>Mass concentration of particles up to 10 µm.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>ParticulateMatter</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"></state>
 	</channel-type>
 	<channel-type id="pm2-5" advanced="false">
-		<item-type unitHint="μg/m³">Number:Density</item-type>
-		<label>Fine Dust 2.5μm</label>
+		<item-type unitHint="µg/m³">Number:Density</item-type>
+		<label>Fine Dust 2.5 µm</label>
+		<description>Mass concentration of particles up to 2.5 µm.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>ParticulateMatter</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"></state>
 	</channel-type>
 	<channel-type id="pressure" advanced="false">
 		<item-type unitHint="hPa">Number:Pressure</item-type>
 		<label>Barometric Pressure</label>
+		<description>Absolute air pressure at the location of the device.</description>
 		<state readOnly="true" pattern="%.2f %unit%"></state>
 	</channel-type>
 	<channel-type id="radon" advanced="false">
@@ -435,13 +614,22 @@
 		<state readOnly="true" pattern="%.0f %unit%"></state>
 	</channel-type>
 	<channel-type id="so2" advanced="false">
-		<item-type>Number</item-type>
-		<label>SO₂ Concentration</label>
-		<state readOnly="true" pattern="%.2f μg/m³"></state>
+		<item-type unitHint="µg/m³">Number:Density</item-type>
+		<label>Sulfur Dioxide (SO₂)</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Gas</tag>
+		</tags>
+		<state readOnly="true" pattern="%.2f %unit%"></state>
 	</channel-type>
 	<channel-type id="sound" advanced="false">
 		<item-type unitHint="dB">Number:Dimensionless</item-type>
 		<label>Noise</label>
+		<description>A-weighted sound level, averaged.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Noise</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"></state>
 	</channel-type>
 	<channel-type id="temperature" advanced="false">
@@ -452,11 +640,16 @@
 	<channel-type id="timestamp" advanced="false">
 		<item-type>DateTime</item-type>
 		<label>Time Stamp</label>
+		<description>Time of the last measurement.</description>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="tvoc" advanced="false">
 		<item-type unitHint="ppb">Number:Dimensionless</item-type>
 		<label>Volatile Organic Compounds (VOC)</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>VOC</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"></state>
 	</channel-type>
 	<channel-type id="uptime" advanced="true">
@@ -467,131 +660,235 @@
 	<channel-type id="virus-free" advanced="false">
 		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Virus-Free Index</label>
+		<description>Aerosol load with CO₂ as indicator; 100 % is fine, 0 % means insufficient ventilation.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>AirQuality</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"></state>
 	</channel-type>
 	<channel-type id="mold-free" advanced="false">
 		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Mold-Free Index</label>
+		<description>Mold risk from the long-term humidity; 100 % is fine, 0 % means insufficient ventilation.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>AirQuality</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"></state>
 	</channel-type>
 	<channel-type id="c2h4o" advanced="true">
 		<item-type unitHint="µg/m³">Number:Density</item-type>
 		<label>Acetaldehyde (C2H4O)</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Gas</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="nh3-mr100" advanced="true">
 		<item-type unitHint="µg/m³">Number:Density</item-type>
 		<label>Ammonia (NH3)</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Gas</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="ash3" advanced="true">
 		<item-type unitHint="µg/m³">Number:Density</item-type>
 		<label>Arsine (AsH3)</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Gas</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="br2" advanced="true">
 		<item-type unitHint="µg/m³">Number:Density</item-type>
 		<label>Bromine (Br2)</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Gas</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="ch4s" advanced="true">
 		<item-type unitHint="µg/m³">Number:Density</item-type>
 		<label>Methanethiol (CH4S)</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Gas</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="cl2-m20" advanced="true">
 		<item-type unitHint="µg/m³">Number:Density</item-type>
 		<label>Chlorine (Cl2)</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Gas</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="clo2" advanced="true">
 		<item-type unitHint="µg/m³">Number:Density</item-type>
 		<label>Chlorine Dioxide (ClO2)</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Gas</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="cs2" advanced="true">
 		<item-type unitHint="µg/m³">Number:Density</item-type>
 		<label>Carbon Disulfide (CS2)</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Gas</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="ethanol" advanced="true">
 		<item-type unitHint="µg/m³">Number:Density</item-type>
 		<label>Ethanol</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Gas</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="c2h4" advanced="true">
 		<item-type unitHint="µg/m³">Number:Density</item-type>
 		<label>Ethylene (C2H4)</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Gas</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="ch2o-m10" advanced="true">
 		<item-type unitHint="µg/m³">Number:Density</item-type>
 		<label>Formaldehyde (CH2O)</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Gas</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="f2" advanced="true">
 		<item-type unitHint="µg/m³">Number:Density</item-type>
 		<label>Fluorine (F2)</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Gas</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="hcl" advanced="true">
 		<item-type unitHint="µg/m³">Number:Density</item-type>
 		<label>Hydrochloric Acid (HCl)</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Gas</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="hcn" advanced="true">
 		<item-type unitHint="µg/m³">Number:Density</item-type>
 		<label>Hydrogen Cyanide (HCN)</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Gas</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="hf" advanced="true">
 		<item-type unitHint="µg/m³">Number:Density</item-type>
 		<label>Hydrogen Fluoride (HF)</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Gas</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="h2-m1000" advanced="true">
 		<item-type unitHint="µg/m³">Number:Density</item-type>
 		<label>Hydrogen (H2)</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Gas</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="h2o2" advanced="true">
 		<item-type unitHint="µg/m³">Number:Density</item-type>
 		<label>Hydrogen Peroxide (H2O2)</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Gas</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="n2o" advanced="true">
 		<item-type unitHint="µg/m³">Number:Density</item-type>
 		<label>Nitrous Oxide (N2O)</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Gas</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="no-m250" advanced="true">
 		<item-type unitHint="µg/m³">Number:Density</item-type>
 		<label>Nitrogen Monoxide (NO)</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Gas</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="acid-m100" advanced="true">
 		<item-type unitHint="ppb">Number:Dimensionless</item-type>
 		<label>Organic Acid</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Gas</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="ph3" advanced="true">
 		<item-type unitHint="µg/m³">Number:Density</item-type>
 		<label>Hydrogen Phosphide (PH3)</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Gas</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="sih4" advanced="true">
 		<item-type unitHint="µg/m³">Number:Density</item-type>
 		<label>Silane (SiH4)</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Gas</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="tvoc-ionsc" advanced="true">
 		<item-type unitHint="ppb">Number:Dimensionless</item-type>
 		<label>Industrial VOC</label>
+		<description>VOC measured with the ION Science PID sensor.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>VOC</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="pressure-rel" advanced="true">
 		<item-type unitHint="hPa">Number:Pressure</item-type>
 		<label>Relative Barometric Pressure</label>
+		<description>Air pressure reduced to sea level (QNH); requires the altitude setting.</description>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Pressure</tag>
@@ -601,36 +898,224 @@
 	<channel-type id="sound-max" advanced="true">
 		<item-type unitHint="dB">Number:Dimensionless</item-type>
 		<label>Maximum Noise</label>
-		<description>Maximum A-weighted sound pressure level.</description>
+		<description>Maximum noise in the data rate interval; shows short loud events that averaging hides.</description>
 		<tags>
 			<tag>Measurement</tag>
-			<tag>SoundVolume</tag>
+			<tag>Noise</tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="ch4-mipex" advanced="true">
 		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Methane (CH4)</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Gas</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="c3h8-mipex" advanced="true">
 		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Propane (C3H8)</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Gas</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="r32" advanced="true">
 		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Refrigerant R32</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Gas</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="r454b" advanced="true">
 		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Refrigerant R454B</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Gas</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="r454c" advanced="true">
 		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Refrigerant R454C</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Gas</tag>
+		</tags>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="person" advanced="false">
+		<item-type>Number</item-type>
+		<label>Person</label>
+		<description>Experimental, may not be reliable; requires advanced data processing.</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="window-event" advanced="false">
+		<item-type>Number</item-type>
+		<label>Window Event</label>
+		<description>Experimental, may not be reliable; requires advanced data processing.</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="window-open" advanced="false">
+		<item-type>Number</item-type>
+		<label>Window Open</label>
+		<description>Experimental, may not be reliable; requires advanced data processing.</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="wifi-rssi" advanced="true">
+		<item-type unitHint="dBm">Number:Power</item-type>
+		<label>Wi-Fi Signal Strength</label>
+		<description>Signal strength of the Wi-Fi connection, UNDEF while not connected.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>RSSI</tag>
+		</tags>
+		<state readOnly="true" pattern="%.0f %unit%"></state>
+	</channel-type>
+	<channel-type id="flow1" advanced="true">
+		<item-type unitHint="l/min">Number:VolumetricFlowRate</item-type>
+		<label>Air Flow 1</label>
+		<description>In standard litres per minute at 20 °C and 1013 hPa.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Airflow</tag>
+		</tags>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="flow2" advanced="true">
+		<item-type unitHint="l/min">Number:VolumetricFlowRate</item-type>
+		<label>Air Flow 2</label>
+		<description>In standard litres per minute at 20 °C and 1013 hPa.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Airflow</tag>
+		</tags>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="flow3" advanced="true">
+		<item-type unitHint="l/min">Number:VolumetricFlowRate</item-type>
+		<label>Air Flow 3</label>
+		<description>In standard litres per minute at 20 °C and 1013 hPa.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Airflow</tag>
+		</tags>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="flow4" advanced="true">
+		<item-type unitHint="l/min">Number:VolumetricFlowRate</item-type>
+		<label>Air Flow 4</label>
+		<description>In standard litres per minute at 20 °C and 1013 hPa.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Airflow</tag>
+		</tags>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="pm1-sps30" advanced="true">
+		<item-type unitHint="µg/m³">Number:Density</item-type>
+		<label>Fine Dust 1 µm (SPS30)</label>
+		<description>Mass concentration of particles up to 1 µm, measured by the optional SPS30 sensor.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>ParticulateMatter</tag>
+		</tags>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+	<channel-type id="pm2-5-sps30" advanced="true">
+		<item-type unitHint="µg/m³">Number:Density</item-type>
+		<label>Fine Dust 2.5 µm (SPS30)</label>
+		<description>Mass concentration of particles up to 2.5 µm, measured by the optional SPS30 sensor.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>ParticulateMatter</tag>
+		</tags>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+	<channel-type id="pm4-sps30" advanced="true">
+		<item-type unitHint="µg/m³">Number:Density</item-type>
+		<label>Fine Dust 4 µm (SPS30)</label>
+		<description>Mass concentration of particles up to 4 µm, measured by the optional SPS30 sensor.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>ParticulateMatter</tag>
+		</tags>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+	<channel-type id="pm10-sps30" advanced="true">
+		<item-type unitHint="µg/m³">Number:Density</item-type>
+		<label>Fine Dust 10 µm (SPS30)</label>
+		<description>Mass concentration of particles up to 10 µm, measured by the optional SPS30 sensor.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>ParticulateMatter</tag>
+		</tags>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+	<channel-type id="cnt0-5-sps30" advanced="true">
+		<item-type>Number</item-type>
+		<label>Fine Dust Count 0.5 µm (SPS30)</label>
+		<description>Number of particles larger than 0.5 µm per cm³, measured by the optional SPS30 sensor.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>ParticulateMatter</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f /cm³"/>
+	</channel-type>
+	<channel-type id="cnt1-sps30" advanced="true">
+		<item-type>Number</item-type>
+		<label>Fine Dust Count 1 µm (SPS30)</label>
+		<description>Number of particles larger than 1 µm per cm³, measured by the optional SPS30 sensor.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>ParticulateMatter</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f /cm³"/>
+	</channel-type>
+	<channel-type id="cnt2-5-sps30" advanced="true">
+		<item-type>Number</item-type>
+		<label>Fine Dust Count 2.5 µm (SPS30)</label>
+		<description>Number of particles larger than 2.5 µm per cm³, measured by the optional SPS30 sensor.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>ParticulateMatter</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f /cm³"/>
+	</channel-type>
+	<channel-type id="cnt4-sps30" advanced="true">
+		<item-type>Number</item-type>
+		<label>Fine Dust Count 4 µm (SPS30)</label>
+		<description>Number of particles larger than 4 µm per cm³, measured by the optional SPS30 sensor.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>ParticulateMatter</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f /cm³"/>
+	</channel-type>
+	<channel-type id="cnt10-sps30" advanced="true">
+		<item-type>Number</item-type>
+		<label>Fine Dust Count 10 µm (SPS30)</label>
+		<description>Number of particles larger than 10 µm per cm³, measured by the optional SPS30 sensor.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>ParticulateMatter</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f /cm³"/>
+	</channel-type>
+	<channel-type id="typps-sps30" advanced="true">
+		<item-type unitHint="µm">Number:Length</item-type>
+		<label>Average Size of Fine Dust (SPS30)</label>
+		<description>Mean particle size, measured by the optional SPS30 sensor.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>ParticulateMatter</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="density-maxerr" advanced="true">
@@ -661,118 +1146,118 @@
 	<!-- Maximum error -->
 	<channel-type id="cnt0-3-maxerr" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Max. Error Fine Dust &gt;0,3μm</label>
-		<state readOnly="true" pattern="± %.2f %%"></state>
+		<label>Max. Error Fine Dust Count 0.3 µm</label>
+		<state readOnly="true" pattern="± %.0f"/>
 	</channel-type>
 	<channel-type id="cnt0-5-maxerr" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Max. Error Fine Dust &gt;0,5μm</label>
-		<state readOnly="true" pattern="± %.2f %%"></state>
+		<label>Max. Error Fine Dust Count 0.5 µm</label>
+		<state readOnly="true" pattern="± %.0f"/>
 	</channel-type>
 	<channel-type id="cnt1-maxerr" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Max. Error Fine Dust &gt;1μm</label>
-		<state readOnly="true" pattern="± %.2f %%"></state>
+		<label>Max. Error Fine Dust Count 1 µm</label>
+		<state readOnly="true" pattern="± %.0f"/>
 	</channel-type>
 	<channel-type id="cnt2-5-maxerr" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Max. Error Fine Dust &gt;2,5μm</label>
-		<state readOnly="true" pattern="± %.2f %%"></state>
+		<label>Max. Error Fine Dust Count 2.5 µm</label>
+		<state readOnly="true" pattern="± %.0f"/>
 	</channel-type>
 	<channel-type id="cnt5-maxerr" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Max. Error Fine Dust &gt;5μm</label>
-		<state readOnly="true" pattern="± %.2f %%"></state>
+		<label>Max. Error Fine Dust Count 5 µm</label>
+		<state readOnly="true" pattern="± %.0f"/>
 	</channel-type>
 	<channel-type id="cnt10-maxerr" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Max. Error Fine Dust &gt;10μm</label>
-		<state readOnly="true" pattern="± %.2f %%"></state>
+		<label>Max. Error Fine Dust Count 10 µm</label>
+		<state readOnly="true" pattern="± %.0f"/>
 	</channel-type>
 	<channel-type id="co-maxerr" advanced="true">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unitHint="mg/m³">Number:Density</item-type>
 		<label>Max. Error CO Conc.</label>
-		<state readOnly="true" pattern="± %.2f %%"></state>
+		<state readOnly="true" pattern="± %.2f %unit%"/>
 	</channel-type>
 	<channel-type id="co2-maxerr" advanced="true">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unitHint="ppm">Number:Dimensionless</item-type>
 		<label>Max. Error CO₂ Conc.</label>
-		<state readOnly="true" pattern="± %.2f %%"></state>
+		<state readOnly="true" pattern="± %.0f %unit%"/>
 	</channel-type>
 	<channel-type id="dewpt-maxerr" advanced="true">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unitHint="K">Number:Temperature</item-type>
 		<label>Max. Error Dew Point</label>
-		<state readOnly="true" pattern="± %.2f %%"></state>
+		<state readOnly="true" pattern="± %.2f %unit%"/>
 	</channel-type>
 	<channel-type id="h2s-maxerr" advanced="true">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unitHint="µg/m³">Number:Density</item-type>
 		<label>Max. Error H₂S Conc.</label>
-		<state readOnly="true" pattern="± %.2f %%"></state>
+		<state readOnly="true" pattern="± %.2f %unit%"/>
 	</channel-type>
 	<channel-type id="humidity-maxerr" advanced="true">
 		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Max. Error Humidity</label>
-		<state readOnly="true" pattern="± %.2f %%"></state>
+		<state readOnly="true" pattern="± %.2f %unit%"/>
 	</channel-type>
 	<channel-type id="humidity-abs-maxerr" advanced="true">
-		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<item-type unitHint="g/m³">Number:Density</item-type>
 		<label>Max. Error Abs. Humidity</label>
-		<state readOnly="true" pattern="± %.2f %%"></state>
+		<state readOnly="true" pattern="± %.2f %unit%"/>
 	</channel-type>
 	<channel-type id="no2-maxerr" advanced="true">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unitHint="µg/m³">Number:Density</item-type>
 		<label>Max. Error NO₂ Conc.</label>
-		<state readOnly="true" pattern="± %.2f %%"></state>
+		<state readOnly="true" pattern="± %.2f %unit%"/>
 	</channel-type>
 	<channel-type id="o3-maxerr" advanced="true">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unitHint="µg/m³">Number:Density</item-type>
 		<label>Max. Error O₃ Conc.</label>
-		<state readOnly="true" pattern="± %.2f %%"></state>
+		<state readOnly="true" pattern="± %.2f %unit%"/>
 	</channel-type>
 	<channel-type id="oxygen-maxerr" advanced="true">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Max. Error Oxygen Conc.</label>
-		<state readOnly="true" pattern="± %.2f %%"></state>
+		<state readOnly="true" pattern="± %.2f %unit%"/>
 	</channel-type>
 	<channel-type id="pm1-maxerr" advanced="true">
-		<item-type>Number:Dimensionless</item-type>
-		<label>Max. Error Fine Dust Conc. &gt;1μm</label>
-		<state readOnly="true" pattern="± %.2f %%"></state>
+		<item-type unitHint="µg/m³">Number:Density</item-type>
+		<label>Max. Error Fine Dust 1 µm</label>
+		<state readOnly="true" pattern="± %.0f %unit%"/>
 	</channel-type>
 	<channel-type id="pm10-maxerr" advanced="true">
-		<item-type>Number:Dimensionless</item-type>
-		<label>Max. Error Fine Dust Conc. &gt;10μm</label>
-		<state readOnly="true" pattern="± %.2f %%"></state>
+		<item-type unitHint="µg/m³">Number:Density</item-type>
+		<label>Max. Error Fine Dust 10 µm</label>
+		<state readOnly="true" pattern="± %.0f %unit%"/>
 	</channel-type>
 	<channel-type id="pm2-5-maxerr" advanced="true">
-		<item-type>Number:Dimensionless</item-type>
-		<label>Max. Error Fine Dust Conc. &gt;2,5μm</label>
-		<state readOnly="true" pattern="± %.2f %%"></state>
+		<item-type unitHint="µg/m³">Number:Density</item-type>
+		<label>Max. Error Fine Dust 2.5 µm</label>
+		<state readOnly="true" pattern="± %.0f %unit%"/>
 	</channel-type>
 	<channel-type id="pressure-maxerr" advanced="true">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unitHint="hPa">Number:Pressure</item-type>
 		<label>Max. Error Pressure</label>
-		<state readOnly="true" pattern="± %.2f %%"></state>
+		<state readOnly="true" pattern="± %.2f %unit%"/>
 	</channel-type>
 	<channel-type id="so2-maxerr" advanced="true">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unitHint="µg/m³">Number:Density</item-type>
 		<label>Max. Error SO₂ Conc.</label>
-		<state readOnly="true" pattern="± %.2f %%"></state>
+		<state readOnly="true" pattern="± %.2f %unit%"/>
 	</channel-type>
 	<channel-type id="sound-maxerr" advanced="true">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unitHint="dB">Number:Dimensionless</item-type>
 		<label>Max. Error Noise</label>
-		<state readOnly="true" pattern="± %.2f %%"></state>
+		<state readOnly="true" pattern="± %.1f %unit%"/>
 	</channel-type>
 	<channel-type id="temperature-maxerr" advanced="true">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unitHint="K">Number:Temperature</item-type>
 		<label>Max. Error Temperature</label>
-		<state readOnly="true" pattern="± %.2f %%"></state>
+		<state readOnly="true" pattern="± %.2f %unit%"/>
 	</channel-type>
 	<channel-type id="tvoc-maxerr" advanced="true">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unitHint="ppb">Number:Dimensionless</item-type>
 		<label>Max. Error VOC Conc.</label>
-		<state readOnly="true" pattern="± %.2f %%"></state>
+		<state readOnly="true" pattern="± %.0f %unit%"/>
 	</channel-type>
 	<channel-type id="virus-free_maxerr" advanced="true">
 		<item-type unitHint="%">Number:Dimensionless</item-type>
@@ -783,29 +1268,24 @@
 	<channel-type id="virus-free-maxerr" advanced="true">
 		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Max. Error Virus-Free</label>
-		<description>Maximum tolerated error in the Virus-Free Index measurement.</description>
-		<state readOnly="true" pattern="± %.2f %%"></state>
+		<state readOnly="true" pattern="± %.2f %unit%"/>
 	</channel-type>
 	<channel-type id="mold-free-maxerr" advanced="true">
 		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Max. Error Mold-Free</label>
-		<description>Maximum tolerated error in the Mold-Free Index measurement.</description>
-		<state readOnly="true" pattern="± %.2f %%"></state>
+		<state readOnly="true" pattern="± %.2f %unit%"/>
 	</channel-type>
 	<!-- settings -->
 	<channel-type id="wifi" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Use WLAN</label>
+		<description>Read-only, so the device cannot be taken off the network.</description>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="wla-nssid" advanced="true">
 		<item-type>String</item-type>
-		<label>WLAN SSID</label>
-		<state readOnly="true"></state>
-	</channel-type>
-	<channel-type id="pass" advanced="true">
-		<item-type>String</item-type>
-		<label>Device Password</label>
+		<label>Configured WLAN Networks</label>
+		<description>Networks the device connects to; add networks with the setWifi action.</description>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="wifi-info" advanced="false">
@@ -815,6 +1295,7 @@
 	<channel-type id="time-server" advanced="true">
 		<item-type>String</item-type>
 		<label>Time Server</label>
+		<description>NTP server the device synchronises its clock with every six hours.</description>
 	</channel-type>
 	<channel-type id="geopos" advanced="false">
 		<item-type>Location</item-type>
@@ -824,21 +1305,25 @@
 		<item-type unitHint="min">Number:Time</item-type>
 		<label>Start of Day Operation</label>
 		<description>Minutes since midnight UTC at which day operation starts.</description>
-		<state min="0" max="1439" step="1" pattern="%1$tHh:%1$tMm"/>
+		<state min="0" max="1439" step="1" pattern="%1$tH:%1$tM UTC"/>
 	</channel-type>
 	<channel-type id="nightmode-start-night" advanced="false">
 		<item-type unitHint="min">Number:Time</item-type>
 		<label>End of Day Operation</label>
 		<description>Minutes since midnight UTC at which night operation starts.</description>
-		<state min="0" max="1439" step="1" pattern="%1$tHh:%1$tMm"/>
+		<state min="0" max="1439" step="1" pattern="%1$tH:%1$tM UTC"/>
 	</channel-type>
 	<channel-type id="nightmode-brightness-day" advanced="false">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type>Number</item-type>
 		<label>Day Brightness of LED</label>
+		<description>0 (off) to 10.</description>
+		<state min="0" max="10" step="1" pattern="%d"/>
 	</channel-type>
 	<channel-type id="nightmode-brightness-night" advanced="false">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type>Number</item-type>
 		<label>Night Brightness of LED</label>
+		<description>0 (off) to 10.</description>
+		<state min="0" max="10" step="1" pattern="%d"/>
 	</channel-type>
 	<channel-type id="nightmode-fan-night-off" advanced="false">
 		<item-type>Switch</item-type>
@@ -847,28 +1332,69 @@
 	<channel-type id="nightmode-wifi-night-off" advanced="false">
 		<item-type>Switch</item-type>
 		<label>Switch Off WLAN at Night</label>
+		<description>The device cannot be reached at night; the cloud upload is buffered until the morning.</description>
+	</channel-type>
+	<channel-type id="nightmode-activated" advanced="false">
+		<item-type>Switch</item-type>
+		<label>Night Mode</label>
+		<description>Whether the night mode is used; the other night mode settings are kept while it is off.</description>
+	</channel-type>
+	<channel-type id="nightmode-alarm-night-off" advanced="false">
+		<item-type>Switch</item-type>
+		<label>Switch Off Acoustic Signals at Night</label>
+		<description>Suppresses the acoustic signals at night; fire and gas alarms are still given.</description>
+	</channel-type>
+	<channel-type id="daytime" advanced="false">
+		<item-type>Switch</item-type>
+		<label>Day Operation</label>
+		<description>ON while the device is in day operation, OFF while it is in night operation.</description>
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="device-name" advanced="false">
 		<item-type>String</item-type>
 		<label>Device Name</label>
-		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="room-type" advanced="false">
 		<item-type>String</item-type>
 		<label>Room Type</label>
+		<description>Helps the device recognise situations typical for the room.</description>
+		<state>
+			<options>
+				<option value="living-room">Living Room</option>
+				<option value="bedroom">Bedroom</option>
+				<option value="kitchen">Kitchen</option>
+				<option value="bathroom">Bathroom</option>
+				<option value="office">Office</option>
+				<option value="workshop">Workshop</option>
+				<option value="children">Children's Room</option>
+				<option value="toilet">Toilet</option>
+				<option value="hallway">Hallway</option>
+				<option value="cellar">Cellar</option>
+				<option value="attic">Attic</option>
+				<option value="outdoor">Outdoor</option>
+				<option value="garage">Garage</option>
+				<option value="medical">Medical</option>
+				<option value="classroom">Classroom</option>
+				<option value="other">Other</option>
+			</options>
+		</state>
 	</channel-type>
 	<channel-type id="logging" advanced="true">
 		<item-type>String</item-type>
 		<label>Logging Level</label>
-	</channel-type>
-	<channel-type id="delete-key" advanced="true">
-		<item-type>String</item-type>
-		<label>Settings to Be Deleted</label>
-		<state readOnly="true"></state>
+		<description>Detail of the device log on the SD card: Error, Warning or Info.</description>
+		<state>
+			<options>
+				<option value="Error">Error</option>
+				<option value="Warning">Warning</option>
+				<option value="Info">Info</option>
+			</options>
+		</state>
 	</channel-type>
 	<channel-type id="fire-alarm" advanced="false">
 		<item-type>Switch</item-type>
-		<label>Fire Alarm</label>
+		<label>Fire Alarm Enabled</label>
+		<description>Alarm for CO above 200 mg/m³, PM1 above 400 µg/m³ or a temperature above 70 °C.</description>
 	</channel-type>
 	<channel-type id="wlan-config-gateway" advanced="true">
 		<item-type>String</item-type>
@@ -882,7 +1408,7 @@
 	</channel-type>
 	<channel-type id="wlan-config-ssid" advanced="true">
 		<item-type>String</item-type>
-		<label>WLAN SSID</label>
+		<label>Connected WLAN SSID</label>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="wlan-config-ip-address" advanced="true">
@@ -898,6 +1424,7 @@
 	<channel-type id="wlan-config-bssid" advanced="true">
 		<item-type>String</item-type>
 		<label>Network BSSID</label>
+		<description>MAC address of the access point the device is connected to.</description>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="cloud-upload" advanced="false">
@@ -906,44 +1433,63 @@
 	</channel-type>
 	<channel-type id="seconds-measurement-delay" advanced="true">
 		<item-type unitHint="s">Number:Time</item-type>
-		<label>Rhythm Historic Average</label>
+		<label>Data Rate</label>
+		<description>Interval at which the current average is stored and uploaded to the cloud.</description>
 		<state min="0" step="1" pattern="%d %unit%"></state>
 	</channel-type>
 	<channel-type id="rejection" advanced="true">
 		<item-type>String</item-type>
 		<label>Power Frequency</label>
+		<description>Mains frequency filter for noise and gas sensors: 50Hz, 60Hz or 50Hz+60Hz.</description>
+		<state>
+			<options>
+				<option value="50Hz">50 Hz</option>
+				<option value="60Hz">60 Hz</option>
+				<option value="50Hz+60Hz">50 Hz and 60 Hz</option>
+			</options>
+		</state>
 	</channel-type>
 	<channel-type id="auto-drift-compensation" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Compensate Automatic Drift</label>
+		<description>Compensates the slow drift of the sensors over time and from high humidity.</description>
 	</channel-type>
 	<channel-type id="auto-update" advanced="false">
-		<item-type>Switch</item-type>
-		<label>Automatic Firmware Update</label>
+		<item-type unitHint="d">Number:Time</item-type>
+		<label>Automatic Firmware Update Interval</label>
+		<description>Days between automatic firmware updates, 0 = off (default 90); an update restarts it.</description>
+		<state min="0" step="1" pattern="%d %unit%"></state>
 	</channel-type>
 	<channel-type id="advanced-data-processing" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Advanced Data Processing</label>
+		<description>Enables the detection of events such as open windows or persons.</description>
 	</channel-type>
 	<channel-type id="ppm-and-ppb" advanced="true">
 		<item-type>Switch</item-type>
-		<label>Values in Particles</label>
+		<label>Gases in ppm and ppb</label>
+		<description>Deprecated: CO in ppm, NO₂, O₃ and SO₂ in ppb, unless units are configured on the device.</description>
 	</channel-type>
 	<channel-type id="gas-alarm" advanced="false">
 		<item-type>Switch</item-type>
-		<label>Gas Alarm</label>
+		<label>Gas Alarm Enabled</label>
+		<description>Alarm for concentrations hazardous to health, e.g. O₂ below 13 % or NO₂ above 20 mg/m³.</description>
 	</channel-type>
 	<channel-type id="sound-info" advanced="false">
-		<item-type>Switch</item-type>
+		<item-type>String</item-type>
 		<label>Sound Info</label>
+		<description>Acoustic signals for thresholds, with frequency, volume, duration and repetition.</description>
+		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="alarm-forwarding" advanced="false">
 		<item-type>Switch</item-type>
 		<label>Share Alarms With Other air-Q</label>
+		<description>Forwards fire and gas alarms to the other air-Q devices in the household.</description>
 	</channel-type>
 	<channel-type id="usercalib" advanced="true">
 		<item-type>String</item-type>
 		<label>Last Sensor Calibration</label>
+		<description>Last user calibration of each sensor, as "sensor: offset=value [dd.MM.yyyy HH:mm:ss]".</description>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="initial-cal-finished" advanced="true">
@@ -952,35 +1498,141 @@
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="averaging" advanced="true">
-		<item-type>Switch</item-type>
-		<label>Do Average</label>
-	</channel-type>
-	<channel-type id="error-bars" advanced="true">
-		<item-type>Switch</item-type>
-		<label>Calculate Maximum Errors</label>
+		<item-type>Number</item-type>
+		<label>Averaging Window</label>
+		<description>Number of measurements the device averages over; 1 disables averaging (default 30).</description>
+		<state min="1" step="1" pattern="%d"></state>
 	</channel-type>
 	<channel-type id="warmup-phase" advanced="true">
 		<item-type>Switch</item-type>
-		<label>Send data as in Warmup Phase</label>
+		<label>Warm-up Phase</label>
+		<description>ON while the gas and VOC sensors warm up, up to 60 minutes after power-on; OFF ends it.</description>
+	</channel-type>
+	<channel-type id="nightmode-last-time-switch" advanced="true">
+		<item-type>Number</item-type>
+		<label>Last Summer/Winter Time Switch</label>
+		<description>Not documented by the manufacturer.</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="cloud-connection" advanced="true">
+		<item-type>String</item-type>
+		<label>Cloud Connection</label>
+		<description>State of the connection to the air-Q Cloud, e.g. DISCONNECTED.</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="boots" advanced="true">
+		<item-type>String</item-type>
+		<label>Boot Counters</label>
+		<description>Not documented by the manufacturer.</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="altitude" advanced="true">
+		<item-type unitHint="m">Number:Length</item-type>
+		<label>Altitude</label>
+		<description>Height above sea level for the relative pressure, UNDEF if not set; needs a restart.</description>
+		<state pattern="%.0f %unit%"/>
+	</channel-type>
+	<channel-type id="altitude-error" advanced="true">
+		<item-type unitHint="m">Number:Length</item-type>
+		<label>Altitude Error</label>
+		<description>Estimated error of the altitude.</description>
+		<state min="0" pattern="± %.0f %unit%"/>
+	</channel-type>
+	<channel-type id="building-standard" advanced="true">
+		<item-type>String</item-type>
+		<label>Building Standard</label>
+		<description>VOC evaluation according to a building standard: None, WELL or RESET.</description>
+		<state>
+			<options>
+				<option value="None">None</option>
+				<option value="WELL">WELL</option>
+				<option value="RESET">RESET</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="country-code" advanced="true">
+		<item-type>String</item-type>
+		<label>Country</label>
+		<description>Time zone for the summer/winter time switch in night mode, and the cloud endpoint.</description>
+		<state>
+			<options>
+				<option value="AT">Austria</option>
+				<option value="AU">Australia</option>
+				<option value="BE">Belgium</option>
+				<option value="BG">Bulgaria</option>
+				<option value="BR">Brazil</option>
+				<option value="CA">Canada</option>
+				<option value="CH">Switzerland</option>
+				<option value="CN">China</option>
+				<option value="CY">Cyprus</option>
+				<option value="CZ">Czechia</option>
+				<option value="DE">Germany</option>
+				<option value="DK">Denmark</option>
+				<option value="EE">Estonia</option>
+				<option value="ES">Spain</option>
+				<option value="FI">Finland</option>
+				<option value="FR">France</option>
+				<option value="GB">United Kingdom</option>
+				<option value="GR">Greece</option>
+				<option value="HK">Hong Kong</option>
+				<option value="HR">Croatia</option>
+				<option value="HU">Hungary</option>
+				<option value="IE">Ireland</option>
+				<option value="IN">India</option>
+				<option value="IS">Iceland</option>
+				<option value="IT">Italy</option>
+				<option value="JP">Japan</option>
+				<option value="KR">South Korea</option>
+				<option value="LI">Liechtenstein</option>
+				<option value="LT">Lithuania</option>
+				<option value="LU">Luxembourg</option>
+				<option value="LV">Latvia</option>
+				<option value="MT">Malta</option>
+				<option value="MX">Mexico</option>
+				<option value="NL">Netherlands</option>
+				<option value="NO">Norway</option>
+				<option value="NZ">New Zealand</option>
+				<option value="PL">Poland</option>
+				<option value="PT">Portugal</option>
+				<option value="RO">Romania</option>
+				<option value="SE">Sweden</option>
+				<option value="SI">Slovenia</option>
+				<option value="SK">Slovakia</option>
+				<option value="TW">Taiwan</option>
+				<option value="US">United States</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="room-height" advanced="true">
+		<item-type unitHint="m">Number:Length</item-type>
+		<label>Room Height</label>
+		<description>Used by the advanced data processing, 0 if not set.</description>
+		<state min="0" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="room-area" advanced="true">
+		<item-type unitHint="m²">Number:Area</item-type>
+		<label>Room Area</label>
+		<description>Used by the advanced data processing, 0 if not set.</description>
+		<state min="0" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="radon-maxerr" advanced="true">
-		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<item-type unitHint="Bq/m³">Number:RadiationSpecificActivity</item-type>
 		<label>Max. Error Radon</label>
-		<state readOnly="true" pattern="± %.2f %%"/>
+		<state readOnly="true" pattern="± %.0f %unit%"/>
 	</channel-type>
 	<channel-type id="cnt0_3" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Fine Dust Count 0.3μm</label>
+		<label>Fine Dust Count 0.3µm</label>
 		<state readOnly="true" pattern="%.0f"></state>
 	</channel-type>
 	<channel-type id="cnt0_5" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Fine Dust Count 0.5 μm</label>
+		<label>Fine Dust Count 0.5 µm</label>
 		<state readOnly="true" pattern="%.0f"></state>
 	</channel-type>
 	<channel-type id="cnt2_5" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Fine Dust Count 2.5μm</label>
+		<label>Fine Dust Count 2.5µm</label>
 		<state readOnly="true" pattern="%.0f"></state>
 	</channel-type>
 	<channel-type id="health_index" advanced="false">
@@ -999,8 +1651,8 @@
 		<state readOnly="true" pattern="%.0f %unit%"></state>
 	</channel-type>
 	<channel-type id="pm2_5" advanced="false">
-		<item-type unitHint="μg/m³">Number:Density</item-type>
-		<label>Fine Dust 2.5μm</label>
+		<item-type unitHint="µg/m³">Number:Density</item-type>
+		<label>Fine Dust 2.5µm</label>
 		<state readOnly="true" pattern="%.0f %unit%"></state>
 	</channel-type>
 	<channel-type id="virus_free" advanced="false">
@@ -1015,53 +1667,53 @@
 	</channel-type>
 	<channel-type id="cnt0_3_maxerr" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Max. Error Fine Dust &gt;0,3μm</label>
-		<state readOnly="true" pattern="± %.2f %%"></state>
+		<label>Max. Error Fine Dust &gt;0,3µm</label>
+		<state readOnly="true" pattern="± %.0f"></state>
 	</channel-type>
 	<channel-type id="cnt0_5_maxerr" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Max. Error Fine Dust &gt;0,5μm</label>
-		<state readOnly="true" pattern="± %.2f %%"></state>
+		<label>Max. Error Fine Dust &gt;0,5µm</label>
+		<state readOnly="true" pattern="± %.0f"></state>
 	</channel-type>
 	<channel-type id="cnt1_maxerr" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Max. Error Fine Dust &gt;1μm</label>
-		<state readOnly="true" pattern="± %.2f %%"></state>
+		<label>Max. Error Fine Dust &gt;1µm</label>
+		<state readOnly="true" pattern="± %.0f"></state>
 	</channel-type>
 	<channel-type id="cnt2_5_maxerr" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Max. Error Fine Dust &gt;2,5μm</label>
-		<state readOnly="true" pattern="± %.2f %%"></state>
+		<label>Max. Error Fine Dust &gt;2,5µm</label>
+		<state readOnly="true" pattern="± %.0f"></state>
 	</channel-type>
 	<channel-type id="cnt5_maxerr" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Max. Error Fine Dust &gt;5μm</label>
-		<state readOnly="true" pattern="± %.2f %%"></state>
+		<label>Max. Error Fine Dust &gt;5µm</label>
+		<state readOnly="true" pattern="± %.0f"></state>
 	</channel-type>
 	<channel-type id="cnt10_maxerr" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Max. Error Fine Dust &gt;10μm</label>
-		<state readOnly="true" pattern="± %.2f %%"></state>
+		<label>Max. Error Fine Dust &gt;10µm</label>
+		<state readOnly="true" pattern="± %.0f"></state>
 	</channel-type>
 	<channel-type id="co_maxerr" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Max. Error CO Conc.</label>
-		<state readOnly="true" pattern="± %.2f %%"></state>
+		<state readOnly="true" pattern="± %.2f mg/m³"></state>
 	</channel-type>
 	<channel-type id="co2_maxerr" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Max. Error CO₂ Conc.</label>
-		<state readOnly="true" pattern="± %.2f %%"></state>
+		<state readOnly="true" pattern="± %.0f ppm"></state>
 	</channel-type>
 	<channel-type id="dewpt_maxerr" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Max. Error Dew Point</label>
-		<state readOnly="true" pattern="± %.2f %%"></state>
+		<state readOnly="true" pattern="± %.2f K"></state>
 	</channel-type>
 	<channel-type id="h2s_maxerr" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Max. Error H₂S Conc.</label>
-		<state readOnly="true" pattern="± %.2f %%"></state>
+		<state readOnly="true" pattern="± %.2f µg/m³"></state>
 	</channel-type>
 	<channel-type id="humidity_maxerr" advanced="true">
 		<item-type unitHint="%">Number:Dimensionless</item-type>
@@ -1069,19 +1721,19 @@
 		<state readOnly="true" pattern="± %.2f %%"></state>
 	</channel-type>
 	<channel-type id="humidity_abs_maxerr" advanced="true">
-		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<item-type>Number:Dimensionless</item-type>
 		<label>Max. Error Abs. Humidity</label>
-		<state readOnly="true" pattern="± %.2f %%"></state>
+		<state readOnly="true" pattern="± %.2f g/m³"></state>
 	</channel-type>
 	<channel-type id="no2_maxerr" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Max. Error NO₂ Conc.</label>
-		<state readOnly="true" pattern="± %.2f %%"></state>
+		<state readOnly="true" pattern="± %.2f µg/m³"></state>
 	</channel-type>
 	<channel-type id="o3_maxerr" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Max. Error O₃ Conc.</label>
-		<state readOnly="true" pattern="± %.2f %%"></state>
+		<state readOnly="true" pattern="± %.2f µg/m³"></state>
 	</channel-type>
 	<channel-type id="oxygen_maxerr" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
@@ -1090,43 +1742,48 @@
 	</channel-type>
 	<channel-type id="pm1_maxerr" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Max. Error Fine Dust Conc. &gt;1μm</label>
-		<state readOnly="true" pattern="± %.2f %%"></state>
+		<label>Max. Error Fine Dust Conc. &gt;1µm</label>
+		<state readOnly="true" pattern="± %.0f µg/m³"></state>
 	</channel-type>
 	<channel-type id="pm10_maxerr" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Max. Error Fine Dust Conc. &gt;10μm</label>
-		<state readOnly="true" pattern="± %.2f %%"></state>
+		<label>Max. Error Fine Dust Conc. &gt;10µm</label>
+		<state readOnly="true" pattern="± %.0f µg/m³"></state>
 	</channel-type>
 	<channel-type id="pm2_5_maxerr" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Max. Error Fine Dust Conc. &gt;2,5μm</label>
-		<state readOnly="true" pattern="± %.2f %%"></state>
+		<label>Max. Error Fine Dust Conc. &gt;2,5µm</label>
+		<state readOnly="true" pattern="± %.0f µg/m³"></state>
 	</channel-type>
 	<channel-type id="pressure_maxerr" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Max. Error Pressure</label>
-		<state readOnly="true" pattern="± %.2f %%"></state>
+		<state readOnly="true" pattern="± %.2f hPa"></state>
 	</channel-type>
 	<channel-type id="so2_maxerr" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Max. Error SO₂ Conc.</label>
-		<state readOnly="true" pattern="± %.2f %%"></state>
+		<state readOnly="true" pattern="± %.2f µg/m³"></state>
+	</channel-type>
+	<channel-type id="so2-number" advanced="false">
+		<item-type>Number</item-type>
+		<label>Sulfur Dioxide (SO₂)</label>
+		<state readOnly="true" pattern="%.2f µg/m³"></state>
 	</channel-type>
 	<channel-type id="sound_maxerr" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Max. Error Noise</label>
-		<state readOnly="true" pattern="± %.2f %%"></state>
+		<state readOnly="true" pattern="± %.1f dB"></state>
 	</channel-type>
 	<channel-type id="temperature_maxerr" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Max. Error Temperature</label>
-		<state readOnly="true" pattern="± %.2f %%"></state>
+		<state readOnly="true" pattern="± %.2f K"></state>
 	</channel-type>
 	<channel-type id="tvoc_maxerr" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Max. Error VOC Conc.</label>
-		<state readOnly="true" pattern="± %.2f %%"></state>
+		<state readOnly="true" pattern="± %.0f ppb"></state>
 	</channel-type>
 	<channel-type id="virus_free_maxerr" advanced="true">
 		<item-type unitHint="%">Number:Dimensionless</item-type>
@@ -1147,7 +1804,7 @@
 	</channel-type>
 	<channel-type id="WLANssid" advanced="true">
 		<item-type>String</item-type>
-		<label>WLAN SSID</label>
+		<label>Configured WLAN Networks</label>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="WifiInfo" advanced="false">
@@ -1159,24 +1816,24 @@
 		<label>Time Server</label>
 	</channel-type>
 	<channel-type id="nightmodeStartDay" advanced="false">
-		<item-type unitHint="min">Number:Time</item-type>
+		<item-type>String</item-type>
 		<label>Start of Day Operation</label>
-		<description>Minutes since midnight UTC at which day operation starts.</description>
-		<state min="0" max="1439" step="1" pattern="%1$tHh:%1$tMm"/>
+		<description>Time in HH:mm UTC at which day operation starts.</description>
 	</channel-type>
 	<channel-type id="nightmodeStartNight" advanced="false">
-		<item-type unitHint="min">Number:Time</item-type>
+		<item-type>String</item-type>
 		<label>End of Day Operation</label>
-		<description>Minutes since midnight UTC at which night operation starts.</description>
-		<state min="0" max="1439" step="1" pattern="%1$tHh:%1$tMm"/>
+		<description>Time in HH:mm UTC at which night operation starts.</description>
 	</channel-type>
 	<channel-type id="nightmodeBrightnessDay" advanced="false">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Day Brightness of LED</label>
+		<state min="0" max="10" step="1" pattern="%d"/>
 	</channel-type>
 	<channel-type id="nightmodeBrightnessNight" advanced="false">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Night Brightness of LED</label>
+		<state min="0" max="10" step="1" pattern="%d"/>
 	</channel-type>
 	<channel-type id="nightmodeFanNightOff" advanced="false">
 		<item-type>Switch</item-type>
@@ -1189,20 +1846,34 @@
 	<channel-type id="deviceName" advanced="false">
 		<item-type>String</item-type>
 		<label>Device Name</label>
-		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="RoomType" advanced="false">
 		<item-type>String</item-type>
 		<label>Room Type</label>
+		<state>
+			<options>
+				<option value="living-room">Living Room</option>
+				<option value="bedroom">Bedroom</option>
+				<option value="kitchen">Kitchen</option>
+				<option value="bathroom">Bathroom</option>
+				<option value="office">Office</option>
+				<option value="workshop">Workshop</option>
+				<option value="children">Children's Room</option>
+				<option value="toilet">Toilet</option>
+				<option value="hallway">Hallway</option>
+				<option value="cellar">Cellar</option>
+				<option value="attic">Attic</option>
+				<option value="outdoor">Outdoor</option>
+				<option value="garage">Garage</option>
+				<option value="medical">Medical</option>
+				<option value="classroom">Classroom</option>
+				<option value="other">Other</option>
+			</options>
+		</state>
 	</channel-type>
 	<channel-type id="Logging" advanced="true">
 		<item-type>String</item-type>
 		<label>Logging Level</label>
-	</channel-type>
-	<channel-type id="DeleteKey" advanced="true">
-		<item-type>String</item-type>
-		<label>Settings to Be Deleted</label>
-		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="FireAlarm" advanced="false">
 		<item-type>Switch</item-type>
@@ -1220,7 +1891,7 @@
 	</channel-type>
 	<channel-type id="WLAN_config_SSID" advanced="true">
 		<item-type>String</item-type>
-		<label>WLAN SSID</label>
+		<label>Connected WLAN SSID</label>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="WLAN_config_IPAddress" advanced="true">
@@ -1266,6 +1937,8 @@
 	<channel-type id="ppm_and_ppb" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Values in Particles</label>
+		<description>Deprecated: reports CO in ppm and NO₂, O₃ and SO₂ in ppb. The device ignores it for sensors with a unit
+			set in its units setting.</description>
 	</channel-type>
 	<channel-type id="GasAlarm" advanced="false">
 		<item-type>Switch</item-type>
@@ -1274,6 +1947,7 @@
 	<channel-type id="SoundInfo" advanced="false">
 		<item-type>Switch</item-type>
 		<label>Sound Info</label>
+		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="AlarmForwarding" advanced="false">
 		<item-type>Switch</item-type>
@@ -1288,17 +1962,8 @@
 		<item-type>Switch</item-type>
 		<label>Do Average</label>
 	</channel-type>
-	<channel-type id="ErrorBars" advanced="true">
-		<item-type>Switch</item-type>
-		<label>Calculate Maximum Errors</label>
-	</channel-type>
 	<channel-type id="WarmupPhase" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Send data as in Warmup Phase</label>
-	</channel-type>
-	<channel-type id="radon_maxerr" advanced="true">
-		<item-type unitHint="%">Number:Dimensionless</item-type>
-		<label>Max. Error Radon</label>
-		<state readOnly="true" pattern="± %.2f %%"/>
 	</channel-type>
 </thing:thing-descriptions>
