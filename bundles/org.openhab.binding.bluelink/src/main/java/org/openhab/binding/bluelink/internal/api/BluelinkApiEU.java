@@ -105,7 +105,7 @@ public class BluelinkApiEU extends AbstractBluelinkApi<Vehicle> {
         }
         this.cciAuthenticator = new CciAuthenticator(httpClient, timeZoneProvider, brandConfig.cci,
                 brandConfig.loginBaseUrl);
-        final String storedDeviceId = properties.get("deviceId");
+        final String storedDeviceId = properties.get(DEVICE_ID_PROPERTY);
         if (storedDeviceId != null && !storedDeviceId.isBlank()) {
             this.deviceId = UUID.fromString(storedDeviceId);
         }
@@ -132,7 +132,7 @@ public class BluelinkApiEU extends AbstractBluelinkApi<Vehicle> {
     @Override
     public Map<String, String> getProperties() {
         final UUID id = deviceId;
-        return id != null ? Map.of("deviceId", id.toString()) : Map.of();
+        return id != null ? Map.of(DEVICE_ID_PROPERTY, id.toString()) : Map.of();
     }
 
     // serialized because the CCI refresh rotates tokens and concurrent logins would invalidate each other

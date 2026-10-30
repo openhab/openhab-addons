@@ -59,4 +59,20 @@ public class AccountActions implements ThingActions {
         final BluelinkAccountHandler hnd = handler;
         return hnd != null ? hnd.verifyCode(code) : null;
     }
+
+    public static @Nullable String requestVerificationCode(final @Nullable ThingActions actions) {
+        if (actions instanceof AccountActions aa) {
+            return aa.requestVerificationCode();
+        } else {
+            throw new IllegalArgumentException("expected AccountActions");
+        }
+    }
+
+    public static @Nullable String verifyCode(final @Nullable ThingActions actions, final String code) {
+        if (actions instanceof AccountActions aa) {
+            return aa.verifyCode(code);
+        } else {
+            throw new IllegalArgumentException("expected AccountActions");
+        }
+    }
 }

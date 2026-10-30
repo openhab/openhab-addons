@@ -259,7 +259,8 @@ public class BluelinkApiCATest {
 
         api.accessTokenExpiry = Instant.now();
         assertTrue(api.login());
-        verify(0, postRequestedFor(urlEqualTo("/mfa/selverifmeth")));
+        verify(0, postRequestedFor(urlEqualTo("/mfa/selverifmeth"))
+                .withRequestBody(matchingJsonPath("$.userAccount", equalTo(user))));
     }
 
     @Test

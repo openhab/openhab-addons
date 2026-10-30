@@ -52,6 +52,7 @@ public abstract class AbstractBluelinkApi<V extends IVehicle> {
     protected static final int HTTP_TIMEOUT_SECONDS = 30;
     protected static final int DEFAULT_HEAT_DURATION_MINUTES = 5;
     protected static final Duration TOKEN_EXPIRY_MARGIN = Duration.ofSeconds(60);
+    protected static final String DEVICE_ID_PROPERTY = "deviceId";
 
     protected final Logger logger = LoggerFactory.getLogger(getClass());
     protected final Gson gson = new Gson();

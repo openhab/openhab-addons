@@ -100,7 +100,7 @@ public class BluelinkApiCA extends AbstractBluelinkApi<Vehicle> {
         } else {
             this.baseUrl = baseUrl.endsWith("/") ? baseUrl : baseUrl + "/";
         }
-        final String storedDeviceId = properties.get("deviceId");
+        final String storedDeviceId = properties.get(DEVICE_ID_PROPERTY);
         this.deviceId = storedDeviceId != null && !storedDeviceId.isBlank() ? storedDeviceId
                 : Base64.getEncoder().encodeToString(
                         UUID.randomUUID().toString().replace("-", "").getBytes(StandardCharsets.US_ASCII));
@@ -108,7 +108,7 @@ public class BluelinkApiCA extends AbstractBluelinkApi<Vehicle> {
 
     @Override
     public Map<String, String> getProperties() {
-        return Map.of("deviceId", deviceId);
+        return Map.of(DEVICE_ID_PROPERTY, deviceId);
     }
 
     private static String getApiHostname(final Brand brand) {
@@ -120,14 +120,9 @@ public class BluelinkApiCA extends AbstractBluelinkApi<Vehicle> {
         };
     }
 
-    // a login deletes the previous token, so a token that is still valid must not be replaced
-    @Override
-    protected synchronized void ensureAuthenticated() throws BluelinkApiException {
-        super.ensureAuthenticated();
-    }
-
     @Override
     public synchronized boolean login() throws BluelinkApiException {
+        // a login deletes the previous token, so a token that is still valid must not be replaced
         if (isAuthenticated()) {
             return true;
         }
