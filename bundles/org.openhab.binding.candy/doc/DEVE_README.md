@@ -2,7 +2,7 @@
 
 Analysis date: 25 October 2026. Package: `it.candy.simplyfi`. Examined release: **3.14.1, version code 226**.
 
-For binding development, see the [Bianca protocol contract](doc/protocol.md).
+For binding development, see the [Bianca protocol contract](protocol.md).
 
 ## 1. Scope and confidence
 

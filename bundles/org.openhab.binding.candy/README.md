@@ -1,3 +1,9 @@
+---
+children:
+  - ["doc/protocol", "Bianca Protocol Contract"]
+  - ["doc/DEVE_README", "simply-Fi Reverse-Engineering Report"]
+---
+
 # Candy Binding
 
 This binding monitors Candy Bianca washing machines and provides optional washing controls over the local simply-Fi Wi-Fi protocol.
@@ -6,9 +12,9 @@ Normal monitoring and washing commands use the LAN after account setup.
 
 ## Supported Things
 
-| Thing Type | Description | Tested Model |
-| --- | --- | --- |
-| `bianca` | Candy Bianca washing machine with simply-Fi Wi-Fi | BWM4 137PH6/1-S, type F3E1, rated at 1300 rpm |
+| Thing Type | Description                                       | Tested Model                                  |
+| ---------- | ------------------------------------------------- | --------------------------------------------- |
+| `bianca`   | Candy Bianca washing machine with simply-Fi Wi-Fi | BWM4 137PH6/1-S, type F3E1, rated at 1300 rpm |
 
 The full Thing type UID is `candy:bianca`.
 Basic local monitoring and account-assisted setup have been verified with the listed model in openHAB 5.3.0-M3.
@@ -29,16 +35,16 @@ This binding targets Java 21 and openHAB 5.3.
 
 ### `bianca` Thing Configuration
 
-| Name | Type | Description | Default | Required | Advanced |
-| --- | --- | --- | --- | --- | --- |
-| `hostName` | text | Appliance hostname or IPv4/IPv6 address; no scheme, port, path or credentials | N/A | Yes | No |
-| `username` | text | Simply-Fi username/email; also needed for server program options when using a manual key | N/A | Without a manual key | No |
-| `password` | text | Simply-Fi account password; masked in the UI | N/A | Without a manual key | No |
-| `encryptionKey` | text | Manual 16-character key override; skips account-assisted key retrieval | N/A | No | Yes |
-| `applianceId` | text | Restrict account lookup to one appliance; normally the correct key is matched automatically | N/A | No | Yes |
-| `enableControl` | boolean | Allow explicit start/stop commands after a fresh device permission and state check | `false` | No | No |
-| `refreshInterval` | integer | Seconds between completed ordinary polls; minimum 15 | `30` | No | No |
-| `requestTimeout` | integer | Total local HTTP deadline in seconds; range 1–10 | `10` | No | Yes |
+| Name              | Type    | Description                                                                                 | Default | Required             | Advanced |
+| ----------------- | ------- | ------------------------------------------------------------------------------------------- | ------- | -------------------- | -------- |
+| `hostName`        | text    | Appliance hostname or IPv4/IPv6 address; no scheme, port, path or credentials               | N/A     | Yes                  | No       |
+| `username`        | text    | Simply-Fi username/email; also needed for server program options when using a manual key    | N/A     | Without a manual key | No       |
+| `password`        | text    | Simply-Fi account password; masked in the UI                                                | N/A     | Without a manual key | No       |
+| `encryptionKey`   | text    | Manual 16-character key override; skips account-assisted key retrieval                      | N/A     | No                   | Yes      |
+| `applianceId`     | text    | Restrict account lookup to one appliance; normally the correct key is matched automatically | N/A     | No                   | Yes      |
+| `enableControl`   | boolean | Allow explicit start/stop commands after a fresh device permission and state check          | `false` | No                   | No       |
+| `refreshInterval` | integer | Seconds between completed ordinary polls; minimum 15                                        | `30`    | No                   | No       |
+| `requestTimeout`  | integer | Total local HTTP deadline in seconds; range 1–10                                            | `10`    | No                   | Yes      |
 
 ### Account Setup
 
@@ -81,20 +87,20 @@ A recovered candidate alone does not establish compatibility.
 
 ### Monitoring
 
-| Channel | Type | Read/Write | Description |
-| --- | --- | --- | --- |
-| `machine-state` | String | R | `NO_STATE`, `SELECTING`, `RUNNING`, `PAUSED`, `DELAY_SELECTION`, `DELAYED`, `ERROR`, `FINISHED` |
-| `program-phase` | String | R | `NONE`, `PREWASH`, `WASH`, `RINSE`, `LAST_RINSE`, `FINISHED`, `DRYING`, `ERROR`, `GOOD_NIGHT_PAUSE` |
-| `program-number` | String | R | Bianca selector/program number, preserving identifier representation |
-| `program-code` | String | R | Program code, separate from program number |
-| `remaining-time` | Number:Time | R | Remaining wash duration, reported in seconds |
-| `target-temperature` | Number:Temperature | R | Reported program temperature setting in °C |
-| `target-spin-speed` | Number:Frequency | R | Reported program spin setting in rpm |
-| `remote-control-enabled` | Switch | R | Device remote-operation permission, distinct from network availability |
-| `error-code` | String | R | Advanced: raw device error code; absence does not imply no error |
-| `last-update` | DateTime | R | Advanced: last successfully parsed local response time |
-| `machine-mode-code` | Number | R | Advanced: raw mode code, including unknown codes |
-| `program-phase-code` | Number | R | Advanced: raw phase code, including unknown codes |
+| Channel                  | Type               | Read/Write | Description                                                                                         |
+| ------------------------ | ------------------ | ---------- | --------------------------------------------------------------------------------------------------- |
+| `machine-state`          | String             | R          | `NO_STATE`, `SELECTING`, `RUNNING`, `PAUSED`, `DELAY_SELECTION`, `DELAYED`, `ERROR`, `FINISHED`     |
+| `program-phase`          | String             | R          | `NONE`, `PREWASH`, `WASH`, `RINSE`, `LAST_RINSE`, `FINISHED`, `DRYING`, `ERROR`, `GOOD_NIGHT_PAUSE` |
+| `program-number`         | String             | R          | Bianca selector/program number, preserving identifier representation                                |
+| `program-code`           | String             | R          | Program code, separate from program number                                                          |
+| `remaining-time`         | Number:Time        | R          | Remaining wash duration, reported in seconds                                                        |
+| `target-temperature`     | Number:Temperature | R          | Reported program temperature setting in °C                                                          |
+| `target-spin-speed`      | Number:Frequency   | R          | Reported program spin setting in rpm                                                                |
+| `remote-control-enabled` | Switch             | R          | Device remote-operation permission, distinct from network availability                              |
+| `error-code`             | String             | R          | Advanced: raw device error code; absence does not imply no error                                    |
+| `last-update`            | DateTime           | R          | Advanced: last successfully parsed local response time                                              |
+| `machine-mode-code`      | Number             | R          | Advanced: raw mode code, including unknown codes                                                    |
+| `program-phase-code`     | Number             | R          | Advanced: raw phase code, including unknown codes                                                   |
 
 `REFRESH` requests on monitoring channels share one device read, with request starts at least 15 seconds apart.
 Missing or malformed fields become `UNDEF`; values from earlier responses are not retained as current telemetry.
@@ -107,15 +113,15 @@ Parsed `PAUSED` or `DRYING` states do not imply support for those controls.
 Use the [Thing Actions](#actions) to query programs and request starts or stops from rules without linking command Items.
 The following channels remain available for UI widgets and existing Item-based rules.
 
-| Channel | Type | Read/Write | Description |
-| --- | --- | --- | --- |
-| `program-catalog` | String | RW | Send `LIST` or `REFRESH` to request server options; state is a JSON array of program IDs, labels, startability, defaults and limits |
-| `catalog-status` | String | R | `NOT_READY`, `ACCOUNT_REQUIRED`, `LOADING`, `READY`, `RATE_LIMITED`, `FAILED` |
-| `selected-program` | String | RW | Select a program ID from the dropdown without starting the washer |
-| `start` | Switch | W | Send `ON` to start the selected program with its server defaults |
-| `start-program` | String | W | Advanced: send a supported program ID directly to start it with its server defaults |
-| `stop` | Switch | W | Send `ON` to stop a running cycle or cancel a delayed start |
-| `last-command-result` | String | R | `PENDING`, `SENT`, `CONFIRMED`, `REJECTED`, `DISABLED`, `BUSY`, `INVALID_PROGRAM`, `NOT_READY`, `REMOTE_DISABLED`, `FAILED`, `UNKNOWN` |
+| Channel               | Type   | Read/Write | Description                                                                                                                            |
+| --------------------- | ------ | ---------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| `program-catalog`     | String | RW         | Send `LIST` or `REFRESH` to request server options; state is a JSON array of program IDs, labels, startability, defaults and limits    |
+| `catalog-status`      | String | R          | `NOT_READY`, `ACCOUNT_REQUIRED`, `LOADING`, `READY`, `RATE_LIMITED`, `FAILED`                                                          |
+| `selected-program`    | String | RW         | Select a program ID from the dropdown without starting the washer                                                                      |
+| `start`               | Switch | W          | Send `ON` to start the selected program with its server defaults                                                                       |
+| `start-program`       | String | W          | Advanced: send a supported program ID directly to start it with its server defaults                                                    |
+| `stop`                | Switch | W          | Send `ON` to stop a running cycle or cancel a delayed start                                                                            |
+| `last-command-result` | String | R          | `PENDING`, `SENT`, `CONFIRMED`, `REJECTED`, `DISABLED`, `BUSY`, `INVALID_PROGRAM`, `NOT_READY`, `REMOTE_DISABLED`, `FAILED`, `UNKNOWN` |
 
 ## Full Example
 
@@ -184,14 +190,14 @@ Obtain its actions with `getActions("candy", "candy:bianca:washer")` in Rules DS
 The same actions are available in Main UI rule actions and other scripting languages through openHAB's Thing Actions API.
 No command Item links are required.
 
-| Action | Result | Description |
-| --- | --- | --- |
-| `getPrograms()` | String | Formatted JSON with a localized summary and cached public program options |
-| `refreshPrograms()` | String | Localized queue acknowledgement; the server request remains subject to the five-minute limit |
-| `getCatalogStatus()` | String | Localized description of the latest catalog status |
-| `startProgram(String programId)` | String | Localized queue acknowledgement for a start with the chosen program's server defaults |
-| `stopProgram()` | String | Localized queue acknowledgement for a stop or cancellation of a delayed start |
-| `getLastCommandResult()` | String | Localized description of the latest command result |
+| Action                           | Result | Description                                                                                  |
+| -------------------------------- | ------ | -------------------------------------------------------------------------------------------- |
+| `getPrograms()`                  | String | Formatted JSON with a localized summary and cached public program options                    |
+| `refreshPrograms()`              | String | Localized queue acknowledgement; the server request remains subject to the five-minute limit |
+| `getCatalogStatus()`             | String | Localized description of the latest catalog status                                           |
+| `startProgram(String programId)` | String | Localized queue acknowledgement for a start with the chosen program's server defaults        |
+| `stopProgram()`                  | String | Localized queue acknowledgement for a stop or cancellation of a delayed start                |
+| `getLastCommandResult()`         | String | Localized description of the latest command result                                           |
 
 Every Action returns a String through the `result` output so Main UI can display the outcome.
 Messages use the configured openHAB locale.
@@ -317,8 +323,3 @@ Restore the inherited log level afterward:
 ```text
 log:set DEFAULT org.openhab.binding.candy
 ```
-
-## Developer Documentation
-
-Implementation details and encoding rules are documented in the [Bianca protocol contract](doc/protocol.md).
-APK evidence and architecture are documented in the [simply-Fi reverse-engineering report](DEVE_README.md).
