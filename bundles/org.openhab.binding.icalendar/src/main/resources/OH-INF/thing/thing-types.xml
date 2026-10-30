@@ -184,6 +184,15 @@
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
+	<channel-type id="result_location">
+		<item-type>String</item-type>
+		<label>Location of Result</label>
+		<description>Location of found result in calendar</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
 	<channel-type id="last_update">
 		<item-type>DateTime</item-type>
 		<label>Last Update</label>
@@ -201,6 +210,7 @@
 			<channel typeId="result_start" id="begin"/>
 			<channel typeId="result_end" id="end"/>
 			<channel typeId="result_title" id="title"/>
+			<channel typeId="result_location" id="location"/>
 		</channels>
 	</channel-group-type>
 
