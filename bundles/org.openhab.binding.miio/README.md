@@ -13868,6 +13868,9 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | temperature                | Number:Temperature   | Temperature                              |            |
 | relative_humidity          | Number:Dimensionless | Humidity                                 |            |
 | speed_now                  | Number               | Motor Speed                              |            |
+| button_press               | Number               | Button Pressed                           | Value mapping `["0"="None","1"="Power","2"="Swing"]` |
+| battery_state              | Switch               | Battery Installed                        |            |
+| ac_state                   | Switch               | AC Power Connected                       |            |
 
 ### Mi Smart Space Heater S (<a name="zhimi-heater-ma2">zhimi.heater.ma2</a>) Channels
 
@@ -28561,6 +28564,9 @@ Switch temperature_sensing "Temperature-Sensing Mode" (G_fan) {channel="miio:bas
 Number:Temperature temperature "Temperature" (G_fan) {channel="miio:basic:fan:temperature"}
 Number:Dimensionless relative_humidity "Humidity" (G_fan) {channel="miio:basic:fan:relative_humidity"}
 Number speed_now "Motor Speed" (G_fan) {channel="miio:basic:fan:speed_now"}
+Number button_press "Button Pressed" (G_fan) {channel="miio:basic:fan:button_press"}
+Switch battery_state "Battery Installed" (G_fan) {channel="miio:basic:fan:battery_state"}
+Switch ac_state "AC Power Connected" (G_fan) {channel="miio:basic:fan:ac_state"}
 ```
 
 ### Mi Smart Space Heater S (zhimi.heater.ma2) item file lines

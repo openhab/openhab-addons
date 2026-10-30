@@ -412,6 +412,72 @@
 					"Measurement",
 					"Speed"
 				]
+			},
+			{
+				"property": "button-press",
+				"siid": 6,
+				"piid": 1,
+				"friendlyName": "Button Pressed",
+				"channel": "button_press",
+				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "0",
+							"label": "None"
+						},
+						{
+							"value": "1",
+							"label": "Power"
+						},
+						{
+							"value": "2",
+							"label": "Swing"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "switch",
+				"tags": [
+					"Status"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"None\",\"1\"\u003d\"Power\",\"2\"\u003d\"Swing\"]`"
+			},
+			{
+				"property": "battery-state",
+				"siid": 6,
+				"piid": 2,
+				"friendlyName": "Battery Installed",
+				"channel": "battery_state",
+				"type": "Switch",
+				"stateDescription": {
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "battery",
+				"tags": [
+					"Status"
+				]
+			},
+			{
+				"property": "ac-state",
+				"siid": 6,
+				"piid": 5,
+				"friendlyName": "AC Power Connected",
+				"channel": "ac_state",
+				"type": "Switch",
+				"stateDescription": {
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "energy",
+				"tags": [
+					"Status"
+				]
 			}
 		]
 	}
