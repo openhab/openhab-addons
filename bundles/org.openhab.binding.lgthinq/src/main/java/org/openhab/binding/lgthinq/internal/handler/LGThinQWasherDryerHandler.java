@@ -321,11 +321,13 @@ public class LGThinQWasherDryerHandler
                 selectedFeatures.put(featureName, value);
             }
         }
-        return buildRemoteStartData(cap, cmd.getData(), rsShot, selectedCourse, selectedFeatures);
+        return buildRemoteStartData(cap, cmd.getData(), rsShot, selectedCourse, selectedFeatures,
+                WMD_STATE_INITIAL.equals(lastShot.getState()));
     }
 
     static Map<String, Object> buildRemoteStartData(WasherDryerCapability cap, Map<String, Object> cmdTemplate,
-            WasherDryerSnapshot shot, String selectedCourse, Map<String, String> selectedFeatures) {
+            WasherDryerSnapshot shot, String selectedCourse, Map<String, String> selectedFeatures,
+            boolean initialStart) {
         Map<String, Object> rawData = shot.getRawData();
         Map<String, Object> data = new HashMap<>();
         // 1st - copy snapshot data to command
@@ -349,6 +351,11 @@ public class LGThinQWasherDryerHandler
         data.put("courseType", courseType.getValue());
         // 3rd - replace custom selectable features with channel's ones.
         data.putAll(selectedFeatures);
+        // a washer waiting in the initial state only runs the course and options from the command with this bit,
+        // otherwise it starts whatever is set on its panel, which is nothing after stand-by
+        if (initialStart && data.containsKey("initialBit")) {
+            data.put("initialBit", "INITIAL_BIT_ON");
+        }
         return data;
     }
 

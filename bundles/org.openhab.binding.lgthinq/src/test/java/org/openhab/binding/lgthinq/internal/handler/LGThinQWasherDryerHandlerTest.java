@@ -69,7 +69,7 @@ class LGThinQWasherDryerHandlerTest {
     @Test
     void keepsMachineSettingsForCurrentCourse() throws JsonProcessingException {
         Map<String, Object> data = LGThinQWasherDryerHandler.buildRemoteStartData(cap, cmdTemplate, snapshot("COTTON"),
-                "COTTON", Map.of());
+                "COTTON", Map.of(), false);
 
         assertEquals("COTTON", data.get("courseFL24inchBaseTitan"));
         assertEquals("TEMP_60", data.get("temp"));
@@ -83,7 +83,7 @@ class LGThinQWasherDryerHandlerTest {
     @Test
     void usesCourseDefaultsForOtherCourse() throws JsonProcessingException {
         Map<String, Object> data = LGThinQWasherDryerHandler.buildRemoteStartData(cap, cmdTemplate, snapshot("COTTON"),
-                "EASYCARE", Map.of());
+                "EASYCARE", Map.of(), false);
 
         assertEquals("EASYCARE", data.get("courseFL24inchBaseTitan"));
         assertEquals("TEMP_40", data.get("temp"));
@@ -96,7 +96,7 @@ class LGThinQWasherDryerHandlerTest {
     @Test
     void selectedFeaturesOverrideSnapshot() throws JsonProcessingException {
         Map<String, Object> data = LGThinQWasherDryerHandler.buildRemoteStartData(cap, cmdTemplate, snapshot("COTTON"),
-                "COTTON", Map.of("temp", "TEMP_30", "spin", "SPIN_800"));
+                "COTTON", Map.of("temp", "TEMP_30", "spin", "SPIN_800"), false);
 
         assertEquals("TEMP_30", data.get("temp"));
         assertEquals("SPIN_800", data.get("spin"));
@@ -109,7 +109,7 @@ class LGThinQWasherDryerHandlerTest {
         WasherDryerSnapshot rsShot = LGThinQWasherDryerHandler.selectRemoteStartShot(cap, snapshot("NOT_SELECTED"),
                 remembered);
         Map<String, Object> data = LGThinQWasherDryerHandler.buildRemoteStartData(cap, cmdTemplate, rsShot, "COTTON",
-                Map.of());
+                Map.of(), false);
 
         assertSame(remembered, rsShot);
         assertEquals("TEMP_60", data.get("temp"));
@@ -125,9 +125,20 @@ class LGThinQWasherDryerHandlerTest {
     }
 
     @Test
+    void initialStateRequestsCourseFromCommand() throws JsonProcessingException {
+        Map<String, Object> waiting = LGThinQWasherDryerHandler.buildRemoteStartData(cap, cmdTemplate,
+                snapshot("COTTON"), "COTTON", Map.of(), true);
+        Map<String, Object> paused = LGThinQWasherDryerHandler.buildRemoteStartData(cap, cmdTemplate,
+                snapshot("COTTON"), "COTTON", Map.of(), false);
+
+        assertEquals("INITIAL_BIT_ON", waiting.get("initialBit"));
+        assertEquals("INITIAL_BIT_OFF", paused.get("initialBit"));
+    }
+
+    @Test
     void templateValuesUsedWhenMissingInSnapshot() throws JsonProcessingException {
         Map<String, Object> data = LGThinQWasherDryerHandler.buildRemoteStartData(cap, cmdTemplate, snapshot("COTTON"),
-                "COTTON", Map.of());
+                "COTTON", Map.of(), false);
 
         assertEquals("TURBOWASH_OFF", data.get("turboWash"));
         assertEquals("LOADITEM_OFF", data.get("loadItemWasher"));
