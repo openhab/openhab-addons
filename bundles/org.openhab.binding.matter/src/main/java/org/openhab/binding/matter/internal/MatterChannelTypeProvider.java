@@ -51,6 +51,13 @@ public class MatterChannelTypeProvider extends AbstractStorageBasedTypeProvider 
             @Reference StorageService storageService) {
         super(storageService);
         this.thingTypeRegistry = thingTypeRegistry;
+        removeLegacyChannelGroupTypes();
+    }
+
+    // Older versions named group types "nodeId-endpoint" and never removed them
+    private void removeLegacyChannelGroupTypes() {
+        getChannelGroupTypes(null).stream().map(ChannelGroupType::getUID)
+                .filter(uid -> Character.isDigit(uid.getId().charAt(0))).forEach(this::removeChannelGroupType);
     }
 
     /**

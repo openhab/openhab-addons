@@ -84,6 +84,14 @@ public class LightingType extends DeviceType {
                     colorControlConverter.onEvent(message);
                 }
                 return;
+            case LevelControlCluster.ATTRIBUTE_ON_OFF_TRANSITION_TIME:
+                // Without a Level Control converter the color converter owns the transition
+                if (!clusterToConverters.containsKey(LevelControlCluster.CLUSTER_ID) && clusterToConverters
+                        .get(ColorControlCluster.CLUSTER_ID) instanceof ColorControlConverter colorControlConverter) {
+                    colorControlConverter.onEvent(message);
+                    return;
+                }
+                break;
         }
         // no matching cluster, bubble up for generic cluster processing
         super.onEvent(message);
