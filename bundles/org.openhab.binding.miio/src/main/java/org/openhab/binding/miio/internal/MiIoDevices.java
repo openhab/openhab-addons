@@ -490,6 +490,7 @@ public enum MiIoDevices {
     XIAOMI_DERH_LITE("xiaomi.derh.lite", "Xiaomi Smart Dehumidifier Lite", THING_TYPE_BASIC),
     XIAOMI_HUMIDIFIER_3LITE("xiaomi.humidifier.3lite", "Xiaomi Smart Evaporative Humidifier", THING_TYPE_BASIC),
     XIAOMI_HUMIDIFIER_JSQ2W("xiaomi.humidifier.jsq2w", "Xiaomi Smart Humidifier 2", THING_TYPE_BASIC),
+    XIAOMI_HUMIDIFIER_P3("xiaomi.humidifier.p3", "Mijia Mist-Free Humidifier 3 (400)", THING_TYPE_BASIC),
     XIAOMI_REPEATER_V2("xiaomi.repeater.v2", "Mi Wi-Fi Repeater 2", THING_TYPE_UNSUPPORTED),
     XIAOMI_VACUUM_B106BK("xiaomi.vacuum.b106bk", "Xiaomi Robot Vacuum T12", THING_TYPE_BASIC),
     XIAOMI_VACUUM_B106EU("xiaomi.vacuum.b106eu", "Xiaomi Robot Vacuum S12", THING_TYPE_BASIC),
