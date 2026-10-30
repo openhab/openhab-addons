@@ -1,7 +1,7 @@
 ---
 children:
   - ["doc/protocol", "Bianca Protocol Contract"]
-  - ["doc/DEVE_README", "simply-Fi Reverse-Engineering Report"]
+  - ["doc/DEV_README", "simply-Fi Reverse-Engineering Report"]
 ---
 
 # Candy Binding

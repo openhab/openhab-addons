@@ -4,7 +4,7 @@
 
 The implementation is based on static analysis of simply-Fi **3.14.1 (226)**, package `it.candy.simplyfi`.
 APK SHA-256: `35df93c6e0b5883bee8cb066ba8ef35d3ee4c5e2af164e3a6b02675821718b03`.
-The [reverse-engineering report](DEVE_README.md) documents the wider analysis and APK evidence.
+The [reverse-engineering report](DEV_README.md) documents the wider analysis and APK evidence.
 
 The user's label identifies **BWM4 137PH6/1-S**, type **F3E1**, 1300 rpm.
 No serial number is retained in these notes.
