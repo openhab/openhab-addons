@@ -200,7 +200,7 @@ public enum MiIoDevices {
     MRBOND_AIRER_M1PRO("mrbond.airer.m1pro", "MR.BOND", THING_TYPE_BASIC),
     MRBOND_AIRER_M1S("mrbond.airer.m1s", "MR.BOND", THING_TYPE_BASIC),
     MRBOND_AIRER_M1SUPER("mrbond.airer.m1super", "MR.BOND", THING_TYPE_BASIC),
-    NWT_DERH_330EF("nwt.derh.330ef", "NWT Internet Dehumidifier 30L", THING_TYPE_BASIC),
+    NWT_DERH_330EF("nwt.derh.330ef", "NWT/Widetech Internet Dehumidifier 30L", THING_TYPE_BASIC),
     NWT_DERH_WDH318EFW1("nwt.derh.wdh318efw1", "NWT Internet Dehumidifier 18L", THING_TYPE_BASIC),
     PHILIPS_LIGHT_AIBED("philips.light.aibed", "Xiaomi Smart Sleep and Wake-up Light", THING_TYPE_BASIC),
     PHILIPS_LIGHT_BCEIL("philips.light.bceil", "Philips Zhirui Ceiling Lamp Living room 80W", THING_TYPE_BASIC),
