@@ -83,6 +83,7 @@ public class LGThinQWasherDryerHandler
     private final ChannelUID remoteStartCourseChannelUID;
     private final List<Channel> remoteStartEnabledChannels = new CopyOnWriteArrayList<>();
     private volatile @Nullable WasherDryerSnapshot remoteStartShot;
+    private volatile boolean remoteStartValuesInitialized;
 
     private final Logger logger = LoggerFactory.getLogger(LGThinQWasherDryerHandler.class);
     private final LGThinQWMApiClientService lgThinqWMApiClientService;
@@ -120,6 +121,7 @@ public class LGThinQWasherDryerHandler
         updateThing(builder.build());
         remoteStartEnabledChannels.clear();
         remoteStartShot = null;
+        remoteStartValuesInitialized = false;
     }
 
     private void loadOptionsCourse(WasherDryerCapability cap, ChannelUID courseChannel) {
@@ -205,6 +207,7 @@ public class LGThinQWasherDryerHandler
         // in standby the machine reports no course, so keep the settings it had while remote start was enabled
         if (!shot.isRemoteStartEnabled()) {
             remoteStartShot = null;
+            remoteStartValuesInitialized = false;
         } else if (hasSelectedCourse(getCapabilities(), shot)) {
             remoteStartShot = shot;
         }
@@ -225,7 +228,12 @@ public class LGThinQWasherDryerHandler
                 WasherDryerSnapshot rsShot = selectRemoteStartShot(cap, shot, remoteStartShot);
                 loadOptionsCourse(cap, remoteStartCourseChannelUID);
                 String currentCourse = getCurrentCourse(cap, rsShot);
-                updateState(remoteStartCourseChannelUID, new StringType(currentCourse));
+                // the items keep their values when the channels are recreated after standby, and also after a
+                // restart while the washer is in standby and reports no course
+                boolean initValues = !remoteStartValuesInitialized && hasSelectedCourse(cap, rsShot);
+                if (initValues) {
+                    updateState(remoteStartCourseChannelUID, new StringType(currentCourse));
+                }
 
                 CourseDefinition courseDef = cap.getCourses().get(currentCourse);
                 if (WMD_COURSE_NOT_SELECTED_VALUE.equals(rsShot.getSmartCourse()) && courseDef != null) {
@@ -261,12 +269,15 @@ public class LGThinQWasherDryerHandler
                                     }
                                 }
                             }
-                            updateState(targetChannel, new StringType(getFeatureValue(fd.getChannelId(), rsShot)));
+                            if (initValues) {
+                                updateState(targetChannel, new StringType(getFeatureValue(fd.getChannelId(), rsShot)));
+                            }
                         }
                     }
                 }
 
                 remoteStartEnabledChannels.addAll(dynChannels);
+                remoteStartValuesInitialized = true;
             }
         } else if (!remoteStartEnabledChannels.isEmpty()) {
             ThingBuilder builder = editThing().withoutChannels(remoteStartEnabledChannels);
@@ -423,6 +434,12 @@ public class LGThinQWasherDryerHandler
                 }
                 break;
             }
+            case CHANNEL_WMD_REMOTE_COURSE:
+            case CHANNEL_WMD_REMOTE_START_TEMP:
+            case CHANNEL_WMD_REMOTE_START_SPIN:
+            case CHANNEL_WMD_REMOTE_START_RINSE:
+                // the values are read from the linked items when the remote start is sent
+                break;
             default: {
                 logger.warn("Command {} to the channel {} not supported. Ignored.", command, params.channelUID);
             }

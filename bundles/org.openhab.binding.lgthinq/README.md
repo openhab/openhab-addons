@@ -139,7 +139,9 @@ This Channel Group is only available if the Washer is configured to Remote Start
 | rs-spin              | Spin              | String             | The pre-programmed spin (or default) is shown. You can change-it if you want before remote start        |
 | rs-rinse             | Rinse             | String             | The pre-programmed rinse (or default) is shown. You can change-it if you want before remote start       |
 
-If the Washer goes to stand-by while waiting for remote start, the course and options it had before are kept for the remote start.
+The channels start with the values set on the Washer. Changing `rs-course` does not change the other remote start channels, adjust them if needed.
+If the Washer goes to stand-by while waiting for remote start, the remote start channels keep their values, including changes made during stand-by.
+Wake the Washer with the `stand-by` channel before sending the remote start.
 
 ### Dryer Machine
 
