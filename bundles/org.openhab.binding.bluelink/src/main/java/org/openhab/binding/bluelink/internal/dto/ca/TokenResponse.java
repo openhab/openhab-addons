@@ -17,7 +17,7 @@ import com.google.gson.annotations.SerializedName;
 /**
  * @author Marcus Better - Initial contribution
  */
-public record TokenResponse(Result result) {
+public record TokenResponse(Result result, ResponseError error) {
 
     public record Result(Token token) {
 

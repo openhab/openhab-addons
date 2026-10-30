@@ -52,6 +52,7 @@ public abstract class AbstractBluelinkApi<V extends IVehicle> {
     protected static final int HTTP_TIMEOUT_SECONDS = 30;
     protected static final int DEFAULT_HEAT_DURATION_MINUTES = 5;
     protected static final Duration TOKEN_EXPIRY_MARGIN = Duration.ofSeconds(60);
+    protected static final String DEVICE_ID_PROPERTY = "deviceId";
 
     protected final Logger logger = LoggerFactory.getLogger(getClass());
     protected final Gson gson = new Gson();
@@ -233,7 +234,12 @@ public abstract class AbstractBluelinkApi<V extends IVehicle> {
             throw new BluelinkApiException("empty response");
         }
         final Token token = tokenExtractor.apply(res);
-        if (token == null || token.accessToken() == null || token.expiresIn() == null) {
+        if (token == null) {
+            // some servers report errors with HTTP 200 and only describe them in the body
+            logger.debug("Login response without token: {}", response.getContentAsString());
+            throw new BluelinkApiException("Invalid token response");
+        }
+        if (token.accessToken() == null || token.expiresIn() == null) {
             throw new BluelinkApiException("Invalid token response");
         }
         setAccessToken(token.accessToken(), Instant.now().plusSeconds(Integer.parseInt(token.expiresIn())));
@@ -307,7 +313,20 @@ public abstract class AbstractBluelinkApi<V extends IVehicle> {
             throws BluelinkApiException {
         final ContentResponse response = checkStatus(send(request, op), op);
         logger.debug("{} response: {}", op, response.getContentAsString());
+        checkResponse(request, response, op);
         return gson.fromJson(response.getContentAsString(), responseType);
+    }
+
+    /**
+     * Check a response with a successful HTTP status for errors that are only reported in the body.
+     *
+     * @param request the request that was sent
+     * @param response the response
+     * @param op the operation, for logging
+     * @throws BluelinkApiException if the response reports an error
+     */
+    protected void checkResponse(final Request request, final ContentResponse response, final String op)
+            throws BluelinkApiException {
     }
 
     // transport failures are transient, callers may retry them like a 5xx

@@ -68,6 +68,8 @@ public class BluelinkAccountHandler extends BaseBridgeHandler {
     // EU refresh tokens (valid for 180 days) cannot be obtained since August 2026,
     // so this hint can be removed once the last ones have expired in early 2027
     private static final Pattern LEGACY_REFRESH_TOKEN = Pattern.compile("[A-Z0-9]{48}");
+    private static final String CANADA_ONLY = "Only used for accounts in Canada";
+    private static final String FAILED = "Failed, see the Thing status";
 
     private final Logger logger = LoggerFactory.getLogger(BluelinkAccountHandler.class);
 
@@ -147,7 +149,8 @@ public class BluelinkAccountHandler extends BaseBridgeHandler {
         final String baseUrl = config.apiBaseUrl;
         final AbstractBluelinkApi<?> newApi = switch (region) {
             case US -> new BluelinkApiUS(httpClient, baseUrl, timeZoneProvider, username, password, config.pin);
-            case CA -> new BluelinkApiCA(httpClient, brand, baseUrl, timeZoneProvider, username, password, config.pin);
+            case CA -> new BluelinkApiCA(httpClient, brand, editProperties(), baseUrl, timeZoneProvider, username,
+                    password, config.pin);
             case EU -> new BluelinkApiEU(httpClient, scheduler, brand, editProperties(), baseUrl, timeZoneProvider,
                     username, password);
         };
@@ -189,7 +192,9 @@ public class BluelinkAccountHandler extends BaseBridgeHandler {
         } catch (final LoginRejectedException e) {
             updateIfCurrent(generation, () -> {
                 final ThingStatusDetail detail = switch (e.getReason()) {
-                    case CONSENT_REQUIRED, INVALID_CREDENTIALS, REJECTED -> ThingStatusDetail.CONFIGURATION_ERROR;
+                    case CONSENT_REQUIRED, INVALID_CREDENTIALS, REJECTED, VERIFICATION_REQUIRED,
+                            VERIFICATION_CODE_SENT ->
+                        ThingStatusDetail.CONFIGURATION_ERROR;
                     case BLOCKED, SIGNATURE_REJECTED, TIMESTAMP_REJECTED -> ThingStatusDetail.COMMUNICATION_ERROR;
                 };
                 updateStatus(detail, isLegacyRefreshToken(e) ? "@text/account-handler.login.refresh-token"
@@ -244,6 +249,72 @@ public class BluelinkAccountHandler extends BaseBridgeHandler {
         });
     }
 
+    /**
+     * Send a verification code for a login that needs one (Canada).
+     *
+     * @return the result to show to the user
+     */
+    public String requestVerificationCode() {
+        final AbstractBluelinkApi<?> bluelinkApi;
+        final long generation;
+        synchronized (loginLock) {
+            bluelinkApi = api;
+            generation = loginGeneration.get();
+        }
+        if (!(bluelinkApi instanceof BluelinkApiCA caApi)) {
+            logger.debug("Verification code requested, but it is only used in Canada");
+            return CANADA_ONLY;
+        }
+        final String email;
+        try {
+            email = caApi.requestVerificationCode();
+        } catch (final BluelinkApiException e) {
+            loginFailed(e, generation);
+            return FAILED;
+        }
+        if (email == null) {
+            return "No verification code required";
+        }
+        // shows that the code has been sent
+        login();
+        return "Verification code sent to " + email;
+    }
+
+    /**
+     * Complete a login that needs a verification code (Canada).
+     *
+     * @param code the verification code the user received
+     * @return the result to show to the user
+     */
+    public String verifyCode(final String code) {
+        final AbstractBluelinkApi<?> bluelinkApi;
+        final long generation;
+        synchronized (loginLock) {
+            bluelinkApi = api;
+            generation = loginGeneration.get();
+        }
+        if (!(bluelinkApi instanceof BluelinkApiCA caApi)) {
+            logger.debug("Verification code entered, but it is only used in Canada");
+            return CANADA_ONLY;
+        }
+        try {
+            if (!caApi.verifyCode(code)) {
+                return "No verification code requested";
+            }
+        } catch (final BluelinkApiException e) {
+            loginFailed(e, generation);
+            return FAILED;
+        }
+        markOnline(bluelinkApi, generation);
+        return "Login verified";
+    }
+
+    private void loginFailed(final BluelinkApiException e, final long generation) {
+        final ThingStatusDetail detail = e instanceof LoginRejectedException ? ThingStatusDetail.CONFIGURATION_ERROR
+                : ThingStatusDetail.COMMUNICATION_ERROR;
+        updateIfCurrent(generation, () -> updateStatus(ThingStatus.OFFLINE, detail, e.getStatusDescription()));
+    }
+
     private boolean call(final ApiCall call) throws BluelinkApiException {
         final AbstractBluelinkApi<?> bluelinkApi;
         final long generation;
@@ -290,7 +361,7 @@ public class BluelinkAccountHandler extends BaseBridgeHandler {
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return List.of(BluelinkVehicleDiscoveryService.class);
+        return List.of(BluelinkVehicleDiscoveryService.class, AccountActions.class);
     }
 
     public List<? extends IVehicle> getVehicles() throws BluelinkApiException {

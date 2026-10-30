@@ -31,7 +31,9 @@ public class LoginRejectedException extends BluelinkApiException {
         INVALID_CREDENTIALS("invalid-credentials"),
         REJECTED("rejected"),
         SIGNATURE_REJECTED("signature-rejected"),
-        TIMESTAMP_REJECTED("timestamp-rejected");
+        TIMESTAMP_REJECTED("timestamp-rejected"),
+        VERIFICATION_REQUIRED("verification-required"),
+        VERIFICATION_CODE_SENT("verification-code-sent");
 
         private final String key;
 
