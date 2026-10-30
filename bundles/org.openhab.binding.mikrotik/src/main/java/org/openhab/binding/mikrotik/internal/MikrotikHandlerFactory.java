@@ -12,9 +12,13 @@
  */
 package org.openhab.binding.mikrotik.internal;
 
+import static org.openhab.binding.mikrotik.internal.MikrotikBindingConstants.SUPPORTED_THING_TYPES;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.mikrotik.internal.handler.MikrotikDeviceHandler;
 import org.openhab.binding.mikrotik.internal.handler.MikrotikInterfaceThingHandler;
+import org.openhab.binding.mikrotik.internal.handler.MikrotikKidControlHandler;
 import org.openhab.binding.mikrotik.internal.handler.MikrotikRouterosBridgeHandler;
 import org.openhab.binding.mikrotik.internal.handler.MikrotikWirelessClientThingHandler;
 import org.openhab.core.thing.Bridge;
@@ -36,9 +40,7 @@ import org.osgi.service.component.annotations.Component;
 public class MikrotikHandlerFactory extends BaseThingHandlerFactory {
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
-        return MikrotikRouterosBridgeHandler.supportsThingType(thingTypeUID)
-                || MikrotikWirelessClientThingHandler.supportsThingType(thingTypeUID)
-                || MikrotikInterfaceThingHandler.supportsThingType(thingTypeUID);
+        return SUPPORTED_THING_TYPES.contains(thingTypeUID);
     }
 
     @Override
@@ -50,6 +52,10 @@ public class MikrotikHandlerFactory extends BaseThingHandlerFactory {
             return new MikrotikWirelessClientThingHandler(thing);
         } else if (MikrotikInterfaceThingHandler.supportsThingType(thingTypeUID)) {
             return new MikrotikInterfaceThingHandler(thing);
+        } else if (MikrotikKidControlHandler.supportsThingType(thingTypeUID)) {
+            return new MikrotikKidControlHandler(thing);
+        } else if (MikrotikDeviceHandler.supportsThingType(thingTypeUID)) {
+            return new MikrotikDeviceHandler(thing);
         }
         return null;
     }
