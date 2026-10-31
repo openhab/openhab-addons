@@ -129,7 +129,7 @@ class BMWCarDataAccountHandlerTest {
         vehicleThing = ThingBuilder.create(THING_TYPE_VEHICLE, new ThingUID(THING_TYPE_VEHICLE, ACCOUNT_UID, "car"))
                 .withBridge(ACCOUNT_UID).withConfiguration(new Configuration(Map.of(CONFIG_VIN, VIN)))
                 // the basic data is known, so the vehicle goes online without retrieving it
-                .withProperties(Map.of(PROPERTY_MODEL, "iX xDrive40")).build();
+                .withProperties(Map.of(PROPERTY_MODEL, "iX xDrive40", PROPERTY_VIN, VIN)).build();
         vehicleCallback = statusTrackingCallback();
         vehicle = new BMWCarDataVehicleHandler(vehicleThing);
         vehicle.setCallback(vehicleCallback);

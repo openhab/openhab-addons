@@ -36,6 +36,8 @@ public class BMWCarDataBindingConstants {
 
     // Configuration and property names
     public static final String CONFIG_VIN = "vin";
+    // the VIN the basic data shown as properties belongs to
+    public static final String PROPERTY_VIN = "vin";
     public static final String PROPERTY_BRAND = "brand";
     public static final String PROPERTY_MODEL = "model";
     public static final String PROPERTY_SERIES = "series";

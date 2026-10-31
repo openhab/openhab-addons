@@ -350,7 +350,11 @@ public class BMWCarDataAccountHandler extends BaseBridgeHandler implements Strea
         return basicData;
     }
 
-    private @Nullable BasicData getCachedBasicData(String vin) {
+    /**
+     * @return the static data of a vehicle if it has been retrieved before, without sending a request
+     */
+    @Nullable
+    BasicData getCachedBasicData(String vin) {
         @Nullable
         String cached = storage.get(STORAGE_KEY_BASIC_DATA + vin);
         if (cached == null) {
@@ -444,10 +448,18 @@ public class BMWCarDataAccountHandler extends BaseBridgeHandler implements Strea
         }, 0, TimeUnit.SECONDS);
     }
 
+    /**
+     * Called when a vehicle handler is disposed, also when it is initialized again on a configuration change, so that
+     * it is read again when it goes online.
+     */
+    void vehicleDisposed(BMWCarDataVehicleHandler vehicle) {
+        startedVehicles.remove(vehicle);
+    }
+
     @Override
     public void childHandlerDisposed(ThingHandler childHandler, Thing childThing) {
         if (childHandler instanceof BMWCarDataVehicleHandler vehicle) {
-            startedVehicles.remove(vehicle);
+            vehicleDisposed(vehicle);
         }
         super.childHandlerDisposed(childHandler, childThing);
     }

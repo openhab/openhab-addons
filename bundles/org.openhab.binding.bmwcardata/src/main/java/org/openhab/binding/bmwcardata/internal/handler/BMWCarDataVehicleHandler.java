@@ -20,6 +20,7 @@ import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
@@ -48,14 +49,18 @@ import org.openhab.core.library.types.RawType;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
+import org.openhab.core.thing.ChannelGroupUID;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingStatusInfo;
+import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.BaseThingHandler;
+import org.openhab.core.thing.binding.ThingHandlerCallback;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
+import org.openhab.core.thing.type.ChannelGroupTypeUID;
 import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
@@ -79,10 +84,22 @@ public class BMWCarDataVehicleHandler extends BaseThingHandler {
 
     // retry of the basic data and the image, like a failed refresh of the account, e.g. while the budget is used up
     private static final long RETRY_SECONDS = 15 * 60;
+    // the groups of the predefined channels, whose group types are named <group>-group; not the dynamic channels
+    private static final List<String> PREDEFINED_GROUPS = List.of(GROUP_STATUS, GROUP_RANGE, GROUP_CHARGE,
+            GROUP_BATTERY, GROUP_CLIMATE, GROUP_NAVIGATION, GROUP_TRIP, GROUP_TYRES, GROUP_SECURITY, GROUP_SERVICE,
+            GROUP_STATISTICS);
+    // the properties set from the basic data, which those of another vehicle replace
+    private static final List<String> BASIC_DATA_PROPERTIES = List.of(PROPERTY_VIN, PROPERTY_BRAND, PROPERTY_MODEL,
+            PROPERTY_SERIES, PROPERTY_DRIVE_TRAIN, PROPERTY_PROPULSION_TYPE, PROPERTY_COLOR, PROPERTY_CONSTRUCTION_DATE,
+            PROPERTY_HAS_SUNROOF, PROPERTY_HAS_NAVIGATION, PROPERTY_TELEMATICS_CAPABLE, PROPERTY_MODEL_KEY,
+            PROPERTY_SERIES_DEVT, PROPERTY_BODY_TYPE, PROPERTY_NUMBER_OF_DOORS, PROPERTY_STEERING, PROPERTY_ENGINE,
+            PROPERTY_HEAD_UNIT, PROPERTY_PU_STEP, PROPERTY_CHARGING_MODES, PROPERTY_HVS_MAX_ENERGY,
+            PROPERTY_REESS_CAPACITY, PROPERTY_SIM_STATUS, PROPERTY_COUNTRY_CODE);
 
     private final Logger logger = LoggerFactory.getLogger(BMWCarDataVehicleHandler.class);
 
-    private String vin = "";
+    // set on initialization, read by the jobs, which compare it to detect a change of the VIN while they run
+    private volatile String vin = "";
     private boolean dynamicChannels = true;
     // serializes accepting and publishing values: the REST refresh and the stream deliver data concurrently, and a
     // value accepted as newer must not be published after a value that was accepted later; held while publishing, as
@@ -137,7 +154,13 @@ public class BMWCarDataVehicleHandler extends BaseThingHandler {
         disposed = false;
         refreshFailing = false;
         VehicleConfiguration config = getConfigAs(VehicleConfiguration.class);
+        String previousVin = vin;
         vin = config.vin.trim().toUpperCase(Locale.ROOT);
+        if (!vin.equals(previousVin)) {
+            // a configuration change initializes the same handler again, which must not keep the data of another
+            // vehicle
+            clearVehicleData();
+        }
         dynamicChannels = config.dynamicChannels;
         if (!BMWCarDataApi.isValidVin(vin)) {
             updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.conf-error.vin");
@@ -152,7 +175,27 @@ public class BMWCarDataVehicleHandler extends BaseThingHandler {
         disposed = true;
         cancelProperties();
         cancelImage();
+        BMWCarDataAccountHandler account = getAccountHandler();
+        if (account != null) {
+            // a configuration change initializes the same handler again without telling the account, which reads the
+            // vehicle again once it goes online, e.g. with another VIN
+            account.vehicleDisposed(this);
+        }
         super.dispose();
+    }
+
+    private void clearVehicleData() {
+        synchronized (dataLock) {
+            states.clear();
+            readings.clear();
+            reportedChannels.clear();
+            latitude = null;
+            longitude = null;
+            altitude = null;
+            lastUpdate = null;
+            doorLockTimestamp = null;
+            pluggedReported = false;
+        }
     }
 
     @Override
@@ -194,7 +237,7 @@ public class BMWCarDataVehicleHandler extends BaseThingHandler {
         // data received from the stream proves the vehicle reachable again after a failed poll
         if (getThing().getStatus() == ThingStatus.OFFLINE
                 && getThing().getStatusInfo().getStatusDetail() == ThingStatusDetail.COMMUNICATION_ERROR
-                && hasProperties()) {
+                && hasBasicData()) {
             refreshFailing = false;
             goOnline();
         }
@@ -420,7 +463,13 @@ public class BMWCarDataVehicleHandler extends BaseThingHandler {
 
     private void updateBridgeStatus(ThingStatus bridgeStatus) {
         if (bridgeStatus == ThingStatus.ONLINE) {
-            if (hasProperties()) {
+            if (hasBasicData()) {
+                // e.g. after a restart, or an update of the binding with other channels; costs no request
+                BMWCarDataAccountHandler account = getAccountHandler();
+                BasicData basicData = account != null ? account.getCachedBasicData(vin) : null;
+                if (basicData != null) {
+                    reconcileChannels(basicData);
+                }
                 goOnline();
             } else {
                 // the vehicle goes online once its basic data is known, which usually comes from the account's cache
@@ -440,7 +489,7 @@ public class BMWCarDataVehicleHandler extends BaseThingHandler {
      */
     void refreshSucceeded() {
         refreshFailing = false;
-        if (!disposed && getThing().getStatus() != ThingStatus.ONLINE && hasProperties()) {
+        if (!disposed && getThing().getStatus() != ThingStatus.ONLINE && hasBasicData()) {
             goOnline();
         }
     }
@@ -464,15 +513,18 @@ public class BMWCarDataVehicleHandler extends BaseThingHandler {
     }
 
     /**
-     * @return whether the basic data of the vehicle has been retrieved; the model property marks it
+     * @return whether the basic data of the configured vehicle has been retrieved; the model property marks it, and
+     *         the VIN property tells whose it is, so that it is retrieved again after the VIN was changed, as well as
+     *         for Things of binding versions that did not set the VIN property
      */
-    private boolean hasProperties() {
-        return getThing().getProperties().containsKey(PROPERTY_MODEL);
+    private boolean hasBasicData() {
+        Map<String, String> properties = getThing().getProperties();
+        return properties.containsKey(PROPERTY_MODEL) && vin.equals(properties.get(PROPERTY_VIN));
     }
 
     private synchronized void scheduleProperties(long delaySeconds) {
         ScheduledFuture<?> job = propertiesJob;
-        if ((job == null || job.isDone()) && !hasProperties()) {
+        if ((job == null || job.isDone()) && !hasBasicData()) {
             propertiesJob = jobScheduler.schedule(this::retrieveProperties, delaySeconds, TimeUnit.SECONDS);
         }
     }
@@ -555,15 +607,17 @@ public class BMWCarDataVehicleHandler extends BaseThingHandler {
 
     private void retrieveProperties() {
         BMWCarDataAccountHandler account = getAccountHandler();
-        if (account == null || hasProperties()) {
+        // the handler may be initialized again with another VIN while the basic data is retrieved
+        String requestedVin = vin;
+        if (account == null || hasBasicData()) {
             return;
         }
         BasicData basicData;
         try {
-            basicData = account.fetchBasicData(vin);
+            basicData = account.fetchBasicData(requestedVin);
         } catch (BMWCarDataException e) {
             logger.debug("Failed to retrieve basic vehicle data: {}", e.getMessage());
-            if (disposed) {
+            if (disposed || !requestedVin.equals(vin)) {
                 return;
             }
             if (e.isVinNotPermitted()) {
@@ -576,10 +630,13 @@ public class BMWCarDataVehicleHandler extends BaseThingHandler {
             schedulePropertiesRetry();
             return;
         }
-        if (disposed) {
+        if (disposed || !requestedVin.equals(vin)) {
             return;
         }
         Map<String, String> properties = new HashMap<>(editProperties());
+        // those of the previous vehicle, if the VIN was changed
+        BASIC_DATA_PROPERTIES.forEach(properties::remove);
+        properties.put(PROPERTY_VIN, requestedVin);
         putIfPresent(properties, PROPERTY_BRAND, basicData.brand);
         String model = basicData.modelName != null ? basicData.modelName : basicData.series;
         // the model property marks the properties as retrieved, so it is always set
@@ -608,7 +665,7 @@ public class BMWCarDataVehicleHandler extends BaseThingHandler {
         putIfPresent(properties, PROPERTY_SIM_STATUS, basicData.simStatus);
         putIfPresent(properties, PROPERTY_COUNTRY_CODE, basicData.countryCode);
         updateProperties(properties);
-        removeIrrelevantChannels(basicData);
+        reconcileChannels(basicData);
         Bridge bridge = getBridge();
         // a refresh that failed meanwhile keeps its status until a refresh or stream data succeeds
         if (!disposed && !refreshFailing && bridge != null && bridge.getStatus() == ThingStatus.ONLINE) {
@@ -617,23 +674,46 @@ public class BMWCarDataVehicleHandler extends BaseThingHandler {
     }
 
     /**
-     * Removes the channels that do not apply to the vehicle: those of a drive it does not have and of the sunroof.
-     * Equipment is only treated as missing when BMW explicitly reports so. The channels are removed once, together with
-     * retrieving the properties; recreate the Thing to get them back.
+     * Aligns the predefined channels with the vehicle: removes those that do not apply to it, i.e. those of a drive it
+     * does not have and of the sunroof, and adds those that apply but are missing, e.g. after the VIN was changed to
+     * another vehicle. Equipment is only treated as missing when BMW explicitly reports so. Existing channels are kept
+     * as they are and the dynamic channels are left alone; the Thing is only updated if its channels change.
      */
-    private void removeIrrelevantChannels(BasicData basicData) {
+    private void reconcileChannels(BasicData basicData) {
         // BMW does not document the values, so that users can report the ones of their vehicles
         logger.debug("Vehicle reports drive train {} and propulsion type {}", basicData.driveTrain,
                 basicData.propulsionType);
-        List<Channel> channels = irrelevantChannelIds(basicData).stream()
-                .map(id -> getThing().getChannel(new ChannelUID(getThing().getUID(), id))).filter(Objects::nonNull)
-                .map(Objects::requireNonNull).toList();
-        if (!channels.isEmpty() && !disposed) {
-            logger.debug("Removing {} channels that do not apply to the vehicle", channels.size());
-            // dynamic channels may be created concurrently, under the same lock
-            synchronized (dataLock) {
-                updateThing(editThing().withoutChannels(channels).build());
+        ThingHandlerCallback callback = getCallback();
+        if (callback == null) {
+            return;
+        }
+        Set<String> irrelevant = new HashSet<>(irrelevantChannelIds(basicData));
+        ThingUID thingUID = getThing().getUID();
+        List<Channel> defined = new ArrayList<>();
+        for (String group : PREDEFINED_GROUPS) {
+            for (ChannelBuilder builder : callback.createChannelBuilders(new ChannelGroupUID(thingUID, group),
+                    new ChannelGroupTypeUID(BINDING_ID, group + "-group"))) {
+                defined.add(builder.build());
             }
+        }
+        // dynamic channels may be created concurrently, under the same lock
+        synchronized (dataLock) {
+            if (disposed) {
+                return;
+            }
+            Thing thing = getThing();
+            List<Channel> unsupported = thing.getChannels().stream()
+                    .filter(channel -> irrelevant.contains(channel.getUID().getId())).toList();
+            List<Channel> missing = defined.stream().filter(channel -> !irrelevant.contains(channel.getUID().getId())
+                    && thing.getChannel(channel.getUID()) == null).toList();
+            if (unsupported.isEmpty() && missing.isEmpty()) {
+                return;
+            }
+            logger.debug("Removing {} channels that do not apply to the vehicle and adding {} that do",
+                    unsupported.size(), missing.size());
+            ThingBuilder builder = editThing().withoutChannels(unsupported);
+            missing.forEach(builder::withChannel);
+            updateThing(builder.build());
         }
     }
 

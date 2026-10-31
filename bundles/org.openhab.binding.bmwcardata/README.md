@@ -155,7 +155,7 @@ If it expires or is revoked, the authorization page shows a new link and code.
 All channels are read-only.
 A channel is only updated if the vehicle reports the corresponding data and, for streaming, if the data has been selected in the customer portal.
 
-When the static vehicle data is read, the channels that do not apply to the vehicle are removed:
+When the static vehicle data is known, the channels that do not apply to the vehicle are removed:
 
 - For an electric vehicle (drive train `BEV`), the fuel channels, the total range, the engine state and the electric share of a trip.
 - For a combustion vehicle (drive train `CONV`), the charging, high-voltage battery and electric range channels and the electric share of a trip.
@@ -165,7 +165,7 @@ The navigation channels are always kept: the location comes from the telematics 
 
 Plug-in hybrids (`PHEV`) and vehicles with another or no drive train keep all drive related channels.
 BMW does not document the values, so the binding only acts on those seen on real vehicles; the reported values are shown as Thing properties.
-To get removed channels back, delete and recreate the Thing.
+Removed channels are added again once the vehicle has the corresponding features, e.g. after the VIN was changed to another vehicle; the static data of the new VIN is read for that.
 
 | Channel                              | Type                     | Description                                                                   | Advanced |
 |--------------------------------------|--------------------------|-------------------------------------------------------------------------------|----------|

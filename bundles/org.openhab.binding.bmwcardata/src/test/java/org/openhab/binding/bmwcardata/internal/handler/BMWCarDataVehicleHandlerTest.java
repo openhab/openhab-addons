@@ -29,12 +29,14 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
+import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
+import org.mockito.InOrder;
 import org.openhab.binding.bmwcardata.internal.api.BMWCarDataAuthException;
 import org.openhab.binding.bmwcardata.internal.api.BMWCarDataException;
 import org.openhab.binding.bmwcardata.internal.api.dto.BasicData;
@@ -51,9 +53,12 @@ import org.openhab.core.library.types.RawType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
+import org.openhab.core.thing.ChannelGroupUID;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
@@ -76,8 +81,10 @@ class BMWCarDataVehicleHandlerTest {
     private static final ThingUID THING_UID = new ThingUID(THING_TYPE_VEHICLE, "car");
     private static final ThingUID BRIDGE_UID = new ThingUID(THING_TYPE_ACCOUNT, "account");
     private static final String VIN = "WBY11CF020CM00000";
+    private static final String OTHER_VIN = "WBA21EN050CJ00000";
     // the properties are read already, so that the tests of the image do not depend on the basic data
-    private static final Map<String, String> RETRIEVED_PROPERTIES = Map.of(PROPERTY_MODEL, "iX xDrive40");
+    private static final Map<String, String> RETRIEVED_PROPERTIES = Map.of(PROPERTY_MODEL, "iX xDrive40", PROPERTY_VIN,
+            VIN);
     private static final RawType IMAGE = new RawType(new byte[] { (byte) 0x89, 'P', 'N', 'G' }, "image/png");
     private static final String MILEAGE = "vehicle.vehicle.travelledDistance";
     private static final String LATITUDE = "vehicle.cabin.infotainment.navigation.currentLocation.latitude";
@@ -529,7 +536,8 @@ class BMWCarDataVehicleHandlerTest {
         ThingHandlerCallback vehicleCallback = callbackWithBridge(account);
         Jobs jobs = new Jobs();
         BMWCarDataVehicleHandler vehicle = new BMWCarDataVehicleHandler(
-                vehicleThing(Map.of(PROPERTY_MODEL, "JCW Countryman ALL4", PROPERTY_DRIVE_TRAIN, "CONV")),
+                vehicleThing(
+                        Map.of(PROPERTY_MODEL, "JCW Countryman ALL4", PROPERTY_DRIVE_TRAIN, "CONV", PROPERTY_VIN, VIN)),
                 jobs.scheduler);
         vehicle.setCallback(vehicleCallback);
         vehicle.initialize();
@@ -560,6 +568,91 @@ class BMWCarDataVehicleHandlerTest {
 
         verify(account).fetchBasicData(VIN);
         verify(vehicleCallback, never()).thingUpdated(any());
+    }
+
+    @Test
+    void channelsAreAddedBackWhenTheVinChanges() throws Exception {
+        BMWCarDataAccountHandler account = mock(BMWCarDataAccountHandler.class);
+        when(account.fetchBasicData(VIN)).thenReturn(basicData("CONV", "BE", true, true));
+        when(account.fetchBasicData(OTHER_VIN)).thenReturn(basicData("BEV", "EL", true, true));
+        ThingHandlerCallback vehicleCallback = callbackWithBridge(account);
+        defineChannels(vehicleCallback, GROUP_CHARGE + "#soc", GROUP_RANGE + "#fuel-level", GROUP_RANGE + "#electric");
+        Jobs jobs = new Jobs();
+        BMWCarDataVehicleHandler vehicle = new BMWCarDataVehicleHandler(vehicleThing(Map.of()), jobs.scheduler);
+        vehicle.setCallback(vehicleCallback);
+        vehicle.initialize();
+        jobs.tasks.get(0).run();
+        assertNull(vehicle.getThing().getChannel(GROUP_CHARGE + "#soc"));
+        assertNotNull(vehicle.getThing().getChannel(GROUP_RANGE + "#fuel-level"));
+        vehicle.updateTelematicData(Map.of("vehicle.unknown.descriptor", value(1, null, "2026-10-01T10:00:00Z")));
+
+        // the Thing is reconfigured to an electric vehicle
+        Thing thing = vehicle.getThing();
+        vehicle.thingUpdated(ThingBuilder.create(THING_TYPE_VEHICLE, thing.getUID()).withBridge(BRIDGE_UID)
+                .withConfiguration(new Configuration(Map.of(CONFIG_VIN, OTHER_VIN))).withChannels(thing.getChannels())
+                .withProperties(thing.getProperties()).build());
+        jobs.tasks.get(1).run();
+
+        thing = vehicle.getThing();
+        assertEquals("BEV", thing.getProperties().get(PROPERTY_DRIVE_TRAIN));
+        assertEquals(OTHER_VIN, thing.getProperties().get(PROPERTY_VIN));
+        assertNotNull(thing.getChannel(GROUP_CHARGE + "#soc"));
+        assertNotNull(thing.getChannel(GROUP_RANGE + "#electric"));
+        assertNull(thing.getChannel(GROUP_RANGE + "#fuel-level"));
+        // the dynamic channels are left alone
+        assertNotNull(thing.getChannel(GROUP_OTHER + "#unknown-descriptor"));
+        // the account reads the current values of the other vehicle
+        verify(account).vehicleDisposed(vehicle);
+        verify(account, times(2)).vehicleOnline(vehicle);
+        vehicle.dispose();
+    }
+
+    @Test
+    void unchangedChannelsDoNotUpdateTheThing() throws Exception {
+        BMWCarDataAccountHandler account = mock(BMWCarDataAccountHandler.class);
+        when(account.getCachedBasicData(VIN)).thenReturn(basicData("CONV", "BE", true, true));
+        ThingHandlerCallback vehicleCallback = callbackWithBridge(account);
+        defineChannels(vehicleCallback, GROUP_CHARGE + "#soc", GROUP_RANGE + "#fuel-level");
+        Jobs jobs = new Jobs();
+        ThingUID uid = new ThingUID(THING_TYPE_VEHICLE, BRIDGE_UID, "car");
+        // the channels of a combustion vehicle, e.g. after a restart
+        Thing thing = ThingBuilder.create(THING_TYPE_VEHICLE, uid).withBridge(BRIDGE_UID)
+                .withConfiguration(new Configuration(Map.of(CONFIG_VIN, VIN)))
+                .withChannel(ChannelBuilder.create(new ChannelUID(uid, GROUP_RANGE + "#fuel-level")).build())
+                .withProperties(RETRIEVED_PROPERTIES).build();
+        BMWCarDataVehicleHandler vehicle = new BMWCarDataVehicleHandler(thing, jobs.scheduler);
+        vehicle.setCallback(vehicleCallback);
+        vehicle.initialize();
+        vehicle.bridgeStatusChanged(new ThingStatusInfo(ThingStatus.ONLINE, ThingStatusDetail.NONE, null));
+
+        verify(account, times(2)).getCachedBasicData(VIN);
+        verify(account, never()).fetchBasicData(anyString());
+        verify(vehicleCallback, never()).thingUpdated(any());
+        vehicle.dispose();
+    }
+
+    @Test
+    void restartReconcilesTheChannelsWithTheCachedBasicData() throws Exception {
+        BMWCarDataAccountHandler account = mock(BMWCarDataAccountHandler.class);
+        when(account.getCachedBasicData(VIN)).thenReturn(basicData("BEV", "EL", true, true));
+        ThingHandlerCallback vehicleCallback = callbackWithBridge(account);
+        defineChannels(vehicleCallback, GROUP_CHARGE + "#soc", GROUP_RANGE + "#fuel-level", GROUP_RANGE + "#electric");
+        Jobs jobs = new Jobs();
+        BMWCarDataVehicleHandler vehicle = new BMWCarDataVehicleHandler(vehicleThing(RETRIEVED_PROPERTIES),
+                jobs.scheduler);
+        vehicle.setCallback(vehicleCallback);
+        vehicle.initialize();
+
+        // no request, and the channels are final before the account reads the vehicle
+        verify(account, never()).fetchBasicData(anyString());
+        InOrder order = inOrder(vehicleCallback, account);
+        order.verify(vehicleCallback).thingUpdated(any());
+        order.verify(account).vehicleOnline(vehicle);
+        Thing thing = vehicle.getThing();
+        assertNull(thing.getChannel(GROUP_RANGE + "#fuel-level"));
+        assertNotNull(thing.getChannel(GROUP_CHARGE + "#soc"));
+        assertNotNull(thing.getChannel(GROUP_RANGE + "#electric"));
+        vehicle.dispose();
     }
 
     @Test
@@ -804,6 +897,18 @@ class BMWCarDataVehicleHandlerTest {
                 .withChannels(ChannelBuilder.create(new ChannelUID(uid, GROUP_CHARGE + "#soc")).build(),
                         ChannelBuilder.create(new ChannelUID(uid, GROUP_RANGE + "#fuel-level")).build())
                 .withProperties(properties).build();
+    }
+
+    /**
+     * Lets the callback create the given predefined channels of the vehicle, as the framework does from the channel
+     * group types.
+     */
+    private static void defineChannels(ThingHandlerCallback callback, String... channelIds) {
+        when(callback.createChannelBuilders(any(), any())).thenAnswer(invocation -> {
+            ChannelGroupUID group = invocation.getArgument(0);
+            return Stream.of(channelIds).filter(id -> id.startsWith(group.getId() + "#"))
+                    .map(id -> ChannelBuilder.create(new ChannelUID(group.getThingUID(), id))).toList();
+        });
     }
 
     private static ThingHandlerCallback callbackWithBridge(BMWCarDataAccountHandler account) {
