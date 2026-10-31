@@ -23,8 +23,11 @@ import org.slf4j.LoggerFactory;
 /**
  * Resolves the metric name used to store an item (or alias) in VictoriaMetrics.
  * <p>
- * The name is the item name or alias, or the {@code victoriametrics} metadata value if set, preceded by the configured
- * prefix. openHAB item names are always valid Prometheus metric names, but aliases and metadata values are free text,
+ * The name is the item name or alias, or the {@code victoriametrics} metadata value if set, surrounded by the
+ * configured
+ * prefix and suffix. A suffix like {@code _value} matches the names VictoriaMetrics creates for data written with the
+ * InfluxDB line protocol (e.g. by the InfluxDB persistence service) or imported with vmctl. openHAB item names are
+ * always valid Prometheus metric names, but aliases and metadata values are free text,
  * so characters outside {@code [a-zA-Z0-9_:]} are replaced with {@code _}. The resulting name does not have to be
  * unique, because every series also carries the exact item name in the {@code item} label and all queries filter on
  * that label.
@@ -56,7 +59,8 @@ public class VictoriaMetricsMetricNameResolver {
      * @return a valid Prometheus metric name
      */
     public String getMetricName(String itemName) {
-        String name = configuration.getMetricPrefix() + metadataService.getMeasurementNameOrDefault(itemName);
+        String name = configuration.getMetricPrefix() + metadataService.getMeasurementNameOrDefault(itemName)
+                + configuration.getMetricSuffix();
         if (isValidMetricName(name)) {
             return name;
         }
@@ -69,6 +73,10 @@ public class VictoriaMetricsMetricNameResolver {
 
     public static boolean isValidMetricName(String name) {
         return VALID_METRIC_NAME.matcher(name).matches();
+    }
+
+    public static boolean isValidMetricNameSuffix(String suffix) {
+        return !INVALID_METRIC_NAME_CHARS.matcher(suffix).find();
     }
 
     static String sanitize(String name) {

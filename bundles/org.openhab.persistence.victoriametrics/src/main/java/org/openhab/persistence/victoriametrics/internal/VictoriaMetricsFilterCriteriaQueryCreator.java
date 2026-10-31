@@ -15,8 +15,10 @@ package org.openhab.persistence.victoriametrics.internal;
 import static org.openhab.persistence.victoriametrics.internal.VictoriaMetricsConstants.*;
 
 import java.math.BigDecimal;
+import java.time.Duration;
 import java.time.Instant;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
@@ -40,6 +42,11 @@ import org.openhab.persistence.victoriametrics.internal.VictoriaMetricsRepositor
  */
 @NonNullByDefault
 public class VictoriaMetricsFilterCriteriaQueryCreator {
+    // VictoriaMetrics supports timestamps up to 2262
+    static final Instant OPEN_END = Instant.parse("2200-01-01T00:00:00Z");
+    private static final List<Duration> EXPORT_WINDOWS = List.of(Duration.ofHours(1), Duration.ofDays(1),
+            Duration.ofDays(7), Duration.ofDays(30), Duration.ofDays(365));
+
     private final VictoriaMetricsMetricNameResolver metricNameResolver;
 
     public VictoriaMetricsFilterCriteriaQueryCreator(VictoriaMetricsMetricNameResolver metricNameResolver) {
@@ -58,8 +65,59 @@ public class VictoriaMetricsFilterCriteriaQueryCreator {
         String localAlias = alias != null ? alias : itemName;
         ZonedDateTime begin = criteria.getBeginDate();
         ZonedDateTime end = criteria.getEndDate();
+        // the export API defaults the end to the current time, which would exclude future states
         return new VictoriaMetricsQuery(createSeriesSelector(localAlias), begin != null ? begin.toInstant() : null,
-                end != null ? end.toInstant() : null);
+                end != null ? end.toInstant() : OPEN_END);
+    }
+
+    /**
+     * Create the queries to export the samples for a {@link FilterCriteria}, to be executed in the returned order
+     * <p>
+     * Descending queries with a page size (e.g. the last state for restore on startup) only need the most recent
+     * samples, but exporting the complete history of an item can take many seconds. For these queries, consecutive
+     * non-overlapping time windows of increasing size are returned, starting at the end of the time range. The caller
+     * stops as soon as the requested page is complete, see {@link #isComplete(List, FilterCriteria)}. This replaces the
+     * {@code last()} optimization of the InfluxDB persistence service.
+     *
+     * @param criteria Criteria to create the queries from
+     * @param alias the alias the item is stored with, or <code>null</code> to use the item name
+     * @param now the current time
+     * @return the queries, covering the complete time range of the criteria
+     */
+    public List<VictoriaMetricsQuery> createQueries(FilterCriteria criteria, @Nullable String alias, Instant now) {
+        VictoriaMetricsQuery query = createQuery(criteria, alias);
+        if (criteria.getOrdering() != FilterCriteria.Ordering.DESCENDING
+                || criteria.getPageSize() == Integer.MAX_VALUE) {
+            return List.of(query);
+        }
+
+        Instant start = query.start();
+        // with an open end, the first window includes all future states
+        Instant anchor = query.end().isAfter(now) ? now : query.end();
+        List<VictoriaMetricsQuery> queries = new ArrayList<>();
+        Instant windowEnd = query.end();
+        for (Duration window : EXPORT_WINDOWS) {
+            Instant windowStart = anchor.minus(window);
+            if (start != null && !windowStart.isAfter(start)) {
+                break;
+            }
+            queries.add(new VictoriaMetricsQuery(query.selector(), windowStart, windowEnd));
+            windowEnd = windowStart.minusMillis(1);
+        }
+        queries.add(new VictoriaMetricsQuery(query.selector(), start, windowEnd));
+        return queries;
+    }
+
+    /**
+     * Check if the result of the queries executed so far is complete
+     *
+     * @param result the result of {@link #applyCriteria(Stream, FilterCriteria)} for the samples exported so far
+     * @param criteria the criteria the queries were created from
+     * @return <code>true</code> if the remaining queries cannot change the result
+     */
+    public boolean isComplete(List<VictoriaMetricsRow> result, FilterCriteria criteria) {
+        // queries are only split for descending queries, so a full page cannot contain samples of later windows
+        return criteria.getPageSize() != Integer.MAX_VALUE && result.size() >= criteria.getPageSize();
     }
 
     /**
@@ -139,8 +197,8 @@ public class VictoriaMetricsFilterCriteriaQueryCreator {
      *
      * @param selector the series selector ({@code match[]})
      * @param start the inclusive start of the time range, or <code>null</code> for no limit
-     * @param end the inclusive end of the time range, or <code>null</code> for no limit
+     * @param end the inclusive end of the time range
      */
-    public record VictoriaMetricsQuery(String selector, @Nullable Instant start, @Nullable Instant end) {
+    public record VictoriaMetricsQuery(String selector, @Nullable Instant start, Instant end) {
     }
 }

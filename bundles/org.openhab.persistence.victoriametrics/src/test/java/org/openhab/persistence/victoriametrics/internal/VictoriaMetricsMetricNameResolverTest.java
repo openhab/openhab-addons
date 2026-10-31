@@ -62,6 +62,22 @@ public class VictoriaMetricsMetricNameResolverTest {
     }
 
     @Test
+    public void suffixIsAppended() {
+        VictoriaMetricsMetricNameResolver suffixed = new VictoriaMetricsMetricNameResolver(
+                new VictoriaMetricsConfiguration(Map.of(VictoriaMetricsConfiguration.METRIC_PREFIX_PARAM, "openhab_",
+                        VictoriaMetricsConfiguration.METRIC_SUFFIX_PARAM, "_value")),
+                new VictoriaMetricsMetadataService(mock(MetadataRegistry.class)));
+        assertThat(suffixed.getMetricName("MyLamp"), is("openhab_MyLamp_value"));
+        assertThat(suffixed.getMetricName("outside.temp"), is("openhab_outside_temp_value"));
+    }
+
+    @ParameterizedTest
+    @CsvSource({ "'', true", "_value, true", "1, true", "ns:x, true", ".value, false", "-x, false" })
+    public void suffixValidation(String suffix, boolean valid) {
+        assertThat(VictoriaMetricsMetricNameResolver.isValidMetricNameSuffix(suffix), is(valid));
+    }
+
+    @Test
     public void emptyNameIsSanitized() {
         assertThat(VictoriaMetricsMetricNameResolver.sanitize(""), is("_"));
     }

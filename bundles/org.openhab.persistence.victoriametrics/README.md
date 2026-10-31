@@ -6,7 +6,7 @@ VictoriaMetrics is compatible with the Prometheus query API, so tools such as [G
 
 ## Database Structure
 
-- The states of an item are persisted as samples of a _metric_ (time series) with a name equal to the name of the item, its alias, or a name set by metadata, optionally preceded by a configurable prefix.
+- The states of an item are persisted as samples of a _metric_ (time series) with a name equal to the name of the item, its alias, or a name set by metadata, optionally surrounded by a configurable prefix and suffix.
   In all variants, a label (tag) named `item` is added, containing the item name (or alias).
 - VictoriaMetrics stores 64-bit floating point values only, so only states with a numeric representation are persisted:
   - `DecimalType` and `QuantityType` (e.g. Number, Dimmer and Rollershutter items) are stored as their value.
@@ -52,13 +52,14 @@ Please check these VictoriaMetrics settings, as their defaults do not fit typica
 This service can be configured in the UI under `Settings` → `Other Services` → `VictoriaMetrics Persistence Service` or in the file `services/victoriametrics.cfg`.
 Attention: The file-based configuration overrides the UI configuration.
 
-| Property     | Default                 | Required | Description                                                                                                                          |
-| ------------ | ----------------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------ |
-| url          | <http://127.0.0.1:8428> | No       | Database URL                                                                                                                         |
-| user         |                         | No       | Username for HTTP basic authentication, e.g. when VictoriaMetrics runs with `-httpAuth.username` or behind vmauth or a reverse proxy |
-| password     |                         | No(\*)   | Password for HTTP basic authentication                                                                                               |
-| token        |                         | No       | Bearer token to authenticate, e.g. for vmauth or a reverse proxy. Only used if no user is set                                        |
-| metricPrefix |                         | No       | Prefix added to all metric names, e.g. `openhab_`. Must be a valid metric name. Useful if VictoriaMetrics also stores other metrics  |
+| Property     | Default                 | Required | Description                                                                                                                                                                      |
+| ------------ | ----------------------- | -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| url          | <http://127.0.0.1:8428> | No       | Database URL                                                                                                                                                                     |
+| user         |                         | No       | Username for HTTP basic authentication, e.g. when VictoriaMetrics runs with `-httpAuth.username` or behind vmauth or a reverse proxy                                             |
+| password     |                         | No(\*)   | Password for HTTP basic authentication                                                                                                                                           |
+| token        |                         | No       | Bearer token to authenticate, e.g. for vmauth or a reverse proxy. Only used if no user is set                                                                                    |
+| metricPrefix |                         | No       | Prefix added to all metric names, e.g. `openhab_`. Must be a valid metric name. Useful if VictoriaMetrics also stores other metrics                                              |
+| metricSuffix |                         | No       | Suffix added to all metric names. Set it to `_value` to continue using data written by the InfluxDB persistence service, see [Migrating from InfluxDB](#migrating-from-influxdb) |
 
 (\*) A single-node VictoriaMetrics server does not require authentication by default.
 If a user is set, a password must be set as well.
@@ -147,34 +148,34 @@ If you use a self-signed certificate for your VictoriaMetrics instance (which is
 1. Go to the `lib/security` directory of your JVM, e.g. `cd /opt/java/zulu17.38.21-ca-jdk17.0.5-linux_aarch32hf/lib/security`.
 1. Add the certificate to the JVM's keystore: `sudo keytool -importcert -file <path-to-certfile> -cacerts -keypass changeit -storepass changeit -alias <alias-for-cert>`.
 
-## Migrating Data from InfluxDB
+## Migrating from InfluxDB
 
-Data persisted by the InfluxDB persistence service (InfluxDB 1.x) can be imported with [vmctl](https://docs.victoriametrics.com/victoriametrics/vmctl/influxdb/).
-vmctl names the imported series `<measurement>_<field>`, i.e. `MyItem_value{item="MyItem",db="openhab"}`, while this service expects `MyItem{item="MyItem"}`.
-Remove the `_value` suffix during the import with a relabeling rule, e.g. in a file `migrate-relabel.yml`:
+VictoriaMetrics converts data in the InfluxDB line protocol to series named `<measurement>_<field>`, i.e. the InfluxDB persistence service's data ends up as `MyItem_value{item="MyItem"}`.
+Set `metricSuffix=_value` to read this data and to continue writing to the same series.
+Use the same settings for `addCategoryTag`, `addLabelTag` and `addTypeTag` as before, otherwise new series are created next to the existing ones (openHAB still finds both).
 
-```yaml
-- source_labels: [__name__]
-  regex: "(.+)_value"
-  target_label: __name__
-  replacement: "$1"
+### InfluxDB Persistence Service Writing to VictoriaMetrics
+
+If the InfluxDB persistence service (version `V1`) already writes to the InfluxDB-compatible endpoint of VictoriaMetrics, replace it with this service, configured with `metricSuffix=_value`.
+The existing history remains available.
+
+### Importing Data from InfluxDB 1.x
+
+Data persisted in InfluxDB 1.x can be imported with [vmctl](https://docs.victoriametrics.com/victoriametrics/vmctl/influxdb/), optionally limited with `--influx-filter-time-start` and `--influx-filter-time-end`:
+
+```shell
+vmctl influx --influx-addr=http://127.0.0.1:8086 --influx-user=openhab --influx-password=<password> \
+  --influx-database=openhab --influx-skip-database-label --vm-addr=http://127.0.0.1:8428
 ```
 
-1. Stop openHAB or the VictoriaMetrics persistence service, so no new data is written during the migration.
-1. Start VictoriaMetrics with `-relabelConfig=migrate-relabel.yml` (and your other options, e.g. `-retentionPeriod`).
-1. Run the import, optionally limited with `--influx-filter-time-start` and `--influx-filter-time-end`:
-
-   ```shell
-   vmctl influx --influx-addr=http://127.0.0.1:8086 --influx-user=openhab --influx-password=<password> \
-     --influx-database=openhab --influx-skip-database-label --vm-addr=http://127.0.0.1:8428
-   ```
-
-1. Restart VictoriaMetrics **without** `-relabelConfig`, otherwise the rule also renames items whose names end with `_value`.
+Then configure this service with `metricSuffix=_value`.
 
 Notes:
 
-- If you used `replaceUnderscore=true` with InfluxDB, the measurement names contain dots and do not match the item names; use metadata to set the metric names or adapt the relabeling rule.
-- String values (e.g. of String items) cannot be stored in VictoriaMetrics.
+- If you used `replaceUnderscore=true` with InfluxDB, the measurement names contain dots instead of underscores.
+  This service does not find these series, because it only uses letters, digits, `_` and `:` in metric names.
+  Rename them during the import, e.g. with a [relabeling rule](https://docs.victoriametrics.com/victoriametrics/relabeling/) (`-relabelConfig`).
+- String values (e.g. of String items) are not used by this service.
 - vmctl does not support importing from InfluxDB 2.x and 3.x directly.
 
 ## Grafana
@@ -199,5 +200,7 @@ If items are persisted only on change, use `last_over_time(MyItem[1d])` to draw 
   VictoriaMetrics can only delete complete series, so removing a time range or values filtered by state is rejected.
   This also applies when openHAB replaces stored future states (forecasts): the old future states are not removed.
 - Queries load the matching raw samples of the requested time range from VictoriaMetrics and apply the state filter, ordering and paging in openHAB.
-  Very large time ranges of frequently changing items therefore require more memory than with other persistence services.
-- The item information shown in the UI counts the samples of the last year and does not include the earliest and latest timestamp.
+  Queries for the most recent states (e.g. restoring the state on startup) read increasing time windows backwards from the end of the time range until the requested states are found.
+  Other queries over very large time ranges of frequently changing items require more memory than with other persistence services.
+- The item list shown in the UI contains the items with samples during the last year, but no number of samples and no earliest and latest timestamp.
+  Counting the samples of all items is too expensive for larger installations.

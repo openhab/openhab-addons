@@ -13,7 +13,6 @@
 package org.openhab.persistence.victoriametrics.internal;
 
 import java.util.Date;
-import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -24,15 +23,14 @@ import org.openhab.core.persistence.PersistenceItemInfo;
  *
  * @author Joan Pujol Espinar - Initial contribution
  * @author Franz - Initial VictoriaMetrics adaptation
+ * @author Michael Weger - Return names only
  */
 @NonNullByDefault
 public class VictoriaMetricsPersistentItemInfo implements PersistenceItemInfo {
     private final String name;
-    private final Integer count;
 
-    public VictoriaMetricsPersistentItemInfo(Map.Entry<String, Integer> itemInfo) {
-        this.name = itemInfo.getKey();
-        this.count = itemInfo.getValue();
+    public VictoriaMetricsPersistentItemInfo(String name) {
+        this.name = name;
     }
 
     @Override
@@ -43,7 +41,7 @@ public class VictoriaMetricsPersistentItemInfo implements PersistenceItemInfo {
     @Override
     @Nullable
     public Integer getCount() {
-        return count;
+        return null;
     }
 
     @Override

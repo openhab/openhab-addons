@@ -28,6 +28,7 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -208,38 +209,48 @@ public class VictoriaMetricsRepositoryTest {
     }
 
     @Test
-    public void getStoredItemsCount() {
+    public void getStoredItemNames() {
         when(response.getStatus()).thenReturn(200);
-        when(response.getContentAsString()).thenReturn("""
-                {"status":"success","data":{"resultType":"vector","result":[
-                {"metric":{"item":"ItemA"},"value":[1767225600,"42"]},
-                {"metric":{"item":"ItemB"},"value":[1767225600,"7"]}]}}
-                """);
+        when(response.getContentAsString()).thenReturn("{\"status\":\"success\",\"data\":[\"ItemA\",\"ItemB\"]}");
 
-        Map<String, Integer> result = createRepository().getStoredItemsCount();
+        Set<String> result = createRepository().getStoredItemNames();
 
-        assertThat(result, is(Map.of("ItemA", 42, "ItemB", 7)));
-        verify(httpClient).newRequest("http://localhost:8428/api/v1/query");
-        verify(request).param("query", "sum by (item) (count_over_time({item!=\"\"}[365d]))");
+        assertThat(result, containsInAnyOrder("ItemA", "ItemB"));
+        verify(httpClient).newRequest("http://localhost:8428/api/v1/label/item/values");
+        verify(request).param("match[]", "{item!=\"\"}");
+        verify(request).param(eq("start"), any(String.class));
     }
 
     @Test
-    public void getStoredItemsCountWithPrefix() {
+    public void getStoredItemNamesWithPrefixAndSuffix() {
         when(response.getStatus()).thenReturn(200);
-        when(response.getContentAsString()).thenReturn("{\"status\":\"success\",\"data\":{\"result\":[]}}");
+        when(response.getContentAsString()).thenReturn("{\"status\":\"success\",\"data\":[]}");
+
+        createRepository(
+                Map.of(VictoriaMetricsConfiguration.URL_PARAM, URL, VictoriaMetricsConfiguration.METRIC_PREFIX_PARAM,
+                        "openhab_", VictoriaMetricsConfiguration.METRIC_SUFFIX_PARAM, "_value"))
+                .getStoredItemNames();
+
+        verify(request).param("match[]", "{__name__=~\"openhab_.*_value\",item!=\"\"}");
+    }
+
+    @Test
+    public void getStoredItemNamesWithSuffix() {
+        when(response.getStatus()).thenReturn(200);
+        when(response.getContentAsString()).thenReturn("{\"status\":\"success\",\"data\":[]}");
 
         createRepository(Map.of(VictoriaMetricsConfiguration.URL_PARAM, URL,
-                VictoriaMetricsConfiguration.METRIC_PREFIX_PARAM, "openhab_")).getStoredItemsCount();
+                VictoriaMetricsConfiguration.METRIC_SUFFIX_PARAM, "_value")).getStoredItemNames();
 
-        verify(request).param("query", "sum by (item) (count_over_time({__name__=~\"openhab_.*\",item!=\"\"}[365d]))");
+        verify(request).param("match[]", "{__name__=~\".*_value\",item!=\"\"}");
     }
 
     @Test
-    public void getStoredItemsCountWithUnexpectedResponse() {
+    public void getStoredItemNamesWithUnexpectedResponse() {
         when(response.getStatus()).thenReturn(200);
         when(response.getContentAsString()).thenReturn("[]");
 
-        assertThat(createRepository().getStoredItemsCount(), is(Map.of()));
+        assertThat(createRepository().getStoredItemNames(), empty());
     }
 
     @Test

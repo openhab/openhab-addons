@@ -170,7 +170,7 @@ public class VictoriaMetricsPersistenceService implements ModifiablePersistenceS
     @Override
     public Set<PersistenceItemInfo> getItemInfo() {
         if (checkConnection()) {
-            return repository.getStoredItemsCount().entrySet().stream().map(VictoriaMetricsPersistentItemInfo::new)
+            return repository.getStoredItemNames().stream().map(VictoriaMetricsPersistentItemInfo::new)
                     .collect(Collectors.toUnmodifiableSet());
         } else {
             logger.info("getItemInfo ignored, VictoriaMetrics is not connected");
