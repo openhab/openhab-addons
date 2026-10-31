@@ -22,6 +22,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.mqtt.generic.values.RollershutterValue;
 import org.openhab.binding.mqtt.generic.values.TextValue;
 import org.openhab.binding.mqtt.generic.values.Value;
 import org.openhab.core.io.transport.mqtt.MqttBrokerConnection;
@@ -374,8 +375,11 @@ public class ChannelState implements MqttMessageSubscriber {
 
         Command mqttCommandValue = cachedValue.parseCommand(command);
         // UP/DOWN stay UpDownType only if an up/down command string is configured, otherwise they were
-        // converted to a percentage (0/100) and belong on the regular command topic.
-        final boolean upDownCommand = mqttCommandValue instanceof UpDownType;
+        // converted to a percentage (0/100) and belong on the regular command topic. Endpoint percentages
+        // (0/100) are published as up/down strings if transformExtentsToString is set, so they count as well.
+        final boolean upDownCommand = cachedValue instanceof RollershutterValue rollershutterValue
+                ? rollershutterValue.isUpDownPublish(mqttCommandValue)
+                : mqttCommandValue instanceof UpDownType;
         Value mqttFormatter = cachedValue;
 
         // Outgoing transformations
