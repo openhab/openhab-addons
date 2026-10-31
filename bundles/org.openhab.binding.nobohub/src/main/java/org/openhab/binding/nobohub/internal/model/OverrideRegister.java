@@ -15,8 +15,6 @@ package org.openhab.binding.nobohub.internal.model;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.validation.constraints.NotNull;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
@@ -29,7 +27,7 @@ import org.eclipse.jdt.annotation.Nullable;
 @NonNullByDefault
 public final class OverrideRegister {
 
-    private final @NotNull Map<Integer, OverridePlan> register = new HashMap<>();
+    private final Map<Integer, OverridePlan> register = new HashMap<>();
 
     /**
      * Stores a new Override in the register. If an override exists with the same id, that value is overwritten.

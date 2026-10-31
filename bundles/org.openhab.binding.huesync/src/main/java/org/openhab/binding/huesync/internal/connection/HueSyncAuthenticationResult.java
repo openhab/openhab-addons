@@ -16,8 +16,8 @@ import java.net.URI;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.api.Authentication.Result;
-import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.Authentication.Result;
+import org.eclipse.jetty.client.Request;
 import org.eclipse.jetty.http.HttpHeader;
 
 /**
@@ -46,7 +46,7 @@ public class HueSyncAuthenticationResult implements Result {
     @Override
     public void apply(@Nullable Request request) {
         if (request != null && !request.getHeaders().contains(HttpHeader.AUTHORIZATION)) {
-            request.header(HttpHeader.AUTHORIZATION, "Bearer " + this.token);
+            request.headers(headers -> headers.put(HttpHeader.AUTHORIZATION, "Bearer " + this.token));
         }
     }
 }

@@ -14,18 +14,18 @@ package org.openhab.binding.argoclima.internal.device.passthrough.requests;
 
 import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
+import java.util.HexFormat;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.TreeMap;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.xml.bind.DatatypeConverter;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.argoclima.internal.configuration.ArgoClimaConfigurationLocal.DeviceSidePasswordDisplayMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * Device's update - sent from AC to manufacturer's remote server (via GET ...?CM=GET_UI_FLG command)
@@ -112,7 +112,7 @@ public class DeviceSideUpdateDTO {
         public UiFlgSetupParam(String rawString, DeviceSidePasswordDisplayMode includeDeviceSidePasswordsInProperties) {
             this.rawString = rawString;
             try {
-                this.bytes = Optional.ofNullable(DatatypeConverter.parseHexBinary(rawString));
+                this.bytes = Optional.of(HexFormat.of().parseHex(rawString));
                 var bb = ByteBuffer.wrap(this.bytes.orElseThrow());
 
                 // helper structures to parse with

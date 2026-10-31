@@ -24,8 +24,8 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.hpprinter.internal.api.HPServerResult.RequestStatus;
 import org.slf4j.Logger;

@@ -24,11 +24,11 @@ import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.api.Response;
-import org.eclipse.jetty.client.api.Response.CompleteListener;
-import org.eclipse.jetty.client.api.Response.HeadersListener;
-import org.eclipse.jetty.client.api.Result;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.Response;
+import org.eclipse.jetty.client.Response.CompleteListener;
+import org.eclipse.jetty.client.Response.HeadersListener;
+import org.eclipse.jetty.client.Result;
 import org.eclipse.jetty.http.HttpFields;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
@@ -343,7 +343,7 @@ public class SseConnectionTest {
 
         Response response = mock(Response.class);
         when(response.getStatus()).thenReturn(429);
-        when(response.getHeaders()).thenReturn(new HttpFields());
+        when(response.getHeaders()).thenReturn(HttpFields.EMPTY);
 
         Result result = mock(Result.class);
         when(result.getResponse()).thenReturn(response);
@@ -366,7 +366,7 @@ public class SseConnectionTest {
 
         Response response = mock(Response.class);
         when(response.getStatus()).thenReturn(429);
-        HttpFields httpFields = new HttpFields();
+        HttpFields.Mutable httpFields = HttpFields.build();
         httpFields.add("Retry-After", "3600");
         when(response.getHeaders()).thenReturn(httpFields);
 
@@ -389,7 +389,7 @@ public class SseConnectionTest {
 
         Response response = mock(Response.class);
         when(response.getStatus()).thenReturn(429);
-        HttpFields httpFields = new HttpFields();
+        HttpFields.Mutable httpFields = HttpFields.build();
         httpFields.add("Retry-After", "1");
         when(response.getHeaders()).thenReturn(httpFields);
 
@@ -412,7 +412,7 @@ public class SseConnectionTest {
 
         Response response = mock(Response.class);
         when(response.getStatus()).thenReturn(429);
-        HttpFields httpFields = new HttpFields();
+        HttpFields.Mutable httpFields = HttpFields.build();
         httpFields.add("Retry-After", "3601");
         when(response.getHeaders()).thenReturn(httpFields);
 

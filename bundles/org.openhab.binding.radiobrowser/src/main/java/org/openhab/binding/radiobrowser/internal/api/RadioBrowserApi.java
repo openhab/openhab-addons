@@ -30,9 +30,9 @@ import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.Request;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.radiobrowser.internal.RadioBrowserHandler;
 import org.openhab.binding.radiobrowser.internal.api.RadioBrowserJson.Country;
@@ -77,9 +77,9 @@ public class RadioBrowserApi {
         Request request;
         String errorReason = "";
         request = httpClient.newRequest("https://" + server + url).scheme("https");
-        request.header("Host", server);
-        request.header("User-Agent", "openHAB4/RadioBrowserBinding");// api requirement
-        request.header("Connection", "Keep-Alive");
+        request.headers(h -> h.add("Host", server));
+        request.headers(h -> h.add("User-Agent", "openHAB4/RadioBrowserBinding")); // api requirement
+        request.headers(h -> h.add("Connection", "Keep-Alive"));
         request.timeout(HTTP_TIMEOUT_SECONDS, TimeUnit.SECONDS);
         request.method(HttpMethod.GET);
         logger.debug("Sending GET:{}", url);

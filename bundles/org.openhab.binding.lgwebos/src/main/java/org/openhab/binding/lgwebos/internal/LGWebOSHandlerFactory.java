@@ -80,7 +80,7 @@ public class LGWebOSHandlerFactory extends BaseThingHandlerFactory {
         this.webSocketClient.setConnectTimeout(1000);
 
         // channel and app listing are json docs up to 5MB
-        this.webSocketClient.getPolicy().setMaxTextMessageSize(5 * 1024 * 1024);
+        this.webSocketClient.setMaxTextMessageSize(5 * 1024 * 1024);
 
         // since this is not using openHAB's shared web socket client we need to start and stop
         try {

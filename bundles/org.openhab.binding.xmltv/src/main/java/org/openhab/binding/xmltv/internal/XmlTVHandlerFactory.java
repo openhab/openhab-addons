@@ -14,9 +14,6 @@ package org.openhab.binding.xmltv.internal;
 
 import static org.openhab.binding.xmltv.internal.XmlTVBindingConstants.*;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
 import javax.xml.stream.XMLInputFactory;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -34,6 +31,10 @@ import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBException;
+import jakarta.xml.bind.Unmarshaller;
 
 /**
  * The {@link XmlTVHandlerFactory} is responsible for creating things and thing

@@ -17,12 +17,12 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.util.List;
 
-import javax.xml.bind.JAXBException;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.emotiva.internal.AbstractDTOTestBase;
 import org.openhab.binding.emotiva.internal.protocol.EmotivaControlCommands;
+
+import jakarta.xml.bind.JAXBException;
 
 /**
  * Unit tests for EmotivaCommandDTO command types.

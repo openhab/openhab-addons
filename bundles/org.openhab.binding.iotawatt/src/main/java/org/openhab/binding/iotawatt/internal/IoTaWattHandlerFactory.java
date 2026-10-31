@@ -56,7 +56,8 @@ public class IoTaWattHandlerFactory extends BaseThingHandlerFactory
      * Creates a IoTaWattHandlerFactory
      */
     public IoTaWattHandlerFactory() {
-        this.insecureClient = new HttpClient(new SslContextFactory.Client(true));
+        this.insecureClient = new HttpClient();
+        this.insecureClient.setSslContextFactory(new SslContextFactory.Client(true));
     }
 
     @Override

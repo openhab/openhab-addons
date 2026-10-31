@@ -18,7 +18,6 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.function.Supplier;
 
-import org.apache.directory.api.util.Strings;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.solax.internal.model.InverterType;
@@ -94,13 +93,13 @@ public class CloudRawDataBean implements CloudInverterData {
     @Override
     public String getInverterSerialNumber() {
         String inverterSN = result.getInverterSN();
-        return inverterSN != null ? inverterSN : Strings.EMPTY_STRING;
+        return inverterSN != null ? inverterSN : "";
     }
 
     @Override
     public String getWifiSerialNumber() {
         String serialNumber = result.getSn();
-        return serialNumber != null ? serialNumber : Strings.EMPTY_STRING;
+        return serialNumber != null ? serialNumber : "";
     }
 
     @Override

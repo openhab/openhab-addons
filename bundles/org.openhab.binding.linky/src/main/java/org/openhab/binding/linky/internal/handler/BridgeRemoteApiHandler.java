@@ -16,9 +16,6 @@ import java.io.IOException;
 import java.util.Hashtable;
 import java.util.Objects;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.linky.internal.config.LinkyBridgeApiConfiguration;
@@ -34,14 +31,17 @@ import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
+import org.ops4j.pax.web.service.http.HttpService;
+import org.ops4j.pax.web.service.http.NamespaceException;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.http.HttpService;
-import org.osgi.service.http.NamespaceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServlet;
 
 /**
  * {@link BridgeRemoteApiHandler} is the base handler to access enedis data.

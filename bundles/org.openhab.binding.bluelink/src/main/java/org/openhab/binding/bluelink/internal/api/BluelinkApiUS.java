@@ -27,10 +27,10 @@ import javax.measure.quantity.Temperature;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.bluelink.internal.dto.TokenResponse;
@@ -82,7 +82,7 @@ public class BluelinkApiUS extends AbstractBluelinkApi<Vehicle> {
         final String loginUrl = baseUrl + "/v2/ac/oauth/token";
         final Request request = httpClient.newRequest(loginUrl).method(HttpMethod.POST)
                 .timeout(HTTP_TIMEOUT_SECONDS, TimeUnit.SECONDS)
-                .content(new StringContentProvider(gson.toJson(loginRequest)), APPLICATION_JSON);
+                .body(new StringRequestContent(gson.toJson(loginRequest)));
         addStandardHeaders(request);
         return doLogin(request, TokenResponse.class, t -> t);
     }
@@ -110,8 +110,8 @@ public class BluelinkApiUS extends AbstractBluelinkApi<Vehicle> {
             throws BluelinkApiException {
         ensureAuthenticated();
         final String url = baseUrl + "/ac/v2/rcs/rvs/vehicleStatus";
-        final Request request = httpClient.newRequest(url).timeout(HTTP_TIMEOUT_SECONDS, TimeUnit.SECONDS)
-                .header("refresh", String.valueOf(forceRefresh));
+        final Request request = httpClient.newRequest(url).timeout(HTTP_TIMEOUT_SECONDS, TimeUnit.SECONDS);
+        withHeader(request, "refresh", String.valueOf(forceRefresh));
         addStandardHeaders(request);
         addAuthHeaders(request);
         addVehicleHeaders(request, vehicle);
@@ -164,8 +164,8 @@ public class BluelinkApiUS extends AbstractBluelinkApi<Vehicle> {
         addStandardHeaders(request);
         addAuthHeaders(request);
         addVehicleHeaders(request, vehicle);
-        request.header("APPCLOUD-VIN", vehicle.vin());
-        request.content(new StringContentProvider(gson.toJson(doorRequest)), APPLICATION_JSON);
+        withHeader(request, "APPCLOUD-VIN", vehicle.vin());
+        request.body(new StringRequestContent(gson.toJson(doorRequest)));
         sendRequest(request, "door command");
         return true;
     }
@@ -200,7 +200,7 @@ public class BluelinkApiUS extends AbstractBluelinkApi<Vehicle> {
         addStandardHeaders(request);
         addAuthHeaders(request);
         addVehicleHeaders(request, vehicle);
-        request.content(new StringContentProvider(gson.toJson(climateRequest)), APPLICATION_JSON);
+        request.body(new StringRequestContent(gson.toJson(climateRequest)));
         sendRequest(request, "climate command");
         return true;
     }
@@ -236,7 +236,7 @@ public class BluelinkApiUS extends AbstractBluelinkApi<Vehicle> {
                 List.of(new ChargeLimitsRequest.TargetSOC(plugType, limit)));
         final Request request = httpClient.newRequest(url).method(HttpMethod.POST)
                 .timeout(HTTP_TIMEOUT_SECONDS, TimeUnit.SECONDS)
-                .content(new StringContentProvider(gson.toJson(chargeLimitsRequest)), APPLICATION_JSON);
+                .body(new StringRequestContent(gson.toJson(chargeLimitsRequest)));
         addStandardHeaders(request);
         addAuthHeaders(request);
         addVehicleHeaders(request, vehicle);
@@ -247,8 +247,7 @@ public class BluelinkApiUS extends AbstractBluelinkApi<Vehicle> {
     private boolean sendSimplePostCommand(final IVehicle vehicle, final String endpoint) throws BluelinkApiException {
         final String url = baseUrl + endpoint;
         final Request request = httpClient.newRequest(url).method(HttpMethod.POST)
-                .timeout(HTTP_TIMEOUT_SECONDS, TimeUnit.SECONDS)
-                .content(new StringContentProvider("{}"), APPLICATION_JSON);
+                .timeout(HTTP_TIMEOUT_SECONDS, TimeUnit.SECONDS).body(new StringRequestContent("{}"));
         addStandardHeaders(request);
         addAuthHeaders(request);
         addVehicleHeaders(request, vehicle);
@@ -258,22 +257,30 @@ public class BluelinkApiUS extends AbstractBluelinkApi<Vehicle> {
 
     @Override
     public void addStandardHeaders(final Request request) {
-        request.header(HttpHeader.CONTENT_TYPE, APPLICATION_JSON)
-                .header(HttpHeader.ACCEPT, "application/json, text/plain, */*")
-                .header(HttpHeader.ACCEPT_ENCODING, "gzip, deflate, br")
-                .header(HttpHeader.USER_AGENT,
-                        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
-                .header("from", "SPA").header("to", "ISS").header("language", "0").header("client_id", CLIENT_ID)
-                .header("clientSecret", CLIENT_SECRET).header("brandIndicator", "H")
-                .header("offset", String.valueOf(getTimeZoneOffset()));
+        withHeader(request, HttpHeader.CONTENT_TYPE, APPLICATION_JSON);
+        withHeader(request, HttpHeader.ACCEPT, "application/json, text/plain, */*");
+        withHeader(request, HttpHeader.ACCEPT_ENCODING, "gzip, deflate, br");
+        withHeader(request, HttpHeader.USER_AGENT,
+                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36");
+        withHeader(request, "from", "SPA");
+        withHeader(request, "to", "ISS");
+        withHeader(request, "language", "0");
+        withHeader(request, "client_id", CLIENT_ID);
+        withHeader(request, "clientSecret", CLIENT_SECRET);
+        withHeader(request, "brandIndicator", "H");
+        withHeader(request, "offset", String.valueOf(getTimeZoneOffset()));
     }
 
     private void addAuthHeaders(final Request request) {
         final String token = accessToken;
         if (token != null) {
-            request.header("accessToken", token);
+            withHeader(request, "accessToken", token);
         }
-        request.header("username", username).header("blueLinkServicePin", pin);
+        withHeader(request, "username", username);
+        final String localPin = pin;
+        if (localPin != null) {
+            withHeader(request, "blueLinkServicePin", localPin);
+        }
     }
 
     private void addVehicleHeaders(final Request request, final IVehicle vehicle) {
@@ -281,12 +288,17 @@ public class BluelinkApiUS extends AbstractBluelinkApi<Vehicle> {
         final String vin = vehicle.vin();
 
         if (regId != null) {
-            request.header("registrationId", regId);
+            withHeader(request, "registrationId", regId);
         }
         if (vehicle instanceof Vehicle v && v.generation() != null) {
-            request.header("gen", v.generation());
+            final String generation = v.generation();
+            if (generation != null) {
+                withHeader(request, "gen", generation);
+            }
         }
-        request.header("vin", vin);
+        if (vin != null) {
+            withHeader(request, "vin", vin);
+        }
     }
 
     private static Vehicle toVehicle(final EnrolledVehicle.VehicleInfo info) {

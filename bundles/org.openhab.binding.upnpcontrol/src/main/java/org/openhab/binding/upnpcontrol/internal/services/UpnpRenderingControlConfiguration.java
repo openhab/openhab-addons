@@ -14,7 +14,7 @@ package org.openhab.binding.upnpcontrol.internal.services;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -62,7 +62,8 @@ public class UpnpRenderingControlConfiguration {
             mute = (rcService.getStateVariable("Mute") != null);
             loudness = (rcService.getStateVariable("Loudness") != null);
             if (rcService.getStateVariable("A_ARG_TYPE_Channel") != null) {
-                audioChannels = new HashSet<>(Arrays
+                // keep the order announced by the device
+                audioChannels = new LinkedHashSet<>(Arrays
                         .asList(rcService.getStateVariable("A_ARG_TYPE_Channel").getTypeDetails().getAllowedValues()));
             }
         }

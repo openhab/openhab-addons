@@ -31,10 +31,10 @@ import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpMethod;
 import org.osgi.framework.FrameworkUtil;
 import org.slf4j.Logger;
@@ -94,10 +94,11 @@ public class EyeOnWaterClient {
         formData.put("password", password);
         String formDataString = ofFormData(formData);
 
-        Request request = httpClient.newRequest(loginUrl).method(POST).timeout(15, TimeUnit.SECONDS)
-                .header(CONTENT_TYPE, "application/x-www-form-urlencoded").header(USER_AGENT, getUserAgent())
-                .followRedirects(false).content(new StringContentProvider("application/x-www-form-urlencoded",
-                        formDataString, StandardCharsets.UTF_8));
+        Request request = httpClient.newRequest(loginUrl).method(POST).timeout(15, TimeUnit.SECONDS).headers(h -> {
+            h.put(CONTENT_TYPE, "application/x-www-form-urlencoded");
+            h.put(USER_AGENT, getUserAgent());
+        }).followRedirects(false).body(
+                new StringRequestContent("application/x-www-form-urlencoded", formDataString, StandardCharsets.UTF_8));
 
         ContentResponse response;
         try {
@@ -141,12 +142,12 @@ public class EyeOnWaterClient {
 
     private ContentResponse sendRequest(String url, HttpMethod method, @Nullable String contentType,
             @Nullable String contentPayload) throws IOException, InterruptedException {
-        Request request = httpClient.newRequest(url).method(method).timeout(15, TimeUnit.SECONDS).header(USER_AGENT,
-                getUserAgent());
+        Request request = httpClient.newRequest(url).method(method).timeout(15, TimeUnit.SECONDS)
+                .headers(h -> h.put(USER_AGENT, getUserAgent()));
 
         if (contentPayload != null) {
             String type = contentType != null ? contentType : "application/json";
-            request.content(new StringContentProvider(type, contentPayload, StandardCharsets.UTF_8));
+            request.body(new StringRequestContent(type, contentPayload, StandardCharsets.UTF_8));
         }
 
         try {

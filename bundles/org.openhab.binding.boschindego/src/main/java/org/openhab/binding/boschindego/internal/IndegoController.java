@@ -20,12 +20,12 @@ import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.HttpResponseException;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.api.Response;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.Response;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
@@ -117,8 +117,9 @@ public class IndegoController {
             throws IndegoAuthenticationException, IndegoTimeoutException, IndegoException {
         int status = 0;
         try {
-            Request request = httpClient.newRequest(BASE_URL + path).method(HttpMethod.GET)
-                    .header(HttpHeader.AUTHORIZATION, authorizationProvider.getAuthorizationHeader()).agent(userAgent);
+            final String authHeader = authorizationProvider.getAuthorizationHeader();
+            Request request = httpClient.newRequest(BASE_URL + path).method(HttpMethod.GET).agent(userAgent);
+            request.headers(headers -> headers.put(HttpHeader.AUTHORIZATION, authHeader));
             if (logger.isTraceEnabled()) {
                 logger.trace("GET request for {}", BASE_URL + path);
             }
@@ -182,8 +183,9 @@ public class IndegoController {
     protected RawType getRawRequest(String path) throws IndegoAuthenticationException, IndegoException {
         int status = 0;
         try {
-            Request request = httpClient.newRequest(BASE_URL + path).method(HttpMethod.GET)
-                    .header(HttpHeader.AUTHORIZATION, authorizationProvider.getAuthorizationHeader()).agent(userAgent);
+            final String authHeader = authorizationProvider.getAuthorizationHeader();
+            Request request = httpClient.newRequest(BASE_URL + path).method(HttpMethod.GET).agent(userAgent);
+            request.headers(headers -> headers.put(HttpHeader.AUTHORIZATION, authHeader));
             if (logger.isTraceEnabled()) {
                 logger.trace("GET request for {}", BASE_URL + path);
             }
@@ -268,12 +270,13 @@ public class IndegoController {
     protected void putPostRequest(HttpMethod method, String path, @Nullable Object requestDto)
             throws IndegoAuthenticationException, IndegoException {
         try {
-            Request request = httpClient.newRequest(BASE_URL + path).method(method)
-                    .header(HttpHeader.AUTHORIZATION, authorizationProvider.getAuthorizationHeader())
-                    .header(HttpHeader.CONTENT_TYPE, CONTENT_TYPE_HEADER).agent(userAgent);
+            final String authHeader = authorizationProvider.getAuthorizationHeader();
+            Request request = httpClient.newRequest(BASE_URL + path).method(method).agent(userAgent);
+            request.headers(headers -> headers.put(HttpHeader.AUTHORIZATION, authHeader));
+            request.headers(headers -> headers.put(HttpHeader.CONTENT_TYPE, CONTENT_TYPE_HEADER));
             if (requestDto != null) {
                 String payload = gson.toJson(requestDto);
-                request.content(new StringContentProvider(payload));
+                request.body(new StringRequestContent(payload));
                 if (logger.isTraceEnabled()) {
                     logger.trace("{} request for {} with payload '{}'", method, BASE_URL + path, payload);
                 }

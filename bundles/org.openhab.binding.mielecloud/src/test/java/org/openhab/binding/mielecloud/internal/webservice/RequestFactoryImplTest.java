@@ -17,18 +17,18 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.http.HttpFields;
 import org.eclipse.jetty.http.HttpMethod;
+import org.eclipse.jetty.io.Content;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.openhab.binding.mielecloud.internal.util.MockUtil;
 import org.openhab.binding.mielecloud.internal.webservice.language.LanguageProvider;
 import org.openhab.binding.mielecloud.internal.webservice.request.RequestFactoryImpl;
@@ -49,11 +49,6 @@ public class RequestFactoryImplTest {
     private static final long EXTENDED_REQUEST_TIMEOUT = 10;
     private static final TimeUnit REQUEST_TIMEOUT_UNIT = TimeUnit.SECONDS;
 
-    @Nullable
-    private String contentString;
-    @Nullable
-    private String contentType;
-
     private final LanguageProvider defaultLanguageProvider = new LanguageProvider() {
         @Override
         public Optional<String> getLanguage() {
@@ -69,28 +64,37 @@ public class RequestFactoryImplTest {
 
     private Request getRequestMock() {
         Request requestMock = mock(Request.class);
-        when(requestMock.header(anyString(), anyString())).thenReturn(requestMock);
+        when(requestMock.headers(any())).thenReturn(requestMock);
         when(requestMock.timeout(anyLong(), any())).thenReturn(requestMock);
         when(requestMock.method(any(HttpMethod.class))).thenReturn(requestMock);
         when(requestMock.param(anyString(), anyString())).thenReturn(requestMock);
-        when(requestMock.content(any())).thenAnswer(i -> {
-            StringContentProvider provider = i.getArgument(0);
-            List<Byte> rawData = new ArrayList<>();
-            provider.forEach(b -> {
-                b.rewind();
-                while (b.hasRemaining()) {
-                    rawData.add(b.get());
-                }
-            });
-            byte[] data = new byte[rawData.size()];
-            for (int j = 0; j < data.length; j++) {
-                data[j] = rawData.get(j);
-            }
-            contentString = new String(data, StandardCharsets.UTF_8);
-            contentType = provider.getContentType();
-            return requestMock;
-        });
+        when(requestMock.body(any())).thenReturn(requestMock);
         return requestMock;
+    }
+
+    /**
+     * Collects the headers set on the request. Jetty 12 no longer takes the header name and value as arguments, but a
+     * consumer modifying the header fields, so the captured consumers have to be applied to be able to assert on the
+     * resulting headers.
+     *
+     * @param request the mocked request
+     * @param expectedCount the number of expected calls setting headers
+     * @return the header fields as they would be sent
+     */
+    @SuppressWarnings("unchecked")
+    private HttpFields capturedHeaders(Request request, int expectedCount) {
+        ArgumentCaptor<Consumer<HttpFields.Mutable>> captor = ArgumentCaptor.forClass(Consumer.class);
+        verify(request, times(expectedCount)).headers(captor.capture());
+
+        HttpFields.Mutable fields = HttpFields.build();
+        captor.getAllValues().forEach(consumer -> consumer.accept(fields));
+        return fields;
+    }
+
+    private void assertDefaultHeaders(HttpFields headers, String accept) {
+        assertEquals("application/json", headers.get("Content-type"));
+        assertEquals(accept, headers.get("Accept"));
+        assertEquals("Bearer " + ACCESS_TOKEN, headers.get("Authorization"));
     }
 
     private RequestFactoryImpl createRequestFactoryImpl(Request requestMock, LanguageProvider languageProvider) {
@@ -113,9 +117,7 @@ public class RequestFactoryImplTest {
 
         // then:
         assertEquals(requestMock, request);
-        verify(request).header("Content-type", "application/json");
-        verify(request).header("Accept", "*/*");
-        verify(request).header("Authorization", "Bearer " + ACCESS_TOKEN);
+        assertDefaultHeaders(capturedHeaders(request, 3), "*/*");
         verify(request).timeout(REQUEST_TIMEOUT, REQUEST_TIMEOUT_UNIT);
         verify(request).method(HttpMethod.GET);
         verify(request).param("language", LANGUAGE);
@@ -123,7 +125,7 @@ public class RequestFactoryImplTest {
     }
 
     @Test
-    public void testCreatePutRequestReturnsRequestWithExpectedHeadersAndContent() {
+    public void testCreatePutRequestReturnsRequestWithExpectedHeadersAndContent() throws Exception {
         Request requestMock = getRequestMock();
         RequestFactoryImpl requestFactory = createRequestFactoryImpl(requestMock, defaultLanguageProvider);
 
@@ -132,15 +134,14 @@ public class RequestFactoryImplTest {
 
         // then:
         assertEquals(requestMock, request);
-        verify(request).header("Content-type", "application/json");
-        verify(request).header("Accept", "*/*");
-        verify(request).header("Authorization", "Bearer " + ACCESS_TOKEN);
+        assertDefaultHeaders(capturedHeaders(request, 3), "*/*");
         verify(request).timeout(EXTENDED_REQUEST_TIMEOUT, REQUEST_TIMEOUT_UNIT);
         verify(request).method(HttpMethod.PUT);
-        verify(request).content(any());
+        ArgumentCaptor<Request.Content> bodyCaptor = ArgumentCaptor.forClass(Request.Content.class);
+        verify(request).body(bodyCaptor.capture());
+        assertEquals("application/json", bodyCaptor.getValue().getContentType());
+        assertEquals(JSON_CONTENT, Content.Source.asString(bodyCaptor.getValue(), StandardCharsets.UTF_8));
         verify(request).param("language", LANGUAGE);
-        assertEquals(JSON_CONTENT, contentString);
-        assertEquals("application/json", contentType);
         verifyNoMoreInteractions(request);
     }
 
@@ -154,9 +155,7 @@ public class RequestFactoryImplTest {
 
         // then:
         assertEquals(requestMock, request);
-        verify(request).header("Content-type", "application/json");
-        verify(request).header("Accept", "*/*");
-        verify(request).header("Authorization", "Bearer " + ACCESS_TOKEN);
+        assertDefaultHeaders(capturedHeaders(request, 3), "*/*");
         verify(request).timeout(REQUEST_TIMEOUT, REQUEST_TIMEOUT_UNIT);
         verify(request).method(HttpMethod.POST);
         verify(request).param("language", LANGUAGE);
@@ -179,9 +178,7 @@ public class RequestFactoryImplTest {
 
         // then:
         assertEquals(requestMock, request);
-        verify(request).header("Content-type", "application/json");
-        verify(request).header("Accept", "*/*");
-        verify(request).header("Authorization", "Bearer " + ACCESS_TOKEN);
+        assertDefaultHeaders(capturedHeaders(request, 3), "*/*");
         verify(request).timeout(REQUEST_TIMEOUT, REQUEST_TIMEOUT_UNIT);
         verify(request).method(HttpMethod.GET);
         verifyNoMoreInteractions(request);
@@ -198,9 +195,7 @@ public class RequestFactoryImplTest {
 
         // then:
         assertEquals(requestMock, request);
-        verify(request).header("Content-type", "application/json");
-        verify(request).header("Accept", "*/*");
-        verify(request).header("Authorization", "Bearer " + ACCESS_TOKEN);
+        assertDefaultHeaders(capturedHeaders(request, 3), "*/*");
         verify(request).timeout(REQUEST_TIMEOUT, REQUEST_TIMEOUT_UNIT);
         verify(request).method(HttpMethod.GET);
         verifyNoMoreInteractions(request);
@@ -216,9 +211,7 @@ public class RequestFactoryImplTest {
 
         // then:
         assertEquals(requestMock, request);
-        verify(request).header("Content-type", "application/json");
-        verify(request).header("Accept", "text/event-stream");
-        verify(request).header("Authorization", "Bearer " + ACCESS_TOKEN);
+        assertDefaultHeaders(capturedHeaders(request, 3), "text/event-stream");
         verifyNoMoreInteractions(request);
     }
 
@@ -232,10 +225,9 @@ public class RequestFactoryImplTest {
 
         // then:
         assertEquals(requestMock, request);
-        verify(request).header("Content-type", "application/json");
-        verify(request).header("Accept", "text/event-stream");
-        verify(request).header("Authorization", "Bearer " + ACCESS_TOKEN);
-        verify(request).header("Accept-Language", LANGUAGE);
+        HttpFields headers = capturedHeaders(request, 4);
+        assertDefaultHeaders(headers, "text/event-stream");
+        assertEquals(LANGUAGE, headers.get("Accept-Language"));
         verifyNoMoreInteractions(request);
     }
 }

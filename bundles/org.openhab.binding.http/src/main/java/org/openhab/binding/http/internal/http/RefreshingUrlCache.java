@@ -128,7 +128,7 @@ public class RefreshingUrlCache {
 
             httpClient.newRequest(uri, httpMethod, httpContent, httpContentType).thenAccept(request -> {
                 request.timeout(timeout, TimeUnit.MILLISECONDS);
-                headers.forEach(request::header);
+                request.headers(h -> headers.forEach(h::add));
 
                 CompletableFuture<@Nullable ChannelHandlerContent> responseContentFuture = new CompletableFuture<>();
                 responseContentFuture.exceptionally(t -> {

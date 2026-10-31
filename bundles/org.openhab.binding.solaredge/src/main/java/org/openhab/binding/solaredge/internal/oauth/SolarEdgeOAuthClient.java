@@ -24,9 +24,9 @@ import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.solaredge.internal.config.SolarEdgeConfiguration;
@@ -133,8 +133,7 @@ public class SolarEdgeOAuthClient {
         try {
             ContentResponse response = httpClient.newRequest(PUBLIC_DATA_API_V2_TOKEN_URL).method(HttpMethod.POST)
                     .timeout(config.getSyncTimeout(), TimeUnit.SECONDS)
-                    .content(
-                            new StringContentProvider("application/json", gson.toJson(payload), StandardCharsets.UTF_8))
+                    .body(new StringRequestContent("application/json", gson.toJson(payload), StandardCharsets.UTF_8))
                     .send();
             if (response.getStatus() != HttpStatus.OK_200) {
                 boolean authorizationRequired = "refresh_token".equals(grantType)

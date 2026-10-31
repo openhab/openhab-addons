@@ -24,6 +24,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.jupnp.UpnpService;
 import org.jupnp.model.meta.LocalDevice;
 import org.jupnp.model.meta.RemoteDevice;
+import org.jupnp.model.types.UDN;
 import org.jupnp.registry.Registry;
 import org.jupnp.registry.RegistryListener;
 import org.openhab.binding.upnpcontrol.internal.audiosink.UpnpAudioSink;
@@ -36,6 +37,8 @@ import org.openhab.binding.upnpcontrol.internal.handler.UpnpServerHandler;
 import org.openhab.core.audio.AudioHTTPServer;
 import org.openhab.core.audio.AudioSink;
 import org.openhab.core.config.core.Configuration;
+import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.io.transport.upnp.UpnpIOService;
 import org.openhab.core.net.HttpServiceUtil;
 import org.openhab.core.net.NetworkAddressService;
@@ -70,7 +73,6 @@ public class UpnpControlHandlerFactory extends BaseThingHandlerFactory implement
     private ConcurrentMap<String, UpnpRendererHandler> upnpRenderers = new ConcurrentHashMap<>();
     private ConcurrentMap<String, UpnpServerHandler> upnpServers = new ConcurrentHashMap<>();
     private ConcurrentMap<String, UpnpHandler> handlers = new ConcurrentHashMap<>();
-    private ConcurrentMap<String, RemoteDevice> devices = new ConcurrentHashMap<>();
 
     private final UpnpIOService upnpIOService;
     private final UpnpService upnpService;
@@ -78,6 +80,8 @@ public class UpnpControlHandlerFactory extends BaseThingHandlerFactory implement
     private final NetworkAddressService networkAddressService;
     private final UpnpDynamicStateDescriptionProvider upnpStateDescriptionProvider;
     private final UpnpDynamicCommandDescriptionProvider upnpCommandDescriptionProvider;
+    private final TranslationProvider translationProvider;
+    private final LocaleProvider localeProvider;
 
     private String callbackUrl = "";
 
@@ -87,6 +91,7 @@ public class UpnpControlHandlerFactory extends BaseThingHandlerFactory implement
             final @Reference NetworkAddressService networkAddressService,
             final @Reference UpnpDynamicStateDescriptionProvider dynamicStateDescriptionProvider,
             final @Reference UpnpDynamicCommandDescriptionProvider dynamicCommandDescriptionProvider,
+            final @Reference TranslationProvider translationProvider, final @Reference LocaleProvider localeProvider,
             Map<String, Object> config) {
         this.upnpIOService = upnpIOService;
         this.upnpService = upnpService;
@@ -94,6 +99,8 @@ public class UpnpControlHandlerFactory extends BaseThingHandlerFactory implement
         this.networkAddressService = networkAddressService;
         this.upnpStateDescriptionProvider = dynamicStateDescriptionProvider;
         this.upnpCommandDescriptionProvider = dynamicCommandDescriptionProvider;
+        this.translationProvider = translationProvider;
+        this.localeProvider = localeProvider;
 
         upnpService.getRegistry().addListener(this);
 
@@ -146,16 +153,13 @@ public class UpnpControlHandlerFactory extends BaseThingHandlerFactory implement
 
     private UpnpServerHandler addServer(Thing thing) {
         UpnpServerHandler handler = new UpnpServerHandler(thing, upnpIOService, upnpRenderers,
-                upnpStateDescriptionProvider, upnpCommandDescriptionProvider, configuration);
+                upnpStateDescriptionProvider, upnpCommandDescriptionProvider, configuration, translationProvider,
+                localeProvider);
         String key = thing.getUID().toString();
         upnpServers.put(key, handler);
         logger.debug("Media server handler created for {} with UID {}", thing.getLabel(), thing.getUID());
 
-        String udn = handler.getUDN();
-        if (udn != null) {
-            handlers.put(udn, handler);
-            remoteDeviceUpdated(null, devices.get(udn));
-        }
+        addHandler(key, handler);
 
         return handler;
     }
@@ -163,19 +167,34 @@ public class UpnpControlHandlerFactory extends BaseThingHandlerFactory implement
     private UpnpRendererHandler addRenderer(Thing thing) {
         callbackUrl = createCallbackUrl();
         UpnpRendererHandler handler = new UpnpRendererHandler(thing, upnpIOService, this, upnpStateDescriptionProvider,
-                upnpCommandDescriptionProvider, configuration);
+                upnpCommandDescriptionProvider, configuration, translationProvider, localeProvider);
         String key = thing.getUID().toString();
         upnpRenderers.put(key, handler);
         upnpServers.forEach((thingId, value) -> value.addRendererOption(key));
         logger.debug("Media renderer handler created for {} with UID {}", thing.getLabel(), thing.getUID());
 
-        String udn = handler.getUDN();
-        if (udn != null) {
-            handlers.put(udn, handler);
-            remoteDeviceUpdated(null, devices.get(udn));
-        }
+        addHandler(key, handler);
 
         return handler;
+    }
+
+    /**
+     * Registers the handler for device updates and configures it from the device, if it is already known. The
+     * registry lookup also finds embedded devices and devices discovered before this factory was started.
+     */
+    void addHandler(String key, UpnpHandler handler) {
+        handlers.put(key, handler);
+        // the handler looks its device up again when its UDN is changed
+        handler.setDeviceLookup(this::getRemoteDevice);
+
+        RemoteDevice device = getRemoteDevice(handler.getUDN());
+        if (device != null) {
+            handler.updateDeviceConfig(device);
+        }
+    }
+
+    private @Nullable RemoteDevice getRemoteDevice(@Nullable String udn) {
+        return udn == null ? null : upnpService.getRegistry().getRemoteDevice(new UDN(udn), false);
     }
 
     private void removeServer(String key) {
@@ -185,12 +204,12 @@ public class UpnpControlHandlerFactory extends BaseThingHandlerFactory implement
         }
         logger.debug("Removing media server handler for {} with UID {}", handler.getThing().getLabel(),
                 handler.getThing().getUID());
-        handlers.remove(handler.getUDN());
+        handlers.remove(key);
         upnpServers.remove(key);
     }
 
     private void removeRenderer(String key) {
-        UpnpHandler handler = upnpServers.get(key);
+        UpnpHandler handler = upnpRenderers.get(key);
         if (handler == null) {
             return;
         }
@@ -217,7 +236,7 @@ public class UpnpControlHandlerFactory extends BaseThingHandlerFactory implement
         }
 
         upnpServers.forEach((thingId, value) -> value.removeRendererOption(key));
-        handlers.remove(handler.getUDN());
+        handlers.remove(key);
         upnpRenderers.remove(key);
     }
 
@@ -271,39 +290,38 @@ public class UpnpControlHandlerFactory extends BaseThingHandlerFactory implement
 
     @Override
     public void remoteDeviceAdded(@Nullable Registry registry, @Nullable RemoteDevice device) {
-        if (device == null) {
-            return;
-        }
-
-        String udn = device.getIdentity().getUdn().getIdentifierString();
-        if ("MediaServer".equals(device.getType().getType()) || "MediaRenderer".equals(device.getType().getType())) {
-            devices.put(udn, device);
-        }
-
-        if (handlers.containsKey(udn)) {
-            remoteDeviceUpdated(registry, device);
+        if (device != null) {
+            updateDeviceConfig(device);
         }
     }
 
     @Override
     public void remoteDeviceUpdated(@Nullable Registry registry, @Nullable RemoteDevice device) {
-        if (device == null) {
-            return;
-        }
-
-        String udn = device.getIdentity().getUdn().getIdentifierString();
-        UpnpHandler handler = handlers.get(udn);
-        if (handler != null) {
-            handler.updateDeviceConfig(device);
+        if (device != null) {
+            updateDeviceConfig(device);
         }
     }
 
     @Override
     public void remoteDeviceRemoved(@Nullable Registry registry, @Nullable RemoteDevice device) {
-        if (device == null) {
-            return;
+    }
+
+    /**
+     * Updates the handlers of the device and of its embedded devices. Registry events are only reported for root
+     * devices, while media servers and renderers are often embedded devices (e.g. in AV receivers).
+     */
+    private void updateDeviceConfig(RemoteDevice device) {
+        String udn = device.getIdentity().getUdn().getIdentifierString();
+        for (UpnpHandler handler : handlers.values()) {
+            // match the current UDN, it can be changed in the thing configuration
+            if (udn.equals(handler.getUDN())) {
+                handler.updateDeviceConfig(device);
+            }
         }
-        devices.remove(device.getIdentity().getUdn().getIdentifierString());
+
+        for (RemoteDevice embeddedDevice : device.getEmbeddedDevices()) {
+            updateDeviceConfig(embeddedDevice);
+        }
     }
 
     @Override
@@ -316,7 +334,6 @@ public class UpnpControlHandlerFactory extends BaseThingHandlerFactory implement
 
     @Override
     public void beforeShutdown(@Nullable Registry registry) {
-        devices = new ConcurrentHashMap<>();
     }
 
     @Override

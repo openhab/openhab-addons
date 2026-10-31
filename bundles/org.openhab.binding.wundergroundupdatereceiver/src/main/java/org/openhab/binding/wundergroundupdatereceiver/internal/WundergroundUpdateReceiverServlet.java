@@ -27,21 +27,21 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-import javax.servlet.Servlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.http.whiteboard.propertytypes.HttpWhiteboardServletName;
-import org.osgi.service.http.whiteboard.propertytypes.HttpWhiteboardServletPattern;
+import org.osgi.service.servlet.whiteboard.propertytypes.HttpWhiteboardServletName;
+import org.osgi.service.servlet.whiteboard.propertytypes.HttpWhiteboardServletPattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import jakarta.servlet.Servlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * The {@link WundergroundUpdateReceiverServlet} is responsible for receiving updates,and

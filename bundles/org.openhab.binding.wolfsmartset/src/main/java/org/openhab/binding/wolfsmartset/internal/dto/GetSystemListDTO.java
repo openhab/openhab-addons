@@ -14,12 +14,12 @@ package org.openhab.binding.wolfsmartset.internal.dto;
 
 import java.util.List;
 
-import javax.annotation.Generated;
-
 import org.eclipse.jdt.annotation.Nullable;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+
+import jakarta.annotation.Generated;
 
 /**
  * generated with https://www.jsonschema2pojo.org/

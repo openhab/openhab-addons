@@ -14,14 +14,14 @@ package org.openhab.binding.emotiva.internal.dto;
 
 import static org.openhab.binding.emotiva.internal.EmotivaBindingConstants.DEFAULT_CONTROL_ACK_VALUE;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlValue;
-
 import org.openhab.binding.emotiva.internal.protocol.EmotivaControlCommands;
 import org.openhab.binding.emotiva.internal.protocol.EmotivaSubscriptionTags;
+
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlAttribute;
+import jakarta.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlValue;
 
 /**
  * The EmotivaCommand DTO. Use by multiple message types to control commands in Emotiva devices.

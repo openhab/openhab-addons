@@ -29,10 +29,10 @@ import java.util.function.Predicate;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
@@ -70,7 +70,7 @@ public class BoschHttpClient extends HttpClient {
     private final String systemPassword;
 
     public BoschHttpClient(String ipAddress, String systemPassword, SslContextFactory sslContextFactory) {
-        super(sslContextFactory);
+        super();
         this.ipAddress = ipAddress;
         this.systemPassword = systemPassword;
     }
@@ -284,8 +284,9 @@ public class BoschHttpClient extends HttpClient {
             items.put("certificate", "-----BEGIN CERTIFICATE-----\r" + publicCert + "\r-----END CERTIFICATE-----");
 
             String url = this.getPairingUrl();
-            Request request = this.createRequest(url, HttpMethod.POST, items).header("Systempassword",
-                    Base64.getEncoder().encodeToString(this.systemPassword.getBytes(StandardCharsets.UTF_8)));
+            Request request = this.createRequest(url, HttpMethod.POST, items);
+            request.headers(headers -> headers.put("Systempassword",
+                    Base64.getEncoder().encodeToString(this.systemPassword.getBytes(StandardCharsets.UTF_8))));
 
             contentResponse = request.send();
 
@@ -332,9 +333,12 @@ public class BoschHttpClient extends HttpClient {
     public Request createRequest(String url, HttpMethod method, @Nullable Object content) {
         logger.trace("Create request for http client {}", this);
 
-        Request request = this.newRequest(url).method(method).header("Content-Type", "application/json")
-                .header("api-version", "3.2") // see https://github.com/BoschSmartHome/bosch-shc-api-docs/issues/80
-                .timeout(DEFAULT_TIMEOUT_SECONDS, DEFAULT_TIMEOUT_UNIT); // Set default timeout
+        Request request = this.newRequest(url).method(method).timeout(DEFAULT_TIMEOUT_SECONDS, DEFAULT_TIMEOUT_UNIT); // Set
+                                                                                                                      // default
+                                                                                                                      // timeout
+        request.headers(headers -> headers.put("Content-Type", "application/json"));
+        request.headers(headers -> headers.put("api-version", "3.2")); // see
+                                                                       // https://github.com/BoschSmartHome/bosch-shc-api-docs/issues/80
 
         if (content != null) {
             final String body;
@@ -344,7 +348,7 @@ public class BoschHttpClient extends HttpClient {
                 body = GsonUtils.DEFAULT_GSON_INSTANCE.toJson(content);
             }
             logger.trace("create request for {} and content {}", url, body);
-            request = request.content(new StringContentProvider(body));
+            request = request.body(new StringRequestContent(body));
         } else {
             logger.trace("create request for {}", url);
         }

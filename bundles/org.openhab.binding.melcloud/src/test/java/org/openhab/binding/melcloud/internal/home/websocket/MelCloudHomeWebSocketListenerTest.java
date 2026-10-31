@@ -15,10 +15,12 @@ package org.openhab.binding.melcloud.internal.home.websocket;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jetty.websocket.api.Callback;
 import org.eclipse.jetty.websocket.api.Session;
 import org.junit.jupiter.api.Test;
 
@@ -132,7 +134,7 @@ class MelCloudHomeWebSocketListenerTest {
         Session session = mock(Session.class);
 
         // Act
-        listener.onWebSocketConnect(session);
+        listener.onWebSocketOpen(session);
 
         // Assert
         assertEquals(List.of(true), openClosed);
@@ -145,7 +147,7 @@ class MelCloudHomeWebSocketListenerTest {
         MelCloudHomeWebSocketListener listener = newListener(received, new ArrayList<>());
 
         // Act
-        listener.onWebSocketBinary(new byte[] { 1, 2, 3 }, 0, 3);
+        listener.onWebSocketBinary(ByteBuffer.wrap(new byte[] { 1, 2, 3 }), Callback.NOOP);
 
         // Assert
         assertEquals(List.of(), received);

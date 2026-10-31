@@ -17,11 +17,9 @@ import java.io.StringWriter;
 import java.net.ConnectException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
-import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ExecutionException;
@@ -36,16 +34,14 @@ import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentProvider;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpScheme;
 import org.eclipse.jetty.http.HttpStatus;
-import org.eclipse.jetty.http.HttpURI;
 import org.eclipse.jetty.http.MimeTypes;
 import org.openhab.binding.plugwiseha.internal.api.exception.PlugwiseHABadRequestException;
 import org.openhab.binding.plugwiseha.internal.api.exception.PlugwiseHAException;
@@ -229,19 +225,7 @@ public class PlugwiseHAControllerRequest<T> {
         this.logger.debug("Performing API request: {} {}", request.getMethod(), request.getURI());
 
         if (logger.isTraceEnabled()) {
-            String content = "";
-            final ContentProvider provider = request.getContent();
-            if (provider != null) {
-                final Iterator<ByteBuffer> it = provider.iterator();
-                while (it.hasNext()) {
-                    final ByteBuffer next = it.next();
-                    final byte[] bytes = new byte[next.capacity()];
-                    next.get(bytes);
-                    content += String.format("{}\n", new String(bytes, StandardCharsets.UTF_8));
-                }
-            }
-
-            logger.trace(">> \n{}", content);
+            logger.trace(">> {} {}", request.getMethod(), request.getURI());
         }
 
         try {
@@ -287,12 +271,13 @@ public class PlugwiseHAControllerRequest<T> {
 
     private Request newRequest() {
         HttpMethod method = bodyParameter == null ? HttpMethod.GET : HttpMethod.PUT;
-        HttpURI uri = new HttpURI(HttpScheme.HTTP.asString(), this.host, this.port, this.path);
-        Request request = httpClient.newRequest(uri.toString()).timeout(TIMEOUT_SECONDS, TimeUnit.SECONDS)
-                .method(method);
+        String uri = HttpScheme.HTTP.asString() + "://" + this.host + ":" + this.port + this.path;
+        Request request = httpClient.newRequest(uri).timeout(TIMEOUT_SECONDS, TimeUnit.SECONDS).method(method);
 
         for (Entry<String, String> entry : this.headers.entrySet()) {
-            request.header(entry.getKey(), entry.getValue());
+            final String key = entry.getKey();
+            final String val = entry.getValue();
+            request.headers(h -> h.add(key, val));
         }
 
         for (Entry<String, String> entry : this.queryParameters.entrySet()) {
@@ -301,8 +286,7 @@ public class PlugwiseHAControllerRequest<T> {
 
         if (this.bodyParameter != null) {
             String xmlBody = getRequestBodyAsXml();
-            ContentProvider content = new StringContentProvider(CONTENT_TYPE_TEXT_XML, xmlBody, StandardCharsets.UTF_8);
-            request = request.content(content);
+            request.body(new StringRequestContent(CONTENT_TYPE_TEXT_XML, xmlBody, StandardCharsets.UTF_8));
         }
         return request;
     }

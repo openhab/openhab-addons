@@ -12,11 +12,11 @@
  */
 package org.openhab.binding.denonmarantz.internal.xml.dto.types;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-
 import org.openhab.binding.denonmarantz.internal.xml.adapters.StringAdapter;
+
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 /**
  * Contains a string value

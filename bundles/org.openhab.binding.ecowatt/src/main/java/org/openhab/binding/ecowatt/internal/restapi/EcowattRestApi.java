@@ -21,9 +21,9 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.Request;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
@@ -83,7 +83,7 @@ public class EcowattRestApi {
         String token = authenticate().getAccessToken();
 
         final Request request = httpClient.newRequest(apiUrl).method(HttpMethod.GET)
-                .header(HttpHeader.AUTHORIZATION, "Bearer " + token).timeout(10, TimeUnit.SECONDS);
+                .headers(h -> h.add(HttpHeader.AUTHORIZATION, "Bearer " + token)).timeout(10, TimeUnit.SECONDS);
 
         ContentResponse response;
         try {

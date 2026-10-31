@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.gardena.internal;
 
+import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -28,12 +30,11 @@ import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
+import org.eclipse.jetty.client.FormRequestContent;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.AbstractTypedContentProvider;
-import org.eclipse.jetty.client.util.FormContentProvider;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.util.Fields;
@@ -121,7 +122,7 @@ public class GardenaSmartImpl implements GardenaSmart, GardenaSmartWebSocketList
         webSocketClient = webSocketFactory.createWebSocketClient(name);
         webSocketClient.setConnectTimeout(config.getConnectionTimeout() * 1000L);
         webSocketClient.setStopTimeout(3000);
-        webSocketClient.setMaxIdleTimeout(150000);
+        webSocketClient.setIdleTimeout(Duration.ofMillis(150000));
 
         logger.debug("Starting GardenaSmart");
         try {
@@ -210,35 +211,34 @@ public class GardenaSmartImpl implements GardenaSmart, GardenaSmartWebSocketList
     private <T> T executeRequest(HttpMethod method, String url, @Nullable Object content, @Nullable Class<T> result)
             throws GardenaException {
         try {
-            AbstractTypedContentProvider contentProvider = null;
-            String contentType = "application/vnd.api+json";
-            if (content != null) {
-                if (content instanceof Fields contentAsFields) {
-                    contentProvider = new FormContentProvider(contentAsFields);
-                    contentType = "application/x-www-form-urlencoded";
-                } else {
-                    contentProvider = new StringContentProvider(gson.toJson(content));
-                }
-            }
+            final String contentType = content instanceof Fields ? "application/x-www-form-urlencoded"
+                    : "application/vnd.api+json";
 
             if (logger.isTraceEnabled()) {
                 logger.trace(">>> {} {}, data: {}", method, url, content == null ? null : gson.toJson(content));
             }
 
-            Request request = httpClient.newRequest(url).method(method).header(HttpHeader.CONTENT_TYPE, contentType)
-                    .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS)
-                    .header(HttpHeader.ACCEPT, "application/vnd.api+json").header(HttpHeader.ACCEPT_ENCODING, "gzip");
+            Request request = httpClient.newRequest(url).method(method)
+                    .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS).headers(headers -> {
+                        headers.put(HttpHeader.CONTENT_TYPE, contentType);
+                        headers.put(HttpHeader.ACCEPT, "application/vnd.api+json");
+                        headers.put(HttpHeader.ACCEPT_ENCODING, "gzip");
+                    });
 
             if (!URL_API_TOKEN.equals(url)) {
                 verifyToken();
                 final PostOAuth2Response token = this.token;
                 if (token != null) {
-                    request.header("Authorization", token.tokenType + " " + token.accessToken);
+                    request.headers(headers -> headers.add("Authorization", token.tokenType + " " + token.accessToken));
                 }
-                request.header("X-Api-Key", config.getApiKey());
+                request.headers(headers -> headers.add("X-Api-Key", config.getApiKey()));
             }
 
-            request.content(contentProvider);
+            if (content instanceof Fields contentAsFields) {
+                request.body(new FormRequestContent(contentAsFields));
+            } else if (content != null) {
+                request.body(new StringRequestContent(contentType, gson.toJson(content), StandardCharsets.UTF_8));
+            }
             ContentResponse contentResponse = request.send();
             int status = contentResponse.getStatus();
             if (logger.isTraceEnabled()) {

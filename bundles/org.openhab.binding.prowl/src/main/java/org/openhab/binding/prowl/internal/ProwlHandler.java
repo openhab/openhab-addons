@@ -23,9 +23,9 @@ import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.openhab.binding.prowl.internal.action.ProwlActions;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.thing.ChannelUID;
@@ -135,10 +135,9 @@ public class ProwlHandler extends BaseThingHandler {
         logger.debug("Pushing an event: {} with desc: {}", event, description);
         try {
             ContentResponse response = httpClient.POST(PROWL_ADD_URI).timeout(5, TimeUnit.SECONDS)
-                    .content(
-                            new StringContentProvider("apikey=" + config.apiKey + "&application=" + config.application
-                                    + "&event=" + event + "&description=" + description + "&priority=" + priority),
-                            "application/x-www-form-urlencoded; charset=UTF-8")
+                    .body(new StringRequestContent("application/x-www-form-urlencoded; charset=UTF-8",
+                            "apikey=" + config.apiKey + "&application=" + config.application + "&event=" + event
+                                    + "&description=" + description + "&priority=" + priority))
                     .send();
             String resp = response.getContentAsString();
             updateFreeMessages(resp);

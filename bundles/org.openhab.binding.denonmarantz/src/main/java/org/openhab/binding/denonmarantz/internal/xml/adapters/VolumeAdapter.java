@@ -16,10 +16,10 @@ import static org.openhab.binding.denonmarantz.internal.DenonMarantzBindingConst
 
 import java.math.BigDecimal;
 
-import javax.xml.bind.annotation.adapters.XmlAdapter;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+
+import jakarta.xml.bind.annotation.adapters.XmlAdapter;
 
 /**
  * Maps Denon volume values in dB to percentage
