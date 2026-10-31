@@ -103,6 +103,7 @@ class RachioBridgeHandlerConfigurationTest {
         RachioApi successfulApi = successfulRefreshApi();
         RachioConfiguration configuration = configurationWithApiKey();
         setField(handler, "rachioApi", activeApi);
+        setField(handler, "apiReady", true);
         setField(handler, "thingConfig", configuration);
         Mockito.doReturn(failingApi, successfulApi).when(handler).createRachioApi("person-id");
         Mockito.doThrow(new RachioApiException("refresh failed")).when(failingApi).initialize("api-key",
@@ -126,6 +127,7 @@ class RachioBridgeHandlerConfigurationTest {
         RachioApi deferredApi = Mockito.mock(RachioApi.class);
         RachioApiThrottledException throttled = Mockito.mock(RachioApiThrottledException.class);
         setField(handler, "rachioApi", activeApi);
+        setField(handler, "apiReady", true);
         setField(handler, "thingConfig", configurationWithApiKey());
         Mockito.doReturn(deferredApi).when(handler).createRachioApi("person-id");
         Mockito.doThrow(throttled).when(deferredApi).initialize("api-key", bridge.getUID(), Priority.MEDIUM,

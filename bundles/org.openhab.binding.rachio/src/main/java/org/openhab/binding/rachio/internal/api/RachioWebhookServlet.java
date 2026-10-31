@@ -17,6 +17,7 @@ import static org.openhab.binding.rachio.internal.RachioBindingConstants.*;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
+import java.util.regex.Pattern;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -51,6 +52,7 @@ import com.google.gson.JsonSyntaxException;
  * {@link RachioWebhookServlet} implements the callback for the Rachio Cloud event API.
  *
  * @author Markus Michels - Initial contribution
+ * @author Kovacs Istvan - Isolated Cloud webhook registration paths
  */
 @Component(service = {}, configurationPolicy = ConfigurationPolicy.OPTIONAL, immediate = true)
 @NonNullByDefault
@@ -59,6 +61,8 @@ public class RachioWebhookServlet extends HttpServlet {
     private static final String WEBHOOK_SIGNATURE_HEADER = "x-signature";
     private static final int MAX_WEBHOOK_PAYLOAD_BYTES = 256 * 1024;
     private static final Gson GSON = new Gson();
+    private static final Pattern CLOUD_WEBHOOK_PATH = Pattern.compile(Pattern.quote(SERVLET_CLOUD_WEBHOOK_PATH_PREFIX)
+            + "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}");
     private final Logger logger = LoggerFactory.getLogger(RachioWebhookServlet.class);
     private final RachioWebhookDuplicateEventCache duplicateEventCache = new RachioWebhookDuplicateEventCache();
 
@@ -162,7 +166,8 @@ public class RachioWebhookServlet extends HttpServlet {
         logger.trace("RachioWebhook: Request from {}:{}{} ({}:{}, {})", ipAddress, request.getRemotePort(), path,
                 request.getRemoteHost(), request.getServerPort(), request.getProtocol());
 
-        if (!SERVLET_WEBHOOK_PATH.equalsIgnoreCase(path)) {
+        boolean cloudRegistrationPath = path != null && CLOUD_WEBHOOK_PATH.matcher(path).matches();
+        if (!SERVLET_WEBHOOK_PATH.equalsIgnoreCase(path) && !cloudRegistrationPath) {
             logger.debug("RachioWebhook: Invalid request received - path = {}", path);
             resp.sendError(HttpServletResponse.SC_NOT_FOUND);
             return;
@@ -195,7 +200,7 @@ public class RachioWebhookServlet extends HttpServlet {
             event = parseEvent(data);
             String signature = request.getHeader(WEBHOOK_SIGNATURE_HEADER);
             boolean modernWebhookShape = signature != null || event.hasStrongModernWebhookMarkers();
-            if (!modernWebhookShape && event.isLegacyNotificationEvent()) {
+            if (!cloudRegistrationPath && !modernWebhookShape && event.isLegacyNotificationEvent()) {
                 event.normalizeLegacyNotificationEvent();
                 logger.trace("RachioWebhook: Processing legacy NotificationService event ({})", describeEvent(event));
                 if (isBlank(event.subType)) {

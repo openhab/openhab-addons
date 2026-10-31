@@ -87,6 +87,7 @@ import org.slf4j.LoggerFactory;
  * Devices are linked to the bridge. All devices and zones go offline if the cloud api access fails.
  *
  * @author Markus Michels - initial contribution
+ * @author Kovacs Istvan - API lifecycle readiness
  */
 @NonNullByDefault
 public class RachioBridgeHandler extends AbstractRachioBridgeHandler {
@@ -106,6 +107,7 @@ public class RachioBridgeHandler extends AbstractRachioBridgeHandler {
     private volatile boolean disposed;
     private volatile RachioSmartHoseSnapshot smartHoseSnapshot = RachioSmartHoseSnapshot.EMPTY;
     private long lifecycleGeneration;
+    private boolean apiReady;
 
     public enum RefreshReason {
         SCHEDULED_POLL,
@@ -169,6 +171,7 @@ public class RachioBridgeHandler extends AbstractRachioBridgeHandler {
         long generation;
         synchronized (lifecycleLock) {
             disposed = false;
+            apiReady = false;
             generation = ++lifecycleGeneration;
             thingConfig = configuration;
             smartHoseSnapshot = RachioSmartHoseSnapshot.EMPTY;
@@ -225,6 +228,7 @@ public class RachioBridgeHandler extends AbstractRachioBridgeHandler {
                     return;
                 }
                 rachioApi = initializedApi;
+                apiReady = true;
             }
             if (!isLifecycleCurrent(generation)) {
                 return;
@@ -550,7 +554,7 @@ public class RachioBridgeHandler extends AbstractRachioBridgeHandler {
     @Nullable
     LifecycleSnapshot currentLifecycleSnapshot() {
         synchronized (lifecycleLock) {
-            if (disposed) {
+            if (disposed || !apiReady) {
                 return null;
             }
             return new LifecycleSnapshot(lifecycleGeneration, thingConfig, rachioApi);
@@ -566,14 +570,14 @@ public class RachioBridgeHandler extends AbstractRachioBridgeHandler {
     /** Returns whether the supplied generation and API still belong to this live handler. */
     boolean isLifecycleCurrent(long generation, RachioApi api) {
         synchronized (lifecycleLock) {
-            return !disposed && lifecycleGeneration == generation && isSameInstance(rachioApi, api);
+            return !disposed && apiReady && lifecycleGeneration == generation && isSameInstance(rachioApi, api);
         }
     }
 
     /** Publishes coordinator state only while its captured bridge lifecycle remains current. */
     boolean publishWebhookStateIfCurrent(LifecycleSnapshot lifecycle, Runnable publisher) {
         synchronized (lifecycleLock) {
-            if (disposed || lifecycleGeneration != lifecycle.generation()
+            if (disposed || !apiReady || lifecycleGeneration != lifecycle.generation()
                     || !isSameInstance(rachioApi, lifecycle.api())) {
                 return false;
             }
@@ -595,6 +599,7 @@ public class RachioBridgeHandler extends AbstractRachioBridgeHandler {
     private void invalidateLifecycle() {
         synchronized (lifecycleLock) {
             disposed = true;
+            apiReady = false;
             lifecycleGeneration++;
         }
     }

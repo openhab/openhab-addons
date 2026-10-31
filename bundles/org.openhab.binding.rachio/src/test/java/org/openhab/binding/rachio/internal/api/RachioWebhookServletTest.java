@@ -23,6 +23,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.openhab.binding.rachio.internal.RachioBindingConstants.SERVLET_CLOUD_WEBHOOK_PATH_PREFIX;
 import static org.openhab.binding.rachio.internal.RachioBindingConstants.SERVLET_WEBHOOK_PATH;
 
 import java.io.ByteArrayInputStream;
@@ -39,6 +40,9 @@ import javax.servlet.http.HttpServletResponse;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.openhab.binding.rachio.internal.RachioHandlerFactory;
@@ -54,6 +58,99 @@ import org.openhab.binding.rachio.internal.api.json.RachioEventGsonDTO;
 class RachioWebhookServletTest {
     private static final String VALID_SIGNATURE = "valid-signature";
     private static final String INVALID_SIGNATURE = "invalid-signature";
+    private static final String CLOUD_REGISTRATION_PATH = SERVLET_CLOUD_WEBHOOK_PATH_PREFIX
+            + "12345678-9abc-def0-1234-56789abcdef0";
+
+    @Test
+    void canonicalCloudRegistrationPathAcceptsSignedModernEvent() throws Exception {
+        RachioHandlerFactory handlerFactory = mockHandlerFactory(true);
+        RachioWebhookServlet servlet = servlet(handlerFactory);
+        HttpServletResponse response = response();
+        String body = eventJson("cloud-event");
+
+        servlet.service(requestAtPath(CLOUD_REGISTRATION_PATH, body, VALID_SIGNATURE), response);
+
+        verify(handlerFactory).isValidWebHookSignature(eq(VALID_SIGNATURE), eq(body.getBytes(StandardCharsets.UTF_8)),
+                any(RachioEventGsonDTO.class));
+        verify(handlerFactory).webHookEvent(eq("127.0.0.1"), any(RachioEventGsonDTO.class));
+        verify(handlerFactory, never()).legacyWebHookEvent(anyString(), any(RachioEventGsonDTO.class));
+        verify(response).setStatus(HttpServletResponse.SC_OK);
+        verify(response, never()).sendError(Mockito.anyInt());
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = { "/rachio/webhook/cloud/", "/rachio/webhook/cloud/1-1-1-1-1",
+            "/rachio/webhook/cloud/12345678-9abc-def0-1234-56789abcdef",
+            "/rachio/webhook/cloud/12345678-9ABC-DEF0-1234-56789ABCDEF0",
+            "/RACHIO/WEBHOOK/cloud/12345678-9abc-def0-1234-56789abcdef0",
+            "/rachio/webhook/CLOUD/12345678-9abc-def0-1234-56789abcdef0",
+            "/rachio/webhook/cloudx/12345678-9abc-def0-1234-56789abcdef0",
+            "/rachio/webhook/cloud//12345678-9abc-def0-1234-56789abcdef0",
+            "/rachio/webhook/cloud/12345678-9abc-def0-1234-56789abcdef0/",
+            "/rachio/webhook/cloud/12345678-9abc-def0-1234-56789abcdef0/extra",
+            "/rachio/webhook/cloud/../12345678-9abc-def0-1234-56789abcdef0",
+            "/rachio/webhook/cloud/12345678-9abc-def0-1234-56789abcdef0/../extra",
+            "/rachio/webhook/cloud/%2e%2e/12345678-9abc-def0-1234-56789abcdef0",
+            "/rachio/webhook/cloud/12345678-9abc-def0-1234-56789abcdef0%2fextra",
+            "/rachio/webhook/cloud/12345678-9abc-def0-1234-56789abcdef0;extra=value" })
+    void malformedCloudRegistrationPathIsRejectedBeforeAuthentication(String path) throws Exception {
+        RachioHandlerFactory handlerFactory = mockHandlerFactory(true);
+        RachioWebhookServlet servlet = servlet(handlerFactory);
+        HttpServletResponse response = response();
+
+        servlet.service(requestAtPath(path, eventJson("cloud-event"), VALID_SIGNATURE), response);
+
+        verify(response).sendError(HttpServletResponse.SC_NOT_FOUND);
+        verify(handlerFactory, never()).isValidWebHookSignature(anyString(), any(byte[].class),
+                any(RachioEventGsonDTO.class));
+        verify(handlerFactory, never()).webHookEvent(anyString(), any(RachioEventGsonDTO.class));
+        verify(handlerFactory, never()).legacyWebHookEvent(anyString(), any(RachioEventGsonDTO.class));
+    }
+
+    @ParameterizedTest
+    @NullAndEmptySource
+    @ValueSource(strings = { " ", INVALID_SIGNATURE })
+    void cloudRegistrationPathRequiresValidSignature(@Nullable String signature) throws Exception {
+        RachioHandlerFactory handlerFactory = mockHandlerFactory(false);
+        RachioWebhookServlet servlet = servlet(handlerFactory);
+        HttpServletResponse response = response();
+
+        servlet.service(requestAtPath(CLOUD_REGISTRATION_PATH, eventJson("cloud-event"), signature), response);
+
+        verify(response).sendError(HttpServletResponse.SC_UNAUTHORIZED);
+        verify(handlerFactory, never()).webHookEvent(anyString(), any(RachioEventGsonDTO.class));
+        verify(handlerFactory, never()).legacyWebHookEvent(anyString(), any(RachioEventGsonDTO.class));
+    }
+
+    @Test
+    void unsignedLegacyNotificationCannotUseCloudRegistrationPath() throws Exception {
+        RachioHandlerFactory handlerFactory = mockHandlerFactory(false);
+        RachioWebhookServlet servlet = servlet(handlerFactory);
+        HttpServletResponse response = response();
+
+        servlet.service(requestAtPath(CLOUD_REGISTRATION_PATH, legacyEventJson("external-id"), null), response);
+
+        verify(response).sendError(HttpServletResponse.SC_UNAUTHORIZED);
+        verify(handlerFactory, never()).webHookEvent(anyString(), any(RachioEventGsonDTO.class));
+        verify(handlerFactory, never()).legacyWebHookEvent(anyString(), any(RachioEventGsonDTO.class));
+    }
+
+    @Test
+    void signedCloudEventAndUnsignedBasePathLegacyEventRemainIndependent() throws Exception {
+        RachioHandlerFactory handlerFactory = mockHandlerFactory(true);
+        RachioWebhookServlet servlet = servlet(handlerFactory);
+        HttpServletResponse cloudResponse = response();
+        HttpServletResponse legacyResponse = response();
+
+        servlet.service(requestAtPath(CLOUD_REGISTRATION_PATH, eventJson("cloud-event"), VALID_SIGNATURE),
+                cloudResponse);
+        servlet.service(request(legacyEventJson("external-id"), null), legacyResponse);
+
+        verify(cloudResponse).setStatus(HttpServletResponse.SC_OK);
+        verify(legacyResponse).setStatus(HttpServletResponse.SC_OK);
+        verify(handlerFactory).webHookEvent(eq("127.0.0.1"), any(RachioEventGsonDTO.class));
+        verify(handlerFactory).legacyWebHookEvent(eq("127.0.0.1"), any(RachioEventGsonDTO.class));
+    }
 
     @Test
     void duplicateWebhookEventIsAcknowledgedButRoutedOnce() throws Exception {
@@ -632,8 +729,12 @@ class RachioWebhookServletTest {
     }
 
     private HttpServletRequest request(String body, @Nullable String signature) throws IOException {
+        return requestAtPath(SERVLET_WEBHOOK_PATH, body, signature);
+    }
+
+    private HttpServletRequest requestAtPath(String path, String body, @Nullable String signature) throws IOException {
         HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
-        when(request.getRequestURI()).thenReturn(SERVLET_WEBHOOK_PATH);
+        when(request.getRequestURI()).thenReturn(path);
         when(request.getMethod()).thenReturn("POST");
         when(request.getRemoteAddr()).thenReturn("127.0.0.1");
         when(request.getRemotePort()).thenReturn(443);
