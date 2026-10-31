@@ -47,6 +47,7 @@ import com.daimler.mbcarkit.proto.VehicleEvents.AuxheatwarningsArrayAttribute;
 import com.daimler.mbcarkit.proto.VehicleEvents.BoolAttribute;
 import com.daimler.mbcarkit.proto.VehicleEvents.ChargeProgramsArrayAttribute;
 import com.daimler.mbcarkit.proto.VehicleEvents.ChargeProgramsValue;
+import com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionSocObjectAttribute;
 import com.daimler.mbcarkit.proto.VehicleEvents.DoubleAttribute;
 import com.daimler.mbcarkit.proto.VehicleEvents.DoubleCombustionConsumptionAttribute;
 import com.daimler.mbcarkit.proto.VehicleEvents.DoubleDistanceAttribute;
@@ -228,6 +229,22 @@ public class Mapper {
                         } else {
                             observer = new UOMObserver(UOMObserver.TIME_ROW);
                         }
+                    }
+                    return new ChannelStateMap(ch[0], ch[1], state, observer);
+
+                // Time - end of charging reported by MB.OS vehicles as an absolute timestamp
+                case MB_KEY_CHARGING_PREDICTION_MAX_SOC:
+                    // an attribute without a prediction is stored with timestamp 0, see
+                    // putChargingPredictionSoc
+                    if (Utils.isNil(value) || value.getIntValue() <= 0) {
+                        state = UnDefType.UNDEF;
+                    } else {
+                        state = Utils.getDateTimeType(value.getIntValue());
+                    }
+                    if (Locale.US.getCountry().equals(Utils.getCountry())) {
+                        observer = new UOMObserver(UOMObserver.TIME_US);
+                    } else {
+                        observer = new UOMObserver(UOMObserver.TIME_ROW);
                     }
                     return new ChannelStateMap(ch[0], ch[1], state, observer);
 
@@ -758,6 +775,13 @@ public class Mapper {
         if (vsu.hasEndofchargetime()) {
             putClockHour(attributes, MB_KEY_ENDOFCHARGETIME, vsu.getEndofchargetime());
         }
+        // MB.OS vehicles have no endofchargetime - their charge end time is a Timestamp inside
+        // charging_prediction_max_soc. Legacy vehicles send an empty prediction next to a valid
+        // endofchargetime, so don't let the empty one take over their charge end time.
+        if (vsu.hasChargingPredictionMaxSoc()
+                && (vsu.getChargingPredictionMaxSoc().getValue().hasPredictedEndTime() || !vsu.hasEndofchargetime())) {
+            putChargingPredictionSoc(attributes, MB_KEY_CHARGING_PREDICTION_MAX_SOC, vsu.getChargingPredictionMaxSoc());
+        }
 
         // consumption
         if (vsu.hasLiquidconsumptionreset()) {
@@ -791,7 +815,10 @@ public class Mapper {
         if (!metadata.hasTimestamp()) {
             return 0;
         }
-        Timestamp ts = metadata.getTimestamp();
+        return toMillis(metadata.getTimestamp());
+    }
+
+    private static long toMillis(Timestamp ts) {
         return ts.getSeconds() * 1000 + ts.getNanos() / 1_000_000;
     }
 
@@ -847,6 +874,23 @@ public class Mapper {
     private static void putClockHour(Map<String, VehicleAttributeStatus> map, String key, Int64ClockHourAttribute a) {
         map.put(key, baseBuilder(a.getMetadata()).setIntValue(a.getValue()).setClockHourUnit(a.getUnit())
                 .setDisplayValue(a.getDisplayValue()).build());
+    }
+
+    /**
+     * Stores the predicted end of charging as epoch milliseconds in the int value.
+     * <p>
+     * {@code predicted_end_time} is a message field with explicit presence, so its absence is the vehicle stating
+     * that it currently has no prediction - and not an elided proto3 default. Such an attribute is stored with
+     * timestamp 0 to reset the channel, which is required because MB.OS vehicles drop the prediction in a partial
+     * update as soon as charging ends while full updates can be minutes apart.
+     */
+    private static void putChargingPredictionSoc(Map<String, VehicleAttributeStatus> map, String key,
+            ChargingPredictionSocObjectAttribute a) {
+        map.put(key,
+                baseBuilder(a.getMetadata())
+                        .setIntValue(
+                                a.getValue().hasPredictedEndTime() ? toMillis(a.getValue().getPredictedEndTime()) : 0)
+                        .build());
     }
 
     private static void putCombustionConsumption(Map<String, VehicleAttributeStatus> map, String key,
@@ -1013,6 +1057,7 @@ public class Mapper {
         CHANNELS.put(MB_KEY_CHARGE_ERROR, new String[] { OH_CHANNEL_ERROR, GROUP_CHARGE });
         CHANNELS.put(MB_KEY_CHARGING_POWER, new String[] { OH_CHANNEL_POWER, GROUP_CHARGE });
         CHANNELS.put(MB_KEY_ENDOFCHARGETIME, new String[] { OH_CHANNEL_END_TIME, GROUP_CHARGE });
+        CHANNELS.put(MB_KEY_CHARGING_PREDICTION_MAX_SOC, new String[] { OH_CHANNEL_END_TIME, GROUP_CHARGE });
 
         CHANNELS.put(MB_KEY_POSITION_HEADING, new String[] { OH_CHANNEL_HEADING, GROUP_POSITION });
         CHANNELS.put(MB_KEY_POSITION_ERROR, new String[] { OH_CHANNEL_STATUS, GROUP_POSITION });

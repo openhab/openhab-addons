@@ -45,6 +45,8 @@ import org.openhab.core.types.UnDefType;
 import com.daimler.mbcarkit.proto.VehicleEvents.AttributeStatus;
 import com.daimler.mbcarkit.proto.VehicleEvents.ChargingErrorDetails;
 import com.daimler.mbcarkit.proto.VehicleEvents.ChargingErrorDetailsEnumAttribute;
+import com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionSoc;
+import com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionSocObjectAttribute;
 import com.daimler.mbcarkit.proto.VehicleEvents.Chargingstatus;
 import com.daimler.mbcarkit.proto.VehicleEvents.ChargingstatusEnumAttribute;
 import com.daimler.mbcarkit.proto.VehicleEvents.DoubleAttribute;
@@ -349,6 +351,101 @@ class VehicleHandlerTest {
         DateTimeType expectedShifted = new DateTimeType(
                 baseEndTime.getZonedDateTime(ZoneId.systemDefault()).plusDays(2));
         assertEquals(expectedShifted.format(DATE_TIME_FORMAT),
+                ((DateTimeType) updateListener.getResponse("test::bev:charge#end-time")).format(DATE_TIME_FORMAT),
+                "End of Charge Time");
+    }
+
+    @Test
+    public void testBEVChargeEndtimeMbOs() {
+        Map<String, Object> instances = createBEV();
+        ThingCallbackListener updateListener = (ThingCallbackListener) instances
+                .get(ThingCallbackListener.class.getCanonicalName());
+        VehicleHandler vHandler = (VehicleHandler) instances.get(VehicleHandler.class.getCanonicalName());
+        assertNotNull(updateListener);
+        assertNotNull(vHandler);
+
+        // no capture available - values taken from a GLC EQ log, which reports the charge end time only as
+        // charging_prediction_max_soc and has no endofchargetime at all
+        long timestampMs = 1700000000000L;
+        long predictedEndSeconds = 1700003400L; // timestamp plus 56 minutes
+        VSUMetadata metadata = VSUMetadata.newBuilder().setStatus(AttributeStatus.VALUE_VALID)
+                .setTimestamp(Timestamp.newBuilder().setSeconds(timestampMs / 1000).build()).build();
+        ChargingPredictionSoc prediction = ChargingPredictionSoc.newBuilder()
+                .setPredictedEndTime(Timestamp.newBuilder().setSeconds(predictedEndSeconds).build())
+                .setPredictedElectricalEnergyRange(370).build();
+        VehicleStatusUpdate vsu1 = VehicleStatusUpdate.newBuilder().setFinOrVin("UNIT_TEST_VIN").setFullUpdate(true)
+                .setChargingPredictionMaxSoc(ChargingPredictionSocObjectAttribute.newBuilder().setValue(prediction)
+                        .setMetadata(metadata).build())
+                .build();
+        vHandler.enqueueUpdate(new VehicleStatusAttributes(true, Mapper.fromVehicleStatusUpdate(vsu1)));
+        updateListener.waitForUpdates();
+
+        DateTimeType expectedEndTime = Utils.getDateTimeType(predictedEndSeconds * 1000);
+        assertEquals(expectedEndTime.format(DATE_TIME_FORMAT),
+                ((DateTimeType) updateListener.getResponse("test::bev:charge#end-time")).format(DATE_TIME_FORMAT),
+                "End of Charge Time");
+
+        // charging ends: the vehicle keeps sending the attribute, but without a prediction - and it does so in a
+        // partial update, so the previous value has to be dropped without waiting for the next full update
+        ChargingPredictionSoc noPrediction = ChargingPredictionSoc.newBuilder().setPredictedElectricalEnergyRange(370)
+                .build();
+        VehicleStatusUpdate vsu2 = VehicleStatusUpdate.newBuilder().setFinOrVin("UNIT_TEST_VIN").setFullUpdate(false)
+                .setChargingPredictionMaxSoc(ChargingPredictionSocObjectAttribute.newBuilder().setValue(noPrediction)
+                        .setMetadata(metadata).build())
+                .build();
+        vHandler.enqueueUpdate(new VehicleStatusAttributes(false, Mapper.fromVehicleStatusUpdate(vsu2)));
+        updateListener.waitForUpdates();
+
+        assertEquals(UnDefType.UNDEF, updateListener.getResponse("test::bev:charge#end-time"),
+                "End of Charge Time reset");
+    }
+
+    @Test
+    public void testBEVChargeEndtimeMbOsCapture() {
+        Map<String, Object> instances = createBEV();
+        ThingCallbackListener updateListener = (ThingCallbackListener) instances
+                .get(ThingCallbackListener.class.getCanonicalName());
+        VehicleHandler vHandler = (VehicleHandler) instances.get(VehicleHandler.class.getCanonicalName());
+        assertNotNull(updateListener);
+        assertNotNull(vHandler);
+
+        // capture of a GLC EQ taken during an active AC charging session at 78 % of a max SoC of 80 %
+        String raw = loadRaw("src/test/resources/vehiclestatusupdates/GLC EQ.raw");
+        VehicleStatusAttributes update = ProtoConverter.raw2Proto(raw, true);
+        vHandler.enqueueUpdate(update);
+        updateListener.waitForUpdates();
+
+        assertEquals(Utils.getDateTimeType(1792252144L * 1000).format(DATE_TIME_FORMAT),
+                ((DateTimeType) updateListener.getResponse("test::bev:charge#end-time")).format(DATE_TIME_FORMAT),
+                "End of Charge Time");
+        assertEquals("78 %", updateListener.getResponse("test::bev:range#soc").toFullString(), "SoC");
+    }
+
+    @Test
+    public void testBEVChargeEndtimeLegacyKeepsPrecedence() {
+        Map<String, Object> instances = createBEV();
+        ThingCallbackListener updateListener = (ThingCallbackListener) instances
+                .get(ThingCallbackListener.class.getCanonicalName());
+        VehicleHandler vHandler = (VehicleHandler) instances.get(VehicleHandler.class.getCanonicalName());
+        assertNotNull(updateListener);
+        assertNotNull(vHandler);
+
+        // vehicles reporting endofchargetime send an empty prediction next to it - that must not overrule them
+        long timestampMs = 1700000000000L;
+        int minutesAfterMidnight = 835; // 13:55
+        VSUMetadata metadata = VSUMetadata.newBuilder().setStatus(AttributeStatus.VALUE_VALID)
+                .setTimestamp(Timestamp.newBuilder().setSeconds(timestampMs / 1000).build()).build();
+        Int64ClockHourAttribute endOfCharge = Int64ClockHourAttribute.newBuilder().setValue(minutesAfterMidnight)
+                .setMetadata(metadata).build();
+        VehicleStatusUpdate vsu = VehicleStatusUpdate.newBuilder().setFinOrVin("UNIT_TEST_VIN").setFullUpdate(true)
+                .setEndofchargetime(endOfCharge)
+                .setChargingPredictionMaxSoc(ChargingPredictionSocObjectAttribute.newBuilder()
+                        .setValue(ChargingPredictionSoc.newBuilder().build()).setMetadata(metadata).build())
+                .build();
+        vHandler.enqueueUpdate(new VehicleStatusAttributes(true, Mapper.fromVehicleStatusUpdate(vsu)));
+        updateListener.waitForUpdates();
+
+        assertEquals(Utils.getEndOfChargeTime(timestampMs, minutesAfterMidnight).format(DATE_TIME_FORMAT),
                 ((DateTimeType) updateListener.getResponse("test::bev:charge#end-time")).format(DATE_TIME_FORMAT),
                 "End of Charge Time");
     }
