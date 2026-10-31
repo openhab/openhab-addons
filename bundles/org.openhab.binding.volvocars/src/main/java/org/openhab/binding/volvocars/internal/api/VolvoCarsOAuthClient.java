@@ -14,6 +14,7 @@ package org.openhab.binding.volvocars.internal.api;
 
 import static org.openhab.binding.volvocars.internal.VolvoCarsBindingConstants.*;
 
+import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -23,6 +24,7 @@ import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Base64;
+import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -38,6 +40,10 @@ import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.util.Fields;
 import org.openhab.binding.volvocars.internal.api.dto.TokenResponse;
 import org.openhab.binding.volvocars.internal.config.AccountConfiguration;
+import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
+import org.openhab.core.auth.client.oauth2.OAuthClientService;
+import org.openhab.core.auth.client.oauth2.OAuthException;
+import org.openhab.core.auth.client.oauth2.OAuthResponseException;
 import org.openhab.core.storage.Storage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,17 +54,16 @@ import com.google.gson.JsonSyntaxException;
 /**
  * OAuth 2.0 authorization code flow with PKCE (RFC 7636) against Volvo ID.
  * <p>
- * The core {@code OAuthClientService} is not used because it cannot send a per-authorization
- * {@code code_verifier} with the token request only. The refresh token is persisted in the
- * given {@link Storage}, the short-lived access token is kept in memory only.
+ * The binding exchanges the authorization code itself, as the core {@link OAuthClientService} cannot send a
+ * per-authorization {@code code_verifier} with the token request. The resulting tokens are imported into the
+ * {@link OAuthClientService}, which stores them encrypted and refreshes them. The given {@link Storage} only keeps
+ * the client id the tokens were obtained with.
  *
  * @author Michael Weger - Initial contribution
  */
 @NonNullByDefault
 public class VolvoCarsOAuthClient {
-    private static final String REFRESH_TOKEN = "refreshToken";
     private static final String CLIENT_ID = "clientId";
-    private static final Duration EXPIRY_MARGIN = Duration.ofSeconds(60);
     private static final Duration PENDING_AUTHORIZATION_VALIDITY = Duration.ofMinutes(15);
     private static final int REQUEST_TIMEOUT_SECONDS = 30;
 
@@ -67,27 +72,28 @@ public class VolvoCarsOAuthClient {
     private final Gson gson = new Gson();
 
     private final HttpClient httpClient;
+    private final OAuthClientService oAuthService;
     private final Storage<String> storage;
     private final String storagePrefix;
     private final AccountConfiguration config;
     private final String scopes;
     private final Clock clock;
 
-    private String accessToken = "";
-    private Instant accessTokenExpiry = Instant.MIN;
+    private boolean refreshRequired;
     private @Nullable PendingAuthorization pendingAuthorization;
 
     private record PendingAuthorization(String state, String codeVerifier, Instant expiry) {
     }
 
-    public VolvoCarsOAuthClient(HttpClient httpClient, Storage<String> storage, String storagePrefix,
-            AccountConfiguration config) {
-        this(httpClient, storage, storagePrefix, config, Clock.systemUTC());
+    public VolvoCarsOAuthClient(HttpClient httpClient, OAuthClientService oAuthService, Storage<String> storage,
+            String storagePrefix, AccountConfiguration config) {
+        this(httpClient, oAuthService, storage, storagePrefix, config, Clock.systemUTC());
     }
 
-    VolvoCarsOAuthClient(HttpClient httpClient, Storage<String> storage, String storagePrefix,
-            AccountConfiguration config, Clock clock) {
+    VolvoCarsOAuthClient(HttpClient httpClient, OAuthClientService oAuthService, Storage<String> storage,
+            String storagePrefix, AccountConfiguration config, Clock clock) {
         this.httpClient = httpClient;
+        this.oAuthService = oAuthService;
         this.storage = storage;
         this.storagePrefix = storagePrefix + ".";
         this.config = config;
@@ -96,13 +102,14 @@ public class VolvoCarsOAuthClient {
     }
 
     /**
-     * @return true if a refresh token obtained with the currently configured client id is available
+     * @return true if the account was authorized with the currently configured client id
      */
     public synchronized boolean isAuthorized() {
-        if (value(REFRESH_TOKEN).isEmpty()) {
+        String authorizedClientId = storage.get(storagePrefix + CLIENT_ID);
+        if (authorizedClientId == null) {
             return false;
         }
-        if (!config.clientId.equals(value(CLIENT_ID))) {
+        if (!config.clientId.equals(authorizedClientId)) {
             logger.debug("Client id changed since the last authorization, discarding stored tokens");
             clearTokens();
             return false;
@@ -131,7 +138,8 @@ public class VolvoCarsOAuthClient {
     }
 
     /**
-     * Exchanges the authorization code returned to the redirect URI for tokens.
+     * Exchanges the authorization code returned to the redirect URI for tokens and hands them to the
+     * {@link OAuthClientService}.
      */
     public synchronized void authorize(String code, String state) throws VolvoCarsException {
         PendingAuthorization pending = pendingAuthorization;
@@ -145,33 +153,67 @@ public class VolvoCarsOAuthClient {
         fields.put("code", code);
         fields.put("redirect_uri", config.redirectUri);
         fields.put("code_verifier", pending.codeVerifier());
-        requestToken(fields, false);
+        TokenResponse token = requestToken(fields);
+        String refreshToken = token.refreshToken;
+        if (refreshToken == null || refreshToken.isBlank()) {
+            throw new VolvoCarsException("Volvo ID did not return a refresh token");
+        }
+        AccessTokenResponse response = new AccessTokenResponse();
+        response.setAccessToken(token.accessToken);
+        response.setRefreshToken(refreshToken);
+        response.setTokenType("Bearer");
+        response.setExpiresIn(token.expiresIn);
+        response.setScope(scopes);
+        response.setCreatedOn(clock.instant());
+        try {
+            oAuthService.importAccessTokenResponse(response);
+        } catch (OAuthException e) {
+            // the service has been closed, the handler is being disposed
+            throw new VolvoCarsException("Could not store the tokens: " + e.getMessage(), e);
+        }
+        refreshRequired = false;
         storage.put(storagePrefix + CLIENT_ID, config.clientId);
+        logger.debug("Obtained Volvo tokens");
     }
 
     /**
-     * @return a valid access token, refreshing it if required
+     * @return a valid access token, refreshed by the {@link OAuthClientService} if it has expired
      * @throws VolvoCarsException if no token could be obtained
      */
     public synchronized String getAccessToken() throws VolvoCarsException {
-        if (!accessToken.isEmpty() && clock.instant().plus(EXPIRY_MARGIN).isBefore(accessTokenExpiry)) {
-            return accessToken;
-        }
         if (!isAuthorized()) {
             throw new VolvoCarsException("Authorization required", 0, true);
         }
-        Fields fields = new Fields();
-        fields.put("grant_type", "refresh_token");
-        fields.put("refresh_token", value(REFRESH_TOKEN));
-        return requestToken(fields, true);
+        try {
+            AccessTokenResponse token = oAuthService.getAccessTokenResponse();
+            if (token == null || token.getRefreshToken() == null) {
+                clearTokens();
+                throw new VolvoCarsException("Authorization required", 0, true);
+            }
+            if (refreshRequired) {
+                token = oAuthService.refreshToken();
+                refreshRequired = false;
+            }
+            String accessToken = token.getAccessToken();
+            if (accessToken == null || accessToken.isBlank()) {
+                throw new VolvoCarsException("Volvo ID returned an incomplete token response");
+            }
+            return accessToken;
+        } catch (OAuthResponseException e) {
+            // Volvo ID answers with 400 for an expired or revoked refresh token, 401 for rejected client credentials
+            clearTokens();
+            throw new VolvoCarsException("Volvo ID rejected the token refresh: " + Objects.toString(e.getError(), ""),
+                    0, true);
+        } catch (OAuthException | IOException e) {
+            throw new VolvoCarsException("Token refresh failed: " + e.getMessage(), e);
+        }
     }
 
     /**
      * Forces the next {@link #getAccessToken()} call to refresh the access token.
      */
     public synchronized void invalidateAccessToken() {
-        accessToken = "";
-        accessTokenExpiry = Instant.MIN;
+        refreshRequired = true;
     }
 
     /**
@@ -185,12 +227,18 @@ public class VolvoCarsOAuthClient {
     }
 
     public synchronized void clearTokens() {
-        invalidateAccessToken();
-        storage.remove(storagePrefix + REFRESH_TOKEN);
+        refreshRequired = false;
         storage.remove(storagePrefix + CLIENT_ID);
+        try {
+            // keeps the service for the import after a new authorization
+            oAuthService.importAccessTokenResponse(new AccessTokenResponse());
+        } catch (OAuthException e) {
+            // the service has been closed, the handler is being disposed
+            logger.debug("Could not discard the tokens: {}", e.getMessage());
+        }
     }
 
-    private String requestToken(Fields fields, boolean isRefresh) throws VolvoCarsException {
+    private TokenResponse requestToken(Fields fields) throws VolvoCarsException {
         String credentials = Base64.getEncoder()
                 .encodeToString((config.clientId + ":" + config.clientSecret).getBytes(StandardCharsets.UTF_8));
         try {
@@ -200,41 +248,20 @@ public class VolvoCarsOAuthClient {
                     .timeout(REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS).send();
             int status = response.getStatus();
             if (status != HttpStatus.OK_200) {
-                // Volvo ID answers with 400 for an expired or revoked refresh token
-                boolean authorizationRequired = isRefresh
-                        && (status == HttpStatus.BAD_REQUEST_400 || status == HttpStatus.UNAUTHORIZED_401);
-                if (authorizationRequired) {
-                    clearTokens();
-                }
-                throw new VolvoCarsException("Volvo ID token endpoint returned HTTP " + status, status,
-                        authorizationRequired);
+                throw new VolvoCarsException("Volvo ID token endpoint returned HTTP " + status, status, false);
             }
             TokenResponse token = gson.fromJson(response.getContentAsString(), TokenResponse.class);
-            String newAccessToken = token != null ? token.accessToken : null;
-            if (token == null || newAccessToken == null || newAccessToken.isBlank()) {
+            String accessToken = token != null ? token.accessToken : null;
+            if (token == null || accessToken == null || accessToken.isBlank()) {
                 throw new VolvoCarsException("Volvo ID returned an incomplete token response");
             }
-            String newRefreshToken = token.refreshToken;
-            if (newRefreshToken != null && !newRefreshToken.isBlank()) {
-                storage.put(storagePrefix + REFRESH_TOKEN, newRefreshToken);
-            } else if (!isRefresh) {
-                throw new VolvoCarsException("Volvo ID did not return a refresh token");
-            }
-            accessToken = newAccessToken;
-            accessTokenExpiry = clock.instant().plusSeconds(token.expiresIn);
-            logger.debug("Obtained Volvo access token, valid until {}", accessTokenExpiry);
-            return newAccessToken;
+            return token;
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new VolvoCarsException("Token request was interrupted", e);
         } catch (ExecutionException | TimeoutException | JsonSyntaxException e) {
             throw new VolvoCarsException("Token request failed: " + e.getMessage(), e);
         }
-    }
-
-    private String value(String key) {
-        String value = storage.get(storagePrefix + key);
-        return value != null ? value : "";
     }
 
     private String randomUrlSafeString(int numBytes) {

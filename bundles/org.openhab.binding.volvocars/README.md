@@ -108,7 +108,7 @@ After the bridge has been created, it stays offline until openHAB has been autho
    Otherwise, copy the complete URL from the address bar of your browser and paste it into the form on the authorization page.
    The authorization must be completed within 15 minutes.
 
-The binding stores the refresh token in the openHAB user data and renews the tokens automatically.
+The tokens are stored encrypted and renewed automatically by openHAB's OAuth client service.
 This does not need the redirect URI, so it also works if the redirect URI is not reachable.
 Volvo ID issues a new refresh token on every renewal and invalidates a refresh token that is not used within 7 days.
 The binding therefore renews the tokens at least once a day, even if no vehicle is polled.

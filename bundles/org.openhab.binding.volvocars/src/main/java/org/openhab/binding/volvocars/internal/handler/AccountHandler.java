@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.volvocars.internal.handler;
 
+import static org.openhab.binding.volvocars.internal.VolvoCarsBindingConstants.TOKEN_URL;
+
 import java.util.Collection;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
@@ -26,6 +28,8 @@ import org.openhab.binding.volvocars.internal.api.VolvoCarsOAuthClient;
 import org.openhab.binding.volvocars.internal.config.AccountConfiguration;
 import org.openhab.binding.volvocars.internal.discovery.VolvoCarsDiscoveryService;
 import org.openhab.binding.volvocars.internal.servlet.VolvoCarsAuthServlet;
+import org.openhab.core.auth.client.oauth2.OAuthClientService;
+import org.openhab.core.auth.client.oauth2.OAuthFactory;
 import org.openhab.core.storage.Storage;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
@@ -54,18 +58,21 @@ public class AccountHandler extends BaseBridgeHandler {
     private final HttpClient httpClient;
     private final Storage<String> storage;
     private final VolvoCarsAuthServlet authServlet;
+    private final OAuthFactory oAuthFactory;
 
+    private @Nullable OAuthClientService oAuthService;
     private @Nullable VolvoCarsOAuthClient oAuthClient;
     private volatile @Nullable VolvoCarsApi api;
     private @Nullable ScheduledFuture<?> reconnectJob;
     private @Nullable ScheduledFuture<?> tokenRenewalJob;
 
     public AccountHandler(Bridge bridge, HttpClient httpClient, Storage<String> storage,
-            VolvoCarsAuthServlet authServlet) {
+            VolvoCarsAuthServlet authServlet, OAuthFactory oAuthFactory) {
         super(bridge);
         this.httpClient = httpClient;
         this.storage = storage;
         this.authServlet = authServlet;
+        this.oAuthFactory = oAuthFactory;
     }
 
     @Override
@@ -75,8 +82,12 @@ public class AccountHandler extends BaseBridgeHandler {
             updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.conf-error.incomplete");
             return;
         }
-        VolvoCarsOAuthClient localOAuthClient = new VolvoCarsOAuthClient(httpClient, storage,
-                getThing().getUID().getAsString(), config);
+        // the binding obtains the tokens, core's OAuth client service stores and refreshes them
+        OAuthClientService localOAuthService = oAuthFactory.createOAuthClientService(oAuthHandle(), TOKEN_URL, null,
+                config.clientId, config.clientSecret, null, true);
+        oAuthService = localOAuthService;
+        VolvoCarsOAuthClient localOAuthClient = new VolvoCarsOAuthClient(httpClient, localOAuthService, storage,
+                oAuthHandle(), config);
         VolvoCarsApi localApi = new VolvoCarsApi(httpClient, localOAuthClient, config.apiKey);
         oAuthClient = localOAuthClient;
         api = localApi;
@@ -104,6 +115,10 @@ public class AccountHandler extends BaseBridgeHandler {
                 job.cancel(false);
                 tokenRenewalJob = null;
             }
+            if (oAuthService != null) {
+                oAuthService = null;
+                oAuthFactory.ungetOAuthService(oAuthHandle());
+            }
         }
     }
 
@@ -113,6 +128,7 @@ public class AccountHandler extends BaseBridgeHandler {
         if (localOAuthClient != null) {
             localOAuthClient.clearTokens();
         }
+        oAuthFactory.deleteServiceAndAccessToken(oAuthHandle());
         super.handleRemoval();
     }
 
@@ -218,6 +234,10 @@ public class AccountHandler extends BaseBridgeHandler {
             logger.debug("Renewing the tokens of {} failed: {}", getThing().getUID(), e.getMessage());
             reportFailure(usedApi, e);
         }
+    }
+
+    private String oAuthHandle() {
+        return getThing().getUID().getAsString();
     }
 
     private void setAuthorizationRequired() {

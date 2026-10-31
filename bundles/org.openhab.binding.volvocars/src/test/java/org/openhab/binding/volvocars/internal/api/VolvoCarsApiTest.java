@@ -48,13 +48,14 @@ class VolvoCarsApiTest {
     private final HttpMocks http = new HttpMocks();
     private final VolvoCarsApi api;
 
-    VolvoCarsApiTest() throws VolvoCarsException {
+    VolvoCarsApiTest() throws Exception {
         AccountConfiguration config = new AccountConfiguration();
         config.clientId = "client";
         config.clientSecret = "secret";
         config.redirectUri = "http://openhab:8080/volvocars";
         VolatileStorage<String> storage = new VolatileStorage<>();
-        VolvoCarsOAuthClient oAuthClient = new VolvoCarsOAuthClient(http.httpClient, storage, "test", config);
+        VolvoCarsOAuthClient oAuthClient = new VolvoCarsOAuthClient(http.httpClient, new OAuthServiceMock().service,
+                storage, "test", config);
         String state = Objects.requireNonNull(
                 VolvoCarsAuthServletTestAccess.parseQuery(oAuthClient.createAuthorizationUrl()).get("state"));
         http.respond(TOKEN_URL, 200, "{\"access_token\": \"a\", \"refresh_token\": \"r\", \"expires_in\": 1799}");

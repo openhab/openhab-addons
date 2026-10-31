@@ -13,6 +13,7 @@
 package org.openhab.binding.volvocars.internal.api;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 import static org.openhab.binding.volvocars.internal.VolvoCarsBindingConstants.TOKEN_URL;
 
 import java.time.Clock;
@@ -21,6 +22,8 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -28,6 +31,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.volvocars.internal.config.AccountConfiguration;
 import org.openhab.binding.volvocars.internal.servlet.VolvoCarsAuthServletTestAccess;
+import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
+import org.openhab.core.auth.client.oauth2.OAuthException;
+import org.openhab.core.auth.client.oauth2.OAuthResponseException;
 import org.openhab.core.test.storage.VolatileStorage;
 
 /**
@@ -43,6 +49,7 @@ class VolvoCarsOAuthClientTest {
             """;
 
     private final HttpMocks http = new HttpMocks();
+    private final OAuthServiceMock oAuth;
     private final VolatileStorage<String> storage = new VolatileStorage<>();
     private final AccountConfiguration config = new AccountConfiguration();
     private Instant now = Instant.parse("2026-01-01T00:00:00Z");
@@ -64,6 +71,10 @@ class VolvoCarsOAuthClientTest {
         }
     };
 
+    VolvoCarsOAuthClientTest() throws Exception {
+        oAuth = new OAuthServiceMock();
+    }
+
     @BeforeEach
     void setUp() {
         config.clientId = "client";
@@ -73,7 +84,15 @@ class VolvoCarsOAuthClientTest {
     }
 
     private VolvoCarsOAuthClient createClient() {
-        return new VolvoCarsOAuthClient(http.httpClient, storage, PREFIX, config, clock);
+        return new VolvoCarsOAuthClient(http.httpClient, oAuth.service, storage, PREFIX, config, clock);
+    }
+
+    private VolvoCarsOAuthClient authorizedClient() throws VolvoCarsException {
+        VolvoCarsOAuthClient client = createClient();
+        String state = stateOf(client.createAuthorizationUrl());
+        http.respond(TOKEN_URL, 200, TOKEN_RESPONSE);
+        client.authorize("code", state);
+        return client;
     }
 
     @Test
@@ -104,7 +123,7 @@ class VolvoCarsOAuthClientTest {
     }
 
     @Test
-    void authorizeStoresRefreshToken() throws VolvoCarsException {
+    void authorizeHandsTokensToOAuthService() throws VolvoCarsException {
         VolvoCarsOAuthClient client = createClient();
         String state = stateOf(client.createAuthorizationUrl());
         http.respond(TOKEN_URL, 200, TOKEN_RESPONSE);
@@ -114,8 +133,14 @@ class VolvoCarsOAuthClientTest {
 
         assertTrue(client.isAuthorized());
         assertFalse(client.isPendingState(state));
+        AccessTokenResponse token = Objects.requireNonNull(oAuth.token);
+        assertEquals("access-1", token.getAccessToken());
+        assertEquals("refresh-1", token.getRefreshToken());
+        assertEquals(1799, token.getExpiresIn());
+        assertEquals(now, token.getCreatedOn());
         assertEquals("access-1", client.getAccessToken());
-        assertEquals("refresh-1", storage.get(PREFIX + ".refreshToken"));
+        // the binding only keeps the client id, the tokens are stored by the OAuth client service
+        assertEquals(Set.of(PREFIX + ".clientId"), Set.copyOf(storage.getKeys()));
     }
 
     @Test
@@ -138,80 +163,76 @@ class VolvoCarsOAuthClientTest {
     }
 
     @Test
-    void accessTokenIsRefreshedWhenExpiredAndRotatedRefreshTokenIsStored() throws VolvoCarsException {
-        VolvoCarsOAuthClient client = createClient();
-        String state = stateOf(client.createAuthorizationUrl());
-        http.respond(TOKEN_URL, 200, TOKEN_RESPONSE);
-        client.authorize("code", state);
+    void invalidatedAccessTokenIsRefreshed() throws Exception {
+        VolvoCarsOAuthClient client = authorizedClient();
+        oAuth.refreshReturns("access-2", "refresh-2");
 
-        http.respond(TOKEN_URL, 200, """
-                {"access_token": "access-2", "refresh_token": "refresh-2", "expires_in": 1799}
-                """);
-        now = now.plus(Duration.ofMinutes(10));
         assertEquals("access-1", client.getAccessToken());
+        verify(oAuth.service, never()).refreshToken();
 
-        now = now.plus(Duration.ofMinutes(20));
+        // e.g. after the API rejected the access token
+        client.invalidateAccessToken();
         assertEquals("access-2", client.getAccessToken());
-        assertEquals("refresh-2", storage.get(PREFIX + ".refreshToken"));
+        assertEquals("access-2", client.getAccessToken());
+        verify(oAuth.service).refreshToken();
     }
 
     @Test
-    void renewTokensRefreshesEvenIfAccessTokenIsStillValid() throws VolvoCarsException {
-        VolvoCarsOAuthClient client = createClient();
-        String state = stateOf(client.createAuthorizationUrl());
-        http.respond(TOKEN_URL, 200, TOKEN_RESPONSE);
-        client.authorize("code", state);
+    void renewTokensRefreshesEvenIfAccessTokenIsStillValid() throws Exception {
+        VolvoCarsOAuthClient client = authorizedClient();
+        oAuth.refreshReturns("access-2", "refresh-2");
 
-        http.respond(TOKEN_URL, 200, """
-                {"access_token": "access-2", "refresh_token": "refresh-2", "expires_in": 1799}
-                """);
         client.renewTokens();
 
+        verify(oAuth.service).refreshToken();
         assertEquals("access-2", client.getAccessToken());
-        assertEquals("refresh-2", storage.get(PREFIX + ".refreshToken"));
     }
 
     @Test
-    void rejectedRefreshTokenRequiresNewAuthorization() throws VolvoCarsException {
-        VolvoCarsOAuthClient client = createClient();
-        String state = stateOf(client.createAuthorizationUrl());
-        http.respond(TOKEN_URL, 200, TOKEN_RESPONSE);
-        client.authorize("code", state);
-        client.invalidateAccessToken();
+    void rejectedRefreshTokenRequiresNewAuthorization() throws Exception {
+        VolvoCarsOAuthClient client = authorizedClient();
+        OAuthResponseException rejected = new OAuthResponseException();
+        rejected.setError("invalid_grant");
+        when(oAuth.service.refreshToken()).thenThrow(rejected);
 
-        http.respond(TOKEN_URL, 400, "{\"error\": \"invalid_grant\"}");
+        VolvoCarsException e = assertThrows(VolvoCarsException.class, client::renewTokens);
+
+        assertTrue(e.isAuthorizationRequired());
+        assertFalse(client.isAuthorized());
+        assertNull(Objects.requireNonNull(oAuth.token).getRefreshToken());
+    }
+
+    @Test
+    void temporaryTokenEndpointFailureKeepsAuthorization() throws Exception {
+        VolvoCarsOAuthClient client = authorizedClient();
+        when(oAuth.service.refreshToken()).thenThrow(new OAuthException("Bad http response, http code 503"));
+
+        VolvoCarsException e = assertThrows(VolvoCarsException.class, client::renewTokens);
+
+        assertFalse(e.isAuthorizationRequired());
+        assertTrue(client.isAuthorized());
+        assertEquals("refresh-1", Objects.requireNonNull(oAuth.token).getRefreshToken());
+    }
+
+    @Test
+    void missingStoredTokenRequiresNewAuthorization() throws Exception {
+        VolvoCarsOAuthClient client = authorizedClient();
+        oAuth.token = null;
+
         VolvoCarsException e = assertThrows(VolvoCarsException.class, client::getAccessToken);
 
         assertTrue(e.isAuthorizationRequired());
         assertFalse(client.isAuthorized());
-        assertNull(storage.get(PREFIX + ".refreshToken"));
     }
 
     @Test
-    void temporaryTokenEndpointFailureKeepsAuthorization() throws VolvoCarsException {
-        VolvoCarsOAuthClient client = createClient();
-        String state = stateOf(client.createAuthorizationUrl());
-        http.respond(TOKEN_URL, 200, TOKEN_RESPONSE);
-        client.authorize("code", state);
-        client.invalidateAccessToken();
-
-        http.respond(TOKEN_URL, 503, "");
-        VolvoCarsException e = assertThrows(VolvoCarsException.class, client::getAccessToken);
-
-        assertFalse(e.isAuthorizationRequired());
-        assertTrue(client.isAuthorized());
-    }
-
-    @Test
-    void changedClientIdDiscardsTokens() throws VolvoCarsException {
-        VolvoCarsOAuthClient client = createClient();
-        String state = stateOf(client.createAuthorizationUrl());
-        http.respond(TOKEN_URL, 200, TOKEN_RESPONSE);
-        client.authorize("code", state);
+    void changedClientIdDiscardsTokens() throws Exception {
+        authorizedClient();
 
         config.clientId = "other-client";
         assertFalse(createClient().isAuthorized());
-        assertNull(storage.get(PREFIX + ".refreshToken"));
+        assertNull(Objects.requireNonNull(oAuth.token).getRefreshToken());
+        assertNull(storage.get(PREFIX + ".clientId"));
     }
 
     private static String stateOf(String authorizationUrl) {

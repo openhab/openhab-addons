@@ -20,6 +20,7 @@ import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.volvocars.internal.handler.AccountHandler;
 import org.openhab.binding.volvocars.internal.handler.VehicleHandler;
 import org.openhab.binding.volvocars.internal.servlet.VolvoCarsAuthServlet;
+import org.openhab.core.auth.client.oauth2.OAuthFactory;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.storage.Storage;
 import org.openhab.core.storage.StorageService;
@@ -46,13 +47,16 @@ public class VolvoCarsHandlerFactory extends BaseThingHandlerFactory {
     private final HttpClient httpClient;
     private final Storage<String> storage;
     private final VolvoCarsAuthServlet authServlet;
+    private final OAuthFactory oAuthFactory;
 
     @Activate
     public VolvoCarsHandlerFactory(@Reference HttpClientFactory httpClientFactory,
-            @Reference StorageService storageService, @Reference VolvoCarsAuthServlet authServlet) {
+            @Reference StorageService storageService, @Reference VolvoCarsAuthServlet authServlet,
+            @Reference OAuthFactory oAuthFactory) {
         this.httpClient = httpClientFactory.getCommonHttpClient();
         this.storage = storageService.getStorage(BINDING_ID, String.class.getClassLoader());
         this.authServlet = authServlet;
+        this.oAuthFactory = oAuthFactory;
     }
 
     @Override
@@ -65,7 +69,7 @@ public class VolvoCarsHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (THING_TYPE_ACCOUNT.equals(thingTypeUID)) {
-            return new AccountHandler((Bridge) thing, httpClient, storage, authServlet);
+            return new AccountHandler((Bridge) thing, httpClient, storage, authServlet, oAuthFactory);
         } else if (THING_TYPE_VEHICLE.equals(thingTypeUID)) {
             return new VehicleHandler(thing);
         }
