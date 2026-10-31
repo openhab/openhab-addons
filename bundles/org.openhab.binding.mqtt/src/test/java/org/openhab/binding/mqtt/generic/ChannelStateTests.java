@@ -53,6 +53,7 @@ import org.openhab.binding.mqtt.generic.values.NumberValue;
 import org.openhab.binding.mqtt.generic.values.OnOffValue;
 import org.openhab.binding.mqtt.generic.values.OpenCloseValue;
 import org.openhab.binding.mqtt.generic.values.PercentageValue;
+import org.openhab.binding.mqtt.generic.values.RollershutterValue;
 import org.openhab.binding.mqtt.generic.values.TextValue;
 import org.openhab.core.io.transport.mqtt.MqttBrokerConnection;
 import org.openhab.core.library.types.HSBType;
@@ -61,6 +62,7 @@ import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.RawType;
 import org.openhab.core.library.types.StopMoveType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.types.UpDownType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.transform.TransformationException;
@@ -180,6 +182,81 @@ public class ChannelStateTests {
 
         c.stop().get();
         verify(connectionMock).unsubscribe(eq("state"), eq(c));
+    }
+
+    @Test
+    public void publishUpDownSeparateTopicTest() throws Exception {
+        ChannelConfig config = ChannelConfigBuilder.create("state", "position").withUpDownCommandTopic("upDown")
+                .withStopCommandTopic("stopCommand").build();
+        RollershutterValue value = new RollershutterValue("UP", "DOWN", "STOP");
+        ChannelState c = spy(new ChannelState(config, channelUIDMock, value, channelStateUpdateListenerMock));
+
+        c.start(connectionMock, scheduler, 0).get(50, TimeUnit.MILLISECONDS);
+
+        c.publishValue(UpDownType.UP).get();
+        verify(connectionMock).publish(eq("upDown"),
+                argThat(p -> Arrays.equals(p, "UP".getBytes(StandardCharsets.UTF_8))), anyInt(), eq(false));
+
+        c.publishValue(new PercentType(42)).get();
+        verify(connectionMock).publish(eq("position"),
+                argThat(p -> Arrays.equals(p, "42".getBytes(StandardCharsets.UTF_8))), anyInt(), eq(false));
+
+        c.publishValue(StopMoveType.STOP).get();
+        verify(connectionMock).publish(eq("stopCommand"),
+                argThat(p -> Arrays.equals(p, "STOP".getBytes(StandardCharsets.UTF_8))), anyInt(), eq(false));
+
+        c.stop().get();
+    }
+
+    @Test
+    public void publishExtentsUpDownTopicTest() throws Exception {
+        ChannelConfig config = ChannelConfigBuilder.create("state", "position").withUpDownCommandTopic("upDown")
+                .build();
+        // transformExtentsToString enabled: 0%/100% are published as UP/DOWN on the upDown topic
+        RollershutterValue value = new RollershutterValue("UP", "DOWN", "STOP", "UP", "DOWN", false, true);
+        ChannelState c = spy(new ChannelState(config, channelUIDMock, value, channelStateUpdateListenerMock));
+
+        c.start(connectionMock, scheduler, 0).get(50, TimeUnit.MILLISECONDS);
+
+        c.publishValue(PercentType.ZERO).get();
+        verify(connectionMock).publish(eq("upDown"),
+                argThat(p -> Arrays.equals(p, "UP".getBytes(StandardCharsets.UTF_8))), anyInt(), eq(false));
+
+        c.publishValue(PercentType.HUNDRED).get();
+        verify(connectionMock).publish(eq("upDown"),
+                argThat(p -> Arrays.equals(p, "DOWN".getBytes(StandardCharsets.UTF_8))), anyInt(), eq(false));
+
+        c.publishValue(new PercentType(42)).get();
+        verify(connectionMock).publish(eq("position"),
+                argThat(p -> Arrays.equals(p, "42".getBytes(StandardCharsets.UTF_8))), anyInt(), eq(false));
+
+        c.stop().get();
+    }
+
+    @Test
+    public void publishExtentsNoTransformPositionTopicTest() throws Exception {
+        ChannelConfig config = ChannelConfigBuilder.create("state", "position").withUpDownCommandTopic("upDown")
+                .build();
+        // transformExtentsToString disabled: 0%/100% are numeric and stay on the position topic
+        RollershutterValue value = new RollershutterValue("UP", "DOWN", "STOP", "UP", "DOWN", false, false);
+        ChannelState c = spy(new ChannelState(config, channelUIDMock, value, channelStateUpdateListenerMock));
+
+        c.start(connectionMock, scheduler, 0).get(50, TimeUnit.MILLISECONDS);
+
+        c.publishValue(PercentType.ZERO).get();
+        verify(connectionMock).publish(eq("position"),
+                argThat(p -> Arrays.equals(p, "0".getBytes(StandardCharsets.UTF_8))), anyInt(), eq(false));
+
+        c.publishValue(PercentType.HUNDRED).get();
+        verify(connectionMock).publish(eq("position"),
+                argThat(p -> Arrays.equals(p, "100".getBytes(StandardCharsets.UTF_8))), anyInt(), eq(false));
+
+        // explicit UP/DOWN commands still use the upDown topic
+        c.publishValue(UpDownType.DOWN).get();
+        verify(connectionMock).publish(eq("upDown"),
+                argThat(p -> Arrays.equals(p, "DOWN".getBytes(StandardCharsets.UTF_8))), anyInt(), eq(false));
+
+        c.stop().get();
     }
 
     @Test
