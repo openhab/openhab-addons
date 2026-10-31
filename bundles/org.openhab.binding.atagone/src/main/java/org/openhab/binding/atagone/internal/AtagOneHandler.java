@@ -19,9 +19,10 @@ import java.security.SecureRandom;
 import java.time.Duration;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -408,26 +409,26 @@ public class AtagOneHandler extends BaseThingHandler {
         return true;
     }
 
-    public boolean enqueueChSchedulePeriodSet(String weekday, int periodIndex, int startMinutes, int endMinutes,
+    public boolean enqueueChSchedulePeriodSet(String weekday, int startMinutes, int endMinutes,
             double temperatureCelsius) {
         return enqueueSchedule("action:setChSchedulePeriod", true,
-                () -> composeChSchedulePeriodSet(weekday, periodIndex, startMinutes, endMinutes, temperatureCelsius));
+                () -> composeChSchedulePeriodSet(weekday, startMinutes, endMinutes, temperatureCelsius));
     }
 
-    public boolean enqueueChSchedulePeriodClear(String weekday, int periodIndex) {
+    public boolean enqueueChSchedulePeriodClear(String weekday, int startMinutes) {
         return enqueueSchedule("action:clearChSchedulePeriod", true,
-                () -> composeChSchedulePeriodClear(weekday, periodIndex));
+                () -> composeChSchedulePeriodClear(weekday, startMinutes));
     }
 
-    public boolean enqueueDhwSchedulePeriodSet(String weekday, int periodIndex, int startMinutes, int endMinutes,
+    public boolean enqueueDhwSchedulePeriodSet(String weekday, int startMinutes, int endMinutes,
             double temperatureCelsius) {
         return enqueueSchedule("action:setDhwSchedulePeriod", false,
-                () -> composeDhwSchedulePeriodSet(weekday, periodIndex, startMinutes, endMinutes, temperatureCelsius));
+                () -> composeDhwSchedulePeriodSet(weekday, startMinutes, endMinutes, temperatureCelsius));
     }
 
-    public boolean enqueueDhwSchedulePeriodClear(String weekday, int periodIndex) {
+    public boolean enqueueDhwSchedulePeriodClear(String weekday, int startMinutes) {
         return enqueueSchedule("action:clearDhwSchedulePeriod", false,
-                () -> composeDhwSchedulePeriodClear(weekday, periodIndex));
+                () -> composeDhwSchedulePeriodClear(weekday, startMinutes));
     }
 
     public boolean enqueueChScheduleFromJson(String json) {
@@ -439,29 +440,29 @@ public class AtagOneHandler extends BaseThingHandler {
     }
 
     @Nullable
-    ScheduleDTO composeChSchedulePeriodSet(String weekday, int periodIndex, int startMinutes, int endMinutes,
+    ScheduleDTO composeChSchedulePeriodSet(String weekday, int startMinutes, int endMinutes,
             double temperatureCelsius) {
         return composeSchedulePeriodChange(lastChScheduleEntries, CHANNEL_CH_SCHEDULE_BASE_TEMPERATURE, weekday,
-                periodIndex, new double[] { startMinutes, endMinutes, temperatureCelsius });
+                startMinutes, new double[] { startMinutes, endMinutes, temperatureCelsius });
     }
 
     @Nullable
-    ScheduleDTO composeChSchedulePeriodClear(String weekday, int periodIndex) {
+    ScheduleDTO composeChSchedulePeriodClear(String weekday, int startMinutes) {
         return composeSchedulePeriodChange(lastChScheduleEntries, CHANNEL_CH_SCHEDULE_BASE_TEMPERATURE, weekday,
-                periodIndex, null);
+                startMinutes, null);
     }
 
     @Nullable
-    ScheduleDTO composeDhwSchedulePeriodSet(String weekday, int periodIndex, int startMinutes, int endMinutes,
+    ScheduleDTO composeDhwSchedulePeriodSet(String weekday, int startMinutes, int endMinutes,
             double temperatureCelsius) {
         return composeSchedulePeriodChange(lastDhwScheduleEntries, CHANNEL_DHW_SCHEDULE_BASE_TEMPERATURE, weekday,
-                periodIndex, new double[] { startMinutes, endMinutes, temperatureCelsius });
+                startMinutes, new double[] { startMinutes, endMinutes, temperatureCelsius });
     }
 
     @Nullable
-    ScheduleDTO composeDhwSchedulePeriodClear(String weekday, int periodIndex) {
+    ScheduleDTO composeDhwSchedulePeriodClear(String weekday, int startMinutes) {
         return composeSchedulePeriodChange(lastDhwScheduleEntries, CHANNEL_DHW_SCHEDULE_BASE_TEMPERATURE, weekday,
-                periodIndex, null);
+                startMinutes, null);
     }
 
     @Nullable
@@ -491,24 +492,49 @@ public class AtagOneHandler extends BaseThingHandler {
         return ScheduleJson.parse(json, celsius.doubleValue(), lastEntries);
     }
 
-    private static boolean overlapsAnyOtherPeriod(double[][] dayEntries, int excludeIndex, double[] candidate) {
-        for (int i = 0; i < dayEntries.length; i++) {
-            if (i == excludeIndex) {
+    // An earlier period running past the new start is trimmed, not rejected, like the ATAG web UI does.
+    private static double @Nullable [][] insertPeriod(double[][] day, double[] candidate) {
+        if (!ScheduleJson.isValidPeriod(candidate[0], candidate[1])) {
+            return null;
+        }
+        List<double[]> result = new ArrayList<>();
+        for (double[] period : day) {
+            if (period[0] == candidate[0]) {
                 continue;
             }
-            double[] other = dayEntries[i];
-            if (ScheduleJson.periodsOverlap(candidate[0], candidate[1], other[0], other[1])) {
-                return true;
+            if (period[0] < candidate[0] && period[1] > candidate[0]) {
+                if (period[1] > candidate[1]) {
+                    return null;
+                }
+                result.add(new double[] { period[0], candidate[0], period[2] });
+            } else if (ScheduleJson.periodsOverlap(candidate[0], candidate[1], period[0], period[1])) {
+                return null;
+            } else {
+                result.add(period);
             }
         }
-        return false;
+        result.add(candidate);
+        result.sort(Comparator.comparingDouble(period -> period[0]));
+        return result.toArray(new double[0][]);
+    }
+
+    private static double @Nullable [][] removePeriod(double[][] day, double startMinutes) {
+        for (int i = 0; i < day.length; i++) {
+            if (day[i][0] == startMinutes) {
+                double[][] result = new double[day.length - 1][];
+                System.arraycopy(day, 0, result, 0, i);
+                System.arraycopy(day, i + 1, result, i, day.length - i - 1);
+                return result;
+            }
+        }
+        return null;
     }
 
     @Nullable
     private ScheduleDTO composeSchedulePeriodChange(double @Nullable [][][] lastEntries, String baseTempChannel,
-            String weekday, int periodIndex, double @Nullable [] newPeriod) {
+            String weekday, int startMinutes, double @Nullable [] newPeriod) {
         Integer weekdayNumber = WEEKDAY_BY_NAME.get(weekday.toLowerCase(Locale.ROOT));
-        if (weekdayNumber == null || lastEntries == null || periodIndex < 0) {
+        if (weekdayNumber == null || lastEntries == null) {
             return null;
         }
         int dayIndex = weekdayNumber - 1;
@@ -519,22 +545,10 @@ public class AtagOneHandler extends BaseThingHandler {
         if (dayEntries == null) {
             return null;
         }
-        double[][] updatedDay;
-        if (newPeriod != null) {
-            if (periodIndex > dayEntries.length || !ScheduleJson.isValidPeriod(newPeriod[0], newPeriod[1])
-                    || overlapsAnyOtherPeriod(dayEntries, periodIndex, newPeriod)) {
-                return null;
-            }
-            updatedDay = periodIndex < dayEntries.length ? dayEntries.clone()
-                    : Arrays.copyOf(dayEntries, dayEntries.length + 1);
-            updatedDay[periodIndex] = newPeriod;
-        } else {
-            if (periodIndex >= dayEntries.length) {
-                return null;
-            }
-            updatedDay = new double[dayEntries.length - 1][];
-            System.arraycopy(dayEntries, 0, updatedDay, 0, periodIndex);
-            System.arraycopy(dayEntries, periodIndex + 1, updatedDay, periodIndex, dayEntries.length - periodIndex - 1);
+        double[][] updatedDay = newPeriod != null ? insertPeriod(dayEntries, newPeriod)
+                : removePeriod(dayEntries, startMinutes);
+        if (updatedDay == null) {
+            return null;
         }
         State storedBaseTemp = stateMap.get(baseTempChannel);
         if (!(storedBaseTemp instanceof QuantityType<?> qt)) {

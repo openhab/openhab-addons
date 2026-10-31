@@ -18,6 +18,7 @@ import static org.mockito.Mockito.*;
 import static org.openhab.binding.atagone.internal.AtagOneBindingConstants.*;
 
 import java.lang.reflect.Field;
+import java.time.LocalTime;
 import java.util.Map;
 import java.util.Objects;
 
@@ -133,7 +134,7 @@ class AtagOneActionsTest {
     void activateVacationWithNoBoundHandlerDoesNotThrow() {
         AtagOneActions freshActions = new AtagOneActions();
 
-        assertDoesNotThrow(() -> freshActions.activateVacation(3600));
+        assertDoesNotThrow(() -> freshActions.activateVacation(1));
     }
 
     @Test
@@ -146,7 +147,7 @@ class AtagOneActionsTest {
 
     @Test
     void activateVacationComposesHolidayActivationWithExplicitDuration() throws Exception {
-        actions.activateVacation(2 * 86400); // 2 whole days
+        actions.activateVacation(2);
 
         ArgumentCaptor<ControlUpdateDTO> control = ArgumentCaptor.forClass(ControlUpdateDTO.class);
         verify(apiClient, timeout(VERIFY_TIMEOUT_MS)).updateControl(control.capture(), any());
@@ -154,13 +155,6 @@ class AtagOneActionsTest {
         assertEquals(CH_MODE_HOLIDAY, control.getValue().ch_mode);
         assertEquals(2 * 86400L, control.getValue().ch_mode_duration);
         assertEquals(2 * 86400L, control.getValue().vacation_duration);
-    }
-
-    @Test
-    void activateVacationRejectsNonWholeDay() throws Exception {
-        actions.activateVacation(12 * 3600); // 12 hours — not a whole day
-
-        verify(apiClient, never()).updateControl(any(), any());
     }
 
     @Test
@@ -172,7 +166,7 @@ class AtagOneActionsTest {
 
     @Test
     void activateExtendComposesExtendActivationWithExplicitDuration() throws Exception {
-        actions.activateExtend(2 * 3600); // 2 whole hours
+        actions.activateExtend(120);
 
         ArgumentCaptor<ControlUpdateDTO> control = ArgumentCaptor.forClass(ControlUpdateDTO.class);
         verify(apiClient, timeout(VERIFY_TIMEOUT_MS)).updateControl(control.capture(), any());
@@ -185,14 +179,14 @@ class AtagOneActionsTest {
 
     @Test
     void activateExtendAcceptsFifteenMinuteIncrement() throws Exception {
-        actions.activateExtend(1800); // 30 minutes — a whole 15-minute increment
+        actions.activateExtend(30);
 
         verify(apiClient, timeout(VERIFY_TIMEOUT_MS)).updateControl(any(), any());
     }
 
     @Test
     void activateExtendRejectsNonFifteenMinuteIncrement() throws Exception {
-        actions.activateExtend(1000); // not a whole 15-minute increment
+        actions.activateExtend(10);
 
         verify(apiClient, never()).updateControl(any(), any());
     }
@@ -206,7 +200,7 @@ class AtagOneActionsTest {
 
     @Test
     void activateFireplaceComposesFireplaceActivationWithExplicitDuration() throws Exception {
-        actions.activateFireplace(3600);
+        actions.activateFireplace(1);
 
         ArgumentCaptor<ControlUpdateDTO> control = ArgumentCaptor.forClass(ControlUpdateDTO.class);
         verify(apiClient, timeout(VERIFY_TIMEOUT_MS)).updateControl(control.capture(), any());
@@ -217,10 +211,8 @@ class AtagOneActionsTest {
     }
 
     @Test
-    void activateFireplaceRejectsNonWholeHour() throws Exception {
-        // 2400s (40 minutes) is the exact value confirmed to trigger a real device reboot — must be
-        // rejected before it ever reaches the device.
-        actions.activateFireplace(2400);
+    void activateFireplaceRejectsNegativeHours() throws Exception {
+        actions.activateFireplace(-1);
 
         verify(apiClient, never()).updateControl(any(), any());
     }
@@ -278,7 +270,7 @@ class AtagOneActionsTest {
 
     @Test
     void staticDelegatesCallThroughToInstanceMethods() throws Exception {
-        AtagOneActions.activateFireplace(actions, 3600);
+        AtagOneActions.activateFireplace(actions, 1);
 
         verify(apiClient, timeout(VERIFY_TIMEOUT_MS)).updateControl(any(), any());
     }
@@ -290,7 +282,7 @@ class AtagOneActionsTest {
         seedLastChScheduleEntries(entries);
         seedState(CHANNEL_CH_SCHEDULE_BASE_TEMPERATURE, new QuantityType<>(22.5, SIUnits.CELSIUS));
 
-        boolean accepted = actions.setChSchedulePeriod("monday", 1, 600, 1200, 20.0);
+        boolean accepted = actions.setChSchedulePeriod("monday", LocalTime.of(10, 0), LocalTime.of(20, 0), 20.0);
 
         assertTrue(accepted);
         ArgumentCaptor<ScheduleDTO> schedule = ArgumentCaptor.forClass(ScheduleDTO.class);
@@ -299,23 +291,95 @@ class AtagOneActionsTest {
     }
 
     @Test
-    void setChSchedulePeriodRejectsInvalidWeekdayWithoutSending() throws ReflectiveOperationException {
-        seedLastChScheduleEntries(new double[7][][]);
+    void setChSchedulePeriodTreatsMidnightEndAsEndOfDay() throws Exception {
+        double[][][] entries = new double[7][][];
+        entries[0] = new double[][] {};
+        seedLastChScheduleEntries(entries);
         seedState(CHANNEL_CH_SCHEDULE_BASE_TEMPERATURE, new QuantityType<>(22.5, SIUnits.CELSIUS));
 
-        boolean accepted = actions.setChSchedulePeriod("someday", 0, 0, 1440, 18.0);
+        boolean accepted = actions.setChSchedulePeriod("monday", LocalTime.of(22, 0), LocalTime.MIDNIGHT, 20.0);
 
-        assertFalse(accepted);
+        assertTrue(accepted);
+        ArgumentCaptor<ScheduleDTO> schedule = ArgumentCaptor.forClass(ScheduleDTO.class);
+        verify(apiClient, timeout(VERIFY_TIMEOUT_MS)).updateChSchedule(schedule.capture());
+        assertEquals(1320, schedule.getValue().entries[0][0][0]);
+        assertEquals(1440, schedule.getValue().entries[0][0][1]);
     }
 
     @Test
-    void setChSchedulePeriodRejectsOverlapWithAnotherPeriodWithoutSending() throws ReflectiveOperationException {
+    void setChSchedulePeriodAcceptsTimeStrings() throws Exception {
+        double[][][] entries = new double[7][][];
+        entries[0] = new double[][] {};
+        seedLastChScheduleEntries(entries);
+        seedState(CHANNEL_CH_SCHEDULE_BASE_TEMPERATURE, new QuantityType<>(22.5, SIUnits.CELSIUS));
+
+        boolean accepted = actions.setChSchedulePeriod("monday", "06:00", "22:00", 20.0);
+
+        assertTrue(accepted);
+        ArgumentCaptor<ScheduleDTO> schedule = ArgumentCaptor.forClass(ScheduleDTO.class);
+        verify(apiClient, timeout(VERIFY_TIMEOUT_MS)).updateChSchedule(schedule.capture());
+        assertEquals(360, schedule.getValue().entries[0][0][0]);
+        assertEquals(1320, schedule.getValue().entries[0][0][1]);
+    }
+
+    @Test
+    void setChSchedulePeriodRejectsMalformedTimeStringWithoutSending() throws Exception {
+        double[][][] entries = new double[7][][];
+        entries[0] = new double[][] {};
+        seedLastChScheduleEntries(entries);
+        seedState(CHANNEL_CH_SCHEDULE_BASE_TEMPERATURE, new QuantityType<>(22.5, SIUnits.CELSIUS));
+
+        boolean accepted = actions.setChSchedulePeriod("monday", "6am", "22:00", 20.0);
+
+        assertFalse(accepted);
+        verify(apiClient, never()).updateChSchedule(any());
+    }
+
+    @Test
+    void clearChSchedulePeriodAcceptsTimeString() throws Exception {
+        double[][][] entries = new double[7][][];
+        entries[0] = new double[][] { { 0, 360, 18.0 }, { 360, 1440, 20.0 } };
+        seedLastChScheduleEntries(entries);
+        seedState(CHANNEL_CH_SCHEDULE_BASE_TEMPERATURE, new QuantityType<>(22.5, SIUnits.CELSIUS));
+
+        assertTrue(actions.clearChSchedulePeriod("monday", "06:00"));
+        assertFalse(actions.clearChSchedulePeriod("monday", "6am"));
+        verify(apiClient, timeout(VERIFY_TIMEOUT_MS)).updateChSchedule(any());
+    }
+
+    @Test
+    void setChSchedulePeriodTrimsEarlierPeriodThatOverlapsTheNewStart() throws Exception {
         double[][][] entries = new double[7][][];
         entries[0] = new double[][] { { 0, 600, 18.0 } };
         seedLastChScheduleEntries(entries);
         seedState(CHANNEL_CH_SCHEDULE_BASE_TEMPERATURE, new QuantityType<>(22.5, SIUnits.CELSIUS));
 
-        boolean accepted = actions.setChSchedulePeriod("monday", 1, 300, 900, 20.0);
+        boolean accepted = actions.setChSchedulePeriod("monday", LocalTime.of(5, 0), LocalTime.of(15, 0), 20.0);
+
+        assertTrue(accepted);
+        ArgumentCaptor<ScheduleDTO> schedule = ArgumentCaptor.forClass(ScheduleDTO.class);
+        verify(apiClient, timeout(VERIFY_TIMEOUT_MS)).updateChSchedule(schedule.capture());
+        assertEquals(300, schedule.getValue().entries[0][0][1]);
+    }
+
+    @Test
+    void setChSchedulePeriodRejectsInvalidWeekdayWithoutSending() throws ReflectiveOperationException {
+        seedLastChScheduleEntries(new double[7][][]);
+        seedState(CHANNEL_CH_SCHEDULE_BASE_TEMPERATURE, new QuantityType<>(22.5, SIUnits.CELSIUS));
+
+        boolean accepted = actions.setChSchedulePeriod("someday", LocalTime.MIDNIGHT, LocalTime.MIDNIGHT, 18.0);
+
+        assertFalse(accepted);
+    }
+
+    @Test
+    void setChSchedulePeriodRejectsOverlapWithALaterPeriodWithoutSending() throws ReflectiveOperationException {
+        double[][][] entries = new double[7][][];
+        entries[0] = new double[][] { { 600, 900, 18.0 } };
+        seedLastChScheduleEntries(entries);
+        seedState(CHANNEL_CH_SCHEDULE_BASE_TEMPERATURE, new QuantityType<>(22.5, SIUnits.CELSIUS));
+
+        boolean accepted = actions.setChSchedulePeriod("monday", LocalTime.of(5, 0), LocalTime.of(12, 0), 20.0);
 
         assertFalse(accepted);
     }
@@ -335,7 +399,8 @@ class AtagOneActionsTest {
     void setChSchedulePeriodWithNoBoundHandlerDoesNotThrow() {
         AtagOneActions freshActions = new AtagOneActions();
 
-        assertDoesNotThrow(() -> freshActions.setChSchedulePeriod("monday", 0, 0, 1440, 18.0));
+        assertDoesNotThrow(
+                () -> freshActions.setChSchedulePeriod("monday", LocalTime.MIDNIGHT, LocalTime.MIDNIGHT, 18.0));
     }
 
     @Test
@@ -345,7 +410,7 @@ class AtagOneActionsTest {
         seedLastChScheduleEntries(entries);
         seedState(CHANNEL_CH_SCHEDULE_BASE_TEMPERATURE, new QuantityType<>(22.5, SIUnits.CELSIUS));
 
-        boolean accepted = actions.clearChSchedulePeriod("wednesday", 0);
+        boolean accepted = actions.clearChSchedulePeriod("wednesday", LocalTime.MIDNIGHT);
 
         assertTrue(accepted);
         ArgumentCaptor<ScheduleDTO> schedule = ArgumentCaptor.forClass(ScheduleDTO.class);
@@ -354,11 +419,11 @@ class AtagOneActionsTest {
     }
 
     @Test
-    void clearChSchedulePeriodRejectsOutOfRangeIndexWithoutSending() throws ReflectiveOperationException {
+    void clearChSchedulePeriodRejectsStartThatMatchesNoPeriodWithoutSending() throws ReflectiveOperationException {
         seedLastChScheduleEntries(new double[7][][]);
         seedState(CHANNEL_CH_SCHEDULE_BASE_TEMPERATURE, new QuantityType<>(22.5, SIUnits.CELSIUS));
 
-        boolean accepted = actions.clearChSchedulePeriod("monday", 0);
+        boolean accepted = actions.clearChSchedulePeriod("monday", LocalTime.NOON);
 
         assertFalse(accepted);
     }
@@ -370,7 +435,7 @@ class AtagOneActionsTest {
         seedLastDhwScheduleEntries(entries);
         seedState(CHANNEL_DHW_SCHEDULE_BASE_TEMPERATURE, new QuantityType<>(48.0, SIUnits.CELSIUS));
 
-        boolean accepted = actions.setDhwSchedulePeriod("saturday", 1, 600, 1200, 55.0);
+        boolean accepted = actions.setDhwSchedulePeriod("saturday", LocalTime.of(10, 0), LocalTime.of(20, 0), 55.0);
 
         assertTrue(accepted);
         verify(apiClient, timeout(VERIFY_TIMEOUT_MS)).updateDhwSchedule(any());
@@ -381,7 +446,7 @@ class AtagOneActionsTest {
         seedLastDhwScheduleEntries(new double[7][][]);
         seedState(CHANNEL_DHW_SCHEDULE_BASE_TEMPERATURE, new QuantityType<>(48.0, SIUnits.CELSIUS));
 
-        boolean accepted = actions.clearDhwSchedulePeriod("someday", 0);
+        boolean accepted = actions.clearDhwSchedulePeriod("someday", LocalTime.MIDNIGHT);
 
         assertFalse(accepted);
     }
@@ -393,7 +458,7 @@ class AtagOneActionsTest {
         seedLastChScheduleEntries(entries);
         seedState(CHANNEL_CH_SCHEDULE_BASE_TEMPERATURE, new QuantityType<>(22.5, SIUnits.CELSIUS));
 
-        boolean accepted = AtagOneActions.clearChSchedulePeriod(actions, "monday", 0);
+        boolean accepted = AtagOneActions.clearChSchedulePeriod(actions, "monday", LocalTime.MIDNIGHT);
 
         assertTrue(accepted);
         verify(apiClient, timeout(VERIFY_TIMEOUT_MS)).updateChSchedule(any());
