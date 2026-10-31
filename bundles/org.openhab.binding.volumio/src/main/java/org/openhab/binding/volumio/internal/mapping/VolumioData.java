@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.volumio.internal.mapping;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import javax.measure.quantity.Time;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -40,6 +43,9 @@ import org.openhab.core.library.unit.Units;
 public class VolumioData {
 
     private boolean initialized;
+
+    /** Fields that have received a value from the device at least once; the first value is always published. */
+    private final Set<String> seen = new HashSet<>();
 
     private String title = "";
     private boolean titleDirty;
@@ -111,6 +117,9 @@ public class VolumioData {
      * are missing.
      */
     public synchronized void update(JSONObject json) {
+        // Optional fields that are missing in this payload must not keep a stale dirty flag from the previous one.
+        stateDirty = volumeDirty = positionDirty = muteDirty = randomDirty = repeatDirty = repeatSingleDirty = false;
+        streamDirty = updateDbDirty = false;
         setTitle(text(json, VolumioBindingConstants.STATE_TITLE));
         setAlbum(text(json, VolumioBindingConstants.STATE_ALBUM));
         setArtist(text(json, VolumioBindingConstants.STATE_ARTIST));
@@ -203,7 +212,7 @@ public class VolumioData {
     }
 
     private void setTitle(String title) {
-        titleDirty = !title.equals(this.title);
+        titleDirty = !seen.add("title") || !title.equals(this.title);
         this.title = title;
     }
 
@@ -212,7 +221,7 @@ public class VolumioData {
     }
 
     private void setAlbum(String album) {
-        albumDirty = !album.equals(this.album);
+        albumDirty = !seen.add("album") || !album.equals(this.album);
         this.album = album;
     }
 
@@ -221,7 +230,7 @@ public class VolumioData {
     }
 
     private void setArtist(String artist) {
-        artistDirty = !artist.equals(this.artist);
+        artistDirty = !seen.add("artist") || !artist.equals(this.artist);
         this.artist = artist;
     }
 
@@ -231,7 +240,7 @@ public class VolumioData {
 
     private void setVolume(int volume) {
         int clamped = Math.max(0, Math.min(100, volume));
-        volumeDirty = clamped != this.volume;
+        volumeDirty = !seen.add("volume") || clamped != this.volume;
         this.volume = clamped;
     }
 
@@ -240,12 +249,12 @@ public class VolumioData {
     }
 
     private void setMute(boolean mute) {
-        muteDirty = mute != this.mute;
+        muteDirty = !seen.add("mute") || mute != this.mute;
         this.mute = mute;
     }
 
     private void setState(String state) {
-        stateDirty = !state.equals(this.state);
+        stateDirty = !seen.add("state") || !state.equals(this.state);
         this.state = state;
     }
 
@@ -254,7 +263,7 @@ public class VolumioData {
     }
 
     private void setTrackType(String trackType) {
-        trackTypeDirty = !trackType.equals(this.trackType);
+        trackTypeDirty = !seen.add("trackType") || !trackType.equals(this.trackType);
         this.trackType = trackType;
     }
 
@@ -263,7 +272,7 @@ public class VolumioData {
     }
 
     private void setCoverArtUrl(String coverArtUrl) {
-        coverArtDirty = !coverArtUrl.equals(this.coverArtUrl);
+        coverArtDirty = !seen.add("coverArt") || !coverArtUrl.equals(this.coverArtUrl);
         this.coverArtUrl = coverArtUrl;
     }
 
@@ -280,7 +289,7 @@ public class VolumioData {
     }
 
     private void setRandom(boolean val) {
-        randomDirty = val != this.random;
+        randomDirty = !seen.add("random") || val != this.random;
         this.random = val;
     }
 
@@ -289,7 +298,7 @@ public class VolumioData {
     }
 
     private void setRepeat(boolean val) {
-        repeatDirty = val != this.repeat;
+        repeatDirty = !seen.add("repeat") || val != this.repeat;
         this.repeat = val;
     }
 
@@ -298,7 +307,7 @@ public class VolumioData {
     }
 
     private void setRepeatSingle(boolean val) {
-        repeatSingleDirty = val != this.repeatSingle;
+        repeatSingleDirty = !seen.add("repeatSingle") || val != this.repeatSingle;
         this.repeatSingle = val;
     }
 
@@ -309,7 +318,7 @@ public class VolumioData {
 
     private void setDuration(int seconds) {
         int value = Math.max(0, seconds);
-        durationDirty = value != this.duration;
+        durationDirty = !seen.add("duration") || value != this.duration;
         this.duration = value;
     }
 
@@ -319,7 +328,7 @@ public class VolumioData {
     }
 
     private void setPosition(int position) {
-        positionDirty = position != this.position;
+        positionDirty = !seen.add("position") || position != this.position;
         this.position = position;
     }
 
@@ -333,7 +342,7 @@ public class VolumioData {
     }
 
     private void setUri(String uri) {
-        uriDirty = !uri.equals(this.uri);
+        uriDirty = !seen.add("uri") || !uri.equals(this.uri);
         this.uri = uri;
     }
 
@@ -347,7 +356,7 @@ public class VolumioData {
     }
 
     private void setService(String service) {
-        serviceDirty = !service.equals(this.service);
+        serviceDirty = !seen.add("service") || !service.equals(this.service);
         this.service = service;
     }
 
@@ -356,7 +365,7 @@ public class VolumioData {
     }
 
     private void setSampleRate(String sampleRate) {
-        sampleRateDirty = !sampleRate.equals(this.sampleRate);
+        sampleRateDirty = !seen.add("sampleRate") || !sampleRate.equals(this.sampleRate);
         this.sampleRate = sampleRate;
     }
 
@@ -365,7 +374,7 @@ public class VolumioData {
     }
 
     private void setBitDepth(String bitDepth) {
-        bitDepthDirty = !bitDepth.equals(this.bitDepth);
+        bitDepthDirty = !seen.add("bitDepth") || !bitDepth.equals(this.bitDepth);
         this.bitDepth = bitDepth;
     }
 
@@ -374,7 +383,7 @@ public class VolumioData {
     }
 
     private void setAudioChannels(String audioChannels) {
-        audioChannelsDirty = !audioChannels.equals(this.audioChannels);
+        audioChannelsDirty = !seen.add("audioChannels") || !audioChannels.equals(this.audioChannels);
         this.audioChannels = audioChannels;
     }
 
@@ -383,7 +392,7 @@ public class VolumioData {
     }
 
     private void setStream(boolean val) {
-        streamDirty = val != this.stream;
+        streamDirty = !seen.add("stream") || val != this.stream;
         this.stream = val;
     }
 
@@ -392,7 +401,7 @@ public class VolumioData {
     }
 
     private void setUpdateDb(boolean val) {
-        updateDbDirty = val != this.updateDb;
+        updateDbDirty = !seen.add("updateDb") || val != this.updateDb;
         this.updateDb = val;
     }
 

@@ -418,20 +418,20 @@ public class VolumioHandler extends BaseThingHandler {
             return;
         }
 
+        // Registration and connect() stay inside the lifecycle guard, so dispose() cannot close the service in between.
         synchronized (lifecycleLock) {
             if (disposed) {
                 service.close();
                 return;
             }
             volumio = service;
+            service.on(Socket.EVENT_CONNECT, connectListener());
+            service.on(Socket.EVENT_DISCONNECT, disconnectListener());
+            service.on(Socket.EVENT_CONNECT_ERROR, connectErrorListener());
+            service.on(VolumioEvents.PUSH_STATE, pushStateListener());
+            service.on(VolumioEvents.PUSH_QUEUE, pushQueueListener());
+            service.connect();
         }
-
-        service.on(Socket.EVENT_CONNECT, connectListener());
-        service.on(Socket.EVENT_DISCONNECT, disconnectListener());
-        service.on(Socket.EVENT_CONNECT_ERROR, connectErrorListener());
-        service.on(VolumioEvents.PUSH_STATE, pushStateListener());
-        service.on(VolumioEvents.PUSH_QUEUE, pushQueueListener());
-        service.connect();
     }
 
     @Override
