@@ -146,14 +146,12 @@ public class OSHISystemInfo implements SystemInfoInterface {
     }
 
     /**
-     * Returns the network interface with the given index. The list of interfaces is read once at initialization. If
-     * an interface was not available at that time (e.g. network not yet up during boot) or has changed since, the list
-     * is re-read (at most once per {@link #NETWORK_REFRESH_INTERVAL_MS}) before giving up.
+     * Returns the network interface with the given index. The list of interfaces is re-read before the lookup (at most
+     * once per {@link #NETWORK_REFRESH_INTERVAL_MS}), so interfaces that were not available at initialization (e.g.
+     * network not yet up during boot), were added, removed or reordered are always reflected.
      */
     private NetworkIF getNetworkIF(int index) throws DeviceNotFoundException {
-        if (networks == null || networks.size() <= index) {
-            refreshNetworks();
-        }
+        refreshNetworks();
         return getDevice(networks, index);
     }
 
@@ -731,6 +729,7 @@ public class OSHISystemInfo implements SystemInfoInterface {
 
     @Override
     public int getNetworkIFCount() {
+        refreshNetworks();
         return networks.size();
     }
 
