@@ -30,6 +30,7 @@ public class AuthRegisterMacDmsTokenTO {
 
     @Override
     public @NonNull String toString() {
-        return "AuthRegisterMacDmsTokenTO{devicePrivateKey='" + devicePrivateKey + "', adpToken='" + adpToken + "'}";
+        // devicePrivateKey and adpToken are secrets and must not be exposed
+        return "AuthRegisterMacDmsTokenTO{}";
     }
 }
