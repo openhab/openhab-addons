@@ -9,29 +9,27 @@
 		<semantic-equipment-tag>EVSE</semantic-equipment-tag>
 		<channels>
 			<channel id="state" typeId="state">
-				<description>Current operational state of the wallbox, read from Modbus register 1000.</description>
+				<description>Current numeric operational state of the wallbox.</description>
 			</channel>
 			<channel id="enableduser" typeId="enabled-user">
-				<description>Enable or disable charging. Commands use Modbus; availability readback comes from REST or UDP when
-					available.</description>
+				<description>Enable or disable charging.</description>
 			</channel>
 			<channel id="wallbox" typeId="plug-wallbox">
-				<description>Whether the cable is plugged into the wallbox, derived from cable state when Modbus is available.</description>
+				<description>Whether the cable is plugged into the wallbox.</description>
 			</channel>
 			<channel id="vehicle" typeId="plug-vehicle">
-				<description>Whether a vehicle is connected, derived from cable state when Modbus is available.</description>
+				<description>Whether a vehicle is connected.</description>
 			</channel>
 			<channel id="locked" typeId="locked">
-				<description>Whether the charging plug is locked, derived from cable state when Modbus is available.</description>
+				<description>Whether the charging plug is locked.</description>
 			</channel>
 			<channel id="unlockplug" typeId="unlock-plug">
-				<description>Send ON to unlock the charging plug through Modbus, UDP, or REST. Charging must be stopped before
-					unlocking.</description>
+				<description>Send ON to unlock the charging plug. Charging must be stopped before unlocking.</description>
 			</channel>
 			<channel id="errorcode" typeId="error-code">
 				<label>Modbus Error Code</label>
-				<description>Raw numeric wallbox error code from Modbus register 1006; zero means no error. Its encoding is
-					different from REST error names and the two UDP error words.</description>
+				<description>Numeric wallbox error code; zero means no error. Its encoding differs from REST error names and UDP
+					error words.</description>
 			</channel>
 			<channel id="I1" typeId="current">
 				<label>Measured Current Phase 1</label>
@@ -47,13 +45,15 @@
 			</channel>
 			<channel id="maxsystemcurrent" typeId="hardware-current-limit">
 				<label>Hardware Current Limit</label>
-				<description>Maximum current supported by the wallbox hardware, reported by Modbus or UDP. This is not the user
-					setpoint or the current actually drawn by the vehicle.</description>
+				<description>Maximum current supported by the wallbox hardware. This is not the user
+					setpoint or the current actually
+					drawn by the vehicle.</description>
 			</channel>
 			<channel id="maxpilotcurrent" typeId="pilot-current">
 				<label>Offered Charging Current</label>
-				<description>Maximum charging current currently offered to the vehicle, reported by Modbus or UDP. The vehicle may
-					draw less; I1, I2 and I3 report actual measured current.</description>
+				<description>Maximum charging current currently offered to the vehicle. The vehicle may
+					draw less; I1, I2 and I3
+					report actual measured current.</description>
 			</channel>
 			<channel id="U1" typeId="voltage">
 				<label>Voltage Phase 1</label>
@@ -81,8 +81,7 @@
 				<description>Energy delivered in the current charging session, in watt-hours.</description>
 			</channel>
 			<channel id="sessionrfidtag" typeId="session-rfid-tag">
-				<description>RFID tag used for the last charging session, represented by the hexadecimal Modbus RFID register. Only
-					available when RFID is enabled.</description>
+				<description>Hexadecimal RFID tag used for the last charging session. Available only when RFID is enabled.</description>
 			</channel>
 			<channel id="setenergylimit" typeId="set-energy-limit">
 				<description>Energy limit for an already running or the next charging session. Send an energy quantity, for example
@@ -92,54 +91,51 @@
 				<description>Communication source allowed to control phase switching: disabled, OCPP, REST, Modbus or UDP.</description>
 			</channel>
 			<channel id="phaseswitchstate" typeId="phase-switch-state">
-				<description>Phase-switch state, 1 for single-phase or 3 for three-phase charging. Writable through Modbus or UDP;
-					read-only through REST. Use togglephaseswitch for a REST phase toggle.</description>
+				<description>Phase-switch state, 0 when phase switching is deactivated, 1 for single-phase or 3 for three-phase
+					charging. Commands require the selected phaseswitchsource.</description>
 			</channel>
 			<channel id="failsafecurrent" typeId="failsafe-current-setting">
 				<label>Failsafe Current Setting</label>
-				<description>Failsafe current in amperes. Read and written through Modbus; UDP writes combine this value with the
-					current timeout from report 2.</description>
+				<description>Charging-current limit applied after the communication timeout, in amperes.</description>
 			</channel>
 			<channel id="failsafetimeout" typeId="failsafe-timeout-setting">
 				<label>Failsafe Timeout Setting</label>
-				<description>Communication timeout after which failsafe current is applied, in seconds. Read and written through
-					Modbus; UDP writes combine this value with the failsafe current from report 2. This is not the delayed user-current
-					timer.</description>
+				<description>Communication timeout in seconds before failsafe current applies. This is not the delayed
+					current-setpoint timer.</description>
 			</channel>
 			<channel id="failsafepersist" typeId="register-trigger">
 				<label>Persist Failsafe Settings</label>
-				<description>Send ON to save the active failsafe settings permanently on a P30 wallbox through Modbus or
-					UDP.</description>
+				<description>Send ON to save active failsafe settings permanently on a P30 wallbox.</description>
 			</channel>
 			<channel id="fastchargingstatus" typeId="fast-charging-status">
-				<description>P40-only raw fast-charging status from Modbus register 1200. Removed after a P30 model is identified.</description>
+				<description>Raw fast-charging status. Available only on P40.</description>
 			</channel>
 			<channel id="activatefastcharging" typeId="register-trigger">
 				<label>Activate Fast Charging</label>
-				<description>Send ON to activate fast charging on P40. Removed after a P30 model is identified.</description>
+				<description>Send ON to activate fast charging. Available only on P40.</description>
 			</channel>
 			<channel id="enabledsystem" typeId="enabled-system">
-				<description>Wallbox activation state imposed by the system, reported by UDP Enable sys. This is not the writable
+				<description>Wallbox activation state imposed by the system. This is not the writable
 					user enable command.</description>
 			</channel>
 			<channel id="maxpresetcurrent" typeId="current-setpoint">
 				<label>User Charging Current Setpoint</label>
-				<description>User-requested maximum charging current, in amperes. Commands use Modbus when available and otherwise
-					use UDP. This is a setpoint, not measured current.</description>
+				<description>User-requested maximum charging current, in amperes. This is a setpoint, not measured current.</description>
 			</channel>
 			<channel id="maxpresetcurrentrange" typeId="range">
 				<label>UDP User Current Setpoint (%)</label>
 				<description>Percentage representation of maxpresetcurrent, mapped between 6 A and the hardware current limit.
 					Both
-					channels control the same UDP user-current setpoint.</description>
+					channels control the same setpoint.</description>
 			</channel>
 			<channel id="currtimer" typeId="current-timer">
 				<label>Delayed User Current Setpoint</label>
-				<description>Current that will replace the UDP user-current setpoint when currtimertimeout expires. This is the
-					delayed currtime setting, not actual charging current.</description>
+				<description>Delayed charging-current setpoint that takes effect when currtimertimeout expires. This is not
+					measured
+					current.</description>
 			</channel>
 			<channel id="currtimertimeout" typeId="current-timer-timeout">
-				<description>Remaining time before the delayed UDP user-current setpoint becomes active, in seconds.</description>
+				<description>Remaining time in seconds before the delayed charging-current setpoint becomes active.</description>
 			</channel>
 			<channel id="maxpilotcurrentdutycyle" typeId="pilot-current-duty-cycle">
 				<label>Control Pilot Duty Cycle</label>
@@ -154,30 +150,27 @@
 					wallbox.</description>
 			</channel>
 			<channel id="udpstop" typeId="udp-stop">
-				<description>Send a stop command over UDP using the explicitly supplied 16-digit session RFID tag. No RFID report
-					is
-					read to construct this command.</description>
+				<description>Send a stop command over UDP using the explicitly supplied 16-digit session RFID tag.</description>
 			</channel>
 			<channel id="sessionid" typeId="session-id">
-				<description>Identifier of the last charging session from UDP report 100.</description>
+				<description>Identifier of the current or latest charging session, retained after completion.</description>
 			</channel>
 			<channel id="sessionrfidclass" typeId="session-rfid-class">
-				<description>RFID authorization class used for the last charging session from UDP report 100.</description>
+				<description>RFID authorization class used for the last charging session.</description>
 			</channel>
 			<channel id="input" typeId="x1">
 				<label>X1 Enable Input</label>
-				<description>State of the physical X1 enable input, reported by the UDP Input field. This is separate from the
-					REST
-					x2active flag.</description>
+				<description>State of the physical X1 enable input.</description>
 			</channel>
 			<channel id="output" typeId="x2">
 				<label>X2 Switched Output</label>
-				<description>State of the physical X2 switched output. Send ON or OFF to control it through the UDP output command;
-					X1 is the separate enable input.</description>
+				<description>X2 output: 0 opens, 1 closes, and values of at least 10 configure pulses per kWh. REST provides
+					readback only. Commands require DSW1.2 OFF.</description>
 			</channel>
 			<channel id="display" typeId="display">
-				<description>Transient wallbox display text sent through UDP on supported P30 models. The setDisplay rule action
-					also allows display-duration limits.</description>
+				<description>Transient wallbox display text on supported models. The setDisplay rule action
+					also allows
+					display-duration limits.</description>
 			</channel>
 			<channel id="error1" typeId="error-word-1">
 				<label>UDP Error Word 1</label>
@@ -195,10 +188,10 @@
 				<description>System uptime since the wallbox was last reset, in seconds.</description>
 			</channel>
 			<channel id="timequality" typeId="time-quality">
-				<description>Wallbox clock synchronization quality reported by UDP timeQ, from 0 to 3.</description>
+				<description>Wallbox clock synchronization quality, from 0 to 3.</description>
 			</channel>
 			<channel id="bootflag" typeId="boot-flag">
-				<description>Raw UDP setBoot diagnostic value; its semantics are not documented in the UDP Programmer's Guide.</description>
+				<description>Raw boot diagnostic value; its meaning is not documented by KEBA.</description>
 			</channel>
 			<channel id="dipswitch1" typeId="dip-switch">
 				<label>DIP Switch Block 1</label>
@@ -209,41 +202,37 @@
 				<description>Raw hexadecimal value of DIP-switch block 2.</description>
 			</channel>
 			<channel id="reststate" typeId="textual-state">
-				<description>Textual operational state reported by the REST API, for example CHARGING or READY_FOR_CHARGING.
-					This
-					retains REST state names alongside the numeric Modbus state.</description>
+				<description>Textual operational state from REST, for example CHARGING or READY_FOR_CHARGING; retained alongside
+					the
+					numeric state.</description>
 			</channel>
 			<channel id="error" typeId="error-name">
 				<label>REST Error Name</label>
-				<description>Wallbox errorCode name reported by REST, for example TEMPERATURE_DERATING. This is complementary to,
-					not numerically equivalent to, the Modbus error code.</description>
+				<description>Wallbox error-code name from REST, for example TEMPERATURE_DERATING. It is not numerically
+					equivalent to
+					the Modbus error code.</description>
 			</channel>
 			<channel id="reserved" typeId="status">
 				<label>Reserved</label>
-				<description>Whether the wallbox has an active reservation, reported by the REST reserved field.</description>
-			</channel>
-			<channel id="restoutput" typeId="status">
-				<label>REST X2 Output Active</label>
-				<description>Whether the X2 output is active, reported by the REST x2active flag. This is separate from the UDP
-					X1
-					input and the UDP output command channel.</description>
+				<description>Whether the wallbox has an active reservation.</description>
 			</channel>
 			<channel id="temperature" typeId="temperature">
-				<description>Internal wallbox temperature from the REST meter data, in degrees Celsius.</description>
+				<description>Internal wallbox temperature, in degrees Celsius.</description>
 			</channel>
 			<channel id="externalmeter" typeId="status">
 				<label>External Meter</label>
-				<description>Whether the wallbox reports an external meter through REST hasExternalMeter; not an external-meter
-					energy reading.</description>
+				<description>Whether an external meter is present; this is not an external-meter energy reading.</description>
 			</channel>
 			<channel id="session" typeId="session-active">
-				<description>Whether a charging session is currently active, reported by REST sessionActive.</description>
+				<description>Whether a charging session is active.</description>
 			</channel>
 			<channel id="sessionstart" typeId="session-start">
-				<description>Start time of the latest charging session returned by the REST session endpoint.</description>
+				<description>Start time of the current or latest charging session, retained after completion. Requires a valid
+					absolute timestamp.</description>
 			</channel>
 			<channel id="sessionduration" typeId="session-duration">
-				<description>Duration of the latest charging session, in seconds, from the REST session endpoint.</description>
+				<description>Elapsed or final duration of the current or latest charging session, in seconds, retained after
+					completion.</description>
 			</channel>
 			<channel id="start" typeId="command">
 				<label>Start Charging</label>
@@ -251,7 +240,9 @@
 			</channel>
 			<channel id="stop" typeId="command">
 				<label>Stop Charging</label>
-				<description>Send ON to request that the REST API stops the active charging session.</description>
+				<description>Send ON to stop charging. Modbus TCP suspends the session by setting the charging current
+					to 0 mA until
+					a new current is set; without Modbus TCP, the REST API stops the session.</description>
 			</channel>
 			<channel id="togglephaseswitch" typeId="command">
 				<label>Toggle Phase Switch</label>
@@ -259,28 +250,29 @@
 					resets to OFF after a successful request. This does not select a target phase count.</description>
 			</channel>
 			<channel id="authon" typeId="authentication-enabled">
-				<description>Whether charging authorization is enabled, reported by REST authorizationEnabled when available.</description>
+				<description>Whether charging authorization is enabled.</description>
 			</channel>
 			<channel id="permanentlylocked" typeId="permanent-lock">
-				<description>Enable or disable permanent plug locking through REST. This is a locking policy, not the current
-					physical plug-lock state.</description>
+				<description>Enable or disable permanent plug locking. This is a locking policy, not the current
+					physical plug-lock
+					state.</description>
 			</channel>
 			<channel id="maxphases" typeId="numeric-value">
 				<label>Maximum Phases</label>
-				<description>Maximum number of charging phases supported by the wallbox, reported by REST maxPhases.</description>
+				<description>Maximum number of charging phases supported by the wallbox.</description>
 			</channel>
 			<channel id="phaseconfiguration" typeId="phase-configuration">
-				<description>Configured phase order reported by REST phaseUsed, rather than just the number of active phases.</description>
+				<description>Configured phase order, rather than just the number of active phases.</description>
 			</channel>
 			<channel id="dipswitchsettings" typeId="dipswitch-settings">
-				<description>Raw JSON array of DIP-switch settings reported by REST. Null entries are preserved.</description>
+				<description>Raw DIP-switch settings as a JSON array. Null entries are preserved.</description>
 			</channel>
 			<channel id="dipswitchinterpretation" typeId="dipswitch-interpretation">
-				<description>Named DIP-switch settings returned by the REST interpretation endpoint as a JSON object.</description>
+				<description>Named DIP-switch settings as a JSON object.</description>
 			</channel>
 			<channel id="reboot" typeId="command">
 				<label>Reboot</label>
-				<description>Send ON to request a wallbox reboot through the REST API.</description>
+				<description>Send ON to request a wallbox reboot.</description>
 			</channel>
 		</channels>
 		<properties>
@@ -468,9 +460,11 @@
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="x2" advanced="true">
-		<item-type>Switch</item-type>
+		<item-type>Number</item-type>
 		<label>X2</label>
-		<description>State of the X2 output</description>
+		<description>X2 output setting: 0 opens, 1 closes, and values of at least 10 configure pulses per kWh. Requires
+			DSW1.2
+			OFF.</description>
 		<tags>
 			<tag>Control</tag>
 		</tags>
@@ -509,8 +503,7 @@
 	<channel-type id="current-timer" advanced="true">
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>Delayed Preset Current</label>
-		<description>Current that will replace the preset current once the delayed-current timeout expires, as set by the
-			"currtime" command</description>
+		<description>Charging-current setpoint that takes effect after the activation delay</description>
 		<tags>
 			<tag>Setpoint</tag>
 			<tag>Current</tag>
@@ -520,7 +513,7 @@
 	<channel-type id="current-timer-timeout" advanced="true">
 		<item-type>Number:Time</item-type>
 		<label>Delayed Preset Current Timeout</label>
-		<description>Remaining time before the delayed preset current set by the "currtime" command is applied</description>
+		<description>Remaining time before the delayed charging-current setpoint becomes active</description>
 		<tags>
 			<tag>Setpoint</tag>
 		</tags>
@@ -529,7 +522,7 @@
 	<channel-type id="phase-switch-source" advanced="true">
 		<item-type>Number</item-type>
 		<label>Phase Switching Source</label>
-		<description>Communication channel allowed to control phase switching, set with the "x2src" command</description>
+		<description>Communication source allowed to control phase switching</description>
 		<tags>
 			<tag>Status</tag>
 		</tags>
@@ -546,12 +539,15 @@
 	<channel-type id="phase-switch-state" advanced="true">
 		<item-type>Number</item-type>
 		<label>Phase Switching State</label>
-		<description>Phase-switch state: 1 for single-phase charging or 3 for three-phase charging</description>
+		<description>Phase-switch state: 0 when phase switching is deactivated, 1 for single-phase charging or 3 for
+			three-phase
+			charging</description>
 		<tags>
 			<tag>Status</tag>
 		</tags>
 		<state readOnly="false">
 			<options>
+				<option value="0">Phase switching deactivated</option>
 				<option value="1">Single-phase charging</option>
 				<option value="3">3-phase charging</option>
 			</options>
@@ -560,12 +556,15 @@
 	<channel-type id="phase-switch-state-readonly" advanced="true">
 		<item-type>Number</item-type>
 		<label>Phase Switching State</label>
-		<description>Phase-switch state: 1 for single-phase charging or 3 for three-phase charging</description>
+		<description>Phase-switch state: 0 when phase switching is deactivated, 1 for single-phase charging or 3 for
+			three-phase
+			charging</description>
 		<tags>
 			<tag>Status</tag>
 		</tags>
 		<state readOnly="true">
 			<options>
+				<option value="0">Phase switching deactivated</option>
 				<option value="1">Single-phase charging</option>
 				<option value="3">3-phase charging</option>
 			</options>
@@ -737,7 +736,7 @@
 	<channel-type id="boot-flag" advanced="true">
 		<item-type>Number</item-type>
 		<label>Boot Flag</label>
-		<description>Raw value reported by report 1 as "setBoot"; not documented in the UDP Programmers Guide V2.05</description>
+		<description>Raw boot diagnostic value; its meaning is not documented by KEBA</description>
 		<tags>
 			<tag>Status</tag>
 		</tags>
@@ -746,9 +745,8 @@
 	<channel-type id="dip-switch" advanced="true">
 		<item-type>String</item-type>
 		<label>DIP Switch Block</label>
-		<description>Raw hexadecimal DIP switch value reported by report 1; not documented in the UDP Programmers Guide
-			V2.05,
-			see the installation manual for the meaning of individual switches</description>
+		<description>Raw hexadecimal DIP-switch value; consult the installation manual for the meaning of individual
+			switches</description>
 		<tags>
 			<tag>Status</tag>
 		</tags>
@@ -803,8 +801,7 @@
 	<channel-type id="register-trigger" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Momentary Register Command</label>
-		<description>Send ON to submit the associated Modbus register value; the channel resets to OFF after a successful
-			write</description>
+		<description>Send ON to perform this action; the channel resets to OFF after success</description>
 		<tags>
 			<tag>Switch</tag>
 		</tags>
@@ -923,7 +920,7 @@
 	<channel-type id="command">
 		<item-type>Switch</item-type>
 		<label>REST Command</label>
-		<description>Send ON to execute this one-shot REST command</description>
+		<description>Send ON to execute this one-shot command</description>
 		<tags>
 			<tag>Control</tag>
 		</tags>
