@@ -26,6 +26,7 @@ import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettings
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyShortLightStatus;
 import org.openhab.binding.shelly.internal.api1.Shelly1CoapServer;
 import org.openhab.binding.shelly.internal.config.ShellyBindingRuntimeConfig;
+import org.openhab.binding.shelly.internal.handler.component.ShellyComponentMedia;
 import org.openhab.binding.shelly.internal.handler.component.ShellyComponentThermostat;
 import org.openhab.binding.shelly.internal.provider.ShellyChannelDefinitions;
 import org.openhab.binding.shelly.internal.provider.ShellyStateDescriptionProvider;
@@ -88,6 +89,11 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
         } else if (groupName.startsWith(CHANNEL_GROUP_ROL_CONTROL)
                 && groupName.length() > CHANNEL_GROUP_ROL_CONTROL.length()) {
             rIndex = Integer.parseInt(substringAfter(channelUID.getGroupId(), CHANNEL_GROUP_ROL_CONTROL)) - 1;
+        }
+
+        if (CHANNEL_GROUP_MEDIA.equals(groupName)) {
+            ShellyComponentMedia.handleCommand(this, channelUID.getIdWithoutGroup(), command);
+            return true;
         }
 
         switch (channelUID.getIdWithoutGroup()) {

@@ -14,6 +14,7 @@ package org.openhab.binding.shelly.internal.api2;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -23,6 +24,9 @@ import org.openhab.binding.shelly.internal.api.ShellyApiException;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2DeviceStatusPower;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusSys;
+import org.openhab.binding.shelly.internal.api2.dto.ShellyMediaJsonDTO.Shelly2DeviceStatusMedia;
+import org.openhab.binding.shelly.internal.api2.dto.ShellyMediaJsonDTO.Shelly2DeviceStatusMedia.Shelly2DeviceStatusMediaPlayback;
+import org.openhab.binding.shelly.internal.api2.dto.ShellyMediaJsonDTO.Shelly2DeviceStatusMedia.Shelly2DeviceStatusMediaPlayback.Shelly2DeviceStatusMediaMeta;
 import org.openhab.binding.shelly.internal.api2.dto.ShellyThermostatJsonDTO.Shelly2DeviceStatusThermostat;
 import org.openhab.binding.shelly.internal.util.ShellyUtils;
 
@@ -36,7 +40,7 @@ import com.google.gson.Gson;
 @NonNullByDefault
 public class Shelly2WallDisplayStatusJsonTest {
 
-    private static final String DEVICE_STATUS = """
+    private static final String DEVICE_STATUS_PLAYING = """
             {"ble":{"mac":"00:00:46:B8:EB:41"},"cloud":{"connected":true},"mqtt":{"connected":false},
             "temperature:0":{"id":0,"tC":26.2,"tF":79},"humidity:0":{"id":0,"rh":59},
             "illuminance:0":{"id":0,"lux":5,"illumination":"twilight"},
@@ -48,16 +52,20 @@ public class Shelly2WallDisplayStatusJsonTest {
             "relay_in_thermostat":false,"relays_in_thermostat":[],"sensor_in_thermostat":false,
             "awaiting_auth_code":false,"ch":["switch:0"]},
             "wifi":{"sta_ip":"192.168.60.115","status":"got ip","ssid":"MiOt","rssi":-55},
+            "media":{"playback":{"enable":true,"buffering":false,"volume":6,"media_type":"RADIO",
+            "media_meta":{"title":"Radio Regenbogen 2","thumb":"https://cdn.example.com/logo.png"}},
+            "total_size":3885854,"total_size_h":"3.706 MB",
+            "item_counts":{"audio":0,"alert":0,"ringtone":10,"photo":0,"video":0}},
             "devicepower:0":{"id":0,"external":{"present":true}},
-            "devicepower:1":{"id":1,"device":"XB61819872196631","battery":{"percent":99}},
-            "thermostat:0":{"id":0,"enable":true,"target_C":21.5,"current_C":20.3,"output":true}}
+            "devicepower:1":{"id":1,"device":"XB61819872196631","battery":{"percent":99}}}
             """;
 
     private final Gson gson = new Gson();
 
     @Test
     void deviceStatusCaptureIsMapped() throws ShellyApiException {
-        Shelly2DeviceStatusResult status = ShellyUtils.fromJson(gson, DEVICE_STATUS, Shelly2DeviceStatusResult.class);
+        Shelly2DeviceStatusResult status = ShellyUtils.fromJson(gson, DEVICE_STATUS_PLAYING,
+                Shelly2DeviceStatusResult.class);
 
         Shelly2DeviceStatusSys sys = status.sys;
         assertNotNull(sys);
@@ -69,9 +77,49 @@ public class Shelly2WallDisplayStatusJsonTest {
         assertNotNull(power1.battery);
         assertThat(power1.battery.percent, is(equalTo(99.0)));
 
+        Shelly2DeviceStatusMedia media = status.media;
+        assertNotNull(media);
+        Shelly2DeviceStatusMediaPlayback playback = media.playback;
+        assertNotNull(playback);
+        assertThat(playback.enable, is(equalTo(Boolean.TRUE)));
+        assertThat(playback.volume, is(equalTo(6)));
+        assertThat(playback.mediaType, is(equalTo("RADIO")));
+        Shelly2DeviceStatusMediaMeta meta = playback.mediaMeta;
+        assertNotNull(meta);
+        assertThat(meta.title, is(equalTo("Radio Regenbogen 2")));
+        assertThat(status.thermostat0, is(nullValue()));
+    }
+
+    @Test
+    void thermostatKeyMapsToThermostatStatus() throws ShellyApiException {
+        String json = """
+                {"thermostat:0":{"enable":true,"target_C":21.5,"current_C":20.3,"output":true,
+                "schedules":{"enable":false}}}
+                """;
+
+        Shelly2DeviceStatusResult status = ShellyUtils.fromJson(gson, json, Shelly2DeviceStatusResult.class);
         Shelly2DeviceStatusThermostat thermostat = status.thermostat0;
         assertNotNull(thermostat);
         assertThat(thermostat.enable, is(equalTo(Boolean.TRUE)));
         assertThat(thermostat.targetC, is(equalTo(21.5)));
+        assertThat(thermostat.currentC, is(equalTo(20.3)));
+        assertThat(thermostat.output, is(equalTo(Boolean.TRUE)));
+    }
+
+    @Test
+    void indexedMediaKeyMapsToMediaStatus() throws ShellyApiException {
+        String json = """
+                {"media:0":{"playback":{"enable":true,"volume":10,"media_type":"AUDIO",
+                "media_meta":{"title":"Indexed Song"}}}}
+                """;
+
+        Shelly2DeviceStatusResult status = ShellyUtils.fromJson(gson, json, Shelly2DeviceStatusResult.class);
+        Shelly2DeviceStatusMedia media = status.media;
+        assertNotNull(media);
+        Shelly2DeviceStatusMediaPlayback playback = media.playback;
+        assertNotNull(playback);
+        Shelly2DeviceStatusMediaMeta meta = playback.mediaMeta;
+        assertNotNull(meta);
+        assertThat(meta.title, is(equalTo("Indexed Song")));
     }
 }
