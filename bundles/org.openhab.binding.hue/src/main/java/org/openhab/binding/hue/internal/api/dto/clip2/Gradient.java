@@ -50,7 +50,7 @@ public class Gradient {
 
     /**
      * Sets the color of the point at the given index. If the gradient has no points yet (e.g. the light is
-     * in solid color mode), or has fewer points than the capacity, the missing points are first filled with
+     * in solid color mode), or has fewer points than needed, the missing points are first filled with
      * copies of the new color so that a complete palette can be sent to the bridge.
      *
      * @param index the index of the point to be set
@@ -60,6 +60,20 @@ public class Gradient {
     public Gradient setPointXy(int index, PairXy pairXy) throws IndexOutOfBoundsException {
         Integer capable = this.pointsCapable;
         int capacity = capable != null ? capable : MAX_POINTS;
+        return setPointXy(index, pairXy, capacity);
+    }
+
+    /**
+     * Sets the color of the point at the given index. If the gradient has no points yet (e.g. the light is
+     * in solid color mode), or has fewer points than needed, the missing points are first filled with
+     * copies of the new color so that a complete palette can be sent to the bridge.
+     *
+     * @param index the index of the point to be set
+     * @param pairXy the new color co-ordinate value to set for the point at the specified index
+     * @param capacity the number of points the light can handle
+     * @throws IndexOutOfBoundsException if index is outside the light's point capacity
+     */
+    public Gradient setPointXy(int index, PairXy pairXy, int capacity) throws IndexOutOfBoundsException {
         if (index < 0 || index >= capacity) {
             throw new IndexOutOfBoundsException("index:%d, capacity:%d".formatted(index, capacity));
         }

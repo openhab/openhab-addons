@@ -305,4 +305,30 @@ class GradientCacheTest {
         assertEquals(5, gradientOf(Objects.requireNonNull(result)).getXyPoints().size());
         assertEquals(1, gradientOf(cache).getXyPoints().size());
     }
+
+    @Test
+    void setGradientPointColorXyOnEmptyPaletteUsesReportedCapacity() {
+        Resource cache = light(createGradient(-1, 3, 0)); // solid color mode, capacity 3
+
+        Resource result = Setters.setGradientPointColorXy(new Resource(ResourceType.LIGHT), new HSBType("120,100,100"),
+                1, cache);
+
+        assertNotNull(result);
+        Gradient sent = gradientOf(Objects.requireNonNull(result));
+        assertEquals(3, sent.getXyPoints().size());
+        assertEquals(0, sent.getPointsCapable());
+        assertFalse(GSON.toJson(sent).contains("points_capable"));
+    }
+
+    @Test
+    void setGradientPointColorXyRepairPathUsesReportedCapacity() {
+        Gradient invalid = Objects.requireNonNull(GSON.fromJson(
+                "{\"points\":[{\"color\":{\"xy\":{\"x\":0.1,\"y\":0.5}}},{}],\"points_capable\":3}", Gradient.class));
+
+        Resource result = Setters.setGradientPointColorXy(new Resource(ResourceType.LIGHT), new HSBType("120,100,100"),
+                0, light(invalid));
+
+        assertNotNull(result);
+        assertEquals(3, gradientOf(Objects.requireNonNull(result)).getXyPoints().size());
+    }
 }

@@ -192,7 +192,9 @@ public class Setters {
                 copy = new Gradient(); // invalid cached point: repair by sending a full set
             }
             try {
-                target.setGradient(copy.setPointXy(index, new PairXy().setXY(ColorUtil.hsbToXY(hsb2, gamut))));
+                int capacity = capable > 0 ? capable : Gradient.MAX_POINTS;
+                PairXy point = new PairXy().setXY(ColorUtil.hsbToXY(hsb2, gamut));
+                target.setGradient(copy.setPointXy(index, point, capacity));
             } catch (IndexOutOfBoundsException | IllegalStateException e) {
                 return null; // beyond light capability
             }

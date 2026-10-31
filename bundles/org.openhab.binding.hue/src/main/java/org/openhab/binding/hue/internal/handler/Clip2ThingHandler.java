@@ -700,13 +700,6 @@ public class Clip2ThingHandler extends BaseThingHandler {
         try {
             Resources resources = getBridgeHandler().putResource(putResource);
 
-            // immediately update gradient points cache entry in order to be ready for an immediate next point command
-            if (putGradientResource != null && cache != null) {
-                Setters.setResource(putGradientResource, cache);
-                serviceContributorsCache.put(putGradientResource.getId(), putGradientResource);
-                putGradientResource = null;
-            }
-
             if (resources.hasErrors()) {
                 logger.debug("{} command '{}' for channel '{}' succeeded with error(s): {}", resourceId, command,
                         channelUID,
@@ -715,6 +708,10 @@ public class Clip2ThingHandler extends BaseThingHandler {
                         .allMatch(e -> ErrorType.ATTRIBUTE_MAY_HAVE_NO_EFFECT == e.getErrorType())) {
                     loopBackNotify(putResource);
                 }
+            } else if (putGradientResource != null && cache != null) {
+                // update gradient points cache entry to be ready immediately for a next point command
+                Setters.setResource(putGradientResource, cache);
+                serviceContributorsCache.put(putGradientResource.getId(), putGradientResource);
             }
         } catch (ApiException | AssetNotLoadedException e) {
             if (logger.isDebugEnabled()) {
