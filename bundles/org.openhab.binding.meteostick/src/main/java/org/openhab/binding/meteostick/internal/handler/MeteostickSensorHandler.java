@@ -51,9 +51,26 @@ import org.slf4j.LoggerFactory;
  * @author Chris Jackson - Initial contribution
  * @author John Cocula - Added variable spoon size, UoM, wind stats, bug fixes
  * @author Cor Hoogendoorn - Added option for wind vanes not facing North and cumulative rainfall for today
+ * @author Jens Erat - Harden packet parsing and validate received values
  */
 public class MeteostickSensorHandler extends BaseThingHandler implements MeteostickEventListener {
     private static final String DAILY_MIDNIGHT = "1 0 0 * * ? *";
+
+    // Plausibility bounds, chosen to reject physically impossible values while accepting any real weather reading.
+    private static final BigDecimal MIN_TEMPERATURE = new BigDecimal("-100");
+    private static final BigDecimal MAX_TEMPERATURE = new BigDecimal("100");
+    private static final BigDecimal MIN_HUMIDITY = new BigDecimal("0");
+    private static final BigDecimal MAX_HUMIDITY = new BigDecimal("100");
+    private static final BigDecimal MIN_WIND_SPEED = new BigDecimal("0");
+    private static final BigDecimal MAX_WIND_SPEED = new BigDecimal("200");
+    private static final int MIN_WIND_DIRECTION = 0;
+    private static final int MAX_WIND_DIRECTION = 360;
+    private static final int MIN_RAIN_COUNTER = 0;
+    private static final int MAX_RAIN_COUNTER = 255;
+    private static final BigDecimal MIN_SOLAR_POWER = new BigDecimal("0");
+    private static final BigDecimal MAX_SOLAR_POWER = new BigDecimal("100");
+    private static final double MIN_SIGNAL = -200;
+    private static final double MAX_SIGNAL = 0;
     private final CronScheduler cronScheduler;
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_DAVIS);
 
@@ -183,8 +200,7 @@ public class MeteostickSensorHandler extends BaseThingHandler implements Meteost
         startTimeoutCheck();
     }
 
-    private void processSignalStrength(String dbmString) {
-        double dbm = Double.parseDouble(dbmString);
+    private void processSignalStrength(double dbm) {
         int strength;
 
         if (dbm > -60) {
@@ -210,85 +226,202 @@ public class MeteostickSensorHandler extends BaseThingHandler implements Meteost
 
     @Override
     public void onDataReceived(String[] data) {
-        logger.debug("MeteoStick received channel {}: {}", channel, data);
+        logger.debug("MeteoStick received channel {}: {}", channel, String.join(" ", data));
         updateStatus(ThingStatus.ONLINE);
         lastData = new Date();
 
         startTimeoutCheck();
 
+        if (data.length == 0) {
+            return;
+        }
+
         switch (data[0]) {
             case "R": // Rain
-                int rain = Integer.parseInt(data[2]);
-                updateState(new ChannelUID(getThing().getUID(), CHANNEL_RAIN_RAW), new DecimalType(rain));
-                processSignalStrength(data[3]);
-                processBattery(data.length == 5);
-
-                rain &= 0x7F;
-                int totalspoon = 0;
-                if (rainspoonold < 0) {
-                    rainspoonold = rain;
-                }
-                if (rain < rainspoonold) {
-                    totalspoon = 128 - rainspoonold + rain;
-                } else {
-                    totalspoon = rain - rainspoonold;
-                }
-
-                BigDecimal rainincrease = BigDecimal.valueOf(totalspoon).multiply(spoon);
-                rainHistory.put(rainincrease);
-
-                BigDecimal rainfall = rainHistory.getTotal();
-                rainfall.setScale(1, RoundingMode.DOWN);
-                updateState(new ChannelUID(getThing().getUID(), CHANNEL_RAIN_CURRENTHOUR),
-                        new QuantityType<>(rainfall, MILLI(METRE)));
-
-                rainfallToday = rainfallToday.add(rainincrease);
-                rainfallToday.setScale(1, RoundingMode.DOWN);
-                updateState(new ChannelUID(getThing().getUID(), CHANNEL_RAIN_TODAY),
-                        new QuantityType<>(rainfallToday, MILLI(METRE)));
-                rainspoonold = rain;
+                processRain(data);
                 break;
             case "W": // Wind
-                BigDecimal windSpeed = new BigDecimal(data[2]);
-                int windDirection = Integer.parseInt(data[3]);
-                updateState(new ChannelUID(getThing().getUID(), CHANNEL_WIND_SPEED),
-                        new QuantityType<>(windSpeed, METRE_PER_SECOND));
-                if (deltawinddir != 0) {
-                    if (windDirection < (360 - deltawinddir)) {
-                        windDirection += deltawinddir;
-                    } else {
-                        windDirection -= (360 - deltawinddir);
-                    }
-                }
-                updateState(new ChannelUID(getThing().getUID(), CHANNEL_WIND_DIRECTION),
-                        new QuantityType<>(windDirection, DEGREE_ANGLE));
-
-                windHistory.put(windSpeed, windDirection);
-
-                processSignalStrength(data[4]);
-                processBattery(data.length == 6);
+                processWind(data);
                 break;
             case "T": // Temperature
-                BigDecimal temperature = new BigDecimal(data[2]);
-                updateState(new ChannelUID(getThing().getUID(), CHANNEL_OUTDOOR_TEMPERATURE),
-                        new QuantityType<>(temperature.setScale(1), CELSIUS));
-
-                BigDecimal humidity = new BigDecimal(data[3]);
-                updateState(new ChannelUID(getThing().getUID(), CHANNEL_HUMIDITY),
-                        new DecimalType(humidity.setScale(1)));
-
-                processSignalStrength(data[4]);
-                processBattery(data.length == 6);
+                processTemperature(data);
                 break;
             case "P": // Solar panel power
-                BigDecimal power = new BigDecimal(data[2]);
-                updateState(new ChannelUID(getThing().getUID(), CHANNEL_SOLAR_POWER),
-                        new DecimalType(power.setScale(1)));
-
-                processSignalStrength(data[3]);
-                processBattery(data.length == 5);
+                processPower(data);
                 break;
         }
+    }
+
+    private void processRain(String[] data) {
+        // Computed rain packet: R <channel> <counter> <signal> [<low battery>]
+        if (data.length < 4) {
+            logger.debug("MeteoStick received short rain packet on channel {}: {}", channel, String.join(" ", data));
+            return;
+        }
+
+        int rain;
+        double signal;
+        try {
+            rain = Integer.parseInt(data[2]);
+            signal = Double.parseDouble(data[3]);
+        } catch (NumberFormatException e) {
+            logger.debug("MeteoStick received rain packet with non-numeric values on channel {}: {}", channel,
+                    String.join(" ", data));
+            return;
+        }
+
+        if (rain < MIN_RAIN_COUNTER || rain > MAX_RAIN_COUNTER || signal < MIN_SIGNAL || signal > MAX_SIGNAL) {
+            logger.debug("MeteoStick received rain packet with implausible values on channel {}: {}", channel,
+                    String.join(" ", data));
+            return;
+        }
+
+        updateState(new ChannelUID(getThing().getUID(), CHANNEL_RAIN_RAW), new DecimalType(rain));
+        processSignalStrength(signal);
+        processBattery(data.length == 5);
+
+        rain &= 0x7F;
+        int totalspoon = 0;
+        if (rainspoonold < 0) {
+            rainspoonold = rain;
+        }
+        if (rain < rainspoonold) {
+            totalspoon = 128 - rainspoonold + rain;
+        } else {
+            totalspoon = rain - rainspoonold;
+        }
+
+        BigDecimal rainincrease = BigDecimal.valueOf(totalspoon).multiply(spoon);
+        rainHistory.put(rainincrease);
+
+        BigDecimal rainfall = rainHistory.getTotal();
+        rainfall.setScale(1, RoundingMode.DOWN);
+        updateState(new ChannelUID(getThing().getUID(), CHANNEL_RAIN_CURRENTHOUR),
+                new QuantityType<>(rainfall, MILLI(METRE)));
+
+        rainfallToday = rainfallToday.add(rainincrease);
+        rainfallToday.setScale(1, RoundingMode.DOWN);
+        updateState(new ChannelUID(getThing().getUID(), CHANNEL_RAIN_TODAY),
+                new QuantityType<>(rainfallToday, MILLI(METRE)));
+        rainspoonold = rain;
+    }
+
+    private void processWind(String[] data) {
+        // Computed wind packet: W <channel> <speed> <direction> <signal> [<low battery>]
+        if (data.length < 5) {
+            logger.debug("MeteoStick received short wind packet on channel {}: {}", channel, String.join(" ", data));
+            return;
+        }
+
+        BigDecimal windSpeed;
+        int windDirection;
+        double signal;
+        try {
+            windSpeed = new BigDecimal(data[2]);
+            windDirection = Integer.parseInt(data[3]);
+            signal = Double.parseDouble(data[4]);
+        } catch (NumberFormatException e) {
+            logger.debug("MeteoStick received wind packet with non-numeric values on channel {}: {}", channel,
+                    String.join(" ", data));
+            return;
+        }
+
+        if (!isWithin(windSpeed, MIN_WIND_SPEED, MAX_WIND_SPEED) || windDirection < MIN_WIND_DIRECTION
+                || windDirection > MAX_WIND_DIRECTION || signal < MIN_SIGNAL || signal > MAX_SIGNAL) {
+            logger.debug("MeteoStick received wind packet with implausible values on channel {}: {}", channel,
+                    String.join(" ", data));
+            return;
+        }
+
+        updateState(new ChannelUID(getThing().getUID(), CHANNEL_WIND_SPEED),
+                new QuantityType<>(windSpeed, METRE_PER_SECOND));
+        if (deltawinddir != 0) {
+            if (windDirection < (360 - deltawinddir)) {
+                windDirection += deltawinddir;
+            } else {
+                windDirection -= (360 - deltawinddir);
+            }
+        }
+        updateState(new ChannelUID(getThing().getUID(), CHANNEL_WIND_DIRECTION),
+                new QuantityType<>(windDirection, DEGREE_ANGLE));
+
+        windHistory.put(windSpeed, windDirection);
+
+        processSignalStrength(signal);
+        processBattery(data.length == 6);
+    }
+
+    private void processTemperature(String[] data) {
+        // Computed temperature packet: T <channel> <temperature> <humidity> <signal> [<low battery>]
+        if (data.length < 5) {
+            logger.debug("MeteoStick received short temperature packet on channel {}: {}", channel,
+                    String.join(" ", data));
+            return;
+        }
+
+        BigDecimal temperature;
+        BigDecimal humidity;
+        double signal;
+        try {
+            temperature = new BigDecimal(data[2]);
+            humidity = new BigDecimal(data[3]);
+            signal = Double.parseDouble(data[4]);
+        } catch (NumberFormatException e) {
+            logger.debug("MeteoStick received temperature packet with non-numeric values on channel {}: {}", channel,
+                    String.join(" ", data));
+            return;
+        }
+
+        if (!isWithin(temperature, MIN_TEMPERATURE, MAX_TEMPERATURE) || !isWithin(humidity, MIN_HUMIDITY, MAX_HUMIDITY)
+                || signal < MIN_SIGNAL || signal > MAX_SIGNAL) {
+            logger.debug("MeteoStick received temperature packet with implausible values on channel {}: {}", channel,
+                    String.join(" ", data));
+            return;
+        }
+
+        updateState(new ChannelUID(getThing().getUID(), CHANNEL_OUTDOOR_TEMPERATURE),
+                new QuantityType<>(temperature.setScale(1, RoundingMode.HALF_UP), CELSIUS));
+
+        updateState(new ChannelUID(getThing().getUID(), CHANNEL_HUMIDITY),
+                new DecimalType(humidity.setScale(1, RoundingMode.HALF_UP)));
+
+        processSignalStrength(signal);
+        processBattery(data.length == 6);
+    }
+
+    private void processPower(String[] data) {
+        // Computed solar panel packet: P <channel> <power> <signal> [<low battery>]
+        if (data.length < 4) {
+            logger.debug("MeteoStick received short power packet on channel {}: {}", channel, String.join(" ", data));
+            return;
+        }
+
+        BigDecimal power;
+        double signal;
+        try {
+            power = new BigDecimal(data[2]);
+            signal = Double.parseDouble(data[3]);
+        } catch (NumberFormatException e) {
+            logger.debug("MeteoStick received power packet with non-numeric values on channel {}: {}", channel,
+                    String.join(" ", data));
+            return;
+        }
+
+        if (!isWithin(power, MIN_SOLAR_POWER, MAX_SOLAR_POWER) || signal < MIN_SIGNAL || signal > MAX_SIGNAL) {
+            logger.debug("MeteoStick received power packet with implausible values on channel {}: {}", channel,
+                    String.join(" ", data));
+            return;
+        }
+
+        updateState(new ChannelUID(getThing().getUID(), CHANNEL_SOLAR_POWER),
+                new DecimalType(power.setScale(1, RoundingMode.HALF_UP)));
+
+        processSignalStrength(signal);
+        processBattery(data.length == 5);
+    }
+
+    private static boolean isWithin(BigDecimal value, BigDecimal min, BigDecimal max) {
+        return value.compareTo(min) >= 0 && value.compareTo(max) <= 0;
     }
 
     class SlidingTimeWindow<T> {
