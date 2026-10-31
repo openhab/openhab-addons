@@ -29,6 +29,7 @@ import org.openhab.binding.matter.internal.client.dto.cluster.gen.OnOffCluster;
 import org.openhab.binding.matter.internal.client.dto.ws.AttributeChangedMessage;
 import org.openhab.binding.matter.internal.handler.MatterBaseThingHandler;
 import org.openhab.binding.matter.internal.util.ValueUtils;
+import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
@@ -52,10 +53,11 @@ public class LevelControlConverter extends GenericConverter<LevelControlCluster>
 
     private PercentType lastLevel = new PercentType(0);
     private OnOffType lastOnOff = OnOffType.OFF;
-    private Integer onTransitionTime = 0;
-    private Integer offTransitionTime = 0;
-    private Integer defaultMoveRate = 0;
+    // Null falls back to OnOffTransitionTime
+    private volatile @Nullable Integer onTransitionTime;
+    private volatile @Nullable Integer offTransitionTime;
     private final int minLevel;
+    private final LevelTransition transition;
 
     public LevelControlConverter(LevelControlCluster cluster, MatterBaseThingHandler handler, int endpointNumber,
             String labelPrefix) {
@@ -63,22 +65,13 @@ public class LevelControlConverter extends GenericConverter<LevelControlCluster>
 
         // only the Lighting feature reserves level 0, everything else may be driven all the way down
         minLevel = cluster.featureMap.lighting ? 1 : 0;
+        onTransitionTime = cluster.onTransitionTime;
+        offTransitionTime = cluster.offTransitionTime;
+        transition = new LevelTransition(handler, endpointNumber);
+    }
 
-        if (cluster.onTransitionTime != null) {
-            onTransitionTime = cluster.onTransitionTime;
-        } else if (cluster.onOffTransitionTime != null) {
-            onTransitionTime = cluster.onOffTransitionTime;
-        }
-
-        if (cluster.offTransitionTime != null) {
-            offTransitionTime = cluster.offTransitionTime;
-        } else if (cluster.onOffTransitionTime != null) {
-            offTransitionTime = cluster.onOffTransitionTime;
-        }
-
-        if (cluster.defaultMoveRate != null) {
-            defaultMoveRate = cluster.defaultMoveRate;
-        }
+    LevelTransition transition() {
+        return transition;
     }
 
     @Override
@@ -97,10 +90,14 @@ public class LevelControlConverter extends GenericConverter<LevelControlCluster>
                 ClusterCommand onOffCommand = onOffType == OnOffType.ON ? OnOffCluster.on() : OnOffCluster.off();
                 handler.sendClusterCommand(endpointNumber, OnOffCluster.CLUSTER_NAME, onOffCommand);
             } else {
-                ClusterCommand levelCommand = LevelControlCluster.moveToLevelWithOnOff(
-                        onOffType == OnOffType.OFF ? 0 : 100,
-                        onOffType == OnOffType.OFF ? offTransitionTime : onTransitionTime, initializingCluster.options,
-                        initializingCluster.options);
+                boolean off = onOffType == OnOffType.OFF;
+                Integer transitionTime = transition.channelTransitionTime(channelUID);
+                if (transitionTime == null) {
+                    transitionTime = off ? offTransitionTime : onTransitionTime;
+                }
+                ClusterCommand levelCommand = LevelTransition.moveToLevelWithOnOff(
+                        ValueUtils.percentToLevel(off ? PercentType.ZERO : PercentType.HUNDRED, minLevel),
+                        transitionTime, initializingCluster.options);
                 handler.sendClusterCommand(endpointNumber, LevelControlCluster.CLUSTER_NAME, levelCommand);
             }
         } else if (command instanceof PercentType percentType) {
@@ -108,8 +105,8 @@ public class LevelControlConverter extends GenericConverter<LevelControlCluster>
             if (percentType.equals(PercentType.ZERO) && initializingCluster.featureMap.lighting) {
                 handler.sendClusterCommand(endpointNumber, OnOffCluster.CLUSTER_NAME, OnOffCluster.off());
             } else {
-                ClusterCommand levelCommand = LevelControlCluster.moveToLevelWithOnOff(
-                        ValueUtils.percentToLevel(percentType, minLevel), defaultMoveRate, initializingCluster.options,
+                ClusterCommand levelCommand = LevelTransition.moveToLevelWithOnOff(
+                        ValueUtils.percentToLevel(percentType, minLevel), transition.channelTransitionTime(channelUID),
                         initializingCluster.options);
                 handler.sendClusterCommand(endpointNumber, LevelControlCluster.CLUSTER_NAME, levelCommand);
             }
@@ -146,8 +143,22 @@ public class LevelControlConverter extends GenericConverter<LevelControlCluster>
 
                 }
                 break;
+            case LevelControlCluster.ATTRIBUTE_ON_OFF_TRANSITION_TIME:
+                transition.onEvent(message);
+                break;
+            case LevelControlCluster.ATTRIBUTE_ON_TRANSITION_TIME:
+                onTransitionTime = message.value instanceof Number number ? number.intValue() : null;
+                break;
+            case LevelControlCluster.ATTRIBUTE_OFF_TRANSITION_TIME:
+                offTransitionTime = message.value instanceof Number number ? number.intValue() : null;
+                break;
         }
         super.onEvent(message);
+    }
+
+    @Override
+    public void handleConfigurationUpdate(Configuration config) {
+        transition.handleConfigurationUpdate(config);
     }
 
     @Override
@@ -157,6 +168,7 @@ public class LevelControlConverter extends GenericConverter<LevelControlCluster>
     }
 
     public void initState(boolean onOff) {
+        transition.initialize(initializingCluster);
         lastOnOff = OnOffType.from(onOff);
         lastLevel = toPercent(initializingCluster.currentLevel);
         updateState(CHANNEL_ID_LEVEL_LEVEL, onOff ? lastLevel : OnOffType.OFF);

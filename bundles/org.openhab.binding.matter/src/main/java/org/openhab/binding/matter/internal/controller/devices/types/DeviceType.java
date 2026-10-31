@@ -18,16 +18,21 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.matter.internal.client.AttributeListener;
 import org.openhab.binding.matter.internal.client.EventTriggeredListener;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.BaseCluster;
+import org.openhab.binding.matter.internal.client.dto.cluster.gen.ColorControlCluster;
+import org.openhab.binding.matter.internal.client.dto.cluster.gen.LevelControlCluster;
 import org.openhab.binding.matter.internal.client.dto.ws.AttributeChangedMessage;
 import org.openhab.binding.matter.internal.client.dto.ws.EventTriggeredMessage;
+import org.openhab.binding.matter.internal.controller.devices.converter.ColorControlConverter;
 import org.openhab.binding.matter.internal.controller.devices.converter.ConverterRegistry;
 import org.openhab.binding.matter.internal.controller.devices.converter.GenericConverter;
+import org.openhab.binding.matter.internal.controller.devices.converter.LevelControlConverter;
 import org.openhab.binding.matter.internal.handler.MatterBaseThingHandler;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.thing.Channel;
@@ -68,9 +73,9 @@ public abstract class DeviceType implements AttributeListener, EventTriggeredLis
     protected Integer endpointNumber;
     protected MatterBaseThingHandler handler;
 
-    protected Map<ChannelUID, GenericConverter<? extends BaseCluster>> channelUIDToConverters = new HashMap<>();
+    protected final Map<ChannelUID, GenericConverter<? extends BaseCluster>> channelUIDToConverters = new ConcurrentHashMap<>();
     protected Map<ChannelUID, @Nullable StateDescription> channelUIDToStateDescription = new HashMap<>();
-    protected Map<Integer, GenericConverter<? extends BaseCluster>> clusterToConverters = new HashMap<>();
+    protected final Map<Integer, GenericConverter<? extends BaseCluster>> clusterToConverters = new ConcurrentHashMap<>();
     protected Map<String, BaseCluster> allClusters = new HashMap<>();
 
     public DeviceType(Integer deviceType, MatterBaseThingHandler handler, Integer endpointNumber) {
@@ -164,6 +169,12 @@ public abstract class DeviceType implements AttributeListener, EventTriggeredLis
                 }
             }
         });
+        // Both send level commands and share one transition
+        if (clusterToConverters.get(LevelControlCluster.CLUSTER_ID) instanceof LevelControlConverter levelConverter
+                && clusterToConverters
+                        .get(ColorControlCluster.CLUSTER_ID) instanceof ColorControlConverter colorConverter) {
+            colorConverter.shareTransition(levelConverter);
+        }
         return channels;
     }
 

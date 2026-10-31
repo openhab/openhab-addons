@@ -670,6 +670,14 @@ public class MatterBindingConstants {
     public static final String CONFIG_DESC_DOORLOCK_DELETE_USER = "@text/thing-type.config.matter.node.doorlock_delete_user.description";
     public static final String CONFIG_DESC_DOORLOCK_EXTERNAL_FABRIC = "@text/thing-type.config.matter.node.doorlock_external_fabric.description";
 
+    // Transition time. Thing config keys end with "-<endpoint number>".
+    public static final String CONFIG_CHANNEL_TRANSITION_TIME = "transitionTime";
+    public static final String CONFIG_LEVEL_DEFAULT_TRANSITION_TIME = "defaultTransitionTime";
+    public static final String CONFIG_GROUP_LEVEL_TRANSITION = "levelTransition";
+    public static final String CONFIG_LABEL_LEVEL_TRANSITION = "@text/thing-type.config.matter.node.level_transition.label";
+    public static final String CONFIG_LABEL_LEVEL_DEFAULT_TRANSITION_TIME = "@text/thing-type.config.matter.node.level_default_transition_time.label";
+    public static final String CONFIG_DESC_LEVEL_DEFAULT_TRANSITION_TIME = "@text/thing-type.config.matter.node.level_default_transition_time.description";
+
     // Firmware Update - Note these are the raw i18n keys, not the translated strings
     public static final String OTA_FIRMWARE_UPDATE_FAILED = "ota.matter.firmwareUpdateFailed";
     public static final String OTA_FIRMWARE_UPDATE_FAILED_ROLLING_BACK = "ota.matter.firmwareUpdateFailedRollingBack";
