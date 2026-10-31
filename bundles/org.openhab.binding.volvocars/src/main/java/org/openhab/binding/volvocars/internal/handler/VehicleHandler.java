@@ -82,13 +82,14 @@ public class VehicleHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(VehicleHandler.class);
     private final Object pollLock = new Object();
     private final Object refreshJobLock = new Object();
+    private final Object sessionLock = new Object();
 
     private @Nullable ScheduledFuture<?> pollJob;
     private @Nullable ScheduledFuture<?> refreshJob;
 
     /**
      * Identifies the current initialization so that tasks scheduled before a dispose do not publish stale state or
-     * send commands for a previous configuration.
+     * send commands for a previous configuration. Cleared by {@link #dispose()} under {@link #sessionLock}.
      */
     private volatile @Nullable Session session;
 
@@ -150,8 +151,11 @@ public class VehicleHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
-        Session oldSession = session;
-        session = null;
+        Session oldSession;
+        synchronized (sessionLock) {
+            oldSession = session;
+            session = null;
+        }
         if (oldSession != null) {
             oldSession.cancelCommandJobs();
         }
@@ -258,9 +262,9 @@ public class VehicleHandler extends BaseThingHandler {
                 sent = false;
             }
             if (currentSession.equals(session)) {
-                updateState(GROUP_CONTROL, CHANNEL_LAST_COMMAND_STATUS, new StringType(status));
+                updateState(currentSession, GROUP_CONTROL, CHANNEL_LAST_COMMAND_STATUS, new StringType(status));
                 if (sent && resetChannel != null) {
-                    updateState(GROUP_CONTROL, resetChannel, OnOffType.OFF);
+                    updateState(currentSession, GROUP_CONTROL, resetChannel, OnOffType.OFF);
                 }
                 // the vehicle needs some time until the command is reflected in its reported state
                 scheduleRefresh(REFRESH_AFTER_COMMAND_SECONDS);
@@ -485,48 +489,50 @@ public class VehicleHandler extends BaseThingHandler {
         Map<String, ValueField> doors = getValues(api, vin, "doors");
         if (doors != null) {
             ValueField centralLock = doors.get("centralLock");
-            updateState(GROUP_DOORS, CHANNEL_LOCK,
+            updateState(pollSession, GROUP_DOORS, CHANNEL_LOCK,
                     centralLock == null ? UnDefType.UNDEF : switch (String.valueOf(centralLock.getString())) {
                         case "LOCKED" -> OnOffType.ON;
                         case "UNLOCKED" -> OnOffType.OFF;
                         default -> UnDefType.UNDEF;
                     });
-            DOOR_CHANNELS.forEach((key, channel) -> updateState(GROUP_DOORS, channel, toOpenClosed(doors.get(key))));
+            DOOR_CHANNELS.forEach(
+                    (key, channel) -> updateState(pollSession, GROUP_DOORS, channel, toOpenClosed(doors.get(key))));
         }
         Map<String, ValueField> windows = getValues(api, vin, "windows");
         if (windows != null) {
-            WINDOW_CHANNELS
-                    .forEach((key, channel) -> updateState(GROUP_WINDOWS, channel, toOpenClosed(windows.get(key))));
+            WINDOW_CHANNELS.forEach(
+                    (key, channel) -> updateState(pollSession, GROUP_WINDOWS, channel, toOpenClosed(windows.get(key))));
         }
         Map<String, ValueField> engine = getValues(api, vin, "engine-status");
         if (engine != null) {
             ValueField engineStatus = engine.get("engineStatus");
-            updateState(GROUP_STATUS, CHANNEL_ENGINE_RUNNING,
+            updateState(pollSession, GROUP_STATUS, CHANNEL_ENGINE_RUNNING,
                     engineStatus == null || "UNSPECIFIED".equals(engineStatus.getString()) ? UnDefType.UNDEF
                             : OnOffType.from("RUNNING".equals(engineStatus.getString())));
         }
         Map<String, ValueField> odometer = getValues(api, vin, "odometer");
         if (odometer != null) {
-            updateState(GROUP_STATUS, CHANNEL_ODOMETER, toQuantity(odometer.get("odometer"), KILOMETRE));
+            updateState(pollSession, GROUP_STATUS, CHANNEL_ODOMETER, toQuantity(odometer.get("odometer"), KILOMETRE));
         }
         Map<String, ValueField> accessibility = getValues(api, vin, "command-accessibility");
         if (accessibility != null) {
             ValueField availability = accessibility.get("availabilityStatus");
             String reason = availability != null ? availability.unavailableReason : null;
-            updateState(GROUP_STATUS, CHANNEL_AVAILABILITY,
+            updateState(pollSession, GROUP_STATUS, CHANNEL_AVAILABILITY,
                     reason != null && !reason.isBlank() ? new StringType(reason) : toString(availability));
         }
         Map<String, ValueField> statistics = getValues(api, vin, "statistics");
         if (statistics != null) {
-            updateStatistics(statistics);
+            updateStatistics(pollSession, statistics);
         }
         if (localVehicle.hasCombustionEngine() || (localVehicle.hasBattery() && !energyApiSupported)) {
             Map<String, ValueField> fuel = getValues(api, vin, "fuel");
             if (fuel != null) {
-                updateState(GROUP_FUEL, CHANNEL_FUEL_AMOUNT, toQuantity(fuel.get("fuelAmount"), Units.LITRE));
+                updateState(pollSession, GROUP_FUEL, CHANNEL_FUEL_AMOUNT,
+                        toQuantity(fuel.get("fuelAmount"), Units.LITRE));
                 if (!energyApiSupported) {
                     // the fuel status also reports the battery level, used if the Energy API is not available
-                    updateState(GROUP_BATTERY, CHANNEL_BATTERY_LEVEL,
+                    updateState(pollSession, GROUP_BATTERY, CHANNEL_BATTERY_LEVEL,
                             toQuantity(fuel.get("batteryChargeLevel"), Units.PERCENT));
                 }
             }
@@ -534,11 +540,11 @@ public class VehicleHandler extends BaseThingHandler {
         if (energyApiSupported) {
             Map<String, ValueField> energy = getEnergyState(api, vin);
             if (energy != null) {
-                updateEnergy(energy);
+                updateEnergy(pollSession, energy);
             }
         }
         if (pollSession.locationSupported) {
-            pollSession.locationSupported = updateLocation(api, vin);
+            pollSession.locationSupported = updateLocation(api, pollSession);
         }
     }
 
@@ -549,29 +555,33 @@ public class VehicleHandler extends BaseThingHandler {
 
         Map<String, ValueField> diagnostics = getValues(api, vin, "diagnostics");
         if (diagnostics != null) {
-            updateState(GROUP_MAINTENANCE, CHANNEL_SERVICE_WARNING, toString(diagnostics.get("serviceWarning")));
-            updateState(GROUP_MAINTENANCE, CHANNEL_DISTANCE_TO_SERVICE,
+            updateState(pollSession, GROUP_MAINTENANCE, CHANNEL_SERVICE_WARNING,
+                    toString(diagnostics.get("serviceWarning")));
+            updateState(pollSession, GROUP_MAINTENANCE, CHANNEL_DISTANCE_TO_SERVICE,
                     toQuantity(diagnostics.get("distanceToService"), KILOMETRE));
-            updateState(GROUP_MAINTENANCE, CHANNEL_TIME_TO_SERVICE,
+            updateState(pollSession, GROUP_MAINTENANCE, CHANNEL_TIME_TO_SERVICE,
                     toQuantity(diagnostics.get("timeToService"), Units.MONTH));
-            updateState(GROUP_MAINTENANCE, CHANNEL_ENGINE_HOURS_TO_SERVICE,
+            updateState(pollSession, GROUP_MAINTENANCE, CHANNEL_ENGINE_HOURS_TO_SERVICE,
                     toQuantity(diagnostics.get("engineHoursToService"), Units.HOUR));
-            updateState(GROUP_MAINTENANCE, CHANNEL_WASHER_FLUID_WARNING,
+            updateState(pollSession, GROUP_MAINTENANCE, CHANNEL_WASHER_FLUID_WARNING,
                     toString(diagnostics.get("washerFluidLevelWarning")));
         }
         Map<String, ValueField> brakes = getValues(api, vin, "brakes");
         if (brakes != null) {
-            updateState(GROUP_MAINTENANCE, CHANNEL_BRAKE_FLUID_WARNING, toString(brakes.get("brakeFluidLevelWarning")));
+            updateState(pollSession, GROUP_MAINTENANCE, CHANNEL_BRAKE_FLUID_WARNING,
+                    toString(brakes.get("brakeFluidLevelWarning")));
         }
         Map<String, ValueField> engineWarnings = getValues(api, vin, "engine");
         if (engineWarnings != null) {
-            updateState(GROUP_MAINTENANCE, CHANNEL_OIL_LEVEL_WARNING, toString(engineWarnings.get("oilLevelWarning")));
-            updateState(GROUP_MAINTENANCE, CHANNEL_COOLANT_LEVEL_WARNING,
+            updateState(pollSession, GROUP_MAINTENANCE, CHANNEL_OIL_LEVEL_WARNING,
+                    toString(engineWarnings.get("oilLevelWarning")));
+            updateState(pollSession, GROUP_MAINTENANCE, CHANNEL_COOLANT_LEVEL_WARNING,
                     toString(engineWarnings.get("engineCoolantLevelWarning")));
         }
         Map<String, ValueField> tyres = getValues(api, vin, "tyres");
         if (tyres != null) {
-            TYRE_CHANNELS.forEach((key, channel) -> updateState(GROUP_MAINTENANCE, channel, toString(tyres.get(key))));
+            TYRE_CHANNELS.forEach(
+                    (key, channel) -> updateState(pollSession, GROUP_MAINTENANCE, channel, toString(tyres.get(key))));
         }
         Map<String, ValueField> warnings = getValues(api, vin, "warnings");
         if (warnings != null) {
@@ -581,53 +591,61 @@ public class VehicleHandler extends BaseThingHandler {
                     failures.add(key.endsWith("Warning") ? key.substring(0, key.length() - "Warning".length()) : key);
                 }
             });
-            updateState(GROUP_MAINTENANCE, CHANNEL_LIGHT_FAILURE, OnOffType.from(!failures.isEmpty()));
-            updateState(GROUP_MAINTENANCE, CHANNEL_LIGHT_FAILURES, new StringType(String.join(", ", failures)));
+            updateState(pollSession, GROUP_MAINTENANCE, CHANNEL_LIGHT_FAILURE, OnOffType.from(!failures.isEmpty()));
+            updateState(pollSession, GROUP_MAINTENANCE, CHANNEL_LIGHT_FAILURES,
+                    new StringType(String.join(", ", failures)));
         }
     }
 
-    private void updateStatistics(Map<String, ValueField> statistics) {
-        updateState(GROUP_TRIP, CHANNEL_AVERAGE_SPEED,
+    private void updateStatistics(Session pollSession, Map<String, ValueField> statistics) {
+        updateState(pollSession, GROUP_TRIP, CHANNEL_AVERAGE_SPEED,
                 toQuantity(statistics.get("averageSpeed"), SIUnits.KILOMETRE_PER_HOUR));
-        updateState(GROUP_TRIP, CHANNEL_AVERAGE_SPEED_AUTOMATIC,
+        updateState(pollSession, GROUP_TRIP, CHANNEL_AVERAGE_SPEED_AUTOMATIC,
                 toQuantity(statistics.get("averageSpeedAutomatic"), SIUnits.KILOMETRE_PER_HOUR));
-        updateState(GROUP_TRIP, CHANNEL_TRIP_METER_MANUAL, toQuantity(statistics.get("tripMeterManual"), KILOMETRE));
-        updateState(GROUP_TRIP, CHANNEL_TRIP_METER_AUTOMATIC,
+        updateState(pollSession, GROUP_TRIP, CHANNEL_TRIP_METER_MANUAL,
+                toQuantity(statistics.get("tripMeterManual"), KILOMETRE));
+        updateState(pollSession, GROUP_TRIP, CHANNEL_TRIP_METER_AUTOMATIC,
                 toQuantity(statistics.get("tripMeterAutomatic"), KILOMETRE));
-        updateState(GROUP_TRIP, CHANNEL_AVERAGE_FUEL_CONSUMPTION, toDecimal(statistics.get("averageFuelConsumption")));
-        updateState(GROUP_TRIP, CHANNEL_AVERAGE_FUEL_CONSUMPTION_AUTOMATIC,
+        updateState(pollSession, GROUP_TRIP, CHANNEL_AVERAGE_FUEL_CONSUMPTION,
+                toDecimal(statistics.get("averageFuelConsumption")));
+        updateState(pollSession, GROUP_TRIP, CHANNEL_AVERAGE_FUEL_CONSUMPTION_AUTOMATIC,
                 toDecimal(statistics.get("averageFuelConsumptionAutomatic")));
-        updateState(GROUP_TRIP, CHANNEL_AVERAGE_ENERGY_CONSUMPTION,
+        updateState(pollSession, GROUP_TRIP, CHANNEL_AVERAGE_ENERGY_CONSUMPTION,
                 toDecimal(statistics.get("averageEnergyConsumption")));
-        updateState(GROUP_FUEL, CHANNEL_DISTANCE_TO_EMPTY_TANK,
+        updateState(pollSession, GROUP_FUEL, CHANNEL_DISTANCE_TO_EMPTY_TANK,
                 toQuantity(statistics.get("distanceToEmptyTank"), KILOMETRE));
-        updateState(GROUP_BATTERY, CHANNEL_DISTANCE_TO_EMPTY_BATTERY,
+        updateState(pollSession, GROUP_BATTERY, CHANNEL_DISTANCE_TO_EMPTY_BATTERY,
                 toQuantity(statistics.get("distanceToEmptyBattery"), KILOMETRE));
     }
 
-    private void updateEnergy(Map<String, ValueField> energy) {
-        updateState(GROUP_BATTERY, CHANNEL_BATTERY_LEVEL, toQuantity(energy.get("batteryChargeLevel"), Units.PERCENT));
-        updateState(GROUP_BATTERY, CHANNEL_ELECTRIC_RANGE, toQuantity(energy.get("electricRange"), KILOMETRE));
-        updateState(GROUP_BATTERY, CHANNEL_CHARGER_CONNECTION_STATUS, toString(energy.get("chargerConnectionStatus")));
-        updateState(GROUP_BATTERY, CHANNEL_CHARGING_STATUS, toString(energy.get("chargingStatus")));
-        updateState(GROUP_BATTERY, CHANNEL_CHARGING_TYPE, toString(energy.get("chargingType")));
-        updateState(GROUP_BATTERY, CHANNEL_CHARGER_POWER_STATUS, toString(energy.get("chargerPowerStatus")));
-        updateState(GROUP_BATTERY, CHANNEL_ESTIMATED_CHARGING_TIME,
+    private void updateEnergy(Session pollSession, Map<String, ValueField> energy) {
+        updateState(pollSession, GROUP_BATTERY, CHANNEL_BATTERY_LEVEL,
+                toQuantity(energy.get("batteryChargeLevel"), Units.PERCENT));
+        updateState(pollSession, GROUP_BATTERY, CHANNEL_ELECTRIC_RANGE,
+                toQuantity(energy.get("electricRange"), KILOMETRE));
+        updateState(pollSession, GROUP_BATTERY, CHANNEL_CHARGER_CONNECTION_STATUS,
+                toString(energy.get("chargerConnectionStatus")));
+        updateState(pollSession, GROUP_BATTERY, CHANNEL_CHARGING_STATUS, toString(energy.get("chargingStatus")));
+        updateState(pollSession, GROUP_BATTERY, CHANNEL_CHARGING_TYPE, toString(energy.get("chargingType")));
+        updateState(pollSession, GROUP_BATTERY, CHANNEL_CHARGER_POWER_STATUS,
+                toString(energy.get("chargerPowerStatus")));
+        updateState(pollSession, GROUP_BATTERY, CHANNEL_ESTIMATED_CHARGING_TIME,
                 toQuantity(energy.get("estimatedChargingTimeToTargetBatteryChargeLevel"), Units.MINUTE));
-        updateState(GROUP_BATTERY, CHANNEL_TARGET_BATTERY_LEVEL,
+        updateState(pollSession, GROUP_BATTERY, CHANNEL_TARGET_BATTERY_LEVEL,
                 toQuantity(energy.get("targetBatteryChargeLevel"), Units.PERCENT));
-        updateState(GROUP_BATTERY, CHANNEL_CHARGING_CURRENT_LIMIT,
+        updateState(pollSession, GROUP_BATTERY, CHANNEL_CHARGING_CURRENT_LIMIT,
                 toQuantity(energy.get("chargingCurrentLimit"), Units.AMPERE));
-        updateState(GROUP_BATTERY, CHANNEL_CHARGING_POWER, toQuantity(energy.get("chargingPower"), Units.WATT));
+        updateState(pollSession, GROUP_BATTERY, CHANNEL_CHARGING_POWER,
+                toQuantity(energy.get("chargingPower"), Units.WATT));
     }
 
     /**
      * @return false if the location is not available for the vehicle or authorization
      */
-    private boolean updateLocation(VolvoCarsApi api, String vin) throws VolvoCarsException {
+    private boolean updateLocation(VolvoCarsApi api, Session pollSession) throws VolvoCarsException {
         Location location;
         try {
-            location = api.getLocation(vin);
+            location = api.getLocation(pollSession.config.vin);
         } catch (VolvoCarsException e) {
             // Volvo answers with 403 if the location scope was not granted or the vehicle's region is not supported
             if (e.getHttpStatus() == HttpStatus.FORBIDDEN_403 || e.getHttpStatus() == HttpStatus.NOT_FOUND_404) {
@@ -641,11 +659,11 @@ public class VehicleHandler extends BaseThingHandler {
         if (coordinates != null && coordinates.size() >= 2) {
             DecimalType latitude = new DecimalType(coordinates.get(1));
             DecimalType longitude = new DecimalType(coordinates.get(0));
-            updateState(GROUP_LOCATION, CHANNEL_POSITION,
+            updateState(pollSession, GROUP_LOCATION, CHANNEL_POSITION,
                     coordinates.size() > 2 ? new PointType(latitude, longitude, new DecimalType(coordinates.get(2)))
                             : new PointType(latitude, longitude));
         } else {
-            updateState(GROUP_LOCATION, CHANNEL_POSITION, UnDefType.UNDEF);
+            updateState(pollSession, GROUP_LOCATION, CHANNEL_POSITION, UnDefType.UNDEF);
         }
         Location.Properties properties = location != null ? location.properties : null;
         State heading = UnDefType.UNDEF;
@@ -668,8 +686,8 @@ public class VehicleHandler extends BaseThingHandler {
                 }
             }
         }
-        updateState(GROUP_LOCATION, CHANNEL_HEADING, heading);
-        updateState(GROUP_LOCATION, CHANNEL_TIMESTAMP, timestamp);
+        updateState(pollSession, GROUP_LOCATION, CHANNEL_HEADING, heading);
+        updateState(pollSession, GROUP_LOCATION, CHANNEL_TIMESTAMP, timestamp);
         return true;
     }
 
@@ -710,8 +728,16 @@ public class VehicleHandler extends BaseThingHandler {
         }
     }
 
-    private void updateState(String group, String channel, State state) {
-        updateState(new ChannelUID(getThing().getUID(), group, channel), state);
+    /**
+     * Publishes a channel state read for the given session, unless the Thing was disposed or reconfigured since.
+     * Runs under the lock {@link #dispose()} takes, so that no state of a previous session is published after it.
+     */
+    private void updateState(Session stateSession, String group, String channel, State state) {
+        synchronized (sessionLock) {
+            if (stateSession.equals(session)) {
+                updateState(new ChannelUID(getThing().getUID(), group, channel), state);
+            }
+        }
     }
 
     private static State toOpenClosed(@Nullable ValueField field) {

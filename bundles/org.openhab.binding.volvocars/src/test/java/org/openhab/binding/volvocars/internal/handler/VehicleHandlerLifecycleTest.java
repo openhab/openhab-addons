@@ -30,6 +30,7 @@ import org.junit.jupiter.api.Test;
 import org.openhab.binding.volvocars.internal.api.VolvoCarsApi;
 import org.openhab.binding.volvocars.internal.api.VolvoCarsException;
 import org.openhab.binding.volvocars.internal.api.dto.CommandResult;
+import org.openhab.binding.volvocars.internal.api.dto.ValueField;
 import org.openhab.binding.volvocars.internal.api.dto.Vehicle;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.OnOffType;
@@ -42,6 +43,9 @@ import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.types.RefreshType;
+import org.openhab.core.types.UnDefType;
+
+import com.google.gson.JsonPrimitive;
 
 /**
  * Tests the lifecycle of the {@link VehicleHandler}, i.e. commands and polls across reconfiguration and
@@ -109,6 +113,46 @@ class VehicleHandlerLifecycleTest {
         // commands issued after the reconfiguration are sent to the new vehicle
         handler.handleCommand(new ChannelUID(thing.getUID(), GROUP_DOORS, CHANNEL_LOCK), OnOffType.OFF);
         verify(api, timeout(TIMEOUT_MS)).executeCommand(eq(OTHER_VIN), eq("unlock"), isNull());
+    }
+
+    @Test
+    void stateReadBeforeReconfigurationIsNotPublished() throws Exception {
+        Vehicle vehicle = new Vehicle();
+        vehicle.fuelType = "PETROL";
+        when(api.getVehicle(anyString())).thenReturn(vehicle);
+        ValueField locked = new ValueField();
+        locked.value = new JsonPrimitive("LOCKED");
+        CountDownLatch responseReceived = new CountDownLatch(1);
+        CountDownLatch releaseResponse = new CountDownLatch(1);
+        when(api.getValues(VIN, "doors")).thenAnswer(invocation -> {
+            responseReceived.countDown();
+            // the response has already arrived, so canceling the poll job does not stop the poll
+            boolean interrupted = false;
+            while (true) {
+                try {
+                    releaseResponse.await(TIMEOUT_MS, TimeUnit.MILLISECONDS);
+                    break;
+                } catch (InterruptedException e) {
+                    interrupted = true;
+                }
+            }
+            if (interrupted) {
+                Thread.currentThread().interrupt();
+            }
+            return Map.of("centralLock", locked);
+        });
+        ChannelUID lockChannel = new ChannelUID(thing.getUID(), GROUP_DOORS, CHANNEL_LOCK);
+
+        handler.initialize();
+        assertTrue(responseReceived.await(TIMEOUT_MS, TimeUnit.MILLISECONDS));
+        thing.getConfiguration().put("vin", OTHER_VIN);
+        handler.thingUpdated(thing);
+        releaseResponse.countDown();
+
+        // the poll of the new vehicle publishes its state, the response for the previous vehicle is discarded
+        verify(api, timeout(TIMEOUT_MS)).getValues(OTHER_VIN, "doors");
+        verify(callback, timeout(TIMEOUT_MS)).stateUpdated(lockChannel, UnDefType.UNDEF);
+        verify(callback, after(1000).never()).stateUpdated(lockChannel, OnOffType.ON);
     }
 
     @Test
