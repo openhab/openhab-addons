@@ -79,24 +79,6 @@ public class VehicleHandler extends BaseThingHandler {
     private static final int REFRESH_AFTER_COMMAND_SECONDS = 15;
     private static final int COALESCED_REFRESH_DELAY_SECONDS = 2;
 
-    private static final Map<String, String> DOORS = Map.of("frontLeftDoor", CHANNEL_FRONT_LEFT, "frontRightDoor",
-            CHANNEL_FRONT_RIGHT, "rearLeftDoor", CHANNEL_REAR_LEFT, "rearRightDoor", CHANNEL_REAR_RIGHT, "hood",
-            CHANNEL_HOOD, "tailgate", CHANNEL_TAILGATE, "tankLid", CHANNEL_TANK_LID);
-    private static final Map<String, String> WINDOWS = Map.of("frontLeftWindow", CHANNEL_FRONT_LEFT, "frontRightWindow",
-            CHANNEL_FRONT_RIGHT, "rearLeftWindow", CHANNEL_REAR_LEFT, "rearRightWindow", CHANNEL_REAR_RIGHT, "sunroof",
-            CHANNEL_SUNROOF);
-    private static final Map<String, String> TYRES = Map.of("frontLeft", CHANNEL_TYRE_FRONT_LEFT, "frontRight",
-            CHANNEL_TYRE_FRONT_RIGHT, "rearLeft", CHANNEL_TYRE_REAR_LEFT, "rearRight", CHANNEL_TYRE_REAR_RIGHT);
-    private static final Map<String, String> HONK_FLASH_COMMANDS = Map.of("HONK", "honk", "FLASH", "flash",
-            "HONK_AND_FLASH", "honk-flash");
-    /** Battery channels provided by the Energy API, mapped to the name of their energy state value. */
-    private static final Map<String, String> ENERGY_CHANNELS = Map.of(CHANNEL_BATTERY_LEVEL, "batteryChargeLevel",
-            CHANNEL_ELECTRIC_RANGE, "electricRange", CHANNEL_CHARGER_CONNECTION_STATUS, "chargerConnectionStatus",
-            CHANNEL_CHARGING_STATUS, "chargingStatus", CHANNEL_CHARGING_TYPE, "chargingType",
-            CHANNEL_CHARGER_POWER_STATUS, "chargerPowerStatus", CHANNEL_ESTIMATED_CHARGING_TIME,
-            "estimatedChargingTimeToTargetBatteryChargeLevel", CHANNEL_TARGET_BATTERY_LEVEL, "targetBatteryChargeLevel",
-            CHANNEL_CHARGING_CURRENT_LIMIT, "chargingCurrentLimit", CHANNEL_CHARGING_POWER, "chargingPower");
-
     private final Logger logger = LoggerFactory.getLogger(VehicleHandler.class);
     private final Object pollLock = new Object();
     private final Object refreshJobLock = new Object();
@@ -509,11 +491,12 @@ public class VehicleHandler extends BaseThingHandler {
                         case "UNLOCKED" -> OnOffType.OFF;
                         default -> UnDefType.UNDEF;
                     });
-            DOORS.forEach((key, channel) -> updateState(GROUP_DOORS, channel, toOpenClosed(doors.get(key))));
+            DOOR_CHANNELS.forEach((key, channel) -> updateState(GROUP_DOORS, channel, toOpenClosed(doors.get(key))));
         }
         Map<String, ValueField> windows = getValues(api, vin, "windows");
         if (windows != null) {
-            WINDOWS.forEach((key, channel) -> updateState(GROUP_WINDOWS, channel, toOpenClosed(windows.get(key))));
+            WINDOW_CHANNELS
+                    .forEach((key, channel) -> updateState(GROUP_WINDOWS, channel, toOpenClosed(windows.get(key))));
         }
         Map<String, ValueField> engine = getValues(api, vin, "engine-status");
         if (engine != null) {
@@ -588,7 +571,7 @@ public class VehicleHandler extends BaseThingHandler {
         }
         Map<String, ValueField> tyres = getValues(api, vin, "tyres");
         if (tyres != null) {
-            TYRES.forEach((key, channel) -> updateState(GROUP_MAINTENANCE, channel, toString(tyres.get(key))));
+            TYRE_CHANNELS.forEach((key, channel) -> updateState(GROUP_MAINTENANCE, channel, toString(tyres.get(key))));
         }
         Map<String, ValueField> warnings = getValues(api, vin, "warnings");
         if (warnings != null) {

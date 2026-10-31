@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.volvocars.internal;
 
+import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -139,4 +140,27 @@ public class VolvoCarsBindingConstants {
     public static final String CHANNEL_HONK_FLASH = "honk-flash";
     public static final String CHANNEL_LOCK_REDUCED_GUARD = "lock-reduced-guard";
     public static final String CHANNEL_LAST_COMMAND_STATUS = "last-command-status";
+
+    // Mappings of API values to channels and commands
+    /** Values of the doors status, mapped to the channels of group doors. */
+    public static final Map<String, String> DOOR_CHANNELS = Map.of("frontLeftDoor", CHANNEL_FRONT_LEFT,
+            "frontRightDoor", CHANNEL_FRONT_RIGHT, "rearLeftDoor", CHANNEL_REAR_LEFT, "rearRightDoor",
+            CHANNEL_REAR_RIGHT, "hood", CHANNEL_HOOD, "tailgate", CHANNEL_TAILGATE, "tankLid", CHANNEL_TANK_LID);
+    /** Values of the windows status, mapped to the channels of group windows. */
+    public static final Map<String, String> WINDOW_CHANNELS = Map.of("frontLeftWindow", CHANNEL_FRONT_LEFT,
+            "frontRightWindow", CHANNEL_FRONT_RIGHT, "rearLeftWindow", CHANNEL_REAR_LEFT, "rearRightWindow",
+            CHANNEL_REAR_RIGHT, "sunroof", CHANNEL_SUNROOF);
+    /** Values of the tyre status, mapped to the tyre channels of group maintenance. */
+    public static final Map<String, String> TYRE_CHANNELS = Map.of("frontLeft", CHANNEL_TYRE_FRONT_LEFT, "frontRight",
+            CHANNEL_TYRE_FRONT_RIGHT, "rearLeft", CHANNEL_TYRE_REAR_LEFT, "rearRight", CHANNEL_TYRE_REAR_RIGHT);
+    /** Commands of channel honk-flash, mapped to the API commands. */
+    public static final Map<String, String> HONK_FLASH_COMMANDS = Map.of("HONK", "honk", "FLASH", "flash",
+            "HONK_AND_FLASH", "honk-flash");
+    /** Battery channels provided by the Energy API, mapped to the name of their energy state value. */
+    public static final Map<String, String> ENERGY_CHANNELS = Map.of(CHANNEL_BATTERY_LEVEL, "batteryChargeLevel",
+            CHANNEL_ELECTRIC_RANGE, "electricRange", CHANNEL_CHARGER_CONNECTION_STATUS, "chargerConnectionStatus",
+            CHANNEL_CHARGING_STATUS, "chargingStatus", CHANNEL_CHARGING_TYPE, "chargingType",
+            CHANNEL_CHARGER_POWER_STATUS, "chargerPowerStatus", CHANNEL_ESTIMATED_CHARGING_TIME,
+            "estimatedChargingTimeToTargetBatteryChargeLevel", CHANNEL_TARGET_BATTERY_LEVEL, "targetBatteryChargeLevel",
+            CHANNEL_CHARGING_CURRENT_LIMIT, "chargingCurrentLimit", CHANNEL_CHARGING_POWER, "chargingPower");
 }
