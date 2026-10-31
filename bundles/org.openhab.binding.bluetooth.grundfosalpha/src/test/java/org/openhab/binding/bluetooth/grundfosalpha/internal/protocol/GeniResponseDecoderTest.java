@@ -553,6 +553,30 @@ public class GeniResponseDecoderTest {
         assertThat(decoder.decode(), is(anEmptyMap()));
     }
 
+    @ParameterizedTest
+    @CsvSource({ "OperatingMode,0", "OperatingMode,1", "OperatingMode,2", "OperatingMode,3", "ControlMode,0",
+            "ControlMode,1", "ControlMode,2", "ControlMode,13", "ControlMode,14", "ControlMode,15", "ControlMode,255" })
+    void modeRepliesRequireRequestContext(GeniMeasurand type, int value) {
+        byte[] apdu = HexUtils.hexToBytes("0A0E00012F010000070006007FFFFFFF");
+        apdu[9 + type.offset()] = (byte) value;
+        var decoder = new GeniResponseDecoder(type.readRequest());
+        assertThat(decoder.addPacket(reply(apdu)), is(true));
+        assertThat(decoder.decode(), is(Map.of(type, BigDecimal.valueOf(value))));
+
+        var uncorrelated = new GeniResponseDecoder();
+        assertThat(uncorrelated.addPacket(reply(apdu)), is(true));
+        assertThat(uncorrelated.decode(), is(anEmptyMap()));
+        assertThat(uncorrelated.objectData(), is(nullValue()));
+    }
+
+    @Test
+    void malformedTrailingApduPreventsReadModifyWrite() {
+        var decoder = new GeniResponseDecoder(GeniReadRequest.ControlMode);
+        assertThat(decoder.addPacket(reply(HexUtils.hexToBytes("0A0E00012F010000070006007FFFFFFF0A"))), is(true));
+        assertThat(decoder.decode(), is(anEmptyMap()));
+        assertThat(decoder.objectData(), is(nullValue()));
+    }
+
     private static byte[] applicationData(String capturedReply) {
         byte[] response = HexUtils.hexToBytes(capturedReply);
         return Arrays.copyOfRange(response, 4, response.length - 2);
