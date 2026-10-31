@@ -118,6 +118,7 @@ Device things support some of the following channels:
 | volume                        | Dimmer             | Preset the sound volume to be played on the next `alarm-sound`, `alert-sound`, or `chime-sound` play request.       |
 | duration                      | Number:Time        | Preset the sound duration on the next `alarm-sound` play request.                                                   |
 | mute                          | Switch             | Channel to mute or un-mute the speaker output. Note: it is impossible to mute the `alarm-sound`.                    |
+| gradient-color-`N`            | Color              | Color of the color gradient point `N`. Note: it only uses the HS- part of the HSB, the B- part is ingored.          |
 
 The exact list of channels in a given device is determined at run time when the system is started.
 Each device reports its own live list of capabilities, and the respective list of channels is created accordingly.
@@ -154,6 +155,17 @@ So (for example) the channel value `1002` ((1 * 1000) + 2) means that the second
 The `rotary-steps` channel is a trigger channel.
 When the dial is turned, the channel receives a number corresponding to the number of steps of the last movement of a rotary dial.
 A positive number means the dial was rotated clock-wise, whereas a negative number means it was rotated counter-clockwise.
+
+### Channels for Devices with Multiple (Auxiliary) Lights
+
+Some devices, such as the Hue Twilight or Hue Centris, contain two or more independent lights: a main light and one or more auxiliary lights.
+The binding detects these devices automatically.
+The main light uses the normal channels of the thing, e.g. `brightness` or `color-temperature`, as shown above.
+The auxiliary lights are exposed in an additional channel group called `lightN`, where `N` identifies the auxiliary light id, which provides its own set of channels, e.g. `light2#color`.
+For a Hue Twilight, the back light is `light2`.
+The auxiliary light channels are created dynamically, so only the channels that the auxiliary light actually supports are shown.
+Commands sent to a `lightN` channel control only the auxiliary light, and commands sent to the normal channels control only the main light.
+The `dynamics` channel is also available per light: use `dynamics` for the main light and `lightN#dynamics` for the auxiliary light.
 
 ### Channels for Rooms and Zones
 
