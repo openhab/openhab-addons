@@ -36,7 +36,9 @@ import org.openhab.binding.matter.internal.client.dto.ws.OtaUpdateInfo;
 import org.openhab.binding.matter.internal.controller.MatterControllerClient;
 import org.openhab.binding.matter.internal.util.TranslationService;
 import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
+import org.openhab.core.thing.binding.ThingHandlerCallback;
 
 /**
  * Tests for {@link NodeHandler}.
@@ -45,6 +47,8 @@ import org.openhab.core.thing.binding.BaseThingHandlerFactory;
  */
 @NonNullByDefault
 public class NodeHandlerTest {
+
+    private static final ThingUID NODE_UID = new ThingUID("matter:node:main:42");
 
     @Mock
     @NonNullByDefault({})
@@ -67,6 +71,15 @@ public class NodeHandlerTest {
     @Mock
     @NonNullByDefault({})
     private MatterControllerClient client;
+    @Mock
+    @NonNullByDefault({})
+    private ThingHandlerCallback callback;
+    @Mock
+    @NonNullByDefault({})
+    private Bridge controllerBridge;
+    @Mock
+    @NonNullByDefault({})
+    private ControllerHandler controllerHandler;
 
     @NonNullByDefault({})
     private NodeHandler handler;
@@ -74,10 +87,16 @@ public class NodeHandlerTest {
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
+        ThingUID controllerUID = new ThingUID("matter:controller:main");
+        when(bridge.getBridgeUID()).thenReturn(controllerUID);
+        when(bridge.getUID()).thenReturn(NODE_UID);
+        when(callback.getBridge(controllerUID)).thenReturn(controllerBridge);
+        when(controllerBridge.getHandler()).thenReturn(controllerHandler);
         handler = new NodeHandler(bridge, thingHandlerFactory, stateDescriptionProvider, channelTypeProvider,
                 configDescriptionProvider, translationService);
         handler.cachedClient = client;
         handler.nodeId = BigInteger.valueOf(42);
+        handler.setCallback(callback);
     }
 
     @Test
@@ -102,5 +121,24 @@ public class NodeHandlerTest {
 
         assertNotSame(first, second);
         verify(client, times(2)).otaQueryForUpdates(BigInteger.valueOf(42), true);
+    }
+
+    @Test
+    public void otaQueryResultIsStoredForFirmwareLookups() {
+        OtaUpdateInfo updateInfo = new OtaUpdateInfo(1, 2, 3, "1.2.3", null, null);
+        when(client.otaQueryForUpdates(any(), anyBoolean())).thenReturn(CompletableFuture.completedFuture(updateInfo));
+
+        handler.checkForOTAUpdate();
+
+        verify(controllerHandler).updateFirmwareInfo(NODE_UID, updateInfo);
+    }
+
+    @Test
+    public void otaQueryWithNoUpdateIsStoredForFirmwareLookups() {
+        when(client.otaQueryForUpdates(any(), anyBoolean())).thenReturn(CompletableFuture.completedFuture(null));
+
+        handler.checkForOTAUpdate();
+
+        verify(controllerHandler).updateFirmwareInfo(NODE_UID, null);
     }
 }
