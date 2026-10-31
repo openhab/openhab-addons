@@ -33,6 +33,6 @@ public class VictoriaMetricsConstants {
     public static final String PATH_HEALTH = "/health";
     public static final String PATH_IMPORT = "/api/v1/import/prometheus";
     public static final String PATH_EXPORT = "/api/v1/export";
-    public static final String PATH_QUERY = "/api/v1/query";
+    public static final String PATH_LABEL_VALUES = "/api/v1/label/%s/values";
     public static final String PATH_DELETE_SERIES = "/api/v1/admin/tsdb/delete_series";
 }

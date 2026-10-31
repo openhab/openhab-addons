@@ -52,7 +52,13 @@
 			<label>Metric Name Prefix</label>
 			<description>Prefix added to all metric names, e.g. "openhab_". Must be a valid metric name. If not set, the
 				metric
-				name is the item name.</description>
+				name starts with the item name.</description>
+		</parameter>
+
+		<parameter name="metricSuffix" type="text" required="false" groupName="misc">
+			<label>Metric Name Suffix</label>
+			<description>Suffix added to all metric names. Set to "_value" to use data written by the InfluxDB persistence
+				service to VictoriaMetrics or imported with vmctl.</description>
 		</parameter>
 
 		<parameter name="addCategoryTag" type="boolean" required="true" groupName="tags">

@@ -21,11 +21,12 @@ import java.io.InputStreamReader;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Base64;
-import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -63,7 +64,7 @@ import com.google.gson.JsonParser;
 @NonNullByDefault
 public class VictoriaMetricsRepository {
     private static final long REQUEST_TIMEOUT_SECONDS = 30;
-    private static final String ITEM_COUNT_RANGE = "365d";
+    private static final long ITEM_NAMES_RANGE_DAYS = 365;
 
     private final Logger logger = LoggerFactory.getLogger(VictoriaMetricsRepository.class);
     private final VictoriaMetricsConfiguration configuration;
@@ -198,42 +199,58 @@ public class VictoriaMetricsRepository {
      * @return Query results
      */
     public List<VictoriaMetricsRow> query(FilterCriteria filter, @Nullable String alias) {
-        VictoriaMetricsQuery query = queryCreator.createQuery(filter, alias);
-        logger.trace("Query {}", query);
-        Request request = newRequest(PATH_EXPORT).param("match[]", query.selector());
-        Instant start = query.start();
-        if (start != null) {
-            request.param("start", formatTimestamp(start));
-        }
-        Instant end = query.end();
-        if (end != null) {
-            request.param("end", formatTimestamp(end));
-        }
-
-        // the export can be large, so stream it instead of buffering the complete response
-        InputStreamResponseListener listener = new InputStreamResponseListener();
-        request.send(listener);
         try {
-            Response response = listener.get(REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS);
-            try (InputStream inputStream = listener.getInputStream()) {
-                if (response.getStatus() != HttpStatus.OK_200) {
-                    logger.warn("Failed to execute query '{}': HTTP status {}: {}", filter, response.getStatus(),
-                            new String(inputStream.readAllBytes(), StandardCharsets.UTF_8));
-                    return List.of();
+            List<VictoriaMetricsRow> rows = new ArrayList<>();
+            List<VictoriaMetricsRow> result = List.of();
+            for (VictoriaMetricsQuery query : queryCreator.createQueries(filter, alias, Instant.now())) {
+                rows.addAll(export(query));
+                result = queryCreator.applyCriteria(rows.stream(), filter);
+                if (queryCreator.isComplete(result, filter)) {
+                    break;
                 }
-                return queryCreator.applyCriteria(parseExport(inputStream).stream(), filter);
             }
+            return result;
         } catch (InterruptedException e) {
-            request.abort(e);
             Thread.currentThread().interrupt();
         } catch (TimeoutException | ExecutionException | IOException | JsonParseException | IllegalStateException
                 | IllegalArgumentException e) {
             // IllegalStateException is thrown for unexpected JSON types, IllegalArgumentException for a non-numeric
             // filter state
-            request.abort(e);
             logger.warn("Failed to execute query '{}': {}", filter, e.getMessage());
         }
         return List.of();
+    }
+
+    private List<VictoriaMetricsRow> export(VictoriaMetricsQuery query)
+            throws InterruptedException, TimeoutException, ExecutionException, IOException {
+        logger.trace("Query {}", query);
+        Request request = newRequest(PATH_EXPORT).param("match[]", query.selector()).param("end",
+                formatTimestamp(query.end()));
+        Instant start = query.start();
+        if (start != null) {
+            request.param("start", formatTimestamp(start));
+        }
+
+        // the export can be large, so stream it instead of buffering the complete response
+        InputStreamResponseListener listener = new InputStreamResponseListener();
+        request.send(listener);
+        boolean completed = false;
+        try {
+            Response response = listener.get(REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS);
+            try (InputStream inputStream = listener.getInputStream()) {
+                if (response.getStatus() != HttpStatus.OK_200) {
+                    throw new IOException("HTTP status " + response.getStatus() + ": "
+                            + new String(inputStream.readAllBytes(), StandardCharsets.UTF_8));
+                }
+                List<VictoriaMetricsRow> rows = parseExport(inputStream);
+                completed = true;
+                return rows;
+            }
+        } finally {
+            if (!completed) {
+                request.abort(new IOException("Export aborted"));
+            }
+        }
     }
 
     /**
@@ -286,39 +303,38 @@ public class VictoriaMetricsRepository {
     }
 
     /**
-     * Return all stored item names with its count of stored points during the last year
+     * Return the names of all items with samples during the last year
+     * <p>
+     * Unlike InfluxDB, the number of stored points is not returned: counting the samples of all series reads all
+     * samples of the time range and exceeds the default query duration limit on larger installations, while the names
+     * are read from the index only.
      *
-     * @return Map with {@code <ItemName,ItemCount>}
+     * @return the item names (or aliases)
      */
-    public Map<String, Integer> getStoredItemsCount() {
+    public Set<String> getStoredItemNames() {
+        // prefix and suffix only contain [a-zA-Z0-9_:], so they need no regex escaping
         String prefix = configuration.getMetricPrefix();
-        String selector = prefix.isEmpty() ? "{" + TAG_ITEM_NAME + "!=\"\"}"
-                : "{" + LABEL_METRIC_NAME + "=~\"" + prefix + ".*\"," + TAG_ITEM_NAME + "!=\"\"}";
-        String promql = "sum by (" + TAG_ITEM_NAME + ") (count_over_time(" + selector + "[" + ITEM_COUNT_RANGE + "]))";
+        String suffix = configuration.getMetricSuffix();
+        String selector = prefix.isEmpty() && suffix.isEmpty() ? "{" + TAG_ITEM_NAME + "!=\"\"}"
+                : "{" + LABEL_METRIC_NAME + "=~\"" + prefix + ".*" + suffix + "\"," + TAG_ITEM_NAME + "!=\"\"}";
+        Instant start = Instant.now().minus(ITEM_NAMES_RANGE_DAYS, ChronoUnit.DAYS);
 
-        Map<String, Integer> result = new LinkedHashMap<>();
+        Set<String> result = new LinkedHashSet<>();
         try {
-            ContentResponse response = newRequest(PATH_QUERY).param("query", promql).send();
+            ContentResponse response = newRequest(PATH_LABEL_VALUES.formatted(TAG_ITEM_NAME)).param("match[]", selector)
+                    .param("start", formatTimestamp(start)).send();
             if (response.getStatus() != HttpStatus.OK_200) {
                 logger.warn("Failed to query stored items: HTTP status {}: {}", response.getStatus(),
                         response.getContentAsString());
                 return result;
             }
-            JsonObject data = JsonParser.parseString(response.getContentAsString()).getAsJsonObject()
-                    .getAsJsonObject("data");
-            JsonArray series = data != null ? data.getAsJsonArray("result") : null;
-            if (series == null) {
+            JsonArray names = JsonParser.parseString(response.getContentAsString()).getAsJsonObject()
+                    .getAsJsonArray("data");
+            if (names == null) {
                 throw new JsonParseException("Unexpected query result: " + response.getContentAsString());
             }
-            for (JsonElement element : series) {
-                JsonObject entry = element.getAsJsonObject();
-                JsonObject metric = entry.getAsJsonObject("metric");
-                JsonArray value = entry.getAsJsonArray("value");
-                JsonElement itemName = metric != null ? metric.get(TAG_ITEM_NAME) : null;
-                BigDecimal count = value != null && value.size() == 2 ? toBigDecimal(value.get(1)) : null;
-                if (itemName != null && count != null) {
-                    result.put(itemName.getAsString(), count.intValue());
-                }
+            for (JsonElement name : names) {
+                result.add(name.getAsString());
             }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();

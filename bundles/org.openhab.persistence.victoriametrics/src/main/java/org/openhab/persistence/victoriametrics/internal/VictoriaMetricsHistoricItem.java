@@ -12,7 +12,6 @@
  */
 package org.openhab.persistence.victoriametrics.internal;
 
-import java.text.DateFormat;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -25,6 +24,7 @@ import org.openhab.core.types.State;
  * Java bean used to return items queries results from VictoriaMetrics.
  *
  * @author Franz - Initial contribution
+ * @author Michael Weger - Fix toString
  */
 @NonNullByDefault
 public class VictoriaMetricsHistoricItem implements HistoricItem {
@@ -65,6 +65,7 @@ public class VictoriaMetricsHistoricItem implements HistoricItem {
 
     @Override
     public String toString() {
-        return DateFormat.getDateTimeInstance().format(getTimestamp()) + ": " + name + " -> " + state.toString();
+        // DateFormat cannot format a ZonedDateTime
+        return getTimestamp() + ": " + name + " -> " + state;
     }
 }

@@ -97,6 +97,12 @@ public class VictoriaMetricsPersistenceServiceTest {
     }
 
     @Test
+    public void activateWithInvalidSuffixShouldFail() {
+        assertThrows(IllegalArgumentException.class,
+                () -> getService(Map.of(URL_PARAM, "http://localhost:8428", METRIC_SUFFIX_PARAM, ".value")));
+    }
+
+    @Test
     public void deactivateShouldDisconnectRepository() {
         VictoriaMetricsPersistenceService instance = getService(VALID_CONFIGURATION_WITHOUT_AUTHENTICATION);
         instance.deactivate();

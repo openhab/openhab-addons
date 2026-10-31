@@ -25,7 +25,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Joan Pujol Espinar - Initial contribution
  * @author Franz - Initial VictoriaMetrics adaptation
- * @author Michael Weger - Remove case conversion, validate metric prefix
+ * @author Michael Weger - Remove case conversion, add metric prefix and suffix
  */
 @NonNullByDefault
 public class VictoriaMetricsConfiguration {
@@ -34,6 +34,7 @@ public class VictoriaMetricsConfiguration {
     public static final String USER_PARAM = "user";
     public static final String PASSWORD_PARAM = "password";
     public static final String METRIC_PREFIX_PARAM = "metricPrefix";
+    public static final String METRIC_SUFFIX_PARAM = "metricSuffix";
     public static final String ADD_CATEGORY_TAG_PARAM = "addCategoryTag";
     public static final String ADD_LABEL_TAG_PARAM = "addLabelTag";
     public static final String ADD_TYPE_TAG_PARAM = "addTypeTag";
@@ -44,6 +45,7 @@ public class VictoriaMetricsConfiguration {
     private final String password;
     private final String token;
     private final String metricPrefix;
+    private final String metricSuffix;
     private final boolean addCategoryTag;
     private final boolean addTypeTag;
     private final boolean addLabelTag;
@@ -55,6 +57,7 @@ public class VictoriaMetricsConfiguration {
         password = ConfigParser.valueAsOrElse(config.get(PASSWORD_PARAM), String.class, "");
         token = ConfigParser.valueAsOrElse(config.get(TOKEN_PARAM), String.class, "");
         metricPrefix = ConfigParser.valueAsOrElse(config.get(METRIC_PREFIX_PARAM), String.class, "");
+        metricSuffix = ConfigParser.valueAsOrElse(config.get(METRIC_SUFFIX_PARAM), String.class, "");
         addCategoryTag = ConfigParser.valueAsOrElse(config.get(ADD_CATEGORY_TAG_PARAM), Boolean.class, false);
         addLabelTag = ConfigParser.valueAsOrElse(config.get(ADD_LABEL_TAG_PARAM), Boolean.class, false);
         addTypeTag = ConfigParser.valueAsOrElse(config.get(ADD_TYPE_TAG_PARAM), Boolean.class, false);
@@ -67,8 +70,9 @@ public class VictoriaMetricsConfiguration {
         boolean hasValidCredentials = user.isBlank() || !password.isBlank();
         boolean hasValidPrefix = metricPrefix.isEmpty()
                 || VictoriaMetricsMetricNameResolver.isValidMetricName(metricPrefix);
+        boolean hasValidSuffix = VictoriaMetricsMetricNameResolver.isValidMetricNameSuffix(metricSuffix);
 
-        if (hasUrl && hasValidCredentials && hasValidPrefix) {
+        if (hasUrl && hasValidCredentials && hasValidPrefix && hasValidSuffix) {
             return true;
         } else {
             String msg = "VictoriaMetrics configuration isn't valid. Addon won't work: ";
@@ -81,6 +85,9 @@ public class VictoriaMetricsConfiguration {
             }
             if (!hasValidPrefix) {
                 reason.add("Metric prefix is not a valid metric name");
+            }
+            if (!hasValidSuffix) {
+                reason.add("Metric suffix contains characters not allowed in metric names");
             }
             logger.warn("{} {}", msg, reason);
             return false;
@@ -107,6 +114,10 @@ public class VictoriaMetricsConfiguration {
         return metricPrefix;
     }
 
+    public String getMetricSuffix() {
+        return metricSuffix;
+    }
+
     public boolean isAddCategoryTag() {
         return addCategoryTag;
     }
@@ -126,8 +137,8 @@ public class VictoriaMetricsConfiguration {
     @Override
     public String toString() {
         return "VictoriaMetricsConfiguration{url='" + url + "', user='" + user + "', password='" + password.length()
-                + " chars', token='" + token.length() + " chars', metricPrefix='" + metricPrefix + "', addCategoryTag="
-                + addCategoryTag + ", addTypeTag=" + addTypeTag + ", addLabelTag=" + addLabelTag + ", addUnitTag="
-                + addUnitTag + '}';
+                + " chars', token='" + token.length() + " chars', metricPrefix='" + metricPrefix + "', metricSuffix='"
+                + metricSuffix + "', addCategoryTag=" + addCategoryTag + ", addTypeTag=" + addTypeTag + ", addLabelTag="
+                + addLabelTag + ", addUnitTag=" + addUnitTag + '}';
     }
 }

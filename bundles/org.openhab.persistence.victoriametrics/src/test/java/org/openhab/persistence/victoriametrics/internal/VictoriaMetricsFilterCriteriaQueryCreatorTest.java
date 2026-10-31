@@ -18,6 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
 import java.math.BigDecimal;
+import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
@@ -80,7 +81,7 @@ public class VictoriaMetricsFilterCriteriaQueryCreatorTest {
         VictoriaMetricsQuery query = instance.createQuery(criteria, null);
         assertThat(query.selector(), equalTo("{__name__=\"sampleItem\",item=\"sampleItem\"}"));
         assertThat(query.start(), nullValue());
-        assertThat(query.end(), nullValue());
+        assertThat(query.end(), equalTo(VictoriaMetricsFilterCriteriaQueryCreator.OPEN_END));
     }
 
     @Test
@@ -245,6 +246,59 @@ public class VictoriaMetricsFilterCriteriaQueryCreatorTest {
     public void testItemLabelIsEscaped() {
         VictoriaMetricsQuery query = instance.createQuery(createBaseCriteria(), "a\"b\\c");
         assertThat(query.selector(), equalTo("{__name__=\"a_b_c\",item=\"a\\\"b\\\\c\"}"));
+    }
+
+    @Test
+    public void testUnpagedOrAscendingQueryIsNotSplit() {
+        FilterCriteria criteria = createBaseCriteria();
+        assertThat(instance.createQueries(criteria, null, T0), hasSize(1));
+
+        criteria.setOrdering(FilterCriteria.Ordering.ASCENDING).setPageSize(1);
+        assertThat(instance.createQueries(criteria, null, T0), hasSize(1));
+    }
+
+    @Test
+    public void testPreviousStateIsQueriedInWindows() {
+        FilterCriteria criteria = createBaseCriteria();
+        criteria.setOrdering(FilterCriteria.Ordering.DESCENDING).setPageSize(1);
+
+        List<VictoriaMetricsQuery> queries = instance.createQueries(criteria, null, T0);
+
+        // the first window includes future states, the last one the remaining history
+        assertThat(queries.stream().map(VictoriaMetricsQuery::start).toList(),
+                contains(T0.minus(Duration.ofHours(1)), T0.minus(Duration.ofDays(1)), T0.minus(Duration.ofDays(7)),
+                        T0.minus(Duration.ofDays(30)), T0.minus(Duration.ofDays(365)), null));
+        assertThat(queries.stream().map(VictoriaMetricsQuery::end).toList(),
+                contains(VictoriaMetricsFilterCriteriaQueryCreator.OPEN_END,
+                        T0.minus(Duration.ofHours(1)).minusMillis(1), T0.minus(Duration.ofDays(1)).minusMillis(1),
+                        T0.minus(Duration.ofDays(7)).minusMillis(1), T0.minus(Duration.ofDays(30)).minusMillis(1),
+                        T0.minus(Duration.ofDays(365)).minusMillis(1)));
+    }
+
+    @Test
+    public void testWindowsAreLimitedByTimeRange() {
+        Instant end = T0.minus(Duration.ofDays(10));
+        FilterCriteria criteria = createBaseCriteria();
+        criteria.setOrdering(FilterCriteria.Ordering.DESCENDING).setPageSize(1)
+                .setBeginDate(ZonedDateTime.ofInstant(end.minus(Duration.ofDays(3)), ZoneOffset.UTC))
+                .setEndDate(ZonedDateTime.ofInstant(end, ZoneOffset.UTC));
+
+        List<VictoriaMetricsQuery> queries = instance.createQueries(criteria, null, T0);
+
+        assertThat(queries.stream().map(VictoriaMetricsQuery::start).toList(),
+                contains(end.minus(Duration.ofHours(1)), end.minus(Duration.ofDays(1)), end.minus(Duration.ofDays(3))));
+        assertThat(queries.get(0).end(), equalTo(end));
+        assertThat(queries.get(2).end(), equalTo(end.minus(Duration.ofDays(1)).minusMillis(1)));
+    }
+
+    @Test
+    public void testIsComplete() {
+        FilterCriteria criteria = createBaseCriteria();
+        assertThat(instance.isComplete(rows(0, 1), criteria), is(false));
+
+        criteria.setPageSize(2);
+        assertThat(instance.isComplete(rows(0), criteria), is(false));
+        assertThat(instance.isComplete(rows(0, 1), criteria), is(true));
     }
 
     private FilterCriteria createBaseCriteria() {
