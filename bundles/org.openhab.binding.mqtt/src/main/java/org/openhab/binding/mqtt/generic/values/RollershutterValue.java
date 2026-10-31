@@ -166,7 +166,31 @@ public class RollershutterValue extends Value {
 
     @Override
     public String getMQTTpublishValue(Command command, @Nullable String pattern) {
-        return getMQTTpublishValue(command, transformExtentsToString);
+        String value = getMQTTpublishValue(command, transformExtentsToString);
+        if (pattern == null || isCommandString(command)) {
+            // Configured up/down/stop strings are sent literally, as documented
+            return value;
+        }
+        // Remaining values are always numeric positions; pass an integer so that both %s and %d work
+        return String.format(pattern, Integer.valueOf(value));
+    }
+
+    /**
+     * Whether the publish value of the command is a literal command string (not a numeric position).
+     */
+    private boolean isCommandString(Command command) {
+        if (command == StopMoveType.STOP) {
+            return true;
+        } else if (command == UpDownType.UP) {
+            return upCommandString != null;
+        } else if (command == UpDownType.DOWN) {
+            return downCommandString != null;
+        } else if (transformExtentsToString && command.equals(PercentType.HUNDRED)) {
+            return downCommandString != null;
+        } else if (transformExtentsToString && command.equals(PercentType.ZERO)) {
+            return upCommandString != null;
+        }
+        return false;
     }
 
     public String getMQTTpublishValue(Command command, boolean transformExtentsToString) {
