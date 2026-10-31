@@ -55,6 +55,8 @@ import org.slf4j.LoggerFactory;
 public class SerialOceanicThingHandler extends OceanicThingHandler implements SerialPortEventListener {
 
     private static final long REQUEST_TIMEOUT = 10000;
+    /** Bound dispose/reconnect so ThingManager is never wedged on a purejavacomm read(). */
+    private static final long READER_JOIN_TIMEOUT_MS = 2000;
     private static final int BAUD = 19200;
     private static final int RECONNECT_INTERVAL_SECONDS = 15;
 
@@ -100,8 +102,9 @@ public class SerialOceanicThingHandler extends OceanicThingHandler implements Se
         disposed = true;
         lifecycleGeneration.incrementAndGet();
         cancelReconnect();
-        closeSerialResources(true);
+        // Cancel polling first so requestResponse wait loops are interrupted before serial teardown
         super.dispose();
+        closeSerialResources(true);
     }
 
     /**
@@ -287,32 +290,50 @@ public class SerialOceanicThingHandler extends OceanicThingHandler implements Se
                 return;
             }
             logger.debug("Reconnecting Oceanic serial thing handler");
-            // Soft reset only — do not call initialize()/dispose(); those would clear disposed or tear down polling
-            closeSerialResources(true);
         }
+        // Soft reset only — do not call initialize()/dispose(); those would clear disposed or tear down polling.
+        // Must not hold the handler monitor across close/join (reader may need it in acceptResponse).
+        closeSerialResources(true);
         openSerialConnection(generation);
     }
 
     /**
      * Close the reader thread and serial resources currently published on this handler.
+     * <p>
+     * Order matters for purejavacomm: {@link InputStream#read()} ignores {@link Thread#interrupt()}, so the input
+     * stream is closed first to unblock the reader, then a timed join runs, then {@link SerialPort#close()}. The join
+     * never holds the handler monitor, so dispose cannot deadlock with {@code acceptResponse} or block ThingManager
+     * beyond a short bound.
      *
      * @param joinReader whether to join the reader thread (must be false when called from the reader itself)
      */
-    private synchronized void closeSerialResources(boolean joinReader) {
-        SerialPortReader reader = readerThread;
-        if (reader != null) {
-            try {
-                reader.requestStop();
-                if (joinReader && !reader.equals(Thread.currentThread())) {
-                    reader.join(2000);
-                }
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                logger.debug("Interrupted while joining the serial port reader thread: {}", e.getMessage());
-            }
+    private void closeSerialResources(boolean joinReader) {
+        final SerialPortReader reader;
+        final InputStream in;
+        final OutputStream out;
+        final SerialPort port;
+        final CountDownLatch park;
+
+        synchronized (this) {
+            reader = readerThread;
+            in = inputStream;
+            out = outputStream;
+            port = serialPort;
+            park = serialEventPark;
+            // Drop published refs first so acceptResponse/requestResponse treat the connection as gone
+            readerThread = null;
+            inputStream = null;
+            outputStream = null;
+            serialPort = null;
+            serialEventPark = null;
         }
 
-        InputStream in = inputStream;
+        if (reader != null) {
+            // stopping before close so a racing EOF does not claim handleSerialFailure
+            reader.requestStop();
+        }
+
+        // Close the input stream first — that is what unblocks a stuck purejavacomm read()
         if (in != null) {
             try {
                 in.close();
@@ -320,7 +341,6 @@ public class SerialOceanicThingHandler extends OceanicThingHandler implements Se
                 logger.debug("Error while closing the input stream: {}", e.getMessage());
             }
         }
-        OutputStream out = outputStream;
         if (out != null) {
             try {
                 out.close();
@@ -329,23 +349,36 @@ public class SerialOceanicThingHandler extends OceanicThingHandler implements Se
             }
         }
         // Wake only this connection's park before removeEventListener/close — never a replacement's latch
-        CountDownLatch park = serialEventPark;
-        serialEventPark = null;
         releaseSerialEventWait(park);
-        SerialPort port = serialPort;
         if (port != null) {
             try {
                 port.removeEventListener();
             } catch (Exception e) {
                 logger.debug("Error while removing serial event listener: {}", e.getMessage());
             }
-            port.close();
         }
 
-        readerThread = null;
-        inputStream = null;
-        outputStream = null;
-        serialPort = null;
+        // Join after stream close (read unblocked) and before port.close (avoids close waiting on reader)
+        if (reader != null && joinReader && !reader.equals(Thread.currentThread())) {
+            try {
+                if (!reader.join(READER_JOIN_TIMEOUT_MS)) {
+                    logger.warn(
+                            "Oceanic serial reader did not exit within {}ms after stream close for '{}'; abandoning join",
+                            READER_JOIN_TIMEOUT_MS, getThing().getUID());
+                }
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                logger.debug("Interrupted while joining the serial port reader thread: {}", e.getMessage());
+            }
+        }
+
+        if (port != null) {
+            try {
+                port.close();
+            } catch (Exception e) {
+                logger.debug("Error while closing the serial port: {}", e.getMessage());
+            }
+        }
     }
 
     /**
@@ -374,13 +407,12 @@ public class SerialOceanicThingHandler extends OceanicThingHandler implements Se
         }
         // Release resources from the scheduler so we never join the reader from itself
         scheduler.execute(() -> {
-            synchronized (SerialOceanicThingHandler.this) {
-                if (!isLifecycleCurrent(failureGeneration)) {
-                    return;
-                }
-                closeSerialResources(true);
-                scheduleReconnect(failureGeneration);
+            if (!isLifecycleCurrent(failureGeneration)) {
+                return;
             }
+            // close/join outside the handler monitor — see closeSerialResources
+            closeSerialResources(true);
+            scheduleReconnect(failureGeneration);
         });
     }
 
@@ -424,6 +456,9 @@ public class SerialOceanicThingHandler extends OceanicThingHandler implements Se
 
             long timeStamp = System.currentTimeMillis();
             while ("".equals(reader.getLastResponse())) {
+                if (disposed || reader.isStopping()) {
+                    break;
+                }
                 try {
                     Thread.sleep(50);
                 } catch (InterruptedException e) {
@@ -517,6 +552,10 @@ public class SerialOceanicThingHandler extends OceanicThingHandler implements Se
         public void reset() {
             logger.trace("Resetting the SerialPortReader");
             index = 0;
+        }
+
+        boolean isStopping() {
+            return stopping;
         }
 
         /**
