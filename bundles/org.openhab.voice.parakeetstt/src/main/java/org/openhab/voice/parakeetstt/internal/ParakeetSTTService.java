@@ -331,11 +331,10 @@ public class ParakeetSTTService implements STTService, ConfigOptionProvider {
      * @param audioStream incoming audio stream
      * @param aborted cancellation flag
      * @return transcribed text
-     * @throws IOException if reading audio fails
-     * @throws STTException if offline fallback fails due to missing VAD
+     * @throws STTException if reading audio fails, or offline fallback fails due to missing VAD
      */
     private String recognizeAuto(ParakeetSTTConfiguration currentConfig, LoadedModels models, String targetLang,
-            AudioStream audioStream, AtomicBoolean aborted) throws IOException, STTException {
+            AudioStream audioStream, AtomicBoolean aborted) throws STTException {
         TranscribeStream stream = null;
         try {
             stream = models.asrModel().startTranscribeStream(targetLang.isBlank() ? null : targetLang);
@@ -360,17 +359,15 @@ public class ParakeetSTTService implements STTService, ConfigOptionProvider {
      * @param audioStream incoming audio stream
      * @param aborted cancellation flag
      * @return transcribed text
-     * @throws IOException if reading audio fails
+     * @throws STTException if starting the ASR stream fails, or reading audio fails
      */
     private String recognizeStreaming(ParakeetSTTConfiguration currentConfig, LoadedModels models, String targetLang,
-            AudioStream audioStream, AtomicBoolean aborted) throws IOException {
+            AudioStream audioStream, AtomicBoolean aborted) throws STTException {
         try (TranscribeStream stream = models.asrModel()
                 .startTranscribeStream(targetLang.isBlank() ? null : targetLang)) {
             return recognizeWithStream(currentConfig, models, stream, audioStream, aborted);
         } catch (ParakeetException e) {
-            logger.warn("Failed to start streaming session for model '{}': {}", currentConfig.modelName,
-                    e.getMessage());
-            return ERROR_MESSAGE;
+            throw new STTException("Failed to start streaming session for model '" + currentConfig.modelName + "'", e);
         }
     }
 
@@ -383,11 +380,13 @@ public class ParakeetSTTService implements STTService, ConfigOptionProvider {
      * @param audioStream incoming audio stream
      * @param aborted cancellation flag
      * @return transcribed text
-     * @throws IOException if reading audio fails
+     * @throws STTException if reading audio fails
      */
     private String recognizeWithStream(ParakeetSTTConfiguration currentConfig, LoadedModels models,
-            TranscribeStream transcribeStream, AudioStream audioStream, AtomicBoolean aborted) throws IOException {
-        // TODO: Do we need to calculate and handle these ourself? Most of them are passed to Parakeet VAD model
+            TranscribeStream transcribeStream, AudioStream audioStream, AtomicBoolean aborted) throws STTException {
+        // Audio stream chunking (stepSamples) and timeout limits (maxSamples, initSilenceSamples, maxSilenceSamples)
+        // must be managed by the service: VAD models only classify speech presence and do not impose stream
+        // duration limits, nor does VAD apply when running in streaming mode without a VAD model.
         int stepSamples = Math.max(1, (int) Math.round(currentConfig.stepSeconds * SAMPLE_RATE));
         int maxSamples = Math.max(stepSamples, currentConfig.maxSeconds * SAMPLE_RATE);
         int initSilenceSamples = Math.max(stepSamples,
@@ -397,7 +396,8 @@ public class ParakeetSTTService implements STTService, ConfigOptionProvider {
         StringBuilder transcript = new StringBuilder();
         ParakeetModel vadModel = models.vadModel();
 
-        // TODO: How does this handle models with integrated VAD support?
+        // Models with integrated VAD components are loaded into models.vadModel() during initialization;
+        // models with native End-Of-Utterance (EOU) prediction are handled via streamResult.eou().
         try (VadStream vadStream = vadModel != null
                 ? vadModel.startVadStream(SAMPLE_RATE, buildVadOptions(currentConfig))
                 : null) {
@@ -420,17 +420,9 @@ public class ParakeetSTTService implements STTService, ConfigOptionProvider {
                 short[] chunk = samplesRead == stepSamples ? stepAudioSamples
                         : Arrays.copyOf(stepAudioSamples, samplesRead);
                 totalSamples += samplesRead;
-
-                // TODO: Shouldn't we run VAD before?
-                TranscribeStreamResult streamResult = transcribeStream.feed(chunk);
                 boolean stepHadActivity = false;
-                if (!streamResult.text().isEmpty()) {
-                    appendTranscript(transcript, streamResult.text());
-                    speechDetected = true;
-                    stepHadActivity = true;
-                }
-
                 boolean vadEndedUtterance = false;
+
                 if (vadStream != null) {
                     VadStreamResult vadResult = vadStream.feed(chunk, false);
                     for (VadEvent event : vadResult.events()) {
@@ -448,6 +440,15 @@ public class ParakeetSTTService implements STTService, ConfigOptionProvider {
                     if (vadSpeechActive) {
                         stepHadActivity = true;
                     }
+                }
+
+                // In streaming mode, chunks must be fed continuously to maintain acoustic streaming context and avoid
+                // clipping speech before VAD detects start; VAD utterance boundaries are checked afterward.
+                TranscribeStreamResult streamResult = transcribeStream.feed(chunk);
+                if (!streamResult.text().isEmpty()) {
+                    appendTranscript(transcript, streamResult.text());
+                    speechDetected = true;
+                    stepHadActivity = true;
                 }
 
                 if (streamResult.eou()) {
@@ -485,6 +486,8 @@ public class ParakeetSTTService implements STTService, ConfigOptionProvider {
                     appendTranscript(transcript, finalResult.text());
                 }
             }
+        } catch (IOException e) {
+            throw new STTException("Failed to read audio stream: " + e.getMessage(), e);
         }
         return transcript.toString();
     }
@@ -498,17 +501,17 @@ public class ParakeetSTTService implements STTService, ConfigOptionProvider {
      * @param audioStream incoming audio stream
      * @param aborted cancellation flag
      * @return transcribed text
-     * @throws IOException if reading audio fails
-     * @throws STTException if VAD model is missing or transcription fails
+     * @throws STTException if reading audio fails, the VAD model is missing or transcription fails
      */
     private String recognizeOffline(ParakeetSTTConfiguration currentConfig, LoadedModels models, String targetLang,
-            AudioStream audioStream, AtomicBoolean aborted) throws IOException, STTException {
+            AudioStream audioStream, AtomicBoolean aborted) throws STTException {
         ParakeetModel vadModel = models.vadModel();
         if (vadModel == null) {
             throw new STTException(
                     "Offline transcription mode requires a VAD model (configure vadModelName or use a bundle GGUF with a 'vad' component)");
         }
-        // TODO: Do we need to calculate and handle these ourself? Most of them are passed to Parakeet VAD model
+        // Stream chunking and timeout limits must be handled here to control audio buffer growth
+        // and enforce initial silence timeout before speech starts.
         int stepSamples = Math.max(1, (int) Math.round(currentConfig.stepSeconds * SAMPLE_RATE));
         int maxSamples = Math.max(stepSamples, currentConfig.maxSeconds * SAMPLE_RATE);
         int initSilenceSamples = Math.max(stepSamples,
@@ -518,12 +521,15 @@ public class ParakeetSTTService implements STTService, ConfigOptionProvider {
         TranscribeOptions transcribeOptions = buildTranscribeOptions(currentConfig, targetLang);
         StringBuilder transcript = new StringBuilder();
 
-        // TODO: Review try_catch block
         try (VadStream vadStream = vadModel.startVadStream(SAMPLE_RATE, buildVadOptions(currentConfig))) {
             // ByteBuffer allocated once per recognition session, used to read o.o.c.a.AudioStream into short[]
             ByteBuffer captureBuffer = ByteBuffer.allocate(stepSamples * Short.BYTES).order(ByteOrder.LITTLE_ENDIAN);
+            // stepAudioSamples is the small incremental chunk buffer used to read from the live stream and feed the VAD
             short[] stepAudioSamples = new short[stepSamples];
 
+            // audioBuffer accumulates all audio samples received during the session. While the VAD is fed
+            // incrementally, the offline ASR model requires the entire utterance as a contiguous waveform for batch
+            // transcription.
             short[] audioBuffer = new short[maxSamples];
 
             int totalSamples = 0;
@@ -536,16 +542,19 @@ public class ParakeetSTTService implements STTService, ConfigOptionProvider {
 
             while (!aborted.get() && !stopListening && totalSamples < maxSamples) {
                 int maxRead = Math.min(stepSamples, maxSamples - totalSamples);
+                // Read AudioStream samples into stepAudioSamples
                 int samplesRead = readSamples(audioStream, captureBuffer, stepAudioSamples, maxRead, aborted);
                 if (samplesRead <= 0 || aborted.get()) {
                     break;
                 }
+                // Append stepAudioSamples to audioBuffer
                 System.arraycopy(stepAudioSamples, 0, audioBuffer, totalSamples, samplesRead);
                 int previousTotalSamples = totalSamples;
                 totalSamples += samplesRead;
-
+                // Create audio chunk to feed to VAD
                 short[] chunk = samplesRead == stepSamples ? stepAudioSamples
                         : Arrays.copyOf(stepAudioSamples, samplesRead);
+                // Feed chunk into VAD
                 VadStreamResult vadResult = vadStream.feed(chunk, false);
 
                 for (VadEvent event : vadResult.events()) {
@@ -564,6 +573,7 @@ public class ParakeetSTTService implements STTService, ConfigOptionProvider {
                         int utteranceEndSample = Math.max(utteranceStartSample, Math.min(totalSamples, endSample));
                         logger.debug("VAD speech end at {}s (sample {})", event.time(), utteranceEndSample);
                         if (utteranceEndSample > utteranceStartSample) {
+                            // Slice out the complete utterance from the cumulative buffer and run ASR transcription
                             short[] segment = Arrays.copyOfRange(audioBuffer, utteranceStartSample, utteranceEndSample);
                             String segmentText = models.asrModel().transcribe(segment, SAMPLE_RATE, transcribeOptions);
                             appendTranscript(transcript, segmentText);
@@ -592,10 +602,15 @@ public class ParakeetSTTService implements STTService, ConfigOptionProvider {
 
             if (!aborted.get() && speechActive && totalSamples > utteranceStartSample) {
                 vadStream.feed(new short[0], true);
+                // Transcribe trailing audio samples
                 short[] trailingSegment = Arrays.copyOfRange(audioBuffer, utteranceStartSample, totalSamples);
                 String segmentText = models.asrModel().transcribe(trailingSegment, SAMPLE_RATE, transcribeOptions);
                 appendTranscript(transcript, segmentText);
             }
+        } catch (IOException e) {
+            throw new STTException("Failed to read audio stream: " + e.getMessage(), e);
+        } catch (ParakeetException e) {
+            throw new STTException("Offline speech recognition failed: " + e.getMessage(), e);
         }
         return transcript.toString();
     }
