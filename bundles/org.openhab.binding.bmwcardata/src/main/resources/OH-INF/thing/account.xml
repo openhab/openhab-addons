@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="bmwcardata"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="account">
+		<label>BMW CarData Account</label>
+		<description>Access to the vehicles of a BMW Group customer account via BMW CarData</description>
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
+
+		<config-description>
+			<parameter-group name="stream">
+				<label>Stream</label>
+				<description>Receiving the CarData stream</description>
+			</parameter-group>
+			<parameter-group name="broker">
+				<label>Local Broker</label>
+				<description>Local MQTT broker the bmw-mqtt-bridge publishes the CarData stream to, or the binding mirrors it to</description>
+				<advanced>true</advanced>
+			</parameter-group>
+			<parameter-group name="rest">
+				<label>API Requests</label>
+				<description>BMW allows 50 API requests per account and day</description>
+			</parameter-group>
+
+			<parameter name="clientId" type="text" required="true">
+				<label>Client ID</label>
+				<description>The client ID created in the BMW CarData section of the MyBMW / MINI customer portal. The client
+					needs
+					the subscriptions "CarData API" and "CarData Streaming".</description>
+			</parameter>
+			<parameter name="streaming" type="boolean" groupName="stream">
+				<label>Streaming</label>
+				<description>Receive vehicle data pushed by the CarData streaming service. The data selected for the stream in
+					the
+					customer portal is updated as soon as the vehicle reports it.</description>
+				<default>true</default>
+			</parameter>
+			<parameter name="streamMode" type="text" groupName="stream">
+				<label>Stream Mode</label>
+				<description>Connect to the BMW streaming service directly, or receive the stream from a local MQTT broker the
+					bmw-mqtt-bridge publishes to. BMW allows only one stream connection per account.</description>
+				<options>
+					<option value="direct">Direct</option>
+					<option value="bridge">bmw-mqtt-bridge</option>
+				</options>
+				<limitToOptions>true</limitToOptions>
+				<default>direct</default>
+			</parameter>
+			<parameter name="mirrorToBroker" type="boolean" groupName="stream">
+				<label>Mirror to Local Broker</label>
+				<description>Republish the direct stream to the local MQTT broker in the topic format of the bmw-mqtt-bridge, so
+					that other tools can use it. Ignored in bridge mode.</description>
+				<default>false</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="mirrorRetain" type="boolean" groupName="stream">
+				<label>Retain Mirrored Messages</label>
+				<description>Publish the mirrored stream messages retained, so that a consumer receives the last message of each
+					vehicle when it connects, however old it is. Like MQTT_RETAIN of the bmw-mqtt-bridge. The connection state is
+					always retained.</description>
+				<default>false</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="brokerHost" type="text" groupName="broker">
+				<context>network-address</context>
+				<label>Broker Host</label>
+				<description>Host name or IP address of the local MQTT broker. Required in bridge mode and for mirroring.</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="brokerPort" type="integer" min="1" max="65535" groupName="broker">
+				<label>Broker Port</label>
+				<default>1883</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="brokerSecure" type="boolean" groupName="broker">
+				<label>Use TLS</label>
+				<description>Connect to the broker with TLS. The certificate of the broker is verified with the trust store of
+					the
+					Java runtime.</description>
+				<default>false</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="brokerUsername" type="text" groupName="broker">
+				<label>Broker User Name</label>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="brokerPassword" type="text" groupName="broker">
+				<context>password</context>
+				<label>Broker Password</label>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="topicPrefix" type="text" groupName="broker">
+				<label>Topic Prefix</label>
+				<description>Prefix of the bridge topics, the LOCAL_PREFIX configured in the bridge.</description>
+				<default>bmw/</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="refreshInterval" type="integer" min="0" max="24" unit="h" groupName="rest">
+				<label>Refresh Interval</label>
+				<description>Hours between refreshes of all vehicle data via the CarData API, one request per vehicle. 0 disables
+					the periodic refresh; a vehicle is still read once when it goes online after its start or the start of the account,
+					and after stream outages of five minutes or more.</description>
+				<default>6</default>
+			</parameter>
+			<parameter name="requestBudget" type="integer" min="1" max="50" groupName="rest">
+				<label>Request Budget</label>
+				<description>Maximum number of CarData API requests the binding sends in 24 hours. BMW allows 50 requests per
+					account and day; keep a reserve if other tools use the same account.</description>
+				<default>40</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+</thing:thing-descriptions>

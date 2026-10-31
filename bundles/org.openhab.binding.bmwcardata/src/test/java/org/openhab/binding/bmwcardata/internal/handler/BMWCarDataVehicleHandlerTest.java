@@ -1,0 +1,949 @@
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+package org.openhab.binding.bmwcardata.internal.handler;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
+import static org.openhab.binding.bmwcardata.internal.BMWCarDataBindingConstants.*;
+
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.EnumSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+import java.util.function.BooleanSupplier;
+import java.util.stream.Stream;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
+import org.mockito.InOrder;
+import org.openhab.binding.bmwcardata.internal.api.BMWCarDataAuthException;
+import org.openhab.binding.bmwcardata.internal.api.BMWCarDataException;
+import org.openhab.binding.bmwcardata.internal.api.dto.BasicData;
+import org.openhab.binding.bmwcardata.internal.api.dto.TelematicValue;
+import org.openhab.binding.bmwcardata.internal.handler.VehicleChannel.Drive;
+import org.openhab.core.config.core.Configuration;
+import org.openhab.core.library.types.DateTimeType;
+import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.OpenClosedType;
+import org.openhab.core.library.types.PointType;
+import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.types.RawType;
+import org.openhab.core.library.types.StringType;
+import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.Channel;
+import org.openhab.core.thing.ChannelGroupUID;
+import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.ThingStatusInfo;
+import org.openhab.core.thing.ThingUID;
+import org.openhab.core.thing.binding.ThingHandlerCallback;
+import org.openhab.core.thing.binding.builder.ChannelBuilder;
+import org.openhab.core.thing.binding.builder.ThingBuilder;
+import org.openhab.core.types.RefreshType;
+import org.openhab.core.types.State;
+import org.openhab.core.types.UnDefType;
+
+import com.google.gson.JsonNull;
+import com.google.gson.JsonPrimitive;
+
+/**
+ * Tests the processing of telematic data by the {@link BMWCarDataVehicleHandler}.
+ *
+ * @author Michael Weger - Initial contribution
+ */
+@NonNullByDefault
+class BMWCarDataVehicleHandlerTest {
+
+    private static final ThingUID THING_UID = new ThingUID(THING_TYPE_VEHICLE, "car");
+    private static final ThingUID BRIDGE_UID = new ThingUID(THING_TYPE_ACCOUNT, "account");
+    private static final String VIN = "WBY11CF020CM00000";
+    private static final String OTHER_VIN = "WBA21EN050CJ00000";
+    // the properties are read already, so that the tests of the image do not depend on the basic data
+    private static final Map<String, String> RETRIEVED_PROPERTIES = Map.of(PROPERTY_MODEL, "iX xDrive40", PROPERTY_VIN,
+            VIN);
+    private static final RawType IMAGE = new RawType(new byte[] { (byte) 0x89, 'P', 'N', 'G' }, "image/png");
+    private static final String MILEAGE = "vehicle.vehicle.travelledDistance";
+    private static final String LATITUDE = "vehicle.cabin.infotainment.navigation.currentLocation.latitude";
+    private static final String LONGITUDE = "vehicle.cabin.infotainment.navigation.currentLocation.longitude";
+
+    private @NonNullByDefault({}) ThingHandlerCallback callback;
+    private @NonNullByDefault({}) BMWCarDataVehicleHandler handler;
+
+    @BeforeEach
+    void setUp() {
+        Thing thing = ThingBuilder.create(THING_TYPE_VEHICLE, THING_UID).build();
+        callback = mock(ThingHandlerCallback.class);
+        handler = new BMWCarDataVehicleHandler(thing);
+        handler.setCallback(callback);
+    }
+
+    @Test
+    void publishesKnownDescriptorsAndLastUpdate() {
+        handler.updateTelematicData(Map.of(MILEAGE, value(12345, "km", "2026-10-01T10:00:00Z"),
+                "vehicle.powertrain.tractionBattery.charging.port.anyPosition.isPlugged",
+                value(true, null, "2026-10-01T10:05:00Z"), "vehicle.unknown.descriptor",
+                value(1, null, "2026-10-01T11:00:00Z")));
+
+        verifyState("range#mileage", QuantityType.valueOf("12345 km"));
+        verifyState("charge#plugged", OnOffType.ON);
+        // descriptors without predefined channel are published by dynamic channels
+        verifyState("other#unknown-descriptor", new DecimalType(1));
+        verifyState(CHANNEL_LAST_UPDATE, new DateTimeType(Instant.parse("2026-10-01T11:00:00Z")));
+    }
+
+    @Test
+    void ignoresDescriptorsWithoutValue() {
+        TelematicValue empty = new TelematicValue();
+        empty.value = JsonNull.INSTANCE;
+        empty.timestamp = "2026-10-01T12:00:00Z";
+        handler.updateTelematicData(Map.of(MILEAGE, value(200, "km", "2026-10-01T10:00:00Z"),
+                "vehicle.cabin.door.lock.status", empty, "vehicle.unknown.descriptor", empty));
+
+        verifyState(CHANNEL_LAST_UPDATE, new DateTimeType(Instant.parse("2026-10-01T10:00:00Z")));
+        verify(callback, never()).stateUpdated(eq(channel("status#door-lock")), any());
+        verify(callback, never()).thingUpdated(any());
+
+        // the empty value must not block a later value with an older timestamp
+        handler.updateTelematicData(Map.of("vehicle.cabin.door.lock.status",
+                stringValue("SELECTIVE-LOCKED", null, "2026-10-01T11:00:00Z")));
+        verifyState("status#door-lock", OnOffType.OFF);
+        verifyState("status#door-lock-state", new StringType("SELECTIVELOCKED"));
+    }
+
+    @Test
+    void ignoresDataAndRefreshResultsAfterDispose() {
+        handler.dispose();
+
+        handler.updateTelematicData(Map.of(MILEAGE, value(200, "km", "2026-10-01T10:00:00Z")));
+        handler.refreshSucceeded();
+        handler.refreshFailed(new BMWCarDataException("late failure", 503));
+
+        verifyNoInteractions(callback);
+    }
+
+    @Test
+    void derivesPluggedFromChargingPortUntilVehicleReportsIt() {
+        String port = "vehicle.body.chargingPort.status";
+        handler.updateTelematicData(Map.of(port, stringValue("Connected", null, "2026-10-01T10:00:00Z")));
+        verifyState("charge#plugged", OnOffType.ON);
+
+        handler.updateTelematicData(Map.of(port, stringValue("DISCONNECTED", null, "2026-10-01T10:01:00Z")));
+        verifyState("charge#plugged", OnOffType.OFF);
+
+        // other values leave the plug state as it is
+        handler.updateTelematicData(Map.of(port, stringValue("INVALID", null, "2026-10-01T10:02:00Z")));
+        verify(callback, never()).stateUpdated(channel("charge#plugged"), UnDefType.UNDEF);
+
+        handler.updateTelematicData(Map.of("vehicle.powertrain.tractionBattery.charging.port.anyPosition.isPlugged",
+                value(false, null, "2026-10-01T10:03:00Z")));
+        handler.updateTelematicData(Map.of(port, stringValue("CONNECTED", null, "2026-10-01T10:04:00Z")));
+        verify(callback, times(1)).stateUpdated(channel("charge#plugged"), OnOffType.ON);
+    }
+
+    @Test
+    void ignoresValuesOlderThanPublishedOnes() {
+        handler.updateTelematicData(Map.of(MILEAGE, value(200, "km", "2026-10-01T10:00:00Z")));
+        handler.updateTelematicData(Map.of(MILEAGE, value(100, "km", "2026-10-01T09:00:00Z")));
+
+        verifyState("range#mileage", QuantityType.valueOf("200 km"));
+        verify(callback, never()).stateUpdated(channel("range#mileage"), QuantityType.valueOf("100 km"));
+    }
+
+    @Test
+    void publishesCopiesOnce() {
+        handler.updateTelematicData(Map.of(MILEAGE, value(200, "km", "2026-10-01T10:00:00Z")));
+        // the stream delivers many messages twice
+        handler.updateTelematicData(Map.of(MILEAGE, value(200, "km", "2026-10-01T10:00:00Z")));
+        verify(callback, times(1)).stateUpdated(channel("range#mileage"), QuantityType.valueOf("200 km"));
+
+        // a new reading with the same value, and another value with the same timestamp, are published
+        handler.updateTelematicData(Map.of(MILEAGE, value(200, "km", "2026-10-01T10:05:00Z")));
+        handler.updateTelematicData(Map.of(MILEAGE, value(201, "km", "2026-10-01T10:05:00Z")));
+        verify(callback, times(2)).stateUpdated(channel("range#mileage"), QuantityType.valueOf("200 km"));
+        verifyState("range#mileage", QuantityType.valueOf("201 km"));
+    }
+
+    @Test
+    void publishesCopiesFromStreamAndApiOnce() {
+        // the stream sends numbers as JSON numbers, the REST API as strings
+        handler.updateTelematicData(Map.of(MILEAGE, value(200, "km", "2026-10-01T10:00:00Z")));
+        handler.updateTelematicData(Map.of(MILEAGE, stringValue("200", "km", "2026-10-01T10:00:00Z")));
+        handler.updateTelematicData(Map.of(MILEAGE, stringValue("200.0", "km", "2026-10-01T10:00:00Z")));
+        verify(callback, times(1)).stateUpdated(channel("range#mileage"), QuantityType.valueOf("200 km"));
+
+        String plugged = "vehicle.powertrain.tractionBattery.charging.port.anyPosition.isPlugged";
+        handler.updateTelematicData(Map.of(plugged, value(true, null, "2026-10-01T10:00:00Z")));
+        handler.updateTelematicData(Map.of(plugged, stringValue("true", null, "2026-10-01T10:00:00Z")));
+        verify(callback, times(1)).stateUpdated(channel("charge#plugged"), OnOffType.ON);
+
+        // another unit is another value
+        handler.updateTelematicData(Map.of(MILEAGE, stringValue("200", "mi", "2026-10-01T10:00:00Z")));
+        verifyState("range#mileage", QuantityType.valueOf("200 mi"));
+    }
+
+    @Test
+    void doorLockTakesTheNewestOfBothDescriptors() {
+        String doorStatus = "vehicle.cabin.door.status";
+        String lockStatus = "vehicle.cabin.door.lock.status";
+        handler.updateTelematicData(Map.of(doorStatus, stringValue("UNLOCKED", null, "2026-10-01T10:05:00Z")));
+        verifyState("status#door-lock", OnOffType.OFF);
+        verifyState("status#door-lock-state", new StringType("UNLOCKED"));
+
+        // a refresh with an older value of the REST only descriptor does not replace the newer stream value
+        handler.updateTelematicData(Map.of(lockStatus, stringValue("SECURED", null, "2026-10-01T10:00:00Z")));
+        verify(callback, never()).stateUpdated(channel("status#door-lock"), OnOffType.ON);
+        verify(callback, never()).stateUpdated(channel("status#door-lock-state"), new StringType("SECURED"));
+
+        handler.updateTelematicData(Map.of(lockStatus, stringValue("LOCKED", null, "2026-10-01T10:10:00Z")));
+        verifyState("status#door-lock", OnOffType.ON);
+        verifyState("status#door-lock-state", new StringType("LOCKED"));
+    }
+
+    @Test
+    void displayedStateOfChargeIsUsedUntilTheHeaderIsReported() {
+        String header = "vehicle.drivetrain.batteryManagement.header";
+        String displayed = "vehicle.powertrain.electric.battery.stateOfCharge.displayed";
+        handler.updateTelematicData(Map.of(displayed, value(70, "%", "2026-10-01T10:00:00Z")));
+        verifyState("charge#soc", QuantityType.valueOf("70 %"));
+
+        handler.updateTelematicData(Map.of(header, value(71, "%", "2026-10-01T10:05:00Z")));
+        verifyState("charge#soc", QuantityType.valueOf("71 %"));
+
+        // once the vehicle reports the header, the displayed value no longer updates the channel
+        handler.updateTelematicData(Map.of(displayed, value(72, "%", "2026-10-01T10:10:00Z")));
+        verify(callback, never()).stateUpdated(channel("charge#soc"), QuantityType.valueOf("72 %"));
+    }
+
+    @Test
+    void undefinedHeaderDoesNotStopTheDisplayedStateOfCharge() {
+        String header = "vehicle.drivetrain.batteryManagement.header";
+        String displayed = "vehicle.powertrain.electric.battery.stateOfCharge.displayed";
+        handler.updateTelematicData(Map.of(header, stringValue("INVALID", "%", "2026-10-01T10:00:00Z")));
+        verifyState("charge#soc", UnDefType.UNDEF);
+
+        handler.updateTelematicData(Map.of(displayed, value(70, "%", "2026-10-01T10:05:00Z")));
+        verifyState("charge#soc", QuantityType.valueOf("70 %"));
+    }
+
+    @Test
+    void sunroofStatusUpdatesTheSunroofChannels() {
+        handler.updateTelematicData(
+                Map.of("vehicle.cabin.sunroof.status", stringValue("INTERMEDIATE", null, "2026-10-01T10:00:00Z")));
+        verifyState("status#sunroof", OpenClosedType.OPEN);
+        verifyState("status#sunroof-state", new StringType("INTERMEDIATE"));
+    }
+
+    @Test
+    void combinesLatitudeAndLongitudeOfSeparateMessages() {
+        handler.updateTelematicData(Map.of(LATITUDE, value(48.17, null, "2026-10-01T10:00:00Z")));
+        verify(callback, never()).stateUpdated(eq(channel(CHANNEL_GPS)), any());
+
+        handler.updateTelematicData(Map.of(LONGITUDE, value(11.56, null, "2026-10-01T10:00:00Z")));
+        verifyState(CHANNEL_GPS, PointType.valueOf("48.17,11.56"));
+
+        handler.updateTelematicData(Map.of(LATITUDE, value(48.18, null, "2026-10-01T10:05:00Z"),
+                "vehicle.cabin.infotainment.navigation.currentLocation.altitude",
+                value(520, "m", "2026-10-01T10:05:00Z")));
+        verifyState("navigation#altitude", QuantityType.valueOf("520 m"));
+        verifyState(CHANNEL_GPS, PointType.valueOf("48.18,11.56,520"));
+    }
+
+    @Test
+    void olderRefreshDoesNotOverwriteNewerStreamDataPublishedMeanwhile() throws Exception {
+        // the refresh is held while publishing its mileage: it has accepted its position, but not published it yet
+        CountDownLatch refreshPublishing = new CountDownLatch(1);
+        CountDownLatch releaseRefresh = new CountDownLatch(1);
+        doAnswer(invocation -> {
+            refreshPublishing.countDown();
+            releaseRefresh.await(10, TimeUnit.SECONDS);
+            return null;
+        }).when(callback).stateUpdated(channel("range#mileage"), QuantityType.valueOf("100 km"));
+        Map<String, TelematicValue> refresh = new LinkedHashMap<>();
+        refresh.put(LATITUDE, value(48.17, null, "2026-10-01T10:00:00Z"));
+        refresh.put(LONGITUDE, value(11.56, null, "2026-10-01T10:00:00Z"));
+        refresh.put(MILEAGE, value(100, "km", "2026-10-01T10:00:00Z"));
+        Thread refreshThread = new Thread(() -> handler.updateTelematicData(refresh));
+        Thread streamThread = new Thread(() -> handler.updateTelematicData(Map.of(LATITUDE,
+                value(48.18, null, "2026-10-01T10:05:00Z"), LONGITUDE, value(11.57, null, "2026-10-01T10:05:00Z"))));
+        refreshThread.setDaemon(true);
+        streamThread.setDaemon(true);
+        try {
+            refreshThread.start();
+            assertTrue(refreshPublishing.await(10, TimeUnit.SECONDS));
+            streamThread.start();
+            // the newer stream data has to wait for the refresh; unserialized, it would be published right away
+            waitUntil(() -> streamThread.getState() == Thread.State.BLOCKED || !streamThread.isAlive());
+        } finally {
+            releaseRefresh.countDown();
+        }
+        refreshThread.join(10_000);
+        streamThread.join(10_000);
+        assertFalse(refreshThread.isAlive());
+        assertFalse(streamThread.isAlive());
+
+        ArgumentCaptor<State> location = ArgumentCaptor.forClass(State.class);
+        verify(callback, atLeastOnce()).stateUpdated(eq(channel(CHANNEL_GPS)), location.capture());
+        assertEquals(PointType.valueOf("48.18,11.57"), location.getValue());
+        // the REFRESH cache holds the newer position as well
+        handler.handleCommand(channel(CHANNEL_GPS), RefreshType.REFRESH);
+        verify(callback, times(2)).stateUpdated(channel(CHANNEL_GPS), PointType.valueOf("48.18,11.57"));
+    }
+
+    private static void waitUntil(BooleanSupplier condition) throws InterruptedException {
+        long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(10);
+        while (!condition.getAsBoolean()) {
+            assertTrue(System.nanoTime() < deadline, "condition not reached within 10 seconds");
+            Thread.sleep(5);
+        }
+    }
+
+    @Test
+    void publishesStateOfOpenings() {
+        handler.updateTelematicData(Map.of("vehicle.cabin.window.row1.driver.status",
+                stringValue("INTERMEDIATE", null, "2026-10-01T10:00:00Z")));
+
+        verifyState("status#window-front-driver", OpenClosedType.OPEN);
+        verifyState("status#window-front-driver-state", new StringType("INTERMEDIATE"));
+    }
+
+    @Test
+    void refreshRepublishesCachedState() {
+        handler.updateTelematicData(Map.of(MILEAGE, value(200, "km", "2026-10-01T10:00:00Z")));
+
+        handler.handleCommand(channel("range#mileage"), RefreshType.REFRESH);
+        handler.handleCommand(channel("range#electric"), RefreshType.REFRESH);
+
+        verify(callback, times(2)).stateUpdated(channel("range#mileage"), QuantityType.valueOf("200 km"));
+        verify(callback, never()).stateUpdated(eq(channel("range#electric")), any());
+    }
+
+    @Test
+    void createsDynamicChannelsOnce() {
+        handler.updateTelematicData(Map.of("vehicle.vehicle.avgAuxPower",
+                stringValue("250", "W", "2026-10-01T10:00:00Z"), "vehicle.cabin.sunroof.tiltStatus",
+                stringValue("CLOSED", null, "2026-10-01T10:00:00Z"), "vehicle.body.lights.isRunningOn",
+                stringValue("true", null, "2026-10-01T10:00:00Z"), "vehicle.cabin.door.row1.driver.position",
+                stringValue("INVALID", null, "2026-10-01T10:00:00Z")));
+
+        ArgumentCaptor<Thing> captor = ArgumentCaptor.forClass(Thing.class);
+        verify(callback).thingUpdated(captor.capture());
+        Thing updated = captor.getValue();
+        assertEquals("String", channelOf(updated, "other#cabin-sunroof-tilt-status").getAcceptedItemType());
+        assertEquals("Switch", channelOf(updated, "other#body-lights-is-running-on").getAcceptedItemType());
+        assertEquals("Number:Power", channelOf(updated, "other#vehicle-avg-aux-power").getAcceptedItemType());
+        // the item type cannot be derived from a placeholder value
+        assertNull(updated.getChannel("other#cabin-door-row1-driver-position"));
+        verifyState("other#cabin-sunroof-tilt-status", new StringType("CLOSED"));
+        verifyState("other#body-lights-is-running-on", OnOffType.ON);
+
+        handler.updateTelematicData(
+                Map.of("vehicle.cabin.sunroof.tiltStatus", stringValue("INVALID", null, "2026-10-01T11:00:00Z")));
+
+        verify(callback, times(1)).thingUpdated(any());
+        verifyState("other#cabin-sunroof-tilt-status", UnDefType.UNDEF);
+    }
+
+    @Test
+    void dynamicChannelWithUnitGetsQuantityItemType() {
+        handler.updateTelematicData(
+                Map.of("vehicle.drivetrain.avgSpeed", stringValue("42", "km", "2026-10-01T10:00:00Z")));
+
+        ArgumentCaptor<Thing> captor = ArgumentCaptor.forClass(Thing.class);
+        verify(callback).thingUpdated(captor.capture());
+        assertEquals("Number:Length", channelOf(captor.getValue(), "other#drivetrain-avg-speed").getAcceptedItemType());
+        verifyState("other#drivetrain-avg-speed", QuantityType.valueOf("42 km"));
+    }
+
+    private static Channel channelOf(Thing thing, String channelId) {
+        Channel channel = thing.getChannel(channelId);
+        assertNotNull(channel);
+        return Objects.requireNonNull(channel);
+    }
+
+    private static TelematicValue stringValue(String value, @Nullable String unit, String timestamp) {
+        TelematicValue telematicValue = new TelematicValue();
+        telematicValue.value = new JsonPrimitive(value);
+        telematicValue.unit = unit;
+        telematicValue.timestamp = timestamp;
+        return telematicValue;
+    }
+
+    @Test
+    void electricVehicleLosesCombustionChannels() {
+        BasicData basicData = basicData("BEV", null, true, true);
+        assertEquals(EnumSet.of(Drive.ELECTRIC), BMWCarDataVehicleHandler.drives(basicData));
+        List<String> ids = BMWCarDataVehicleHandler.irrelevantChannelIds(basicData);
+        assertTrue(ids.contains(GROUP_RANGE + "#fuel-level"));
+        assertTrue(ids.contains(GROUP_RANGE + "#total"));
+        assertTrue(ids.contains(GROUP_STATUS + "#engine"));
+        assertTrue(ids.contains(GROUP_TRIP + "#electric-share"));
+        assertFalse(ids.contains(GROUP_STATUS + "#ignition"));
+        assertFalse(ids.contains(GROUP_TRIP + "#eco-pro-share"));
+        assertFalse(ids.contains(GROUP_RANGE + "#electric-target"));
+        assertFalse(ids.contains(GROUP_CHARGE + "#soc"));
+        assertFalse(ids.contains(GROUP_STATUS + "#sunroof"));
+        assertFalse(ids.contains(CHANNEL_GPS));
+    }
+
+    @Test
+    void combustionVehicleLosesElectricChannels() {
+        BasicData basicData = basicData("CONV", "BE", true, true);
+        assertEquals(EnumSet.of(Drive.COMBUSTION), BMWCarDataVehicleHandler.drives(basicData));
+        List<String> ids = BMWCarDataVehicleHandler.irrelevantChannelIds(basicData);
+        assertTrue(ids.contains(GROUP_CHARGE + "#soc"));
+        // the channel of several data points is removed once
+        assertEquals(1, ids.stream().filter((GROUP_CHARGE + "#soc")::equals).count());
+        assertTrue(ids.contains(GROUP_RANGE + "#electric"));
+        assertTrue(ids.contains(GROUP_RANGE + "#electric-target"));
+        assertTrue(ids.contains(GROUP_CHARGE + "#flap-locked"));
+        assertTrue(ids.contains(GROUP_TRIP + "#electric-share"));
+        assertFalse(ids.contains(GROUP_STATUS + "#engine"));
+        assertFalse(ids.contains(GROUP_RANGE + "#fuel-level"));
+        assertFalse(ids.contains(GROUP_RANGE + "#mileage"));
+    }
+
+    @Test
+    void hybridAndUnknownDrivesKeepAllDriveChannels() {
+        assertEquals(List.of(), BMWCarDataVehicleHandler.irrelevantChannelIds(basicData("PHEV", null, true, true)));
+        assertEquals(List.of(), BMWCarDataVehicleHandler.irrelevantChannelIds(basicData("XYZ", null, null, null)));
+        assertEquals(List.of(), BMWCarDataVehicleHandler.irrelevantChannelIds(new BasicData()));
+        // values not seen on real vehicles are not guessed
+        for (String driveTrain : List.of("MHEV", "HEV", "CE", "ICE")) {
+            assertEquals(EnumSet.of(Drive.ELECTRIC, Drive.COMBUSTION),
+                    BMWCarDataVehicleHandler.drives(basicData(driveTrain, null, null, null)));
+        }
+        // the propulsion type of a combustion vehicle is its fuel
+        assertEquals(EnumSet.of(Drive.ELECTRIC, Drive.COMBUSTION),
+                BMWCarDataVehicleHandler.drives(basicData(null, "BE", null, null)));
+        assertEquals(EnumSet.of(Drive.ELECTRIC), BMWCarDataVehicleHandler.drives(basicData(null, "EL", null, null)));
+    }
+
+    @Test
+    void missingEquipmentLosesItsChannels() {
+        List<String> ids = BMWCarDataVehicleHandler.irrelevantChannelIds(basicData("PHEV", null, false, false));
+        assertTrue(ids.contains(GROUP_STATUS + "#sunroof"));
+        assertTrue(ids.contains(GROUP_STATUS + "#sunroof-state"));
+        assertEquals(1, ids.stream().filter((GROUP_STATUS + "#sunroof")::equals).count());
+        // hasNavi is not trusted, as vehicles with a navigation system report false
+        assertFalse(ids.contains(GROUP_NAVIGATION + "#destination-distance"));
+        assertFalse(ids.contains(GROUP_NAVIGATION + "#arrival-time"));
+        assertFalse(ids.contains(CHANNEL_GPS));
+        assertFalse(ids.contains(GROUP_NAVIGATION + "#heading"));
+        assertFalse(ids.contains(GROUP_STATUS + "#door-lock"));
+    }
+
+    @Test
+    void retrievingThePropertiesRemovesTheChannels() throws Exception {
+        BMWCarDataAccountHandler account = mock(BMWCarDataAccountHandler.class);
+        when(account.fetchBasicData(VIN)).thenReturn(basicData("CONV", "BE", true, true));
+        ThingHandlerCallback vehicleCallback = callbackWithBridge(account);
+        BMWCarDataVehicleHandler vehicle = new BMWCarDataVehicleHandler(vehicleThing(Map.of()));
+        vehicle.setCallback(vehicleCallback);
+        vehicle.initialize();
+
+        // the properties, then the channels
+        ArgumentCaptor<Thing> updated = ArgumentCaptor.forClass(Thing.class);
+        verify(vehicleCallback, timeout(5000).times(2)).thingUpdated(updated.capture());
+        Thing thing = updated.getValue();
+        assertEquals("CONV", thing.getProperties().get(PROPERTY_DRIVE_TRAIN));
+        assertNull(thing.getChannel(GROUP_CHARGE + "#soc"));
+        assertNotNull(thing.getChannel(GROUP_RANGE + "#fuel-level"));
+        vehicle.dispose();
+    }
+
+    @Test
+    void basicDataDoesNotHideAFailedRefresh() throws Exception {
+        BMWCarDataAccountHandler account = mock(BMWCarDataAccountHandler.class);
+        // a plug-in hybrid keeps all channels, so the Thing and the status it holds are not replaced
+        when(account.fetchBasicData(VIN)).thenThrow(new BMWCarDataException("Request to BMW CarData failed", 503))
+                .thenReturn(basicData("PHEV", "BE", true, true));
+        ThingHandlerCallback vehicleCallback = callbackWithBridge(account);
+        doAnswer(invocation -> {
+            ((Thing) invocation.getArgument(0)).setStatusInfo(invocation.getArgument(1));
+            return null;
+        }).when(vehicleCallback).statusUpdated(any(), any());
+        Jobs jobs = new Jobs();
+        BMWCarDataVehicleHandler vehicle = new BMWCarDataVehicleHandler(vehicleThing(Map.of()), jobs.scheduler);
+        vehicle.setCallback(vehicleCallback);
+        vehicle.initialize();
+        jobs.tasks.get(0).run();
+
+        // a refresh fails before the basic data is read again
+        vehicle.refreshFailed(new BMWCarDataException("Request to BMW CarData failed", 502));
+        jobs.tasks.get(1).run();
+        assertEquals(ThingStatus.OFFLINE, vehicle.getThing().getStatus());
+        assertEquals("@text/offline.comm-error.refresh-failed [\"HTTP 502\"]",
+                vehicle.getThing().getStatusInfo().getDescription());
+
+        vehicle.refreshSucceeded();
+        assertEquals(ThingStatus.ONLINE, vehicle.getThing().getStatus());
+        vehicle.dispose();
+    }
+
+    @Test
+    void furtherBasicDataIsShownAsProperties() throws Exception {
+        BasicData basicData = basicData("PHEV", "BE", true, true);
+        basicData.bodyType = "SAV";
+        basicData.numberOfDoors = 5;
+        basicData.chargingModes = List.of("AC_LOW", "AC_HIGH");
+        basicData.isTelematicsCapable = true;
+        BMWCarDataAccountHandler account = mock(BMWCarDataAccountHandler.class);
+        when(account.fetchBasicData(VIN)).thenReturn(basicData);
+        Jobs jobs = new Jobs();
+        BMWCarDataVehicleHandler vehicle = new BMWCarDataVehicleHandler(vehicleThing(Map.of()), jobs.scheduler);
+        vehicle.setCallback(callbackWithBridge(account));
+        vehicle.initialize();
+
+        jobs.tasks.get(0).run();
+
+        Map<String, String> properties = vehicle.getThing().getProperties();
+        assertEquals("SAV", properties.get(PROPERTY_BODY_TYPE));
+        assertEquals("5", properties.get(PROPERTY_NUMBER_OF_DOORS));
+        assertEquals("AC_LOW, AC_HIGH", properties.get(PROPERTY_CHARGING_MODES));
+        assertEquals("true", properties.get(PROPERTY_TELEMATICS_CAPABLE));
+        // fields BMW did not send are left out
+        assertFalse(properties.containsKey(PROPERTY_ENGINE));
+        vehicle.dispose();
+    }
+
+    @Test
+    void thingWithRetrievedPropertiesIsLeftAlone() throws Exception {
+        BMWCarDataAccountHandler account = mock(BMWCarDataAccountHandler.class);
+        ThingHandlerCallback vehicleCallback = callbackWithBridge(account);
+        Jobs jobs = new Jobs();
+        BMWCarDataVehicleHandler vehicle = new BMWCarDataVehicleHandler(
+                vehicleThing(
+                        Map.of(PROPERTY_MODEL, "JCW Countryman ALL4", PROPERTY_DRIVE_TRAIN, "CONV", PROPERTY_VIN, VIN)),
+                jobs.scheduler);
+        vehicle.setCallback(vehicleCallback);
+        vehicle.initialize();
+
+        // no job retrieves the basic data, so nothing can update the Thing later either
+        assertTrue(jobs.tasks.isEmpty());
+        verify(account, never()).fetchBasicData(anyString());
+        verify(vehicleCallback, never()).thingUpdated(any());
+        verify(account).vehicleOnline(vehicle);
+        vehicle.dispose();
+    }
+
+    @Test
+    void disposedHandlerDoesNotUpdateTheThing() throws Exception {
+        BMWCarDataAccountHandler account = mock(BMWCarDataAccountHandler.class);
+        ThingHandlerCallback vehicleCallback = callbackWithBridge(account);
+        Jobs jobs = new Jobs();
+        BMWCarDataVehicleHandler vehicle = new BMWCarDataVehicleHandler(vehicleThing(Map.of()), jobs.scheduler);
+        vehicle.setCallback(vehicleCallback);
+        // the Thing is disposed while the basic data is retrieved
+        when(account.fetchBasicData(VIN)).thenAnswer(invocation -> {
+            vehicle.dispose();
+            return basicData("CONV", "BE", true, true);
+        });
+        vehicle.initialize();
+
+        jobs.tasks.get(0).run();
+
+        verify(account).fetchBasicData(VIN);
+        verify(vehicleCallback, never()).thingUpdated(any());
+    }
+
+    @Test
+    void channelsAreAddedBackWhenTheVinChanges() throws Exception {
+        BMWCarDataAccountHandler account = mock(BMWCarDataAccountHandler.class);
+        when(account.fetchBasicData(VIN)).thenReturn(basicData("CONV", "BE", true, true));
+        when(account.fetchBasicData(OTHER_VIN)).thenReturn(basicData("BEV", "EL", true, true));
+        ThingHandlerCallback vehicleCallback = callbackWithBridge(account);
+        defineChannels(vehicleCallback, GROUP_CHARGE + "#soc", GROUP_RANGE + "#fuel-level", GROUP_RANGE + "#electric");
+        Jobs jobs = new Jobs();
+        BMWCarDataVehicleHandler vehicle = new BMWCarDataVehicleHandler(vehicleThing(Map.of()), jobs.scheduler);
+        vehicle.setCallback(vehicleCallback);
+        vehicle.initialize();
+        jobs.tasks.get(0).run();
+        assertNull(vehicle.getThing().getChannel(GROUP_CHARGE + "#soc"));
+        assertNotNull(vehicle.getThing().getChannel(GROUP_RANGE + "#fuel-level"));
+        vehicle.updateTelematicData(Map.of("vehicle.unknown.descriptor", value(1, null, "2026-10-01T10:00:00Z")));
+
+        // the Thing is reconfigured to an electric vehicle
+        Thing thing = vehicle.getThing();
+        vehicle.thingUpdated(ThingBuilder.create(THING_TYPE_VEHICLE, thing.getUID()).withBridge(BRIDGE_UID)
+                .withConfiguration(new Configuration(Map.of(CONFIG_VIN, OTHER_VIN))).withChannels(thing.getChannels())
+                .withProperties(thing.getProperties()).build());
+        jobs.tasks.get(1).run();
+
+        thing = vehicle.getThing();
+        assertEquals("BEV", thing.getProperties().get(PROPERTY_DRIVE_TRAIN));
+        assertEquals(OTHER_VIN, thing.getProperties().get(PROPERTY_VIN));
+        assertNotNull(thing.getChannel(GROUP_CHARGE + "#soc"));
+        assertNotNull(thing.getChannel(GROUP_RANGE + "#electric"));
+        assertNull(thing.getChannel(GROUP_RANGE + "#fuel-level"));
+        // the dynamic channels are left alone
+        assertNotNull(thing.getChannel(GROUP_OTHER + "#unknown-descriptor"));
+        // the account reads the current values of the other vehicle
+        verify(account).vehicleDisposed(vehicle);
+        verify(account, times(2)).vehicleOnline(vehicle);
+        vehicle.dispose();
+    }
+
+    @Test
+    void unchangedChannelsDoNotUpdateTheThing() throws Exception {
+        BMWCarDataAccountHandler account = mock(BMWCarDataAccountHandler.class);
+        when(account.getCachedBasicData(VIN)).thenReturn(basicData("CONV", "BE", true, true));
+        ThingHandlerCallback vehicleCallback = callbackWithBridge(account);
+        defineChannels(vehicleCallback, GROUP_CHARGE + "#soc", GROUP_RANGE + "#fuel-level");
+        Jobs jobs = new Jobs();
+        ThingUID uid = new ThingUID(THING_TYPE_VEHICLE, BRIDGE_UID, "car");
+        // the channels of a combustion vehicle, e.g. after a restart
+        Thing thing = ThingBuilder.create(THING_TYPE_VEHICLE, uid).withBridge(BRIDGE_UID)
+                .withConfiguration(new Configuration(Map.of(CONFIG_VIN, VIN)))
+                .withChannel(ChannelBuilder.create(new ChannelUID(uid, GROUP_RANGE + "#fuel-level")).build())
+                .withProperties(RETRIEVED_PROPERTIES).build();
+        BMWCarDataVehicleHandler vehicle = new BMWCarDataVehicleHandler(thing, jobs.scheduler);
+        vehicle.setCallback(vehicleCallback);
+        vehicle.initialize();
+        vehicle.bridgeStatusChanged(new ThingStatusInfo(ThingStatus.ONLINE, ThingStatusDetail.NONE, null));
+
+        verify(account, times(2)).getCachedBasicData(VIN);
+        verify(account, never()).fetchBasicData(anyString());
+        verify(vehicleCallback, never()).thingUpdated(any());
+        vehicle.dispose();
+    }
+
+    @Test
+    void restartReconcilesTheChannelsWithTheCachedBasicData() throws Exception {
+        BMWCarDataAccountHandler account = mock(BMWCarDataAccountHandler.class);
+        when(account.getCachedBasicData(VIN)).thenReturn(basicData("BEV", "EL", true, true));
+        ThingHandlerCallback vehicleCallback = callbackWithBridge(account);
+        defineChannels(vehicleCallback, GROUP_CHARGE + "#soc", GROUP_RANGE + "#fuel-level", GROUP_RANGE + "#electric");
+        Jobs jobs = new Jobs();
+        BMWCarDataVehicleHandler vehicle = new BMWCarDataVehicleHandler(vehicleThing(RETRIEVED_PROPERTIES),
+                jobs.scheduler);
+        vehicle.setCallback(vehicleCallback);
+        vehicle.initialize();
+
+        // no request, and the channels are final before the account reads the vehicle
+        verify(account, never()).fetchBasicData(anyString());
+        InOrder order = inOrder(vehicleCallback, account);
+        order.verify(vehicleCallback).thingUpdated(any());
+        order.verify(account).vehicleOnline(vehicle);
+        Thing thing = vehicle.getThing();
+        assertNull(thing.getChannel(GROUP_RANGE + "#fuel-level"));
+        assertNotNull(thing.getChannel(GROUP_CHARGE + "#soc"));
+        assertNotNull(thing.getChannel(GROUP_RANGE + "#electric"));
+        vehicle.dispose();
+    }
+
+    @Test
+    void vehicleGoesOnlineOnlyWithItsBasicData() throws Exception {
+        BMWCarDataAccountHandler account = mock(BMWCarDataAccountHandler.class);
+        when(account.fetchBasicData(VIN)).thenThrow(new BMWCarDataException("Request budget used up"))
+                .thenReturn(basicData("BEV", "EL", true, true));
+        ThingHandlerCallback vehicleCallback = callbackWithBridge(account);
+        doAnswer(invocation -> {
+            ((Thing) invocation.getArgument(0)).setStatusInfo(invocation.getArgument(1));
+            return null;
+        }).when(vehicleCallback).statusUpdated(any(), any());
+        Jobs jobs = new Jobs();
+        Thing thing = vehicleThing(Map.of());
+        BMWCarDataVehicleHandler vehicle = new BMWCarDataVehicleHandler(thing, jobs.scheduler);
+        vehicle.setCallback(vehicleCallback);
+        vehicle.initialize();
+        assertEquals(ThingStatus.UNKNOWN, thing.getStatus());
+
+        // e.g. BMW's daily limit is reached
+        jobs.tasks.get(0).run();
+        assertEquals(ThingStatus.OFFLINE, thing.getStatus());
+        assertEquals(List.of(0L, 15 * 60L), jobs.delays);
+        // neither stream data nor a successful refresh make the vehicle online without its basic data
+        vehicle.updateTelematicData(Map.of(MILEAGE, value(100, "km", "2026-10-01T10:00:00Z")));
+        vehicle.refreshSucceeded();
+        assertEquals(ThingStatus.OFFLINE, thing.getStatus());
+        verify(account, never()).vehicleOnline(any());
+
+        jobs.tasks.get(1).run();
+        // removing the fuel channels of the electric vehicle replaced the Thing
+        assertEquals(ThingStatus.ONLINE, vehicle.getThing().getStatus());
+        assertEquals("BEV", vehicle.getThing().getProperties().get(PROPERTY_DRIVE_TRAIN));
+        // with its channels final, the account reads its current values
+        verify(account).vehicleOnline(vehicle);
+        vehicle.dispose();
+    }
+
+    /**
+     * A scheduler that only records the jobs of the handler, which the test then runs itself, so that it does not
+     * depend on timing.
+     */
+    private static class Jobs {
+        final List<Runnable> tasks = new ArrayList<>();
+        final List<Long> delays = new ArrayList<>();
+        final ScheduledExecutorService scheduler = mock(ScheduledExecutorService.class);
+
+        Jobs() {
+            when(scheduler.schedule(any(Runnable.class), anyLong(), any(TimeUnit.class))).thenAnswer(invocation -> {
+                tasks.add(invocation.getArgument(0));
+                delays.add(invocation.getArgument(1));
+                return mock(ScheduledFuture.class);
+            });
+        }
+    }
+
+    @Test
+    void imageIsNotRetrievedWithoutLinkedItem() throws Exception {
+        BMWCarDataAccountHandler account = mock(BMWCarDataAccountHandler.class);
+        ThingHandlerCallback vehicleCallback = callbackWithBridge(account);
+        Jobs jobs = new Jobs();
+        BMWCarDataVehicleHandler vehicle = new BMWCarDataVehicleHandler(vehicleThing(RETRIEVED_PROPERTIES),
+                jobs.scheduler);
+        vehicle.setCallback(vehicleCallback);
+        vehicle.initialize();
+
+        verify(vehicleCallback).isChannelLinked(imageChannel());
+        // no job retrieves the image, so it cannot be retrieved later either
+        assertTrue(jobs.tasks.isEmpty());
+        verify(account, never()).fetchVehicleImage(anyString());
+        vehicle.dispose();
+    }
+
+    @Test
+    void linkedImageIsRetrievedWhenTheBridgeIsOnline() throws Exception {
+        BMWCarDataAccountHandler account = mock(BMWCarDataAccountHandler.class);
+        when(account.fetchVehicleImage(VIN)).thenReturn(IMAGE);
+        ThingHandlerCallback vehicleCallback = callbackWithBridge(account);
+        when(vehicleCallback.isChannelLinked(imageChannel())).thenReturn(true);
+        Jobs jobs = new Jobs();
+        BMWCarDataVehicleHandler vehicle = new BMWCarDataVehicleHandler(vehicleThing(RETRIEVED_PROPERTIES),
+                jobs.scheduler);
+        vehicle.setCallback(vehicleCallback);
+        vehicle.initialize();
+
+        jobs.tasks.get(0).run();
+
+        verify(vehicleCallback).stateUpdated(imageChannel(), IMAGE);
+        vehicle.dispose();
+    }
+
+    @Test
+    void linkingTheImageChannelRetrievesTheImageOnce() throws Exception {
+        BMWCarDataAccountHandler account = mock(BMWCarDataAccountHandler.class);
+        when(account.fetchVehicleImage(VIN)).thenReturn(IMAGE);
+        ThingHandlerCallback vehicleCallback = callbackWithBridge(account);
+        Jobs jobs = new Jobs();
+        BMWCarDataVehicleHandler vehicle = new BMWCarDataVehicleHandler(vehicleThing(RETRIEVED_PROPERTIES),
+                jobs.scheduler);
+        vehicle.setCallback(vehicleCallback);
+        vehicle.initialize();
+
+        when(vehicleCallback.isChannelLinked(imageChannel())).thenReturn(true);
+        vehicle.channelLinked(imageChannel());
+        jobs.tasks.get(0).run();
+        verify(vehicleCallback).stateUpdated(imageChannel(), IMAGE);
+
+        // a second item, or a REFRESH, is served from the published state
+        vehicle.channelLinked(imageChannel());
+        verify(vehicleCallback, times(2)).stateUpdated(imageChannel(), IMAGE);
+        verify(account, times(1)).fetchVehicleImage(VIN);
+        vehicle.dispose();
+    }
+
+    @Test
+    void failedImageIsRetriedAfter15Minutes() throws Exception {
+        BMWCarDataAccountHandler account = mock(BMWCarDataAccountHandler.class);
+        // e.g. BMW's daily limit is reached
+        when(account.fetchVehicleImage(VIN))
+                .thenThrow(new BMWCarDataException("Too many requests", 429, BMWCarDataException.ERROR_RATE_LIMIT))
+                .thenReturn(IMAGE);
+        ThingHandlerCallback vehicleCallback = callbackWithBridge(account);
+        when(vehicleCallback.isChannelLinked(imageChannel())).thenReturn(true);
+        Jobs jobs = new Jobs();
+        BMWCarDataVehicleHandler vehicle = new BMWCarDataVehicleHandler(vehicleThing(RETRIEVED_PROPERTIES),
+                jobs.scheduler);
+        vehicle.setCallback(vehicleCallback);
+        vehicle.initialize();
+
+        jobs.tasks.get(0).run();
+        assertEquals(List.of(0L, 15 * 60L), jobs.delays);
+
+        jobs.tasks.get(1).run();
+        verify(vehicleCallback).stateUpdated(imageChannel(), IMAGE);
+        vehicle.dispose();
+    }
+
+    @Test
+    void imageRetryIsSkippedOnceTheItemIsUnlinked() throws Exception {
+        BMWCarDataAccountHandler account = mock(BMWCarDataAccountHandler.class);
+        when(account.fetchVehicleImage(VIN))
+                .thenThrow(new BMWCarDataException("Too many requests", 429, BMWCarDataException.ERROR_RATE_LIMIT));
+        ThingHandlerCallback vehicleCallback = callbackWithBridge(account);
+        when(vehicleCallback.isChannelLinked(imageChannel())).thenReturn(true);
+        Jobs jobs = new Jobs();
+        BMWCarDataVehicleHandler vehicle = new BMWCarDataVehicleHandler(vehicleThing(RETRIEVED_PROPERTIES),
+                jobs.scheduler);
+        vehicle.setCallback(vehicleCallback);
+        vehicle.initialize();
+        jobs.tasks.get(0).run();
+
+        when(vehicleCallback.isChannelLinked(imageChannel())).thenReturn(false);
+        jobs.tasks.get(1).run();
+
+        // no request for an image nobody shows
+        verify(account, times(1)).fetchVehicleImage(VIN);
+        vehicle.dispose();
+    }
+
+    @Test
+    void imageOfAVinWithoutPermissionIsNotRetried() throws Exception {
+        BMWCarDataAccountHandler account = mock(BMWCarDataAccountHandler.class);
+        when(account.fetchVehicleImage(VIN))
+                .thenThrow(new BMWCarDataException("No permission", 403, BMWCarDataException.ERROR_VIN_NOT_PERMITTED));
+        ThingHandlerCallback vehicleCallback = callbackWithBridge(account);
+        when(vehicleCallback.isChannelLinked(imageChannel())).thenReturn(true);
+        Jobs jobs = new Jobs();
+        BMWCarDataVehicleHandler vehicle = new BMWCarDataVehicleHandler(vehicleThing(RETRIEVED_PROPERTIES),
+                jobs.scheduler);
+        vehicle.setCallback(vehicleCallback);
+        vehicle.initialize();
+
+        jobs.tasks.get(0).run();
+
+        assertEquals(1, jobs.tasks.size());
+        vehicle.dispose();
+    }
+
+    @Test
+    void missingImageIsNotRetried() throws Exception {
+        BMWCarDataAccountHandler account = mock(BMWCarDataAccountHandler.class);
+        when(account.fetchVehicleImage(VIN))
+                .thenThrow(new BMWCarDataException("No vehicle image found for given VIN", 404, "CU-126"));
+        ThingHandlerCallback vehicleCallback = callbackWithBridge(account);
+        when(vehicleCallback.isChannelLinked(imageChannel())).thenReturn(true);
+        Jobs jobs = new Jobs();
+        BMWCarDataVehicleHandler vehicle = new BMWCarDataVehicleHandler(vehicleThing(RETRIEVED_PROPERTIES),
+                jobs.scheduler);
+        vehicle.setCallback(vehicleCallback);
+        vehicle.initialize();
+
+        jobs.tasks.get(0).run();
+
+        assertEquals(1, jobs.tasks.size());
+        vehicle.dispose();
+    }
+
+    @Test
+    void imageIsRetriedAfterAServerError() throws Exception {
+        BMWCarDataAccountHandler account = mock(BMWCarDataAccountHandler.class);
+        when(account.fetchVehicleImage(VIN)).thenThrow(new BMWCarDataException("Bad gateway", 502));
+        ThingHandlerCallback vehicleCallback = callbackWithBridge(account);
+        when(vehicleCallback.isChannelLinked(imageChannel())).thenReturn(true);
+        Jobs jobs = new Jobs();
+        BMWCarDataVehicleHandler vehicle = new BMWCarDataVehicleHandler(vehicleThing(RETRIEVED_PROPERTIES),
+                jobs.scheduler);
+        vehicle.setCallback(vehicleCallback);
+        vehicle.initialize();
+
+        jobs.tasks.get(0).run();
+
+        assertEquals(List.of(0L, 15 * 60L), jobs.delays);
+        vehicle.dispose();
+    }
+
+    @Test
+    void imageIsRetriedAfterARejectedToken() throws Exception {
+        BMWCarDataAccountHandler account = mock(BMWCarDataAccountHandler.class);
+        when(account.fetchVehicleImage(VIN)).thenThrow(new BMWCarDataAuthException("Unauthorized", 401));
+        ThingHandlerCallback vehicleCallback = callbackWithBridge(account);
+        when(vehicleCallback.isChannelLinked(imageChannel())).thenReturn(true);
+        Jobs jobs = new Jobs();
+        BMWCarDataVehicleHandler vehicle = new BMWCarDataVehicleHandler(vehicleThing(RETRIEVED_PROPERTIES),
+                jobs.scheduler);
+        vehicle.setCallback(vehicleCallback);
+        vehicle.initialize();
+
+        jobs.tasks.get(0).run();
+
+        assertEquals(List.of(0L, 15 * 60L), jobs.delays);
+        vehicle.dispose();
+    }
+
+    private static ChannelUID imageChannel() {
+        return new ChannelUID(new ThingUID(THING_TYPE_VEHICLE, BRIDGE_UID, "car"), CHANNEL_IMAGE);
+    }
+
+    private static Thing vehicleThing(Map<String, String> properties) {
+        ThingUID uid = new ThingUID(THING_TYPE_VEHICLE, BRIDGE_UID, "car");
+        return ThingBuilder.create(THING_TYPE_VEHICLE, uid).withBridge(BRIDGE_UID)
+                .withConfiguration(new Configuration(Map.of(CONFIG_VIN, VIN)))
+                .withChannels(ChannelBuilder.create(new ChannelUID(uid, GROUP_CHARGE + "#soc")).build(),
+                        ChannelBuilder.create(new ChannelUID(uid, GROUP_RANGE + "#fuel-level")).build())
+                .withProperties(properties).build();
+    }
+
+    /**
+     * Lets the callback create the given predefined channels of the vehicle, as the framework does from the channel
+     * group types.
+     */
+    private static void defineChannels(ThingHandlerCallback callback, String... channelIds) {
+        when(callback.createChannelBuilders(any(), any())).thenAnswer(invocation -> {
+            ChannelGroupUID group = invocation.getArgument(0);
+            return Stream.of(channelIds).filter(id -> id.startsWith(group.getId() + "#"))
+                    .map(id -> ChannelBuilder.create(new ChannelUID(group.getThingUID(), id))).toList();
+        });
+    }
+
+    private static ThingHandlerCallback callbackWithBridge(BMWCarDataAccountHandler account) {
+        Bridge bridge = mock(Bridge.class);
+        when(bridge.getStatus()).thenReturn(ThingStatus.ONLINE);
+        when(bridge.getHandler()).thenReturn(account);
+        ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
+        when(callback.getBridge(BRIDGE_UID)).thenReturn(bridge);
+        return callback;
+    }
+
+    private static BasicData basicData(@Nullable String driveTrain, @Nullable String propulsionType,
+            @Nullable Boolean hasSunRoof, @Nullable Boolean hasNavi) {
+        BasicData basicData = new BasicData();
+        basicData.driveTrain = driveTrain;
+        basicData.propulsionType = propulsionType;
+        basicData.hasSunRoof = hasSunRoof;
+        basicData.hasNavi = hasNavi;
+        return basicData;
+    }
+
+    private void verifyState(String channelId, State state) {
+        verify(callback).stateUpdated(channel(channelId), state);
+    }
+
+    private static ChannelUID channel(String channelId) {
+        return new ChannelUID(THING_UID, channelId);
+    }
+
+    private static TelematicValue value(Object value, @Nullable String unit, String timestamp) {
+        TelematicValue telematicValue = new TelematicValue();
+        telematicValue.value = value instanceof Boolean bool ? new JsonPrimitive(bool)
+                : new JsonPrimitive((Number) value);
+        telematicValue.unit = unit;
+        telematicValue.timestamp = timestamp;
+        return telematicValue;
+    }
+}
