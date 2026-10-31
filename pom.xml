@@ -78,6 +78,7 @@
     <eea.version>2.4.0</eea.version>
     <jackson.annotations.version>2.22</jackson.annotations.version>
     <jackson.version>2.22.2</jackson.version>
+    <jinjava.version>2.8.5</jinjava.version>
     <jna.version>5.19.1</jna.version>
     <json.version>20251224</json.version>
     <jsoup.version>1.23.2</jsoup.version>

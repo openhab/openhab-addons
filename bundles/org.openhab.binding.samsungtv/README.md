@@ -28,7 +28,7 @@ The binding has the following configuration options, which can be set for "bindi
 | subscription            | Subscribe to UPNP        | Reduces polling on UPNP devices, default false         | no       |
 | orientationKey          | Orientation Key          | Key press to send to rotate auto-rotation mount        | no       |
 | legacyCipherSuites      | Legacy Cipher Suites     | Legacy TLS suites for older TVs, default true          | no       |
-| ipControl               | Use IP Control           | Use IP Control for power state, default false          | no       |
+| ipControl               | Use IP Control           | Use IP Control for power and input, default false      | no       |
 | ipControlToken          | IP Control Token         | Security token for IP Control                          | no       |
 | smartThingsApiKey       | Smartthings PAT          | Smartthings Personal Access Token                      | no       |
 | smartThingsDeviceId     | Smartthings Device ID    | Smartthings Device ID for this TV                      | no       |
@@ -80,6 +80,7 @@ You have 30 seconds to accept it, and the returned token is stored in _"IP Contr
 If you miss the request, the binding asks again the next time the TV is on, at most every 5 minutes.
 If you define the Thing in a `.things` file, copy the token from the Thing's configuration in the UI into `ipControlToken` in the file, otherwise the TV asks again after openHAB restarts.
 If IP Control does not answer, the binding falls back to the REST interface.
+With IP Control the `sourceName` channel is also read and set over IP Control, without SmartThings. The TV reports the selected input (eg `HDMI1` or `TV`), not an app running on top of it, and only when it is not in art mode. It is read every 10 seconds at most. If the TV refuses an input name, the command is passed on to SmartThings, if configured.
 
 For >2019 TV's, there is an app workaround, see [App Discovery](#app-discovery) for details.
 

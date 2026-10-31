@@ -35,6 +35,7 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -47,6 +48,8 @@ import org.openhab.binding.viessmann.internal.dto.device.StoredChannelValues;
 import org.openhab.binding.viessmann.internal.dto.features.FeatureCommand;
 import org.openhab.binding.viessmann.internal.dto.features.FeatureCommandParams;
 import org.openhab.binding.viessmann.internal.dto.features.FeatureDataDTO;
+import org.openhab.binding.viessmann.internal.dto.features.FeatureErrorEntries;
+import org.openhab.binding.viessmann.internal.dto.features.FeatureErrorValue;
 import org.openhab.binding.viessmann.internal.dto.features.FeatureProperties;
 import org.openhab.binding.viessmann.internal.dto.schedule.DaySchedule;
 import org.openhab.binding.viessmann.internal.dto.schedule.ScheduleDTO;
@@ -681,6 +684,10 @@ public class DeviceHandler extends ViessmannThingHandler {
                     typeEntry = prop.entries.type;
                     valueEntry = new Gson().toJson(prop.entries.value);
                     break;
+                case "errorEntries":
+                    typeEntry = "array";
+                    valueEntry = joinErrorCodes(prop.errorEntries);
+                    break;
                 case "overlapAllowed":
                     typeEntry = prop.overlapAllowed.type;
                     valueEntry = prop.overlapAllowed.value ? "true" : "false";
@@ -1150,6 +1157,18 @@ public class DeviceHandler extends ViessmannThingHandler {
                 storedChannelValues.putProperty(msg.getChannelId(), msg.getValue());
             }
         }
+    }
+
+    /**
+     * Joins the codes of the messages of a feature such as {@code device.messages.status.raw} into a comma separated
+     * list. The list is empty if the feature has no active message.
+     */
+    static String joinErrorCodes(@Nullable FeatureErrorEntries errorEntries) {
+        List<FeatureErrorValue> values = errorEntries == null ? null : errorEntries.value;
+        if (values == null) {
+            return "";
+        }
+        return values.stream().map(v -> v.errorCode).filter(Objects::nonNull).collect(Collectors.joining(","));
     }
 
     static @Nullable AdditionalProperty resolveAdditionalProperty(FeatureProperties properties, String entry) {

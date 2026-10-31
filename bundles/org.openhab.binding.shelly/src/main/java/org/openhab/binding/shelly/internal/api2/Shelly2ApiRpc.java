@@ -17,6 +17,7 @@ import static org.openhab.binding.shelly.internal.api.ShellyApiLightUtil.*;
 import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.*;
 import static org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.*;
 import static org.openhab.binding.shelly.internal.api2.ShellyBluJsonDTO.*;
+import static org.openhab.binding.shelly.internal.api2.dto.Shelly2DeviceJsonDTO.*;
 import static org.openhab.binding.shelly.internal.api2.dto.ShellyPresenceJsonDTO.*;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
@@ -39,6 +40,7 @@ import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.io.EofException;
 import org.eclipse.jetty.websocket.api.StatusCode;
@@ -124,6 +126,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     private volatile @Nullable String pendingAsyncMethod;
     private final WebSocketClient client;
     private final ScheduledExecutorService scheduler;
+    private final Shelly2DebugLogController debugLog;
 
     // Pro/Plus RGBW(W) PM: RPC method family per settings.lights[i].apiComponent tag - replaces per-call-site
     // profile-string checks (SHELLY2_PROFILE_CCTX2.equals(...)) with a single lookup, correct for hybrid profiles.
@@ -166,6 +169,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
         this.client = webSocketClient;
         this.scheduler = scheduler;
         this.alwaysOn = profile.alwaysOn;
+        this.debugLog = new Shelly2DebugLogController(thingName, this, config, webSocketClient);
     }
 
     @Override
@@ -200,7 +204,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     public void startScan() {
         try {
             if (!profile.isBlu) { // Do not try for BLU devices
-                installScript(SHELLY2_BLU_GWSCRIPT, config.getEnableBluGateway());
+                installScript(SHELLY2_BLU_GWSCRIPT, config.getEnableBluGateway(), true);
             }
         } catch (ShellyApiException e) {
             logger.trace("{}: Unable to start/stop {}", thingName, SHELLY2_BLU_GWSCRIPT);
@@ -224,6 +228,11 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
         }
 
         profile.initialized = true;
+
+        if (profile.capDebugLog && dc.sys.debug != null && dc.sys.debug.websocket != null
+                && getBool(dc.sys.debug.websocket.enable)) {
+            debugLog.resume();
+        }
 
         try {
             if (alwaysOn && dc.ble != null) {
@@ -300,6 +309,20 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     }
 
     protected void installScript(String script, boolean install) throws ShellyApiException {
+        installScript(script, install, false);
+    }
+
+    /**
+     * Installs, updates or removes a script on the device.
+     *
+     * @param script name of the script
+     * @param install true to install/start the script, false to remove it
+     * @param restart true to restart the script even if the current version is already running. The restart empties
+     *            the scanner's device cache, so already known BLU devices announce themselves again when they send
+     *            their next packet. The Inbox scan uses this.
+     * @throws ShellyApiException on API errors
+     */
+    protected void installScript(String script, boolean install, boolean restart) throws ShellyApiException {
         try {
             ShellyScriptListResponse scriptList = apiRequest(
                     new Shelly2RpcRequest().withMethod(SHELLYRPC_METHOD_SCRIPT_LIST), ShellyScriptListResponse.class);
@@ -370,11 +393,18 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
                         logger.debug("{}: A newer script version was found, updating", thingName);
                         upload = true;
                     } else if (running) {
-                        // Same version already running — nothing to do; leave it undisturbed so no
-                        // event gap is created and no risk of a silent restart failure.
-                        logger.debug("{}: Script {} already running with current version, leaving it", thingName,
-                                script);
                         enableScript(script, ourId, true); // ensure auto-start flag is set
+                        if (restart) {
+                            logger.debug("{}: Restarting script {}", thingName, script);
+                            if (!startScript(ourId, false) || !startScript(ourId, true)) {
+                                logger.warn("{}: Failed to restart script {}", thingName, script);
+                            }
+                        } else {
+                            // Same version already running — nothing to do; leave it undisturbed so no
+                            // event gap is created and no risk of a silent restart failure.
+                            logger.debug("{}: Script {} already running with current version, leaving it", thingName,
+                                    script);
+                        }
                         return;
                     } else {
                         // Same version but not running — start it
@@ -1332,6 +1362,25 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     }
 
     @Override
+    public void setDebugLogEnabled(boolean enable) throws ShellyApiException {
+        debugLog.setEnabled(enable);
+    }
+
+    @Override
+    public boolean isDebugLogEnabled() {
+        return debugLog.isEnabled();
+    }
+
+    @Nullable
+    String buildDebugLogAuthHeader() throws ShellyApiException {
+        // the /debug/log upgrade GET reuses the nonce of the last /rpc challenge
+        Shelly2AuthChallenge challenge = authInfo;
+        return challenge != null && !config.getPassword().isBlank()
+                ? buildAuthHeader(HttpMethod.GET, SHELLY2_DEBUGLOG_ENDPOINT, challenge)
+                : null;
+    }
+
+    @Override
     public void setLightParm(int lightIndex, String parm, String value) throws ShellyApiException {
         setLightParms(lightIndex, Map.of(parm, value));
     }
@@ -1697,6 +1746,8 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     @Override
     public synchronized void close() {
         Shelly2RpcSocket rpcSocket = this.rpcSocket;
+        ShellyThingInterface thing = this.thing;
+        debugLog.close(thing != null && thing.isStopping());
         if (rpcSocket == null) {
             initialized = false;
             return;

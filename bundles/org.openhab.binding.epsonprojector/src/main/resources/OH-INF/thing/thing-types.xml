@@ -10,14 +10,20 @@
 		<semantic-equipment-tag>Projector</semantic-equipment-tag>
 
 		<channels>
-			<channel id="power" typeId="system.power"/>
+			<channel id="power" typeId="system.power">
+				<label>Power</label>
+				<description>Powers the projector on or off</description>
+			</channel>
 			<channel id="powerstate" typeId="powerstate"/>
 			<channel id="source" typeId="source"/>
 			<channel id="aspectratio" typeId="aspectratio"/>
 			<channel id="colormode" typeId="colormode"/>
 			<channel id="freeze" typeId="freeze"/>
 			<channel id="mute" typeId="mute"/>
-			<channel id="volume" typeId="system.volume"/>
+			<channel id="volume" typeId="system.volume">
+				<label>Volume</label>
+				<description>Retrieve or set the volume</description>
+			</channel>
 			<channel id="luminance" typeId="luminance"/>
 			<channel id="brightness" typeId="brightness"/>
 			<channel id="contrast" typeId="contrast"/>
@@ -41,7 +47,7 @@
 		</channels>
 
 		<properties>
-			<property name="thingTypeVersion">1</property>
+			<property name="thingTypeVersion">2</property>
 			<property name="modelId">Unknown</property>
 			<property name="serialNumber">Unknown</property>
 		</properties>
@@ -84,14 +90,20 @@
 		<semantic-equipment-tag>Projector</semantic-equipment-tag>
 
 		<channels>
-			<channel id="power" typeId="system.power"/>
+			<channel id="power" typeId="system.power">
+				<label>Power</label>
+				<description>Powers the projector on or off</description>
+			</channel>
 			<channel id="powerstate" typeId="powerstate"/>
 			<channel id="source" typeId="source"/>
 			<channel id="aspectratio" typeId="aspectratio"/>
 			<channel id="colormode" typeId="colormode"/>
 			<channel id="freeze" typeId="freeze"/>
 			<channel id="mute" typeId="mute"/>
-			<channel id="volume" typeId="system.volume"/>
+			<channel id="volume" typeId="system.volume">
+				<label>Volume</label>
+				<description>Retrieve or set the volume</description>
+			</channel>
 			<channel id="luminance" typeId="luminance"/>
 			<channel id="brightness" typeId="brightness"/>
 			<channel id="contrast" typeId="contrast"/>
@@ -115,7 +127,7 @@
 		</channels>
 
 		<properties>
-			<property name="thingTypeVersion">1</property>
+			<property name="thingTypeVersion">2</property>
 			<property name="modelId">Unknown</property>
 			<property name="serialNumber">Unknown</property>
 		</properties>
@@ -186,6 +198,56 @@
 		<item-type>String</item-type>
 		<label>KeyCode</label>
 		<description>Send a KEY Operation Command to the Projector</description>
+		<state>
+			<options>
+				<option value="03">Menu</option>
+				<option value="04">Home</option>
+				<option value="05">Esc</option>
+				<option value="35">Up</option>
+				<option value="36">Down</option>
+				<option value="37">Left</option>
+				<option value="38">Right</option>
+				<option value="16">Enter</option>
+				<option value="14">Source Auto</option>
+				<option value="48">Source Search</option>
+				<option value="10">Comp 1/2</option>
+				<option value="11">Video/S-Video</option>
+				<option value="41">Computer</option>
+				<option value="42">Video</option>
+				<option value="E8">BNC</option>
+				<option value="E9">DVI-D</option>
+				<option value="EA">HDMI/HDBase-T</option>
+				<option value="EB">LAN</option>
+				<option value="EC">SDI</option>
+				<option value="ED">Slot 1</option>
+				<option value="EE">Slot 2</option>
+				<option value="12">Freeze</option>
+				<option value="15">A/V Mute</option>
+				<option value="13">Blank</option>
+				<option value="17">Aspect</option>
+				<option value="18">Lock</option>
+				<option value="19">Color Mode</option>
+				<option value="1A">Pattern</option>
+				<option value="21">Volume +</option>
+				<option value="22">Volume -</option>
+				<option value="23">Sync +</option>
+				<option value="24">Sync -</option>
+				<option value="25">Tracking +</option>
+				<option value="26">Tracking -</option>
+				<option value="31">Brightness +</option>
+				<option value="32">Brightness -</option>
+				<option value="33">Contrast +</option>
+				<option value="34">Contrast -</option>
+				<option value="06">VKeystone +</option>
+				<option value="07">VKeystone -</option>
+				<option value="08">HKeystone +</option>
+				<option value="09">HKeystone -</option>
+				<option value="39">Zoom +</option>
+				<option value="3A">Zoom -</option>
+				<option value="1B">Wide</option>
+				<option value="1C">Tele</option>
+			</options>
+		</state>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="verticalkeystone" advanced="true">
@@ -266,7 +328,7 @@
 				<option value="42">S-Video</option>
 				<option value="52">USB</option>
 				<option value="53">LAN</option>
-				<option value="56">WiFi Direct</option>
+				<option value="56">Wi-Fi Direct</option>
 			</options>
 		</state>
 	</channel-type>
