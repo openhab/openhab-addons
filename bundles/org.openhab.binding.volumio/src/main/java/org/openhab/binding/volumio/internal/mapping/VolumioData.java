@@ -12,38 +12,40 @@
  */
 package org.openhab.binding.volumio.internal.mapping;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URI;
-import java.net.URL;
-import java.net.URLConnection;
-import java.util.Objects;
+import java.util.HashSet;
+import java.util.Set;
+
+import javax.measure.quantity.Time;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
-import org.json.JSONException;
 import org.json.JSONObject;
 import org.openhab.binding.volumio.internal.VolumioBindingConstants;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.PlayPauseType;
-import org.openhab.core.library.types.RawType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.openhab.core.library.unit.Units;
 
 /**
- * The {@link VolumioData} class defines state data of volumio.
+ * Holds the last known player state, as delivered by the Volumio {@code pushState} event, and the size of the
+ * play queue, as delivered by {@code pushQueue}.
+ * <p>
+ * The JSON keys used here follow the Volumio WebSocket API documentation ("Get Player State").
+ * <p>
+ * Each setter remembers whether the value changed, so that the handler only publishes real changes.
  *
  * @author Patrick Sernetz - Initial Contribution
- * @author Chris Wohlbrecht - Adaption for openHAB 3
  * @author Michael Loercher - Adaption for openHAB 3
  */
 @NonNullByDefault
 public class VolumioData {
 
-    private final Logger logger = LoggerFactory.getLogger(VolumioData.class);
+    private boolean initialized;
+
+    /** Fields that have received a value from the device at least once; the first value is always published. */
+    private final Set<String> seen = new HashSet<>();
 
     private String title = "";
     private boolean titleDirty;
@@ -57,302 +59,429 @@ public class VolumioData {
     private int volume = 0;
     private boolean volumeDirty;
 
+    private boolean mute = false;
+    private boolean muteDirty;
+
     private String state = "";
     private boolean stateDirty;
 
     private String trackType = "";
     private boolean trackTypeDirty;
 
-    private String position = "";
-    private boolean positionDirty;
-
-    private byte @Nullable [] coverArt = null;
     private String coverArtUrl = "";
     private boolean coverArtDirty;
 
     private boolean repeat = false;
     private boolean repeatDirty;
 
+    private boolean repeatSingle = false;
+    private boolean repeatSingleDirty;
+
     private boolean random = false;
     private boolean randomDirty;
 
-    public void update(JSONObject jsonObject) throws JSONException {
-        if (jsonObject.has(VolumioBindingConstants.CHANNEL_TITLE)) {
-            setTitle(jsonObject.getString(VolumioBindingConstants.CHANNEL_TITLE));
-        } else {
-            setTitle("");
-        }
+    private int duration = 0;
+    private boolean durationDirty;
 
-        if (jsonObject.has(VolumioBindingConstants.CHANNEL_ALBUM)
-                && !jsonObject.isNull(VolumioBindingConstants.CHANNEL_ALBUM)) {
-            setAlbum(jsonObject.getString(VolumioBindingConstants.CHANNEL_ALBUM));
-        } else {
-            setAlbum("");
-        }
+    private int position = 0;
+    private boolean positionDirty;
 
-        if (jsonObject.has(VolumioBindingConstants.CHANNEL_VOLUME)) {
-            setVolume(jsonObject.getInt(VolumioBindingConstants.CHANNEL_VOLUME));
-        } else {
-            setVolume(0);
-        }
+    private String uri = "";
+    private boolean uriDirty;
 
-        if (jsonObject.has(VolumioBindingConstants.CHANNEL_ARTIST)) {
-            setArtist(jsonObject.getString(VolumioBindingConstants.CHANNEL_ARTIST));
-        } else {
-            setArtist("");
-        }
+    private String service = "";
+    private boolean serviceDirty;
 
-        /* Special */
-        if (jsonObject.has("status")) {
-            setState(jsonObject.getString("status"));
-        } else {
-            setState("pause");
-        }
+    private String sampleRate = "";
+    private boolean sampleRateDirty;
 
-        if (jsonObject.has(VolumioBindingConstants.CHANNEL_TRACK_TYPE)) {
-            setTrackType(jsonObject.getString(VolumioBindingConstants.CHANNEL_TRACK_TYPE));
-        } else {
-            setTrackType("");
-        }
+    private String bitDepth = "";
+    private boolean bitDepthDirty;
 
-        if (jsonObject.has(VolumioBindingConstants.CHANNEL_COVER_ART)
-                && !jsonObject.isNull(VolumioBindingConstants.CHANNEL_COVER_ART)) {
-            setCoverArt(jsonObject.getString(VolumioBindingConstants.CHANNEL_COVER_ART));
-        } else {
-            setCoverArt(null);
-        }
+    private String audioChannels = "";
+    private boolean audioChannelsDirty;
 
-        if (jsonObject.has(VolumioBindingConstants.CHANNEL_PLAY_RANDOM)
-                && !jsonObject.isNull(VolumioBindingConstants.CHANNEL_PLAY_RANDOM)) {
-            setRandom(jsonObject.getBoolean(VolumioBindingConstants.CHANNEL_PLAY_RANDOM));
-        } else {
-            setRandom(false);
-        }
+    private boolean stream = false;
+    private boolean streamDirty;
 
-        if (jsonObject.has(VolumioBindingConstants.CHANNEL_PLAY_REPEAT)
-                && !jsonObject.isNull(VolumioBindingConstants.CHANNEL_PLAY_REPEAT)) {
-            setRepeat(jsonObject.getBoolean(VolumioBindingConstants.CHANNEL_PLAY_REPEAT));
-        } else {
-            setRepeat(false);
+    private boolean updateDb = false;
+    private boolean updateDbDirty;
+
+    private int queueSize = 0;
+    private boolean queueSizeDirty;
+    private boolean queueInitialized;
+
+    /**
+     * Update the state from a {@code pushState} payload. Text fields and the duration that are missing or null are
+     * reset (for example a web radio without artist), numeric and boolean fields keep their previous value if they
+     * are missing.
+     */
+    public synchronized void update(JSONObject json) {
+        // Optional fields that are missing in this payload must not keep a stale dirty flag from the previous one.
+        stateDirty = volumeDirty = positionDirty = muteDirty = randomDirty = repeatDirty = repeatSingleDirty = false;
+        streamDirty = updateDbDirty = false;
+        setTitle(text(json, VolumioBindingConstants.STATE_TITLE));
+        setAlbum(text(json, VolumioBindingConstants.STATE_ALBUM));
+        setArtist(text(json, VolumioBindingConstants.STATE_ARTIST));
+        setTrackType(text(json, VolumioBindingConstants.STATE_TRACK_TYPE));
+        setCoverArtUrl(text(json, VolumioBindingConstants.STATE_ALBUM_ART));
+        setUri(text(json, VolumioBindingConstants.STATE_URI));
+        setService(text(json, VolumioBindingConstants.STATE_SERVICE));
+        setSampleRate(text(json, VolumioBindingConstants.STATE_SAMPLE_RATE));
+        setBitDepth(text(json, VolumioBindingConstants.STATE_BIT_DEPTH));
+        setAudioChannels(text(json, VolumioBindingConstants.STATE_CHANNELS));
+        setDuration(integer(json, VolumioBindingConstants.STATE_DURATION, 0));
+
+        if (present(json, VolumioBindingConstants.STATE_STATUS)) {
+            setState(json.optString(VolumioBindingConstants.STATE_STATUS, ""));
         }
+        if (present(json, VolumioBindingConstants.STATE_VOLUME)) {
+            setVolume(integer(json, VolumioBindingConstants.STATE_VOLUME, volume));
+        }
+        if (present(json, VolumioBindingConstants.STATE_POSITION)) {
+            setPosition(integer(json, VolumioBindingConstants.STATE_POSITION, position));
+        }
+        if (present(json, VolumioBindingConstants.STATE_MUTE)) {
+            setMute(json.optBoolean(VolumioBindingConstants.STATE_MUTE, mute));
+        }
+        if (present(json, VolumioBindingConstants.STATE_RANDOM)) {
+            setRandom(json.optBoolean(VolumioBindingConstants.STATE_RANDOM, random));
+        }
+        if (present(json, VolumioBindingConstants.STATE_REPEAT)) {
+            setRepeat(json.optBoolean(VolumioBindingConstants.STATE_REPEAT, repeat));
+        }
+        if (present(json, VolumioBindingConstants.STATE_REPEAT_SINGLE)) {
+            setRepeatSingle(json.optBoolean(VolumioBindingConstants.STATE_REPEAT_SINGLE, repeatSingle));
+        }
+        if (present(json, VolumioBindingConstants.STATE_STREAM)) {
+            setStream(json.optBoolean(VolumioBindingConstants.STATE_STREAM, stream));
+        }
+        if (present(json, VolumioBindingConstants.STATE_UPDATE_DB)) {
+            setUpdateDb(json.optBoolean(VolumioBindingConstants.STATE_UPDATE_DB, updateDb));
+        }
+        initialized = true;
     }
 
-    public StringType getTitle() {
+    private static boolean present(JSONObject json, String key) {
+        return json.has(key) && !json.isNull(key);
+    }
+
+    private static String text(JSONObject json, String key) {
+        if (!present(json, key)) {
+            return "";
+        }
+        String value = json.optString(key, "");
+        return "null".equals(value) ? "" : value;
+    }
+
+    private static int integer(JSONObject json, String key, int defaultValue) {
+        return present(json, key) ? json.optInt(key, defaultValue) : defaultValue;
+    }
+
+    /** @return true once at least one {@code pushState} payload has been processed */
+    public synchronized boolean isInitialized() {
+        return initialized;
+    }
+
+    /** Record the number of tracks in the play queue, as delivered by {@code pushQueue}. */
+    public synchronized void setQueueSize(int size) {
+        queueSizeDirty = !queueInitialized || size != this.queueSize;
+        queueInitialized = true;
+        this.queueSize = size;
+    }
+
+    public synchronized boolean isQueueInitialized() {
+        return queueInitialized;
+    }
+
+    public synchronized DecimalType getQueueSize() {
+        return new DecimalType(queueSize);
+    }
+
+    public synchronized boolean isQueueSizeDirty() {
+        return queueSizeDirty;
+    }
+
+    public synchronized StringType getTitle() {
         return new StringType(title);
     }
 
-    public void setTitle(String title) {
-        if (!title.equals(this.title)) {
-            this.title = title;
-            this.titleDirty = true;
-        } else {
-            this.titleDirty = false;
-        }
+    /** @return the plain title, empty if nothing is playing */
+    public synchronized String getTitleText() {
+        return title;
     }
 
-    public StringType getAlbum() {
+    private void setTitle(String title) {
+        titleDirty = !seen.add("title") || !title.equals(this.title);
+        this.title = title;
+    }
+
+    public synchronized StringType getAlbum() {
         return new StringType(album);
     }
 
-    public void setAlbum(String album) {
-        if ("null".equals(album)) {
-            album = "";
-        }
-
-        if (!album.equals(this.album)) {
-            this.album = album;
-            this.albumDirty = true;
-        } else {
-            this.albumDirty = false;
-        }
+    private void setAlbum(String album) {
+        albumDirty = !seen.add("album") || !album.equals(this.album);
+        this.album = album;
     }
 
-    public StringType getArtist() {
+    public synchronized StringType getArtist() {
         return new StringType(artist);
     }
 
-    public void setArtist(String artist) {
-        if ("null".equals(artist)) {
-            this.artist = "";
-        }
-
-        if (!artist.equals(this.artist)) {
-            this.artist = artist;
-            this.artistDirty = true;
-        } else {
-            this.artistDirty = false;
-        }
+    private void setArtist(String artist) {
+        artistDirty = !seen.add("artist") || !artist.equals(this.artist);
+        this.artist = artist;
     }
 
-    public PercentType getVolume() {
+    public synchronized PercentType getVolume() {
         return new PercentType(volume);
     }
 
-    public void setVolume(int volume) {
-        if (volume != this.volume) {
-            this.volume = volume;
-            this.volumeDirty = true;
-        } else {
-            this.volumeDirty = false;
-        }
+    private void setVolume(int volume) {
+        int clamped = Math.max(0, Math.min(100, volume));
+        volumeDirty = !seen.add("volume") || clamped != this.volume;
+        this.volume = clamped;
     }
 
-    public void setState(String state) {
-        if (!state.equals(this.state)) {
-            this.state = state;
-            this.stateDirty = true;
-        } else {
-            this.stateDirty = false;
-        }
+    public synchronized OnOffType getMute() {
+        return OnOffType.from(mute);
     }
 
-    public PlayPauseType getState() {
-        PlayPauseType playPauseStatus;
-
-        if ("play".equals(state)) {
-            playPauseStatus = PlayPauseType.PLAY;
-        } else {
-            playPauseStatus = PlayPauseType.PAUSE;
-        }
-
-        return playPauseStatus;
+    private void setMute(boolean mute) {
+        muteDirty = !seen.add("mute") || mute != this.mute;
+        this.mute = mute;
     }
 
-    public void setTrackType(String trackType) {
-        if (!trackType.equals(this.trackType)) {
-            this.trackType = trackType;
-            this.trackTypeDirty = true;
-        } else {
-            this.trackTypeDirty = false;
-        }
+    private void setState(String state) {
+        stateDirty = !seen.add("state") || !state.equals(this.state);
+        this.state = state;
     }
 
-    public StringType getTrackType() {
+    public synchronized PlayPauseType getState() {
+        return "play".equals(state) ? PlayPauseType.PLAY : PlayPauseType.PAUSE;
+    }
+
+    private void setTrackType(String trackType) {
+        trackTypeDirty = !seen.add("trackType") || !trackType.equals(this.trackType);
+        this.trackType = trackType;
+    }
+
+    public synchronized StringType getTrackType() {
         return new StringType(trackType);
     }
 
-    public void setPosition(String position) {
-        if (!position.equals(this.position)) {
-            this.position = position;
-            this.positionDirty = true;
-        } else {
-            this.positionDirty = false;
-        }
+    private void setCoverArtUrl(String coverArtUrl) {
+        coverArtDirty = !seen.add("coverArt") || !coverArtUrl.equals(this.coverArtUrl);
+        this.coverArtUrl = coverArtUrl;
     }
 
-    public void setCoverArt(@Nullable String coverArtUrl) {
-        if (coverArtUrl != null) {
-            if (!Objects.equals(coverArtUrl, this.coverArtUrl)) {
-                if (!coverArtUrl.startsWith("http")) {
-                    return;
-                }
-
-                try {
-                    URL url = URI.create(coverArtUrl).toURL();
-                    URLConnection connection = url.openConnection();
-                    InputStream inStream = null;
-                    inStream = connection.getInputStream();
-                    coverArt = inputStreamToByte(inStream);
-                } catch (IOException ioe) {
-                    coverArt = null;
-                }
-                this.coverArtDirty = true;
-            } else {
-                this.coverArtDirty = false;
-            }
-        } else {
-            coverArt = null;
-        }
+    /**
+     * @return the raw {@code albumart} value, which is either an absolute URL or a path relative to the Volumio
+     *         host (for example {@code /albumart?web=...}); empty if there is none
+     */
+    public synchronized String getCoverArtUrl() {
+        return coverArtUrl;
     }
 
-    private byte @Nullable [] inputStreamToByte(InputStream is) {
-        byte @Nullable [] imgdata = null;
-        try (ByteArrayOutputStream bytestream = new ByteArrayOutputStream()) {
-            int ch;
-            while ((ch = is.read()) != -1) {
-                bytestream.write(ch);
-            }
-            imgdata = bytestream.toByteArray();
-            return imgdata;
-        } catch (Exception e) {
-            logger.error("Could not open or read input stream {}", e.getMessage());
-        }
-
-        return imgdata;
-    }
-
-    public @Nullable RawType getCoverArt() {
-        byte[] localCoverArt = coverArt;
-        return localCoverArt == null ? null : new RawType(localCoverArt, "image/jpeg");
-    }
-
-    public OnOffType getRandom() {
+    public synchronized OnOffType getRandom() {
         return OnOffType.from(random);
     }
 
-    public void setRandom(boolean val) {
-        if (val != this.random) {
-            this.random = val;
-            this.randomDirty = true;
-        } else {
-            this.randomDirty = false;
-        }
+    private void setRandom(boolean val) {
+        randomDirty = !seen.add("random") || val != this.random;
+        this.random = val;
     }
 
-    public OnOffType getRepeat() {
+    public synchronized OnOffType getRepeat() {
         return OnOffType.from(repeat);
     }
 
-    public void setRepeat(boolean val) {
-        if (val != this.repeat) {
-            this.repeat = val;
-            this.repeatDirty = true;
-        } else {
-            this.repeatDirty = false;
-        }
+    private void setRepeat(boolean val) {
+        repeatDirty = !seen.add("repeat") || val != this.repeat;
+        this.repeat = val;
     }
 
-    public StringType getPosition() {
-        return new StringType(position);
+    public synchronized OnOffType getRepeatSingle() {
+        return OnOffType.from(repeatSingle);
     }
 
-    public boolean isPositionDirty() {
-        return positionDirty;
+    private void setRepeatSingle(boolean val) {
+        repeatSingleDirty = !seen.add("repeatSingle") || val != this.repeatSingle;
+        this.repeatSingle = val;
     }
 
-    public boolean isStateDirty() {
+    /** @return the track duration in seconds; 0 if the item has none (for example a web radio) */
+    public synchronized QuantityType<Time> getDuration() {
+        return new QuantityType<>(duration, Units.SECOND);
+    }
+
+    private void setDuration(int seconds) {
+        int value = Math.max(0, seconds);
+        durationDirty = !seen.add("duration") || value != this.duration;
+        this.duration = value;
+    }
+
+    /** @return the position of the current track in the play queue, 0 for the first track */
+    public synchronized DecimalType getPosition() {
+        return new DecimalType(position);
+    }
+
+    private void setPosition(int position) {
+        positionDirty = !seen.add("position") || position != this.position;
+        this.position = position;
+    }
+
+    public synchronized StringType getUri() {
+        return new StringType(uri);
+    }
+
+    /** @return the plain URI of the current item, empty if nothing is playing */
+    public synchronized String getUriText() {
+        return uri;
+    }
+
+    private void setUri(String uri) {
+        uriDirty = !seen.add("uri") || !uri.equals(this.uri);
+        this.uri = uri;
+    }
+
+    public synchronized StringType getService() {
+        return new StringType(service);
+    }
+
+    /** @return the playback service of the current item (for example mpd), empty if unknown */
+    public synchronized String getServiceText() {
+        return service;
+    }
+
+    private void setService(String service) {
+        serviceDirty = !seen.add("service") || !service.equals(this.service);
+        this.service = service;
+    }
+
+    public synchronized StringType getSampleRate() {
+        return new StringType(sampleRate);
+    }
+
+    private void setSampleRate(String sampleRate) {
+        sampleRateDirty = !seen.add("sampleRate") || !sampleRate.equals(this.sampleRate);
+        this.sampleRate = sampleRate;
+    }
+
+    public synchronized StringType getBitDepth() {
+        return new StringType(bitDepth);
+    }
+
+    private void setBitDepth(String bitDepth) {
+        bitDepthDirty = !seen.add("bitDepth") || !bitDepth.equals(this.bitDepth);
+        this.bitDepth = bitDepth;
+    }
+
+    public synchronized StringType getAudioChannels() {
+        return new StringType(audioChannels);
+    }
+
+    private void setAudioChannels(String audioChannels) {
+        audioChannelsDirty = !seen.add("audioChannels") || !audioChannels.equals(this.audioChannels);
+        this.audioChannels = audioChannels;
+    }
+
+    public synchronized OnOffType getStream() {
+        return OnOffType.from(stream);
+    }
+
+    private void setStream(boolean val) {
+        streamDirty = !seen.add("stream") || val != this.stream;
+        this.stream = val;
+    }
+
+    public synchronized OnOffType getUpdateDb() {
+        return OnOffType.from(updateDb);
+    }
+
+    private void setUpdateDb(boolean val) {
+        updateDbDirty = !seen.add("updateDb") || val != this.updateDb;
+        this.updateDb = val;
+    }
+
+    public synchronized boolean isStateDirty() {
         return stateDirty;
     }
 
-    public boolean isTitleDirty() {
+    public synchronized boolean isTitleDirty() {
         return titleDirty;
     }
 
-    public boolean isAlbumDirty() {
+    public synchronized boolean isAlbumDirty() {
         return albumDirty;
     }
 
-    public boolean isArtistDirty() {
+    public synchronized boolean isArtistDirty() {
         return artistDirty;
     }
 
-    public boolean isVolumeDirty() {
+    public synchronized boolean isVolumeDirty() {
         return volumeDirty;
     }
 
-    public boolean isTrackTypeDirty() {
+    public synchronized boolean isMuteDirty() {
+        return muteDirty;
+    }
+
+    public synchronized boolean isTrackTypeDirty() {
         return trackTypeDirty;
     }
 
-    public boolean isCoverArtDirty() {
+    public synchronized boolean isCoverArtDirty() {
         return coverArtDirty;
     }
 
-    public boolean isRandomDirty() {
+    public synchronized boolean isRandomDirty() {
         return randomDirty;
     }
 
-    public boolean isRepeatDirty() {
+    public synchronized boolean isRepeatDirty() {
         return repeatDirty;
+    }
+
+    public synchronized boolean isRepeatSingleDirty() {
+        return repeatSingleDirty;
+    }
+
+    public synchronized boolean isDurationDirty() {
+        return durationDirty;
+    }
+
+    public synchronized boolean isPositionDirty() {
+        return positionDirty;
+    }
+
+    public synchronized boolean isUriDirty() {
+        return uriDirty;
+    }
+
+    public synchronized boolean isServiceDirty() {
+        return serviceDirty;
+    }
+
+    public synchronized boolean isSampleRateDirty() {
+        return sampleRateDirty;
+    }
+
+    public synchronized boolean isBitDepthDirty() {
+        return bitDepthDirty;
+    }
+
+    public synchronized boolean isAudioChannelsDirty() {
+        return audioChannelsDirty;
+    }
+
+    public synchronized boolean isStreamDirty() {
+        return streamDirty;
+    }
+
+    public synchronized boolean isUpdateDbDirty() {
+        return updateDbDirty;
     }
 }
