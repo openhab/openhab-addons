@@ -16,7 +16,6 @@ import static org.openhab.binding.volvocars.internal.VolvoCarsBindingConstants.*
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.volvocars.internal.handler.AccountHandler;
 import org.openhab.binding.volvocars.internal.handler.VehicleHandler;
 import org.openhab.binding.volvocars.internal.servlet.VolvoCarsAuthServlet;
@@ -44,7 +43,7 @@ import org.osgi.service.component.annotations.Reference;
 @Component(configurationPid = "binding.volvocars", service = ThingHandlerFactory.class)
 public class VolvoCarsHandlerFactory extends BaseThingHandlerFactory {
 
-    private final HttpClient httpClient;
+    private final HttpClientFactory httpClientFactory;
     private final Storage<String> storage;
     private final VolvoCarsAuthServlet authServlet;
     private final OAuthFactory oAuthFactory;
@@ -53,7 +52,7 @@ public class VolvoCarsHandlerFactory extends BaseThingHandlerFactory {
     public VolvoCarsHandlerFactory(@Reference HttpClientFactory httpClientFactory,
             @Reference StorageService storageService, @Reference VolvoCarsAuthServlet authServlet,
             @Reference OAuthFactory oAuthFactory) {
-        this.httpClient = httpClientFactory.getCommonHttpClient();
+        this.httpClientFactory = httpClientFactory;
         this.storage = storageService.getStorage(BINDING_ID, String.class.getClassLoader());
         this.authServlet = authServlet;
         this.oAuthFactory = oAuthFactory;
@@ -69,7 +68,8 @@ public class VolvoCarsHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (THING_TYPE_ACCOUNT.equals(thingTypeUID)) {
-            return new AccountHandler((Bridge) thing, httpClient, storage, authServlet, oAuthFactory);
+            return new AccountHandler((Bridge) thing, httpClientFactory.getCommonHttpClient(), storage, authServlet,
+                    oAuthFactory);
         } else if (THING_TYPE_VEHICLE.equals(thingTypeUID)) {
             return new VehicleHandler(thing);
         }
