@@ -138,7 +138,7 @@ public class VictoriaMetricsRepository {
             ContentResponse response = newRequest(PATH_IMPORT).method(HttpMethod.POST)
                     .content(new StringContentProvider("text/plain", body, StandardCharsets.UTF_8)).send();
             int status = response.getStatus();
-            if (status == HttpStatus.NO_CONTENT_204 || status == HttpStatus.OK_200) {
+            if (HttpStatus.isSuccess(status)) {
                 return true;
             } else if (status == HttpStatus.BAD_REQUEST_400) {
                 // retrying would fail again and block all subsequent points
@@ -177,7 +177,7 @@ public class VictoriaMetricsRepository {
         try {
             ContentResponse response = newRequest(PATH_DELETE_SERIES).method(HttpMethod.POST)
                     .param("match[]", queryCreator.createSeriesSelector(itemName)).send();
-            if (response.getStatus() == HttpStatus.NO_CONTENT_204) {
+            if (HttpStatus.isSuccess(response.getStatus())) {
                 return true;
             }
             logger.warn("Deleting from database failed with HTTP status {}: {}", response.getStatus(),
