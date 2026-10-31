@@ -1,0 +1,8 @@
+{
+  "data": [
+    { "command": "LOCK", "href": "/v2/vehicles/YV1TESTVIN0000001/commands/lock" },
+    { "command": "UNLOCK", "href": "/v2/vehicles/YV1TESTVIN0000001/commands/unlock" },
+    { "command": "CLIMATIZATION_START", "href": "/v2/vehicles/YV1TESTVIN0000001/commands/climatization-start" },
+    { "command": "CLIMATIZATION_STOP", "href": "/v2/vehicles/YV1TESTVIN0000001/commands/climatization-stop" }
+  ]
+}

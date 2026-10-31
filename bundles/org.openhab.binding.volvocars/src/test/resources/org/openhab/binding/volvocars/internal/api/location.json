@@ -1,0 +1,7 @@
+{
+  "data": {
+    "type": "Feature",
+    "properties": { "timestamp": "2026-01-01T10:00:00.000Z", "heading": "90" },
+    "geometry": { "type": "Point", "coordinates": [11.85, 57.72, 0.0] }
+  }
+}
