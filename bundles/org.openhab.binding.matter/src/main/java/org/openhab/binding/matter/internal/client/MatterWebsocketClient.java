@@ -29,6 +29,7 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -503,14 +504,17 @@ public class MatterWebsocketClient implements WebSocketListener, MatterWebsocket
         logger.debug("Connecting {}", dest);
         WebSocketClient client = new WebSocketClient();
         client.setMaxIdleTimeout(Long.MAX_VALUE);
+        URI uri = new URI(dest);
+        Future<Session> connection;
         // stop the existing client and atomically swap in the new one
+        // connect() restarts a stopped client, so a disconnect must not stop it until connect() returns
         synchronized (webSocketClientLock) {
             stopWebSocketClient(webSocketClient);
             webSocketClient = client;
             startWebSocketClient(client);
+            connection = client.connect(this, uri, new ClientUpgradeRequest());
         }
-        URI uri = new URI(dest);
-        client.connect(this, uri, new ClientUpgradeRequest()).get();
+        connection.get();
     }
 
     void startWebSocketClient(WebSocketClient client) throws Exception {
