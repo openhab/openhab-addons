@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="e3dc"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-group-type id="battery-control">
+		<label>Battery Control</label>
+		<description>Warning: Battery controlling can be handled from different clients and the &quot;mixed use&quot; can
+			cause trouble. 1) AI 360: battery handling in control of the internal E3DC power plant control. 2) Block charge /
+			discharge switch: easy handling to enable / disable charging and discharging via rules. 3) Manual schedules via the
+			MyE3DC app or rules: your own handling.</description>
+		<channels>
+			<channel id="set-power-mode" typeId="battery-control-set-power-mode"/>
+			<channel id="charging-lock" typeId="battery-control-charging-lock"/>
+			<channel id="discharging-lock" typeId="battery-control-discharging-lock"/>
+			<channel id="charging-throttled" typeId="battery-control-charging-throttled"/>
+			<channel id="charging-time-lock" typeId="battery-control-charging-time-lock"/>
+			<channel id="discharging-time-lock" typeId="battery-control-discharging-time-lock"/>
+			<channel id="weather-regulated-charge" typeId="battery-control-weather-regulated-charge"/>
+			<channel id="power-limits-used" typeId="battery-control-power-limits-used"/>
+			<channel id="set-manual-charge" typeId="battery-control-set-manual-charge"/>
+			<channel id="idle-periods-enabled" typeId="battery-control-idle-periods-enabled"/>
+			<channel id="idle-periods" typeId="battery-control-idle-periods"/>
+			<channel id="block-charging" typeId="battery-control-block-charging"/>
+			<channel id="block-discharging" typeId="battery-control-block-discharging"/>
+			<channel id="manual-charge-energy" typeId="battery-control-manual-charge-energy"/>
+		</channels>
+	</channel-group-type>
+
+</thing:thing-descriptions>
