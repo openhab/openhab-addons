@@ -17,11 +17,13 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 import static org.openhab.binding.volvocars.internal.VolvoCarsBindingConstants.*;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.AfterEach;
@@ -35,12 +37,14 @@ import org.openhab.binding.volvocars.internal.api.dto.Vehicle;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.ChannelGroupUID;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
+import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.UnDefType;
@@ -153,6 +157,63 @@ class VehicleHandlerLifecycleTest {
         verify(api, timeout(TIMEOUT_MS)).getValues(OTHER_VIN, "doors");
         verify(callback, timeout(TIMEOUT_MS)).stateUpdated(lockChannel, UnDefType.UNDEF);
         verify(callback, after(1000).never()).stateUpdated(lockChannel, OnOffType.ON);
+    }
+
+    @Test
+    void channelsAreAddedBackWhenTheVinChanges() throws Exception {
+        // a subset of the defined channels, as core creates them from the channel group types
+        Map<String, List<String>> definedChannels = Map.of(GROUP_FUEL, List.of(CHANNEL_FUEL_AMOUNT), GROUP_BATTERY,
+                List.of(CHANNEL_BATTERY_LEVEL, CHANNEL_CHARGING_STATUS));
+        when(callback.createChannelBuilders(any(), any())).thenAnswer(invocation -> {
+            ChannelGroupUID groupUID = invocation.getArgument(0);
+            return definedChannels.getOrDefault(groupUID.getId(), List.of()).stream()
+                    .map(id -> ChannelBuilder.create(new ChannelUID(groupUID, id), "Number")).toList();
+        });
+        Thing localThing = ThingBuilder.create(THING_TYPE_VEHICLE, thing.getUID()).withBridge(bridgeUID)
+                .withConfiguration(new Configuration(Map.of("vin", VIN)))
+                .withChannels(
+                        definedChannels.entrySet().stream()
+                                .flatMap(group -> group.getValue().stream().map(id -> ChannelBuilder
+                                        .create(new ChannelUID(thing.getUID(), group.getKey(), id), "Number").build()))
+                                .toList())
+                .build();
+        VehicleHandler localHandler = new VehicleHandler(localThing);
+        localHandler.setCallback(callback);
+        Vehicle petrol = new Vehicle();
+        petrol.fuelType = "PETROL";
+        Vehicle electric = new Vehicle();
+        electric.fuelType = "ELECTRIC";
+        when(api.getVehicle(VIN)).thenReturn(petrol);
+        when(api.getVehicle(OTHER_VIN)).thenReturn(electric);
+        when(api.getSupportedEnergyCapabilities(OTHER_VIN)).thenReturn(Set.of("batteryChargeLevel", "chargingStatus"));
+        try {
+            localHandler.initialize();
+            verify(callback, timeout(TIMEOUT_MS).times(1)).statusUpdated(any(),
+                    argThat(info -> info.getStatus() == ThingStatus.ONLINE));
+            assertEquals(Set.of(CHANNEL_FUEL_AMOUNT), channelIds(localHandler));
+
+            // the Thing is reconfigured to an electric vehicle
+            Thing petrolThing = localHandler.getThing();
+            petrolThing.getConfiguration().put("vin", OTHER_VIN);
+            localHandler.thingUpdated(petrolThing);
+            verify(callback, timeout(TIMEOUT_MS).times(2)).statusUpdated(any(),
+                    argThat(info -> info.getStatus() == ThingStatus.ONLINE));
+            assertEquals(Set.of(CHANNEL_BATTERY_LEVEL, CHANNEL_CHARGING_STATUS), channelIds(localHandler));
+
+            // the Thing is only updated if its channels or properties change
+            clearInvocations(callback);
+            localHandler.thingUpdated(localHandler.getThing());
+            verify(callback, timeout(TIMEOUT_MS)).statusUpdated(any(),
+                    argThat(info -> info.getStatus() == ThingStatus.ONLINE));
+            verify(callback, never()).thingUpdated(any());
+        } finally {
+            localHandler.dispose();
+        }
+    }
+
+    private static Set<String> channelIds(VehicleHandler localHandler) {
+        return localHandler.getThing().getChannels().stream().map(channel -> channel.getUID().getIdWithoutGroup())
+                .collect(Collectors.toSet());
     }
 
     @Test

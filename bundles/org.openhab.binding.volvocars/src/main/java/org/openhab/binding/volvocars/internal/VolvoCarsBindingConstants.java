@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.volvocars.internal;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -68,6 +69,9 @@ public class VolvoCarsBindingConstants {
     public static final String GROUP_LOCATION = "location";
     public static final String GROUP_MAINTENANCE = "maintenance";
     public static final String GROUP_CONTROL = "control";
+    /** All channel groups, their ids are also the ids of their channel group types. */
+    public static final List<String> CHANNEL_GROUPS = List.of(GROUP_DOORS, GROUP_WINDOWS, GROUP_STATUS, GROUP_FUEL,
+            GROUP_BATTERY, GROUP_TRIP, GROUP_LOCATION, GROUP_MAINTENANCE, GROUP_CONTROL);
 
     // Channels of group doors
     public static final String CHANNEL_LOCK = "lock";

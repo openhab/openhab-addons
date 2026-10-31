@@ -13,6 +13,7 @@ The binding replaces the [VolvoOnCall Binding](https://www.openhab.org/addons/bi
 All cars supported by the Volvo Cars app and the Volvo Cars APIs should work.
 Which values and commands are available depends on the model, its powertrain and the market.
 Channels for features the car does not have (e.g. fuel channels of an electric car or remote commands the car does not support) are removed automatically.
+They are added again once the car reports these features, e.g. after the VIN of the Thing was changed to another car.
 
 ## Prerequisites
 

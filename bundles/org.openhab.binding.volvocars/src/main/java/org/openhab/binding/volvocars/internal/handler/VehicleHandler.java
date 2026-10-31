@@ -52,6 +52,7 @@ import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
+import org.openhab.core.thing.ChannelGroupUID;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -59,6 +60,10 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.ThingHandler;
+import org.openhab.core.thing.binding.ThingHandlerCallback;
+import org.openhab.core.thing.binding.builder.ChannelBuilder;
+import org.openhab.core.thing.binding.builder.ThingBuilder;
+import org.openhab.core.thing.type.ChannelGroupTypeUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
@@ -104,6 +109,8 @@ public class VehicleHandler extends BaseThingHandler {
         private @Nullable Vehicle vehicle;
         /** null if unknown, e.g. because the energy scope was not granted; empty if the Energy API is unsupported */
         private @Nullable Set<String> energyCapabilities;
+        /** null if unknown, e.g. because the scope was not granted */
+        private @Nullable Set<String> commands;
         private boolean locationSupported = true;
         private Instant nextSlowRefresh = Instant.MIN;
 
@@ -377,8 +384,9 @@ public class VehicleHandler extends BaseThingHandler {
             return null;
         }
         updateProperties(localVehicle, vin);
-        removeUnsupportedChannels(localVehicle, capabilities, commands);
         pollSession.energyCapabilities = capabilities;
+        pollSession.commands = commands;
+        reconcileChannels(localVehicle, pollSession);
         pollSession.vehicle = localVehicle;
         return localVehicle;
     }
@@ -397,8 +405,8 @@ public class VehicleHandler extends BaseThingHandler {
             return;
         }
         if (capabilities != null && pollSession.equals(session)) {
-            removeUnsupportedChannels(localVehicle, capabilities, null);
             pollSession.energyCapabilities = capabilities;
+            reconcileChannels(localVehicle, pollSession);
         }
     }
 
@@ -427,43 +435,68 @@ public class VehicleHandler extends BaseThingHandler {
     }
 
     /**
-     * Removes the channels of features the vehicle does not have, e.g. fuel channels of an electric car.
-     *
-     * @param energyCapabilities see {@link #isBatteryChannelSupported(String, Set)}
-     * @param commands the commands supported by the vehicle, or null if they are unknown
+     * Aligns the channels with the features of the vehicle: removes the channels of features it does not have, e.g.
+     * fuel channels of an electric car, and adds the defined channels of features it has that are missing, e.g. after
+     * the VIN was changed. The Thing is only updated if its channels change.
      */
-    private void removeUnsupportedChannels(Vehicle localVehicle, @Nullable Set<String> energyCapabilities,
-            @Nullable Set<String> commands) {
+    private void reconcileChannels(Vehicle localVehicle, Session pollSession) {
+        ThingHandlerCallback callback = getCallback();
+        if (callback == null) {
+            return;
+        }
+        Thing localThing = getThing();
         List<Channel> unsupported = new ArrayList<>();
-        for (Channel channel : getThing().getChannels()) {
-            ChannelUID uid = channel.getUID();
-            String group = uid.getGroupId();
-            String id = uid.getIdWithoutGroup();
-            boolean supported = switch (group != null ? group : "") {
-                case GROUP_FUEL -> localVehicle.hasCombustionEngine();
-                case GROUP_BATTERY -> localVehicle.hasBattery() && isBatteryChannelSupported(id, energyCapabilities);
-                case GROUP_TRIP -> !((CHANNEL_AVERAGE_FUEL_CONSUMPTION.equals(id)
-                        || CHANNEL_AVERAGE_FUEL_CONSUMPTION_AUTOMATIC.equals(id))
-                        && !localVehicle.hasCombustionEngine())
-                        && !(CHANNEL_AVERAGE_ENERGY_CONSUMPTION.equals(id) && !localVehicle.hasBattery());
-                case GROUP_CONTROL -> commands == null || switch (id) {
-                    case CHANNEL_CLIMATIZATION -> commands.contains("CLIMATIZATION_START");
-                    case CHANNEL_ENGINE_REMOTE_START -> commands.contains("ENGINE_START");
-                    case CHANNEL_HONK_FLASH ->
-                        commands.contains("HONK") || commands.contains("FLASH") || commands.contains("HONK_AND_FLASH");
-                    case CHANNEL_LOCK_REDUCED_GUARD -> commands.contains("LOCK_REDUCED_GUARD");
-                    default -> true;
-                };
-                default -> true;
-            };
-            if (!supported) {
+        for (Channel channel : localThing.getChannels()) {
+            if (!isChannelSupported(channel.getUID(), localVehicle, pollSession.energyCapabilities,
+                    pollSession.commands)) {
                 unsupported.add(channel);
             }
         }
-        if (!unsupported.isEmpty()) {
-            logger.debug("Removing {} channels not supported by vehicle {}", unsupported.size(), getThing().getUID());
-            updateThing(editThing().withoutChannels(unsupported).build());
+        List<Channel> missing = new ArrayList<>();
+        for (String group : CHANNEL_GROUPS) {
+            for (ChannelBuilder builder : callback.createChannelBuilders(
+                    new ChannelGroupUID(localThing.getUID(), group), new ChannelGroupTypeUID(BINDING_ID, group))) {
+                Channel channel = builder.build();
+                if (localThing.getChannel(channel.getUID()) == null && isChannelSupported(channel.getUID(),
+                        localVehicle, pollSession.energyCapabilities, pollSession.commands)) {
+                    missing.add(channel);
+                }
+            }
         }
+        if (!unsupported.isEmpty() || !missing.isEmpty()) {
+            logger.debug("Removing {} and adding {} channels of vehicle {}", unsupported.size(), missing.size(),
+                    localThing.getUID());
+            ThingBuilder thingBuilder = editThing().withoutChannels(unsupported);
+            missing.forEach(thingBuilder::withChannel);
+            updateThing(thingBuilder.build());
+        }
+    }
+
+    /**
+     * @param energyCapabilities see {@link #isBatteryChannelSupported(String, Set)}
+     * @param commands the commands supported by the vehicle, or null if they are unknown
+     */
+    static boolean isChannelSupported(ChannelUID uid, Vehicle localVehicle, @Nullable Set<String> energyCapabilities,
+            @Nullable Set<String> commands) {
+        String group = uid.getGroupId();
+        String id = uid.getIdWithoutGroup();
+        return switch (group != null ? group : "") {
+            case GROUP_FUEL -> localVehicle.hasCombustionEngine();
+            case GROUP_BATTERY -> localVehicle.hasBattery() && isBatteryChannelSupported(id, energyCapabilities);
+            case GROUP_TRIP ->
+                !((CHANNEL_AVERAGE_FUEL_CONSUMPTION.equals(id) || CHANNEL_AVERAGE_FUEL_CONSUMPTION_AUTOMATIC.equals(id))
+                        && !localVehicle.hasCombustionEngine())
+                        && !(CHANNEL_AVERAGE_ENERGY_CONSUMPTION.equals(id) && !localVehicle.hasBattery());
+            case GROUP_CONTROL -> commands == null || switch (id) {
+                case CHANNEL_CLIMATIZATION -> commands.contains("CLIMATIZATION_START");
+                case CHANNEL_ENGINE_REMOTE_START -> commands.contains("ENGINE_START");
+                case CHANNEL_HONK_FLASH ->
+                    commands.contains("HONK") || commands.contains("FLASH") || commands.contains("HONK_AND_FLASH");
+                case CHANNEL_LOCK_REDUCED_GUARD -> commands.contains("LOCK_REDUCED_GUARD");
+                default -> true;
+            };
+            default -> true;
+        };
     }
 
     /**
