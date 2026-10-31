@@ -12,7 +12,6 @@
 
 	<config-description-ref uri="persistence:victoriametrics"/>
 
-	<!-- Discovery is optional. Only add if you can detect the service! -->
 	<discovery-methods>
 		<discovery-method>
 			<service-type>process</service-type>
@@ -24,4 +23,5 @@
 			</match-properties>
 		</discovery-method>
 	</discovery-methods>
+
 </addon:addon>

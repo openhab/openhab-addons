@@ -23,14 +23,10 @@ import org.openhab.core.items.GroupItem;
 import org.openhab.core.items.Item;
 import org.openhab.core.items.ItemNotFoundException;
 import org.openhab.core.items.ItemRegistry;
-import org.openhab.core.library.items.ColorItem;
 import org.openhab.core.library.items.ContactItem;
 import org.openhab.core.library.items.DateTimeItem;
 import org.openhab.core.library.items.DimmerItem;
-import org.openhab.core.library.items.ImageItem;
-import org.openhab.core.library.items.LocationItem;
 import org.openhab.core.library.items.NumberItem;
-import org.openhab.core.library.items.PlayerItem;
 import org.openhab.core.library.items.RollershutterItem;
 import org.openhab.core.library.items.SwitchItem;
 import org.openhab.core.library.types.DateTimeType;
@@ -39,11 +35,7 @@ import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.PercentType;
-import org.openhab.core.library.types.PlayPauseType;
-import org.openhab.core.library.types.PointType;
 import org.openhab.core.library.types.QuantityType;
-import org.openhab.core.library.types.RawType;
-import org.openhab.core.library.types.RewindFastforwardType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
@@ -51,11 +43,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Conversion logic between openHAB {@link State} types and VictoriaMetrics storage types.
+ * Conversion logic between openHAB {@link State} types and VictoriaMetrics sample values.
+ * <p>
+ * VictoriaMetrics samples are 64-bit floating point numbers, so only states with a numeric representation can be
+ * stored. Unlike InfluxDB, states that InfluxDB stores as strings (e.g. {@link StringType}, {@link HSBType},
+ * {@code PointType}, {@code RawType}, {@code PlayPauseType}) are not supported.
  *
  * @author Joan Pujol Espinar - Initial contribution
  * @author Franz - Initial VictoriaMetrics adaptation
- * @author Michael Weger - Continuation of initial contribution
+ * @author Michael Weger - Restrict to numeric states
  */
 @NonNullByDefault
 public class VictoriaMetricsStateConvertUtils {
@@ -64,18 +60,16 @@ public class VictoriaMetricsStateConvertUtils {
     private static final Logger LOGGER = LoggerFactory.getLogger(VictoriaMetricsStateConvertUtils.class);
 
     /**
-     * Converts {@link State} to objects suitable for VictoriaMetrics values.
+     * Converts {@link State} to a number fitting into a VictoriaMetrics sample.
      *
      * @param state to be converted
-     * @return integer or double value for DecimalType, 0 or 1 for OnOffType and OpenClosedType,
-     *         integer for DateTimeType, String for all others
+     * @return decimal value for DecimalType and QuantityType, 0 or 1 for OnOffType and OpenClosedType,
+     *         epoch milliseconds for DateTimeType, <code>null</code> for all others
      */
-    public static Object stateToObject(State state) {
-        Object value;
-        if (state instanceof HSBType) {
-            value = state.toString();
-        } else if (state instanceof PointType) {
-            value = state.toString();
+    public static @Nullable Number stateToObject(State state) {
+        Number value;
+        if (state instanceof HSBType) { // HSBType is a DecimalType, but has no single numeric value
+            value = null;
         } else if (state instanceof DecimalType type) {
             value = type.toBigDecimal();
         } else if (state instanceof QuantityType<?> type) {
@@ -87,7 +81,7 @@ public class VictoriaMetricsStateConvertUtils {
         } else if (state instanceof DateTimeType type) {
             value = type.getInstant().toEpochMilli();
         } else {
-            value = state.toFullString();
+            value = null;
         }
         return value;
     }
@@ -112,14 +106,6 @@ public class VictoriaMetricsStateConvertUtils {
         return new StringType(String.valueOf(value));
     }
 
-    /**
-     * Converts a value to a {@link State} which is suitable for the given {@link Item}.
-     * This is needed for querying a {@link VictoriaMetricsHistoricItem}.
-     *
-     * @param value to be converted to a {@link State}
-     * @param itemToSetState the {@link Item} to get the {@link State} for
-     * @return the state of the item represented by the itemToSetState parameter, else the string value of
-     */
     public static State objectToState(@Nullable Object value, Item itemToSetState) {
         String valueStr = String.valueOf(value);
 
@@ -128,11 +114,7 @@ public class VictoriaMetricsStateConvertUtils {
         if (item instanceof GroupItem groupItem) {
             item = groupItem.getBaseItem();
         }
-        if (item instanceof ColorItem) {
-            return new HSBType(valueStr);
-        } else if (item instanceof LocationItem) {
-            return new PointType(valueStr);
-        } else if (item instanceof NumberItem numberItem) {
+        if (item instanceof NumberItem numberItem) {
             Unit<?> unit = numberItem.getUnit();
             if (unit == null) {
                 return new DecimalType(valueStr);
@@ -149,18 +131,7 @@ public class VictoriaMetricsStateConvertUtils {
             return new PercentType(valueStr);
         } else if (item instanceof DateTimeItem) {
             return new DateTimeType(Instant.ofEpochMilli(new BigDecimal(valueStr).longValue()));
-        } else if (item instanceof PlayerItem) {
-            try {
-                return PlayPauseType.valueOf(valueStr);
-            } catch (IllegalArgumentException ignored) {
-            }
-            try {
-                return RewindFastforwardType.valueOf(valueStr);
-            } catch (IllegalArgumentException ignored) {
-            }
-        } else if (item instanceof ImageItem) {
-            return RawType.valueOf(valueStr);
-        } else {
+        } else if (item == null) {
             return new StringType(valueStr);
         }
         return UnDefType.UNDEF;

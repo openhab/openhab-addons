@@ -26,6 +26,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
+import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.items.ItemRegistry;
 import org.openhab.core.items.MetadataRegistry;
 import org.openhab.persistence.victoriametrics.internal.ItemTestHelper;
@@ -36,17 +37,31 @@ import org.openhab.persistence.victoriametrics.internal.VictoriaMetricsRepositor
 /**
  * @author Joan Pujol Espinar - Initial contribution
  * @author Franz - Initial VictoriaMetrics adaptation
- * @author Michael Weger - Continuation of initial contribution
+ * @author Michael Weger - Add configuration validation tests
  */
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
 @NonNullByDefault
 public class VictoriaMetricsPersistenceServiceTest {
-    private static final Map<String, Object> VALID_CONFIGURATION = Map.of(URL_PARAM, "http://localhost:8428",
-            USER_PARAM, "user", PASSWORD_PARAM, "password", MEASUREMENT_PREFIX, "openhab_");
+    private static final Map<String, Object> VALID_CONFIGURATION_WITHOUT_AUTHENTICATION = Map.of( //
+            URL_PARAM, "http://localhost:8428");
 
-    private static final Map<String, Object> INVALID_CONFIGURATION = Map.of(URL_PARAM, "http://localhost:8428",
-            USER_PARAM, "user", MEASUREMENT_PREFIX, "openhab_");
+    private static final Map<String, Object> VALID_CONFIGURATION_WITH_USER = Map.of( //
+            URL_PARAM, "http://localhost:8428", //
+            USER_PARAM, "user", PASSWORD_PARAM, "password", //
+            METRIC_PREFIX_PARAM, "openhab_");
+
+    private static final Map<String, Object> VALID_CONFIGURATION_WITH_TOKEN = Map.of( //
+            URL_PARAM, "http://localhost:8428", //
+            TOKEN_PARAM, "sampletoken");
+
+    private static final Map<String, Object> INVALID_CONFIGURATION_WITHOUT_PASSWORD = Map.of( //
+            URL_PARAM, "http://localhost:8428", //
+            USER_PARAM, "user");
+
+    private static final Map<String, Object> INVALID_CONFIGURATION_WITH_INVALID_PREFIX = Map.of( //
+            URL_PARAM, "http://localhost:8428", //
+            METRIC_PREFIX_PARAM, "open-hab.");
 
     private @Mock @NonNullByDefault({}) VictoriaMetricsRepository repositoryMock;
 
@@ -54,19 +69,43 @@ public class VictoriaMetricsPersistenceServiceTest {
             mock(MetadataRegistry.class));
 
     @Test
-    public void activateWithValidConfigShouldConnectRepository() {
-        getService(VALID_CONFIGURATION);
+    public void activateWithValidConfigWithoutAuthenticationShouldConnectRepository() {
+        getService(VALID_CONFIGURATION_WITHOUT_AUTHENTICATION);
         verify(repositoryMock).connect();
     }
 
     @Test
-    public void activateWithInvalidConfigShouldFail() {
-        assertThrows(IllegalArgumentException.class, () -> getService(INVALID_CONFIGURATION));
+    public void activateWithValidConfigWithUserShouldConnectRepository() {
+        getService(VALID_CONFIGURATION_WITH_USER);
+        verify(repositoryMock).connect();
+    }
+
+    @Test
+    public void activateWithValidConfigWithTokenShouldConnectRepository() {
+        getService(VALID_CONFIGURATION_WITH_TOKEN);
+        verify(repositoryMock).connect();
+    }
+
+    @Test
+    public void activateWithUserWithoutPasswordShouldFail() {
+        assertThrows(IllegalArgumentException.class, () -> getService(INVALID_CONFIGURATION_WITHOUT_PASSWORD));
+    }
+
+    @Test
+    public void activateWithInvalidPrefixShouldFail() {
+        assertThrows(IllegalArgumentException.class, () -> getService(INVALID_CONFIGURATION_WITH_INVALID_PREFIX));
+    }
+
+    @Test
+    public void deactivateShouldDisconnectRepository() {
+        VictoriaMetricsPersistenceService instance = getService(VALID_CONFIGURATION_WITHOUT_AUTHENTICATION);
+        instance.deactivate();
+        verify(repositoryMock).disconnect();
     }
 
     @Test
     public void storeItemWithConnectedRepository() throws UnexpectedConditionException {
-        VictoriaMetricsPersistenceService instance = getService(VALID_CONFIGURATION);
+        VictoriaMetricsPersistenceService instance = getService(VALID_CONFIGURATION_WITHOUT_AUTHENTICATION);
         when(repositoryMock.isConnected()).thenReturn(true);
         instance.store(ItemTestHelper.createNumberItem("number", 5));
         verify(repositoryMock, timeout(5000)).write(any());
@@ -74,14 +113,15 @@ public class VictoriaMetricsPersistenceServiceTest {
 
     @Test
     public void storeItemWithDisconnectedRepositoryIsIgnored() throws UnexpectedConditionException {
-        VictoriaMetricsPersistenceService instance = getService(VALID_CONFIGURATION);
+        VictoriaMetricsPersistenceService instance = getService(VALID_CONFIGURATION_WITHOUT_AUTHENTICATION);
         when(repositoryMock.isConnected()).thenReturn(false);
         instance.store(ItemTestHelper.createNumberItem("number", 5));
         verify(repositoryMock, never()).write(any());
     }
 
     private VictoriaMetricsPersistenceService getService(Map<String, Object> config) {
-        return new VictoriaMetricsPersistenceService(mock(ItemRegistry.class), metadataService, config) {
+        return new VictoriaMetricsPersistenceService(mock(ItemRegistry.class), metadataService,
+                mock(HttpClientFactory.class), config) {
             @Override
             protected VictoriaMetricsRepository createVictoriaMetricsRepository() {
                 return repositoryMock;

@@ -18,7 +18,6 @@ import org.openhab.core.library.types.DecimalType;
 
 /**
  * @author Joan Pujol Espinar - Initial contribution
- * @author Michael Weger - Continuation of initial contribution
  */
 @NonNullByDefault
 public class ItemTestHelper {

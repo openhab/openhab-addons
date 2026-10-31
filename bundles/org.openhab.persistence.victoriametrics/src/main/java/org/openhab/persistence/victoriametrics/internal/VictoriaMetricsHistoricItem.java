@@ -25,7 +25,6 @@ import org.openhab.core.types.State;
  * Java bean used to return items queries results from VictoriaMetrics.
  *
  * @author Franz - Initial contribution
- * @author Michael Weger - Continuation of initial contribution
  */
 @NonNullByDefault
 public class VictoriaMetricsHistoricItem implements HistoricItem {
