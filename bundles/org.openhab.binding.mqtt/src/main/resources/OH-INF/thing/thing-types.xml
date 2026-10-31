@@ -201,6 +201,30 @@
 					connection. An example input would be `SHA-256:83F9171E06A313118889F7D79302BD1B7A2042EE0CFD029ABF8DD06FFA6CD9D3`.</description>
 				<advanced>true</advanced>
 			</parameter>
+			<parameter name="clientKeystore" type="text">
+				<label>Client Keystore</label>
+				<description>Path to a keystore file containing the client certificate and private key used for TLS client
+					authentication (mutual TLS), e.g. `/etc/openhab/mqtt/client.p12`. Requires **secure** to be enabled. The trust
+					of
+					the broker certificate is still handled by the pinning options.</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="clientKeystorePassword" type="text">
+				<label>Client Keystore Password</label>
+				<description>Password of the client keystore (also used for the private key).</description>
+				<context>password</context>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="clientKeystoreType" type="text">
+				<label>Client Keystore Type</label>
+				<description>Keystore type of the client keystore.</description>
+				<options>
+					<option value="PKCS12">PKCS12</option>
+					<option value="JKS">JKS</option>
+				</options>
+				<default>PKCS12</default>
+				<advanced>true</advanced>
+			</parameter>
 			<parameter name="publickeypin" type="boolean">
 				<label>Public Key Pinning</label>
 				<description>If this and SSL is set: After the next connection has been successfully established, the public key of
