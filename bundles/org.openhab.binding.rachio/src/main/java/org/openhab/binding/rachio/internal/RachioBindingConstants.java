@@ -370,6 +370,7 @@ public class RachioBindingConstants {
     public static final String EVENT_PROGRAM_RAIN_SKIP_CANCELED = "PROGRAM_RAIN_SKIP_CANCELED_EVENT";
 
     public static final String SERVLET_WEBHOOK_PATH = "/rachio/webhook";
+    public static final String SERVLET_CLOUD_WEBHOOK_PATH_PREFIX = SERVLET_WEBHOOK_PATH + "/cloud/";
     public static final String SERVLET_WEBHOOK_APPLICATION_JSON = "application/json";
     public static final String SERVLET_WEBHOOK_CHARSET = "utf-8";
     public static final String SERVLET_WEBHOOK_USER_AGENT = "Mozilla/5.0";

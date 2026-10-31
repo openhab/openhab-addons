@@ -12,13 +12,15 @@
  */
 package org.openhab.binding.rachio.internal.handler;
 
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.SERVLET_WEBHOOK_PATH;
+import static org.openhab.binding.rachio.internal.RachioBindingConstants.SERVLET_CLOUD_WEBHOOK_PATH_PREFIX;
 import static org.openhab.binding.rachio.internal.RachioUtils.isSameInstance;
 
 import java.time.Instant;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
-import java.util.Objects;
+import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.ExecutionException;
@@ -34,27 +36,29 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Shared owner for the single Rachio servlet path exposed through the openHAB Cloud webhook provider.
+ * Shares a Cloud registration between bridges while keeping each acquisition and remote operation independently owned.
  *
  * @author Kovacs Istvan - Initial contribution
+ * @author Kovacs Istvan - Cloud webhook recovery
+ * @author Kovacs Istvan - Isolated registration paths and acquisition ownership
  */
 @NonNullByDefault
 public final class RachioCloudWebhookRegistry {
     private static final long CLOUD_WEBHOOK_REQUEST_TIMEOUT_SECONDS = 10;
+    private static final long CLOUD_WEBHOOK_CLEANUP_TIMEOUT_SECONDS = 60;
     static final String WEBHOOK_SERVICE_UNAVAILABLE = "openHAB core WebhookService is not available";
 
     private final Logger logger = LoggerFactory.getLogger(RachioCloudWebhookRegistry.class);
     private final Supplier<@Nullable WebhookService> webhookServiceSupplier;
     private final long requestTimeoutMillis;
-    private final Map<String, ActiveConsumerLease> activeConsumers = new HashMap<>();
+    private final long cleanupTimeoutMillis;
+    private final Map<String, Map<Long, RequestOperation>> activeConsumers = new HashMap<>();
     private boolean providerManaged;
     private @Nullable WebhookService managedProvider;
-    private @Nullable Webhook cachedWebhook;
-    private @Nullable WebhookService cachedWebhookProvider;
-    private @Nullable CompletableFuture<Webhook> pendingRequest;
-    private @Nullable WebhookService pendingRequestProvider;
-    private CompletableFuture<Boolean> pendingRemoval = CompletableFuture.completedFuture(Boolean.TRUE);
-    private long cachedWebhookGeneration;
+    private @Nullable RequestOperation cachedRequest;
+    private @Nullable RequestOperation pendingRequest;
+    private long providerEpoch;
+    private long registrationSequence;
     private long consumerLeaseSequence;
 
     public RachioCloudWebhookRegistry(Supplier<@Nullable WebhookService> webhookServiceSupplier) {
@@ -62,258 +66,267 @@ public final class RachioCloudWebhookRegistry {
     }
 
     RachioCloudWebhookRegistry(Supplier<@Nullable WebhookService> webhookServiceSupplier, long requestTimeoutMillis) {
+        this(webhookServiceSupplier, requestTimeoutMillis,
+                TimeUnit.SECONDS.toMillis(CLOUD_WEBHOOK_CLEANUP_TIMEOUT_SECONDS));
+    }
+
+    RachioCloudWebhookRegistry(Supplier<@Nullable WebhookService> webhookServiceSupplier, long requestTimeoutMillis,
+            long cleanupTimeoutMillis) {
         this.webhookServiceSupplier = webhookServiceSupplier;
-        if (requestTimeoutMillis < 0) {
-            throw new IllegalArgumentException("Cloud webhook request timeout must not be negative");
+        if (requestTimeoutMillis < 0 || cleanupTimeoutMillis < 0) {
+            throw new IllegalArgumentException("Cloud webhook timeouts must not be negative");
         }
         this.requestTimeoutMillis = requestTimeoutMillis;
+        this.cleanupTimeoutMillis = cleanupTimeoutMillis;
     }
 
     CloudWebhookLease acquire(String consumerId) throws CloudWebhookException, InterruptedException {
-        CompletableFuture<Webhook> webhookFuture;
-        CompletableFuture<Boolean> removalBeforeRequest = CompletableFuture.completedFuture(Boolean.TRUE);
-        boolean startRequest = false;
-        WebhookService webhookService;
+        RequestOperation operation;
+        boolean startRequest;
         synchronized (this) {
-            WebhookService currentProvider = currentProvider();
-            if (currentProvider == null) {
+            WebhookService provider = currentProvider();
+            if (provider == null) {
                 throw new CloudWebhookException(WEBHOOK_SERVICE_UNAVAILABLE);
             }
-            webhookService = currentProvider;
-            Webhook webhook = cachedWebhook;
-            if (webhook != null && webhookService.equals(cachedWebhookProvider)) {
-                return activateLease(consumerId, webhook, cachedWebhookGeneration);
+            RequestOperation cached = cachedRequest;
+            Webhook cachedWebhook = cached == null ? null : cached.webhook;
+            if (cached != null && !cached.retired && cached.providerEpoch == providerEpoch
+                    && provider.equals(cached.webhookService) && cachedWebhook != null) {
+                return activateLease(consumerId, cached, cachedWebhook);
             }
-
-            cachedWebhook = null;
-            cachedWebhookProvider = webhookService;
-            CompletableFuture<Webhook> request = pendingRequest;
-            if (request != null && webhookService.equals(pendingRequestProvider)) {
-                webhookFuture = request;
+            RequestOperation pending = pendingRequest;
+            if (pending != null && !pending.retired && pending.providerEpoch == providerEpoch
+                    && provider.equals(pending.webhookService)) {
+                operation = pending;
+                startRequest = false;
             } else {
-                removalBeforeRequest = pendingRemoval;
-                webhookFuture = new CompletableFuture<>();
-                pendingRequest = webhookFuture;
-                pendingRequestProvider = webhookService;
+                operation = new RequestOperation(provider, providerEpoch, ++registrationSequence);
+                pendingRequest = operation;
                 startRequest = true;
             }
-        }
-        if (startRequest) {
-            startWebhookRequest(webhookService, removalBeforeRequest, webhookFuture);
+            operation.waiters++;
         }
 
         try {
-            Webhook webhook = webhookFuture.get(requestTimeoutMillis, TimeUnit.MILLISECONDS);
+            if (startRequest) {
+                startWebhookRequest(operation);
+            }
+            Webhook webhook = operation.result.get(requestTimeoutMillis, TimeUnit.MILLISECONDS);
             synchronized (this) {
-                Webhook currentWebhook = cachedWebhook;
-                if (currentWebhook != null && webhookService.equals(cachedWebhookProvider)) {
-                    return activateLease(consumerId, currentWebhook, cachedWebhookGeneration);
-                }
-                if (!isSameInstance(pendingRequest, webhookFuture) || !webhookService.equals(pendingRequestProvider)) {
+                if (operation.retired || operation.providerEpoch != providerEpoch
+                        || !operation.webhookService.equals(currentProvider())
+                        || !isSameInstance(pendingRequest, operation) && !isSameInstance(cachedRequest, operation)) {
                     throw new CloudWebhookException(
                             "openHAB Cloud webhook provider changed while requesting the webhook URL");
                 }
-                webhookLease(webhook, cachedWebhookGeneration + 1, 0);
-                cachedWebhook = webhook;
-                cachedWebhookGeneration++;
-                pendingRequest = null;
-                pendingRequestProvider = null;
-                currentWebhook = webhook;
-                return activateLease(consumerId, currentWebhook, cachedWebhookGeneration);
+                CloudWebhookLease lease = activateLease(consumerId, operation, webhook);
+                operation.webhook = webhook;
+                cachedRequest = operation;
+                if (isSameInstance(pendingRequest, operation)) {
+                    pendingRequest = null;
+                }
+                return lease;
             }
-        } catch (InterruptedException e) {
-            throw e;
         } catch (TimeoutException e) {
-            abandonPendingRequest(webhookFuture, webhookService, e);
             throw new CloudWebhookException("Timed out while requesting openHAB Cloud webhook URL", e);
-        } catch (CloudWebhookException e) {
-            abandonPendingRequest(webhookFuture, webhookService, e);
-            throw e;
         } catch (ExecutionException | RuntimeException e) {
-            abandonPendingRequest(webhookFuture, webhookService, e);
             throw new CloudWebhookException("Failed to request openHAB Cloud webhook URL",
                     unwrapCompletionException(e));
+        } finally {
+            releaseRequestWaiter(operation);
         }
     }
 
     void release(String consumerId, long consumerLease) {
-        RemovalOperation removal;
+        RequestOperation operation;
+        boolean cleanup;
         synchronized (this) {
-            ActiveConsumerLease activeLease = activeConsumers.get(consumerId);
-            if (activeLease == null || activeLease.consumerLease() != consumerLease) {
+            Map<Long, RequestOperation> consumerLeases = activeConsumers.get(consumerId);
+            if (consumerLeases == null) {
                 return;
             }
-            activeConsumers.remove(consumerId);
-            if (!activeConsumers.isEmpty()) {
+            RequestOperation leased = consumerLeases.remove(consumerLease);
+            if (leased == null) {
                 return;
             }
-
-            cachedWebhook = null;
-            WebhookService webhookService = cachedWebhookProvider;
-            if (webhookService == null) {
-                webhookService = currentProvider();
-                cachedWebhookProvider = webhookService;
+            operation = leased;
+            if (consumerLeases.isEmpty()) {
+                activeConsumers.remove(consumerId);
             }
-            if (webhookService == null) {
-                return;
+            operation.leases--;
+            if (operation.leases == 0 && operation.waiters == 0) {
+                retireOperation(operation);
             }
-
-            removal = prepareWebhookRemoval(webhookService);
+            cleanup = requestCleanupWhenUnused(operation);
         }
-        executeWebhookRemoval(removal);
+        if (cleanup) {
+            removeWebhook(operation);
+        }
     }
 
-    private RemovalOperation prepareWebhookRemoval(WebhookService webhookService) {
-        CompletableFuture<Boolean> removalFuture = new CompletableFuture<>();
-        RemovalOperation removal = new RemovalOperation(webhookService, pendingRemoval, removalFuture);
-        pendingRemoval = removalFuture;
-        return removal;
+    synchronized boolean isLeaseActive(String consumerId, long consumerLease) {
+        Map<Long, RequestOperation> leases = activeConsumers.get(consumerId);
+        RequestOperation operation = leases == null ? null : leases.get(consumerLease);
+        return operation != null && operation.providerEpoch == providerEpoch
+                && operation.webhookService.equals(currentProvider());
     }
 
-    private void executeWebhookRemoval(RemovalOperation removal) {
-        startWebhookRemoval(removal.webhookService(), removal.previousRemoval(), removal.result());
-        removal.result().whenComplete((ignored, error) -> {
-            if (error == null) {
-                logger.debug("RachioCloud: openHAB Cloud webhook URL removal completed");
-            } else {
-                logger.debug("RachioCloud: Failed to remove openHAB Cloud webhook URL",
-                        unwrapCompletionException(error));
+    private void startWebhookRequest(RequestOperation operation) {
+        synchronized (this) {
+            if (operation.retired || operation.providerEpoch != providerEpoch
+                    || !operation.webhookService.equals(currentProvider())) {
+                operation.result
+                        .completeExceptionally(new CloudWebhookException("Cloud webhook request was abandoned"));
+                return;
             }
-        });
+            operation.requestSent = true;
+        }
+        try {
+            operation.webhookService.requestWebhook(operation.localPath).whenComplete((webhook, error) -> {
+                boolean cleanupLateResult;
+                synchronized (this) {
+                    cleanupLateResult = error == null && operation.cleanupRequested;
+                }
+                if (error == null) {
+                    operation.result.complete(webhook);
+                } else {
+                    operation.result.completeExceptionally(unwrapCompletionException(error));
+                }
+                if (cleanupLateResult) {
+                    // A create may finish after its eager cleanup. Its unique path cannot name a replacement.
+                    removeWebhook(operation);
+                }
+            });
+        } catch (RuntimeException e) {
+            operation.result.completeExceptionally(e);
+        }
     }
 
-    private void startWebhookRequest(WebhookService webhookService, CompletableFuture<Boolean> removalBeforeRequest,
-            CompletableFuture<Webhook> result) {
-        removalBeforeRequest.handle((ignored, error) -> Boolean.TRUE)
-                .thenCompose(ignored -> webhookService.requestWebhook(SERVLET_WEBHOOK_PATH))
-                .whenComplete((webhook, error) -> {
-                    if (error == null) {
-                        if (!result.complete(webhook)) {
-                            removeAbandonedWebhook(webhookService);
+    private void removeWebhook(RequestOperation operation) {
+        try {
+            operation.webhookService.removeWebhook(operation.localPath).thenApply(ignored -> Boolean.TRUE)
+                    .orTimeout(cleanupTimeoutMillis, TimeUnit.MILLISECONDS).whenComplete((ignored, error) -> {
+                        if (error == null) {
+                            logger.debug("RachioCloud: Retired openHAB Cloud webhook URL removal completed");
+                        } else {
+                            logger.debug("RachioCloud: Failed to remove retired openHAB Cloud webhook URL",
+                                    unwrapCompletionException(error));
                         }
-                    } else {
-                        result.completeExceptionally(unwrapCompletionException(error));
-                    }
-                });
-    }
-
-    private void startWebhookRemoval(WebhookService webhookService, CompletableFuture<Boolean> previousRemoval,
-            CompletableFuture<Boolean> result) {
-        previousRemoval.handle((ignored, error) -> Boolean.TRUE)
-                .thenCompose(ignored -> webhookService.removeWebhook(SERVLET_WEBHOOK_PATH))
-                .whenComplete((ignored, error) -> {
-                    if (error == null) {
-                        result.complete(Boolean.TRUE);
-                    } else {
-                        result.completeExceptionally(unwrapCompletionException(error));
-                    }
-                });
+                    });
+        } catch (RuntimeException e) {
+            logger.debug("RachioCloud: Unable to remove retired openHAB Cloud webhook URL", e);
+        }
     }
 
     public void onProviderChanged(@Nullable WebhookService previousProvider, @Nullable WebhookService newProvider) {
-        RemovalOperation removal = null;
-        CompletableFuture<Webhook> abandonedRequest;
-        WebhookService abandonedRequestProvider;
+        Set<RequestOperation> retired = new HashSet<>();
+        Set<RequestOperation> cleanup = new HashSet<>();
         synchronized (this) {
             providerManaged = true;
             managedProvider = newProvider;
-            WebhookService registeredProvider = cachedWebhookProvider;
-            if (registeredProvider == null) {
-                registeredProvider = previousProvider;
+            providerEpoch++;
+            RequestOperation cached = cachedRequest;
+            if (cached != null) {
+                retired.add(cached);
             }
-            boolean registrationMayExist = cachedWebhook != null || !activeConsumers.isEmpty();
-            abandonedRequest = pendingRequest;
-            abandonedRequestProvider = pendingRequestProvider;
-
-            cachedWebhook = null;
-            cachedWebhookProvider = newProvider;
-            pendingRequest = null;
-            pendingRequestProvider = null;
+            RequestOperation pending = pendingRequest;
+            if (pending != null) {
+                retired.add(pending);
+            }
+            activeConsumers.values().forEach(leases -> retired.addAll(leases.values()));
             activeConsumers.clear();
-
-            if (registrationMayExist && registeredProvider != null) {
-                removal = prepareWebhookRemoval(registeredProvider);
+            for (RequestOperation operation : retired) {
+                operation.leases = 0;
+                retireOperation(operation);
+                if (requestCleanupWhenUnused(operation)) {
+                    cleanup.add(operation);
+                }
             }
         }
-        if (removal != null) {
-            executeWebhookRemoval(removal);
-        }
-        if (abandonedRequest != null && abandonedRequestProvider != null
-                && !Objects.equals(abandonedRequestProvider, newProvider)) {
-            discardRequestResult(abandonedRequest, abandonedRequestProvider,
+        for (RequestOperation operation : retired) {
+            operation.result.completeExceptionally(
                     new CloudWebhookException("openHAB Cloud webhook provider changed while requesting the URL"));
         }
+        cleanup.forEach(this::removeWebhook);
     }
 
-    private void removeAbandonedWebhook(WebhookService webhookService) {
-        RemovalOperation removal;
+    void invalidateCachedWebhook(long expectedGeneration) {
+        RequestOperation operation;
+        boolean cleanup;
         synchronized (this) {
-            boolean providerInUse = webhookService.equals(cachedWebhookProvider)
-                    && (cachedWebhook != null || !activeConsumers.isEmpty());
-            providerInUse |= webhookService.equals(pendingRequestProvider) && pendingRequest != null;
-            if (providerInUse) {
+            RequestOperation cached = cachedRequest;
+            if (cached == null || cached.generation != expectedGeneration) {
                 return;
             }
-            removal = prepareWebhookRemoval(webhookService);
+            operation = cached;
+            retireOperation(operation);
+            cleanup = requestCleanupWhenUnused(operation);
         }
-        executeWebhookRemoval(removal);
+        if (cleanup) {
+            removeWebhook(operation);
+        }
     }
 
-    private void abandonPendingRequest(CompletableFuture<Webhook> request, WebhookService webhookService,
-            Throwable failure) {
+    private void releaseRequestWaiter(RequestOperation operation) {
+        boolean cleanup;
         synchronized (this) {
-            if (!isSameInstance(pendingRequest, request) || !webhookService.equals(pendingRequestProvider)) {
-                return;
+            operation.waiters--;
+            if (operation.waiters == 0 && operation.leases == 0) {
+                retireOperation(operation);
             }
+            cleanup = requestCleanupWhenUnused(operation);
+        }
+        if (cleanup) {
+            removeWebhook(operation);
+        }
+    }
+
+    private void retireOperation(RequestOperation operation) {
+        operation.retired = true;
+        if (isSameInstance(cachedRequest, operation)) {
+            cachedRequest = null;
+        }
+        if (isSameInstance(pendingRequest, operation)) {
             pendingRequest = null;
-            pendingRequestProvider = null;
         }
-        discardRequestResult(request, webhookService, failure);
     }
 
-    private void discardRequestResult(CompletableFuture<Webhook> request, WebhookService webhookService,
-            Throwable failure) {
-        if (!request.completeExceptionally(failure) && !request.isCompletedExceptionally()) {
-            removeAbandonedWebhook(webhookService);
+    private boolean requestCleanupWhenUnused(RequestOperation operation) {
+        if (!operation.retired || operation.leases != 0 || operation.waiters != 0 || !operation.requestSent
+                || operation.cleanupRequested) {
+            return false;
         }
+        operation.cleanupRequested = true;
+        return true;
     }
 
     private @Nullable WebhookService currentProvider() {
         return providerManaged ? managedProvider : webhookServiceSupplier.get();
     }
 
-    synchronized void invalidateCachedWebhook(long expectedGeneration) {
-        // A stale bridge must not invalidate the replacement already acquired by another bridge.
-        if (cachedWebhook != null && cachedWebhookGeneration == expectedGeneration) {
-            cachedWebhook = null;
-        }
-    }
-
     synchronized int activeConsumerCount() {
         return activeConsumers.size();
     }
 
-    private CloudWebhookLease activateLease(String consumerId, Webhook webhook, long generation)
-            throws CloudWebhookException {
-        ActiveConsumerLease activeLease = activeConsumers.get(consumerId);
-        if (activeLease != null && activeLease.webhookGeneration() == generation) {
-            return webhookLease(webhook, generation, activeLease.consumerLease());
-        }
-        long consumerLease = ++consumerLeaseSequence;
-        CloudWebhookLease lease = webhookLease(webhook, generation, consumerLease);
-        activeConsumers.put(consumerId, new ActiveConsumerLease(generation, consumerLease));
-        logger.debug("RachioCloud: openHAB Cloud webhook URL is available for {} active bridge(s)",
-                activeConsumers.size());
-        return lease;
-    }
-
-    private CloudWebhookLease webhookLease(Webhook webhook, long generation, long consumerLease)
+    private CloudWebhookLease activateLease(String consumerId, RequestOperation operation, Webhook webhook)
             throws CloudWebhookException {
         String urlString = webhook.url().toString();
         if (urlString.isBlank()) {
             throw new CloudWebhookException("openHAB Cloud webhook URL is blank");
         }
-        return new CloudWebhookLease(urlString, webhook.expiresAt(), generation, consumerLease);
+        long consumerLease = ++consumerLeaseSequence;
+        CloudWebhookLease lease = new CloudWebhookLease(urlString, webhook.expiresAt(), operation.generation,
+                consumerLease);
+        Map<Long, RequestOperation> consumerLeases = activeConsumers.get(consumerId);
+        if (consumerLeases == null) {
+            consumerLeases = new HashMap<>();
+            activeConsumers.put(consumerId, consumerLeases);
+        }
+        consumerLeases.put(consumerLease, operation);
+        operation.leases++;
+        logger.debug("RachioCloud: openHAB Cloud webhook URL is available for {} active bridge(s)",
+                activeConsumers.size());
+        return lease;
     }
 
     private Throwable unwrapCompletionException(Throwable error) {
@@ -331,11 +344,25 @@ public final class RachioCloudWebhookRegistry {
     record CloudWebhookLease(String url, Instant expiresAt, long generation, long consumerLease) {
     }
 
-    private record ActiveConsumerLease(long webhookGeneration, long consumerLease) {
-    }
+    private static final class RequestOperation {
+        private final WebhookService webhookService;
+        private final long providerEpoch;
+        private final long generation;
+        // Remove-by-path providers cannot fence a late operation on a reused path.
+        private final String localPath = SERVLET_CLOUD_WEBHOOK_PATH_PREFIX + UUID.randomUUID();
+        private final CompletableFuture<Webhook> result = new CompletableFuture<>();
+        private @Nullable Webhook webhook;
+        private int waiters;
+        private int leases;
+        private boolean requestSent;
+        private boolean retired;
+        private boolean cleanupRequested;
 
-    private record RemovalOperation(WebhookService webhookService, CompletableFuture<Boolean> previousRemoval,
-            CompletableFuture<Boolean> result) {
+        private RequestOperation(WebhookService webhookService, long providerEpoch, long generation) {
+            this.webhookService = webhookService;
+            this.providerEpoch = providerEpoch;
+            this.generation = generation;
+        }
     }
 
     static final class CloudWebhookException extends Exception {

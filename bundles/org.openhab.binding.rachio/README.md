@@ -119,7 +119,14 @@ Set `autoConfigureWebhooks=true` and either:
 
 The manual `publicWebhookUrl` must use HTTPS and must not contain URL userinfo credentials.
 Modern events require a valid `x-signature` over the received request body.
-Multiple Rachio bridges safely share the same local `/rachio/webhook` servlet path.
+Multiple Rachio bridges share a Cloud registration, with each registration generation using its own local path under `/rachio/webhook/cloud/`.
+This isolates late cleanup from replacement registrations and allows recovery even if an old Cloud request never completes.
+The base `/rachio/webhook` path remains available for manually configured callbacks.
+Failed Cloud URL requests and incomplete registrations using the Cloud URL are retried automatically, starting after 30 seconds.
+Repeated failures increase the retry delay up to five minutes.
+Polling continues during recovery, and retries stop when Cloud webhooks are disabled or the bridge is removed.
+Polling also clears a zone's run indication if a completion webhook is missed.
+A newer webhook received during a current-schedule refresh takes precedence over that response.
 
 When modern mode is active, stale legacy callbacks may still arrive; they are acknowledged and ignored.
 Otherwise, configuring `callbackUrl` keeps legacy NotificationService support available.

@@ -24,6 +24,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.OptionalDouble;
 import java.util.concurrent.Future;
+import java.util.function.BooleanSupplier;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -55,6 +56,7 @@ import org.slf4j.LoggerFactory;
  * sent to one of the zone channels.
  *
  * @author Markus Michels - Initial contribution
+ * @author Kovacs Istvan - Polling reconciliation of zone run feedback
  */
 
 @NonNullByDefault
@@ -388,19 +390,23 @@ public class RachioZoneHandler extends AbstractRachioThingHandler {
                 String state = event.getZoneRunStateForWebhookHandling();
                 if ("ZONE_STARTED".equals(state)) {
                     logger.debug("{}: {} STARTED watering ({}).", thingId, zoneLogSubject, event.timestamp);
-                    zoneRunState = OnOffType.ON;
-                    updateChannel(CHANNEL_ZONE_RUN, zoneRunState);
+                    synchronized (z) {
+                        zoneRunState = OnOffType.ON;
+                        updateChannel(CHANNEL_ZONE_RUN, zoneRunState);
+                    }
                 } else if ("ZONE_STOPPED".equals(state) || "ZONE_COMPLETED".equals(state)) {
                     logger.debug(
                             "{}: {} STOPPED watering (timestamp={}, current={}, duration={}sec/{}min, flowVolume={}).",
                             thingId, zoneLogSubject, event.timestamp, event.zoneCurrent, event.duration,
                             event.durationInMinutes, event.flowVolume);
-                    zoneRunState = OnOffType.OFF;
+                    synchronized (z) {
+                        zoneRunState = OnOffType.OFF;
+                        updateChannel(CHANNEL_ZONE_RUN, zoneRunState);
+                    }
                     long lastWateredDate = firstTimestampMillis(event.endTime, event.timestamp);
                     if (lastWateredDate >= 0) {
                         z.recordLastWateredDate(lastWateredDate);
                     }
-                    updateChannel(CHANNEL_ZONE_RUN, zoneRunState);
                 } else {
                     logger.debug("{}: Event for zone {}: {} (status={}, duration = {}sec)", thingId, zoneName,
                             event.summary, state, event.duration);
@@ -424,6 +430,22 @@ public class RachioZoneHandler extends AbstractRachioThingHandler {
         }
 
         return update;
+    }
+
+    void reconcileIdleRunState(RachioDevice expectedDevice, BooleanSupplier idleStillCurrent) {
+        RachioZone currentZone = zone;
+        long generation = getHandlerLifecycleGeneration();
+        if (currentZone == null || generation < 0) {
+            return;
+        }
+        synchronized (currentZone) {
+            if (isHandlerLifecycleCurrent(generation) && isSameInstance(dev, expectedDevice)
+                    && isSameInstance(zone, currentZone) && idleStillCurrent.getAsBoolean()) {
+                // Serialize the correction with zone webhook publication so a newer START always wins.
+                zoneRunState = OnOffType.OFF;
+                updateChannel(CHANNEL_ZONE_RUN, zoneRunState);
+            }
+        }
     }
 
     private String getZoneDisplayName(RachioEventGsonDTO event, RachioZone zone) {
