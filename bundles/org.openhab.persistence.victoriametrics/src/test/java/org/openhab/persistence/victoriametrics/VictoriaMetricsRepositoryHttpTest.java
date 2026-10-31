@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -22,6 +22,7 @@ import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -38,10 +39,12 @@ import okhttp3.mockwebserver.MockWebServer;
 
 /**
  * @author Franz - Initial contribution
+ * @author Michael Weger - Continuation of initial contribution
  */
+@NonNullByDefault
 public class VictoriaMetricsRepositoryHttpTest {
-    private MockWebServer mockWebServer;
-    private VictoriaMetricsRepository repository;
+    private @NonNullByDefault({}) MockWebServer mockWebServer;
+    private @NonNullByDefault({}) VictoriaMetricsRepository repository;
 
     @BeforeEach
     public void setup() throws IOException {

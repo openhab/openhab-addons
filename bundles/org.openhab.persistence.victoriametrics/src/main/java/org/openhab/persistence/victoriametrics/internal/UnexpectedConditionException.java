@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,10 +18,11 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * Throw to indicate an unexpected condition that should not have happened (a bug)
  *
  * @author Joan Pujol Espinar - Initial contribution
+ * @author Michael Weger - Continuation of initial contribution
  */
 @NonNullByDefault
 public class UnexpectedConditionException extends Exception {
-    private static final long serialVersionUID = 1128380327167959556L;
+    private static final long serialVersionUID = 1L;
 
     public UnexpectedConditionException(String message) {
         super(message);

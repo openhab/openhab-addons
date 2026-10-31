@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,12 +12,16 @@
  */
 package org.openhab.persistence.victoriametrics.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Utility class for converting camelCase strings to snake_case.
  * This is useful for formatting item names or metadata keys in a way that is compatible with VictoriaMetrics.
  *
  * @author Franz - Initial contribution
+ * @author Michael Weger - Continuation of initial contribution
  */
+@NonNullByDefault
 public class VictoriaMetricsCaseConvertUtils {
 
     /**

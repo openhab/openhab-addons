@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -49,7 +49,14 @@ import org.openhab.core.persistence.QueryablePersistenceService;
 import org.openhab.core.persistence.strategy.PersistenceStrategy;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
-import org.openhab.persistence.victoriametrics.internal.*;
+import org.openhab.persistence.victoriametrics.internal.VictoriaMetricsCaseConvertUtils;
+import org.openhab.persistence.victoriametrics.internal.VictoriaMetricsConfiguration;
+import org.openhab.persistence.victoriametrics.internal.VictoriaMetricsHistoricItem;
+import org.openhab.persistence.victoriametrics.internal.VictoriaMetricsMetadataService;
+import org.openhab.persistence.victoriametrics.internal.VictoriaMetricsPersistentItemInfo;
+import org.openhab.persistence.victoriametrics.internal.VictoriaMetricsPoint;
+import org.openhab.persistence.victoriametrics.internal.VictoriaMetricsRepository;
+import org.openhab.persistence.victoriametrics.internal.VictoriaMetricsStateConvertUtils;
 import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -66,6 +73,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Franz - Initial contribution
  * @author Joan Pujol Espinar - Original InfluxDB implementation
+ * @author Michael Weger - Continuation of initial contribution
  */
 @NonNullByDefault
 @Component(service = { PersistenceService.class,
