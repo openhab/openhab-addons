@@ -174,6 +174,55 @@
         </executions>
       </plugin>
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <version>3.2.0</version>
+        <executions>
+          <execution>
+            <!-- VirtualFileSystem fails on listed but missing files, so drop pip (excluded from the jar below) -->
+            <id>remove-pip-from-filelist</id>
+            <goals>
+              <goal>run</goal>
+            </goals>
+            <phase>process-resources</phase>
+            <configuration>
+              <target>
+                <property name="vfs" value="${project.build.directory}/classes/org.graalvm.python.vfs"/>
+                <copy file="${vfs}/fileslist.txt" overwrite="true" tofile="${vfs}/fileslist.txt.tmp">
+                  <filterchain>
+                    <linecontains negate="true">
+                      <contains value="/site-packages/pip/"/>
+                    </linecontains>
+                    <linecontains negate="true">
+                      <contains value="/site-packages/pip-"/>
+                    </linecontains>
+                    <linecontains negate="true">
+                      <contains value="/bin/pip"/>
+                    </linecontains>
+                    <linecontains negate="true">
+                      <contains value="/Scripts/pip"/>
+                    </linecontains>
+                  </filterchain>
+                </copy>
+                <move file="${vfs}/fileslist.txt.tmp" overwrite="true" tofile="${vfs}/fileslist.txt"/>
+              </target>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <configuration>
+          <!-- pip is only needed by graalpy-maven-plugin to install the packages at build time -->
+          <excludes>
+            <exclude>org.graalvm.python.vfs/venv/**/site-packages/pip/**</exclude>
+            <exclude>org.graalvm.python.vfs/venv/**/site-packages/pip-*.dist-info/**</exclude>
+            <exclude>org.graalvm.python.vfs/venv/*/pip*</exclude>
+          </excludes>
+        </configuration>
+      </plugin>
+      <plugin>
         <groupId>org.apache.karaf.tooling</groupId>
         <artifactId>karaf-maven-plugin</artifactId>
         <version>${karaf.version}</version>
