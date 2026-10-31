@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -24,6 +24,7 @@ import org.openhab.core.persistence.PersistenceItemInfo;
  *
  * @author Joan Pujol Espinar - Initial contribution
  * @author Franz - Initial VictoriaMetrics adaptation
+ * @author Michael Weger - Continuation of initial contribution
  */
 @NonNullByDefault
 public class VictoriaMetricsPersistentItemInfo implements PersistenceItemInfo {

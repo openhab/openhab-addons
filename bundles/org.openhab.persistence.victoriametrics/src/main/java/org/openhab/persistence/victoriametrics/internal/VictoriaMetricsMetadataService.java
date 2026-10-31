@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -27,6 +27,7 @@ import org.osgi.service.component.annotations.Reference;
  * Utility service for using item metadata in VictoriaMetrics
  *
  * @author Franz - Initial contribution
+ * @author Michael Weger - Continuation of initial contribution
  */
 @NonNullByDefault
 @Component(service = VictoriaMetricsMetadataService.class)

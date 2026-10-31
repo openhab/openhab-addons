@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,14 +14,17 @@ package org.openhab.persistence.victoriametrics;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.persistence.victoriametrics.internal.VictoriaMetricsCaseConvertUtils;
 
 /**
  * Unit tests for {@link VictoriaMetricsCaseConvertUtils}.
  *
- * @author Franz
+ * @author Franz - Initial contribution
+ * @author Michael Weger - Continuation of initial contribution
  */
+@NonNullByDefault
 public class VictoriaMetricsCaseConvertUtilsTest {
 
     @Test

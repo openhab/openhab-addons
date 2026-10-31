@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -25,6 +25,7 @@ import org.openhab.core.types.State;
  * Java bean used to return items queries results from VictoriaMetrics.
  *
  * @author Franz - Initial contribution
+ * @author Michael Weger - Continuation of initial contribution
  */
 @NonNullByDefault
 public class VictoriaMetricsHistoricItem implements HistoricItem {
