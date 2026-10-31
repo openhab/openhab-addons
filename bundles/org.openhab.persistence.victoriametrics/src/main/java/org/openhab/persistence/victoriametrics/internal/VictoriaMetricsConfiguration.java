@@ -25,7 +25,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Joan Pujol Espinar - Initial contribution
  * @author Franz - Initial VictoriaMetrics adaptation
- * @author Michael Weger - Continuation of initial contribution
+ * @author Michael Weger - Remove case conversion, validate metric prefix
  */
 @NonNullByDefault
 public class VictoriaMetricsConfiguration {
@@ -33,51 +33,55 @@ public class VictoriaMetricsConfiguration {
     public static final String TOKEN_PARAM = "token";
     public static final String USER_PARAM = "user";
     public static final String PASSWORD_PARAM = "password";
+    public static final String METRIC_PREFIX_PARAM = "metricPrefix";
     public static final String ADD_CATEGORY_TAG_PARAM = "addCategoryTag";
     public static final String ADD_LABEL_TAG_PARAM = "addLabelTag";
     public static final String ADD_TYPE_TAG_PARAM = "addTypeTag";
     public static final String ADD_UNIT_TAG_PARAM = "addUnitTag";
-    public static final String CAMEL_TO_SNAKE_CASE_PARAM = "camelToSnakeCase";
-    public static final String MEASUREMENT_PREFIX = "measurementPrefix";
     private final Logger logger = LoggerFactory.getLogger(VictoriaMetricsConfiguration.class);
     private final String url;
     private final String user;
     private final String password;
     private final String token;
-    private final String measurementPrefix;
+    private final String metricPrefix;
     private final boolean addCategoryTag;
     private final boolean addTypeTag;
     private final boolean addLabelTag;
     private final boolean addUnitTag;
-    private final boolean camelToSnakeCase;
 
     public VictoriaMetricsConfiguration(Map<String, Object> config) {
-        // Set VictoriaMetrics default port
         url = ConfigParser.valueAsOrElse(config.get(URL_PARAM), String.class, "http://127.0.0.1:8428");
-        user = ConfigParser.valueAsOrElse(config.get(USER_PARAM), String.class, "openhab");
+        user = ConfigParser.valueAsOrElse(config.get(USER_PARAM), String.class, "");
         password = ConfigParser.valueAsOrElse(config.get(PASSWORD_PARAM), String.class, "");
         token = ConfigParser.valueAsOrElse(config.get(TOKEN_PARAM), String.class, "");
+        metricPrefix = ConfigParser.valueAsOrElse(config.get(METRIC_PREFIX_PARAM), String.class, "");
         addCategoryTag = ConfigParser.valueAsOrElse(config.get(ADD_CATEGORY_TAG_PARAM), Boolean.class, false);
         addLabelTag = ConfigParser.valueAsOrElse(config.get(ADD_LABEL_TAG_PARAM), Boolean.class, false);
         addTypeTag = ConfigParser.valueAsOrElse(config.get(ADD_TYPE_TAG_PARAM), Boolean.class, false);
         addUnitTag = ConfigParser.valueAsOrElse(config.get(ADD_UNIT_TAG_PARAM), Boolean.class, false);
-        camelToSnakeCase = ConfigParser.valueAsOrElse(config.get(CAMEL_TO_SNAKE_CASE_PARAM), Boolean.class, true);
-        measurementPrefix = ConfigParser.valueAsOrElse(config.get(MEASUREMENT_PREFIX), String.class, "openhab_");
     }
 
     public boolean isValid() {
-        // VM OSS: allow blank credentials
-        boolean hasBasicCredentials = !user.isBlank();
-        boolean hasPassword = !password.isBlank();
-        boolean hasToken = !token.isBlank();
-        boolean hasValidCredentials = (!hasBasicCredentials || hasPassword) || hasToken;
-        if (hasValidCredentials) {
+        // VictoriaMetrics single-node does not require authentication, so credentials are optional
+        boolean hasUrl = !url.isBlank();
+        boolean hasValidCredentials = user.isBlank() || !password.isBlank();
+        boolean hasValidPrefix = metricPrefix.isEmpty()
+                || VictoriaMetricsMetricNameResolver.isValidMetricName(metricPrefix);
+
+        if (hasUrl && hasValidCredentials && hasValidPrefix) {
             return true;
         } else {
             String msg = "VictoriaMetrics configuration isn't valid. Addon won't work: ";
             StringJoiner reason = new StringJoiner(",");
-            // We have only this reason right now
-            reason.add("User defined but no password");
+            if (!hasUrl) {
+                reason.add("No URL defined");
+            }
+            if (!hasValidCredentials) {
+                reason.add("User defined but no password");
+            }
+            if (!hasValidPrefix) {
+                reason.add("Metric prefix is not a valid metric name");
+            }
             logger.warn("{} {}", msg, reason);
             return false;
         }
@@ -99,8 +103,8 @@ public class VictoriaMetricsConfiguration {
         return token;
     }
 
-    public String getMeasurementPrefix() {
-        return measurementPrefix;
+    public String getMetricPrefix() {
+        return metricPrefix;
     }
 
     public boolean isAddCategoryTag() {
@@ -119,16 +123,11 @@ public class VictoriaMetricsConfiguration {
         return addUnitTag;
     }
 
-    public boolean isCamelToSnakeCase() {
-        return camelToSnakeCase;
-    }
-
     @Override
     public String toString() {
-        return "VictoriaMetricsConfiguration{" + "url='" + url + "', " + "user='" + user + "', " + "password='"
-                + password.length() + " chars'" + " , " + "token='" + token.length() + " chars'" + ", "
-                + "measurementPrefix='" + measurementPrefix + ", " + "addCategoryTag=" + addCategoryTag + ", "
-                + "addTypeTag=" + addTypeTag + ", " + "addLabelTag=" + addLabelTag + ", " + "camelToSnakeCase="
-                + camelToSnakeCase + ", " + "addUnitTag=" + addUnitTag + '}';
+        return "VictoriaMetricsConfiguration{url='" + url + "', user='" + user + "', password='" + password.length()
+                + " chars', token='" + token.length() + " chars', metricPrefix='" + metricPrefix + "', addCategoryTag="
+                + addCategoryTag + ", addTypeTag=" + addTypeTag + ", addLabelTag=" + addLabelTag + ", addUnitTag="
+                + addUnitTag + '}';
     }
 }

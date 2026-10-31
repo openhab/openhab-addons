@@ -18,7 +18,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * Throw to indicate an unexpected condition that should not have happened (a bug)
  *
  * @author Joan Pujol Espinar - Initial contribution
- * @author Michael Weger - Continuation of initial contribution
  */
 @NonNullByDefault
 public class UnexpectedConditionException extends Exception {

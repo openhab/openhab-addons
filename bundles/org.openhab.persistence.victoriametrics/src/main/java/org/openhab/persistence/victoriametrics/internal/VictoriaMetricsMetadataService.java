@@ -15,6 +15,7 @@ package org.openhab.persistence.victoriametrics.internal;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.core.items.ItemUtil;
 import org.openhab.core.items.Metadata;
 import org.openhab.core.items.MetadataKey;
 import org.openhab.core.items.MetadataRegistry;
@@ -27,7 +28,7 @@ import org.osgi.service.component.annotations.Reference;
  * Utility service for using item metadata in VictoriaMetrics
  *
  * @author Franz - Initial contribution
- * @author Michael Weger - Continuation of initial contribution
+ * @author Michael Weger - Support aliases that are not valid item names
  */
 @NonNullByDefault
 @Component(service = VictoriaMetricsMetadataService.class)
@@ -59,10 +60,14 @@ public class VictoriaMetricsMetadataService {
     /**
      * Get an Optional of the metadata for an item
      *
-     * @param itemName the item name
+     * @param itemName the item name or alias
      * @return Optional with the metadata (may be empty)
      */
     public Optional<Metadata> getMetaData(String itemName) {
+        // aliases are free text, but metadata only exists for (valid) item names and MetadataKey rejects others
+        if (!ItemUtil.isValidItemName(itemName)) {
+            return Optional.empty();
+        }
         MetadataKey key = new MetadataKey(VictoriaMetricsPersistenceService.SERVICE_NAME, itemName);
         return Optional.ofNullable(metadataRegistry.get(key));
     }

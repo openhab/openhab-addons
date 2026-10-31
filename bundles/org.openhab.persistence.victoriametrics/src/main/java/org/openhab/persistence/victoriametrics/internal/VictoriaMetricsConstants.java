@@ -19,16 +19,20 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  *
  * @author Joan Pujol Espinar - Initial contribution
  * @author Franz - Initial VictoriaMetrics adaptation
- * @author Michael Weger - Continuation of initial contribution
+ * @author Michael Weger - Add VictoriaMetrics API constants
  */
 @NonNullByDefault
 public class VictoriaMetricsConstants {
+    public static final String LABEL_METRIC_NAME = "__name__";
     public static final String TAG_ITEM_NAME = "item";
     public static final String TAG_CATEGORY_NAME = "category";
     public static final String TAG_TYPE_NAME = "type";
     public static final String TAG_LABEL_NAME = "label";
     public static final String TAG_UNIT_NAME = "unit";
-    public static final int QUERY_MAX_POINTS = 1000;
-    public static final int QUERY_DEFAULT_STEP = 60; // seconds
-    public static final long CONNECTION_HEARTBEAT_INTERVAL = 60 * 1000; // 1 minute
+
+    public static final String PATH_HEALTH = "/health";
+    public static final String PATH_IMPORT = "/api/v1/import/prometheus";
+    public static final String PATH_EXPORT = "/api/v1/export";
+    public static final String PATH_QUERY = "/api/v1/query";
+    public static final String PATH_DELETE_SERIES = "/api/v1/admin/tsdb/delete_series";
 }

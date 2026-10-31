@@ -12,10 +12,11 @@
  */
 package org.openhab.persistence.victoriametrics.internal;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
 
 import org.eclipse.jdt.annotation.DefaultLocation;
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -25,13 +26,13 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  *
  * @author Joan Pujol Espinar - Initial contribution
  * @author Franz - Initial VictoriaMetrics adaptation
- * @author Michael Weger - Continuation of initial contribution
+ * @author Michael Weger - Fix timestamp unit, numeric values only
  */
 @NonNullByDefault({ DefaultLocation.PARAMETER })
 public class VictoriaMetricsPoint {
     private final String metricName;
     private final Instant time;
-    private final Object value;
+    private final Number value;
     private final Map<String, String> tags;
 
     private VictoriaMetricsPoint(Builder builder) {
@@ -49,7 +50,11 @@ public class VictoriaMetricsPoint {
         return metricName;
     }
 
-    public Object getValue() {
+    public Instant getTime() {
+        return time;
+    }
+
+    public Number getValue() {
         return value;
     }
 
@@ -60,8 +65,8 @@ public class VictoriaMetricsPoint {
     public static final class Builder {
         private final String metricName;
         private Instant time;
-        private Object value;
-        private final Map<String, String> tags = new HashMap<>();
+        private Number value;
+        private final Map<String, String> tags = new TreeMap<>();
 
         private Builder(String metricName) {
             this.metricName = metricName;
@@ -72,7 +77,7 @@ public class VictoriaMetricsPoint {
             return this;
         }
 
-        public Builder withValue(Object val) {
+        public Builder withValue(Number val) {
             value = val;
             return this;
         }
@@ -87,16 +92,14 @@ public class VictoriaMetricsPoint {
         }
     }
 
-    @Override
-    public String toString() {
-        return "VictoriaMetricsPoint{" + "metricName='" + metricName + "'" + ", time=" + time + ", value=" + value
-                + ", tags=" + tags + '}';
-    }
-
+    /**
+     * Format the point as a line of the Prometheus text exposition format, which uses milliseconds since epoch as
+     * timestamp.
+     *
+     * @return the formatted line, without line terminator
+     */
     public String toPrometheusFormat() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(metricName);
-        // Add tags if present
+        StringBuilder sb = new StringBuilder(metricName);
         if (!tags.isEmpty()) {
             sb.append('{');
             boolean first = true;
@@ -105,31 +108,28 @@ public class VictoriaMetricsPoint {
                     sb.append(',');
                 }
                 first = false;
-                sb.append(entry.getKey()).append("=\"").append(escapeLabelValue(entry.getValue())).append("\"");
+                sb.append(entry.getKey()).append("=\"").append(escapeLabelValue(entry.getValue())).append('"');
             }
             sb.append('}');
         }
-        sb.append(' ');
-        sb.append(formatPrometheusValue(value)); // see below
-        // Prometheus expects timestamp in **seconds** (as an integer)
-        sb.append(' ');
-        sb.append(time.getEpochSecond());
+        sb.append(' ').append(value instanceof BigDecimal decimal ? decimal.toPlainString() : value.toString());
+        sb.append(' ').append(time.toEpochMilli());
         return sb.toString();
     }
 
-    private String escapeLabelValue(String s) {
-        return s.replace("\\", "\\\\").replace("\"", "\\\"").replace("\n", "\\n");
+    /**
+     * Escape a label value as defined by the Prometheus text exposition format and PromQL string literals.
+     *
+     * @param value the label value
+     * @return the escaped value, without enclosing quotes
+     */
+    public static String escapeLabelValue(String value) {
+        return value.replace("\\", "\\\\").replace("\"", "\\\"").replace("\n", "\\n");
     }
 
-    private String formatPrometheusValue(Object val) {
-        if (val instanceof Number) {
-            return val.toString();
-        } else if (val instanceof Boolean) {
-            // Prometheus doesn't support bool natively, but treat as 1/0
-            return ((Boolean) val) ? "1" : "0";
-        } else {
-            // Strings are discouraged, but you could map them to 0 or NaN
-            return "NaN";
-        }
+    @Override
+    public String toString() {
+        return "VictoriaMetricsPoint{" + "metricName='" + metricName + '\'' + ", time=" + time + ", value=" + value
+                + ", tags=" + tags + '}';
     }
 }

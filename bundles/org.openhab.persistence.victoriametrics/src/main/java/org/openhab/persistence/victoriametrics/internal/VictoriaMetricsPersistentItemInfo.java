@@ -24,7 +24,6 @@ import org.openhab.core.persistence.PersistenceItemInfo;
  *
  * @author Joan Pujol Espinar - Initial contribution
  * @author Franz - Initial VictoriaMetrics adaptation
- * @author Michael Weger - Continuation of initial contribution
  */
 @NonNullByDefault
 public class VictoriaMetricsPersistentItemInfo implements PersistenceItemInfo {
@@ -50,12 +49,12 @@ public class VictoriaMetricsPersistentItemInfo implements PersistenceItemInfo {
     @Override
     @Nullable
     public Date getEarliest() {
-        return null; // TODO: Implement when available in VictoriaMetrics binding
+        return null;
     }
 
     @Override
     @Nullable
     public Date getLatest() {
-        return null; // TODO: Implement when available in VictoriaMetrics binding
+        return null;
     }
 }
