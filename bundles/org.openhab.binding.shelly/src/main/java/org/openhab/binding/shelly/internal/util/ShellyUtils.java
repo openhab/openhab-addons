@@ -240,6 +240,10 @@ public class ShellyUtils {
         return new StringType(value != null ? value : "");
     }
 
+    public static State toStringOrUndef(@Nullable String value) {
+        return value != null ? new StringType(value) : UnDefType.UNDEF;
+    }
+
     public static DecimalType getDecimal(@Nullable Double value) {
         return new DecimalType((value != null ? value : 0));
     }
