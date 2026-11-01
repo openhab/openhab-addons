@@ -246,12 +246,18 @@ public class SourceGenerator {
             return null;
         }
         logger.debug("Generating actions");
-        Set<? extends Class<?>> thingActionsClasses;
-        Collection<ServiceReference<ThingActions>> serviceReferences = null;
+        Set<Class<? extends ThingActions>> thingActionsClasses = new HashSet<>();
+        Collection<ServiceReference<ThingActions>> foundServiceReferences = new ArrayList<>();
         try {
-            serviceReferences = bundleContext.getServiceReferences(ThingActions.class, null);
-            thingActionsClasses = serviceReferences.stream().map(bundleContext::getService).map(Object::getClass)
-                    .collect(Collectors.toSet());
+            Collection<ServiceReference<ThingActions>> serviceReferences = bundleContext
+                    .getServiceReferences(ThingActions.class, null);
+            for (ServiceReference<ThingActions> serviceReference : serviceReferences) {
+                ThingActions service = bundleContext.getService(serviceReference);
+                if (service != null) { // compiler says it cannot be null, but Javadoc says so
+                    foundServiceReferences.add(serviceReference);
+                    thingActionsClasses.add(service.getClass());
+                }
+            }
         } catch (InvalidSyntaxException e) {
             logger.warn("Failed to get thing actions: {}", e.getMessage());
             return null;
@@ -261,9 +267,7 @@ public class SourceGenerator {
                     e.getMessage());
             return null;
         } finally {
-            if (serviceReferences != null) {
-                serviceReferences.forEach(bundleContext::ungetService);
-            }
+            foundServiceReferences.forEach(bundleContext::ungetService);
         }
 
         Collection<ActionType> actions = moduleTypeRegistry.getActions();
