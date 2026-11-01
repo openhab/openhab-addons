@@ -45,6 +45,15 @@ import org.slf4j.LoggerFactory;
 import com.daimler.mbcarkit.proto.VehicleEvents.Auxheatwarning;
 import com.daimler.mbcarkit.proto.VehicleEvents.AuxheatwarningsArrayAttribute;
 import com.daimler.mbcarkit.proto.VehicleEvents.BoolAttribute;
+import com.daimler.mbcarkit.proto.VehicleEvents.ChargeCouplerLockStatus;
+import com.daimler.mbcarkit.proto.VehicleEvents.ChargeCouplerStatus;
+import com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlapStatus;
+import com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlapsArrayAttribute;
+import com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlapsPositionState;
+import com.daimler.mbcarkit.proto.VehicleEvents.ChargeInletsArrayAttribute;
+import com.daimler.mbcarkit.proto.VehicleEvents.ChargeInletsEntry;
+import com.daimler.mbcarkit.proto.VehicleEvents.ChargeInletsEntry.ChargeInletsCouplerState;
+import com.daimler.mbcarkit.proto.VehicleEvents.ChargeInletsEntry.ChargeInletsLockState;
 import com.daimler.mbcarkit.proto.VehicleEvents.ChargeProgramsArrayAttribute;
 import com.daimler.mbcarkit.proto.VehicleEvents.ChargeProgramsValue;
 import com.daimler.mbcarkit.proto.VehicleEvents.ChargingPredictionSocObjectAttribute;
@@ -543,6 +552,15 @@ public class Mapper {
             putEnum(attributes, MB_KEY_CHARGE_FLAP_DC_STATUS, vsu.getChargeFlapDCStatus().getValueValue(),
                     vsu.getChargeFlapDCStatus().getMetadata());
         }
+        // Newer vehicles report flap and inlet as lists. They are translated into the values of the attributes above
+        // so the channels stay the same for all vehicles. The attributes above win if both are present.
+        if (vsu.hasChargeFlaps() && !vsu.hasChargeFlapDCStatus()) {
+            putChargeFlap(attributes, vsu.getChargeFlaps());
+        }
+        if (vsu.hasChargeInlets()) {
+            putChargeInlet(attributes, vsu.getChargeInlets(), !vsu.hasChargeCouplerACStatus(),
+                    !vsu.hasChargeCouplerDCLockStatus());
+        }
         if (vsu.hasChargingstatus()) {
             putEnum(attributes, MB_KEY_CHARGE_STATUS, vsu.getChargingstatus().getValueValue(),
                     vsu.getChargingstatus().getMetadata());
@@ -872,6 +890,89 @@ public class Mapper {
 
     private static void putDouble(Map<String, VehicleAttributeStatus> map, String key, DoubleAttribute a) {
         map.put(key, baseBuilder(a.getMetadata()).setDoubleValue(a.getValue()).build());
+    }
+
+    /**
+     * Stores the first charge flap of the list with the value of the legacy charge flap status.
+     * <p>
+     * The numbers of {@link ChargeFlapsPositionState} differ from {@link ChargeFlapStatus}, which the channel is
+     * based on, so the value must be translated.
+     */
+    private static void putChargeFlap(Map<String, VehicleAttributeStatus> map, ChargeFlapsArrayAttribute a) {
+        if (a.getValueCount() > 0) {
+            putEnum(map, MB_KEY_CHARGE_FLAP_DC_STATUS, toLegacyFlapStatus(a.getValue(0).getPositionState()),
+                    a.getMetadata());
+        }
+    }
+
+    /**
+     * Stores the first charge inlet of the list with the values of the legacy coupler and lock status.
+     * <p>
+     * The inlet doesn't tell whether it is used for AC or DC charging, so only the AC coupler is filled.
+     */
+    private static void putChargeInlet(Map<String, VehicleAttributeStatus> map, ChargeInletsArrayAttribute a,
+            boolean coupler, boolean lock) {
+        if (a.getValueCount() > 0) {
+            ChargeInletsEntry inlet = a.getValue(0);
+            if (coupler) {
+                putEnum(map, MB_KEY_CHARGE_COUPLER_AC_STATUS, toLegacyCouplerStatus(inlet.getCouplerState()),
+                        a.getMetadata());
+            }
+            if (lock) {
+                putEnum(map, MB_KEY_CHARGE_COUPLER_DC_LOCK_STATUS, toLegacyLockStatus(inlet.getLockState()),
+                        a.getMetadata());
+            }
+        }
+    }
+
+    /**
+     * @return number of {@link ChargeFlapStatus} or -1 if the state is unknown
+     */
+    private static int toLegacyFlapStatus(ChargeFlapsPositionState state) {
+        switch (state) {
+            case CHARGE_FLAPS_POSITION_STATE_OPEN:
+                return ChargeFlapStatus.CHARGE_FLAP_STATUS_OPEN_VALUE;
+            case CHARGE_FLAPS_POSITION_STATE_CLOSED:
+                return ChargeFlapStatus.CHARGE_FLAP_STATUS_CLOSED_VALUE;
+            case CHARGE_FLAPS_POSITION_STATE_FLAP_PRESSED:
+                return ChargeFlapStatus.CHARGE_FLAP_STATUS_FLAP_PRESSED_VALUE;
+            default:
+                return -1;
+        }
+    }
+
+    /**
+     * @return number of {@link ChargeCouplerStatus} or -1 if the state is unknown
+     */
+    private static int toLegacyCouplerStatus(ChargeInletsCouplerState state) {
+        switch (state) {
+            case CHARGE_INLETS_COUPLER_STATE_PLUGGED:
+                return ChargeCouplerStatus.CHARGE_COUPLER_STATUS_PLUGGED_BOTH_SIDES_VALUE;
+            case CHARGE_INLETS_COUPLER_STATE_VEHICLE_PLUGGED:
+                return ChargeCouplerStatus.CHARGE_COUPLER_STATUS_PLUGGED_VEHICLE_SIDE_VALUE;
+            case CHARGE_INLETS_COUPLER_STATE_VEHICLE_NOT_PLUGGED:
+                return ChargeCouplerStatus.CHARGE_COUPLER_STATUS_NOT_PLUGGED_VEHICLE_SIDE_VALUE;
+            case CHARGE_INLETS_COUPLER_STATE_DEFECT:
+                return ChargeCouplerStatus.CHARGE_COUPLER_STATUS_UNKNOWN_DUE_DEFECT_VALUE;
+            default:
+                return -1;
+        }
+    }
+
+    /**
+     * @return number of {@link ChargeCouplerLockStatus} or -1 if the state is unknown
+     */
+    private static int toLegacyLockStatus(ChargeInletsLockState state) {
+        switch (state) {
+            case CHARGE_INLETS_LOCK_STATE_LOCKED:
+                return ChargeCouplerLockStatus.CHARGE_COUPLER_LOCK_STATUS_LOCKED_VALUE;
+            case CHARGE_INLETS_LOCK_STATE_UNLOCKED:
+                return ChargeCouplerLockStatus.CHARGE_COUPLER_LOCK_STATUS_UNLOCKED_VALUE;
+            case CHARGE_INLETS_LOCK_STATE_LOCK_STATE_NOT_CLEAR:
+                return ChargeCouplerLockStatus.CHARGE_COUPLER_LOCK_STATUS_NOT_CLEAR_VALUE;
+            default:
+                return -1;
+        }
     }
 
     private static void putEnum(Map<String, VehicleAttributeStatus> map, String key, int enumValue,
