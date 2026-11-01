@@ -24,6 +24,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.OptionalDouble;
 import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -55,6 +57,7 @@ import org.slf4j.LoggerFactory;
  * sent to one of the zone channels.
  *
  * @author Markus Michels - Initial contribution
+ * @author Kovacs Istvan - Polling reconciliation of zone run feedback
  */
 
 @NonNullByDefault
@@ -80,7 +83,7 @@ public class RachioZoneHandler extends AbstractRachioThingHandler {
 
     @Override
     public void initialize() {
-        beginHandlerInitialization();
+        long generation = beginHandlerInitialization();
         cancelImageDownload();
         thingId = getThing().getUID().getAsString();
         String configuredZoneId = getThingConfigurationString(PROPERTY_ZONE_ID);
@@ -93,12 +96,19 @@ public class RachioZoneHandler extends AbstractRachioThingHandler {
                 Bridge currentBridge = bridge;
                 logger.debug("Zone parent bridge resolved: thingUid={}, bridgeUid={}, bridgeOnline={}",
                         getThing().getUID(), currentBridge != null ? currentBridge.getUID() : null, isBridgeOnline());
-                zone = handler != null ? handler.getZoneByThing(this.getThing()) : null;
-                RachioZone z = zone;
+                RachioZone z = handler != null ? handler.getZoneByThing(this.getThing()) : null;
+                RachioDevice resolvedDevice = z != null && handler != null ? handler.getDevForZone(z) : null;
+                if (!publishIfHandlerLifecycleCurrent(generation, () -> {
+                    zone = z;
+                    dev = resolvedDevice;
+                    if (z != null) {
+                        z.setThingHandler(this);
+                    }
+                })) {
+                    return;
+                }
                 if (z != null && handler != null) {
-                    z.setThingHandler(this);
-                    dev = handler.getDevForZone(z);
-                    RachioDevice d = dev;
+                    RachioDevice d = resolvedDevice;
                     if (d != null) {
                         thingId = d.name + "[" + z.zoneNumber + "]";
                         logger.debug(
@@ -291,33 +301,34 @@ public class RachioZoneHandler extends AbstractRachioThingHandler {
     }
 
     private boolean bindResolvedModel(RachioDevice currentDev, RachioZone currentZone, String reason) {
-        RachioDevice previousDev = dev;
-        RachioZone previousZone = zone;
-        boolean changed = !Objects.equals(previousDev, currentDev) || !Objects.equals(previousZone, currentZone)
-                || !Objects.equals(currentZone.getThingHandler(), this);
-
-        currentZone.setThingHandler(this);
-        dev = currentDev;
-        zone = currentZone;
-        thingId = currentDev.name + "[" + currentZone.zoneNumber + "]";
-        if (changed) {
-            logger.debug(
-                    "{}: Rebound zone Thing '{}' to current bridge model for zoneId='{}' after {}; direct webhook handling can use this handler",
-                    thingId, getThing().getUID(), currentZone.id, reason);
-        }
-        return true;
+        return publishIfHandlerLifecycleCurrent(getHandlerLifecycleGeneration(), () -> {
+            boolean changed = !Objects.equals(dev, currentDev) || !Objects.equals(zone, currentZone)
+                    || !Objects.equals(currentZone.getThingHandler(), this);
+            currentZone.setThingHandler(this);
+            dev = currentDev;
+            zone = currentZone;
+            thingId = currentDev.name + "[" + currentZone.zoneNumber + "]";
+            if (changed) {
+                logger.debug(
+                        "{}: Rebound zone Thing '{}' to current bridge model for zoneId='{}' after {}; direct webhook handling can use this handler",
+                        thingId, getThing().getUID(), currentZone.id, reason);
+            }
+        });
     }
 
     @Override
     public void onDeviceCatalogChanged() {
-        if (getHandlerLifecycleGeneration() < 0) {
+        long generation = getHandlerLifecycleGeneration();
+        if (generation < 0) {
             return;
         }
         RachioZone previousZone = zone;
         RachioDevice previousDevice = dev;
         if (!rebindToCurrentBridgeModel("cloud catalogue refresh")) {
-            zone = null;
-            dev = null;
+            publishIfHandlerLifecycleCurrent(generation, () -> {
+                zone = null;
+                dev = null;
+            });
             cancelImageDownload();
             updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, i18nText("thing-status.rachio.zone.not-in-poll"));
         } else if (!isSameInstance(previousZone, zone) || !isSameInstance(previousDevice, dev)) {
@@ -375,6 +386,7 @@ public class RachioZoneHandler extends AbstractRachioThingHandler {
 
     public boolean webhookEvent(RachioEventGsonDTO event) {
         boolean update = false;
+        long generation = getHandlerLifecycleGeneration();
         RachioZone z = zone;
         if (z == null) {
             return false;
@@ -388,19 +400,21 @@ public class RachioZoneHandler extends AbstractRachioThingHandler {
                 String state = event.getZoneRunStateForWebhookHandling();
                 if ("ZONE_STARTED".equals(state)) {
                     logger.debug("{}: {} STARTED watering ({}).", thingId, zoneLogSubject, event.timestamp);
-                    zoneRunState = OnOffType.ON;
-                    updateChannel(CHANNEL_ZONE_RUN, zoneRunState);
+                    synchronized (z) {
+                        publishZoneRunState(generation, z, OnOffType.ON);
+                    }
                 } else if ("ZONE_STOPPED".equals(state) || "ZONE_COMPLETED".equals(state)) {
                     logger.debug(
                             "{}: {} STOPPED watering (timestamp={}, current={}, duration={}sec/{}min, flowVolume={}).",
                             thingId, zoneLogSubject, event.timestamp, event.zoneCurrent, event.duration,
                             event.durationInMinutes, event.flowVolume);
-                    zoneRunState = OnOffType.OFF;
+                    synchronized (z) {
+                        publishZoneRunState(generation, z, OnOffType.OFF);
+                    }
                     long lastWateredDate = firstTimestampMillis(event.endTime, event.timestamp);
                     if (lastWateredDate >= 0) {
                         z.recordLastWateredDate(lastWateredDate);
                     }
-                    updateChannel(CHANNEL_ZONE_RUN, zoneRunState);
                 } else {
                     logger.debug("{}: Event for zone {}: {} (status={}, duration = {}sec)", thingId, zoneName,
                             event.summary, state, event.duration);
@@ -424,6 +438,45 @@ public class RachioZoneHandler extends AbstractRachioThingHandler {
         }
 
         return update;
+    }
+
+    private void publishZoneRunState(long generation, RachioZone expectedZone, OnOffType state) {
+        publishIfHandlerLifecycleCurrent(generation, () -> {
+            if (isSameInstance(zone, expectedZone)) {
+                zoneRunState = state;
+                updateChannel(CHANNEL_ZONE_RUN, state);
+            }
+        });
+    }
+
+    @Nullable
+    RunStateContext captureRunStateContext(RachioDevice expectedDevice, RachioZone expectedZone) {
+        AtomicReference<@Nullable RunStateContext> captured = new AtomicReference<>();
+        long generation = getHandlerLifecycleGeneration();
+        publishIfHandlerLifecycleCurrent(generation, () -> {
+            if (isSameInstance(dev, expectedDevice) && isSameInstance(zone, expectedZone)) {
+                captured.set(new RunStateContext(this, expectedDevice, expectedZone, generation));
+            }
+        });
+        return captured.get();
+    }
+
+    void reconcileIdleRunState(RunStateContext context, Consumer<Runnable> publishIfIdleCurrent) {
+        synchronized (context.zone()) {
+            publishIfHandlerLifecycleCurrent(context.generation(), () -> {
+                if (isSameInstance(context.handler(), this) && isSameInstance(dev, context.device())
+                        && isSameInstance(zone, context.zone())) {
+                    // Keep lifecycle/model binding and the controller response current through publication.
+                    publishIfIdleCurrent.accept(() -> {
+                        zoneRunState = OnOffType.OFF;
+                        updateChannel(CHANNEL_ZONE_RUN, zoneRunState);
+                    });
+                }
+            });
+        }
+    }
+
+    record RunStateContext(RachioZoneHandler handler, RachioDevice device, RachioZone zone, long generation) {
     }
 
     private String getZoneDisplayName(RachioEventGsonDTO event, RachioZone zone) {
