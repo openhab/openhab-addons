@@ -20,8 +20,18 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.security.KeyStore;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
+
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.AfterEach;
@@ -29,6 +39,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.io.TempDir;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -128,6 +139,65 @@ public class BrokerHandlerTest extends JavaTest {
                     () -> handler.assignClientCertificate(config, mockedConnection));
             assertTrue(e.getMessage().startsWith("Unable to load client keystore"));
         }
+    }
+
+    private static final char[] KEYSTORE_PASSWORD = "changeit".toCharArray();
+
+    /** Creates a keystore with a fresh self-signed certificate for localhost (not trusted by any CA). */
+    private Path createSelfSignedKeystore(Path dir) throws IOException, InterruptedException {
+        Path keystore = dir.resolve("selfsigned.p12");
+        String keytool = Path.of(System.getProperty("java.home"), "bin", "keytool").toString();
+        Process process = new ProcessBuilder(keytool, "-genkeypair", "-alias", "test", "-keyalg", "RSA", "-keysize",
+                "2048", "-validity", "30", "-dname", "CN=localhost", "-ext", "san=dns:localhost", "-storetype",
+                "PKCS12", "-keystore", keystore.toString(), "-storepass", new String(KEYSTORE_PASSWORD))
+                .redirectErrorStream(true).start();
+        process.getInputStream().readAllBytes();
+        assertThat(process.waitFor(), is(0));
+        return keystore;
+    }
+
+    private X509Certificate[] loadChain(Path keystore) throws Exception {
+        KeyStore keyStore = KeyStore.getInstance("PKCS12");
+        try (InputStream in = Files.newInputStream(keystore)) {
+            keyStore.load(in, KEYSTORE_PASSWORD);
+        }
+        return new X509Certificate[] { (X509Certificate) keyStore.getCertificate("test") };
+    }
+
+    private BrokerHandlerConfig realKeystoreConfig(Path keystore, boolean hostnameValidated, boolean certificatePin) {
+        BrokerHandlerConfig config = clientCertConfig(true, hostnameValidated, certificatePin, false);
+        config.clientKeystore = keystore.toString();
+        config.clientKeystorePassword = new String(KEYSTORE_PASSWORD);
+        return config;
+    }
+
+    @Test
+    public void clientCertificateWithHostnameValidationRejectsUntrustedServerCertificate(@TempDir Path dir)
+            throws Exception {
+        Path keystore = createSelfSignedKeystore(dir);
+        MqttBrokerConnection mockedConnection = mock(MqttBrokerConnection.class);
+
+        handler.assignClientCertificate(realKeystoreConfig(keystore, true, false), mockedConnection);
+
+        verify(mockedConnection).setKeyManagerFactory(any());
+        ArgumentCaptor<TrustManager[]> captor = ArgumentCaptor.forClass(TrustManager[].class);
+        verify(mockedConnection).setTrustManagers(captor.capture());
+        X509Certificate[] selfSignedChain = loadChain(keystore);
+        for (TrustManager trustManager : captor.getValue()) {
+            X509TrustManager x509TrustManager = (X509TrustManager) trustManager;
+            assertThrows(CertificateException.class, () -> x509TrustManager.checkServerTrusted(selfSignedChain, "RSA"));
+        }
+    }
+
+    @Test
+    public void clientCertificateWithPinningKeepsPinTrustManager(@TempDir Path dir) throws Exception {
+        Path keystore = createSelfSignedKeystore(dir);
+        MqttBrokerConnection mockedConnection = mock(MqttBrokerConnection.class);
+
+        handler.assignClientCertificate(realKeystoreConfig(keystore, true, true), mockedConnection);
+
+        verify(mockedConnection).setKeyManagerFactory(any());
+        verify(mockedConnection, never()).setTrustManagers(any());
     }
 
     @Test

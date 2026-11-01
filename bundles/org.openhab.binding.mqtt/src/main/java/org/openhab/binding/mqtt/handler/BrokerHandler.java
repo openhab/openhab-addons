@@ -27,6 +27,7 @@ import java.util.concurrent.TimeoutException;
 
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.TrustManager;
+import javax.net.ssl.TrustManagerFactory;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -211,7 +212,9 @@ public class BrokerHandler extends AbstractBrokerHandler implements PinnedCallba
      * <p>
      * A client certificate only authenticates the client. To avoid talking to an unverified broker, a client
      * certificate is refused if the broker is neither verified by hostname validation nor by certificate or public key
-     * pinning.
+     * pinning. If only hostname validation is enabled, the {@link PinTrustManager} (which does not validate the
+     * certificate chain without pins) is replaced by the platform's default trust managers, so that the broker
+     * certificate has to be issued by a trusted CA in addition to matching the hostname.
      *
      * @throws IllegalArgumentException if the keystore cannot be loaded or the broker would not be verified
      */
@@ -235,10 +238,25 @@ public class BrokerHandler extends AbstractBrokerHandler implements PinnedCallba
                     .getInstance(KeyManagerFactory.getDefaultAlgorithm());
             keyManagerFactory.init(keyStore, keystorePassword);
             connection.setKeyManagerFactory(keyManagerFactory);
+            if (!config.certificatepin && !config.publickeypin) {
+                // Hostname validation only: the PinTrustManager would accept any certificate chain, use CA validation
+                connection.setTrustManagers(createCaTrustManagers());
+            }
         } catch (GeneralSecurityException | IOException e) {
             throw new IllegalArgumentException(
                     "Unable to load client keystore '" + config.clientKeystore + "': " + e.getMessage(), e);
         }
+    }
+
+    /**
+     * Creates the platform's default trust managers, which validate the server certificate chain against the trusted
+     * CA certificates of the JVM.
+     */
+    protected TrustManager[] createCaTrustManagers() throws GeneralSecurityException {
+        TrustManagerFactory trustManagerFactory = TrustManagerFactory
+                .getInstance(TrustManagerFactory.getDefaultAlgorithm());
+        trustManagerFactory.init((@Nullable KeyStore) null);
+        return trustManagerFactory.getTrustManagers();
     }
 
     /**
