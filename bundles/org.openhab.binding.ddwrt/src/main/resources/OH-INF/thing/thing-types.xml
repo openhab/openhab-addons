@@ -296,7 +296,7 @@
 		<description>Whether the device or client is currently online</description>
 		<category>Status</category>
 		<tags>
-			<tag>Status</tag>
+			<point-tag>Status</point-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -307,8 +307,8 @@
 		<description>System boot time (updates only on reboot)</description>
 		<category>Time</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Timestamp</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -320,7 +320,7 @@
 		<label>Total Clients</label>
 		<description>Total number of clients connected across all devices</description>
 		<tags>
-			<tag>Measurement</tag>
+			<point-tag>Measurement</point-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -330,7 +330,7 @@
 		<label>Wireless Clients</label>
 		<description>Number of wireless clients connected across all devices</description>
 		<tags>
-			<tag>Measurement</tag>
+			<point-tag>Measurement</point-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -340,7 +340,7 @@
 		<label>Wired Clients</label>
 		<description>Number of wired clients connected across all devices</description>
 		<tags>
-			<tag>Measurement</tag>
+			<point-tag>Measurement</point-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -353,8 +353,8 @@
 		<description>1-minute load average</description>
 		<category>Number</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Level</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Level</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.2f"/>
 	</channel-type>
@@ -365,8 +365,8 @@
 		<description>CPU temperature in degrees Celsius</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -385,7 +385,7 @@
 		<description>Total bytes received on the WAN interface of the gateway device</description>
 		<category>Network</category>
 		<tags>
-			<tag>Measurement</tag>
+			<point-tag>Measurement</point-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -396,7 +396,7 @@
 		<description>Total bytes sent on the WAN interface of the gateway device</description>
 		<category>Network</category>
 		<tags>
-			<tag>Measurement</tag>
+			<point-tag>Measurement</point-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -407,7 +407,7 @@
 		<description>Total bytes received on the LAN or primary network interface</description>
 		<category>Network</category>
 		<tags>
-			<tag>Measurement</tag>
+			<point-tag>Measurement</point-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -418,7 +418,7 @@
 		<description>Total bytes sent on the LAN or primary network interface</description>
 		<category>Network</category>
 		<tags>
-			<tag>Measurement</tag>
+			<point-tag>Measurement</point-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -429,7 +429,7 @@
 		<description>Turn ON to reboot the device; automatically resets to OFF</description>
 		<category>Switch</category>
 		<tags>
-			<tag>Control</tag>
+			<point-tag>Control</point-tag>
 		</tags>
 	</channel-type>
 
@@ -438,7 +438,7 @@
 		<label>Wireless Clients</label>
 		<description>Number of wireless clients associated with radios on this device</description>
 		<tags>
-			<tag>Measurement</tag>
+			<point-tag>Measurement</point-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -448,7 +448,7 @@
 		<label>DHCP Leases</label>
 		<description>Number of active DHCP leases (only available on gateway devices)</description>
 		<tags>
-			<tag>Measurement</tag>
+			<point-tag>Measurement</point-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -458,7 +458,7 @@
 		<label>DHCP Remaining IPs</label>
 		<description>Available IP addresses in the DHCP pool (only available on gateway devices)</description>
 		<tags>
-			<tag>Measurement</tag>
+			<point-tag>Measurement</point-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -471,8 +471,8 @@
 		<description>Whether the radio or rule is enabled</description>
 		<category>Switch</category>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Enabled</tag>
+			<point-tag>Switch</point-tag>
+			<property-tag>Enabled</property-tag>
 		</tags>
 	</channel-type>
 
@@ -490,7 +490,7 @@
 		<description>Wireless channel number</description>
 		<category>Number</category>
 		<tags>
-			<tag>Status</tag>
+			<point-tag>Status</point-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -508,7 +508,7 @@
 		<description>Number of clients associated with this radio</description>
 		<category>Number</category>
 		<tags>
-			<tag>Measurement</tag>
+			<point-tag>Measurement</point-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -577,8 +577,8 @@
 		<description>Signal strength in dBm</description>
 		<category>QualityOfService</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>RSSI</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>RSSI</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%d dBm"/>
 	</channel-type>
@@ -589,8 +589,8 @@
 		<description>Signal-to-noise ratio in dB</description>
 		<category>QualityOfService</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>SignalStrength</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>SignalStrength</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%d dB"/>
 	</channel-type>
@@ -600,8 +600,8 @@
 		<label>RX Rate</label>
 		<description>Receive rate in Mbit/s</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Speed</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Speed</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f Mbit/s"/>
 	</channel-type>
@@ -611,8 +611,8 @@
 		<label>TX Rate</label>
 		<description>Transmit rate in Mbit/s</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Speed</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Speed</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f Mbit/s"/>
 	</channel-type>
@@ -623,8 +623,8 @@
 		<description>Timestamp when the client was last seen online</description>
 		<category>Time</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Timestamp</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -646,7 +646,7 @@
 		<description>Whether the syslog follower has an active SSH channel to the device</description>
 		<category>Status</category>
 		<tags>
-			<tag>Status</tag>
+			<point-tag>Status</point-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -658,7 +658,7 @@
 		<label>Last Warning Event</label>
 		<description>Last warning-level syslog line</description>
 		<tags>
-			<tag>Status</tag>
+			<point-tag>Status</point-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -668,7 +668,7 @@
 		<label>Last Error Event</label>
 		<description>Last error-level syslog line</description>
 		<tags>
-			<tag>Status</tag>
+			<point-tag>Status</point-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -678,7 +678,7 @@
 		<label>Warning Events</label>
 		<description>Number of warning-level syslog events since startup</description>
 		<tags>
-			<tag>Measurement</tag>
+			<point-tag>Measurement</point-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -688,7 +688,7 @@
 		<label>Error Events</label>
 		<description>Number of error-level syslog events since startup</description>
 		<tags>
-			<tag>Measurement</tag>
+			<point-tag>Measurement</point-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -698,7 +698,7 @@
 		<label>Last DHCP Event</label>
 		<description>Last DHCP lease, renewal, or release event</description>
 		<tags>
-			<tag>Status</tag>
+			<point-tag>Status</point-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -708,7 +708,7 @@
 		<label>Last Wireless Event</label>
 		<description>Last wireless association or deassociation event</description>
 		<tags>
-			<tag>Status</tag>
+			<point-tag>Status</point-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>

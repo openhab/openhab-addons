@@ -80,8 +80,8 @@
 		<description>The preferred Eco temperature level set on the heater or in the binding</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point-tag>Setpoint</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state min="7" max="30" step="1" pattern="%d %unit%" readOnly="false"/>
 	</channel-type>
@@ -92,8 +92,8 @@
 		<description>The preferred Comfort temperature level set on the heater or in the binding</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point-tag>Setpoint</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state min="7" max="30" step="1" pattern="%d %unit%" readOnly="false"/>
 	</channel-type>
@@ -104,8 +104,8 @@
 		<description>The current temperature from a device that supports reporting temperatures</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.3f %unit%" readOnly="true"/>
 	</channel-type>

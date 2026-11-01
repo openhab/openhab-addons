@@ -127,7 +127,7 @@ access to some portion of the premises to selected users.]]>
 		<label>Alarm</label>
 		<description>Active when there is ongoing alarm in the patition</description>
 		<tags>
-			<tag>Alarm</tag>
+			<point-tag>Alarm</point-tag>
 		</tags>
 	</channel-type>
 
@@ -142,8 +142,8 @@ access to some portion of the premises to selected users.]]>
 		<label>Fire Alarm</label>
 		<description>Active when there is ongoing fire alarm in the patition</description>
 		<tags>
-			<tag>Alarm</tag>
-			<tag>Smoke</tag>
+			<point-tag>Alarm</point-tag>
+			<property-tag>Smoke</property-tag>
 		</tags>
 	</channel-type>
 

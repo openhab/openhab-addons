@@ -797,7 +797,7 @@
 		<label>Data Received</label>
 		<description>Received LoRa datagram decoded as UTF-8 text</description>
 		<tags>
-			<tag>Status</tag>
+			<point-tag>Status</point-tag>
 		</tags>
 		<state readOnly="true">
 		</state>
@@ -808,7 +808,7 @@
 		<label>Raw Data Received</label>
 		<description>Received LoRa datagram as BASE64-encoded raw payload</description>
 		<tags>
-			<tag>Status</tag>
+			<point-tag>Status</point-tag>
 		</tags>
 		<state readOnly="true">
 		</state>
@@ -819,7 +819,7 @@
 		<label>Bytes Received</label>
 		<description>Number of bytes received from the LoRa network so far</description>
 		<tags>
-			<tag>Measurement</tag>
+			<point-tag>Measurement</point-tag>
 		</tags>
 		<state pattern="%.0f %unit%" readOnly="true">
 		</state>
@@ -830,7 +830,7 @@
 		<label>Data to Send</label>
 		<description>Send a UTF-8 text datagram to the LoRa network, the binding encodes it as BASE64</description>
 		<tags>
-			<tag>Control</tag>
+			<point-tag>Control</point-tag>
 		</tags>
 	</channel-type>
 
@@ -839,7 +839,7 @@
 		<label>Raw Data to Send</label>
 		<description>Use this channel to send a BASE64-encoded datagram to the LoRa network</description>
 		<tags>
-			<tag>Control</tag>
+			<point-tag>Control</point-tag>
 		</tags>
 	</channel-type>
 
@@ -848,7 +848,7 @@
 		<label>Bytes Sent</label>
 		<description>Number of bytes sent to the LoRa network so far</description>
 		<tags>
-			<tag>Measurement</tag>
+			<point-tag>Measurement</point-tag>
 		</tags>
 		<state pattern="%.0f %unit%" readOnly="true">
 		</state>
@@ -859,7 +859,7 @@
 		<label>TX Errors</label>
 		<description>Number of failed LoRa transmits</description>
 		<tags>
-			<tag>Measurement</tag>
+			<point-tag>Measurement</point-tag>
 		</tags>
 		<state readOnly="true">
 		</state>
@@ -871,8 +871,8 @@
 		<description>Transmission air time of the LoRa Add-On during the last 60 minutes</description>
 		<category>Time</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Duration</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Duration</property-tag>
 		</tags>
 		<state pattern="%.0f %unit%" readOnly="true">
 		</state>
@@ -884,8 +884,8 @@
 		<description>Received Signal Strength (RSSI) of the last received LoRa packet</description>
 		<category>QualityOfService</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>RSSI</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>RSSI</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%">
 		</state>
@@ -897,7 +897,7 @@
 		<description>LoRa Signal/Noise Ratio of the received packet</description>
 		<category>QualityOfService</category>
 		<tags>
-			<tag>Measurement</tag>
+			<point-tag>Measurement</point-tag>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%">
 		</state>

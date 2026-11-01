@@ -10,8 +10,8 @@
 		<description>Operation Status</description>
 		<category>Switch</category>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Power</tag>
+			<point-tag>Switch</point-tag>
+			<property-tag>Power</property-tag>
 		</tags>
 	</channel-type>
 
@@ -183,7 +183,7 @@
 		<description>Fault Status</description>
 		<category>Alarm</category>
 		<tags>
-			<tag>Alarm</tag>
+			<point-tag>Alarm</point-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -218,8 +218,8 @@
 		<description>Controls whether the unit is in power saving operation or not</description>
 		<category>Switch</category>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
+			<point-tag>Switch</point-tag>
+			<property-tag>Mode</property-tag>
 		</tags>
 	</channel-type>
 
@@ -236,8 +236,8 @@
 		<description>Air Flow Rate</description>
 		<category>Flow</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>Airflow</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Airflow</property-tag>
 		</tags>
 		<state>
 			<options>
@@ -259,8 +259,8 @@
 		<label>Automatic Air Flow Direction</label>
 		<description>The type of automatic control applied to the air flow direction, if any</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Airflow</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Airflow</property-tag>
 		</tags>
 		<state>
 			<options>
@@ -277,8 +277,8 @@
 		<label>Automatic Swing Of Air Flow</label>
 		<description>Automatic Swing Of Air Flow</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Airflow</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Airflow</property-tag>
 		</tags>
 		<state>
 			<options>
@@ -295,8 +295,8 @@
 		<label>Air Flow Direction Vertical</label>
 		<description>Air Flow Direction Vertical</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Airflow</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Airflow</property-tag>
 		</tags>
 		<state>
 			<options>
@@ -314,8 +314,8 @@
 		<label>Air Flow Direction Horizontal</label>
 		<description>Air Flow Direction Horizontal</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Airflow</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Airflow</property-tag>
 		</tags>
 		<state>
 			<options>
@@ -359,8 +359,8 @@
 		<label>Operation Mode</label>
 		<description>The current mode for the Home AC unit (heating, cooling, etc.)</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Mode</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Mode</property-tag>
 		</tags>
 		<state>
 			<options>
@@ -380,8 +380,8 @@
 		<description>Desired target room temperature</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point-tag>Setpoint</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state min="0" max="50" pattern="%d %unit%" readOnly="false"/>
 	</channel-type>
@@ -392,8 +392,8 @@
 		<description>Measured Room Temperature</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state min="-127" max="125" pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
@@ -404,8 +404,8 @@
 		<description>Measured Outdoor Temperature</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state min="-127" max="125" pattern="%d %unit%" readOnly="true"/>
 	</channel-type>

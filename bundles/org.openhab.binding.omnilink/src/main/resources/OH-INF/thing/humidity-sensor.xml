@@ -32,8 +32,8 @@
 		<description>The current relative humidity at this humidity sensor.</description>
 		<category>Humidity</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Humidity</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Humidity</property-tag>
 		</tags>
 		<state readOnly="true" min="0" max="100" pattern="%d %%"/>
 	</channel-type>
@@ -44,8 +44,8 @@
 		<description>The current low setpoint for this humidity sensor.</description>
 		<category>Humidity</category>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Humidity</tag>
+			<point-tag>Setpoint</point-tag>
+			<property-tag>Humidity</property-tag>
 		</tags>
 		<state min="0" max="100" pattern="%d %%"/>
 	</channel-type>
@@ -56,8 +56,8 @@
 		<description>The current high setpoint for this humidity sensor.</description>
 		<category>Humidity</category>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Humidity</tag>
+			<point-tag>Setpoint</point-tag>
+			<property-tag>Humidity</property-tag>
 		</tags>
 		<state min="0" max="100" pattern="%d %%"/>
 	</channel-type>

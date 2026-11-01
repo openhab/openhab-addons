@@ -704,8 +704,8 @@
 		<label>Power</label>
 		<description>Power ON/OFF the AVR</description>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Power</tag>
+			<point-tag>Switch</point-tag>
+			<property-tag>Power</property-tag>
 		</tags>
 	</channel-type>
 
@@ -715,8 +715,8 @@
 		<description>Increase/Decrease the volume (%) and mute/un-mute</description>
 		<category>SoundVolume</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>SoundVolume</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>SoundVolume</property-tag>
 		</tags>
 		<state min="0" max="100" pattern="%d %%"/>
 	</channel-type>
@@ -727,8 +727,8 @@
 		<description>Set the volume level (dB)</description>
 		<category>SoundVolume</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>SoundVolume</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>SoundVolume</property-tag>
 		</tags>
 		<state min="-80" max="12" step="0.5" pattern="%.1f dB"></state>
 	</channel-type>
@@ -738,8 +738,8 @@
 		<label>Mute</label>
 		<description>Enable/Disable Mute on the AVR</description>
 		<tags>
-			<tag>Switch</tag>
-			<tag>SoundVolume</tag>
+			<point-tag>Switch</point-tag>
+			<property-tag>SoundVolume</property-tag>
 		</tags>
 	</channel-type>
 
@@ -748,8 +748,8 @@
 		<label>Input Source</label>
 		<description>Select the input source of the AVR</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Channel</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Channel</property-tag>
 		</tags>
 		<state>
 			<options>
@@ -783,8 +783,8 @@
 		<label>Input Source</label>
 		<description>Select the input source of the AVR</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Channel</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Channel</property-tag>
 		</tags>
 		<state>
 			<options>
@@ -823,8 +823,8 @@
 		<label>Input Source</label>
 		<description>Select the input source of the AVR</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Channel</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Channel</property-tag>
 		</tags>
 		<state>
 			<options>
@@ -861,8 +861,8 @@
 		<label>Input Source</label>
 		<description>Select the input source of the AVR</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Channel</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Channel</property-tag>
 		</tags>
 		<state>
 			<options>
@@ -899,8 +899,8 @@
 		<label>Input Source</label>
 		<description>Select the input source of the AVR</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Channel</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Channel</property-tag>
 		</tags>
 		<state>
 			<options>
@@ -937,8 +937,8 @@
 		<label>Input Source</label>
 		<description>Select the input source of the AVR</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Channel</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Channel</property-tag>
 		</tags>
 		<state>
 			<options>
@@ -975,8 +975,8 @@
 		<label>Input Source</label>
 		<description>Select the input source of the AVR</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Channel</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Channel</property-tag>
 		</tags>
 		<state>
 			<options>
@@ -1013,8 +1013,8 @@
 		<label>Input Source</label>
 		<description>Select the input source of the AVR</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Channel</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Channel</property-tag>
 		</tags>
 		<state>
 			<options>
@@ -1051,8 +1051,8 @@
 		<label>Input Source</label>
 		<description>Select the input source of the AVR</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Channel</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Channel</property-tag>
 		</tags>
 		<state>
 			<options>
@@ -1080,8 +1080,8 @@
 		<label>Input Source</label>
 		<description>Select the input source of the AVR</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Channel</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Channel</property-tag>
 		</tags>
 		<state>
 			<options>
@@ -1109,8 +1109,8 @@
 		<label>Input Source</label>
 		<description>Select the input source of the AVR</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Channel</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Channel</property-tag>
 		</tags>
 		<state>
 			<options>
@@ -1139,8 +1139,8 @@
 		<label>Input Source</label>
 		<description>Select the input source of the AVR</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Channel</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Channel</property-tag>
 		</tags>
 		<state>
 			<options>
@@ -1169,8 +1169,8 @@
 		<label>Input Source</label>
 		<description>Select the input source of the AVR</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Channel</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Channel</property-tag>
 		</tags>
 		<state>
 			<options>
@@ -1199,8 +1199,8 @@
 		<label>Input Source</label>
 		<description>Select the input source of the AVR</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Channel</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Channel</property-tag>
 		</tags>
 		<state>
 			<options>
@@ -1229,8 +1229,8 @@
 		<label>Input Source</label>
 		<description>Select the input source of the AVR</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Channel</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Channel</property-tag>
 		</tags>
 		<state>
 			<options>
@@ -1259,8 +1259,8 @@
 		<label>Input Source</label>
 		<description>Select the input source of the AVR</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Channel</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Channel</property-tag>
 		</tags>
 		<state>
 			<options>
@@ -1286,8 +1286,8 @@
 		<label>Input Source</label>
 		<description>Select the input source of the AVR</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Channel</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Channel</property-tag>
 		</tags>
 		<state>
 			<options>
@@ -1318,8 +1318,8 @@
 		<label>Input Source</label>
 		<description>Select the input source of the AVR</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Channel</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Channel</property-tag>
 		</tags>
 		<state>
 			<options>
@@ -1351,8 +1351,8 @@
 		<label>Input Source</label>
 		<description>Select the input source of the AVR</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Channel</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Channel</property-tag>
 		</tags>
 		<state>
 			<options>
@@ -1384,8 +1384,8 @@
 		<label>Input Source</label>
 		<description>Select the input source of the AVR</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Channel</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Channel</property-tag>
 		</tags>
 		<state>
 			<options>
@@ -1417,8 +1417,8 @@
 		<label>Input Source</label>
 		<description>Select the input source of the AVR</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Channel</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Channel</property-tag>
 		</tags>
 		<state>
 			<options>
@@ -1450,8 +1450,8 @@
 		<label>Input Source</label>
 		<description>Select the input source of the AVR</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Channel</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Channel</property-tag>
 		</tags>
 		<state>
 			<options>
@@ -1490,8 +1490,8 @@
 		<label>Listening Mode</label>
 		<description>Set the listening mode</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Mode</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Mode</property-tag>
 		</tags>
 		<state>
 			<options>
@@ -1559,8 +1559,8 @@
 		<label>Playing Listening Mode</label>
 		<description>Display the effective listening mode</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Mode</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>

@@ -43,8 +43,8 @@
 		<label>Light Effect Theme</label>
 		<description>Name of active lightning effect</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Mode</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Mode</property-tag>
 		</tags>
 		<state readOnly="false"/>
 		<command>

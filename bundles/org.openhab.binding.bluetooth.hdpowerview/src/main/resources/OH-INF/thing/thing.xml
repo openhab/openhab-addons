@@ -60,8 +60,8 @@
 		<description>The vertical position of the shade</description>
 		<category>Blinds</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>Position</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Position</property-tag>
 		</tags>
 		<state min="0" max="100" step="1" pattern="%.1f %%"/>
 	</channel-type>
@@ -72,8 +72,8 @@
 		<description>The secondary vertical position (on top-down/bottom-up shades)</description>
 		<category>Blinds</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>Position</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Position</property-tag>
 		</tags>
 		<state min="0" max="100" step="1" pattern="%.1f %%"/>
 	</channel-type>
@@ -84,8 +84,8 @@
 		<description>The tilt of the slats in the shade</description>
 		<category>Blinds</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>Tilt</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Tilt</property-tag>
 		</tags>
 		<state min="0" max="100" step="1" pattern="%.1f %%"/>
 	</channel-type>

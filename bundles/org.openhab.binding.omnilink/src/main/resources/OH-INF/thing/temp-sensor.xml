@@ -32,8 +32,8 @@
 		<description>The current temperature at this temperature sensor.</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -44,8 +44,8 @@
 		<description>The current low setpoint of this temperature sensor.</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point-tag>Setpoint</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
@@ -56,8 +56,8 @@
 		<description>The current high setpoint of this temperature sensor.</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point-tag>Setpoint</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>

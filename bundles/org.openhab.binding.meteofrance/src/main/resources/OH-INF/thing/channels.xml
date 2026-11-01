@@ -10,8 +10,8 @@
 		<description>Rain intensity level</description>
 		<category>oh:meteofrance:intensity</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Rain</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Rain</property-tag>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -29,8 +29,8 @@
 		<description>Wind event alert level</description>
 		<category>oh:meteofrance:vent</category>
 		<tags>
-			<tag>Alarm</tag>
-			<tag>Wind</tag>
+			<point-tag>Alarm</point-tag>
+			<property-tag>Wind</property-tag>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -48,8 +48,8 @@
 		<description>Storm alert level</description>
 		<category>oh:meteofrance:orage</category>
 		<tags>
-			<tag>Alarm</tag>
-			<tag>Wind</tag>
+			<point-tag>Alarm</point-tag>
+			<property-tag>Wind</property-tag>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -67,8 +67,8 @@
 		<description>Flood alert level</description>
 		<category>oh:meteofrance:inondation</category>
 		<tags>
-			<tag>Alarm</tag>
-			<tag>Water</tag>
+			<point-tag>Alarm</point-tag>
+			<property-tag>Water</property-tag>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -86,8 +86,8 @@
 		<description>Snow event alert level</description>
 		<category>oh:meteofrance:neige</category>
 		<tags>
-			<tag>Alarm</tag>
-			<tag>Precipitation</tag>
+			<point-tag>Alarm</point-tag>
+			<property-tag>Precipitation</property-tag>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -105,8 +105,8 @@
 		<description>High temperature alert level</description>
 		<category>oh:meteofrance:canicule</category>
 		<tags>
-			<tag>Alarm</tag>
-			<tag>Temperature</tag>
+			<point-tag>Alarm</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -124,8 +124,8 @@
 		<description>Negative temperature alert level</description>
 		<category>oh:meteofrance:grand-froid</category>
 		<tags>
-			<tag>Alarm</tag>
-			<tag>Temperature</tag>
+			<point-tag>Alarm</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -143,7 +143,7 @@
 		<description>Avalanche alert level</description>
 		<category>oh:meteofrance:avalanches</category>
 		<tags>
-			<tag>Alarm</tag>
+			<point-tag>Alarm</point-tag>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -161,8 +161,8 @@
 		<description>Submersion wave alert level</description>
 		<category>oh:meteofrance:vague-submersion</category>
 		<tags>
-			<tag>Alarm</tag>
-			<tag>Water</tag>
+			<point-tag>Alarm</point-tag>
+			<property-tag>Water</property-tag>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -180,8 +180,8 @@
 		<description>Flood caused by rainfall alert level</description>
 		<category>oh:meteofrance:pluie-inondation</category>
 		<tags>
-			<tag>Alarm</tag>
-			<tag>Rain</tag>
+			<point-tag>Alarm</point-tag>
+			<property-tag>Rain</property-tag>
 		</tags>
 		<state readOnly="true">
 			<options>

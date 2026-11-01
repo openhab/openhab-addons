@@ -9,8 +9,8 @@
 		<label>Temperature</label>
 		<description>Current Zone Temperature</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -19,8 +19,8 @@
 		<label>Target Temperature</label>
 		<description>Target Zone Temperature</description>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point-tag>Setpoint</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
@@ -29,8 +29,8 @@
 		<label>Light Switch</label>
 		<description>Switching lights on and off</description>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Light</tag>
+			<point-tag>Switch</point-tag>
+			<property-tag>Light</property-tag>
 		</tags>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>

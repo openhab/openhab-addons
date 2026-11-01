@@ -8,16 +8,16 @@
 			<update-channel id="hasPendingCommand">
 				<type>melcloud:hasPendingCommand-channel</type>
 				<tags>
-					<tag>Status</tag>
-					<tag>Info</tag>
+					<point-tag>Status</point-tag>
+					<property-tag>Info</property-tag>
 				</tags>
 			</update-channel>
 
 			<update-channel id="offline">
 				<type>melcloud:offline-channel</type>
 				<tags>
-					<tag>Status</tag>
-					<tag>Info</tag>
+					<point-tag>Status</point-tag>
+					<property-tag>Info</property-tag>
 				</tags>
 			</update-channel>
 
@@ -25,8 +25,8 @@
 				<type>melcloud:roomTemperatureZone1-channel</type>
 				<label>Room Temperature Zone1</label>
 				<tags>
-					<tag>Measurement</tag>
-					<tag>Temperature</tag>
+					<point-tag>Measurement</point-tag>
+					<property-tag>Temperature</property-tag>
 				</tags>
 			</update-channel>
 
@@ -34,8 +34,8 @@
 				<type>melcloud:setTemperatureZone1-channel</type>
 				<label>Set Temperature Zone1</label>
 				<tags>
-					<tag>Setpoint</tag>
-					<tag>Temperature</tag>
+					<point-tag>Setpoint</point-tag>
+					<property-tag>Temperature</property-tag>
 				</tags>
 			</update-channel>
 
@@ -45,8 +45,8 @@
 				<label>Tank Target Degrees</label>
 				<description>Setpoint temperature of water</description>
 				<tags>
-					<tag>Setpoint</tag>
-					<tag>Temperature</tag>
+					<point-tag>Setpoint</point-tag>
+					<property-tag>Temperature</property-tag>
 				</tags>
 			</add-channel>
 
@@ -55,8 +55,8 @@
 				<label>Room Temperature Zone2</label>
 				<description>Room temperature for zone 2</description>
 				<tags>
-					<tag>Measurement</tag>
-					<tag>Temperature</tag>
+					<point-tag>Measurement</point-tag>
+					<property-tag>Temperature</property-tag>
 				</tags>
 			</add-channel>
 
@@ -65,8 +65,8 @@
 				<label>Set Temperature Zone2</label>
 				<description>Set temperature for zone 2</description>
 				<tags>
-					<tag>Setpoint</tag>
-					<tag>Temperature</tag>
+					<point-tag>Setpoint</point-tag>
+					<property-tag>Temperature</property-tag>
 				</tags>
 			</add-channel>
 
@@ -75,8 +75,8 @@
 				<label>Heat Flow Temp Zone1</label>
 				<description>Set temperature for water flow for zone 1</description>
 				<tags>
-					<tag>Setpoint</tag>
-					<tag>Temperature</tag>
+					<point-tag>Setpoint</point-tag>
+					<property-tag>Temperature</property-tag>
 				</tags>
 			</add-channel>
 
@@ -85,8 +85,8 @@
 				<label>Heat Flow Temp Zone2</label>
 				<description>Set temperature for water flow for zone 2</description>
 				<tags>
-					<tag>Setpoint</tag>
-					<tag>Temperature</tag>
+					<point-tag>Setpoint</point-tag>
+					<property-tag>Temperature</property-tag>
 				</tags>
 			</add-channel>
 
@@ -95,8 +95,8 @@
 				<label>Flow Mode Zone1</label>
 				<description>Set flow mode for zone 1</description>
 				<tags>
-					<tag>Setpoint</tag>
-					<tag>Mode</tag>
+					<point-tag>Setpoint</point-tag>
+					<property-tag>Mode</property-tag>
 				</tags>
 			</add-channel>
 
@@ -105,8 +105,8 @@
 				<label>Flow Mode Zone2</label>
 				<description>Set flow mode for zone 2</description>
 				<tags>
-					<tag>Setpoint</tag>
-					<tag>Mode</tag>
+					<point-tag>Setpoint</point-tag>
+					<property-tag>Mode</property-tag>
 				</tags>
 			</add-channel>
 
@@ -115,8 +115,8 @@
 				<label>Operation Mode</label>
 				<description>Operation mode</description>
 				<tags>
-					<tag>Status</tag>
-					<tag>Mode</tag>
+					<point-tag>Status</point-tag>
+					<property-tag>Mode</property-tag>
 				</tags>
 			</add-channel>
 

@@ -47,8 +47,8 @@
 		<label>@text/positionChannelLabel</label>
 		<description>@text/positionChannelDescription</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>OpenLevel</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>OpenLevel</property-tag>
 		</tags>
 	</channel-type>
 

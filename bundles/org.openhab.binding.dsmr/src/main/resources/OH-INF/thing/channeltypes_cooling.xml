@@ -9,8 +9,8 @@
 		<label>Cooling Delivery (GJ)</label>
 		<description>The total amount of cooling used.</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Energy</property-tag>
 		</tags>
 		<state pattern="%.3f GJ" readOnly="true"></state>
 	</channel-type>

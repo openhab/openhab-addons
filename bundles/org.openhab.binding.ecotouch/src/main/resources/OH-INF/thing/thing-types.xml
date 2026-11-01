@@ -319,8 +319,8 @@
 		<description>The current outside temperature</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -330,8 +330,8 @@
 		<description>The outside temperature averaged over one hour</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Calculation</tag>
-			<tag>Temperature</tag>
+			<point-tag>Calculation</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -341,8 +341,8 @@
 		<description>The outside temperature averaged over one day</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Calculation</tag>
-			<tag>Temperature</tag>
+			<point-tag>Calculation</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -351,8 +351,8 @@
 		<label>Temperature Source In</label>
 		<category>Temperature</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -361,8 +361,8 @@
 		<label>Temperature Source Out</label>
 		<category>Temperature</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -388,8 +388,8 @@
 		<label>Temperature Return Set</label>
 		<category>Temperature</category>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point-tag>Setpoint</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -398,8 +398,8 @@
 		<label>Temperature Return</label>
 		<category>Temperature</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -408,8 +408,8 @@
 		<label>Temperature Flow</label>
 		<category>Temperature</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -435,8 +435,8 @@
 		<label>Temperature Room</label>
 		<category>Temperature</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -445,8 +445,8 @@
 		<label>Avg. Room Temp 1h</label>
 		<category>Temperature</category>
 		<tags>
-			<tag>Calculation</tag>
-			<tag>Temperature</tag>
+			<point-tag>Calculation</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -455,8 +455,8 @@
 		<label>Temperature Water</label>
 		<category>Temperature</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -487,8 +487,8 @@
 		<item-type>Number:Power</item-type>
 		<label>Power Compressor</label>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Power</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -496,8 +496,8 @@
 		<item-type>Number:Power</item-type>
 		<label>Power Heating</label>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Power</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -505,8 +505,8 @@
 		<item-type>Number:Power</item-type>
 		<label>Power Cooling</label>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Power</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -526,8 +526,8 @@
 		<description>Temperature Heating Return</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -537,8 +537,8 @@
 		<description>Temperature Heating Setpoint</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point-tag>Setpoint</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -555,8 +555,8 @@
 		<description>Temperature Cooling Return</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -573,8 +573,8 @@
 		<description>Temperature Cooling Setpoint BMS</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point-tag>Setpoint</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state min="5" max="26" readOnly="false" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -591,8 +591,8 @@
 		<description>Temperature Water Setpoint BMS</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point-tag>Setpoint</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state min="28" max="70" readOnly="false" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -801,8 +801,8 @@
 		<item-type>Switch</item-type>
 		<label>Enable Heating</label>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
+			<point-tag>Switch</point-tag>
+			<property-tag>Mode</property-tag>
 		</tags>
 		<state readOnly="false"/>
 	</channel-type>
@@ -810,8 +810,8 @@
 		<item-type>Switch</item-type>
 		<label>Enable Cooling</label>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
+			<point-tag>Switch</point-tag>
+			<property-tag>Mode</property-tag>
 		</tags>
 		<state readOnly="false"/>
 	</channel-type>
@@ -820,8 +820,8 @@
 		<label>Enable Water</label>
 		<description>Enable Warm Water</description>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
+			<point-tag>Switch</point-tag>
+			<property-tag>Mode</property-tag>
 		</tags>
 		<state readOnly="false"/>
 	</channel-type>
@@ -875,7 +875,7 @@
 		<item-type>Switch</item-type>
 		<label>State Alarm</label>
 		<tags>
-			<tag>Alarm</tag>
+			<point-tag>Alarm</point-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -993,8 +993,8 @@
 		<label>Temperature Surrounding</label>
 		<category>Temperature</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -1003,8 +1003,8 @@
 		<label>Temperature Suction Air</label>
 		<category>Temperature</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -1013,8 +1013,8 @@
 		<label>Temperature Sump</label>
 		<category>Temperature</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -1045,8 +1045,8 @@
 		<description>EcoVent Temperature Exhaust Air</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -1056,8 +1056,8 @@
 		<description>EcoVent Temperature Exit Air</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -1067,8 +1067,8 @@
 		<description>EcoVent Temperature Outdoor Air</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -1078,8 +1078,8 @@
 		<description>EcoVent Temperature Supply Air</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -1087,8 +1087,8 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>EcoVent CO2</label>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>CO2</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>CO2</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -1096,8 +1096,8 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>EcoVent Air Moisture</label>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Moisture</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Moisture</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -1105,8 +1105,8 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>EcoVent Fan</label>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Speed</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Speed</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>

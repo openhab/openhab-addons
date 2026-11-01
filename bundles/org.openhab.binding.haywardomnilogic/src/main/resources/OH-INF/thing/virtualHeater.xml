@@ -31,8 +31,8 @@
 		<label>Current Setpoint</label>
 		<category>Temperature</category>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point-tag>Setpoint</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state min="65" max="90" step="1.0" pattern="%d %unit%" readOnly="false"/>
 	</channel-type>

@@ -81,8 +81,8 @@
 		<description>Date and time of last probe connection</description>
 		<category>Time</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Timestamp</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM"/>
 	</channel-type>
@@ -93,8 +93,8 @@
 		<description>Time since the start of cook in seconds. Default: 0</description>
 		<category>Time</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Duration</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Duration</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
@@ -105,8 +105,8 @@
 		<description>Remaining time in seconds or UNDEF when unknown</description>
 		<category>Time</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Duration</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Duration</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
@@ -117,8 +117,8 @@
 		<description>Date and time of estimated end time for current cook</description>
 		<category>Time</category>
 		<tags>
-			<tag>Forecast</tag>
-			<tag>Timestamp</tag>
+			<point-tag>Forecast</point-tag>
+			<property-tag>Timestamp</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM"/>
 	</channel-type>
@@ -129,8 +129,8 @@
 		<description>Internal temperature reading of MEATER Probe</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -142,8 +142,8 @@
 			internal</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -154,8 +154,8 @@
 		<description>Target temperature of current cook</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point-tag>Setpoint</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -166,8 +166,8 @@
 		<description>Peak temperature of current cook</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -192,8 +192,8 @@
 		<description>One of Not Started, Configured, Started, Ready For Resting, Resting, Slightly Underdone, Finished,
 			Slightly Overdone, OVERCOOK!</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Progress</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Progress</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>

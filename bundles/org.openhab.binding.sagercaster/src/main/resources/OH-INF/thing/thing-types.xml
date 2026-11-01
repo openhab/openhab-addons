@@ -126,8 +126,8 @@
 		<item-type>String</item-type>
 		<label>@text/windVelocity</label>
 		<tags>
-			<tag>Status</tag>
-			<tag>Speed</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Speed</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%s">
 			<options>
@@ -148,8 +148,8 @@
 		<label>@text/windDirectionLabel</label>
 		<category>Wind</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Wind</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Wind</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
@@ -189,8 +189,8 @@
 		<description>@text/timestampChannelDescription</description>
 		<category>Time</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Timestamp</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -209,8 +209,8 @@
 		<description>@text/rainQttyDescription</description>
 		<category>Rain</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Rain</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Rain</property-tag>
 		</tags>
 		<state pattern="%.2f %unit%"/>
 	</channel-type>
@@ -221,8 +221,8 @@
 		<description>@text/rainingDescription</description>
 		<category>Rain</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Rain</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Rain</property-tag>
 		</tags>
 	</channel-type>
 
@@ -232,8 +232,8 @@
 		<description>@text/beaufortDescription</description>
 		<category>Wind</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Wind</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Wind</property-tag>
 		</tags>
 		<state min="0" max="12" pattern="%d"/>
 	</channel-type>
@@ -243,7 +243,7 @@
 		<label>@text/reliabilityLabel</label>
 		<description>@text/reliabilityDescription</description>
 		<tags>
-			<tag>Calculation</tag>
+			<point-tag>Calculation</point-tag>
 		</tags>
 		<state min="0" step="0.1" max="100" pattern="%.0f %unit%" readOnly="true"/>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>

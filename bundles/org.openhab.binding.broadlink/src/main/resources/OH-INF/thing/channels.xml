@@ -47,8 +47,8 @@
 		<label>Night Light</label>
 		<category>Lightbulb</category>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Light</tag>
+			<point-tag>Switch</point-tag>
+			<property-tag>Light</property-tag>
 		</tags>
 	</channel-type>
 	<channel-type id="light">
@@ -56,8 +56,8 @@
 		<label>Illumination</label>
 		<description>Light conditions</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Illuminance</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Illuminance</property-tag>
 		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
@@ -66,8 +66,8 @@
 		<label>Background Noise</label>
 		<description>Noise conditions</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Noise</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Noise</property-tag>
 		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
@@ -76,8 +76,8 @@
 		<label>Air Quality</label>
 		<description>Air quality conditions</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>AirQuality</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>AirQuality</property-tag>
 		</tags>
 		<state readOnly="true"></state>
 	</channel-type>

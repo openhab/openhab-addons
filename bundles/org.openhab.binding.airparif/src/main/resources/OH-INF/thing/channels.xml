@@ -9,8 +9,8 @@
 		<label>Timestamp</label>
 		<category>time</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Timestamp</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -32,8 +32,8 @@
 		<item-type unitHint="µg/m³">Number:Density</item-type>
 		<label>Measure</label>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>AirQuality</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>AirQuality</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
@@ -43,8 +43,8 @@
 		<label>Air Quality</label>
 		<category>oh:airparif:aq</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>AirQuality</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>AirQuality</property-tag>
 		</tags>
 		<state readOnly="true">
 			<options>

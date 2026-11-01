@@ -146,8 +146,8 @@
 			update.
 		</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Gas</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Gas</property-tag>
 		</tags>
 	</channel-type>
 

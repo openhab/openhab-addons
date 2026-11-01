@@ -199,8 +199,8 @@
 		<label>Mode (ON=color, OFF=white)</label>
 		<description>ON: Device is in color mode, OFF: Device is in White Mode</description>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
+			<point-tag>Switch</point-tag>
+			<property-tag>Mode</property-tag>
 		</tags>
 	</channel-type>
 
@@ -209,8 +209,8 @@
 		<label>Full Color</label>
 		<description>Setting this channel sets the selected color to 255, all others to 0</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Color</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Color</property-tag>
 		</tags>
 		<state>
 			<options>
@@ -249,8 +249,8 @@
 		<label>White</label>
 		<description>White (0-100%), applies only in Color Mode</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>ColorTemperature</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>ColorTemperature</property-tag>
 		</tags>
 		<state min="0" max="100" step="1" readOnly="false"/>
 	</channel-type>
@@ -268,8 +268,8 @@
 		<description>Accepts Dimmer Item (0..100%) or Switch Item (ON/OFF)</description>
 		<category>Light</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>Brightness</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Brightness</property-tag>
 		</tags>
 		<state min="0" max="100" step="1" readOnly="false"/>
 	</channel-type>
@@ -331,8 +331,8 @@
 		<description>Accepts Color Item (HSB), Dimmer Item (0..100%) or Switch Item (ON/OFF)</description>
 		<category>ColorLight</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>Color</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Color</property-tag>
 		</tags>
 	</channel-type>
 

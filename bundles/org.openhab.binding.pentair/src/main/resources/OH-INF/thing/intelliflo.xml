@@ -61,8 +61,8 @@
 		<label>Power</label>
 		<description>Pump power</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Power</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>

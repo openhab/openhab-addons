@@ -198,8 +198,8 @@
 		<description>Increase or decrease the volume</description>
 		<category>SoundVolume</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>SoundVolume</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>SoundVolume</property-tag>
 		</tags>
 		<state pattern="%d" readOnly="false"/>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>

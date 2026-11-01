@@ -39,8 +39,8 @@
 		<label>Timestamp</label>
 		<description>Timestamp of the last meter reading.</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Timestamp</property-tag>
 		</tags>
 		<state readOnly="true"></state>
 	</channel-type>

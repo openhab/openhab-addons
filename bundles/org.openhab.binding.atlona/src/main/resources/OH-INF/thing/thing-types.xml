@@ -484,8 +484,8 @@
 		<label>Power</label>
 		<description>Whether the matrix is on or not</description>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Power</tag>
+			<point-tag>Switch</point-tag>
+			<property-tag>Power</property-tag>
 		</tags>
 	</channel-type>
 	<channel-type id="panellock" advanced="true">
@@ -530,8 +530,8 @@
 		<label>Mirror Enabled</label>
 		<description>Whether the HDMI port mirroring is enabled or not</description>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
+			<point-tag>Switch</point-tag>
+			<property-tag>Mode</property-tag>
 		</tags>
 	</channel-type>
 	<channel-type id="volume">
@@ -545,8 +545,8 @@
 		<label>Mute</label>
 		<description>Sets the output to muted or not</description>
 		<tags>
-			<tag>Switch</tag>
-			<tag>SoundVolume</tag>
+			<point-tag>Switch</point-tag>
+			<property-tag>SoundVolume</property-tag>
 		</tags>
 	</channel-type>
 </thing:thing-descriptions>

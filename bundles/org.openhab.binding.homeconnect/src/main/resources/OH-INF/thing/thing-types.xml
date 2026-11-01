@@ -369,8 +369,8 @@
 		<item-type>String</item-type>
 		<label>Program Actions</label>
 		<tags>
-			<tag>Control</tag>
-			<tag>Mode</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Mode</property-tag>
 		</tags>
 		<state>
 			<options>
@@ -385,8 +385,8 @@
 		<description>This status indicates whether the home appliance is currently manually controlled by the user operating
 			the home appliance, e.g. opening the door or pressing a button.</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Mode</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -395,8 +395,8 @@
 		<label>Drip Tray Full</label>
 		<description>Is coffee maker drip tray full?</description>
 		<tags>
-			<tag>Alarm</tag>
-			<tag>Level</tag>
+			<point-tag>Alarm</point-tag>
+			<property-tag>Level</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -405,8 +405,8 @@
 		<label>Water Tank Empty</label>
 		<description>Is coffee maker water tank empty?</description>
 		<tags>
-			<tag>Alarm</tag>
-			<tag>Level</tag>
+			<point-tag>Alarm</point-tag>
+			<property-tag>Level</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -415,8 +415,8 @@
 		<label>Bean Container Empty</label>
 		<description>Is coffee maker bean container is empty?</description>
 		<tags>
-			<tag>Alarm</tag>
-			<tag>Level</tag>
+			<point-tag>Alarm</point-tag>
+			<property-tag>Level</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -427,8 +427,8 @@
 			operating the home appliance locally (i.e. opening/closing door) or automatically by the home appliance (i.e. locking
 			the door).</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>OpenState</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>OpenState</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -437,8 +437,8 @@
 		<label>Operation State</label>
 		<description>This status describes the operation state of the home appliance.</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Mode</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -449,8 +449,8 @@
 			change (only disabling), or manually by the user changing the flag locally on the home appliance, or automatically
 			after a certain duration - usually 24 hours.</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Mode</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -459,8 +459,8 @@
 		<label>Remote Control Activation State</label>
 		<description>This status indicates whether the allowance for remote controlling is enabled.</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Mode</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -469,8 +469,8 @@
 		<label>Active Program</label>
 		<description>This status describes the active program of the home appliance.</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Mode</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -479,8 +479,8 @@
 		<label>Selected Program</label>
 		<description>This state describes the selected program of the home appliance.</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Mode</property-tag>
 		</tags>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
@@ -489,8 +489,8 @@
 		<label>Remaining Program Time</label>
 		<description>This status indicates the remaining program time of the home appliance.</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Duration</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Duration</property-tag>
 		</tags>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
@@ -499,7 +499,7 @@
 		<label>Progress State</label>
 		<description>This status describes the program progress of the home appliance.</description>
 		<tags>
-			<tag>Status</tag>
+			<point-tag>Status</point-tag>
 		</tags>
 		<state readOnly="true" min="0" max="100" pattern="%d %unit%"/>
 	</channel-type>
@@ -508,8 +508,8 @@
 		<label>Cavity Temperature</label>
 		<description>This status describes the oven cavity temperature of the home appliance.</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
@@ -518,8 +518,8 @@
 		<label>Elapsed Program Time</label>
 		<description>This status describes the elapsed program time of the home appliance.</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Duration</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Duration</property-tag>
 		</tags>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
@@ -528,8 +528,8 @@
 		<label>Setpoint Temperature</label>
 		<description>This status describes the intended cooking compartment temperature of the home appliance.</description>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point-tag>Setpoint</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.0f %unit%" step="1"/>
 	</channel-type>
@@ -538,8 +538,8 @@
 		<label>Selected Duration</label>
 		<description>This status describes the duration of the program of the home appliance.</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Duration</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Duration</property-tag>
 		</tags>
 		<state pattern="%d %unit%" step="60" min="60"/>
 	</channel-type>
@@ -548,8 +548,8 @@
 		<label>Washing Program Temperature</label>
 		<description>This status describes the temperature of the washing program of the home appliance.</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Temperature</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state>
 			<options>
@@ -576,8 +576,8 @@
 		<label>Spin Speed</label>
 		<description>This status defines the spin speed of a washer program of the home appliance.</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Speed</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Speed</property-tag>
 		</tags>
 		<state>
 			<options>
@@ -604,8 +604,8 @@
 		<description>This status defines the i-Dos dosing level of a washer program of the home appliance. (If appliance
 			supports i-Dos)</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Level</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Level</property-tag>
 		</tags>
 		<state>
 			<options>
@@ -623,8 +623,8 @@
 		<description>This status defines the i-Dos dosing level of a washer program of the home appliance. (If appliance
 			supports i-Dos)</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Level</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Level</property-tag>
 		</tags>
 		<state>
 			<options>
@@ -642,8 +642,8 @@
 		<description>This status indicates whether i-Dos 1 is activated for a washer program of the home appliance. (If
 			appliance supports i-Dos)</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Mode</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -653,8 +653,8 @@
 		<description>This status indicates whether i-Dos 2 is activated for a washer program of the home appliance. (If
 			appliance supports i-Dos)</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Mode</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -663,8 +663,8 @@
 		<label>Vario Perfect</label>
 		<description>This status defines the vario perfect mode of a washer program of the home appliance.</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Mode</property-tag>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -678,8 +678,8 @@
 		<label>Less Ironing</label>
 		<description>This status indicates whether less ironing is activated for a washer program of the home appliance.</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Mode</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -688,8 +688,8 @@
 		<label>Pre-Wash</label>
 		<description>This status indicates whether the pre-wash is activated for a washer program of the home appliance.</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Mode</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -698,8 +698,8 @@
 		<label>Rinse Plus</label>
 		<description>This status defines the number of additional rinses of a washer program of the home appliance.</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Mode</property-tag>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -716,8 +716,8 @@
 		<description>This status indicates whether the spin function is deactivated for a washer program of the home appliance
 			(washing will remain in the water after the last rinse cycle).</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Mode</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -726,8 +726,8 @@
 		<label>Soaking</label>
 		<description>This status indicates whether the soaking is activated for a washer program of the home appliance.</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Mode</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -736,7 +736,7 @@
 		<label>Load Recommendation</label>
 		<description>This channel indicates the maximum laundry load recommended for a program of the home appliance.</description>
 		<tags>
-			<tag>Status</tag>
+			<point-tag>Status</point-tag>
 		</tags>
 		<state readOnly="true" min="0" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -745,8 +745,8 @@
 		<label>Program Energy</label>
 		<description>This channel provides the estimated energy required in percentage for a program of the home appliance.</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Energy</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Energy</property-tag>
 		</tags>
 		<state readOnly="true" min="0" max="100" pattern="%d %unit%"/>
 	</channel-type>
@@ -755,8 +755,8 @@
 		<label>Program Water</label>
 		<description>This channel provides the estimated water required in percentage for a program of the home appliance.</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Water</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Water</property-tag>
 		</tags>
 		<state readOnly="true" min="0" max="100" pattern="%d %unit%"/>
 	</channel-type>
@@ -765,8 +765,8 @@
 		<label>Refrigerator Temperature</label>
 		<description>Target temperature of the refrigerator compartment (Range depends on appliance - common range 2 to 8°C).</description>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point-tag>Setpoint</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state step="1" pattern="%.0f %unit%"/>
 	</channel-type>
@@ -775,8 +775,8 @@
 		<label>Freezer temperature</label>
 		<description>Target temperature of the freezer compartment (Range depends on appliance - common range -16 to -24°C).</description>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point-tag>Setpoint</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state step="1" pattern="%.0f %unit%"/>
 	</channel-type>
@@ -786,8 +786,8 @@
 		<description>The setting has no impact on setpoint temperatures but will make the fridge compartment cool to the
 			lowest possible temperature until it is disabled manually by the customer or by the HA because of a timeout.</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Mode</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Mode</property-tag>
 		</tags>
 		<state readOnly="false"/>
 	</channel-type>
@@ -798,8 +798,8 @@
 			lowest possible temperature until it is disabled manually by the customer or by the home appliance because of a
 			timeout.</description>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
+			<point-tag>Switch</point-tag>
+			<property-tag>Mode</property-tag>
 		</tags>
 		<state readOnly="false"/>
 	</channel-type>
@@ -808,8 +808,8 @@
 		<label>Drying Target</label>
 		<description>Specifies the desired dryness setting.</description>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Moisture</tag>
+			<point-tag>Setpoint</point-tag>
+			<property-tag>Moisture</property-tag>
 		</tags>
 		<state readOnly="false"/>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
@@ -819,8 +819,8 @@
 		<label>Venting Level</label>
 		<description>Current venting level of the hood.</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Speed</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Speed</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -829,8 +829,8 @@
 		<label>Intensive level</label>
 		<description>Current venting intensive level of the hood.</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Speed</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Speed</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -839,8 +839,8 @@
 		<label>Program Actions</label>
 		<description>Start hood program.</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Speed</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Speed</property-tag>
 		</tags>
 	</channel-type>
 	<channel-type id="functional_light_state">
@@ -848,7 +848,7 @@
 		<label>Functional Light State</label>
 		<description>This setting describes the current functional light state of the home appliance.</description>
 		<tags>
-			<tag>Status</tag>
+			<point-tag>Status</point-tag>
 		</tags>
 	</channel-type>
 	<channel-type id="ambient_light_state">
@@ -856,7 +856,7 @@
 		<label>Ambient Light State</label>
 		<description>This setting describes the current ambient light state of the home appliance.</description>
 		<tags>
-			<tag>Status</tag>
+			<point-tag>Status</point-tag>
 		</tags>
 	</channel-type>
 	<channel-type id="ambient_light_color_state">
@@ -864,8 +864,8 @@
 		<label>Ambient Light Color</label>
 		<description>This setting describes the color state of the ambient light.</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Color</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Color</property-tag>
 		</tags>
 		<state readOnly="false">
 			<options>
@@ -978,8 +978,8 @@
 		<description>This setting describes the custom color state of the ambient light.</description>
 		<category>Colorpicker</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>Color</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Color</property-tag>
 		</tags>
 		<state readOnly="false"/>
 	</channel-type>
@@ -988,8 +988,8 @@
 		<label>Battery Level</label>
 		<description>This status describes the battery level of the home appliance.</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Energy</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Energy</property-tag>
 		</tags>
 		<state readOnly="true" min="0" max="100" pattern="%d %unit%"/>
 	</channel-type>
@@ -997,8 +997,8 @@
 		<item-type>String</item-type>
 		<label>Program Actions</label>
 		<tags>
-			<tag>Control</tag>
-			<tag>Mode</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Mode</property-tag>
 		</tags>
 		<state>
 			<options>
@@ -1015,8 +1015,8 @@
 		<label>Cleaning Mode</label>
 		<description>The cleaning mode of the cleaning robot.</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Mode</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Mode</property-tag>
 		</tags>
 		<state>
 			<options>
@@ -1036,8 +1036,8 @@
 		<label>Suction Power</label>
 		<description>The suction power of the cleaning robot (Spotless series only).</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Mode</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Mode</property-tag>
 		</tags>
 		<state>
 			<options>
@@ -1052,7 +1052,7 @@
 		<label>Water Flow Rate</label>
 		<description>The water flow rate of the cleaning robot (Spotless series only).</description>
 		<tags>
-			<tag>Status</tag>
+			<point-tag>Status</point-tag>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -1067,7 +1067,7 @@
 		<label>Cleaning Passes</label>
 		<description>The number of cleaning passes of the cleaning robot (Spotless series only).</description>
 		<tags>
-			<tag>Status</tag>
+			<point-tag>Status</point-tag>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -1081,7 +1081,7 @@
 		<label>Carpet Boost</label>
 		<description>Indicates whether the carpet boost mode of the cleaning robot is enabled (Spotless series only).</description>
 		<tags>
-			<tag>Status</tag>
+			<point-tag>Status</point-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -1090,7 +1090,7 @@
 		<label>Cleaning Speed</label>
 		<description>The cleaning speed of the cleaning robot (Spotless series only).</description>
 		<tags>
-			<tag>Status</tag>
+			<point-tag>Status</point-tag>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -1105,7 +1105,7 @@
 		<label>Mop Extension</label>
 		<description>Indicates whether the mop extension of the cleaning robot is enabled (Spotless series only).</description>
 		<tags>
-			<tag>Status</tag>
+			<point-tag>Status</point-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -1114,7 +1114,7 @@
 		<label>Current Map</label>
 		<description>The current map of the cleaning robot.</description>
 		<tags>
-			<tag>Control</tag>
+			<point-tag>Control</point-tag>
 		</tags>
 		<state>
 			<options>

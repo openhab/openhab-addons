@@ -49,8 +49,8 @@
 		<description>NTP refreshed date and time.</description>
 		<category>Time</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Timestamp</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -60,8 +60,8 @@
 		<description>NTP refreshed date and time.</description>
 		<category>Time</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Timestamp</property-tag>
 		</tags>
 		<state readOnly="true"/>
 		<config-description>

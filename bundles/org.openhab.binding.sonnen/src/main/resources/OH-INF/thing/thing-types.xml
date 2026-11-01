@@ -80,8 +80,8 @@
 		<label>Battery Charging</label>
 		<description>Indicates the actual current charging the Battery. Otherwise 0.</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Power</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
@@ -90,8 +90,8 @@
 		<label>Battery Discharging</label>
 		<description>Indicates the actual current discharging the Battery. Otherwise 0.</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Power</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
@@ -100,8 +100,8 @@
 		<label>Consumption</label>
 		<description>Indicates the actual consumption of the House.</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Power</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
@@ -110,8 +110,8 @@
 		<label>Grid Feed In</label>
 		<description>Indicates the actual current feeding to the Grid. Otherwise 0.</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Power</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
@@ -120,8 +120,8 @@
 		<label>Grid Consumption</label>
 		<description>Indicates the actual current consumption from the Grid. Otherwise 0.</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Power</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
@@ -130,8 +130,8 @@
 		<label>Solar Production</label>
 		<description>Indicates the actual production of the Solar system.</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Power</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
@@ -176,8 +176,8 @@
 		<label>kWh Imported Production</label>
 		<description>Indicates the imported kWh Production.</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Energy</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -186,8 +186,8 @@
 		<label>kWh Exported Production</label>
 		<description>Indicates the exported kWh Production.</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Energy</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -196,8 +196,8 @@
 		<label>kWh Imported Consumption</label>
 		<description>Indicates the imported kWh Consumption.</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Energy</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -206,8 +206,8 @@
 		<label>kWh Exported Consumption</label>
 		<description>Indicates the exported kWh Consumption.</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Energy</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -218,8 +218,8 @@
 			the local web interface from the sonnen battery must be activated and the given token must be entered in
 			authentication token field of the binding.</description>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
+			<point-tag>Switch</point-tag>
+			<property-tag>Mode</property-tag>
 		</tags>
 	</channel-type>
 	<channel-type id="batteryDischargingToGrid">
@@ -236,8 +236,8 @@
 			charging the battery. Assure that the battery is in automatic mode if you don't actively charge the battery.Changing
 			the operation mode is happening with the channel "Start/Stop Active Battery Charging from Grid"</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Mode</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -246,8 +246,8 @@
 		<label>Battery Charge Rate</label>
 		<description>Indicates the desired charge rate for the battery. (0 - 10000W)</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Power</property-tag>
 		</tags>
 		<state pattern="%.0f %unit%"/>
 	</channel-type>
@@ -256,8 +256,8 @@
 		<label>Battery Discharge Rate</label>
 		<description>Indicates the desired discharge rate for the battery. (0 - 10000W)</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Power</property-tag>
 		</tags>
 		<state pattern="%.0f %unit%"/>
 	</channel-type>

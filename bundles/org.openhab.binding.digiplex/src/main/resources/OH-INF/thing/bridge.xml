@@ -90,8 +90,8 @@
 		<label>Telephone Line</label>
 		<description>Reports telephone line failure</description>
 		<tags>
-			<tag>Alarm</tag>
-			<tag>Tampered</tag>
+			<point-tag>Alarm</point-tag>
+			<property-tag>Tampered</property-tag>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -107,8 +107,8 @@
 		<description>Reports power line failure</description>
 		<category>Energy</category>
 		<tags>
-			<tag>Alarm</tag>
-			<tag>Power</tag>
+			<point-tag>Alarm</point-tag>
+			<property-tag>Power</property-tag>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -124,8 +124,8 @@
 		<description>Reports battery failure</description>
 		<category>LowBattery</category>
 		<tags>
-			<tag>Alarm</tag>
-			<tag>LowBattery</tag>
+			<point-tag>Alarm</point-tag>
+			<property-tag>LowBattery</property-tag>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -166,8 +166,8 @@
 		<label>Bell Status</label>
 		<description>Reports if bell is absent</description>
 		<tags>
-			<tag>Alarm</tag>
-			<tag>Tampered</tag>
+			<point-tag>Alarm</point-tag>
+			<property-tag>Tampered</property-tag>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -196,8 +196,8 @@
 		<description>Reports if fire loop has been triggered</description>
 		<category>Smoke</category>
 		<tags>
-			<tag>Alarm</tag>
-			<tag>Smoke</tag>
+			<point-tag>Alarm</point-tag>
+			<property-tag>Smoke</property-tag>
 		</tags>
 		<state readOnly="true">
 			<options>

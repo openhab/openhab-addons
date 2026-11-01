@@ -76,8 +76,8 @@
 		<description>Shade position (0% = fully open, 100% = fully closed)</description>
 		<category>Blinds</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>OpenLevel</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>OpenLevel</property-tag>
 		</tags>
 		<state min="0" max="100" pattern="%d %%"/>
 	</channel-type>
@@ -88,8 +88,8 @@
 		<description>Battery level of the shade</description>
 		<category>Battery</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>StateOfCharge</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>StateOfCharge</property-tag>
 		</tags>
 		<state readOnly="true" min="0" max="100" pattern="%d %%"/>
 	</channel-type>

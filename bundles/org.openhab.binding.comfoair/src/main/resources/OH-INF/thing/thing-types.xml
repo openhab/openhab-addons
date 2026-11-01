@@ -413,8 +413,8 @@
 		<description>Activate (control through openHAB) or deactivate (return control to CCEase) binding control</description>
 		<category>Switch</category>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Enabled</tag>
+			<point-tag>Switch</point-tag>
+			<property-tag>Enabled</property-tag>
 		</tags>
 		<state readOnly="false"/>
 	</channel-type>
@@ -425,8 +425,8 @@
 		<description>Fan level</description>
 		<category>Number</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>Level</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Level</property-tag>
 		</tags>
 		<state readOnly="false">
 			<options>
@@ -444,8 +444,8 @@
 		<description>Target (comfort) temperature</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point-tag>Setpoint</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state min="12" max="28" step="0.5" pattern="%.1f %unit%" readOnly="false"/>
 	</channel-type>
@@ -456,7 +456,7 @@
 		<description>Filter full</description>
 		<category>Switch</category>
 		<tags>
-			<tag>Status</tag>
+			<point-tag>Status</point-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -555,8 +555,8 @@
 		<description>Current relative speed (%) of incoming fan</description>
 		<category>Number</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Level</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Level</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -567,8 +567,8 @@
 		<description>Current relative speed (%) of outgoing fan</description>
 		<category>Number</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Level</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Level</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -579,8 +579,8 @@
 		<description>Current rotational speed of incoming fan</description>
 		<category>Number</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Speed</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Speed</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.0f rpm"/>
 	</channel-type>
@@ -591,8 +591,8 @@
 		<description>Current rotational speed of outgoing fan</description>
 		<category>Number</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Speed</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Speed</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.0f rpm"/>
 	</channel-type>
@@ -603,8 +603,8 @@
 		<description>Intake air temperature (outside)</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -615,8 +615,8 @@
 		<description>Outlet air temperature (outside)</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -627,8 +627,8 @@
 		<description>Inlet air temperature (inside)</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -639,8 +639,8 @@
 		<description>Uptake air temperature (inside)</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -707,7 +707,7 @@
 		<description>State of the chimney control</description>
 		<category>Switch</category>
 		<tags>
-			<tag>Status</tag>
+			<point-tag>Status</point-tag>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -723,7 +723,7 @@
 		<description>State of the bypass (ON = open / OFF = closed)</description>
 		<category>Switch</category>
 		<tags>
-			<tag>Status</tag>
+			<point-tag>Status</point-tag>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -739,7 +739,7 @@
 		<description>State of the geothermal heat exchanger valve (ON = open / OFF = closed)</description>
 		<category>Switch</category>
 		<tags>
-			<tag>Status</tag>
+			<point-tag>Status</point-tag>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -755,7 +755,7 @@
 		<description>State of the heater</description>
 		<category>Switch</category>
 		<tags>
-			<tag>Status</tag>
+			<point-tag>Status</point-tag>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -771,7 +771,7 @@
 		<description>State of the 0-10V control</description>
 		<category>Switch</category>
 		<tags>
-			<tag>Status</tag>
+			<point-tag>Status</point-tag>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -787,7 +787,7 @@
 		<description>State of the antifrost control</description>
 		<category>Switch</category>
 		<tags>
-			<tag>Status</tag>
+			<point-tag>Status</point-tag>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -803,7 +803,7 @@
 		<description>State of the cookerhood control</description>
 		<category>Switch</category>
 		<tags>
-			<tag>Status</tag>
+			<point-tag>Status</point-tag>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -819,7 +819,7 @@
 		<description>State of the enthalpy module</description>
 		<category>Switch</category>
 		<tags>
-			<tag>Status</tag>
+			<point-tag>Status</point-tag>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -835,8 +835,8 @@
 		<description>Temperature of geothermal heat exchanger sensor</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -847,8 +847,8 @@
 		<description>Temperature of heater sensor</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -859,8 +859,8 @@
 		<description>Temperature of cookerhood sensor</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -871,8 +871,8 @@
 		<description>Uptime at level 0 (away)</description>
 		<category>Time</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Duration</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Duration</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.0f h"/>
 	</channel-type>
@@ -883,8 +883,8 @@
 		<description>Uptime at level 1</description>
 		<category>Time</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Duration</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Duration</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.0f h"/>
 	</channel-type>
@@ -895,8 +895,8 @@
 		<description>Uptime at level 2</description>
 		<category>Time</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Duration</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Duration</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.0f h"/>
 	</channel-type>
@@ -907,8 +907,8 @@
 		<description>Uptime at level 3</description>
 		<category>Time</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Duration</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Duration</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.0f h"/>
 	</channel-type>
@@ -919,8 +919,8 @@
 		<description>Uptime of antifrost</description>
 		<category>Time</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Duration</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Duration</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.0f h"/>
 	</channel-type>
@@ -931,8 +931,8 @@
 		<description>Uptime of preheater</description>
 		<category>Time</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Duration</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Duration</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.0f h"/>
 	</channel-type>
@@ -943,8 +943,8 @@
 		<description>Hours of bypass open</description>
 		<category>Time</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Duration</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Duration</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.0f h"/>
 	</channel-type>
@@ -955,8 +955,8 @@
 		<description>Uptime of the filter</description>
 		<category>Time</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Duration</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Duration</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.0f h"/>
 	</channel-type>
@@ -999,7 +999,7 @@
 		<description>State of the preheater valve</description>
 		<category>Number</category>
 		<tags>
-			<tag>Status</tag>
+			<point-tag>Status</point-tag>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -1016,7 +1016,7 @@
 		<description>State of the frost protection</description>
 		<category>Switch</category>
 		<tags>
-			<tag>Status</tag>
+			<point-tag>Status</point-tag>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -1032,7 +1032,7 @@
 		<description>State of the preheater</description>
 		<category>Switch</category>
 		<tags>
-			<tag>Status</tag>
+			<point-tag>Status</point-tag>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -1056,7 +1056,7 @@
 		<description>Frost safety setting</description>
 		<category>Number</category>
 		<tags>
-			<tag>Status</tag>
+			<point-tag>Status</point-tag>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -1074,8 +1074,8 @@
 		<description>Lower temperature of the geothermal heat exchanger</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point-tag>Setpoint</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state min="0" max="15" step="1" pattern="%.1f %unit%" readOnly="false"/>
 	</channel-type>
@@ -1086,8 +1086,8 @@
 		<description>Upper temperature of the geothermal heat exchanger</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point-tag>Setpoint</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state min="10" max="25" step="1" pattern="%.1f %unit%" readOnly="false"/>
 	</channel-type>
@@ -1122,8 +1122,8 @@
 		<description>Target temperature of the heater</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point-tag>Setpoint</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state min="5" max="40" step="1" pattern="%.1f %unit%" readOnly="false"/>
 	</channel-type>
@@ -1142,8 +1142,8 @@
 		<description>Temperature of the enthalpy sensor</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -1154,8 +1154,8 @@
 		<description>Humidity of the enthalpy sensor</description>
 		<category>Humidity</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Humidity</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Humidity</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -1412,8 +1412,8 @@
 		<description>End delay for cooker hood control (uses minutes internally)</description>
 		<category>Time</category>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Duration</tag>
+			<point-tag>Setpoint</point-tag>
+			<property-tag>Duration</property-tag>
 		</tags>
 		<state min="0" max="180" step="1" readOnly="false" pattern="%.0f min"/>
 	</channel-type>
@@ -1424,8 +1424,8 @@
 		<description>Start delay for bathroom switch (uses minutes internally)</description>
 		<category>Time</category>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Duration</tag>
+			<point-tag>Setpoint</point-tag>
+			<property-tag>Duration</property-tag>
 		</tags>
 		<state min="0" max="120" step="1" readOnly="false" pattern="%.0f min"/>
 	</channel-type>
@@ -1436,8 +1436,8 @@
 		<description>End delay for bathroom switch (uses minutes internally)</description>
 		<category>Time</category>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Duration</tag>
+			<point-tag>Setpoint</point-tag>
+			<property-tag>Duration</property-tag>
 		</tags>
 		<state min="0" max="120" step="1" readOnly="false" pattern="%.0f min"/>
 	</channel-type>
@@ -1448,8 +1448,8 @@
 		<description>End delay for L1 switch (uses minutes internally)</description>
 		<category>Time</category>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Duration</tag>
+			<point-tag>Setpoint</point-tag>
+			<property-tag>Duration</property-tag>
 		</tags>
 		<state min="0" max="120" step="1" readOnly="false" pattern="%.0f min"/>
 	</channel-type>
@@ -1460,8 +1460,8 @@
 		<description>Usage period until filter pollution message (uses full weeks internally)</description>
 		<category>Time</category>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Duration</tag>
+			<point-tag>Setpoint</point-tag>
+			<property-tag>Duration</property-tag>
 		</tags>
 		<state min="10" max="26" step="1" readOnly="false" pattern="%.0f week"/>
 	</channel-type>
@@ -1472,8 +1472,8 @@
 		<description>End delay (RF short actuation) for ventilation level 3 (uses minutes internally)</description>
 		<category>Time</category>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Duration</tag>
+			<point-tag>Setpoint</point-tag>
+			<property-tag>Duration</property-tag>
 		</tags>
 		<state min="1" max="20" step="1" readOnly="false" pattern="%.0f min"/>
 	</channel-type>
@@ -1492,8 +1492,8 @@
 		<description>Period for pulse ventilation (uses minutes internally)</description>
 		<category>Time</category>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Duration</tag>
+			<point-tag>Setpoint</point-tag>
+			<property-tag>Duration</property-tag>
 		</tags>
 		<state min="0" max="120" step="1" readOnly="false" pattern="%.0f min"/>
 	</channel-type>
@@ -1572,8 +1572,8 @@
 		<description>Voltage level of analog input</description>
 		<category>Number</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Voltage</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Voltage</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>

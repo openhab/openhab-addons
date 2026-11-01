@@ -9,8 +9,8 @@
 		<label>Actual Power</label>
 		<description>Power prediction for this moment</description>
 		<tags>
-			<tag>Forecast</tag>
-			<tag>Power</tag>
+			<point-tag>Forecast</point-tag>
+			<property-tag>Power</property-tag>
 		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
@@ -19,8 +19,8 @@
 		<label>Power Forecast</label>
 		<description>Power forecast for next hours/days</description>
 		<tags>
-			<tag>Forecast</tag>
-			<tag>Power</tag>
+			<point-tag>Forecast</point-tag>
+			<property-tag>Power</property-tag>
 		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
@@ -29,8 +29,8 @@
 		<label>Actual Energy Forecast</label>
 		<description>Today's forecast till now</description>
 		<tags>
-			<tag>Forecast</tag>
-			<tag>Energy</tag>
+			<point-tag>Forecast</point-tag>
+			<property-tag>Energy</property-tag>
 		</tags>
 		<state pattern="%.3f %unit%" readOnly="true"/>
 	</channel-type>
@@ -39,8 +39,8 @@
 		<label>Remaining Energy Forecast</label>
 		<description>Today's remaining forecast till sunset</description>
 		<tags>
-			<tag>Forecast</tag>
-			<tag>Energy</tag>
+			<point-tag>Forecast</point-tag>
+			<property-tag>Energy</property-tag>
 		</tags>
 		<state pattern="%.3f %unit%" readOnly="true"/>
 	</channel-type>
@@ -49,8 +49,8 @@
 		<label>Today's Energy Forecast</label>
 		<description>Today's total energy forecast</description>
 		<tags>
-			<tag>Forecast</tag>
-			<tag>Energy</tag>
+			<point-tag>Forecast</point-tag>
+			<property-tag>Energy</property-tag>
 		</tags>
 		<state pattern="%.3f %unit%" readOnly="true"/>
 	</channel-type>
@@ -59,8 +59,8 @@
 		<label>Energy Forecast</label>
 		<description>Energy forecast for next hours/days</description>
 		<tags>
-			<tag>Forecast</tag>
-			<tag>Energy</tag>
+			<point-tag>Forecast</point-tag>
+			<property-tag>Energy</property-tag>
 		</tags>
 		<state pattern="%.3f %unit%" readOnly="true"/>
 	</channel-type>
@@ -80,8 +80,8 @@
 		<label>Latest Update</label>
 		<description>Date and time of the latest forecast update</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Timestamp</property-tag>
 		</tags>
 	</channel-type>
 </thing:thing-descriptions>

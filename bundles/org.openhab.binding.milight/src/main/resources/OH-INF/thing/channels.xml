@@ -9,8 +9,8 @@
 		<label>Night Mode</label>
 		<description>Switch to night mode, a very dimmed brightness mode</description>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
+			<point-tag>Switch</point-tag>
+			<property-tag>Mode</property-tag>
 		</tags>
 		<state>
 			<options>
@@ -24,8 +24,8 @@
 		<label>White Mode</label>
 		<description>Switch to white mode, which basically sets the saturation to 0 (turns off the color LEDs).</description>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
+			<point-tag>Switch</point-tag>
+			<property-tag>Mode</property-tag>
 		</tags>
 		<state>
 			<options>
@@ -53,8 +53,8 @@
 			or bind to a Switch for turning the LED on or off.</description>
 		<category>ColorLight</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>Color</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Color</property-tag>
 		</tags>
 	</channel-type>
 
@@ -64,8 +64,8 @@
 		<description>The brightness can be set in 16 steps for RGBW/White LEDs and in 64 steps for RGBWW LEDs.</description>
 		<category>Light</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>Brightness</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Brightness</property-tag>
 		</tags>
 		<state min="0" max="100" step="1" pattern="%d"></state>
 	</channel-type>
@@ -84,8 +84,8 @@
 			RGBWW supports 64 steps.</description>
 		<category>Light</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>ColorTemperature</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>ColorTemperature</property-tag>
 		</tags>
 		<state min="0" max="100" step="1" pattern="%d"></state>
 	</channel-type>
@@ -95,8 +95,8 @@
 		<label>Animation Speed</label>
 		<description>The speed of some animations can be increased or decreased</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Speed</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Speed</property-tag>
 		</tags>
 	</channel-type>
 
@@ -114,8 +114,8 @@
 		<description>Animation mode of your LED. RGBWW LEDs support 9 animation modes.</description>
 		<category>Light</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>Mode</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Mode</property-tag>
 		</tags>
 		<state>
 			<options>

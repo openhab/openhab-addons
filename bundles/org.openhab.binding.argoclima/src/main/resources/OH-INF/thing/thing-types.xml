@@ -317,8 +317,8 @@
 		<label>Mode</label>
 		<category>Climate</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>Mode</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Mode</property-tag>
 		</tags>
 		<state readOnly="false">
 			<options>
@@ -336,8 +336,8 @@
 		<description>The device's target temperature</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point-tag>Setpoint</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state min="10" max="36" step="0.5" pattern="%.1f %unit%" readOnly="false"/>
 	</channel-type>
@@ -347,8 +347,8 @@
 		<label>Actual Temperature</label>
 		<category>Temperature</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -358,8 +358,8 @@
 		<label>Fan Speed</label>
 		<category>Fan</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>Speed</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Speed</property-tag>
 		</tags>
 		<state readOnly="false">
 			<options>
@@ -425,9 +425,10 @@
 		<!-- Argo remote supports a delay param in range of 0:10...19:50 (in 10-minute increments)
 			Note we're not using %unit% here, as default time unit is seconds... which won't be too readable here
 		-->
+		<!-- using Level instead of Duration semantic property, as it renders better Main UI widget by default -->
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Level</tag> <!-- using Level instead of Duration semantic property, as it renders better Main UI widget by default -->
+			<point-tag>Setpoint</point-tag>
+			<property-tag>Level</property-tag>
 		</tags>
 		<state readOnly="false" min="10" max="1190" step="10.0" pattern="%.0f min"/>
 	</channel-type>
@@ -439,8 +440,8 @@
 		<label>Extended Mode</label>
 		<category>Heating</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>Mode</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Mode</property-tag>
 		</tags>
 		<state readOnly="false">
 			<options>
@@ -458,8 +459,8 @@
 		<label>Airflow Direction</label>
 		<category>Flow</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>Airflow</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Airflow</property-tag>
 		</tags>
 		<state readOnly="false">
 			<options>

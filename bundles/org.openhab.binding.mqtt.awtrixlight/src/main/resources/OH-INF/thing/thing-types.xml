@@ -132,8 +132,8 @@
 		<description>Brightness in lux</description>
 		<category>sun</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Light</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Light</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
@@ -144,8 +144,8 @@
 		<description>Let the clock set brightness automatically based on internal brightness sensor readings</description>
 		<category>screen</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>Light</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Light</property-tag>
 		</tags>
 	</channel-type>
 
@@ -155,8 +155,8 @@
 		<description>Screen brightness in percent</description>
 		<category>screen</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>Light</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Light</property-tag>
 		</tags>
 		<state pattern="%.0f %unit%"></state>
 	</channel-type>
@@ -167,8 +167,8 @@
 		<description>RSSI value of WiFi signal</description>
 		<category>qualityofservice</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>RSSI</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>RSSI</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"></state>
 	</channel-type>
@@ -179,8 +179,8 @@
 		<description>Indicator state</description>
 		<category>switch</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>Power</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Power</property-tag>
 		</tags>
 	</channel-type>
 
@@ -209,8 +209,8 @@
 		<description>Color to display text and charts on the screen</description>
 		<category>colorpicker</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>Color</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Color</property-tag>
 		</tags>
 	</channel-type>
 
@@ -227,8 +227,8 @@
 		<description>Color for display background</description>
 		<category>colorpicker</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>Color</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Color</property-tag>
 		</tags>
 	</channel-type>
 
@@ -238,8 +238,8 @@
 		<description>Color text as gradient from Main Color to Gradient Color</description>
 		<category>colorpicker</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>Color</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Color</property-tag>
 		</tags>
 	</channel-type>
 
@@ -249,8 +249,8 @@
 		<description>How long the app should be displayed</description>
 		<category>time</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>Duration</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Duration</property-tag>
 		</tags>
 		<state pattern="%.0f %unit%" readOnly="false"/>
 	</channel-type>
@@ -291,8 +291,8 @@
 		<description>Changes the color scheme of the effect settings</description>
 		<category>colorpicker</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>Color</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Color</property-tag>
 		</tags>
 		<state>
 			<options>
@@ -366,8 +366,8 @@
 		<description>Blink text in specified time interval</description>
 		<category>text</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>Duration</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Duration</property-tag>
 		</tags>
 		<state step="0.1" pattern="%.1f s" readOnly="false"/>
 	</channel-type>
@@ -378,8 +378,8 @@
 		<description>Fade text in specified interval</description>
 		<category>text</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>Duration</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Duration</property-tag>
 		</tags>
 		<state step="0.1" pattern="%.1f s" readOnly="false"/>
 	</channel-type>
@@ -390,8 +390,8 @@
 		<description>Fades the text color in rainbow colors</description>
 		<category>text</category>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Color</tag>
+			<point-tag>Switch</point-tag>
+			<property-tag>Color</property-tag>
 		</tags>
 	</channel-type>
 
@@ -436,8 +436,8 @@
 		<description>Remove the app if there was no update within specified seconds</description>
 		<category>time</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>Duration</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Duration</property-tag>
 		</tags>
 	</channel-type>
 
@@ -447,8 +447,8 @@
 		<description>Delete the app or mark as stale after lifetime</description>
 		<category>screen</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Mode</property-tag>
 		</tags>
 		<state>
 			<options>
@@ -478,8 +478,8 @@
 		<description>Overlay effect (overridden by global clock overlay)</description>
 		<category>screen</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Mode</property-tag>
 		</tags>
 		<state>
 			<options>
@@ -508,8 +508,8 @@
 		<description>Color of progress bar</description>
 		<category>colorpicker</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>Color</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Color</property-tag>
 		</tags>
 	</channel-type>
 
@@ -519,8 +519,8 @@
 		<description>Color of progress bar background</description>
 		<category>colorpicker</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>Color</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Color</property-tag>
 		</tags>
 	</channel-type>
 
@@ -529,8 +529,8 @@
 		<label>Scroll Speed</label>
 		<description>Speed of text scrolling as percentage of default speed</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Speed</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Speed</property-tag>
 		</tags>
 		<state pattern="%.0f %unit%"></state>
 	</channel-type>

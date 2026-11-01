@@ -181,8 +181,8 @@
 		<description>Temperature measured by thermostat</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -193,8 +193,8 @@
 		<description>Setpoint temperature of thermostat</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point-tag>Setpoint</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state min="0" max="100" step="0.5" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -205,8 +205,8 @@
 		<description>Thermostat mode</description>
 		<category>Number</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>Mode</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Mode</property-tag>
 		</tags>
 		<state>
 			<options>
@@ -225,8 +225,8 @@
 		<description>CO2 value for Qbus</description>
 		<category>CO2</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>CO2</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>CO2</property-tag>
 		</tags>
 	</channel-type>
 
@@ -236,8 +236,8 @@
 		<description>Rollershutter control for Qbus</description>
 		<category>Blinds</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>OpenLevel</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>OpenLevel</property-tag>
 		</tags>
 	</channel-type>
 
@@ -247,8 +247,8 @@
 		<description>Slatcontrol for Qbus</description>
 		<category>Blinds</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>Tilt</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Tilt</property-tag>
 		</tags>
 	</channel-type>
 

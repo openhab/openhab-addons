@@ -189,8 +189,8 @@
 		<description>Vehicle door lock status</description>
 		<category>Lock</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>LockState</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>LockState</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -200,7 +200,7 @@
 		<label>Engine Running</label>
 		<description>Engine running status</description>
 		<tags>
-			<tag>Status</tag>
+			<point-tag>Status</point-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -211,8 +211,8 @@
 		<description>12V battery state of charge</description>
 		<category>BatteryLevel</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Energy</property-tag>
 		</tags>
 		<state pattern="%.0f %%" readOnly="true"/>
 	</channel-type>
@@ -223,8 +223,8 @@
 		<description>Door open/closed state</description>
 		<category>Door</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>OpenState</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>OpenState</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -234,8 +234,8 @@
 		<label>Trunk</label>
 		<description>Trunk open/closed state</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>OpenState</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>OpenState</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -245,8 +245,8 @@
 		<label>Hood</label>
 		<description>Hood open/closed state</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>OpenState</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>OpenState</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -257,8 +257,8 @@
 		<description>Window open/closed state</description>
 		<category>Window</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>OpenState</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>OpenState</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -269,8 +269,8 @@
 		<description>Climate control active state</description>
 		<category>Climate</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Heating</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Heating</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -281,8 +281,8 @@
 		<description>Air temperature setpoint</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Temperature</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
@@ -292,8 +292,8 @@
 		<label>Defrost</label>
 		<description>Defrost on/off status</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Enabled</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Enabled</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -304,8 +304,8 @@
 		<description>Seat heater level (0-3)</description>
 		<category>Heating</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Heating</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Heating</property-tag>
 		</tags>
 		<state min="0" max="3" step="1" pattern="%.0f" readOnly="true"/>
 	</channel-type>
@@ -316,8 +316,8 @@
 		<description>Heater on/off status</description>
 		<category>Heating</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Heating</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Heating</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -328,8 +328,8 @@
 		<description>Time of last vehicle data update</description>
 		<category>Time</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Timestamp</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -340,7 +340,7 @@
 		<description>Estimated driving range</description>
 		<category>Car</category>
 		<tags>
-			<tag>Forecast</tag>
+			<point-tag>Forecast</point-tag>
 		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
@@ -351,8 +351,8 @@
 		<description>Fuel tank level</description>
 		<category>Oil</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Level</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Level</property-tag>
 		</tags>
 		<state pattern="%.0f %%" readOnly="true"/>
 	</channel-type>
@@ -363,8 +363,8 @@
 		<description>EV battery state of charge</description>
 		<category>Battery</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Level</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Level</property-tag>
 		</tags>
 		<state pattern="%.0f %%" readOnly="true"/>
 	</channel-type>
@@ -375,8 +375,8 @@
 		<description>EV charging status</description>
 		<category>Battery</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Info</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -387,7 +387,7 @@
 		<description>Whether the charge cable is plugged</description>
 		<category>Battery</category>
 		<tags>
-			<tag>Status</tag>
+			<point-tag>Status</point-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -398,8 +398,8 @@
 		<description>Target charge limit on DC</description>
 		<category>Battery</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Energy</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Energy</property-tag>
 		</tags>
 		<state pattern="%.0f %%" readOnly="false" min="50" max="100" step="10"/>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
@@ -410,8 +410,8 @@
 		<description>Target charge limit on AC</description>
 		<category>Battery</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Energy</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Energy</property-tag>
 		</tags>
 		<state pattern="%.0f %%" readOnly="false" min="50" max="100" step="10"/>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
@@ -423,8 +423,8 @@
 		<description>Estimated time to fully charged with current charger</description>
 		<category>Time</category>
 		<tags>
-			<tag>Forecast</tag>
-			<tag>Duration</tag>
+			<point-tag>Forecast</point-tag>
+			<property-tag>Duration</property-tag>
 		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
@@ -434,8 +434,8 @@
 		<description>Estimated time to fully charged with Level 3 charger</description>
 		<category>Time</category>
 		<tags>
-			<tag>Forecast</tag>
-			<tag>Duration</tag>
+			<point-tag>Forecast</point-tag>
+			<property-tag>Duration</property-tag>
 		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
@@ -445,8 +445,8 @@
 		<description>Estimated time to fully charged with Level 1 charger</description>
 		<category>Time</category>
 		<tags>
-			<tag>Forecast</tag>
-			<tag>Duration</tag>
+			<point-tag>Forecast</point-tag>
+			<property-tag>Duration</property-tag>
 		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
@@ -456,8 +456,8 @@
 		<description>Estimated time to fully charged with Level 2 charger</description>
 		<category>Time</category>
 		<tags>
-			<tag>Forecast</tag>
-			<tag>Duration</tag>
+			<point-tag>Forecast</point-tag>
+			<property-tag>Duration</property-tag>
 		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
@@ -468,7 +468,7 @@
 		<description>Vehicle odometer reading</description>
 		<category>Car</category>
 		<tags>
-			<tag>Measurement</tag>
+			<point-tag>Measurement</point-tag>
 		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
@@ -479,7 +479,7 @@
 		<description>Warning indicator</description>
 		<category>Alarm</category>
 		<tags>
-			<tag>Switch</tag>
+			<point-tag>Switch</point-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -489,7 +489,7 @@
 		<description>Low fuel level indicator</description>
 		<category>Alarm</category>
 		<tags>
-			<tag>Switch</tag>
+			<point-tag>Switch</point-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>

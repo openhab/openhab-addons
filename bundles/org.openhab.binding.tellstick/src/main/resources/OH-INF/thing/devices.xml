@@ -91,8 +91,8 @@
 		<label>Dimmer Value</label>
 		<description>The channel to control the dimmer</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Brightness</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Brightness</property-tag>
 		</tags>
 	</channel-type>
 
@@ -102,8 +102,8 @@
 		<description>Turns the power on or off</description>
 		<category>Switch</category>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Power</tag>
+			<point-tag>Switch</point-tag>
+			<property-tag>Power</property-tag>
 		</tags>
 	</channel-type>
 

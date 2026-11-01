@@ -234,8 +234,8 @@
 		<description>Turn off this unit for a specified number of seconds.</description>
 		<category>Switch</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>Power</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Power</property-tag>
 		</tags>
 		<state min="1" max="99"/>
 	</channel-type>
@@ -254,8 +254,8 @@
 		<description>Turn off this unit for a specified number of minutes.</description>
 		<category>Switch</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>Power</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Power</property-tag>
 		</tags>
 		<state min="1" max="99"/>
 	</channel-type>
@@ -274,8 +274,8 @@
 		<description>Turn off this unit for a specified number of hours.</description>
 		<category>Switch</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>Power</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Power</property-tag>
 		</tags>
 		<state min="1" max="18"/>
 	</channel-type>

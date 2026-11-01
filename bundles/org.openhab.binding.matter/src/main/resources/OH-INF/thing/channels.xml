@@ -11,8 +11,8 @@
 			to provide power to the Node</description>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Energy</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%d %%"/>
 	</channel-type>
@@ -24,8 +24,8 @@
 			required</description>
 		<category>Energy</category>
 		<tags>
-			<tag>Alarm</tag>
-			<tag>LowBattery</tag>
+			<point-tag>Alarm</point-tag>
+			<property-tag>LowBattery</property-tag>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -45,8 +45,8 @@
 		</description>
 		<category>ColorLight</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>Color</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Color</property-tag>
 		</tags>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
@@ -57,8 +57,8 @@
 		<description>Sets the color temperature of the light</description>
 		<category>ColorLight</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>ColorTemperature</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>ColorTemperature</property-tag>
 		</tags>
 		<state pattern="%.0f %%" min="0" max="100"/>
 	</channel-type>
@@ -69,8 +69,8 @@
 		<description>Sets the color temperature of the light in mirek</description>
 		<category>ColorLight</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>ColorTemperature</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>ColorTemperature</property-tag>
 		</tags>
 		<state pattern="%.0f %unit%"/>
 	</channel-type>
@@ -81,8 +81,8 @@
 		<description>Switches the power on and off</description>
 		<category>Light</category>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Power</tag>
+			<point-tag>Switch</point-tag>
+			<property-tag>Power</property-tag>
 		</tags>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
@@ -93,8 +93,8 @@
 		<description>Sets the level of the light</description>
 		<category>Light</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>Brightness</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Brightness</property-tag>
 		</tags>
 		<state min="0" max="100" pattern="%d %%"/>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
@@ -105,8 +105,8 @@
 		<label>Mode Select</label>
 		<description>Selection of 1 or more states</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Mode</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Mode</property-tag>
 		</tags>
 		<state pattern="%d" readOnly="false"/>
 	</channel-type>
@@ -177,8 +177,8 @@
 		<description>Indicates the local temperature provided by the thermostat</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -189,8 +189,8 @@
 		<description>Indicates the outdoor temperature provided by the thermostat</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -201,8 +201,8 @@
 		<description>Sets the heating temperature when the room is occupied</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point-tag>Setpoint</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
@@ -213,8 +213,8 @@
 		<description>Sets the cooling temperature when the room is occupied</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point-tag>Setpoint</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
@@ -225,8 +225,8 @@
 		<description>Sets the heating temperature when the room is unoccupied</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point-tag>Setpoint</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
@@ -237,8 +237,8 @@
 		<description>Sets the cooling temperature when the room is unoccupied</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point-tag>Setpoint</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
@@ -248,8 +248,8 @@
 		<label>System Mode</label>
 		<description>Sets the system mode of the thermostat</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Mode</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Mode</property-tag>
 		</tags>
 		<state>
 			<options>
@@ -271,8 +271,8 @@
 		<label>Running Mode</label>
 		<description>The running mode of the thermostat</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Mode</property-tag>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -289,8 +289,8 @@
 		<description>Indicates if the thermostat is currently heating</description>
 		<category>Heating</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Heating</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Heating</property-tag>
 		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
@@ -301,8 +301,8 @@
 		<description>Indicates if the thermostat is currently cooling</description>
 		<category>Climate</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Airconditioning</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Airconditioning</property-tag>
 		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
@@ -313,8 +313,8 @@
 		<description>Indicates if the thermostat fan is currently running</description>
 		<category>Fan</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Ventilation</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Ventilation</property-tag>
 		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
@@ -325,8 +325,8 @@
 		<description>Indicates if the thermostat is currently heating with its second stage</description>
 		<category>Heating</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Heating</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Heating</property-tag>
 		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
@@ -337,8 +337,8 @@
 		<description>Indicates if the thermostat is currently cooling with its second stage</description>
 		<category>Climate</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Airconditioning</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Airconditioning</property-tag>
 		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
@@ -349,8 +349,8 @@
 		<description>Indicates if the thermostat fan is currently running at its second stage</description>
 		<category>Fan</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Ventilation</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Ventilation</property-tag>
 		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
@@ -361,8 +361,8 @@
 		<description>Indicates if the thermostat fan is currently running at its third stage</description>
 		<category>Fan</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Ventilation</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Ventilation</property-tag>
 		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
@@ -381,8 +381,8 @@
 		<description>Opens and closes the valve and reflects its current state</description>
 		<category>Flow</category>
 		<tags>
-			<tag>Switch</tag>
-			<tag>OpenState</tag>
+			<point-tag>Switch</point-tag>
+			<property-tag>OpenState</property-tag>
 		</tags>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
@@ -421,8 +421,8 @@
 		<description>Sets and reflects the valve level as a percentage, for valves that support level control</description>
 		<category>Flow</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>OpenLevel</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>OpenLevel</property-tag>
 		</tags>
 		<state min="0" max="100" pattern="%.0f %%"/>
 	</channel-type>
@@ -457,8 +457,8 @@
 		<description>Sets the fan mode</description>
 		<category>Fan</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>Mode</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Mode</property-tag>
 		</tags>
 		<state>
 			<options>
@@ -478,8 +478,8 @@
 		<description>The current fan speed percentage </description>
 		<category>Fan</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>Speed</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Speed</property-tag>
 		</tags>
 		<state min="0" max="100" pattern="%d %%"/>
 	</channel-type>
@@ -490,8 +490,8 @@
 		<description>Indicates the temperature reading</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -502,8 +502,8 @@
 		<description>Indicates the current relative humidity</description>
 		<category>Humidity</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Humidity</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Humidity</property-tag>
 		</tags>
 		<state pattern="%.0f %%" readOnly="true"/>
 	</channel-type>
@@ -514,8 +514,8 @@
 		<description>Indicates if an occupancy sensor is triggered</description>
 		<category>Presence</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Presence</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Presence</property-tag>
 		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
@@ -525,8 +525,8 @@
 		<label>Illumination</label>
 		<description>Indicates the brightness in Lux.</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Illuminance</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Illuminance</property-tag>
 		</tags>
 		<state pattern="%d %unit%" readOnly="true"></state>
 	</channel-type>
@@ -543,8 +543,8 @@
 		<label>Contact State</label>
 		<description>Indicates a contact state, open or closed.</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>OpenState</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>OpenState</property-tag>
 		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
@@ -555,8 +555,8 @@
 		<description>Wi-Fi signal strength indicator.</description>
 		<category>QualityOfService</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>RSSI</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>RSSI</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%d %unit%"></state>
 	</channel-type>
@@ -567,8 +567,8 @@
 		<description>Locks and unlocks the door and maintains the lock state. If the door lock supports unbolting, this will
 			reflect the latched state.</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>LockState</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>LockState</property-tag>
 		</tags>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
@@ -578,8 +578,8 @@
 		<label>Door Bolt State</label>
 		<description>Bolts and unbolts the door and maintains the bolt state.</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>LockState</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>LockState</property-tag>
 		</tags>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
@@ -589,8 +589,8 @@
 		<label>Door Sensor State</label>
 		<description>Door Sensor State</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>OpenState</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>OpenState</property-tag>
 		</tags>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
@@ -600,8 +600,8 @@
 		<label>Door Lock Sound Volume</label>
 		<description>Sets the sound volume of the door lock</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>SoundVolume</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>SoundVolume</property-tag>
 		</tags>
 		<state>
 			<options>
@@ -652,8 +652,8 @@
 		<label>Energy</label>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Energy</property-tag>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"></state>
 	</channel-type>
@@ -663,8 +663,8 @@
 		<label>Active Power</label>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Power</property-tag>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -674,8 +674,8 @@
 		<label>Active Current</label>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Current</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Current</property-tag>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -685,8 +685,8 @@
 		<label>Voltage</label>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Voltage</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Voltage</property-tag>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
@@ -697,8 +697,8 @@
 		<label>Run Mode</label>
 		<description>Selects the run mode (idle, cleaning, mapping) of the robotic vacuum cleaner</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Mode</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Mode</property-tag>
 		</tags>
 		<state pattern="%d"/>
 	</channel-type>
@@ -708,8 +708,8 @@
 		<label>Clean Mode</label>
 		<description>Selects the cleaning mode (vacuum, mop etc.) of the robotic vacuum cleaner</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Mode</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Mode</property-tag>
 		</tags>
 		<state pattern="%d"/>
 	</channel-type>
@@ -719,8 +719,8 @@
 		<label>Operational State</label>
 		<description>Reports the operational state of the robotic vacuum cleaner</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Mode</property-tag>
 		</tags>
 		<state pattern="%d" readOnly="true"/>
 	</channel-type>
@@ -730,8 +730,8 @@
 		<label>Go Home</label>
 		<description>Sends the robotic vacuum cleaner back to the dock</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Mode</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Mode</property-tag>
 		</tags>
 	</channel-type>
 
@@ -740,8 +740,8 @@
 		<label>Area Selection</label>
 		<description>Toggle to enable a mapped area for cleaning</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Enabled</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Enabled</property-tag>
 		</tags>
 	</channel-type>
 
@@ -750,8 +750,8 @@
 		<label>Air Quality</label>
 		<description>Indicates the currently measured air quality.</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>AirQuality</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>AirQuality</property-tag>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -773,7 +773,7 @@
 		<description>Indicates the measured concentration.</description>
 		<category>QualityOfService</category>
 		<tags>
-			<tag>Measurement</tag>
+			<point-tag>Measurement</point-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -784,7 +784,7 @@
 		<description>Indicates the concentration level as an enumeration (0=Unknown, 1=Low, 2=Medium, 3=High, 4=Critical).</description>
 		<category>QualityOfService</category>
 		<tags>
-			<tag>Status</tag>
+			<point-tag>Status</point-tag>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -803,7 +803,7 @@
 		<description>Indicates the peak (maximum) concentration measured during the measurement window.</description>
 		<category>Chart</category>
 		<tags>
-			<tag>Measurement</tag>
+			<point-tag>Measurement</point-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -814,7 +814,7 @@
 		<description>Indicates the average concentration measured during the measurement window.</description>
 		<category>Chart</category>
 		<tags>
-			<tag>Measurement</tag>
+			<point-tag>Measurement</point-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -826,8 +826,8 @@
 		<description>Indicates the visibly and audibly expressed alarm state with the highest priority.</description>
 		<category>Alarm</category>
 		<tags>
-			<tag>Alarm</tag>
-			<tag>Smoke</tag>
+			<point-tag>Alarm</point-tag>
+			<property-tag>Smoke</property-tag>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -850,8 +850,8 @@
 		<description>Indicates whether the smoke sensor is currently triggering an alarm.</description>
 		<category>Alarm</category>
 		<tags>
-			<tag>Alarm</tag>
-			<tag>Smoke</tag>
+			<point-tag>Alarm</point-tag>
+			<property-tag>Smoke</property-tag>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -868,8 +868,8 @@
 		<description>Indicates whether the CO sensor is currently triggering an alarm.</description>
 		<category>Alarm</category>
 		<tags>
-			<tag>Alarm</tag>
-			<tag>CO</tag>
+			<point-tag>Alarm</point-tag>
+			<property-tag>CO</property-tag>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -886,8 +886,8 @@
 		<description>Indicates whether the battery power resource fault detection is triggered.</description>
 		<category>Alarm</category>
 		<tags>
-			<tag>Alarm</tag>
-			<tag>LowBattery</tag>
+			<point-tag>Alarm</point-tag>
+			<property-tag>LowBattery</property-tag>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -904,7 +904,7 @@
 		<description>Indicates whether the audible expression of the device is currently muted.</description>
 		<category>Alarm</category>
 		<tags>
-			<tag>Status</tag>
+			<point-tag>Status</point-tag>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -920,7 +920,7 @@
 		<description>Indicates whether the device self-test is currently activated.</description>
 		<category>Alarm</category>
 		<tags>
-			<tag>Status</tag>
+			<point-tag>Status</point-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -931,7 +931,7 @@
 		<description>Indicates whether the hardware fault detection mechanism is triggered.</description>
 		<category>Alarm</category>
 		<tags>
-			<tag>Alarm</tag>
+			<point-tag>Alarm</point-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -942,7 +942,7 @@
 		<description>Indicates whether the end-of-service has been triggered at the device.</description>
 		<category>Alarm</category>
 		<tags>
-			<tag>Alarm</tag>
+			<point-tag>Alarm</point-tag>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -958,8 +958,8 @@
 		<description>Indicates whether the interconnected smoke alarm is currently triggering from another device.</description>
 		<category>Alarm</category>
 		<tags>
-			<tag>Alarm</tag>
-			<tag>Smoke</tag>
+			<point-tag>Alarm</point-tag>
+			<property-tag>Smoke</property-tag>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -976,8 +976,8 @@
 		<description>Indicates whether the interconnected CO alarm is currently triggering from another device.</description>
 		<category>Alarm</category>
 		<tags>
-			<tag>Alarm</tag>
-			<tag>CO</tag>
+			<point-tag>Alarm</point-tag>
+			<property-tag>CO</property-tag>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -994,7 +994,7 @@
 		<description>Indicates the contamination level of the smoke sensor.</description>
 		<category>Alarm</category>
 		<tags>
-			<tag>Status</tag>
+			<point-tag>Status</point-tag>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -1012,7 +1012,7 @@
 		<description>Indicates the sensitivity level of the smoke sensor.</description>
 		<category>Alarm</category>
 		<tags>
-			<tag>Control</tag>
+			<point-tag>Control</point-tag>
 		</tags>
 		<state>
 			<options>
@@ -1029,8 +1029,8 @@
 		<description>Indicates the date when the device reaches its stated expiry date.</description>
 		<category>Time</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Timestamp</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -1043,7 +1043,7 @@
 			action to start the update process.</description>
 		<category>Status</category>
 		<tags>
-			<tag>Status</tag>
+			<point-tag>Status</point-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -1057,7 +1057,7 @@
 			regularly to check in with openHAB.</description>
 		<category>Status</category>
 		<tags>
-			<tag>Status</tag>
+			<point-tag>Status</point-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -1068,8 +1068,8 @@
 		<description>The time this sleepy device last checked in with openHAB.</description>
 		<category>Time</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Timestamp</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>

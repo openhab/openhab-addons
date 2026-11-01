@@ -139,8 +139,8 @@
 		<label>Anel Device Temperature</label>
 		<description>The value of the built-in temperature sensor of the Anel device</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -162,8 +162,8 @@
 		<label>Relay State</label>
 		<description>The state of the relay / socket (read-only if locked!)</description>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Power</tag>
+			<point-tag>Switch</point-tag>
+			<property-tag>Power</property-tag>
 		</tags>
 		<autoUpdatePolicy>veto</autoUpdatePolicy><!-- updates are only sent in non-locked mode -->
 	</channel-type>
@@ -192,8 +192,8 @@
 		<label>Sensor Temperature</label>
 		<description>The temperature value of the optional sensor</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -202,8 +202,8 @@
 		<label>Sensor Humidity</label>
 		<description>The humidity value of the optional sensor</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Humidity</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Humidity</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -212,8 +212,8 @@
 		<label>Sensor Brightness</label>
 		<description>The brightness value of the optional sensor</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Illuminance</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Illuminance</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>

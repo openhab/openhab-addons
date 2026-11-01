@@ -8,8 +8,8 @@
 		<label>Ink Level</label>
 		<description>Shows the amount of Ink/Toner remaining</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Level</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Level</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%f %%"/>
 	</channel-type>
@@ -19,7 +19,7 @@
 		<label>Totals</label>
 		<description>Amount of pages.</description>
 		<tags>
-			<tag>Status</tag>
+			<point-tag>Status</point-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -29,7 +29,7 @@
 		<label>Totals</label>
 		<description>Amount of pages.</description>
 		<tags>
-			<tag>Status</tag>
+			<point-tag>Status</point-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -39,8 +39,8 @@
 		<label>Cumulative Marking Used</label>
 		<description>Shows the amount of Ink/Toner used</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Level</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Level</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%f mL"/>
 	</channel-type>
@@ -50,8 +50,8 @@
 		<label>Status</label>
 		<description>Printer Status</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Mode</property-tag>
 		</tags>
 		<state readOnly="true">
 			<options>

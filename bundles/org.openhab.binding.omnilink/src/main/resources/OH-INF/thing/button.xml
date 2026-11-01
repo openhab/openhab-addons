@@ -31,8 +31,8 @@
 		<description>Sends a button event to the controller.</description>
 		<category>Switch</category>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
+			<point-tag>Switch</point-tag>
+			<property-tag>Mode</property-tag>
 		</tags>
 	</channel-type>
 

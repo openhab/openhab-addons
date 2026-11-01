@@ -11,8 +11,8 @@
 		<description>Switches the current on/off</description>
 		<category>Switch</category>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Power</tag>
+			<point-tag>Switch</point-tag>
+			<property-tag>Power</property-tag>
 		</tags>
 	</channel-type>
 
@@ -23,8 +23,8 @@
 		<description>Dims the connected light</description>
 		<category>Lightbulb</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>Brightness</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Brightness</property-tag>
 		</tags>
 	</channel-type>
 
@@ -35,8 +35,8 @@
 		<description>Controls the blinds</description>
 		<category>Blinds</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>OpenLevel</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>OpenLevel</property-tag>
 		</tags>
 		<config-description>
 			<parameter name="invert" type="boolean">
@@ -53,8 +53,8 @@
 		<description>Switches the state on/off</description>
 		<category>Switch</category>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Power</tag>
+			<point-tag>Switch</point-tag>
+			<property-tag>Power</property-tag>
 		</tags>
 	</channel-type>
 
@@ -65,8 +65,8 @@
 		<description>Thermostat target temperature</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point-tag>Setpoint</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state min="6" max="30" step="0.5" pattern="%.1f %unit%" readOnly="false"/>
 	</channel-type>
@@ -97,8 +97,8 @@
 		<description>Actual measured room temperature</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -117,8 +117,8 @@
 		<description>Actual measured room humidity</description>
 		<category>Humidity</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Humidity</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Humidity</property-tag>
 		</tags>
 		<state readOnly="true" min="0" max="100" pattern="%.1f%%"/>
 	</channel-type>
@@ -137,8 +137,8 @@
 		<description>Shows the open/close state</description>
 		<category>Contact</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>OpenState</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>OpenState</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -150,8 +150,8 @@
 		<description>Shows if smoke was detected</description>
 		<category>Smoke</category>
 		<tags>
-			<tag>Alarm</tag>
-			<tag>Smoke</tag>
+			<point-tag>Alarm</point-tag>
+			<property-tag>Smoke</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -195,8 +195,8 @@
 		<description>The count of detected motions</description>
 		<category>Motion</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Motion</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Motion</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -208,8 +208,8 @@
 		<description>Shows the detected luminance in percent</description>
 		<category>Sun</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Illuminance</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Illuminance</property-tag>
 		</tags>
 		<state readOnly="true" min="0" max="100" pattern="%d%%"/>
 	</channel-type>
@@ -230,8 +230,8 @@
 		<description>The energy consumption per month in kWh</description>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Energy</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -243,8 +243,8 @@
 		<description>The absolute energy consumption</description>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Energy</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -274,8 +274,8 @@
 		<description>The energy consumption per day in kWh</description>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Energy</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -287,8 +287,8 @@
 		<description>The current power consumption in Watt</description>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Power</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -300,8 +300,8 @@
 		<description>The energy generation per month in kWh</description>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Energy</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -313,8 +313,8 @@
 		<description>The total energy generation</description>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Energy</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -344,8 +344,8 @@
 		<description>The energy generation per day in kWh</description>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Energy</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -357,8 +357,8 @@
 		<description>The current power generation in Watt</description>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Power</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -370,8 +370,8 @@
 		<description>The total energy consumption</description>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Energy</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -383,8 +383,8 @@
 		<description>The energy feed per month in kWh</description>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Energy</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -396,8 +396,8 @@
 		<description>The total energy fed</description>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Energy</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -418,8 +418,8 @@
 		<description>The energy feed per day in Euro</description>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Energy</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -431,8 +431,8 @@
 		<description>The energy feed per day in kWh</description>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Energy</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>

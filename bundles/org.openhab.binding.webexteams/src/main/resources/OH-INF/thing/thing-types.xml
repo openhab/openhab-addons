@@ -53,8 +53,8 @@
 		<label>Status</label>
 		<description>The current presence status of the person.</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Presence</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Presence</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>

@@ -10,8 +10,8 @@
 			channel, the values is used for ALL DMX channels.</description>
 		<category>Light</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>Brightness</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Brightness</property-tag>
 		</tags>
 	</channel-type>
 	<!-- Color Temperature -->
@@ -21,8 +21,8 @@
 		<description>Relative intensity of two adjacent DMX channels</description>
 		<category>ColorLight</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>ColorTemperature</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>ColorTemperature</property-tag>
 		</tags>
 	</channel-type>
 	<!-- Color Channel -->
@@ -33,8 +33,8 @@
 			color will be re-use in 3-channel groups.</description>
 		<category>ColorLight</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>Color</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Color</property-tag>
 		</tags>
 	</channel-type>
 	<!-- Switch Channel -->
@@ -44,8 +44,8 @@
 		<description>Allows to switch a thing ON or OFF.</description>
 		<category>Light</category>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Power</tag>
+			<point-tag>Switch</point-tag>
+			<property-tag>Power</property-tag>
 		</tags>
 	</channel-type>
 	<!-- Control Channel -->

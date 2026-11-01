@@ -108,8 +108,8 @@
 		<description>Group channel for CBus on/off lighting groups</description>
 		<category>Light</category>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Light</tag>
+			<point-tag>Switch</point-tag>
+			<property-tag>Light</property-tag>
 		</tags>
 	</channel-type>
 
@@ -119,8 +119,8 @@
 		<description>Group channel for CBus variable value lighting groups</description>
 		<category>Light</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>Brightness</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Brightness</property-tag>
 		</tags>
 	</channel-type>
 
@@ -131,8 +131,8 @@
 		<description>Group channel for CBus temperature groups</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -150,8 +150,8 @@
 		<label>DALI Channel</label>
 		<description>Group channel for CBus DALI groups</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Brightness</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Brightness</property-tag>
 		</tags>
 	</channel-type>
 

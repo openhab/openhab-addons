@@ -8,8 +8,8 @@
 		<item-type>Number:ElectricPotential</item-type>
 		<label>Average Line To Neutral AC Voltage</label>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Voltage</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Voltage</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
@@ -17,8 +17,8 @@
 		<item-type>Number:ElectricPotential</item-type>
 		<label>Average Line To Line AC Voltage</label>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Voltage</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Voltage</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
@@ -26,8 +26,8 @@
 		<item-type>Number:Power</item-type>
 		<label>Total Real Power Value</label>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Power</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
@@ -35,8 +35,8 @@
 		<item-type>Number:Power</item-type>
 		<label>AC Real Power Value</label>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Power</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
@@ -44,8 +44,8 @@
 		<item-type>Number:Power</item-type>
 		<label>Total Apparent Power Value</label>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Power</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
@@ -53,8 +53,8 @@
 		<item-type>Number:Power</item-type>
 		<label>Total Reactive Power Value</label>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Power</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
@@ -62,8 +62,8 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Average AC Power Factor</label>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Airconditioning</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Airconditioning</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -72,8 +72,8 @@
 		<item-type>Number:Energy</item-type>
 		<label>Total Real Energy Exported</label>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Energy</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
@@ -81,8 +81,8 @@
 		<item-type>Number:Energy</item-type>
 		<label>Real Energy Exported</label>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Energy</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
@@ -90,8 +90,8 @@
 		<item-type>Number:Energy</item-type>
 		<label>Total Real Energy Imported</label>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Energy</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
@@ -99,8 +99,8 @@
 		<item-type>Number:Energy</item-type>
 		<label>Real Energy Imported</label>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Energy</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
@@ -109,8 +109,8 @@
 		<item-type>Number:Energy</item-type>
 		<label>Total Apparent Energy Exported</label>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Energy</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
@@ -118,8 +118,8 @@
 		<item-type>Number:Energy</item-type>
 		<label>Apparent Energy Exported</label>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Energy</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
@@ -127,8 +127,8 @@
 		<item-type>Number:Energy</item-type>
 		<label>Total Apparent Energy Imported</label>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Energy</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
@@ -136,8 +136,8 @@
 		<item-type>Number:Energy</item-type>
 		<label>Apparent Energy Imported</label>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Energy</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
@@ -146,8 +146,8 @@
 		<item-type>Number:Energy</item-type>
 		<label>Total Reactive Energy Imported Quadrant 1</label>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Energy</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
@@ -155,8 +155,8 @@
 		<item-type>Number:Energy</item-type>
 		<label>Reactive Energy Imported Quadrant 1</label>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Energy</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
@@ -164,8 +164,8 @@
 		<item-type>Number:Energy</item-type>
 		<label>Total Reactive Energy Imported Quadrant 2</label>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Energy</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
@@ -173,8 +173,8 @@
 		<item-type>Number:Energy</item-type>
 		<label>Reactive Energy Imported Quadrant 2</label>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Energy</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
@@ -183,8 +183,8 @@
 		<item-type>Number:Energy</item-type>
 		<label>Total Reactive Energy Exported Quadrant 3</label>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Energy</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
@@ -192,8 +192,8 @@
 		<item-type>Number:Energy</item-type>
 		<label>Reactive Energy Exported Quadrant 3</label>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Energy</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
@@ -201,8 +201,8 @@
 		<item-type>Number:Energy</item-type>
 		<label>Total Reactive Energy Exported Quadrant 4</label>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Energy</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
@@ -210,8 +210,8 @@
 		<item-type>Number:Energy</item-type>
 		<label>Reactive Energy Exported Quadrant 4</label>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Energy</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>

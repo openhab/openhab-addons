@@ -8,8 +8,8 @@
 		<item-type>Color</item-type>
 		<label>Color</label>
 		<tags>
-			<tag>Control</tag>
-			<tag>Color</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Color</property-tag>
 		</tags>
 		<config-description-ref uri="channel-type:homeassistant:channel"/>
 	</channel-type>
@@ -18,8 +18,8 @@
 		<item-type>Dimmer</item-type>
 		<label>Dimmer</label>
 		<tags>
-			<tag>Control</tag>
-			<tag>Brightness</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Brightness</property-tag>
 		</tags>
 		<config-description-ref uri="channel-type:homeassistant:channel"/>
 	</channel-type>
@@ -28,8 +28,8 @@
 		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Humidity</label>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Humidity</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Humidity</property-tag>
 		</tags>
 		<config-description-ref uri="channel-type:homeassistant:channel"/>
 	</channel-type>
@@ -44,8 +44,8 @@
 		<item-type>Location</item-type>
 		<label>Location</label>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>GeoLocation</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>GeoLocation</property-tag>
 		</tags>
 		<config-description-ref uri="channel-type:homeassistant:channel"/>
 	</channel-type>
@@ -68,8 +68,8 @@
 		<item-type>Rollershutter</item-type>
 		<label>Rollershutter</label>
 		<tags>
-			<tag>Control</tag>
-			<tag>OpenLevel</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>OpenLevel</property-tag>
 		</tags>
 		<config-description-ref uri="channel-type:homeassistant:channel"/>
 	</channel-type>
@@ -90,8 +90,8 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Temperature</label>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<config-description-ref uri="channel-type:homeassistant:channel"/>
 	</channel-type>

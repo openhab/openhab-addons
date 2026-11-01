@@ -51,8 +51,8 @@
 		<label>PM 2.5</label>
 		<description>The PM 2.5 value</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>ParticulateMatter</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>ParticulateMatter</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"></state>
 	</channel-type>
@@ -62,8 +62,8 @@
 		<label>PM 10</label>
 		<description>The PM 10 value</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>ParticulateMatter</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>ParticulateMatter</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"></state>
 	</channel-type>

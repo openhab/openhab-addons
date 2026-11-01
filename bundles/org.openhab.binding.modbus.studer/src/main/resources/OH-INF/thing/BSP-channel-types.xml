@@ -8,8 +8,8 @@
 		<item-type>Number:Power</item-type>
 		<label>Power</label>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Power</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
@@ -18,8 +18,8 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>State of Charge</label>
 		<tags>
-			<tag>Status</tag>
-			<tag>Energy</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Energy</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
@@ -28,8 +28,8 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Battery Temperature</label>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>

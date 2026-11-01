@@ -139,7 +139,7 @@
 		<label>Poll Update</label>
 		<description>Poll status update from the cloud (get latest measures, not a trigger for new measures)</description>
 		<tags>
-			<tag>Setpoint</tag>
+			<point-tag>Setpoint</point-tag>
 		</tags>
 	</channel-type>
 
@@ -149,8 +149,8 @@
 		<label>Water Temperature</label>
 		<description>Water temperature</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -159,8 +159,8 @@
 		<label>Water Temperature Delta</label>
 		<description>Change in water temperature since last measure</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state readOnly="true" pattern="Δ %+.1f %unit%"/>
 	</channel-type>
@@ -169,7 +169,7 @@
 		<label>pH Level</label>
 		<description>pH level</description>
 		<tags>
-			<tag>Measurement</tag>
+			<point-tag>Measurement</point-tag>
 		</tags>
 		<state readOnly="true" pattern="%.2f"/>
 	</channel-type>
@@ -178,7 +178,7 @@
 		<label>pH Level Delta</label>
 		<description>Change in pH level since last measure</description>
 		<tags>
-			<tag>Measurement</tag>
+			<point-tag>Measurement</point-tag>
 		</tags>
 		<state readOnly="true" pattern="Δ %+.2f"/>
 	</channel-type>
@@ -187,7 +187,7 @@
 		<label>ORP</label>
 		<description>Oxidation-Reduction Potential (ORP)</description>
 		<tags>
-			<tag>Measurement</tag>
+			<point-tag>Measurement</point-tag>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
@@ -196,7 +196,7 @@
 		<label>ORP Delta</label>
 		<description>Change in ORP since last measure</description>
 		<tags>
-			<tag>Measurement</tag>
+			<point-tag>Measurement</point-tag>
 		</tags>
 		<state readOnly="true" pattern="Δ %+.0f %unit%"/>
 	</channel-type>
@@ -205,7 +205,7 @@
 		<label>Salt</label>
 		<description>Salt level</description>
 		<tags>
-			<tag>Measurement</tag>
+			<point-tag>Measurement</point-tag>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
@@ -214,7 +214,7 @@
 		<label>Salt Delta</label>
 		<description>Change in salt level since last measure</description>
 		<tags>
-			<tag>Measurement</tag>
+			<point-tag>Measurement</point-tag>
 		</tags>
 		<state readOnly="true" pattern="Δ %+.0f %unit%"/>
 	</channel-type>
@@ -223,7 +223,7 @@
 		<label>TDS</label>
 		<description>Total dissolved solids</description>
 		<tags>
-			<tag>Measurement</tag>
+			<point-tag>Measurement</point-tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -232,7 +232,7 @@
 		<label>TDS Delta</label>
 		<description>Change in TDS since last measure</description>
 		<tags>
-			<tag>Measurement</tag>
+			<point-tag>Measurement</point-tag>
 		</tags>
 		<state readOnly="true" pattern="Δ %+.1f %unit%"/>
 	</channel-type>
@@ -241,8 +241,8 @@
 		<label>RSSI</label>
 		<description>Signal strength (RSSI)</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>RSSI</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>RSSI</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%d"/>
 	</channel-type>
@@ -251,8 +251,8 @@
 		<label>Value Time</label>
 		<description>Timestamp of the set of measures</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Timestamp</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%1$tH:%1$tM"/>
 	</channel-type>
@@ -263,7 +263,7 @@
 		<label>ID</label>
 		<description>ID of the current recommendation</description>
 		<tags>
-			<tag>Status</tag>
+			<point-tag>Status</point-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -272,8 +272,8 @@
 		<label>Title</label>
 		<description>Title of the current recommendation</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Water</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Water</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -282,8 +282,8 @@
 		<label>Message</label>
 		<description>Message of the current recommendation</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Water</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Water</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -292,8 +292,8 @@
 		<label>Created At</label>
 		<description>Creation time of the current recommendation</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Timestamp</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -302,8 +302,8 @@
 		<label>Updated At</label>
 		<description>Update time of the current recommendation</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Timestamp</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -312,7 +312,7 @@
 		<label>Status</label>
 		<description>Status of the current recommendation</description>
 		<tags>
-			<tag>Status</tag>
+			<point-tag>Status</point-tag>
 		</tags>
 		<state>
 			<options>
@@ -326,8 +326,8 @@
 		<label>Deadline</label>
 		<description>Deadline of the current recommendation</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Timestamp</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -338,8 +338,8 @@
 		<label>Minimum Water Temperature</label>
 		<description>Minimum water temperature</description>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point-tag>Setpoint</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -348,7 +348,7 @@
 		<label>Minimum pH Level</label>
 		<description>Minimum pH level</description>
 		<tags>
-			<tag>Setpoint</tag>
+			<point-tag>Setpoint</point-tag>
 		</tags>
 		<state readOnly="true" pattern="%.2f"/>
 	</channel-type>
@@ -357,7 +357,7 @@
 		<label>Minimum ORP</label>
 		<description>Minimum Oxidation-Reduction Potential (ORP)</description>
 		<tags>
-			<tag>Setpoint</tag>
+			<point-tag>Setpoint</point-tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -366,7 +366,7 @@
 		<label>Minimum Salt Level</label>
 		<description>Minimum salt level</description>
 		<tags>
-			<tag>Setpoint</tag>
+			<point-tag>Setpoint</point-tag>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
@@ -375,7 +375,7 @@
 		<label>Minimum TDS</label>
 		<description>Minimum Total Dissolved Solids (TDS)</description>
 		<tags>
-			<tag>Setpoint</tag>
+			<point-tag>Setpoint</point-tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>

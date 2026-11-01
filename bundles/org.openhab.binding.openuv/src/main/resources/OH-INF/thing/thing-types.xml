@@ -78,8 +78,8 @@
 		<description>UV Index</description>
 		<category>oh:openuv:uv-index</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Ultraviolet</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Ultraviolet</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.0f/16" min="0" max="16"/>
 	</channel-type>
@@ -98,8 +98,8 @@
 		<description>Ozone level from OMI data</description>
 		<category>oh:openuv:ozone</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Ozone</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Ozone</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -162,8 +162,8 @@
 		<label>UV Alert</label>
 		<category>oh:openuv:uv-alarm</category>
 		<tags>
-			<tag>Alarm</tag>
-			<tag>Ultraviolet</tag>
+			<point-tag>Alarm</point-tag>
+			<property-tag>Ultraviolet</property-tag>
 		</tags>
 		<state readOnly="true">
 			<options>

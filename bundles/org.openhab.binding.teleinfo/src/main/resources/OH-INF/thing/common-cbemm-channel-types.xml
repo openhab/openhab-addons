@@ -10,8 +10,8 @@
 		<description>Maximum consumed electric current</description>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Current</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Current</property-tag>
 		</tags>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
@@ -22,8 +22,8 @@
 		<description>Instantaneous electric current</description>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Current</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Current</property-tag>
 		</tags>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>

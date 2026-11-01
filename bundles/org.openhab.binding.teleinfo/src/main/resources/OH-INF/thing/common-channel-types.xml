@@ -10,8 +10,8 @@
 		<description>Subscribed electric current</description>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Current</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Current</property-tag>
 		</tags>
 		<state pattern="%d A" readOnly="true"/>
 	</channel-type>
@@ -22,8 +22,8 @@
 		<description>Current pricing period</description>
 		<category>Energy</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Info</property-tag>
 		</tags>
 		<state pattern="%s" readOnly="true">
 			<options>
@@ -48,8 +48,8 @@
 		<description>Pricing schedule group</description>
 		<category>Energy</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Info</property-tag>
 		</tags>
 		<state pattern="%s" readOnly="true">
 			<options>

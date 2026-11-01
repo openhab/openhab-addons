@@ -48,8 +48,8 @@
 		<label>Radon Current Level</label>
 		<description>Radon gas level</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Radon</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Radon</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>

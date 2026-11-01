@@ -10,8 +10,8 @@
 		<description>Turn the AC on or off.</description>
 		<category>Switch</category>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Power</tag>
+			<point-tag>Switch</point-tag>
+			<property-tag>Power</property-tag>
 		</tags>
 	</channel-type>
 	<channel-type id="target-temperature">
@@ -19,8 +19,8 @@
 		<label>Target Temperature</label>
 		<category>Temperature</category>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point-tag>Setpoint</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state readOnly="false" pattern="%d %unit%"/>
 	</channel-type>
@@ -29,8 +29,8 @@
 		<label>Operational Mode</label>
 		<description>Operational modes: AUTO, COOL, DRY, HEAT, FAN ONLY.</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Mode</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Mode</property-tag>
 		</tags>
 		<state>
 			<options>
@@ -47,8 +47,8 @@
 		<label>Fan Speed</label>
 		<description>Fan speeds: SILENT, LOW, MEDIUM, HIGH, FULL, AUTO.</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Airflow</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Airflow</property-tag>
 		</tags>
 		<state>
 			<options>
@@ -66,8 +66,8 @@
 		<label>Fan Speed</label>
 		<description>Fan speeds: OFF, LOWEST, LOW, MEDIUM, HIGH, AUTO.</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Airflow</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Airflow</property-tag>
 		</tags>
 		<state>
 			<options>
@@ -85,8 +85,8 @@
 		<label>Swing Angle Horizontal</label>
 		<description>Swing Angle Horizontal: Closed, Positions 1 - 5 plus Auto.</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Airflow</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Airflow</property-tag>
 		</tags>
 		<state>
 			<options>
@@ -105,8 +105,8 @@
 		<label>Swing Angle Vertical</label>
 		<description>Swing Angle Vertical: Closed, Positions 1 - 5 plus Auto.</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Airflow</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Airflow</property-tag>
 		</tags>
 		<state>
 			<options>
@@ -125,8 +125,8 @@
 		<label>Swing Mode</label>
 		<description>Swing modes: OFF, VERTICAL, HORIZONTAL, BOTH. Some V3 versions do not support</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Tilt</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Tilt</property-tag>
 		</tags>
 		<state>
 			<options>
@@ -143,8 +143,8 @@
 		<description>Eco mode, Cool only, Temp: min. 24C, Fan: AUTO. </description>
 		<category>Switch</category>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Airconditioning</tag>
+			<point-tag>Switch</point-tag>
+			<property-tag>Airconditioning</property-tag>
 		</tags>
 	</channel-type>
 	<channel-type id="turbo-mode">
@@ -154,8 +154,8 @@
 			mode.</description>
 		<category>Switch</category>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Airconditioning</tag>
+			<point-tag>Switch</point-tag>
+			<property-tag>Airconditioning</property-tag>
 		</tags>
 	</channel-type>
 	<channel-type id="silent-mode">
@@ -165,8 +165,8 @@
 			mode.</description>
 		<category>Switch</category>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Airconditioning</tag>
+			<point-tag>Switch</point-tag>
+			<property-tag>Airconditioning</property-tag>
 		</tags>
 	</channel-type>
 	<channel-type id="indoor-temperature">
@@ -175,8 +175,8 @@
 		<description>Indoor temperature measured by the internal unit.</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -186,8 +186,8 @@
 		<description>Outdoor temperature from the external unit. Not frequent when unit is off</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -197,8 +197,8 @@
 		<description>Sleep function ("Moon with a star" icon on IR Remote Controller).</description>
 		<category>Switch</category>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Airconditioning</tag>
+			<point-tag>Switch</point-tag>
+			<property-tag>Airconditioning</property-tag>
 		</tags>
 	</channel-type>
 	<channel-type id="temperature-unit" advanced="true">
@@ -207,8 +207,8 @@
 		<description>On = Farenheit on Indoor AC unit LED display, Off = Celsius.</description>
 		<category>Switch</category>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Enabled</tag>
+			<point-tag>Switch</point-tag>
+			<property-tag>Enabled</property-tag>
 		</tags>
 	</channel-type>
 	<channel-type id="screen-display" advanced="true">
@@ -218,8 +218,8 @@
 			possible either.</description>
 		<category>Switch</category>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Brightness</tag>
+			<point-tag>Switch</point-tag>
+			<property-tag>Brightness</property-tag>
 		</tags>
 	</channel-type>
 	<channel-type id="appliance-error" advanced="true">
@@ -227,8 +227,8 @@
 		<label>Appliance Error</label>
 		<category>Switch</category>
 		<tags>
-			<tag>Alarm</tag>
-			<tag>Airconditioning</tag>
+			<point-tag>Alarm</point-tag>
+			<property-tag>Airconditioning</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -237,8 +237,8 @@
 		<label>Filter Needs Cleaning</label>
 		<category>Switch</category>
 		<tags>
-			<tag>Alarm</tag>
-			<tag>Airflow</tag>
+			<point-tag>Alarm</point-tag>
+			<property-tag>Airflow</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -247,8 +247,8 @@
 		<label>On Timer</label>
 		<description>On Timer (HH:MM) to set.</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Duration</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Duration</property-tag>
 		</tags>
 	</channel-type>
 	<channel-type id="off-timer" advanced="true">
@@ -256,8 +256,8 @@
 		<label>Off Timer</label>
 		<description>Off Timer (HH:MM) to set.</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Duration</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Duration</property-tag>
 		</tags>
 	</channel-type>
 	<channel-type id="auxiliary-heat" advanced="true">
@@ -265,8 +265,8 @@
 		<label>Auxiliary Heat</label>
 		<category>Switch</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Heating</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Heating</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -275,8 +275,8 @@
 		<label>Purifier Mode</label>
 		<description>Purifier Modes (ON, OFF or AUTO)</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Heating</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Heating</property-tag>
 		</tags>
 		<state>
 			<options>
@@ -292,8 +292,8 @@
 		<description>kilowatt Hours reported by the indoor unit.</description>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Energy</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f"/>
 	</channel-type>
@@ -303,8 +303,8 @@
 		<description>Amperes (current) reported by the indoor unit.</description>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Energy</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f"/>
 	</channel-type>
@@ -314,8 +314,8 @@
 		<description>Watts reported by the indoor unit.</description>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Energy</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f"/>
 	</channel-type>
@@ -324,8 +324,8 @@
 		<label>Dehumidifier Mode</label>
 		<description>Operational modes: AUTO, MANUAL, CONTINUOUS, CLOTHES DRY, SHOE DRY.</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Mode</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Mode</property-tag>
 		</tags>
 		<state>
 			<options>
@@ -341,8 +341,8 @@
 		<item-type>Number</item-type>
 		<label>Tank Water Level</label>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Level</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Level</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%d%%"/>
 	</channel-type>
@@ -350,8 +350,8 @@
 		<item-type>Number</item-type>
 		<label>Dehumidifier Tank Setpoint</label>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Humidity</tag>
+			<point-tag>Setpoint</point-tag>
+			<property-tag>Humidity</property-tag>
 		</tags>
 		<state>
 			<options>
@@ -368,8 +368,8 @@
 		<description>Louver Movement.</description>
 		<category>Switch</category>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
+			<point-tag>Switch</point-tag>
+			<property-tag>Mode</property-tag>
 		</tags>
 	</channel-type>
 	<channel-type id="humidity">
@@ -378,8 +378,8 @@
 		<description>Humidity in room (if supported).</description>
 		<category>Humidity</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Humidity</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Humidity</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%d%%"/>
 	</channel-type>
@@ -389,8 +389,8 @@
 		<description>Lock Controls. </description>
 		<category>Switch</category>
 		<tags>
-			<tag>Switch</tag>
-			<tag>LockState</tag>
+			<point-tag>Switch</point-tag>
+			<property-tag>LockState</property-tag>
 		</tags>
 	</channel-type>
 	<channel-type id="anion" advanced="true">
@@ -398,8 +398,8 @@
 		<label>Anion</label>
 		<category>Switch</category>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Enabled</tag>
+			<point-tag>Switch</point-tag>
+			<property-tag>Enabled</property-tag>
 		</tags>
 	</channel-type>
 	<channel-type id="maximum-humidity">
@@ -408,8 +408,8 @@
 		<description>Set Maximum Humidity level.</description>
 		<category>Humidity</category>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Humidity</tag>
+			<point-tag>Setpoint</point-tag>
+			<property-tag>Humidity</property-tag>
 		</tags>
 		<state pattern="%d%%"/>
 	</channel-type>

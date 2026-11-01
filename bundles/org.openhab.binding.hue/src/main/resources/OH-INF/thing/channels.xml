@@ -9,8 +9,8 @@
 		<description>The date and time when the sensor was last updated.</description>
 		<category>Time</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Timestamp</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS"/>
 	</channel-type>
@@ -20,8 +20,8 @@
 		<label>Illuminance</label>
 		<description>Current illuminance.</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Illuminance</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Illuminance</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -31,8 +31,8 @@
 		<label>Light Level</label>
 		<description>Current light level.</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Illuminance</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Illuminance</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%d"/>
 	</channel-type>
@@ -138,8 +138,8 @@
 		<description>Current temperature.</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -150,8 +150,8 @@
 		<label>Alert</label>
 		<description>The alert channel allows a temporary change to the bulb’s state.</description>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
+			<point-tag>Switch</point-tag>
+			<property-tag>Mode</property-tag>
 		</tags>
 		<state>
 			<options>
@@ -169,8 +169,8 @@
 		<description>The effect channel allows putting the bulb in a color looping mode.</description>
 		<category>ColorLight</category>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
+			<point-tag>Switch</point-tag>
+			<property-tag>Mode</property-tag>
 		</tags>
 	</channel-type>
 
@@ -193,8 +193,8 @@
 		<label>Scene</label>
 		<description>The scene channel allows recalling a scene to all lights that belong to the scene.</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Mode</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Mode</property-tag>
 		</tags>
 	</channel-type>
 
@@ -218,8 +218,8 @@
 		<label>Sensor Enabled</label>
 		<category>Lock</category>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
+			<point-tag>Switch</point-tag>
+			<property-tag>Mode</property-tag>
 		</tags>
 	</channel-type>
 
@@ -228,8 +228,8 @@
 		<label>Scene</label>
 		<category>MediaControl</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>Mode</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Mode</property-tag>
 		</tags>
 		<state pattern="%s"/>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
@@ -241,8 +241,8 @@
 		<description>The date and time when the thing was last updated.</description>
 		<category>Time</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Timestamp</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS"/>
 	</channel-type>
@@ -251,8 +251,8 @@
 		<item-type>String</item-type>
 		<label>Alert</label>
 		<tags>
-			<tag>Control</tag>
-			<tag>Mode</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Mode</property-tag>
 		</tags>
 		<state pattern="%s"/>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
@@ -262,8 +262,8 @@
 		<item-type>String</item-type>
 		<label>Effect</label>
 		<tags>
-			<tag>Control</tag>
-			<tag>Mode</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Mode</property-tag>
 		</tags>
 		<state pattern="%s"/>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
@@ -275,8 +275,8 @@
 		<description>The duration (ms) of dynamic transitions between light or scene states.</description>
 		<category>Time</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>Duration</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Duration</property-tag>
 		</tags>
 		<state min="0" step="100" pattern="%d ms"/>
 	</channel-type>
@@ -287,8 +287,8 @@
 		<description>Set the color xy parameter of the light without changing other state parameters.</description>
 		<category>ColorLight</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>Color</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Color</property-tag>
 		</tags>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
@@ -299,8 +299,8 @@
 		<description>Set the dimming parameter of the light without changing other state parameters.</description>
 		<category>Light</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>Brightness</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Brightness</property-tag>
 		</tags>
 		<state min="0" max="100" pattern="%.1f %%"/>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
@@ -312,8 +312,8 @@
 		<description>Set the on/off parameter of the light without changing other state parameters.</description>
 		<category>Switch</category>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Power</tag>
+			<point-tag>Switch</point-tag>
+			<property-tag>Power</property-tag>
 		</tags>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
@@ -323,8 +323,8 @@
 		<label>Open/Closed</label>
 		<category>Lock</category>
 		<tags>
-			<tag>Alarm</tag>
-			<tag>OpenState</tag>
+			<point-tag>Alarm</point-tag>
+			<property-tag>OpenState</property-tag>
 		</tags>
 	</channel-type>
 
@@ -333,8 +333,8 @@
 		<label>Normal/Tamper</label>
 		<category>Siren</category>
 		<tags>
-			<tag>Alarm</tag>
-			<tag>Tampered</tag>
+			<point-tag>Alarm</point-tag>
+			<property-tag>Tampered</property-tag>
 		</tags>
 	</channel-type>
 
@@ -343,8 +343,8 @@
 		<label>Enable</label>
 		<category>Switch</category>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Enabled</tag>
+			<point-tag>Switch</point-tag>
+			<property-tag>Enabled</property-tag>
 		</tags>
 	</channel-type>
 
@@ -358,8 +358,8 @@
 		<description>The name of the sound clip that the speaker plays.</description>
 		<category>Speaker</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>Mode</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Mode</property-tag>
 		</tags>
 		<state>
 			<options>
@@ -395,8 +395,8 @@
 		<description>Duration of the speaker output.</description>
 		<category>Time</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>Duration</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Duration</property-tag>
 		</tags>
 		<state min="1" max="30" step="1" pattern="%d s"/>
 	</channel-type>

@@ -115,8 +115,8 @@
 		<label>Battery</label>
 		<description>Battery charge percentage</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Energy</property-tag>
 		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
@@ -213,8 +213,8 @@
 		<label>RSSI</label>
 		<description>Wi-Fi signal strength</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>RSSI</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>RSSI</property-tag>
 		</tags>
 		<state readOnly="true"></state>
 	</channel-type>

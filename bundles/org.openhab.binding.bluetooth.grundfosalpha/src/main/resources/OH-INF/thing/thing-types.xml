@@ -18,8 +18,8 @@
 		<description>Current head</description>
 		<category>Water</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Water</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Water</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
@@ -30,8 +30,8 @@
 		<description>Current pump temperature</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
@@ -42,8 +42,8 @@
 		<description>Accumulated electrical energy consumed by the pump</description>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Energy</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.3f %unit%"/>
 	</channel-type>
@@ -54,8 +54,8 @@
 		<description>Current rotation of the pump motor</description>
 		<category>Fan</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Frequency</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Frequency</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.0f rpm"/>
 	</channel-type>
@@ -66,8 +66,8 @@
 		<description>Current drawn by the pump motor</description>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Current</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Current</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.3f %unit%"/>
 	</channel-type>
@@ -78,8 +78,8 @@
 		<description>Accumulated running time of the pump</description>
 		<category>Time</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Duration</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Duration</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.3f %unit%"/>
 	</channel-type>
@@ -89,7 +89,7 @@
 		<label>Start Count</label>
 		<description>Accumulated number of pump starts</description>
 		<tags>
-			<tag>Measurement</tag>
+			<point-tag>Measurement</point-tag>
 		</tags>
 		<state readOnly="true" pattern="%.0f"/>
 	</channel-type>

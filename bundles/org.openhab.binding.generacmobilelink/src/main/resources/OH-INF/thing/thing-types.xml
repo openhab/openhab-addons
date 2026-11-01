@@ -67,8 +67,8 @@
 		<label>Status Text</label>
 		<description>The longer description of the current status.</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Info</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -131,8 +131,8 @@
 		<label>Run Hours</label>
 		<description>Number of hours run.</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Duration</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Duration</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -141,8 +141,8 @@
 		<label>Battery Voltage</label>
 		<description>The battery voltage.</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Voltage</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Voltage</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -151,8 +151,8 @@
 		<label>Hours of Protection</label>
 		<description>Number of hours of protection the generator has provided.</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Duration</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Duration</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -161,8 +161,8 @@
 		<label>Signal Strength</label>
 		<description>The Wi-Fi signal strength of the generator</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>SignalStrength</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>SignalStrength</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>

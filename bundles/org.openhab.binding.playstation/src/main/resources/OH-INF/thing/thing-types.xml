@@ -50,8 +50,8 @@
 		<label>PlayStation 3 Power</label>
 		<description>Shows if the PlayStation 3 is on or off.</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Power</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Power</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -60,8 +60,8 @@
 		<label>PlayStation 4 Power</label>
 		<description>Shows if the PlayStation 4 is on or in standby/off.</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Power</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Power</property-tag>
 		</tags>
 	</channel-type>
 	<channel-type id="application-channel">
@@ -69,8 +69,8 @@
 		<label>Application</label>
 		<description>Name of the currently running application.</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>App</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>App</property-tag>
 		</tags>
 		<state pattern="%s" readOnly="true"/>
 	</channel-type>

@@ -113,8 +113,8 @@
 		<label>Lock</label>
 		<description>Lock or unlock the Tedee lock.</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>LockState</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>LockState</property-tag>
 		</tags>
 		<state readOnly="false"/>
 	</channel-type>
@@ -125,8 +125,8 @@
 		<label>Lock State</label>
 		<description>Current internal state of the Tedee lock.</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>LockState</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>LockState</property-tag>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -151,8 +151,8 @@
 		<label>Door State</label>
 		<description>Current door state reported by the Tedee lock.</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>OpenState</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>OpenState</property-tag>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -170,7 +170,7 @@
 		<label>Charging</label>
 		<description>Indicates whether the Tedee lock is charging.</description>
 		<tags>
-			<tag>Status</tag>
+			<point-tag>Status</point-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -181,7 +181,7 @@
 		<label>Jammed</label>
 		<description>Indicates whether the Tedee lock is jammed.</description>
 		<tags>
-			<tag>Alarm</tag>
+			<point-tag>Alarm</point-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -192,7 +192,7 @@
 		<label>Connected</label>
 		<description>Indicates whether the Tedee lock is connected to the Tedee Bridge.</description>
 		<tags>
-			<tag>Status</tag>
+			<point-tag>Status</point-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -203,7 +203,7 @@
 		<label>Action</label>
 		<description>Send an action to the Tedee lock.</description>
 		<tags>
-			<tag>Control</tag>
+			<point-tag>Control</point-tag>
 		</tags>
 		<command>
 			<options>
@@ -222,8 +222,8 @@
 		<label>Setting Enabled</label>
 		<description>Read-only Tedee device setting.</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Enabled</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Enabled</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -234,8 +234,8 @@
 		<label>Setting Value</label>
 		<description>Read-only Tedee device setting value.</description>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Duration</tag>
+			<point-tag>Setpoint</point-tag>
+			<property-tag>Duration</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>

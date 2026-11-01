@@ -40,8 +40,8 @@
 		<label>Shutter State</label>
 		<description>Represents state of the roller shutter</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>OpenLevel</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>OpenLevel</property-tag>
 		</tags>
 	</channel-type>
 

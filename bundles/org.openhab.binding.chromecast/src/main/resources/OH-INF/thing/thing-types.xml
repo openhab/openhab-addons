@@ -182,8 +182,8 @@
 		<label>App</label>
 		<description>Name of the currently running application</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>App</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>App</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -208,8 +208,8 @@
 		<label>Current Time</label>
 		<description>Current time of currently playing media</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Progress</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Progress</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
@@ -219,8 +219,8 @@
 		<label>Duration</label>
 		<description>Length of currently playing media</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Duration</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Duration</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
@@ -231,8 +231,8 @@
 		<label>Media Type</label>
 		<description>The type of the currently playing media. One of GENERIC, MOVIE, TV_SHOW, AUDIO_TRACK, PHOTO</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Info</property-tag>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -250,8 +250,8 @@
 		<label>Album Artist</label>
 		<description>The name of the album's artist</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Info</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -261,8 +261,8 @@
 		<label>Album Name</label>
 		<description>The name of the album</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Info</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -273,8 +273,8 @@
 		<description>The broadcast date of the currently playing media</description>
 		<category>Calendar</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Info</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td"/>
 	</channel-type>
@@ -284,8 +284,8 @@
 		<label>Composer</label>
 		<description>The composer of the current track</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Info</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -296,8 +296,8 @@
 		<description>The creation date of the currently playing media</description>
 		<category>Calendar</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Info</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td"/>
 	</channel-type>
@@ -307,8 +307,8 @@
 		<label>Disc Number</label>
 		<description>The disc number of the currently playing media</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Info</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -318,8 +318,8 @@
 		<label>Episode Number</label>
 		<description>The episode number of the currently playing media</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Info</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -343,8 +343,8 @@
 		<label>Location Name</label>
 		<description>The location of where the current media was taken</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Info</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -355,8 +355,8 @@
 		<description>The release date of the currently playing media</description>
 		<category>Calendar</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Info</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td"/>
 	</channel-type>
@@ -366,8 +366,8 @@
 		<label>Season Number</label>
 		<description>The season number of the currently playing media</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Info</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -377,8 +377,8 @@
 		<label>Series Title</label>
 		<description>The series title of the currently playing media</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Info</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -388,8 +388,8 @@
 		<label>Studio</label>
 		<description>The studio of the currently playing media</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Info</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -399,8 +399,8 @@
 		<label>Subtitle</label>
 		<description>The subtitle of the currently playing media</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Info</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -410,8 +410,8 @@
 		<label>Track Number</label>
 		<description>The track number of the currently playing media</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Info</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>

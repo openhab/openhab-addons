@@ -83,8 +83,8 @@
 		<label>Location Name</label>
 		<description>Name of location represented</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>GeoLocation</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>GeoLocation</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -95,8 +95,8 @@
 		<description>Time of forecast time window start</description>
 		<category>Time</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Timestamp</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%1$tF %1$tR"/>
 	</channel-type>
@@ -107,8 +107,8 @@
 		<description>Air Temperature</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -119,8 +119,8 @@
 		<description>Minimum Screen Air Temperature Over Previous Hour</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -131,8 +131,8 @@
 		<description>Maximum Screen Air Temperature Over Previous Hour</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -143,8 +143,8 @@
 		<description>Feels Like Temperature</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -155,8 +155,8 @@
 		<description>Screen Relative Humidity</description>
 		<category>Humidity</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Humidity</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Humidity</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.0f %%"/>
 	</channel-type>
@@ -175,8 +175,8 @@
 		<description>Probability of Precipitation</description>
 		<category>Rain</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Rain</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Rain</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.0f %%"/>
 	</channel-type>
@@ -187,8 +187,8 @@
 		<description>Precipitation Rate</description>
 		<category>Rain</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Speed</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Speed</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.4f %unit%"/>
 	</channel-type>
@@ -199,8 +199,8 @@
 		<description>Total Precipitation Amount Over Previous Hour</description>
 		<category>Rain</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Rain</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Rain</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.4f %unit%"/>
 	</channel-type>
@@ -211,8 +211,8 @@
 		<description>Total Snowfall Amount Over Previous Hour</description>
 		<category>Snow</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Precipitation</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Precipitation</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.4f %unit%"/>
 	</channel-type>
@@ -223,8 +223,8 @@
 		<description>UV Index</description>
 		<category>Sun</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Ultraviolet</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Ultraviolet</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.0f"/>
 	</channel-type>
@@ -235,8 +235,8 @@
 		<description>Mean Sea Level Pressure</description>
 		<category>Pressure</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Pressure</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Pressure</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -247,8 +247,8 @@
 		<description>10m Wind Speed</description>
 		<category>Wind</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Wind</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Wind</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
@@ -259,8 +259,8 @@
 		<description>10m Wind Gust Speed</description>
 		<category>Wind</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Wind</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Wind</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
@@ -271,8 +271,8 @@
 		<description>Maximum 10m Wind Gust Speed of Previous Hour</description>
 		<category>Wind</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Wind</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Wind</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
@@ -283,8 +283,8 @@
 		<description>Dew Point Temperature</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -295,8 +295,8 @@
 		<description>10m Wind From Direction</description>
 		<category>Wind</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Wind</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Wind</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -309,8 +309,8 @@
 			minutes preceding the validity time. 10m wind is the considered surface wind.</description>
 		<category>Wind</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Wind</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Wind</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
@@ -322,8 +322,8 @@
 			minutes preceding the validity time. 10m wind is the considered surface wind.</description>
 		<category>Wind</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Wind</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Wind</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
@@ -336,8 +336,8 @@
 			as the direction from which it is blowing. 10m wind is the considered surface wind.</description>
 		<category>Wind</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Wind</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Wind</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -350,8 +350,8 @@
 			as the direction from which it is blowing. 10m wind is the considered surface wind.</description>
 		<category>Wind</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Wind</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Wind</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -363,8 +363,8 @@
 			speed observed over the 10 minutes preceding the validity time. 10m wind is the considered surface wind.</description>
 		<category>Wind</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Wind</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Wind</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
@@ -376,8 +376,8 @@
 			speed observed over the 10 minutes preceding the validity time. 10m wind is the considered surface wind.</description>
 		<category>Wind</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Wind</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Wind</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
@@ -404,8 +404,8 @@
 		<description>Relative Humidity at Local Midday - Stevenson screen height is approximately 1.5m above ground level.</description>
 		<category>Humidity</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Humidity</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Humidity</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.0f %%"/>
 	</channel-type>
@@ -416,8 +416,8 @@
 		<description>Relative Humidity at Local Midnight - Stevenson screen height is approximately 1.5m above ground level.</description>
 		<category>Humidity</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Humidity</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Humidity</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.0f %%"/>
 	</channel-type>
@@ -429,8 +429,8 @@
 			sea areas. Air pressure at sea level is the quantity often abbreviated as pressure or PMSL.</description>
 		<category>Pressure</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Pressure</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Pressure</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -442,8 +442,8 @@
 			sea areas. Air pressure at sea level is the quantity often abbreviated as pressure or PMSL.</description>
 		<category>Pressure</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Pressure</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Pressure</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -455,8 +455,8 @@
 			Daytime is defined as those forecast times that fall between local dawn and dusk.</description>
 		<category>Sun</category>
 		<tags>
-			<tag>Forecast</tag>
-			<tag>Ultraviolet</tag>
+			<point-tag>Forecast</point-tag>
+			<property-tag>Ultraviolet</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.0f"/>
 	</channel-type>
@@ -470,8 +470,8 @@
 			1.5m above ground level. Daytime is defined as those forecast times that fall between local dawn and dusk.</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Forecast</tag>
-			<tag>Temperature</tag>
+			<point-tag>Forecast</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -485,8 +485,8 @@
 			1.5m above ground level. Night-time is defined as those forecast times that fall between local dusk and dawn.</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Forecast</tag>
-			<tag>Temperature</tag>
+			<point-tag>Forecast</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -500,8 +500,8 @@
 			1.5m above ground level. Daytime is defined as those forecast times that fall between local dawn and dusk.</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Forecast</tag>
-			<tag>Temperature</tag>
+			<point-tag>Forecast</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -515,8 +515,8 @@
 			1.5m above ground level. Night-time is defined as those forecast times that fall between local dusk and dawn.</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Forecast</tag>
-			<tag>Temperature</tag>
+			<point-tag>Forecast</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -530,8 +530,8 @@
 			1.5m above ground level. Night-time is defined as those forecast times that fall between local dusk and dawn.</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Forecast</tag>
-			<tag>Temperature</tag>
+			<point-tag>Forecast</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -544,8 +544,8 @@
 			Daytime is defined as those forecast times that fall between local dawn and dusk.</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Forecast</tag>
-			<tag>Temperature</tag>
+			<point-tag>Forecast</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -558,8 +558,8 @@
 			radiation. Night-time is defined as those forecast times that fall between local dusk and dawn.</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Forecast</tag>
-			<tag>Temperature</tag>
+			<point-tag>Forecast</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -574,8 +574,8 @@
 			between local dawn and dusk.</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Forecast</tag>
-			<tag>Temperature</tag>
+			<point-tag>Forecast</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -590,8 +590,8 @@
 			fall between local dusk and dawn.</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Forecast</tag>
-			<tag>Temperature</tag>
+			<point-tag>Forecast</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -606,8 +606,8 @@
 			between local dawn and dusk.</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Forecast</tag>
-			<tag>Temperature</tag>
+			<point-tag>Forecast</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -622,8 +622,8 @@
 			fall between local dusk and dawn.</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Forecast</tag>
-			<tag>Temperature</tag>
+			<point-tag>Forecast</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -635,8 +635,8 @@
 			between local dawn and dusk.</description>
 		<category>Rain</category>
 		<tags>
-			<tag>Forecast</tag>
-			<tag>Rain</tag>
+			<point-tag>Forecast</point-tag>
+			<property-tag>Rain</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.0f %%"/>
 	</channel-type>
@@ -648,8 +648,8 @@
 			between local dusk and dawn.</description>
 		<category>Rain</category>
 		<tags>
-			<tag>Forecast</tag>
-			<tag>Rain</tag>
+			<point-tag>Forecast</point-tag>
+			<property-tag>Rain</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.0f %%"/>
 	</channel-type>
@@ -661,8 +661,8 @@
 			dawn and dusk.</description>
 		<category>Rain</category>
 		<tags>
-			<tag>Forecast</tag>
-			<tag>Precipitation</tag>
+			<point-tag>Forecast</point-tag>
+			<property-tag>Precipitation</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.0f %%"/>
 	</channel-type>
@@ -674,8 +674,8 @@
 			local dusk and dawn.</description>
 		<category>Rain</category>
 		<tags>
-			<tag>Forecast</tag>
-			<tag>Precipitation</tag>
+			<point-tag>Forecast</point-tag>
+			<property-tag>Precipitation</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.0f %%"/>
 	</channel-type>
@@ -688,8 +688,8 @@
 			between local dawn and dusk.</description>
 		<category>Rain</category>
 		<tags>
-			<tag>Forecast</tag>
-			<tag>Precipitation</tag>
+			<point-tag>Forecast</point-tag>
+			<property-tag>Precipitation</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.0f %%"/>
 	</channel-type>
@@ -702,8 +702,8 @@
 			between local dusk and dawn.</description>
 		<category>Rain</category>
 		<tags>
-			<tag>Forecast</tag>
-			<tag>Precipitation</tag>
+			<point-tag>Forecast</point-tag>
+			<property-tag>Precipitation</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.0f %%"/>
 	</channel-type>
@@ -715,8 +715,8 @@
 			dawn and dusk.</description>
 		<category>Rain</category>
 		<tags>
-			<tag>Forecast</tag>
-			<tag>Rain</tag>
+			<point-tag>Forecast</point-tag>
+			<property-tag>Rain</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.0f %%"/>
 	</channel-type>
@@ -728,8 +728,8 @@
 			local dusk and dawn.</description>
 		<category>Rain</category>
 		<tags>
-			<tag>Forecast</tag>
-			<tag>Rain</tag>
+			<point-tag>Forecast</point-tag>
+			<property-tag>Rain</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.0f %%"/>
 	</channel-type>
@@ -741,8 +741,8 @@
 			those forecast times that fall between local dawn and dusk.</description>
 		<category>Rain</category>
 		<tags>
-			<tag>Forecast</tag>
-			<tag>Rain</tag>
+			<point-tag>Forecast</point-tag>
+			<property-tag>Rain</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.0f %%"/>
 	</channel-type>
@@ -754,8 +754,8 @@
 			as those forecast times that fall between local dusk and dawn.</description>
 		<category>Rain</category>
 		<tags>
-			<tag>Forecast</tag>
-			<tag>Rain</tag>
+			<point-tag>Forecast</point-tag>
+			<property-tag>Rain</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.0f %%"/>
 	</channel-type>
@@ -767,8 +767,8 @@
 			dawn and dusk.</description>
 		<category>Rain</category>
 		<tags>
-			<tag>Forecast</tag>
-			<tag>Precipitation</tag>
+			<point-tag>Forecast</point-tag>
+			<property-tag>Precipitation</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.0f %%"/>
 	</channel-type>
@@ -780,8 +780,8 @@
 			local dusk and dawn.</description>
 		<category>Rain</category>
 		<tags>
-			<tag>Forecast</tag>
-			<tag>Precipitation</tag>
+			<point-tag>Forecast</point-tag>
+			<property-tag>Precipitation</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.0f %%"/>
 	</channel-type>
@@ -792,8 +792,8 @@
 		<description>Probability of Sferics During The Day - This is the probability of a strike within a radius of 50km.</description>
 		<category>Rain</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Rain</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Rain</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.0f %%"/>
 	</channel-type>
@@ -804,8 +804,8 @@
 		<description>Probability of Sferics During The Night - This is the probability of a strike within a radius of 50km.</description>
 		<category>Rain</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Rain</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Rain</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.0f %%"/>
 	</channel-type>
@@ -817,8 +817,8 @@
 			dawn and dusk</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Forecast</tag>
-			<tag>Temperature</tag>
+			<point-tag>Forecast</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -830,8 +830,8 @@
 			local dusk and dawn</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Forecast</tag>
-			<tag>Temperature</tag>
+			<point-tag>Forecast</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>

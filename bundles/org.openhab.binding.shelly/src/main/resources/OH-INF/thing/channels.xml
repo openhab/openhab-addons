@@ -10,8 +10,8 @@
 		<description>ON when rain is detected; stays ON briefly after rain stops (WS90 piezo sensor hardware behavior)</description>
 		<category>Rain</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Rain</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Rain</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -22,8 +22,8 @@
 		<description>Wind speed in m/s</description>
 		<category>Wind</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Speed</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Speed</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.2f %unit%">
 		</state>
@@ -35,8 +35,8 @@
 		<description>Wind direction in degrees (0-360)</description>
 		<category>Wind</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Wind</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Wind</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%">
 		</state>
@@ -48,8 +48,8 @@
 		<description>Wind gust speed in m/s</description>
 		<category>Wind</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Speed</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Speed</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.2f %unit%">
 		</state>
@@ -61,8 +61,8 @@
 		<description>Ultraviolet radiation index (0-11+)</description>
 		<category>Sun</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Ultraviolet</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Ultraviolet</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.0f">
 		</state>
@@ -74,8 +74,8 @@
 		<description>Atmospheric pressure in hPa</description>
 		<category>Pressure</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Pressure</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Pressure</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.2f %unit%">
 		</state>
@@ -87,8 +87,8 @@
 		<description>Dew point temperature</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%">
 		</state>
@@ -100,8 +100,8 @@
 		<description>Accumulated precipitation in mm (monotonic total since sensor reset)</description>
 		<category>Rain</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Rain</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Rain</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%">
 		</state>
@@ -113,8 +113,8 @@
 		<description>Wind direction as 16-point compass label (e.g. NNE)</description>
 		<category>Wind</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Wind</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Wind</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -125,8 +125,8 @@
 		<description>Perceived "feels like" temperature, combining air temperature, humidity and wind speed</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%">
 		</state>
@@ -138,8 +138,8 @@
 		<description>Atmospheric pressure reduced to sea level (QNH), based on the configured station altitude</description>
 		<category>Pressure</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Pressure</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Pressure</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.2f %unit%">
 		</state>
@@ -151,8 +151,8 @@
 		<description>Voltage of the internal energy storage capacitor charged by the solar panel</description>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Voltage</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Voltage</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.3f %unit%"/>
 	</channel-type>

@@ -251,8 +251,8 @@
 		<label>Produced Today</label>
 		<category>energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Energy</property-tag>
 		</tags>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
@@ -261,8 +261,8 @@
 		<label>Produced 7 Days</label>
 		<category>energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Energy</property-tag>
 		</tags>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
@@ -271,8 +271,8 @@
 		<label>Produced Lifetime</label>
 		<category>energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Energy</property-tag>
 		</tags>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
@@ -282,8 +282,8 @@
 		<description>Latest watts produced</description>
 		<category>energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Power</property-tag>
 		</tags>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
@@ -295,8 +295,8 @@
 		<description>Last reported power delivery</description>
 		<category>energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Power</property-tag>
 		</tags>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
@@ -306,8 +306,8 @@
 		<description>Maximum reported power</description>
 		<category>energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Power</property-tag>
 		</tags>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
@@ -324,8 +324,8 @@
 		<item-type>Contact</item-type>
 		<label>Relay Status</label>
 		<tags>
-			<tag>Status</tag>
-			<tag>OpenState</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>OpenState</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -343,8 +343,8 @@
 		<description>Latest battery power. Positive when discharging, negative when charging</description>
 		<category>energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Power</property-tag>
 		</tags>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
@@ -354,8 +354,8 @@
 		<description>State of charge of the battery</description>
 		<category>BatteryLevel</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Energy</property-tag>
 		</tags>
 		<state min="0" max="100" pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
@@ -365,8 +365,8 @@
 		<description>Energy currently stored in the batteries</description>
 		<category>energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Energy</property-tag>
 		</tags>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
@@ -376,8 +376,8 @@
 		<description>Capacity of the battery</description>
 		<category>energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Energy</property-tag>
 		</tags>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
@@ -387,8 +387,8 @@
 		<description>Temperature of the battery</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>

@@ -191,8 +191,8 @@
 		<label>Water Temperature</label>
 		<description>The temperature of the water. Only valid when pool pump is running.</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
@@ -202,8 +202,8 @@
 		<label>Solar Temperature</label>
 		<description>The temperature of the solar sensor.</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
@@ -213,8 +213,8 @@
 		<label>Air Temperature</label>
 		<description>The temperature of the air.</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
@@ -224,8 +224,8 @@
 		<label>Auxillary Switch</label>
 		<description>The on/off control for this circuit.</description>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Power</tag>
+			<point-tag>Switch</point-tag>
+			<property-tag>Power</property-tag>
 		</tags>
 	</channel-type>
 
@@ -248,8 +248,8 @@
 		<label>Heat Mode</label>
 		<description>The current head mode (None, Heater, Solar Preferred, Solar).</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Mode</property-tag>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -266,8 +266,8 @@
 		<label>Temperature Set Point</label>
 		<description>The set point temperature for this mode.</description>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point-tag>Setpoint</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%d %unit%" min="15" max="105" step="1"/>
 	</channel-type>
@@ -277,8 +277,8 @@
 		<label>Light Mode</label>
 		<description>The current light mode.</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Mode</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Mode</property-tag>
 		</tags>
 		<state>
 			<options>
@@ -328,8 +328,8 @@
 		<label>Start Time</label>
 		<description>The start time for this schedule.</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Timestamp</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Timestamp</property-tag>
 		</tags>
 		<state min="0" max="1440"/>
 	</channel-type>
@@ -339,8 +339,8 @@
 		<label>End Time</label>
 		<description>The end time (or duration for Egg Timer) of this schedule.</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Timestamp</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Timestamp</property-tag>
 		</tags>
 		<state min="0" max="1440"/>
 	</channel-type>
@@ -362,8 +362,8 @@
 		<label>Service Mode</label>
 		<description>Controller is in service mode</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Mode</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -373,8 +373,8 @@
 		<label>Heater Delay</label>
 		<description>Pump is continuing to run to allow the heater to cool.</description>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
+			<point-tag>Switch</point-tag>
+			<property-tag>Mode</property-tag>
 		</tags>
 	</channel-type>
 

@@ -7,8 +7,8 @@
 		<item-type>Number</item-type>
 		<label>Window Front Left</label>
 		<tags>
-			<tag>Status</tag>
-			<tag>OpenState</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>OpenState</property-tag>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -25,8 +25,8 @@
 		<item-type>Number</item-type>
 		<label>Window Front Right </label>
 		<tags>
-			<tag>Status</tag>
-			<tag>OpenState</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>OpenState</property-tag>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -43,8 +43,8 @@
 		<item-type>Number</item-type>
 		<label>Window Rear Left</label>
 		<tags>
-			<tag>Status</tag>
-			<tag>OpenState</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>OpenState</property-tag>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -61,8 +61,8 @@
 		<item-type>Number</item-type>
 		<label>Window Rear Right</label>
 		<tags>
-			<tag>Status</tag>
-			<tag>OpenState</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>OpenState</property-tag>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -79,8 +79,8 @@
 		<item-type>Number</item-type>
 		<label>Window Blind Rear Right</label>
 		<tags>
-			<tag>Status</tag>
-			<tag>OpenState</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>OpenState</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -88,8 +88,8 @@
 		<item-type>Number</item-type>
 		<label>Window Blind Rear Left</label>
 		<tags>
-			<tag>Status</tag>
-			<tag>OpenState</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>OpenState</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -97,8 +97,8 @@
 		<item-type>Number</item-type>
 		<label>Window Blind Rear</label>
 		<tags>
-			<tag>Status</tag>
-			<tag>OpenState</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>OpenState</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -106,8 +106,8 @@
 		<item-type>Number</item-type>
 		<label>Flip Window</label>
 		<tags>
-			<tag>Status</tag>
-			<tag>OpenState</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>OpenState</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>

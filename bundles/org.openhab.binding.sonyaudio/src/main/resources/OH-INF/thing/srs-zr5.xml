@@ -26,8 +26,8 @@
 		<label>Sound Field</label>
 		<description>Select the Sound Field for the speaker</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>MediaControl</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>MediaControl</property-tag>
 		</tags>
 		<state>
 			<options>

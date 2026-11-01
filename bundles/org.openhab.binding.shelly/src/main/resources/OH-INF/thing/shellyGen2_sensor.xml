@@ -112,8 +112,8 @@
 		<description>Occupancy state of the main detection zone (ON = presence detected)</description>
 		<category>Motion</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Presence</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Presence</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -123,7 +123,7 @@
 		<label>Object Count</label>
 		<description>Number of objects/persons currently detected in the main zone</description>
 		<tags>
-			<tag>Measurement</tag>
+			<point-tag>Measurement</point-tag>
 		</tags>
 		<state readOnly="true" pattern="%d"/>
 	</channel-type>
@@ -133,8 +133,8 @@
 		<label>Sensor Enable</label>
 		<description>Enable or disable the mmWave radar sensor</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Enabled</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Enabled</property-tag>
 		</tags>
 		<state readOnly="false"/>
 	</channel-type>
@@ -144,8 +144,8 @@
 		<label>Thermostat Enabled</label>
 		<description>Enable or disable the Wall Display thermostat</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Enabled</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Enabled</property-tag>
 		</tags>
 		<state readOnly="false"/>
 	</channel-type>

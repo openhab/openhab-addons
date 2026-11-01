@@ -65,8 +65,8 @@
 		<item-type>Number:Length</item-type>
 		<label>Water Level</label>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Level</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Level</property-tag>
 		</tags>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
@@ -74,8 +74,8 @@
 		<item-type>Number</item-type>
 		<label>Water Level Trend</label>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Info</property-tag>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -89,8 +89,8 @@
 		<item-type>Number</item-type>
 		<label>Warning Level</label>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Info</property-tag>
 		</tags>
 		<state readOnly="true">
 			<options>

@@ -17,8 +17,8 @@
 		<item-type>DateTime</item-type>
 		<label>Command Updated</label>
 		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Timestamp</property-tag>
 		</tags>
 		<state pattern="%1$tA, %1$td.%1$tm. %1$tH:%1$tM" readOnly="true"/>
 	</channel-type>

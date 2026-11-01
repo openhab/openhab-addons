@@ -60,8 +60,8 @@
 		<label>Output</label>
 		<description>Switch Module's Output</description>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Power</tag>
+			<point-tag>Switch</point-tag>
+			<property-tag>Power</property-tag>
 		</tags>
 	</channel-type>
 

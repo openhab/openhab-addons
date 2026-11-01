@@ -62,8 +62,8 @@
 		<description>Controller date/time.</description>
 		<category>Time</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Timestamp</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS"/>
 	</channel-type>

@@ -111,8 +111,8 @@
 		<description>Current operating status of the Etherrain</description>
 		<category>Water</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Power</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Power</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -131,8 +131,8 @@
 		<description>Provides feedback on whether the EtherRain device has detected rain or not</description>
 		<category>Sensor</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Rain</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Rain</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>

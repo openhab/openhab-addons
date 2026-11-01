@@ -22,8 +22,8 @@
 		<label>Solar Forecast</label>
 		<description>Holds the solar forecast data</description>
 		<tags>
-			<tag>Forecast</tag>
-			<tag>Energy</tag>
+			<point-tag>Forecast</point-tag>
+			<property-tag>Energy</property-tag>
 		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
@@ -32,8 +32,8 @@
 		<label>CO2 Forecast</label>
 		<description>Holds the CO2 forecast data</description>
 		<tags>
-			<tag>Forecast</tag>
-			<tag>CO2</tag>
+			<point-tag>Forecast</point-tag>
+			<property-tag>CO2</property-tag>
 		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
@@ -42,8 +42,8 @@
 		<label>Feed In Forecast</label>
 		<description>Holds the feed in forecast data</description>
 		<tags>
-			<tag>Forecast</tag>
-			<tag>Price</tag>
+			<point-tag>Forecast</point-tag>
+			<property-tag>Price</property-tag>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
@@ -52,8 +52,8 @@
 		<label>Grid Forecast</label>
 		<description>Holds the grid forecast data</description>
 		<tags>
-			<tag>Forecast</tag>
-			<tag>Price</tag>
+			<point-tag>Forecast</point-tag>
+			<property-tag>Price</property-tag>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
@@ -62,8 +62,8 @@
 		<label>Scaled Solar Forecast</label>
 		<description>Holds the scaled solar forecast data</description>
 		<tags>
-			<tag>Forecast</tag>
-			<tag>Calculation</tag>
+			<point-tag>Calculation</point-tag>
+			<property-tag>Energy</property-tag>
 		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
@@ -78,8 +78,8 @@
 		<label>Today's Forecast</label>
 		<description>Accumulated forecast for today</description>
 		<tags>
-			<tag>Forecast</tag>
-			<tag>Energy</tag>
+			<point-tag>Forecast</point-tag>
+			<property-tag>Energy</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -88,8 +88,8 @@
 		<label>Tomorrow's Forecast</label>
 		<description>Accumulated forecast for tomorrow</description>
 		<tags>
-			<tag>Forecast</tag>
-			<tag>Energy</tag>
+			<point-tag>Forecast</point-tag>
+			<property-tag>Energy</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -98,8 +98,8 @@
 		<label>After Tomorrow's Forecast</label>
 		<description>Accumulated forecast for the day after tomorrow</description>
 		<tags>
-			<tag>Forecast</tag>
-			<tag>Energy</tag>
+			<point-tag>Forecast</point-tag>
+			<property-tag>Energy</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>

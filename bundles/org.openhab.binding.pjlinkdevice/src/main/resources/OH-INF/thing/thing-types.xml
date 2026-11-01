@@ -87,8 +87,8 @@
 		<label>Power</label>
 		<description>Turn the projector on or off.</description>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Power</tag>
+			<point-tag>Switch</point-tag>
+			<property-tag>Power</property-tag>
 		</tags>
 	</channel-type>
 
@@ -103,8 +103,8 @@
 		<label>Audio Mute</label>
 		<description>Set the audio mute state.</description>
 		<tags>
-			<tag>Switch</tag>
-			<tag>SoundVolume</tag>
+			<point-tag>Switch</point-tag>
+			<property-tag>SoundVolume</property-tag>
 		</tags>
 	</channel-type>
 
@@ -113,8 +113,8 @@
 		<label>Video Mute</label>
 		<description>Set the video mute state.</description>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Brightness</tag>
+			<point-tag>Switch</point-tag>
+			<property-tag>Brightness</property-tag>
 		</tags>
 	</channel-type>
 
@@ -123,8 +123,8 @@
 		<label>Audio and Video Mute</label>
 		<description>Set the audio and video mute state.</description>
 		<tags>
-			<tag>Switch</tag>
-			<tag>MediaControl</tag>
+			<point-tag>Switch</point-tag>
+			<property-tag>MediaControl</property-tag>
 		</tags>
 	</channel-type>
 

@@ -100,8 +100,8 @@
 		<label>Brightness</label>
 		<description>Sets the brightness of the LEDs</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Brightness</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Brightness</property-tag>
 		</tags>
 	</channel-type>
 	<channel-type id="color">
@@ -109,8 +109,8 @@
 		<label>Color</label>
 		<description>Sets the color effect of the LEDs</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Color</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Color</property-tag>
 		</tags>
 	</channel-type>
 
@@ -131,8 +131,8 @@
 		<label>Enabled</label>
 		<description>Shows whether Hyperion is currently enabled or not and allows enabling or disabling of Hyperion</description>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
+			<point-tag>Switch</point-tag>
+			<property-tag>Mode</property-tag>
 		</tags>
 	</channel-type>
 

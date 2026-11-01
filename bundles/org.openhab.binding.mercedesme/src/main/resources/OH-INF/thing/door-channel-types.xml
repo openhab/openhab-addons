@@ -7,8 +7,8 @@
 		<item-type>Contact</item-type>
 		<label>Door Front Left</label>
 		<tags>
-			<tag>Status</tag>
-			<tag>OpenState</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>OpenState</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -16,8 +16,8 @@
 		<item-type>Contact</item-type>
 		<label>Door Front Right</label>
 		<tags>
-			<tag>Status</tag>
-			<tag>OpenState</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>OpenState</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -25,8 +25,8 @@
 		<item-type>Contact</item-type>
 		<label>Door Rear Left</label>
 		<tags>
-			<tag>Status</tag>
-			<tag>OpenState</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>OpenState</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -34,8 +34,8 @@
 		<item-type>Contact</item-type>
 		<label>Door Rear Right</label>
 		<tags>
-			<tag>Status</tag>
-			<tag>OpenState</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>OpenState</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -43,8 +43,8 @@
 		<item-type>Contact</item-type>
 		<label>Deck Lid</label>
 		<tags>
-			<tag>Status</tag>
-			<tag>OpenState</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>OpenState</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -52,8 +52,8 @@
 		<item-type>Contact</item-type>
 		<label>Engine Hood</label>
 		<tags>
-			<tag>Status</tag>
-			<tag>OpenState</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>OpenState</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -61,8 +61,8 @@
 		<item-type>Number</item-type>
 		<label>Roof top</label>
 		<tags>
-			<tag>Status</tag>
-			<tag>OpenState</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>OpenState</property-tag>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -76,8 +76,8 @@
 		<item-type>Number</item-type>
 		<label>Sun Roof</label>
 		<tags>
-			<tag>Status</tag>
-			<tag>OpenState</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>OpenState</property-tag>
 		</tags>
 		<state>
 			<options>
@@ -103,8 +103,8 @@
 		<item-type>Number</item-type>
 		<label>Sun Roof Front Blind</label>
 		<tags>
-			<tag>Status</tag>
-			<tag>OpenState</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>OpenState</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -112,8 +112,8 @@
 		<item-type>Number</item-type>
 		<label>Sun Roof Rear Blind</label>
 		<tags>
-			<tag>Status</tag>
-			<tag>OpenState</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>OpenState</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>

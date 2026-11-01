@@ -119,8 +119,8 @@
 		<label>Instantaneous Power</label>
 		<description>Deprecated! See channel 'powerAC1'</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Power</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -128,8 +128,8 @@
 		<item-type>Number:Power</item-type>
 		<label>Instantaneous Power AC</label>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Power</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -137,8 +137,8 @@
 		<item-type>Number:ElectricPotential</item-type>
 		<label>Voltage AC</label>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Voltage</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Voltage</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -146,8 +146,8 @@
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>Current AC</label>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Current</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Current</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -155,8 +155,8 @@
 		<item-type>Number:Frequency</item-type>
 		<label>Frequency AC</label>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Frequency</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Frequency</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
@@ -164,8 +164,8 @@
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>Current PV</label>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Current</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Current</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -173,8 +173,8 @@
 		<item-type>Number:ElectricPotential</item-type>
 		<label>Voltage PV</label>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Voltage</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Voltage</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -183,8 +183,8 @@
 		<label>Energy Today</label>
 		<description>The amount of energy generated today</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Energy</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
@@ -199,8 +199,8 @@
 		<description>The temperature from the sensor</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>

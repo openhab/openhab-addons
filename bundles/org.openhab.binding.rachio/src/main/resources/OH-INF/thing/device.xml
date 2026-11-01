@@ -79,7 +79,7 @@
 		<label>Name</label>
 		<description>The name of the sprinkler controller. This could be configured using the Rachio App.</description>
 		<tags>
-			<tag>Status</tag>
+			<point-tag>Status</point-tag>
 		</tags>
 	</channel-type>
 	<channel-type id="device-active">
@@ -87,7 +87,7 @@
 		<label>Active</label>
 		<description>ON: Controller is active, OFF: Controller is suspended</description>
 		<tags>
-			<tag>Control</tag>
+			<point-tag>Control</point-tag>
 		</tags>
 	</channel-type>
 	<channel-type id="device-online">
@@ -95,7 +95,7 @@
 		<label>Online</label>
 		<description>ON: Controller is online, OFF: Controller is offline, check internet connection</description>
 		<tags>
-			<tag>Status</tag>
+			<point-tag>Status</point-tag>
 		</tags>
 	</channel-type>
 	<channel-type id="device-paused">
@@ -103,7 +103,7 @@
 		<label>Paused</label>
 		<description>OFF: active watering run is not paused, ON: pause active watering run for pause-time seconds</description>
 		<tags>
-			<tag>Control</tag>
+			<point-tag>Control</point-tag>
 		</tags>
 	</channel-type>
 	<channel-type id="device-pause-time">
@@ -111,8 +111,8 @@
 		<label>Pause Time</label>
 		<description>Number of seconds to pause the active zone run when paused receives ON. Range is 0 to 3600 seconds.</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Duration</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Duration</property-tag>
 		</tags>
 	</channel-type>
 	<channel-type id="device-sleep-mode">
@@ -120,7 +120,7 @@
 		<label>Sleep Mode</label>
 		<description>Indicates whether the Rachio device sleep mode is active.</description>
 		<tags>
-			<tag>Status</tag>
+			<point-tag>Status</point-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -129,8 +129,8 @@
 		<label>Stop Watering</label>
 		<description>ON: stop watering for all zones, OFF: n/a</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Water</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Water</property-tag>
 		</tags>
 	</channel-type>
 	<channel-type id="device-run">
@@ -138,8 +138,8 @@
 		<label>Run Multiple Zones</label>
 		<description>ON: start watering for selected zones (''=ALL), OFF: n/a</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Water</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Water</property-tag>
 		</tags>
 	</channel-type>
 	<channel-type id="device-run-zones">
@@ -147,7 +147,7 @@
 		<label>Run Zone List</label>
 		<description>Zones to run at the same time (''=run ALL)</description>
 		<tags>
-			<tag>Control</tag>
+			<point-tag>Control</point-tag>
 		</tags>
 	</channel-type>
 	<channel-type id="device-runtime">
@@ -155,8 +155,8 @@
 		<label>Runtime</label>
 		<description>=0, use default runtime, >0: Start zones for given number of seconds</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Duration</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Duration</property-tag>
 		</tags>
 	</channel-type>
 	<channel-type id="device-rain-delay">
@@ -164,8 +164,8 @@
 		<label>Rain Delay</label>
 		<description>>1: Rain delay device</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Duration</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Duration</property-tag>
 		</tags>
 	</channel-type>
 	<channel-type id="device-rain-sensor-tripped">
@@ -173,8 +173,8 @@
 		<label>Rain Sensor Tripped</label>
 		<description>Indicates whether the rain sensor is currently tripped.</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Rain</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Rain</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -183,7 +183,7 @@
 		<label>Active Zone Number</label>
 		<description>Zone number of the currently active watering run; 0 when no zone is active.</description>
 		<tags>
-			<tag>Status</tag>
+			<point-tag>Status</point-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -192,7 +192,7 @@
 		<label>Active Zone Name</label>
 		<description>Name of the currently active watering zone, populated from webhook zone run events.</description>
 		<tags>
-			<tag>Status</tag>
+			<point-tag>Status</point-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -245,8 +245,8 @@
 		<label>Current Schedule Duration</label>
 		<description>Duration of the currently running schedule in seconds.</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Duration</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Duration</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -267,8 +267,8 @@
 		<label>Last API Event Time</label>
 		<description>Time of the most recent event retrieved from the Rachio event history endpoint.</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Timestamp</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -289,8 +289,8 @@
 		<label>Forecast High</label>
 		<description>Today's forecast high temperature.</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -299,8 +299,8 @@
 		<label>Forecast Low</label>
 		<description>Today's forecast low temperature.</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -310,8 +310,8 @@
 		<label>Forecast Precipitation</label>
 		<description>Today's forecast precipitation amount.</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Rain</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Rain</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -320,8 +320,8 @@
 		<label>Precipitation Probability</label>
 		<description>Today's forecast precipitation probability as a 0..1 fraction.</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Rain</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Rain</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -330,8 +330,8 @@
 		<label>Forecast Wind</label>
 		<description>Today's forecast wind speed.</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Wind</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Wind</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -340,8 +340,8 @@
 		<label>Forecast Updated</label>
 		<description>Timestamp of the forecast data when provided by Rachio.</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Timestamp</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -395,8 +395,8 @@
 		<label>Last Update</label>
 		<description>Timestamp of last status update.</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Timestamp</property-tag>
 		</tags>
 	</channel-type>
 	<channel-type id="last-event">
@@ -404,7 +404,7 @@
 		<label>Last Event</label>
 		<description>Most recent event processed by the binding, from polling or webhooks.</description>
 		<tags>
-			<tag>Status</tag>
+			<point-tag>Status</point-tag>
 		</tags>
 	</channel-type>
 	<channel-type id="last-event-time">
@@ -412,8 +412,8 @@
 		<label>Last Event Time</label>
 		<description>Timestamp when the last event was processed.</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Timestamp</property-tag>
 		</tags>
 	</channel-type>
 </thing:thing-descriptions>

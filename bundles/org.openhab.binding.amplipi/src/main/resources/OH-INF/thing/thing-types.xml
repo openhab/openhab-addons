@@ -130,8 +130,8 @@
 		<label>Source</label>
 		<description>The audio source that is played</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Channel</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Channel</property-tag>
 		</tags>
 		<state>
 			<options>

@@ -60,7 +60,7 @@
 		<label>Name</label>
 		<description>Name of the zone as configured in the Rachio App.</description>
 		<tags>
-			<tag>Status</tag>
+			<point-tag>Status</point-tag>
 		</tags>
 		<state readOnly="true" pattern="%s">
 		</state>
@@ -70,7 +70,7 @@
 		<label>Zone Number</label>
 		<description>Zone Number (1-16)</description>
 		<tags>
-			<tag>Status</tag>
+			<point-tag>Status</point-tag>
 		</tags>
 		<state readOnly="true" pattern="%.0f"/>
 	</channel-type>
@@ -79,7 +79,7 @@
 		<label>Enabled</label>
 		<description>ON: Zone is enabled, OFF: Zone is disabled. Sending ON/OFF enables or disables the zone.</description>
 		<tags>
-			<tag>Control</tag>
+			<point-tag>Control</point-tag>
 		</tags>
 	</channel-type>
 	<channel-type id="zone-run">
@@ -87,8 +87,8 @@
 		<label>Run Zone</label>
 		<description>ON: start watering, OFF: stop watering</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Water</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Water</property-tag>
 		</tags>
 	</channel-type>
 	<channel-type id="zone-runtime">
@@ -96,8 +96,8 @@
 		<label>Runtime</label>
 		<description>Set &gt; 0 to start the zone for the given number of seconds.</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Duration</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Duration</property-tag>
 		</tags>
 	</channel-type>
 	<channel-type id="zone-available-water">
@@ -105,8 +105,8 @@
 		<label>Available Water</label>
 		<description>Available water for the zone.</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Water</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Water</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
@@ -115,8 +115,8 @@
 		<label>Total Runtime</label>
 		<description>Total runtime of the zone.</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Duration</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Duration</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -131,7 +131,7 @@
 		<label>Image</label>
 		<description>Zone picture as native openHAB image data.</description>
 		<tags>
-			<tag>Status</tag>
+			<point-tag>Status</point-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -140,8 +140,8 @@
 		<label>Depth of Water</label>
 		<description>Depth of water value returned by Rachio for this zone.</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Water</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Water</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
@@ -150,8 +150,8 @@
 		<label>Saturated Depth of Water</label>
 		<description>Saturated depth of water value returned by Rachio for this zone.</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Water</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Water</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
@@ -160,7 +160,7 @@
 		<label>Management Allowed Depletion</label>
 		<description>Management allowed depletion value returned by Rachio for this zone.</description>
 		<tags>
-			<tag>Measurement</tag>
+			<point-tag>Measurement</point-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -169,8 +169,8 @@
 		<label>Root Zone Depth</label>
 		<description>Root zone depth value returned by Rachio for this zone.</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Water</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Water</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -179,7 +179,7 @@
 		<label>Efficiency</label>
 		<description>Efficiency value returned by Rachio for this zone.</description>
 		<tags>
-			<tag>Measurement</tag>
+			<point-tag>Measurement</point-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -188,7 +188,7 @@
 		<label>Yard Area</label>
 		<description>Yard area in square feet as returned by Rachio for this zone.</description>
 		<tags>
-			<tag>Measurement</tag>
+			<point-tag>Measurement</point-tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -197,8 +197,8 @@
 		<label>Last Watered Date</label>
 		<description>Timestamp when this zone was last watered.</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Timestamp</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -207,8 +207,8 @@
 		<label>Fixed Runtime</label>
 		<description>Fixed runtime value returned by Rachio for this zone.</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Duration</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Duration</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -217,8 +217,8 @@
 		<label>Maximum Runtime</label>
 		<description>Maximum runtime value returned by Rachio for this zone.</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Duration</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Duration</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -227,8 +227,8 @@
 		<label>Runtime Without Multiplier</label>
 		<description>Runtime without multiplier value returned by Rachio for this zone.</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Duration</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Duration</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -237,7 +237,7 @@
 		<label>Schedule Data Modified</label>
 		<description>ON when Rachio reports modified schedule data for this zone.</description>
 		<tags>
-			<tag>Status</tag>
+			<point-tag>Status</point-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -246,8 +246,8 @@
 		<label>Moisture Level</label>
 		<description>Command-only zone/setMoistureLevel input in mm; Rachio does not return it as readable state.</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Water</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Water</property-tag>
 		</tags>
 	</channel-type>
 	<channel-type id="zone-moisture-percent">
@@ -255,7 +255,7 @@
 		<label>Moisture Percent</label>
 		<description>Command-only zone/setMoisturePercent input (0-1); Rachio does not return it as readable state.</description>
 		<tags>
-			<tag>Control</tag>
+			<point-tag>Control</point-tag>
 		</tags>
 	</channel-type>
 </thing:thing-descriptions>

@@ -106,8 +106,8 @@
 		<label>Purchased Power</label>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Power</property-tag>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
@@ -116,8 +116,8 @@
 		<label>Grid Feed-in Power</label>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Power</property-tag>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
@@ -126,8 +126,8 @@
 		<label>Purchased Energy</label>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Energy</property-tag>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
@@ -136,8 +136,8 @@
 		<label>Grid Feed-in Energy</label>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Energy</property-tag>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
@@ -146,8 +146,8 @@
 		<label>Purchased Power L1</label>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Power</property-tag>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
@@ -156,8 +156,8 @@
 		<label>Grid Feed-in Power L1</label>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Power</property-tag>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
@@ -166,8 +166,8 @@
 		<label>Purchased Energy L1</label>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Energy</property-tag>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
@@ -176,8 +176,8 @@
 		<label>Grid Feed-in Energy L1</label>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Energy</property-tag>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
@@ -186,8 +186,8 @@
 		<label>Purchased Power L2</label>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Power</property-tag>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
@@ -196,8 +196,8 @@
 		<label>Grid Feed-in Power L2</label>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Power</property-tag>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
@@ -206,8 +206,8 @@
 		<label>Purchased Energy L2</label>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Energy</property-tag>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
@@ -216,8 +216,8 @@
 		<label>Grid Feed-in Energy L2</label>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Energy</property-tag>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
@@ -226,8 +226,8 @@
 		<label>Purchased Power L3</label>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Power</property-tag>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
@@ -236,8 +236,8 @@
 		<label>Grid Feed-in Power L3</label>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Power</property-tag>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
@@ -246,8 +246,8 @@
 		<label>Purchased Energy L3</label>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Energy</property-tag>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
@@ -256,8 +256,8 @@
 		<label>Grid Feed-in Energy L3</label>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Energy</property-tag>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
@@ -267,8 +267,8 @@
 		<label>Purchased Reactive Power</label>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Power</property-tag>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
@@ -277,8 +277,8 @@
 		<label>Grid Feed-in Reactive Power</label>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Power</property-tag>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
@@ -287,8 +287,8 @@
 		<label>Purchased Reactive Energy</label>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Energy</property-tag>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
@@ -297,8 +297,8 @@
 		<label>Grid Feed-in Reactive Energy</label>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Energy</property-tag>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
@@ -307,8 +307,8 @@
 		<label>Purchased Reactive Power L1</label>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Power</property-tag>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
@@ -317,8 +317,8 @@
 		<label>Grid Feed-in Reactive Power L1</label>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Power</property-tag>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
@@ -327,8 +327,8 @@
 		<label>Purchased Reactive Energy L1</label>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Energy</property-tag>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
@@ -337,8 +337,8 @@
 		<label>Grid Feed-in Reactive Energy L1</label>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Energy</property-tag>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
@@ -347,8 +347,8 @@
 		<label>Purchased Reactive Power L2</label>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Power</property-tag>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
@@ -357,8 +357,8 @@
 		<label>Grid Feed-in Reactive Power L2</label>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Power</property-tag>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
@@ -367,8 +367,8 @@
 		<label>Purchased Reactive Energy L2</label>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Energy</property-tag>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
@@ -377,8 +377,8 @@
 		<label>Grid Feed-in Reactive Energy L2</label>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Energy</property-tag>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
@@ -387,8 +387,8 @@
 		<label>Purchased Reactive Power L3</label>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Power</property-tag>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
@@ -397,8 +397,8 @@
 		<label>Grid Feed-in Reactive Power L3</label>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Power</property-tag>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
@@ -407,8 +407,8 @@
 		<label>Purchased Reactive Energy L3</label>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Energy</property-tag>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
@@ -417,8 +417,8 @@
 		<label>Grid Feed-in Reactive Energy L3</label>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Energy</property-tag>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
@@ -428,8 +428,8 @@
 		<label>Purchased Apparent Power</label>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Power</property-tag>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
@@ -438,8 +438,8 @@
 		<label>Grid Feed-in Apparent Power</label>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Power</property-tag>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
@@ -448,8 +448,8 @@
 		<label>Purchased Apparent Energy</label>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Energy</property-tag>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
@@ -458,8 +458,8 @@
 		<label>Grid Feed-in Apparent Energy</label>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Energy</property-tag>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
@@ -468,8 +468,8 @@
 		<label>Purchased Apparent Power L1</label>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Power</property-tag>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
@@ -478,8 +478,8 @@
 		<label>Grid Feed-in Apparent Power L1</label>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Power</property-tag>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
@@ -488,8 +488,8 @@
 		<label>Purchased Apparent Energy L1</label>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Energy</property-tag>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
@@ -498,8 +498,8 @@
 		<label>Grid Feed-in Apparent Energy L1</label>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Energy</property-tag>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
@@ -508,8 +508,8 @@
 		<label>Purchased Apparent Power L2</label>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Power</property-tag>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
@@ -518,8 +518,8 @@
 		<label>Grid Feed-in Apparent Power L2</label>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Power</property-tag>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
@@ -528,8 +528,8 @@
 		<label>Purchased Apparent Energy L2</label>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Energy</property-tag>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
@@ -538,8 +538,8 @@
 		<label>Grid Feed-in Apparent Energy L2</label>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Energy</property-tag>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
@@ -548,8 +548,8 @@
 		<label>Purchased Apparent Power L3</label>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Power</property-tag>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
@@ -558,8 +558,8 @@
 		<label>Grid Feed-in Apparent Power L3</label>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Power</property-tag>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
@@ -568,8 +568,8 @@
 		<label>Purchased Apparent Energy L3</label>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Energy</property-tag>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
@@ -578,8 +578,8 @@
 		<label>Grid Feed-in Apparent Energy L3</label>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Energy</property-tag>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
@@ -589,7 +589,7 @@
 		<label>Power Factor</label>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
+			<point-tag>Measurement</point-tag>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
@@ -598,7 +598,7 @@
 		<label>Power Factor L1</label>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
+			<point-tag>Measurement</point-tag>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
@@ -607,7 +607,7 @@
 		<label>Power Factor L2</label>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
+			<point-tag>Measurement</point-tag>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
@@ -616,7 +616,7 @@
 		<label>Power Factor L3</label>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
+			<point-tag>Measurement</point-tag>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
@@ -625,8 +625,8 @@
 		<label>Current L1</label>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Current</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Current</property-tag>
 		</tags>
 		<state pattern="%.3f %unit%" readOnly="true"/>
 	</channel-type>
@@ -635,8 +635,8 @@
 		<label>Current L2</label>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Current</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Current</property-tag>
 		</tags>
 		<state pattern="%.3f %unit%" readOnly="true"/>
 	</channel-type>
@@ -645,8 +645,8 @@
 		<label>Current L3</label>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Current</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Current</property-tag>
 		</tags>
 		<state pattern="%.3f %unit%" readOnly="true"/>
 	</channel-type>
@@ -655,8 +655,8 @@
 		<label>Voltage L1</label>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Voltage</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Voltage</property-tag>
 		</tags>
 		<state pattern="%.3f %unit%" readOnly="true"/>
 	</channel-type>
@@ -665,8 +665,8 @@
 		<label>Voltage L2</label>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Voltage</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Voltage</property-tag>
 		</tags>
 		<state pattern="%.3f %unit%" readOnly="true"/>
 	</channel-type>
@@ -675,8 +675,8 @@
 		<label>Voltage L3</label>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Voltage</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Voltage</property-tag>
 		</tags>
 		<state pattern="%.3f %unit%" readOnly="true"/>
 	</channel-type>
@@ -685,8 +685,8 @@
 		<label>Frequency</label>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Frequency</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Frequency</property-tag>
 		</tags>
 		<state pattern="%.3f Hz" readOnly="true"/>
 	</channel-type>

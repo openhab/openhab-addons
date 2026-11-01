@@ -53,8 +53,8 @@
 		<label>Power</label>
 		<description>Turns on/off the Hot Water Service</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Power</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Power</property-tag>
 		</tags>
 		<state/>
 	</channel-type>
@@ -75,8 +75,8 @@
 		<label>Fault Status</label>
 		<description>Report any current Faults from HWS</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Info</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
@@ -85,8 +85,8 @@
 		<label>Defrost</label>
 		<description>Is the defrost cycle running</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Info</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -95,8 +95,8 @@
 		<label>Work State</label>
 		<description>Report the current workstate of the HWS</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Info</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%">
 			<options>
@@ -111,8 +111,8 @@
 		<label>Current Temperature</label>
 		<description>Current Temperature of Hot Water</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Temperature</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
@@ -121,8 +121,8 @@
 		<label>Set Temperature</label>
 		<description>Set Temperature of Hot Water</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Temperature</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.0f %unit%"/>
 	</channel-type>
@@ -131,8 +131,8 @@
 		<label>Tank Capacity</label>
 		<description>Report the current hot water capacity of the HWS</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Level</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Level</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>

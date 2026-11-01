@@ -24,8 +24,8 @@
 		<label>Switch</label>
 		<description>This zone is a read only switch type zone</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Power</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Power</property-tag>
 		</tags>
 		<state readOnly="true"/>
 		<config-description>
@@ -59,8 +59,8 @@
 		<label>Temperature</label>
 		<description>This zone measures temperature</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state readOnly="true"/>
 		<config-description>
@@ -98,8 +98,8 @@
 		<label>Humidity</label>
 		<description>This zone measures humidity</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Humidity</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Humidity</property-tag>
 		</tags>
 		<state readOnly="true"/>
 		<config-description>
@@ -123,8 +123,8 @@
 		<label>Actuator</label>
 		<description>This zone is an actuator</description>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Power</tag>
+			<point-tag>Switch</point-tag>
+			<property-tag>Power</property-tag>
 		</tags>
 		<config-description>
 			<parameter name="zone" type="text" required="true">
@@ -169,8 +169,8 @@
 		<label>Switch</label>
 		<description>This zone is a read only switch type zone</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Power</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Power</property-tag>
 		</tags>
 		<state readOnly="true"/>
 		<config-description>
@@ -209,8 +209,8 @@
 		<label>Actuator</label>
 		<description>This zone is an actuator</description>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Power</tag>
+			<point-tag>Switch</point-tag>
+			<property-tag>Power</property-tag>
 		</tags>
 		<config-description>
 			<parameter name="zone" type="text" required="true">
@@ -259,8 +259,8 @@
 		<label>Temperature</label>
 		<description>This zone measures temperature</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state readOnly="true"/>
 		<config-description>
@@ -299,8 +299,8 @@
 		<label>Humidity</label>
 		<description>This zone measures humidity</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Humidity</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Humidity</property-tag>
 		</tags>
 		<state readOnly="true"/>
 		<config-description>

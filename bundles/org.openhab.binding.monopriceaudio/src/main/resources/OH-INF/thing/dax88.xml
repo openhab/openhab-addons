@@ -169,8 +169,8 @@
 		<label>All On</label>
 		<description>Turn All Zones On or Off</description>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Power</tag>
+			<point-tag>Switch</point-tag>
+			<property-tag>Power</property-tag>
 		</tags>
 	</channel-type>
 
@@ -207,8 +207,8 @@
 		<label>Do Not Disturb</label>
 		<description>Controls if the Zone Should Ignore an Incoming Audio Page</description>
 		<tags>
-			<tag>Switch</tag>
-			<tag>SoundVolume</tag>
+			<point-tag>Switch</point-tag>
+			<property-tag>SoundVolume</property-tag>
 		</tags>
 	</channel-type>
 
@@ -217,8 +217,8 @@
 		<label>Page Active</label>
 		<description>Indicates if the Page Mode is Active for This Zone</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Mode</property-tag>
 		</tags>
 		<state readOnly="true">
 			<options>

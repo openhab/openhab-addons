@@ -69,8 +69,8 @@
 		<description>Received signal strength indicator</description>
 		<category>QualityOfService</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>RSSI</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>RSSI</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
@@ -100,8 +100,8 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Temperature</label>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -109,8 +109,8 @@
 		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Humidity</label>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Humidity</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Humidity</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -118,8 +118,8 @@
 		<item-type>Number:Pressure</item-type>
 		<label>Pressure</label>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Pressure</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Pressure</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
@@ -149,8 +149,8 @@
 		<item-type>Number:ElectricPotential</item-type>
 		<label>Battery Voltage</label>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Voltage</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Voltage</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -158,8 +158,8 @@
 		<item-type>Number:Power</item-type>
 		<label>TX Power</label>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Power</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
@@ -180,8 +180,8 @@
 		<label>PM1.0</label>
 		<description><![CDATA[particulate matter <= 1.0 μm concentration (E1 format only)]]></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>AirQuality</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>AirQuality</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -190,8 +190,8 @@
 		<label>PM2.5</label>
 		<description><![CDATA[particulate matter <= 2.5 μm concentration]]></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>AirQuality</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>AirQuality</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -200,8 +200,8 @@
 		<label>PM4.0</label>
 		<description><![CDATA[particulate matter <= 4.0 μm concentration (E1 format only)]]></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>AirQuality</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>AirQuality</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -210,8 +210,8 @@
 		<label>PM10.0</label>
 		<description><![CDATA[particulate matter <= 10.0 μm concentration (E1 format only)]]></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>AirQuality</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>AirQuality</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -220,8 +220,8 @@
 		<label>CO2</label>
 		<description>CO2 concentration</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>AirQuality</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>AirQuality</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
@@ -242,8 +242,8 @@
 		<label>Luminosity</label>
 		<description>Light intensity (logarithmic scale)</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Light</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Light</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -258,8 +258,8 @@
 		<label>Air Quality Index</label>
 		<description>Calculated indoor air quality index from PM2.5 and CO2 (0-100%, higher = better)</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>AirQuality</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>AirQuality</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>

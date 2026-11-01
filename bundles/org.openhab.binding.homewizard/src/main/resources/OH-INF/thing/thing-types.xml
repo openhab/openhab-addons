@@ -145,8 +145,8 @@
 		<description>This channel provides the most recently reported total imported energy in kWh by counter 1, most commonly
 			used for import during the night or weekend.</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Energy</property-tag>
 		</tags>
 	</channel-type>
 
@@ -158,8 +158,8 @@
 			used for import during the day.
 		</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Energy</property-tag>
 		</tags>
 	</channel-type>
 
@@ -171,8 +171,8 @@
 			used for export during the night or weekend.
 		</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Energy</property-tag>
 		</tags>
 	</channel-type>
 
@@ -184,8 +184,8 @@
 			used for export during the day.
 		</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Energy</property-tag>
 		</tags>
 	</channel-type>
 
@@ -196,8 +196,8 @@
 			This channel provides the current grid voltage.
 		</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Voltage</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Voltage</property-tag>
 		</tags>
 	</channel-type>
 
@@ -209,8 +209,8 @@
 			exported.
 		</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Power</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"></state>
 	</channel-type>
@@ -223,8 +223,8 @@
 			exported.
 		</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Power</property-tag>
 		</tags>
 	</channel-type>
 
@@ -236,8 +236,8 @@
 			exported. It will be 0 for single phase systems.
 		</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Power</property-tag>
 		</tags>
 	</channel-type>
 
@@ -249,8 +249,8 @@
 			exported. It will be 0 for single phase systems.
 		</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Power</property-tag>
 		</tags>
 	</channel-type>
 
@@ -263,8 +263,8 @@
 			update.
 		</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Gas</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Gas</property-tag>
 		</tags>
 	</channel-type>
 
@@ -283,8 +283,8 @@
 			This channel provides the most recently reported total imported water in m^3.
 		</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Water</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Water</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.3f %unit%"/>
 	</channel-type>
@@ -306,8 +306,8 @@
 			This channel provides access to the power switch of the Energysocket
 		</description>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Power</tag>
+			<point-tag>Switch</point-tag>
+			<property-tag>Power</property-tag>
 		</tags>
 	</channel-type>
 

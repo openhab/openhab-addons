@@ -60,8 +60,8 @@
 		<label>Output</label>
 		<description>Dimmer Module's Output</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Brightness</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Brightness</property-tag>
 		</tags>
 	</channel-type>
 

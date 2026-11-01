@@ -52,8 +52,8 @@
 		<description>Allows to control the devices connected to this elero channel or group by sending UP, DOWN, STOP
 			commands.</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>OpenLevel</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>OpenLevel</property-tag>
 		</tags>
 	</channel-type>
 

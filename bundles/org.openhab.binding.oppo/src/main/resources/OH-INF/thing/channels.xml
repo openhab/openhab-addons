@@ -9,8 +9,8 @@
 		<label>Source Input</label>
 		<description>Select the Source Input for the Player</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>MediaControl</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>MediaControl</property-tag>
 		</tags>
 	</channel-type>
 
@@ -19,8 +19,8 @@
 		<label>Play Mode</label>
 		<description>The Current Playback Mode of the Source</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Mode</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -31,8 +31,8 @@
 		<description>Transport Controls e.g. Play/Pause/Next/Previous/Fast Forward/Rewind</description>
 		<category>Player</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>MediaControl</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>MediaControl</property-tag>
 		</tags>
 	</channel-type>
 
@@ -55,8 +55,8 @@
 		<label>Time Display</label>
 		<description>The Playback Time Elapsed/Remaining</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Duration</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Duration</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%1$tT"/>
 	</channel-type>
@@ -94,8 +94,8 @@
 		<label>Title Elapsed</label>
 		<description>The total playback time elapsed of the currently playing title</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Duration</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Duration</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%1$tT"/>
 	</channel-type>
@@ -105,8 +105,8 @@
 		<label>Title Length</label>
 		<description>The total length of the currently playing title</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Duration</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Duration</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%1$tT"/>
 	</channel-type>
@@ -117,8 +117,8 @@
 		<description>The date/time when the currently playing title will end</description>
 		<category>Time</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Timestamp</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -128,8 +128,8 @@
 		<label>Title Progress</label>
 		<description>The percent complete progress of the currently playing title</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Progress</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Progress</property-tag>
 		</tags>
 		<state pattern="%.0f%%"/>
 	</channel-type>
@@ -139,8 +139,8 @@
 		<label>Repeat Mode</label>
 		<description>The Current Repeat Mode</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Mode</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Mode</property-tag>
 		</tags>
 		<state>
 			<options>
@@ -159,8 +159,8 @@
 		<label>Zoom Mode</label>
 		<description>The Current Zoom Mode</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Mode</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Mode</property-tag>
 		</tags>
 		<state>
 			<options>
@@ -186,8 +186,8 @@
 		<label>Disc Type</label>
 		<description>The Current Type of Disc in the Player</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>MediaControl</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>MediaControl</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -197,8 +197,8 @@
 		<label>Audio Type</label>
 		<description>The Current Audio Track Type</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Info</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -229,8 +229,8 @@
 		<label>Output Video Resolution</label>
 		<description>The Video Resolution of the Player Output</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>MediaControl</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>MediaControl</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -247,8 +247,8 @@
 		<label>OSD Position</label>
 		<description>Set the OSD Position 0 to 5</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Position</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Position</property-tag>
 		</tags>
 		<state min="0" max="5" step="1" pattern="%d"/>
 	</channel-type>
@@ -265,8 +265,8 @@
 		<label>HDMI Mode</label>
 		<description>The Current HDMI Output Mode</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Mode</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Mode</property-tag>
 		</tags>
 	</channel-type>
 
@@ -275,8 +275,8 @@
 		<label>HDR Mode</label>
 		<description>The Current HDR Output Mode</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Mode</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Mode</property-tag>
 		</tags>
 		<state>
 			<options>

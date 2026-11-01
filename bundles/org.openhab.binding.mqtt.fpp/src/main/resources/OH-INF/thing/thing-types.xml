@@ -48,8 +48,8 @@
 		<label>Status</label>
 		<description>FPP Player Status</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>MediaControl</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>MediaControl</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -70,8 +70,8 @@
 		<label>Current Song</label>
 		<description>FPP Current Song</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Info</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -80,8 +80,8 @@
 		<label>Current Playlist</label>
 		<description>FPP Current Playlist</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Info</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -90,8 +90,8 @@
 		<label>Seconds Played</label>
 		<description>FPP Seconds Played</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Progress</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Progress</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f sec"/>
 	</channel-type>
@@ -100,8 +100,8 @@
 		<label>Seconds Remaining</label>
 		<description>FPP Seconds Remaining</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Progress</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Progress</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f sec"/>
 	</channel-type>
@@ -116,8 +116,8 @@
 		<label>Player</label>
 		<description>FPP Player Control</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>MediaControl</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>MediaControl</property-tag>
 		</tags>
 	</channel-type>
 	<channel-type id="volume">
@@ -125,8 +125,8 @@
 		<label>Volume</label>
 		<description>FPP Volume of the Output</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>SoundVolume</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>SoundVolume</property-tag>
 		</tags>
 	</channel-type>
 	<channel-type id="bridging-enabled" advanced="true">

@@ -115,8 +115,8 @@
 		<item-type>String</item-type>
 		<label>Light Mode</label>
 		<tags>
-			<tag>Control</tag>
-			<tag>Mode</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Mode</property-tag>
 		</tags>
 		<state>
 			<options>
@@ -161,8 +161,8 @@
 		<label>Dynamic Light Mode Speed</label>
 		<description>Speed of color/intensity changes in dynamic light modes</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Speed</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Speed</property-tag>
 		</tags>
 	</channel-type>
 
@@ -172,8 +172,8 @@
 		<description>Speed of the fan, in arbitrary steps</description>
 		<category>Fan</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>Speed</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Speed</property-tag>
 		</tags>
 		<state min="0" max="6" pattern="%.0f"/>
 	</channel-type>
@@ -182,8 +182,8 @@
 		<item-type>Switch</item-type>
 		<label>Reverse</label>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
+			<point-tag>Switch</point-tag>
+			<property-tag>Mode</property-tag>
 		</tags>
 		<state>
 			<options>
@@ -197,8 +197,8 @@
 		<item-type>Number</item-type>
 		<label>Mode</label>
 		<tags>
-			<tag>Control</tag>
-			<tag>Speed</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Speed</property-tag>
 		</tags>
 		<state>
 			<options>
@@ -222,8 +222,8 @@
 		<description>Wi‑Fi received signal strength indicator (dBm)</description>
 		<category>QualityOfService</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>RSSI</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>RSSI</property-tag>
 		</tags>
 		<state readOnly="true"></state>
 	</channel-type>

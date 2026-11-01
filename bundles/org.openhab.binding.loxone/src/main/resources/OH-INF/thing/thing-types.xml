@@ -140,8 +140,8 @@
 		<label>Loxone Switch</label>
 		<description>Loxone's virtual input of switch type and push button controls.</description>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Power</tag>
+			<point-tag>Switch</point-tag>
+			<property-tag>Power</property-tag>
 		</tags>
 	</channel-type>
 
@@ -157,8 +157,8 @@
 		<label>Loxone Jalousie</label>
 		<description>Loxone's Jalousies (rollershutters, blinds).</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>OpenLevel</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>OpenLevel</property-tag>
 		</tags>
 	</channel-type>
 
@@ -194,8 +194,8 @@
 		<label>Loxone Light Controller / Hotel Light Controller</label>
 		<description>Loxone's light controllers (LightController).</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Light</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Light</property-tag>
 		</tags>
 		<state pattern="%d" min="0" max="9" step="1">
 			<options>
@@ -225,8 +225,8 @@
 		<label>Loxone Dimmer</label>
 		<description>Loxone's dimmer control</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Brightness</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Brightness</property-tag>
 		</tags>
 	</channel-type>
 
@@ -235,8 +235,8 @@
 		<label>Loxone ColorPicker</label>
 		<description>Loxone's Color Picker V2 control</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Color</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Color</property-tag>
 		</tags>
 	</channel-type>
 

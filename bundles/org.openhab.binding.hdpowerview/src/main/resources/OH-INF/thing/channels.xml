@@ -10,8 +10,8 @@
 		<description>The vertical position of the shade</description>
 		<category>Blinds</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>OpenLevel</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>OpenLevel</property-tag>
 		</tags>
 		<state min="0" max="100" pattern="%.1f %%"/>
 	</channel-type>
@@ -21,8 +21,8 @@
 		<label>Vane</label>
 		<description>The opening of the slats in the shade</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Tilt</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Tilt</property-tag>
 		</tags>
 		<state min="0" max="100" pattern="%.1f %%"/>
 	</channel-type>
@@ -66,8 +66,8 @@
 		<item-type>Switch</item-type>
 		<label>Enable</label>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Enabled</tag>
+			<point-tag>Switch</point-tag>
+			<property-tag>Enabled</property-tag>
 		</tags>
 	</channel-type>
 
@@ -84,8 +84,8 @@
 		<description>Received Signal Strength Indicator</description>
 		<category>QualityOfService</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>RSSI</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>RSSI</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%d %unit%"></state>
 	</channel-type>
@@ -113,8 +113,8 @@
 		<description>Signal strength of Bluetooth Low Energy communication</description>
 		<category>QualityOfService</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>RSSI</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>RSSI</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.0f dBm"/>
 	</channel-type>

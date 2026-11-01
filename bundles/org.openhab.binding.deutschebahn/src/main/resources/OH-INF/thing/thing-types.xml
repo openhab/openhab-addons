@@ -188,8 +188,8 @@
 		<label>Planned Time</label>
 		<description>Provides the planned time of a train.</description>
 		<tags>
-			<tag>Forecast</tag>
-			<tag>Timestamp</tag>
+			<point-tag>Forecast</point-tag>
+			<property-tag>Timestamp</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%1$tH:%1$tM"/>
 	</channel-type>
@@ -199,8 +199,8 @@
 		<label>Changed Time</label>
 		<description>Provides the changed time of a train.</description>
 		<tags>
-			<tag>Forecast</tag>
-			<tag>Timestamp</tag>
+			<point-tag>Forecast</point-tag>
+			<property-tag>Timestamp</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%1$tH:%1$tM"/>
 	</channel-type>
@@ -210,8 +210,8 @@
 		<label>Planned Status</label>
 		<description>Provides the planned status of a train.</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Info</property-tag>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -227,8 +227,8 @@
 		<label>Changed Status</label>
 		<description>Provides the changed status of a train.</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Info</property-tag>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -252,8 +252,8 @@
 		<description>Messages for this train. Contains all translated codes from the messages of the selected train stop.
 			Multiple messages will be separated with a single dash.</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Info</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>

@@ -9,8 +9,8 @@
 		<label>Gas Delivery 24 Hour</label>
 		<description>The total amount of gas used in the past 24 hour.</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Gas</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Gas</property-tag>
 		</tags>
 		<state pattern="%.3f %unit%" readOnly="true"></state>
 	</channel-type>
@@ -19,8 +19,8 @@
 		<label>Compensated Gas Delivery 24 Hour</label>
 		<description>The total compensated amount of gas used in the past 24 hour.</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Gas</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Gas</property-tag>
 		</tags>
 		<state pattern="%.3f %unit%" readOnly="true"></state>
 	</channel-type>
@@ -29,8 +29,8 @@
 		<label>Gas Delivery</label>
 		<description>The total amount used in the past period.</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Gas</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Gas</property-tag>
 		</tags>
 		<state pattern="%.3f %unit%" readOnly="true"></state>
 	</channel-type>
@@ -39,8 +39,8 @@
 		<label>Gas Delivery</label>
 		<description>Last value of not temperature corrected gas volume.</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Gas</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Gas</property-tag>
 		</tags>
 		<state pattern="%.3f %unit%" readOnly="true"></state>
 	</channel-type>
@@ -49,8 +49,8 @@
 		<label>Timestamp</label>
 		<description>Timestamp of the last gas meter capture time.</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Timestamp</property-tag>
 		</tags>
 		<state readOnly="true"></state>
 	</channel-type>

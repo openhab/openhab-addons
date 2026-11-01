@@ -9,8 +9,8 @@
 		<label>BT1 Outdoor Temp</label>
 		<description>Outdoor temperature</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -20,8 +20,8 @@
 		<label>EP23-BT2 Supply Temp S4</label>
 		<description>Supply temperature for system 4</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -31,8 +31,8 @@
 		<label>EP22-BT2 Supply Temp S3</label>
 		<description>Supply temperature for system 3</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -42,8 +42,8 @@
 		<label>EP21-BT2 Supply Temp S2</label>
 		<description>Supply temperature for system 2</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -53,8 +53,8 @@
 		<label>BT2 Supply Temp S1</label>
 		<description>Supply temperature for system 1</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -64,8 +64,8 @@
 		<label>EB100-EP14-BT3 Return Temp</label>
 		<description>Return temperature</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -75,8 +75,8 @@
 		<label>BT7 Hot Water Top</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -86,8 +86,8 @@
 		<label>BT6 Hot Water Load</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Water</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Water</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -97,8 +97,8 @@
 		<label>EB100-EP14-BT10 Brine in Temp</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -108,8 +108,8 @@
 		<label>EB100-EP14-BT11 Brine out Temp</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -119,8 +119,8 @@
 		<label>EB100-EP14-BT12 Cond. Out</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -130,8 +130,8 @@
 		<label>EB100-EP14-BT14 Hot Gas Temp</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -141,8 +141,8 @@
 		<label>EB100-EP14-BT15 Liquid Line</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -152,8 +152,8 @@
 		<label>EB100-EP14-BT17 Suction</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -163,8 +163,8 @@
 		<label>EB100-BT20 Exhaust Air Temp. 1</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -174,8 +174,8 @@
 		<label>EB100-BT21 Vented Air Temp. 1</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -185,8 +185,8 @@
 		<label>AZ1-BT26 Temp Collector in FLM 1</label>
 		<description>Connected to the FLM module</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -203,8 +203,8 @@
 		<label>EP23-BT50 Room Temp S4</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -214,8 +214,8 @@
 		<label>EP22-BT50 Room Temp S3</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -232,8 +232,8 @@
 		<label>BT50 Room Temp S1</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -243,8 +243,8 @@
 		<label>CL11-BT51 Pool 1 Temp</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -261,8 +261,8 @@
 		<label>EP8-BT54 Solar Load Temp</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -272,8 +272,8 @@
 		<label>EQ1-BT64 Cool Supply Temp</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -283,8 +283,8 @@
 		<label>EQ1-BT65 Cool Return Temp</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -301,8 +301,8 @@
 		<label>BT1 Average</label>
 		<description>EB100-BT1 Outdoor temperature average</description>
 		<tags>
-			<tag>Calculation</tag>
-			<tag>Temperature</tag>
+			<point-tag>Calculation</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -312,8 +312,8 @@
 		<label>EM1-BT52 Boiler Temperature</label>
 		<description>Temperature of Boiler</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -323,8 +323,8 @@
 		<label>BT25 External Supply Temp</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -348,8 +348,8 @@
 		<label>EB100-BE3 Current Phase 3</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Current</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Current</property-tag>
 		</tags>
 		<state pattern="%.1f A" readOnly="true">
 		</state>
@@ -359,8 +359,8 @@
 		<label>EB100-BE2 Current Phase 2</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Current</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Current</property-tag>
 		</tags>
 		<state pattern="%.1f A" readOnly="true">
 		</state>
@@ -370,8 +370,8 @@
 		<label>EB100-BE1 Current Phase 1</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Current</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Current</property-tag>
 		</tags>
 		<state pattern="%.1f A" readOnly="true">
 		</state>
@@ -381,8 +381,8 @@
 		<label>CL12-BT51 Pool 2 Temp</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -392,8 +392,8 @@
 		<label>EB100-BT20 Exhaust Air Temp. 4</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -403,8 +403,8 @@
 		<label>EB100-BT20 Exhaust Air Temp. 3</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -421,8 +421,8 @@
 		<label>EB100-BT21 Vented Air Temp. 4</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -432,8 +432,8 @@
 		<label>EB100-BT21 Vented Air Temp. 3</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -443,8 +443,8 @@
 		<label>EB100-BT21 Vented Air Temp. 2</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -454,8 +454,8 @@
 		<label>AZ4-BT26 Temp Collector in FLM 4</label>
 		<description>Connected to the FLM module</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -465,8 +465,8 @@
 		<label>AZ3-BT26 Temp Collector in FLM 3</label>
 		<description>Connected to the FLM module</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -476,8 +476,8 @@
 		<label>AZ2-BT26 Temp Collector in FLM 2</label>
 		<description>Connected to the FLM module</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -487,8 +487,8 @@
 		<label>AZ4-BT27 Temp Collector out FLM 4</label>
 		<description>Connected to the FLM module</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -498,8 +498,8 @@
 		<label>AZ3-BT27 Temp Collector out FLM 3</label>
 		<description>Connected to the FLM module</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -509,8 +509,8 @@
 		<label>AZ2-BT27 Temp Collector out FLM 2</label>
 		<description>Connected to the FLM module</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -520,8 +520,8 @@
 		<label>EP23-BT3 Return Temp S4</label>
 		<description>Return temperature for system 4</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -531,8 +531,8 @@
 		<label>EP22-BT3 Return Temp S3</label>
 		<description>Return temperature for system 3</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -549,8 +549,8 @@
 		<label>EQ1-BT57 Collector Temp.</label>
 		<description>External collector temperature for ACS</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -560,8 +560,8 @@
 		<label>EQ1-BT75 Heatdump Temp.</label>
 		<description>Heating medium dump temperature for ACS</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -592,8 +592,8 @@
 		<label>Calculated Supply Temperature S4</label>
 		<description></description>
 		<tags>
-			<tag>Calculation</tag>
-			<tag>Temperature</tag>
+			<point-tag>Calculation</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -603,8 +603,8 @@
 		<label>Calculated Supply Temperature S3</label>
 		<description></description>
 		<tags>
-			<tag>Calculation</tag>
-			<tag>Temperature</tag>
+			<point-tag>Calculation</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -614,8 +614,8 @@
 		<label>Calculated Supply Temperature S2</label>
 		<description></description>
 		<tags>
-			<tag>Calculation</tag>
-			<tag>Temperature</tag>
+			<point-tag>Calculation</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -625,8 +625,8 @@
 		<label>Calculated Supply Temperature S1</label>
 		<description></description>
 		<tags>
-			<tag>Calculation</tag>
-			<tag>Temperature</tag>
+			<point-tag>Calculation</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -664,8 +664,8 @@
 		<label>Int. El.add. Power</label>
 		<description>Current power from the internal electrical addition</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Power</property-tag>
 		</tags>
 		<state pattern="%.2f kW" readOnly="true">
 		</state>
@@ -800,8 +800,8 @@
 		<label>Accumulated Energy</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Energy</property-tag>
 		</tags>
 		<state pattern="%.1f kWh" readOnly="true">
 		</state>
@@ -1010,8 +1010,8 @@
 		<label>EB108 Compressor Size</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Power</property-tag>
 		</tags>
 		<state pattern="%d kW" readOnly="true">
 		</state>
@@ -1021,8 +1021,8 @@
 		<label>EB108-EP15-BT3 Return Temp.</label>
 		<description>Return temperature</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -1032,8 +1032,8 @@
 		<label>EB108-EP15-BT10 Brine in Temp</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -1043,8 +1043,8 @@
 		<label>EB108-EP15-BT11 Brine out Temp</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -1061,8 +1061,8 @@
 		<label>EB108-EP15-BT14 Hot Gas Temp</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -1072,8 +1072,8 @@
 		<label>EB108-EP15-BT15 Liquid Line</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -1083,8 +1083,8 @@
 		<label>EB108-EP15-BT17 Suction</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -1094,8 +1094,8 @@
 		<label>EB108-EP15-BT29 Compr. Oil. Temp.</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -1105,8 +1105,8 @@
 		<label>EB108-EP15-BP8 Pressure Transmitter</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -1179,8 +1179,8 @@
 		<label>EB108-EP14-BT3 Return Temp.</label>
 		<description>Return temperature</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -1190,8 +1190,8 @@
 		<label>EB108-EP14-BT10 Brine in Temp</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -1201,8 +1201,8 @@
 		<label>EB108-EP14-BT11 Brine out Temp</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -1212,8 +1212,8 @@
 		<label>EB108-EP14-BT12 Cond. Out</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -1223,8 +1223,8 @@
 		<label>EB108-EP14-BT14 Hot Gas Temp</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -1234,8 +1234,8 @@
 		<label>EB108-EP14-BT15 Liquid Line</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -1245,8 +1245,8 @@
 		<label>EB108-EP14-BT17 Suction</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -1263,8 +1263,8 @@
 		<label>EB108-EP14-BP8 Pressure Transmitter</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -1351,8 +1351,8 @@
 		<label>EB107 Compressor Size</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Power</property-tag>
 		</tags>
 		<state pattern="%d kW" readOnly="true">
 		</state>
@@ -1362,8 +1362,8 @@
 		<label>EB107-EP15-BT3 Return Temp.</label>
 		<description>Return temperature</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -1373,8 +1373,8 @@
 		<label>EB107-EP15-BT10 Brine in Temp</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -1391,8 +1391,8 @@
 		<label>EB107-EP15-BT12 Cond. Out</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -1402,8 +1402,8 @@
 		<label>EB107-EP15-BT14 Hot Gas Temp</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -1413,8 +1413,8 @@
 		<label>EB107-EP15-BT15 Liquid Line</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -1424,8 +1424,8 @@
 		<label>EB107-EP15-BT17 Suction</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -1435,8 +1435,8 @@
 		<label>EB107-EP15-BT29 Compr. Oil. Temp.</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -1516,8 +1516,8 @@
 		<label>EB107-EP14-BT3 Return Temp.</label>
 		<description>Return temperature</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -1534,8 +1534,8 @@
 		<label>EB107-EP14-BT11 Brine out Temp</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -1545,8 +1545,8 @@
 		<label>EB107-EP14-BT12 Cond. Out</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -1556,8 +1556,8 @@
 		<label>EB107-EP14-BT14 Hot Gas Temp</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -1574,8 +1574,8 @@
 		<label>EB107-EP14-BT17 Suction</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -1585,8 +1585,8 @@
 		<label>EB107-EP14-BT29 Compr. Oil. Temp.</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -1596,8 +1596,8 @@
 		<label>EB107-EP14-BP8 Pressure Transmitter</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -1684,8 +1684,8 @@
 		<label>EB106 Compressor Size</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Power</property-tag>
 		</tags>
 		<state pattern="%d kW" readOnly="true">
 		</state>
@@ -1695,8 +1695,8 @@
 		<label>EB106-EP15-BT3 Return Temp.</label>
 		<description>Return temperature</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -1706,8 +1706,8 @@
 		<label>EB106-EP15-BT10 Brine in Temp</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -1724,8 +1724,8 @@
 		<label>EB106-EP15-BT12 Cond. Out</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -1735,8 +1735,8 @@
 		<label>EB106-EP15-BT14 Hot Gas Temp</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -1753,8 +1753,8 @@
 		<label>EB106-EP15-BT17 Suction</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -1764,8 +1764,8 @@
 		<label>EB106-EP15-BT29 Compr. Oil. Temp.</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -1775,8 +1775,8 @@
 		<label>EB106-EP15-BP8 Pressure Transmitter</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -1849,8 +1849,8 @@
 		<label>EB106-EP14-BT3 Return Temp.</label>
 		<description>Return temperature</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -1860,8 +1860,8 @@
 		<label>EB106-EP14-BT10 Brine in Temp</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -1871,8 +1871,8 @@
 		<label>EB106-EP14-BT11 Brine out Temp</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -1882,8 +1882,8 @@
 		<label>EB106-EP14-BT12 Cond. Out</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -1900,8 +1900,8 @@
 		<label>EB106-EP14-BT15 Liquid Line</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -1911,8 +1911,8 @@
 		<label>EB106-EP14-BT17 Suction</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -1922,8 +1922,8 @@
 		<label>EB106-EP14-BT29 Compr. Oil. Temp.</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -1933,8 +1933,8 @@
 		<label>EB106-EP14-BP8 Pressure Transmitter</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -2021,8 +2021,8 @@
 		<label>EB105 Compressor Size</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Power</property-tag>
 		</tags>
 		<state pattern="%d kW" readOnly="true">
 		</state>
@@ -2032,8 +2032,8 @@
 		<label>EB105-EP15-BT3 Return Temp.</label>
 		<description>Return temperature</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -2050,8 +2050,8 @@
 		<label>EB105-EP15-BT11 Brine out Temp</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -2061,8 +2061,8 @@
 		<label>EB105-EP15-BT12 Cond. Out</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -2072,8 +2072,8 @@
 		<label>EB105-EP15-BT14 Hot Gas Temp</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -2083,8 +2083,8 @@
 		<label>EB105-EP15-BT15 Liquid Line</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -2094,8 +2094,8 @@
 		<label>EB105-EP15-BT17 Suction</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -2105,8 +2105,8 @@
 		<label>EB105-EP15-BT29 Compr. Oil. Temp.</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -2116,8 +2116,8 @@
 		<label>EB105-EP15-BP8 Pressure Transmitter</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -2190,8 +2190,8 @@
 		<label>EB105-EP14-BT3 Return Temp.</label>
 		<description>Return temperature</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -2201,8 +2201,8 @@
 		<label>EB105-EP14-BT10 Brine in Temp</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -2212,8 +2212,8 @@
 		<label>EB105-EP14-BT11 Brine out Temp</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -2223,8 +2223,8 @@
 		<label>EB105-EP14-BT12 Cond. Out</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -2234,8 +2234,8 @@
 		<label>EB105-EP14-BT14 Hot Gas Temp</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -2245,8 +2245,8 @@
 		<label>EB105-EP14-BT15 Liquid Line</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -2256,8 +2256,8 @@
 		<label>EB105-EP14-BT17 Suction</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -2267,8 +2267,8 @@
 		<label>EB105-EP14-BT29 Compr. Oil. Temp.</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -2278,8 +2278,8 @@
 		<label>EB105-EP14-BP8 Pressure Transmitter</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -2366,8 +2366,8 @@
 		<label>EB104 Compressor Size</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Power</property-tag>
 		</tags>
 		<state pattern="%d kW" readOnly="true">
 		</state>
@@ -2377,8 +2377,8 @@
 		<label>EB104-EP15-BT3 Return Temp.</label>
 		<description>Return temperature</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -2388,8 +2388,8 @@
 		<label>EB104-EP15-BT10 Brine in Temp</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -2399,8 +2399,8 @@
 		<label>EB104-EP15-BT11 Brine out Temp</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -2417,8 +2417,8 @@
 		<label>EB104-EP15-BT14 Hot Gas Temp</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -2428,8 +2428,8 @@
 		<label>EB104-EP15-BT15 Liquid Line</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -2446,8 +2446,8 @@
 		<label>EB104-EP15-BT29 Compr. Oil. Temp.</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -2457,8 +2457,8 @@
 		<label>EB104-EP15-BP8 Pressure Transmitter</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -2531,8 +2531,8 @@
 		<label>EB104-EP14-BT3 Return Temp.</label>
 		<description>Return temperature</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -2542,8 +2542,8 @@
 		<label>EB104-EP14-BT10 Brine in Temp</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -2560,8 +2560,8 @@
 		<label>EB104-EP14-BT12 Cond. Out</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -2571,8 +2571,8 @@
 		<label>EB104-EP14-BT14 Hot Gas Temp</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -2582,8 +2582,8 @@
 		<label>EB104-EP14-BT15 Liquid Line</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -2593,8 +2593,8 @@
 		<label>EB104-EP14-BT17 Suction</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -2604,8 +2604,8 @@
 		<label>EB104-EP14-BT29 Compr. Oil. Temp.</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -2615,8 +2615,8 @@
 		<label>EB104-EP14-BP8 Pressure Transmitter</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -2703,8 +2703,8 @@
 		<label>EB103 Compressor Size</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Power</property-tag>
 		</tags>
 		<state pattern="%d kW" readOnly="true">
 		</state>
@@ -2721,8 +2721,8 @@
 		<label>EB103-EP15-BT10 Brine in Temp</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -2732,8 +2732,8 @@
 		<label>EB103-EP15-BT11 Brine out Temp</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -2743,8 +2743,8 @@
 		<label>EB103-EP15-BT12 Cond. Out</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -2761,8 +2761,8 @@
 		<label>EB103-EP15-BT15 Liquid Line</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -2772,8 +2772,8 @@
 		<label>EB103-EP15-BT17 Suction</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -2783,8 +2783,8 @@
 		<label>EB103-EP15-BT29 Compr. Oil. Temp.</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -2864,8 +2864,8 @@
 		<label>EB103-EP14-BT3 Return Temp.</label>
 		<description>Return temperature</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -2875,8 +2875,8 @@
 		<label>EB103-EP14-BT10 Brine in Temp</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -2886,8 +2886,8 @@
 		<label>EB103-EP14-BT11 Brine out Temp</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -2897,8 +2897,8 @@
 		<label>EB103-EP14-BT12 Cond. Out</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -2908,8 +2908,8 @@
 		<label>EB103-EP14-BT14 Hot Gas Temp</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -2919,8 +2919,8 @@
 		<label>EB103-EP14-BT15 Liquid Line</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -2930,8 +2930,8 @@
 		<label>EB103-EP14-BT17 Suction</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -2941,8 +2941,8 @@
 		<label>EB103-EP14-BT29 Compr. Oil. Temp.</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -3036,8 +3036,8 @@
 		<label>EB102 Compressor Size</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Power</property-tag>
 		</tags>
 		<state pattern="%d kW" readOnly="true">
 		</state>
@@ -3047,8 +3047,8 @@
 		<label>EB102-EP15-BT3 Return Temp.</label>
 		<description>Return temperature</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -3065,8 +3065,8 @@
 		<label>EB102-EP15-BT11 Brine out Temp</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -3090,8 +3090,8 @@
 		<label>EB102-EP15-BT15 Liquid Line</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -3108,8 +3108,8 @@
 		<label>EB102-EP15-BT29 Compr. Oil. Temp.</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -3119,8 +3119,8 @@
 		<label>EB102-EP15-BP8 Pressure Transmitter</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -3193,8 +3193,8 @@
 		<label>EB102-EP14-BT3 Return Temp.</label>
 		<description>Return temperature</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -3204,8 +3204,8 @@
 		<label>EB102-EP14-BT10 Brine in Temp</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -3215,8 +3215,8 @@
 		<label>EB102-EP14-BT11 Brine out Temp</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -3226,8 +3226,8 @@
 		<label>EB102-EP14-BT12 Cond. Out</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -3237,8 +3237,8 @@
 		<label>EB102-EP14-BT14 Hot Gas Temp</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -3248,8 +3248,8 @@
 		<label>EB102-EP14-BT15 Liquid Line</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -3259,8 +3259,8 @@
 		<label>EB102-EP14-BT17 Suction</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -3270,8 +3270,8 @@
 		<label>EB102-EP14-BT29 Compr. Oil. Temp.</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -3365,8 +3365,8 @@
 		<label>EB101 Compressor Size</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Power</property-tag>
 		</tags>
 		<state pattern="%d kW" readOnly="true">
 		</state>
@@ -3376,8 +3376,8 @@
 		<label>EB101-EP15-BT3 Return Temp.</label>
 		<description>Return temperature</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -3387,8 +3387,8 @@
 		<label>EB101-EP15-BT10 Brine in Temp</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -3398,8 +3398,8 @@
 		<label>EB101-EP15-BT11 Brine out Temp</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -3409,8 +3409,8 @@
 		<label>EB101-EP15-BT12 Cond. Out</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -3420,8 +3420,8 @@
 		<label>EB101-EP15-BT14 Hot Gas Temp</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -3431,8 +3431,8 @@
 		<label>EB101-EP15-BT15 Liquid Line</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -3442,8 +3442,8 @@
 		<label>EB101-EP15-BT17 Suction</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -3453,8 +3453,8 @@
 		<label>EB101-EP15-BT29 Compr. Oil. Temp.</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -3464,8 +3464,8 @@
 		<label>EB101-EP15-BP8 Pressure Transmitter</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -3538,8 +3538,8 @@
 		<label>EB101-EP14-BT3 Return Temp.</label>
 		<description>Return temperature</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -3549,8 +3549,8 @@
 		<label>EB101-EP14-BT10 Brine in Temp</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -3560,8 +3560,8 @@
 		<label>EB101-EP14-BT11 Brine out Temp</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -3571,8 +3571,8 @@
 		<label>EB101-EP14-BT12 Cond. Out</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -3582,8 +3582,8 @@
 		<label>EB101-EP14-BT14 Hot Gas Temp</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -3593,8 +3593,8 @@
 		<label>EB101-EP14-BT15 Liquid Line</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -3604,8 +3604,8 @@
 		<label>EB101-EP14-BT17 Suction</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -3615,8 +3615,8 @@
 		<label>EB101-EP14-BT29 Compr. Oil. Temp.</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -3626,8 +3626,8 @@
 		<label>EB101-EP14-BP8 Pressure Transmitter</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -3977,8 +3977,8 @@
 		<label>Calc. Cooling Supply Temperature S4</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -3988,8 +3988,8 @@
 		<label>Calc. Cooling Supply Temperature S3</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -3999,8 +3999,8 @@
 		<label>Calc. Cooling Supply Temperature S2</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -4010,8 +4010,8 @@
 		<label>Calc. Cooling Supply Temperature S1</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -4070,8 +4070,8 @@
 		<label>Accumulated Energy HW Cpr and Add</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Power</property-tag>
 		</tags>
 		<state pattern="%.1f kWh" readOnly="true">
 		</state>
@@ -4081,8 +4081,8 @@
 		<label>Accumulated Energy Heat Cpr and Add</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Energy</property-tag>
 		</tags>
 		<state pattern="%.1f kWh" readOnly="true">
 		</state>
@@ -4092,8 +4092,8 @@
 		<label>Accumulated Energy Cooling Cpr</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Energy</property-tag>
 		</tags>
 		<state pattern="%.1f kWh" readOnly="true">
 		</state>
@@ -4103,8 +4103,8 @@
 		<label>Accumulated Energy Pool Cpr</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Energy</property-tag>
 		</tags>
 		<state pattern="%.1f kWh" readOnly="true">
 		</state>
@@ -4114,8 +4114,8 @@
 		<label>Accumulated Energy HW Cpr</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Energy</property-tag>
 		</tags>
 		<state pattern="%.1f kWh" readOnly="true">
 		</state>
@@ -4125,8 +4125,8 @@
 		<label>Accumulated Energy Heat Cpr</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Energy</property-tag>
 		</tags>
 		<state pattern="%.1f kWh" readOnly="true">
 		</state>
@@ -4164,8 +4164,8 @@
 		<label>EB108-BT6 Hot Water Load Temp.</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -4175,8 +4175,8 @@
 		<label>EB108-BT7 Hot Water Top Temp.</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -4186,8 +4186,8 @@
 		<label>EB108-BT2 Supply Temp.</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -4204,8 +4204,8 @@
 		<label>EB107-BT6 Hot Water Load Temp.</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -4215,8 +4215,8 @@
 		<label>EB107-BT7 Hot Water Top Temp.</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -4226,8 +4226,8 @@
 		<label>EB107-BT2 Supply Temp.</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -4251,8 +4251,8 @@
 		<label>EB106-BT7 Hot Water Top Temp.</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -4262,8 +4262,8 @@
 		<label>EB106-BT2 Supply Temp.</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -4280,8 +4280,8 @@
 		<label>EB105-BT6 Hot Water Load Temp.</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -4291,8 +4291,8 @@
 		<label>EB105-BT7 Hot Water Top Temp.</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -4302,8 +4302,8 @@
 		<label>EB105-BT2 Supply Temp.</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -4320,8 +4320,8 @@
 		<label>EB104-BT6 Hot Water Load Temp.</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -4331,8 +4331,8 @@
 		<label>EB104-BT7 Hot Water Top Temp.</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -4342,8 +4342,8 @@
 		<label>EB104-BT2 Supply Temp.</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -4360,8 +4360,8 @@
 		<label>EB103-BT6 Hot Water Load Temp.</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -4371,8 +4371,8 @@
 		<label>EB103-BT7 Hot Water Top Temp.</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -4382,8 +4382,8 @@
 		<label>EB103-BT2 Supply Temp.</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -4393,8 +4393,8 @@
 		<label>EB102 Own Hot Water</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%d" readOnly="true">
 		</state>
@@ -4404,8 +4404,8 @@
 		<label>EB102-BT6 Hot Water Load Temp.</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -4415,8 +4415,8 @@
 		<label>EB102-BT7 Hot Water Top Temp.</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -4426,8 +4426,8 @@
 		<label>EB102-BT2 Supply Temp.</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -4444,8 +4444,8 @@
 		<label>EB101-BT6 Hot Water Load Temp.</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -4455,8 +4455,8 @@
 		<label>EB101-BT7 Hot Water Top Temp.</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -4466,8 +4466,8 @@
 		<label>EB101-BT2 Supply Temp.</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -4665,8 +4665,8 @@
 		<label>Min Supply System 4</label>
 		<description></description>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point-tag>Setpoint</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state min="50" max="700" step="1" pattern="%.1f °C" readOnly="false">
 		</state>
@@ -4676,8 +4676,8 @@
 		<label>Min Supply System 3</label>
 		<description></description>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point-tag>Setpoint</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state min="50" max="700" step="1" pattern="%.1f °C" readOnly="false">
 		</state>
@@ -4687,8 +4687,8 @@
 		<label>Min Supply System 2</label>
 		<description></description>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point-tag>Setpoint</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state min="50" max="700" step="1" pattern="%.1f °C" readOnly="false">
 		</state>
@@ -4698,8 +4698,8 @@
 		<label>Min Supply System 1</label>
 		<description></description>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point-tag>Setpoint</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state min="50" max="700" step="1" pattern="%.1f °C" readOnly="false">
 		</state>
@@ -4709,8 +4709,8 @@
 		<label>Max Supply System 4</label>
 		<description></description>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point-tag>Setpoint</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state min="50" max="700" step="1" pattern="%.1f °C" readOnly="false">
 		</state>
@@ -4720,8 +4720,8 @@
 		<label>Max Supply System 3</label>
 		<description></description>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point-tag>Setpoint</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state min="50" max="700" step="1" pattern="%.1f °C" readOnly="false">
 		</state>
@@ -4731,8 +4731,8 @@
 		<label>Max Supply System 2</label>
 		<description></description>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point-tag>Setpoint</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state min="50" max="700" step="1" pattern="%.1f °C" readOnly="false">
 		</state>
@@ -4742,8 +4742,8 @@
 		<label>Max Supply System 1</label>
 		<description></description>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point-tag>Setpoint</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state min="50" max="700" step="1" pattern="%.1f °C" readOnly="false">
 		</state>
@@ -4753,8 +4753,8 @@
 		<label>Own Curve P7</label>
 		<description>User defined curve point</description>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point-tag>Setpoint</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state min="0" max="80" step="1" pattern="%d °C" readOnly="false">
 		</state>
@@ -4764,8 +4764,8 @@
 		<label>Own Curve P6</label>
 		<description>User defined curve point</description>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point-tag>Setpoint</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state min="0" max="80" step="1" pattern="%d °C" readOnly="false">
 		</state>
@@ -4775,8 +4775,8 @@
 		<label>Own Curve P5</label>
 		<description>User defined curve point</description>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point-tag>Setpoint</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state min="0" max="80" step="1" pattern="%d °C" readOnly="false">
 		</state>
@@ -4786,8 +4786,8 @@
 		<label>Own Curve P4</label>
 		<description>User defined curve point</description>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point-tag>Setpoint</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state min="0" max="80" step="1" pattern="%d °C" readOnly="false">
 		</state>
@@ -4797,8 +4797,8 @@
 		<label>Own Curve P3</label>
 		<description>User defined curve point</description>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point-tag>Setpoint</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state min="0" max="80" step="1" pattern="%d °C" readOnly="false">
 		</state>
@@ -4808,8 +4808,8 @@
 		<label>Own Curve P2</label>
 		<description>User defined curve point</description>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point-tag>Setpoint</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state min="0" max="80" step="1" pattern="%d °C" readOnly="false">
 		</state>
@@ -4819,8 +4819,8 @@
 		<label>Own Curve P1</label>
 		<description>User defined curve point</description>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point-tag>Setpoint</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state min="0" max="80" step="1" pattern="%d °C" readOnly="false">
 		</state>
@@ -4830,8 +4830,8 @@
 		<label>Point Offset Outdoor Temp.</label>
 		<description>Outdoor temperature point where the heat curve is offset</description>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point-tag>Setpoint</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state min="-40" max="30" step="1" pattern="%d °C" readOnly="false">
 		</state>
@@ -4841,8 +4841,8 @@
 		<label>Point Offset</label>
 		<description>Amount of offset at the point offset temperature</description>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point-tag>Setpoint</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state min="-10" max="10" step="1" pattern="%d °C" readOnly="false">
 		</state>
@@ -4880,8 +4880,8 @@
 		<label>External Adjustment with Room Sensor S4</label>
 		<description>Room temperature setting when closing the external adjustment input</description>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point-tag>Setpoint</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state min="50" max="300" step="1" pattern="%.1f °C" readOnly="false">
 		</state>
@@ -4891,8 +4891,8 @@
 		<label>External Adjustment with Room Sensor S3</label>
 		<description>Room temperature setting when closing the external adjustment input</description>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point-tag>Setpoint</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state min="50" max="300" step="1" pattern="%.1f °C" readOnly="false">
 		</state>
@@ -4902,8 +4902,8 @@
 		<label>External Adjustment with Room Sensor S2</label>
 		<description>Room temperature setting when closing the external adjustment input</description>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point-tag>Setpoint</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state min="50" max="300" step="1" pattern="%.1f °C" readOnly="false">
 		</state>
@@ -4913,8 +4913,8 @@
 		<label>External Adjustment with Room Sensor S1</label>
 		<description>Room temperature setting when closing the external adjustment input</description>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point-tag>Setpoint</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state min="50" max="300" step="1" pattern="%.1f °C" readOnly="false">
 		</state>
@@ -4936,8 +4936,8 @@
 		<label>Start Temperature HW Luxury</label>
 		<description>Start temperature for heating water</description>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point-tag>Setpoint</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state min="50" max="700" step="1" pattern="%.1f °C" readOnly="false">
 		</state>
@@ -4947,8 +4947,8 @@
 		<label>Start Temperature HW Normal</label>
 		<description>Start temperature for heating water</description>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point-tag>Setpoint</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state min="50" max="700" step="1" pattern="%.1f °C" readOnly="false">
 		</state>
@@ -4958,8 +4958,8 @@
 		<label>Start Temperature HW Economy</label>
 		<description>Start temperature for heating water</description>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point-tag>Setpoint</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state min="50" max="700" step="1" pattern="%.1f °C" readOnly="false">
 		</state>
@@ -4969,8 +4969,8 @@
 		<label>Stop Temperature Periodic HW</label>
 		<description>Temperature where hot water generation will stop</description>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point-tag>Setpoint</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state min="550" max="700" step="1" pattern="%.1f °C" readOnly="false">
 		</state>
@@ -4980,8 +4980,8 @@
 		<label>Stop Temperature HW Luxury</label>
 		<description>Temperature where hot water generation will stop</description>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point-tag>Setpoint</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state min="50" max="700" step="1" pattern="%.1f °C" readOnly="false">
 		</state>
@@ -4991,8 +4991,8 @@
 		<label>Stop Temperature HW Normal</label>
 		<description>Temperature where hot water generation will stop</description>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point-tag>Setpoint</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state min="50" max="700" step="1" pattern="%.1f °C" readOnly="false">
 		</state>
@@ -5002,8 +5002,8 @@
 		<label>Stop Temperature HW Economy</label>
 		<description>Temperature where hot water generation will stop</description>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point-tag>Setpoint</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state min="50" max="700" step="1" pattern="%.1f °C" readOnly="false">
 		</state>
@@ -5298,8 +5298,8 @@
 		<label>Floor Drying Temp. 7</label>
 		<description>Supply temperature each period</description>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point-tag>Setpoint</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state min="15" max="70" step="1" pattern="%d °C" readOnly="false">
 		</state>
@@ -5309,8 +5309,8 @@
 		<label>Floor Drying Temp. 6</label>
 		<description>Supply temperature each period</description>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point-tag>Setpoint</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state min="15" max="70" step="1" pattern="%d °C" readOnly="false">
 		</state>
@@ -5320,8 +5320,8 @@
 		<label>Floor Drying Temp. 5</label>
 		<description>Supply temperature each period</description>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point-tag>Setpoint</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state min="15" max="70" step="1" pattern="%d °C" readOnly="false">
 		</state>
@@ -5331,8 +5331,8 @@
 		<label>Floor Drying Temp. 4</label>
 		<description>Supply temperature each period</description>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point-tag>Setpoint</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state min="15" max="70" step="1" pattern="%d °C" readOnly="false">
 		</state>
@@ -5349,8 +5349,8 @@
 		<label>Floor Drying Temp. 2</label>
 		<description>Supply temperature each period</description>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point-tag>Setpoint</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state min="15" max="70" step="1" pattern="%d °C" readOnly="false">
 		</state>
@@ -5360,8 +5360,8 @@
 		<label>Floor Drying Temp. 1</label>
 		<description>Supply temperature each period</description>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point-tag>Setpoint</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state min="15" max="70" step="1" pattern="%d °C" readOnly="false">
 		</state>
@@ -5450,8 +5450,8 @@
 		<label>Shunt Controlled Add. Min. Temp.</label>
 		<description></description>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point-tag>Setpoint</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state min="5" max="90" step="1" pattern="%d °C" readOnly="false">
 		</state>
@@ -5533,8 +5533,8 @@
 		<label>Heat At Room Under Temp.</label>
 		<description>This value indicates how many degrees under set room temp heating will be allowed</description>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point-tag>Setpoint</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state min="5" max="100" step="1" pattern="%.1f °C" readOnly="false">
 		</state>
@@ -5544,8 +5544,8 @@
 		<label>Cool At Room over Temp.</label>
 		<description>This value indicates how many degrees over set room temp cooling will be allowed</description>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point-tag>Setpoint</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state min="5" max="100" step="1" pattern="%.1f °C" readOnly="false">
 		</state>
@@ -5643,8 +5643,8 @@
 		<label>Start Temperature Cooling</label>
 		<description>Start temperature for cooling</description>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point-tag>Setpoint</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state min="-200" max="400" step="1" pattern="%.1f °C" readOnly="false">
 		</state>
@@ -5654,8 +5654,8 @@
 		<label>Stop Temperature Heating</label>
 		<description>Stop temperature for heating</description>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point-tag>Setpoint</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state min="-200" max="400" step="1" pattern="%.1f °C" readOnly="false">
 		</state>
@@ -5665,8 +5665,8 @@
 		<label>Stop Temperature Additive</label>
 		<description>Stop temperature for additive</description>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point-tag>Setpoint</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state min="-250" max="400" step="1" pattern="%.1f °C" readOnly="false">
 		</state>
@@ -5683,8 +5683,8 @@
 		<label>Max Diff. Comp.</label>
 		<description></description>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point-tag>Setpoint</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state min="10" max="250" step="1" pattern="%.1f °C" readOnly="false">
 		</state>
@@ -5694,8 +5694,8 @@
 		<label>Max Diff. Add.</label>
 		<description></description>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point-tag>Setpoint</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state min="10" max="240" step="1" pattern="%.1f °C" readOnly="false">
 		</state>
@@ -5711,8 +5711,8 @@
 		<label>Low Brine out Temp.</label>
 		<description></description>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point-tag>Setpoint</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state min="-120" max="150" step="1" pattern="%.1f °C" readOnly="false">
 		</state>
@@ -5728,8 +5728,8 @@
 		<label>High Brine in Temp.</label>
 		<description>The brine in temperature that triggers the high brine in temperature alarm (if active).</description>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point-tag>Setpoint</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state min="100" max="300" step="1" pattern="%.1f °C" readOnly="false">
 		</state>
@@ -5805,8 +5805,8 @@
 		<label>Room Sensor Setpoint S4</label>
 		<description>Sets the room temperature setpoint for the system</description>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point-tag>Setpoint</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state min="50" max="300" step="1" pattern="%.1f °C" readOnly="false">
 		</state>
@@ -5816,8 +5816,8 @@
 		<label>Room Sensor Setpoint S3</label>
 		<description>Sets the room temperature setpoint for the system</description>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point-tag>Setpoint</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state min="50" max="300" step="1" pattern="%.1f °C" readOnly="false">
 		</state>
@@ -5827,8 +5827,8 @@
 		<label>Room Sensor Setpoint S2</label>
 		<description>Sets the room temperature setpoint for the system</description>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point-tag>Setpoint</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state min="50" max="300" step="1" pattern="%.1f °C" readOnly="false">
 		</state>
@@ -5838,8 +5838,8 @@
 		<label>Room Sensor Setpoint S1</label>
 		<description>Sets the room temperature setpoint for the system</description>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point-tag>Setpoint</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state min="50" max="300" step="1" pattern="%.1f °C" readOnly="false">
 		</state>
@@ -5916,8 +5916,8 @@
 		<label>Speed Brine Pump</label>
 		<description></description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Speed</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Speed</property-tag>
 		</tags>
 		<state min="1" max="100" step="1" pattern="%d %" readOnly="false">
 		</state>
@@ -5934,8 +5934,8 @@
 		<label>Start Room Temp. Night Cooling</label>
 		<description></description>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point-tag>Setpoint</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state min="20" max="30" step="1" pattern="%d °C" readOnly="false">
 		</state>
@@ -5945,8 +5945,8 @@
 		<label>Night Cooling Min. Diff.</label>
 		<description>Minimum difference between room temp and outdoor temp to start night cooling</description>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point-tag>Setpoint</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state min="3" max="10" step="1" pattern="%d °C" readOnly="false">
 		</state>
@@ -6176,8 +6176,8 @@
 		<label>Pool 2 Start Temp.</label>
 		<description>The Temperature below which the pool heating should start</description>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point-tag>Setpoint</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state min="50" max="800" step="1" pattern="%.1f °C" readOnly="false">
 		</state>
@@ -6187,8 +6187,8 @@
 		<label>Pool 1 Start Temp.</label>
 		<description>The Temperature below which the pool heating should start</description>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point-tag>Setpoint</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state min="50" max="800" step="1" pattern="%.1f °C" readOnly="false">
 		</state>
@@ -6198,8 +6198,8 @@
 		<label>Pool 2 Stop Temp.</label>
 		<description>The Temperature at which the pool heating will stop</description>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point-tag>Setpoint</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state min="50" max="800" step="1" pattern="%.1f °C" readOnly="false">
 		</state>
@@ -6209,8 +6209,8 @@
 		<label>Pool 1 Stop Temp.</label>
 		<description>The Temperature at which the pool heating will stop</description>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point-tag>Setpoint</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state min="50" max="800" step="1" pattern="%.1f °C" readOnly="false">
 		</state>
@@ -6239,8 +6239,8 @@
 		<label>Min Cooling Supply Temp S4</label>
 		<description>Minimum allowed supply temperature during cooling</description>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point-tag>Setpoint</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state min="5" max="30" step="1" pattern="%d °C" readOnly="false">
 		</state>
@@ -6250,8 +6250,8 @@
 		<label>Min Cooling Supply Temp S3</label>
 		<description>Minimum allowed supply temperature during cooling</description>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point-tag>Setpoint</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state min="5" max="30" step="1" pattern="%d °C" readOnly="false">
 		</state>
@@ -6261,8 +6261,8 @@
 		<label>Min Cooling Supply Temp S2</label>
 		<description>Minimum allowed supply temperature during cooling</description>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point-tag>Setpoint</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state min="5" max="30" step="1" pattern="%d °C" readOnly="false">
 		</state>
@@ -6272,8 +6272,8 @@
 		<label>Min Cooling Supply Temp S1</label>
 		<description>Minimum allowed supply temperature during cooling</description>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point-tag>Setpoint</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state min="5" max="30" step="1" pattern="%d °C" readOnly="false">
 		</state>
@@ -6283,8 +6283,8 @@
 		<label>Cooling Supply Temp. At 20°C</label>
 		<description>Supply Temperature at 20°C. Used to create cooling curve</description>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point-tag>Setpoint</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state min="5" max="30" step="1" pattern="%d °C" readOnly="false">
 		</state>
@@ -6294,8 +6294,8 @@
 		<label>Cooling Supply Temp. At 20°C</label>
 		<description>Supply Temperature at 20°C. Used to create cooling curve</description>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point-tag>Setpoint</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state min="5" max="30" step="1" pattern="%d °C" readOnly="false">
 		</state>
@@ -6312,8 +6312,8 @@
 		<label>Cooling Supply Temp. At 20°C</label>
 		<description>Supply Temperature at 20°C. Used to create cooling curve</description>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point-tag>Setpoint</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state min="5" max="30" step="1" pattern="%d °C" readOnly="false">
 		</state>
@@ -6323,8 +6323,8 @@
 		<label>Cooling Supply Temp. At 40°C</label>
 		<description>Supply Temperature at 40°C. Used to create cooling curve</description>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point-tag>Setpoint</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state min="5" max="30" step="1" pattern="%d °C" readOnly="false">
 		</state>
@@ -6341,8 +6341,8 @@
 		<label>Cooling Supply Temp. At 40°C</label>
 		<description>Supply Temperature at 40°C. Used to create cooling curve</description>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point-tag>Setpoint</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state min="5" max="30" step="1" pattern="%d °C" readOnly="false">
 		</state>
@@ -6352,8 +6352,8 @@
 		<label>Cooling Supply Temp. At 40°C</label>
 		<description>Supply Temperature at 40°C. Used to create cooling curve</description>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point-tag>Setpoint</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state min="5" max="30" step="1" pattern="%d °C" readOnly="false">
 		</state>

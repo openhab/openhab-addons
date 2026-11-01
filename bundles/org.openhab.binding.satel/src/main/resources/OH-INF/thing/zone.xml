@@ -54,8 +54,8 @@
 		<label>Violation</label>
 		<description>Active when violation is detected in the zone</description>
 		<tags>
-			<tag>Alarm</tag>
-			<tag>Presence</tag>
+			<point-tag>Alarm</point-tag>
+			<property-tag>Presence</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -65,8 +65,8 @@
 		<label>Tamper</label>
 		<description>Active when detector in the zone is tampered</description>
 		<tags>
-			<tag>Alarm</tag>
-			<tag>Tampered</tag>
+			<point-tag>Alarm</point-tag>
+			<property-tag>Tampered</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -76,8 +76,8 @@
 		<label>Alarm</label>
 		<description>Active when violation is detected in the zone and zone is armed</description>
 		<tags>
-			<tag>Alarm</tag>
-			<tag>Presence</tag>
+			<point-tag>Alarm</point-tag>
+			<property-tag>Presence</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -87,8 +87,8 @@
 		<label>Tamper Alarm</label>
 		<description>Active when detector in the zone is tampered and zone is armed</description>
 		<tags>
-			<tag>Alarm</tag>
-			<tag>Tampered</tag>
+			<point-tag>Alarm</point-tag>
+			<property-tag>Tampered</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -98,7 +98,7 @@
 		<label>Alarm Memory</label>
 		<description>Memorized alarm state for the zone</description>
 		<tags>
-			<tag>Alarm</tag>
+			<point-tag>Alarm</point-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -108,8 +108,8 @@
 		<label>Tamper Alarm Memory</label>
 		<description>Memorized tamper alarm state for the zone</description>
 		<tags>
-			<tag>Alarm</tag>
-			<tag>Tampered</tag>
+			<point-tag>Alarm</point-tag>
+			<property-tag>Tampered</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -119,8 +119,8 @@
 		<label>Bypass</label>
 		<description>Active when zone is bypassed</description>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
+			<point-tag>Switch</point-tag>
+			<property-tag>Mode</property-tag>
 		</tags>
 	</channel-type>
 

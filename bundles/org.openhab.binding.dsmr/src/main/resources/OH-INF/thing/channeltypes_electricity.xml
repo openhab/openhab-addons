@@ -8,8 +8,8 @@
 		<label>Delivery</label>
 		<description>The total amount of electricity used.</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Energy</property-tag>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -18,8 +18,8 @@
 		<label>Delivery Tariff 0</label>
 		<description>The total amount of electricity used for tariff 0.</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Energy</property-tag>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -28,8 +28,8 @@
 		<label>Delivery Tariff 1</label>
 		<description>The total amount of electricity used for tariff 1.</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Energy</property-tag>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -38,8 +38,8 @@
 		<label>Delivery Tariff 2</label>
 		<description>The total amount of electricity used for tariff 2.</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Energy</property-tag>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -48,8 +48,8 @@
 		<label>Delivery Tariff 1</label>
 		<description>The total amount of electricity used for tariff 1.</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Energy</property-tag>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -58,8 +58,8 @@
 		<label>Delivery Tariff 2</label>
 		<description>The total amount of electricity used for tariff 2.</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Energy</property-tag>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -116,8 +116,8 @@
 		<label>Total Imported Energy (P+)</label>
 		<description>The total imported energy register (P+).</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Energy</property-tag>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -126,8 +126,8 @@
 		<label>Total Exported Energy (P+)</label>
 		<description>The total exported energy register (P-).</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Energy</property-tag>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -136,8 +136,8 @@
 		<label>Total Imported Energy (Q+)</label>
 		<description>The total imported energy register (Q+).</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Energy</property-tag>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -146,8 +146,8 @@
 		<label>Total Exported Energy (Q-)</label>
 		<description>The total exported energy register (Q-).</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Energy</property-tag>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -192,8 +192,8 @@
 		<label>Actual Power Delivery</label>
 		<description>The current power delivery.</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Power</property-tag>
 		</tags>
 		<state pattern="%.3f %unit%" readOnly="true"/>
 	</channel-type>
@@ -202,8 +202,8 @@
 		<label>Actual Power Demand</label>
 		<description>The current power delivery demand.</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Power</property-tag>
 		</tags>
 		<state pattern="%.3f %unit%" readOnly="true"/>
 	</channel-type>
@@ -218,8 +218,8 @@
 		<label>Actual Reactive Power Delivery</label>
 		<description>The current reactive power delivery.</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Power</property-tag>
 		</tags>
 		<state pattern="%.3f kvar" readOnly="true"/>
 	</channel-type>

@@ -9,8 +9,8 @@
 		<label>Power</label>
 		<description>Device power</description>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Power</tag>
+			<point-tag>Switch</point-tag>
+			<property-tag>Power</property-tag>
 		</tags>
 	</channel-type>
 	<channel-type id="fan-speed">
@@ -18,8 +18,8 @@
 		<label>Fan Speed</label>
 		<description>Fan speed</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Airflow</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Airflow</property-tag>
 		</tags>
 		<state pattern="%s">
 			<options>
@@ -36,8 +36,8 @@
 		<label>Mode</label>
 		<description>Filter mode</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Mode</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Mode</property-tag>
 		</tags>
 		<state pattern="%s">
 			<options>
@@ -55,8 +55,8 @@
 		<label>Buttons</label>
 		<description>Buttons light</description>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Light</tag>
+			<point-tag>Switch</point-tag>
+			<property-tag>Light</property-tag>
 		</tags>
 		<state pattern="%s"/>
 	</channel-type>
@@ -65,8 +65,8 @@
 		<label>Displayed Index</label>
 		<description>Index shown on the display</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Mode</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Mode</property-tag>
 		</tags>
 		<state pattern="%s">
 			<options>
@@ -81,8 +81,8 @@
 		<label>LED Light Level</label>
 		<description>Level 100, 75, 50, 25, 0</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Brightness</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Brightness</property-tag>
 		</tags>
 		<state pattern="%d %unit%" min="0" max="100" step="25"/>
 	</channel-type>
@@ -91,8 +91,8 @@
 		<label>Child Lock</label>
 		<description>Child lock enabled/disabled</description>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Enabled</tag>
+			<point-tag>Switch</point-tag>
+			<property-tag>Enabled</property-tag>
 		</tags>
 	</channel-type>
 
@@ -101,8 +101,8 @@
 		<label>Timer Remaining</label>
 		<description>Time left until the timer switches the device off</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Duration</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Duration</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
@@ -111,8 +111,8 @@
 		<label>Timer</label>
 		<description>Timer in hours, 0 is off. Up to 5 or 12 hours, depending on the model</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Duration</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Duration</property-tag>
 		</tags>
 		<state min="0" max="12" pattern="%d" step="1"/>
 	</channel-type>
@@ -122,8 +122,8 @@
 		<label>PM2.5</label>
 		<description>PM 2.5 particles pollution level</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>ParticulateMatter</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>ParticulateMatter</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.0f µg/m³"/>
 	</channel-type>
@@ -132,8 +132,8 @@
 		<label>Allergen Index</label>
 		<description>Allergen index</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>AirQuality</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>AirQuality</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%d"/>
 	</channel-type>
@@ -142,8 +142,8 @@
 		<label>TVOC</label>
 		<description>Total volatile organic compounds (TVOC) level. Recent models report it as an index from 1 to 4</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>VOC</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>VOC</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%d"/>
 	</channel-type>
@@ -153,8 +153,8 @@
 		<description>Wi-Fi signal strength</description>
 		<category>QualityOfService</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>RSSI</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>RSSI</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
@@ -163,8 +163,8 @@
 		<label>Air Quality Threshold</label>
 		<description>Air quality level at which the Philips app sends a notification</description>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>AirQuality</tag>
+			<point-tag>Setpoint</point-tag>
+			<property-tag>AirQuality</property-tag>
 		</tags>
 		<state pattern="%d">
 			<options>
@@ -180,8 +180,8 @@
 		<label>Error Message</label>
 		<description>Error reported by the device</description>
 		<tags>
-			<tag>Alarm</tag>
-			<tag>Info</tag>
+			<point-tag>Alarm</point-tag>
+			<property-tag>Info</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%s">
 			<options>
@@ -198,8 +198,8 @@
 		<label>Beep</label>
 		<description>The device beeps when a button is pressed</description>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Enabled</tag>
+			<point-tag>Switch</point-tag>
+			<property-tag>Enabled</property-tag>
 		</tags>
 	</channel-type>
 	<channel-type id="standby-sensors" advanced="true">
@@ -207,8 +207,8 @@
 		<label>Sensors in Standby</label>
 		<description>The sensors keep measuring when the device is in standby</description>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Enabled</tag>
+			<point-tag>Switch</point-tag>
+			<property-tag>Enabled</property-tag>
 		</tags>
 	</channel-type>
 	<channel-type id="allergy-sleep" advanced="true">
@@ -216,8 +216,8 @@
 		<label>Allergy Sleep</label>
 		<description>Sleep mode that is gentle for allergic people</description>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Enabled</tag>
+			<point-tag>Switch</point-tag>
+			<property-tag>Enabled</property-tag>
 		</tags>
 	</channel-type>
 	<channel-type id="display" advanced="true">
@@ -225,8 +225,8 @@
 		<label>Display</label>
 		<description>The display of the device is on</description>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Light</tag>
+			<point-tag>Switch</point-tag>
+			<property-tag>Light</property-tag>
 		</tags>
 	</channel-type>
 	<channel-type id="display-brightness">
@@ -234,8 +234,8 @@
 		<label>Display Brightness</label>
 		<description>Brightness of the display, with the steps the model offers</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Brightness</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Brightness</property-tag>
 		</tags>
 		<state pattern="%s"/>
 	</channel-type>
@@ -244,8 +244,8 @@
 		<label>Lamp Mode</label>
 		<description>What the lamp of the device shows</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Mode</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Mode</property-tag>
 		</tags>
 		<state pattern="%s"/>
 	</channel-type>
@@ -255,8 +255,8 @@
 		<label>Pre-filter</label>
 		<description>Estimated time to perform a manual clean up of the Pre-filter</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Duration</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Duration</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
@@ -265,8 +265,8 @@
 		<label>Wick</label>
 		<description>Wick filter estimated lifetime</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Duration</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Duration</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
@@ -275,8 +275,8 @@
 		<label>Carbon</label>
 		<description>Active carbon filter estimated lifetime</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Duration</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Duration</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
@@ -285,8 +285,8 @@
 		<label>HEPA Filter</label>
 		<description>HEPA filter estimated lifetime</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Duration</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Duration</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
@@ -296,8 +296,8 @@
 		<description>Current humidity</description>
 		<category>Humidity</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Humidity</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Humidity</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%" min="0" max="100"/>
 	</channel-type>
@@ -307,8 +307,8 @@
 		<description>Humidity setpoint</description>
 		<category>Humidity</category>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Humidity</tag>
+			<point-tag>Setpoint</point-tag>
+			<property-tag>Humidity</property-tag>
 		</tags>
 		<state pattern="%.0f %unit%" min="40" max="70" step="10"/>
 	</channel-type>
@@ -318,8 +318,8 @@
 		<description>Current temperature</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -328,8 +328,8 @@
 		<label>Function</label>
 		<description>P: Purification, PH: Purification and Humidification</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Mode</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Mode</property-tag>
 		</tags>
 		<state pattern="%s">
 			<options>
@@ -343,8 +343,8 @@
 		<label>Water Level</label>
 		<description>Water tank level</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Level</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Level</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>

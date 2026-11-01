@@ -10,8 +10,8 @@
 		<description>Current air quality level based on volatile organic compounds (VOCs) measurement. Example: good or poor,
 			...</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>VOC</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>VOC</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -22,8 +22,8 @@
 		<description>Current air quality based on measurements of volatile organic compounds (VOCs). The measured value is
 			specified in ppb (parts per billion).</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>VOC</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>VOC</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -33,7 +33,7 @@
 		<label>Alarm</label>
 		<description>Alarm was triggered.</description>
 		<tags>
-			<tag>Alarm</tag>
+			<point-tag>Alarm</point-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -58,8 +58,8 @@
 		<label>Carbon-monoxide</label>
 		<description>Carbon-monoxide was detected.</description>
 		<tags>
-			<tag>Alarm</tag>
-			<tag>CO</tag>
+			<point-tag>Alarm</point-tag>
+			<property-tag>CO</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -70,8 +70,8 @@
 		<description>Current consumption</description>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Energy</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -82,8 +82,8 @@
 		<description>Current current</description>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Current</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Current</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -106,8 +106,8 @@
 		<item-type>Contact</item-type>
 		<label>External Window Open</label>
 		<tags>
-			<tag>Status</tag>
-			<tag>OpenState</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>OpenState</property-tag>
 		</tags>
 	</channel-type>
 
@@ -116,8 +116,8 @@
 		<label>Fire</label>
 		<description>A fire was detected.</description>
 		<tags>
-			<tag>Alarm</tag>
-			<tag>Smoke</tag>
+			<point-tag>Alarm</point-tag>
+			<property-tag>Smoke</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -154,8 +154,8 @@
 		<description>Target temperature</description>
 		<category>Heating</category>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point-tag>Setpoint</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f %unit%" step="0.5" max="28" min="6"/>
 	</channel-type>
@@ -166,8 +166,8 @@
 		<description>Current humidity</description>
 		<category>Humidity</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Humidity</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Humidity</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
@@ -192,8 +192,8 @@
 		<item-type>String</item-type>
 		<label>Lightlevel</label>
 		<tags>
-			<tag>Status</tag>
-			<tag>Illuminance</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Illuminance</property-tag>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -209,8 +209,8 @@
 		<label>Illuminance</label>
 		<description>Current light illuminance</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Illuminance</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Illuminance</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -220,8 +220,8 @@
 		<label>Light Level</label>
 		<description>Current light level.</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Illuminance</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Illuminance</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%d"/>
 	</channel-type>
@@ -232,8 +232,8 @@
 		<description>Status of this thermostat's child lock.</description>
 		<category>Lock</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>OpenState</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>OpenState</property-tag>
 		</tags>
 	</channel-type>
 
@@ -243,8 +243,8 @@
 		<description>Current mode</description>
 		<category>Heating</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>Mode</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Mode</property-tag>
 		</tags>
 		<state>
 			<options>
@@ -260,8 +260,8 @@
 		<label>Moisture</label>
 		<description>Current moisture</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Moisture</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Moisture</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -277,8 +277,8 @@
 		<item-type>Switch</item-type>
 		<label>Heater State</label>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Heating</tag>
+			<point-tag>Switch</point-tag>
+			<property-tag>Heating</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -288,8 +288,8 @@
 		<label>Open/Close</label>
 		<description>Open/Close detected</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>OpenState</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>OpenState</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -317,8 +317,8 @@
 		<label>Particulate Matter (PM2.5)</label>
 		<description>Current particulate matter (PM2.5) concentration</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>ParticulateMatter</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>ParticulateMatter</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
@@ -329,8 +329,8 @@
 		<description>Current power usage</description>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Power</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -341,8 +341,8 @@
 		<description>Current pressure</description>
 		<category>Pressure</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Pressure</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Pressure</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -352,8 +352,8 @@
 		<label>Tampered</label>
 		<description>A zone is being tampered.</description>
 		<tags>
-			<tag>Alarm</tag>
-			<tag>Tampered</tag>
+			<point-tag>Alarm</point-tag>
+			<property-tag>Tampered</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -364,8 +364,8 @@
 		<description>Current temperature</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
@@ -388,8 +388,8 @@
 		<label>Valve position</label>
 		<description>Current valve position</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>OpenLevel</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>OpenLevel</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -399,8 +399,8 @@
 		<label>Vibration</label>
 		<description>Vibration was detected.</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Vibration</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Vibration</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -418,8 +418,8 @@
 		<description>Current voltage</description>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Voltage</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Voltage</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -429,8 +429,8 @@
 		<label>Water Leakage</label>
 		<description>Water leakage detected</description>
 		<tags>
-			<tag>Alarm</tag>
-			<tag>Water</tag>
+			<point-tag>Alarm</point-tag>
+			<property-tag>Water</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -439,8 +439,8 @@
 		<item-type>Contact</item-type>
 		<label>Window Open</label>
 		<tags>
-			<tag>Status</tag>
-			<tag>OpenState</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>OpenState</property-tag>
 		</tags>
 	</channel-type>
 

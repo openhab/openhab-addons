@@ -87,8 +87,8 @@
 		<label>Main Light</label>
 		<description>Enable or disable the main floodlight</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Light</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Light</property-tag>
 		</tags>
 	</channel-type>
 
@@ -97,8 +97,8 @@
 		<label>Is Dark</label>
 		<description>Scene is currently dark</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Illuminance</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Illuminance</property-tag>
 		</tags>
 	</channel-type>
 
@@ -107,8 +107,8 @@
 		<label>Last Motion</label>
 		<description>Timestamp of last motion detected</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Timestamp</property-tag>
 		</tags>
 	</channel-type>
 
@@ -117,8 +117,8 @@
 		<label>Light Mode</label>
 		<description>When will floodlight turn on</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Mode</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Mode</property-tag>
 		</tags>
 		<state>
 			<options>
@@ -134,8 +134,8 @@
 		<label>Enable At</label>
 		<description>When the lighting mode is relevant</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Mode</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Mode</property-tag>
 		</tags>
 		<state>
 			<options>
@@ -150,8 +150,8 @@
 		<label>Status Indicator</label>
 		<description>Enable or disable floodlight status LED indicator</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Light</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Light</property-tag>
 		</tags>
 	</channel-type>
 
@@ -160,8 +160,8 @@
 		<label>PIR Duration</label>
 		<description>How long the light stays on after motion</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Duration</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Duration</property-tag>
 		</tags>
 	</channel-type>
 
@@ -170,8 +170,8 @@
 		<label>PIR Sensitivity</label>
 		<description>PIR motion sensitivity (0-100)</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Level</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Level</property-tag>
 		</tags>
 		<state min="0" max="100" step="1" pattern="%d %%"/>
 	</channel-type>
@@ -181,8 +181,8 @@
 		<label>LED Level</label>
 		<description>Brightness level of the main LED (1-6)</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Brightness</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Brightness</property-tag>
 		</tags>
 		<state min="1" max="6" step="1" pattern="%d"/>
 	</channel-type>
@@ -192,8 +192,8 @@
 		<label>Battery</label>
 		<description>Battery charge level (%)</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Level</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Level</property-tag>
 		</tags>
 		<state min="0" max="100" pattern="%d %%" readOnly="true"/>
 	</channel-type>
@@ -203,8 +203,8 @@
 		<label>Contact</label>
 		<description>Contact state (OPEN/CLOSED)</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>OpenState</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>OpenState</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -214,8 +214,8 @@
 		<label>Temperature</label>
 		<description>Ambient temperature</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -225,8 +225,8 @@
 		<label>Humidity</label>
 		<description>Ambient humidity</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Humidity</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Humidity</property-tag>
 		</tags>
 		<state min="0" max="100" pattern="%d %%" readOnly="true"/>
 	</channel-type>
@@ -236,8 +236,8 @@
 		<label>Illuminance</label>
 		<description>Ambient light (Lux)</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Illuminance</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Illuminance</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -247,7 +247,7 @@
 		<label>Alarm</label>
 		<description>Smoke or CO alarm state (OPEN = alarming)</description>
 		<tags>
-			<tag>Alarm</tag>
+			<point-tag>Alarm</point-tag>
 		</tags>
 	</channel-type>
 
@@ -268,8 +268,8 @@
 		<label>Water Leak</label>
 		<description>Water leak state (OPEN = leak detected)</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Water</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Water</property-tag>
 		</tags>
 	</channel-type>
 
@@ -293,8 +293,8 @@
 		<label>Tamper</label>
 		<description>Tamper state (OPEN = tampering)</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Tampered</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Tampered</property-tag>
 		</tags>
 	</channel-type>
 
@@ -351,8 +351,8 @@
 		<label>Doorbell Ring</label>
 		<description>Doorbell ring state (OPEN = doorbell ring detected)</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Presence</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Presence</property-tag>
 		</tags>
 		<config-description-ref uri="thing-type:unifiprotect:latching-contact-config"/>
 	</channel-type>
@@ -362,8 +362,8 @@
 		<label>Snapshot</label>
 		<description>Latest camera snapshot image</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Info</property-tag>
 		</tags>
 		<config-description-ref uri="thing-type:unifiprotect:snapshot-config"/>
 	</channel-type>
@@ -373,8 +373,8 @@
 		<label>Microphone Volume</label>
 		<description>Microphone volume (0-100)</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>SoundVolume</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>SoundVolume</property-tag>
 		</tags>
 		<state min="0" max="100" step="1" pattern="%d %%"/>
 	</channel-type>
@@ -384,8 +384,8 @@
 		<label>Video Mode</label>
 		<description>Current video mode of the camera</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Mode</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Mode</property-tag>
 		</tags>
 		<state>
 			<options>
@@ -404,8 +404,8 @@
 		<label>HDR Mode</label>
 		<description>High Dynamic Range (HDR) mode</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Mode</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Mode</property-tag>
 		</tags>
 		<state>
 			<options>
@@ -421,8 +421,8 @@
 		<label>OSD Name</label>
 		<description>Show the name on the camera OSD</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Info</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Info</property-tag>
 		</tags>
 	</channel-type>
 
@@ -431,8 +431,8 @@
 		<label>OSD Date</label>
 		<description>Show the date on the camera OSD</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Info</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Info</property-tag>
 		</tags>
 	</channel-type>
 
@@ -441,8 +441,8 @@
 		<label>OSD Logo</label>
 		<description>Show the logo on the camera OSD</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Info</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Info</property-tag>
 		</tags>
 	</channel-type>
 
@@ -451,8 +451,8 @@
 		<label>RTSP Stream URL</label>
 		<description>RTSP stream URL</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Info</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -462,8 +462,8 @@
 		<label>WebRTC URL</label>
 		<description>WebRTC stream URL</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Info</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -473,8 +473,8 @@
 		<label>Snapshot URL</label>
 		<description>Snapshot image URL</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Info</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -484,8 +484,8 @@
 		<label>Status LED</label>
 		<description>Enable or disable the camera status LED</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Light</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Light</property-tag>
 		</tags>
 	</channel-type>
 
@@ -495,8 +495,8 @@
 		<description>Camera recording mode</description>
 		<category>Camera</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>Mode</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Mode</property-tag>
 		</tags>
 		<state>
 			<options>
@@ -513,8 +513,8 @@
 		<description>Enable or disable microphone</description>
 		<category>Microphone</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>SoundVolume</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>SoundVolume</property-tag>
 		</tags>
 	</channel-type>
 
@@ -524,8 +524,8 @@
 		<description>Infrared LED mode</description>
 		<category>Camera</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>Mode</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Mode</property-tag>
 		</tags>
 		<state>
 			<options>
@@ -543,8 +543,8 @@
 		<description>Enable or disable motion detection</description>
 		<category>Motion</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>Motion</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Motion</property-tag>
 		</tags>
 	</channel-type>
 
@@ -554,7 +554,7 @@
 		<description>Use NVR global settings instead of per-camera settings</description>
 		<category>Camera</category>
 		<tags>
-			<tag>Control</tag>
+			<point-tag>Control</point-tag>
 		</tags>
 	</channel-type>
 
@@ -564,8 +564,8 @@
 		<description>Enable person smart detection</description>
 		<category>Camera</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>Presence</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Presence</property-tag>
 		</tags>
 	</channel-type>
 
@@ -575,8 +575,8 @@
 		<description>Enable vehicle smart detection</description>
 		<category>Camera</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>Presence</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Presence</property-tag>
 		</tags>
 	</channel-type>
 
@@ -586,8 +586,8 @@
 		<description>Enable face smart detection</description>
 		<category>Camera</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>Presence</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Presence</property-tag>
 		</tags>
 	</channel-type>
 
@@ -597,8 +597,8 @@
 		<description>Enable license plate smart detection</description>
 		<category>Camera</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>Presence</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Presence</property-tag>
 		</tags>
 	</channel-type>
 
@@ -608,8 +608,8 @@
 		<description>Enable package smart detection</description>
 		<category>Camera</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>Presence</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Presence</property-tag>
 		</tags>
 	</channel-type>
 
@@ -619,8 +619,8 @@
 		<description>Enable animal smart detection</description>
 		<category>Camera</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>Presence</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Presence</property-tag>
 		</tags>
 	</channel-type>
 
@@ -629,8 +629,8 @@
 		<label>Active Patrol Slot</label>
 		<description>Currently active PTZ patrol slot</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Info</property-tag>
 		</tags>
 	</channel-type>
 
@@ -645,8 +645,8 @@
 		<label>Motion</label>
 		<description>Motion state (OPEN = motion detected)</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Motion</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Motion</property-tag>
 		</tags>
 		<config-description-ref uri="thing-type:unifiprotect:latching-contact-config"/>
 	</channel-type>
@@ -675,8 +675,8 @@
 		<label>Smart Detect Audio</label>
 		<description>Smart audio detection state (OPEN = audio detection active)</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Noise</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Noise</property-tag>
 		</tags>
 		<config-description-ref uri="thing-type:unifiprotect:latching-contact-config"/>
 	</channel-type>
@@ -702,8 +702,8 @@
 		<label>Smart Detect Zone</label>
 		<description>Smart detect zone state (OPEN = zone detection active)</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Presence</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Presence</property-tag>
 		</tags>
 		<config-description-ref uri="thing-type:unifiprotect:latching-contact-config"/>
 	</channel-type>
@@ -728,8 +728,8 @@
 		<label>Smart Detect Line</label>
 		<description>Smart detect line state (OPEN = line detection active)</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Presence</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Presence</property-tag>
 		</tags>
 		<config-description-ref uri="thing-type:unifiprotect:latching-contact-config"/>
 	</channel-type>
@@ -754,8 +754,8 @@
 		<label>Smart Detect Loiter</label>
 		<description>Smart detect loiter state (OPEN = smart detect loiter detected)</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Presence</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Presence</property-tag>
 		</tags>
 		<config-description-ref uri="thing-type:unifiprotect:latching-contact-config"/>
 	</channel-type>
@@ -766,8 +766,8 @@
 		<description>Lock or unlock the door (ON = locked, OFF = unlocked)</description>
 		<category>Lock</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>LockState</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>LockState</property-tag>
 		</tags>
 	</channel-type>
 
@@ -777,8 +777,8 @@
 		<description>Current lock status (CLOSED = locked, OPEN = unlocked)</description>
 		<category>Lock</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>LockState</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>LockState</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -796,8 +796,8 @@
 		<description>Automatically lock after this duration (0 = disabled)</description>
 		<category>Lock</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>Duration</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Duration</property-tag>
 		</tags>
 		<state min="0" max="3600" step="1" pattern="%d s"/>
 	</channel-type>
@@ -823,8 +823,8 @@
 		<description>Chime volume (0-100)</description>
 		<category>SoundVolume</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>SoundVolume</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>SoundVolume</property-tag>
 		</tags>
 		<state min="0" max="100" step="1" pattern="%d %%"/>
 	</channel-type>
@@ -835,7 +835,7 @@
 		<description>Number of times to repeat chime (1-6)</description>
 		<category>SoundVolume</category>
 		<tags>
-			<tag>Control</tag>
+			<point-tag>Control</point-tag>
 		</tags>
 		<state min="1" max="6" step="1" pattern="%d"/>
 	</channel-type>
@@ -895,8 +895,8 @@
 		<description>Camera speaker volume (0-100)</description>
 		<category>SoundVolume</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>SoundVolume</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>SoundVolume</property-tag>
 		</tags>
 		<state min="0" max="100" step="1" pattern="%d %%"/>
 	</channel-type>
@@ -907,8 +907,8 @@
 		<description>Camera optical zoom level (0-100)</description>
 		<category>Camera</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>Level</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Level</property-tag>
 		</tags>
 		<state min="0" max="100" step="1" pattern="%d %%"/>
 	</channel-type>
@@ -919,7 +919,7 @@
 		<description>Wide Dynamic Range level (0-3)</description>
 		<category>Camera</category>
 		<tags>
-			<tag>Control</tag>
+			<point-tag>Control</point-tag>
 		</tags>
 		<state min="0" max="3" step="1" pattern="%d"/>
 	</channel-type>
@@ -930,8 +930,8 @@
 		<description>Doorbell ring volume (0-100)</description>
 		<category>SoundVolume</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>SoundVolume</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>SoundVolume</property-tag>
 		</tags>
 		<state min="0" max="100" step="1" pattern="%d %%"/>
 	</channel-type>
@@ -942,8 +942,8 @@
 		<description>Doorbell chime duration in milliseconds</description>
 		<category>Time</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>Duration</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Duration</property-tag>
 		</tags>
 	</channel-type>
 
@@ -996,8 +996,8 @@
 		<description>Thumbnail image from the most recent motion event</description>
 		<category>Camera</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Info</property-tag>
 		</tags>
 		<state readOnly="true"/>
 		<config-description-ref uri="thing-type:unifiprotect:snapshot-config"/>
@@ -1009,8 +1009,8 @@
 		<description>Heatmap image showing motion zones from the most recent motion event</description>
 		<category>Camera</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Info</property-tag>
 		</tags>
 		<state readOnly="true"/>
 		<config-description-ref uri="thing-type:unifiprotect:snapshot-config"/>
@@ -1022,7 +1022,7 @@
 		<description>Motion detection score (0-100) from the most recent motion event</description>
 		<category>Camera</category>
 		<tags>
-			<tag>Measurement</tag>
+			<point-tag>Measurement</point-tag>
 		</tags>
 		<state readOnly="true" min="0" max="100" pattern="%d"/>
 	</channel-type>
@@ -1033,8 +1033,8 @@
 		<description>Thumbnail image from the most recent smart detection event</description>
 		<category>Camera</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Info</property-tag>
 		</tags>
 		<state readOnly="true"/>
 		<config-description-ref uri="thing-type:unifiprotect:snapshot-config"/>
@@ -1046,7 +1046,7 @@
 		<description>Smart detection confidence score (0-100) from the most recent event</description>
 		<category>Camera</category>
 		<tags>
-			<tag>Measurement</tag>
+			<point-tag>Measurement</point-tag>
 		</tags>
 		<state readOnly="true" min="0" max="100" pattern="%d"/>
 	</channel-type>
@@ -1057,7 +1057,7 @@
 		<description>Types of objects detected in the most recent smart detection event (comma-separated)</description>
 		<category>Camera</category>
 		<tags>
-			<tag>Status</tag>
+			<point-tag>Status</point-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -1068,7 +1068,7 @@
 		<description>Primary object type from the most recent smart detection event</description>
 		<category>Camera</category>
 		<tags>
-			<tag>Status</tag>
+			<point-tag>Status</point-tag>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -1088,8 +1088,8 @@
 		<description>Timestamp of the most recent smart detection event</description>
 		<category>Camera</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Timestamp</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -1100,8 +1100,8 @@
 		<description>Current motion detection state</description>
 		<category>Motion</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Presence</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Presence</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -1112,8 +1112,8 @@
 		<description>Current smart detection state</description>
 		<category>Camera</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Presence</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Presence</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -1124,7 +1124,7 @@
 		<description>Camera is currently recording</description>
 		<category>Camera</category>
 		<tags>
-			<tag>Status</tag>
+			<point-tag>Status</point-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -1135,8 +1135,8 @@
 		<description>Timestamp of the most recent smart detection event</description>
 		<category>Camera</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Timestamp</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -1147,7 +1147,7 @@
 		<description>Live heatmap is enabled</description>
 		<category>Camera</category>
 		<tags>
-			<tag>Status</tag>
+			<point-tag>Status</point-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -1158,7 +1158,7 @@
 		<description>Video reconfiguration is in progress</description>
 		<category>Camera</category>
 		<tags>
-			<tag>Status</tag>
+			<point-tag>Status</point-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -1169,7 +1169,7 @@
 		<description>Network physical connection rate (Mbps)</description>
 		<category>Network</category>
 		<tags>
-			<tag>Measurement</tag>
+			<point-tag>Measurement</point-tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f Mbps"/>
 	</channel-type>
@@ -1180,7 +1180,7 @@
 		<description>Camera is currently probing for WiFi</description>
 		<category>Network</category>
 		<tags>
-			<tag>Status</tag>
+			<point-tag>Status</point-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -1191,7 +1191,7 @@
 		<description>Network quality is poor</description>
 		<category>Network</category>
 		<tags>
-			<tag>Status</tag>
+			<point-tag>Status</point-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -1202,7 +1202,7 @@
 		<description>Wireless uplink is enabled</description>
 		<category>Network</category>
 		<tags>
-			<tag>Status</tag>
+			<point-tag>Status</point-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -1213,7 +1213,7 @@
 		<description>Current voltage</description>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
+			<point-tag>Measurement</point-tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -1224,7 +1224,7 @@
 		<description>Battery charge percentage</description>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
+			<point-tag>Measurement</point-tag>
 		</tags>
 		<state readOnly="true" min="0" max="100" pattern="%d %%"/>
 	</channel-type>
@@ -1235,7 +1235,7 @@
 		<description>Battery is currently charging</description>
 		<category>Energy</category>
 		<tags>
-			<tag>Status</tag>
+			<point-tag>Status</point-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -1246,7 +1246,7 @@
 		<description>Battery sleep state</description>
 		<category>Energy</category>
 		<tags>
-			<tag>Status</tag>
+			<point-tag>Status</point-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -1257,7 +1257,7 @@
 		<description>WiFi channel number</description>
 		<category>Network</category>
 		<tags>
-			<tag>Measurement</tag>
+			<point-tag>Measurement</point-tag>
 		</tags>
 		<state readOnly="true" pattern="%d"/>
 	</channel-type>
@@ -1268,7 +1268,7 @@
 		<description>WiFi frequency (MHz)</description>
 		<category>Network</category>
 		<tags>
-			<tag>Measurement</tag>
+			<point-tag>Measurement</point-tag>
 		</tags>
 		<state readOnly="true" pattern="%d MHz"/>
 	</channel-type>
@@ -1279,7 +1279,7 @@
 		<description>WiFi signal quality percentage</description>
 		<category>Network</category>
 		<tags>
-			<tag>Measurement</tag>
+			<point-tag>Measurement</point-tag>
 		</tags>
 		<state readOnly="true" min="0" max="100" pattern="%d %%"/>
 	</channel-type>
@@ -1290,7 +1290,7 @@
 		<description>WiFi signal strength (dBm)</description>
 		<category>Network</category>
 		<tags>
-			<tag>Measurement</tag>
+			<point-tag>Measurement</point-tag>
 		</tags>
 		<state readOnly="true" pattern="%d dBm"/>
 	</channel-type>
@@ -1301,7 +1301,7 @@
 		<description>Storage space used by this camera</description>
 		<category>Status</category>
 		<tags>
-			<tag>Measurement</tag>
+			<point-tag>Measurement</point-tag>
 		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
@@ -1312,7 +1312,7 @@
 		<description>Storage write rate (bytes per second)</description>
 		<category>Status</category>
 		<tags>
-			<tag>Measurement</tag>
+			<point-tag>Measurement</point-tag>
 		</tags>
 		<state readOnly="true" pattern="%.0f B/s"/>
 	</channel-type>
@@ -1323,8 +1323,8 @@
 		<description>Enable high frame rate mode if supported by camera</description>
 		<category>Camera</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>Mode</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Mode</property-tag>
 		</tags>
 	</channel-type>
 
@@ -1334,8 +1334,8 @@
 		<description>Enable High Dynamic Range mode if supported by camera</description>
 		<category>Camera</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>Mode</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Mode</property-tag>
 		</tags>
 	</channel-type>
 
@@ -1345,8 +1345,8 @@
 		<description>Timestamp when the device was last booted</description>
 		<category>Status</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Timestamp</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -1357,8 +1357,8 @@
 		<description>Timestamp when the device connected to the NVR</description>
 		<category>Status</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Timestamp</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -1369,8 +1369,8 @@
 		<description>Timestamp when the device was last seen by the NVR</description>
 		<category>Status</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Timestamp</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -1380,8 +1380,8 @@
 		<description>Thumbnail image from the most recent doorbell ring event</description>
 		<category>Camera</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Info</property-tag>
 		</tags>
 		<state readOnly="true"/>
 		<config-description-ref uri="thing-type:unifiprotect:snapshot-config"/>
@@ -1393,7 +1393,7 @@
 		<description>Doorbell is currently being pressed</description>
 		<category>Status</category>
 		<tags>
-			<tag>Alarm</tag>
+			<point-tag>Alarm</point-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -1404,8 +1404,8 @@
 		<description>Timestamp of the most recent doorbell ring</description>
 		<category>Status</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Timestamp</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -1416,8 +1416,8 @@
 		<description>Custom text message to display on doorbell LCD screen</description>
 		<category>Status</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>Info</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Info</property-tag>
 		</tags>
 	</channel-type>
 
@@ -1427,7 +1427,7 @@
 		<description>NVR uptime in milliseconds</description>
 		<category>Status</category>
 		<tags>
-			<tag>Measurement</tag>
+			<point-tag>Measurement</point-tag>
 		</tags>
 		<state readOnly="true" pattern="%d ms"/>
 	</channel-type>
@@ -1438,8 +1438,8 @@
 		<description>Timestamp when the NVR was last updated</description>
 		<category>Status</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Timestamp</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -1450,8 +1450,8 @@
 		<description>Timestamp of the last NVR configuration update</description>
 		<category>Status</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Timestamp</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -1462,7 +1462,7 @@
 		<description>Average CPU load percentage</description>
 		<category>Status</category>
 		<tags>
-			<tag>Measurement</tag>
+			<point-tag>Measurement</point-tag>
 		</tags>
 		<state readOnly="true" min="0" max="100" pattern="%.1f %%"/>
 	</channel-type>
@@ -1473,8 +1473,8 @@
 		<description>CPU temperature</description>
 		<category>Status</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -1485,7 +1485,7 @@
 		<description>Available system memory</description>
 		<category>Status</category>
 		<tags>
-			<tag>Measurement</tag>
+			<point-tag>Measurement</point-tag>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
@@ -1496,7 +1496,7 @@
 		<description>Free system memory</description>
 		<category>Status</category>
 		<tags>
-			<tag>Measurement</tag>
+			<point-tag>Measurement</point-tag>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
@@ -1507,7 +1507,7 @@
 		<description>Total storage capacity</description>
 		<category>Status</category>
 		<tags>
-			<tag>Measurement</tag>
+			<point-tag>Measurement</point-tag>
 		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
@@ -1518,7 +1518,7 @@
 		<description>Available storage space</description>
 		<category>Status</category>
 		<tags>
-			<tag>Measurement</tag>
+			<point-tag>Measurement</point-tag>
 		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
@@ -1529,7 +1529,7 @@
 		<description>Storage utilization percentage</description>
 		<category>Status</category>
 		<tags>
-			<tag>Measurement</tag>
+			<point-tag>Measurement</point-tag>
 		</tags>
 		<state readOnly="true" min="0" max="100" pattern="%.1f %%"/>
 	</channel-type>
@@ -1540,7 +1540,7 @@
 		<description>Storage is recycling old recordings</description>
 		<category>Status</category>
 		<tags>
-			<tag>Status</tag>
+			<point-tag>Status</point-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -1551,7 +1551,7 @@
 		<description>Maximum recording retention duration</description>
 		<category>Status</category>
 		<tags>
-			<tag>Measurement</tag>
+			<point-tag>Measurement</point-tag>
 		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
@@ -1562,8 +1562,7 @@
 		<description>NVR is connected to UniFi Cloud</description>
 		<category>Status</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Status</tag>
+			<point-tag>Status</point-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -1574,7 +1573,7 @@
 		<description>Automatic NVR configuration backups enabled</description>
 		<category>Status</category>
 		<tags>
-			<tag>Control</tag>
+			<point-tag>Control</point-tag>
 		</tags>
 	</channel-type>
 
@@ -1584,8 +1583,8 @@
 		<description>System alerts are enabled</description>
 		<category>Status</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>Alarm</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Enabled</property-tag>
 		</tags>
 	</channel-type>
 
@@ -1595,7 +1594,7 @@
 		<description>Current operational state of the device</description>
 		<category>Status</category>
 		<tags>
-			<tag>Status</tag>
+			<point-tag>Status</point-tag>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -1616,7 +1615,7 @@
 		<description>Device uptime in milliseconds</description>
 		<category>Status</category>
 		<tags>
-			<tag>Measurement</tag>
+			<point-tag>Measurement</point-tag>
 		</tags>
 		<state readOnly="true" pattern="%d ms"/>
 	</channel-type>
@@ -1627,7 +1626,7 @@
 		<description>Total storage capacity</description>
 		<category>Status</category>
 		<tags>
-			<tag>Measurement</tag>
+			<point-tag>Measurement</point-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -1638,7 +1637,7 @@
 		<description>Used storage space</description>
 		<category>Status</category>
 		<tags>
-			<tag>Measurement</tag>
+			<point-tag>Measurement</point-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -1649,7 +1648,7 @@
 		<description>Available storage space</description>
 		<category>Status</category>
 		<tags>
-			<tag>Measurement</tag>
+			<point-tag>Measurement</point-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -1660,7 +1659,7 @@
 		<description>Storage utilization percentage</description>
 		<category>Status</category>
 		<tags>
-			<tag>Measurement</tag>
+			<point-tag>Measurement</point-tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %%"/>
 	</channel-type>
@@ -1671,7 +1670,7 @@
 		<description>All storage devices are healthy</description>
 		<category>Status</category>
 		<tags>
-			<tag>Status</tag>
+			<point-tag>Status</point-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -1682,7 +1681,7 @@
 		<description>Camera utilization percentage (current/max)</description>
 		<category>Status</category>
 		<tags>
-			<tag>Measurement</tag>
+			<point-tag>Measurement</point-tag>
 		</tags>
 		<state readOnly="true" pattern="%.0f %%"/>
 	</channel-type>
@@ -1693,7 +1692,7 @@
 		<description>Global recording mode</description>
 		<category>Status</category>
 		<tags>
-			<tag>Status</tag>
+			<point-tag>Status</point-tag>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -1711,7 +1710,7 @@
 		<description>Recording is globally disabled</description>
 		<category>Status</category>
 		<tags>
-			<tag>Status</tag>
+			<point-tag>Status</point-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -1722,7 +1721,7 @@
 		<description>Recording only on motion detection</description>
 		<category>Status</category>
 		<tags>
-			<tag>Status</tag>
+			<point-tag>Status</point-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -1733,7 +1732,7 @@
 		<description>Recording retention duration</description>
 		<category>Status</category>
 		<tags>
-			<tag>Status</tag>
+			<point-tag>Status</point-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -1744,7 +1743,7 @@
 		<description>System is in away mode</description>
 		<category>Status</category>
 		<tags>
-			<tag>Status</tag>
+			<point-tag>Status</point-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -1755,7 +1754,7 @@
 		<description>Geofencing is enabled</description>
 		<category>Status</category>
 		<tags>
-			<tag>Status</tag>
+			<point-tag>Status</point-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -1766,7 +1765,7 @@
 		<description>Smart detection feature is available</description>
 		<category>Status</category>
 		<tags>
-			<tag>Status</tag>
+			<point-tag>Status</point-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -1777,7 +1776,7 @@
 		<description>Insights feature is enabled</description>
 		<category>Status</category>
 		<tags>
-			<tag>Status</tag>
+			<point-tag>Status</point-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -1788,7 +1787,7 @@
 		<description>Cloud vault is registered</description>
 		<category>Status</category>
 		<tags>
-			<tag>Status</tag>
+			<point-tag>Status</point-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -1799,7 +1798,7 @@
 		<description>Automatic updates are enabled</description>
 		<category>Status</category>
 		<tags>
-			<tag>Status</tag>
+			<point-tag>Status</point-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -1810,8 +1809,8 @@
 		<description>Timestamp of last software update</description>
 		<category>Status</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Timestamp</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -1822,7 +1821,7 @@
 		<description>UniFi Protect software update is available</description>
 		<category>Status</category>
 		<tags>
-			<tag>Status</tag>
+			<point-tag>Status</point-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>

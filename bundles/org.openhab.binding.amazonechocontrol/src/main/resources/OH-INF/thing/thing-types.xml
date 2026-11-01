@@ -323,8 +323,8 @@
 		<label>Active</label>
 		<description>Activate this flash briefing configuration</description>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
+			<point-tag>Switch</point-tag>
+			<property-tag>Mode</property-tag>
 		</tags>
 	</channel-type>
 	<channel-type id="playOnDevice" advanced="true">
@@ -400,8 +400,8 @@
 		<label>Loop</label>
 		<description>Loop</description>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
+			<point-tag>Switch</point-tag>
+			<property-tag>Mode</property-tag>
 		</tags>
 	</channel-type>
 	<channel-type id="shuffle">
@@ -409,8 +409,8 @@
 		<label>Shuffle</label>
 		<description>Shuffle play</description>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
+			<point-tag>Switch</point-tag>
+			<property-tag>Mode</property-tag>
 		</tags>
 	</channel-type>
 	<channel-type id="player">
@@ -418,8 +418,8 @@
 		<label>Player</label>
 		<description>Music Player</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>MediaControl</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>MediaControl</property-tag>
 		</tags>
 	</channel-type>
 	<channel-type id="volume">
@@ -427,8 +427,8 @@
 		<label>Volume</label>
 		<description>Volume of the sound</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>SoundVolume</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>SoundVolume</property-tag>
 		</tags>
 	</channel-type>
 	<channel-type id="equalizerTreble">
@@ -471,8 +471,8 @@
 		<description>ON requests the customer history activity; the channel answers OFF when the request is
 			done</description>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
+			<point-tag>Switch</point-tag>
+			<property-tag>Mode</property-tag>
 		</tags>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
@@ -518,8 +518,8 @@
 		<label>Media Progress</label>
 		<description>Media progress in percent</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>MediaControl</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>MediaControl</property-tag>
 		</tags>
 	</channel-type>
 	<channel-type id="mediaProgressTime" advanced="true">
@@ -552,8 +552,8 @@
 		<label>Do Not Disturb</label>
 		<description>Do Not Disturb mode enabled</description>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
+			<point-tag>Switch</point-tag>
+			<property-tag>Mode</property-tag>
 		</tags>
 	</channel-type>
 	<channel-type id="nextReminder" advanced="true">
@@ -588,8 +588,8 @@
 		<item-type>Dimmer</item-type>
 		<label>Brightness</label>
 		<tags>
-			<tag>Control</tag>
-			<tag>Brightness</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Brightness</property-tag>
 		</tags>
 		<state min="0" max="100" step="1"/>
 	</channel-type>
@@ -598,8 +598,8 @@
 		<item-type>Color</item-type>
 		<label>Color</label>
 		<tags>
-			<tag>Control</tag>
-			<tag>Color</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Color</property-tag>
 		</tags>
 		<config-description>
 			<parameter name="matchColors" type="boolean">
@@ -614,8 +614,8 @@
 		<item-type>String</item-type>
 		<label>Color Name</label>
 		<tags>
-			<tag>Status</tag>
-			<tag>Color</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Color</property-tag>
 		</tags>
 	</channel-type>
 	<!-- Alexa.ColorTemperatureController -->
@@ -623,8 +623,8 @@
 		<item-type>String</item-type>
 		<label>Color Temperature Name</label>
 		<tags>
-			<tag>Status</tag>
-			<tag>ColorTemperature</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>ColorTemperature</property-tag>
 		</tags>
 	</channel-type>
 	<!-- Alexa.PercentageController -->
@@ -637,8 +637,8 @@
 		<item-type>Switch</item-type>
 		<label>Power State</label>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Power</tag>
+			<point-tag>Switch</point-tag>
+			<property-tag>Power</property-tag>
 		</tags>
 	</channel-type>
 	<!-- Alexa.LockController -->
@@ -646,8 +646,8 @@
 		<item-type>Switch</item-type>
 		<label>Lock State</label>
 		<tags>
-			<tag>Switch</tag>
-			<tag>LockState</tag>
+			<point-tag>Switch</point-tag>
+			<property-tag>LockState</property-tag>
 		</tags>
 	</channel-type>
 	<!-- Alexa.PowerLevelController -->
@@ -655,8 +655,8 @@
 		<item-type>Dimmer</item-type>
 		<label>Power Level</label>
 		<tags>
-			<tag>Control</tag>
-			<tag>Power</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Power</property-tag>
 		</tags>
 		<state min="0" max="100" step="1"/>
 	</channel-type>
@@ -669,7 +669,7 @@
 		<item-type>Contact</item-type>
 		<label>Burglary Alarm</label>
 		<tags>
-			<tag>Alarm</tag>
+			<point-tag>Alarm</point-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -677,8 +677,8 @@
 		<item-type>Contact</item-type>
 		<label>Carbon Monoxide Alarm</label>
 		<tags>
-			<tag>Alarm</tag>
-			<tag>CO</tag>
+			<point-tag>Alarm</point-tag>
+			<property-tag>CO</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -686,8 +686,8 @@
 		<item-type>Contact</item-type>
 		<label>Fire Alarm</label>
 		<tags>
-			<tag>Alarm</tag>
-			<tag>Smoke</tag>
+			<point-tag>Alarm</point-tag>
+			<property-tag>Smoke</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -695,8 +695,8 @@
 		<item-type>Contact</item-type>
 		<label>Water Alarm</label>
 		<tags>
-			<tag>Alarm</tag>
-			<tag>Water</tag>
+			<point-tag>Alarm</point-tag>
+			<property-tag>Water</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -705,8 +705,8 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Temperature</label>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -715,8 +715,8 @@
 		<item-type>Switch</item-type>
 		<label>Motion Detected</label>
 		<tags>
-			<tag>Status</tag>
-			<tag>Motion</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Motion</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -737,8 +737,8 @@
 		<item-type>Location</item-type>
 		<label>Location</label>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>GeoLocation</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>GeoLocation</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -747,8 +747,8 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Target Setpoint</label>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point-tag>Setpoint</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
@@ -757,8 +757,8 @@
 		<label>Upper Setpoint</label>
 		<category>Temperature</category>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point-tag>Setpoint</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
@@ -767,8 +767,8 @@
 		<label>Lower Setpoint</label>
 		<category>Temperature</category>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point-tag>Setpoint</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
@@ -776,8 +776,8 @@
 		<item-type>String</item-type>
 		<label>Thermostat Mode</label>
 		<tags>
-			<tag>Control</tag>
-			<tag>Mode</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Mode</property-tag>
 		</tags>
 		<state>
 			<options>
@@ -794,8 +794,8 @@
 		<item-type>Number</item-type>
 		<label>Indoor Air Quality</label>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>AirQuality</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>AirQuality</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -804,8 +804,8 @@
 		<label>Humidity</label>
 		<category>Humidity</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Temperature</property-tag>
 		</tags>
 		<state readOnly="true" pattern=":.1%"/>
 	</channel-type>
@@ -814,8 +814,8 @@
 		<label>PM2.5</label>
 		<description>Particulate Matter PM2.5 density.</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>ParticulateMatter</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>ParticulateMatter</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -823,8 +823,8 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Carbon Monoxide</label>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>CO</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>CO</property-tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -837,8 +837,8 @@
 		<item-type>Number</item-type>
 		<label>Fan speed</label>
 		<tags>
-			<tag>Control</tag>
-			<tag>Speed</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Speed</property-tag>
 		</tags>
 	</channel-type>
 

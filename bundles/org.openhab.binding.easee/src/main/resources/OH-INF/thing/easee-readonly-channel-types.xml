@@ -8,8 +8,8 @@
 		<label>Received Signal Strength Indicator</label>
 		<category>QualityOfService</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>RSSI</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>RSSI</property-tag>
 		</tags>
 		<state pattern="%d %unit%" readOnly="true">
 		</state>
@@ -18,8 +18,8 @@
 		<item-type>Number:Power</item-type>
 		<label>Power</label>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Power</property-tag>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true">
 		</state>
@@ -28,8 +28,8 @@
 		<item-type>Number:Energy</item-type>
 		<label>Energy</label>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Energy</property-tag>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true">
 		</state>
@@ -38,8 +38,8 @@
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>ElectricCurrent</label>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Current</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Current</property-tag>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true">
 		</state>
@@ -48,8 +48,8 @@
 		<item-type>Switch</item-type>
 		<label>Switch</label>
 		<tags>
-			<tag>Status</tag>
-			<tag>Power</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Power</property-tag>
 		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
@@ -57,8 +57,8 @@
 		<item-type>Number:ElectricPotential</item-type>
 		<label>ElectricPotential</label>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Voltage</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Voltage</property-tag>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true">
 		</state>

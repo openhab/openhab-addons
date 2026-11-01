@@ -127,8 +127,8 @@
 		</description>
 		<category>text</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>Mode</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Mode</property-tag>
 		</tags>
 		<command>
 			<options>
@@ -157,8 +157,8 @@
 		</description>
 		<category>switch</category>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
+			<point-tag>Switch</point-tag>
+			<property-tag>Mode</property-tag>
 		</tags>
 	</channel-type>
 
@@ -178,8 +178,8 @@
 		</description>
 		<category>switch</category>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
+			<point-tag>Switch</point-tag>
+			<property-tag>Mode</property-tag>
 		</tags>
 	</channel-type>
 
@@ -200,8 +200,8 @@
 		</description>
 		<category>receiver</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>Channel</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Channel</property-tag>
 		</tags>
 		<command>
 			<options>
@@ -236,8 +236,8 @@
 		</description>
 		<category>slider</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>Brightness</tag>
+			<point-tag>Control</point-tag>
+			<property-tag>Brightness</property-tag>
 		</tags>
 		<state min="0" max="200" step="1" pattern="%d"/>
 	</channel-type>

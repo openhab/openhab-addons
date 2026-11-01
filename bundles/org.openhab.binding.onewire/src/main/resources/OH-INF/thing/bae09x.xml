@@ -83,8 +83,8 @@
 		<label>Frequency</label>
 		<description>Frequency of PWM output in Hz</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Frequency</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Frequency</property-tag>
 		</tags>
 		<config-description>
 			<parameter name="prescaler" type="integer">
@@ -120,8 +120,8 @@
 		<label>PIO</label>
 		<description>Programmable I/O channel</description>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Power</tag>
+			<point-tag>Switch</point-tag>
+			<property-tag>Power</property-tag>
 		</tags>
 		<config-description>
 			<parameter name="mode" type="text">
@@ -149,16 +149,16 @@
 		<item-type>Switch</item-type>
 		<label>Digital Out</label>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Power</tag>
+			<point-tag>Switch</point-tag>
+			<property-tag>Power</property-tag>
 		</tags>
 	</channel-type>
 	<channel-type id="bae-di">
 		<item-type>Switch</item-type>
 		<label>Digital In</label>
 		<tags>
-			<tag>Status</tag>
-			<tag>Power</tag>
+			<point-tag>Status</point-tag>
+			<property-tag>Power</property-tag>
 		</tags>
 	</channel-type>
 	<!-- Analog In (ADC) -->
@@ -167,8 +167,8 @@
 		<label>Analog Input</label>
 		<description>Analog input (ADC)</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Voltage</tag>
+			<point-tag>Measurement</point-tag>
+			<property-tag>Voltage</property-tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 		<config-description>
