@@ -352,6 +352,22 @@ public class WindowTriggerHandlerTest {
     }
 
     @Test
+    void plannedWindowStartsActiveAfterRestartWithinWindow() {
+        WindowTriggerHandler handler = createHandler(Map.of());
+
+        clock.instant = DAY.plusHours(2).plusMinutes(30).toInstant();
+        handler.refresh();
+
+        List<ItemTimeSeriesEvent> events = timeSeriesEvents();
+        assertEquals(1, events.size());
+        assertEquals(
+                List.of(new TimeSeries.Entry(DAY.plusHours(2).plusMinutes(30).toInstant(), OnOffType.ON),
+                        new TimeSeries.Entry(DAY.plusHours(4).toInstant(), OnOffType.OFF),
+                        new TimeSeries.Entry(DAY.plusHours(24).toInstant(), OnOffType.OFF)),
+                events.get(0).getTimeSeries().getStates().toList());
+    }
+
+    @Test
     void plannedWindowIsClearedWhenForecastIsMissing() {
         WindowTriggerHandler handler = createHandler(Map.of());
 

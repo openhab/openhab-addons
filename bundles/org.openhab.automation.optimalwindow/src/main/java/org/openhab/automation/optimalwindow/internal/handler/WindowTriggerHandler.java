@@ -265,7 +265,8 @@ public class WindowTriggerHandler extends BaseTriggerModuleHandler {
 
         Instant instant = now.toInstant();
         TimeSeries timeSeries = new TimeSeries(TimeSeries.Policy.REPLACE);
-        timeSeries.add(instant, OnOffType.from(active));
+        // the state of this result, active is only updated after the items
+        timeSeries.add(instant, OnOffType.from(result.isActive(instant)));
         for (TimeRange range : ranges) {
             if (!range.end().isAfter(instant)) {
                 continue;

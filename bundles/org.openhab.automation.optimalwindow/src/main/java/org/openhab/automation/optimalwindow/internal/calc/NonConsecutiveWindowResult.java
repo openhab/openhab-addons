@@ -80,6 +80,11 @@ public class NonConsecutiveWindowResult extends WindowResult {
             total = total.plus(member.duration());
         }
 
+        // gaps in the forecast can leave less than the length, a shorter window is no valid result
+        if (total.compareTo(length) < 0) {
+            return;
+        }
+
         // sort the members and merge adjacent ranges
         members.sort(Comparator.naturalOrder());
         for (TimeRange member : members) {

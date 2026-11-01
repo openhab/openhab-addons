@@ -166,6 +166,34 @@ public class WindowCalculatorTest {
     }
 
     @Test
+    void calculateNonConsecutiveWithGapShorterThanLength() {
+        ForecastSource source = (item, service, begin, end) -> {
+            SortedMap<Instant, Double> values = new TreeMap<>();
+            ZonedDateTime t = time("2026-10-06T20:00", GMT);
+            for (int hour = 0; hour < 12; hour++) {
+                ZonedDateTime value = t.plusHours(hour);
+                // 02:00 is missing, so the value of 01:00 is only valid for one hour
+                if (value.getHour() != 2) {
+                    values.put(value.toInstant(), 1.0);
+                }
+            }
+            return values;
+        };
+
+        // only four of the five hours have a value
+        WindowConfiguration config = WindowConfiguration.from(new Configuration(Map.of("forecastItem", "Price",
+                "rangeStart", "00:00", "rangeDuration", "5h", "length", "5h", "consecutive", false)));
+        assertNull(new WindowCalculator(source).calculate(config, time("2026-10-07T00:00", GMT)));
+
+        config = WindowConfiguration.from(new Configuration(Map.of("forecastItem", "Price", "rangeStart", "00:00",
+                "rangeDuration", "5h", "length", "4h", "consecutive", false)));
+        WindowResult result = new WindowCalculator(source).calculate(config, time("2026-10-07T00:00", GMT));
+        assertNotNull(result);
+        assertEquals(List.of(range("2026-10-07T00:00", "2026-10-07T02:00", GMT),
+                range("2026-10-07T03:00", "2026-10-07T05:00", GMT)), result.getRanges());
+    }
+
+    @Test
     void calculateWithoutFullCoverage() {
         ForecastSource source = (item, service, begin, end) -> new TreeMap<>(
                 Map.of(time("2026-10-07T00:00", GMT).toInstant(), 1.0, time("2026-10-07T06:00", GMT).toInstant(), 2.0));
