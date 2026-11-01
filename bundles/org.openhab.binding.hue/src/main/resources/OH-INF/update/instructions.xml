@@ -36,7 +36,7 @@
 			<add-channel id="gradient-color-1">
 				<type>hue:gradient-color</type>
 				<label>Gradient Color 1</label>
-				<description>Controls the color of gradient point 2.</description>
+				<description>Controls the color of gradient point 1.</description>
 			</add-channel>
 			<add-channel id="gradient-color-2">
 				<type>hue:gradient-color</type>
