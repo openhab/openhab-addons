@@ -19,6 +19,8 @@ import java.util.function.Function;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.enocean.internal.config.EnOceanChannelContactConfig;
+import org.openhab.binding.enocean.internal.config.EnOceanChannelRollershutterConfig;
+import org.openhab.binding.enocean.internal.config.EnOceanChannelRollershutterConfig.ConfigMode;
 import org.openhab.binding.enocean.internal.messages.ERP1Message;
 import org.openhab.binding.enocean.internal.statemachine.BlindAction;
 import org.openhab.binding.enocean.internal.statemachine.BlindState;
@@ -64,6 +66,12 @@ public class PTM200Message extends _RPSMessage {
             Function<String, State> getCurrentStateFunc, @Nullable STMStateMachine<?, ?> stm) {
     }
 
+    private void updateEndAngle(STMStateMachine<BlindAction, BlindState> stm, Configuration config, PercentType angle) {
+        if (config.as(EnOceanChannelRollershutterConfig.class).getConfigMode() == ConfigMode.BLINDS) {
+            stm.updateChannel(CHANNEL_DIMMER, angle);
+        }
+    }
+
     // TODO: Architectural improvement - Feedback processing should be in Handler
     // This EEP processes feedback and updates state machine that was initiated by A5_3F_7F_EltakoFSB.
     // This creates coupling between send and receive EEP classes. Ideally, the Handler should
@@ -94,6 +102,8 @@ public class PTM200Message extends _RPSMessage {
                                     break;
                                 case MOVEMENT_MANUAL_UP:
                                     blindStm.apply(BlindAction.MANUAL_DONE);
+                                    // the slats opened before the blind moved up
+                                    updateEndAngle(blindStm, config, PercentType.ZERO);
                                     break;
                                 default:
                                     break;
@@ -119,6 +129,8 @@ public class PTM200Message extends _RPSMessage {
                                     break;
                                 case MOVEMENT_MANUAL_DOWN:
                                     blindStm.apply(BlindAction.MANUAL_DONE);
+                                    // the slats closed before the blind moved down
+                                    updateEndAngle(blindStm, config, PercentType.HUNDRED);
                                     break;
                                 default:
                                     break;

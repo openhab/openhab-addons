@@ -14,8 +14,11 @@ package org.openhab.binding.enocean.internal.eep.Base;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.CHANNEL_DIMMER;
 import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.CHANNEL_ROLLERSHUTTER;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ScheduledExecutorService;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -52,16 +55,23 @@ public class PTM200MessageTest {
     private static final String END_POSITION_DOWN = "F650000000DE30";
 
     private @Mock @NonNullByDefault({}) ScheduledExecutorService scheduler;
+    private final Map<String, State> channelUpdates = new HashMap<>();
 
     private STMStateMachine<BlindAction, BlindState> build(BlindState initialState) {
-        return STMStateMachine.build(STMTransitionConfiguration.BlindTransitions.FSB14_BLINDS, initialState, scheduler,
-                null);
+        return STMStateMachine
+                .build(STMTransitionConfiguration.BlindTransitions.FSB14_BLINDS, initialState, scheduler, null)
+                .registerChannelUpdater(channelUpdates::put);
     }
 
     private static State receive(String payloadHex, STMStateMachine<BlindAction, BlindState> stm) {
+        return receive(payloadHex, stm, new Configuration());
+    }
+
+    private static State receive(String payloadHex, STMStateMachine<BlindAction, BlindState> stm,
+            Configuration config) {
         byte[] payload = HexUtils.hexToBytes(payloadHex);
         return new PTM200Message(new ERP1Message(payload.length, 0, payload)).convertToStateImpl(CHANNEL_ROLLERSHUTTER,
-                "", id -> PercentType.ZERO, new Configuration(), stm);
+                "", id -> PercentType.ZERO, config, stm);
     }
 
     @Test
@@ -111,6 +121,27 @@ public class PTM200MessageTest {
         receive(END_POSITION_DOWN, stm);
 
         assertThat(stm.getState(), is(BlindState.MOVEMENT_MANUAL_UP));
+    }
+
+    @Test
+    void endPositionAfterManualMovementSetsEndAngleOfBlinds() {
+        Configuration blinds = new Configuration(Map.of("shutTime", 27, "swapTime", 14, "configMode", "blinds"));
+
+        receive(END_POSITION_UP, build(BlindState.MOVEMENT_MANUAL_UP), blinds);
+        assertThat(channelUpdates.get(CHANNEL_DIMMER), is(PercentType.ZERO));
+
+        receive(END_POSITION_DOWN, build(BlindState.MOVEMENT_MANUAL_DOWN), blinds);
+        assertThat(channelUpdates.get(CHANNEL_DIMMER), is(PercentType.HUNDRED));
+    }
+
+    @Test
+    void endPositionDoesNotTouchTheDimmerOutsideBlindsMode() {
+        Configuration rollershutter = new Configuration(
+                Map.of("shutTime", 27, "swapTime", 14, "configMode", "rollershutter"));
+
+        receive(END_POSITION_UP, build(BlindState.MOVEMENT_MANUAL_UP), rollershutter);
+
+        assertThat(channelUpdates.isEmpty(), is(true));
     }
 
     @Test

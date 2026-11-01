@@ -19,11 +19,13 @@ import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.CHANN
 import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.CHANNEL_ROLLERSHUTTER;
 
 import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ScheduledExecutorService;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -64,6 +66,7 @@ public class A5_3F_7F_EltakoFSBTest {
     private @Mock @NonNullByDefault({}) Thing thing;
     private @Mock @NonNullByDefault({}) Channel rollershutterChannel;
     private @Mock @NonNullByDefault({}) ScheduledExecutorService scheduler;
+    private final Map<String, State> channelUpdates = new HashMap<>();
     private final A5_3F_7F_EltakoFSB eep = new A5_3F_7F_EltakoFSB();
 
     @BeforeEach
@@ -152,9 +155,9 @@ public class A5_3F_7F_EltakoFSBTest {
     void manualMovementEndsWithPartialFeedbackAndTracksPosition() {
         STMStateMachine<BlindAction, BlindState> stm = build(BlindState.MOVEMENT_MANUAL_DOWN);
 
-        // 11.0 s down from 20 %: 20 + 110 * 100 / 270 = 61 %
+        // 11.0 s down from 20 % with closed slats: 20 + 110 * 100 / 270 = 61 %
         State result = feedback("A5006E020A000000DE20").convertToStateImpl(CHANNEL_ROLLERSHUTTER, "",
-                id -> new PercentType(20), new Configuration(BLINDS_CONFIG), stm);
+                id -> state(id, 20, 100), new Configuration(BLINDS_CONFIG), stm);
 
         assertThat(stm.getState(), is(BlindState.IDLE));
         assertThat(result, is(new PercentType(61)));
@@ -177,8 +180,80 @@ public class A5_3F_7F_EltakoFSBTest {
 
     private State positionAfter(String feedbackHex, int startPosition) {
         STMStateMachine<BlindAction, BlindState> stm = build(BlindState.MOVEMENT_MANUAL_DOWN);
-        return feedback(feedbackHex).convertToStateImpl(CHANNEL_ROLLERSHUTTER, "", id -> new PercentType(startPosition),
+        return feedback(feedbackHex).convertToStateImpl(CHANNEL_ROLLERSHUTTER, "", id -> state(id, startPosition, 100),
                 new Configuration(BLINDS_CONFIG), stm);
+    }
+
+    @Test
+    void manualMovementTurnsSlatsBeforeChangingPosition() {
+        STMStateMachine<BlindAction, BlindState> stm = build(BlindState.MOVEMENT_MANUAL_DOWN);
+
+        // 5.0 s down, slats at 45: closing them takes 55 % of 1.4 s = 0.8 s, 4.2 s remain for the blind
+        State result = feedback("A50032020A000000DE20").convertToStateImpl(CHANNEL_ROLLERSHUTTER, "",
+                id -> state(id, 0, 45), new Configuration(BLINDS_CONFIG), stm);
+
+        assertThat(result, is(new PercentType(16)));
+        assertThat(channelUpdates.get(CHANNEL_DIMMER), is(PercentType.HUNDRED));
+    }
+
+    @Test
+    void shortManualMovementOnlyTurnsSlats() {
+        STMStateMachine<BlindAction, BlindState> stm = build(BlindState.MOVEMENT_MANUAL_DOWN);
+
+        // 0.5 s of the 0.8 s needed to close the slats from 45
+        State result = feedback("A50005020A000000DE20").convertToStateImpl(CHANNEL_ROLLERSHUTTER, "",
+                id -> state(id, 0, 45), new Configuration(BLINDS_CONFIG), stm);
+
+        assertThat(result, is(PercentType.ZERO));
+        assertThat(channelUpdates.get(CHANNEL_DIMMER), is(new PercentType(81)));
+    }
+
+    @Test
+    void manualMovementUpOpensSlatsFirst() {
+        STMStateMachine<BlindAction, BlindState> stm = build(BlindState.MOVEMENT_MANUAL_UP);
+
+        // 4.0 s up from 50 %, slats at 30: opening them takes 0.4 s, 3.6 s remain for the blind
+        State result = feedback("A50028010A000000DE20").convertToStateImpl(CHANNEL_ROLLERSHUTTER, "",
+                id -> state(id, 50, 30), new Configuration(BLINDS_CONFIG), stm);
+
+        assertThat(result, is(new PercentType(37)));
+        assertThat(channelUpdates.get(CHANNEL_DIMMER), is(PercentType.ZERO));
+    }
+
+    @Test
+    void unknownAngleIsOnlySetWhenSlatsHaveTurnedFully() {
+        STMStateMachine<BlindAction, BlindState> stm = build(BlindState.MOVEMENT_MANUAL_DOWN);
+        feedback("A50032020A000000DE20").convertToStateImpl(CHANNEL_ROLLERSHUTTER, "", id -> state(id, 0, null),
+                new Configuration(BLINDS_CONFIG), stm);
+        assertThat(channelUpdates.get(CHANNEL_DIMMER), is(PercentType.HUNDRED));
+
+        channelUpdates.clear();
+        stm = build(BlindState.MOVEMENT_MANUAL_DOWN);
+        feedback("A50005020A000000DE20").convertToStateImpl(CHANNEL_ROLLERSHUTTER, "", id -> state(id, 0, null),
+                new Configuration(BLINDS_CONFIG), stm);
+        assertThat(channelUpdates.isEmpty(), is(true));
+    }
+
+    @Test
+    void rollershutterModeDoesNotTouchTheDimmer() {
+        STMStateMachine<BlindAction, BlindState> stm = build(BlindState.MOVEMENT_MANUAL_DOWN);
+
+        State result = feedback("A50032020A000000DE20").convertToStateImpl(CHANNEL_ROLLERSHUTTER, "",
+                id -> state(id, 0, 45),
+                new Configuration(Map.of("shutTime", 27, "swapTime", 14, "configMode", "rollershutter")), stm);
+
+        assertThat(result, is(new PercentType(19)));
+        assertThat(channelUpdates.isEmpty(), is(true));
+    }
+
+    @Test
+    void manualMovementToTheEndSetsEndAngle() {
+        STMStateMachine<BlindAction, BlindState> stm = build(BlindState.MOVEMENT_MANUAL_UP);
+
+        feedback("A5010E010A000000DE20").convertToStateImpl(CHANNEL_ROLLERSHUTTER, "", id -> state(id, 50, 45),
+                new Configuration(BLINDS_CONFIG), stm);
+
+        assertThat(channelUpdates.get(CHANNEL_DIMMER), is(PercentType.ZERO));
     }
 
     @Test
@@ -198,11 +273,14 @@ public class A5_3F_7F_EltakoFSBTest {
         stm.startMovement(81);
 
         // reports 2.7 s instead of the requested 8.1 s
-        feedback("A5001B020A000000DE20").convertToStateImpl(CHANNEL_ROLLERSHUTTER, "", id -> new PercentType(20),
-                new Configuration(BLINDS_CONFIG), stm);
+        State result = feedback("A5001B020A000000DE20").convertToStateImpl(CHANNEL_ROLLERSHUTTER, "",
+                id -> state(id, 20, 45), new Configuration(BLINDS_CONFIG), stm);
 
         assertThat(stm.getState(), is(BlindState.IDLE));
         assertThat(stm.getStoredCommand(), is(nullValue()));
+        // 0.8 s close the slats, 1.9 s remain for the blind: 20 + 7 %
+        assertThat(result, is(new PercentType(27)));
+        assertThat(channelUpdates.get(CHANNEL_DIMMER), is(PercentType.HUNDRED));
     }
 
     @Test
@@ -242,8 +320,16 @@ public class A5_3F_7F_EltakoFSBTest {
     }
 
     private STMStateMachine<BlindAction, BlindState> build(BlindState initialState) {
-        return STMStateMachine.build(STMTransitionConfiguration.BlindTransitions.FSB14_BLINDS, initialState, scheduler,
-                null);
+        return STMStateMachine
+                .build(STMTransitionConfiguration.BlindTransitions.FSB14_BLINDS, initialState, scheduler, null)
+                .registerChannelUpdater(channelUpdates::put);
+    }
+
+    private static State state(String channelId, int position, @Nullable Integer angle) {
+        if (CHANNEL_DIMMER.equals(channelId)) {
+            return angle == null ? UnDefType.UNDEF : new PercentType(angle);
+        }
+        return new PercentType(position);
     }
 
     private static A5_3F_7F_EltakoFSB feedback(String payloadHex) {

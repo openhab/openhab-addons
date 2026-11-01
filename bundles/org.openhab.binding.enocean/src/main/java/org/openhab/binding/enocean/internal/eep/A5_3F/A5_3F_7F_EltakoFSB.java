@@ -375,6 +375,12 @@ public class A5_3F_7F_EltakoFSB extends _4BSMessage implements StateMachineProvi
                                 // StopMoveType.MOVE is used as command for adjustment of slats
                                 blindStm.storeCommand(CHANNEL_ROLLERSHUTTER, StopMoveType.MOVE);
                                 break;
+                            case MOVEMENT_MANUAL_UP, MOVEMENT_MANUAL_DOWN:
+                                if (c.getConfigMode() == ConfigMode.BLINDS) {
+                                    blindStm.updateChannel(CHANNEL_DIMMER,
+                                            move_up ? PercentType.ZERO : PercentType.HUNDRED);
+                                }
+                                break;
                             default:
                         }
                         blindStm.apply(BlindAction.POSITION_DONE);// will launch new command for adjustment of slats
@@ -402,7 +408,8 @@ public class A5_3F_7F_EltakoFSB extends _4BSMessage implements StateMachineProvi
                                     if (isInterruptedByUser(blindStm, runtime)) {
                                         // e.g. wall switch: do not adjust the slats, the user is in control
                                         blindStm.apply(BlindAction.POSITION_INTERRUPTED);
-                                        return newPosition;
+                                        return trackMovement(blindStm, c, getCurrentStateFunc, current, runtime,
+                                                direction > 0);
                                     }
                                     blindStm.storeCommand(CHANNEL_ROLLERSHUTTER, StopMoveType.MOVE);
                                     blindStm.apply(BlindAction.POSITION_DONE); // will execute MOVE command, when we use
@@ -410,7 +417,8 @@ public class A5_3F_7F_EltakoFSB extends _4BSMessage implements StateMachineProvi
                                     return newPosition;
                                 case MOVEMENT_MANUAL_UP, MOVEMENT_MANUAL_DOWN:
                                     blindStm.apply(BlindAction.MANUAL_DONE);
-                                    return newPosition;
+                                    return trackMovement(blindStm, c, getCurrentStateFunc, current, runtime,
+                                            direction > 0);
                                 case MOVEMENT_SLATS:
                                     blindStm.apply(BlindAction.SLATS_POS_DONE);
                                     return new PercentType(current.intValue()); // do not change the position
@@ -429,6 +437,58 @@ public class A5_3F_7F_EltakoFSB extends _4BSMessage implements StateMachineProvi
 
     private static int fullTravelRuntime(byte shutTimeByte) {
         return (shutTimeByte & 0xFF) * 10;
+    }
+
+    /**
+     * Position and slat angle after a run that nobody requested through the binding.
+     *
+     * @param position the new position
+     * @param angle the new slat angle, null if it is not known
+     */
+    record Travel(int position, @Nullable Integer angle) {
+    }
+
+    /**
+     * Calculates the effect of a run on position and slats. When moving down the slats close first (angle 100) and
+     * only then the position changes, when moving up they open first (angle 0).
+     *
+     * @param runtime the driven time in 100 ms
+     * @param shutTime the travel time in s
+     * @param swapTime the time for turning the slats from one end to the other in 100 ms, 0 if there are no slats
+     */
+    static Travel travel(int position, @Nullable Integer angle, boolean down, int runtime, int shutTime, int swapTime) {
+        int endAngle = down ? 100 : 0;
+        int slatsTime = 0;
+        Integer newAngle = angle;
+        if (swapTime > 0) {
+            if (angle != null) {
+                int remaining = down ? 100 - angle : angle;
+                slatsTime = Math.round(remaining * (float) swapTime / 100);
+                if (runtime < slatsTime) {
+                    int turned = Math.round(runtime * 100f / swapTime);
+                    return new Travel(position, Math.min(100, Math.max(0, angle + (down ? turned : -turned))));
+                }
+                newAngle = endAngle;
+            } else if (runtime >= swapTime) {
+                newAngle = endAngle;
+            }
+        }
+        int moved = Math.round((runtime - slatsTime) * 100f / (shutTime * 10));
+        return new Travel(Math.min(100, Math.max(0, position + (down ? moved : -moved))), newAngle);
+    }
+
+    private PercentType trackMovement(STMStateMachine<BlindAction, BlindState> stm, EnOceanChannelRollershutterConfig c,
+            Function<String, @Nullable State> getCurrentStateFunc, PercentType position, int runtime, boolean down) {
+        int swapTime = c.getConfigMode() == ConfigMode.BLINDS ? Math.max(0, c.swapTime) : 0;
+        State dimmer = getCurrentStateFunc.apply(CHANNEL_DIMMER);
+        PercentType angle = dimmer == null ? null : dimmer.as(PercentType.class);
+        Travel travel = travel(position.intValue(), angle == null ? null : angle.intValue(), down, runtime, c.shutTime,
+                swapTime);
+        Integer newAngle = travel.angle();
+        if (swapTime > 0 && newAngle != null) {
+            stm.updateChannel(CHANNEL_DIMMER, new PercentType(newAngle));
+        }
+        return new PercentType(travel.position());
     }
 
     private static boolean isInterruptedByUser(STMStateMachine<BlindAction, BlindState> stm, int runtime) {
