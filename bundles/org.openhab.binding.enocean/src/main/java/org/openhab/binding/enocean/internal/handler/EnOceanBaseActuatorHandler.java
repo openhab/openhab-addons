@@ -19,6 +19,7 @@ import java.util.Collections;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -48,6 +49,7 @@ import org.openhab.core.thing.link.ItemChannelLinkRegistry;
 import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
+import org.openhab.core.types.State;
 import org.openhab.core.util.HexUtils;
 
 /**
@@ -452,15 +454,16 @@ public class EnOceanBaseActuatorHandler extends EnOceanBaseSensorHandler {
         for (Object watchdog : smProvider.getWatchdogs(getThing())) {
             stm.registerWatchdog((STMWatchdog) watchdog, this::onWatchdogTimeout);
         }
+        BiConsumer<String, State> channelUpdater = this::updateState;
+        stm.registerChannelUpdater(channelUpdater);
         return stm;
     }
 
     private void onWatchdogTimeout(Object timedOutState) {
-        logger.warn(
-                "{}: No feedback from the actuator while in state {}. Resetting the state machine to INVALID. "
-                        + "Make sure the actuator reports its movements, e.g. for an Eltako FSB14 it must be in the "
-                        + "feedback list of the FAM14 (operating mode 7) and the FAM14 must poll it.",
-                thing.getUID(), timedOutState);
+        logger.warn("{}: No feedback from the actuator while in state {}. Resetting the state machine to INVALID. "
+                + "Make sure the actuator reports its movements, e.g. for an Eltako FSB14 it must be in the "
+                + "feedback list of the FAM14 and the FAM14 must send its confirmation telegrams to the "
+                + "network of the gateway (see the binding documentation).", thing.getUID(), timedOutState);
     }
 
     /**
