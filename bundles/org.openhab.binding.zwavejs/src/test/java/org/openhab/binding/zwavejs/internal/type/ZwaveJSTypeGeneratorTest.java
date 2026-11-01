@@ -358,6 +358,21 @@ public class ZwaveJSTypeGeneratorTest {
     }
 
     @Test
+    public void testNullColorValueGeneratesColorChannel() throws IOException {
+        Node node = Objects.requireNonNull(DataUtil.getNodeFromStore("store_4.json", 44));
+        node.values.stream().filter(value -> value.commandClass == 51 && value.metadata.type == MetadataType.ANY)
+                .forEach(value -> value.value = null);
+
+        ZwaveJSTypeGeneratorResult results = Objects.requireNonNull(provider)
+                .generate(new ThingUID(BINDING_ID, "test-bridge", "test-thing"), node, false);
+        Channel channel = Objects.requireNonNull(results.channels.get("color-switch-color"));
+        ChannelType type = Objects.requireNonNull(
+                channelTypeProvider.getChannelType(Objects.requireNonNull(channel.getChannelTypeUID()), null));
+
+        assertEquals("Color", type.getItemType());
+    }
+
+    @Test
     public void testGenCTNode60RollerShutterTypeForUpDown() throws IOException {
         // Test detection of Roller Shutter type based on Up/Down Switch channels.
         // Channel identifiers may vary depending on device configuration.

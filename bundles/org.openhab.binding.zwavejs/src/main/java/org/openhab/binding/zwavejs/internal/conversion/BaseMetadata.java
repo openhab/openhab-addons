@@ -516,6 +516,10 @@ public abstract class BaseMetadata {
             return MetadataType.BOOLEAN; // Notification CC can be boolean or string, but we default to boolean
         }
 
+        if (commandClass == COMMAND_CLASS_SWITCH_COLOR) {
+            return MetadataType.COLOR; // aggregate color value that is not known yet
+        }
+
         logger.warn("Node {}, unexpected value type: {}, please file a bug report", nodeId,
                 value != null ? value.getClass().getName() : "null");
         return MetadataType.STRING;
