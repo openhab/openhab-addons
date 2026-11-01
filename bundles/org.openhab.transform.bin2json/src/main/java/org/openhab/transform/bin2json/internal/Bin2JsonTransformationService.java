@@ -14,6 +14,8 @@ package org.openhab.transform.bin2json.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.core.io.bin2json.Bin2Json;
+import org.openhab.core.io.bin2json.ConversionException;
 import org.openhab.core.transform.TransformationException;
 import org.openhab.core.transform.TransformationService;
 import org.osgi.service.component.annotations.Component;
