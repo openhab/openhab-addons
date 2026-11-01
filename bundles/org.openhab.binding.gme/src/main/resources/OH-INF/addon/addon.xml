@@ -7,6 +7,6 @@
 	<name>GME Binding</name>
 	<description>Provides electricity market prices from the Italian Gestore dei Mercati Energetici (GME).</description>
 	<connection>cloud</connection>
-	<country>IT</country>
+	<countries>it</countries>
 
 </addon:addon>
