@@ -1222,8 +1222,7 @@ public class ZwaveJSNodeHandlerTest {
 
         try {
             Channel channel = nodeHandler.getThing().getChannels().stream()
-                    .filter(c -> c.getConfiguration().get(CONFIG_CHANNEL_READ_PROPERTY) == null).findFirst()
-                    .orElseThrow();
+                    .filter(c -> "meter-reset-1".equals(c.getUID().getId())).findFirst().orElseThrow();
             nodeHandler.handleCommand(channel.getUID(), org.openhab.core.types.RefreshType.REFRESH);
             verify(nodeHandler.getBridgeHandler(), never()).sendCommand(any());
         } finally {
