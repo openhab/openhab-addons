@@ -311,6 +311,10 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
         NodeSetValueCommand zwaveCommand = new NodeSetValueCommand(config.id, channelConfig);
         // Handle RefreshType
         if (command instanceof RefreshType) {
+            if (channelConfig.readProperty == null) {
+                logger.debug("Node {}. Channel {} is not readable, ignoring refresh", config.id, channelUID);
+                return;
+            }
             handler.sendCommand(new NodeGetValueCommand(config.id, channelConfig));
             return;
         }
