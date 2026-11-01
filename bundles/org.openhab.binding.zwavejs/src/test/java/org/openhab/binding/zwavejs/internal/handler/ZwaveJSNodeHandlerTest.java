@@ -1205,7 +1205,9 @@ public class ZwaveJSNodeHandlerTest {
         ZwaveJSNodeHandlerMock nodeHandler = arrangeHandleCommandTest(7);
 
         try {
-            Channel channel = nodeHandler.getThing().getChannels().get(0);
+            Channel channel = nodeHandler.getThing().getChannels().stream()
+                    .filter(c -> c.getConfiguration().get(CONFIG_CHANNEL_READ_PROPERTY) != null).findFirst()
+                    .orElseThrow();
             nodeHandler.handleCommand(channel.getUID(), org.openhab.core.types.RefreshType.REFRESH);
             // Should call sendCommand once
             verify(nodeHandler.getBridgeHandler(), times(1)).sendCommand(any(NodeGetValueCommand.class));
