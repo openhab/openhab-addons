@@ -20,7 +20,6 @@ Import-Package: \
 
 -runbundles: \
 	com.fasterxml.jackson.core.jackson-annotations;version='[2.22.0,2.22.1)',\
-	com.google.gson;version='[2.14.0,2.14.1)',\
 	de.focus_shift.jollyday-core;version='[1.9.3,1.9.4)',\
 	de.focus_shift.jollyday-jackson;version='[1.9.3,1.9.4)',\
 	io.methvin.directory-watcher;version='[0.19.1,0.19.2)',\
