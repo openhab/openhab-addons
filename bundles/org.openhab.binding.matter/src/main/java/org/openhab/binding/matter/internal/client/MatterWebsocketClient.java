@@ -88,7 +88,8 @@ import com.google.gson.reflect.TypeToken;
  * @author Dan Cunningham - Initial contribution
  */
 @NonNullByDefault
-public class MatterWebsocketClient implements Session.Listener, MatterWebsocketService.NodeProcessListener {
+public class MatterWebsocketClient
+        implements Session.Listener.AutoDemanding, MatterWebsocketService.NodeProcessListener {
 
     protected final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -232,6 +233,9 @@ public class MatterWebsocketClient implements Session.Listener, MatterWebsocketS
     @Override
     public void onWebSocketOpen(@Nullable Session session) {
         if (session != null) {
+            session.setInputBufferSize(BUFFER_SIZE);
+            session.setMaxTextMessageSize(BUFFER_SIZE);
+            session.setMaxBinaryMessageSize(BUFFER_SIZE);
             this.session = session;
             for (MatterClientListener listener : clientListeners) {
                 listener.onConnect();
