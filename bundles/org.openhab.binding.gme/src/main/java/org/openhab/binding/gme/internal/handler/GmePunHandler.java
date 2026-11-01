@@ -114,14 +114,14 @@ public class GmePunHandler extends BaseThingHandler {
             scheduleApiRefresh();
             refreshPrices(false);
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "@text/status.gme.bridge-offline");
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE, "@text/status.gme.bridge-offline");
         }
     }
 
     private boolean linkBridge() {
         Bridge bridge = getBridge();
         if (bridge == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED,
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE,
                     "@text/status.gme.bridge-missing");
             return false;
         }
@@ -132,7 +132,7 @@ public class GmePunHandler extends BaseThingHandler {
             return true;
         }
 
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/status.gme.wrong-bridge");
+        updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/status.gme.wrong-bridge");
         return false;
     }
 
@@ -149,7 +149,7 @@ public class GmePunHandler extends BaseThingHandler {
         } else {
             lifecycleGeneration.incrementAndGet();
             cancelJobs();
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "@text/status.gme.bridge-offline");
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE, "@text/status.gme.bridge-offline");
         }
     }
 
@@ -335,14 +335,14 @@ public class GmePunHandler extends BaseThingHandler {
                 }
                 GmeApiBridgeHandler currentBridgeHandler = bridgeHandler;
                 if (currentBridgeHandler == null) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED,
+                    updateStatus(ThingStatusDetail.BRIDGE_OFFLINE,
                             "@text/status.gme.bridge-handler-unavailable");
                     return;
                 }
 
                 GmeAuthManager authManager = currentBridgeHandler.getAuthManager();
                 if (authManager == null) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED,
+                    updateStatus(ThingStatusDetail.BRIDGE_OFFLINE,
                             "@text/status.gme.auth-manager-unavailable");
                     return;
                 }
@@ -387,7 +387,7 @@ public class GmePunHandler extends BaseThingHandler {
                             List<GmePriceEntry> newTodayPrices = filterZone(marketPrices, "PUN");
 
                             if (!GmePriceTimeline.isCompleteDailySet(newTodayPrices, today, GME_ZONE, granularity)) {
-                                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                                         "@text/status.gme.incomplete-today-dataset");
                                 return;
                             }
@@ -529,12 +529,12 @@ public class GmePunHandler extends BaseThingHandler {
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
                 if (isCurrentGeneration(generation)) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                             "@text/status.gme.refresh-interrupted");
                 }
             } catch (IOException | TimeoutException | ExecutionException | IllegalStateException e) {
                 if (isCurrentGeneration(generation)) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                             "@text/status.gme.price-retrieval-failed [\"" + e.getMessage() + "\"]");
                 }
             } finally {

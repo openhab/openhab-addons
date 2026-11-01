@@ -14,14 +14,14 @@ The binding supports the following Thing types:
 
 | Thing Type UID | Type   | Description                                                  |
 |----------------|--------|--------------------------------------------------------------|
-| `api`          | Bridge | Connection to a GME API account and common API configuration |
+| `account`          | Bridge | Connection to a GME API account and common API configuration |
 | `pun`          | Thing  | PUN and zonal electricity market prices                      |
 
-The `pun` Thing must be associated with a `gme:api` Bridge.
+The `pun` Thing must be associated with a `gme:account` Bridge.
 
 ## Thing Configuration
 
-### `api` Bridge Configuration
+### `account` Bridge Configuration
 
 The API Bridge manages authentication with GME and configuration shared by the price Things.
 
@@ -78,17 +78,16 @@ An authentication failure does not change the stored password change date.
 ### `pun` Thing Configuration
 
 The PUN Thing does not require additional configuration.
-It obtains authentication, refresh interval, market zone and market granularity information from its parent `api` Bridge.
+It obtains authentication, refresh interval, market zone and market granularity information from its parent `account` Bridge.
 
 ## Channels
 
-### `api` Bridge Channels
+### `account` Bridge Channels
 
 | Channel                   | Type     | Read/Write | Description                                                                        |
 |---------------------------|----------|------------|------------------------------------------------------------------------------------|
 | `password-last-changed`   | DateTime | R          | Date and time when the current password was first observed or successfully changed |
 | `password-expiry`         | DateTime | R          | Estimated expiry date and time of the current GME API password                     |
-| `password-days-remaining` | Number   | R          | Estimated number of days remaining before password expiry                          |
 | `password-status`         | String   | R          | Password lifecycle status: `OK`, `CHANGE_SOON` or `EXPIRED`                        |
 
 The password status becomes `CHANGE_SOON` after five months.
@@ -136,7 +135,7 @@ If GME rejects a request because the token is no longer valid, the binding inval
 ### Thing Configuration
 
 ```java
-Bridge gme:api:account "GME API Account" [
+Bridge gme:account:account "GME API Account" [
     username="your_username",
     password="your_password",
     initialPasswordChangedAt="2026-08-15",
@@ -162,10 +161,9 @@ DateTime GME_TodayMinimumTime "Today's Minimum Time [%1$tH:%1$tM]" { channel="gm
 DateTime GME_TodayMaximumTime "Today's Maximum Time [%1$tH:%1$tM]" { channel="gme:pun:account:pun:today#max-time" }
 Switch GME_TomorrowAvailable "Tomorrow Available" { channel="gme:pun:account:pun:market#tomorrow-available" }
 DateTime GME_LastUpdate "Last Update [%1$td/%1$tm/%1$tY %1$tH:%1$tM]" { channel="gme:pun:account:pun:market#last-update" }
-DateTime GME_PasswordLastChanged "GME Password Last Changed [%1$td/%1$tm/%1$tY]" { channel="gme:api:account:password-last-changed" }
-DateTime GME_PasswordExpiry "GME Password Expiry [%1$td/%1$tm/%1$tY]" { channel="gme:api:account:password-expiry" }
-Number GME_PasswordDaysRemaining "GME Password Days Remaining [%d]" { channel="gme:api:account:password-days-remaining" }
-String GME_PasswordStatus "GME Password Status [%s]" { channel="gme:api:account:password-status" }
+DateTime GME_PasswordLastChanged "GME Password Last Changed [%1$td/%1$tm/%1$tY]" { channel="gme:account:account:password-last-changed" }
+DateTime GME_PasswordExpiry "GME Password Expiry [%1$td/%1$tm/%1$tY]" { channel="gme:account:account:password-expiry" }
+String GME_PasswordStatus "GME Password Status [%s]" { channel="gme:account:account:password-status" }
 ```
 
 ## Automation Examples

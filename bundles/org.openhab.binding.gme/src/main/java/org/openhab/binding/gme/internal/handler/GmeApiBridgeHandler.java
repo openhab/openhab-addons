@@ -35,7 +35,6 @@ import org.openhab.binding.gme.internal.model.GmeCredentialTracker;
 import org.openhab.binding.gme.internal.model.GmeGranularity;
 import org.openhab.binding.gme.internal.model.GmePasswordAge;
 import org.openhab.core.library.types.DateTimeType;
-import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.storage.Storage;
 import org.openhab.core.thing.Bridge;
@@ -104,19 +103,19 @@ public class GmeApiBridgeHandler extends BaseBridgeHandler {
         try {
             granularity = GmeGranularity.fromApiValue(config.granularity);
         } catch (IllegalArgumentException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/status.gme.invalid-granularity [\"" + e.getMessage() + "\"]");
             return;
         }
 
         if (!marketZone.isBlank() && !MARKET_ZONES.contains(marketZone)) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/status.gme.invalid-market-zone [\"" + marketZone + "\"]");
             return;
         }
 
         if (config.username.isBlank() || config.password.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/status.gme.credentials-missing");
             return;
         }
@@ -149,7 +148,7 @@ public class GmeApiBridgeHandler extends BaseBridgeHandler {
             Thread.currentThread().interrupt();
             synchronized (lifecycleLock) {
                 if (isCurrentGeneration(generation)) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                             "@text/status.gme.authentication-interrupted");
                 }
             }
@@ -158,7 +157,7 @@ public class GmeApiBridgeHandler extends BaseBridgeHandler {
                 if (!isCurrentGeneration(generation)) {
                     return;
                 }
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                         "@text/status.gme.authentication-failed [\"" + e.getMessage() + "\"]");
                 cancelAuthenticationRetry();
                 if (e instanceof GmeApiException apiError && apiError.getStatusCode() >= 400
@@ -188,8 +187,6 @@ public class GmeApiBridgeHandler extends BaseBridgeHandler {
 
         updateState(CHANNEL_PASSWORD_LAST_CHANGED, new DateTimeType(changedAt));
         updateState(CHANNEL_PASSWORD_EXPIRY, new DateTimeType(passwordAge.getExpiry(changedAt)));
-        updateState(CHANNEL_PASSWORD_DAYS_REMAINING,
-                new DecimalType(Long.toString(passwordAge.getDaysRemaining(changedAt))));
         updateState(CHANNEL_PASSWORD_STATUS, new StringType(passwordAge.getStatus(changedAt).name()));
     }
 

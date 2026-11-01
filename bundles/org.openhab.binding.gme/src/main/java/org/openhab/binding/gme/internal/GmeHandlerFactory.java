@@ -18,7 +18,6 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.gme.internal.handler.GmeApiBridgeHandler;
 import org.openhab.binding.gme.internal.handler.GmePunHandler;
 import org.openhab.core.io.net.http.HttpClientFactory;
@@ -45,12 +44,12 @@ public class GmeHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_API, THING_TYPE_PUN);
 
-    private final HttpClient httpClient;
+    private final HttpClientFactory httpClientFactory;
     private final StorageService storageService;
 
     @Activate
     public GmeHandlerFactory(@Reference HttpClientFactory httpClientFactory, @Reference StorageService storageService) {
-        this.httpClient = httpClientFactory.getCommonHttpClient();
+        this.httpClientFactory = httpClientFactory;
         this.storageService = storageService;
     }
 
@@ -66,7 +65,7 @@ public class GmeHandlerFactory extends BaseThingHandlerFactory {
         if (THING_TYPE_API.equals(thingTypeUID)) {
             Storage<String> storage = storageService.getStorage(thing.getUID().toString(),
                     GmeHandlerFactory.class.getClassLoader());
-            return new GmeApiBridgeHandler((Bridge) thing, httpClient, storage);
+            return new GmeApiBridgeHandler((Bridge) thing, httpClientFactory.getCommonHttpClient(), storage);
         }
 
         if (THING_TYPE_PUN.equals(thingTypeUID)) {

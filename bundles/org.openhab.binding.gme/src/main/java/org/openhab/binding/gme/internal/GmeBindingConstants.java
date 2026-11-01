@@ -25,12 +25,11 @@ public class GmeBindingConstants {
 
     public static final String BINDING_ID = "gme";
 
-    public static final ThingTypeUID THING_TYPE_API = new ThingTypeUID(BINDING_ID, "api");
+    public static final ThingTypeUID THING_TYPE_API = new ThingTypeUID(BINDING_ID, "account");
     public static final ThingTypeUID THING_TYPE_PUN = new ThingTypeUID(BINDING_ID, "pun");
 
     public static final String CHANNEL_PASSWORD_LAST_CHANGED = "password-last-changed";
     public static final String CHANNEL_PASSWORD_EXPIRY = "password-expiry";
-    public static final String CHANNEL_PASSWORD_DAYS_REMAINING = "password-days-remaining";
     public static final String CHANNEL_PASSWORD_STATUS = "password-status";
 
     public static final String CHANNEL_CURRENT_PRICE = "market#current-price";

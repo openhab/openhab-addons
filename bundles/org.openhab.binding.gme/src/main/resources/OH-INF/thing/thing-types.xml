@@ -3,7 +3,7 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<bridge-type id="api">
+	<bridge-type id="account">
 		<label>GME API Account</label>
 		<description>Connection to the Gestore dei Mercati Energetici market data API.</description>
 		<semantic-equipment-tag>WebService</semantic-equipment-tag>
@@ -16,10 +16,6 @@
 			<channel id="password-expiry" typeId="timestamp">
 				<label>Password Expiry</label>
 				<description>Estimated expiry date of the current GME API password.</description>
-			</channel>
-			<channel id="password-days-remaining" typeId="password-days">
-				<label>Password Days Remaining</label>
-				<description>Estimated number of days remaining before the GME API password expires.</description>
 			</channel>
 			<channel id="password-status" typeId="password-status">
 				<label>Password Status</label>
@@ -84,7 +80,7 @@
 
 	<thing-type id="pun">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="api"/>
+			<bridge-type-ref id="account"/>
 		</supported-bridge-type-refs>
 
 		<label>PUN Prices</label>
@@ -171,16 +167,6 @@
 			<tag>Status</tag>
 		</tags>
 		<state readOnly="true"/>
-	</channel-type>
-
-	<channel-type id="password-days">
-		<item-type>Number</item-type>
-		<label>Password Days Remaining</label>
-		<category>Time</category>
-		<tags>
-			<tag>Status</tag>
-		</tags>
-		<state readOnly="true" pattern="%d"/>
 	</channel-type>
 
 	<channel-type id="password-status">
