@@ -23,6 +23,7 @@ import java.lang.foreign.MemorySegment;
 import java.net.URI;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
@@ -91,6 +92,52 @@ class ParakeetSTTServiceTest {
         Path path = tempDir.resolve(filename);
         Files.writeString(path, "dummy-gguf");
         return path;
+    }
+
+    private Path createGgufModelFile(String filename, @Nullable String name, @Nullable String architecture,
+            @Nullable List<String> languages) throws IOException {
+        ByteBuffer buf = ByteBuffer.allocate(8192).order(ByteOrder.LITTLE_ENDIAN);
+        buf.putInt(0x46554747); // "GGUF"
+        buf.putInt(3); // version
+        buf.putLong(0L); // tensor count
+        int kvCount = (name != null ? 1 : 0) + (architecture != null ? 1 : 0) + (languages != null ? 1 : 0);
+        buf.putLong(kvCount);
+
+        if (architecture != null) {
+            writeStringKv(buf, "general.architecture", architecture);
+        }
+        if (name != null) {
+            writeStringKv(buf, "general.name", name);
+        }
+        if (languages != null) {
+            byte[] keyBytes = "general.languages".getBytes(StandardCharsets.UTF_8);
+            buf.putLong(keyBytes.length);
+            buf.put(keyBytes);
+            buf.putInt(9); // ARRAY
+            buf.putInt(8); // TYPE_STRING
+            buf.putLong(languages.size());
+            for (String lang : languages) {
+                byte[] langBytes = lang.getBytes(StandardCharsets.UTF_8);
+                buf.putLong(langBytes.length);
+                buf.put(langBytes);
+            }
+        }
+        byte[] bytes = new byte[buf.position()];
+        buf.flip();
+        buf.get(bytes);
+        Path path = tempDir.resolve(filename);
+        Files.write(path, bytes);
+        return path;
+    }
+
+    private static void writeStringKv(ByteBuffer buf, String key, String value) {
+        byte[] keyBytes = key.getBytes(StandardCharsets.UTF_8);
+        buf.putLong(keyBytes.length);
+        buf.put(keyBytes);
+        buf.putInt(8); // STRING
+        byte[] valBytes = value.getBytes(StandardCharsets.UTF_8);
+        buf.putLong(valBytes.length);
+        buf.put(valBytes);
     }
 
     private static AudioStream createAudioStream(int numSamples) {
@@ -284,6 +331,45 @@ class ParakeetSTTServiceTest {
         assertThat(listener.events.getFirst(), instanceOf(RecognitionStartEvent.class));
         assertThat(listener.events.get(1), instanceOf(RecognitionStopEvent.class));
         assertThat(listener.events.get(2), instanceOf(SpeechRecognitionErrorEvent.class));
+    }
+
+    @Test
+    void getParameterOptionsFiltersAndFormatsLabelsWithGgufMetadata() throws IOException {
+        createGgufModelFile("parakeet-tdt-0.6b.gguf", "nvidia/parakeet-tdt-0.6b", "parakeet", List.of("en"));
+        createGgufModelFile("silero-vad-f16.gguf", "Silero VAD v4", "silero-vad", null);
+        createDummyModelFile("custom-model.gguf");
+
+        URI uri = URI.create(CONFIG_URI);
+        Collection<ParameterOption> modelOptions = service.getParameterOptions(uri, PARAM_MODEL_NAME, null,
+                Locale.ENGLISH);
+        assertNotNull(modelOptions);
+        // VAD-only model should be filtered out from modelName options
+        List<String> modelValues = modelOptions.stream().map(ParameterOption::getValue).toList();
+        assertEquals(List.of("custom-model.gguf", "parakeet-tdt-0.6b.gguf"), modelValues);
+        List<String> modelLabels = modelOptions.stream().map(ParameterOption::getLabel).toList();
+        assertEquals(List.of("custom-model.gguf", "nvidia/parakeet-tdt-0.6b"), modelLabels);
+
+        Collection<ParameterOption> vadOptions = service.getParameterOptions(uri, PARAM_VAD_MODEL_NAME, null,
+                Locale.ENGLISH);
+        assertNotNull(vadOptions);
+        // ASR-only model should be filtered out from vadModelName options
+        List<String> vadValues = vadOptions.stream().map(ParameterOption::getValue).toList();
+        assertEquals(List.of("custom-model.gguf", "silero-vad-f16.gguf"), vadValues);
+        List<String> vadLabels = vadOptions.stream().map(ParameterOption::getLabel).toList();
+        assertEquals(List.of("custom-model.gguf", "Silero VAD v4"), vadLabels);
+    }
+
+    @Test
+    void getSupportedLocalesExtractsLanguagesFromModelGgufMetadata() throws IOException {
+        createGgufModelFile("canary-multilingual.gguf", "nvidia/canary-1b", "canary", List.of("en", "de", "es", "fr"));
+
+        service.activate(Map.of("modelName", "canary-multilingual.gguf"));
+        assertEquals(Set.of(Locale.ENGLISH, Locale.GERMAN, Locale.forLanguageTag("es"), Locale.FRENCH),
+                service.getSupportedLocales());
+
+        // When language is explicitly configured, it takes precedence
+        service.modified(Map.of("modelName", "canary-multilingual.gguf", "language", "de"));
+        assertEquals(Set.of(Locale.GERMAN), service.getSupportedLocales());
     }
 
     private static class RecordingListener implements STTListener {

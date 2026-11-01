@@ -31,6 +31,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -53,6 +54,8 @@ import org.openhab.core.voice.stt.STTService;
 import org.openhab.core.voice.stt.STTServiceHandle;
 import org.openhab.core.voice.stt.SpeechRecognitionErrorEvent;
 import org.openhab.core.voice.stt.SpeechRecognitionEvent;
+import org.openhab.voice.parakeetstt.internal.gguf.GgufMetadata;
+import org.openhab.voice.parakeetstt.internal.gguf.GgufMetadataReader;
 import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -100,6 +103,7 @@ public class ParakeetSTTService implements STTService, ConfigOptionProvider {
     private final Logger logger = LoggerFactory.getLogger(ParakeetSTTService.class);
     private final LocaleProvider localeProvider;
     private final Path parakeetFolder;
+    private final GgufMetadataReader ggufMetadataReader;
 
     private final ScheduledExecutorService executor = ThreadPoolManager.getScheduledPool(THREAD_POOL);
 
@@ -124,12 +128,17 @@ public class ParakeetSTTService implements STTService, ConfigOptionProvider {
 
     @Activate
     public ParakeetSTTService(final @Reference LocaleProvider localeProvider) {
-        this(localeProvider, PARAKEET_FOLDER);
+        this(localeProvider, PARAKEET_FOLDER, new GgufMetadataReader());
     }
 
     ParakeetSTTService(LocaleProvider localeProvider, Path parakeetFolder) {
+        this(localeProvider, parakeetFolder, new GgufMetadataReader());
+    }
+
+    ParakeetSTTService(LocaleProvider localeProvider, Path parakeetFolder, GgufMetadataReader ggufMetadataReader) {
         this.localeProvider = localeProvider;
         this.parakeetFolder = parakeetFolder;
+        this.ggufMetadataReader = ggufMetadataReader;
     }
 
     @Activate
@@ -203,18 +212,56 @@ public class ParakeetSTTService implements STTService, ConfigOptionProvider {
 
     @Override
     public Set<Locale> getSupportedLocales() {
-        // TODO: More sophisticated implementation based on model metadata
+        String modelName = config.modelName;
+        Set<Locale> locales = null;
+        if (!modelName.isBlank()) {
+            try {
+                Path modelPath = resolveModelPath(modelName);
+                GgufMetadata metadata = ggufMetadataReader.read(modelPath);
+                if (metadata != null && !metadata.languages().isEmpty()) {
+                    locales = metadata.languages().stream() //
+                            .map(String::trim) //
+                            .filter(lang -> !lang.isEmpty()) //
+                            .map(Locale::forLanguageTag) //
+                            .filter(loc -> !loc.getLanguage().isEmpty()) //
+                            .collect(Collectors.toSet());
+                }
+            } catch (IOException e) {
+                logger.debug("Could not determine model supported locales for '{}': {}", modelName, e.getMessage());
+            }
+        }
+        logger.debug("Supported locales for model '{}': {}", modelName, locales);
+
         String language = config.language;
-        Locale modelLocale = localeProvider.getLocale();
+        Locale configuredLocale = null;
         if (!language.isBlank()) {
             Locale parsed = Locale.forLanguageTag(language.trim());
             if (!parsed.getLanguage().isEmpty()) {
-                modelLocale = parsed;
-            } else {
-                logger.warn("Invalid language '{}', defaulting to server locale", language);
+                configuredLocale = parsed;
             }
         }
-        return Set.of(modelLocale);
+
+        if (locales != null && !locales.isEmpty()) {
+            if (configuredLocale != null) {
+                if (locales.contains(configuredLocale)) {
+                    return Set.of(configuredLocale);
+                } else {
+                    logger.debug("Configured locale {} is not supported by model '{}', using default locale {}",
+                            configuredLocale, modelName, localeProvider.getLocale());
+                }
+            } else {
+                return locales;
+            }
+        }
+
+        logger.debug("No supported locales defined in model metadata ...");
+        if (configuredLocale != null) {
+            logger.debug("...using configured locale {}", configuredLocale);
+            return Set.of(configuredLocale);
+        } else {
+            logger.debug("...using default locale {}", localeProvider.getLocale());
+            return Set.of(localeProvider.getLocale());
+        }
     }
 
     @Override
@@ -235,13 +282,47 @@ public class ParakeetSTTService implements STTService, ConfigOptionProvider {
             return List.of();
         }
         try (Stream<Path> files = Files.list(parakeetFolder)) {
-            // TODO: Extract metadata from GGUF files
-            return files.filter(Files::isRegularFile).map(path -> path.getFileName().toString())
-                    .filter(name -> name.endsWith(MODEL_EXTENSION)).sorted(Comparator.naturalOrder())
-                    .map(name -> new ParameterOption(name, name)).toList();
+            return files.filter(Files::isRegularFile) //
+                    .filter(path -> path.getFileName().toString().endsWith(MODEL_EXTENSION)) //
+                    .map(path -> {
+                        String filename = path.getFileName().toString();
+                        GgufMetadata metadata = ggufMetadataReader.read(path);
+                        return new ModelOptionCandidate(filename, metadata);
+                    }) //
+                    .filter(candidate -> matchesModelParameter(param, candidate)) //
+                    .sorted(Comparator.comparing(ModelOptionCandidate::filename)) //
+                    .map(candidate -> new ParameterOption(candidate.filename(), candidate.label())) //
+                    .toList();
         } catch (IOException e) {
             logger.warn("Unable to list Parakeet models in {}: {}", parakeetFolder, e.getMessage());
             return List.of();
+        }
+    }
+
+    private boolean matchesModelParameter(String param, ModelOptionCandidate candidate) {
+        GgufMetadata metadata = candidate.metadata();
+        if (metadata == null) {
+            return true;
+        }
+        if (PARAM_MODEL_NAME.equals(param)) {
+            return !metadata.isVadOnly();
+        }
+        if (PARAM_VAD_MODEL_NAME.equals(param)) {
+            return !metadata.isAsr();
+        }
+        return true;
+    }
+
+    private record ModelOptionCandidate(String filename, @Nullable GgufMetadata metadata) {
+        String label() {
+            GgufMetadata localMetadata = metadata;
+            if (localMetadata != null) {
+                String name = localMetadata.name();
+                if (name != null && !name.isBlank()) {
+                    return name;
+                }
+            }
+            return filename;
         }
     }
 
