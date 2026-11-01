@@ -18,11 +18,13 @@ import java.util.List;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.types.Command;
+import org.openhab.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,6 +56,7 @@ public class STMStateMachine<A extends Enum<A>, S extends Enum<S>> {
 
     private final List<STMWatchdog<A, S>> watchdogs = new ArrayList<>();
     private @Nullable Consumer<S> watchdogTimeoutCallback;
+    private volatile @Nullable BiConsumer<String, State> channelUpdater;
     private @Nullable ScheduledFuture<?> watchdogFuture;
     private long stateGeneration;
     private boolean disposed;
@@ -112,6 +115,30 @@ public class STMStateMachine<A extends Enum<A>, S extends Enum<S>> {
         this.watchdogs.add(watchdog);
         this.watchdogTimeoutCallback = onTimeout;
         return this;
+    }
+
+    /**
+     * Registers the callback used to update channel states that follow from the movements of the device.
+     *
+     * @param updater called with the channel ID and the new state
+     * @return this state machine for fluent configuration
+     */
+    public STMStateMachine<A, S> registerChannelUpdater(BiConsumer<String, State> updater) {
+        this.channelUpdater = updater;
+        return this;
+    }
+
+    /**
+     * Updates the state of a channel, if a callback is registered.
+     *
+     * @param channel the channel ID
+     * @param state the new state
+     */
+    public void updateChannel(String channel, State state) {
+        BiConsumer<String, State> updater = channelUpdater;
+        if (updater != null) {
+            updater.accept(channel, state);
+        }
     }
 
     /**
