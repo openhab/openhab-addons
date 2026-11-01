@@ -204,9 +204,9 @@
 			<parameter name="clientKeystore" type="text">
 				<label>Client Keystore</label>
 				<description>Path to a keystore file containing the client certificate and private key used for TLS client
-					authentication (mutual TLS), e.g. `/etc/openhab/mqtt/client.p12`. Requires **secure** to be enabled. The trust
-					of
-					the broker certificate is still handled by the pinning options.</description>
+					authentication (mutual TLS), e.g. `/etc/openhab/mqtt/client.p12`. Requires **secure** to be enabled. The broker
+					must be verified: enable certificate or public key pinning, or hostname validation (then the broker certificate
+					also has to be issued by a CA trusted by the JVM).</description>
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="clientKeystorePassword" type="text">
