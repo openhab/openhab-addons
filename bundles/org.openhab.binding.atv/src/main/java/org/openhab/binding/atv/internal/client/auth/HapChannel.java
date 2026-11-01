@@ -15,7 +15,6 @@ package org.openhab.binding.atv.internal.client.auth;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.Arrays;
 import java.util.concurrent.CompletableFuture;
@@ -30,6 +29,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.atv.internal.client.exceptions.ConnectionFailedError;
 import org.openhab.binding.atv.internal.client.exceptions.ConnectionLostError;
 import org.openhab.binding.atv.internal.client.exceptions.InvalidStateError;
+import org.openhab.binding.atv.internal.client.support.Sockets;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,8 +38,8 @@ import org.slf4j.LoggerFactory;
  * {@link HapSession} encryption and segmenting.
  *
  * <p>
- * A dedicated virtual thread performs the blocking reads and feeds decrypted plaintext to
- * {@link #onReceive(byte[])}; writes are serialized on a single-threaded virtual-thread
+ * A dedicated thread performs the blocking reads and feeds decrypted plaintext to
+ * {@link #onReceive(byte[])}; writes are serialized on a single-threaded
  * executor so {@link #send(byte[])} never blocks the caller and the encryption counters
  * advance in send order.
  *
@@ -57,7 +57,7 @@ public abstract class HapChannel implements AutoCloseable {
 
     private final HapSession session = new HapSession();
     private final ExecutorService writer = Executors
-            .newSingleThreadExecutor(Thread.ofVirtual().name("hap-channel-writer").factory());
+            .newSingleThreadExecutor(Thread.ofPlatform().daemon().name("hap-channel-writer").factory());
     private final AtomicBoolean closed = new AtomicBoolean();
 
     private volatile @Nullable Socket socket;
@@ -89,14 +89,17 @@ public abstract class HapChannel implements AutoCloseable {
                 throw new InvalidStateError("already connected");
             }
             try {
-                Socket newSocket = new Socket();
-                newSocket.connect(new InetSocketAddress(address, port));
-                newSocket.setTcpNoDelay(true);
+                Socket newSocket = Sockets.connect(address, port);
                 this.socket = newSocket;
                 this.inputStream = newSocket.getInputStream();
                 this.outputStream = newSocket.getOutputStream();
             } catch (IOException e) {
                 throw new ConnectionFailedError("failed to connect to " + address + ":" + port, e);
+            }
+            if (closed.get()) {
+                // close() ran while the connect was in flight and found no socket to close
+                closeSocket();
+                throw new ConnectionFailedError("closed while connecting");
             }
             logger.debug("Connected to {}:{}", address, port);
             startReader();
@@ -180,7 +183,7 @@ public abstract class HapChannel implements AutoCloseable {
 
     @SuppressWarnings("PMD.AvoidCatchingGenericException")
     private void startReader() {
-        Thread.ofVirtual().name("hap-channel-reader").start(() -> {
+        Thread.ofPlatform().daemon().name("hap-channel-reader").start(() -> {
             @Nullable
             Throwable cause = null;
             try {
@@ -205,6 +208,8 @@ public abstract class HapChannel implements AutoCloseable {
             boolean locallyClosed = closed.get();
             logger.debug("Connection was lost to remote (locally closed: {})", locallyClosed);
             if (!locallyClosed) {
+                // A decrypt failure leaves the socket open, and the session is unusable from then on
+                closeSocket();
                 Consumer<@Nullable Throwable> callback = connectionLostCallback;
                 if (callback != null) {
                     callback.accept(cause);

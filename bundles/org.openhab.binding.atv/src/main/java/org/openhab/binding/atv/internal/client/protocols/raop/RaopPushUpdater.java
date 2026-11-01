@@ -72,7 +72,7 @@ public final class RaopPushUpdater implements PushUpdater {
             throw new NoAsyncListenerError("no listener set");
         }
         activated = true;
-        Thread.ofVirtual().name("raop-push-initial").start(this::stateUpdated);
+        Thread.ofPlatform().daemon().name("raop-push-initial").start(this::stateUpdated);
     }
 
     @Override

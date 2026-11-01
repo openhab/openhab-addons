@@ -20,7 +20,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.atv.internal.client.exceptions.ProtocolError;
 
 /**
- * Small helper for the RAOP data plane, which runs on virtual threads and consumes the
+ * Small helper for the RAOP data plane, which runs on dedicated threads and consumes the
  * {@code CompletableFuture} based RTSP APIs synchronously.
  *
  * @author Dan Cunningham - Initial contribution

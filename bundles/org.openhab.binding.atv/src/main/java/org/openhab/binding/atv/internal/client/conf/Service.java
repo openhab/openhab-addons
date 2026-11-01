@@ -205,8 +205,9 @@ public class Service implements BaseService {
 
     @Override
     public String toString() {
-        return "Protocol: " + protocol + ", Port: " + port + ", Credentials: " + credentials + ", Requires Password: "
-                + requiresPassword + ", Password: " + password + ", Pairing: " + pairing
-                + (enabled ? "" : " (Disabled)");
+        // Only say whether secrets are set; this string ends up in logs
+        return "Protocol: " + protocol + ", Port: " + port + ", Credentials: " + (credentials == null ? "none" : "set")
+                + ", Requires Password: " + requiresPassword + ", Password: " + (password == null ? "none" : "set")
+                + ", Pairing: " + pairing + (enabled ? "" : " (Disabled)");
     }
 }

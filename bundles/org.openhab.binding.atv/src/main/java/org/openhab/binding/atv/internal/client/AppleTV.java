@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.atv.internal.client;
 
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
@@ -68,6 +69,18 @@ public interface AppleTV {
      */
     default Set<Protocol> connectedProtocols() {
         return Set.of();
+    }
+
+    /**
+     * Returns why protocols failed during {@link #connect()}. Because a connect can be partial,
+     * a failure here does not fail the connect itself. An {@code AuthenticationError} means the
+     * device no longer accepts the stored credentials for that protocol and it must be paired
+     * again.
+     *
+     * @return the failure cause per protocol; empty when every protocol connected
+     */
+    default Map<Protocol, Throwable> connectFailures() {
+        return Map.of();
     }
 
     /**

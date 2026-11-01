@@ -58,9 +58,11 @@ final class CompanionPairVerifyProcedure {
 
         Map<String, Object> m3Message = new LinkedHashMap<>();
         m3Message.put(CompanionAuth.PAIRING_DATA_KEY, m3Tlv);
-        CompanionAuth.awaitExchange(protocol.exchangeAuth(FrameType.PV_Next, m3Message));
-
-        // The status of the final message is not checked further.
+        Map<String, Object> m4Message = CompanionAuth
+                .awaitExchange(protocol.exchangeAuth(FrameType.PV_Next, m3Message));
+        if (m4Message.get(CompanionAuth.PAIRING_DATA_KEY) instanceof byte[] m4Tlv) {
+            verifier.verify3(m4Tlv);
+        }
     }
 
     /**

@@ -17,8 +17,10 @@ import java.net.InetAddress;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
@@ -82,7 +84,7 @@ public abstract class ScanOrchestrator {
         serviceTypes.put(Mdns.SLEEP_PROXY_SERVICE,
                 new ServiceTypeEntry((service, response) -> null, (serviceType, props) -> Map.of()));
         // A sleep proxy service is named "<number> <device name>"
-        deviceInfoNames.put(Mdns.SLEEP_PROXY_SERVICE, name -> name.split(" ", 2)[1]);
+        deviceInfoNames.put(Mdns.SLEEP_PROXY_SERVICE, name -> name.substring(name.indexOf(" ") + 1));
     }
 
     /**
@@ -164,7 +166,7 @@ public abstract class ScanOrchestrator {
             try {
                 serviceDiscovered(service, response, entry);
             } catch (RuntimeException e) {
-                LOGGER.error("Failed to parse service: {}", service, e);
+                LOGGER.debug("Failed to parse service: {}", service, e);
             }
         }
     }
@@ -282,13 +284,18 @@ public abstract class ScanOrchestrator {
      * @return filtered devices
      */
     public static List<AtvConfig> filterDevices(Collection<AtvConfig> devices, Set<String> identifiers) {
+        // Identifiers are MAC addresses or UUIDs, whose case varies between sources
+        Set<String> wanted = new HashSet<>();
+        if (identifiers != null) {
+            identifiers.forEach(id -> wanted.add(id.toLowerCase(Locale.ROOT)));
+        }
         List<AtvConfig> filtered = new ArrayList<>();
         for (AtvConfig device : devices) {
             if (!device.ready()) {
                 continue;
             }
-            if (identifiers != null && !identifiers.isEmpty()
-                    && device.allIdentifiers().stream().noneMatch(identifiers::contains)) {
+            if (!wanted.isEmpty()
+                    && device.allIdentifiers().stream().noneMatch(id -> wanted.contains(id.toLowerCase(Locale.ROOT)))) {
                 continue;
             }
             filtered.add(device);

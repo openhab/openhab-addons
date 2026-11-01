@@ -113,26 +113,27 @@ public record HapCredentials(byte[] ltpk, byte[] ltsk, byte[] atvId, byte[] clie
         // Compatibility with "legacy credentials" used by AirPlay where seed is stored
         // as LTSK and identifier as client_id (others are empty).
         if (split.length == 2) {
-            byte[] clientId = unhex(detailString, split[0]);
-            byte[] ltsk = unhex(detailString, split[1]);
+            byte[] clientId = unhex(split[0]);
+            byte[] ltsk = unhex(split[1]);
             return new HapCredentials(EMPTY, ltsk, EMPTY, clientId);
         }
         if (split.length == 4) {
-            byte[] ltpk = unhex(detailString, split[0]);
-            byte[] ltsk = unhex(detailString, split[1]);
-            byte[] atvId = unhex(detailString, split[2]);
-            byte[] clientId = unhex(detailString, split[3]);
+            byte[] ltpk = unhex(split[0]);
+            byte[] ltsk = unhex(split[1]);
+            byte[] atvId = unhex(split[2]);
+            byte[] clientId = unhex(split[3]);
             return new HapCredentials(ltpk, ltsk, atvId, clientId);
         }
 
-        throw new InvalidCredentialsError("invalid credentials: " + detailString);
+        throw new InvalidCredentialsError("invalid credentials: expected 2 or 4 fields, got " + split.length);
     }
 
-    private static byte[] unhex(String detailString, String hex) {
+    private static byte[] unhex(String hex) {
         try {
             return HexFormat.of().parseHex(hex);
         } catch (IllegalArgumentException e) {
-            throw new InvalidCredentialsError("invalid credentials: " + detailString, e);
+            // The parser message can quote part of the secret, so it is not kept as the cause
+            throw new InvalidCredentialsError("invalid credentials: a field is not valid hex");
         }
     }
 

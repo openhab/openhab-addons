@@ -23,7 +23,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * Serial executor backed by a single virtual thread.
+ * Serial executor backed by a single thread.
  *
  * <p>
  * All state mutation for one device runs on its device loop: tasks run one at a time, in
@@ -42,10 +42,10 @@ public final class DeviceLoop {
     private volatile @Nullable Thread loopThread;
 
     /**
-     * Creates a new device loop with its own single virtual thread.
+     * Creates a new device loop with its own single thread.
      */
     public DeviceLoop() {
-        var factory = Thread.ofVirtual().name("atv-device-loop-" + COUNTER.incrementAndGet()).factory();
+        var factory = Thread.ofPlatform().daemon().name("atv-device-loop-" + COUNTER.incrementAndGet()).factory();
         this.executor = Executors.newSingleThreadExecutor(task -> {
             Thread thread = factory.newThread(task);
             loopThread = thread;

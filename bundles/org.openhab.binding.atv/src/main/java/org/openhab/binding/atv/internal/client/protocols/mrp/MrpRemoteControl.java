@@ -90,7 +90,7 @@ public final class MrpRemoteControl implements RemoteControl, CapabilitySource {
             return CompletableFuture.failedFuture(new NotSupportedError("unsupported key: " + key));
         }
         CompletableFuture<Void> result = new CompletableFuture<>();
-        Thread.ofVirtual().name("mrp-hid-" + key).start(() -> {
+        Thread.ofPlatform().daemon().name("mrp-hid-" + key).start(() -> {
             try {
                 switch (action) {
                     case SingleTap -> doPress(protocol, keycode, false, flush);

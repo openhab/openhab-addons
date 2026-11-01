@@ -37,7 +37,7 @@ import org.slf4j.LoggerFactory;
  *
  * <p>
  * Binds a UDP socket on an ephemeral port and serves incoming control data from a
- * dedicated virtual thread until {@link #close()} is called.
+ * dedicated thread until {@link #close()} is called.
  *
  * @author Dan Cunningham - Initial contribution
  */
@@ -78,7 +78,7 @@ public final class ControlServer implements AutoCloseable {
             throws IOException {
         this.packetBacklog = packetBacklog;
         this.socket = new DatagramSocket(port, bindAddress);
-        this.receiverThread = Thread.ofVirtual().name("raop-control-server").start(this::receiveLoop);
+        this.receiverThread = Thread.ofPlatform().daemon().name("raop-control-server").start(this::receiveLoop);
     }
 
     /** Returns the local port this control endpoint listens on. */
@@ -139,7 +139,7 @@ public final class ControlServer implements AutoCloseable {
                 handleDatagram(packet);
             } catch (IOException e) {
                 if (!socket.isClosed()) {
-                    LOGGER.error("Control connection error: {}", e.toString());
+                    LOGGER.debug("Control connection error: {}", e.toString());
                 }
                 return;
             } catch (RuntimeException e) {

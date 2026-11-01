@@ -20,6 +20,7 @@ import java.util.Set;
 
 import org.openhab.binding.atv.internal.client.Scanner;
 import org.openhab.binding.atv.internal.client.core.AtvRuntime;
+import org.openhab.binding.atv.internal.client.scan.ServiceBrowser;
 import org.openhab.binding.atv.internal.client.settings.Storage;
 
 /**
@@ -42,11 +43,14 @@ import org.openhab.binding.atv.internal.client.settings.Storage;
  *            select one (unicast when {@code hosts} is given, multicast otherwise)
  * @param knock whether a unicast scan knocks the well-known service ports to wake a device
  *            sleeping behind a Bonjour sleep proxy
+ * @param browser mDNS browser used for a multicast scan (when {@code hosts} is empty), or
+ *            {@code null}; a multicast scan without one fails, because this library does
+ *            not start an mDNS stack of its own
  *
  * @author Dan Cunningham - Initial contribution
  */
 public record ScanOptions(Duration timeout, Set<String> identifiers, Set<Protocol> protocols, List<String> hosts,
-        AtvRuntime runtime, Storage storage, Scanner scanner, boolean knock) {
+        AtvRuntime runtime, Storage storage, Scanner scanner, boolean knock, ServiceBrowser browser) {
 
     /** Default scan timeout. */
     public static final Duration DEFAULT_TIMEOUT = Duration.ofSeconds(5);
@@ -67,7 +71,7 @@ public record ScanOptions(Duration timeout, Set<String> identifiers, Set<Protoco
      * @return default options
      */
     public static ScanOptions defaults() {
-        return new ScanOptions(null, null, null, null, null, null, null, true);
+        return new ScanOptions(null, null, null, null, null, null, null, true, null);
     }
 
     /**
@@ -77,7 +81,7 @@ public record ScanOptions(Duration timeout, Set<String> identifiers, Set<Protoco
      * @return updated copy
      */
     public ScanOptions withTimeout(Duration timeout) {
-        return new ScanOptions(timeout, identifiers, protocols, hosts, runtime, storage, scanner, knock);
+        return new ScanOptions(timeout, identifiers, protocols, hosts, runtime, storage, scanner, knock, browser);
     }
 
     /**
@@ -88,7 +92,7 @@ public record ScanOptions(Duration timeout, Set<String> identifiers, Set<Protoco
      */
     public ScanOptions withIdentifiers(String... identifiers) {
         return new ScanOptions(timeout, new LinkedHashSet<>(Arrays.asList(identifiers)), protocols, hosts, runtime,
-                storage, scanner, knock);
+                storage, scanner, knock, browser);
     }
 
     /**
@@ -99,7 +103,7 @@ public record ScanOptions(Duration timeout, Set<String> identifiers, Set<Protoco
      */
     public ScanOptions withProtocols(Protocol... protocols) {
         return new ScanOptions(timeout, identifiers, new LinkedHashSet<>(Arrays.asList(protocols)), hosts, runtime,
-                storage, scanner, knock);
+                storage, scanner, knock, browser);
     }
 
     /**
@@ -109,7 +113,7 @@ public record ScanOptions(Duration timeout, Set<String> identifiers, Set<Protoco
      * @return updated copy
      */
     public ScanOptions withHosts(List<String> hosts) {
-        return new ScanOptions(timeout, identifiers, protocols, hosts, runtime, storage, scanner, knock);
+        return new ScanOptions(timeout, identifiers, protocols, hosts, runtime, storage, scanner, knock, browser);
     }
 
     /**
@@ -119,7 +123,7 @@ public record ScanOptions(Duration timeout, Set<String> identifiers, Set<Protoco
      * @return updated copy
      */
     public ScanOptions withRuntime(AtvRuntime runtime) {
-        return new ScanOptions(timeout, identifiers, protocols, hosts, runtime, storage, scanner, knock);
+        return new ScanOptions(timeout, identifiers, protocols, hosts, runtime, storage, scanner, knock, browser);
     }
 
     /**
@@ -129,7 +133,7 @@ public record ScanOptions(Duration timeout, Set<String> identifiers, Set<Protoco
      * @return updated copy
      */
     public ScanOptions withStorage(Storage storage) {
-        return new ScanOptions(timeout, identifiers, protocols, hosts, runtime, storage, scanner, knock);
+        return new ScanOptions(timeout, identifiers, protocols, hosts, runtime, storage, scanner, knock, browser);
     }
 
     /**
@@ -139,7 +143,7 @@ public record ScanOptions(Duration timeout, Set<String> identifiers, Set<Protoco
      * @return updated copy
      */
     public ScanOptions withScanner(Scanner scanner) {
-        return new ScanOptions(timeout, identifiers, protocols, hosts, runtime, storage, scanner, knock);
+        return new ScanOptions(timeout, identifiers, protocols, hosts, runtime, storage, scanner, knock, browser);
     }
 
     /**
@@ -151,6 +155,16 @@ public record ScanOptions(Duration timeout, Set<String> identifiers, Set<Protoco
      * @return updated copy
      */
     public ScanOptions withKnock(boolean knock) {
-        return new ScanOptions(timeout, identifiers, protocols, hosts, runtime, storage, scanner, knock);
+        return new ScanOptions(timeout, identifiers, protocols, hosts, runtime, storage, scanner, knock, browser);
+    }
+
+    /**
+     * Returns a copy that runs multicast scans through the given mDNS browser.
+     *
+     * @param browser browser to use
+     * @return updated copy
+     */
+    public ScanOptions withBrowser(ServiceBrowser browser) {
+        return new ScanOptions(timeout, identifiers, protocols, hosts, runtime, storage, scanner, knock, browser);
     }
 }

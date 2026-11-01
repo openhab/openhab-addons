@@ -22,6 +22,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -44,6 +45,9 @@ import org.openhab.binding.atv.internal.client.dto.DeviceInfo;
 import org.openhab.binding.atv.internal.client.dto.DeviceModel;
 import org.openhab.binding.atv.internal.client.dto.OperatingSystem;
 import org.openhab.binding.atv.internal.client.dto.Protocol;
+import org.openhab.binding.atv.internal.client.exceptions.AuthenticationError;
+import org.openhab.binding.atv.internal.client.exceptions.CredentialsRejectedError;
+import org.openhab.binding.atv.internal.client.exceptions.InvalidCredentialsError;
 import org.openhab.binding.atv.internal.client.exceptions.InvalidStateError;
 import org.openhab.binding.atv.internal.client.exceptions.NoServiceError;
 import org.openhab.binding.atv.internal.client.exceptions.NotSupportedError;
@@ -101,6 +105,7 @@ public final class AppleTVRelay implements AppleTV, DeviceListener {
 
     private final Deque<SetupData> protocolsToSetup = new ArrayDeque<>();
     private final Map<Protocol, SetupData> protocolHandlers = new LinkedHashMap<>();
+    private final Map<Protocol, Throwable> connectFailures = new LinkedHashMap<>();
 
     private final PushUpdaterRelay pushUpdates;
     private final FeaturesRelay features;
@@ -180,33 +185,66 @@ public final class AppleTVRelay implements AppleTV, DeviceListener {
             // (typically Companion) reachable, so connect proceeds with whatever set up.
             chain = chain.thenCompose(ignore -> setUpProtocol(setupData, devinfo).handle((done, error) -> {
                 if (error != null) {
-                    Throwable cause = error.getCause();
-                    LOGGER.debug("Protocol {} failed to connect: {}", setupData.protocol(),
-                            cause != null ? cause.getMessage() : error.getMessage());
+                    Throwable inner = error.getCause();
+                    Throwable cause = error instanceof CompletionException && inner != null ? inner : error;
+                    LOGGER.debug("Protocol {} failed to connect: {}", setupData.protocol(), cause.getMessage(), cause);
+                    boolean registered;
+                    synchronized (this) {
+                        connectFailures.put(setupData.protocol(), cause);
+                        registered = protocolHandlers.containsKey(setupData.protocol());
+                    }
                     // A protocol that failed part way through may have left a socket, reader thread or
                     // heartbeat behind. Unregistered protocols are invisible to close(), so tear this one
                     // down here or every reconnect leaks another.
-                    synchronized (this) {
-                        if (!protocolHandlers.containsKey(setupData.protocol())) {
-                            closeQuietly(setupData);
-                        }
+                    if (!registered) {
+                        closeQuietly(setupData);
                     }
                 }
                 return done;
             }));
         }
         return chain.thenCompose(ignore -> {
+            @Nullable
+            Throwable failure = null;
             synchronized (this) {
                 if (protocolHandlers.isEmpty()) {
-                    // Nothing connected; tear down and fail so the caller retries.
-                    return close().handle((closed, closeError) -> null).thenCompose(closed -> CompletableFuture
-                            .<Void> failedFuture(new NoServiceError("no protocol could be connected")));
+                    // Nothing connected, so tear down and fail so the caller retries. A rejected pairing
+                    // is reported as such, since retrying will not fix it. Otherwise each protocol's failure
+                    // is attached, so the caller can tell a device that refused from one that never answered.
+                    failure = connectFailures.entrySet().stream().filter(e -> isCredentialFailure(e.getValue()))
+                            .<Throwable> map(e -> new CredentialsRejectedError(e.getKey(), e.getValue())).findFirst()
+                            .orElseGet(() -> {
+                                NoServiceError none = new NoServiceError("no protocol could be connected");
+                                connectFailures.values().forEach(none::addSuppressed);
+                                return none;
+                            });
                 }
+            }
+            if (failure != null) {
+                Throwable connectFailure = failure;
+                return close().handle((closed, closeError) -> null)
+                        .thenCompose(closed -> CompletableFuture.<Void> failedFuture(connectFailure));
             }
             deviceInfo = buildDeviceInfo(devinfo);
             wirePowerListener();
             return CompletableFuture.completedFuture(null);
         });
+    }
+
+    /**
+     * Whether a protocol failed because the device rejected its credentials, as opposed to a network or
+     * protocol problem that a retry may fix.
+     *
+     * @param failure the failure reported by a protocol
+     * @return {@code true} if the credentials were rejected
+     */
+    private static boolean isCredentialFailure(Throwable failure) {
+        return failure instanceof AuthenticationError || failure instanceof InvalidCredentialsError;
+    }
+
+    @Override
+    public synchronized Map<Protocol, Throwable> connectFailures() {
+        return Map.copyOf(connectFailures);
     }
 
     @Override
@@ -264,28 +302,33 @@ public final class AppleTVRelay implements AppleTV, DeviceListener {
     }
 
     @Override
-    public synchronized CompletableFuture<Void> close() {
-        // If close was called before, return the previous (pending) result
-        @Nullable
-        CompletableFuture<Void> existing = closeFuture;
-        if (existing != null) {
-            return existing;
+    public CompletableFuture<Void> close() {
+        CompletableFuture<Boolean> done = new CompletableFuture<>();
+        CompletableFuture<Void> future = done.thenAccept(ignore -> {
+        });
+        List<SetupData> toClose;
+        synchronized (this) {
+            // If close was called before, return the previous (possibly pending) result
+            @Nullable
+            CompletableFuture<Void> existing = closeFuture;
+            if (existing != null) {
+                return existing;
+            }
+            closeFuture = future;
+            toClose = List.copyOf(protocolHandlers.values());
         }
-
-        // Stop all push updaters, otherwise they might continue in the background
-        pushUpdates.stop();
-
-        for (SetupData setupData : protocolHandlers.values()) {
-            closeQuietly(setupData);
+        // Teardown can wait on the network, so it runs without this object's lock. Holding it would block
+        // every other caller for that long.
+        try {
+            // Stop all push updaters, otherwise they might continue in the background
+            pushUpdates.stop();
+            toClose.forEach(this::closeQuietly);
+        } finally {
+            // Block access to everything in the public interface
+            guard.block();
+            loop.shutdown();
+            done.complete(true);
         }
-
-        // Block access to everything in the public interface
-        guard.block();
-
-        loop.shutdown();
-
-        CompletableFuture<Void> future = CompletableFuture.completedFuture(null);
-        closeFuture = future;
         return future;
     }
 

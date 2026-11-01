@@ -25,6 +25,7 @@ import java.util.Map;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.atv.internal.client.auth.HapChannel;
+import org.openhab.binding.atv.internal.client.exceptions.ProtocolError;
 import org.openhab.binding.atv.internal.client.protocols.mrp.MrpExtensions;
 import org.openhab.binding.atv.internal.client.protocols.mrp.dto.ProtocolMessageOuterClass.ProtocolMessage;
 import org.openhab.binding.atv.internal.client.support.BinaryPlist;
@@ -53,6 +54,8 @@ public final class DataStreamChannel extends HapChannel {
 
     /** Length of the binary data frame header ({@code DataHeader.length}). */
     public static final int HEADER_LENGTH = 32;
+    /** Largest accepted message; real messages are far smaller, so anything bigger is a corrupt header. */
+    static final long MAX_MESSAGE_SIZE = 1 << 24;
 
     /** Padding value used in all sent messages ({@code DATA_HEADER_PADDING}). */
     public static final int DATA_HEADER_PADDING = 0x00000000;
@@ -239,6 +242,8 @@ public final class DataStreamChannel extends HapChannel {
      *
      * @param data buffered bytes
      * @return the decoded message (or {@code null} when incomplete) plus the remainder
+     * @throws ProtocolError if the size field is smaller than the header or larger than
+     *             {@link #MAX_MESSAGE_SIZE}; the channel then closes
      */
     public static DecodeResult decodeMessage(byte[] data) {
         if (data.length < HEADER_LENGTH) {
@@ -246,6 +251,9 @@ public final class DataStreamChannel extends HapChannel {
         }
         ByteBuffer input = ByteBuffer.wrap(data);
         long size = Integer.toUnsignedLong(input.getInt());
+        if (size < HEADER_LENGTH || size > MAX_MESSAGE_SIZE) {
+            throw new ProtocolError("invalid data stream message size " + size);
+        }
         byte[] messageType = new byte[12];
         input.get(messageType);
         byte[] command = new byte[4];

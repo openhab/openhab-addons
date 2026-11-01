@@ -33,8 +33,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * <li>{@code pad(v)} left-pads the minimal bytes of {@code v} to the byte length of N.</li>
  * <li>{@code k = H(N || PAD(g))}, {@code x = H(salt || H(I ":" P))}, {@code u = H(PAD(A) ||
  * PAD(B))}.</li>
- * <li>Client proof {@code M1 = H((H(N) xor H(g)) || H(I) || salt || A || B || K)} (RFC 2945 form —
- * <em>not</em> BouncyCastle's {@code H(A||B||S)}).</li>
+ * <li>Client proof {@code M1 = H((H(N) xor H(g)) || H(I) || salt || A || B || K)} (RFC 2945 form,
+ * not the shorter {@code H(A||B||S)} some SRP libraries use).</li>
  * <li>Server proof {@code M2 = H(A || M1 || K)}.</li>
  * <li>The session-key derivation {@code K = f(S)} is pluggable: HAP uses {@code K = H(S)}, AirPlay
  * legacy uses {@code K = H(S||0x00000000) || H(S||0x00000001)}.</li>

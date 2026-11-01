@@ -79,7 +79,7 @@ public final class Knock {
         for (int port : ports) {
             CompletableFuture<@Nullable Void> task = new CompletableFuture<>();
             tasks.add(task);
-            Thread.ofVirtual().name("atv-knock-" + address.getHostAddress() + ":" + port).start(() -> {
+            Thread.ofPlatform().daemon().name("atv-knock-" + address.getHostAddress() + ":" + port).start(() -> {
                 // Per-port knocks are best-effort and repeat every two seconds for the life of every
                 // scan, so they are traced rather than logged: a failure here means nothing on its own.
                 LOGGER.trace("Knocking at port {} on {}", port, address);
@@ -112,7 +112,7 @@ public final class Knock {
     public static CompletableFuture<@Nullable Void> knocker(InetAddress address, List<Integer> ports,
             Duration timeout) {
         CompletableFuture<@Nullable Void> result = new CompletableFuture<>();
-        Thread.ofVirtual().name("atv-knocker-" + address.getHostAddress()).start(() -> {
+        Thread.ofPlatform().daemon().name("atv-knocker-" + address.getHostAddress()).start(() -> {
             long deadline = System.nanoTime() + timeout.toNanos();
             while (!result.isDone()) {
                 long remainingMs = (deadline - System.nanoTime()) / 1_000_000;

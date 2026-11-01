@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.atv.internal.client;
 
-import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -21,8 +20,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
-
-import javax.jmdns.JmDNS;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.atv.internal.client.conf.AtvConfig;
@@ -53,6 +51,7 @@ import org.openhab.binding.atv.internal.client.protocols.raop.Raop;
 import org.openhab.binding.atv.internal.client.scan.JmdnsScanner;
 import org.openhab.binding.atv.internal.client.scan.ScanOrchestrator;
 import org.openhab.binding.atv.internal.client.scan.ScanProtocols;
+import org.openhab.binding.atv.internal.client.scan.ServiceBrowser;
 import org.openhab.binding.atv.internal.client.scan.UnicastScanner;
 import org.openhab.binding.atv.internal.client.settings.MemoryStorage;
 import org.openhab.binding.atv.internal.client.settings.Storage;
@@ -129,85 +128,32 @@ public final class Atv {
     }
 
     /**
-     * Default scanner selection: unicast scanning when hosts are given, multicast browsing
-     * otherwise. Multicast browsing creates one jmDNS instance per local private (site-local)
-     * IPv4 address, so devices on any interface are found.
+     * Default scanner selection: unicast scanning when hosts are given, otherwise multicast
+     * browsing through the {@link ScanOptions#browser() browser} the caller supplies.
      */
     private static CompletableFuture<List<AtvConfig>> discover(ScanOptions options) {
         ScanOrchestrator orchestrator;
-        Runnable cleanup = () -> {
-        };
-        try {
-            if (!options.hosts().isEmpty()) {
-                List<InetAddress> hosts = new ArrayList<>();
+        if (!options.hosts().isEmpty()) {
+            List<InetAddress> hosts = new ArrayList<>();
+            try {
                 for (String host : options.hosts()) {
                     hosts.add(InetAddress.getByName(host));
                 }
-                orchestrator = new UnicastScanner(hosts, options.knock());
-            } else {
-                List<JmDNS> instances = createJmdnsInstances();
-                orchestrator = new JmdnsScanner(instances, false);
-                cleanup = () -> {
-                    for (JmDNS jmdns : instances) {
-                        try {
-                            jmdns.close();
-                        } catch (IOException e) {
-                            LOGGER.debug("Failed to close jmDNS instance", e);
-                        }
-                    }
-                };
+            } catch (UnknownHostException e) {
+                return CompletableFuture.failedFuture(new ConnectionFailedError("invalid host", e));
             }
-        } catch (UnknownHostException e) {
-            return CompletableFuture.failedFuture(new ConnectionFailedError("invalid host", e));
-        } catch (IOException e) {
-            return CompletableFuture.failedFuture(new ConnectionFailedError("failed to set up scanner", e));
+            orchestrator = new UnicastScanner(hosts, options.knock());
+        } else {
+            ServiceBrowser browser = options.browser();
+            if (browser == null) {
+                return CompletableFuture
+                        .failedFuture(new NotSupportedError("multicast scan needs an mDNS browser or a host"));
+            }
+            orchestrator = new JmdnsScanner(browser, false);
         }
 
         ScanProtocols.registerAll(orchestrator, options.protocols());
-
-        Runnable finalCleanup = cleanup;
-        return orchestrator.discover(options.timeout()).whenComplete((result, error) -> finalCleanup.run())
-                .thenApply(devices -> List.copyOf(devices.values()));
-    }
-
-    /**
-     * Creates one jmDNS instance per up, non-loopback, private (site-local) IPv4 address of
-     * the local host, falling back to a default-bound instance when none is usable.
-     * Per-address failures are logged at debug level and otherwise ignored.
-     *
-     * @return jmDNS instances to browse with (at least one)
-     * @throws IOException if not even a fallback instance can be created
-     */
-    private static List<JmDNS> createJmdnsInstances() throws IOException {
-        List<JmDNS> instances = new ArrayList<>();
-        try {
-            var interfaces = java.net.NetworkInterface.getNetworkInterfaces();
-            while (interfaces.hasMoreElements()) {
-                java.net.NetworkInterface networkInterface = interfaces.nextElement();
-                if (!networkInterface.isUp() || networkInterface.isLoopback()) {
-                    continue;
-                }
-                var addresses = networkInterface.getInetAddresses();
-                while (addresses.hasMoreElements()) {
-                    InetAddress address = addresses.nextElement();
-                    if (!(address instanceof java.net.Inet4Address) || address.isLoopbackAddress()
-                            || !address.isSiteLocalAddress()) {
-                        continue;
-                    }
-                    try {
-                        instances.add(JmDNS.create(address));
-                    } catch (IOException e) {
-                        LOGGER.debug("Failed to set up jmDNS on {}", address, e);
-                    }
-                }
-            }
-        } catch (java.net.SocketException e) {
-            LOGGER.debug("Failed to enumerate network interfaces", e);
-        }
-        if (instances.isEmpty()) {
-            instances.add(JmDNS.create());
-        }
-        return instances;
+        return orchestrator.discover(options.timeout()).thenApply(devices -> List.copyOf(devices.values()));
     }
 
     /**
@@ -319,10 +265,69 @@ public final class Atv {
 
         return storage.getSettings(config).thenApply(settings -> {
             DeviceLoop loop = runtime.newDeviceLoop();
-            Core core = new Core(runtime, loop, deepCopy(config), service, settings, new ListenerRegistry<>(loop),
-                    new ProtocolStateDispatcher(protocol, new CoreStateDispatcher(loop)), TakeoverMethod.NO_OP);
-            return module.pair(core, options.pairingOptions());
+            try {
+                Core core = new Core(runtime, loop, deepCopy(config), service, settings, new ListenerRegistry<>(loop),
+                        new ProtocolStateDispatcher(protocol, new CoreStateDispatcher(loop)), TakeoverMethod.NO_OP);
+                return new LoopOwningPairingHandler(module.pair(core, options.pairingOptions()), loop);
+            } catch (RuntimeException e) {
+                loop.shutdown();
+                throw e;
+            }
         });
+    }
+
+    /**
+     * Wraps a protocol's pairing handler so that closing it also shuts down the device loop
+     * {@link #pair} created for it. Closing more than once is a no-op.
+     */
+    private static final class LoopOwningPairingHandler extends PairingHandler {
+
+        private final PairingHandler delegate;
+        private final DeviceLoop loop;
+        private final AtomicBoolean closed = new AtomicBoolean();
+
+        LoopOwningPairingHandler(PairingHandler delegate, DeviceLoop loop) {
+            super(delegate.service());
+            this.delegate = delegate;
+            this.loop = loop;
+        }
+
+        @Override
+        public CompletableFuture<Void> close() {
+            if (!closed.compareAndSet(false, true)) {
+                return CompletableFuture.completedFuture(null);
+            }
+            try {
+                return delegate.close();
+            } finally {
+                loop.shutdown();
+            }
+        }
+
+        @Override
+        public void pin(String pin) {
+            delegate.pin(pin);
+        }
+
+        @Override
+        public boolean deviceProvidesPin() {
+            return delegate.deviceProvidesPin();
+        }
+
+        @Override
+        public boolean hasPaired() {
+            return delegate.hasPaired();
+        }
+
+        @Override
+        public CompletableFuture<Void> begin() {
+            return delegate.begin();
+        }
+
+        @Override
+        public CompletableFuture<Void> finish() {
+            return delegate.finish();
+        }
     }
 
     /**

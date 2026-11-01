@@ -95,7 +95,7 @@ public final class AirPlayPlayer {
      */
     public CompletableFuture<Void> playUrl(String url, double position) {
         return CompletableFuture.runAsync(() -> play(url, position),
-                runnable -> Thread.ofVirtual().name("airplay-player").start(runnable));
+                runnable -> Thread.ofPlatform().daemon().name("airplay-player").start(runnable));
     }
 
     private void play(String url, double position) {

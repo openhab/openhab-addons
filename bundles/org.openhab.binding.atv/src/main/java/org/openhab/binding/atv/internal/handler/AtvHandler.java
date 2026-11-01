@@ -14,7 +14,11 @@ package org.openhab.binding.atv.internal.handler;
 
 import static org.openhab.binding.atv.internal.AtvBindingConstants.*;
 
+import java.io.IOException;
 import java.io.InputStream;
+import java.net.Inet4Address;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.Clock;
 import java.time.Duration;
 import java.util.List;
@@ -25,14 +29,28 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executors;
+import java.util.concurrent.RejectedExecutionException;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
+import java.util.regex.Pattern;
+
+import javax.jmdns.ServiceEvent;
+import javax.jmdns.ServiceInfo;
+import javax.jmdns.ServiceListener;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.api.Response;
+import org.eclipse.jetty.client.util.InputStreamResponseListener;
+import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.atv.internal.AtvBindingConstants;
 import org.openhab.binding.atv.internal.AtvDynamicCommandDescriptionProvider;
 import org.openhab.binding.atv.internal.AtvDynamicStateDescriptionProvider;
@@ -61,10 +79,18 @@ import org.openhab.binding.atv.internal.client.dto.RepeatState;
 import org.openhab.binding.atv.internal.client.dto.ScanOptions;
 import org.openhab.binding.atv.internal.client.dto.ShuffleState;
 import org.openhab.binding.atv.internal.client.dto.UserAccount;
+import org.openhab.binding.atv.internal.client.exceptions.AuthenticationError;
 import org.openhab.binding.atv.internal.client.exceptions.BlockedStateError;
+import org.openhab.binding.atv.internal.client.exceptions.CredentialsRejectedError;
+import org.openhab.binding.atv.internal.client.exceptions.InvalidCredentialsError;
 import org.openhab.binding.atv.internal.client.exceptions.NotSupportedError;
 import org.openhab.binding.atv.internal.config.AtvConfiguration;
+import org.openhab.core.OpenHAB;
+import org.openhab.core.audio.AudioManager;
+import org.openhab.core.common.ThreadPoolManager;
 import org.openhab.core.config.core.Configuration;
+import org.openhab.core.io.transport.mdns.MDNSClient;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.NextPreviousType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
@@ -98,49 +124,45 @@ public class AtvHandler extends BaseThingHandler {
 
     private static final Duration SCAN_TIMEOUT = Duration.ofSeconds(8);
     private static final long OP_TIMEOUT_SECONDS = 30;
-    private static final long RECONNECT_SECONDS = 30;
-    // Fast retry after a graceful drop or to upgrade a partial connection once the device wakes.
+    // Delay for an attempt that should happen right away, e.g. to upgrade a partial connection.
     private static final long RECONNECT_NOW_SECONDS = 3;
-    // Cadence for re-probing an asleep but still-discoverable device to detect a wake (e.g. the user
-    // turning it on with the remote). Lower means a faster power-on response for automations, at the cost
-    // of more frequent lightweight Companion power probes; the probe never holds a connection, so it does
-    // not flap.
-    private static final long ASLEEP_RETRY_SECONDS = 20;
-    // An asleep device stays ONLINE while it remains reachable. If it cannot be reached for this long it
-    // is treated as gone (powered off) and reported OFFLINE. Must exceed any asleep unreachable cycle.
-    private static final long GONE_AFTER_MILLIS = Duration.ofMinutes(10).toMillis();
-    // While a user wake is pending, retry fast to catch a duty-cycle device's brief reachable window
-    // instead of waiting out the slow asleep cadence.
-    private static final long WAKE_RETRY_SECONDS = 5;
-    // Give up a pending wake after this long so an off device is not hammered forever. Must exceed a
-    // sleeping device's unreachable cycle so at least one reachable window is caught.
-    private static final long WAKE_TIMEOUT_MILLIS = Duration.ofMinutes(5).toMillis();
+    // How long an asleep check waits for the device to push its power state when it did not answer the
+    // initial query.
+    private static final long POWER_REPORT_WAIT_SECONDS = 2;
     // Cadence for extrapolating the playback position channel while media is playing.
-    private static final long POSITION_INTERVAL_SECONDS = 1;
+    private static final long POSITION_INTERVAL_SECONDS = 5;
     // Window over which repeated refresh requests are merged into one.
     private static final long REFRESH_DEBOUNCE_SECONDS = 2;
-    // Cadence for the stale-connection watchdog check.
-    private static final long WATCHDOG_INTERVAL_SECONDS = 60;
+    // How long to wait for an HTTP server to start answering before giving up on a stream-url request.
+    private static final long HTTP_RESPONSE_TIMEOUT_SECONDS = 10;
+    private static final Pattern IPV4_LITERAL = Pattern.compile("\\d{1,3}(\\.\\d{1,3}){3}");
 
     private final Logger logger = LoggerFactory.getLogger(AtvHandler.class);
     private final @Nullable FileHostService fileHostService;
     private final AtvDynamicStateDescriptionProvider stateDescriptionProvider;
     private final AtvDynamicCommandDescriptionProvider commandDescriptionProvider;
+    private final @Nullable MDNSClient mdnsClient;
+    private final HttpClient httpClient;
+    // Brings an attempt forward when the device announces itself over mDNS, so a remote power-on is noticed
+    // sooner than the next scheduled asleep check.
+    private final ServiceListener announcementListener = new AnnouncementListener();
 
     private volatile AtvConfiguration config = new AtvConfiguration();
     private volatile @Nullable AtvRuntime runtime;
-    // Written from the scheduler thread (connect) and the protocol loop thread (disconnect); the atomic
-    // reference makes the compare-and-clear in handleDisconnect safe against a concurrent reconnect.
+    // Written by connect() and by the protocol threads that report a disconnect. The atomic reference lets
+    // handleDisconnect clear only the connection it was told about, not a newer one.
     private final AtomicReference<@Nullable AppleTV> appleTV = new AtomicReference<>();
     private volatile @Nullable ScheduledFuture<?> reconnectJob;
+    // Dedicated single thread for the blocking connect, scan and probe work, so a device that becomes
+    // unreachable cannot tie up openHAB's shared thing-handler pool and stall other bindings. It also runs
+    // connects one at a time. shutdownNow on dispose interrupts a connect that is blocked.
+    private volatile @Nullable ScheduledExecutorService connectExecutor;
     private volatile @Nullable ScheduledFuture<?> positionJob;
-    private volatile @Nullable ScheduledFuture<?> staleJob;
     private volatile @Nullable ScheduledFuture<?> healthJob;
     private volatile @Nullable ScheduledFuture<?> refreshJob;
     // In-flight audio-sink playback, so a sink stop request can end it.
     private final AtomicReference<@Nullable CompletableFuture<Void>> playback = new AtomicReference<>();
-    // Guards the position ticker; a separate monitor from connect()'s, which is held for the whole
-    // (slow) connect and must not block the protocol threads that report now-playing updates.
+    // Guards the position ticker, which now-playing updates start and stop from several threads.
     private final Object positionLock = new Object();
     private volatile @Nullable String lastArtworkId;
     // Forces the first artwork evaluation after connect, so restored state is cleared even when the id is null.
@@ -151,86 +173,125 @@ public class AtvHandler extends BaseThingHandler {
     private volatile long lastPositionMillis;
     private volatile int lastTotalSeconds;
 
-    // Tells a graceful sleep apart from a real failure, and detects wake from a partial connection.
-    private volatile PowerState lastPowerState = PowerState.Unknown;
-    private volatile long lastReachableMillis;
+    // Replaced on every initialize, so nothing carries over from a previous session.
+    private volatile ConnectionSupervisor supervisor;
     private volatile boolean disposed;
-    // Set when power ON is commanded while offline; honored once a connection is (re)established.
-    private volatile boolean pendingWake;
-    private volatile long pendingWakeDeadlineMillis;
-    // Keeps the repeating "still asleep" probe result to a single log line per sleep.
-    private volatile boolean asleepReported;
-    // Set after a device drops the connection while asleep; the next connect only checks power and
-    // disconnects again if still asleep, so the Thing does not bounce ONLINE every retry.
-    private volatile boolean wakeProbe;
-    // Time of the last update received from the device; drives the stale-connection watchdog.
-    private volatile long lastEventMillis;
-    // True while the audio sink is streaming, so the watchdog does not reconnect mid-playback.
-    private volatile boolean streaming;
-    // Whether the active power probe has ever answered on the current connection; a probe that never
-    // works (e.g. some tvOS builds) must not trigger a reconnect loop, only a regression from working.
+    // Bumped on every initialize and dispose. A connect or pairing task remembers the value it started
+    // with and drops its results if it changed, so a task left over from before a reinitialize cannot
+    // touch the new session's state.
+    private final AtomicInteger generation = new AtomicInteger();
+    // Held only while publishing or clearing the connection, so dispose cannot slip in between a connect
+    // checking its generation and storing its connection.
+    private final Object connectionLock = new Object();
+    // Makes cancelling the pending reconnect and scheduling its replacement one step, so two threads asking
+    // for a reconnect at once cannot leave an extra job behind.
+    private final Object scheduleLock = new Object();
+    // True while connect() runs. mDNS announcements are ignored then, since an attempt is already underway.
+    private volatile boolean connecting;
+    // Set once the device rejects a stored pairing. Reconnecting cannot help until the user re-pairs, which
+    // reinitializes the handler.
+    private volatile boolean credentialsRejected;
+    // Number of audio streams in progress, so the health check does not reconnect mid-playback.
+    private final AtomicInteger activeStreams = new AtomicInteger();
+    // Whether the active power probe has ever answered on the current connection. A probe that never works
+    // (e.g. some tvOS builds) must not trigger a reconnect loop, only one that stops working.
     private volatile boolean probeSucceeded;
 
     // pairing state kept alive between showing the PIN and the user entering it
-    private @Nullable PairingHandler pendingPairing;
-    private @Nullable Protocol pendingProtocol;
+    private volatile @Nullable PairingHandler pendingPairing;
+    private volatile @Nullable Protocol pendingProtocol;
 
     public AtvHandler(Thing thing, @Nullable FileHostService fileHostService,
             AtvDynamicStateDescriptionProvider stateDescriptionProvider,
-            AtvDynamicCommandDescriptionProvider commandDescriptionProvider) {
+            AtvDynamicCommandDescriptionProvider commandDescriptionProvider, @Nullable MDNSClient mdnsClient,
+            HttpClient httpClient) {
         super(thing);
         this.fileHostService = fileHostService;
         this.stateDescriptionProvider = stateDescriptionProvider;
         this.commandDescriptionProvider = commandDescriptionProvider;
+        this.mdnsClient = mdnsClient;
+        this.httpClient = httpClient;
+        this.supervisor = newSupervisor();
     }
 
     @Override
     public void initialize() {
+        migrateLegacyDeviceId();
         config = getConfigAs(AtvConfiguration.class);
-        if (config.macAddress.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.no-identifier");
+        if (config.deviceId.isBlank()) {
+            updateStatus(ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, "@text/offline.no-identifier");
             return;
         }
         // openHAB reuses the same handler instance across a configuration change (dispose then initialize),
         // so every flag dispose() set has to be cleared here or the handler stays dead.
+        generation.incrementAndGet();
         disposed = false;
-        lastPowerState = PowerState.Unknown;
-        pendingWake = false;
-        wakeProbe = false;
-        asleepReported = false;
-        streaming = false;
+        connecting = false;
+        credentialsRejected = false;
+        pendingPairing = null;
+        pendingProtocol = null;
+        supervisor = newSupervisor();
+        activeStreams.set(0);
         probeSucceeded = false;
         artworkEvaluated = false;
         updateStatus(ThingStatus.UNKNOWN);
-        runtime = new AtvRuntime(scheduler, Clock.systemUTC(), fileHostService);
-        scheduler.execute(this::connect);
+        // The client's heartbeats and timers run on a binding-private pool, not openHAB's shared
+        // thing-handler pool, so nothing the client schedules can starve other bindings.
+        runtime = new AtvRuntime(ThreadPoolManager.getScheduledPool(BINDING_ID), Clock.systemUTC(), fileHostService);
+        connectExecutor = Executors.newSingleThreadScheduledExecutor(runnable -> {
+            Thread thread = new Thread(runnable, "atv-connect-" + getThing().getUID().getId());
+            thread.setDaemon(true);
+            return thread;
+        });
+        MDNSClient mdns = mdnsClient;
+        if (mdns != null) {
+            mdns.addServiceListener(MDNS_AIRPLAY, announcementListener);
+        }
+        submitConnect();
     }
 
     @Override
     public void dispose() {
-        disposed = true;
+        synchronized (connectionLock) {
+            disposed = true;
+            generation.incrementAndGet();
+        }
+        MDNSClient mdns = mdnsClient;
+        if (mdns != null) {
+            mdns.removeServiceListener(MDNS_AIRPLAY, announcementListener);
+        }
         cancel(reconnectJob);
         reconnectJob = null;
         cancel(refreshJob);
         refreshJob = null;
         stopPositionTicker();
-        cancel(staleJob);
-        staleJob = null;
         cancel(healthJob);
         healthJob = null;
-        PairingHandler pairing = pendingPairing;
-        if (pairing != null) {
-            pairing.close();
+        PairingHandler pairing;
+        AppleTV atv;
+        synchronized (connectionLock) {
+            pairing = pendingPairing;
             pendingPairing = null;
             pendingProtocol = null;
+            atv = appleTV.getAndSet(null);
         }
-        AppleTV atv = appleTV.getAndSet(null);
+        if (pairing != null) {
+            pairing.close();
+        }
         if (atv != null) {
             atv.close();
         }
+        ScheduledExecutorService executor = connectExecutor;
+        connectExecutor = null;
+        if (executor != null) {
+            // shutdownNow interrupts a connect that is blocked on an unreachable device so it exits promptly.
+            // Not awaited: a connect stuck in a socket call ignores the interrupt, and the generation check
+            // already stops it from touching the next session once it returns.
+            executor.shutdownNow();
+        }
         clearDynamicOptions();
         lastArtworkId = null;
-        // the runtime uses openHAB's shared scheduler, so nothing to shut down here
+        // the runtime uses a shared binding-managed pool, so nothing to shut down here
         runtime = null;
     }
 
@@ -248,7 +309,17 @@ public class AtvHandler extends BaseThingHandler {
                         updated.put(key, value);
                     }
                 }));
-                completePairing(pairing, pinValue);
+                // Finishing pairing waits on the network, so it runs on the dedicated executor rather than
+                // the shared thread that delivers this configuration update.
+                ScheduledExecutorService executor = connectExecutor;
+                if (executor != null) {
+                    int gen = generation.get();
+                    try {
+                        executor.execute(() -> completePairing(gen, pairing, pinValue));
+                    } catch (RejectedExecutionException e) {
+                        // Disposed meanwhile, which also closed the pairing.
+                    }
+                }
                 return;
             }
         }
@@ -259,7 +330,7 @@ public class AtvHandler extends BaseThingHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         AppleTV atv = appleTV.get();
         if (atv == null) {
-            // A power ON while offline is a wake request; reconnect and send it once connected.
+            // A power ON while offline is a wake request. Reconnect and send it once connected.
             if (CHANNEL_POWER.equals(channelUID.getIdWithoutGroup()) && command == OnOffType.ON) {
                 requestWake();
             }
@@ -270,6 +341,16 @@ public class AtvHandler extends BaseThingHandler {
             return;
         }
         String id = channelUID.getIdWithoutGroup();
+        try {
+            dispatchCommand(atv, id, command);
+        } catch (RuntimeException e) {
+            // Bad input (e.g. an unknown shuffle mode) or a command the device cannot take right now (mid
+            // reconnect, or unsupported on a speaker). Not worth an error in the log.
+            logger.debug("Command {} for channel {} failed: {}", command, id, e.getMessage());
+        }
+    }
+
+    private void dispatchCommand(AppleTV atv, String id, Command command) {
         String value = command.toString();
         switch (id) {
             case CHANNEL_POWER -> {
@@ -300,8 +381,8 @@ public class AtvHandler extends BaseThingHandler {
                     atv.remoteControl().setPosition(Duration.ofSeconds(quantity.longValue()));
                 }
             }
-            case CHANNEL_PLAY_URL -> atv.stream().playUrl(value);
-            case CHANNEL_STREAM_URL -> atv.stream().streamFile(value);
+            case CHANNEL_PLAY_URL -> resolveMediaSource(value).ifPresent(source -> atv.stream().playUrl(source));
+            case CHANNEL_STREAM_URL -> resolveMediaSource(value).ifPresent(source -> streamUrl(atv, source));
             case CHANNEL_TOUCH_GESTURE -> handleTouchGesture(atv, value);
             case CHANNEL_OUTPUT_DEVICES -> atv.audio().setOutputDevices(List.of(value.split(",")));
             case CHANNEL_OUTPUT_DEVICE_VOLUME -> handleOutputDeviceVolume(atv, value);
@@ -335,28 +416,95 @@ public class AtvHandler extends BaseThingHandler {
     public void streamAudio(InputStream stream, double volumePercent) {
         AppleTV atv = appleTV.get();
         if (atv == null) {
-            logger.debug("Cannot stream audio to {}: not connected", config.macAddress);
+            logger.debug("Cannot stream audio to {}: not connected", config.deviceId);
             return;
         }
-        streaming = true;
+        activeStreams.incrementAndGet();
         try {
             CompletableFuture<Void> future = atv.stream().streamFile(stream, null,
                     Map.<String, Object> of(Stream.OPTION_VOLUME, volumePercent));
             playback.set(future);
-            // No timeout: RAOP paces the audio in real time, so this call lasts as long as the clip. A
-            // timeout here would cut playback short and let the caller close the stream mid-send.
+            // No timeout: RAOP paces the audio in real time, so this call lasts as long as the clip, and a
+            // sink stream can be an endless radio stream. A timeout would cut playback short.
             future.get();
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         } catch (ExecutionException e) {
-            logger.debug("Failed to stream audio to {}", config.macAddress, e);
+            logger.debug("Failed to stream audio to {}", config.deviceId, e);
         } catch (BlockedStateError e) {
-            logger.debug("Cannot stream audio to {}: connection closed", config.macAddress);
+            logger.debug("Cannot stream audio to {}: connection closed", config.deviceId);
         } finally {
             playback.set(null);
-            streaming = false;
-            markEvent();
+            activeStreams.decrementAndGet();
         }
+    }
+
+    /**
+     * Accepts an http(s) URL as is, or a bare file name from openHAB's sounds folder, which it turns into
+     * a path. Anything else is rejected so these channels cannot be used to read arbitrary files.
+     */
+    Optional<String> resolveMediaSource(String value) {
+        String source = value.trim();
+        String lower = source.toLowerCase(Locale.ROOT);
+        if (lower.startsWith("http://") || lower.startsWith("https://")) {
+            return Optional.of(source);
+        }
+        Path soundsFolder = Path.of(OpenHAB.getConfigFolder(), AudioManager.SOUND_DIR).toAbsolutePath().normalize();
+        if (!source.isEmpty() && !source.contains("/") && !source.contains("\\") && !".".equals(source)
+                && !"..".equals(source)) {
+            Path file = soundsFolder.resolve(source).normalize();
+            if (soundsFolder.equals(file.getParent()) && Files.isRegularFile(file)) {
+                return Optional.of(file.toString());
+            }
+        }
+        logger.debug("Ignoring media source '{}': expected an http(s) URL or a file name in {}", source, soundsFolder);
+        return Optional.empty();
+    }
+
+    /** Streams an http(s) URL or a local file to the device over RAOP without blocking the caller. */
+    private void streamUrl(AppleTV atv, String source) {
+        if (!source.regionMatches(true, 0, "http", 0, 4)) {
+            trackStream(atv.stream().streamFile(source));
+            return;
+        }
+        // Opening the HTTP stream waits for the server, so keep it off the thread delivering the command.
+        scheduler.execute(() -> {
+            InputStreamResponseListener listener = new InputStreamResponseListener();
+            Request request = httpClient.newRequest(source);
+            request.send(listener);
+            try {
+                Response response = listener.get(HTTP_RESPONSE_TIMEOUT_SECONDS, TimeUnit.SECONDS);
+                if (response.getStatus() != HttpStatus.OK_200) {
+                    logger.debug("Cannot stream {}: HTTP {}", source, response.getStatus());
+                    response.abort(new IOException("unexpected status " + response.getStatus()));
+                    return;
+                }
+                InputStream in = listener.getInputStream();
+                trackStream(atv.stream().streamFile(in, null, Map.of())).whenComplete((result, error) -> {
+                    try {
+                        in.close();
+                    } catch (IOException e) {
+                        logger.trace("Closing stream for {} failed", source, e);
+                    }
+                });
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            } catch (ExecutionException | TimeoutException | RuntimeException e) {
+                logger.debug("Cannot stream {}: {}", source, e.getMessage());
+                request.abort(e);
+            }
+        });
+    }
+
+    /** Counts a stream as active until it finishes, so the health check leaves the connection alone meanwhile. */
+    private CompletableFuture<Void> trackStream(CompletableFuture<Void> future) {
+        activeStreams.incrementAndGet();
+        return future.whenComplete((result, error) -> {
+            activeStreams.decrementAndGet();
+            if (error != null) {
+                logger.debug("Streaming to {} failed: {}", config.deviceId, error.getMessage());
+            }
+        });
     }
 
     /**
@@ -385,101 +533,198 @@ public class AtvHandler extends BaseThingHandler {
         return Math.max(0, Math.min(100, config.notificationVolume));
     }
 
-    private synchronized void connect() {
-        if (disposed) {
+    /** Runs only on connectExecutor, one attempt at a time. */
+    private void connect(int gen) {
+        // Nothing to do while waiting for a PIN. Completing or failing the pairing reconnects.
+        if (isStale(gen) || pendingPairing != null) {
             return;
         }
-        // Discard any prior connection first so a reconnect does not leak its protocols and heartbeats.
-        AppleTV existing = appleTV.getAndSet(null);
-        if (existing != null) {
-            existing.close();
+        // A job left over from two reconnect requests arriving together. Only a partial connection is worth
+        // replacing.
+        if (appleTV.get() != null && !isDegradedConnection()) {
+            return;
         }
+        connecting = true;
+        // A retry queued before this attempt started is now redundant. Anything that asks for another
+        // attempt while this one runs schedules a fresh job.
+        synchronized (scheduleLock) {
+            cancel(reconnectJob);
+        }
+        // Discard any prior connection first so a reconnect does not leak its protocols and heartbeats.
+        dropConnection();
         try {
-            AtvConfig device = scanForDevice();
-            if (device == null) {
-                setDisconnectedStatus("@text/offline.not-found");
-                scheduleConnect(RECONNECT_SECONDS);
+            List<AtvConfig> found = scanForDevice();
+            if (isStale(gen)) {
                 return;
             }
-            markReachable();
+            AtvConfig device = ownDevice(found);
+            if (device == null) {
+                retry(gen, supervisor.onFailed(Reachability.NO_ANSWER), notFoundMessage(found));
+                return;
+            }
             updateDeviceProperties(device);
             applyStoredCredentials(device);
 
             Protocol needsPairing = protocolNeedingPairing(device);
             if (needsPairing != null) {
-                beginPairing(device, needsPairing);
+                beginPairing(gen, device, needsPairing);
                 return;
             }
 
-            if (wakeProbe && !pendingWake && probeStillAsleep(device)) {
-                // Still asleep (a lightweight Companion-only probe read power Off). Keep the Thing ONLINE
-                // with the sleeping note and probe again later for wake rather than fully reconnecting.
-                setDisconnectedStatus(null);
-                scheduleConnect(ASLEEP_RETRY_SECONDS);
+            ConnectionSupervisor.Plan plan = supervisor.onFound(device.deepSleep());
+            if (plan == ConnectionSupervisor.Plan.CHECK) {
+                plan = checkAsleep(device);
+                if (isStale(gen)) {
+                    return;
+                }
+            }
+            if (plan == ConnectionSupervisor.Plan.WAIT) {
+                retry(gen, supervisor.waitRetry(), "@text/offline.no-response");
                 return;
             }
-            wakeProbe = false;
-            asleepReported = false;
 
-            AppleTV atv = await(Atv.connect(device, new ConnectOptions(runtime, null, null)));
-            appleTV.set(atv);
-            if (disposed) {
-                // Disposed while this async connect was in flight; close the late connection rather than
-                // leaking it and its heartbeats past the handler's lifetime.
-                appleTV.compareAndSet(atv, null);
-                atv.close();
-                return;
+            AppleTV atv = await(Atv.connect(device, new ConnectOptions(runtime, null, null)), AppleTV::close);
+            synchronized (connectionLock) {
+                if (isStale(gen)) {
+                    // Disposed or reinitialized while this connect was in flight. Close the late connection
+                    // rather than leaking it and its heartbeats.
+                    atv.close();
+                    return;
+                }
+                appleTV.set(atv);
             }
-            markEvent();
+            supervisor.onConnected(powerOf(atv));
             probeSucceeded = false;
             registerListeners(atv);
-            if (isDegradedConnection()) {
+            if (isStale(gen)) {
+                return;
+            }
+            Protocol rejected = rejectedProtocol(atv);
+            if (rejected != null) {
+                // Connected on the other protocols, but one pairing was removed on the device.
+                logger.debug("{} credentials for {} were rejected; clear them to pair again",
+                        credentialProtocol(rejected), config.deviceId);
+                updateStatus(ThingStatus.ONLINE,
+                        "@text/online.credentials-rejected [\"" + credentialProtocol(rejected) + "\"]");
+            } else if (isDegradedConnection()) {
                 // Only part of the protocols came up, so metadata, push updates and remote control are
-                // missing. Report it rather than looking fully online; a wake upgrades the connection.
-                updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, "@text/online.partial");
+                // missing. A wake upgrades the connection.
+                updateStatus(ThingStatus.ONLINE, "@text/online.partial");
             } else {
                 updateStatus(ThingStatus.ONLINE);
             }
             clearPins();
             refreshAll();
             refreshDynamicOptions(atv);
-            startWatchdog();
-            startHealthCheck();
-            if (pendingWake) {
-                pendingWake = false;
+            startHealthCheck(gen);
+            if (supervisor.consumeWake()) {
                 wake(atv);
             }
         } catch (InterruptedException e) {
+            // Only dispose interrupts this thread, so there is nothing left to report or retry.
             Thread.currentThread().interrupt();
-            logger.debug("Connection to {} failed", config.macAddress, e);
-            setDisconnectedStatus(e.getMessage());
-            scheduleConnect(RECONNECT_SECONDS);
         } catch (ExecutionException | TimeoutException e) {
-            logger.debug("Connection to {} failed", config.macAddress, e);
-            setDisconnectedStatus(e.getMessage());
-            scheduleConnect(RECONNECT_SECONDS);
+            if (isStale(gen)) {
+                return;
+            }
+            if (e.getCause() instanceof CredentialsRejectedError rejected) {
+                // Retrying cannot fix a removed pairing, so stop here until the user re-pairs.
+                credentialsRejected(rejected.protocol());
+                return;
+            }
+            logger.debug("Connection to {} failed", config.deviceId, e);
+            retry(gen, supervisor.onFailed(Reachability.of(e)), failureMessage(e));
         } catch (BlockedStateError e) {
+            if (isStale(gen)) {
+                return;
+            }
             // The connection dropped while it was still being set up (common right after a wake, while the
             // device settles). Treat it as a transient disconnect and retry.
-            logger.debug("Connection to {} closed during setup; reconnecting", config.macAddress);
-            appleTV.set(null);
-            setDisconnectedStatus(null);
-            scheduleConnect(RECONNECT_NOW_SECONDS);
+            logger.debug("Connection to {} closed during setup; reconnecting", config.deviceId);
+            dropConnection();
+            retry(gen, supervisor.onFailed(Reachability.HOST_UP), "@text/offline.connect-failed");
+        } catch (RuntimeException e) {
+            // Without this the executor would swallow the exception and no retry would ever be scheduled.
+            if (isStale(gen)) {
+                return;
+            }
+            logger.debug("Connection to {} failed unexpectedly", config.deviceId, e);
+            dropConnection();
+            retry(gen, supervisor.onFailed(Reachability.of(e)), failureMessage(e));
+        } finally {
+            if (!isStale(gen)) {
+                connecting = false;
+            }
         }
     }
 
-    private @Nullable AtvConfig scanForDevice() throws InterruptedException, ExecutionException, TimeoutException {
+    /**
+     * Reports a pairing the device no longer accepts. The stored credentials are left alone: clearing them
+     * would start a new pairing, which pops a PIN up on the TV without the user asking for it.
+     */
+    private void credentialsRejected(Protocol protocol) {
+        credentialsRejected = true;
+        Protocol stored = credentialProtocol(protocol);
+        logger.debug("{} credentials for {} were rejected; clear them to pair again", stored, config.deviceId);
+        updateStatus(ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
+                "@text/offline.credentials-rejected [\"" + stored + "\"]");
+    }
+
+    private @Nullable Protocol rejectedProtocol(AppleTV atv) {
+        return atv.connectFailures().entrySet().stream()
+                .filter(e -> e.getValue() instanceof AuthenticationError
+                        || e.getValue() instanceof InvalidCredentialsError)
+                .map(Map.Entry::getKey).findFirst().orElse(null);
+    }
+
+    /** MRP is tunneled over AirPlay on current devices, so its credentials are the AirPlay ones. */
+    private Protocol credentialProtocol(Protocol protocol) {
+        return protocol == Protocol.MRP ? Protocol.AirPlay : protocol;
+    }
+
+    private boolean isStale(int gen) {
+        return disposed || gen != generation.get();
+    }
+
+    private List<AtvConfig> scanForDevice() throws InterruptedException, ExecutionException, TimeoutException {
         // Knock only while a wake is pending: it exists to pull a device out of sleep, so knocking on every
         // routine reconnect would keep waking a device the user deliberately turned off.
         ScanOptions options = ScanOptions.defaults().withTimeout(SCAN_TIMEOUT).withRuntime(runtime)
-                .withKnock(isWakePending());
-        options = config.host.isBlank() ? options.withIdentifiers(config.macAddress)
-                : options.withHosts(List.of(config.host));
-        List<AtvConfig> results = await(Atv.scan(options));
-        String mac = config.macAddress.toLowerCase(Locale.ROOT);
-        return results.stream()
-                .filter(c -> c.allIdentifiers().stream().anyMatch(id -> id.toLowerCase(Locale.ROOT).equals(mac)))
-                .findFirst().orElse(results.isEmpty() ? null : results.get(0));
+                .withKnock(supervisor.isWaking());
+        MDNSClient mdns = mdnsClient;
+        if (config.host.isBlank()) {
+            if (mdns == null) {
+                return List.of();
+            }
+            options = options.withIdentifiers(config.deviceId).withBrowser(mdns::list);
+        } else {
+            options = options.withHosts(List.of(config.host));
+        }
+        return await(Atv.scan(options));
+    }
+
+    @Nullable
+    AtvConfig ownDevice(List<AtvConfig> found) {
+        String id = config.deviceId.toLowerCase(Locale.ROOT);
+        // Only ever accept this Thing's own device. Whatever else answers at the configured address (e.g.
+        // after a DHCP change) must not receive this Thing's credentials or pairing requests.
+        return found.stream()
+                .filter(c -> c.allIdentifiers().stream().anyMatch(other -> other.toLowerCase(Locale.ROOT).equals(id)))
+                .findFirst().orElse(null);
+    }
+
+    /**
+     * Names the device found at the configured host when it is not this Thing's device. A hand-entered
+     * hardware MAC is the usual cause, since devices identify themselves by their AirPlay ID instead.
+     */
+    String notFoundMessage(List<AtvConfig> found) {
+        if (config.host.isBlank() || found.isEmpty()) {
+            return "@text/offline.not-found";
+        }
+        AtvConfig other = found.get(0);
+        String id = other.getService(Protocol.AirPlay).flatMap(BaseService::identifier).or(other::identifier)
+                .orElse("?");
+        return "@text/offline.wrong-device [\"" + id + "\", \"" + config.host + "\", \"" + config.deviceId + "\"]";
     }
 
     private void applyStoredCredentials(AtvConfig device) {
@@ -519,22 +764,47 @@ public class AtvHandler extends BaseThingHandler {
         return null;
     }
 
-    private void beginPairing(AtvConfig device, Protocol protocol)
+    private void beginPairing(int gen, AtvConfig device, Protocol protocol)
             throws InterruptedException, ExecutionException, TimeoutException {
-        PairingHandler pairing = await(Atv.pair(device, protocol, new PairOptions(runtime, null, pairingOptions())));
-        await(pairing.begin());
-        pendingPairing = pairing;
-        pendingProtocol = protocol;
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
-                "@text/offline.pairing [\"" + protocol + "\"]");
+        PairingHandler pairing = await(Atv.pair(device, protocol, new PairOptions(runtime, null, pairingOptions())),
+                PairingHandler::close);
+        try {
+            await(pairing.begin());
+        } catch (Exception e) {
+            pairing.close();
+            throw e;
+        }
+        PairingHandler previous;
+        synchronized (connectionLock) {
+            // Checked and stored together so dispose either sees this pairing and closes it, or this sees
+            // the dispose and closes it here.
+            if (isStale(gen)) {
+                previous = pairing;
+            } else {
+                previous = pendingPairing;
+                pendingPairing = pairing;
+                pendingProtocol = protocol;
+            }
+        }
+        if (previous != null) {
+            previous.close();
+        }
+        if (!isStale(gen)) {
+            updateStatus(ThingStatusDetail.OFFLINE.AUTHORIZATION_PENDING,
+                    "@text/offline.pairing [\"" + protocol + "\"]");
+        }
     }
 
-    private void completePairing(PairingHandler pairing, String pin) {
+    private void completePairing(int gen, PairingHandler pairing, String pin) {
         Protocol protocol = pendingProtocol;
         try {
             pairing.pin(pin);
             await(pairing.finish());
             String credentials = Objects.requireNonNullElse(pairing.service().credentials().orElse(""), "");
+            pairing.close();
+            if (isStale(gen)) {
+                return;
+            }
             pendingPairing = null;
             pendingProtocol = null;
             storeConfiguration(updated -> {
@@ -545,11 +815,15 @@ public class AtvHandler extends BaseThingHandler {
                 }
             });
             // reconnect, which pairs the next protocol if needed
-            scheduler.execute(this::connect);
+            submitConnect();
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            pairingFailed(pairing, protocol, e);
-        } catch (ExecutionException | TimeoutException e) {
+            pairing.close();
+        } catch (ExecutionException | TimeoutException | RuntimeException e) {
+            if (isStale(gen)) {
+                pairing.close();
+                return;
+            }
             pairingFailed(pairing, protocol, e);
         }
     }
@@ -564,9 +838,9 @@ public class AtvHandler extends BaseThingHandler {
         pendingPairing = null;
         pendingProtocol = null;
         storeConfiguration(updated -> updated.put(CONFIG_PIN, ""));
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+        updateStatus(ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
                 "@text/offline.pairing-failed [\"" + protocol + "\"]");
-        scheduler.execute(this::connect);
+        submitConnect();
     }
 
     private void registerListeners(AppleTV atv) {
@@ -578,8 +852,8 @@ public class AtvHandler extends BaseThingHandler {
 
             @Override
             public void connectionClosed() {
-                // A graceful close (e.g. the device tearing down its side on sleep) is still a disconnect;
-                // recover like any other rather than leaving the Thing stranded OFFLINE with no reason.
+                // A graceful close (e.g. the device tearing down its side on sleep) is still a disconnect,
+                // so recover from it like any other.
                 handleDisconnect(atv, null);
             }
         });
@@ -589,7 +863,6 @@ public class AtvHandler extends BaseThingHandler {
             @Override
             @NonNullByDefault({})
             public void playstatusUpdate(PushUpdater updater, Playing playstatus) {
-                markEvent();
                 updatePlaying(playstatus);
             }
 
@@ -602,20 +875,18 @@ public class AtvHandler extends BaseThingHandler {
         push.start();
 
         atv.power().addListener((oldState, newState) -> {
-            markEvent();
-            lastPowerState = newState;
+            supervisor.onPower(newState);
             updateState(CHANNEL_POWER, powerToState(newState));
-            // Woke on a partial (Companion-only) connection; reconnect to restore the richer protocols.
+            // Woke on a partial (Companion-only) connection. Reconnect to restore the other protocols.
             if (newState == PowerState.On && oldState != PowerState.On && isDegradedConnection()) {
                 logger.debug("Device {} woke with a partial connection; reconnecting to restore all protocols",
-                        config.macAddress);
-                scheduleConnect(RECONNECT_NOW_SECONDS);
+                        config.deviceId);
+                scheduleConnect(generation.get(), RECONNECT_NOW_SECONDS);
             }
         });
         atv.audio().addListener(new org.openhab.binding.atv.internal.client.capability.AudioListener() {
             @Override
             public void volumeUpdate(double oldLevel, double newLevel) {
-                markEvent();
                 updateState(CHANNEL_VOLUME, new PercentType((int) Math.round(newLevel)));
             }
 
@@ -623,13 +894,11 @@ public class AtvHandler extends BaseThingHandler {
             @NonNullByDefault({})
             public void outputDevicesUpdate(List<org.openhab.binding.atv.internal.client.dto.OutputDevice> oldDevices,
                     List<org.openhab.binding.atv.internal.client.dto.OutputDevice> newDevices) {
-                markEvent();
                 updateState(CHANNEL_OUTPUT_DEVICES, new StringType(
                         newDevices.stream().map(d -> d.identifier()).reduce((a, b) -> a + "," + b).orElse("")));
             }
         });
         atv.keyboard().addListener((oldState, newState) -> {
-            markEvent();
             updateState(CHANNEL_KEYBOARD_FOCUS, new StringType(newState.name()));
         });
     }
@@ -646,10 +915,11 @@ public class AtvHandler extends BaseThingHandler {
             return;
         }
         atv.metadata().playing().thenAccept(this::updatePlaying);
-        // Speakers do not support power management; calling powerState() there throws NotSupportedError.
+        // Speakers have no power management, and powerState() throws NotSupportedError there.
         if (!atv.features().inState(FeatureState.Unsupported, FeatureName.PowerState)) {
-            lastPowerState = atv.power().powerState();
-            updateState(CHANNEL_POWER, powerToState(lastPowerState));
+            PowerState power = atv.power().powerState();
+            supervisor.onPower(power);
+            updateState(CHANNEL_POWER, powerToState(power));
         }
         if (atv.features().inState(FeatureState.Available, FeatureName.Volume)) {
             updateState(CHANNEL_VOLUME, new PercentType((int) Math.round(atv.audio().volume())));
@@ -667,6 +937,8 @@ public class AtvHandler extends BaseThingHandler {
         updateState(CHANNEL_SEASON_NUMBER, decimalOrUndef(p.seasonNumber()));
         updateState(CHANNEL_EPISODE_NUMBER, decimalOrUndef(p.episodeNumber()));
         updateState(CHANNEL_CONTENT_ID, stringOrUndef(p.contentIdentifier()));
+        Optional<Long> itunesId = p.iTunesStoreIdentifier();
+        updateState(CHANNEL_ITUNES_ID, itunesId.isPresent() ? new DecimalType(itunesId.get()) : UnDefType.UNDEF);
         Optional<ShuffleState> shuffle = p.shuffle();
         updateState(CHANNEL_SHUFFLE, shuffle.isPresent() ? new StringType(shuffle.get().name()) : UnDefType.UNDEF);
         Optional<RepeatState> repeat = p.repeat();
@@ -690,7 +962,7 @@ public class AtvHandler extends BaseThingHandler {
         }
 
         AppleTV atv = appleTV.get();
-        // Not-unsupported rather than available, so an idle Apple TV clears the channel; speakers are skipped.
+        // Not-unsupported rather than available, so an idle Apple TV clears the channel. Speakers are skipped.
         if (atv != null && !atv.features().inState(FeatureState.Unsupported, FeatureName.App)) {
             atv.metadata().app().ifPresentOrElse(app -> {
                 updateState(CHANNEL_APP, new StringType(app.identifier()));
@@ -815,25 +1087,22 @@ public class AtvHandler extends BaseThingHandler {
         }
     }
 
-    private void startWatchdog() {
-        cancel(staleJob);
-        if (config.staleTimeout > 0) {
-            staleJob = scheduler.scheduleWithFixedDelay(this::checkStaleness, WATCHDOG_INTERVAL_SECONDS,
-                    WATCHDOG_INTERVAL_SECONDS, TimeUnit.SECONDS);
-        }
-    }
-
-    private void startHealthCheck() {
+    private void startHealthCheck(int gen) {
         cancel(healthJob);
         if (config.healthCheckInterval > 0) {
-            healthJob = scheduler.scheduleWithFixedDelay(this::runHealthCheck, config.healthCheckInterval,
+            ScheduledFuture<?> job = scheduler.scheduleWithFixedDelay(this::runHealthCheck, config.healthCheckInterval,
                     config.healthCheckInterval, TimeUnit.SECONDS);
+            healthJob = job;
+            // dispose() may have cancelled the previous job just before this one was stored.
+            if (isStale(gen)) {
+                cancel(job);
+            }
         }
     }
 
     private void runHealthCheck() {
         AppleTV atv = appleTV.get();
-        if (atv == null || streaming) {
+        if (atv == null || activeStreams.get() > 0) {
             return;
         }
         PowerState cached;
@@ -845,7 +1114,7 @@ public class AtvHandler extends BaseThingHandler {
             disableHealthCheck();
             return;
         } catch (BlockedStateError e) {
-            // Connection is closing; a reconnect is already in progress.
+            // The connection is closing, so a reconnect is already on its way.
             return;
         }
         probe.whenComplete((fetched, error) -> {
@@ -856,49 +1125,34 @@ public class AtvHandler extends BaseThingHandler {
                     disableHealthCheck();
                     return;
                 }
-                // Only treat a failure as a stall if the probe worked before - some tvOS builds never
-                // answer it, and reconnecting on every such failure would loop.
+                // Only treat a failure as a stall if the probe worked before. Some tvOS builds never answer
+                // it, and reconnecting on every such failure would loop.
                 if (probeSucceeded) {
-                    logger.debug("Power probe stopped responding on {}; reconnecting", config.macAddress);
-                    scheduleConnect(RECONNECT_NOW_SECONDS);
+                    // Handled as a lost connection, so a device that reported Off before going quiet is
+                    // treated as asleep rather than failed.
+                    logger.debug("Power probe stopped responding on {}; dropping the connection", config.deviceId);
+                    handleDisconnect(atv, null);
+                    atv.close();
                 }
                 return;
             }
             probeSucceeded = true;
-            markEvent();
             if (fetched != cached) {
-                logger.debug("Power probe reports {} but tracked {} on {}; reconnecting to clear stalled push stream",
-                        fetched, cached, config.macAddress);
-                scheduleConnect(RECONNECT_NOW_SECONDS);
+                // The poll itself updates the tracked state, so the device's answer is already in effect.
+                logger.debug("Power poll on {} read {} while {} was tracked", config.deviceId, fetched, cached);
             }
         });
     }
 
     /** Stops the health check on a device that offers no active power query (e.g. a speaker). */
     private void disableHealthCheck() {
-        logger.debug("Active power probe unsupported on {}; disabling health check", config.macAddress);
+        logger.debug("Active power probe unsupported on {}; disabling health check", config.deviceId);
         cancel(healthJob);
         healthJob = null;
     }
 
     private @Nullable Throwable unwrap(@Nullable Throwable error) {
         return error instanceof CompletionException && error.getCause() != null ? error.getCause() : error;
-    }
-
-    private void markEvent() {
-        lastEventMillis = System.currentTimeMillis();
-    }
-
-    private void checkStaleness() {
-        if (config.staleTimeout <= 0 || appleTV.get() == null || streaming) {
-            return;
-        }
-        if (System.currentTimeMillis() - lastEventMillis >= config.staleTimeout * 60_000L) {
-            logger.debug("No updates from {} for {} min; rebuilding connection to clear a possible stalled push stream",
-                    config.macAddress, config.staleTimeout);
-            markEvent();
-            scheduleConnect(RECONNECT_NOW_SECONDS);
-        }
     }
 
     /**
@@ -955,12 +1209,12 @@ public class AtvHandler extends BaseThingHandler {
             artworkEvaluated = true;
             lastArtworkId = artworkId;
             if (artworkId == null) {
-                // No artwork; clear any stale image.
+                // No artwork, so clear any stale image.
                 updateState(CHANNEL_ARTWORK, UnDefType.UNDEF);
                 return;
             }
         } catch (RuntimeException e) {
-            // artworkId is unsupported by this protocol; fall through and always fetch
+            // This protocol has no artwork identifier, so always fetch.
             logger.trace("Artwork identifier unavailable, fetching unconditionally", e);
         }
         atv.metadata().artwork().thenAccept(artwork -> {
@@ -1067,12 +1321,24 @@ public class AtvHandler extends BaseThingHandler {
         };
     }
 
-    /** Clears the pairing PIN once the device is fully paired and online; it is spent by then. */
+    /** Clears the pairing PIN once the device is fully paired and online. It is spent by then. */
     private void clearPins() {
         if (config.pin.isBlank()) {
             return;
         }
         storeConfiguration(updated -> updated.put(CONFIG_PIN, ""));
+    }
+
+    /** Moves the device ID of a Thing created by a test build to the parameter's current name. */
+    void migrateLegacyDeviceId() {
+        Configuration current = getConfig();
+        if (current.get(CONFIG_LEGACY_DEVICE_ID) instanceof String legacy && !legacy.isBlank()
+                && !(current.get(CONFIG_DEVICE_ID) instanceof String id && !id.isBlank())) {
+            storeConfiguration(updated -> {
+                updated.put(CONFIG_DEVICE_ID, legacy);
+                updated.remove(CONFIG_LEGACY_DEVICE_ID);
+            });
+        }
     }
 
     /** Applies an edit to the Thing configuration and re-reads the cached copy. */
@@ -1096,45 +1362,54 @@ public class AtvHandler extends BaseThingHandler {
     }
 
     private State decimalOrUndef(Optional<Integer> value) {
-        return value.isPresent() ? new org.openhab.core.library.types.DecimalType(value.get()) : UnDefType.UNDEF;
+        return value.isPresent() ? new DecimalType(value.get()) : UnDefType.UNDEF;
     }
 
     private void handleDisconnect(AppleTV connection, @Nullable Exception exception) {
+        int gen = generation.get();
         if (!appleTV.compareAndSet(connection, null)) {
-            // A newer connection replaced this one, or we closed it intentionally; nothing to recover.
+            // A newer connection replaced this one, or it was closed on purpose. Nothing to recover.
             return;
         }
         stopPositionTicker();
-        markReachable();
-        setDisconnectedStatus(exception != null ? exception.getMessage() : null);
-        if (lastPowerState == PowerState.Off) {
-            // Asleep: the device will not hold a connection, so probe slowly for wake instead of flapping
-            // (fast while a wake is pending). A GUI power ON wakes it immediately via requestWake().
-            wakeProbe = true;
-            scheduleConnect(ASLEEP_RETRY_SECONDS);
-        } else {
-            // Awake a moment ago; a genuine glitch, so retry promptly.
-            scheduleConnect(RECONNECT_NOW_SECONDS);
+        retry(gen, supervisor.onConnectionLost(),
+                exception != null ? failureMessage(exception) : "@text/offline.connection-lost");
+    }
+
+    /** Closes and forgets the current connection, if any. */
+    private void dropConnection() {
+        AppleTV existing = appleTV.getAndSet(null);
+        if (existing != null) {
+            existing.close();
         }
     }
 
-    private void setDisconnectedStatus(@Nullable String communicationError) {
-        if (lastPowerState == PowerState.Off) {
-            if (System.currentTimeMillis() - lastReachableMillis < GONE_AFTER_MILLIS) {
-                // Asleep but still reachable on the network: report ONLINE, since OFFLINE should mean
-                // unreachable, but flag the duty cycle so it is clear that only the power channel acts.
-                updateStatus(ThingStatus.ONLINE, ThingStatusDetail.DUTY_CYCLE, "@text/online.asleep");
-            } else {
-                // Asleep and unreachable for a long time: the device is likely powered off.
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "@text/offline.not-found");
-            }
-        } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, communicationError);
+    /**
+     * Shows the supervisor's verdict and schedules the next attempt.
+     *
+     * @param offlineMessage status description to show if the verdict is OFFLINE
+     */
+    private void retry(int gen, ConnectionSupervisor.Retry retry, String offlineMessage) {
+        if (isStale(gen)) {
+            return;
         }
+        if (retry.status() == ConnectionSupervisor.Status.ASLEEP) {
+            // Asleep is not a failure: the device is there and can be woken, so the Thing stays ONLINE.
+            updateStatus(ThingStatus.ONLINE, "@text/online.asleep");
+        } else {
+            updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, offlineMessage);
+        }
+        scheduleConnect(gen, retry.delaySeconds());
     }
 
-    private void markReachable() {
-        lastReachableMillis = System.currentTimeMillis();
+    /** The deepest cause's message, which names the actual problem rather than a wrapper's class name. */
+    private String failureMessage(Throwable failure) {
+        Throwable root = failure;
+        for (int depth = 0; depth < 8 && root.getCause() != null; depth++) {
+            root = Objects.requireNonNull(root.getCause());
+        }
+        String message = root.getMessage();
+        return message == null || message.isBlank() ? "@text/offline.connect-failed" : message;
     }
 
     /**
@@ -1152,84 +1427,182 @@ public class AtvHandler extends BaseThingHandler {
         return !atv.connectedProtocols().contains(Protocol.MRP);
     }
 
+    private ConnectionSupervisor newSupervisor() {
+        return new ConnectionSupervisor(getThing().getUID().getId(), Clock.systemUTC());
+    }
+
     private void requestWake() {
-        logger.debug("Power ON requested while offline; reconnecting to wake {}", config.macAddress);
-        pendingWake = true;
-        pendingWakeDeadlineMillis = System.currentTimeMillis() + WAKE_TIMEOUT_MILLIS;
-        scheduleConnect(RECONNECT_NOW_SECONDS);
+        supervisor.requestWake();
+        scheduleConnect(generation.get(), RECONNECT_NOW_SECONDS);
+    }
+
+    /** Replaces any pending reconnect with one after the given delay, unless the session has ended. */
+    private void scheduleConnect(int gen, long delaySeconds) {
+        synchronized (scheduleLock) {
+            ScheduledExecutorService executor = connectExecutor;
+            if (executor == null || isStale(gen)) {
+                return;
+            }
+            cancel(reconnectJob);
+            try {
+                reconnectJob = executor.schedule(() -> connect(gen), delaySeconds, TimeUnit.SECONDS);
+            } catch (RejectedExecutionException e) {
+                // Disposed meanwhile, which shut the executor down.
+            }
+        }
+    }
+
+    private void submitConnect() {
+        scheduleConnect(generation.get(), 0);
     }
 
     /**
-     * Whether a user wake request is still active. A duty-cycle device is only reachable for brief windows,
-     * so a wake keeps retrying until it lands one. Auto-clears (and returns false) once the deadline passes
-     * so an off device is not retried forever.
+     * Handles an mDNS announcement for this device by bringing the next attempt forward. A sleeping device
+     * keeps announcing itself, so this does not mean it woke. It only makes a remote power-on show up sooner
+     * than the next scheduled check. It never knocks, so it cannot wake a device the user turned off.
      */
-    private boolean isWakePending() {
-        if (!pendingWake) {
-            return false;
+    private void onMdnsAnnouncement(@Nullable ServiceInfo info) {
+        if (info == null || disposed || credentialsRejected || pendingPairing != null || !matchesDevice(info)) {
+            return;
         }
-        if (System.currentTimeMillis() >= pendingWakeDeadlineMillis) {
-            logger.debug("Wake request for {} timed out; device did not respond", config.macAddress);
-            pendingWake = false;
-            return false;
+        followAddressChange(info);
+        if (appleTV.get() != null || connecting) {
+            return;
         }
-        return true;
+        ScheduledFuture<?> pending = reconnectJob;
+        if (pending != null && !pending.isDone() && pending.getDelay(TimeUnit.SECONDS) <= RECONNECT_NOW_SECONDS) {
+            return;
+        }
+        if (supervisor.onAnnouncement()) {
+            logger.debug("mDNS announcement from {}, trying now", config.deviceId);
+            scheduleConnect(generation.get(), RECONNECT_NOW_SECONDS);
+        }
     }
 
     /**
-     * Schedules the next connect attempt: fast while a wake is pending (to catch a brief reachable window),
-     * otherwise at the given normal cadence. The single entry point for every retry, so the cadence does
-     * not depend on which code path asked for it.
+     * Updates the configured host when this device announces itself from a new IPv4 address (e.g. after a
+     * DHCP change). The scan only accepts a device with this Thing's identifier, so without this a moved
+     * device would stay unreachable.
      */
-    private void scheduleConnect(long normalSeconds) {
-        cancel(reconnectJob);
-        long delay = isWakePending() ? WAKE_RETRY_SECONDS : normalSeconds;
-        reconnectJob = scheduler.schedule(this::connect, delay, TimeUnit.SECONDS);
+    private void followAddressChange(ServiceInfo info) {
+        String id = info.getPropertyString("deviceid");
+        String host = config.host;
+        Inet4Address[] addresses = info.getInet4Addresses();
+        // A host name is left alone. It is meant to keep working when the address changes.
+        if (!IPV4_LITERAL.matcher(host).matches() || id == null || !id.equalsIgnoreCase(config.deviceId)
+                || addresses.length == 0) {
+            return;
+        }
+        for (Inet4Address address : addresses) {
+            if (host.equals(address.getHostAddress())) {
+                return;
+            }
+        }
+        String newHost = addresses[0].getHostAddress();
+        logger.debug("Device {} moved from {} to {}, updating host", config.deviceId, host, newHost);
+        storeConfiguration(updated -> updated.put(CONFIG_HOST, newHost));
+    }
+
+    private boolean matchesDevice(ServiceInfo info) {
+        String id = info.getPropertyString("deviceid");
+        if (id != null && id.equalsIgnoreCase(config.deviceId)) {
+            return true;
+        }
+        String host = config.host;
+        if (!host.isBlank()) {
+            for (Inet4Address address : info.getInet4Addresses()) {
+                if (host.equals(address.getHostAddress())) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    @NonNullByDefault({})
+    private final class AnnouncementListener implements ServiceListener {
+        @Override
+        public void serviceAdded(ServiceEvent event) {
+            onMdnsAnnouncement(event.getInfo());
+        }
+
+        @Override
+        public void serviceResolved(ServiceEvent event) {
+            onMdnsAnnouncement(event.getInfo());
+        }
+
+        @Override
+        public void serviceRemoved(ServiceEvent event) {
+        }
     }
 
     private void wake(AppleTV atv) {
         try {
             atv.power().turnOn();
         } catch (RuntimeException e) {
-            logger.debug("Failed to wake {}", config.macAddress, e);
+            logger.debug("Failed to wake {}", config.deviceId, e);
         }
     }
 
     /**
-     * Lightweight wake probe: opens a Companion-only connection (which reports power without the AirPlay
-     * tunnel or RAOP), reads the power state, and closes it. Returns {@code true} when the device is still
-     * asleep or could not be reached, so the caller keeps the Thing offline instead of a full reconnect.
+     * Asks a device believed asleep whether it still is, over a Companion-only connection that is closed
+     * again right away.
      */
-    private boolean probeStillAsleep(AtvConfig device) {
+    private ConnectionSupervisor.Plan checkAsleep(AtvConfig device) throws InterruptedException {
         try {
-            AppleTV probe = await(Atv.connect(device, new ConnectOptions(runtime, null, Protocol.Companion)));
+            AppleTV check = await(Atv.connect(device, new ConnectOptions(runtime, null, Protocol.Companion)),
+                    AppleTV::close);
             try {
-                return isAsleep(probe);
+                PowerState power = awaitPower(check);
+                logger.trace("Asleep check of {} read power {}", config.deviceId, power);
+                return supervisor.onChecked(Reachability.ANSWERED, power);
             } finally {
-                probe.close();
+                check.close();
             }
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            return true;
-        } catch (ExecutionException | TimeoutException | RuntimeException e) {
-            // Logged once per sleep rather than on every 60s probe, which would otherwise repeat for as
-            // long as the device stays asleep.
-            if (!asleepReported) {
-                asleepReported = true;
-                logger.debug("Wake probe of {} did not respond; still asleep", config.macAddress);
-            } else {
-                logger.trace("Wake probe of {} did not respond; still asleep", config.macAddress);
-            }
-            return true;
+        } catch (ExecutionException | TimeoutException e) {
+            Reachability reach = Reachability.of(e);
+            logger.trace("Asleep check of {} failed ({}): {}", config.deviceId, reach, e.getMessage());
+            return supervisor.onChecked(reach, PowerState.Unknown);
         }
     }
 
-    private boolean isAsleep(AppleTV atv) {
+    /**
+     * Returns the device's power state, waiting briefly for it to push one if it is not known yet. Some tvOS
+     * builds do not answer the initial power query and only report through the status subscription.
+     */
+    private PowerState awaitPower(AppleTV atv) throws InterruptedException {
+        PowerState power = powerOf(atv);
+        if (power != PowerState.Unknown) {
+            return power;
+        }
+        CompletableFuture<PowerState> reported = new CompletableFuture<>();
         try {
-            return atv.power().powerState() == PowerState.Off;
+            atv.power().addListener((oldState, newState) -> {
+                if (newState != PowerState.Unknown) {
+                    reported.complete(newState);
+                }
+            });
         } catch (RuntimeException e) {
-            // Power unsupported or not yet known; do not treat as asleep.
-            return false;
+            return PowerState.Unknown;
+        }
+        // Covers a report that arrived before the listener was added.
+        power = powerOf(atv);
+        if (power != PowerState.Unknown) {
+            return power;
+        }
+        try {
+            return reported.get(POWER_REPORT_WAIT_SECONDS, TimeUnit.SECONDS);
+        } catch (ExecutionException | TimeoutException e) {
+            return PowerState.Unknown;
+        }
+    }
+
+    private PowerState powerOf(AppleTV atv) {
+        try {
+            return atv.power().powerState();
+        } catch (RuntimeException e) {
+            // A speaker has no power state, and a closing connection blocks the call.
+            return PowerState.Unknown;
         }
     }
 
@@ -1245,5 +1618,19 @@ public class AtvHandler extends BaseThingHandler {
 
     private <T> T await(CompletableFuture<T> future) throws InterruptedException, ExecutionException, TimeoutException {
         return future.get(OP_TIMEOUT_SECONDS, TimeUnit.SECONDS);
+    }
+
+    /**
+     * Waits for an operation that opens a resource. If the wait is abandoned, the operation keeps running,
+     * so whatever it opens later is closed on arrival instead of leaking.
+     */
+    private <T> T await(CompletableFuture<T> future, Consumer<? super T> closer)
+            throws InterruptedException, ExecutionException, TimeoutException {
+        try {
+            return await(future);
+        } catch (InterruptedException | TimeoutException e) {
+            future.thenAccept(closer);
+            throw e;
+        }
     }
 }

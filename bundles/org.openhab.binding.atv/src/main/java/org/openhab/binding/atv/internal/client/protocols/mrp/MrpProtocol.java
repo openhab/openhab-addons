@@ -33,8 +33,10 @@ import org.openhab.binding.atv.internal.client.core.Heartbeater;
 import org.openhab.binding.atv.internal.client.core.MessageDispatcher;
 import org.openhab.binding.atv.internal.client.exceptions.AuthenticationError;
 import org.openhab.binding.atv.internal.client.exceptions.ConnectionLostError;
+import org.openhab.binding.atv.internal.client.exceptions.InvalidCredentialsError;
 import org.openhab.binding.atv.internal.client.exceptions.InvalidStateError;
 import org.openhab.binding.atv.internal.client.exceptions.OperationTimeoutError;
+import org.openhab.binding.atv.internal.client.exceptions.ProtocolError;
 import org.openhab.binding.atv.internal.client.protocols.mrp.dto.ProtocolMessageOuterClass.ProtocolMessage;
 import org.openhab.binding.atv.internal.client.settings.InfoSettings;
 import org.slf4j.Logger;
@@ -217,7 +219,7 @@ public class MrpProtocol extends MessageDispatcher<ProtocolMessage.Type, Protoco
         state = ProtocolState.CONNECTING;
 
         CompletableFuture<Void> result = new CompletableFuture<>();
-        Thread.ofVirtual().name("mrp-start").start(() -> {
+        Thread.ofPlatform().daemon().name("mrp-start").start(() -> {
             try {
                 connection.connect().join();
                 state = ProtocolState.CONNECTED;
@@ -243,10 +245,11 @@ public class MrpProtocol extends MessageDispatcher<ProtocolMessage.Type, Protoco
                 if (!skipInitialMessages) {
                     try {
                         enableEncryption();
-                    } catch (AuthenticationError e) {
+                    } catch (AuthenticationError | InvalidCredentialsError e) {
                         throw e;
                     } catch (RuntimeException e) {
-                        throw new AuthenticationError("authentication failed", e);
+                        // Timeouts and dropped connections here say nothing about the pairing itself
+                        throw new ProtocolError("failed to set up encryption", e);
                     }
 
                     // This should be the first message sent after encryption has been enabled

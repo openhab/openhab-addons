@@ -142,7 +142,7 @@ public final class AirPlayV1 implements StreamProtocol {
     public void startFeedback() {
         HttpResponse feedback = RaopFutures.await(rtsp.feedback(true));
         if (feedback.code() == 200) {
-            keepAliveThread = Thread.ofVirtual().name("raop-keep-alive").start(this::sendKeepAlive);
+            keepAliveThread = Thread.ofPlatform().daemon().name("raop-keep-alive").start(this::sendKeepAlive);
         } else {
             LOGGER.debug("Keep-alive not supported, not starting task");
         }

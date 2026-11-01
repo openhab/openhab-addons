@@ -55,13 +55,13 @@ public final class MrpPairVerifyProcedure implements PairVerifyProcedure {
     @SuppressWarnings("PMD.AvoidCatchingGenericException")
     public CompletableFuture<Boolean> verifyCredentials() {
         CompletableFuture<Boolean> result = new CompletableFuture<>();
-        Thread.ofVirtual().name("mrp-pair-verify").start(() -> {
+        Thread.ofPlatform().daemon().name("mrp-pair-verify").start(() -> {
             try {
                 ProtocolMessage m2 = protocol
                         .sendAndReceive(MrpMessages.cryptoPairing(verifier.verify1(), false), false).join();
                 byte[] m3 = verifier.verify2(pairingData(m2));
-                protocol.sendAndReceive(MrpMessages.cryptoPairing(m3, false), false).join();
-                // The M4 status code is not checked
+                ProtocolMessage m4 = protocol.sendAndReceive(MrpMessages.cryptoPairing(m3, false), false).join();
+                verifier.verify3(pairingData(m4));
                 result.complete(true);
             } catch (Throwable t) {
                 Throwable cause = t;

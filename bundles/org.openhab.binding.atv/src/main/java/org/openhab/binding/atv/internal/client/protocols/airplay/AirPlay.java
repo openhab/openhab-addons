@@ -52,6 +52,7 @@ import org.openhab.binding.atv.internal.client.dto.FeatureState;
 import org.openhab.binding.atv.internal.client.dto.OperatingSystem;
 import org.openhab.binding.atv.internal.client.dto.PairingRequirement;
 import org.openhab.binding.atv.internal.client.dto.Protocol;
+import org.openhab.binding.atv.internal.client.exceptions.AuthenticationError;
 import org.openhab.binding.atv.internal.client.exceptions.HttpError;
 import org.openhab.binding.atv.internal.client.exceptions.InvalidCredentialsError;
 import org.openhab.binding.atv.internal.client.exceptions.NotSupportedError;
@@ -208,7 +209,7 @@ public final class AirPlay {
         @Override
         public CompletableFuture<Void> playUrl(String url, Map<String, Object> options) {
             return CompletableFuture.runAsync(() -> playUrlBlocking(url, options),
-                    runnable -> Thread.ofVirtual().name("airplay-play-url").start(runnable));
+                    runnable -> Thread.ofPlatform().daemon().name("airplay-play-url").start(runnable));
         }
 
         private void playUrlBlocking(String url, Map<String, Object> options) {
@@ -396,6 +397,9 @@ public final class AirPlay {
                     }
                     Throwable directCause = error.getCause();
                     Throwable cause = error instanceof CompletionException && directCause != null ? directCause : error;
+                    if (cause instanceof AuthenticationError) {
+                        throw new CompletionException(cause);
+                    }
                     if (cause instanceof HttpError httpError && httpError.statusCode() == 470) {
                         throw new CompletionException(
                                 new InvalidCredentialsError("invalid or missing credentials", cause));

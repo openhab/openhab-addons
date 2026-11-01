@@ -34,7 +34,9 @@ public class AtvBindingConstants {
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_APPLETV, THING_TYPE_SPEAKER);
 
     // Config parameters
-    public static final String CONFIG_MAC = "macAddress";
+    public static final String CONFIG_DEVICE_ID = "deviceId";
+    // Name of the device ID parameter in test builds before the binding was merged.
+    public static final String CONFIG_LEGACY_DEVICE_ID = "macAddress";
     public static final String CONFIG_HOST = "host";
     public static final String CONFIG_NAME = "name";
     public static final String CONFIG_PIN = "pin";

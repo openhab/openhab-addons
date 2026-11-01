@@ -93,11 +93,11 @@ public final class MrpPairingHandler extends PairingHandler {
             return CompletableFuture.failedFuture(new PairingError("no pin given"));
         }
         CompletableFuture<Void> result = new CompletableFuture<>();
-        Thread.ofVirtual().name("mrp-pairing-finish").start(() -> {
+        Thread.ofPlatform().daemon().name("mrp-pairing-finish").start(() -> {
             try {
                 HapCredentials credentials = pairingProcedure.finishPairing(pin).join();
                 String credentialsString = credentials.toString();
-                LOGGER.debug("Verifying credentials {}", credentialsString);
+                LOGGER.debug("Verifying new credentials");
 
                 MrpPairVerifyProcedure verifier = new MrpPairVerifyProcedure(protocol,
                         HapCredentials.parse(credentialsString));
@@ -135,7 +135,7 @@ public final class MrpPairingHandler extends PairingHandler {
     @Override
     public void pin(String pin) {
         this.pinCode = zeroFill(pin, 4);
-        LOGGER.debug("MRP PIN changed to {}", pinCode);
+        LOGGER.debug("MRP PIN set");
     }
 
     private static String zeroFill(String value, int width) {

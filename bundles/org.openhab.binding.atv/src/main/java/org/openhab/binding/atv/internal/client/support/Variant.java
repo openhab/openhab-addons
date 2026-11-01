@@ -31,6 +31,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public final class Variant {
 
+    /** A 64-bit value never needs more than 10 bytes. */
+    static final int MAX_VARIANT_BYTES = 10;
+
     private Variant() {
     }
 
@@ -60,7 +63,8 @@ public final class Variant {
      * @param data buffer to read from
      * @param offset offset of the first variant byte
      * @return decoded value and number of bytes consumed (starting at {@code offset})
-     * @throws IllegalArgumentException if the buffer ends in the middle of a variant
+     * @throws IllegalArgumentException if the buffer ends in the middle of a variant or the
+     *             variant is longer than 10 bytes
      */
     public static Result readVariant(byte[] data, int offset) {
         long result = 0;
@@ -71,6 +75,9 @@ public final class Variant {
             cnt++;
             if ((b & 0x80) == 0) {
                 return new Result(result, cnt);
+            }
+            if (cnt == MAX_VARIANT_BYTES) {
+                break;
             }
         }
         throw new IllegalArgumentException("invalid variant");
@@ -87,6 +94,7 @@ public final class Variant {
      *
      * @param buffer buffer positioned at the first variant byte
      * @return decoded value and consumed byte count, or empty if more data is needed
+     * @throws IllegalArgumentException if the variant is longer than 10 bytes
      */
     public static Optional<Result> tryReadVariant(ByteBuffer buffer) {
         long result = 0;
@@ -99,6 +107,9 @@ public final class Variant {
             if ((b & 0x80) == 0) {
                 buffer.position(pos + cnt);
                 return Optional.of(new Result(result, cnt));
+            }
+            if (cnt == MAX_VARIANT_BYTES) {
+                throw new IllegalArgumentException("variant longer than " + MAX_VARIANT_BYTES + " bytes");
             }
         }
         return Optional.empty();

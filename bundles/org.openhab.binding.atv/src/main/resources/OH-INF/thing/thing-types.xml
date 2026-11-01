@@ -49,13 +49,13 @@
 			<channel id="stream-url" typeId="stream-url"/>
 		</channels>
 
-		<representation-property>macAddress</representation-property>
+		<representation-property>deviceId</representation-property>
 
 		<config-description>
-			<parameter name="macAddress" type="text" required="true">
-				<context>mac-address</context>
-				<label>Identifier</label>
-				<description>Unique device identifier (MAC). Set automatically by discovery.</description>
+			<!-- Not marked required, so initialize() still runs for Things that only have the old macAddress value. -->
+			<parameter name="deviceId" type="text">
+				<label>Device ID</label>
+				<description>AirPlay device ID, set by discovery. It looks like a MAC address but is often not the hardware MAC.</description>
 			</parameter>
 			<parameter name="host" type="text">
 				<context>network-address</context>
@@ -96,16 +96,9 @@
 			</parameter>
 			<parameter name="healthCheckInterval" type="integer" unit="s" min="0">
 				<label>Health Check Interval</label>
-				<description>How often, in seconds, to actively query the device power state and rebuild the connection if it does
-					not answer or disagrees with the tracked state. 0 disables.</description>
+				<description>How often, in seconds, to actively query the device power state. The connection is rebuilt if the
+					device stops answering. 0 disables.</description>
 				<default>30</default>
-				<advanced>true</advanced>
-			</parameter>
-			<parameter name="staleTimeout" type="integer" unit="min" min="0">
-				<label>Stale Connection Timeout (Backup)</label>
-				<description>How often, in minutes, to rebuild the connection when no updates of any kind have arrived; a backup for
-					when the health check is off or unavailable. Keep 15 or higher. 0 disables.</description>
-				<default>0</default>
 				<advanced>true</advanced>
 			</parameter>
 		</config-description>
@@ -132,13 +125,13 @@
 			<channel id="output-device-volume" typeId="output-device-volume"/>
 		</channels>
 
-		<representation-property>macAddress</representation-property>
+		<representation-property>deviceId</representation-property>
 
 		<config-description>
-			<parameter name="macAddress" type="text" required="true">
-				<context>mac-address</context>
-				<label>Identifier</label>
-				<description>Unique device identifier (MAC). Set automatically by discovery.</description>
+			<!-- Not marked required, so initialize() still runs for Things that only have the old macAddress value. -->
+			<parameter name="deviceId" type="text">
+				<label>Device ID</label>
+				<description>AirPlay device ID, set by discovery. It looks like a MAC address but is often not the hardware MAC.</description>
 			</parameter>
 			<parameter name="host" type="text">
 				<context>network-address</context>
@@ -185,16 +178,9 @@
 			</parameter>
 			<parameter name="healthCheckInterval" type="integer" unit="s" min="0">
 				<label>Health Check Interval</label>
-				<description>How often, in seconds, to actively query the device power state and rebuild the connection if it does
-					not answer or disagrees with the tracked state. 0 disables.</description>
+				<description>How often, in seconds, to actively query the device power state. The connection is rebuilt if the
+					device stops answering. 0 disables.</description>
 				<default>30</default>
-				<advanced>true</advanced>
-			</parameter>
-			<parameter name="staleTimeout" type="integer" unit="min" min="0">
-				<label>Stale Connection Timeout (Backup)</label>
-				<description>How often, in minutes, to rebuild the connection when no updates of any kind have arrived; a backup for
-					when the health check is off or unavailable. Keep 15 or higher. 0 disables.</description>
-				<default>0</default>
 				<advanced>true</advanced>
 			</parameter>
 		</config-description>
@@ -519,7 +505,7 @@
 	<channel-type id="play-url">
 		<item-type>String</item-type>
 		<label>Play URL</label>
-		<description>Streams a video URL to the device via AirPlay.</description>
+		<description>Plays an http(s) media URL, or a file name from the openHAB sounds folder, on the device via AirPlay.</description>
 		<tags>
 			<tag>Control</tag>
 		</tags>
@@ -529,7 +515,7 @@
 	<channel-type id="stream-url">
 		<item-type>String</item-type>
 		<label>Stream URL</label>
-		<description>Streams an audio URL or file to the device via AirPlay/RAOP.</description>
+		<description>Streams an http(s) audio URL, or a file name from the openHAB sounds folder, to the device via RAOP.</description>
 		<tags>
 			<tag>Control</tag>
 		</tags>

@@ -21,6 +21,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.atv.internal.client.exceptions.InvalidResponseError;
 
 /**
  * Implementation of TLV8 used by the HomeKit pairing process.
@@ -190,14 +191,21 @@ public final class Tlv8 {
      *
      * @param data TLV8 encoded bytes
      * @return map from tag to (merged) value
+     * @throws InvalidResponseError if the data ends in the middle of an entry
      */
     public static Map<Integer, byte[]> read(byte[] data) {
         Map<Integer, byte[]> result = new LinkedHashMap<>();
         int pos = 0;
         while (pos < data.length) {
+            if (pos + 2 > data.length) {
+                throw new InvalidResponseError("truncated TLV8 entry header at offset " + pos);
+            }
             int tag = data[pos] & 0xFF;
             int length = data[pos + 1] & 0xFF;
-            byte[] value = Arrays.copyOfRange(data, pos + 2, Math.min(pos + 2 + length, data.length));
+            if (pos + 2 + length > data.length) {
+                throw new InvalidResponseError("truncated TLV8 value for tag " + tag);
+            }
+            byte[] value = Arrays.copyOfRange(data, pos + 2, pos + 2 + length);
             result.merge(tag, value, Tlv8::concat);
             pos += 2 + length;
         }

@@ -31,14 +31,13 @@ import org.openhab.binding.atv.internal.client.exceptions.NotSupportedError;
  *
  * <p>
  * The input is decoded with {@link AudioSystem} and converted to the requested
- * signed-PCM format (typically 44100 Hz / 16 bit / 2 channels) when the installed
- * providers support it.
+ * signed-PCM format (typically 44100 Hz / 16 bit / 2 channels), resampling and
+ * mixing channels as needed.
  *
  * <p>
- * Only PCM/WAV (and other formats bundled with the JDK, e.g. AIFF/AU) are guaranteed
- * to work. Additional SPI decoders (e.g. mp3spi/vorbisspi) are picked up automatically
- * by {@link AudioSystem} if present on the classpath, but none are shipped as
- * dependencies of this project.
+ * WAV, AIFF and AU are handled by the JDK. MP3 is decoded by the embedded mp3spi
+ * provider. The {@code open} methods set the thread context class loader to this
+ * bundle's loader so {@link AudioSystem} can find that provider under OSGi.
  *
  * @author Dan Cunningham - Initial contribution
  */
@@ -109,13 +108,37 @@ public final class JavaSoundAudioSource implements AudioSource {
         // Big-endian target so no byte swapping is needed in readFrames
         AudioFormat target = new AudioFormat(AudioFormat.Encoding.PCM_SIGNED, sampleRate, sampleSize * 8, channels,
                 sampleSize * channels, sampleRate, true);
-        if (input.getFormat().matches(target)) {
-            return new JavaSoundAudioSource(input);
+        AudioInputStream pcm = decodeToPcm(input);
+        if (pcm.getFormat().matches(target)) {
+            return new JavaSoundAudioSource(pcm);
         }
+        return new JavaSoundAudioSource(convert(target, pcm));
+    }
+
+    /**
+     * Decodes a compressed stream (e.g. MP3) to PCM at its own sample rate and channel count.
+     *
+     * <p>
+     * This has to be a separate step. mp3spi also claims it can decode straight to another sample rate, but it
+     * only relabels the stream without resampling, so 24 kHz audio would play at 44.1 kHz speed. Once the audio is
+     * PCM, the JDK's own converter does the resampling and channel mixing properly.
+     */
+    private static AudioInputStream decodeToPcm(AudioInputStream input) {
+        AudioFormat source = input.getFormat();
+        AudioFormat.Encoding encoding = source.getEncoding();
+        if (AudioFormat.Encoding.PCM_SIGNED.equals(encoding) || AudioFormat.Encoding.PCM_UNSIGNED.equals(encoding)) {
+            return input;
+        }
+        AudioFormat decoded = new AudioFormat(AudioFormat.Encoding.PCM_SIGNED, source.getSampleRate(), 16,
+                source.getChannels(), source.getChannels() * 2, source.getSampleRate(), true);
+        return convert(decoded, input);
+    }
+
+    private static AudioInputStream convert(AudioFormat target, AudioInputStream input) {
         if (!AudioSystem.isConversionSupported(target, input.getFormat())) {
             throw new NotSupportedError("conversion to " + target + " not supported from " + input.getFormat());
         }
-        return new JavaSoundAudioSource(AudioSystem.getAudioInputStream(target, input));
+        return AudioSystem.getAudioInputStream(target, input);
     }
 
     @Override

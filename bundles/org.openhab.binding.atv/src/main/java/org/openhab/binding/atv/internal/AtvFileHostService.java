@@ -22,7 +22,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-import javax.servlet.ServletException;
+import javax.servlet.Servlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -36,56 +36,36 @@ import org.openhab.core.net.NetworkAddressService;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.http.HttpService;
-import org.osgi.service.http.NamespaceException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.osgi.service.http.whiteboard.propertytypes.HttpWhiteboardServletName;
+import org.osgi.service.http.whiteboard.propertytypes.HttpWhiteboardServletPattern;
 
 /**
- * Hosts local files over HTTP using openHAB's {@link HttpService}, backing the client library's
- * {@link FileHostService} SPI so AirPlay {@code play_url} can serve a local file to a receiver.
+ * Hosts local files over openHAB's HTTP server, backing the client library's {@link FileHostService} SPI so
+ * AirPlay {@code play_url} can serve a local file to a receiver. Each file is reachable only under a random
+ * token, and only while the client holds it open.
  *
  * @author Dan Cunningham - Initial contribution
  */
 @NonNullByDefault
-@Component(service = FileHostService.class)
-public class AtvFileHostService implements FileHostService {
+@Component(service = { FileHostService.class, Servlet.class })
+@HttpWhiteboardServletName(AtvFileHostService.SERVLET_NAME)
+@HttpWhiteboardServletPattern(AtvFileHostService.ALIAS + "/*")
+public class AtvFileHostService extends HttpServlet implements FileHostService {
 
-    private static final String ALIAS = "/atv-media";
+    static final String SERVLET_NAME = "atv-media";
+    static final String ALIAS = "/atv-media";
+    private static final long serialVersionUID = 1L;
     private static final int DEFAULT_PORT = 8080;
 
-    private final Logger logger = LoggerFactory.getLogger(AtvFileHostService.class);
-
-    private final HttpService httpService;
-    private final NetworkAddressService networkAddressService;
-    private final BundleContext bundleContext;
+    private final transient NetworkAddressService networkAddressService;
+    private final transient BundleContext bundleContext;
     private final Map<String, Path> hostedFiles = new ConcurrentHashMap<>();
-    private boolean servletRegistered;
 
     @Activate
-    public AtvFileHostService(@Reference HttpService httpService,
-            @Reference NetworkAddressService networkAddressService, BundleContext bundleContext) {
-        this.httpService = httpService;
+    public AtvFileHostService(@Reference NetworkAddressService networkAddressService, BundleContext bundleContext) {
         this.networkAddressService = networkAddressService;
         this.bundleContext = bundleContext;
-        try {
-            httpService.registerServlet(ALIAS, new MediaServlet(hostedFiles), null,
-                    httpService.createDefaultHttpContext());
-            servletRegistered = true;
-        } catch (ServletException | NamespaceException e) {
-            // Without the servlet the play-url channel hands out URLs that answer 404, so this is worth
-            // surfacing rather than leaving the feature quietly broken.
-            logger.warn("Registering media servlet failed; playing local files will not work", e);
-        }
-    }
-
-    @Deactivate
-    public void deactivate() {
-        if (servletRegistered) {
-            httpService.unregister(ALIAS);
-        }
     }
 
     @Override
@@ -126,35 +106,23 @@ public class AtvFileHostService implements FileHostService {
     /**
      * Serves files previously published through {@link #host(Path)}.
      */
-    @NonNullByDefault
-    private static class MediaServlet extends HttpServlet {
-
-        private static final long serialVersionUID = 1L;
-
-        private final Map<String, Path> hostedFiles;
-
-        MediaServlet(Map<String, Path> hostedFiles) {
-            this.hostedFiles = hostedFiles;
+    @Override
+    protected void doGet(@Nullable HttpServletRequest req, @Nullable HttpServletResponse resp) throws IOException {
+        if (req == null || resp == null) {
+            return;
         }
-
-        @Override
-        protected void doGet(@Nullable HttpServletRequest req, @Nullable HttpServletResponse resp) throws IOException {
-            if (req == null || resp == null) {
-                return;
-            }
-            String pathInfo = req.getPathInfo();
-            String token = pathInfo == null ? "" : pathInfo.startsWith("/") ? pathInfo.substring(1) : pathInfo;
-            Path path = hostedFiles.get(token);
-            if (path == null || !Files.exists(path)) {
-                resp.sendError(HttpServletResponse.SC_NOT_FOUND);
-                return;
-            }
-            String contentType = Files.probeContentType(path);
-            resp.setContentType(contentType != null ? contentType : "application/octet-stream");
-            resp.setContentLengthLong(Files.size(path));
-            try (OutputStream out = resp.getOutputStream()) {
-                Files.copy(path, out);
-            }
+        String pathInfo = req.getPathInfo();
+        String token = pathInfo == null ? "" : pathInfo.startsWith("/") ? pathInfo.substring(1) : pathInfo;
+        Path path = hostedFiles.get(token);
+        if (path == null || !Files.exists(path)) {
+            resp.sendError(HttpServletResponse.SC_NOT_FOUND);
+            return;
+        }
+        String contentType = Files.probeContentType(path);
+        resp.setContentType(contentType != null ? contentType : "application/octet-stream");
+        resp.setContentLengthLong(Files.size(path));
+        try (OutputStream out = resp.getOutputStream()) {
+            Files.copy(path, out);
         }
     }
 }

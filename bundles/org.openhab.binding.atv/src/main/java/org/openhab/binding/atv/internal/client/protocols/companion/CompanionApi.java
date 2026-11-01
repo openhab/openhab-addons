@@ -48,7 +48,7 @@ import org.slf4j.LoggerFactory;
  *
  * <p>
  * Public operations return {@link CompletableFuture}s; multi-step sequences (connect, text
- * input, clicks, swipes) run blocking on dedicated virtual threads, while single exchanges are
+ * input, clicks, swipes) run blocking on dedicated threads, while single exchanges are
  * composed asynchronously so listener callbacks (delivered on the device loop) may safely
  * trigger further commands.
  *
@@ -75,7 +75,7 @@ public final class CompanionApi implements CompanionProtocol.Listener {
 
     private final Core core;
     private final ExecutorService blockingExecutor = Executors
-            .newThreadPerTaskExecutor(Thread.ofVirtual().name("companion-api-", 0).factory());
+            .newThreadPerTaskExecutor(Thread.ofPlatform().daemon().name("companion-api-", 0).factory());
     private final ConcurrentMap<String, CopyOnWriteArrayList<Consumer<Map<String, Object>>>> eventListeners = new ConcurrentHashMap<>();
     private final List<String> subscribedEvents = new CopyOnWriteArrayList<>();
     private final Object connectionLock = new Object();

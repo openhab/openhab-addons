@@ -16,6 +16,7 @@ import static org.openhab.binding.atv.internal.AtvBindingConstants.*;
 
 import java.net.Inet4Address;
 import java.net.Inet6Address;
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Locale;
@@ -54,6 +55,8 @@ public class AtvDiscoveryParticipant implements MDNSDiscoveryParticipant {
     private static final String TXT_MODEL = "model";
     private static final String TXT_DEVICE_ID = "deviceid";
     private static final String APPLETV_MODEL_PREFIX = "AppleTV";
+    // Devices withdraw their announcement when they sleep; keep the inbox entry across a night's sleep.
+    private static final long REMOVAL_GRACE_PERIOD_SECONDS = Duration.ofHours(24).toSeconds();
 
     /**
      * Apple computers advertise {@code _airplay._tcp} (macOS AirPlay Receiver) but are not usable
@@ -67,6 +70,11 @@ public class AtvDiscoveryParticipant implements MDNSDiscoveryParticipant {
     @Override
     public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
         return SUPPORTED_THING_TYPES_UIDS;
+    }
+
+    @Override
+    public long getRemovalGracePeriodSeconds(ServiceInfo service) {
+        return REMOVAL_GRACE_PERIOD_SECONDS;
     }
 
     @Override
@@ -97,7 +105,7 @@ public class AtvDiscoveryParticipant implements MDNSDiscoveryParticipant {
                     deviceId(service), service.getServer());
             return null;
         }
-        String mac = deviceId(service);
+        String id = deviceId(service);
         String name = service.getName();
         String model = service.getPropertyString(TXT_MODEL);
 
@@ -105,10 +113,10 @@ public class AtvDiscoveryParticipant implements MDNSDiscoveryParticipant {
             logger.trace("Ignoring Apple computer {} (model {})", name, model);
             return null;
         }
-        logger.trace("Discovered AirPlay device {} ({}) at {}", name, mac, host);
+        logger.trace("Discovered AirPlay device {} ({}) at {}", name, id, host);
 
         Map<String, Object> properties = new HashMap<>();
-        properties.put(CONFIG_MAC, mac);
+        properties.put(CONFIG_DEVICE_ID, id);
         properties.put(CONFIG_HOST, host);
         if (model != null) {
             properties.put(PROPERTY_MODEL, model);
@@ -119,7 +127,7 @@ public class AtvDiscoveryParticipant implements MDNSDiscoveryParticipant {
                 : name;
 
         return DiscoveryResultBuilder.create(uid).withThingType(thingType(service)).withProperties(properties)
-                .withRepresentationProperty(CONFIG_MAC).withLabel(label).build();
+                .withRepresentationProperty(CONFIG_DEVICE_ID).withLabel(label).build();
     }
 
     /** Apple TVs report a {@code model} starting with "AppleTV"; everything else is treated as a speaker. */

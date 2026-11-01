@@ -78,7 +78,10 @@ public final class AirPlayHapPairVerifyProcedure implements AirPlayPairVerifyPro
         return http
                 .post("/pair-verify", AIRPLAY_HEADERS, newVerifier.verify1(), false).thenCompose(response -> http
                         .post("/pair-verify", AIRPLAY_HEADERS, newVerifier.verify2(response.bodyBytes()), false))
-                .thenApply(response -> true);
+                .thenApply(response -> {
+                    newVerifier.verify3(response.bodyBytes());
+                    return true;
+                });
     }
 
     @Override

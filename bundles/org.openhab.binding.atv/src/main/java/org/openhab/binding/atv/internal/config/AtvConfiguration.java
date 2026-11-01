@@ -22,8 +22,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class AtvConfiguration {
 
-    /** Stable device identifier (MAC); the Thing's representation property. */
-    public String macAddress = "";
+    /** AirPlay device ID, which looks like a MAC address. The Thing's representation property. */
+    public String deviceId = "";
     /** IP address; populated and refreshed by discovery, or set manually. */
     public String host = "";
     /** Friendly name presented to the device while pairing. */
@@ -42,13 +42,8 @@ public class AtvConfiguration {
     /** Default volume (0-100) for audio played to this device as an openHAB audio sink. */
     public int notificationVolume = 50;
     /**
-     * Seconds between active power-state health checks; each rebuilds the connection if the device does
-     * not answer or its reported state disagrees with the tracked state. 0 disables the health check.
+     * Seconds between active power-state health checks. The connection is dropped and rebuilt if the
+     * device stops answering. 0 disables the health check.
      */
     public int healthCheckInterval = 30;
-    /**
-     * Backup: minutes of no updates of any kind after which the connection is transparently rebuilt;
-     * 0 disables it. Recommended 15 or higher.
-     */
-    public int staleTimeout = 0;
 }

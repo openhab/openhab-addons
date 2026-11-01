@@ -20,9 +20,12 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.atv.internal.client.core.FileHostService;
 import org.openhab.binding.atv.internal.handler.AtvHandler;
 import org.openhab.core.audio.AudioSink;
+import org.openhab.core.io.net.http.HttpClientFactory;
+import org.openhab.core.io.transport.mdns.MDNSClient;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
@@ -48,14 +51,19 @@ public class AtvHandlerFactory extends BaseThingHandlerFactory {
     private final FileHostService fileHostService;
     private final AtvDynamicStateDescriptionProvider stateDescriptionProvider;
     private final AtvDynamicCommandDescriptionProvider commandDescriptionProvider;
+    private final MDNSClient mdnsClient;
+    private final HttpClient httpClient;
 
     @Activate
     public AtvHandlerFactory(@Reference FileHostService fileHostService,
             @Reference AtvDynamicStateDescriptionProvider stateDescriptionProvider,
-            @Reference AtvDynamicCommandDescriptionProvider commandDescriptionProvider) {
+            @Reference AtvDynamicCommandDescriptionProvider commandDescriptionProvider,
+            @Reference MDNSClient mdnsClient, @Reference HttpClientFactory httpClientFactory) {
         this.fileHostService = fileHostService;
         this.stateDescriptionProvider = stateDescriptionProvider;
         this.commandDescriptionProvider = commandDescriptionProvider;
+        this.mdnsClient = mdnsClient;
+        this.httpClient = httpClientFactory.getCommonHttpClient();
     }
 
     @Override
@@ -69,7 +77,7 @@ public class AtvHandlerFactory extends BaseThingHandlerFactory {
             return null;
         }
         AtvHandler handler = new AtvHandler(thing, fileHostService, stateDescriptionProvider,
-                commandDescriptionProvider);
+                commandDescriptionProvider, mdnsClient, httpClient);
         AtvAudioSink sink = new AtvAudioSink(handler);
         ServiceRegistration<AudioSink> registration = bundleContext.registerService(AudioSink.class, sink, null);
         audioSinkRegistrations.put(thing.getUID().toString(), registration);

@@ -195,6 +195,7 @@ public final class Mrp {
         Runnable close = () -> {
             pushUpdater.stop();
             protocol.stop();
+            metadata.close();
         };
 
         java.util.function.Supplier<Map<String, Object>> deviceInfoSupplier = () -> {

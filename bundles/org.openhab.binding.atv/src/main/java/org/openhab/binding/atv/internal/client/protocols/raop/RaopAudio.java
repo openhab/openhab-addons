@@ -90,7 +90,7 @@ public final class RaopAudio implements Audio, CapabilitySource {
     @SuppressWarnings("PMD.AvoidCatchingGenericException")
     public CompletableFuture<Void> setVolume(double level, @Nullable OutputDevice outputDevice) {
         CompletableFuture<Void> result = new CompletableFuture<>();
-        Thread.ofVirtual().name("raop-set-volume").start(() -> {
+        Thread.ofPlatform().daemon().name("raop-set-volume").start(() -> {
             try {
                 RaopStreamClient raop = playbackManager.streamClient();
                 double dbfsVolume = RaopVolume.pctToDbfs(level);

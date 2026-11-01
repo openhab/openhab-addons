@@ -28,6 +28,7 @@ import org.openhab.binding.atv.internal.client.auth.HapPairVerify;
 import org.openhab.binding.atv.internal.client.conf.BaseService;
 import org.openhab.binding.atv.internal.client.exceptions.AtvException;
 import org.openhab.binding.atv.internal.client.exceptions.AuthenticationError;
+import org.openhab.binding.atv.internal.client.exceptions.InvalidCredentialsError;
 import org.openhab.binding.atv.internal.client.exceptions.OperationTimeoutError;
 import org.openhab.binding.atv.internal.client.exceptions.ProtocolError;
 import org.openhab.binding.atv.internal.client.support.Opack;
@@ -129,7 +130,7 @@ public final class CompanionProtocol implements CompanionConnection.FrameListene
      * Connects to the device and sets up encryption when credentials are present.
      *
      * <p>
-     * Blocking; call from a dedicated (virtual) thread.
+     * Blocking, so call it from a dedicated thread.
      *
      * @throws ProtocolError if already started
      * @throws AuthenticationError if pair-verify fails
@@ -146,10 +147,11 @@ public final class CompanionProtocol implements CompanionConnection.FrameListene
         if (credentialsString != null) {
             try {
                 setupEncryption(HapCredentials.parse(credentialsString));
-            } catch (AuthenticationError e) {
+            } catch (AuthenticationError | InvalidCredentialsError e) {
                 throw e;
             } catch (Exception e) {
-                throw new AuthenticationError("failed to set up encryption", e);
+                // Timeouts and dropped connections here say nothing about the pairing itself
+                throw new ProtocolError("failed to set up encryption", e);
             }
         }
     }
