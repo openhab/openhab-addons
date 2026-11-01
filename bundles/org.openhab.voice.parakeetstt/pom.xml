@@ -18,7 +18,7 @@
     <dependency>
       <groupId>io.github.jvoice-project</groupId>
       <artifactId>parakeet-ffm</artifactId>
-      <version>0.6.1.2</version>
+      <version>0.6.1.3</version>
     </dependency>
   </dependencies>
 
