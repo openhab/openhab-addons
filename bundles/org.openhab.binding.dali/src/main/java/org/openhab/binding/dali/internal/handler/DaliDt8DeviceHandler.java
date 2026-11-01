@@ -34,6 +34,7 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.types.Command;
+import org.openhab.core.types.RefreshType;
 import org.openhab.core.util.ColorUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,8 +65,11 @@ public class DaliDt8DeviceHandler extends DaliDeviceHandler {
                 } else {
                     throw new DaliException("unknown device type");
                 }
-                int mirek;
-                if (command instanceof DecimalType decimalCommand) {
+                int mirek = 0;
+                boolean refreshOnly = false;
+                if (command instanceof RefreshType) {
+                    refreshOnly = true;
+                } else if (command instanceof DecimalType decimalCommand) {
                     // Color temperature in DALI is represented in mirek ("reciprocal megakelvin")
                     // It is one million times the reciprocal of the color temperature (in Kelvin)
                     mirek = (int) (1E6f / (Math.min(Math.max(decimalCommand.intValue(), 1000), 20000)));
@@ -82,18 +86,20 @@ public class DaliDt8DeviceHandler extends DaliDeviceHandler {
                     return;
                 }
 
-                final byte mirekLsb = (byte) (mirek & 0xff);
-                final byte mirekMsb = (byte) ((mirek >> 8) & 0xff);
-                // Write mirek value to the DTR0+DTR1 registers
-                daliHandler.sendCommand(DaliStandardCommand.createSetDTR0Command(mirekLsb));
-                daliHandler.sendCommand(DaliStandardCommand.createSetDTR1Command(mirekMsb));
-                // Indicate that the follwing command is a DT8 (WW/CW and single-channel RGB) command
-                daliHandler.sendCommand(DaliStandardCommand.createSetDeviceTypeCommand(8));
-                // Set the color temperature to the value in DTR0+DTR1
-                daliHandler.sendCommand(DaliStandardCommand.createSetColorTemperatureCommand(address));
-                // Finish the command sequence
-                daliHandler.sendCommand(DaliStandardCommand.createSetDeviceTypeCommand(8));
-                daliHandler.sendCommand(DaliStandardCommand.createActivateCommand(address));
+                if (!refreshOnly) {
+                    final byte mirekLsb = (byte) (mirek & 0xff);
+                    final byte mirekMsb = (byte) ((mirek >> 8) & 0xff);
+                    // Write mirek value to the DTR0+DTR1 registers
+                    daliHandler.sendCommand(DaliStandardCommand.createSetDTR0Command(mirekLsb));
+                    daliHandler.sendCommand(DaliStandardCommand.createSetDTR1Command(mirekMsb));
+                    // Indicate that the follwing command is a DT8 (WW/CW and single-channel RGB) command
+                    daliHandler.sendCommand(DaliStandardCommand.createSetDeviceTypeCommand(8));
+                    // Set the color temperature to the value in DTR0+DTR1
+                    daliHandler.sendCommand(DaliStandardCommand.createSetColorTemperatureCommand(address));
+                    // Finish the command sequence
+                    daliHandler.sendCommand(DaliStandardCommand.createSetDeviceTypeCommand(8));
+                    daliHandler.sendCommand(DaliStandardCommand.createActivateCommand(address));
+                }
 
                 DaliAddress readAddress = address;
                 if (readDeviceTargetId != null) {
