@@ -113,22 +113,27 @@
 			<channel id="duration" typeId="duration"/>
 			<channel id="gradient-color-1" typeId="gradient-color">
 				<label>Gradient Color 1</label>
+				<description>Controls the color of gradient point 1.</description>
 				<autoUpdatePolicy>veto</autoUpdatePolicy>
 			</channel>
 			<channel id="gradient-color-2" typeId="gradient-color">
 				<label>Gradient Color 2</label>
+				<description>Controls the color of gradient point 2.</description>
 				<autoUpdatePolicy>veto</autoUpdatePolicy>
 			</channel>
 			<channel id="gradient-color-3" typeId="gradient-color">
 				<label>Gradient Color 3</label>
+				<description>Controls the color of gradient point 3.</description>
 				<autoUpdatePolicy>veto</autoUpdatePolicy>
 			</channel>
 			<channel id="gradient-color-4" typeId="gradient-color">
 				<label>Gradient Color 4</label>
+				<description>Controls the color of gradient point 4.</description>
 				<autoUpdatePolicy>veto</autoUpdatePolicy>
 			</channel>
 			<channel id="gradient-color-5" typeId="gradient-color">
 				<label>Gradient Color 5</label>
+				<description>Controls the color of gradient point 5.</description>
 				<autoUpdatePolicy>veto</autoUpdatePolicy>
 			</channel>
 		</channels>
