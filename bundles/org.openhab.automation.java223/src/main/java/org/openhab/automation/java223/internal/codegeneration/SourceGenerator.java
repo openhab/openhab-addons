@@ -25,6 +25,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -88,6 +89,17 @@ public class SourceGenerator {
     private final InjectedCodeGenerator injectedCodeGenerator;
 
     private static final String TPL_LOCATION = "/generated/";
+
+    /**
+     * The Java reserved keywords and literals. Such a name cannot be used as a member name in the generated source
+     * code, so it has to be sanitized.
+     */
+    private static final Set<String> JAVA_RESERVED_KEYWORDS = Set.of("abstract", "assert", "boolean", "break", "byte",
+            "case", "catch", "char", "class", "const", "continue", "default", "do", "double", "else", "enum", "extends",
+            "final", "finally", "float", "for", "goto", "if", "implements", "import", "instanceof", "int", "interface",
+            "long", "native", "new", "package", "private", "protected", "public", "return", "short", "static",
+            "strictfp", "super", "switch", "synchronized", "this", "throw", "throws", "transient", "try", "void",
+            "volatile", "while", "true", "false", "null");
 
     Configuration cfg = new Configuration(Configuration.VERSION_2_3_32);
 
@@ -533,6 +545,11 @@ public class SourceGenerator {
         context.put("items", items);
         context.put("itemImports",
                 items.stream().map(item -> item.getClass().getCanonicalName()).collect(Collectors.toSet()));
+        // the item names are used as Java member names, so they have to be sanitized
+        Map<String, String> sanitizedNames = buildSanitizedNames(items.stream().map(Item::getName).toList());
+        context.put("sanitizedName", createSanitizedNameFunction(sanitizedNames));
+        // the labels are inserted inside Java comments, so they have to be sanitized too
+        context.put("sanitizedComment", createSanitizedCommentFunction());
 
         StringWriter writer = new StringWriter();
         template.process(context, writer);
@@ -560,10 +577,12 @@ public class SourceGenerator {
         context.put("packageName", packageName);
         context.put("things", things);
 
-        @SuppressWarnings("unchecked")
-        TemplateMethodModelEx tmm = (args) -> escapeName(
-                ((List<freemarker.ext.beans.GenericObjectModel>) args).getFirst().getWrappedObject().toString());
-        context.put("escapeName", tmm);
+        // the thing UIDs are used as Java member names, so they have to be sanitized
+        Map<String, String> sanitizedNames = buildSanitizedNames(
+                things.stream().map(thing -> thing.getUID().toString()).toList());
+        context.put("sanitizedName", createSanitizedNameFunction(sanitizedNames));
+        // the labels are inserted inside Java comments, so they have to be sanitized too
+        context.put("sanitizedComment", createSanitizedCommentFunction());
 
         StringWriter writer = new StringWriter();
         template.process(context, writer);
@@ -577,8 +596,139 @@ public class SourceGenerator {
                 + minusString.substring(1).replaceAll("[^a-zA-Z0-9_]", "_");
     }
 
-    private static String escapeName(String textToEscape) {
-        return textToEscape.replace(":", "_").replace("-", "_");
+    /**
+     * Sanitizes a name so that it can safely be used as a Java member name (field or method) in the generated
+     * source code.
+     * <p>
+     * The sanitization is performed in the following order:
+     * <ul>
+     * <li>Every character which is not a letter, a digit or an underscore is replaced by an underscore. This notably
+     * covers the {@code :} and {@code -} characters found in thing UIDs.</li>
+     * <li>If the resulting name starts with a digit, an underscore is prepended, as a Java identifier cannot start
+     * with a digit.</li>
+     * <li>If the resulting name is a Java reserved keyword or literal, a trailing underscore is appended.</li>
+     * </ul>
+     * Note that this method does not guarantee the uniqueness of the returned name: two distinct names may sanitize
+     * to the same value. Use {@link #buildSanitizedNames(Collection)} to get collision-free names.
+     *
+     * @param name The name to sanitize
+     * @return A name which can be used as a Java member name
+     */
+    protected static String sanitizeNameToJava(String name) {
+        StringBuilder builder = new StringBuilder(name.length());
+        for (int i = 0; i < name.length(); i++) {
+            char c = name.charAt(i);
+            builder.append(Character.isLetterOrDigit(c) || c == '_' ? c : '_');
+        }
+        if (builder.isEmpty()) {
+            return "_";
+        }
+        if (Character.isDigit(builder.charAt(0))) {
+            builder.insert(0, '_');
+        }
+        String sanitized = builder.toString();
+        return JAVA_RESERVED_KEYWORDS.contains(sanitized) ? sanitized + "_" : sanitized;
+    }
+
+    /**
+     * Sanitizes a text so that it can safely be inserted inside a Javadoc comment).
+     * <p>
+     * The main risk is the comment terminating sequence (a star followed by a slash), which would close the comment
+     * prematurely and turn the rest of the text into invalid Java code. Such a sequence is replaced by a star
+     * followed by an escaped slash, which is still readable in the generated code but cannot terminate the comment.
+     * <p>
+     * The comment opening sequence (a slash followed by a star) is neutralized as well, as it would otherwise open a
+     * nested comment.
+     *
+     * @param text The text to sanitize
+     * @return A text which can safely be inserted inside a Java comment
+     */
+    protected static String sanitizeComment(String text) {
+        // the comment terminating sequence (star + slash) is broken by escaping the slash
+        String sanitized = text.replace("*/", "*\\/");
+        // the comment opening sequence (slash + star) is broken by escaping the star
+        sanitized = sanitized.replace("/*", "/\\*");
+        return sanitized;
+    }
+
+    /**
+     * Computes a collision-free Java member name for each of the given names.
+     * <p>
+     * Names are sanitized with {@link #sanitizeNameToJava(String)}. When two different names sanitize to the same
+     * value, a numeric suffix ({@code _2}, {@code _3}, ...) is appended to the colliding ones, so that the generated
+     * code stays valid and every name remains accessible.
+     *
+     * @param names The original names, in the order they must be processed
+     * @return A map of original name to unique Java member name
+     */
+    protected static Map<String, String> buildSanitizedNames(Collection<String> names) {
+        Map<String, String> sanitizedNames = new LinkedHashMap<>();
+        Set<String> usedNames = new HashSet<>();
+        for (String name : names) {
+            // the same name may be provided several times (for example when two registries hold the same object): in
+            // that case, the name computed during the first occurrence must be kept
+            if (sanitizedNames.containsKey(name)) {
+                continue;
+            }
+            String base = sanitizeNameToJava(name);
+            String candidate = base;
+            int counter = 2;
+            while (!usedNames.add(candidate)) {
+                candidate = base + "_" + counter++;
+            }
+            sanitizedNames.put(name, candidate);
+        }
+        return sanitizedNames;
+    }
+
+    /**
+     * Creates the template function used by the templates to retrieve the sanitized (and unique) Java member name
+     * matching an original name.
+     *
+     * @param sanitizedNames The map computed by {@link #buildSanitizedNames(Collection)}
+     * @return The template method, to be exposed to the template under the {@code sanitizedName} name
+     */
+    private static TemplateMethodModelEx createSanitizedNameFunction(Map<String, String> sanitizedNames) {
+        @SuppressWarnings("unchecked")
+        TemplateMethodModelEx tmm = (args) -> {
+            Object argument = ((List<Object>) args).getFirst();
+            String name = extractName(argument);
+            // fall back on a plain sanitization if the name is unknown, to never generate an invalid identifier
+            return sanitizedNames.getOrDefault(name, sanitizeNameToJava(name));
+        };
+        return tmm;
+    }
+
+    /**
+     * Extracts the textual value of a template argument, which can either be a plain string or an object (like a
+     * {@link ThingUID}).
+     *
+     * @param argument The template argument
+     * @return The textual value of the argument
+     */
+    private static String extractName(Object argument) {
+        if (argument instanceof freemarker.template.SimpleScalar scalar) {
+            return scalar.getAsString();
+        }
+        if (argument instanceof freemarker.ext.beans.GenericObjectModel model) {
+            Object wrapped = model.getWrappedObject();
+            return wrapped == null ? "" : wrapped.toString();
+        }
+        return String.valueOf(argument);
+    }
+
+    /**
+     * Creates the template function used by the templates to sanitize a text inserted inside a Java comment.
+     *
+     * @return The template method, to be exposed to the template under the {@code sanitizedComment} name
+     */
+    private static TemplateMethodModelEx createSanitizedCommentFunction() {
+        @SuppressWarnings("unchecked")
+        TemplateMethodModelEx tmm = (args) -> {
+            Object argument = ((List<Object>) args).getFirst();
+            return sanitizeComment(extractName(argument));
+        };
+        return tmm;
     }
 
     private static Optional<String> className(String fullName) {

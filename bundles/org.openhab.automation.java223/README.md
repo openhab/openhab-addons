@@ -218,6 +218,8 @@ As these files are no more, no less, standard Java223 library files, you can use
 Be careful though, do not use the variable names `items`, `things`, or `actions`, as they are already reserved as openHAB input values for the ItemRegistry, ThingsRegistry, and ScriptThingActions respectively.
 As a reference or example, in the Java223Script helper abstract class, the following variables are used for them:  `_items`, `_things`, `_actions`.
 
+**Note about the generated member names**: the item names and the thing UIDs are used as Java member names in the generated classes, so they are sanitized to always remain valid Java identifiers.
+
 **Tip: all your scripts, _including libraries_, can extend the `Java223Script` class.
 This way they will automatically obtain easy access to all openHAB inputs, to some shortcuts, etc.**
 

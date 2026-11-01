@@ -17,19 +17,19 @@ public class Items {
 
 <#list items as item>
 <#if item.getLabel()??>
-    /** ${item.getLabel()} */
+    /** ${sanitizedComment(item.getLabel())} */
 </#if>
     @InjectBinding(disable = true)
-    public static final String ${item.getName()} = "${item.getName()}";
+    public static final String ${sanitizedName(item.getName())} = "${item.getName()}";
 
 </#list>
 
 <#list items as item>
 <#if item.getLabel()??>
-    /** ${item.getLabel()} */
+    /** ${sanitizedComment(item.getLabel())} */
 </#if>
-    public ${item.getClass().getSimpleName()} ${item.getName()}() {
-        return (${item.getClass().getSimpleName()}) getItem(${item.getName()});
+    public ${item.getClass().getSimpleName()} ${sanitizedName(item.getName())}() {
+        return (${item.getClass().getSimpleName()}) getItem(${sanitizedName(item.getName())});
     }
 </#list>
     

@@ -14,18 +14,18 @@ public class Things {
     
 <#list things as thing>
 <#if thing.getLabel()??>
-    /** ${thing.getLabel()} */
+    /** ${sanitizedComment(thing.getLabel())} */
 </#if>
     @InjectBinding(disable = true)
-    public static final String ${escapeName(thing.getUID())} = "${thing.getUID()}";
+    public static final String ${sanitizedName(thing.getUID())} = "${thing.getUID()}";
 
 </#list>
 
 <#list things as thing>
 <#if thing.getLabel()??>
-    /** ${thing.getLabel()} */
+    /** ${sanitizedComment(thing.getLabel())} */
 </#if>
-    public Thing ${escapeName(thing.getUID())}() {
+    public Thing ${sanitizedName(thing.getUID())}() {
         return getThing("${thing.getUID()}");
     }
 </#list>
