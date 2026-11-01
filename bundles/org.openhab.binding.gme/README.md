@@ -14,7 +14,7 @@ The binding supports the following Thing types:
 
 | Thing Type UID | Type   | Description                                                  |
 |----------------|--------|--------------------------------------------------------------|
-| `account`          | Bridge | Connection to a GME API account and common API configuration |
+| `account`      | Bridge | Connection to a GME API account and common API configuration |
 | `pun`          | Thing  | PUN and zonal electricity market prices                      |
 
 The `pun` Thing must be associated with a `gme:account` Bridge.
