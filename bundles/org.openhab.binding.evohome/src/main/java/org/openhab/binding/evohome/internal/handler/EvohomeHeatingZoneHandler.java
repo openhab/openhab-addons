@@ -58,6 +58,7 @@ import org.slf4j.LoggerFactory;
  * @author Kovacs Istvan - Unavailable measurements and explicit refresh
  * @author Kovacs Istvan - Schedule and temporary override controls
  * @author Kovacs Istvan - Weekly program and next scheduled target
+ * @author Kovacs Istvan - Serialized set point mode selection
  */
 @NonNullByDefault
 public class EvohomeHeatingZoneHandler extends BaseEvohomeHandler {
@@ -88,7 +89,7 @@ public class EvohomeHeatingZoneHandler extends BaseEvohomeHandler {
         super.initialize();
         int duration = getEvohomeThingConfig().temporaryOverrideDuration;
         if (duration < 0 || duration > 1440) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                     "Temporary override duration must be between 0 and 1440 minutes");
         }
     }
@@ -242,18 +243,20 @@ public class EvohomeHeatingZoneHandler extends BaseEvohomeHandler {
             String mode = command.toString();
             if ("FollowSchedule".equals(mode)) {
                 cancelSetPointOverride();
+            } else if ("PermanentOverride".equals(mode) || "TemporaryOverride".equals(mode)) {
+                executeZoneCommand(() -> {
+                    SetPointContext context = getSetPointContext();
+                    if (context == null) {
+                        logger.debug("Thing {}: cannot change override mode without a known target temperature",
+                                getThing().getUID());
+                    } else if ("PermanentOverride".equals(mode)) {
+                        setPermanentSetPoint(context.temperature());
+                    } else {
+                        setTemporarySetPoint(context.temperature());
+                    }
+                });
             } else {
-                SetPointContext context = getSetPointContext();
-                if (context == null) {
-                    logger.debug("Thing {}: cannot change override mode without a known target temperature",
-                            getThing().getUID());
-                } else if ("PermanentOverride".equals(mode)) {
-                    setPermanentSetPoint(context.temperature());
-                } else if ("TemporaryOverride".equals(mode)) {
-                    setTemporarySetPoint(context.temperature());
-                } else {
-                    logger.debug("Thing {}: unsupported setpoint mode {}", getThing().getUID(), mode);
-                }
+                logger.debug("Thing {}: unsupported setpoint mode {}", getThing().getUID(), mode);
             }
         } else if (EvohomeBindingConstants.ZONE_SET_POINT_CHANNEL.equals(channelId)
                 || EvohomeBindingConstants.ZONE_TEMPORARY_SET_POINT_CHANNEL.equals(channelId)) {
@@ -268,19 +271,32 @@ public class EvohomeHeatingZoneHandler extends BaseEvohomeHandler {
             } else if (temperature == CANCEL_SET_POINT_OVERRIDE) {
                 cancelSetPointOverride();
             } else {
-                SetPointContext context = getSetPointContext();
-                if (context != null && "TemporaryOverride".equals(context.mode())) {
-                    Instant until = context.until();
-                    if (until != null && until.isAfter(Instant.now())) {
-                        setTemporarySetPoint(temperature, until);
+                executeZoneCommand(() -> {
+                    SetPointContext context = getSetPointContext();
+                    if (context != null && "TemporaryOverride".equals(context.mode())) {
+                        Instant until = context.until();
+                        if (until != null && until.isAfter(Instant.now())) {
+                            setTemporarySetPoint(temperature, until);
+                        } else {
+                            // An expired or unparseable temporary override must never become permanent implicitly.
+                            setTemporarySetPoint(temperature);
+                        }
                     } else {
-                        // An expired or unparseable temporary override must never become permanent implicitly.
-                        setTemporarySetPoint(temperature);
+                        setPermanentSetPoint(temperature);
                     }
-                } else {
-                    setPermanentSetPoint(temperature);
-                }
+                });
             }
+        }
+    }
+
+    private void executeZoneCommand(Runnable command) {
+        EvohomeAccountBridgeHandler bridge = getEvohomeBridge();
+        if (bridge != null && !disposed) {
+            bridge.executeZoneCommand(() -> {
+                if (!disposed && bridge.equals(getEvohomeBridge())) {
+                    command.run();
+                }
+            });
         }
     }
 

@@ -17,6 +17,7 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import java.time.Instant;
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.Objects;
 
@@ -142,8 +143,8 @@ class EvohomeSystemActionsTest {
     void staticActionRejectsWrongThingActions() {
         ThingActions wrongActions = mock(ThingActions.class);
         assertThrows(IllegalArgumentException.class, () -> EvohomeSystemActions.setSystemMode(wrongActions, "Auto"));
-        assertThrows(IllegalArgumentException.class,
-                () -> EvohomeSystemActions.setTemporarySystemMode(wrongActions, "Away", ZonedDateTime.now()));
+        assertThrows(IllegalArgumentException.class, () -> EvohomeSystemActions.setTemporarySystemMode(wrongActions,
+                "Away", ZonedDateTime.now(ZoneOffset.UTC)));
         assertThrows(IllegalArgumentException.class,
                 () -> EvohomeSystemActions.setTemporarySystemModeFor(wrongActions, "Away", 90));
     }

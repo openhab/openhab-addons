@@ -38,12 +38,12 @@ Thing configuration is optional, it is easier to use discovery which will automa
 
 ### Account
 
-| Name            | Required | Description                                            |
-|-----------------|----------|--------------------------------------------------------|
-| username        | yes      | The username of your TCC account                       |
-| password        | yes      | The password of your TCC account                       |
-| refreshInterval | no       | The amount of time in seconds between updates (15-3000, default 15) |
-| scheduleRefreshInterval | no | Cache interval for linked zone schedules, in minutes (1-1440, default 60). Separate from status polling. |
+| Name                    | Required   | Description                                                                                              |
+| ----------------------- | ---------- | -------------------------------------------------------------------------------------------------------- |
+| username                | yes        | The username of your TCC account                                                                         |
+| password                | yes        | The password of your TCC account                                                                         |
+| refreshInterval         | no         | The amount of time in seconds between updates (15-3000, default 15)                                      |
+| scheduleRefreshInterval | no         | Cache interval for linked zone schedules, in minutes (1-1440, default 60). Separate from status polling. |
 
 The interval is measured from the completion of the previous request.
 Polling retrieves the latest values held by TCC; it does not force the physical sensors to take a new measurement.
@@ -55,16 +55,16 @@ For schedule channels, `REFRESH` queues a fresh program read for that zone.
 
 ### Display &amp; Zone
 
-| Name | Required | Description                                                                            |
-|------|----------|----------------------------------------------------------------------------------------|
-| id   | yes      | The id which can be found by auto-discovery |
-| name | no       | A friendly name for use in the UI                                                      |
+| Name   | Required   | Description                                                                              |
+| ------ | ---------- | ---------------------------------------------------------------------------------------- |
+| id     | yes        | The id which can be found by auto-discovery                                              |
+| name   | no         | A friendly name for use in the UI                                                        |
 
 ### Zone
 
-| Name                      | Required | Description |
-|---------------------------|----------|-------------|
-| temporaryOverrideDuration | no       | Duration for temporary commands, in minutes (0-1440, default 120). 0 ends the override at the next switch point in the zone's weekly program. A positive value sets a fixed duration. |
+| Name                        | Required   | Description                                                                                                                                                                           |
+| --------------------------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| temporaryOverrideDuration   | no         | Duration for temporary commands, in minutes (0-1440, default 120). 0 ends the override at the next switch point in the zone's weekly program. A positive value sets a fixed duration. |
 
 The duration applies to `TemporarySetPoint` commands and to selecting `TemporaryOverride` on `SetPointStatus`.
 It does not change the expiry of an already active temporary override when its temperature is adjusted through `SetPoint`.
@@ -74,9 +74,9 @@ For an exact expiry or a duration chosen per command, use the rule actions below
 
 ### Account
 
-| Channel Type ID       | Item Type | Description |
-|-----------------------|-----------|-------------|
-| lastSuccessfulUpdate  | DateTime  | Time of the last successful retrieval of the complete installation status from TCC. This is not the sensor measurement time. |
+| Channel ID              | Item Type   | Description                                                                                                                  |
+| ----------------------- | ----------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| lastSuccessfulUpdate    | DateTime    | Time of the last successful retrieval of the complete installation status from TCC. This is not the sensor measurement time. |
 
 Failed requests leave `lastSuccessfulUpdate` and the last known zone values unchanged.
 Check the account status and this timestamp when evaluating whether retained values are fresh.
@@ -85,33 +85,36 @@ Managed account Things receive the additional channel through openHAB's Thing up
 
 ### Display
 
-| Channel Type ID | Item Type | Description                                                                                                        |
-|-----------------|-----------|--------------------------------------------------------------------------------------------------------------------|
-| SystemMode      | String    | Gets the system mode. Commands set a permanent mode: Auto, AutoWithEco, Away, DayOff, HeatingOff or Custom, according to the controller's supported modes. |
-| SystemModeUntil | DateTime  | Read only. Expiry reported by TCC for a temporary system mode, or UNDEF when the mode is permanent or the expiry is unknown. |
-| SystemModePermanent | Switch | Read only. ON when TCC reports a permanent mode, OFF for a temporary mode, or UNDEF when unknown. |
-| Reset           | Switch    | Command only. Send ON to select Auto and cancel every heating zone and hot water override belonging to this controller. OFF has no effect. |
+| Channel ID          | Item Type   | Description                                                                                                                                                |
+| ------------------- | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| SystemMode          | String      | Gets the system mode. Commands set a permanent mode: Auto, AutoWithEco, Away, DayOff, HeatingOff or Custom, according to the controller's supported modes. |
+| SystemModeUntil     | DateTime    | Read only. Expiry reported by TCC for a temporary system mode, or UNDEF when the mode is permanent or the expiry is unknown.                               |
+| SystemModePermanent | Switch      | Read only. ON when TCC reports a permanent mode, OFF for a temporary mode, or UNDEF when unknown.                                                          |
+| Reset               | Switch      | Command only. Send ON to select Auto and cancel every heating zone and hot water override belonging to this controller. OFF has no effect.                 |
 
 Use display rule actions to set a temporary system mode with a precise expiry or a duration.
-Only modes advertised by the controller as supporting temporary operation are accepted.
+Modes explicitly advertised as not supporting temporary operation are rejected.
+When capability information is absent, the binding permits temporary AutoWithEco, Away, Custom and DayOff commands; TCC must still accept the request.
 The read-only channels describe the status returned by TCC, rather than the last requested state.
 Selecting `Auto` changes the controller's system mode while preserving individual zone overrides.
 Use `Reset` to resume all normal schedules, including zones with permanent overrides.
 Reset affects only the selected controller, even when the account contains multiple controllers.
+On controllers without a native reset command, the reset uses separate requests for the controller, its heating zones and hot water.
+A later failure does not undo earlier successful requests, so a failed reset can leave the controller only partially reset.
 
 ### Zone
 
-| Channel Type ID | Item Type          | Description                                                                                                                            |
-|-----------------|--------------------|----------------------------------------------------------------------------------------------------------------------------------------|
-| Temperature     | Number:Temperature | Allows for viewing the current actual temperature of the zone.                                                                         |
-| SetPointStatus  | String             | Gets or selects FollowSchedule, PermanentOverride or TemporaryOverride. The override modes use the current target temperature. TemporaryOverride uses the configured duration. |
-| SetPoint        | Number:Temperature | Gets or sets the target temperature. If a temporary override is active, its expiry is preserved. Otherwise a nonzero command creates a permanent override. Sending 0 cancels the override. |
-| TemporarySetPoint | Number:Temperature | Shows the current target temperature. Commands create a temporary override using the configured duration. Read the resulting mode and expiry from SetPointStatus and SetPointUntil. |
-| SetPointUntil   | DateTime           | Expiry of the active temporary override, or UNDEF when no temporary override is active. |
-| WeeklySchedule  | String             | Read only. Complete weekly heating program as canonical JSON, with days ordered Monday to Sunday and switch points sorted by local time. Temperatures are in Celsius. |
-| NextSwitchpoint | DateTime           | Read only. Next switch point in the normal weekly heating program, calculated in the location's time zone. |
-| NextScheduledTemperature | Number:Temperature | Read only. Target temperature at NextSwitchpoint in the normal weekly program. |
-| ScheduleLastUpdated | DateTime       | Read only. Time of the last successful retrieval of this zone's weekly program from TCC. |
+| Channel ID               | Item Type            | Description                                                                                                                                                                                |
+| ------------------------ | -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Temperature              | Number:Temperature   | Allows for viewing the current actual temperature of the zone.                                                                                                                             |
+| SetPointStatus           | String               | Gets or selects FollowSchedule, PermanentOverride or TemporaryOverride. The override modes use the current target temperature. TemporaryOverride uses the configured duration.             |
+| SetPoint                 | Number:Temperature   | Gets or sets the target temperature. If a temporary override is active, its expiry is preserved. Otherwise a nonzero command creates a permanent override. Sending 0 cancels the override. |
+| TemporarySetPoint        | Number:Temperature   | Shows the current target temperature. Commands create a temporary override using the configured duration. Read the resulting mode and expiry from SetPointStatus and SetPointUntil.        |
+| SetPointUntil            | DateTime             | Expiry of the active temporary override, or UNDEF when no temporary override is active.                                                                                                    |
+| WeeklySchedule           | String               | Read only. Complete weekly heating program as canonical JSON, with days ordered Monday to Sunday and switch points sorted by local time. Temperatures are in Celsius.                      |
+| NextSwitchpoint          | DateTime             | Read only. Next switch point in the normal weekly heating program, calculated in the location's time zone.                                                                                 |
+| NextScheduledTemperature | Number:Temperature   | Read only. Target temperature at NextSwitchpoint in the normal weekly program.                                                                                                             |
+| ScheduleLastUpdated      | DateTime             | Read only. Time of the last successful retrieval of this zone's weekly program from TCC.                                                                                                   |
 
 Commands with temperature units are converted to Celsius.
 The binding validates known temperature limits, supported override modes and duration limits reported by the zone.
@@ -191,13 +194,13 @@ Confirm the resulting mode, target temperature and expiry through the appropriat
 
 Temperature arguments are numeric values in degrees Celsius.
 
-| Action | Parameters | Effect |
-|--------|------------|--------|
-| setPermanentSetPoint | Double temperature | Sets a permanent override, including when a temporary override is active. |
-| setTemporarySetPoint | Double temperature, ZonedDateTime until | Sets a temporary override with a precise expiry. The date must include a time zone or UTC offset and be in the future. |
-| setTemporarySetPointFor | Double temperature, Integer minutes | Sets a temporary override for 1-1440 minutes, subject to the zone's supported duration. |
-| setTemporarySetPointUntilNextSwitchpoint | Double temperature | Sets a temporary override until the next switch point in the zone's weekly program, regardless of the configured duration. |
-| cancelSetPointOverride | none | Cancels this zone's override and resumes its schedule under the current system mode. |
+| Action                                   | Parameters                              | Effect                                                                                                                     |
+| ---------------------------------------- | --------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| setPermanentSetPoint                     | Double temperature                      | Sets a permanent override, including when a temporary override is active.                                                  |
+| setTemporarySetPoint                     | Double temperature, ZonedDateTime until | Sets a temporary override with a precise expiry. The date must include a time zone or UTC offset and be in the future.     |
+| setTemporarySetPointFor                  | Double temperature, Integer minutes     | Sets a temporary override for 1-1440 minutes, subject to the zone's supported duration.                                    |
+| setTemporarySetPointUntilNextSwitchpoint | Double temperature                      | Sets a temporary override until the next switch point in the zone's weekly program, regardless of the configured duration. |
+| cancelSetPointOverride                   | none                                    | Cancels this zone's override and resumes its schedule under the current system mode.                                       |
 
 For example, a Rules DSL rule can choose a temperature and expiry together:
 
@@ -226,11 +229,11 @@ zone.cancelSetPointOverride()
 
 ### Display
 
-| Action | Parameters | Effect |
-|--------|------------|--------|
-| setSystemMode | String mode | Sets a permanent controller mode. Auto preserves individual zone overrides; AutoWithReset performs a full controller reset to schedule. |
-| setTemporarySystemMode | String mode, ZonedDateTime until | Sets a temporary controller mode with a precise expiry. The date must include a time zone or UTC offset and be in the future. |
-| setTemporarySystemModeFor | String mode, Integer minutes | Sets a temporary controller mode for a positive duration in minutes, subject to the controller's supported modes and limits. |
+| Action                    | Parameters                       | Effect                                                                                                                                  |
+| ------------------------- | -------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| setSystemMode             | String mode                      | Sets a permanent controller mode. Auto preserves individual zone overrides; AutoWithReset performs a full controller reset to schedule. |
+| setTemporarySystemMode    | String mode, ZonedDateTime until | Sets a temporary controller mode with a precise expiry. The date must include a time zone or UTC offset and be in the future.           |
+| setTemporarySystemModeFor | String mode, Integer minutes     | Sets a temporary controller mode for a positive duration in minutes, subject to the controller's supported modes and limits.            |
 
 Temporary modes and permitted durations depend on the controller's advertised capabilities.
 A mode that supports permanent operation may not support temporary operation.

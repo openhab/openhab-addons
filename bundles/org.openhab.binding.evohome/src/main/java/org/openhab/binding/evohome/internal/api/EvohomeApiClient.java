@@ -27,6 +27,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeoutException;
+import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -61,6 +62,7 @@ import org.openhab.binding.evohome.internal.configuration.EvohomeAccountConfigur
  * @author Kovacs Istvan - Capability-aware overrides and controller reset
  * @author Kovacs Istvan - Temporary controller modes
  * @author Kovacs Istvan - Validated weekly program cache
+ * @author Kovacs Istvan - Incremental reset acknowledgement
  *
  */
 @NonNullByDefault
@@ -326,6 +328,15 @@ public class EvohomeApiClient {
     }
 
     public synchronized void resetTcs(String tcsId) throws TimeoutException, EvohomeApiClientException {
+        resetTcs(tcsId, zoneId -> {
+        });
+    }
+
+    /**
+     * Reports each accepted zone reset, even if a later zone or hot-water request fails.
+     */
+    public synchronized void resetTcs(String tcsId, Consumer<String> onZoneReset)
+            throws TimeoutException, EvohomeApiClientException {
         checkOpen();
         TemperatureControlSystem system = findTemperatureControlSystem(tcsId);
         if (system == null) {
@@ -334,6 +345,7 @@ public class EvohomeApiClient {
         if (system.getAllowedSystemModes().stream().anyMatch(mode -> "AutoWithReset".equals(mode.getSystemMode())
                 && !Boolean.FALSE.equals(mode.getCanBePermanent()))) {
             setTcsMode(tcsId, "AutoWithReset");
+            system.getZones().forEach(zone -> onZoneReset.accept(zone.getZoneId()));
             return;
         }
         for (Zone zone : system.getZones()) {
@@ -342,6 +354,7 @@ public class EvohomeApiClient {
         setTcsMode(tcsId, "Auto");
         for (Zone zone : system.getZones()) {
             cancelHeatingZoneOverride(zone.getZoneId());
+            onZoneReset.accept(zone.getZoneId());
         }
         DomesticHotWater dhw = system.getDhw();
         if (dhw != null && dhw.getDhwId() != null && !dhw.getDhwId().isBlank()) {

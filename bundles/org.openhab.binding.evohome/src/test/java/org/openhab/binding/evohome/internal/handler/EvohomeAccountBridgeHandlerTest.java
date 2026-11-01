@@ -38,6 +38,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.ArgumentCaptor;
 import org.openhab.binding.evohome.internal.api.EvohomeApiClient.CachedSchedule;
@@ -57,6 +58,7 @@ import org.openhab.core.thing.internal.BridgeImpl;
  * Tests retry, publication and disposal through scheduled work.
  *
  * @author Kovacs Istvan - Initial contribution
+ * @author Kovacs Istvan - Listener initialization and recovery regression tests
  */
 @NonNullByDefault
 class EvohomeAccountBridgeHandlerTest {
@@ -112,6 +114,71 @@ class EvohomeAccountBridgeHandlerTest {
             case "getHeaders" -> new HttpFields();
             default -> RETURNS_DEFAULTS.answer(invocation);
         });
+    }
+
+    @Test
+    void listenerRegisteredBeforeInitializationReceivesOnlineAndRecovery() throws Exception {
+        AccountStatusListener listener = mock(AccountStatusListener.class);
+        handler.addAccountStatusListener(listener);
+        clearInvocations(listener);
+        when(request.send()).thenReturn(response(200, TOKEN), response(200, ACCOUNT), response(200, LOCATIONS),
+                response(200, STATUS)).thenThrow(new TimeoutException()).thenReturn(response(200, STATUS));
+        try {
+            handler.initialize();
+            tasks.getFirst().run();
+            tasks.get(1).run();
+            tasks.get(2).run();
+
+            var order = inOrder(listener);
+            order.verify(listener).accountStatusChanged(ThingStatus.UNKNOWN);
+            order.verify(listener).accountStatusChanged(ThingStatus.ONLINE);
+            order.verify(listener).accountStatusChanged(ThingStatus.OFFLINE);
+            order.verify(listener).accountStatusChanged(ThingStatus.ONLINE);
+            order.verifyNoMoreInteractions();
+        } finally {
+            handler.dispose();
+        }
+    }
+
+    @Test
+    void reinitializationPreservesListenerWithoutDuplicateNotifications() throws Exception {
+        AccountStatusListener listener = mock(AccountStatusListener.class);
+        handler.addAccountStatusListener(listener);
+        clearInvocations(listener);
+        try {
+            for (int cycle = 0; cycle < 2; cycle++) {
+                when(request.send()).thenReturn(response(200, TOKEN), response(200, ACCOUNT), response(200, LOCATIONS),
+                        response(200, STATUS));
+                handler.initialize();
+                tasks.getLast().run();
+            }
+            verify(listener, times(2)).accountStatusChanged(ThingStatus.UNKNOWN);
+            verify(listener, times(2)).accountStatusChanged(ThingStatus.ONLINE);
+            verifyNoMoreInteractions(listener);
+        } finally {
+            handler.dispose();
+        }
+    }
+
+    @Test
+    void removedAndDisposedListenersAreNotRetained() throws Exception {
+        AccountStatusListener removed = mock(AccountStatusListener.class);
+        AccountStatusListener disposed = mock(AccountStatusListener.class);
+        handler.addAccountStatusListener(removed);
+        handler.removeAccountStatusListener(removed);
+        handler.addAccountStatusListener(disposed);
+        handler.dispose();
+        clearInvocations(removed, disposed);
+        when(request.send()).thenReturn(response(200, TOKEN), response(200, ACCOUNT), response(200, LOCATIONS),
+                response(200, STATUS));
+        try {
+            handler.initialize();
+            tasks.getLast().run();
+            assertEquals(ThingStatus.ONLINE, bridge.getStatus());
+            verifyNoInteractions(removed, disposed);
+        } finally {
+            handler.dispose();
+        }
     }
 
     @Test
@@ -679,5 +746,50 @@ class EvohomeAccountBridgeHandlerTest {
         tasks.getFirst().run();
         verify(request, never()).send();
         handler.dispose();
+    }
+
+    @ParameterizedTest
+    @CsvSource({ "true, true", "true, false", "false, true", "false, false" })
+    @Timeout(30)
+    void obsoleteResetCannotChangeZoneContexts(boolean nativeReset, boolean reinitialize) throws Exception {
+        EvohomeHeatingZoneHandler selectedZone = attachedZone("zone");
+        CountDownLatch entered = new CountDownLatch(1);
+        CountDownLatch release = new CountDownLatch(1);
+        String installation = nativeReset ? CONTROLLER_INSTALLATION
+                : CONTROLLER_INSTALLATION.replace("AutoWithReset", "Custom");
+        when(request.send()).thenReturn(response(200, TOKEN), response(200, ACCOUNT), response(200, installation),
+                response(200, STATUS)).thenAnswer(invocation -> {
+                    entered.countDown();
+                    assertTrue(release.await(10, TimeUnit.SECONDS));
+                    return response(201, "{}");
+                });
+        handler.initialize();
+        tasks.getFirst().run();
+        var executor = Executors.newSingleThreadExecutor(runnable -> {
+            Thread thread = new Thread(runnable, "evohome-obsolete-reset-test");
+            thread.setDaemon(true);
+            return thread;
+        });
+        try {
+            var work = executor.submit(() -> handler.resetSystem("controller"));
+            assertTrue(entered.await(10, TimeUnit.SECONDS));
+            if (reinitialize) {
+                handler.initialize();
+            } else {
+                handler.dispose();
+            }
+            clearInvocations(callback, selectedZone);
+            int scheduledTasks = tasks.size();
+            release.countDown();
+            assertFalse(work.get(10, TimeUnit.SECONDS));
+            verify(selectedZone, never()).resetCommandContext();
+            verifyNoInteractions(callback);
+            assertEquals(scheduledTasks, tasks.size());
+        } finally {
+            release.countDown();
+            executor.shutdownNow();
+            assertTrue(executor.awaitTermination(10, TimeUnit.SECONDS));
+            handler.dispose();
+        }
     }
 }

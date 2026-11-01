@@ -70,6 +70,7 @@ import org.slf4j.LoggerFactory;
  * @author Kovacs Istvan - Retry scheduling and reliable state publication
  * @author Kovacs Istvan - Validated override commands and system reset
  * @author Kovacs Istvan - Cached weekly schedule polling
+ * @author Kovacs Istvan - Discovery lifecycle and partial reset recovery
  *
  */
 @NonNullByDefault
@@ -100,7 +101,7 @@ public class EvohomeAccountBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public synchronized void initialize() {
-        dispose();
+        disposeConnection();
         configuration = getConfigAs(EvohomeAccountConfiguration.class);
 
         if (checkConfig(configuration)) {
@@ -114,10 +115,14 @@ public class EvohomeAccountBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public synchronized void dispose() {
+        disposeConnection();
+        listeners.clear();
+    }
+
+    private void disposeConnection() {
         refreshGeneration++;
         disposeRefreshTask();
         disposeApiClient();
-        listeners.clear();
         pendingScheduleRefresh.clear();
     }
 
@@ -185,19 +190,18 @@ public class EvohomeAccountBridgeHandler extends BaseBridgeHandler {
     public boolean resetSystem(String tcsId) {
         EvohomeApiClient client = apiClient;
         return client != null
-                && tryToCall(client, "reset system to schedule", tcsId, () -> client.resetTcs(tcsId), () -> {
-                    TemperatureControlSystem system = client.findTemperatureControlSystem(tcsId);
-                    if (system != null) {
-                        Set<String> zoneIds = new HashSet<>();
-                        system.getZones().forEach(zone -> zoneIds.add(zone.getZoneId()));
-                        for (Thing thing : getThing().getThings()) {
-                            if (thing.getHandler() instanceof EvohomeHeatingZoneHandler zoneHandler
-                                    && zoneIds.contains(zoneHandler.getId())) {
-                                zoneHandler.resetCommandContext();
+                && tryToCall(client, "reset system to schedule", tcsId, () -> client.resetTcs(tcsId, zoneId -> {
+                    synchronized (this) {
+                        if (client.equals(apiClient)) {
+                            for (Thing thing : getThing().getThings()) {
+                                if (thing.getHandler() instanceof EvohomeHeatingZoneHandler zoneHandler
+                                        && zoneId.equals(zoneHandler.getId())) {
+                                    zoneHandler.resetCommandContext();
+                                }
                             }
                         }
                     }
-                });
+                }));
     }
 
     public boolean setPermanentSetPoint(String zoneId, double doubleValue) {
@@ -260,6 +264,18 @@ public class EvohomeAccountBridgeHandler extends BaseBridgeHandler {
                     () -> localApiCLient.cancelHeatingZoneOverride(zoneId), onAccepted);
         }
         return false;
+    }
+
+    void executeZoneCommand(Runnable command) {
+        EvohomeApiClient client = apiClient;
+        if (client != null) {
+            synchronized (client) {
+                if (client.equals(apiClient)) {
+                    // Select the mode and expiry after earlier accepted commands have updated their context.
+                    command.run();
+                }
+            }
+        }
     }
 
     public void addAccountStatusListener(AccountStatusListener listener) {

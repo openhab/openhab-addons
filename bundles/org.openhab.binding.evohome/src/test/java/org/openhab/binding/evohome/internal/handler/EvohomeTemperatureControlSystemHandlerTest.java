@@ -222,7 +222,7 @@ class EvohomeTemperatureControlSystemHandlerTest {
     void readOnlyModeStatusChannelsIgnoreCommands() {
         command("SystemModePermanent", OnOffType.ON);
         command("SystemModePermanent", OnOffType.OFF);
-        command("SystemModeUntil", new DateTimeType(ZonedDateTime.now()));
+        command("SystemModeUntil", new DateTimeType(ZonedDateTime.now(ZoneOffset.UTC)));
         verifyNoInteractions(bridge);
         verify(callback, never()).stateUpdated(any(), any());
     }

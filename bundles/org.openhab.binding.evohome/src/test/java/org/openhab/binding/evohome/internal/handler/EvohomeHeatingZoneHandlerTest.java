@@ -537,6 +537,10 @@ class EvohomeHeatingZoneHandlerTest {
             };
             handler.setCallback(callback);
             handler.initialize();
+            doAnswer(invocation -> {
+                invocation.getArgument(0, Runnable.class).run();
+                return null;
+            }).when(bridge).executeZoneCommand(any(Runnable.class));
             when(bridge.setPermanentSetPoint(eq("zone"), anyDouble())).thenReturn(true);
             when(bridge.setTemporarySetPoint(eq("zone"), anyDouble(), any())).thenReturn(true);
             when(bridge.setTemporarySetPointUntilNextSwitchpoint(eq("zone"), anyDouble())).thenReturn(nextSwitchpoint);
