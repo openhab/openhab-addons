@@ -29,6 +29,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -140,6 +141,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
     private volatile double watchdog = now();
     private volatile double lastReport = 0;
     protected volatile int scheduledUpdates = 0;
+    private final AtomicBoolean statusRefreshRunning = new AtomicBoolean();
     private volatile boolean throttleRetryPending = false;
     private int skipCount = UPDATE_SKIP_COUNT;
     private int skipUpdate = 0;
@@ -679,6 +681,19 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
      * Update device status and channels
      */
     protected void refreshStatus() {
+        // A wakeup runs this outside the status job. Return before anything else, so that the skipped cycle doesn't
+        // consume a pending update
+        if (!statusRefreshRunning.compareAndSet(false, true)) {
+            return;
+        }
+        try {
+            refreshStatusSerialized();
+        } finally {
+            statusRefreshRunning.set(false);
+        }
+    }
+
+    private void refreshStatusSerialized() {
         if (stopping) {
             // cancel(true) only interrupts the job, a cycle which is already running has to bail out itself
             return;
@@ -1502,6 +1517,16 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
             return true;
         }
         return false;
+    }
+
+    /**
+     * A sleeping device goes back to sleep shortly after announcing itself, so the update runs right away rather than
+     * with the next cycle of the status job.
+     */
+    @Override
+    public void onDeviceWakeup() {
+        requestUpdates(1, true);
+        scheduler.execute(this::refreshStatus);
     }
 
     /**

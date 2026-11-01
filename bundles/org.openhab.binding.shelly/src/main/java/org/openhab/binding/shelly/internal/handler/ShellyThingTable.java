@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.shelly.internal.handler;
 
+import static org.openhab.binding.shelly.internal.ShellyBindingConstants.PROPERTY_SERVICE_NAME;
+
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.util.HashMap;
@@ -62,6 +64,24 @@ public class ShellyThingTable {
         }
         for (ShellyThingInterface thingInterface : values) {
             if (thingInterface.checkRepresentation(key)) {
+                return thingInterface;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Find the Thing of a device by its mDNS service name, which is unique per device. Other than
+     * {@link #findThing(String)} this doesn't match an IP address, which another device may have used before.
+     */
+    public @Nullable ShellyThingInterface findThingByServiceName(String serviceName) {
+        List<ShellyThingInterface> values;
+        synchronized (this) {
+            values = List.copyOf(table.values());
+        }
+        for (ShellyThingInterface thingInterface : values) {
+            if (serviceName.equalsIgnoreCase(thingInterface.getProperty(PROPERTY_SERVICE_NAME))
+                    || serviceName.equalsIgnoreCase(thingInterface.getProfile().device.hostname)) {
                 return thingInterface;
             }
         }

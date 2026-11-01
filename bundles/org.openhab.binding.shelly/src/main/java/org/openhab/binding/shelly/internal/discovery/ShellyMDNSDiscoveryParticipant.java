@@ -151,7 +151,7 @@ public class ShellyMDNSDiscoveryParticipant implements MDNSDiscoveryParticipant 
             return null;
         }
         logger.debug("{}: Shelly device discovered: IP address={}", serviceName, address);
-        requestUpdateOnWakeup(serviceName, address);
+        requestUpdateOnWakeup(serviceName);
 
         try {
             // Get device settings — capture a consistent local snapshot; @Modified may run concurrently
@@ -181,28 +181,24 @@ public class ShellyMDNSDiscoveryParticipant implements MDNSDiscoveryParticipant 
 
     /**
      * A sleeping battery device announces itself via mDNS every time it wakes up, and is reachable only for a short
-     * while. Ask an existing Thing for that device to update now, its own poll would most likely come too late. An
-     * initialized Thing that is online is not asked, such a device already pushes its status when it wakes up.
+     * while. The announcement counts as a sign of life, so the watchdog of an initialized Thing is restarted. Should
+     * the push not arrive, the Thing is not set offline for a wakeup that did happen. A Thing that is not initialized
+     * yet has no wakeup period learned, restarting its watchdog would only start a short default timeout. A Thing that
+     * is not initialized or offline is asked to update now, its own poll would most likely come too late.
      * <p>
-     * The announcement also counts as a sign of life for an initialized Thing, so its watchdog is restarted even when
-     * no update is requested. Should the push not arrive, the Thing is not set offline for a wakeup that did happen.
-     * A Thing that is not initialized yet has no wakeup period learned, restarting its watchdog would only start a
-     * short default timeout.
+     * Always-on devices report their status event driven and BLU devices can't be reached by a poll, both are left out.
      */
-    private void requestUpdateOnWakeup(String serviceName, String address) {
-        ShellyThingInterface thing = thingTable.findThing(serviceName);
-        if (thing == null) {
-            thing = thingTable.findThing(address);
-        }
+    private void requestUpdateOnWakeup(String serviceName) {
+        ShellyThingInterface thing = thingTable.findThingByServiceName(serviceName);
         if (thing != null) {
             ShellyDeviceProfile profile = thing.getProfile();
-            if (profile.hasBattery && !profile.alwaysOn) {
+            if (profile.hasBattery && !profile.alwaysOn && !profile.isBlu) {
                 if (profile.isInitialized()) {
                     thing.restartWatchdog();
                 }
                 if (!profile.isInitialized() || !thing.isThingOnline()) {
                     logger.debug("{}: Device woke up, requesting update", serviceName);
-                    thing.requestUpdates(1, true);
+                    thing.onDeviceWakeup();
                 }
             }
         }

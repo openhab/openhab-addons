@@ -16,6 +16,8 @@ import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
+import static org.openhab.binding.shelly.internal.ShellyBindingConstants.PROPERTY_SERVICE_NAME;
+import static org.openhab.binding.shelly.internal.ShellyDevices.THING_TYPE_SHELLYPLUSSMOKE;
 
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -23,6 +25,7 @@ import java.net.UnknownHostException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
+import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
 
 /**
  * Tests for {@link ShellyThingTable}.
@@ -50,6 +53,48 @@ public class ShellyThingTableTest {
             when(thing.checkRepresentation(key)).thenReturn(true);
         }
         return thing;
+    }
+
+    private static ShellyThingInterface namedThing(String serviceName, String hostname) {
+        ShellyThingInterface thing = mock(ShellyThingInterface.class);
+        ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYPLUSSMOKE);
+        profile.device.hostname = hostname;
+        when(thing.getProfile()).thenReturn(profile);
+        when(thing.getProperty(PROPERTY_SERVICE_NAME)).thenReturn(serviceName);
+        return thing;
+    }
+
+    @Test
+    void findByServiceNameMatchesServiceNameProperty() {
+        ShellyThingInterface other = namedThing("shellyplussmoke-aabbccddeeff", "");
+        ShellyThingInterface thing = namedThing("shellyplussmoke-666edfe225ed", "");
+
+        ShellyThingTable table = new ShellyThingTable();
+        table.addThing("other", other);
+        table.addThing("thing", thing);
+
+        assertThat(table.findThingByServiceName("SHELLYPLUSSMOKE-666EDFE225ED"), is(thing));
+    }
+
+    @Test
+    void findByServiceNameMatchesHostname() {
+        ShellyThingInterface thing = namedThing("", "shellyplussmoke-666edfe225ed");
+
+        ShellyThingTable table = new ShellyThingTable();
+        table.addThing("thing", thing);
+
+        assertThat(table.findThingByServiceName("shellyplussmoke-666edfe225ed"), is(thing));
+    }
+
+    @Test
+    void findByServiceNameIgnoresOtherRepresentations() {
+        ShellyThingInterface thing = namedThing("shellyplussmoke-aabbccddeeff", "shellyplussmoke-aabbccddeeff");
+        when(thing.checkRepresentation("shellyplussmoke-666edfe225ed")).thenReturn(true);
+
+        ShellyThingTable table = new ShellyThingTable();
+        table.addThing("shellyplussmoke-666edfe225ed", thing);
+
+        assertThat(table.findThingByServiceName("shellyplussmoke-666edfe225ed"), is(nullValue()));
     }
 
     @Test
