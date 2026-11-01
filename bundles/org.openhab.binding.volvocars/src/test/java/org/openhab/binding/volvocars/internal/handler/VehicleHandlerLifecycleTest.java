@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
@@ -234,5 +235,43 @@ class VehicleHandlerLifecycleTest {
                 RefreshType.REFRESH);
 
         verify(api, timeout(TIMEOUT_MS)).getEnergyState(VIN);
+    }
+
+    @Test
+    void failedFeatureRequestsDoNotFailTheFirstRefresh() throws Exception {
+        Vehicle vehicle = new Vehicle();
+        vehicle.fuelType = "ELECTRIC";
+        when(api.getVehicle(VIN)).thenReturn(vehicle);
+        when(api.getSupportedEnergyCapabilities(VIN))
+                .thenThrow(new VolvoCarsException("Service Unavailable", 503, false))
+                .thenReturn(Set.of("batteryChargeLevel"));
+        when(api.getAvailableCommands(VIN)).thenThrow(new VolvoCarsException("Request failed", new TimeoutException()))
+                .thenReturn(Set.of("LOCK"));
+
+        // the values are read even though the features of the vehicle are not known yet
+        handler.initialize();
+        verify(callback, timeout(TIMEOUT_MS)).statusUpdated(eq(thing),
+                argThat(info -> info.getStatus() == ThingStatus.ONLINE));
+        verify(api).getValues(VIN, "doors");
+        verify(api, never()).getEnergyState(anyString());
+
+        // both features are read again on the next refresh
+        handler.handleCommand(new ChannelUID(thing.getUID(), GROUP_BATTERY, CHANNEL_BATTERY_LEVEL),
+                RefreshType.REFRESH);
+        verify(api, timeout(TIMEOUT_MS)).getEnergyState(VIN);
+        verify(api, times(2)).getAvailableCommands(VIN);
+    }
+
+    @Test
+    void featureRequestRequiringAuthorizationFailsTheRefresh() throws Exception {
+        Vehicle vehicle = new Vehicle();
+        vehicle.fuelType = "ELECTRIC";
+        when(api.getVehicle(VIN)).thenReturn(vehicle);
+        VolvoCarsException unauthorized = new VolvoCarsException("Unauthorized", 401, true);
+        when(api.getSupportedEnergyCapabilities(VIN)).thenThrow(unauthorized);
+
+        handler.initialize();
+        verify(accountHandler, timeout(TIMEOUT_MS)).reportFailure(api, unauthorized);
+        verify(api, never()).getValues(anyString(), anyString());
     }
 }

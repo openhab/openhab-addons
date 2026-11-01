@@ -337,9 +337,9 @@ public class VehicleHandler extends BaseThingHandler {
                 if (localVehicle == null) {
                     return;
                 }
-            } else if (localVehicle.hasBattery() && pollSession.energyCapabilities == null) {
-                // retry, e.g. because the account was authorized again with the energy scope in the meantime
-                loadEnergyCapabilities(api, pollSession, localVehicle);
+            } else if (loadFeatures(api, pollSession, localVehicle) && pollSession.equals(session)) {
+                // retried after a temporary failure, or after the account was authorized again with more scopes
+                reconcileChannels(localVehicle, pollSession);
             }
             refreshFast(api, pollSession, localVehicle);
             if (!Instant.now().isBefore(pollSession.nextSlowRefresh)) {
@@ -377,36 +377,50 @@ public class VehicleHandler extends BaseThingHandler {
             }
             throw e;
         }
-        Set<String> capabilities = localVehicle.hasBattery() ? optional(() -> api.getSupportedEnergyCapabilities(vin))
-                : null;
-        Set<String> commands = optional(() -> api.getAvailableCommands(vin));
+        loadFeatures(api, pollSession, localVehicle);
         if (!pollSession.equals(session)) {
             return null;
         }
         updateProperties(localVehicle, vin);
-        pollSession.energyCapabilities = capabilities;
-        pollSession.commands = commands;
         reconcileChannels(localVehicle, pollSession);
         pollSession.vehicle = localVehicle;
         return localVehicle;
     }
 
-    private void loadEnergyCapabilities(VolvoCarsApi api, Session pollSession, Vehicle localVehicle)
+    /**
+     * Reads the energy capabilities and the available commands of the vehicle, if they are not known yet.
+     *
+     * @return true if any of them became known
+     */
+    private boolean loadFeatures(VolvoCarsApi api, Session pollSession, Vehicle localVehicle)
             throws VolvoCarsException {
-        Set<String> capabilities;
+        String vin = pollSession.config.vin;
+        boolean loaded = false;
+        if (localVehicle.hasBattery() && pollSession.energyCapabilities == null) {
+            pollSession.energyCapabilities = loadFeature("Energy capabilities",
+                    () -> api.getSupportedEnergyCapabilities(vin));
+            loaded = pollSession.energyCapabilities != null;
+        }
+        if (pollSession.commands == null) {
+            pollSession.commands = loadFeature("Commands", () -> api.getAvailableCommands(vin));
+            loaded |= pollSession.commands != null;
+        }
+        return loaded;
+    }
+
+    /**
+     * @return the supported features, or null if they are unknown and have to be read again on the next refresh
+     */
+    private @Nullable Set<String> loadFeature(String name, ApiCall<Set<String>> call) throws VolvoCarsException {
         try {
-            capabilities = optional(() -> api.getSupportedEnergyCapabilities(pollSession.config.vin));
+            return optional(call);
         } catch (VolvoCarsException e) {
             if (e.isAuthorizationRequired()) {
                 throw e;
             }
-            // the capabilities are optional, so a failed retry must not fail the whole refresh
-            logger.debug("Energy capabilities of {} are not available: {}", getThing().getUID(), e.getMessage());
-            return;
-        }
-        if (capabilities != null && pollSession.equals(session)) {
-            pollSession.energyCapabilities = capabilities;
-            reconcileChannels(localVehicle, pollSession);
+            // the features only determine the channels, so a failure must not fail the whole refresh
+            logger.debug("{} of {} are not available: {}", name, getThing().getUID(), e.getMessage());
+            return null;
         }
     }
 
