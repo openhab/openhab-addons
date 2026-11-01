@@ -29,8 +29,8 @@
 		<item-type>String</item-type>
 		<label>Heater State</label>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Status</point>
+			<property>Mode</property>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -45,8 +45,8 @@
 		<item-type>Switch</item-type>
 		<label>Heater Enable</label>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Status</point>
+			<property>Mode</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>

@@ -194,8 +194,8 @@
 		<description>Target Temperature in °C to be reached in auto-temperature mode</description>
 		<category>Heating</category>
 		<tags>
-			<point-tag>Setpoint</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state min="4" max="31" step="0.5" pattern="%.1f %unit%" readOnly="false"/>
 	</channel-type>
@@ -247,8 +247,8 @@
 		<label>State</label>
 		<description>State of the contact (open/closed)</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>OpenState</property-tag>
+			<point>Status</point>
+			<property>OpenState</property>
 		</tags>
 		<state pattern="%s" readOnly="true">
 			<options>
@@ -277,7 +277,7 @@
 		<label>Alarm State</label>
 		<description>Alarm State (Unknown/None/Mild/Heavy/Test)</description>
 		<tags>
-			<point-tag>Alarm</point-tag>
+			<point>Alarm</point>
 		</tags>
 		<state pattern="%s" readOnly="true">
 			<options>
@@ -322,8 +322,8 @@
 		<description>Temperature from the sensor</description>
 		<category>Temperature</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%">
 		</state>
@@ -335,8 +335,8 @@
 		<description>Relative humidity in percent (0..100%)</description>
 		<category>Humidity</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Humidity</property-tag>
+			<point>Measurement</point>
+			<property>Humidity</property>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
@@ -347,8 +347,8 @@
 		<description>Indicates flood / water detection when toggled ON</description>
 		<category>Water</category>
 		<tags>
-			<point-tag>Alarm</point-tag>
-			<property-tag>Water</property-tag>
+			<point>Alarm</point>
+			<property>Water</property>
 		</tags>
 		<state readOnly="true">
 		</state>
@@ -360,8 +360,8 @@
 		<description>Indicates smoke detection when toggled ON</description>
 		<category>Smoke</category>
 		<tags>
-			<point-tag>Alarm</point-tag>
-			<property-tag>Smoke</property-tag>
+			<point>Alarm</point>
+			<property>Smoke</property>
 		</tags>
 		<state readOnly="true">
 		</state>
@@ -378,8 +378,8 @@
 		<label>Lux</label>
 		<description>Brightness from the sensor (Lux)</description>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Illuminance</property-tag>
+			<point>Measurement</point>
+			<property>Illuminance</property>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%">
 		</state>
@@ -405,8 +405,8 @@
 		<description>Timestamp when last motion was detected</description>
 		<category>Time</category>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Timestamp</property-tag>
+			<point>Status</point>
+			<property>Timestamp</property>
 		</tags>
 		<state readOnly="true">
 		</state>
@@ -427,8 +427,8 @@
 		<description>Motion detected when toggled ON</description>
 		<category>Motion</category>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Motion</property-tag>
+			<point>Status</point>
+			<property>Motion</property>
 		</tags>
 		<state readOnly="true">
 		</state>
@@ -440,8 +440,8 @@
 		<description>Vibration detected when toggled ON</description>
 		<category>Flow</category>
 		<tags>
-			<point-tag>Alarm</point-tag>
-			<property-tag>Vibration</property-tag>
+			<point>Alarm</point>
+			<property>Vibration</property>
 		</tags>
 		<state readOnly="true">
 		</state>
@@ -453,8 +453,8 @@
 		<description>Tilt in degrees (requires calibration)</description>
 		<category>Tilt</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Tilt</property-tag>
+			<point>Measurement</point>
+			<property>Tilt</property>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%">
 		</state>
@@ -466,8 +466,8 @@
 		<description>Gas concentration in ppm</description>
 		<category>Gas</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>ParticulateMatter</property-tag>
+			<point>Measurement</point>
+			<property>ParticulateMatter</property>
 		</tags>
 		<state readOnly="true" pattern="%.0f ppm">
 		</state>
@@ -478,8 +478,8 @@
 		<label>Voltage (ADC)</label>
 		<description>ADC voltage in V</description>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Voltage</property-tag>
+			<point>Measurement</point>
+			<property>Voltage</property>
 		</tags>
 		<state readOnly="true" pattern="%.3f %unit%">
 		</state>
@@ -491,8 +491,8 @@
 		<description>Position of the valve</description>
 		<category>RadiatorControl</category>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>Level</property-tag>
+			<point>Control</point>
+			<property>Level</property>
 		</tags>
 		<state min="0" max="100" step="1" readOnly="false" pattern="%.0f %%"/>
 	</channel-type>
@@ -522,8 +522,8 @@
 		<description>Temperature</description>
 		<category>Temperature</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%">
 		</state>
@@ -535,8 +535,8 @@
 		<description>Relative humidity in percent (0..100%) from external sensor</description>
 		<category>Humidity</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Humidity</property-tag>
+			<point>Measurement</point>
+			<property>Humidity</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%">
 		</state>
@@ -547,8 +547,8 @@
 		<label>Voltage</label>
 		<description>Voltage from external sensor</description>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Voltage</property-tag>
+			<point>Measurement</point>
+			<property>Voltage</property>
 		</tags>
 		<state readOnly="true" pattern="%.2f %unit%">
 		</state>
@@ -638,7 +638,7 @@
 		<description>Measure distance to the object in mm.</description>
 		<category>Distance</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
+			<point>Measurement</point>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>

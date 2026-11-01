@@ -13,8 +13,8 @@
 		</description>
 		<category>Light</category>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>Brightness</property-tag>
+			<point>Control</point>
+			<property>Brightness</property>
 		</tags>
 	</channel-type>
 
@@ -25,8 +25,8 @@
 		<description>Control the color of the light.</description>
 		<category>ColorLight</category>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>Color</property-tag>
+			<point>Control</point>
+			<property>Color</property>
 		</tags>
 	</channel-type>
 
@@ -37,8 +37,8 @@
 		<description>Control the color temperature of the light.</description>
 		<category>ColorLight</category>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>ColorTemperature</property-tag>
+			<point>Control</point>
+			<property>ColorTemperature</property>
 		</tags>
 	</channel-type>
 
@@ -56,8 +56,8 @@
 		<description>Control the color of the background (ambient) light.</description>
 		<category>ColorLight</category>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>Color</property-tag>
+			<point>Control</point>
+			<property>Color</property>
 		</tags>
 	</channel-type>
 

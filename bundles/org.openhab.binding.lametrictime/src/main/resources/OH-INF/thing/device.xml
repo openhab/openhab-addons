@@ -43,8 +43,8 @@
 		<label>Display Brightness</label>
 		<description>Adjust the brightness of the display</description>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>Brightness</property-tag>
+			<point>Control</point>
+			<property>Brightness</property>
 		</tags>
 		<state min="0" max="100" step="1" readOnly="false"/>
 	</channel-type>
@@ -67,8 +67,8 @@
 		<description>Adjust the volume of the speaker</description>
 		<category>soundvolume</category>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>SoundVolume</property-tag>
+			<point>Control</point>
+			<property>SoundVolume</property>
 		</tags>
 	</channel-type>
 
@@ -77,8 +77,8 @@
 		<label>Bluetooth</label>
 		<description>Switch Bluetooth on/off</description>
 		<tags>
-			<point-tag>Switch</point-tag>
-			<property-tag>Power</property-tag>
+			<point>Switch</point>
+			<property>Power</property>
 		</tags>
 	</channel-type>
 

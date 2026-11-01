@@ -31,8 +31,8 @@
 		<description>Indicates whether this battery is controllable or not</description>
 		<category>Switch</category>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Status</point>
+			<property>Mode</property>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -47,8 +47,8 @@
 		<description>Current power from this battery</description>
 		<category>Energy</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Power</property-tag>
+			<point>Measurement</point>
+			<property>Power</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -58,8 +58,8 @@
 		<description>Current state of charge of this battery</description>
 		<category>BatteryLevel</category>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Energy</property-tag>
+			<point>Status</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
@@ -69,8 +69,8 @@
 		<description>Battery name displayed in the UI</description>
 		<category>Settings</category>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Info</property-tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>

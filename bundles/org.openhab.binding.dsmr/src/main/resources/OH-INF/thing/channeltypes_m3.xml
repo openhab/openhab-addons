@@ -9,8 +9,8 @@
 		<label>Delivery</label>
 		<description>The total amount delivered in the past period.</description>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Gas</property-tag>
+			<point>Measurement</point>
+			<property>Gas</property>
 		</tags>
 		<state pattern="%.3f %unit%" readOnly="true"></state>
 	</channel-type>

@@ -76,8 +76,8 @@
 		<label>Control</label>
 		<description>Device control (UP, DOWN, MY/STOP, closure 0-100%)</description>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>OpenLevel</property-tag>
+			<point>Control</point>
+			<property>OpenLevel</property>
 		</tags>
 	</channel-type>
 

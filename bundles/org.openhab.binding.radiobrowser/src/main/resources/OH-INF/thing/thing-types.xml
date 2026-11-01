@@ -78,8 +78,8 @@
 		<label>Genre</label>
 		<description>A list of genres or tags that you can select from</description>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>Info</property-tag>
+			<point>Control</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="false">
 			<options>
@@ -131,8 +131,8 @@
 		<label>Stream</label>
 		<description>The stations URI that can be sent to a openHAB audio sink</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Info</property-tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 	</channel-type>
 
@@ -141,8 +141,8 @@
 		<label>Name</label>
 		<description>The currently selected stations name</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Info</property-tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 	</channel-type>
 

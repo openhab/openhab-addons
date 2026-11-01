@@ -79,8 +79,8 @@
 		<label>PHC AM Channel</label>
 		<description>Channel to an AM or EM(LED) module.</description>
 		<tags>
-			<point-tag>Switch</point-tag>
-			<property-tag>Power</property-tag>
+			<point>Switch</point>
+			<property>Power</property>
 		</tags>
 	</channel-type>
 
@@ -89,8 +89,8 @@
 		<label>PHC EM Channel</label>
 		<description>Channel from an EM module.</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Power</property-tag>
+			<point>Status</point>
+			<property>Power</property>
 		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
@@ -100,8 +100,8 @@
 		<label>PHC JRM Channel</label>
 		<description>Channel to a JRM module.</description>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>OpenLevel</property-tag>
+			<point>Control</point>
+			<property>OpenLevel</property>
 		</tags>
 	</channel-type>
 
@@ -117,8 +117,8 @@
 		<label>DIM Channel</label>
 		<description>Channel for a DIM module.</description>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>Brightness</property-tag>
+			<point>Control</point>
+			<property>Brightness</property>
 		</tags>
 	</channel-type>
 

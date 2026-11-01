@@ -317,8 +317,8 @@
 		<label>Mode</label>
 		<category>Climate</category>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Control</point>
+			<property>Mode</property>
 		</tags>
 		<state readOnly="false">
 			<options>
@@ -336,8 +336,8 @@
 		<description>The device's target temperature</description>
 		<category>Temperature</category>
 		<tags>
-			<point-tag>Setpoint</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state min="10" max="36" step="0.5" pattern="%.1f %unit%" readOnly="false"/>
 	</channel-type>
@@ -347,8 +347,8 @@
 		<label>Actual Temperature</label>
 		<category>Temperature</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -358,8 +358,8 @@
 		<label>Fan Speed</label>
 		<category>Fan</category>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>Speed</property-tag>
+			<point>Control</point>
+			<property>Speed</property>
 		</tags>
 		<state readOnly="false">
 			<options>
@@ -427,8 +427,8 @@
 		-->
 		<!-- using Level instead of Duration semantic property, as it renders better Main UI widget by default -->
 		<tags>
-			<point-tag>Setpoint</point-tag>
-			<property-tag>Level</property-tag>
+			<point>Setpoint</point>
+			<property>Level</property>
 		</tags>
 		<state readOnly="false" min="10" max="1190" step="10.0" pattern="%.0f min"/>
 	</channel-type>
@@ -440,8 +440,8 @@
 		<label>Extended Mode</label>
 		<category>Heating</category>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Control</point>
+			<property>Mode</property>
 		</tags>
 		<state readOnly="false">
 			<options>
@@ -459,8 +459,8 @@
 		<label>Airflow Direction</label>
 		<category>Flow</category>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>Airflow</property-tag>
+			<point>Control</point>
+			<property>Airflow</property>
 		</tags>
 		<state readOnly="false">
 			<options>

@@ -119,8 +119,8 @@
 		<label>Temperature</label>
 		<description>The ambient temperature of the appliance</description>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -129,8 +129,8 @@
 		<label>Pause</label>
 		<description>Pauses the appliance for the specified duration. Send 0 min to cancel the pause.</description>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>Duration</property-tag>
+			<point>Control</point>
+			<property>Duration</property>
 		</tags>
 	</channel-type>
 	<channel-type id="valve_open">
@@ -138,8 +138,8 @@
 		<label>Valve Open</label>
 		<description>Valve switch</description>
 		<tags>
-			<point-tag>Switch</point-tag>
-			<property-tag>OpenState</property-tag>
+			<point>Switch</point>
+			<property>OpenState</property>
 		</tags>
 	</channel-type>
 	<channel-type id="humidity">
@@ -147,8 +147,8 @@
 		<label>Humidity</label>
 		<description>The humidity reported by the device</description>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Humidity</property-tag>
+			<point>Measurement</point>
+			<property>Humidity</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -157,8 +157,8 @@
 		<label>Temperature</label>
 		<description>The temperature reported by the device</description>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -167,8 +167,8 @@
 		<label>Water Consumption</label>
 		<description>The amount of water consumed in the given time period in liters.</description>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Water</property-tag>
+			<point>Measurement</point>
+			<property>Water</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 		<config-description>
@@ -184,8 +184,8 @@
 		<label>Water Consumption Since Midnight</label>
 		<description>The amount of water consumed since midnight in liters</description>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Water</property-tag>
+			<point>Measurement</point>
+			<property>Water</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>

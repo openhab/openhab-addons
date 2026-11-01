@@ -49,8 +49,8 @@
 		<label>Current Album</label>
 		<description>Name of the album currently playing.</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Info</property-tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -62,8 +62,8 @@
 			is often used by badly configured internet radio stations with broken tags to squeeze both the artist name and the
 			song title in one tag.</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Info</property-tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -73,8 +73,8 @@
 		<label>Current Track</label>
 		<description>The current track number.</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Info</property-tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state pattern="%d" readOnly="true"/>
 	</channel-type>
@@ -84,8 +84,8 @@
 		<label>Current Song</label>
 		<description>The current song number.</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Info</property-tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state pattern="%d" readOnly="true"/>
 	</channel-type>
@@ -95,8 +95,8 @@
 		<label>Current Song ID</label>
 		<description>The current song ID.</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Info</property-tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state pattern="%d" readOnly="true"/>
 	</channel-type>

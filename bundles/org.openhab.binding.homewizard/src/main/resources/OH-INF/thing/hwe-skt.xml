@@ -52,8 +52,8 @@
 			This channel provides access to the power switch of the Energy Socket.
 		</description>
 		<tags>
-			<point-tag>Switch</point-tag>
-			<property-tag>Power</property-tag>
+			<point>Switch</point>
+			<property>Power</property>
 		</tags>
 	</channel-type>
 

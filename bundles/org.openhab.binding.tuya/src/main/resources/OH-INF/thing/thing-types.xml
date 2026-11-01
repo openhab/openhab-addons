@@ -206,8 +206,8 @@
 		<category>ColorLight</category>
 
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>Color</property-tag>
+			<point>Control</point>
+			<property>Color</property>
 		</tags>
 
 		<config-description-ref uri="channel-type:tuya:color"/>
@@ -220,8 +220,8 @@
 		<category>Switch</category>
 
 		<tags>
-			<point-tag>Switch</point-tag>
-			<property-tag>Power</property-tag>
+			<point>Switch</point>
+			<property>Power</property>
 		</tags>
 
 		<config-description-ref uri="channel-type:tuya:switch"/>
@@ -235,8 +235,8 @@
 		<category>Light</category>
 
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>Brightness</property-tag>
+			<point>Control</point>
+			<property>Brightness</property>
 		</tags>
 
 		<config-description-ref uri="channel-type:tuya:dimmer"/>

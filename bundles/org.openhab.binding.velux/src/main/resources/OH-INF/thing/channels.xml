@@ -13,7 +13,7 @@
 		<description>@text/channel-type.velux.information.description</description>
 		<category>NetworkAppliance</category>
 		<tags>
-			<point-tag>Status</point-tag>
+			<point>Status</point>
 		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
@@ -27,7 +27,7 @@
 		<description>@text/channel-type.velux.status.description</description>
 		<category>NetworkAppliance</category>
 		<tags>
-			<point-tag>Status</point-tag>
+			<point>Status</point>
 		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
@@ -144,8 +144,8 @@
 		<description>@text/channel-type.velux.windowPosition.description</description>
 		<category>Window</category>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>OpenLevel</property-tag>
+			<point>Control</point>
+			<property>OpenLevel</property>
 		</tags>
 		<state min="0" max="100"/>
 	</channel-type>
@@ -156,8 +156,8 @@
 		<description>@text/channel-type.velux.position.description</description>
 		<category>Blinds</category>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>OpenLevel</property-tag>
+			<point>Control</point>
+			<property>OpenLevel</property>
 		</tags>
 		<state min="0" max="100"/>
 	</channel-type>
@@ -167,8 +167,8 @@
 		<label>@text/channel-type.velux.vanePosition.label</label>
 		<description>@text/channel-type.velux.vanePosition.description</description>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>Tilt</property-tag>
+			<point>Control</point>
+			<property>Tilt</property>
 		</tags>
 		<state min="0" max="100"/>
 	</channel-type>
@@ -179,7 +179,7 @@
 		<description>@text/channel-type.velux.state.description</description>
 		<category>WallSwitch</category>
 		<tags>
-			<point-tag>Switch</point-tag>
+			<point>Switch</point>
 		</tags>
 	</channel-type>
 
@@ -188,8 +188,8 @@
 		<label>@text/channel-type.velux.limitMinimum.label</label>
 		<description>@text/channel-type.velux.limitMinimum.description</description>
 		<tags>
-			<point-tag>Setpoint</point-tag>
-			<property-tag>OpenLevel</property-tag>
+			<point>Setpoint</point>
+			<property>OpenLevel</property>
 		</tags>
 		<state min="0" max="100"/>
 	</channel-type>
@@ -199,8 +199,8 @@
 		<label>@text/channel-type.velux.limitMaximum.label</label>
 		<description>@text/channel-type.velux.limitMaximum.description</description>
 		<tags>
-			<point-tag>Setpoint</point-tag>
-			<property-tag>OpenLevel</property-tag>
+			<point>Setpoint</point>
+			<property>OpenLevel</property>
 		</tags>
 		<state min="0" max="100"/>
 	</channel-type>
@@ -211,7 +211,7 @@
 		<description>@text/channel-type.velux.action.description</description>
 		<category>WallSwitch</category>
 		<tags>
-			<point-tag>Switch</point-tag>
+			<point>Switch</point>
 		</tags>
 	</channel-type>
 
@@ -221,8 +221,8 @@
 		<description>@text/channel-type.velux.silentMode.description</description>
 		<category>Blinds</category>
 		<tags>
-			<point-tag>Switch</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Switch</point>
+			<property>Mode</property>
 		</tags>
 	</channel-type>
 
@@ -232,8 +232,8 @@
 		<description>@text/channel-type.velux.vposition.description</description>
 		<category>Blinds</category>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>OpenLevel</property-tag>
+			<point>Control</point>
+			<property>OpenLevel</property>
 		</tags>
 	</channel-type>
 

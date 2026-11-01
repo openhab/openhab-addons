@@ -93,8 +93,8 @@
 		<label>Channel</label>
 		<description>Send channel number to switch program</description>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>Channel</property-tag>
+			<point>Control</point>
+			<property>Channel</property>
 		</tags>
 		<state min="1" max="999" step="1"></state>
 	</channel-type>
@@ -124,8 +124,8 @@
 		<label>Program</label>
 		<description>Running program</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Info</property-tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true" pattern="%s">
 		</state>
@@ -135,8 +135,8 @@
 		<label>Description</label>
 		<description>Some info on the running program</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Info</property-tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true" pattern="%s">
 		</state>
@@ -146,8 +146,8 @@
 		<label>Start</label>
 		<description>Program start time</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Timestamp</property-tag>
+			<point>Status</point>
+			<property>Timestamp</property>
 		</tags>
 		<state readOnly="true">
 		</state>
@@ -157,8 +157,8 @@
 		<label>Duration</label>
 		<description>Duration of the program</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Duration</property-tag>
+			<point>Status</point>
+			<property>Duration</property>
 		</tags>
 		<state pattern="%d %unit%" readOnly="true">
 		</state>
@@ -168,8 +168,8 @@
 		<label>Play Position</label>
 		<description>Play Position since program started</description>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Progress</property-tag>
+			<point>Measurement</point>
+			<property>Progress</property>
 		</tags>
 		<state pattern="%d %unit%" readOnly="true">
 		</state>

@@ -45,8 +45,8 @@
 		<item-type>String</item-type>
 		<label>Valve Position</label>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>OpenState</property-tag>
+			<point>Status</point>
+			<property>OpenState</property>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -63,8 +63,8 @@
 		<label>Filter Speed</label>
 		<description>Filter speed in percentage</description>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Speed</property-tag>
+			<point>Measurement</point>
+			<property>Speed</property>
 		</tags>
 		<state min="0" max="100" step="5" pattern="%d %%" readOnly="false"/>
 	</channel-type>
@@ -74,8 +74,8 @@
 		<label>Filter Speed</label>
 		<description>Filter speed in rpm</description>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Speed</property-tag>
+			<point>Measurement</point>
+			<property>Speed</property>
 		</tags>
 		<state min="0" max="3600" step="200" pattern="%d rpm" readOnly="false"/>
 	</channel-type>
@@ -84,8 +84,8 @@
 		<item-type>String</item-type>
 		<label>Filter Speed States</label>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>Speed</property-tag>
+			<point>Control</point>
+			<property>Speed</property>
 		</tags>
 		<state readOnly="false">
 			<options>

@@ -96,8 +96,8 @@
 		<description>Locks the door with ON and unlocks it to day lock with OFF.</description>
 		<category>Door</category>
 		<tags>
-			<point-tag>Switch</point-tag>
-			<property-tag>LockState</property-tag>
+			<point>Switch</point>
+			<property>LockState</property>
 		</tags>
 	</channel-type>
 
@@ -107,8 +107,8 @@
 		<description>Current bolt state. Send OPEN, DAY_LOCK, or NIGHT_LOCK to operate the lock.</description>
 		<category>Door</category>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>LockState</property-tag>
+			<point>Control</point>
+			<property>LockState</property>
 		</tags>
 		<state>
 			<options>
@@ -141,8 +141,8 @@
 		<description>Indicates whether Open House (party) mode is enabled.</description>
 		<category>Door</category>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Enabled</property-tag>
+			<point>Status</point>
+			<property>Enabled</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -153,8 +153,8 @@
 		<description>Indicates whether guest access mode is enabled.</description>
 		<category>Door</category>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Enabled</property-tag>
+			<point>Status</point>
+			<property>Enabled</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -165,8 +165,8 @@
 		<description>Indicates whether twist assist is enabled.</description>
 		<category>Door</category>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Enabled</property-tag>
+			<point>Status</point>
+			<property>Enabled</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -177,8 +177,8 @@
 		<description>Indicates whether the 500 m geofence restriction for Touch to Open is removed.</description>
 		<category>Door</category>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Enabled</property-tag>
+			<point>Status</point>
+			<property>Enabled</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>

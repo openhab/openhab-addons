@@ -10,8 +10,8 @@
 		<description>Total consumed energy</description>
 		<category>Energy</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Energy</property-tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>

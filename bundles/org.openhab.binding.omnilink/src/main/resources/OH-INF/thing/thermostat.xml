@@ -45,8 +45,8 @@
 		<description>Closed when freeze alarm is triggered by this thermostat.</description>
 		<category>Alarm</category>
 		<tags>
-			<point-tag>Alarm</point-tag>
-			<property-tag>Opening</property-tag>
+			<point>Alarm</point>
+			<property>Opening</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -57,8 +57,8 @@
 		<description>Closed during a communications failure with this thermostat.</description>
 		<category>Contact</category>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Opening</property-tag>
+			<point>Status</point>
+			<property>Opening</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -85,8 +85,8 @@
 		<description>The current temperature at this thermostat.</description>
 		<category>Temperature</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -97,8 +97,8 @@
 		<description>The current low/heating setpoint of this thermostat.</description>
 		<category>Temperature</category>
 		<tags>
-			<point-tag>Setpoint</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
@@ -109,8 +109,8 @@
 		<description>The current high/cooling setpoint of this thermostat.</description>
 		<category>Temperature</category>
 		<tags>
-			<point-tag>Setpoint</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
@@ -121,8 +121,8 @@
 		<description>The relative humidity at this thermostat.</description>
 		<category>Humidity</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Humidity</property-tag>
+			<point>Measurement</point>
+			<property>Humidity</property>
 		</tags>
 		<state readOnly="true" min="0" max="100" pattern="%d %%"/>
 	</channel-type>
@@ -133,8 +133,8 @@
 		<description>The current low/humidify setpoint for this thermostat.</description>
 		<category>Humidity</category>
 		<tags>
-			<point-tag>Setpoint</point-tag>
-			<property-tag>Humidity</property-tag>
+			<point>Setpoint</point>
+			<property>Humidity</property>
 		</tags>
 		<state min="0" max="100" pattern="%d %%"/>
 	</channel-type>
@@ -145,8 +145,8 @@
 		<description>The current high/dehumidify setpoint for this thermostat.</description>
 		<category>Humidity</category>
 		<tags>
-			<point-tag>Setpoint</point-tag>
-			<property-tag>Humidity</property-tag>
+			<point>Setpoint</point>
+			<property>Humidity</property>
 		</tags>
 		<state min="0" max="100" pattern="%d %%"/>
 	</channel-type>
@@ -173,8 +173,8 @@
 		<description>The current fan mode of this thermostat.</description>
 		<category>Flow</category>
 		<tags>
-			<point-tag>Setpoint</point-tag>
-			<property-tag>Speed</property-tag>
+			<point>Setpoint</point>
+			<property>Speed</property>
 		</tags>
 		<state>
 			<options>

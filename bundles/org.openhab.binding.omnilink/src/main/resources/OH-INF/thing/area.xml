@@ -75,7 +75,7 @@
 		<description>Indicates if an alarm is active.</description>
 		<category>Alarm</category>
 		<tags>
-			<point-tag>Alarm</point-tag>
+			<point>Alarm</point>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -110,7 +110,7 @@
 		<description>Sends a 4 digit user code to activate the area command.</description>
 		<category>Alarm</category>
 		<tags>
-			<point-tag>Alarm</point-tag>
+			<point>Alarm</point>
 		</tags>
 	</channel-type>
 

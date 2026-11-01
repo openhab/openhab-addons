@@ -130,8 +130,8 @@
 		<label>Next Run Time</label>
 		<description>The next time this zone is scheduled to run</description>
 		<tags>
-			<point-tag>Forecast</point-tag>
-			<property-tag>Timestamp</property-tag>
+			<point>Forecast</point>
+			<property>Timestamp</property>
 		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
@@ -141,8 +141,8 @@
 		<label>Run Zones</label>
 		<description>Run or stop zones for the default time.</description>
 		<tags>
-			<point-tag>Switch</point-tag>
-			<property-tag>Power</property-tag>
+			<point>Switch</point>
+			<property>Power</property>
 		</tags>
 	</channel-type>
 
@@ -151,8 +151,8 @@
 		<label>Run Zones With Custom Duration</label>
 		<description>Run zones now for a custom duration</description>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>Duration</property-tag>
+			<point>Control</point>
+			<property>Duration</property>
 		</tags>
 	</channel-type>
 
@@ -161,8 +161,8 @@
 		<label>Suspend Zones</label>
 		<description>Suspends or resumes zones</description>
 		<tags>
-			<point-tag>Switch</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Switch</point>
+			<property>Mode</property>
 		</tags>
 	</channel-type>
 
@@ -171,8 +171,8 @@
 		<label>Suspend Zones</label>
 		<description>Suspends zones until this date</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Timestamp</property-tag>
+			<point>Status</point>
+			<property>Timestamp</property>
 		</tags>
 	</channel-type>
 
@@ -181,8 +181,8 @@
 		<label>Time Left Seconds</label>
 		<description>Time left that zone will run for</description>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Duration</property-tag>
+			<point>Measurement</point>
+			<property>Duration</property>
 		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
@@ -252,8 +252,8 @@
 		<description>High temperature</description>
 		<category>Temperature</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -264,8 +264,8 @@
 		<description>Low Temperature</description>
 		<category>Temperature</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -289,8 +289,8 @@
 		<label>Forecast Time</label>
 		<description>Forecast date and time</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Timestamp</property-tag>
+			<point>Status</point>
+			<property>Timestamp</property>
 		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
@@ -301,8 +301,8 @@
 		<description>Humidity percentage</description>
 		<category>Temperature</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Humidity</property-tag>
+			<point>Measurement</point>
+			<property>Humidity</property>
 		</tags>
 		<state readOnly="true" pattern="%d%%"/>
 	</channel-type>
@@ -313,8 +313,8 @@
 		<description>Wind speed</description>
 		<category>Wind</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Wind</property-tag>
+			<point>Measurement</point>
+			<property>Wind</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -331,8 +331,8 @@
 		<label>Precipitation</label>
 		<description>Precipitation amount</description>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Rain</property-tag>
+			<point>Measurement</point>
+			<property>Rain</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f"/>
 	</channel-type>
@@ -342,8 +342,8 @@
 		<label>Probability Of Precipitation</label>
 		<description>Probability of precipitation percentage</description>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Rain</property-tag>
+			<point>Measurement</point>
+			<property>Rain</property>
 		</tags>
 		<state readOnly="true" pattern="%d%%"/>
 	</channel-type>

@@ -53,8 +53,8 @@
 		<label>Actual Stove Temperature</label>
 		<description>Current stove temperature.</description>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -64,8 +64,8 @@
 		<label>Stove Mode</label>
 		<description>Current stove mode.</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Status</point>
+			<property>Mode</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -75,8 +75,8 @@
 		<label>Target Stove Temperature</label>
 		<description>Target stove temperature.</description>
 		<tags>
-			<point-tag>Setpoint</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 	</channel-type>
 
@@ -85,8 +85,8 @@
 		<label>Power</label>
 		<description>Turn the stove on/off.</description>
 		<tags>
-			<point-tag>Switch</point-tag>
-			<property-tag>Power</property-tag>
+			<point>Switch</point>
+			<property>Power</property>
 		</tags>
 	</channel-type>
 
@@ -95,8 +95,8 @@
 		<label>Eco Mode</label>
 		<description>Enable or disable Eco Mode.</description>
 		<tags>
-			<point-tag>Switch</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Switch</point>
+			<property>Mode</property>
 		</tags>
 	</channel-type>
 

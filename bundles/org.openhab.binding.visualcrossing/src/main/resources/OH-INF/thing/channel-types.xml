@@ -1819,8 +1819,8 @@
 		<label>Temperature</label>
 		<category>Temperature</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -1832,8 +1832,8 @@
 			liquid-equivalent amount of any frozen precipitation such as snow or ice.
 		</description>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Precipitation</property-tag>
+			<point>Measurement</point>
+			<property>Precipitation</property>
 		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
@@ -1842,8 +1842,8 @@
 		<label>Precip Prob</label>
 		<description>The likelihood of measurable precipitation ranging from 0% to 100%</description>
 		<tags>
-			<point-tag>Forecast</point-tag>
-			<property-tag>Precipitation</property-tag>
+			<point>Forecast</point>
+			<property>Precipitation</property>
 		</tags>
 		<state readOnly="true" min="0" max="100" pattern="%.0f %%"/>
 	</channel-type>
@@ -1901,8 +1901,8 @@
 			pages.
 		</description>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Illuminance</property-tag>
+			<point>Measurement</point>
+			<property>Illuminance</property>
 		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
@@ -1919,8 +1919,8 @@
 			pages.
 		</description>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Power</property-tag>
+			<point>Measurement</point>
+			<property>Power</property>
 		</tags>
 		<state readOnly="true" pattern="%.2f MJ/m²"/>
 	</channel-type>
@@ -1990,8 +1990,8 @@
 			than 30 indicates a low risk, between 30 and 70 a moderate risk and above 70 a high risk.
 		</description>
 		<tags>
-			<point-tag>Forecast</point-tag>
-			<property-tag>Wind</property-tag>
+			<point>Forecast</point>
+			<property>Wind</property>
 		</tags>
 		<state readOnly="true" min="0" max="100" pattern="%.0f %%"/>
 	</channel-type>

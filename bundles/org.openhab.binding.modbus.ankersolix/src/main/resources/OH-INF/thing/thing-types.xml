@@ -476,8 +476,8 @@
 		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Battery State of Charge</label>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>StateOfCharge</property-tag>
+			<point>Measurement</point>
+			<property>StateOfCharge</property>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
@@ -486,8 +486,8 @@
 		<item-type>Number:Power</item-type>
 		<label>PV Power</label>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Power</property-tag>
+			<point>Measurement</point>
+			<property>Power</property>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
@@ -496,8 +496,8 @@
 		<item-type>Number:Power</item-type>
 		<label>Battery Charging Power</label>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Power</property-tag>
+			<point>Measurement</point>
+			<property>Power</property>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
@@ -506,8 +506,8 @@
 		<item-type>Number:Power</item-type>
 		<label>Battery Discharging Power</label>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Power</property-tag>
+			<point>Measurement</point>
+			<property>Power</property>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
@@ -516,8 +516,8 @@
 		<item-type>Number:Power</item-type>
 		<label>Load Power</label>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Power</property-tag>
+			<point>Measurement</point>
+			<property>Power</property>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
@@ -526,8 +526,8 @@
 		<item-type>Number:Power</item-type>
 		<label>Grid Import Power</label>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Power</property-tag>
+			<point>Measurement</point>
+			<property>Power</property>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
@@ -536,8 +536,8 @@
 		<item-type>Number:Power</item-type>
 		<label>Grid Export Power</label>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Power</property-tag>
+			<point>Measurement</point>
+			<property>Power</property>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
@@ -546,8 +546,8 @@
 		<item-type>Number:Power</item-type>
 		<label>AC Grid Output Power</label>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Power</property-tag>
+			<point>Measurement</point>
+			<property>Power</property>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
@@ -556,8 +556,8 @@
 		<item-type>Number:Energy</item-type>
 		<label>PV Total Generation</label>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Energy</property-tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -566,8 +566,8 @@
 		<item-type>Number:Energy</item-type>
 		<label>Cumulative Charge Energy</label>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Energy</property-tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -576,8 +576,8 @@
 		<item-type>Number:Energy</item-type>
 		<label>Cumulative Discharge Energy</label>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Energy</property-tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -586,8 +586,8 @@
 		<item-type>Switch</item-type>
 		<label>Backup SOC Enable</label>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>Enabled</property-tag>
+			<point>Control</point>
+			<property>Enabled</property>
 		</tags>
 		<state readOnly="false"/>
 	</channel-type>
@@ -596,8 +596,8 @@
 		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Charging Limit SOC</label>
 		<tags>
-			<point-tag>Setpoint</point-tag>
-			<property-tag>StateOfCharge</property-tag>
+			<point>Setpoint</point>
+			<property>StateOfCharge</property>
 		</tags>
 		<state min="80" max="100" step="1" readOnly="false" pattern="%.0f %unit%"/>
 	</channel-type>
@@ -606,8 +606,8 @@
 		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Discharge Limit SOC</label>
 		<tags>
-			<point-tag>Setpoint</point-tag>
-			<property-tag>StateOfCharge</property-tag>
+			<point>Setpoint</point>
+			<property>StateOfCharge</property>
 		</tags>
 		<state min="0" max="20" step="1" readOnly="false" pattern="%.0f %unit%"/>
 	</channel-type>
@@ -616,8 +616,8 @@
 		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Backup Reserve SOC</label>
 		<tags>
-			<point-tag>Setpoint</point-tag>
-			<property-tag>StateOfCharge</property-tag>
+			<point>Setpoint</point>
+			<property>StateOfCharge</property>
 		</tags>
 		<state min="0" max="100" step="1" readOnly="false" pattern="%.0f %unit%"/>
 	</channel-type>
@@ -626,8 +626,8 @@
 		<item-type>String</item-type>
 		<label>Operating Mode</label>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Control</point>
+			<property>Mode</property>
 		</tags>
 		<state readOnly="false">
 			<options>
@@ -646,8 +646,8 @@
 		<item-type>String</item-type>
 		<label>Battery Power Direction</label>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Control</point>
+			<property>Mode</property>
 		</tags>
 		<state readOnly="false">
 			<options>
@@ -661,8 +661,8 @@
 		<item-type>Number:Power</item-type>
 		<label>Battery Power Setpoint</label>
 		<tags>
-			<point-tag>Setpoint</point-tag>
-			<property-tag>Power</property-tag>
+			<point>Setpoint</point>
+			<property>Power</property>
 		</tags>
 		<state min="0" max="10000" step="1" readOnly="false" pattern="%.0f %unit%"/>
 	</channel-type>
@@ -671,7 +671,7 @@
 		<item-type>String</item-type>
 		<label>Meter Type</label>
 		<tags>
-			<point-tag>Status</point-tag>
+			<point>Status</point>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -685,8 +685,8 @@
 		<item-type>Number:Power</item-type>
 		<label>Active Power</label>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Power</property-tag>
+			<point>Measurement</point>
+			<property>Power</property>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
@@ -695,8 +695,8 @@
 		<item-type>Number:Power</item-type>
 		<label>Reactive Power</label>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Power</property-tag>
+			<point>Measurement</point>
+			<property>Power</property>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
@@ -705,7 +705,7 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Power Factor</label>
 		<tags>
-			<point-tag>Measurement</point-tag>
+			<point>Measurement</point>
 		</tags>
 		<state readOnly="true" pattern="%.3f"/>
 	</channel-type>
@@ -714,8 +714,8 @@
 		<item-type>Number:Energy</item-type>
 		<label>Active Energy</label>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Energy</property-tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -724,8 +724,8 @@
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>Current</label>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Current</property-tag>
+			<point>Measurement</point>
+			<property>Current</property>
 		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
@@ -734,8 +734,8 @@
 		<item-type>Number:ElectricPotential</item-type>
 		<label>Voltage</label>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Voltage</property-tag>
+			<point>Measurement</point>
+			<property>Voltage</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -744,8 +744,8 @@
 		<item-type>Number:Power</item-type>
 		<label>Real Time Power</label>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Power</property-tag>
+			<point>Measurement</point>
+			<property>Power</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -754,8 +754,8 @@
 		<item-type>Number:ElectricPotential</item-type>
 		<label>Voltage</label>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Voltage</property-tag>
+			<point>Measurement</point>
+			<property>Voltage</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -764,8 +764,8 @@
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>Current</label>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Current</property-tag>
+			<point>Measurement</point>
+			<property>Current</property>
 		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
@@ -774,8 +774,8 @@
 		<item-type>Number:Energy</item-type>
 		<label>Cumulative Energy</label>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Energy</property-tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state readOnly="true" pattern="%.3f %unit%"/>
 	</channel-type>
@@ -784,8 +784,8 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Temperature</label>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -794,8 +794,8 @@
 		<item-type>Switch</item-type>
 		<label>Power Switch</label>
 		<tags>
-			<point-tag>Switch</point-tag>
-			<property-tag>Power</property-tag>
+			<point>Switch</point>
+			<property>Power</property>
 		</tags>
 		<state readOnly="false"/>
 	</channel-type>
@@ -804,7 +804,7 @@
 		<item-type>Number</item-type>
 		<label>Alarm Word</label>
 		<tags>
-			<point-tag>Status</point-tag>
+			<point>Status</point>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -813,7 +813,7 @@
 		<item-type>Number</item-type>
 		<label>Raw Value</label>
 		<tags>
-			<point-tag>Measurement</point-tag>
+			<point>Measurement</point>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -822,8 +822,8 @@
 		<item-type>Number:Power</item-type>
 		<label>Power</label>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Power</property-tag>
+			<point>Measurement</point>
+			<property>Power</property>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
@@ -832,8 +832,8 @@
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>Current</label>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Current</property-tag>
+			<point>Measurement</point>
+			<property>Current</property>
 		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
@@ -842,8 +842,8 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Temperature</label>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
@@ -852,8 +852,8 @@
 		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>LED Light Brightness</label>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Brightness</property-tag>
+			<point>Measurement</point>
+			<property>Brightness</property>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
@@ -862,8 +862,8 @@
 		<item-type unitHint="s">Number:Time</item-type>
 		<label>Current Charging Session Duration</label>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Duration</property-tag>
+			<point>Measurement</point>
+			<property>Duration</property>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
@@ -872,8 +872,8 @@
 		<item-type>Number:Energy</item-type>
 		<label>Current Charging Capacity</label>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Energy</property-tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
@@ -882,8 +882,8 @@
 		<item-type>String</item-type>
 		<label>Enabled Status</label>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Enabled</property-tag>
+			<point>Status</point>
+			<property>Enabled</property>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -897,8 +897,8 @@
 		<item-type>String</item-type>
 		<label>Single / Three-Phase State</label>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Status</point>
+			<property>Mode</property>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -912,8 +912,8 @@
 		<item-type>String</item-type>
 		<label>Charging Mode State</label>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Status</point>
+			<property>Mode</property>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -927,7 +927,7 @@
 		<item-type>String</item-type>
 		<label>CP Signal State</label>
 		<tags>
-			<point-tag>Status</point-tag>
+			<point>Status</point>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -949,7 +949,7 @@
 		<item-type>String</item-type>
 		<label>Charging Status State</label>
 		<tags>
-			<point-tag>Status</point-tag>
+			<point>Status</point>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -970,7 +970,7 @@
 		<item-type>String</item-type>
 		<label>OCPP Connection State</label>
 		<tags>
-			<point-tag>Status</point-tag>
+			<point>Status</point>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -985,7 +985,7 @@
 		<item-type>String</item-type>
 		<label>MQTT Connection State</label>
 		<tags>
-			<point-tag>Status</point-tag>
+			<point>Status</point>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -999,8 +999,8 @@
 		<item-type>String</item-type>
 		<label>Charging Command</label>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>Power</property-tag>
+			<point>Control</point>
+			<property>Power</property>
 		</tags>
 		<state readOnly="false">
 			<options>
@@ -1014,8 +1014,8 @@
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>Maximum Current Setting</label>
 		<tags>
-			<point-tag>Setpoint</point-tag>
-			<property-tag>Current</property-tag>
+			<point>Setpoint</point>
+			<property>Current</property>
 		</tags>
 		<state min="0" max="32" step="0.1" readOnly="false" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -1024,8 +1024,8 @@
 		<item-type>Switch</item-type>
 		<label>Boost Mode Command</label>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Control</point>
+			<property>Mode</property>
 		</tags>
 		<state readOnly="false"/>
 	</channel-type>
@@ -1034,8 +1034,8 @@
 		<item-type unitHint="s">Number:Time</item-type>
 		<label>Set Timeout</label>
 		<tags>
-			<point-tag>Setpoint</point-tag>
-			<property-tag>Duration</property-tag>
+			<point>Setpoint</point>
+			<property>Duration</property>
 		</tags>
 		<state min="6" step="1" readOnly="false" pattern="%.0f %unit%"/>
 	</channel-type>
@@ -1044,8 +1044,8 @@
 		<item-type>Number</item-type>
 		<label>Set Number of Charging Phases</label>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Control</point>
+			<property>Mode</property>
 		</tags>
 		<state readOnly="false">
 			<options>

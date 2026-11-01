@@ -44,8 +44,8 @@
 		<label>Pump Speed</label>
 		<description>Pump speed in percentage</description>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>Speed</property-tag>
+			<point>Control</point>
+			<property>Speed</property>
 		</tags>
 		<state min="0" max="100" step="1" pattern="%d %%" readOnly="false"/>
 	</channel-type>
@@ -55,8 +55,8 @@
 		<label>Pump Speed</label>
 		<description>Pump speed in RPM</description>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>Frequency</property-tag>
+			<point>Control</point>
+			<property>Frequency</property>
 		</tags>
 		<state min="0" max="3600" step="200" pattern="%d rpm" readOnly="false"/>
 	</channel-type>
@@ -65,8 +65,8 @@
 		<item-type>String</item-type>
 		<label>Pump Speed Presets</label>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>Speed</property-tag>
+			<point>Control</point>
+			<property>Speed</property>
 		</tags>
 		<state readOnly="false">
 			<options>

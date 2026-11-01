@@ -23,8 +23,8 @@
 		<item-type>Switch</item-type>
 		<label>Leak Detected</label>
 		<tags>
-			<point-tag>Alarm</point-tag>
-			<property-tag>Water</property-tag>
+			<point>Alarm</point>
+			<property>Water</property>
 		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
@@ -33,8 +33,8 @@
 		<label>Temperature</label>
 		<category>Temperature</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true">
 		</state>
@@ -46,8 +46,8 @@
 			This channel shows the brightness of the environment in Lux.
 		</description>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Illuminance</property-tag>
+			<point>Measurement</point>
+			<property>Illuminance</property>
 		</tags>
 		<state pattern="%d %unit%" readOnly="true"></state>
 	</channel-type>
@@ -56,8 +56,8 @@
 		<label>Open Status</label>
 		<category>Contact</category>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>OpenState</property-tag>
+			<point>Status</point>
+			<property>OpenState</property>
 		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
@@ -66,8 +66,8 @@
 		<label>Motion Status</label>
 		<category>Motion</category>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Motion</property-tag>
+			<point>Status</point>
+			<property>Motion</property>
 		</tags>
 		<state readOnly="true"></state>
 	</channel-type>

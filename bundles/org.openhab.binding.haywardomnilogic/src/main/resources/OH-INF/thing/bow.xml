@@ -33,8 +33,8 @@
 		<item-type>Switch</item-type>
 		<label>Flow Sensor</label>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Water</property-tag>
+			<point>Status</point>
+			<property>Water</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -43,8 +43,8 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Water Temp</label>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>

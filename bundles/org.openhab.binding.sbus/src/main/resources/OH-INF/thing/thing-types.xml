@@ -272,8 +272,8 @@
 		<description>Switch state (ON/OFF)</description>
 		<category>Switch</category>
 		<tags>
-			<point-tag>Switch</point-tag>
-			<property-tag>Power</property-tag>
+			<point>Switch</point>
+			<property>Power</property>
 		</tags>
 		<config-description>
 			<parameter name="channelNumber" type="integer" required="true">
@@ -289,8 +289,8 @@
 		<description>Dimmer state (0-100%)</description>
 		<category>DimmableLight</category>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>Brightness</property-tag>
+			<point>Control</point>
+			<property>Brightness</property>
 		</tags>
 		<config-description>
 			<parameter name="channelNumber" type="integer" required="true">
@@ -313,8 +313,8 @@
 		<description>Rollershutter control (UP/DOWN) - controls two opposite channels</description>
 		<category>Blinds</category>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>OpenLevel</property-tag>
+			<point>Control</point>
+			<property>OpenLevel</property>
 		</tags>
 		<config-description>
 			<parameter name="channelNumber" type="integer" required="true">
@@ -334,8 +334,8 @@
 		<description>Temperature reading from the device</description>
 		<category>Temperature</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 		<config-description>
@@ -361,8 +361,8 @@
 		<description>Color control</description>
 		<category>ColorLight</category>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>Color</property-tag>
+			<point>Control</point>
+			<property>Color</property>
 		</tags>
 		<config-description>
 			<parameter name="channelNumber" type="integer" required="true">
@@ -384,8 +384,8 @@
 		<description>Contact state (OPEN/CLOSED)</description>
 		<category>Contact</category>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>OpenState</property-tag>
+			<point>Status</point>
+			<property>OpenState</property>
 		</tags>
 		<state readOnly="true"/>
 		<config-description>
@@ -402,8 +402,8 @@
 		<description>Motion detection state (ON=motion detected, OFF=no motion)</description>
 		<category>Motion</category>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Motion</property-tag>
+			<point>Status</point>
+			<property>Motion</property>
 		</tags>
 		<state readOnly="true"/>
 		<config-description>
@@ -421,8 +421,8 @@
 		<description>Light level in LUX units</description>
 		<category>Sun</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Light</property-tag>
+			<point>Measurement</point>
+			<property>Light</property>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 		<config-description>
@@ -440,8 +440,8 @@
 		<description>Current date and time on the device</description>
 		<category>Time</category>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Timestamp</property-tag>
+			<point>Status</point>
+			<property>Timestamp</property>
 		</tags>
 		<state pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS"/>
 	</channel-type>

@@ -59,8 +59,8 @@
 		<description>Programmed start time of the program</description>
 		<category>Time</category>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Timestamp</property-tag>
+			<point>Status</point>
+			<property>Timestamp</property>
 		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
@@ -71,8 +71,8 @@
 		<description>End time of the program (programmed or running)</description>
 		<category>Time</category>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Timestamp</property-tag>
+			<point>Status</point>
+			<property>Timestamp</property>
 		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
@@ -83,8 +83,8 @@
 		<description>Duration of the program running on the appliance</description>
 		<category>Time</category>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Duration</property-tag>
+			<point>Status</point>
+			<property>Duration</property>
 		</tags>
 		<state readOnly="true" pattern="%1$tR"></state>
 	</channel-type>
@@ -95,8 +95,8 @@
 		<description>Time elapsed in the program running on the appliance</description>
 		<category>Time</category>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Progress</property-tag>
+			<point>Status</point>
+			<property>Progress</property>
 		</tags>
 		<state readOnly="true" pattern="%1$tR"></state>
 	</channel-type>
@@ -107,8 +107,8 @@
 		<description>Time to finish the program running on the appliance</description>
 		<category>Time</category>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Duration</property-tag>
+			<point>Status</point>
+			<property>Duration</property>
 		</tags>
 		<state readOnly="true" pattern="%1$tR"></state>
 	</channel-type>
@@ -118,8 +118,8 @@
 		<label>Door</label>
 		<description>Current state of the door of the appliance</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>OpenState</property-tag>
+			<point>Status</point>
+			<property>OpenState</property>
 		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
@@ -145,8 +145,8 @@
 		<description>Switch the appliance on or off</description>
 		<category>Switch</category>
 		<tags>
-			<point-tag>Switch</point-tag>
-			<property-tag>Power</property-tag>
+			<point>Switch</point>
+			<property>Power</property>
 		</tags>
 	</channel-type>
 
@@ -178,8 +178,8 @@
 		<description>Current temperature of the appliance</description>
 		<category>Temperature</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
@@ -190,8 +190,8 @@
 		<description>Target temperature to be reached by the appliance</description>
 		<category>Temperature</category>
 		<tags>
-			<point-tag>Setpoint</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
@@ -201,8 +201,8 @@
 		<label>Super Cool</label>
 		<description>Start or stop Super Cooling</description>
 		<tags>
-			<point-tag>Switch</point-tag>
-			<property-tag>Enabled</property-tag>
+			<point>Switch</point>
+			<property>Enabled</property>
 		</tags>
 		<state readOnly="false"></state>
 	</channel-type>
@@ -226,8 +226,8 @@
 		<label>Super Freeze</label>
 		<description>Start or stop Super Freezing</description>
 		<tags>
-			<point-tag>Switch</point-tag>
-			<property-tag>Enabled</property-tag>
+			<point>Switch</point>
+			<property>Enabled</property>
 		</tags>
 		<state readOnly="false"></state>
 	</channel-type>
@@ -281,8 +281,8 @@
 		<description>Energy consumption by the currently running program on the appliance</description>
 		<category>Energy</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Energy</property-tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -293,8 +293,8 @@
 		<description>Water consumption by the currently running program on the appliance</description>
 		<category>Water</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Water</property-tag>
+			<point>Measurement</point>
+			<property>Water</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>

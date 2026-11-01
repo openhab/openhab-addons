@@ -23,8 +23,8 @@
 		<item-type>Switch</item-type>
 		<label>Digital Output</label>
 		<tags>
-			<point-tag>Switch</point-tag>
-			<property-tag>Power</property-tag>
+			<point>Switch</point>
+			<property>Power</property>
 		</tags>
 		<config-description-ref uri="channel-type:gce:relayConfig"/>
 	</channel-type>

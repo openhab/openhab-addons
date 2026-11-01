@@ -87,8 +87,8 @@
 		<label>Voltage</label>
 		<description>Voltage</description>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Voltage</property-tag>
+			<point>Measurement</point>
+			<property>Voltage</property>
 		</tags>
 		<state readOnly="true" pattern="%f %unit%"/>
 	</channel-type>
@@ -97,8 +97,8 @@
 		<label>Date</label>
 		<description>The current date and time on the panel</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Timestamp</property-tag>
+			<point>Status</point>
+			<property>Timestamp</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -107,7 +107,7 @@
 		<label>Trouble Flag</label>
 		<description>Panel system trouble indicator</description>
 		<tags>
-			<point-tag>Alarm</point-tag>
+			<point>Alarm</point>
 		</tags>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>

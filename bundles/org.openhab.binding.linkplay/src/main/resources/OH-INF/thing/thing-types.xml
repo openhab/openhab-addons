@@ -45,8 +45,8 @@
 		<description>Control playback of the device</description>
 		<category>MediaControl</category>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>MediaControl</property-tag>
+			<point>Control</point>
+			<property>MediaControl</property>
 		</tags>
 	</channel-type>
 	<channel-type id="playback-state">
@@ -55,8 +55,8 @@
 		<description>Current playback state (PLAYING, PAUSED, STOPPED, BUFFERING)</description>
 		<category>MediaControl</category>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>MediaControl</property-tag>
+			<point>Status</point>
+			<property>MediaControl</property>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -73,8 +73,8 @@
 		<description>Current track position</description>
 		<category>MediaControl</category>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Progress</property-tag>
+			<point>Status</point>
+			<property>Progress</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -84,8 +84,8 @@
 		<description>Total track duration</description>
 		<category>MediaControl</category>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Duration</property-tag>
+			<point>Status</point>
+			<property>Duration</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -94,8 +94,8 @@
 		<label>Playlist Name</label>
 		<description>Playlist name</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Info</property-tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -105,8 +105,8 @@
 		<description>Loop, shuffle or single-track mode</description>
 		<category>MediaControl</category>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Control</point>
+			<property>Mode</property>
 		</tags>
 		<state>
 			<options>
@@ -124,8 +124,8 @@
 		<label>EQ Preset</label>
 		<description>Name of the active EQ preset</description>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Control</point>
+			<property>Mode</property>
 		</tags>
 	</channel-type>
 	<channel-type id="volume">
@@ -134,8 +134,8 @@
 		<description>Main volume (0-100 %)</description>
 		<category>SoundVolume</category>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>SoundVolume</property-tag>
+			<point>Control</point>
+			<property>SoundVolume</property>
 		</tags>
 		<state min="0" max="100" step="1" pattern="%d %%"/>
 	</channel-type>
@@ -145,8 +145,8 @@
 		<description>Mutes or unmutes the device</description>
 		<category>SoundVolume</category>
 		<tags>
-			<point-tag>Switch</point-tag>
-			<property-tag>SoundVolume</property-tag>
+			<point>Switch</point>
+			<property>SoundVolume</property>
 		</tags>
 	</channel-type>
 
@@ -156,8 +156,8 @@
 		<label>Track Title</label>
 		<description>Current track title</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Info</property-tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -166,8 +166,8 @@
 		<label>Track Artist</label>
 		<description>Current track artist</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Info</property-tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -176,8 +176,8 @@
 		<label>Track Album</label>
 		<description>Current track album</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Info</property-tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -186,8 +186,8 @@
 		<label>Track URI</label>
 		<description>Current track uri</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Info</property-tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -196,8 +196,8 @@
 		<label>Track Source</label>
 		<description>Current track source (Pandora, Spotify, etc.)</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Info</property-tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -206,8 +206,8 @@
 		<label>Album Art URL</label>
 		<description>URL of the current album artwork</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Info</property-tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -216,8 +216,8 @@
 		<label>Album Art</label>
 		<description>Album artwork</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Info</property-tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -226,8 +226,8 @@
 		<label>Sample Rate</label>
 		<description>Sample rate of the playing track (Hz)</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Info</property-tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -236,8 +236,8 @@
 		<label>Bit Depth</label>
 		<description>Bit depth of the playing track</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Info</property-tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -246,8 +246,8 @@
 		<label>Bit Rate</label>
 		<description>Bit rate of the playing track (kbps)</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Info</property-tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -258,8 +258,8 @@
 		<label>Source Input</label>
 		<description>Active input source (WiFi, Bluetooth, Line-in, …)</description>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>MediaControl</property-tag>
+			<point>Control</point>
+			<property>MediaControl</property>
 		</tags>
 		<state>
 			<options>
@@ -278,8 +278,8 @@
 		<label>Bluetooth Connected</label>
 		<description>Indicates if a Bluetooth device is connected</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Presence</property-tag>
+			<point>Status</point>
+			<property>Presence</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -288,8 +288,8 @@
 		<label>Paired BT Device</label>
 		<description>MAC address of the paired Bluetooth device</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Info</property-tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -298,8 +298,8 @@
 		<label>Line-in Active</label>
 		<description>True when line-in source is selected</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>MediaControl</property-tag>
+			<point>Status</point>
+			<property>MediaControl</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -310,8 +310,8 @@
 		<label>EQ Enabled</label>
 		<description>Equaliser on/off</description>
 		<tags>
-			<point-tag>Switch</point-tag>
-			<property-tag>Enabled</property-tag>
+			<point>Switch</point>
+			<property>Enabled</property>
 		</tags>
 	</channel-type>
 	<channel-type id="eq-band">
@@ -319,8 +319,8 @@
 		<label>EQ Band</label>
 		<description>Gain value of an EQ frequency band</description>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>Level</property-tag>
+			<point>Control</point>
+			<property>Level</property>
 		</tags>
 		<state min="-12" max="12" step="1" pattern="%d dB"/>
 	</channel-type>
@@ -329,8 +329,8 @@
 		<label>Output Hardware Mode</label>
 		<description>Active audio output (SPDIF, AUX, COAX)</description>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Control</point>
+			<property>Mode</property>
 		</tags>
 		<state>
 			<options>
@@ -345,8 +345,8 @@
 		<label>Channel Balance</label>
 		<description>Stereo balance (-1.0 left … 1.0 right)</description>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>Level</property-tag>
+			<point>Control</point>
+			<property>Level</property>
 		</tags>
 		<state min="-1" max="1" step="0.1" pattern="%.1f"/>
 	</channel-type>
@@ -355,8 +355,8 @@
 		<label>SPDIF Switch Delay</label>
 		<description>SPDIF sample-rate switch delay (ms)</description>
 		<tags>
-			<point-tag>Setpoint</point-tag>
-			<property-tag>Duration</property-tag>
+			<point>Setpoint</point>
+			<property>Duration</property>
 		</tags>
 		<state min="0" max="3000" step="50" pattern="%d ms"/>
 	</channel-type>
@@ -368,8 +368,8 @@
 		<description>Volume level for all grouped devices</description>
 		<category>SoundVolume</category>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>SoundVolume</property-tag>
+			<point>Control</point>
+			<property>SoundVolume</property>
 		</tags>
 		<state min="0" max="100" step="1" pattern="%d %%"/>
 	</channel-type>
@@ -379,8 +379,8 @@
 		<description>Mutes or unmutes all grouped devices</description>
 		<category>SoundVolume</category>
 		<tags>
-			<point-tag>Switch</point-tag>
-			<property-tag>SoundVolume</property-tag>
+			<point>Switch</point>
+			<property>SoundVolume</property>
 		</tags>
 	</channel-type>
 	<channel-type id="multiroom-active">
@@ -388,8 +388,8 @@
 		<label>Multi-room Active</label>
 		<description>Indicates if the device is part of a group</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>MediaControl</property-tag>
+			<point>Status</point>
+			<property>MediaControl</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -398,8 +398,8 @@
 		<label>Multi-room Leader</label>
 		<description>Indicates if the device is a leader of a group</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>MediaControl</property-tag>
+			<point>Status</point>
+			<property>MediaControl</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -408,8 +408,8 @@
 		<label>Join Group</label>
 		<description>Join another player's group</description>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>MediaControl</property-tag>
+			<point>Control</point>
+			<property>MediaControl</property>
 		</tags>
 	</channel-type>
 	<channel-type id="leave-group">
@@ -417,8 +417,8 @@
 		<label>Leave Group</label>
 		<description>Leave this player's group</description>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>MediaControl</property-tag>
+			<point>Control</point>
+			<property>MediaControl</property>
 		</tags>
 	</channel-type>
 	<channel-type id="add-remove-member">
@@ -426,8 +426,8 @@
 		<label>Manage Members</label>
 		<description>Add or remove members from this player's group</description>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>MediaControl</property-tag>
+			<point>Control</point>
+			<property>MediaControl</property>
 		</tags>
 	</channel-type>
 	<channel-type id="ungroup">
@@ -435,8 +435,8 @@
 		<label>Ungroup</label>
 		<description>Ungroup all devices</description>
 		<tags>
-			<point-tag>Switch</point-tag>
-			<property-tag>MediaControl</property-tag>
+			<point>Switch</point>
+			<property>MediaControl</property>
 		</tags>
 	</channel-type>
 
@@ -447,8 +447,8 @@
 		<description>Enables or disables the status LED</description>
 		<category>Light</category>
 		<tags>
-			<point-tag>Switch</point-tag>
-			<property-tag>Light</property-tag>
+			<point>Switch</point>
+			<property>Light</property>
 		</tags>
 	</channel-type>
 	<channel-type id="touch-keys-enabled">
@@ -456,8 +456,8 @@
 		<label>Touch Keys</label>
 		<description>Enables or disables touch controls</description>
 		<tags>
-			<point-tag>Switch</point-tag>
-			<property-tag>Enabled</property-tag>
+			<point>Switch</point>
+			<property>Enabled</property>
 		</tags>
 	</channel-type>
 	<channel-type id="shutdown-timer">
@@ -465,8 +465,8 @@
 		<label>Shutdown Timer</label>
 		<description>Seconds until automatic shutdown</description>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>Duration</property-tag>
+			<point>Control</point>
+			<property>Duration</property>
 		</tags>
 	</channel-type>
 	<channel-type id="reboot">
@@ -474,8 +474,8 @@
 		<label>Reboot Device</label>
 		<description>Sends a reboot command (ON to trigger)</description>
 		<tags>
-			<point-tag>Switch</point-tag>
-			<property-tag>Power</property-tag>
+			<point>Switch</point>
+			<property>Power</property>
 		</tags>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
@@ -484,8 +484,8 @@
 		<label>Factory Reset</label>
 		<description>Restores factory defaults (ON to trigger)</description>
 		<tags>
-			<point-tag>Switch</point-tag>
-			<property-tag>Power</property-tag>
+			<point>Switch</point>
+			<property>Power</property>
 		</tags>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
@@ -496,8 +496,8 @@
 		<label>Preset Count</label>
 		<description>Number of presets stored on the device</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Info</property-tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -506,8 +506,8 @@
 		<label>Play Preset</label>
 		<description>Sends the chosen preset number (1-12) to play</description>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>MediaControl</property-tag>
+			<point>Control</point>
+			<property>MediaControl</property>
 		</tags>
 	</channel-type>
 	<!-- Added preset detail channel types -->
@@ -516,8 +516,8 @@
 		<label>Preset Name</label>
 		<description>Name of the stored preset</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Info</property-tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -526,8 +526,8 @@
 		<label>Preset URL</label>
 		<description>URL associated with the preset</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Info</property-tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -536,8 +536,8 @@
 		<label>Preset Source</label>
 		<description>Source type of the preset (e.g. tunein, udisk)</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Info</property-tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -546,8 +546,8 @@
 		<label>Preset Picture URL</label>
 		<description>Artwork URL for the preset</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Info</property-tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -556,8 +556,8 @@
 		<label>Preset Picture</label>
 		<description>Artwork image for the preset</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Info</property-tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -566,8 +566,8 @@
 		<label>Play Preset</label>
 		<description>Play the preset (ON to trigger)</description>
 		<tags>
-			<point-tag>Switch</point-tag>
-			<property-tag>MediaControl</property-tag>
+			<point>Switch</point>
+			<property>MediaControl</property>
 		</tags>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>

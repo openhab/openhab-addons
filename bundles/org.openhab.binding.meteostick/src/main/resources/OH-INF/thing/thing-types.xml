@@ -98,8 +98,8 @@
 		<description>Current indoor temperature</description>
 		<category>Temperature</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%">
 		</state>
@@ -111,8 +111,8 @@
 		<description>Current outdoor temperature</description>
 		<category>Temperature</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%">
 		</state>
@@ -124,8 +124,8 @@
 		<description>Current humidity in percent</description>
 		<category>Humidity</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Humidity</property-tag>
+			<point>Measurement</point>
+			<property>Humidity</property>
 		</tags>
 		<state readOnly="true" pattern="%d %%">
 		</state>
@@ -137,8 +137,8 @@
 		<description>Current atmospheric pressure</description>
 		<category>Pressure</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Pressure</property-tag>
+			<point>Measurement</point>
+			<property>Pressure</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%">
 		</state>
@@ -150,8 +150,8 @@
 		<description>Wind direction</description>
 		<category>Wind</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Wind</property-tag>
+			<point>Measurement</point>
+			<property>Wind</property>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%">
 		</state>
@@ -163,8 +163,8 @@
 		<description>Wind direction average over last two minutes</description>
 		<category>Wind</category>
 		<tags>
-			<point-tag>Calculation</point-tag>
-			<property-tag>Wind</property-tag>
+			<point>Calculation</point>
+			<property>Wind</property>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%">
 		</state>
@@ -176,8 +176,8 @@
 		<description>Wind speed</description>
 		<category>Wind</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Wind</property-tag>
+			<point>Measurement</point>
+			<property>Wind</property>
 		</tags>
 		<state readOnly="true" pattern="%.2f %unit%">
 		</state>
@@ -189,8 +189,8 @@
 		<description>Wind speed average over last two minutes</description>
 		<category>Wind</category>
 		<tags>
-			<point-tag>Calculation</point-tag>
-			<property-tag>Wind</property-tag>
+			<point>Calculation</point>
+			<property>Wind</property>
 		</tags>
 		<state readOnly="true" pattern="%.2f %unit%">
 		</state>
@@ -211,8 +211,8 @@
 		<description>A counter between 0 and 255 in spoon-sized steps</description>
 		<category>Rain</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Rain</property-tag>
+			<point>Measurement</point>
+			<property>Rain</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f">
 		</state>
@@ -224,8 +224,8 @@
 		<description>Rainfall in the previous hour</description>
 		<category>Rain</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Rain</property-tag>
+			<point>Measurement</point>
+			<property>Rain</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%">
 		</state>
@@ -237,8 +237,8 @@
 		<description>Rainfall in the last 60 minutes</description>
 		<category>Rain</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Rain</property-tag>
+			<point>Measurement</point>
+			<property>Rain</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%">
 		</state>
@@ -250,8 +250,8 @@
 		<description>Total rainfall today</description>
 		<category>Rain</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Rain</property-tag>
+			<point>Measurement</point>
+			<property>Rain</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%">
 		</state>
@@ -263,8 +263,8 @@
 		<description>Solar panel power percentage</description>
 		<category>Light</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Illuminance</property-tag>
+			<point>Measurement</point>
+			<property>Illuminance</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %%">
 		</state>

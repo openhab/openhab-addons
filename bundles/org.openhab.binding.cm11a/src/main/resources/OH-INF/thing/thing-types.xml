@@ -74,8 +74,8 @@
 		<description>Increase/decrease the light level</description>
 		<category>Light</category>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>Brightness</property-tag>
+			<point>Control</point>
+			<property>Brightness</property>
 		</tags>
 		<state min="0" max="100" pattern="%.0f %%"/>
 	</channel-type>
@@ -86,8 +86,8 @@
 		<description>On/off status of the switch</description>
 		<category>Switch</category>
 		<tags>
-			<point-tag>Switch</point-tag>
-			<property-tag>Power</property-tag>
+			<point>Switch</point>
+			<property>Power</property>
 		</tags>
 	</channel-type>
 

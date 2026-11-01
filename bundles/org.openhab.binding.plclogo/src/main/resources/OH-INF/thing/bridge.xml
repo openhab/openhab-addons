@@ -56,8 +56,8 @@
 		<item-type>Contact</item-type>
 		<label>Digital Input</label>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>OpenState</property-tag>
+			<point>Status</point>
+			<property>OpenState</property>
 		</tags>
 	</channel-type>
 
@@ -65,8 +65,8 @@
 		<item-type>Switch</item-type>
 		<label>Digital Output</label>
 		<tags>
-			<point-tag>Switch</point-tag>
-			<property-tag>Power</property-tag>
+			<point>Switch</point>
+			<property>Power</property>
 		</tags>
 	</channel-type>
 
@@ -75,7 +75,7 @@
 		<item-type>Number</item-type>
 		<label>Analog Number</label>
 		<tags>
-			<point-tag>Measurement</point-tag>
+			<point>Measurement</point>
 		</tags>
 	</channel-type>
 

@@ -154,8 +154,8 @@
 		<label>Volume</label>
 		<description>Volume of your device</description>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>SoundVolume</property-tag>
+			<point>Control</point>
+			<property>SoundVolume</property>
 		</tags>
 		<state min="0" max="100" step="1" pattern="%d %%">
 		</state>
@@ -191,8 +191,8 @@
 		<description>Control the Zone Player, e.g. play/pause/next/previous/fast-forward/rewind</description>
 		<category>Player</category>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>MediaControl</property-tag>
+			<point>Control</point>
+			<property>MediaControl</property>
 		</tags>
 	</channel-type>
 	<channel-type id="stream" advanced="true">
@@ -227,8 +227,8 @@
 		<description>Current Playing Time</description>
 		<category>Time</category>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>Duration</property-tag>
+			<point>Control</point>
+			<property>Duration</property>
 		</tags>
 		<state pattern="%.0f %unit%"/>
 	</channel-type>
@@ -238,8 +238,8 @@
 		<description>Duration of Current Track (in seconds)</description>
 		<category>Time</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Duration</property-tag>
+			<point>Measurement</point>
+			<property>Duration</property>
 		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
@@ -286,8 +286,8 @@
 		<label>Album</label>
 		<description>Album name of the current song</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Info</property-tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true" pattern="%s"></state>
 	</channel-type>
@@ -296,8 +296,8 @@
 		<label>Artist</label>
 		<description>Artist name of the current song</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Info</property-tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true" pattern="%s"></state>
 	</channel-type>
@@ -306,8 +306,8 @@
 		<label>Year</label>
 		<description>Release year of the current song</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Info</property-tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true" pattern="%s"></state>
 	</channel-type>
@@ -316,8 +316,8 @@
 		<label>Genre</label>
 		<description>Genre name of the current song</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Info</property-tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true" pattern="%s"></state>
 	</channel-type>
@@ -326,8 +326,8 @@
 		<label>Album Artist</label>
 		<description>Main artist for the album</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Info</property-tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true" pattern="%s"></state>
 	</channel-type>
@@ -336,8 +336,8 @@
 		<label>Track Artist</label>
 		<description>Main artist for the track</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Info</property-tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true" pattern="%s"></state>
 	</channel-type>
@@ -346,8 +346,8 @@
 		<label>Band/Orchestra</label>
 		<description>Band/orchestra performing the work</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Info</property-tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true" pattern="%s"></state>
 	</channel-type>
@@ -356,8 +356,8 @@
 		<label>Composer</label>
 		<description>Original composer of the work</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Info</property-tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true" pattern="%s"></state>
 	</channel-type>
@@ -366,8 +366,8 @@
 		<label>Conductor</label>
 		<description>Person who conducted the performance</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Info</property-tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true" pattern="%s"></state>
 	</channel-type>
@@ -399,8 +399,8 @@
 		<label>Sleep</label>
 		<description>Power off the player after the specified number of minutes</description>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>MediaControl</property-tag>
+			<point>Control</point>
+			<property>MediaControl</property>
 		</tags>
 		<state pattern="%d"></state>
 	</channel-type>

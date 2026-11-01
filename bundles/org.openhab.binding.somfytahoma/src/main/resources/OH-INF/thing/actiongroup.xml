@@ -21,8 +21,8 @@
 		<label>Somfy Action Group Trigger</label>
 		<description>Trigger of the action group</description>
 		<tags>
-			<point-tag>Switch</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Switch</point>
+			<property>Mode</property>
 		</tags>
 	</channel-type>
 </thing:thing-descriptions>

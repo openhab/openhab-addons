@@ -62,8 +62,8 @@
 		<item-type>String</item-type>
 		<label>@text/icloud.device-thing.channel.battery-status.label</label>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Status</point>
+			<property>Mode</property>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -82,8 +82,8 @@
 		<item-type>Location</item-type>
 		<label>@text/icloud.device-thing.channel.location.label</label>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>GeoLocation</property-tag>
+			<point>Measurement</point>
+			<property>GeoLocation</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>

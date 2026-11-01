@@ -323,8 +323,8 @@
 		<label>Observation Time</label>
 		<category>Time</category>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Timestamp</property-tag>
+			<point>Status</point>
+			<property>Timestamp</property>
 		</tags>
 		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS"/>
 	</channel-type>
@@ -333,8 +333,8 @@
 		<label>Forecast Time</label>
 		<category>Time</category>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Timestamp</property-tag>
+			<point>Status</point>
+			<property>Timestamp</property>
 		</tags>
 		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS"/>
 	</channel-type>
@@ -343,8 +343,8 @@
 		<label>Temperature</label>
 		<category>Temperature</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -353,8 +353,8 @@
 		<label>Humidity</label>
 		<category>Humidity</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Humidity</property-tag>
+			<point>Measurement</point>
+			<property>Humidity</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -363,8 +363,8 @@
 		<label>Wind Direction</label>
 		<category>Wind</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Wind</property-tag>
+			<point>Measurement</point>
+			<property>Wind</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -373,8 +373,8 @@
 		<label>Wind Speed</label>
 		<category>Wind</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Wind</property-tag>
+			<point>Measurement</point>
+			<property>Wind</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -383,8 +383,8 @@
 		<label>Wind Gust</label>
 		<category>Wind</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Wind</property-tag>
+			<point>Measurement</point>
+			<property>Wind</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -393,8 +393,8 @@
 		<label>Pressure</label>
 		<category>Pressure</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Pressure</property-tag>
+			<point>Measurement</point>
+			<property>Pressure</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -404,8 +404,8 @@
 		<description>Precipitation in one hour</description>
 		<category>Rain</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Rain</property-tag>
+			<point>Measurement</point>
+			<property>Rain</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -542,8 +542,8 @@
 		<label>Precipitation Intensity</label>
 		<description>Equivalent to the precipitation amount if the same intensity prevails for an hour. </description>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Precipitation</property-tag>
+			<point>Measurement</point>
+			<property>Precipitation</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>

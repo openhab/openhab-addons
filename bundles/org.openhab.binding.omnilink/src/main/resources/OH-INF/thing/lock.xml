@@ -30,8 +30,8 @@
 		<description>Lock or unlock this lock.</description>
 		<category>Switch</category>
 		<tags>
-			<point-tag>Switch</point-tag>
-			<property-tag>LockState</property-tag>
+			<point>Switch</point>
+			<property>LockState</property>
 		</tags>
 	</channel-type>
 

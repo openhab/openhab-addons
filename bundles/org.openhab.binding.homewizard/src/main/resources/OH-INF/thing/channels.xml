@@ -75,8 +75,8 @@
 		</description>
 		<category>QualityOfService</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>SignalStrength</property-tag>
+			<point>Measurement</point>
+			<property>SignalStrength</property>
 		</tags>
 	</channel-type>
 
@@ -88,8 +88,8 @@
 		</description>
 		<category>Duration</category>
 		<tags>
-			<point-tag>Calculation</point-tag>
-			<property-tag>Duration</property-tag>
+			<point>Calculation</point>
+			<property>Duration</property>
 		</tags>
 	</channel-type>
 
@@ -100,8 +100,8 @@
 			This channel provides the state of the cloud communication.
 		</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Enabled</property-tag>
+			<point>Status</point>
+			<property>Enabled</property>
 		</tags>
 	</channel-type>
 
@@ -112,8 +112,8 @@
 			This channel provides the brightness of the status LED in percent.
 		</description>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>Brightness</property-tag>
+			<point>Control</point>
+			<property>Brightness</property>
 		</tags>
 	</channel-type>
 
@@ -125,8 +125,8 @@
 		</description>
 		<category>Energy</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Power</property-tag>
+			<point>Measurement</point>
+			<property>Power</property>
 		</tags>
 	</channel-type>
 
@@ -138,8 +138,8 @@
 		</description>
 		<category>Energy</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Power</property-tag>
+			<point>Measurement</point>
+			<property>Power</property>
 		</tags>
 	</channel-type>
 
@@ -151,8 +151,8 @@
 		</description>
 		<category>Energy</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Voltage</property-tag>
+			<point>Measurement</point>
+			<property>Voltage</property>
 		</tags>
 	</channel-type>
 
@@ -164,8 +164,8 @@
 		</description>
 		<category>Energy</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Voltage</property-tag>
+			<point>Measurement</point>
+			<property>Voltage</property>
 		</tags>
 	</channel-type>
 
@@ -177,8 +177,8 @@
 		</description>
 		<category>Energy</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Current</property-tag>
+			<point>Measurement</point>
+			<property>Current</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -191,8 +191,8 @@
 		</description>
 		<category>Energy</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Current</property-tag>
+			<point>Measurement</point>
+			<property>Current</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -205,8 +205,8 @@
 		</description>
 		<category>Energy</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Energy</property-tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 	</channel-type>
 
@@ -218,8 +218,8 @@
 		</description>
 		<category>Energy</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Energy</property-tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 	</channel-type>
 
@@ -231,8 +231,8 @@
 		</description>
 		<category>Energy</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Energy</property-tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 	</channel-type>
 
@@ -244,8 +244,8 @@
 		</description>
 		<category>Energy</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Energy</property-tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 	</channel-type>
 
@@ -287,8 +287,8 @@
 		</description>
 		<category>Energy</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Frequency</property-tag>
+			<point>Measurement</point>
+			<property>Frequency</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -300,8 +300,8 @@
 			This channel provides the control mode of the Plug-In Battery.
 		</description>
 		<tags>
-			<point-tag>Setpoint</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Setpoint</point>
+			<property>Mode</property>
 		</tags>
 		<command>
 			<options>

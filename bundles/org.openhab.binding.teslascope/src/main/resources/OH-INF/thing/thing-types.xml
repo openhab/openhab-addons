@@ -166,8 +166,8 @@
 		<label>Battery Level</label>
 		<description>Vehicle Battery Level</description>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Power</property-tag>
+			<point>Measurement</point>
+			<property>Power</property>
 		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
@@ -200,8 +200,8 @@
 		<label>Auto Conditioning</label>
 		<description>Turns on auto-conditioning (a/c or heating)</description>
 		<tags>
-			<point-tag>Switch</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Switch</point>
+			<property>Mode</property>
 		</tags>
 	</channel-type>
 	<channel-type id="battery-range" advanced="true">
@@ -232,8 +232,8 @@
 		<label>Charge Limit SOC</label>
 		<description>Current charging limit of the vehicle, in %</description>
 		<tags>
-			<point-tag>Setpoint</point-tag>
-			<property-tag>Level</property-tag>
+			<point>Setpoint</point>
+			<property>Level</property>
 		</tags>
 		<state pattern="%.0f %%"></state>
 	</channel-type>
@@ -242,8 +242,8 @@
 		<label>Charge Limit SOC Min</label>
 		<description>Minimum charging limit of the vehicle, in %</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Level</property-tag>
+			<point>Status</point>
+			<property>Level</property>
 		</tags>
 		<state pattern="%.0f %%" readOnly="true"></state>
 	</channel-type>
@@ -252,8 +252,8 @@
 		<label>Charge Limit SOC Max</label>
 		<description>Maximum charging limit of the vehicle, in %</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Level</property-tag>
+			<point>Status</point>
+			<property>Level</property>
 		</tags>
 		<state pattern="%.0f %%" readOnly="true"></state>
 	</channel-type>
@@ -268,8 +268,8 @@
 		<label>Charge Port</label>
 		<description>Open the Charge Port (ON) or indicates the state of the Charge Port (ON/OFF if Open/Closed)</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>OpenState</property-tag>
+			<point>Status</point>
+			<property>OpenState</property>
 		</tags>
 	</channel-type>
 	<channel-type id="charge-port-latch">
@@ -277,8 +277,8 @@
 		<label>Charge Port Latch</label>
 		<description>Indicates the Charge Port Latch status (ON/OFF if latched/unlatched)</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>OpenState</property-tag>
+			<point>Status</point>
+			<property>OpenState</property>
 		</tags>
 	</channel-type>
 	<channel-type id="charge-rate" advanced="true">
@@ -292,8 +292,8 @@
 		<label>Charger Current</label>
 		<description>Current actually delivered by the charger</description>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Current</property-tag>
+			<point>Measurement</point>
+			<property>Current</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"></state>
 	</channel-type>
@@ -302,8 +302,8 @@
 		<label>Charger Current Requested</label>
 		<description>Current requested from the charger</description>
 		<tags>
-			<point-tag>Setpoint</point-tag>
-			<property-tag>Current</property-tag>
+			<point>Setpoint</point>
+			<property>Current</property>
 		</tags>
 		<state pattern="%.1f %unit%"></state>
 	</channel-type>
@@ -312,8 +312,8 @@
 		<label>Charger Current Max</label>
 		<description>Maximum current supported by the charger</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Current</property-tag>
+			<point>Status</point>
+			<property>Current</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"></state>
 	</channel-type>
@@ -346,8 +346,8 @@
 		<label>Door Lock</label>
 		<description>Lock or unlock the car</description>
 		<tags>
-			<point-tag>Switch</point-tag>
-			<property-tag>LockState</property-tag>
+			<point>Switch</point>
+			<property>LockState</property>
 		</tags>
 	</channel-type>
 	<channel-type id="driver-rear-door" advanced="true">
@@ -411,8 +411,8 @@
 		<label>Inside Temperature</label>
 		<description>Indicates the inside temperature of the vehicle</description>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"></state>
 	</channel-type>
@@ -427,8 +427,8 @@
 		<label>At Home?</label>
 		<description>Car located at Home Address</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>GeoLocation</property-tag>
+			<point>Status</point>
+			<property>GeoLocation</property>
 		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
@@ -437,8 +437,8 @@
 		<label>At Work?</label>
 		<description>Car located at Work Address</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>GeoLocation</property-tag>
+			<point>Status</point>
+			<property>GeoLocation</property>
 		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
@@ -447,8 +447,8 @@
 		<label>At Favorite?</label>
 		<description>Car located at Address listed in favorites</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>GeoLocation</property-tag>
+			<point>Status</point>
+			<property>GeoLocation</property>
 		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
@@ -587,8 +587,8 @@
 		<label>Speed</label>
 		<description>Vehicle speed</description>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Speed</property-tag>
+			<point>Measurement</point>
+			<property>Speed</property>
 		</tags>
 		<state pattern="%d %unit%" readOnly="true"></state>
 	</channel-type>
@@ -698,8 +698,8 @@
 		<label>Self-Driving Percentage</label>
 		<description>Percentage of driving that is on FSD</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Level</property-tag>
+			<point>Status</point>
+			<property>Level</property>
 		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>

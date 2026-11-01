@@ -65,8 +65,8 @@
 		<label>Rocker Switch</label>
 		<description>The virtual rocker switch channel allows to send rocker msg.</description>
 		<tags>
-			<point-tag>Switch</point-tag>
-			<property-tag>Light</property-tag>
+			<point>Switch</point>
+			<property>Light</property>
 		</tags>
 		<config-description-ref uri="channel-type:enocean:virtualRockerChannel"/>
 	</channel-type>
@@ -77,8 +77,8 @@
 		<label>Rollershutter</label>
 		<description>This channels allows to control a rollershutter through rocker msg.</description>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>OpenLevel</property-tag>
+			<point>Control</point>
+			<property>OpenLevel</property>
 		</tags>
 		<config-description-ref uri="channel-type:enocean:virtualRockerChannel"/>
 	</channel-type>

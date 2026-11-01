@@ -57,8 +57,8 @@
 		<item-type>Switch</item-type>
 		<label>Unit Power Status</label>
 		<tags>
-			<point-tag>Switch</point-tag>
-			<property-tag>Power</property-tag>
+			<point>Switch</point>
+			<property>Power</property>
 		</tags>
 	</channel-type>
 
@@ -71,8 +71,8 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Indoor Temperature</label>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 	</channel-type>
 
@@ -80,8 +80,8 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Outdoor Temperature</label>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 	</channel-type>
 
@@ -99,8 +99,8 @@
 		<item-type>String</item-type>
 		<label>Operation Mode</label>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Control</point>
+			<property>Mode</property>
 		</tags>
 		<command>
 			<options>
@@ -118,8 +118,8 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Setpoint</label>
 		<tags>
-			<point-tag>Setpoint</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 	</channel-type>
 
@@ -127,8 +127,8 @@
 		<item-type>Number</item-type>
 		<label>Fan Speed</label>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>Speed</property-tag>
+			<point>Control</point>
+			<property>Speed</property>
 		</tags>
 	</channel-type>
 

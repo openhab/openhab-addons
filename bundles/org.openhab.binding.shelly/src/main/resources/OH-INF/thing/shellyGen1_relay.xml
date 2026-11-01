@@ -390,8 +390,8 @@
 		<description>Control the Roller Shutter: UP, DOWN, STOP, Position (0=open, 100=closed)</description>
 		<category>Blinds</category>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>OpenLevel</property-tag>
+			<point>Control</point>
+			<property>OpenLevel</property>
 		</tags>
 	</channel-type>
 
@@ -400,8 +400,8 @@
 		<label>Roller Position (100=open, 0=closed)</label>
 		<description>Position the Roller Shutter (100-0 in percent, where 100%=open, 0%=closed)</description>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>OpenLevel</property-tag>
+			<point>Control</point>
+			<property>OpenLevel</property>
 		</tags>
 		<state readOnly="false" min="0" max="100" pattern="%.0f %%"/>
 	</channel-type>
@@ -491,8 +491,8 @@
 		<description>Light Brightness in percent (0-100%, 0=OFF)</description>
 		<category>Light</category>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>Brightness</property-tag>
+			<point>Control</point>
+			<property>Brightness</property>
 		</tags>
 	</channel-type>
 
@@ -520,8 +520,8 @@
 		<description>[deprecated] Use currentPower instead. Current power consumption in Watts</description>
 		<category>Energy</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Power</property-tag>
+			<point>Measurement</point>
+			<property>Power</property>
 		</tags>
 		<state readOnly="true" pattern="%.2f %unit%">
 		</state>
@@ -533,8 +533,8 @@
 		<description>Current power consumption</description>
 		<category>Energy</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Power</property-tag>
+			<point>Measurement</point>
+			<property>Power</property>
 		</tags>
 		<state readOnly="true" pattern="%.2f %unit%">
 		</state>
@@ -547,8 +547,8 @@
 			meters)</description>
 		<category>Energy</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Energy</property-tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state readOnly="true" pattern="%.3f %unit%">
 		</state>
@@ -561,8 +561,8 @@
 			device</description>
 		<category>Energy</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Power</property-tag>
+			<point>Measurement</point>
+			<property>Power</property>
 		</tags>
 		<state readOnly="true" pattern="%.2f %unit%">
 		</state>
@@ -574,8 +574,8 @@
 		<description>Total instantaneous active power across all meters of the device</description>
 		<category>Energy</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Power</property-tag>
+			<point>Measurement</point>
+			<property>Power</property>
 		</tags>
 		<state readOnly="true" pattern="%.2f %unit%">
 		</state>
@@ -588,8 +588,8 @@
 			(including all meters)</description>
 		<category>Energy</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Energy</property-tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state readOnly="true" pattern="%.3f %unit%">
 		</state>
@@ -601,8 +601,8 @@
 		<description>Accumulated returned energy in kWh of the device (including all meters)</description>
 		<category>Energy</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Energy</property-tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state readOnly="true" pattern="%.3f %unit%">
 		</state>
@@ -615,8 +615,8 @@
 			powered up (might reset on restart depending on device and firmware)</description>
 		<category>Energy</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Energy</property-tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state readOnly="true" pattern="%.3f %unit%">
 		</state>
@@ -629,8 +629,8 @@
 			firmware)</description>
 		<category>Energy</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Energy</property-tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state readOnly="true" pattern="%.3f %unit%">
 		</state>
@@ -642,8 +642,8 @@
 		<description>[deprecated] Use reactivePower instead. Instantaneous reactive power in Watts</description>
 		<category>Energy</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Power</property-tag>
+			<point>Measurement</point>
+			<property>Power</property>
 		</tags>
 		<state readOnly="true" pattern="%.3f %unit%">
 		</state>
@@ -655,8 +655,8 @@
 		<description>Instantaneous reactive power in VAR</description>
 		<category>Energy</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Power</property-tag>
+			<point>Measurement</point>
+			<property>Power</property>
 		</tags>
 		<state readOnly="true" pattern="%.2f %unit%">
 		</state>
@@ -668,8 +668,8 @@
 		<description>Instantaneous apparent power in VA</description>
 		<category>Energy</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Power</property-tag>
+			<point>Measurement</point>
+			<property>Power</property>
 		</tags>
 		<state readOnly="true" pattern="%.2f %unit%">
 		</state>
@@ -681,8 +681,8 @@
 		<description>Accumulated apparent power in VA of the device (including all meters)</description>
 		<category>Energy</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Power</property-tag>
+			<point>Measurement</point>
+			<property>Power</property>
 		</tags>
 		<state readOnly="true" pattern="%.2f %unit%">
 		</state>
@@ -694,8 +694,8 @@
 		<description>[deprecated] Use energyHistMin1 instead. Average power consumption during the previous minute</description>
 		<category>Energy</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Power</property-tag>
+			<point>Measurement</point>
+			<property>Power</property>
 		</tags>
 		<state readOnly="true" pattern="%.2f %unit%">
 		</state>
@@ -707,8 +707,8 @@
 		<description>Total energy consumed during the previous complete minute (minute -1), in Wh</description>
 		<category>Energy</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Energy</property-tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state readOnly="true" pattern="%.3f %unit%">
 		</state>
@@ -720,8 +720,8 @@
 		<description>Total energy consumed during the complete minute 2 minutes ago (minute -2), in Wh</description>
 		<category>Energy</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Energy</property-tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state readOnly="true" pattern="%.3f %unit%">
 		</state>
@@ -733,8 +733,8 @@
 		<description>Total energy consumed during the complete minute 3 minutes ago (minute -3), in Wh</description>
 		<category>Energy</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Energy</property-tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state readOnly="true" pattern="%.3f %unit%">
 		</state>
@@ -747,8 +747,8 @@
 			-1, -2 and -3), in Wh</description>
 		<category>Energy</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Energy</property-tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state readOnly="true" pattern="%.3f %unit%">
 		</state>
@@ -767,8 +767,8 @@
 			powered up (might reset on restart depending on device and firmware)</description>
 		<category>Energy</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Energy</property-tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state readOnly="true" pattern="%.3f %unit%">
 		</state>
@@ -780,8 +780,8 @@
 		<description>[deprecated] Use returnedEnergy instead. Total returned energy in kWh</description>
 		<category>Energy</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Energy</property-tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state readOnly="true" pattern="%.3f %unit%">
 		</state>
@@ -793,8 +793,8 @@
 		<description>Total returned energy</description>
 		<category>Energy</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Energy</property-tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state readOnly="true" pattern="%.3f %unit%">
 		</state>
@@ -806,8 +806,8 @@
 		<description>RMS voltage in Volt</description>
 		<category>Energy</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Voltage</property-tag>
+			<point>Measurement</point>
+			<property>Voltage</property>
 		</tags>
 		<state readOnly="true" pattern="%.2f %unit%">
 		</state>
@@ -819,8 +819,8 @@
 		<description>Current in A</description>
 		<category>Energy</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Current</property-tag>
+			<point>Measurement</point>
+			<property>Current</property>
 		</tags>
 		<state readOnly="true" pattern="%.3f %unit%">
 		</state>
@@ -832,8 +832,8 @@
 		<description>Grid frequency in Hertz (Hz)</description>
 		<category>Energy</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Frequency</property-tag>
+			<point>Measurement</point>
+			<property>Frequency</property>
 		</tags>
 		<state readOnly="true" pattern="%.2f %unit%">
 		</state>
@@ -853,8 +853,8 @@
 		<description>Measured neutral current</description>
 		<category>Energy</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Current</property-tag>
+			<point>Measurement</point>
+			<property>Current</property>
 		</tags>
 		<state readOnly="true" pattern="%.3f %unit%">
 		</state>
@@ -866,8 +866,8 @@
 		<description>Sum of measured current on all phases</description>
 		<category>Energy</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Current</property-tag>
+			<point>Measurement</point>
+			<property>Current</property>
 		</tags>
 		<state readOnly="true" pattern="%.3f %unit%">
 		</state>
@@ -879,8 +879,8 @@
 		<description>[deprecated] Use nmThreshold instead. Mismatch becomes ON when threshold is exceeded</description>
 		<category>Energy</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Current</property-tag>
+			<point>Measurement</point>
+			<property>Current</property>
 		</tags>
 		<state readOnly="true" pattern="%.3f %unit%">
 		</state>
@@ -892,8 +892,8 @@
 		<description>Mismatch becomes ON when threshold is exceeded</description>
 		<category>Energy</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Current</property-tag>
+			<point>Measurement</point>
+			<property>Current</property>
 		</tags>
 		<state readOnly="true" pattern="%.3f %unit%">
 		</state>
@@ -911,8 +911,8 @@
 		<description>Timestamp of last measurement</description>
 		<category>Time</category>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Timestamp</property-tag>
+			<point>Status</point>
+			<property>Timestamp</property>
 		</tags>
 		<state readOnly="true">
 		</state>

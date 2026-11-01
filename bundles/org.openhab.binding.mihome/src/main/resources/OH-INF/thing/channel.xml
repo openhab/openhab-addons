@@ -8,8 +8,8 @@
 		<item-type>Switch</item-type>
 		<label>Button Switch</label>
 		<tags>
-			<point-tag>Switch</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Switch</point>
+			<property>Mode</property>
 		</tags>
 	</channel-type>
 
@@ -18,8 +18,8 @@
 		<label>Curtain</label>
 		<category>Blinds</category>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>OpenLevel</property-tag>
+			<point>Control</point>
+			<property>OpenLevel</property>
 		</tags>
 		<state max="100" min="0" step="1" pattern="%d %%" readOnly="false"></state>
 	</channel-type>
@@ -37,8 +37,8 @@
 			light on and off.</description>
 		<category>Light</category>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>Brightness</property-tag>
+			<point>Control</point>
+			<property>Brightness</property>
 		</tags>
 		<state max="100" min="0" step="1" pattern="%d %%" readOnly="false"></state>
 	</channel-type>
@@ -50,8 +50,8 @@
 			This channel shows the brightness of the environment of the device.
 		</description>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Illuminance</property-tag>
+			<point>Measurement</point>
+			<property>Illuminance</property>
 		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
@@ -62,8 +62,8 @@
 		<description>Control the color of light.</description>
 		<category>ColorLight</category>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>Color</property-tag>
+			<point>Control</point>
+			<property>Color</property>
 		</tags>
 	</channel-type>
 
@@ -72,8 +72,8 @@
 		<label>Color Temperature</label>
 		<description>Allows to control the color temperature of light.</description>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>ColorTemperature</property-tag>
+			<point>Control</point>
+			<property>ColorTemperature</property>
 		</tags>
 		<state pattern="%d K"/>
 	</channel-type>
@@ -89,8 +89,8 @@
 		<description>This channel controls the volume of the gateway for playing sounds</description>
 		<category>SoundVolume</category>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>SoundVolume</property-tag>
+			<point>Control</point>
+			<property>SoundVolume</property>
 		</tags>
 		<state max="100" min="0" step="1" pattern="%d %%" readOnly="false"></state>
 	</channel-type>
@@ -99,8 +99,8 @@
 		<item-type>Switch</item-type>
 		<label>Switch to Turn Sound Off When Playing</label>
 		<tags>
-			<point-tag>Switch</point-tag>
-			<property-tag>SoundVolume</property-tag>
+			<point>Switch</point>
+			<property>SoundVolume</property>
 		</tags>
 	</channel-type>
 
@@ -114,8 +114,8 @@
 		<item-type>Number:Time</item-type>
 		<label>Cube Rotation Time</label>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>Duration</property-tag>
+			<point>Control</point>
+			<property>Duration</property>
 		</tags>
 		<state readOnly="false" pattern="%d %unit%"></state>
 	</channel-type>
@@ -125,8 +125,8 @@
 		<label>Gas Detected</label>
 		<category>Gas</category>
 		<tags>
-			<point-tag>Alarm</point-tag>
-			<property-tag>Gas</property-tag>
+			<point>Alarm</point>
+			<property>Gas</property>
 		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
@@ -135,8 +135,8 @@
 		<item-type>Switch</item-type>
 		<label>Leak Detected</label>
 		<tags>
-			<point-tag>Alarm</point-tag>
-			<property-tag>Water</property-tag>
+			<point>Alarm</point>
+			<property>Water</property>
 		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
@@ -152,8 +152,8 @@
 		<label>Temperature</label>
 		<category>Temperature</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true">
 		</state>
@@ -164,8 +164,8 @@
 		<label>Humidity</label>
 		<category>Humidity</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Humidity</property-tag>
+			<point>Measurement</point>
+			<property>Humidity</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true">
 		</state>
@@ -176,8 +176,8 @@
 		<label>Pressure</label>
 		<category>Pressure</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Pressure</property-tag>
+			<point>Measurement</point>
+			<property>Pressure</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true">
 		</state>
@@ -188,8 +188,8 @@
 		<label>Open Status</label>
 		<category>Contact</category>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>OpenState</property-tag>
+			<point>Status</point>
+			<property>OpenState</property>
 		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
@@ -224,8 +224,8 @@
 		<label>Motion Status</label>
 		<category>Motion</category>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Motion</property-tag>
+			<point>Status</point>
+			<property>Motion</property>
 		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
@@ -257,8 +257,8 @@
 		<label>Power</label>
 		<category>PowerOutlet</category>
 		<tags>
-			<point-tag>Switch</point-tag>
-			<property-tag>Power</property-tag>
+			<point>Switch</point>
+			<property>Power</property>
 		</tags>
 	</channel-type>
 
@@ -272,8 +272,8 @@
 		<item-type>Number</item-type>
 		<label>Provided Power</label>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Power</property-tag>
+			<point>Measurement</point>
+			<property>Power</property>
 		</tags>
 		<state pattern="%.1f W" readOnly="true"></state>
 	</channel-type>
@@ -282,8 +282,8 @@
 		<item-type>Number</item-type>
 		<label>Power Consumed</label>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Energy</property-tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%.3f kWh" readOnly="true"></state>
 	</channel-type>
@@ -292,8 +292,8 @@
 		<item-type>Number</item-type>
 		<label>Particle Density</label>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>ParticulateMatter</property-tag>
+			<point>Measurement</point>
+			<property>ParticulateMatter</property>
 		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
@@ -303,8 +303,8 @@
 		<label>Smoke Detected</label>
 		<category>Smoke</category>
 		<tags>
-			<point-tag>Alarm</point-tag>
-			<property-tag>Smoke</property-tag>
+			<point>Alarm</point>
+			<property>Smoke</property>
 		</tags>
 		<state readOnly="true"></state>
 	</channel-type>

@@ -7,8 +7,8 @@
 		<item-type>Switch</item-type>
 		<label>Door Lock Front Left</label>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>LockState</property-tag>
+			<point>Status</point>
+			<property>LockState</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -16,8 +16,8 @@
 		<item-type>Switch</item-type>
 		<label>Door Lock Front Right</label>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>LockState</property-tag>
+			<point>Status</point>
+			<property>LockState</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -25,8 +25,8 @@
 		<item-type>Switch</item-type>
 		<label>Door Lock Rear Left</label>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>LockState</property-tag>
+			<point>Status</point>
+			<property>LockState</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -34,8 +34,8 @@
 		<item-type>Switch</item-type>
 		<label>Door Lock Rear Right</label>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>LockState</property-tag>
+			<point>Status</point>
+			<property>LockState</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -43,8 +43,8 @@
 		<item-type>Switch</item-type>
 		<label>Deck Lid Lock</label>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>LockState</property-tag>
+			<point>Status</point>
+			<property>LockState</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -52,8 +52,8 @@
 		<item-type>Switch</item-type>
 		<label>Flap Lock</label>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>LockState</property-tag>
+			<point>Status</point>
+			<property>LockState</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>

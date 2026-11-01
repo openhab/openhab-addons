@@ -60,8 +60,8 @@
 		<label>Last Updated</label>
 		<description>Time when data was last read from the device</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Timestamp</property-tag>
+			<point>Status</point>
+			<property>Timestamp</property>
 		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
@@ -78,8 +78,8 @@
 		<label>AC Phase 1 Current</label>
 		<description>AC Phase 1 current in A</description>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Current</property-tag>
+			<point>Measurement</point>
+			<property>Current</property>
 		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
@@ -89,8 +89,8 @@
 		<label>AC Phase 2 Current</label>
 		<description>AC Phase 2 current in A</description>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Current</property-tag>
+			<point>Measurement</point>
+			<property>Current</property>
 		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
@@ -100,8 +100,8 @@
 		<label>AC Phase 3 Current</label>
 		<description>AC Phase 3 current in A</description>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Current</property-tag>
+			<point>Measurement</point>
+			<property>Current</property>
 		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
@@ -111,8 +111,8 @@
 		<label>Energy Generated Today</label>
 		<description>Energy generated today in Wh</description>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Energy</property-tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
@@ -122,8 +122,8 @@
 		<label>Energy Generated Total</label>
 		<description>Total energy generated since recording began in Wh</description>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Energy</property-tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
@@ -140,8 +140,8 @@
 		<label>Energy Generated Yesterday</label>
 		<description>Energy generated yesterday in Wh</description>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Energy</property-tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
@@ -151,8 +151,8 @@
 		<label>Energy Generated Last Month</label>
 		<description>Energy generated last month in Wh</description>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Energy</property-tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
@@ -162,8 +162,8 @@
 		<label>Energy Generated Last Year</label>
 		<description>Energy generated last year in Wh</description>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Energy</property-tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
@@ -173,8 +173,8 @@
 		<label>Energy Generated This Month</label>
 		<description>Energy generated this month in Wh</description>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Energy</property-tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
@@ -184,8 +184,8 @@
 		<label>Energy Generated This Year</label>
 		<description>Energy generated this year in Wh</description>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Energy</property-tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
@@ -195,8 +195,8 @@
 		<label>Current Power Generated</label>
 		<description>Power currently being generated in W</description>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Power</property-tag>
+			<point>Measurement</point>
+			<property>Power</property>
 		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
@@ -206,8 +206,8 @@
 		<label>AC Frequency</label>
 		<description>AC frequency in Hz</description>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Frequency</property-tag>
+			<point>Measurement</point>
+			<property>Frequency</property>
 		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
@@ -217,8 +217,8 @@
 		<label>AC Phase 1 Voltage</label>
 		<description>AC Phase 1 voltage in V</description>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Voltage</property-tag>
+			<point>Measurement</point>
+			<property>Voltage</property>
 		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
@@ -228,8 +228,8 @@
 		<label>AC Phase 2 Voltage</label>
 		<description>AC Phase 2 voltage in V</description>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Voltage</property-tag>
+			<point>Measurement</point>
+			<property>Voltage</property>
 		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
@@ -239,8 +239,8 @@
 		<label>AC Phase 3 Voltage</label>
 		<description>AC Phase 3 voltage in V</description>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Voltage</property-tag>
+			<point>Measurement</point>
+			<property>Voltage</property>
 		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
@@ -250,8 +250,8 @@
 		<label>Heat Sink Temperature</label>
 		<description>Heat sink temperature in degrees Celsius</description>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true"></state>
 	</channel-type>

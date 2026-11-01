@@ -112,8 +112,8 @@
 		<label>Enabled</label>
 		<description>Enable or disable monitor</description>
 		<tags>
-			<point-tag>Switch</point-tag>
-			<property-tag>Enabled</property-tag>
+			<point>Switch</point>
+			<property>Enabled</property>
 		</tags>
 		<state pattern="%s">
 			<options>
@@ -142,7 +142,7 @@
 		<label>Alarm</label>
 		<description>Monitor alarm status</description>
 		<tags>
-			<point-tag>Alarm</point-tag>
+			<point>Alarm</point>
 		</tags>
 		<state readOnly="true" pattern="%s"></state>
 	</channel-type>

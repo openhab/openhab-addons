@@ -75,8 +75,8 @@
 		<label>Particulate Matter</label>
 		<description>Particulate Matter Level</description>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>ParticulateMatter</property-tag>
+			<point>Measurement</point>
+			<property>ParticulateMatter</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -86,8 +86,8 @@
 		<description>Temperature</description>
 		<category>Temperature</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -97,8 +97,8 @@
 		<description>Humidity Level</description>
 		<category>Humidity</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Humidity</property-tag>
+			<point>Measurement</point>
+			<property>Humidity</property>
 		</tags>
 		<state readOnly="true" pattern="%d %%"/>
 	</channel-type>
@@ -108,8 +108,8 @@
 		<description>Carbon dioxide Level</description>
 		<category>CarbonDioxide</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>CO2</property-tag>
+			<point>Measurement</point>
+			<property>CO2</property>
 		</tags>
 		<state readOnly="true" pattern="%d ppm"/>
 	</channel-type>
@@ -118,8 +118,8 @@
 		<label>Volatile Compounds</label>
 		<description>Volatile Organic Compounds Level</description>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>VOC</property-tag>
+			<point>Measurement</point>
+			<property>VOC</property>
 		</tags>
 		<state readOnly="true" pattern="%d ppb"/>
 	</channel-type>

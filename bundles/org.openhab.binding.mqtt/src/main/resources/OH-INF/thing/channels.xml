@@ -15,8 +15,8 @@
 		<label>Date/Time Value</label>
 		<description>Current date and/or time</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Timestamp</property-tag>
+			<point>Status</point>
+			<property>Timestamp</property>
 		</tags>
 		<config-description-ref uri="thing-type:mqtt:string_channel"/>
 	</channel-type>
@@ -34,8 +34,8 @@
 		<label>Location</label>
 		<description>GPS coordinates as Latitude,Longitude,Altitude</description>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>GeoLocation</property-tag>
+			<point>Measurement</point>
+			<property>GeoLocation</property>
 		</tags>
 		<config-description-ref uri="thing-type:mqtt:string_channel"/>
 	</channel-type>
@@ -50,7 +50,7 @@
 		<item-type>Dimmer</item-type>
 		<label>Dimmer</label>
 		<tags>
-			<point-tag>Control</point-tag>
+			<point>Control</point>
 		</tags>
 		<config-description-ref uri="thing-type:mqtt:dimmer_channel"></config-description-ref>
 	</channel-type>
@@ -59,8 +59,8 @@
 		<item-type>Switch</item-type>
 		<label>On/Off Switch</label>
 		<tags>
-			<point-tag>Switch</point-tag>
-			<property-tag>Power</property-tag>
+			<point>Switch</point>
+			<property>Power</property>
 		</tags>
 		<config-description-ref uri="thing-type:mqtt:switch_channel"></config-description-ref>
 	</channel-type>
@@ -69,8 +69,8 @@
 		<item-type>Contact</item-type>
 		<label>Open/Close Contact</label>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>OpenState</property-tag>
+			<point>Status</point>
+			<property>OpenState</property>
 		</tags>
 		<state readOnly="true"/>
 		<config-description-ref uri="thing-type:mqtt:contact_channel"/>
@@ -80,8 +80,8 @@
 		<item-type>Rollershutter</item-type>
 		<label>Rollershutter</label>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>OpenLevel</property-tag>
+			<point>Control</point>
+			<property>OpenLevel</property>
 		</tags>
 		<config-description-ref uri="thing-type:mqtt:rollershutter_channel"></config-description-ref>
 	</channel-type>
@@ -90,8 +90,8 @@
 		<item-type>Player</item-type>
 		<label>Player</label>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>MediaControl</property-tag>
+			<point>Control</point>
+			<property>MediaControl</property>
 		</tags>
 		<config-description-ref uri="thing-type:mqtt:player_channel"></config-description-ref>
 	</channel-type>
@@ -100,8 +100,8 @@
 		<item-type>Color</item-type>
 		<label>Color Value (Red,Green,Blue)</label>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>Color</property-tag>
+			<point>Control</point>
+			<property>Color</property>
 		</tags>
 		<config-description-ref uri="thing-type:mqtt:color_channel"></config-description-ref>
 	</channel-type>
@@ -110,8 +110,8 @@
 		<item-type>Color</item-type>
 		<label>Color Value (Hue,Saturation,Brightness)</label>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>Color</property-tag>
+			<point>Control</point>
+			<property>Color</property>
 		</tags>
 		<config-description-ref uri="thing-type:mqtt:color_channel"></config-description-ref>
 	</channel-type>
@@ -120,8 +120,8 @@
 		<item-type>Color</item-type>
 		<label>Color Value (HSB, RGB or CIE xyY)</label>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>Color</property-tag>
+			<point>Control</point>
+			<property>Color</property>
 		</tags>
 		<config-description-ref uri="thing-type:mqtt:color_channel"></config-description-ref>
 	</channel-type>

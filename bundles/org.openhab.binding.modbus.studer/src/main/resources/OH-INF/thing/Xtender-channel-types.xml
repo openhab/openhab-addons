@@ -8,8 +8,8 @@
 		<item-type>Number:ElectricPotential</item-type>
 		<label>Input Voltage</label>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Voltage</property-tag>
+			<point>Measurement</point>
+			<property>Voltage</property>
 		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
@@ -18,8 +18,8 @@
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>Input Current</label>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Current</property-tag>
+			<point>Measurement</point>
+			<property>Current</property>
 		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
@@ -28,8 +28,8 @@
 		<item-type>Number:Power</item-type>
 		<label>Input Active Power</label>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Power</property-tag>
+			<point>Measurement</point>
+			<property>Power</property>
 		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
@@ -38,8 +38,8 @@
 		<item-type>Number:Frequency</item-type>
 		<label>Input Frequency</label>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Frequency</property-tag>
+			<point>Measurement</point>
+			<property>Frequency</property>
 		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
@@ -48,8 +48,8 @@
 		<item-type>Number:ElectricPotential</item-type>
 		<label>Output Voltage</label>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Voltage</property-tag>
+			<point>Measurement</point>
+			<property>Voltage</property>
 		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
@@ -58,8 +58,8 @@
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>Output Current</label>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Current</property-tag>
+			<point>Measurement</point>
+			<property>Current</property>
 		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
@@ -68,8 +68,8 @@
 		<item-type>Number:Power</item-type>
 		<label>Output Active Power</label>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Power</property-tag>
+			<point>Measurement</point>
+			<property>Power</property>
 		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
@@ -78,8 +78,8 @@
 		<item-type>Number:Frequency</item-type>
 		<label>Output Frequency</label>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Frequency</property-tag>
+			<point>Measurement</point>
+			<property>Frequency</property>
 		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
@@ -88,8 +88,8 @@
 		<item-type>String</item-type>
 		<label>Operating State</label>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Status</point>
+			<property>Mode</property>
 		</tags>
 		<state readOnly="true">
 			<options>

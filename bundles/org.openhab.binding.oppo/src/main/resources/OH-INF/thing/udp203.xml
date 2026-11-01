@@ -64,8 +64,8 @@
 		<label>Remote Button</label>
 		<description>Simulate pressing a button on the remote control</description>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>MediaControl</property-tag>
+			<point>Control</point>
+			<property>MediaControl</property>
 		</tags>
 		<state>
 			<options>

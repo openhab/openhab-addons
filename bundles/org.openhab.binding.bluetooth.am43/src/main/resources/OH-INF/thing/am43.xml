@@ -111,8 +111,8 @@
 		<label>Position</label>
 		<description>The percent value of the blind position</description>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>OpenLevel</property-tag>
+			<point>Control</point>
+			<property>OpenLevel</property>
 		</tags>
 		<state readOnly="false" pattern="%d %%" min="0" max="100"/>
 	</channel-type>
@@ -143,8 +143,8 @@
 		<label>Light Level</label>
 		<description>Light level detected by the solar sensor. Will range from 0-10</description>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Illuminance</property-tag>
+			<point>Measurement</point>
+			<property>Illuminance</property>
 		</tags>
 		<state readOnly="true" pattern="%d"/>
 	</channel-type>

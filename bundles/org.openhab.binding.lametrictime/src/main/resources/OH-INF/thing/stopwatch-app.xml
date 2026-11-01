@@ -29,8 +29,8 @@
 		<label>Command</label>
 		<description>Send a command to the stopwatch app</description>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Control</point>
+			<property>Mode</property>
 		</tags>
 		<state>
 			<options>

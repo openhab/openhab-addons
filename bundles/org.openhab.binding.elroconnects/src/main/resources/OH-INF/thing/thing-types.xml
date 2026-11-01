@@ -252,7 +252,7 @@
 		<label>Scene</label>
 		<description>Scene selection from scenes configured in the ELRO Connects app, enables configuring alarm modes</description>
 		<tags>
-			<point-tag>Alarm</point-tag>
+			<point>Alarm</point>
 		</tags>
 	</channel-type>
 
@@ -262,7 +262,7 @@
 		<description>Alarm triggered</description>
 		<category>Alarm</category>
 		<tags>
-			<point-tag>Alarm</point-tag>
+			<point>Alarm</point>
 		</tags>
 	</channel-type>
 	<channel-type id="smokealarm">
@@ -271,8 +271,8 @@
 		<description>Smoke alarm triggered</description>
 		<category>Alarm</category>
 		<tags>
-			<point-tag>Alarm</point-tag>
-			<property-tag>Smoke</property-tag>
+			<point>Alarm</point>
+			<property>Smoke</property>
 		</tags>
 	</channel-type>
 	<channel-type id="coalarm">
@@ -281,8 +281,8 @@
 		<description>CO alarm triggered</description>
 		<category>Alarm</category>
 		<tags>
-			<point-tag>Alarm</point-tag>
-			<property-tag>CO</property-tag>
+			<point>Alarm</point>
+			<property>CO</property>
 		</tags>
 	</channel-type>
 	<channel-type id="heatalarm">
@@ -291,8 +291,8 @@
 		<description>Heat alarm triggered</description>
 		<category>Fire</category>
 		<tags>
-			<point-tag>Alarm</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Alarm</point>
+			<property>Temperature</property>
 		</tags>
 	</channel-type>
 	<channel-type id="wateralarm">
@@ -301,8 +301,8 @@
 		<description>Water alarm triggered</description>
 		<category>Alarm</category>
 		<tags>
-			<point-tag>Alarm</point-tag>
-			<property-tag>Water</property-tag>
+			<point>Alarm</point>
+			<property>Water</property>
 		</tags>
 	</channel-type>
 	<channel-type id="entryalarm">
@@ -311,8 +311,8 @@
 		<description>Entry alarm triggered</description>
 		<category>Alarm</category>
 		<tags>
-			<point-tag>Alarm</point-tag>
-			<property-tag>OpenState</property-tag>
+			<point>Alarm</point>
+			<property>OpenState</property>
 		</tags>
 	</channel-type>
 	<channel-type id="motionalarm">
@@ -321,8 +321,8 @@
 		<description>Motion alarm triggered</description>
 		<category>Alarm</category>
 		<tags>
-			<point-tag>Alarm</point-tag>
-			<property-tag>Presence</property-tag>
+			<point>Alarm</point>
+			<property>Presence</property>
 		</tags>
 	</channel-type>
 	<channel-type id="entry">
@@ -330,8 +330,8 @@
 		<label>Entry Contact</label>
 		<description>Door/window contact open/closed</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>OpenState</property-tag>
+			<point>Status</point>
+			<property>OpenState</property>
 		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
@@ -341,8 +341,8 @@
 		<label>Mute Alarm</label>
 		<description>Mute</description>
 		<tags>
-			<point-tag>Alarm</point-tag>
-			<property-tag>SoundVolume</property-tag>
+			<point>Alarm</point>
+			<property>SoundVolume</property>
 		</tags>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
@@ -351,8 +351,8 @@
 		<label>Test Alarm</label>
 		<description>Trigger alarm test sound</description>
 		<tags>
-			<point-tag>Alarm</point-tag>
-			<property-tag>SoundVolume</property-tag>
+			<point>Alarm</point>
+			<property>SoundVolume</property>
 		</tags>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
@@ -362,8 +362,8 @@
 		<description>Current temperature</description>
 		<category>Temperature</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>

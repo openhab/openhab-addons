@@ -125,8 +125,8 @@
 		<label>Forecast Date</label>
 		<description>Forecast date</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Timestamp</property-tag>
+			<point>Status</point>
+			<property>Timestamp</property>
 		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
@@ -137,8 +137,8 @@
 		<description>The low temperature</description>
 		<category>Temperature</category>
 		<tags>
-			<point-tag>Forecast</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Forecast</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -149,8 +149,8 @@
 		<description>The high temperature</description>
 		<category>Temperature</category>
 		<tags>
-			<point-tag>Forecast</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Forecast</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -161,8 +161,8 @@
 		<description>The average temperature</description>
 		<category>Temperature</category>
 		<tags>
-			<point-tag>Forecast</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Forecast</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -189,8 +189,8 @@
 		<description>The minimum relative humidity in %</description>
 		<category>Humidity</category>
 		<tags>
-			<point-tag>Forecast</point-tag>
-			<property-tag>Humidity</property-tag>
+			<point>Forecast</point>
+			<property>Humidity</property>
 		</tags>
 		<state readOnly="true" min="0" max="100" pattern="%d %%">
 		</state>
@@ -202,8 +202,8 @@
 		<description>The maximum relative humidity in %</description>
 		<category>Humidity</category>
 		<tags>
-			<point-tag>Forecast</point-tag>
-			<property-tag>Humidity</property-tag>
+			<point>Forecast</point>
+			<property>Humidity</property>
 		</tags>
 		<state readOnly="true" min="0" max="100" pattern="%d %%">
 		</state>
@@ -215,8 +215,8 @@
 		<description>The average relative humidity in %</description>
 		<category>Humidity</category>
 		<tags>
-			<point-tag>Forecast</point-tag>
-			<property-tag>Humidity</property-tag>
+			<point>Forecast</point>
+			<property>Humidity</property>
 		</tags>
 		<state readOnly="true" min="0" max="100" pattern="%d %%">
 		</state>
@@ -227,8 +227,8 @@
 		<label>Cardinal Wind Direction</label>
 		<description>The cardinal direction of the wind</description>
 		<tags>
-			<point-tag>Forecast</point-tag>
-			<property-tag>Wind</property-tag>
+			<point>Forecast</point>
+			<property>Wind</property>
 		</tags>
 		<state readOnly="true" pattern="%s">
 		</state>
@@ -240,8 +240,8 @@
 		<description>Wind direction (in degrees)</description>
 		<category>Wind</category>
 		<tags>
-			<point-tag>Forecast</point-tag>
-			<property-tag>Wind</property-tag>
+			<point>Forecast</point>
+			<property>Wind</property>
 		</tags>
 		<state readOnly="true" min="0" max="360" pattern="%.0f °">
 		</state>
@@ -253,8 +253,8 @@
 		<description>The maximum wind speed</description>
 		<category>Wind</category>
 		<tags>
-			<point-tag>Forecast</point-tag>
-			<property-tag>Wind</property-tag>
+			<point>Forecast</point>
+			<property>Wind</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -265,8 +265,8 @@
 		<description>The minimum wind speed</description>
 		<category>Wind</category>
 		<tags>
-			<point-tag>Forecast</point-tag>
-			<property-tag>Wind</property-tag>
+			<point>Forecast</point>
+			<property>Wind</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -277,8 +277,8 @@
 		<description>The mean wind speed</description>
 		<category>Wind</category>
 		<tags>
-			<point-tag>Forecast</point-tag>
-			<property-tag>Wind</property-tag>
+			<point>Forecast</point>
+			<property>Wind</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -289,8 +289,8 @@
 		<description>Low Pressure</description>
 		<category>Pressure</category>
 		<tags>
-			<point-tag>Forecast</point-tag>
-			<property-tag>Pressure</property-tag>
+			<point>Forecast</point>
+			<property>Pressure</property>
 		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
@@ -301,8 +301,8 @@
 		<description>High Pressure</description>
 		<category>Pressure</category>
 		<tags>
-			<point-tag>Forecast</point-tag>
-			<property-tag>Pressure</property-tag>
+			<point>Forecast</point>
+			<property>Pressure</property>
 		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
@@ -313,8 +313,8 @@
 		<description>Mean Pressure</description>
 		<category>Pressure</category>
 		<tags>
-			<point-tag>Forecast</point-tag>
-			<property-tag>Pressure</property-tag>
+			<point>Forecast</point>
+			<property>Pressure</property>
 		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
@@ -324,8 +324,8 @@
 		<label>UV Index</label>
 		<description>UV Index</description>
 		<tags>
-			<point-tag>Forecast</point-tag>
-			<property-tag>Ultraviolet</property-tag>
+			<point>Forecast</point>
+			<property>Ultraviolet</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f">
 		</state>
@@ -337,8 +337,8 @@
 		<description>Prediction of total precipitation</description>
 		<category>Rain</category>
 		<tags>
-			<point-tag>Forecast</point-tag>
-			<property-tag>Rain</property-tag>
+			<point>Forecast</point>
+			<property>Rain</property>
 		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
@@ -349,8 +349,8 @@
 		<description>Prediction of convective precipitation (rainfall)</description>
 		<category>Rain</category>
 		<tags>
-			<point-tag>Forecast</point-tag>
-			<property-tag>Rain</property-tag>
+			<point>Forecast</point>
+			<property>Rain</property>
 		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
@@ -364,8 +364,8 @@
 			(e.g. 2112211093222219212110112229922133311912239022192).</description>
 		<category>Rain</category>
 		<tags>
-			<point-tag>Forecast</point-tag>
-			<property-tag>Rain</property-tag>
+			<point>Forecast</point>
+			<property>Rain</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -384,8 +384,8 @@
 		<description>Prediction of the fraction of total precipitation that will fall as snow</description>
 		<category>Rain</category>
 		<tags>
-			<point-tag>Forecast</point-tag>
-			<property-tag>Precipitation</property-tag>
+			<point>Forecast</point>
+			<property>Precipitation</property>
 		</tags>
 		<state readOnly="true" min="0" max="100" pattern="%d %%"/>
 	</channel-type>
@@ -396,8 +396,8 @@
 		<description>Prediction of snowfall</description>
 		<category>Rain</category>
 		<tags>
-			<point-tag>Forecast</point-tag>
-			<property-tag>Precipitation</property-tag>
+			<point>Forecast</point>
+			<property>Precipitation</property>
 		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
@@ -407,8 +407,8 @@
 		<label>Precipitation Probability</label>
 		<description>Probability of precipitation (as %)</description>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Precipitation</property-tag>
+			<point>Measurement</point>
+			<property>Precipitation</property>
 		</tags>
 		<state readOnly="true" min="0" max="100" pattern="%d %%">
 		</state>
@@ -427,8 +427,8 @@
 		<label>Precipitation Hours</label>
 		<description>The predicted number of hours having precipitation</description>
 		<tags>
-			<point-tag>Forecast</point-tag>
-			<property-tag>Precipitation</property-tag>
+			<point>Forecast</point>
+			<property>Precipitation</property>
 		</tags>
 		<state readOnly="true" min="0" max="24" pattern="%d">
 		</state>
@@ -439,8 +439,8 @@
 		<label>Humidity Greater Than 90 Hours</label>
 		<description>The predicted number of hours having humidity greater than 90%</description>
 		<tags>
-			<point-tag>Forecast</point-tag>
-			<property-tag>Humidity</property-tag>
+			<point>Forecast</point>
+			<property>Humidity</property>
 		</tags>
 		<state readOnly="true" min="0" max="24" pattern="%d">
 		</state>

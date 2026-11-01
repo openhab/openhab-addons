@@ -8,16 +8,16 @@
 		<item-type>Switch</item-type>
 		<label>Group</label>
 		<tags>
-			<point-tag>Switch</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Switch</point>
+			<property>Mode</property>
 		</tags>
 	</channel-type>
 	<channel-type id="album">
 		<item-type>String</item-type>
 		<label>Album</label>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Info</property-tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -30,8 +30,8 @@
 		<item-type>Switch</item-type>
 		<label>Make Group</label>
 		<tags>
-			<point-tag>Switch</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Switch</point>
+			<property>Mode</property>
 		</tags>
 	</channel-type>
 	<channel-type id="chPlayer">
@@ -68,8 +68,8 @@
 		<description>The current track position</description>
 		<category>Time</category>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Progress</property-tag>
+			<point>Status</point>
+			<property>Progress</property>
 		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
@@ -79,8 +79,8 @@
 		<description>The overall duration of the track</description>
 		<category>Time</category>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Duration</property-tag>
+			<point>Status</point>
+			<property>Duration</property>
 		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
@@ -100,8 +100,8 @@
 		<label>Station</label>
 		<description>The name of the station currently played</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Channel</property-tag>
+			<point>Status</point>
+			<property>Channel</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>

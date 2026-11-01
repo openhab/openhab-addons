@@ -47,8 +47,8 @@
 		<label>Opening State</label>
 		<description>The reported opening-state of that Station.</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>OpenState</property-tag>
+			<point>Status</point>
+			<property>OpenState</property>
 		</tags>
 		<state pattern="%s" readOnly="true"></state>
 	</channel-type>

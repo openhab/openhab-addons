@@ -11,8 +11,8 @@
 		<label>Alarm</label>
 		<description>Current alarm description, if any</description>
 		<tags>
-			<point-tag>Alarm</point-tag>
-			<property-tag>Info</property-tag>
+			<point>Alarm</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
@@ -21,8 +21,8 @@
 		<label>Alert</label>
 		<description>Current alert description, if any, to notify a shortage of salt</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Info</property-tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
@@ -43,8 +43,8 @@
 		<label>Cycle</label>
 		<description>Indicates the stage of the regeneration cycle</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Status</point>
+			<property>Mode</property>
 		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
@@ -65,8 +65,8 @@
 		<label>Water Hardness</label>
 		<description>Water hardness expressed using the chosen hardness unit</description>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Water</property-tag>
+			<point>Measurement</point>
+			<property>Water</property>
 		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
@@ -87,8 +87,8 @@
 		<label>Regenerate Now</label>
 		<description>Start immediate regeneration</description>
 		<tags>
-			<point-tag>Switch</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Switch</point>
+			<property>Mode</property>
 		</tags>
 	</channel-type>
 	<channel-type id="regeneratelater">
@@ -96,8 +96,8 @@
 		<label>Regenerate Later</label>
 		<description>Start a delayed regeneration</description>
 		<tags>
-			<point-tag>Switch</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Switch</point>
+			<property>Mode</property>
 		</tags>
 	</channel-type>
 	<channel-type id="multiregenerate">
@@ -105,8 +105,8 @@
 		<label>Start Multi-regeneration</label>
 		<description>Start a multi-regeneration</description>
 		<tags>
-			<point-tag>Switch</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Switch</point>
+			<property>Mode</property>
 		</tags>
 	</channel-type>
 	<channel-type id="consumption" advanced="true">
@@ -114,8 +114,8 @@
 		<label>Water Consumption</label>
 		<description>Water consumption, in l</description>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Water</property-tag>
+			<point>Measurement</point>
+			<property>Water</property>
 		</tags>
 		<state pattern="%d l" readOnly="true"></state>
 	</channel-type>
@@ -124,8 +124,8 @@
 		<label>Water Pressure</label>
 		<description>Water pressure, in bar</description>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Pressure</property-tag>
+			<point>Measurement</point>
+			<property>Pressure</property>
 		</tags>
 		<state pattern="%.1f bar" readOnly="true"></state>
 	</channel-type>

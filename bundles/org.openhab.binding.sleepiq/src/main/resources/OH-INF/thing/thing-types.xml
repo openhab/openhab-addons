@@ -119,8 +119,8 @@
 		<label>In Bed</label>
 		<description>The presence of a person or object on the chamber</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Presence</property-tag>
+			<point>Status</point>
+			<property>Presence</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -135,8 +135,8 @@
 		<label>Pressure</label>
 		<description>The current pressure inside the chamber</description>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Pressure</property-tag>
+			<point>Measurement</point>
+			<property>Pressure</property>
 		</tags>
 		<state pattern="%d kPa" readOnly="true"/>
 	</channel-type>
@@ -170,8 +170,8 @@
 		<label>Sleep Goal</label>
 		<description>The goal for the amount of sleep per night (in minutes)</description>
 		<tags>
-			<point-tag>Setpoint</point-tag>
-			<property-tag>Duration</property-tag>
+			<point>Setpoint</point>
+			<property>Duration</property>
 		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
@@ -180,8 +180,8 @@
 		<label>Privacy Mode</label>
 		<description>Enable/disable privacy mode</description>
 		<tags>
-			<point-tag>Switch</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Switch</point>
+			<property>Mode</property>
 		</tags>
 		<state readOnly="false"/>
 	</channel-type>
@@ -208,8 +208,8 @@
 		<label>Today's Message</label>
 		<description>The description of today's sleep quality</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Info</property-tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -218,8 +218,8 @@
 		<label>Today's Sleep Duration</label>
 		<description>The total duration of sleep for today in seconds</description>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Duration</property-tag>
+			<point>Measurement</point>
+			<property>Duration</property>
 		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
@@ -228,8 +228,8 @@
 		<label>Today's Sleep In Bed Duration</label>
 		<description>The total duration of time in bed in seconds</description>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Duration</property-tag>
+			<point>Measurement</point>
+			<property>Duration</property>
 		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
@@ -238,8 +238,8 @@
 		<label>Today's Sleep Out Of Bed Duration</label>
 		<description>The total duration of time out of bed in seconds</description>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Duration</property-tag>
+			<point>Measurement</point>
+			<property>Duration</property>
 		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
@@ -248,8 +248,8 @@
 		<label>Today's Sleep Restful Duration</label>
 		<description>The total duration of restful sleep for today in seconds</description>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Duration</property-tag>
+			<point>Measurement</point>
+			<property>Duration</property>
 		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
@@ -258,8 +258,8 @@
 		<label>Today's Sleep Restless Duration</label>
 		<description>The total duration of restless sleep for today in seconds</description>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Duration</property-tag>
+			<point>Measurement</point>
+			<property>Duration</property>
 		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
@@ -286,8 +286,8 @@
 		<label>Preset</label>
 		<description>Bed position preset</description>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>Position</property-tag>
+			<point>Control</point>
+			<property>Position</property>
 		</tags>
 		<state readOnly="false" min="1" max="6" step="1" pattern="%d">
 			<options>
@@ -305,8 +305,8 @@
 		<label>Head Position</label>
 		<description>The position of the adjustable head</description>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>Position</property-tag>
+			<point>Control</point>
+			<property>Position</property>
 		</tags>
 		<state readOnly="false" min="0" max="100" step="1" pattern="%d"/>
 	</channel-type>
@@ -315,8 +315,8 @@
 		<label>Foot Position</label>
 		<description>The position of the adjustable foot</description>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>Position</property-tag>
+			<point>Control</point>
+			<property>Position</property>
 		</tags>
 		<state readOnly="false" min="0" max="100" step="1" pattern="%d"/>
 	</channel-type>
@@ -325,8 +325,8 @@
 		<label>Night Stand</label>
 		<description>The night stand outlet</description>
 		<tags>
-			<point-tag>Switch</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Switch</point>
+			<property>Mode</property>
 		</tags>
 		<state readOnly="false"/>
 	</channel-type>
@@ -335,8 +335,8 @@
 		<label>Under Bed Light</label>
 		<description>The under bed lighting</description>
 		<tags>
-			<point-tag>Switch</point-tag>
-			<property-tag>Light</property-tag>
+			<point>Switch</point>
+			<property>Light</property>
 		</tags>
 		<state readOnly="false"/>
 	</channel-type>

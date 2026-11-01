@@ -7,8 +7,8 @@
 		<item-type>Number:Power</item-type>
 		<label>Power</label>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Power</property-tag>
+			<point>Measurement</point>
+			<property>Power</property>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true">
 		</state>
@@ -17,8 +17,8 @@
 		<item-type>Number:Energy</item-type>
 		<label>Energy</label>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Energy</property-tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true">
 		</state>

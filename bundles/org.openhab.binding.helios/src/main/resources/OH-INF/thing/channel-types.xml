@@ -17,8 +17,8 @@
 		<label>Audio Loop Test Time</label>
 		<description>Event date and time in CCYY-MM-DDThh:mm:ss format</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Timestamp</property-tag>
+			<point>Status</point>
+			<property>Timestamp</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -50,8 +50,8 @@
 		<label>Call State Time</label>
 		<description>Event date and time in CCYY-MM-DDThh:mm:ss format</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Timestamp</property-tag>
+			<point>Status</point>
+			<property>Timestamp</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -71,8 +71,8 @@
 		<label>Card Detection Time</label>
 		<description>Event date and time in CCYY-MM-DDThh:mm:ss format</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Timestamp</property-tag>
+			<point>Status</point>
+			<property>Timestamp</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -92,8 +92,8 @@
 		<label>Code Entered Time</label>
 		<description>Event date and time in CCYY-MM-DDThh:mm:ss format</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Timestamp</property-tag>
+			<point>Status</point>
+			<property>Timestamp</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -112,8 +112,8 @@
 		<label>Device State Time</label>
 		<description>Event date and time in CCYY-MM-DDThh:mm:ss format</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Timestamp</property-tag>
+			<point>Status</point>
+			<property>Timestamp</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -127,8 +127,8 @@
 		<label>Key Press Time</label>
 		<description>Event date and time in CCYY-MM-DDThh:mm:ss format</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Timestamp</property-tag>
+			<point>Status</point>
+			<property>Timestamp</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -142,8 +142,8 @@
 		<label>Key Released Time</label>
 		<description>Event date and time in CCYY-MM-DDThh:mm:ss format</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Timestamp</property-tag>
+			<point>Status</point>
+			<property>Timestamp</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -152,8 +152,8 @@
 		<label>Motion</label>
 		<description>Motion detection indicator</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Motion</property-tag>
+			<point>Status</point>
+			<property>Motion</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -162,8 +162,8 @@
 		<label>Motion Detection Time</label>
 		<description>Event date and time in CCYY-MM-DDThh:mm:ss format</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Timestamp</property-tag>
+			<point>Status</point>
+			<property>Timestamp</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -172,8 +172,8 @@
 		<label>Noise</label>
 		<description>Noise detection indicator</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Noise</property-tag>
+			<point>Status</point>
+			<property>Noise</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -182,8 +182,8 @@
 		<label>Noise Detection Time</label>
 		<description>Event date and time in CCYY-MM-DDThh:mm:ss format</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Timestamp</property-tag>
+			<point>Status</point>
+			<property>Timestamp</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -192,8 +192,8 @@
 		<label>Switch State</label>
 		<description>ON when a switch switched on, OFF when a switch switched off</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Power</property-tag>
+			<point>Status</point>
+			<property>Power</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -219,8 +219,8 @@
 		<label>Switch Switch Time</label>
 		<description>Event date and time in CCYY-MM-DDThh:mm:ss format</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Timestamp</property-tag>
+			<point>Status</point>
+			<property>Timestamp</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>

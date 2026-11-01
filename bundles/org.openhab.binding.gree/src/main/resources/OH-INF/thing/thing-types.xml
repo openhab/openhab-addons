@@ -60,8 +60,8 @@
 		<label>@text/channel-type.gree.mode.label</label>
 		<description>@text/channel-type.gree.mode.description</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Status</point>
+			<property>Mode</property>
 		</tags>
 		<state>
 			<options>
@@ -81,8 +81,8 @@
 		<label>@text/channel-type.gree.targettemperature.label</label>
 		<description>@text/channel-type.gree.targettemperature.description</description>
 		<tags>
-			<point-tag>Setpoint</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state min="5" max="86" step="1" pattern="%d %unit%"></state>
 	</channel-type>
@@ -91,8 +91,8 @@
 		<label>@text/channel-type.gree.currenttemperature.label</label>
 		<description>@text/channel-type.gree.currenttemperature.description</description>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%d %unit%"></state>
 	</channel-type>
@@ -101,8 +101,8 @@
 		<label>@text/channel-type.gree.air.label</label>
 		<description>@text/channel-type.gree.air.description</description>
 		<tags>
-			<point-tag>Switch</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Switch</point>
+			<property>Mode</property>
 		</tags>
 	</channel-type>
 	<channel-type id="dry">
@@ -110,8 +110,8 @@
 		<label>@text/channel-type.gree.dry.label</label>
 		<description>@text/channel-type.gree.dry.description</description>
 		<tags>
-			<point-tag>Switch</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Switch</point>
+			<property>Mode</property>
 		</tags>
 	</channel-type>
 	<channel-type id="turbo">
@@ -119,8 +119,8 @@
 		<label>@text/channel-type.gree.turbo.label</label>
 		<description>@text/channel-type.gree.turbo.description</description>
 		<tags>
-			<point-tag>Switch</point-tag>
-			<property-tag>Speed</property-tag>
+			<point>Switch</point>
+			<property>Speed</property>
 		</tags>
 	</channel-type>
 	<channel-type id="windspeed">
@@ -128,8 +128,8 @@
 		<label>@text/channel-type.gree.windspeed.label</label>
 		<description>@text/channel-type.gree.windspeed.description</description>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>Speed</property-tag>
+			<point>Control</point>
+			<property>Speed</property>
 		</tags>
 		<state>
 			<options>
@@ -147,8 +147,8 @@
 		<label>@text/channel-type.gree.quiet.label</label>
 		<description>@text/channel-type.gree.quiet.description</description>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>Airflow</property-tag>
+			<point>Control</point>
+			<property>Airflow</property>
 		</tags>
 		<state>
 			<options>
@@ -163,8 +163,8 @@
 		<label>@text/channel-type.gree.swingupdown.label</label>
 		<description>@text/channel-type.gree.swingupdown.description</description>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>Airflow</property-tag>
+			<point>Control</point>
+			<property>Airflow</property>
 		</tags>
 		<state>
 			<options>
@@ -183,8 +183,8 @@
 		<label>@text/channel-type.gree.swingleftright.label</label>
 		<description>@text/channel-type.gree.swingleftright.description</description>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>Airflow</property-tag>
+			<point>Control</point>
+			<property>Airflow</property>
 		</tags>
 		<state>
 			<options>
@@ -203,8 +203,8 @@
 		<label>@text/channel-type.gree.powersave.label</label>
 		<description>@text/channel-type.gree.powersave.description</description>
 		<tags>
-			<point-tag>Switch</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Switch</point>
+			<property>Mode</property>
 		</tags>
 	</channel-type>
 	<channel-type id="light">
@@ -217,8 +217,8 @@
 		<label>@text/channel-type.gree.health.label</label>
 		<description>@text/channel-type.gree.health.description</description>
 		<tags>
-			<point-tag>Switch</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Switch</point>
+			<property>Mode</property>
 		</tags>
 	</channel-type>
 

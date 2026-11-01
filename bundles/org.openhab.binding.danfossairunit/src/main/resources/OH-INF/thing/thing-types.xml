@@ -144,8 +144,8 @@
 		<description>Current time reported by the air unit</description>
 		<category>Time</category>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Timestamp</property-tag>
+			<point>Status</point>
+			<property>Timestamp</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -155,8 +155,8 @@
 		<label>Mode</label>
 		<description>Operation mode of the air unit: Off, Demand, Manual, Program</description>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Control</point>
+			<property>Mode</property>
 		</tags>
 		<state>
 			<options>
@@ -174,8 +174,8 @@
 		<description>Controls 10-step setting of the fan when operation mode is manual</description>
 		<category>Fan</category>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>Speed</property-tag>
+			<point>Control</point>
+			<property>Speed</property>
 		</tags>
 		<state step="10" min="0" max="100"/>
 	</channel-type>
@@ -186,8 +186,8 @@
 		<description>Current rotation of the fan supplying air to the rooms</description>
 		<category>Fan</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Frequency</property-tag>
+			<point>Measurement</point>
+			<property>Frequency</property>
 		</tags>
 		<state pattern="%.0f rpm" readOnly="true" min="0"/>
 	</channel-type>
@@ -198,8 +198,8 @@
 		<description>Current rotation of the fan extracting air from the rooms</description>
 		<category>Fan</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Frequency</property-tag>
+			<point>Measurement</point>
+			<property>Frequency</property>
 		</tags>
 		<state pattern="%.0f rpm" readOnly="true" min="0"/>
 	</channel-type>
@@ -210,8 +210,8 @@
 		<description>Current step setting of the fan supplying air to the rooms</description>
 		<category>Fan</category>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Speed</property-tag>
+			<point>Status</point>
+			<property>Speed</property>
 		</tags>
 		<state step="10" min="0" max="100" readOnly="true"/>
 	</channel-type>
@@ -222,8 +222,8 @@
 		<description>Current step setting of the fan extracting air from the rooms</description>
 		<category>Fan</category>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Speed</property-tag>
+			<point>Status</point>
+			<property>Speed</property>
 		</tags>
 		<state step="10" min="0" max="100" readOnly="true"/>
 	</channel-type>
@@ -247,8 +247,8 @@
 		<label>Boost</label>
 		<description>Enables fan boost</description>
 		<tags>
-			<point-tag>Switch</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Switch</point>
+			<property>Mode</property>
 		</tags>
 	</channel-type>
 
@@ -257,8 +257,8 @@
 		<label>Night Cooling</label>
 		<description>Enables night cooling</description>
 		<tags>
-			<point-tag>Switch</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Switch</point>
+			<property>Mode</property>
 		</tags>
 	</channel-type>
 
@@ -268,8 +268,8 @@
 		<description>Disables the heat exchange. Useful in summer when room temperature is above target and outside
 			temperature is below target</description>
 		<tags>
-			<point-tag>Switch</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Switch</point>
+			<property>Mode</property>
 		</tags>
 	</channel-type>
 
@@ -279,8 +279,8 @@
 		<description>Calculated Room Temperature</description>
 		<category>Temperature</category>
 		<tags>
-			<point-tag>Calculation</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Calculation</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -305,8 +305,8 @@
 		<description>The number of hours the unit has been in operation (in minutes)</description>
 		<category>Time</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Duration</property-tag>
+			<point>Measurement</point>
+			<property>Duration</property>
 		</tags>
 		<state pattern="%1$tdd %1$tHh %1$tMm" readOnly="true"/>
 	</channel-type>

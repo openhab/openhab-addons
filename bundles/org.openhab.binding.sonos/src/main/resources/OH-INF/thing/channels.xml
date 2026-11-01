@@ -86,8 +86,8 @@
 		<label>Current Album</label>
 		<description>Name of the album currently playing</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Info</property-tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -104,8 +104,8 @@
 		<label>Current Album Cover Art URL</label>
 		<description>Cover art URL of the album currently playing</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Info</property-tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -115,8 +115,8 @@
 		<label>Current Track</label>
 		<description>Name of the current track or radio station currently playing</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Info</property-tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>

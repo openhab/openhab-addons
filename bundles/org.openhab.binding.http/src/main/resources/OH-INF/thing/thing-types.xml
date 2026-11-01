@@ -138,8 +138,8 @@
 		<item-type>DateTime</item-type>
 		<label>Dummy</label>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Timestamp</property-tag>
+			<point>Status</point>
+			<property>Timestamp</property>
 		</tags>
 		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS"/>
 	</channel-type>
@@ -148,8 +148,8 @@
 		<item-type>Color</item-type>
 		<label>Color Channel</label>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>Color</property-tag>
+			<point>Control</point>
+			<property>Color</property>
 		</tags>
 		<config-description-ref uri="channel-type:http:channel-config-color"/>
 	</channel-type>
@@ -158,8 +158,8 @@
 		<item-type>Contact</item-type>
 		<label>Contact Channel</label>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>OpenState</property-tag>
+			<point>Status</point>
+			<property>OpenState</property>
 		</tags>
 		<config-description-ref uri="channel-type:http:channel-config-contact"/>
 	</channel-type>
@@ -168,8 +168,8 @@
 		<item-type>DateTime</item-type>
 		<label>DateTime Channel</label>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Timestamp</property-tag>
+			<point>Status</point>
+			<property>Timestamp</property>
 		</tags>
 		<config-description-ref uri="channel-type:http:channel-config"/>
 	</channel-type>
@@ -178,8 +178,8 @@
 		<item-type>Dimmer</item-type>
 		<label>Dimmer Channel</label>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>Brightness</property-tag>
+			<point>Control</point>
+			<property>Brightness</property>
 		</tags>
 		<config-description-ref uri="channel-type:http:channel-config-dimmer"/>
 	</channel-type>
@@ -200,8 +200,8 @@
 		<item-type>Number</item-type>
 		<label>Number Channel</label>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>Channel</property-tag>
+			<point>Control</point>
+			<property>Channel</property>
 		</tags>
 		<config-description-ref uri="channel-type:http:channel-config-number"/>
 	</channel-type>
@@ -210,8 +210,8 @@
 		<item-type>Player</item-type>
 		<label>Player Channel</label>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>MediaControl</property-tag>
+			<point>Control</point>
+			<property>MediaControl</property>
 		</tags>
 		<config-description-ref uri="channel-type:http:channel-config-player"/>
 	</channel-type>
@@ -220,8 +220,8 @@
 		<item-type>Rollershutter</item-type>
 		<label>Rollershutter Channel</label>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>OpenLevel</property-tag>
+			<point>Control</point>
+			<property>OpenLevel</property>
 		</tags>
 		<config-description-ref uri="channel-type:http:channel-config-rollershutter"/>
 	</channel-type>
@@ -236,7 +236,7 @@
 		<item-type>Switch</item-type>
 		<label>Switch Channel</label>
 		<tags>
-			<point-tag>Switch</point-tag>
+			<point>Switch</point>
 		</tags>
 		<config-description-ref uri="channel-type:http:channel-config-switch"/>
 	</channel-type>

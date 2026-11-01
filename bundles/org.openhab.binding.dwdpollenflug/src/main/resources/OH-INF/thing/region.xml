@@ -110,8 +110,8 @@
 		<item-type>String</item-type>
 		<label>Pollen Count</label>
 		<tags>
-			<point-tag>Forecast</point-tag>
-			<property-tag>Pollen</property-tag>
+			<point>Forecast</point>
+			<property>Pollen</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>

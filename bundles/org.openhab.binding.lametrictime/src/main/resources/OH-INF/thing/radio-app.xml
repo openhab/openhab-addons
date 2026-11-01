@@ -32,8 +32,8 @@
 		<label>Player</label>
 		<description>Player control</description>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>MediaControl</property-tag>
+			<point>Control</point>
+			<property>MediaControl</property>
 		</tags>
 	</channel-type>
 

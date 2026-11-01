@@ -23,8 +23,8 @@
 		</description>
 		<category>Light</category>
 		<tags>
-			<point-tag>Switch</point-tag>
-			<property-tag>Light</property-tag>
+			<point>Switch</point>
+			<property>Light</property>
 		</tags>
 	</channel-type>
 

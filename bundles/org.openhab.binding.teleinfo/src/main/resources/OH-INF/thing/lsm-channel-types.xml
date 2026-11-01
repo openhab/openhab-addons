@@ -16,8 +16,8 @@
 		<label>Teleinfo Energy Type</label>
 		<category>Energy</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Energy</property-tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
@@ -27,8 +27,8 @@
 		<label>Teleinfo Current Type</label>
 		<category>Energy</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Current</property-tag>
+			<point>Measurement</point>
+			<property>Current</property>
 		</tags>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
@@ -38,8 +38,8 @@
 		<label>Teleinfo Potential Type</label>
 		<category>Energy</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Voltage</property-tag>
+			<point>Measurement</point>
+			<property>Voltage</property>
 		</tags>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
@@ -49,8 +49,8 @@
 		<label>Teleinfo Power Type</label>
 		<category>Energy</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Power</property-tag>
+			<point>Measurement</point>
+			<property>Power</property>
 		</tags>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
@@ -60,8 +60,8 @@
 		<label>Teleinfo PowerFactor Type</label>
 		<category>Energy</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Power</property-tag>
+			<point>Measurement</point>
+			<property>Power</property>
 		</tags>
 		<state pattern="%d" readOnly="false"/>
 	</channel-type>
@@ -92,7 +92,7 @@
 		<label>Cutoff Type</label>
 		<description>This status describes the current cutoff type.</description>
 		<tags>
-			<point-tag>Status</point-tag>
+			<point>Status</point>
 		</tags>
 		<state>
 			<options>
@@ -113,8 +113,8 @@
 		<label>Overvoltage State</label>
 		<description>Describes an over voltage condition possible state.</description>
 		<tags>
-			<point-tag>Alarm</point-tag>
-			<property-tag>Voltage</property-tag>
+			<point>Alarm</point>
+			<property>Voltage</property>
 		</tags>
 		<state>
 			<options>
@@ -129,8 +129,8 @@
 		<label>Exceeding Power State</label>
 		<description>Describe an Exceeding power condition state papp > pmax.</description>
 		<tags>
-			<point-tag>Alarm</point-tag>
-			<property-tag>Power</property-tag>
+			<point>Alarm</point>
+			<property>Power</property>
 		</tags>
 		<state>
 			<options>
@@ -145,8 +145,8 @@
 		<label>Function Mode</label>
 		<description>Tell if the meter is in Consummer mode or Producer mode.</description>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Measurement</point>
+			<property>Mode</property>
 		</tags>
 		<state>
 			<options>
@@ -161,7 +161,7 @@
 		<label>Active Energy</label>
 		<description>Tell about energy direction, if negative we take energy from network, if positive we inject energy.</description>
 		<tags>
-			<point-tag>Measurement</point-tag>
+			<point>Measurement</point>
 		</tags>
 		<state>
 			<options>
@@ -176,7 +176,7 @@
 		<label>Clock State</label>
 		<description>State of the clock.</description>
 		<tags>
-			<point-tag>Status</point-tag>
+			<point>Status</point>
 		</tags>
 		<state>
 			<options>
@@ -191,8 +191,8 @@
 		<label>PLC Mode</label>
 		<description>Mode of the PLC</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Status</point>
+			<property>Mode</property>
 		</tags>
 		<state>
 			<options>
@@ -207,8 +207,8 @@
 		<label>Output Com State</label>
 		<description>State of the communication output</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Status</point>
+			<property>Mode</property>
 		</tags>
 		<state>
 			<options>
@@ -225,7 +225,7 @@
 		<label>PLC State</label>
 		<description>State of the PLC</description>
 		<tags>
-			<point-tag>Status</point-tag>
+			<point>Status</point>
 		</tags>
 		<state>
 			<options>
@@ -241,7 +241,7 @@
 		<label>PLC Synchro State</label>
 		<description>State of the PLC Synchro</description>
 		<tags>
-			<point-tag>Status</point-tag>
+			<point>Status</point>
 		</tags>
 		<state>
 			<options>
@@ -256,7 +256,7 @@
 		<label>Moving Tips</label>
 		<description>Indicate a special tariff slot for a specific period.</description>
 		<tags>
-			<point-tag>Status</point-tag>
+			<point>Status</point>
 		</tags>
 		<state>
 			<options>
@@ -273,7 +273,7 @@
 		<label>Tempo Color Information</label>
 		<description>This status describes the tempo color of a day.</description>
 		<tags>
-			<point-tag>Status</point-tag>
+			<point>Status</point>
 		</tags>
 		<state>
 			<options>
@@ -290,7 +290,7 @@
 		<label>Numeric Rate Type</label>
 		<category>energy</category>
 		<tags>
-			<point-tag>Status</point-tag>
+			<point>Status</point>
 		</tags>
 		<state readOnly="true" pattern="%.0f"/>
 	</channel-type>

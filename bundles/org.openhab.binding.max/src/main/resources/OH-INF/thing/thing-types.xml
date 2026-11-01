@@ -431,8 +431,8 @@
 		<label>Mode</label>
 		<description>Thermostat Mode Setting</description>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Control</point>
+			<property>Mode</property>
 		</tags>
 		<state pattern="%s" readOnly="false">
 			<options>
@@ -450,8 +450,8 @@
 		<description>Current measured room temperature</description>
 		<category>Temperature</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -462,8 +462,8 @@
 		<description>Thermostat Setpoint temperature</description>
 		<category>Temperature</category>
 		<tags>
-			<point-tag>Setpoint</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state min="4.5" max="30.5" step="0.5" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -482,8 +482,8 @@
 		<description>Contact state information</description>
 		<category>Contact</category>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>OpenState</property-tag>
+			<point>Status</point>
+			<property>OpenState</property>
 		</tags>
 		<state pattern="%s" readOnly="true"></state>
 	</channel-type>

@@ -543,8 +543,8 @@
 		<label>User Location Status</label>
 		<description>Information on user location status (HOME/AWAY).</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Status</point>
+			<property>Mode</property>
 		</tags>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
@@ -596,8 +596,8 @@
 		<label>Alarm Status</label>
 		<description>Verisure alarm status.</description>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Control</point>
+			<property>Mode</property>
 		</tags>
 		<state>
 			<options>
@@ -613,8 +613,8 @@
 		<label>SmartLock Status</label>
 		<description>Verisure smart lock status.</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>LockState</property-tag>
+			<point>Status</point>
+			<property>LockState</property>
 		</tags>
 	</channel-type>
 
@@ -654,8 +654,8 @@
 		<label>SmartPlug Status</label>
 		<description>Verisure smart plug status.</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Power</property-tag>
+			<point>Status</point>
+			<property>Power</property>
 		</tags>
 	</channel-type>
 
@@ -670,8 +670,8 @@
 		<label>Door/Window State</label>
 		<description>Is door/window opened or closed. (OPEN/CLOSED)</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>OpenState</property-tag>
+			<point>Status</point>
+			<property>OpenState</property>
 		</tags>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
@@ -682,8 +682,8 @@
 		<description>Current temperature.</description>
 		<category>Temperature</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f °C"/>
 	</channel-type>
@@ -694,8 +694,8 @@
 		<description>Current humidity in %.</description>
 		<category>Humidity</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Humidity</property-tag>
+			<point>Measurement</point>
+			<property>Humidity</property>
 		</tags>
 		<state readOnly="true" min="0" max="100" pattern="%d %%"/>
 	</channel-type>

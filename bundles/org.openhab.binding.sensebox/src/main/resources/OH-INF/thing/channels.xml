@@ -52,8 +52,8 @@
 		<label>UV Intensity</label>
 		<description>Current UV intensity.</description>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Ultraviolet</property-tag>
+			<point>Measurement</point>
+			<property>Ultraviolet</property>
 		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"></state>
 	</channel-type>
@@ -75,8 +75,8 @@
 		<label>Illuminance</label>
 		<description>Current illuminance.</description>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Illuminance</property-tag>
+			<point>Measurement</point>
+			<property>Illuminance</property>
 		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"></state>
 	</channel-type>
@@ -134,8 +134,8 @@
 		<label>Particulate Matter - PM2.5</label>
 		<description>Current density of particles less than 2.5 µm in diameter.</description>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>ParticulateMatter</property-tag>
+			<point>Measurement</point>
+			<property>ParticulateMatter</property>
 		</tags>
 		<state readOnly="true" pattern="%.2f %unit%">
 		</state>
@@ -158,8 +158,8 @@
 		<label>Particulate Matter - PM10</label>
 		<description>Current density of particles less than 10 µm in diameter.</description>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>ParticulateMatter</property-tag>
+			<point>Measurement</point>
+			<property>ParticulateMatter</property>
 		</tags>
 		<state readOnly="true" pattern="%.2f %unit%">
 		</state>

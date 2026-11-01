@@ -123,8 +123,8 @@
 		<description>Allow or forbid charging</description>
 		<category>Battery</category>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>Enabled</property-tag>
+			<point>Control</point>
+			<property>Enabled</property>
 		</tags>
 		<state>
 			<options>
@@ -140,8 +140,8 @@
 		<description>Authorize charging or wait for authorization</description>
 		<category>Battery</category>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>Enabled</property-tag>
+			<point>Control</point>
+			<property>Enabled</property>
 		</tags>
 		<state>
 			<options>
@@ -157,8 +157,8 @@
 		<description>The mode of charging</description>
 		<category>Battery</category>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Control</point>
+			<property>Mode</property>
 		</tags>
 		<state>
 			<options>
@@ -175,8 +175,8 @@
 		<description>The current to charge with</description>
 		<category>Energy</category>
 		<tags>
-			<point-tag>Setpoint</point-tag>
-			<property-tag>Current</property-tag>
+			<point>Setpoint</point>
+			<property>Current</property>
 		</tags>
 		<state pattern="%d A" min="6" max="32" step="1"/>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
@@ -187,8 +187,8 @@
 		<description>The PV Surplus power at which surplus charging starts</description>
 		<category>SolarPlant</category>
 		<tags>
-			<point-tag>Setpoint</point-tag>
-			<property-tag>Power</property-tag>
+			<point>Setpoint</point>
+			<property>Power</property>
 		</tags>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
@@ -198,8 +198,8 @@
 		<description>The battery SoC at which PV surplus charging starts</description>
 		<category>SolarPlant</category>
 		<tags>
-			<point-tag>Setpoint</point-tag>
-			<property-tag>Energy</property-tag>
+			<point>Setpoint</point>
+			<property>Energy</property>
 		</tags>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
@@ -209,8 +209,8 @@
 		<description>Boost charging in Eco or Next Trip mode by using power from the battery</description>
 		<category>Battery</category>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>Enabled</property-tag>
+			<point>Control</point>
+			<property>Enabled</property>
 		</tags>
 		<state>
 			<options>
@@ -226,8 +226,8 @@
 		<description>Limit SoC to discharge the battery to when boost is enabled</description>
 		<category>Battery</category>
 		<tags>
-			<point-tag>Setpoint</point-tag>
-			<property-tag>Energy</property-tag>
+			<point>Setpoint</point>
+			<property>Energy</property>
 		</tags>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
@@ -238,7 +238,7 @@
 		<description>Charging State of the wallbox</description>
 		<category>Battery</category>
 		<tags>
-			<point-tag>Status</point-tag>
+			<point>Status</point>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -255,7 +255,7 @@
 		<description>Whether charging is currently possible, e.g. when using ECO mode, too low PV surplus can block charging</description>
 		<category>Battery</category>
 		<tags>
-			<point-tag>Status</point-tag>
+			<point>Status</point>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -270,7 +270,7 @@
 		<description>Whether the wallbox is charging single phase only</description>
 		<category>Battery</category>
 		<tags>
-			<point-tag>Status</point-tag>
+			<point>Status</point>
 		</tags>
 		<state readOnly="true">
 			<options>

@@ -10,8 +10,8 @@
 		<label>Input Source</label>
 		<description>Select the input source of the receiver</description>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>MediaControl</property-tag>
+			<point>Control</point>
+			<property>MediaControl</property>
 		</tags>
 		<state>
 			<options>
@@ -33,8 +33,8 @@
 		<label>Sound Field</label>
 		<description>Select the Sound Field for the receiver</description>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>MediaControl</property-tag>
+			<point>Control</point>
+			<property>MediaControl</property>
 		</tags>
 		<state>
 			<options>

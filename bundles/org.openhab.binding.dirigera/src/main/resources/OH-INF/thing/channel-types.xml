@@ -93,7 +93,7 @@
 		<description>Switch display on and off</description>
 		<category>Switch</category>
 		<tags>
-			<point-tag>Control</point-tag>
+			<point>Control</point>
 		</tags>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
@@ -124,8 +124,8 @@
 		<label>Alarm Switch</label>
 		<category>Alarm</category>
 		<tags>
-			<point-tag>Alarm</point-tag>
-			<property-tag>Water</property-tag>
+			<point>Alarm</point>
+			<property>Water</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -134,8 +134,8 @@
 		<label>Illuminance</label>
 		<description>Illuminance in Lux </description>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Light</property-tag>
+			<point>Measurement</point>
+			<property>Light</property>
 		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
@@ -144,8 +144,8 @@
 		<label>Contact</label>
 		<category>Contact</category>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>OpenState</property-tag>
+			<point>Status</point>
+			<property>OpenState</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -230,8 +230,8 @@
 		<label>Particulate Matter</label>
 		<description>Category 2.5 particulate matter</description>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>ParticulateMatter</property-tag>
+			<point>Measurement</point>
+			<property>ParticulateMatter</property>
 		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
@@ -240,8 +240,8 @@
 		<label>VOC Index</label>
 		<description>Relative VOC intensity compared to recent history</description>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>VOC</property-tag>
+			<point>Measurement</point>
+			<property>VOC</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -316,8 +316,8 @@
 		<description>Current blind level</description>
 		<category>Rollershutter</category>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>OpenLevel</property-tag>
+			<point>Control</point>
+			<property>OpenLevel</property>
 		</tags>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
@@ -375,8 +375,8 @@
 		<label>Carbon Dioxide</label>
 		<description>CO₂ concentration</description>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>CO2</property-tag>
+			<point>Measurement</point>
+			<property>CO2</property>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>

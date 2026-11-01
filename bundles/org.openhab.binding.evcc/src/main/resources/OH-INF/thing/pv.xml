@@ -25,8 +25,8 @@
 		<description>Current power of this photovoltaic system in Watt</description>
 		<category>Power</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Power</property-tag>
+			<point>Measurement</point>
+			<property>Power</property>
 		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
@@ -37,8 +37,8 @@
 		<description>Accumulated energy of this photovoltaic system in Kilowatt hours</description>
 		<category>Energy</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Energy</property-tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>

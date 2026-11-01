@@ -8,8 +8,8 @@
 		<label>Exit Temperature</label>
 		<description>B14 - Exit Temperature Energy Source</description>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
@@ -18,8 +18,8 @@
 		<label>Incoming temperature</label>
 		<description>B15 - Incoming Temperature Energy Source</description>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
@@ -28,8 +28,8 @@
 		<label>Temperature Outside</label>
 		<description>BOT - Sensor Outside Temperature</description>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>

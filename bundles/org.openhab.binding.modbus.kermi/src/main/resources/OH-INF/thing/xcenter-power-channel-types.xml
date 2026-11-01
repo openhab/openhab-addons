@@ -28,8 +28,8 @@
 		<item-type>Number:Power</item-type>
 		<label>Current Power</label>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Power</property-tag>
+			<point>Measurement</point>
+			<property>Power</property>
 		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
@@ -37,8 +37,8 @@
 		<item-type>Number:Power</item-type>
 		<label>Current power heating</label>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Power</property-tag>
+			<point>Measurement</point>
+			<property>Power</property>
 		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
@@ -46,8 +46,8 @@
 		<item-type>Number:Power</item-type>
 		<label>Current Power Drinking Water</label>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Power</property-tag>
+			<point>Measurement</point>
+			<property>Power</property>
 		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
@@ -55,8 +55,8 @@
 		<item-type>Number:Power</item-type>
 		<label>Current power cooling</label>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Power</property-tag>
+			<point>Measurement</point>
+			<property>Power</property>
 		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
@@ -65,8 +65,8 @@
 		<item-type>Number:Power</item-type>
 		<label>Current Electric Power</label>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Power</property-tag>
+			<point>Measurement</point>
+			<property>Power</property>
 		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
@@ -74,8 +74,8 @@
 		<item-type>Number:Power</item-type>
 		<label>Current Electric Power Heating</label>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Power</property-tag>
+			<point>Measurement</point>
+			<property>Power</property>
 		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
@@ -83,8 +83,8 @@
 		<item-type>Number:Power</item-type>
 		<label>Current electric power drinking water</label>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Power</property-tag>
+			<point>Measurement</point>
+			<property>Power</property>
 		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
@@ -92,8 +92,8 @@
 		<item-type>Number:Power</item-type>
 		<label>Current Electric Power Cooling</label>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Power</property-tag>
+			<point>Measurement</point>
+			<property>Power</property>
 		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>

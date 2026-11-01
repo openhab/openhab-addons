@@ -57,8 +57,8 @@
 		<label>Fader</label>
 		<description>Fader state</description>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>SoundVolume</property-tag>
+			<point>Control</point>
+			<property>SoundVolume</property>
 		</tags>
 	</channel-type>
 	<channel-type id="mute">
@@ -66,8 +66,8 @@
 		<label>Mute</label>
 		<description>Mute state</description>
 		<tags>
-			<point-tag>Switch</point-tag>
-			<property-tag>SoundVolume</property-tag>
+			<point>Switch</point>
+			<property>SoundVolume</property>
 		</tags>
 	</channel-type>
 	<channel-type id="input">

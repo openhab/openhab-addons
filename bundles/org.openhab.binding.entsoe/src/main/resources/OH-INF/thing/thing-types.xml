@@ -121,8 +121,8 @@
 		<label>Spot Price</label>
 		<category>Price</category>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Price</property-tag>
+			<point>Status</point>
+			<property>Price</property>
 		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>

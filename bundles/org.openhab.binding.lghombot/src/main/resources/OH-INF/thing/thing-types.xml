@@ -91,8 +91,8 @@
 		<description>Current battery charge.</description>
 		<category>BatteryLevel</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Energy</property-tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%d%%" readOnly="true"/>
 	</channel-type>
@@ -113,8 +113,8 @@
 		<label>Clean</label>
 		<description>Start cleaning / return home.</description>
 		<tags>
-			<point-tag>Switch</point-tag>
-			<property-tag>Power</property-tag>
+			<point>Switch</point>
+			<property>Power</property>
 		</tags>
 	</channel-type>
 	<channel-type id="startType">
@@ -122,8 +122,8 @@
 		<label>Start</label>
 		<description>Start cleaning.</description>
 		<tags>
-			<point-tag>Switch</point-tag>
-			<property-tag>Power</property-tag>
+			<point>Switch</point>
+			<property>Power</property>
 		</tags>
 	</channel-type>
 	<channel-type id="homeType">
@@ -131,8 +131,8 @@
 		<label>Home</label>
 		<description>Return home.</description>
 		<tags>
-			<point-tag>Switch</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Switch</point>
+			<property>Mode</property>
 		</tags>
 	</channel-type>
 	<channel-type id="pauseType" advanced="true">
@@ -145,8 +145,8 @@
 		<label>Turbo</label>
 		<description>Turbo mode ON, OFF.</description>
 		<tags>
-			<point-tag>Switch</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Switch</point>
+			<property>Mode</property>
 		</tags>
 	</channel-type>
 	<channel-type id="repeatType">
@@ -154,8 +154,8 @@
 		<label>Repeat</label>
 		<description>Repeat cleaning ON, OFF.</description>
 		<tags>
-			<point-tag>Switch</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Switch</point>
+			<property>Mode</property>
 		</tags>
 	</channel-type>
 	<channel-type id="modeType">
@@ -163,8 +163,8 @@
 		<label>Mode</label>
 		<description>Cleaning mode.</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Status</point>
+			<property>Mode</property>
 		</tags>
 		<state>
 			<options>
@@ -211,8 +211,8 @@
 		<label>Last Clean</label>
 		<description>Last time the HomBot cleaned.</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Timestamp</property-tag>
+			<point>Status</point>
+			<property>Timestamp</property>
 		</tags>
 		<state pattern="%1$tF %1$tR" readOnly="true"/>
 	</channel-type>

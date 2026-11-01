@@ -58,8 +58,8 @@
 		<description>channel type for MCP23017 pin in DIGITAL_INPUT mode (contact)</description>
 		<category>Contact</category>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>OpenState</property-tag>
+			<point>Status</point>
+			<property>OpenState</property>
 		</tags>
 		<state readOnly="false"/>
 		<config-description-ref uri="channel-type:mcp23017:input_pin"/>
@@ -71,8 +71,8 @@
 		<description>channel type for MCP23017 pin in DIGITAL_INPUT mode (switch)</description>
 		<category>Switch</category>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Power</property-tag>
+			<point>Status</point>
+			<property>Power</property>
 		</tags>
 		<state readOnly="true"/>
 		<config-description-ref uri="channel-type:mcp23017:output_pin"/>

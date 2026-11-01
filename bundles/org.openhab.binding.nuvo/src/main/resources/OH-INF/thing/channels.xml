@@ -393,8 +393,8 @@
 		<label>All Off</label>
 		<description>Turn All Zones Off</description>
 		<tags>
-			<point-tag>Switch</point-tag>
-			<property-tag>Power</property-tag>
+			<point>Switch</point>
+			<property>Power</property>
 		</tags>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
@@ -404,8 +404,8 @@
 		<label>Page</label>
 		<description>Activates the Page Mode for All Zones</description>
 		<tags>
-			<point-tag>Switch</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Switch</point>
+			<property>Mode</property>
 		</tags>
 	</channel-type>
 
@@ -435,8 +435,8 @@
 		<description>Transport Controls e.g. Play/Pause/Next/Previous for the Current Source</description>
 		<category>Player</category>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>MediaControl</property-tag>
+			<point>Control</point>
+			<property>MediaControl</property>
 		</tags>
 	</channel-type>
 
@@ -466,8 +466,8 @@
 		<label>Loudness Compensation</label>
 		<description>A Switch That Controls the Loudness Compensation Setting for the Zone</description>
 		<tags>
-			<point-tag>Switch</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Switch</point>
+			<property>Mode</property>
 		</tags>
 	</channel-type>
 
@@ -476,8 +476,8 @@
 		<label>Do Not Disturb</label>
 		<description>A Switch That Controls If the Zone Should Ignore an Incoming Audio Page</description>
 		<tags>
-			<point-tag>Switch</point-tag>
-			<property-tag>SoundVolume</property-tag>
+			<point>Switch</point>
+			<property>SoundVolume</property>
 		</tags>
 	</channel-type>
 
@@ -486,8 +486,8 @@
 		<label>Locked</label>
 		<description>Indicates If This Zone Is Locked</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>LockState</property-tag>
+			<point>Status</point>
+			<property>LockState</property>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -502,8 +502,8 @@
 		<label>Party Mode</label>
 		<description>Activate Party Mode With This Zone as the Host</description>
 		<tags>
-			<point-tag>Switch</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Switch</point>
+			<property>Mode</property>
 		</tags>
 	</channel-type>
 
@@ -536,8 +536,8 @@
 		<label>Play Mode</label>
 		<description>The Current Playback Mode of the Source</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Status</point>
+			<property>Mode</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -547,8 +547,8 @@
 		<label>Track Length</label>
 		<description>The Total Running Time of the Current Playing Track</description>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Duration</property-tag>
+			<point>Measurement</point>
+			<property>Duration</property>
 		</tags>
 		<state readOnly="true" pattern="%1$tT"/>
 	</channel-type>
@@ -558,8 +558,8 @@
 		<label>Track Position</label>
 		<description>The Running Time Elapsed of the Current Playing Track</description>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Duration</property-tag>
+			<point>Measurement</point>
+			<property>Duration</property>
 		</tags>
 		<state readOnly="true" pattern="%1$tT"/>
 	</channel-type>

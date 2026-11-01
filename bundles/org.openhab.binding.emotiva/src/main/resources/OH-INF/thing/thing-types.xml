@@ -128,8 +128,8 @@
 		<label>Power</label>
 		<description>Power ON/OFF the device</description>
 		<tags>
-			<point-tag>Switch</point-tag>
-			<property-tag>Power</property-tag>
+			<point>Switch</point>
+			<property>Power</property>
 		</tags>
 	</channel-type>
 
@@ -138,8 +138,8 @@
 		<label>Power (zone)</label>
 		<description>Power ON/OFF this zone of the Processor</description>
 		<tags>
-			<point-tag>Switch</point-tag>
-			<property-tag>Power</property-tag>
+			<point>Switch</point>
+			<property>Power</property>
 		</tags>
 	</channel-type>
 
@@ -149,8 +149,8 @@
 		<description>Set the volume level of this zone</description>
 		<category>SoundVolume</category>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>SoundVolume</property-tag>
+			<point>Control</point>
+			<property>SoundVolume</property>
 		</tags>
 		<state min="0" max="100" pattern="%d %unit%"/>
 	</channel-type>
@@ -161,8 +161,8 @@
 		<description>Set the volume level (dB). Same as [mainVolume - 96]</description>
 		<category>SoundVolume</category>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>SoundVolume</property-tag>
+			<point>Control</point>
+			<property>SoundVolume</property>
 		</tags>
 		<state min="-96" max="15" step="0.5" pattern="%.1f dB"/>
 	</channel-type>
@@ -173,8 +173,8 @@
 		<description>Enable or Disable Mute on this zone of the Processor</description>
 		<category>SoundVolume</category>
 		<tags>
-			<point-tag>Switch</point-tag>
-			<property-tag>SoundVolume</property-tag>
+			<point>Switch</point>
+			<property>SoundVolume</property>
 		</tags>
 	</channel-type>
 
@@ -240,8 +240,8 @@
 		<description>Increased/Reduced volume for a given speaker, in dB</description>
 		<category>SoundVolume</category>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>SoundVolume</property-tag>
+			<point>Control</point>
+			<property>SoundVolume</property>
 		</tags>
 		<state min="-24" step="0.5" max="24" pattern="%.1f dB"/>
 	</channel-type>
@@ -295,8 +295,8 @@
 		<label>Mute</label>
 		<description>Enable/Disable Loudness on this zone of the Processor</description>
 		<tags>
-			<point-tag>Switch</point-tag>
-			<property-tag>SoundVolume</property-tag>
+			<point>Switch</point>
+			<property>SoundVolume</property>
 		</tags>
 	</channel-type>
 
@@ -317,8 +317,8 @@
 		<label>Tuner Channel</label>
 		<description>Radio Tuner Channel</description>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>Channel</property-tag>
+			<point>Control</point>
+			<property>Channel</property>
 		</tags>
 		<state min="1" max="20"/>
 	</channel-type>
@@ -340,8 +340,8 @@
 		<label>Radio Tuner Channel Frequency</label>
 		<description>User select radio tuner channel frequency"</description>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>Frequency</property-tag>
+			<point>Control</point>
+			<property>Frequency</property>
 		</tags>
 		<state readOnly="true" min="535000" max="108000000" pattern="%d %unit%"/>
 	</channel-type>
@@ -351,8 +351,8 @@
 		<label>Radio Tuner Channel Name</label>
 		<description>User select radio tuner channel name</description>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>Channel</property-tag>
+			<point>Control</point>
+			<property>Channel</property>
 		</tags>
 		<state>
 			<options>
@@ -385,8 +385,8 @@
 		<label>Radio Tuner Signal</label>
 		<description>Radio tuner signal quality</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>SignalStrength</property-tag>
+			<point>Status</point>
+			<property>SignalStrength</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>

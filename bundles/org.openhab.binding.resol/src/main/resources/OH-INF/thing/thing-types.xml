@@ -194,8 +194,8 @@
 		<description>Virtual temperature sensor input.</description>
 		<category>Temperature</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="false"/>
 	</channel-type>
@@ -212,8 +212,8 @@
 		<label>Switch</label>
 		<description>Virtual switch input.</description>
 		<tags>
-			<point-tag>Switch</point-tag>
-			<property-tag>Power</property-tag>
+			<point>Switch</point>
+			<property>Power</property>
 		</tags>
 	</channel-type>
 
@@ -223,8 +223,8 @@
 		<description>Virtual temperature offset on heating circuit of an emulated BAS (RCP12 room control unit).</description>
 		<category>Temperature</category>
 		<tags>
-			<point-tag>Setpoint</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="false" min="-15" max="15"/>
 	</channel-type>
@@ -234,8 +234,8 @@
 		<label>Operating Mode</label>
 		<description>Virtual operating mode of the heating circuit controlled by the emulated BAS (RCP12 room control unit).</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Status</point>
+			<property>Mode</property>
 		</tags>
 		<state pattern="%d" readOnly="false" min="0" max="4" step="1">
 			<options>

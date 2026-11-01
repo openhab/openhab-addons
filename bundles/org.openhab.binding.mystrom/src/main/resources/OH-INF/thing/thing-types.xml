@@ -158,8 +158,8 @@
 		<label>Power Consumption</label>
 		<description>The current power delivered by the plug</description>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Power</property-tag>
+			<point>Measurement</point>
+			<property>Power</property>
 		</tags>
 		<state pattern="%.3f %unit%" readOnly="true"/>
 	</channel-type>
@@ -169,8 +169,8 @@
 		<label>Energy Consumption</label>
 		<description>Energy consumed since last API call</description>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Energy</property-tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
@@ -181,8 +181,8 @@
 		<label>Temperature</label>
 		<description>The current temperature at the plug</description>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -199,8 +199,8 @@
 		<label>Mode</label>
 		<description>The color mode we want the Bulb to set to</description>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Control</point>
+			<property>Mode</property>
 		</tags>
 		<command>
 			<options>

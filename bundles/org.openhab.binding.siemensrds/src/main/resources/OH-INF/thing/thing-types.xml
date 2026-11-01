@@ -132,8 +132,8 @@
 		<description>Measured temperature value</description>
 		<category>temperature</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -144,8 +144,8 @@
 		<description>Target temperature setting</description>
 		<category>temperature</category>
 		<tags>
-			<point-tag>Setpoint</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="false" pattern="%.1f %unit%" min="5" max="30" step="0.5"/>
 	</channel-type>
@@ -156,8 +156,8 @@
 		<description>The output state of the thermostat (Heating, Cooling)</description>
 		<category>fire</category>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Status</point>
+			<property>Mode</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -168,8 +168,8 @@
 		<description>Measured humidity value</description>
 		<category>humidity</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Humidity</property-tag>
+			<point>Measurement</point>
+			<property>Humidity</property>
 		</tags>
 		<state readOnly="true" pattern="%.0f %%"/>
 	</channel-type>
@@ -180,8 +180,8 @@
 		<description>Room Air Quality</description>
 		<category>qualityofservice</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>AirQuality</property-tag>
+			<point>Measurement</point>
+			<property>AirQuality</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -192,7 +192,7 @@
 		<description>Energy savings level (Green Leaf)</description>
 		<category>qualityofservice</category>
 		<tags>
-			<point-tag>Status</point-tag>
+			<point>Status</point>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -202,8 +202,8 @@
 		<label>Thermostat Auto Mode</label>
 		<description>The thermostat is in Automatic Mode (Off = Manual Mode)</description>
 		<tags>
-			<point-tag>Switch</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Switch</point>
+			<property>Mode</property>
 		</tags>
 		<state readOnly="false"/>
 	</channel-type>
@@ -214,8 +214,8 @@
 		<description>The thermostat is in Present Occupancy Mode (Off = Away Mode)</description>
 		<category>presence</category>
 		<tags>
-			<point-tag>Switch</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Switch</point>
+			<property>Mode</property>
 		</tags>
 		<state readOnly="false"/>
 	</channel-type>
@@ -225,8 +225,8 @@
 		<label>Hot Water Auto Mode</label>
 		<description>The domestic water heating is in Automatic Mode (Off = Manual Mode)</description>
 		<tags>
-			<point-tag>Switch</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Switch</point>
+			<property>Mode</property>
 		</tags>
 		<state readOnly="false"/>
 	</channel-type>
@@ -236,8 +236,8 @@
 		<label>Hot Water Output State</label>
 		<description>The On/Off state of the domestic water heating</description>
 		<tags>
-			<point-tag>Switch</point-tag>
-			<property-tag>Heating</property-tag>
+			<point>Switch</point>
+			<property>Heating</property>
 		</tags>
 		<state readOnly="false"/>
 	</channel-type>

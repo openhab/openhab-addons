@@ -9,8 +9,8 @@
 		<label>Temperature</label>
 		<category>Temperature</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f °C"/>
 	</channel-type>
@@ -20,8 +20,8 @@
 		<label>Luminiscence</label>
 		<category>Light</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Illuminance</property-tag>
+			<point>Measurement</point>
+			<property>Illuminance</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f Lux"/>
 	</channel-type>
@@ -31,8 +31,8 @@
 		<label>Humidity</label>
 		<category>Humidity</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Humidity</property-tag>
+			<point>Measurement</point>
+			<property>Humidity</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %%"/>
 	</channel-type>
@@ -42,8 +42,8 @@
 		<label>Barometer</label>
 		<category>Pressure</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Pressure</property-tag>
+			<point>Measurement</point>
+			<property>Pressure</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f"/>
 	</channel-type>
@@ -53,8 +53,8 @@
 		<label>Ultraviolet</label>
 		<category>Light</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Ultraviolet</property-tag>
+			<point>Measurement</point>
+			<property>Ultraviolet</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f UV index"/>
 	</channel-type>
@@ -64,8 +64,8 @@
 		<label>CO2</label>
 		<category>CarbonDioxide</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>CO2</property-tag>
+			<point>Measurement</point>
+			<property>CO2</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f ppm"/>
 	</channel-type>
@@ -75,8 +75,8 @@
 		<label>Energy</label>
 		<category>Energy</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Power</property-tag>
+			<point>Measurement</point>
+			<property>Power</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f W"/>
 	</channel-type>
@@ -86,8 +86,8 @@
 		<label>Energy</label>
 		<category>Energy</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Energy</property-tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f kWh"/>
 	</channel-type>
@@ -97,8 +97,8 @@
 		<label>Energy</label>
 		<category>Energy</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Power</property-tag>
+			<point>Measurement</point>
+			<property>Power</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f W"/>
 	</channel-type>
@@ -108,8 +108,8 @@
 		<label>Smoke</label>
 		<category>Smoke</category>
 		<tags>
-			<point-tag>Alarm</point-tag>
-			<property-tag>Smoke</property-tag>
+			<point>Alarm</point>
+			<property>Smoke</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -119,8 +119,8 @@
 		<label>Gas</label>
 		<category>Gas</category>
 		<tags>
-			<point-tag>Alarm</point-tag>
-			<property-tag>CO</property-tag>
+			<point>Alarm</point>
+			<property>CO</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -130,8 +130,8 @@
 		<label>Flood</label>
 		<category>Water</category>
 		<tags>
-			<point-tag>Alarm</point-tag>
-			<property-tag>Water</property-tag>
+			<point>Alarm</point>
+			<property>Water</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -141,8 +141,8 @@
 		<label>Tamper</label>
 		<category>Alarm</category>
 		<tags>
-			<point-tag>Alarm</point-tag>
-			<property-tag>Tampered</property-tag>
+			<point>Alarm</point>
+			<property>Tampered</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -152,8 +152,8 @@
 		<label>DoorWindow</label>
 		<category>Contact</category>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>OpenState</property-tag>
+			<point>Status</point>
+			<property>OpenState</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -163,8 +163,8 @@
 		<label>Motion</label>
 		<category>Motion</category>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Motion</property-tag>
+			<point>Status</point>
+			<property>Motion</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -174,8 +174,8 @@
 		<label>PowerOutlet</label>
 		<category>PowerOutlet</category>
 		<tags>
-			<point-tag>Switch</point-tag>
-			<property-tag>Power</property-tag>
+			<point>Switch</point>
+			<property>Power</property>
 		</tags>
 		<state readOnly="false"/>
 	</channel-type>
@@ -185,8 +185,8 @@
 		<label>Color Temperature</label>
 		<category>ColorLight</category>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>ColorTemperature</property-tag>
+			<point>Control</point>
+			<property>ColorTemperature</property>
 		</tags>
 		<state readOnly="false"/>
 	</channel-type>
@@ -196,8 +196,8 @@
 		<label>Rollshutter</label>
 		<category>Blinds</category>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>OpenLevel</property-tag>
+			<point>Control</point>
+			<property>OpenLevel</property>
 		</tags>
 		<state readOnly="false"/>
 	</channel-type>
@@ -209,8 +209,8 @@
 		<label>Battery</label>
 		<category>Battery</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Energy</property-tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %%"/>
 	</channel-type>
@@ -220,8 +220,8 @@
 		<label>Doorlock</label>
 		<category>Door</category>
 		<tags>
-			<point-tag>Switch</point-tag>
-			<property-tag>LockState</property-tag>
+			<point>Switch</point>
+			<property>LockState</property>
 		</tags>
 		<state readOnly="false"/>
 	</channel-type>
@@ -232,7 +232,7 @@
 		<description>This channel represents a universal channel if no further device information is available.</description>
 		<category>Switch</category>
 		<tags>
-			<point-tag>Status</point-tag>
+			<point>Status</point>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -242,7 +242,7 @@
 		<label>Sensor Multilevel</label>
 		<description>This channel represents a universal channel if no further device information is available.</description>
 		<tags>
-			<point-tag>Measurement</point-tag>
+			<point>Measurement</point>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -253,7 +253,7 @@
 		<description>This channel represents a universal channel if no further device information is available.</description>
 		<category>Switch</category>
 		<tags>
-			<point-tag>Status</point-tag>
+			<point>Status</point>
 		</tags>
 		<state readOnly="false"/>
 	</channel-type>
@@ -263,7 +263,7 @@
 		<label>Switch Multilevel</label>
 		<description>This channel represents a universal channel if no further device information is available.</description>
 		<tags>
-			<point-tag>Control</point-tag>
+			<point>Control</point>
 		</tags>
 		<state readOnly="false"/>
 	</channel-type>
@@ -274,8 +274,8 @@
 		<description>This channel represents the rgbw switch device type from Z-Way.</description>
 		<category>ColorLight</category>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>Color</property-tag>
+			<point>Control</point>
+			<property>Color</property>
 		</tags>
 	</channel-type>
 
@@ -286,8 +286,8 @@
 			states (modes): off, heating and cooling. The state of heating and cooling is alternately set at the state on.</description>
 		<category>Temperature</category>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Status</point>
+			<property>Mode</property>
 		</tags>
 		<state readOnly="false"/>
 	</channel-type>
@@ -297,8 +297,8 @@
 		<label>Thermostat Set Point</label>
 		<category>Temperature</category>
 		<tags>
-			<point-tag>Setpoint</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="false"/>
 	</channel-type>

@@ -27,8 +27,8 @@
 		<item-type>Switch</item-type>
 		<label>Wifi Status</label>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Power</property-tag>
+			<point>Status</point>
+			<property>Power</property>
 		</tags>
 	</channel-type>
 	<channel-type id="ssid">

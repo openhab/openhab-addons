@@ -11,8 +11,8 @@
 		</description>
 		<category>ColorLight</category>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>Light</property-tag>
+			<point>Control</point>
+			<property>Light</property>
 		</tags>
 	</channel-type>
 
@@ -22,8 +22,8 @@
 		<description>This channel supports adjusting the color temperature from cold (0%) to warm (100%).</description>
 		<category>ColorLight</category>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>ColorTemperature</property-tag>
+			<point>Control</point>
+			<property>ColorTemperature</property>
 		</tags>
 	</channel-type>
 

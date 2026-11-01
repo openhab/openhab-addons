@@ -219,8 +219,8 @@
 		<description>Measured temperature value (Read-Only)</description>
 		<category>temperature</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 		<config-description>
@@ -238,8 +238,8 @@
 		<description>Target temperature setting of the room</description>
 		<category>temperature</category>
 		<tags>
-			<point-tag>Setpoint</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="false" pattern="%.1f %unit%" step="0.5"/>
 		<config-description>
@@ -257,8 +257,8 @@
 		<description>Status of whether the thermostat is Off, or calling for Heat</description>
 		<category>fire</category>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Heating</property-tag>
+			<point>Status</point>
+			<property>Heating</property>
 		</tags>
 		<state readOnly="true"/>
 		<config-description>
@@ -276,8 +276,8 @@
 		<description>The Thermostat is in the Present Occupancy Mode (Off=Absent, On=Present)</description>
 		<category>presence</category>
 		<tags>
-			<point-tag>Switch</point-tag>
-			<property-tag>Presence</property-tag>
+			<point>Switch</point>
+			<property>Presence</property>
 		</tags>
 		<state readOnly="false"/>
 		<config-description>
@@ -295,8 +295,8 @@
 		<description>The Plug is in Automatic Mode (Off=Manual, On=Automatic)</description>
 		<category>energy</category>
 		<tags>
-			<point-tag>Switch</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Switch</point>
+			<property>Mode</property>
 		</tags>
 		<state readOnly="false"/>
 		<config-description>
@@ -313,8 +313,8 @@
 		<label>Plug Output State</label>
 		<description>The state of the Plug switch, Off or On</description>
 		<tags>
-			<point-tag>Switch</point-tag>
-			<property-tag>Power</property-tag>
+			<point>Switch</point>
+			<property>Power</property>
 		</tags>
 		<state readOnly="false"/>
 		<config-description>
@@ -332,8 +332,8 @@
 		<description>The state of the contact</description>
 		<category>window</category>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>OpenState</property-tag>
+			<point>Status</point>
+			<property>OpenState</property>
 		</tags>
 		<state readOnly="true"/>
 		<config-description>
@@ -350,8 +350,8 @@
 		<label>Mesh Network QoS</label>
 		<description>Quality of Service: percentage of configured devices currently connected to the RF mesh network</description>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>QualityOfService</property-tag>
+			<point>Measurement</point>
+			<property>QualityOfService</property>
 		</tags>
 		<state readOnly="true" pattern="%.0f %%"></state>
 	</channel-type>

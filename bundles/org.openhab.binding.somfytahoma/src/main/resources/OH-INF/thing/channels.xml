@@ -9,8 +9,8 @@
 		<label>Control (silent)</label>
 		<description>Device control (UP, DOWN, MY/STOP, closure 0-100%) (only for IO devices)</description>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>OpenLevel</property-tag>
+			<point>Control</point>
+			<property>OpenLevel</property>
 		</tags>
 	</channel-type>
 
@@ -19,8 +19,8 @@
 		<label>Control</label>
 		<description>Device control (UP, DOWN, MY/STOP, closure 0-100%)</description>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>OpenLevel</property-tag>
+			<point>Control</point>
+			<property>OpenLevel</property>
 		</tags>
 	</channel-type>
 
@@ -29,8 +29,8 @@
 		<label>Orientation</label>
 		<description>Orientation of the device slats</description>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>Tilt</property-tag>
+			<point>Control</point>
+			<property>Tilt</property>
 		</tags>
 		<state max="100" min="0" step="1" pattern="%d %%" readOnly="false"/>
 	</channel-type>
@@ -40,8 +40,8 @@
 		<label>Contact</label>
 		<description>A contact having OPEN/CLOSE state</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>OpenState</property-tag>
+			<point>Status</point>
+			<property>OpenState</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -58,8 +58,8 @@
 		<label>Luminance</label>
 		<description>A light sensor luminance in lux</description>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Illuminance</property-tag>
+			<point>Measurement</point>
+			<property>Illuminance</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -69,8 +69,8 @@
 		<label>CO2 concentration</label>
 		<description>A CO2 sensor carbon dioxide concentration in ppm</description>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>CO2</property-tag>
+			<point>Measurement</point>
+			<property>CO2</property>
 		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
@@ -80,8 +80,8 @@
 		<label>Noise</label>
 		<description>A noise sensor noise in decibel</description>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Noise</property-tag>
+			<point>Measurement</point>
+			<property>Noise</property>
 		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
@@ -91,7 +91,7 @@
 		<label>Command</label>
 		<description>A channel used for sending commands to Somfy Alarm device</description>
 		<tags>
-			<point-tag>Alarm</point-tag>
+			<point>Alarm</point>
 		</tags>
 		<state>
 			<options>
@@ -108,7 +108,7 @@
 		<label>Command</label>
 		<description>A channel used for sending commands to Somfy Myfox Alarm device</description>
 		<tags>
-			<point-tag>Alarm</point-tag>
+			<point>Alarm</point>
 		</tags>
 		<state>
 			<options>
@@ -124,7 +124,7 @@
 		<label>Intrusion Control</label>
 		<description>A channel used for Alarm external intrusion controlling</description>
 		<tags>
-			<point-tag>Alarm</point-tag>
+			<point>Alarm</point>
 		</tags>
 		<state>
 			<options>
@@ -141,7 +141,7 @@
 		<label>Alarm State</label>
 		<description>A state of the Somfy Alarm</description>
 		<tags>
-			<point-tag>Alarm</point-tag>
+			<point>Alarm</point>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -158,7 +158,7 @@
 		<label>Alarm Intrusion State</label>
 		<description>An intrusion state of the Somfy Alarm</description>
 		<tags>
-			<point-tag>Alarm</point-tag>
+			<point>Alarm</point>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -175,8 +175,8 @@
 		<label>Battery Status State</label>
 		<description>Battery Status State</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>LowBattery</property-tag>
+			<point>Status</point>
+			<property>LowBattery</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -186,8 +186,8 @@
 		<label>Battery State</label>
 		<description>Battery Condition State (full, low, normal, verylow)</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>LowBattery</property-tag>
+			<point>Status</point>
+			<property>LowBattery</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -197,8 +197,8 @@
 		<label>Lighting Led Pod Mod State</label>
 		<description>Lighting Led Pod Mod State</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Status</point>
+			<property>Mode</property>
 		</tags>
 		<state pattern="%.2f" readOnly="true"/>
 	</channel-type>
@@ -208,8 +208,8 @@
 		<label>Current Temperature</label>
 		<description>The current temperature of the heating system</description>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -219,8 +219,8 @@
 		<label>Relative Humidity</label>
 		<description>The current relative humidity</description>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Humidity</property-tag>
+			<point>Measurement</point>
+			<property>Humidity</property>
 		</tags>
 		<state readOnly="true" min="0" max="100" pattern="%f.1 %unit%"/>
 	</channel-type>
@@ -237,8 +237,8 @@
 		<label>Target Temperature</label>
 		<description>The target temperature of the heating system</description>
 		<tags>
-			<point-tag>Setpoint</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
@@ -250,8 +250,8 @@
 			eco)
 		</description>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>Heating</property-tag>
+			<point>Control</point>
+			<property>Heating</property>
 		</tags>
 		<state>
 			<options>
@@ -268,8 +268,8 @@
 		<label>Gate Command</label>
 		<description>A channel used for getting/setting the gate position (open, close, pedestrian, stop)</description>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>OpenLevel</property-tag>
+			<point>Control</point>
+			<property>OpenLevel</property>
 		</tags>
 		<state>
 			<options>
@@ -286,8 +286,8 @@
 		<label>Gate Status</label>
 		<description>A channel used for getting the gate state (open, closed, pedestrian)</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>OpenState</property-tag>
+			<point>Status</point>
+			<property>OpenState</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -297,8 +297,8 @@
 		<label>Position</label>
 		<description>Position of the gate</description>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>OpenLevel</property-tag>
+			<point>Control</point>
+			<property>OpenLevel</property>
 		</tags>
 		<state max="100" min="0" step="1" pattern="%d %%" readOnly="false"/>
 	</channel-type>
@@ -308,8 +308,8 @@
 		<label>Open/Close</label>
 		<description>A channel for controlling door OPEN/CLOSE state</description>
 		<tags>
-			<point-tag>Switch</point-tag>
-			<property-tag>OpenState</property-tag>
+			<point>Switch</point>
+			<property>OpenState</property>
 		</tags>
 	</channel-type>
 
@@ -318,8 +318,8 @@
 		<label>Lock</label>
 		<description>A lock having ON/OFF state (unlocked/locked)</description>
 		<tags>
-			<point-tag>Switch</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Switch</point>
+			<property>Mode</property>
 		</tags>
 	</channel-type>
 
@@ -328,8 +328,8 @@
 		<label>Handle State</label>
 		<description>A state of the Somfy Window Handle</description>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Position</property-tag>
+			<point>Measurement</point>
+			<property>Position</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -339,8 +339,8 @@
 		<label>Temperature</label>
 		<description>The temperature value of the sensor</description>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -350,8 +350,8 @@
 		<label>Energy Consumption</label>
 		<description>The energy consumption reported by the sensor</description>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Energy</property-tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -423,8 +423,8 @@
 		<label>Myfox Shutter</label>
 		<description>A channel for controlling the shutter</description>
 		<tags>
-			<point-tag>Switch</point-tag>
-			<property-tag>OpenState</property-tag>
+			<point>Switch</point>
+			<property>OpenState</property>
 		</tags>
 	</channel-type>
 
@@ -433,8 +433,8 @@
 		<label>Heating Mode</label>
 		<description>Heating mode of the Somfy thermostat</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Heating</property-tag>
+			<point>Status</point>
+			<property>Heating</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -444,8 +444,8 @@
 		<label>Derogation Heating Mode</label>
 		<description>Derogation heating mode of the Somfy thermostat/valve</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Heating</property-tag>
+			<point>Status</point>
+			<property>Heating</property>
 		</tags>
 		<command>
 			<options>
@@ -471,7 +471,7 @@
 		<label>Sensor Defect State</label>
 		<description>State of the Somfy sensor (dead, lowBattery, noDefect...)</description>
 		<tags>
-			<point-tag>Status</point-tag>
+			<point>Status</point>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -481,7 +481,7 @@
 		<label>Sensor Part Battery State</label>
 		<description>State of the sensor part of the Somfy sensor</description>
 		<tags>
-			<point-tag>Status</point-tag>
+			<point>Status</point>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -491,7 +491,7 @@
 		<label>Radio Part Battery State</label>
 		<description>State of the radio part of the Somfy sensor</description>
 		<tags>
-			<point-tag>Status</point-tag>
+			<point>Status</point>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -501,8 +501,8 @@
 		<label>Set Closure And Orientation</label>
 		<description>A channel for setting closure and orientation of the blind</description>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>Position</property-tag>
+			<point>Control</point>
+			<property>Position</property>
 		</tags>
 	</channel-type>
 
@@ -511,8 +511,8 @@
 		<label>Light Intensity</label>
 		<description>The intensity of the light</description>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>Brightness</property-tag>
+			<point>Control</point>
+			<property>Brightness</property>
 		</tags>
 		<state max="100" min="0" step="1" pattern="%d %%"/>
 	</channel-type>
@@ -522,8 +522,8 @@
 		<label>Heating Level</label>
 		<description>The level of the heating</description>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>Heating</property-tag>
+			<point>Control</point>
+			<property>Heating</property>
 		</tags>
 		<state max="100" min="0" step="1" pattern="%d %%"/>
 	</channel-type>
@@ -533,8 +533,8 @@
 		<label>Current Heating Mode</label>
 		<description>Current heating mode of the Somfy thermostatic valve</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Status</point>
+			<property>Mode</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -544,8 +544,8 @@
 		<label>Valve Open/Closed state</label>
 		<description>Current open/closed state of the Somfy thermostatic valve</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>OpenState</property-tag>
+			<point>Status</point>
+			<property>OpenState</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -555,8 +555,8 @@
 		<label>Operating mode</label>
 		<description>Operating mode of the Somfy thermostatic valve</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Status</point>
+			<property>Mode</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -573,8 +573,8 @@
 		<label>Slats</label>
 		<description>Slats having OPEN/CLOSED state</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Tilt</property-tag>
+			<point>Status</point>
+			<property>Tilt</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -584,8 +584,8 @@
 		<label>Command</label>
 		<description>A channel used for sending commands to Somfy Bioclimatic Pergola device</description>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>Tilt</property-tag>
+			<point>Control</point>
+			<property>Tilt</property>
 		</tags>
 		<state>
 			<options>
@@ -601,8 +601,8 @@
 		<label>RSSI</label>
 		<description>Relative received signal strength state</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>RSSI</property-tag>
+			<point>Status</point>
+			<property>RSSI</property>
 		</tags>
 		<state pattern="%.1f" readOnly="true"/>
 	</channel-type>
@@ -612,8 +612,8 @@
 		<label>Boost Mode Duration</label>
 		<description>Duration for Boost Mode</description>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>Duration</property-tag>
+			<point>Control</point>
+			<property>Duration</property>
 		</tags>
 		<state min="0" max="7" step="1" pattern="%d"/>
 	</channel-type>
@@ -623,8 +623,8 @@
 		<label>Away Mode Duration</label>
 		<description>Duration for Away Mode</description>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>Duration</property-tag>
+			<point>Control</point>
+			<property>Duration</property>
 		</tags>
 		<state min="0" max="7" step="1" pattern="%d"/>
 	</channel-type>
@@ -662,8 +662,8 @@
 		<label>Mode</label>
 		<description>Describes the water heater mode</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Status</point>
+			<property>Mode</property>
 		</tags>
 		<state>
 			<options>
@@ -686,8 +686,8 @@
 		<label>Middle Water Temperature</label>
 		<description>Describes the temperature at the middle sensor</description>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -697,8 +697,8 @@
 		<label>Boost</label>
 		<description>Boost Mode (ON or OFF)</description>
 		<tags>
-			<point-tag>Switch</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Switch</point>
+			<property>Mode</property>
 		</tags>
 	</channel-type>
 
@@ -707,8 +707,8 @@
 		<label>Away</label>
 		<description>Away Mode (ON or OFF)</description>
 		<tags>
-			<point-tag>Switch</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Switch</point>
+			<property>Mode</property>
 		</tags>
 	</channel-type>
 
@@ -717,8 +717,8 @@
 		<label>Zone Mode</label>
 		<description>Zone mode control</description>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Control</point>
+			<property>Mode</property>
 		</tags>
 		<state>
 			<options>
@@ -769,8 +769,8 @@
 		<label>Yutaki Mode</label>
 		<description>Yutaki mode state</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Status</point>
+			<property>Mode</property>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -785,8 +785,8 @@
 		<label>Holiday Mode</label>
 		<description>Holiday mode control</description>
 		<tags>
-			<point-tag>Switch</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Switch</point>
+			<property>Mode</property>
 		</tags>
 	</channel-type>
 
@@ -795,8 +795,8 @@
 		<label>DHW Control</label>
 		<description>Domestic hot water control</description>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>Heating</property-tag>
+			<point>Control</point>
+			<property>Heating</property>
 		</tags>
 		<state>
 			<options>
@@ -811,8 +811,8 @@
 		<label>Anti Legionella</label>
 		<description>Anti legionella control</description>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Control</point>
+			<property>Mode</property>
 		</tags>
 		<state>
 			<options>
@@ -827,8 +827,8 @@
 		<label>DHW Temperature Setting</label>
 		<description>DHW temperature setting control</description>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Control</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%d %unit%"/>
 	</channel-type>
@@ -838,8 +838,8 @@
 		<label>DHW Temperature</label>
 		<description>DHW temperature state</description>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
@@ -862,8 +862,8 @@
 		<label>Boost Mode</label>
 		<description>Boost mode state</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Status</point>
+			<property>Mode</property>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -878,8 +878,8 @@
 		<label>Auto/Manu Mode</label>
 		<description>Auto/Manu mode control</description>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Control</point>
+			<property>Mode</property>
 		</tags>
 		<state>
 			<options>
@@ -906,8 +906,8 @@
 		<label>Unit Mode Status</label>
 		<description>Unit mode status state</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Status</point>
+			<property>Mode</property>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -922,8 +922,8 @@
 		<label>Unit Mode</label>
 		<description>Unit mode control</description>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Control</point>
+			<property>Mode</property>
 		</tags>
 		<state>
 			<options>
@@ -962,8 +962,8 @@
 		<label>Eco Mode Target Offset</label>
 		<description>Eco mode target offset control</description>
 		<tags>
-			<point-tag>Setpoint</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%d %unit%"></state>
 	</channel-type>
@@ -973,8 +973,8 @@
 		<label>Eco Mode Offset</label>
 		<description>Eco mode offset state</description>
 		<tags>
-			<point-tag>Setpoint</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%d %unit%" readOnly="true"></state>
 	</channel-type>
@@ -984,7 +984,7 @@
 		<label>Communication Alarm Bit Status</label>
 		<description>Communication alarm bit status state</description>
 		<tags>
-			<point-tag>Alarm</point-tag>
+			<point>Alarm</point>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -1019,8 +1019,8 @@
 		<label>Water Inlet Temperature</label>
 		<description>Water inlet temperature state</description>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%d %unit%" readOnly="true"></state>
 	</channel-type>
@@ -1030,8 +1030,8 @@
 		<label>Water Outlet Temperature</label>
 		<description>Water outlet temperature state</description>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%d %unit%" readOnly="true"></state>
 	</channel-type>
@@ -1041,8 +1041,8 @@
 		<label>Water Outlet Hp Temperature</label>
 		<description>Water outlet hp temperature state</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Status</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%d %unit%" readOnly="true"></state>
 	</channel-type>
@@ -1052,8 +1052,8 @@
 		<label>Liquid Temperature THMI</label>
 		<description>Liquid temperature THMI state</description>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%d %unit%" readOnly="true"></state>
 	</channel-type>
@@ -1063,8 +1063,8 @@
 		<label>Liquid Temperature</label>
 		<description>Liquid temperature state</description>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%d %unit%" readOnly="true"></state>
 	</channel-type>
@@ -1074,8 +1074,8 @@
 		<label>Anti Legionella Temperature</label>
 		<description>Anti legionella temperature control</description>
 		<tags>
-			<point-tag>Setpoint</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%d %unit%"></state>
 	</channel-type>
@@ -1092,8 +1092,8 @@
 		<label>Water Temperature Setting</label>
 		<description>Water temperature setting state</description>
 		<tags>
-			<point-tag>Setpoint</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%d %unit%" readOnly="true"></state>
 	</channel-type>
@@ -1103,8 +1103,8 @@
 		<label>Zone 1 Thermostat Setting</label>
 		<description>Thermostat setting control for the zone 1</description>
 		<tags>
-			<point-tag>Setpoint</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%d %unit%"></state>
 	</channel-type>
@@ -1114,8 +1114,8 @@
 		<label>Zone 1 Water Heating Setting Temperature</label>
 		<description>Water heating setting temperature control for the zone 1</description>
 		<tags>
-			<point-tag>Setpoint</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%d %unit%"></state>
 	</channel-type>
@@ -1125,8 +1125,8 @@
 		<label>Zone 1 Room Ambient Temperature</label>
 		<description>Room ambient temperature control for the zone 1</description>
 		<tags>
-			<point-tag>Setpoint</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%d %unit%"></state>
 	</channel-type>
@@ -1136,8 +1136,8 @@
 		<label>Yutaki Operating Mode</label>
 		<description>Yutaki operating mode state</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Status</point>
+			<property>Mode</property>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -1161,8 +1161,8 @@
 		<label>DHW Mode</label>
 		<description>DHW mode control</description>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Control</point>
+			<property>Mode</property>
 		</tags>
 		<state>
 			<options>
@@ -1177,8 +1177,8 @@
 		<label>Tilt</label>
 		<description>Venetian blind tilt (-5..5)</description>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>Tilt</property-tag>
+			<point>Control</point>
+			<property>Tilt</property>
 		</tags>
 		<state min="-5" max="5" step="1" pattern="%d" readOnly="false"/>
 	</channel-type>

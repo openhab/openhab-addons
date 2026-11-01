@@ -123,8 +123,8 @@
 		<label>All On</label>
 		<description>Turn All Zones On or Off</description>
 		<tags>
-			<point-tag>Switch</point-tag>
-			<property-tag>Power</property-tag>
+			<point>Switch</point>
+			<property>Power</property>
 		</tags>
 	</channel-type>
 

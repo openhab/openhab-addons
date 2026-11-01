@@ -9,8 +9,8 @@
 		<label>Air Pressure</label>
 		<description>Air pressure in hPa</description>
 		<tags>
-			<point-tag>Forecast</point-tag>
-			<property-tag>Pressure</property-tag>
+			<point>Forecast</point>
+			<property>Pressure</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -19,8 +19,8 @@
 		<label>Temperature</label>
 		<description>Temperature</description>
 		<tags>
-			<point-tag>Forecast</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Forecast</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -29,8 +29,8 @@
 		<label>Max Temperature</label>
 		<description>Highest temperature of the day</description>
 		<tags>
-			<point-tag>Forecast</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Forecast</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -39,8 +39,8 @@
 		<label>Min Temperature</label>
 		<description>Lowest temperature of the day</description>
 		<tags>
-			<point-tag>Forecast</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Forecast</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -55,8 +55,8 @@
 		<label>Wind Direction</label>
 		<description>Wind direction</description>
 		<tags>
-			<point-tag>Forecast</point-tag>
-			<property-tag>Wind</property-tag>
+			<point>Forecast</point>
+			<property>Wind</property>
 		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
@@ -65,8 +65,8 @@
 		<label>Wind Speed</label>
 		<description>Wind speed</description>
 		<tags>
-			<point-tag>Forecast</point-tag>
-			<property-tag>Wind</property-tag>
+			<point>Forecast</point>
+			<property>Wind</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -75,8 +75,8 @@
 		<label>Max Wind Speed</label>
 		<description>Highest wind speed of the day</description>
 		<tags>
-			<point-tag>Forecast</point-tag>
-			<property-tag>Wind</property-tag>
+			<point>Forecast</point>
+			<property>Wind</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -85,8 +85,8 @@
 		<label>Min Wind Speed</label>
 		<description>Lowest wind speed of the day</description>
 		<tags>
-			<point-tag>Forecast</point-tag>
-			<property-tag>Wind</property-tag>
+			<point>Forecast</point>
+			<property>Wind</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -95,8 +95,8 @@
 		<label>Relative Humidity</label>
 		<description>Relative humidity in percent</description>
 		<tags>
-			<point-tag>Forecast</point-tag>
-			<property-tag>Humidity</property-tag>
+			<point>Forecast</point>
+			<property>Humidity</property>
 		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
@@ -147,8 +147,8 @@
 		<label>Wind Gust Speed</label>
 		<description>Wind gust speed</description>
 		<tags>
-			<point-tag>Forecast</point-tag>
-			<property-tag>Wind</property-tag>
+			<point>Forecast</point>
+			<property>Wind</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -157,8 +157,8 @@
 		<label>Minimum Precipitation</label>
 		<description>Minimum precipitation intensity</description>
 		<tags>
-			<point-tag>Forecast</point-tag>
-			<property-tag>Rain</property-tag>
+			<point>Forecast</point>
+			<property>Rain</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -167,8 +167,8 @@
 		<label>Maximum Precipitation</label>
 		<description>Maximum precipitation intensity</description>
 		<tags>
-			<point-tag>Forecast</point-tag>
-			<property-tag>Rain</property-tag>
+			<point>Forecast</point>
+			<property>Rain</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -177,8 +177,8 @@
 		<label>Total Precipitation</label>
 		<description>Total amount of precipitation during the day</description>
 		<tags>
-			<point-tag>Forecast</point-tag>
-			<property-tag>Rain</property-tag>
+			<point>Forecast</point>
+			<property>Rain</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -187,8 +187,8 @@
 		<label>Mean Precipitation</label>
 		<description>Mean precipitation intensity</description>
 		<tags>
-			<point-tag>Forecast</point-tag>
-			<property-tag>Rain</property-tag>
+			<point>Forecast</point>
+			<property>Rain</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -197,8 +197,8 @@
 		<label>Median Precipitation</label>
 		<description>Median precipitation intensity</description>
 		<tags>
-			<point-tag>Forecast</point-tag>
-			<property-tag>Rain</property-tag>
+			<point>Forecast</point>
+			<property>Rain</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -207,8 +207,8 @@
 		<label>Precipitation Probability</label>
 		<description>Probability of Precipitation</description>
 		<tags>
-			<point-tag>Forecast</point-tag>
-			<property-tag>Precipitation</property-tag>
+			<point>Forecast</point>
+			<property>Precipitation</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -217,8 +217,8 @@
 		<label>Precipitation Type</label>
 		<description>Type of precipitation</description>
 		<tags>
-			<point-tag>Forecast</point-tag>
-			<property-tag>Precipitation</property-tag>
+			<point>Forecast</point>
+			<property>Precipitation</property>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -244,8 +244,8 @@
 		<label>Frozen Precipitation</label>
 		<description>Percent of precipitation in frozen form</description>
 		<tags>
-			<point-tag>Forecast</point-tag>
-			<property-tag>Precipitation</property-tag>
+			<point>Forecast</point>
+			<property>Precipitation</property>
 		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
@@ -254,8 +254,8 @@
 		<label>Probability of frozen precipitation</label>
 		<description>Probability that the precipitation is in frozen form</description>
 		<tags>
-			<point-tag>Forecast</point-tag>
-			<property-tag>Precipitation</property-tag>
+			<point>Forecast</point>
+			<property>Precipitation</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -303,8 +303,8 @@
 		<label>Air Pressure</label>
 		<description>Air pressure in hPa</description>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Pressure</property-tag>
+			<point>Measurement</point>
+			<property>Pressure</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f hPa"/>
 	</channel-type>
@@ -313,8 +313,8 @@
 		<label>Temperature</label>
 		<description>Temperature</description>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f °C"/>
 	</channel-type>
@@ -323,8 +323,8 @@
 		<label>Max Temperature</label>
 		<description>Highest temperature of the day</description>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f °C"/>
 	</channel-type>
@@ -333,8 +333,8 @@
 		<label>Min Temperature</label>
 		<description>Lowest temperature of the day</description>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f °C"/>
 	</channel-type>
@@ -349,8 +349,8 @@
 		<label>Wind Direction</label>
 		<description>Wind direction</description>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Wind</property-tag>
+			<point>Measurement</point>
+			<property>Wind</property>
 		</tags>
 		<state readOnly="true" pattern="%d °"/>
 	</channel-type>
@@ -359,8 +359,8 @@
 		<label>Wind Speed</label>
 		<description>Wind speed</description>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Wind</property-tag>
+			<point>Measurement</point>
+			<property>Wind</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f m/s"/>
 	</channel-type>
@@ -369,8 +369,8 @@
 		<label>Max Wind Speed</label>
 		<description>Highest wind speed of the day</description>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Wind</property-tag>
+			<point>Measurement</point>
+			<property>Wind</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f m/s"/>
 	</channel-type>
@@ -379,8 +379,8 @@
 		<label>Min Wind Speed</label>
 		<description>Lowest wind speed of the day</description>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Wind</property-tag>
+			<point>Measurement</point>
+			<property>Wind</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f m/s"/>
 	</channel-type>
@@ -389,8 +389,8 @@
 		<label>Relative Humidity</label>
 		<description>Relative humidity in percent</description>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Humidity</property-tag>
+			<point>Measurement</point>
+			<property>Humidity</property>
 		</tags>
 		<state readOnly="true" pattern="%d %%"/>
 	</channel-type>
@@ -429,8 +429,8 @@
 		<label>Wind Gust Speed</label>
 		<description>Wind gust speed</description>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Wind</property-tag>
+			<point>Measurement</point>
+			<property>Wind</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f m/s"/>
 	</channel-type>
@@ -439,8 +439,8 @@
 		<label>Minimum Precipitation</label>
 		<description>Minimum precipitation intensity</description>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Rain</property-tag>
+			<point>Measurement</point>
+			<property>Rain</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f mm/h"/>
 	</channel-type>
@@ -449,8 +449,8 @@
 		<label>Maximum Precipitation</label>
 		<description>Maximum precipitation intensity</description>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Rain</property-tag>
+			<point>Measurement</point>
+			<property>Rain</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f mm/h"/>
 	</channel-type>
@@ -459,8 +459,8 @@
 		<label>Total Precipitation</label>
 		<description>Total amount of precipitation during the day</description>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Rain</property-tag>
+			<point>Measurement</point>
+			<property>Rain</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f mm"/>
 	</channel-type>
@@ -481,8 +481,8 @@
 		<label>Precipitation Category</label>
 		<description>Type of precipitation</description>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Rain</property-tag>
+			<point>Measurement</point>
+			<property>Rain</property>
 		</tags>
 		<state readOnly="true">
 			<options>

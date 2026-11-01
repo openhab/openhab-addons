@@ -20,8 +20,8 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Generic Temperature</label>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true">
 		</state>
@@ -36,8 +36,8 @@
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>Generic Current</label>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Current</property-tag>
+			<point>Measurement</point>
+			<property>Current</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true">
 		</state>
@@ -52,8 +52,8 @@
 		<item-type>Number:Frequency</item-type>
 		<label>Generic Frequency</label>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Frequency</property-tag>
+			<point>Measurement</point>
+			<property>Frequency</property>
 		</tags>
 		<state pattern="%d %unit%" readOnly="true">
 		</state>
@@ -62,8 +62,8 @@
 		<item-type>Number:Energy</item-type>
 		<label>Generic Energy</label>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Energy</property-tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true">
 		</state>
@@ -72,8 +72,8 @@
 		<item-type>Number:Pressure</item-type>
 		<label>Generic Pressure</label>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Pressure</property-tag>
+			<point>Measurement</point>
+			<property>Pressure</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true">
 		</state>
@@ -88,8 +88,8 @@
 		<item-type>Number</item-type>
 		<label>Generic OnOff</label>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>Power</property-tag>
+			<point>Control</point>
+			<property>Power</property>
 		</tags>
 		<state readOnly="true">
 			<options>

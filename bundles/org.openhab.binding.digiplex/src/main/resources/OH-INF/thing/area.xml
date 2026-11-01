@@ -110,7 +110,7 @@
 		<label>Area in Alarm</label>
 		<description>Indicates if area is in alarm</description>
 		<tags>
-			<point-tag>Alarm</point-tag>
+			<point>Alarm</point>
 		</tags>
 		<state readOnly="true">
 			<options>

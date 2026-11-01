@@ -8,8 +8,8 @@
 		<label>Flow Temperature</label>
 		<description>B16 - Flow Temperature</description>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
@@ -18,8 +18,8 @@
 		<label>Return Temperature</label>
 		<description>B17 - Return Temperature</description>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
@@ -28,8 +28,8 @@
 		<label>Flow Speed</label>
 		<description>P13 - Flow speed</description>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Speed</property-tag>
+			<point>Measurement</point>
+			<property>Speed</property>
 		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>

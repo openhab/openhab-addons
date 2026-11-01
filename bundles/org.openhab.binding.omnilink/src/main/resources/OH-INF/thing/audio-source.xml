@@ -41,8 +41,8 @@
 		<description>A line of metadata from this audio source.</description>
 		<category>Text</category>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>SoundVolume</property-tag>
+			<point>Status</point>
+			<property>SoundVolume</property>
 		</tags>
 	</channel-type>
 
@@ -52,8 +52,8 @@
 		<description>Enable or disable polling of this audio source.</description>
 		<category>Switch</category>
 		<tags>
-			<point-tag>Switch</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Switch</point>
+			<property>Mode</property>
 		</tags>
 	</channel-type>
 

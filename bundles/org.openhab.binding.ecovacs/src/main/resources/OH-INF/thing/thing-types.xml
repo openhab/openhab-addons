@@ -146,8 +146,8 @@
 		<label>Current Cleaning Mode</label>
 		<description>Mode used in current clean cycle</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Status</point>
+			<property>Mode</property>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -167,8 +167,8 @@
 		<label>Current Cleaning Time</label>
 		<description>Cleaning time in current clean cycle</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Duration</property-tag>
+			<point>Status</point>
+			<property>Duration</property>
 		</tags>
 		<state pattern="%d %unit%" readOnly="true"></state>
 	</channel-type>
@@ -192,8 +192,8 @@
 		<label>Total Cleaning Time</label>
 		<description>Cleaning time in device life time</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Duration</property-tag>
+			<point>Status</point>
+			<property>Duration</property>
 		</tags>
 		<state pattern="%d %unit%" readOnly="true"></state>
 	</channel-type>
@@ -217,8 +217,8 @@
 		<label>Last Cleaning Start</label>
 		<description>Start time of last completed cleaning run</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Timestamp</property-tag>
+			<point>Status</point>
+			<property>Timestamp</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -228,8 +228,8 @@
 		<label>Last Cleaning Duration</label>
 		<description>Duration of last completed cleaning run</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Duration</property-tag>
+			<point>Status</point>
+			<property>Duration</property>
 		</tags>
 		<state pattern="%d %unit%" readOnly="true"></state>
 	</channel-type>
@@ -246,8 +246,8 @@
 		<label>Last Cleaning Mode</label>
 		<description>Operation mode used in last completed cleaning run</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Status</point>
+			<property>Mode</property>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -273,8 +273,8 @@
 		<label>Auto Empty</label>
 		<description>Automatically empty dust bin in station</description>
 		<tags>
-			<point-tag>Switch</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Switch</point>
+			<property>Mode</property>
 		</tags>
 	</channel-type>
 
@@ -290,8 +290,8 @@
 		<label>Continuous Cleaning</label>
 		<description>Automatically resume unfinished cleaning after charging</description>
 		<tags>
-			<point-tag>Switch</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Switch</point>
+			<property>Mode</property>
 		</tags>
 	</channel-type>
 
@@ -300,8 +300,8 @@
 		<label>Cleaning Power Level</label>
 		<description>Amount of suction power to be used while cleaning</description>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>Speed</property-tag>
+			<point>Control</point>
+			<property>Speed</property>
 		</tags>
 		<state>
 			<options>
@@ -318,8 +318,8 @@
 		<label>True Detect 3D</label>
 		<description>Enable the True Detect 3D object recognition technology</description>
 		<tags>
-			<point-tag>Switch</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Switch</point>
+			<property>Mode</property>
 		</tags>
 	</channel-type>
 
@@ -328,8 +328,8 @@
 		<label>Water System Present</label>
 		<description>Water plate with mop attached to device?</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Info</property-tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -359,8 +359,8 @@
 		<description>Received signal strength indicator for Wi-Fi</description>
 		<category>QualityOfService</category>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>RSSI</property-tag>
+			<point>Status</point>
+			<property>RSSI</property>
 		</tags>
 		<state pattern="%d %unit%" readOnly="true"></state>
 	</channel-type>
@@ -384,8 +384,8 @@
 		<label>Dust Filter Lifetime</label>
 		<description>Remaining life time of dust bin filter in percent</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Level</property-tag>
+			<point>Status</point>
+			<property>Level</property>
 		</tags>
 		<state pattern="%d %unit%" readOnly="true"></state>
 	</channel-type>
@@ -409,8 +409,8 @@
 		<label>Voice Volume</label>
 		<description>Volume level of voice reports</description>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>SoundVolume</property-tag>
+			<point>Control</point>
+			<property>SoundVolume</property>
 		</tags>
 		<state min="0" max="100" step="10"/>
 	</channel-type>
@@ -427,7 +427,7 @@
 		<label>Last Error Description</label>
 		<description>A text describing the last encountered error</description>
 		<tags>
-			<point-tag>Alarm</point-tag>
+			<point>Alarm</point>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>

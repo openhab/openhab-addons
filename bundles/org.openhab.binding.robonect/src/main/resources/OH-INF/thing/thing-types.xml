@@ -152,8 +152,8 @@
 		<label>Temperature</label>
 		<description>The temperature inside the mower</description>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
@@ -163,8 +163,8 @@
 		<label>Humidity</label>
 		<description>The relative humidity in the mower in percent</description>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Humidity</property-tag>
+			<point>Measurement</point>
+			<property>Humidity</property>
 		</tags>
 		<state readOnly="true" pattern="%d %%"/>
 	</channel-type>
@@ -195,8 +195,8 @@
 		<label>Mower Mode</label>
 		<description>The mower mode</description>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Control</point>
+			<property>Mode</property>
 		</tags>
 		<state readOnly="false">
 			<options>
@@ -233,8 +233,8 @@
 		<label>Mower Status</label>
 		<description>The status of the mower</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Info</property-tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -258,8 +258,8 @@
 		<label>Start</label>
 		<description>On if started, Off if stopped</description>
 		<tags>
-			<point-tag>Switch</point-tag>
-			<property-tag>Power</property-tag>
+			<point>Switch</point>
+			<property>Power</property>
 		</tags>
 		<state readOnly="false"/>
 	</channel-type>
@@ -293,8 +293,8 @@
 		<label>Error Message</label>
 		<description>The error message</description>
 		<tags>
-			<point-tag>Alarm</point-tag>
-			<property-tag>Info</property-tag>
+			<point>Alarm</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>

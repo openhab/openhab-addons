@@ -86,8 +86,8 @@
 		<item-type>Dimmer</item-type>
 		<label>Output</label>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>Brightness</property-tag>
+			<point>Control</point>
+			<property>Brightness</property>
 		</tags>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
@@ -96,8 +96,8 @@
 		<item-type>Color</item-type>
 		<label>Color</label>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>Color</property-tag>
+			<point>Control</point>
+			<property>Color</property>
 		</tags>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
@@ -106,8 +106,8 @@
 		<item-type>String</item-type>
 		<label>Tunable White Mode</label>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>Light</property-tag>
+			<point>Control</point>
+			<property>Light</property>
 		</tags>
 		<state>
 			<options>
@@ -145,8 +145,8 @@
 		<item-type>Switch</item-type>
 		<label>Relay</label>
 		<tags>
-			<point-tag>Switch</point-tag>
-			<property-tag>Power</property-tag>
+			<point>Switch</point>
+			<property>Power</property>
 		</tags>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
@@ -185,8 +185,8 @@
 		<item-type>Rollershutter</item-type>
 		<label>Roller Shutter</label>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>OpenLevel</property-tag>
+			<point>Control</point>
+			<property>OpenLevel</property>
 		</tags>
 		<autoUpdatePolicy>veto</autoUpdatePolicy><!-- The position messages come as the shutter moves -->
 		<config-description>
@@ -333,8 +333,8 @@
 		<item-type>Contact</item-type>
 		<label>Binary Sensor</label>
 		<tags>
-			<point-tag>Alarm</point-tag>
-			<property-tag>OpenState</property-tag>
+			<point>Alarm</point>
+			<property>OpenState</property>
 		</tags>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 		<config-description>

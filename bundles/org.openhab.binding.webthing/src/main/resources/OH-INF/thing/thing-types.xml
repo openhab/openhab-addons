@@ -37,8 +37,8 @@
 		<label>Webthing Binding Channel</label>
 		<description>Contact channel for Webthing Binding</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>OpenState</property-tag>
+			<point>Status</point>
+			<property>OpenState</property>
 		</tags>
 	</channel-type>
 
@@ -47,7 +47,7 @@
 		<label>Webthing Binding Channel</label>
 		<description>Switch channel for Webthing Binding</description>
 		<tags>
-			<point-tag>Switch</point-tag>
+			<point>Switch</point>
 		</tags>
 	</channel-type>
 
@@ -56,8 +56,8 @@
 		<label>Webthing Binding Channel</label>
 		<description>Color channel for Webthing Binding</description>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>Color</property-tag>
+			<point>Control</point>
+			<property>Color</property>
 		</tags>
 	</channel-type>
 
@@ -66,8 +66,8 @@
 		<label>Webthing Binding Channel</label>
 		<description>Dimmer channel for Webthing Binding</description>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>Brightness</property-tag>
+			<point>Control</point>
+			<property>Brightness</property>
 		</tags>
 	</channel-type>
 

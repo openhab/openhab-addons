@@ -10,8 +10,8 @@
 		<description>Volume level of the TV.</description>
 		<category>SoundVolume</category>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>SoundVolume</property-tag>
+			<point>Control</point>
+			<property>SoundVolume</property>
 		</tags>
 	</channel-type>
 
@@ -20,8 +20,8 @@
 		<label>Mute</label>
 		<description>Mute state of the TV.</description>
 		<tags>
-			<point-tag>Switch</point-tag>
-			<property-tag>SoundVolume</property-tag>
+			<point>Switch</point>
+			<property>SoundVolume</property>
 		</tags>
 	</channel-type>
 
@@ -30,8 +30,8 @@
 		<label>Brightness</label>
 		<description>Brightness of the TV picture.</description>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>Brightness</property-tag>
+			<point>Control</point>
+			<property>Brightness</property>
 		</tags>
 	</channel-type>
 
@@ -67,8 +67,8 @@
 		<label>Source ID</label>
 		<description>Id of the current source.</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Info</property-tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -78,8 +78,8 @@
 		<label>Channel</label>
 		<description>Selected TV channel number.</description>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>Channel</property-tag>
+			<point>Control</point>
+			<property>Channel</property>
 		</tags>
 	</channel-type>
 
@@ -88,8 +88,8 @@
 		<label>Program Title</label>
 		<description>Program title of the current channel.</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Info</property-tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -99,8 +99,8 @@
 		<label>Channel Name</label>
 		<description>Name of the current TV channel.</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Channel</property-tag>
+			<point>Status</point>
+			<property>Channel</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -124,8 +124,8 @@
 			Power ON remotely.
 		</description>
 		<tags>
-			<point-tag>Switch</point-tag>
-			<property-tag>Power</property-tag>
+			<point>Switch</point>
+			<property>Power</property>
 		</tags>
 	</channel-type>
 
@@ -134,8 +134,8 @@
 		<label>Art Mode</label>
 		<description>TV Art Mode.</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Status</point>
+			<property>Mode</property>
 		</tags>
 	</channel-type>
 
@@ -144,8 +144,8 @@
 		<label>Set Art Mode</label>
 		<description>Set ArtMode ON/OFF from an external source (needed for >=2022 Frame TV's)</description>
 		<tags>
-			<point-tag>Switch</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Switch</point>
+			<property>Mode</property>
 		</tags>
 	</channel-type>
 
@@ -186,8 +186,8 @@
 		<label>Artwork Orientation</label>
 		<description>TV orientation, Landcape or Portrait</description>
 		<tags>
-			<point-tag>Switch</point-tag>
-			<property-tag>MediaControl</property-tag>
+			<point>Switch</point>
+			<property>MediaControl</property>
 		</tags>
 	</channel-type>
 

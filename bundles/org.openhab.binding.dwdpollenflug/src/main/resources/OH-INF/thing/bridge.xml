@@ -48,8 +48,8 @@
 		<item-type>DateTime</item-type>
 		<label>Update Time</label>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Timestamp</property-tag>
+			<point>Status</point>
+			<property>Timestamp</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>

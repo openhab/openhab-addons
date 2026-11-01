@@ -16,8 +16,8 @@
 		<description>Consumption at given time interval</description>
 		<category>flow</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Water</property-tag>
+			<point>Measurement</point>
+			<property>Water</property>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>

@@ -59,8 +59,8 @@
 		<description>Observation date and time</description>
 		<category>time</category>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Timestamp</property-tag>
+			<point>Status</point>
+			<property>Timestamp</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -71,8 +71,8 @@
 		<description>Water level in the river</description>
 		<category>flowpipe</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Level</property-tag>
+			<point>Measurement</point>
+			<property>Level</property>
 		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
@@ -88,8 +88,8 @@
 		<label>Alert</label>
 		<category>error</category>
 		<tags>
-			<point-tag>Alarm</point-tag>
-			<property-tag>Water</property-tag>
+			<point>Alarm</point>
+			<property>Water</property>
 		</tags>
 		<state readOnly="true">
 			<options>

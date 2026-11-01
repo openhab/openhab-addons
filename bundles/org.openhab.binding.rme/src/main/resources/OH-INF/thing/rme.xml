@@ -52,8 +52,8 @@
 		<label>Water Level</label>
 		<description>Indicates the % the cistern is filled with water</description>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Level</property-tag>
+			<point>Measurement</point>
+			<property>Level</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %%"/>
 	</channel-type>
@@ -64,8 +64,8 @@
 		<label>Operation Mode</label>
 		<description>Indicates the operation mode of the RME Rain Manager</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Status</point>
+			<property>Mode</property>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -81,8 +81,8 @@
 		<label>Water Source</label>
 		<description>Indicates water source used to supply water, e.g cistern or city</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Info</property-tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true">
 			<options>

@@ -179,8 +179,8 @@
 		<description>Electrical current</description>
 		<category>Energy</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Current</property-tag>
+			<point>Measurement</point>
+			<property>Current</property>
 		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
@@ -191,8 +191,8 @@
 		<description>Voltage</description>
 		<category>Energy</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Voltage</property-tag>
+			<point>Measurement</point>
+			<property>Voltage</property>
 		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
@@ -203,8 +203,8 @@
 		<description>Temperature</description>
 		<category>Temperature</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
@@ -241,8 +241,8 @@
 		<description>Door is open</description>
 		<category>Door</category>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>OpenState</property-tag>
+			<point>Status</point>
+			<property>OpenState</property>
 		</tags>
 	</channel-type>
 
@@ -278,8 +278,8 @@
 		<label>Speed</label>
 		<description>Current speed</description>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Speed</property-tag>
+			<point>Measurement</point>
+			<property>Speed</property>
 		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
@@ -296,8 +296,8 @@
 		<label>Position</label>
 		<description>Last known position</description>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>GeoLocation</property-tag>
+			<point>Measurement</point>
+			<property>GeoLocation</property>
 		</tags>
 		<state pattern="%2$s°N %3$s°E %1$sm"/>
 	</channel-type>
@@ -358,7 +358,7 @@
 		<label>Emergency Call</label>
 		<description>Emergency call status</description>
 		<tags>
-			<point-tag>Alarm</point-tag>
+			<point>Alarm</point>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -452,8 +452,8 @@
 		<label>Fuel Level</label>
 		<description>Fuel level</description>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Level</property-tag>
+			<point>Measurement</point>
+			<property>Level</property>
 		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
@@ -478,8 +478,8 @@
 		<description>Remaining battery charge</description>
 		<category>BatteryLevel</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Energy</property-tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
@@ -511,8 +511,8 @@
 		<label>Charging Status</label>
 		<description>Battery charging status</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Power</property-tag>
+			<point>Status</point>
+			<property>Power</property>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -530,8 +530,8 @@
 		<label>Charging Mode</label>
 		<description>Battery charging mode</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Status</point>
+			<property>Mode</property>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -562,8 +562,8 @@
 		<description>Time remaining till charged</description>
 		<category>Time</category>
 		<tags>
-			<point-tag>Forecast</point-tag>
-			<property-tag>Duration</property-tag>
+			<point>Forecast</point>
+			<property>Duration</property>
 		</tags>
 		<state pattern="%tT"/>
 	</channel-type>
@@ -574,8 +574,8 @@
 		<description>Time till the next charging starts</description>
 		<category>Time</category>
 		<tags>
-			<point-tag>Forecast</point-tag>
-			<property-tag>Duration</property-tag>
+			<point>Forecast</point>
+			<property>Duration</property>
 		</tags>
 		<state pattern="%tT"/>
 	</channel-type>

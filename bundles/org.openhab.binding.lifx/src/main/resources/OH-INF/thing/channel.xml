@@ -10,8 +10,8 @@
 		<description>Controls the brightness and switches the light on and off</description>
 		<category>Light</category>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>Brightness</property-tag>
+			<point>Control</point>
+			<property>Brightness</property>
 		</tags>
 		<config-description-ref uri="channel-type:lifx:brightness"/>
 	</channel-type>
@@ -22,8 +22,8 @@
 		<description>Controls the color of the light</description>
 		<category>ColorLight</category>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>Color</property-tag>
+			<point>Control</point>
+			<property>Color</property>
 		</tags>
 		<config-description-ref uri="channel-type:lifx:color"/>
 	</channel-type>
@@ -47,8 +47,8 @@
 		<description>Controls the color temperature of the light from 0 (cold) to 100 (warm)</description>
 		<category>ColorLight</category>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>ColorTemperature</property-tag>
+			<point>Control</point>
+			<property>ColorTemperature</property>
 		</tags>
 		<config-description-ref uri="channel-type:lifx:temperature"/>
 	</channel-type>
@@ -58,8 +58,8 @@
 		<label>Effect</label>
 		<description>Controls the effect of the light</description>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Control</point>
+			<property>Mode</property>
 		</tags>
 		<state>
 			<options>

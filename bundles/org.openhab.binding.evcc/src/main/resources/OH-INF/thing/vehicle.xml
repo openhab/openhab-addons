@@ -24,8 +24,8 @@
 		<description>Capacity of vehicle battery</description>
 		<category>Energy</category>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Energy</property-tag>
+			<point>Status</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
@@ -36,8 +36,8 @@
 		<description>Used icon for this vehicle in the UI</description>
 		<category>Text</category>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Info</property-tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true"/>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
@@ -48,8 +48,8 @@
 		<description>State of charge to which the vehicle is charged</description>
 		<category>BatteryLevel</category>
 		<tags>
-			<point-tag>Setpoint</point-tag>
-			<property-tag>Energy</property-tag>
+			<point>Setpoint</point>
+			<property>Energy</property>
 		</tags>
 		<state min="0" step="1" max="100" pattern="%.0f %unit%" readOnly="false"/>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
@@ -60,8 +60,8 @@
 		<description>Minimum state of charge a vehicle should have (fast charging until this limit)</description>
 		<category>BatteryLevel</category>
 		<tags>
-			<point-tag>Setpoint</point-tag>
-			<property-tag>Energy</property-tag>
+			<point>Setpoint</point>
+			<property>Energy</property>
 		</tags>
 		<state min="0" step="1" max="100" pattern="%.0f %unit%" readOnly="false"/>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
@@ -72,8 +72,8 @@
 		<description>Maximum allowed current that can be provided to charge the vehicle</description>
 		<category>Energy</category>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>Current</property-tag>
+			<point>Control</point>
+			<property>Current</property>
 		</tags>
 		<state min="6" step="1" max="32" readOnly="true"/>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
@@ -84,8 +84,8 @@
 		<description>Minimum current that needs to provided to charge the vehicle</description>
 		<category>Energy</category>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>Current</property-tag>
+			<point>Control</point>
+			<property>Current</property>
 		</tags>
 		<state min="6" step="1" max="32" readOnly="true"/>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
@@ -96,8 +96,8 @@
 		<description>Configured duration for charging the vehicle before departure (preconditioning the battery)</description>
 		<category>Time</category>
 		<tags>
-			<point-tag>Setpoint</point-tag>
-			<property-tag>Duration</property-tag>
+			<point>Setpoint</point>
+			<property>Duration</property>
 		</tags>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
@@ -106,8 +106,8 @@
 		<label>Planned SoC</label>
 		<description>Planned state of charge to which the vehicle will be charged (can be greater than the Vehicle Limit SoC)</description>
 		<tags>
-			<point-tag>Setpoint</point-tag>
-			<property-tag>Energy</property-tag>
+			<point>Setpoint</point>
+			<property>Energy</property>
 		</tags>
 		<state readOnly="true"></state>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>

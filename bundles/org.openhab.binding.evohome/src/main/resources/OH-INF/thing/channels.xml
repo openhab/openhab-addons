@@ -9,8 +9,8 @@
 		<description>Current system mode</description>
 		<category>heating</category>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Status</point>
+			<property>Mode</property>
 		</tags>
 		<state pattern="%s">
 			<options>
@@ -29,8 +29,8 @@
 		<description>Current zone temperature</description>
 		<category>temperature</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%">
 		</state>
@@ -41,8 +41,8 @@
 		<description>Gets or sets the set point of this zone (0 cancels the override).</description>
 		<category>heating</category>
 		<tags>
-			<point-tag>Setpoint</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state min="0.0" max="35.0" step="0.5" pattern="%.1f %unit%"/>
 	</channel-type>

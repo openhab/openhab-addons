@@ -48,7 +48,7 @@
 		<label>Output State</label>
 		<description>Represents state of the output</description>
 		<tags>
-			<point-tag>Switch</point-tag>
+			<point>Switch</point>
 		</tags>
 	</channel-type>
 

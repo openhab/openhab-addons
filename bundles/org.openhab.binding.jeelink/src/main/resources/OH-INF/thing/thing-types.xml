@@ -432,8 +432,8 @@
 		<description>@text/channel-type.wind-angle.description</description>
 		<category>Wind</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Wind</property-tag>
+			<point>Measurement</point>
+			<property>Wind</property>
 		</tags>
 		<state min="0" max="360" step="1" readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
@@ -444,8 +444,8 @@
 		<description>@text/channel-type.wind-strength.description</description>
 		<category>Wind</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Wind</property-tag>
+			<point>Measurement</point>
+			<property>Wind</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -456,8 +456,8 @@
 		<description>@text/channel-type.rain.description</description>
 		<category>Rain</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Rain</property-tag>
+			<point>Measurement</point>
+			<property>Rain</property>
 		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
@@ -468,8 +468,8 @@
 		<description>@text/channel-type.pressure.description</description>
 		<category>Pressure</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Pressure</property-tag>
+			<point>Measurement</point>
+			<property>Pressure</property>
 		</tags>
 		<state readOnly="true" pattern="%.3f %unit%"/>
 	</channel-type>
@@ -480,8 +480,8 @@
 		<label>@text/channel-type.current-power.label</label>
 		<description>@text/channel-type.current-power.description</description>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Power</property-tag>
+			<point>Measurement</point>
+			<property>Power</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -492,8 +492,8 @@
 		<label>@text/channel-type.max-power.label</label>
 		<description>@text/channel-type.max-power.description</description>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Power</property-tag>
+			<point>Measurement</point>
+			<property>Power</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -504,8 +504,8 @@
 		<label>@text/channel-type.consumption-total.label</label>
 		<description>@text/channel-type.consumption-total.description</description>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Energy</property-tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
@@ -541,8 +541,8 @@
 		<description>@text/channel-type.temperature.description</description>
 		<category>Temperature</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -554,8 +554,8 @@
 		<description>@text/channel-type.humidity.description</description>
 		<category>Humidity</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Humidity</property-tag>
+			<point>Measurement</point>
+			<property>Humidity</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -566,8 +566,8 @@
 		<label>@text/channel-type.battery-new.label</label>
 		<description>@text/channel-type.battery-new.description</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>LowBattery</property-tag>
+			<point>Status</point>
+			<property>LowBattery</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -578,8 +578,8 @@
 		<label>@text/channel-type.switching-state.label</label>
 		<description>@text/channel-type.switching-state.description</description>
 		<tags>
-			<point-tag>Switch</point-tag>
-			<property-tag>Power</property-tag>
+			<point>Switch</point>
+			<property>Power</property>
 		</tags>
 	</channel-type>
 
@@ -589,8 +589,8 @@
 		<label>@text/channel-type.electric-current.label</label>
 		<description>@text/channel-type.electric-current.description</description>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Current</property-tag>
+			<point>Measurement</point>
+			<property>Current</property>
 		</tags>
 	</channel-type>
 
@@ -607,8 +607,8 @@
 		<label>@text/channel-type.electric-potential.label</label>
 		<description>@text/channel-type.electric-potential.description</description>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Voltage</property-tag>
+			<point>Measurement</point>
+			<property>Voltage</property>
 		</tags>
 	</channel-type>
 
@@ -618,8 +618,8 @@
 		<label>@text/channel-type.power-frequency.label</label>
 		<description>@text/channel-type.power-frequency.description</description>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Frequency</property-tag>
+			<point>Measurement</point>
+			<property>Frequency</property>
 		</tags>
 	</channel-type>
 </thing:thing-descriptions>

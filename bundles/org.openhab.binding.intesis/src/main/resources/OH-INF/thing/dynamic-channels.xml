@@ -9,8 +9,8 @@
 		<label>Unit Mode</label>
 		<description>Operating mode of the Air Conditioner: AUTO/HEAT/DRY/FAN/COOL</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Status</point>
+			<property>Mode</property>
 		</tags>
 		<state readOnly="false">
 			<options>
@@ -27,8 +27,8 @@
 		<label>Fan Speed</label>
 		<description>Sets the fan speed on the Air conditioner.</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Speed</property-tag>
+			<point>Status</point>
+			<property>Speed</property>
 		</tags>
 		<state readOnly="false"></state>
 	</channel-type>
@@ -37,8 +37,8 @@
 		<label>Vertical Swing Mode</label>
 		<description>Sets the vertical (up/down)swing action on the Air Conditioner.</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Tilt</property-tag>
+			<point>Status</point>
+			<property>Tilt</property>
 		</tags>
 		<state readOnly="false"></state>
 	</channel-type>
@@ -47,8 +47,8 @@
 		<label>Horizontal Swing Mode</label>
 		<description>Sets the horizontal (left/right) swing action on the Air Conditioner.</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Tilt</property-tag>
+			<point>Status</point>
+			<property>Tilt</property>
 		</tags>
 		<state readOnly="false"></state>
 	</channel-type>
@@ -57,8 +57,8 @@
 		<label>Target Temperature</label>
 		<description>Sets the desired room temperature.</description>
 		<tags>
-			<point-tag>Setpoint</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f %unit%" step="0.5" readOnly="false"></state>
 	</channel-type>
@@ -67,8 +67,8 @@
 		<label>Ambient Temperature</label>
 		<description>Shows actual room temperature.</description>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f %unit%" step="0.5" readOnly="true"></state>
 	</channel-type>
@@ -77,8 +77,8 @@
 		<label>Outdoor Temperature</label>
 		<description>Shows actual outdoor temperature.</description>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f %unit%" step="0.5" readOnly="true"></state>
 	</channel-type>
@@ -94,7 +94,7 @@
 		<label>Error Status</label>
 		<description>Indicates if the Air Conditioner has encountered an error.</description>
 		<tags>
-			<point-tag>Status</point-tag>
+			<point>Status</point>
 		</tags>
 		<state readOnly="true"></state>
 	</channel-type>

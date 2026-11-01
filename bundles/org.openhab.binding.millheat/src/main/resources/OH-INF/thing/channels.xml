@@ -9,8 +9,8 @@
 		<label>Current Temperature</label>
 		<category>Temperature</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -19,8 +19,8 @@
 		<label>Temperature Comfort Mode</label>
 		<category>Heating</category>
 		<tags>
-			<point-tag>Setpoint</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%d %unit%" min="5" max="35" step="1"/>
 	</channel-type>
@@ -29,8 +29,8 @@
 		<label>Temperature Sleep Mode</label>
 		<category>Heating</category>
 		<tags>
-			<point-tag>Setpoint</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%d %unit%" min="5" max="35" step="1"/>
 	</channel-type>
@@ -40,8 +40,8 @@
 		<description>Set temperature away mode</description>
 		<category>Heating</category>
 		<tags>
-			<point-tag>Setpoint</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%d %unit%" min="5" max="35" step="1"/>
 	</channel-type>
@@ -50,8 +50,8 @@
 		<label>Target Temperature</label>
 		<category>Heating</category>
 		<tags>
-			<point-tag>Setpoint</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%d %unit%" min="5" max="35" step="1"/>
 	</channel-type>
@@ -60,8 +60,8 @@
 		<label>Target Temperature</label>
 		<category>Heating</category>
 		<tags>
-			<point-tag>Setpoint</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%d %unit%" readOnly="true" min="5" max="35" step="1"/>
 	</channel-type>
@@ -71,8 +71,8 @@
 		<description>Current state of the heater or heaters in the room</description>
 		<category>Energy</category>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Heating</property-tag>
+			<point>Status</point>
+			<property>Heating</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -87,8 +87,8 @@
 		<label>Master Switch</label>
 		<description>Master ON/OFF switch for independent heater</description>
 		<tags>
-			<point-tag>Switch</point-tag>
-			<property-tag>Power</property-tag>
+			<point>Switch</point>
+			<property>Power</property>
 		</tags>
 	</channel-type>
 	<channel-type id="fanActive">
@@ -97,8 +97,8 @@
 		<description>Current state of the heater fan (if available; OFF if not present)</description>
 		<category>Flow</category>
 		<tags>
-			<point-tag>Switch</point-tag>
-			<property-tag>Power</property-tag>
+			<point>Switch</point>
+			<property>Power</property>
 		</tags>
 	</channel-type>
 	<channel-type id="window">
@@ -106,8 +106,8 @@
 		<label>Window State</label>
 		<description>Open window or cold air flow detection</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>OpenState</property-tag>
+			<point>Status</point>
+			<property>OpenState</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -117,8 +117,8 @@
 		<description>Actual energy usage in watts</description>
 		<category>Energy</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Power</property-tag>
+			<point>Measurement</point>
+			<property>Power</property>
 		</tags>
 		<state readOnly="true" pattern="%d W"></state>
 	</channel-type>
@@ -126,8 +126,8 @@
 		<item-type>String</item-type>
 		<label>Current Room Program Mode</label>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Status</point>
+			<property>Mode</property>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -154,8 +154,8 @@
 		<label>Target Temperature Vacation</label>
 		<category>Heating</category>
 		<tags>
-			<point-tag>Setpoint</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%d %unit%" min="5" max="35" step="1"/>
 	</channel-type>
@@ -164,8 +164,8 @@
 		<label>Vacation Mode</label>
 		<description>Toggles vacation mode. Start and end times must be preset before activating</description>
 		<tags>
-			<point-tag>Switch</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Switch</point>
+			<property>Mode</property>
 		</tags>
 	</channel-type>
 	<channel-type id="vacationModeAdvanced">
@@ -173,8 +173,8 @@
 		<label>Advanced Vacation Mode</label>
 		<description>Use room Away mode temperatures instead of the home’s global temperature</description>
 		<tags>
-			<point-tag>Switch</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Switch</point>
+			<property>Mode</property>
 		</tags>
 	</channel-type>
 	<channel-type id="vacationModeStart">

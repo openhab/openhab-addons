@@ -292,8 +292,8 @@
 		<label>Dimmer</label>
 		<description>Channel to receive commands from a Dimmer</description>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>Brightness</property-tag>
+			<point>Control</point>
+			<property>Brightness</property>
 		</tags>
 		<config-description>
 			<parameter name="stateTransformation" type="text" multiple="true">
@@ -348,8 +348,8 @@
 		<label>Switch</label>
 		<description>Channel to receive commands from a Switch</description>
 		<tags>
-			<point-tag>Switch</point-tag>
-			<property-tag>Power</property-tag>
+			<point>Switch</point>
+			<property>Power</property>
 		</tags>
 		<config-description>
 			<parameter name="stateTransformation" type="text" multiple="true">
@@ -392,8 +392,8 @@
 		<label>Rollershutter</label>
 		<description>Channel to receive commands from a Rollershutter</description>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>OpenLevel</property-tag>
+			<point>Control</point>
+			<property>OpenLevel</property>
 		</tags>
 		<config-description>
 			<parameter name="stateTransformation" type="text" multiple="true">

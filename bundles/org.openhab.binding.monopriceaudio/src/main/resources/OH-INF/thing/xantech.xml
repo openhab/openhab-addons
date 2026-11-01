@@ -201,8 +201,8 @@
 		<label>All On</label>
 		<description>Turn All Zones On or Off</description>
 		<tags>
-			<point-tag>Switch</point-tag>
-			<property-tag>Power</property-tag>
+			<point>Switch</point>
+			<property>Power</property>
 		</tags>
 	</channel-type>
 
@@ -239,8 +239,8 @@
 		<label>Page Active</label>
 		<description>Indicates if the Page Mode is Active for This Zone</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Status</point>
+			<property>Mode</property>
 		</tags>
 		<state readOnly="true">
 			<options>

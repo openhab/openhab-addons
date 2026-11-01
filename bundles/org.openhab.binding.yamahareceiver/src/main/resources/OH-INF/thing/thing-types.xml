@@ -147,8 +147,8 @@
 		<description>Power the AVR or zone on/off</description>
 		<category>switch</category>
 		<tags>
-			<point-tag>Switch</point-tag>
-			<property-tag>Power</property-tag>
+			<point>Switch</point>
+			<property>Power</property>
 		</tags>
 	</channel-type>
 
@@ -158,8 +158,8 @@
 		<description>Party mode on/off</description>
 		<category>switch</category>
 		<tags>
-			<point-tag>Switch</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Switch</point>
+			<property>Mode</property>
 		</tags>
 	</channel-type>
 
@@ -169,8 +169,8 @@
 		<description>Increase or decrease of party mode volume</description>
 		<category>SoundVolume</category>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>SoundVolume</property-tag>
+			<point>Control</point>
+			<property>SoundVolume</property>
 		</tags>
 	</channel-type>
 
@@ -180,8 +180,8 @@
 		<description>Mute when in party mode</description>
 		<category>SoundVolume</category>
 		<tags>
-			<point-tag>Switch</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Switch</point>
+			<property>Mode</property>
 		</tags>
 	</channel-type>
 
@@ -229,8 +229,8 @@
 		<description>Set the volume level</description>
 		<category>SoundVolume</category>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>SoundVolume</property-tag>
+			<point>Control</point>
+			<property>SoundVolume</property>
 		</tags>
 	</channel-type>
 
@@ -248,8 +248,8 @@
 		<description>Enable/disable mute on the AVR</description>
 		<category>SoundVolume</category>
 		<tags>
-			<point-tag>Switch</point-tag>
-			<property-tag>SoundVolume</property-tag>
+			<point>Switch</point>
+			<property>SoundVolume</property>
 		</tags>
 	</channel-type>
 
@@ -259,8 +259,8 @@
 		<description>Set the dialogue level</description>
 		<category>SoundVolume</category>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>SoundVolume</property-tag>
+			<point>Control</point>
+			<property>SoundVolume</property>
 		</tags>
 		<state min="0" max="2" step="1" pattern="%d"/>
 	</channel-type>
@@ -271,8 +271,8 @@
 		<description>Switch the HDMI1 output on/off</description>
 		<category>switch</category>
 		<tags>
-			<point-tag>Switch</point-tag>
-			<property-tag>Power</property-tag>
+			<point>Switch</point>
+			<property>Power</property>
 		</tags>
 	</channel-type>
 
@@ -282,8 +282,8 @@
 		<description>Switch the HDMI2 output on/off</description>
 		<category>switch</category>
 		<tags>
-			<point-tag>Switch</point-tag>
-			<property-tag>Power</property-tag>
+			<point>Switch</point>
+			<property>Power</property>
 		</tags>
 	</channel-type>
 
@@ -293,8 +293,8 @@
 		<description>Set the active scene of the AVR</description>
 		<category>SoundVolume</category>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>SoundVolume</property-tag>
+			<point>Control</point>
+			<property>SoundVolume</property>
 		</tags>
 		<state pattern="%s">
 			<options>
@@ -326,8 +326,8 @@
 		<label>Station</label>
 		<description>Current station name</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Channel</property-tag>
+			<point>Status</point>
+			<property>Channel</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -337,8 +337,8 @@
 		<label>Artist</label>
 		<description>Artist</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Info</property-tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -348,8 +348,8 @@
 		<label>Album</label>
 		<description>Album</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Info</property-tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -359,8 +359,8 @@
 		<label>Title</label>
 		<description>Track title</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Info</property-tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -370,8 +370,8 @@
 		<label>Track Picture URL</label>
 		<description>Track picture URL</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Info</property-tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -381,8 +381,8 @@
 		<label>Preset</label>
 		<description>Select a saved channel by its preset number</description>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>Channel</property-tag>
+			<point>Control</point>
+			<property>Channel</property>
 		</tags>
 		<state pattern="%s">
 			<!-- There is a maximum of 40 preset channels in the xml API. The names of the stations can be requested via NET_RADIO/Play_Control/Preset/Preset_Sel_Item/Item_1/Title -->
@@ -486,8 +486,8 @@
 		</description>
 		<category>Navigation</category>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>Channel</property-tag>
+			<point>Control</point>
+			<property>Channel</property>
 		</tags>
 	</channel-type>
 
@@ -513,8 +513,8 @@
 		<description>Hierarchical level</description>
 		<category>Navigation</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Level</property-tag>
+			<point>Measurement</point>
+			<property>Level</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>

@@ -7,8 +7,8 @@
 		<item-type>Number</item-type>
 		<label>Starter Battery Status</label>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Energy</property-tag>
+			<point>Status</point>
+			<property>Energy</property>
 		</tags>
 		<state readOnly="true">
 			<!-- see https://github.com/mercedes-benz/MBSDK-CarKit-iOS/blob/master/MBCarKit/MBCarKit/Common/Enums/Status/StarterBatteryState.swift -->
@@ -25,7 +25,7 @@
 		<item-type>Switch</item-type>
 		<label>Brake Fluid</label>
 		<tags>
-			<point-tag>Alarm</point-tag>
+			<point>Alarm</point>
 		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
@@ -33,7 +33,7 @@
 		<item-type>Switch</item-type>
 		<label>Brake Lining Wear</label>
 		<tags>
-			<point-tag>Alarm</point-tag>
+			<point>Alarm</point>
 		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
@@ -41,8 +41,8 @@
 		<item-type>Switch</item-type>
 		<label>Wash Water Low</label>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Water</property-tag>
+			<point>Status</point>
+			<property>Water</property>
 		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
@@ -50,7 +50,7 @@
 		<item-type>Switch</item-type>
 		<label>Coolant Fluid Low</label>
 		<tags>
-			<point-tag>Alarm</point-tag>
+			<point>Alarm</point>
 		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
@@ -58,7 +58,7 @@
 		<item-type>Switch</item-type>
 		<label>Engine Warning</label>
 		<tags>
-			<point-tag>Alarm</point-tag>
+			<point>Alarm</point>
 		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
@@ -66,8 +66,8 @@
 		<item-type>Number</item-type>
 		<label>Tire Pressure Warnings</label>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Pressure</property-tag>
+			<point>Measurement</point>
+			<property>Pressure</property>
 		</tags>
 		<state readOnly="true">
 			<!-- see https://github.com/mercedes-benz/MBSDK-CarKit-iOS/blob/master/MBCarKit/MBCarKit/Common/Enums/Status/TireTypes.swift#L51 -->

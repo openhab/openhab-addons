@@ -318,7 +318,7 @@
 		<label>Connected</label>
 		<description>Whether the charger currently has an open session.</description>
 		<tags>
-			<point-tag>Status</point-tag>
+			<point>Status</point>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -329,8 +329,8 @@
 		<description>Timestamp of the last contact from the charger (a message, or the session opening).</description>
 		<category>Time</category>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Timestamp</property-tag>
+			<point>Status</point>
+			<property>Timestamp</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -340,7 +340,7 @@
 		<label>Status</label>
 		<description>OCPP connector status (Available, Preparing, Charging, SuspendedEV, ...).</description>
 		<tags>
-			<point-tag>Status</point-tag>
+			<point>Status</point>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -350,8 +350,8 @@
 		<label>Cable Connected</label>
 		<description>Whether a vehicle cable is plugged in.</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Presence</property-tag>
+			<point>Status</point>
+			<property>Presence</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -361,8 +361,8 @@
 		<label>Charging Session</label>
 		<description>ON while a transaction is active; command to start/stop remotely.</description>
 		<tags>
-			<point-tag>Switch</point-tag>
-			<property-tag>Power</property-tag>
+			<point>Switch</point>
+			<property>Power</property>
 		</tags>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
@@ -374,8 +374,8 @@
 			the cap.</description>
 		<category>Energy</category>
 		<tags>
-			<point-tag>Setpoint</point-tag>
-			<property-tag>Current</property-tag>
+			<point>Setpoint</point>
+			<property>Current</property>
 		</tags>
 		<state min="0" step="1" pattern="%.0f A"/>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
@@ -389,8 +389,8 @@
 			current limit. Leave unset to use the charge current limit; 0 stops the charge.</description>
 		<category>Energy</category>
 		<tags>
-			<point-tag>Setpoint</point-tag>
-			<property-tag>Power</property-tag>
+			<point>Setpoint</point>
+			<property>Power</property>
 		</tags>
 		<state min="0" step="100" pattern="%.0f W"/>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
@@ -419,8 +419,8 @@
 		<label>Pause</label>
 		<description>Pause charging (charging profile limit 0) without ending the transaction.</description>
 		<tags>
-			<point-tag>Switch</point-tag>
-			<property-tag>Power</property-tag>
+			<point>Switch</point>
+			<property>Power</property>
 		</tags>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
@@ -430,7 +430,7 @@
 		<label>Available</label>
 		<description>OCPP availability (Operative/Inoperative) via ChangeAvailability.</description>
 		<tags>
-			<point-tag>Switch</point-tag>
+			<point>Switch</point>
 		</tags>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
@@ -440,7 +440,7 @@
 		<label>Clear Limit</label>
 		<description>Momentary — remove the charge and power limit, so the charger returns to its own maximum.</description>
 		<tags>
-			<point-tag>Switch</point-tag>
+			<point>Switch</point>
 		</tags>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
@@ -450,7 +450,7 @@
 		<label>Unlock Connector</label>
 		<description>Momentary — unlock the connector (UnlockConnector).</description>
 		<tags>
-			<point-tag>Switch</point-tag>
+			<point>Switch</point>
 		</tags>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
@@ -460,7 +460,7 @@
 		<label>Reset</label>
 		<description>Momentary — soft reset the charge point (Reset).</description>
 		<tags>
-			<point-tag>Switch</point-tag>
+			<point>Switch</point>
 		</tags>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
@@ -471,7 +471,7 @@
 		<description>Switch ON to arm learning; the next RFID card presented to the charger is added to the local
 			authorization list. Auto-disarms once the card is read or 60 s pass.</description>
 		<tags>
-			<point-tag>Switch</point-tag>
+			<point>Switch</point>
 		</tags>
 	</channel-type>
 
@@ -485,7 +485,7 @@
 			Learn Card to add a card without typing its id. Applied only to a charger that supports
 			LocalAuthListManagement.</description>
 		<tags>
-			<point-tag>Control</point-tag>
+			<point>Control</point>
 		</tags>
 	</channel-type>
 
@@ -495,8 +495,8 @@
 		<description>Charger hardware current ceiling, written via a vendor ChangeConfiguration key.</description>
 		<category>Energy</category>
 		<tags>
-			<point-tag>Setpoint</point-tag>
-			<property-tag>Current</property-tag>
+			<point>Setpoint</point>
+			<property>Current</property>
 		</tags>
 		<state min="0" step="1" pattern="%.0f A"/>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
@@ -508,8 +508,8 @@
 		<description>Imported current on one phase (MeterValues Current.Import).</description>
 		<category>Energy</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Current</property-tag>
+			<point>Measurement</point>
+			<property>Current</property>
 		</tags>
 		<state readOnly="true" pattern="%.2f A"/>
 	</channel-type>
@@ -520,8 +520,8 @@
 		<description>Voltage on one phase (MeterValues Voltage).</description>
 		<category>Energy</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Voltage</property-tag>
+			<point>Measurement</point>
+			<property>Voltage</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f V"/>
 	</channel-type>
@@ -532,8 +532,8 @@
 		<description>Current offered to the vehicle (MeterValues Current.Offered).</description>
 		<category>Energy</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Current</property-tag>
+			<point>Measurement</point>
+			<property>Current</property>
 		</tags>
 		<state readOnly="true" pattern="%.0f A"/>
 	</channel-type>
@@ -544,8 +544,8 @@
 		<description>Active power imported (MeterValues Power.Active.Import).</description>
 		<category>Energy</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Power</property-tag>
+			<point>Measurement</point>
+			<property>Power</property>
 		</tags>
 		<state readOnly="true" pattern="%.0f W"/>
 	</channel-type>
@@ -556,8 +556,8 @@
 		<description>Power offered to the vehicle (MeterValues Power.Offered).</description>
 		<category>Energy</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Power</property-tag>
+			<point>Measurement</point>
+			<property>Power</property>
 		</tags>
 		<state readOnly="true" pattern="%.0f W"/>
 	</channel-type>
@@ -568,8 +568,8 @@
 		<description>Energy register (MeterValues Energy.Active.Import.Register).</description>
 		<category>Energy</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Energy</property-tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state readOnly="true" pattern="%.2f kWh"/>
 	</channel-type>
@@ -581,8 +581,8 @@
 			that is linked), published once when the transaction ends. Empty on a meter-less charger without external-energy.</description>
 		<category>Energy</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Energy</property-tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state readOnly="true" pattern="%.2f kWh"/>
 	</channel-type>
@@ -602,8 +602,8 @@
 		<label>Current</label>
 		<category>Energy</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Current</property-tag>
+			<point>Measurement</point>
+			<property>Current</property>
 		</tags>
 		<state readOnly="true" pattern="%.2f A"/>
 	</channel-type>
@@ -613,8 +613,8 @@
 		<label>Voltage</label>
 		<category>Energy</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Voltage</property-tag>
+			<point>Measurement</point>
+			<property>Voltage</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f V"/>
 	</channel-type>
@@ -624,8 +624,8 @@
 		<label>Active Power</label>
 		<category>Energy</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Power</property-tag>
+			<point>Measurement</point>
+			<property>Power</property>
 		</tags>
 		<state readOnly="true" pattern="%.0f W"/>
 	</channel-type>
@@ -635,8 +635,8 @@
 		<label>Reactive Power</label>
 		<category>Energy</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Power</property-tag>
+			<point>Measurement</point>
+			<property>Power</property>
 		</tags>
 		<state readOnly="true" pattern="%.0f var"/>
 	</channel-type>
@@ -645,7 +645,7 @@
 		<item-type>Number</item-type>
 		<label>Power Factor</label>
 		<tags>
-			<point-tag>Measurement</point-tag>
+			<point>Measurement</point>
 		</tags>
 		<state readOnly="true" pattern="%.2f"/>
 	</channel-type>
@@ -655,8 +655,8 @@
 		<label>Energy</label>
 		<category>Energy</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Energy</property-tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state readOnly="true" pattern="%.2f kWh"/>
 	</channel-type>
@@ -665,8 +665,8 @@
 		<item-type>Number:Frequency</item-type>
 		<label>Frequency</label>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Frequency</property-tag>
+			<point>Measurement</point>
+			<property>Frequency</property>
 		</tags>
 		<state readOnly="true" pattern="%.2f Hz"/>
 	</channel-type>
@@ -676,8 +676,8 @@
 		<label>State of Charge</label>
 		<category>Battery</category>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Energy</property-tag>
+			<point>Status</point>
+			<property>Energy</property>
 		</tags>
 		<state readOnly="true" pattern="%.0f %%"/>
 	</channel-type>
@@ -686,7 +686,7 @@
 		<item-type>Number</item-type>
 		<label>RPM</label>
 		<tags>
-			<point-tag>Measurement</point-tag>
+			<point>Measurement</point>
 		</tags>
 		<state readOnly="true" pattern="%.0f"/>
 	</channel-type>
@@ -696,8 +696,8 @@
 		<label>Temperature</label>
 		<category>Temperature</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f °C"/>
 	</channel-type>
@@ -707,7 +707,7 @@
 		<label>Id Tag</label>
 		<description>The idTag of the active transaction.</description>
 		<tags>
-			<point-tag>Status</point-tag>
+			<point>Status</point>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -716,7 +716,7 @@
 		<item-type>Number</item-type>
 		<label>Transaction Id</label>
 		<tags>
-			<point-tag>Status</point-tag>
+			<point>Status</point>
 		</tags>
 		<state readOnly="true" pattern="%.0f"/>
 	</channel-type>
@@ -726,8 +726,8 @@
 		<label>Timestamp</label>
 		<category>Time</category>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Timestamp</property-tag>
+			<point>Status</point>
+			<property>Timestamp</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>

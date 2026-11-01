@@ -55,8 +55,8 @@
 		<label>Pulse Up</label>
 		<description>Send one pulse up</description>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>OpenLevel</property-tag>
+			<point>Control</point>
+			<property>OpenLevel</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -66,8 +66,8 @@
 		<label>Pulse Down</label>
 		<description>Send one pulse down</description>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>OpenLevel</property-tag>
+			<point>Control</point>
+			<property>OpenLevel</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -77,8 +77,8 @@
 		<label>Continuous Up</label>
 		<description>Send continuous up command to blind</description>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>OpenLevel</property-tag>
+			<point>Control</point>
+			<property>OpenLevel</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -88,8 +88,8 @@
 		<label>Continuous Down</label>
 		<description>Send continuous down command to blind</description>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>OpenLevel</property-tag>
+			<point>Control</point>
+			<property>OpenLevel</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -99,8 +99,8 @@
 		<label>Stop</label>
 		<description>Send stop impulse to stop the blinds</description>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>OpenLevel</property-tag>
+			<point>Control</point>
+			<property>OpenLevel</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -110,8 +110,8 @@
 		<label>Shutter</label>
 		<description>Handle the commands up/down/stop </description>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>OpenLevel</property-tag>
+			<point>Control</point>
+			<property>OpenLevel</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -121,8 +121,8 @@
 		<label>Shutter Tilt Up Down</label>
 		<description>Handle the commands tiltUp/tiltDown/stop </description>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>Tilt</property-tag>
+			<point>Control</point>
+			<property>Tilt</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -132,8 +132,8 @@
 		<label>Tilt Up</label>
 		<description>Handle the command for 3 tilts up </description>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>Tilt</property-tag>
+			<point>Control</point>
+			<property>Tilt</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -143,8 +143,8 @@
 		<label>Tilt Down</label>
 		<description>Handle the command for 3 tilts down </description>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>Tilt</property-tag>
+			<point>Control</point>
+			<property>Tilt</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>

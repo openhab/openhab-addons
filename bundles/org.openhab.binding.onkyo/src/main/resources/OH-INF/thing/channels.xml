@@ -10,8 +10,8 @@
 		<label>Power</label>
 		<description>Power on/off your device</description>
 		<tags>
-			<point-tag>Switch</point-tag>
-			<property-tag>Power</property-tag>
+			<point>Switch</point>
+			<property>Power</property>
 		</tags>
 	</channel-type>
 	<channel-type id="input">
@@ -55,8 +55,8 @@
 		<label>Mute</label>
 		<description>Mute/unmute your device</description>
 		<tags>
-			<point-tag>Switch</point-tag>
-			<property-tag>SoundVolume</property-tag>
+			<point>Switch</point>
+			<property>SoundVolume</property>
 		</tags>
 	</channel-type>
 	<channel-type id="volume">
@@ -64,8 +64,8 @@
 		<label>Volume</label>
 		<description>Volume of your device</description>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>SoundVolume</property-tag>
+			<point>Control</point>
+			<property>SoundVolume</property>
 		</tags>
 		<state min="0" max="100" pattern="%d %%">
 		</state>
@@ -176,8 +176,8 @@
 		<label>Title</label>
 		<description>Title of the current song</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Info</property-tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true" pattern="%s"></state>
 	</channel-type>
@@ -186,8 +186,8 @@
 		<label>Album</label>
 		<description>Album name of the current song</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Info</property-tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true" pattern="%s"></state>
 	</channel-type>
@@ -202,8 +202,8 @@
 		<label>Album Art URL</label>
 		<description>URL to the image of cover art of the current song</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Info</property-tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
@@ -212,8 +212,8 @@
 		<label>Artist</label>
 		<description>Artist name of the current song</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Info</property-tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true" pattern="%s"></state>
 	</channel-type>

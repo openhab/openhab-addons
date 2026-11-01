@@ -43,8 +43,8 @@
 		<item-type>Switch</item-type>
 		<label>Armed</label>
 		<tags>
-			<point-tag>Switch</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Switch</point>
+			<property>Mode</property>
 		</tags>
 	</channel-type>
 
@@ -59,8 +59,8 @@
 		<label>Battery Level</label>
 		<category>BatteryLevel</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Energy</property-tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %%"/>
 	</channel-type>
@@ -70,8 +70,8 @@
 		<label>Battery Powered</label>
 		<description>Battery powered or wired</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Power</property-tag>
+			<point>Status</point>
+			<property>Power</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -88,8 +88,8 @@
 		<label>Button A</label>
 		<description>Toggle the button led or the connected scene when bridge device sync enabled.</description>
 		<tags>
-			<point-tag>Switch</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Switch</point>
+			<property>Mode</property>
 		</tags>
 		<autoUpdatePolicy>veto</autoUpdatePolicy> <!-- binding controls state updates -->
 	</channel-type>
@@ -99,8 +99,8 @@
 		<label>Button B</label>
 		<description>Toggle the button led or the connected scene when bridge device sync enabled.</description>
 		<tags>
-			<point-tag>Switch</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Switch</point>
+			<property>Mode</property>
 		</tags>
 		<autoUpdatePolicy>veto</autoUpdatePolicy> <!-- binding controls state updates -->
 	</channel-type>
@@ -110,8 +110,8 @@
 		<label>Button C</label>
 		<description>Toggle the button led or the connected scene when bridge device sync enabled.</description>
 		<tags>
-			<point-tag>Switch</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Switch</point>
+			<property>Mode</property>
 		</tags>
 		<autoUpdatePolicy>veto</autoUpdatePolicy> <!-- binding controls state updates -->
 	</channel-type>
@@ -121,8 +121,8 @@
 		<label>Button D</label>
 		<description>Toggle the button led or the connected scene when bridge device sync enabled.</description>
 		<tags>
-			<point-tag>Switch</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Switch</point>
+			<property>Mode</property>
 		</tags>
 		<autoUpdatePolicy>veto</autoUpdatePolicy> <!-- binding controls state updates -->
 	</channel-type>
@@ -132,8 +132,8 @@
 		<label>Button E</label>
 		<description>Toggle the button led or the connected scene when bridge device sync enabled.</description>
 		<tags>
-			<point-tag>Switch</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Switch</point>
+			<property>Mode</property>
 		</tags>
 		<autoUpdatePolicy>veto</autoUpdatePolicy> <!-- binding controls state updates -->
 	</channel-type>
@@ -143,8 +143,8 @@
 		<label>Button F</label>
 		<description>Toggle the button led or the connected scene when bridge device sync enabled.</description>
 		<tags>
-			<point-tag>Switch</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Switch</point>
+			<property>Mode</property>
 		</tags>
 		<autoUpdatePolicy>veto</autoUpdatePolicy> <!-- binding controls state updates -->
 	</channel-type>
@@ -154,8 +154,8 @@
 		<label>Button G</label>
 		<description>Toggle the button led or the connected scene when bridge device sync enabled.</description>
 		<tags>
-			<point-tag>Switch</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Switch</point>
+			<property>Mode</property>
 		</tags>
 		<autoUpdatePolicy>veto</autoUpdatePolicy> <!-- binding controls state updates -->
 	</channel-type>
@@ -165,8 +165,8 @@
 		<label>Button H</label>
 		<description>Toggle the button led or the connected scene when bridge device sync enabled.</description>
 		<tags>
-			<point-tag>Switch</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Switch</point>
+			<property>Mode</property>
 		</tags>
 		<autoUpdatePolicy>veto</autoUpdatePolicy> <!-- binding controls state updates -->
 	</channel-type>
@@ -199,8 +199,8 @@
 		<item-type>Switch</item-type>
 		<label>Carbon Monoxide Alarm</label>
 		<tags>
-			<point-tag>Alarm</point-tag>
-			<property-tag>CO</property-tag>
+			<point>Alarm</point>
+			<property>CO</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -216,8 +216,8 @@
 		<description>Set the temperature setpoint to activate the cooling.</description>
 		<category>Temperature</category>
 		<tags>
-			<point-tag>Setpoint</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state step="0.5" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -227,8 +227,8 @@
 		<label>Daytime</label>
 		<description>Daytime or nightime</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Status</point>
+			<property>Mode</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -239,8 +239,8 @@
 		<description>Set the humidity setpoint to activate the dehumidifier.</description>
 		<category>Humidity</category>
 		<tags>
-			<point-tag>Setpoint</point-tag>
-			<property-tag>Humidity</property-tag>
+			<point>Setpoint</point>
+			<property>Humidity</property>
 		</tags>
 		<state min="20" max="90" step="1" pattern="%.1f %%"/>
 	</channel-type>
@@ -250,8 +250,8 @@
 		<label>Dimmer</label>
 		<category>Light</category>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>Brightness</property-tag>
+			<point>Control</point>
+			<property>Brightness</property>
 		</tags>
 		<autoUpdatePolicy>veto</autoUpdatePolicy> <!-- binding controls state updates -->
 		<config-description-ref uri="channel-type:insteon:dimmer"/>
@@ -275,8 +275,8 @@
 		<item-type>Switch</item-type>
 		<label>Energy Saving Mode</label>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Status</point>
+			<property>Mode</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -286,8 +286,8 @@
 		<label>Energy Usage</label>
 		<category>Energy</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Energy</property-tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -296,8 +296,8 @@
 		<item-type>String</item-type>
 		<label>Fan Mode</label>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Status</point>
+			<property>Mode</property>
 		</tags>
 		<state>
 			<options>
@@ -311,8 +311,8 @@
 		<item-type>String</item-type>
 		<label>Fan Speed</label>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Speed</property-tag>
+			<point>Status</point>
+			<property>Speed</property>
 		</tags>
 		<state>
 			<options>
@@ -328,8 +328,8 @@
 		<item-type>Switch</item-type>
 		<label>Fan State</label>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Speed</property-tag>
+			<point>Status</point>
+			<property>Speed</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -368,8 +368,8 @@
 		<description>Set the temperature setpoint to activate the heating.</description>
 		<category>Temperature</category>
 		<tags>
-			<point-tag>Setpoint</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state step="0.5" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -392,8 +392,8 @@
 		<description>Set the humidity setpoint to activate the humidifier.</description>
 		<category>Humidity</category>
 		<tags>
-			<point-tag>Setpoint</point-tag>
-			<property-tag>Humidity</property-tag>
+			<point>Setpoint</point>
+			<property>Humidity</property>
 		</tags>
 		<state min="0" max="79" step="1" pattern="%.1f %%"/>
 	</channel-type>
@@ -403,8 +403,8 @@
 		<label>Ambient Humidity</label>
 		<category>Humidity</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Humidity</property-tag>
+			<point>Measurement</point>
+			<property>Humidity</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %%"/>
 	</channel-type>
@@ -415,8 +415,8 @@
 		<description>The last time a message from the device was received.</description>
 		<category>Time</category>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Timestamp</property-tag>
+			<point>Status</point>
+			<property>Timestamp</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -426,8 +426,8 @@
 		<label>Leak Sensor</label>
 		<category>Water</category>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Water</property-tag>
+			<point>Status</point>
+			<property>Water</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -456,8 +456,8 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Ambient Light Level</label>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Illuminance</property-tag>
+			<point>Measurement</point>
+			<property>Illuminance</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %%"/>
 	</channel-type>
@@ -491,8 +491,8 @@
 		<label>Lock</label>
 		<category>Lock</category>
 		<tags>
-			<point-tag>Switch</point-tag>
-			<property-tag>LockState</property-tag>
+			<point>Switch</point>
+			<property>LockState</property>
 		</tags>
 	</channel-type>
 
@@ -501,8 +501,8 @@
 		<label>Low Battery Alert</label>
 		<category>LowBattery</category>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>LowBattery</property-tag>
+			<point>Status</point>
+			<property>LowBattery</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -538,8 +538,8 @@
 		<label>Motion Sensor</label>
 		<category>Motion</category>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Motion</property-tag>
+			<point>Status</point>
+			<property>Motion</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -566,8 +566,8 @@
 		<label>Bottom Outlet</label>
 		<category>PowerOutlet</category>
 		<tags>
-			<point-tag>Switch</point-tag>
-			<property-tag>Power</property-tag>
+			<point>Switch</point>
+			<property>Power</property>
 		</tags>
 	</channel-type>
 
@@ -576,8 +576,8 @@
 		<label>Top Outlet</label>
 		<category>PowerOutlet</category>
 		<tags>
-			<point-tag>Switch</point-tag>
-			<property-tag>Power</property-tag>
+			<point>Switch</point>
+			<property>Power</property>
 		</tags>
 	</channel-type>
 
@@ -586,8 +586,8 @@
 		<label>Power Usage</label>
 		<category>Energy</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Power</property-tag>
+			<point>Measurement</point>
+			<property>Power</property>
 		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
@@ -597,8 +597,8 @@
 		<label>Program 1</label>
 		<description>Toggle the sprinkler program. When needed, activate the previous/next valve.</description>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Control</point>
+			<property>Mode</property>
 		</tags>
 	</channel-type>
 
@@ -607,8 +607,8 @@
 		<label>Program 2</label>
 		<description>Toggle the sprinkler program. When needed, activate its previous/next valve.</description>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Control</point>
+			<property>Mode</property>
 		</tags>
 	</channel-type>
 
@@ -617,8 +617,8 @@
 		<label>Program 3</label>
 		<description>Toggle the sprinkler program. When needed, activate its previous/next valve.</description>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Control</point>
+			<property>Mode</property>
 		</tags>
 	</channel-type>
 
@@ -627,8 +627,8 @@
 		<label>Program 4</label>
 		<description>Toggle the sprinkler program. When needed, activate its previous/next valve.</description>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Control</point>
+			<property>Mode</property>
 		</tags>
 	</channel-type>
 
@@ -642,8 +642,8 @@
 		<item-type>Switch</item-type>
 		<label>Pump Control</label>
 		<tags>
-			<point-tag>Switch</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Switch</point>
+			<property>Mode</property>
 		</tags>
 	</channel-type>
 
@@ -730,8 +730,8 @@
 		<label>Rollershutter</label>
 		<category>Rollershutter</category>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>OpenLevel</property-tag>
+			<point>Control</point>
+			<property>OpenLevel</property>
 		</tags>
 		<autoUpdatePolicy>veto</autoUpdatePolicy> <!-- binding controls state updates -->
 	</channel-type>
@@ -741,8 +741,8 @@
 		<label>Scene</label>
 		<category>Switch</category>
 		<tags>
-			<point-tag>Switch</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Switch</point>
+			<property>Mode</property>
 		</tags>
 	</channel-type>
 
@@ -751,8 +751,8 @@
 		<label>Siren</label>
 		<category>Siren</category>
 		<tags>
-			<point-tag>Switch</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Switch</point>
+			<property>Mode</property>
 		</tags>
 	</channel-type>
 
@@ -761,8 +761,8 @@
 		<label>Smoke Alarm</label>
 		<category>Smoke</category>
 		<tags>
-			<point-tag>Alarm</point-tag>
-			<property-tag>Smoke</property-tag>
+			<point>Alarm</point>
+			<property>Smoke</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -785,8 +785,8 @@
 		<label>Switch</label>
 		<category>Switch</category>
 		<tags>
-			<point-tag>Switch</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Switch</point>
+			<property>Mode</property>
 		</tags>
 	</channel-type>
 
@@ -801,8 +801,8 @@
 		<item-type>String</item-type>
 		<label>System Mode</label>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Status</point>
+			<property>Mode</property>
 		</tags>
 		<state>
 			<options>
@@ -831,8 +831,8 @@
 		<item-type>Contact</item-type>
 		<label>Tamper Switch</label>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Tampered</property-tag>
+			<point>Status</point>
+			<property>Tampered</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -842,8 +842,8 @@
 		<label>Ambient Temperature</label>
 		<category>Temperature</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -976,8 +976,8 @@
 		<item-type>Switch</item-type>
 		<label>Valve 1</label>
 		<tags>
-			<point-tag>Switch</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Switch</point>
+			<property>Mode</property>
 		</tags>
 	</channel-type>
 
@@ -985,8 +985,8 @@
 		<item-type>Switch</item-type>
 		<label>Valve 2</label>
 		<tags>
-			<point-tag>Switch</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Switch</point>
+			<property>Mode</property>
 		</tags>
 	</channel-type>
 
@@ -994,8 +994,8 @@
 		<item-type>Switch</item-type>
 		<label>Valve 3</label>
 		<tags>
-			<point-tag>Switch</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Switch</point>
+			<property>Mode</property>
 		</tags>
 	</channel-type>
 
@@ -1003,8 +1003,8 @@
 		<item-type>Switch</item-type>
 		<label>Valve 4</label>
 		<tags>
-			<point-tag>Switch</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Switch</point>
+			<property>Mode</property>
 		</tags>
 	</channel-type>
 
@@ -1012,8 +1012,8 @@
 		<item-type>Switch</item-type>
 		<label>Valve 5</label>
 		<tags>
-			<point-tag>Switch</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Switch</point>
+			<property>Mode</property>
 		</tags>
 	</channel-type>
 
@@ -1021,8 +1021,8 @@
 		<item-type>Switch</item-type>
 		<label>Valve 6</label>
 		<tags>
-			<point-tag>Switch</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Switch</point>
+			<property>Mode</property>
 		</tags>
 	</channel-type>
 
@@ -1030,8 +1030,8 @@
 		<item-type>Switch</item-type>
 		<label>Valve 7</label>
 		<tags>
-			<point-tag>Switch</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Switch</point>
+			<property>Mode</property>
 		</tags>
 	</channel-type>
 
@@ -1039,8 +1039,8 @@
 		<item-type>Switch</item-type>
 		<label>Valve 8</label>
 		<tags>
-			<point-tag>Switch</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Switch</point>
+			<property>Mode</property>
 		</tags>
 	</channel-type>
 

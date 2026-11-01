@@ -116,8 +116,8 @@
 		<label>Energy Price</label>
 		<category>Price</category>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Price</property-tag>
+			<point>Status</point>
+			<property>Price</property>
 		</tags>
 		<state pattern="%.3f %unit%"/>
 	</channel-type>

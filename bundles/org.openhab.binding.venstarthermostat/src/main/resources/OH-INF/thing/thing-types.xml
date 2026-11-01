@@ -116,8 +116,8 @@
 		<label>System Mode</label>
 		<description>Current System Operating Mode</description>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Control</point>
+			<property>Mode</property>
 		</tags>
 		<state readOnly="false">
 			<options>
@@ -141,8 +141,8 @@
 		<label>Away Mode</label>
 		<description>Current Away Mode</description>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Control</point>
+			<property>Mode</property>
 		</tags>
 		<state readOnly="false">
 			<options>
@@ -164,8 +164,8 @@
 		<label>Fan Mode</label>
 		<description>Current Fan Mode</description>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>Airflow</property-tag>
+			<point>Control</point>
+			<property>Airflow</property>
 		</tags>
 		<state readOnly="false">
 			<options>
@@ -187,8 +187,8 @@
 		<label>Fan State</label>
 		<description>Current Fan State</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Airflow</property-tag>
+			<point>Status</point>
+			<property>Airflow</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -205,8 +205,8 @@
 		<label>Schedule Mode</label>
 		<description>Current Schedule Mode</description>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Control</point>
+			<property>Mode</property>
 		</tags>
 		<state readOnly="false">
 			<options>
@@ -306,8 +306,8 @@
 		<label>System State</label>
 		<description>Current System Operating State</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Status</point>
+			<property>Mode</property>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -333,8 +333,8 @@
 		<description>Heating Setpoint</description>
 		<category>Temperature</category>
 		<tags>
-			<point-tag>Setpoint</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="false" pattern="%.1f %unit%" min="40" max="80" step="1.0"/>
 	</channel-type>
@@ -345,8 +345,8 @@
 		<description>Cooling Setpoint</description>
 		<category>Temperature</category>
 		<tags>
-			<point-tag>Setpoint</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="false" pattern="%.1f %unit%" min="60" max="95" step="1.0"/>
 	</channel-type>
@@ -357,8 +357,8 @@
 		<description>Temperature</description>
 		<category>Temperature</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -369,8 +369,8 @@
 		<description>Outdoor Temperature</description>
 		<category>Temperature</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -381,8 +381,8 @@
 		<description>Indoor Humidity</description>
 		<category>Humidity</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Humidity</property-tag>
+			<point>Measurement</point>
+			<property>Humidity</property>
 		</tags>
 		<state readOnly="true" min="0" max="100" pattern="%d %unit%"/>
 	</channel-type>

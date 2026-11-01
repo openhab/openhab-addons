@@ -325,8 +325,8 @@
 		<description>Outside temperature sensor</description>
 		<category>Temperature</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true"/>
 	</channel-type>
@@ -337,8 +337,8 @@
 		<description>Temperature sensor of boiler (fireplace)</description>
 		<category>Temperature</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true"/>
 	</channel-type>
@@ -356,8 +356,8 @@
 		<item-type>Number</item-type>
 		<label>Power Level</label>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Power</property-tag>
+			<point>Measurement</point>
+			<property>Power</property>
 		</tags>
 		<state pattern="%d %%" readOnly="true" max="100" min="0"/>
 	</channel-type>
@@ -368,8 +368,8 @@
 		<description>Actual temperature of the exhaust</description>
 		<category>Temperature</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true"/>
 	</channel-type>
@@ -382,8 +382,8 @@
 		<description>Temperature of flame</description>
 		<category>Temperature</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true"/>
 	</channel-type>
@@ -421,8 +421,8 @@
 		<label>Fan Speed</label>
 		<description>Fan speed in rpm</description>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Speed</property-tag>
+			<point>Measurement</point>
+			<property>Speed</property>
 		</tags>
 		<state pattern="%d rpm" readOnly="true"/>
 	</channel-type>
@@ -462,8 +462,8 @@
 		<label>Actual Power Level</label>
 		<description>Actual power of the burner</description>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Power</property-tag>
+			<point>Measurement</point>
+			<property>Power</property>
 		</tags>
 		<state pattern="%d %%" readOnly="true" max="100" min="0"/>
 	</channel-type>
@@ -511,8 +511,8 @@
 		<description>Temperature sensor in the middle of the storage tank</description>
 		<category>Temperature</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true"/>
 	</channel-type>
@@ -523,8 +523,8 @@
 		<description>Temperature sensor at the bottom of the storage tank</description>
 		<category>Temperature</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true"/>
 	</channel-type>
@@ -535,8 +535,8 @@
 		<description>Temperature sensor of the hot water</description>
 		<category>Temperature</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true"/>
 	</channel-type>
@@ -547,8 +547,8 @@
 		<description>Set the hot water temperature set point</description>
 		<category>Temperature</category>
 		<tags>
-			<point-tag>Setpoint</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%d °C" readOnly="false" max="60" min="30" step="1"/>
 	</channel-type>
@@ -561,8 +561,8 @@
 		<description>Temperature sensor of the circuit flow</description>
 		<category>Temperature</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true"/>
 	</channel-type>
@@ -631,8 +631,8 @@
 		<description>Temperature of rooms</description>
 		<category>Temperature</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true"/>
 	</channel-type>
@@ -643,8 +643,8 @@
 		<description>Target temperature of rooms</description>
 		<category>Temperature</category>
 		<tags>
-			<point-tag>Setpoint</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state min="6" max="30" step="1" pattern="%.1f °C" readOnly="false"/>
 	</channel-type>
@@ -678,8 +678,8 @@
 		<description>Actual temperature of the collector</description>
 		<category>Temperature</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true"/>
 	</channel-type>
@@ -690,8 +690,8 @@
 		<description>Actual temperature of the storage tank (solar sensor)</description>
 		<category>Temperature</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true"/>
 	</channel-type>
@@ -715,8 +715,8 @@
 		<label>Produced Heat</label>
 		<description>Produced heat since starting solar system</description>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Energy</property-tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%.2f kWh" readOnly="true"/>
 	</channel-type>
@@ -729,8 +729,8 @@
 		<description>Generic temperature sensor</description>
 		<category>Temperature</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true"/>
 	</channel-type>

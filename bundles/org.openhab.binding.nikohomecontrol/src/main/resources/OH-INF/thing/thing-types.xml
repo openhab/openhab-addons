@@ -545,8 +545,8 @@
 		<description>@text/channelRollershutterDescription</description>
 		<category>Blinds</category>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>OpenLevel</property-tag>
+			<point>Control</point>
+			<property>OpenLevel</property>
 		</tags>
 	</channel-type>
 
@@ -556,8 +556,8 @@
 		<description>@text/channelMeasuredDescription</description>
 		<category>Temperature</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -567,8 +567,8 @@
 		<description>@text/channelSetpointDescription</description>
 		<category>Temperature</category>
 		<tags>
-			<point-tag>Setpoint</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state min="0" max="100" step="0.5" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -583,8 +583,8 @@
 		<label>@text/channelModeLabel</label>
 		<description>@text/channelModeDescription</description>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Control</point>
+			<property>Mode</property>
 		</tags>
 		<state>
 			<options>
@@ -646,8 +646,8 @@
 		<label>@text/channelPowerLabel</label>
 		<description>@text/channelPowerDescription</description>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Power</property-tag>
+			<point>Measurement</point>
+			<property>Power</property>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
@@ -656,8 +656,8 @@
 		<label>@text/channelEnergyLabel</label>
 		<description>@text/channelEnergyDescription</description>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Energy</property-tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -666,8 +666,8 @@
 		<label>@text/channelEnergyDayLabel</label>
 		<description>@text/channelEnergyDayDescription</description>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Energy</property-tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -676,8 +676,8 @@
 		<label>@text/channelGasLabel</label>
 		<description>@text/channelGasDescription</description>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Gas</property-tag>
+			<point>Measurement</point>
+			<property>Gas</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -686,8 +686,8 @@
 		<label>@text/channelGasDayLabel</label>
 		<description>@text/channelGasDayDescription</description>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Gas</property-tag>
+			<point>Measurement</point>
+			<property>Gas</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -696,8 +696,8 @@
 		<label>@text/channelWaterLabel</label>
 		<description>@text/channelWaterDescription</description>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Water</property-tag>
+			<point>Measurement</point>
+			<property>Water</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -706,8 +706,8 @@
 		<label>@text/channelWaterDayLabel</label>
 		<description>@text/channelWaterDayDescription</description>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Water</property-tag>
+			<point>Measurement</point>
+			<property>Water</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -716,8 +716,8 @@
 		<label>@text/channelMeasurementTimeLabel</label>
 		<description>@text/channelMeasurementTimeDescription</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Timestamp</property-tag>
+			<point>Status</point>
+			<property>Timestamp</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -728,8 +728,8 @@
 		<description>@text/channelBellButtonDescription</description>
 		<category>Switch</category>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Control</point>
+			<property>Mode</property>
 		</tags>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
@@ -739,8 +739,8 @@
 		<description>@text/channelRingAndComeInDescription</description>
 		<category>Switch</category>
 		<tags>
-			<point-tag>Switch</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Switch</point>
+			<property>Mode</property>
 		</tags>
 	</channel-type>
 	<channel-type id="lock">
@@ -749,8 +749,8 @@
 		<description>@text/channelLockDescription</description>
 		<category>Switch</category>
 		<tags>
-			<point-tag>Switch</point-tag>
-			<property-tag>LockState</property-tag>
+			<point>Switch</point>
+			<property>LockState</property>
 		</tags>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
@@ -761,8 +761,8 @@
 		<description>@text/channelAlarmArmedDescription</description>
 		<category>Alarm</category>
 		<tags>
-			<point-tag>Switch</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Switch</point>
+			<property>Mode</property>
 		</tags>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
@@ -772,7 +772,7 @@
 		<description>@text/channelAlarmStateDescription</description>
 		<category>Alarm</category>
 		<tags>
-			<point-tag>Alarm</point-tag>
+			<point>Alarm</point>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -791,7 +791,7 @@
 		<label>@text/channelChargingStatusLabel</label>
 		<description>@text/channelChargingStatusDescription</description>
 		<tags>
-			<point-tag>Status</point-tag>
+			<point>Status</point>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -807,7 +807,7 @@
 		<label>@text/channelEvStatusLabel</label>
 		<description>@text/channelEvStatusDescription</description>
 		<tags>
-			<point-tag>Status</point-tag>
+			<point>Status</point>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -822,7 +822,7 @@
 		<label>@text/channelCouplingStatusLabel</label>
 		<description>@text/channelCouplingStatusDescription</description>
 		<tags>
-			<point-tag>Status</point-tag>
+			<point>Status</point>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -842,7 +842,7 @@
 		<label>@text/channelChargingModeLabel</label>
 		<description>@text/channelChargingModeDescription</description>
 		<tags>
-			<point-tag>Control</point-tag>
+			<point>Control</point>
 		</tags>
 		<state>
 			<options>
@@ -857,7 +857,7 @@
 		<label>@text/channelTargetDistanceLabel</label>
 		<description>@text/channelTargetDistanceDescription</description>
 		<tags>
-			<point-tag>Setpoint</point-tag>
+			<point>Setpoint</point>
 		</tags>
 		<state pattern="%d %unit%"/>
 	</channel-type>
@@ -866,8 +866,8 @@
 		<label>@text/channelTargetTimeLabel</label>
 		<description>@text/channelTargetTimeDescription</description>
 		<tags>
-			<point-tag>Setpoint</point-tag>
-			<property-tag>Timestamp</property-tag>
+			<point>Setpoint</point>
+			<property>Timestamp</property>
 		</tags>
 		<state pattern="%tR"/>
 	</channel-type>
@@ -876,7 +876,7 @@
 		<label>@text/channelBoostLabel</label>
 		<description>@text/channelBoostDescription</description>
 		<tags>
-			<point-tag>Switch</point-tag>
+			<point>Switch</point>
 		</tags>
 	</channel-type>
 	<channel-type id="reachabledistance">
@@ -884,7 +884,7 @@
 		<label>@text/channelReachableDistanceLabel</label>
 		<description>@text/channelReachableDistanceDescription</description>
 		<tags>
-			<point-tag>Calculation</point-tag>
+			<point>Calculation</point>
 		</tags>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
@@ -893,8 +893,8 @@
 		<label>@text/channelNextChargingTimeLabel</label>
 		<description>@text/channelNextChargingTimeDescription</description>
 		<tags>
-			<point-tag>Calculation</point-tag>
-			<property-tag>Timestamp</property-tag>
+			<point>Calculation</point>
+			<property>Timestamp</property>
 		</tags>
 		<state pattern="%tR" readOnly="true"/>
 	</channel-type>

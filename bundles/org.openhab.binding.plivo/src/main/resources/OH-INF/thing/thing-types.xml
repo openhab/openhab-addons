@@ -111,8 +111,8 @@
 		<label>Last Message Body</label>
 		<description>Body text of the last received SMS or WhatsApp message.</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Info</property-tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -122,8 +122,8 @@
 		<label>Last Message From</label>
 		<description>Phone number of the last message sender.</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Info</property-tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -133,8 +133,8 @@
 		<label>Last Message Date</label>
 		<description>Timestamp of the last received message.</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Timestamp</property-tag>
+			<point>Status</point>
+			<property>Timestamp</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -144,8 +144,8 @@
 		<label>Last Message Media URL</label>
 		<description>URL of the first media attachment from the last received MMS or WhatsApp message.</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Info</property-tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -155,8 +155,8 @@
 		<label>Last Message UUID</label>
 		<description>Plivo Message UUID of the last received message.</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Info</property-tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -166,8 +166,8 @@
 		<label>Last Call From</label>
 		<description>Phone number of the last incoming caller.</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Info</property-tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -177,8 +177,8 @@
 		<label>Last Call Status</label>
 		<description>Status of the last call (e.g. ringing, in-progress, completed).</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Info</property-tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -188,8 +188,8 @@
 		<label>Last Call Date</label>
 		<description>Timestamp of the last incoming call.</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Timestamp</property-tag>
+			<point>Status</point>
+			<property>Timestamp</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -199,8 +199,8 @@
 		<label>Last DTMF Digits</label>
 		<description>Last DTMF digits received from a caller during a voice call.</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Info</property-tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>

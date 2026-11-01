@@ -179,8 +179,8 @@
 		<label>Power State</label>
 		<description>Retrieves the Textual Power State of the Projector</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Status</point>
+			<property>Mode</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -189,8 +189,8 @@
 		<label>Lamp Time</label>
 		<description>Retrieves the number of hours the lamp has been used</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Duration</property-tag>
+			<point>Status</point>
+			<property>Duration</property>
 		</tags>
 		<state readOnly="true" pattern="%d h"/>
 	</channel-type>
@@ -272,8 +272,8 @@
 		<label>Freeze Image</label>
 		<description>Turn the Freeze Screen Mode On or Off</description>
 		<tags>
-			<point-tag>Switch</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Switch</point>
+			<property>Mode</property>
 		</tags>
 	</channel-type>
 	<channel-type id="aspectratio">
@@ -303,8 +303,8 @@
 		<label>Luminance</label>
 		<description>Retrieve or Set the Lamp Mode</description>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Control</point>
+			<property>Mode</property>
 		</tags>
 		<state>
 			<options>
@@ -373,8 +373,8 @@
 		<label>Color Mode</label>
 		<description>Retrieve or Set the Color Mode</description>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>Color</property-tag>
+			<point>Control</point>
+			<property>Color</property>
 		</tags>
 		<state>
 			<options>
@@ -438,8 +438,8 @@
 		<label>AV Mute</label>
 		<description>Turn the AV Mute On or Off</description>
 		<tags>
-			<point-tag>Switch</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Switch</point>
+			<property>Mode</property>
 		</tags>
 	</channel-type>
 	<channel-type id="horizontalreverse" advanced="true">

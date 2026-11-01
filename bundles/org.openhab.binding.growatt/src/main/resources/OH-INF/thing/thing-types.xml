@@ -592,7 +592,7 @@
 		<label>Status Code</label>
 		<category>Status</category>
 		<tags>
-			<point-tag>Status</point-tag>
+			<point>Status</point>
 		</tags>
 		<state readOnly="true" pattern="%00d"/>
 	</channel-type>
@@ -602,7 +602,7 @@
 		<label>Status Code</label>
 		<category>Status</category>
 		<tags>
-			<point-tag>Status</point-tag>
+			<point>Status</point>
 		</tags>
 		<state readOnly="true" pattern="%00d"/>
 	</channel-type>
@@ -612,7 +612,7 @@
 		<label>Fault Code</label>
 		<category>Siren</category>
 		<tags>
-			<point-tag>Status</point-tag>
+			<point>Status</point>
 		</tags>
 		<state readOnly="true" pattern="%00d"/>
 	</channel-type>
@@ -628,8 +628,8 @@
 		<label>Electric Frequency</label>
 		<category>Energy</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Frequency</property-tag>
+			<point>Measurement</point>
+			<property>Frequency</property>
 		</tags>
 		<state readOnly="true" pattern="%0.2f Hz"/>
 	</channel-type>
@@ -639,8 +639,8 @@
 		<label>Electric VA</label>
 		<category>Energy</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Power</property-tag>
+			<point>Measurement</point>
+			<property>Power</property>
 		</tags>
 		<state readOnly="true" pattern="%0.0f VA"/>
 	</channel-type>
@@ -650,8 +650,8 @@
 		<label>Work Time</label>
 		<category>Time</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Duration</property-tag>
+			<point>Measurement</point>
+			<property>Duration</property>
 		</tags>
 		<state readOnly="true" pattern="%0.1f h"/>
 	</channel-type>
@@ -661,8 +661,8 @@
 		<label>Electric Power</label>
 		<category>Energy</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Power</property-tag>
+			<point>Measurement</point>
+			<property>Power</property>
 		</tags>
 		<state readOnly="true" pattern="%0.0f W"/>
 	</channel-type>
@@ -672,8 +672,8 @@
 		<label>Electric Current</label>
 		<category>Energy</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Current</property-tag>
+			<point>Measurement</point>
+			<property>Current</property>
 		</tags>
 		<state readOnly="true" pattern="%0.1f A"/>
 	</channel-type>
@@ -683,8 +683,8 @@
 		<label>Electric Voltage</label>
 		<category>Energy</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Voltage</property-tag>
+			<point>Measurement</point>
+			<property>Voltage</property>
 		</tags>
 		<state readOnly="true" pattern="%0.1f V"/>
 	</channel-type>
@@ -694,8 +694,8 @@
 		<label>Electric Energy</label>
 		<category>Energy</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Energy</property-tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state readOnly="true" pattern="%0.0f kWh"/>
 	</channel-type>
@@ -705,8 +705,8 @@
 		<label>Electric Reactive Power</label>
 		<category>Energy</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Power</property-tag>
+			<point>Measurement</point>
+			<property>Power</property>
 		</tags>
 		<state readOnly="true" pattern="%0.0f var"/>
 	</channel-type>
@@ -716,8 +716,8 @@
 		<label>Electric Reactive Energy</label>
 		<category>Energy</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Energy</property-tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state readOnly="true" pattern="%0.0f kvarh"/>
 	</channel-type>
@@ -727,8 +727,8 @@
 		<label>Outdoor Temperature</label>
 		<category>Temperature</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%0.0f °C"/>
 	</channel-type>
@@ -739,8 +739,8 @@
 		<description>Time offset of inverter clock vs. OH system clock.</description>
 		<category>Time</category>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Timestamp</property-tag>
+			<point>Status</point>
+			<property>Timestamp</property>
 		</tags>
 		<state readOnly="true" pattern="%0.0f s"/>
 	</channel-type>

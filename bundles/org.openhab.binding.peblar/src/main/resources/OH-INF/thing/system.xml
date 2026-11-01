@@ -28,8 +28,8 @@
 		<label>Product Part Number</label>
 		<description>Product part number of the Peblar charger</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Info</property-tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -39,8 +39,8 @@
 		<label>Product Serial Number</label>
 		<description>Product serial number of the Peblar charger</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Info</property-tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -50,8 +50,8 @@
 		<label>Firmware Version</label>
 		<description>Currently installed firmware version</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Info</property-tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -62,8 +62,8 @@
 		<description>Wi-Fi signal strength</description>
 		<category>QualityOfService</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>RSSI</property-tag>
+			<point>Measurement</point>
+			<property>RSSI</property>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
@@ -74,8 +74,8 @@
 		<description>Cellular (LTE) signal strength in dBm</description>
 		<category>QualityOfService</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>RSSI</property-tag>
+			<point>Measurement</point>
+			<property>RSSI</property>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
@@ -85,8 +85,8 @@
 		<label>Uptime</label>
 		<description>Device uptime in seconds since last reboot</description>
 		<tags>
-			<point-tag>Calculation</point-tag>
-			<property-tag>Duration</property-tag>
+			<point>Calculation</point>
+			<property>Duration</property>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
@@ -97,8 +97,8 @@
 		<description>Number of electrical phases the charger is connected to (1 or 3)</description>
 		<category>Energy</category>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Status</point>
+			<property>Mode</property>
 		</tags>
 		<state readOnly="true">
 			<options>

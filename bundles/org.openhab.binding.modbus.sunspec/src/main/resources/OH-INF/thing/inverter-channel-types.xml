@@ -8,8 +8,8 @@
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>AC Total Current Value</label>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Current</property-tag>
+			<point>Measurement</point>
+			<property>Current</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -18,8 +18,8 @@
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>AC Phase Current Value</label>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Current</property-tag>
+			<point>Measurement</point>
+			<property>Current</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -29,8 +29,8 @@
 		<label>AC Voltage</label>
 		<description>This phase's AC voltage relative to the next phase</description>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Voltage</property-tag>
+			<point>Measurement</point>
+			<property>Voltage</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -40,8 +40,8 @@
 		<label>AC Voltage Phase To N Value</label>
 		<description>This phase's AC voltage relative to N line</description>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Voltage</property-tag>
+			<point>Measurement</point>
+			<property>Voltage</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -50,8 +50,8 @@
 		<item-type>Number:Power</item-type>
 		<label>AC Power Value</label>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Power</property-tag>
+			<point>Measurement</point>
+			<property>Power</property>
 		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
@@ -60,8 +60,8 @@
 		<item-type>Number:Frequency</item-type>
 		<label>AC Frequency Value</label>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Frequency</property-tag>
+			<point>Measurement</point>
+			<property>Frequency</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -82,8 +82,8 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>AC Power Factor</label>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Airconditioning</property-tag>
+			<point>Measurement</point>
+			<property>Airconditioning</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -92,8 +92,8 @@
 		<item-type>Number:Energy</item-type>
 		<label>AC Lifetime Energy Production</label>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Energy</property-tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
@@ -102,8 +102,8 @@
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>DC Current Value</label>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Current</property-tag>
+			<point>Measurement</point>
+			<property>Current</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -112,8 +112,8 @@
 		<item-type>Number:ElectricPotential</item-type>
 		<label>DC Voltage Value</label>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Voltage</property-tag>
+			<point>Measurement</point>
+			<property>Voltage</property>
 		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
@@ -122,8 +122,8 @@
 		<item-type>Number:Power</item-type>
 		<label>DC Power Value</label>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Power</property-tag>
+			<point>Measurement</point>
+			<property>Power</property>
 		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
@@ -132,8 +132,8 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Cabinet Temperature</label>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -142,8 +142,8 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Heat Sink Temperature</label>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -152,8 +152,8 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Transformer Temperature</label>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -162,8 +162,8 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Other Temperature</label>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -173,8 +173,8 @@
 		<label>Status</label>
 		<description>Device status</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Status</point>
+			<property>Mode</property>
 		</tags>
 		<state readOnly="true">
 			<options>

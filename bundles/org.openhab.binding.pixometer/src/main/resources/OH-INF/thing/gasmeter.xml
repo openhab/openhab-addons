@@ -29,8 +29,8 @@
 		<label>Last Reading</label>
 		<description>The last value that has been read for this meter.</description>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Gas</property-tag>
+			<point>Measurement</point>
+			<property>Gas</property>
 		</tags>
 		<state pattern="%.3f %unit%" readOnly="true"/>
 	</channel-type>

@@ -9,8 +9,8 @@
 		<label>Timestamp</label>
 		<category>time</category>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Timestamp</property-tag>
+			<point>Status</point>
+			<property>Timestamp</property>
 		</tags>
 		<state readOnly="true" pattern="%1$td/%1$tm"/>
 	</channel-type>
@@ -19,8 +19,8 @@
 		<item-type unitHint="gr/m³">Number:Density</item-type>
 		<label>Measure</label>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>AirQuality</property-tag>
+			<point>Measurement</point>
+			<property>AirQuality</property>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
@@ -30,8 +30,8 @@
 		<label>Air Quality</label>
 		<category>oh:atmofrance:aq</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>AirQuality</property-tag>
+			<point>Measurement</point>
+			<property>AirQuality</property>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -52,8 +52,8 @@
 		<label>Pollen Index</label>
 		<category>oh:atmofrance:pollen</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>AirQuality</property-tag>
+			<point>Measurement</point>
+			<property>AirQuality</property>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -73,8 +73,8 @@
 		<label>Air Quality</label>
 		<category>oh:atmofrance:aq</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>AirQuality</property-tag>
+			<point>Measurement</point>
+			<property>AirQuality</property>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -95,8 +95,8 @@
 		<label>Alder</label>
 		<category>oh:atmofrance:alder</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Level</property-tag>
+			<point>Measurement</point>
+			<property>Level</property>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -116,8 +116,8 @@
 		<label>Birch Level</label>
 		<category>oh:atmofrance:birch</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Level</property-tag>
+			<point>Measurement</point>
+			<property>Level</property>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -137,8 +137,8 @@
 		<label>Olive</label>
 		<category>oh:atmofrance:olive</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Level</property-tag>
+			<point>Measurement</point>
+			<property>Level</property>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -158,8 +158,8 @@
 		<label>Grasses</label>
 		<category>oh:atmofrance:grasses</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Level</property-tag>
+			<point>Measurement</point>
+			<property>Level</property>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -180,8 +180,8 @@
 		<label>Wormwood</label>
 		<category>oh:atmofrance:wormwood</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Level</property-tag>
+			<point>Measurement</point>
+			<property>Level</property>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -201,8 +201,8 @@
 		<label>Ragweed</label>
 		<category>oh:atmofrance:ragweed</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Level</property-tag>
+			<point>Measurement</point>
+			<property>Level</property>
 		</tags>
 		<state readOnly="true">
 			<options>

@@ -39,8 +39,8 @@
 		<item-type>String</item-type>
 		<label>Operating Mode</label>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Status</point>
+			<property>Mode</property>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -71,7 +71,7 @@
 		<item-type>String</item-type>
 		<label>Chlorinator Error</label>
 		<tags>
-			<point-tag>Alarm</point-tag>
+			<point>Alarm</point>
 		</tags>
 		<state pattern="%s" readOnly="true"/>
 	</channel-type>
@@ -87,8 +87,8 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Average Salt Level</label>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Level</property-tag>
+			<point>Measurement</point>
+			<property>Level</property>
 		</tags>
 		<state pattern="%,d ppm" readOnly="true"/>
 	</channel-type>
@@ -97,8 +97,8 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Instant Salt Level</label>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Level</property-tag>
+			<point>Measurement</point>
+			<property>Level</property>
 		</tags>
 		<state pattern="%,d ppm" readOnly="true"/>
 	</channel-type>

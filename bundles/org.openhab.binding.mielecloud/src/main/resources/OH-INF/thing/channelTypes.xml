@@ -51,8 +51,8 @@
 		<label>@text/channel-type.mielecloud.spinning_speed.label</label>
 		<description>@text/channel-type.mielecloud.spinning_speed.description</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Frequency</property-tag>
+			<point>Status</point>
+			<property>Frequency</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -62,8 +62,8 @@
 		<label>@text/channel-type.mielecloud.spinning_speed_raw.label</label>
 		<description>@text/channel-type.mielecloud.spinning_speed_raw.description</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Frequency</property-tag>
+			<point>Status</point>
+			<property>Frequency</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -193,8 +193,8 @@
 		<description>@text/channel-type.mielecloud.finish_state.description</description>
 		<category>Alarm</category>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Info</property-tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -251,8 +251,8 @@
 		<description>@text/channel-type.mielecloud.pre_heat_finished.description</description>
 		<category>Alarm</category>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Info</property-tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -263,8 +263,8 @@
 		<description>@text/channel-type.mielecloud.temperature_target.description</description>
 		<category>Number:Temperature</category>
 		<tags>
-			<point-tag>Setpoint</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -275,8 +275,8 @@
 		<description>@text/channel-type.mielecloud.temperature_current.description</description>
 		<category>Number:Temperature</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -286,8 +286,8 @@
 		<label>@text/channel-type.mielecloud.ventilation_power.label</label>
 		<description>@text/channel-type.mielecloud.ventilation_power.description</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Ventilation</property-tag>
+			<point>Status</point>
+			<property>Ventilation</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -297,8 +297,8 @@
 		<label>@text/channel-type.mielecloud.ventilation_power_raw.label</label>
 		<description>@text/channel-type.mielecloud.ventilation_power_raw.description</description>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Ventilation</property-tag>
+			<point>Measurement</point>
+			<property>Ventilation</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -309,7 +309,7 @@
 		<description>@text/channel-type.mielecloud.error_state.description</description>
 		<category>Alarm</category>
 		<tags>
-			<point-tag>Alarm</point-tag>
+			<point>Alarm</point>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -320,7 +320,7 @@
 		<description>@text/channel-type.mielecloud.info_state.description</description>
 		<category>Alarm</category>
 		<tags>
-			<point-tag>Alarm</point-tag>
+			<point>Alarm</point>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -359,8 +359,8 @@
 		<description>@text/channel-type.mielecloud.fridge_temperature_target.description</description>
 		<category>Number:Temperature</category>
 		<tags>
-			<point-tag>Setpoint</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -371,8 +371,8 @@
 		<description>@text/channel-type.mielecloud.fridge_temperature_current.description</description>
 		<category>Number:Temperature</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -383,8 +383,8 @@
 		<description>@text/channel-type.mielecloud.freezer_temperature_target.description</description>
 		<category>Number:Temperature</category>
 		<tags>
-			<point-tag>Setpoint</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -395,8 +395,8 @@
 		<description>@text/channel-type.mielecloud.freezer_temperature_current.description</description>
 		<category>Number:Temperature</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -407,8 +407,8 @@
 		<description>@text/channel-type.mielecloud.top_temperature_target.description</description>
 		<category>Number:Temperature</category>
 		<tags>
-			<point-tag>Setpoint</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -419,8 +419,8 @@
 		<description>@text/channel-type.mielecloud.top_temperature_current.description</description>
 		<category>Number:Temperature</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -431,8 +431,8 @@
 		<description>@text/channel-type.mielecloud.middle_temperature_target.description</description>
 		<category>Number:Temperature</category>
 		<tags>
-			<point-tag>Setpoint</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -443,8 +443,8 @@
 		<description>@text/channel-type.mielecloud.middle_temperature_current.description</description>
 		<category>Number:Temperature</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -455,8 +455,8 @@
 		<description>@text/channel-type.mielecloud.bottom_temperature_target.description</description>
 		<category>Number:Temperature</category>
 		<tags>
-			<point-tag>Setpoint</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -467,8 +467,8 @@
 		<description>@text/channel-type.mielecloud.bottom_temperature_current.description</description>
 		<category>Number:Temperature</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -479,8 +479,8 @@
 		<description>@text/channel-type.mielecloud.light_switch.description</description>
 		<category>Switch</category>
 		<tags>
-			<point-tag>Switch</point-tag>
-			<property-tag>Light</property-tag>
+			<point>Switch</point>
+			<property>Light</property>
 		</tags>
 	</channel-type>
 
@@ -496,8 +496,8 @@
 		<label>@text/channel-type.mielecloud.plate_power_step.label</label>
 		<description>@text/channel-type.mielecloud.plate_power_step.description</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Level</property-tag>
+			<point>Status</point>
+			<property>Level</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -507,8 +507,8 @@
 		<label>@text/channel-type.mielecloud.plate_power_step_raw.label</label>
 		<description>@text/channel-type.mielecloud.plate_power_step_raw.description</description>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Level</property-tag>
+			<point>Measurement</point>
+			<property>Level</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -526,7 +526,7 @@
 		<description>@text/channel-type.mielecloud.door_alarm.description</description>
 		<category>Alarm</category>
 		<tags>
-			<point-tag>Alarm</point-tag>
+			<point>Alarm</point>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -537,8 +537,8 @@
 		<description>@text/channel-type.mielecloud.water_consumption_current.description</description>
 		<category>Water</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Water</property-tag>
+			<point>Measurement</point>
+			<property>Water</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -549,8 +549,8 @@
 		<description>@text/channel-type.mielecloud.energy_consumption_current.description</description>
 		<category>Energy</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Energy</property-tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -561,8 +561,8 @@
 		<description>@text/channel-type.mielecloud.battery_level.description</description>
 		<category>Battery</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Energy</property-tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>

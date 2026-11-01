@@ -8,8 +8,8 @@
 		<item-type>Switch</item-type>
 		<label>Generic Switch</label>
 		<tags>
-			<point-tag>Switch</point-tag>
-			<property-tag>Power</property-tag>
+			<point>Switch</point>
+			<property>Power</property>
 		</tags>
 		<state readOnly="false"></state>
 	</channel-type>
@@ -22,8 +22,8 @@
 		<item-type>String</item-type>
 		<label>Generic Command</label>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Control</point>
+			<property>Mode</property>
 		</tags>
 		<state readOnly="false">
 			<options>

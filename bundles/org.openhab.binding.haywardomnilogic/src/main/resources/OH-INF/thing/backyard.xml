@@ -32,8 +32,8 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Air Temp</label>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
@@ -70,7 +70,7 @@
 		<item-type>String</item-type>
 		<label>Alarm</label>
 		<tags>
-			<point-tag>Alarm</point-tag>
+			<point>Alarm</point>
 		</tags>
 		<state pattern="%s" readOnly="true"/>
 	</channel-type>

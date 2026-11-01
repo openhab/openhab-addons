@@ -9,7 +9,7 @@
 		<label>Power State</label>
 		<description>Current detailed power state of the projector</description>
 		<tags>
-			<point-tag>Status</point-tag>
+			<point>Status</point>
 		</tags>
 		<state readOnly="true">
 			<options>

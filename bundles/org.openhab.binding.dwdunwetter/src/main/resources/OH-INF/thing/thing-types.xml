@@ -47,8 +47,8 @@
 		<description>Timestamp of the last update from the endpoint.</description>
 		<category>Time</category>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Timestamp</property-tag>
+			<point>Status</point>
+			<property>Timestamp</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -60,7 +60,7 @@
 			trigger channel - are updated.
 			Will be switched to OFF before all other channels are updated to UNDEF.</description>
 		<tags>
-			<point-tag>Alarm</point-tag>
+			<point>Alarm</point>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -93,8 +93,8 @@ This happens after all other channels are populated.]]></description>
 		<label>Description</label>
 		<description>Textual description of the warning.</description>
 		<tags>
-			<point-tag>Alarm</point-tag>
-			<property-tag>Info</property-tag>
+			<point>Alarm</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -104,8 +104,8 @@ This happens after all other channels are populated.]]></description>
 		<description>Issued Date and Time.</description>
 		<category>Time</category>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Timestamp</property-tag>
+			<point>Status</point>
+			<property>Timestamp</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -115,8 +115,8 @@ This happens after all other channels are populated.]]></description>
 		<description>Start Date and Time for which the warning is valid.</description>
 		<category>Time</category>
 		<tags>
-			<point-tag>Alarm</point-tag>
-			<property-tag>Timestamp</property-tag>
+			<point>Alarm</point>
+			<property>Timestamp</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -126,8 +126,8 @@ This happens after all other channels are populated.]]></description>
 		<description>End Date and Time for which the warning is valid.</description>
 		<category>Time</category>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Timestamp</property-tag>
+			<point>Status</point>
+			<property>Timestamp</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -136,8 +136,8 @@ This happens after all other channels are populated.]]></description>
 		<label>Headline</label>
 		<description>Headline of the warning like "Amtliche Warnung vor FROST".</description>
 		<tags>
-			<point-tag>Alarm</point-tag>
-			<property-tag>Info</property-tag>
+			<point>Alarm</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -146,8 +146,8 @@ This happens after all other channels are populated.]]></description>
 		<label>Type</label>
 		<description>Type of the warning, e.g. FROST.</description>
 		<tags>
-			<point-tag>Alarm</point-tag>
-			<property-tag>Info</property-tag>
+			<point>Alarm</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -174,8 +174,8 @@ This happens after all other channels are populated.]]></description>
 		<label>Urgency</label>
 		<description>Urgency of the warning. Possible values are Immediate and Future.</description>
 		<tags>
-			<point-tag>Alarm</point-tag>
-			<property-tag>Info</property-tag>
+			<point>Alarm</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true">
 			<options>

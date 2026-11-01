@@ -30,7 +30,7 @@
 		<label>Azimuth</label>
 		<description>The azimuth of the planet</description>
 		<tags>
-			<point-tag>Calculation</point-tag>
+			<point>Calculation</point>
 		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
@@ -40,7 +40,7 @@
 		<label>Elevation</label>
 		<description>The elevation of the planet</description>
 		<tags>
-			<point-tag>Calculation</point-tag>
+			<point>Calculation</point>
 		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
@@ -50,7 +50,7 @@
 		<label>Shade Length Ratio</label>
 		<description>Projected shade length ratio (derived from Elevation)</description>
 		<tags>
-			<point-tag>Calculation</point-tag>
+			<point>Calculation</point>
 		</tags>
 		<state readOnly="true" pattern="%.2f"/>
 	</channel-type>
@@ -60,8 +60,8 @@
 		<label>Direct Radiation</label>
 		<description>Level of radiation after penetration of the atmospheric layer</description>
 		<tags>
-			<point-tag>Calculation</point-tag>
-			<property-tag>Level</property-tag>
+			<point>Calculation</point>
+			<property>Level</property>
 		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
@@ -71,8 +71,8 @@
 		<label>Diffuse Radiation</label>
 		<description>Level of radiation diffracted by clouds and atmosphere</description>
 		<tags>
-			<point-tag>Calculation</point-tag>
-			<property-tag>Level</property-tag>
+			<point>Calculation</point>
+			<property>Level</property>
 		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
@@ -82,7 +82,7 @@
 		<label>Total Radiation</label>
 		<description>Total quantity of radiation on the ground</description>
 		<tags>
-			<point-tag>Calculation</point-tag>
+			<point>Calculation</point>
 		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
@@ -115,8 +115,8 @@
 		<description>The start time of the event</description>
 		<category>calendar</category>
 		<tags>
-			<point-tag>Calculation</point-tag>
-			<property-tag>Timestamp</property-tag>
+			<point>Calculation</point>
+			<property>Timestamp</property>
 		</tags>
 		<state readOnly="true" pattern="%1$tF %1$tR"/>
 		<config-description-ref uri="channel-type:astro:config"/>
@@ -128,8 +128,8 @@
 		<description>The end time of the event</description>
 		<category>calendar</category>
 		<tags>
-			<point-tag>Calculation</point-tag>
-			<property-tag>Timestamp</property-tag>
+			<point>Calculation</point>
+			<property>Timestamp</property>
 		</tags>
 		<state readOnly="true" pattern="%1$tF %1$tR"/>
 		<config-description-ref uri="channel-type:astro:config"/>
@@ -140,8 +140,8 @@
 		<label>Duration</label>
 		<description>The duration of the event</description>
 		<tags>
-			<point-tag>Calculation</point-tag>
-			<property-tag>Duration</property-tag>
+			<point>Calculation</point>
+			<property>Duration</property>
 		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
@@ -176,8 +176,8 @@
 		<description>The sign of the zodiac</description>
 		<category>oh:astro:zodiac</category>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Info</property-tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -224,8 +224,8 @@
 		<description>The name of the current season</description>
 		<category>oh:astro:season</category>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Info</property-tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -243,8 +243,8 @@
 		<description>The beginning of spring</description>
 		<category>calendar</category>
 		<tags>
-			<point-tag>Calculation</point-tag>
-			<property-tag>Timestamp</property-tag>
+			<point>Calculation</point>
+			<property>Timestamp</property>
 		</tags>
 		<state readOnly="true" pattern="%1$tF %1$tR"/>
 	</channel-type>
@@ -255,8 +255,8 @@
 		<description>The beginning of summer</description>
 		<category>calendar</category>
 		<tags>
-			<point-tag>Calculation</point-tag>
-			<property-tag>Timestamp</property-tag>
+			<point>Calculation</point>
+			<property>Timestamp</property>
 		</tags>
 		<state readOnly="true" pattern="%1$tF %1$tR"/>
 	</channel-type>
@@ -267,8 +267,8 @@
 		<description>The beginning of autumn</description>
 		<category>calendar</category>
 		<tags>
-			<point-tag>Calculation</point-tag>
-			<property-tag>Timestamp</property-tag>
+			<point>Calculation</point>
+			<property>Timestamp</property>
 		</tags>
 		<state readOnly="true" pattern="%1$tF %1$tR"/>
 	</channel-type>
@@ -279,8 +279,8 @@
 		<description>The beginning of winter</description>
 		<category>calendar</category>
 		<tags>
-			<point-tag>Calculation</point-tag>
-			<property-tag>Timestamp</property-tag>
+			<point>Calculation</point>
+			<property>Timestamp</property>
 		</tags>
 		<state readOnly="true" pattern="%1$tF %1$tR"/>
 	</channel-type>
@@ -316,8 +316,8 @@
 		<description>The DateTime of the next total eclipse</description>
 		<category>Calendar</category>
 		<tags>
-			<point-tag>Calculation</point-tag>
-			<property-tag>Timestamp</property-tag>
+			<point>Calculation</point>
+			<property>Timestamp</property>
 		</tags>
 		<state readOnly="true" pattern="%1$tF %1$tR"/>
 	</channel-type>
@@ -328,8 +328,8 @@
 		<description>The DateTime of the next partial eclipse</description>
 		<category>Calendar</category>
 		<tags>
-			<point-tag>Calculation</point-tag>
-			<property-tag>Timestamp</property-tag>
+			<point>Calculation</point>
+			<property>Timestamp</property>
 		</tags>
 		<state readOnly="true" pattern="%1$tF %1$tR"/>
 	</channel-type>
@@ -340,8 +340,8 @@
 		<description>The DateTime of the next ring eclipse</description>
 		<category>Calendar</category>
 		<tags>
-			<point-tag>Calculation</point-tag>
-			<property-tag>Timestamp</property-tag>
+			<point>Calculation</point>
+			<property>Timestamp</property>
 		</tags>
 		<state readOnly="true" pattern="%1$tF %1$tR"/>
 	</channel-type>
@@ -375,8 +375,8 @@
 		<label>Sun Phase Name</label>
 		<description>The name of the current sun phase</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Info</property-tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -420,8 +420,8 @@
 		<description>The DateTime the moon is in the first quarter</description>
 		<category>calendar</category>
 		<tags>
-			<point-tag>Calculation</point-tag>
-			<property-tag>Timestamp</property-tag>
+			<point>Calculation</point>
+			<property>Timestamp</property>
 		</tags>
 		<state readOnly="true" pattern="%1$tF %1$tR"/>
 	</channel-type>
@@ -432,8 +432,8 @@
 		<description>The DateTime the moon is in the third quarter</description>
 		<category>calendar</category>
 		<tags>
-			<point-tag>Calculation</point-tag>
-			<property-tag>Timestamp</property-tag>
+			<point>Calculation</point>
+			<property>Timestamp</property>
 		</tags>
 		<state readOnly="true" pattern="%1$tF %1$tR"/>
 	</channel-type>
@@ -444,8 +444,8 @@
 		<description>The DateTime for full moon</description>
 		<category>calendar</category>
 		<tags>
-			<point-tag>Calculation</point-tag>
-			<property-tag>Timestamp</property-tag>
+			<point>Calculation</point>
+			<property>Timestamp</property>
 		</tags>
 		<state readOnly="true" pattern="%1$tF %1$tR"/>
 	</channel-type>
@@ -456,8 +456,8 @@
 		<description>The DateTime for new moon</description>
 		<category>calendar</category>
 		<tags>
-			<point-tag>Calculation</point-tag>
-			<property-tag>Timestamp</property-tag>
+			<point>Calculation</point>
+			<property>Timestamp</property>
 		</tags>
 		<state readOnly="true" pattern="%1$tF %1$tR"/>
 	</channel-type>
@@ -468,8 +468,8 @@
 		<description>The age of the moon</description>
 		<category>oh:astro:moon_day</category>
 		<tags>
-			<point-tag>Calculation</point-tag>
-			<property-tag>Duration</property-tag>
+			<point>Calculation</point>
+			<property>Duration</property>
 		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
@@ -479,7 +479,7 @@
 		<label>Moon Age</label>
 		<description>The age of the moon</description>
 		<tags>
-			<point-tag>Calculation</point-tag>
+			<point>Calculation</point>
 		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
@@ -489,7 +489,7 @@
 		<label>Moon Age</label>
 		<description>The age of the moon</description>
 		<tags>
-			<point-tag>Calculation</point-tag>
+			<point>Calculation</point>
 		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
@@ -499,7 +499,7 @@
 		<label>Moon Illumination</label>
 		<description>The illumination of the moon</description>
 		<tags>
-			<point-tag>Calculation</point-tag>
+			<point>Calculation</point>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
@@ -510,7 +510,7 @@
 		<description>The name of the current moon phase</description>
 		<category>oh:astro:moon_phase</category>
 		<tags>
-			<point-tag>Status</point-tag>
+			<point>Status</point>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -585,8 +585,8 @@
 		<description>The DateTime when the distance is reached</description>
 		<category>calendar</category>
 		<tags>
-			<point-tag>Calculation</point-tag>
-			<property-tag>Timestamp</property-tag>
+			<point>Calculation</point>
+			<property>Timestamp</property>
 		</tags>
 		<state readOnly="true" pattern="%1$tF %1$tR"/>
 	</channel-type>
@@ -596,7 +596,7 @@
 		<label>Distance</label>
 		<description>The distance of the object</description>
 		<tags>
-			<point-tag>Calculation</point-tag>
+			<point>Calculation</point>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>

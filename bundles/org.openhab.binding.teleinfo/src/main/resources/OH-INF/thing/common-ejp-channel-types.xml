@@ -10,8 +10,8 @@
 		<description>Total consumed energy at high rate pricing</description>
 		<category>Energy</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Energy</property-tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
@@ -22,8 +22,8 @@
 		<description>Total consumed energy at low rate pricing</description>
 		<category>Energy</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Energy</property-tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
@@ -34,7 +34,7 @@
 		<description>Prior notice to EJP start</description>
 		<category>Energy</category>
 		<tags>
-			<point-tag>Status</point-tag>
+			<point>Status</point>
 		</tags>
 
 		<state pattern="%d %unit%" readOnly="true"/>

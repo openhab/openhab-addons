@@ -139,8 +139,8 @@
 		<label>Humidity</label>
 		<description>Humidity level</description>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Humidity</property-tag>
+			<point>Measurement</point>
+			<property>Humidity</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %%"/>
 	</channel-type>
@@ -149,8 +149,8 @@
 		<label>Temperature</label>
 		<description>Temperature</description>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -159,8 +159,8 @@
 		<label>Pressure</label>
 		<description>Pressure</description>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Pressure</property-tag>
+			<point>Measurement</point>
+			<property>Pressure</property>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
@@ -169,8 +169,8 @@
 		<label>CO₂ Level</label>
 		<description>Carbon dioxide level</description>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>CO2</property-tag>
+			<point>Measurement</point>
+			<property>CO2</property>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
@@ -179,8 +179,8 @@
 		<label>TVOC Level</label>
 		<description>Total volatile organic compounds</description>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>VOC</property-tag>
+			<point>Measurement</point>
+			<property>VOC</property>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
@@ -189,8 +189,8 @@
 		<label>Radon Short Term Average Level</label>
 		<description>Radon gas level</description>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Radon</property-tag>
+			<point>Measurement</point>
+			<property>Radon</property>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
@@ -199,8 +199,8 @@
 		<label>Radon Long Term Average Level</label>
 		<description>Radon gas level</description>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Radon</property-tag>
+			<point>Measurement</point>
+			<property>Radon</property>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>

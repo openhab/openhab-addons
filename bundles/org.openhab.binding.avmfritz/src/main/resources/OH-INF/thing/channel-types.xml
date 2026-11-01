@@ -54,8 +54,8 @@
 		<description>States the mode of the device (MANUAL/AUTOMATIC/VACATION).</description>
 		<category>Heating</category>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Status</point>
+			<property>Mode</property>
 		</tags>
 		<state pattern="%s" readOnly="true">
 			<options>
@@ -117,8 +117,8 @@
 		<description>Current measured temperature.</description>
 		<category>Temperature</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 
@@ -131,8 +131,8 @@
 		<description>Current measured humidity.</description>
 		<category>Humidity</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Humidity</property-tag>
+			<point>Measurement</point>
+			<property>Humidity</property>
 		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
@@ -143,8 +143,8 @@
 		<description>Switched outlet (ON/OFF).</description>
 		<category>PowerOutlet</category>
 		<tags>
-			<point-tag>Switch</point-tag>
-			<property-tag>Power</property-tag>
+			<point>Switch</point>
+			<property>Power</property>
 		</tags>
 	</channel-type>
 
@@ -154,8 +154,8 @@
 		<description>Thermostat Setpoint temperature.</description>
 		<category>Heating</category>
 		<tags>
-			<point-tag>Setpoint</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
@@ -166,8 +166,8 @@
 		<description>Thermostat Eco temperature.</description>
 		<category>Temperature</category>
 		<tags>
-			<point-tag>Setpoint</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -178,8 +178,8 @@
 		<description>Thermostat Comfort temperature.</description>
 		<category>Temperature</category>
 		<tags>
-			<point-tag>Setpoint</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -190,8 +190,8 @@
 		<description>States the mode of the radiator (ON/OFF/COMFORT/ECO/BOOST/WINDOW_OPEN).</description>
 		<category>Heating</category>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Status</point>
+			<property>Mode</property>
 		</tags>
 		<state pattern="%s">
 			<options>
@@ -227,8 +227,8 @@
 		<description>Contact state information (OPEN/CLOSED).</description>
 		<category>Contact</category>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>OpenState</property-tag>
+			<point>Status</point>
+			<property>OpenState</property>
 		</tags>
 		<state pattern="%s" readOnly="true"/>
 	</channel-type>
@@ -238,8 +238,8 @@
 		<label>Obstruction Alarm</label>
 		<description>Obstruction alarm of the blinds. The blinds were stopped and moved a bit in the opposite direction.</description>
 		<tags>
-			<point-tag>Alarm</point-tag>
-			<property-tag>Opening</property-tag>
+			<point>Alarm</point>
+			<property>Opening</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -249,8 +249,8 @@
 		<label>Temperature Alarm</label>
 		<description>Temperature alarm of the blinds. Indicates overheating of the motor.</description>
 		<tags>
-			<point-tag>Alarm</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Alarm</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -261,8 +261,8 @@
 		<description>States the last time the button was pressed.</description>
 		<category>Time</category>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Timestamp</property-tag>
+			<point>Status</point>
+			<property>Timestamp</property>
 		</tags>
 		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS"/>
 	</channel-type>
@@ -272,8 +272,8 @@
 		<label>Rollershutter Control</label>
 		<description>Controls the rollershutter and states its opening level in percent</description>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>OpenLevel</property-tag>
+			<point>Control</point>
+			<property>OpenLevel</property>
 		</tags>
 	</channel-type>
 
@@ -283,8 +283,8 @@
 		<description>Controls the color temperature of the light in Kelvin</description>
 		<category>ColorLight</category>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>ColorTemperature</property-tag>
+			<point>Control</point>
+			<property>ColorTemperature</property>
 		</tags>
 		<state min="2700" max="6500" pattern="%.0f K"/>
 	</channel-type>

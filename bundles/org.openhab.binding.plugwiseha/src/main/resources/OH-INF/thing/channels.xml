@@ -10,8 +10,8 @@
 		<description>Get or set the setpoint for this zone</description>
 		<category>heating</category>
 		<tags>
-			<point-tag>Setpoint</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state min="0.0" max="35.0" step="0.5" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -30,8 +30,8 @@
 		<description>Turn preheating for a zone on or off</description>
 		<category>switch</category>
 		<tags>
-			<point-tag>Switch</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Switch</point>
+			<property>Mode</property>
 		</tags>
 	</channel-type>
 
@@ -41,8 +41,8 @@
 		<description>Turn cooling for a zone on or off</description>
 		<category>switch</category>
 		<tags>
-			<point-tag>Switch</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Switch</point>
+			<property>Mode</property>
 		</tags>
 	</channel-type>
 
@@ -52,8 +52,8 @@
 		<description>Set the regulation control of a zone to active, passive, or off</description>
 		<category>switch</category>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Control</point>
+			<property>Mode</property>
 		</tags>
 		<state>
 			<options>
@@ -77,8 +77,8 @@
 		<description>Whether the boiler is active for central heating (on or off)</description>
 		<category>switch</category>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Heating</property-tag>
+			<point>Status</point>
+			<property>Heating</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -89,8 +89,8 @@
 		<description>Whether the boiler is active for domestic hot water (on or off)</description>
 		<category>switch</category>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Heating</property-tag>
+			<point>Status</point>
+			<property>Heating</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -101,8 +101,8 @@
 		<description>Whether the boiler is active for cooling (on or off)</description>
 		<category>switch</category>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Airconditioning</property-tag>
+			<point>Status</point>
+			<property>Airconditioning</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -113,8 +113,8 @@
 		<description>Whether the boiler's flame is active (on or off)</description>
 		<category>switch</category>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Heating</property-tag>
+			<point>Status</point>
+			<property>Heating</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -145,8 +145,8 @@
 		<label>Operation Time</label>
 		<description>Total operation time</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Duration</property-tag>
+			<point>Status</point>
+			<property>Duration</property>
 		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
@@ -156,8 +156,8 @@
 		<label>DHW Operation Time</label>
 		<description>Total operation time for domestic hot water</description>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Duration</property-tag>
+			<point>Status</point>
+			<property>Duration</property>
 		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
@@ -176,8 +176,8 @@
 		<description>Whether the boiler's domestic hot water mode is set to comfort (on or off)</description>
 		<category>switch</category>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Status</point>
+			<property>Mode</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -188,8 +188,8 @@
 		<description>The intended temperature of this boiler</description>
 		<category>heating</category>
 		<tags>
-			<point-tag>Setpoint</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -216,8 +216,8 @@
 		<description>The temperature of the domestic hot water</description>
 		<category>heating</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -236,8 +236,8 @@
 		<description>The temperature of this boiler</description>
 		<category>heating</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -248,8 +248,8 @@
 		<description>The temperature of the return water</description>
 		<category>heating</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -260,8 +260,8 @@
 		<description>The domestic hot water setpoint temperature</description>
 		<category>heating</category>
 		<tags>
-			<point-tag>Setpoint</point-tag>
-			<property-tag>Temperature</property-tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
@@ -280,8 +280,8 @@
 		<description>The water pressure of the boiler</description>
 		<category>heating</category>
 		<tags>
-			<point-tag>Measurement</point-tag>
-			<property-tag>Pressure</property-tag>
+			<point>Measurement</point>
+			<property>Pressure</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -292,8 +292,8 @@
 		<description>Get or set the preset scene for the zone</description>
 		<category>heating</category>
 		<tags>
-			<point-tag>Control</point-tag>
-			<property-tag>Mode</property-tag>
+			<point>Control</point>
+			<property>Mode</property>
 		</tags>
 		<state>
 			<options>
@@ -312,8 +312,8 @@
 		<description>Gets the position of the valve (0% closed, 100% open)</description>
 		<category>heating</category>
 		<tags>
-			<point-tag>Status</point-tag>
-			<property-tag>OpenLevel</property-tag>
+			<point>Status</point>
+			<property>OpenLevel</property>
 		</tags>
 		<state readOnly="true" pattern="%.0f %%"/>
 	</channel-type>
