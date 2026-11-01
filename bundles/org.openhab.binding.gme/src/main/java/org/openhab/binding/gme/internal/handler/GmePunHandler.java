@@ -384,7 +384,8 @@ public class GmePunHandler extends BaseThingHandler {
                             List<GmePriceEntry> newTodayPrices = filterZone(marketPrices, "PUN");
 
                             if (!GmePriceTimeline.isCompleteDailySet(newTodayPrices, today, GME_ZONE, granularity)) {
-                                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/status.gme.incomplete-today-dataset");
+                                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
+                                        "@text/status.gme.incomplete-today-dataset");
                                 return;
                             }
 
