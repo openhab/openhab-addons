@@ -201,8 +201,9 @@ public final class Mdns {
         UnicastQueryState state = new UnicastQueryState(queries, socket, result, address);
         result.whenComplete((r, e) -> socket.close());
 
-        Thread.ofVirtual().name("atv-mdns-recv-" + address.getHostAddress()).start(state::receiveLoop);
-        Thread.ofVirtual().name("atv-mdns-send-" + address.getHostAddress()).start(() -> state.resendLoop(timeout));
+        Thread.ofPlatform().daemon().name("atv-mdns-recv-" + address.getHostAddress()).start(state::receiveLoop);
+        Thread.ofPlatform().daemon().name("atv-mdns-send-" + address.getHostAddress())
+                .start(() -> state.resendLoop(timeout));
         return result;
     }
 

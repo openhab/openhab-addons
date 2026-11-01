@@ -215,7 +215,7 @@ public final class AirPlayV2 implements StreamProtocol {
     @Override
     public void startFeedback() {
         if (feedbackThread == null) {
-            feedbackThread = Thread.ofVirtual().name("raop-feedback").start(this::feedbackLoop);
+            feedbackThread = Thread.ofPlatform().daemon().name("raop-feedback").start(this::feedbackLoop);
         }
     }
 

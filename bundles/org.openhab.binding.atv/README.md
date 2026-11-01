@@ -13,43 +13,39 @@ It speaks the same protocols as the Apple TV Remote app and the tvOS Control Cen
 ## Discovery
 
 Both Thing types are found automatically via mDNS.
-Discovered devices are identified by their MAC address, which becomes the Thing's `macAddress` configuration parameter and cannot be changed afterwards.
+Discovered devices are identified by their AirPlay device ID, which becomes the Thing's `deviceId` configuration parameter.
+It looks like a MAC address but is often not the device's hardware MAC, so take it from discovery rather than from the device's network settings.
 The `host` parameter is filled in by discovery and kept up to date automatically if the device's IP address changes, so it normally does not need to be set by hand.
 Set `host` manually only for a static IP or when the device lives on a different subnet than the openHAB server.
-
-Where the device advertises a model, it is included in the inbox label (for example `great room (Denon AVR-X2700H)`).
-Apple computers also advertise AirPlay but are not controllable media devices, so models matching an Apple computer identifier (e.g. `Mac16,12`, `MacBookPro18,1`, `iMac21,1`) are excluded from discovery.
 
 ## Thing Configuration
 
 ### `appletv`
 
-| Name                 | Type    | Description                                                                               | Default | Required | Advanced |
-| -------------------- | ------- | ----------------------------------------------------------------------------------------- | ------- | -------- | -------- |
-| macAddress           | text    | Unique device identifier (MAC). Set automatically by discovery.                           | N/A     | yes      | no       |
-| host                 | text    | IP address of the Apple TV. Populated and kept current by discovery.                      | N/A     | no       | no       |
-| name                 | text    | Friendly name presented to the device while pairing.                                      | N/A     | no       | yes      |
-| pin                  | text    | Pairing PIN. One field reused for each pairing step in turn, as prompted by the Thing status.  | N/A     | no       | no       |
-| airplayCredentials   | text    | Credentials obtained by pairing AirPlay. Populated automatically after pairing.           | N/A     | no       | yes      |
-| companionCredentials | text    | Credentials obtained by pairing Companion. Populated automatically after pairing.         | N/A     | no       | yes      |
-| notificationVolume   | integer | Default volume (0-100) for audio played to this device as an openHAB audio sink.          | 50      | no       | yes      |
-| healthCheckInterval  | integer | Seconds between active power-state health checks; rebuilds the connection if the device stops answering or its state disagrees with the tracked state (0 disables). | 30 | no | yes |
-| staleTimeout         | integer | Backup: minutes with no updates of any kind before the connection is rebuilt (0 disables; keep 15 or higher if used). | 0 | no | yes |
+| Name                 | Type    | Description                                                                                                           | Default | Required | Advanced |
+| -------------------- | ------- | --------------------------------------------------------------------------------------------------------------------- | ------- | -------- | -------- |
+| deviceId             | text    | AirPlay device ID, set by discovery. It looks like a MAC address but is often not the hardware MAC.                   | N/A     | yes      | no       |
+| host                 | text    | IP address of the Apple TV. Populated and kept current by discovery.                                                  | N/A     | no       | no       |
+| name                 | text    | Friendly name presented to the device while pairing.                                                                  | N/A     | no       | yes      |
+| pin                  | text    | Pairing PIN. One field reused for each pairing step in turn, as prompted by the Thing status.                         | N/A     | no       | no       |
+| airplayCredentials   | text    | Credentials obtained by pairing AirPlay. Populated automatically after pairing.                                       | N/A     | no       | yes      |
+| companionCredentials | text    | Credentials obtained by pairing Companion. Populated automatically after pairing.                                     | N/A     | no       | yes      |
+| notificationVolume   | integer | Default volume (0-100) for audio played to this device as an openHAB audio sink.                                      | 50      | no       | yes      |
+| healthCheckInterval  | integer | Seconds between active power-state health checks; rebuilds the connection if the device stops answering (0 disables). | 30      | no       | yes      |
 
 ### `speaker`
 
-| Name               | Type    | Description                                                                                  | Default | Required | Advanced |
-| ------------------ | ------- | -------------------------------------------------------------------------------------------- | ------- | -------- | -------- |
-| macAddress         | text    | Unique device identifier (MAC). Set automatically by discovery.                              | N/A     | yes      | no       |
-| host               | text    | IP address of the speaker. Populated and kept current by discovery.                          | N/A     | no       | no       |
-| name               | text    | Friendly name presented to the device while pairing.                                         | N/A     | no       | yes      |
-| password           | text    | Password for password-protected AirPlay speakers.                                            | N/A     | no       | yes      |
-| pin                | text    | Pairing PIN. One field reused for each pairing step in turn, as prompted by the Thing status. | N/A     | no       | no       |
-| airplayCredentials | text    | Credentials obtained by pairing AirPlay. Populated automatically after pairing.              | N/A     | no       | yes      |
-| raopCredentials    | text    | Credentials obtained by pairing RAOP audio. Populated automatically after pairing.           | N/A     | no       | yes      |
-| notificationVolume | integer | Default volume (0-100) for audio played to this device as an openHAB audio sink.             | 50      | no       | yes      |
-| healthCheckInterval | integer | Seconds between active power-state health checks; rebuilds the connection if the device stops answering or its state disagrees with the tracked state (0 disables). | 30 | no | yes |
-| staleTimeout       | integer | Backup: minutes with no updates of any kind before the connection is rebuilt (0 disables; keep 15 or higher if used). | 0 | no | yes |
+| Name                | Type    | Description                                                                                                           | Default | Required | Advanced |
+| ------------------- | ------- | --------------------------------------------------------------------------------------------------------------------- | ------- | -------- | -------- |
+| deviceId            | text    | AirPlay device ID, set by discovery. It looks like a MAC address but is often not the hardware MAC.                   | N/A     | yes      | no       |
+| host                | text    | IP address of the speaker. Populated and kept current by discovery.                                                   | N/A     | no       | no       |
+| name                | text    | Friendly name presented to the device while pairing.                                                                  | N/A     | no       | yes      |
+| password            | text    | Password for password-protected AirPlay speakers.                                                                     | N/A     | no       | yes      |
+| pin                 | text    | Pairing PIN. One field reused for each pairing step in turn, as prompted by the Thing status.                         | N/A     | no       | no       |
+| airplayCredentials  | text    | Credentials obtained by pairing AirPlay. Populated automatically after pairing.                                       | N/A     | no       | yes      |
+| raopCredentials     | text    | Credentials obtained by pairing RAOP audio. Populated automatically after pairing.                                    | N/A     | no       | yes      |
+| notificationVolume  | integer | Default volume (0-100) for audio played to this device as an openHAB audio sink.                                      | 50      | no       | yes      |
+| healthCheckInterval | integer | Seconds between active power-state health checks; rebuilds the connection if the device stops answering (0 disables). | 30      | no       | yes      |
 
 ## Pairing
 
@@ -118,8 +114,8 @@ Password-protected speakers use the separate **Password** field instead of a PIN
 | keyboard-input       | String      | Text of the focused input field. Send a value to set the text (empty clears it).                                                                                                                                                                   |
 | keyboard-focus       | String      | Whether a text input field is currently focused: Unknown, Unfocused, Focused. Read-only, advanced.                                                                                                                                                 |
 | touch-gesture        | String      | Performs a trackpad gesture. Formats: `click`, `swipe:x1,y1,x2,y2,ms`, `action:x,y,mode`. Write-only, advanced.                                                                                                                                    |
-| play-url             | String      | Plays a media URL (or a local file) on the device via AirPlay. Write-only. See "Streaming Media" below.                                                                                                                                            |
-| stream-url           | String      | Streams a local audio file to the device via RAOP. Write-only. See "Streaming Media" below.                                                                                                                                                        |
+| play-url             | String      | Plays an `http(s)://` media URL, or a file from the openHAB `sounds` folder, on the device via AirPlay. Write-only. See "Streaming Media" below.                                                                                                   |
+| stream-url           | String      | Streams an `http(s)://` audio URL, or a file from the openHAB `sounds` folder, to the device via RAOP. Write-only. See "Streaming Media" below.                                                                                                    |
 
 ### `speaker` Channels
 
@@ -135,18 +131,33 @@ Password-protected speakers use the separate **Password** field instead of a PIN
 | duration             | Number:Time | Total length of the current media. Read-only.                                                        |
 | progress             | Dimmer      | Playback progress as a percentage. Read-only.                                                        |
 | artwork              | Image       | Artwork of the media currently playing. Read-only.                                                   |
-| stream-url           | String      | Streams a local audio file to the device via RAOP. Write-only. See "Streaming Media" below.          |
+| stream-url           | String      | Streams an audio URL or `sounds` file via RAOP. Write-only. See "Streaming Media" below.             |
 | output-devices       | String      | Comma-separated identifiers of the active AirPlay output devices. Send a list to set them. Advanced. |
 | output-device-volume | String      | Sets the volume of a single output device, formatted as `identifier=level` (level 0-100). Advanced.  |
+
+## Sleep and Wake
+
+An Apple TV that is turned off or goes to sleep stays `ONLINE` with the status description "Device is asleep".
+The binding checks on it every 20 seconds, and the `power` channel shows `OFF`.
+Some models drop off the network for a few minutes at a time while asleep.
+This is expected and does not change the status.
+
+Send `ON` to the `power` channel to wake it.
+The binding keeps trying for up to 5 minutes, connecting as soon as the device answers.
+
+If an asleep device does not answer at all for 10 minutes, it is reported `OFFLINE`, since it is probably unplugged or off the network.
+It comes back on its own once it is reachable again.
 
 ## Streaming Media
 
 The binding can push media to a device through two channels:
 
-- `play-url` (AirPlay): send an `http(s)://` media URL (audio or video) to play it on the device, or a path to a local file on the openHAB server, which the binding serves over HTTP for the device to fetch.
-- `stream-url` (RAOP): send a path to a local audio file on the openHAB server; the binding decodes and streams it. WAV and MP3 are supported; HTTP URLs are not (use `play-url` for a URL the device fetches itself).
+- `play-url` (AirPlay): send an `http(s)://` media URL (audio or video) for the device to fetch and play.
+- `stream-url` (RAOP): send an `http(s)://` audio URL; the binding downloads, decodes and streams it to the device. WAV and MP3 are supported.
 
-Paths for both channels are resolved on the openHAB server, so for a containerised install use the container path (for example `/openhab/conf/sounds/chime.wav`).
+Both channels also accept the bare name of a file in the openHAB `sounds` folder (for example `chime.wav` for `$OPENHAB_CONF/sounds/chime.wav`).
+For `play-url` the binding serves that file over openHAB's HTTP server for the device to fetch.
+Other local paths are rejected, so these channels cannot be used to read arbitrary files from the openHAB server.
 
 ## Audio Sink
 

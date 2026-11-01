@@ -17,6 +17,7 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Clock;
+import java.time.Duration;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
@@ -56,6 +57,8 @@ public final class MrpMetadata implements Metadata, CapabilitySource {
     private final MrpProtocol protocol;
     private final PlayerStateManager psm;
     private final @Nullable String identifier;
+    private static final Duration ARTWORK_TIMEOUT = Duration.ofSeconds(10);
+
     private final HttpClient httpClient;
     private final Clock clock;
     private final org.openhab.binding.atv.internal.client.core.DeviceLoop loop;
@@ -80,7 +83,13 @@ public final class MrpMetadata implements Metadata, CapabilitySource {
         this.identifier = identifier;
         this.clock = clock;
         this.loop = loop;
-        this.httpClient = HttpClient.newBuilder().followRedirects(HttpClient.Redirect.NORMAL).build();
+        this.httpClient = HttpClient.newBuilder().followRedirects(HttpClient.Redirect.NORMAL)
+                .connectTimeout(ARTWORK_TIMEOUT).build();
+    }
+
+    /** Releases the HTTP client used for remote artwork. */
+    public void close() {
+        httpClient.close();
     }
 
     /**
@@ -149,7 +158,7 @@ public final class MrpMetadata implements Metadata, CapabilitySource {
     @SuppressWarnings("PMD.AvoidCatchingGenericException")
     public CompletableFuture<ArtworkInfo> artwork(@Nullable Integer width, @Nullable Integer height) {
         CompletableFuture<ArtworkInfo> result = new CompletableFuture<>();
-        Thread.ofVirtual().name("mrp-artwork").start(() -> {
+        Thread.ofPlatform().daemon().name("mrp-artwork").start(() -> {
             try {
                 // Metadata#artwork is declared to complete with a non-null ArtworkInfo, but
                 // "no artwork available" is a legitimate outcome (see the capability javadoc);
@@ -164,8 +173,8 @@ public final class MrpMetadata implements Metadata, CapabilitySource {
     }
 
     private @Nullable ArtworkInfo artworkBlocking(@Nullable Integer width, @Nullable Integer height) {
-        // Snapshot everything from loop-confined player state in a single loop task; the
-        // artwork thread is a virtual thread, so joining the loop future is fine
+        // Snapshot everything from loop-confined player state in a single loop task. This runs on the
+        // artwork thread, not the loop, so joining the loop future cannot deadlock.
         ArtworkSnapshot snapshot = onLoop(() -> {
             PlayerStateManager.PlayerState playing = psm.playing();
             return new ArtworkSnapshot(artworkIdFor(playing), playing.metadata(), playing.location());
@@ -231,7 +240,8 @@ public final class MrpMetadata implements Metadata, CapabilitySource {
 
         for (String url : urls) {
             try {
-                HttpResponse<byte[]> response = httpClient.send(HttpRequest.newBuilder(URI.create(url)).GET().build(),
+                HttpResponse<byte[]> response = httpClient.send(
+                        HttpRequest.newBuilder(URI.create(url)).timeout(ARTWORK_TIMEOUT).GET().build(),
                         HttpResponse.BodyHandlers.ofByteArray());
                 if (response.statusCode() == 200) {
                     return new ArtworkInfo(response.body(), response.headers().firstValue("content-type").orElse(null),

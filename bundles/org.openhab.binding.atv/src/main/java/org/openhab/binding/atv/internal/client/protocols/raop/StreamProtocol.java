@@ -23,7 +23,7 @@ import org.openhab.binding.atv.internal.client.support.http.HttpResponse;
  *
  * <p>
  * Implementations are AirPlay version specific ({@link AirPlayV1}, {@link AirPlayV2}).
- * Methods are blocking (the RAOP data plane runs on dedicated virtual threads); RTSP
+ * Methods are blocking (the RAOP data plane runs on dedicated threads); RTSP
  * futures are joined internally.
  *
  * @author Dan Cunningham - Initial contribution

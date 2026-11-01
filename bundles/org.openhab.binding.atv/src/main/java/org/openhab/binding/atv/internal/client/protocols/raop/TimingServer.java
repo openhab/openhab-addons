@@ -35,7 +35,7 @@ import org.slf4j.LoggerFactory;
  *
  * <p>
  * Binds a UDP socket on an ephemeral port and serves requests from a dedicated
- * virtual thread until {@link #close()} is called.
+ * thread until {@link #close()} is called.
  *
  * @author Dan Cunningham - Initial contribution
  */
@@ -67,7 +67,7 @@ public final class TimingServer implements AutoCloseable {
     public TimingServer(Clock clock, int port, @Nullable InetAddress bindAddress) throws IOException {
         this.clock = clock;
         this.socket = new DatagramSocket(port, bindAddress);
-        this.receiverThread = Thread.ofVirtual().name("raop-timing-server").start(this::receiveLoop);
+        this.receiverThread = Thread.ofPlatform().daemon().name("raop-timing-server").start(this::receiveLoop);
     }
 
     /** Returns the local port this server listens on. */
@@ -95,7 +95,7 @@ public final class TimingServer implements AutoCloseable {
                 handleRequest(packet);
             } catch (IOException e) {
                 if (!socket.isClosed()) {
-                    LOGGER.error("Error received: {}", e.toString());
+                    LOGGER.debug("Timing server error: {}", e.toString());
                 }
                 return;
             } catch (RuntimeException e) {

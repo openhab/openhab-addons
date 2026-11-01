@@ -49,8 +49,8 @@ import org.slf4j.LoggerFactory;
  *
  * <p>
  * Threading: the whole data plane is blocking code intended to run on a dedicated
- * virtual thread (the {@code RaopStream.streamFile} thread); sync packets and protocol
- * keep-alives run on their own virtual threads. Pacing uses absolute time against the
+ * thread (the {@code RaopStream.streamFile} thread); sync packets and protocol
+ * keep-alives run on their own threads. Pacing uses absolute time against the
  * injectable monotonic clock of {@link StreamTiming}: the sender parks until
  * {@code playbackStart + totalFrames * 1e9 / sampleRate}.
  *
@@ -362,7 +362,7 @@ public final class RaopStreamClient {
         }
         LOGGER.debug("Starting periodic sync task");
         InetSocketAddress dest = new InetSocketAddress(remoteAddr, context.controlPort);
-        syncThread = Thread.ofVirtual().name("raop-sync").start(() -> {
+        syncThread = Thread.ofPlatform().daemon().name("raop-sync").start(() -> {
             boolean first = true;
             try {
                 while (syncThread == Thread.currentThread()) {
@@ -374,7 +374,7 @@ public final class RaopStreamClient {
             } catch (InterruptedException e) {
                 // Stopped
             } catch (IOException e) {
-                LOGGER.error("control task failure: {}", e.toString());
+                LOGGER.debug("Control task failure: {}", e.toString());
             }
             LOGGER.debug("Periodic sync task ended");
         });

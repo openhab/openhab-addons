@@ -124,7 +124,7 @@ public final class RaopStream implements Stream, CapabilitySource {
     private CompletableFuture<Void> stream(Map<String, Object> options, @Nullable MediaMetadata metadata,
             MediaMetadata fileMetadata, SourceOpener opener) {
         CompletableFuture<Void> result = new CompletableFuture<>();
-        Thread.ofVirtual().name("raop-stream").start(() -> {
+        Thread.ofPlatform().daemon().name("raop-stream").start(() -> {
             try {
                 playbackManager.acquire();
                 AudioSource audioFile = null;

@@ -55,7 +55,8 @@ public final class AirPlayPairingHandler extends PairingHandler {
     private final AirPlayMajorVersion airplayVersion;
     private final @Nullable HapCredentials newLegacyCredentials;
 
-    private @Nullable HttpConnection http;
+    private volatile @Nullable HttpConnection http;
+    private volatile boolean closed;
     private @Nullable AirPlayPairSetupProcedure pairingProcedure;
     private @Nullable String pinCode;
     private volatile boolean hasPaired;
@@ -100,8 +101,10 @@ public final class AirPlayPairingHandler extends PairingHandler {
 
     @Override
     public CompletableFuture<Void> close() {
-        if (http != null) {
-            http.close();
+        closed = true;
+        HttpConnection connection = http;
+        if (connection != null) {
+            connection.close();
         }
         return super.close();
     }
@@ -110,6 +113,11 @@ public final class AirPlayPairingHandler extends PairingHandler {
     public CompletableFuture<Void> begin() {
         return HttpConnection.connect(address, service().port()).thenCompose(connection -> {
             this.http = connection;
+            if (closed) {
+                // close() ran while the connect was in flight and found nothing to close
+                connection.close();
+                return CompletableFuture.failedFuture(new PairingError("pairing was closed"));
+            }
             AirPlayPairSetupProcedure procedure = AirPlayAuth
                     .pairSetup(airplayVersion == AirPlayMajorVersion.AirPlayV2 ? AuthenticationType.HAP
                             : AuthenticationType.Legacy, connection, name, newLegacyCredentials);
@@ -139,7 +147,7 @@ public final class AirPlayPairingHandler extends PairingHandler {
     @Override
     public void pin(String pin) {
         this.pinCode = zeroFill(pin, 4);
-        LOGGER.debug("AirPlay PIN changed to {}", pinCode);
+        LOGGER.debug("AirPlay PIN set");
     }
 
     @Override

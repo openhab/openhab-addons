@@ -38,6 +38,9 @@ public final class Dns {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Dns.class);
 
+    /** Maximum length of a domain name on the wire (RFC 1035, section 2.3.4). */
+    static final int MAX_NAME_LENGTH = 255;
+
     private Dns() {
     }
 
@@ -129,11 +132,16 @@ public final class Dns {
      *
      * @param buffer buffer positioned at the name; left positioned after the name
      * @return the parsed domain name
-     * @throws IllegalArgumentException on reserved compression flags or invalid UTF-8
+     * @throws IllegalArgumentException on reserved compression flags, invalid UTF-8, a
+     *             compression pointer that does not point backwards, or a name longer than 255
+     *             bytes
      */
     public static String parseDomainName(ByteBuffer buffer) {
         StringBuilder name = new StringBuilder();
         int compressionOffset = -1;
+        int wireLength = 0;
+        // Pointers must go strictly backwards, which rules out loops
+        int lowestTarget = buffer.position();
         while (buffer.hasRemaining()) {
             int length = buffer.get() & 0xFF;
             if (length == 0) {
@@ -147,6 +155,10 @@ public final class Dns {
             }
             if (lengthFlags == 0b11) {
                 int newOffset = ((length & 0x3F) << 8) | (buffer.get() & 0xFF);
+                if (newOffset >= lowestTarget) {
+                    throw new IllegalArgumentException("Name compression pointer does not point backwards");
+                }
+                lowestTarget = newOffset;
                 // It's technically possible to have multiple levels of name compression,
                 // so make sure we don't lose the original place we need to go back to.
                 if (compressionOffset < 0) {
@@ -154,6 +166,10 @@ public final class Dns {
                 }
                 buffer.position(newOffset);
             } else {
+                wireLength += length + 1;
+                if (wireLength > MAX_NAME_LENGTH) {
+                    throw new IllegalArgumentException("Domain name longer than " + MAX_NAME_LENGTH + " bytes");
+                }
                 byte[] label = new byte[length];
                 buffer.get(label);
                 String decodedLabel;

@@ -15,7 +15,7 @@
   <name>openHAB Add-ons :: Bundles :: atv Binding</name>
 
   <properties>
-    <protobuf.version>4.35.0</protobuf.version>
+    <protobuf.version>4.35.1</protobuf.version>
     <!-- sun.misc is referenced defensively by protobuf-java and javax.sound.midi by tritonus-share; neither
          is used by the binding. sun.misc is a JDK package not exported as an OSGi bundle, so both are
          imported optionally. The openHAB runtime provides them through the JVM. -->
@@ -23,16 +23,19 @@
   </properties>
 
   <dependencies>
+    <!-- Installed as a separate bundle by the feature. Used for ChaCha20-Poly1305, which the JDK refuses
+         under the limited crypto policy that the openHAB Docker image uses by default. -->
+    <dependency>
+      <groupId>org.bouncycastle</groupId>
+      <artifactId>bcprov-jdk18on</artifactId>
+      <version>${bouncycastle.version}</version>
+      <scope>provided</scope>
+    </dependency>
     <!-- Embedded Apple TV client dependencies (jmDNS and SLF4J are provided by the openHAB runtime). -->
     <dependency>
       <groupId>com.google.protobuf</groupId>
       <artifactId>protobuf-java</artifactId>
       <version>${protobuf.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.bouncycastle</groupId>
-      <artifactId>bcprov-jdk18on</artifactId>
-      <version>1.80</version>
     </dependency>
     <!-- MP3 decoder (Java Sound SPI) so the audio sink accepts MP3, not just WAV/PCM. The transitive
          junit dependency is excluded so it does not confuse the test engine. -->
@@ -73,91 +76,37 @@
 
   <build>
     <plugins>
-      <!-- The generated MRP protobuf sources live under src/gen/java. That directory is not scanned by the
-           static-analysis tools (Checkstyle, PMD, SpotBugs), so the generated code needs no null annotations
-           or author tags; it only carries the EPL header. -->
+      <!-- Generate the MRP protobuf classes from src/main/proto. protoc is downloaded from Maven Central and
+           matches the protobuf-java runtime version. -->
       <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>build-helper-maven-plugin</artifactId>
+        <groupId>io.github.ascopes</groupId>
+        <artifactId>protobuf-maven-plugin</artifactId>
+        <version>3.1.0</version>
+        <configuration>
+          <protocVersion>${protobuf.version}</protocVersion>
+          <sourceDirectories>
+            <sourceDirectory>${project.basedir}/src/main/proto</sourceDirectory>
+          </sourceDirectories>
+        </configuration>
         <executions>
           <execution>
             <goals>
-              <goal>add-source</goal>
+              <goal>generate</goal>
             </goals>
-            <configuration>
-              <sources>
-                <source>src/gen/java</source>
-              </sources>
-            </configuration>
           </execution>
         </executions>
       </plugin>
-      <!-- Keep the generated MRP protobuf sources out of the compiler warning stream. -->
+      <!-- Keep the generated protobuf sources out of the compiler warning stream. -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
         <configuration>
           <compilerArgs combine.children="append">
-            <arg>-nowarn:[${project.basedir}/src/gen]</arg>
+            <arg>-nowarn:[${project.build.directory}/generated-sources]</arg>
           </compilerArgs>
         </configuration>
       </plugin>
     </plugins>
   </build>
-
-  <profiles>
-    <!-- Opt-in: regenerate the committed MRP protobuf sources with "mvn -Pcode-gen generate-sources". -->
-    <profile>
-      <id>code-gen</id>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>io.github.ascopes</groupId>
-            <artifactId>protobuf-maven-plugin</artifactId>
-            <version>3.1.0</version>
-            <configuration>
-              <protocVersion>${protobuf.version}</protocVersion>
-              <sourceDirectories>
-                <sourceDirectory>${project.basedir}/src/main/proto</sourceDirectory>
-              </sourceDirectories>
-              <outputDirectory>${project.basedir}/src/gen/java</outputDirectory>
-              <cleanOutputDirectories>false</cleanOutputDirectories>
-            </configuration>
-            <executions>
-              <execution>
-                <goals>
-                  <goal>generate</goal>
-                </goals>
-              </execution>
-            </executions>
-          </plugin>
-          <!-- protoc does not emit a license header, so stamp the EPL header onto the generated sources. -->
-          <plugin>
-            <groupId>com.mycila</groupId>
-            <artifactId>license-maven-plugin</artifactId>
-            <executions>
-              <execution>
-                <id>stamp-generated-header</id>
-                <goals>
-                  <goal>format</goal>
-                </goals>
-                <phase>process-sources</phase>
-                <configuration>
-                  <licenseSets combine.self="override">
-                    <licenseSet>
-                      <header>licenses/epl-2.0/header.txt</header>
-                      <includes>
-                        <include>src/gen/java/**/*.java</include>
-                      </includes>
-                    </licenseSet>
-                  </licenseSets>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-  </profiles>
 
 </project>

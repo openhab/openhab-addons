@@ -41,8 +41,8 @@ public interface Power {
 
     /**
      * Actively queries the device for its current power state, bypassing the cached push state, and
-     * updates the cache. Used as a connection health check: an unanswered query or a result that
-     * disagrees with the cached state indicates a stalled push stream.
+     * updates the cache. Used as a connection health check: an unanswered query means the device has
+     * stopped responding.
      *
      * @return future completing with the freshly queried power state
      * @throws NotSupportedError if not supported

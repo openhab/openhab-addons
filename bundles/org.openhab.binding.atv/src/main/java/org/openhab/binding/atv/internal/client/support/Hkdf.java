@@ -13,10 +13,11 @@
 package org.openhab.binding.atv.internal.client.support;
 
 import java.nio.charset.StandardCharsets;
+import java.security.GeneralSecurityException;
 
-import org.bouncycastle.crypto.digests.SHA512Digest;
-import org.bouncycastle.crypto.generators.HKDFBytesGenerator;
-import org.bouncycastle.crypto.params.HKDFParameters;
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
@@ -33,6 +34,9 @@ public final class Hkdf {
 
     /** Output length in bytes used by all key derivations. */
     public static final int OUTPUT_LENGTH = 32;
+
+    private static final String HMAC_SHA512 = "HmacSHA512";
+    private static final int SHA512_LENGTH = 64;
 
     private Hkdf() {
     }
@@ -61,10 +65,38 @@ public final class Hkdf {
      * @return {@code length} bytes of output key material
      */
     public static byte[] expand(byte[] salt, byte[] info, byte[] inputKeyMaterial, int length) {
-        HKDFBytesGenerator generator = new HKDFBytesGenerator(new SHA512Digest());
-        generator.init(new HKDFParameters(inputKeyMaterial, salt, info));
-        byte[] output = new byte[length];
-        generator.generateBytes(output, 0, length);
-        return output;
+        return derive(HMAC_SHA512, SHA512_LENGTH, salt, info, inputKeyMaterial, length);
+    }
+
+    /** RFC 5869 extract-then-expand for any HMAC algorithm; package-private for the RFC test vectors. */
+    static byte[] derive(String macAlgorithm, int hashLength, byte[] salt, byte[] info, byte[] inputKeyMaterial,
+            int length) {
+        if (length < 0 || length > 255 * hashLength) {
+            throw new IllegalArgumentException("HKDF output length out of range: " + length);
+        }
+        try {
+            Mac mac = Mac.getInstance(macAlgorithm);
+            // SecretKeySpec rejects an empty key; HMAC pads keys with zeros, so this is the same key.
+            byte[] extractKey = salt.length == 0 ? new byte[hashLength] : salt;
+            mac.init(new SecretKeySpec(extractKey, macAlgorithm));
+            byte[] prk = mac.doFinal(inputKeyMaterial);
+
+            mac.init(new SecretKeySpec(prk, macAlgorithm));
+            byte[] output = new byte[length];
+            byte[] block = new byte[0];
+            int written = 0;
+            for (int counter = 1; written < length; counter++) {
+                mac.update(block);
+                mac.update(info);
+                mac.update((byte) counter);
+                block = mac.doFinal();
+                int chunk = Math.min(block.length, length - written);
+                System.arraycopy(block, 0, output, written, chunk);
+                written += chunk;
+            }
+            return output;
+        } catch (GeneralSecurityException e) {
+            throw new IllegalStateException(macAlgorithm + " is not available", e);
+        }
     }
 }

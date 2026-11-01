@@ -130,8 +130,8 @@ public class AtvDiscoveryParticipantTest {
         assertThat(result.getThingUID(), is(new ThingUID(THING_TYPE_APPLETV, MAC_ID)));
         assertThat(result.getThingTypeUID(), is(THING_TYPE_APPLETV));
         assertThat(result.getLabel(), is("Living Room (AppleTV14,1)"));
-        assertThat(result.getRepresentationProperty(), is(CONFIG_MAC));
-        assertThat(result.getProperties(), hasEntry(CONFIG_MAC, MAC));
+        assertThat(result.getRepresentationProperty(), is(CONFIG_DEVICE_ID));
+        assertThat(result.getProperties(), hasEntry(CONFIG_DEVICE_ID, MAC));
         assertThat(result.getProperties(), hasEntry(CONFIG_HOST, "192.168.1.42"));
         assertThat(result.getProperties(), hasEntry(PROPERTY_MODEL, "AppleTV14,1"));
     }

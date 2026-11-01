@@ -12,21 +12,21 @@
  */
 package org.openhab.binding.atv.internal.client.protocols.companion;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.util.Arrays;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.atv.internal.client.exceptions.AuthenticationError;
 import org.openhab.binding.atv.internal.client.exceptions.ConnectionFailedError;
 import org.openhab.binding.atv.internal.client.exceptions.InvalidStateError;
 import org.openhab.binding.atv.internal.client.support.Chacha20Cipher;
+import org.openhab.binding.atv.internal.client.support.ReadBuffer;
+import org.openhab.binding.atv.internal.client.support.Sockets;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,9 +41,10 @@ import org.slf4j.LoggerFactory;
  * then includes the 16-byte authentication tag.
  *
  * <p>
- * Reading happens on a dedicated virtual thread which invokes the frame listener for each
+ * Reading happens on a dedicated thread which invokes the frame listener for each
  * complete frame; exceptions thrown while handling one frame are logged and do not kill the
- * reader.
+ * reader. A frame that fails to decrypt does end the connection, because the cipher counter is
+ * out of step from then on.
  *
  * @author Dan Cunningham - Initial contribution
  */
@@ -90,6 +91,7 @@ public final class CompanionConnection {
     private final ConnectionListener connectionListener;
     private final AtomicBoolean closed = new AtomicBoolean();
     private final Object sendLock = new Object();
+    private final Object stateLock = new Object();
 
     private volatile @Nullable FrameListener listener;
     private volatile @Nullable Chacha20Cipher chacha;
@@ -136,24 +138,31 @@ public final class CompanionConnection {
             return;
         }
         try {
-            Socket newSocket = new Socket();
-            newSocket.setTcpNoDelay(true);
-            newSocket.connect(new InetSocketAddress(host, port));
-            this.socket = newSocket;
-            this.out = newSocket.getOutputStream();
+            Socket newSocket = Sockets.connect(host, port);
+            synchronized (stateLock) {
+                if (closed.get()) {
+                    newSocket.close();
+                    throw new ConnectionFailedError("closed while connecting");
+                }
+                this.out = newSocket.getOutputStream();
+                this.socket = newSocket;
+            }
         } catch (IOException e) {
             throw new ConnectionFailedError("failed to connect to " + host + ":" + port, e);
         }
         LOGGER.debug("Connected to companion device {}:{}", host, port);
-        readerThread = Thread.ofVirtual().name("companion-reader-" + host + ":" + port).start(this::readLoop);
+        readerThread = Thread.ofPlatform().daemon().name("companion-reader-" + host + ":" + port).start(this::readLoop);
     }
 
     /** Closes the connection to the device. */
     public void close() {
         LOGGER.debug("Closing connection");
-        closed.set(true);
-        Socket current = socket;
-        socket = null;
+        Socket current;
+        synchronized (stateLock) {
+            closed.set(true);
+            current = socket;
+            socket = null;
+        }
         if (current != null) {
             try {
                 current.close();
@@ -224,36 +233,35 @@ public final class CompanionConnection {
                 return;
             }
             InputStream in = currentSocket.getInputStream();
-            ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+            ReadBuffer buffer = new ReadBuffer();
             byte[] chunk = new byte[8192];
             int read;
             while ((read = in.read(chunk)) != -1) {
-                buffer.write(chunk, 0, read);
-                byte[] data = buffer.toByteArray();
-                int offset = 0;
-                while (data.length - offset >= HEADER_LENGTH) {
-                    int payloadLength = ((data[offset + 1] & 0xFF) << 16) | ((data[offset + 2] & 0xFF) << 8)
-                            | (data[offset + 3] & 0xFF);
-                    if (data.length - offset < HEADER_LENGTH + payloadLength) {
+                buffer.append(chunk, 0, read);
+                // The 3-byte length field caps a frame at 16 MiB
+                while (buffer.size() >= HEADER_LENGTH) {
+                    int payloadLength = (buffer.peek(1) << 16) | (buffer.peek(2) << 8) | buffer.peek(3);
+                    if (buffer.size() < HEADER_LENGTH + payloadLength) {
                         LOGGER.trace("Require {} bytes but only {} in buffer", HEADER_LENGTH + payloadLength,
-                                data.length - offset);
+                                buffer.size());
                         break;
                     }
-                    byte[] header = Arrays.copyOfRange(data, offset, offset + HEADER_LENGTH);
-                    byte[] payload = Arrays.copyOfRange(data, offset + HEADER_LENGTH,
-                            offset + HEADER_LENGTH + payloadLength);
-                    offset += HEADER_LENGTH + payloadLength;
-                    handleFrame(header, payload);
-                }
-                if (offset > 0) {
-                    byte[] rest = Arrays.copyOfRange(data, offset, data.length);
-                    buffer.reset();
-                    buffer.write(rest, 0, rest.length);
+                    byte[] header = buffer.take(HEADER_LENGTH);
+                    byte[] payload = buffer.take(payloadLength);
+                    handleFrame(header, decrypt(header, payload));
                 }
             }
         } catch (IOException e) {
             if (!closed.get()) {
                 error = e;
+            }
+        }
+
+        if (currentSocket != null && error != null) {
+            try {
+                currentSocket.close();
+            } catch (IOException ignored) {
+                // best effort
             }
         }
 
@@ -270,13 +278,20 @@ public final class CompanionConnection {
         }
     }
 
-    private void handleFrame(byte[] header, byte[] payload) {
+    private byte[] decrypt(byte[] header, byte[] payload) throws IOException {
+        Chacha20Cipher cipher = chacha;
+        if (cipher == null || payload.length == 0) {
+            return payload;
+        }
         try {
-            Chacha20Cipher cipher = chacha;
-            byte[] data = payload;
-            if (cipher != null && payload.length > 0) {
-                data = cipher.decrypt(payload, null, header);
-            }
+            return cipher.decrypt(payload, null, header);
+        } catch (AuthenticationError e) {
+            throw new IOException("failed to decrypt frame", e);
+        }
+    }
+
+    private void handleFrame(byte[] header, byte[] data) {
+        try {
             FrameListener currentListener = listener;
             if (currentListener != null) {
                 currentListener.frameReceived(FrameType.fromValue(header[0] & 0xFF), data);

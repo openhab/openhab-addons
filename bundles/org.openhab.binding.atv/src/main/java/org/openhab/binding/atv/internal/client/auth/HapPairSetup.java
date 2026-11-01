@@ -48,9 +48,7 @@ import org.openhab.binding.atv.internal.client.support.Tlv8.TlvValue;
  * M1 then carries the extra {@code Flags} entry with {@code TransientPairing} (0x10).
  *
  * <p>
- * Note: the device proof in M4 is <em>not</em> verified against the SRP server proof (only
- * an error entry is checked), and {@link #step4(byte[])} does <em>not</em> verify the device
- * signature in M6.
+ * Note: {@link #step4(byte[])} does <em>not</em> verify the device signature in M6.
  *
  * @author Dan Cunningham - Initial contribution
  */
@@ -169,15 +167,18 @@ public final class HapPairSetup implements PairVerifyProcedure {
     }
 
     /**
-     * Third pairing step: consumes M4 (only checking for an error entry — the device proof
-     * is not verified, see class javadoc) and produces the M5 TLV.
+     * Third pairing step: consumes M4, checks the device's SRP proof and produces the M5 TLV.
      *
      * @param m4Tlv M4 TLV bytes received from the device
      * @return M5 TLV bytes
-     * @throws AuthenticationError if M4 contains an error entry
+     * @throws AuthenticationError if M4 contains an error entry or the device proof does not
+     *             match
      */
     public byte[] step3(byte[] m4Tlv) {
-        HapTlv.readChecked(m4Tlv);
+        Map<Integer, byte[]> tlv = HapTlv.readChecked(m4Tlv);
+        if (!verifyDeviceProof(HapTlv.required(tlv, TlvValue.Proof))) {
+            throw new AuthenticationError("device proof does not match");
+        }
         return step3();
     }
 
@@ -250,8 +251,6 @@ public final class HapPairSetup implements PairVerifyProcedure {
 
     /**
      * Verifies the device SRP proof received in M4 against the expected server proof.
-     * Not called by the regular flow (which ignores the M4 proof); provided for callers
-     * that want the extra check.
      *
      * @param proof the device proof from M4
      * @return true if the proof matches

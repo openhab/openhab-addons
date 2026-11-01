@@ -15,9 +15,7 @@ package org.openhab.binding.atv.internal.client.protocols.mrp;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.nio.ByteBuffer;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -26,9 +24,12 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.atv.internal.client.DeviceListener;
+import org.openhab.binding.atv.internal.client.exceptions.AuthenticationError;
 import org.openhab.binding.atv.internal.client.exceptions.ConnectionFailedError;
 import org.openhab.binding.atv.internal.client.protocols.mrp.dto.ProtocolMessageOuterClass.ProtocolMessage;
 import org.openhab.binding.atv.internal.client.support.Chacha20Cipher;
+import org.openhab.binding.atv.internal.client.support.ReadBuffer;
+import org.openhab.binding.atv.internal.client.support.Sockets;
 import org.openhab.binding.atv.internal.client.support.Variant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,7 +39,7 @@ import org.slf4j.LoggerFactory;
  * optionally encrypted with ChaCha20-Poly1305 (8-byte little-endian nonce counters).
  *
  * <p>
- * The length prefix is computed <em>after</em> encryption. A dedicated virtual reader
+ * The length prefix is computed <em>after</em> encryption. A dedicated reader
  * thread reassembles frames from the stream using {@link Variant#tryReadVariant}.
  *
  * @author Dan Cunningham - Initial contribution
@@ -53,6 +54,7 @@ public final class MrpConnection implements AbstractMrpConnection {
     private final @Nullable DeviceListener deviceListener;
 
     private final Object sendLock = new Object();
+    private final Object stateLock = new Object();
     private final AtomicBoolean lostReported = new AtomicBoolean();
 
     /**
@@ -68,6 +70,8 @@ public final class MrpConnection implements AbstractMrpConnection {
     private volatile @Nullable Chacha20Cipher chacha;
     private volatile boolean closedLocally;
     private volatile @Nullable Exception writeError;
+    /** Bumped by every close() so a connect that was in flight at the time can tell it lost. */
+    private int closeGeneration;
 
     /**
      * Creates a connection without a device listener.
@@ -101,23 +105,32 @@ public final class MrpConnection implements AbstractMrpConnection {
     @Override
     public CompletableFuture<Void> connect() {
         CompletableFuture<Void> result = new CompletableFuture<>();
-        Thread.ofVirtual().name("mrp-connect-" + host).start(() -> {
+        int generation;
+        synchronized (stateLock) {
+            generation = closeGeneration;
+        }
+        Thread.ofPlatform().daemon().name("mrp-connect-" + host).start(() -> {
             try {
-                Socket newSocket = new Socket();
-                newSocket.connect(new InetSocketAddress(host, port));
+                Socket newSocket = Sockets.connect(host, port);
                 try {
                     newSocket.setKeepAlive(true);
                 } catch (IOException e) {
                     LOGGER.debug("Keep-alive not supported: {}", e.toString());
                 }
-                newSocket.setTcpNoDelay(true);
-                this.out = newSocket.getOutputStream();
-                this.socket = newSocket;
-                this.closedLocally = false;
-                this.writeError = null;
-                this.lostReported.set(false);
+                synchronized (stateLock) {
+                    if (generation != closeGeneration) {
+                        newSocket.close();
+                        result.completeExceptionally(new ConnectionFailedError("closed while connecting"));
+                        return;
+                    }
+                    this.out = newSocket.getOutputStream();
+                    this.socket = newSocket;
+                    this.closedLocally = false;
+                    this.writeError = null;
+                    this.lostReported.set(false);
+                }
                 LOGGER.debug("Connection established to {}:{}", host, port);
-                Thread.ofVirtual().name("mrp-reader-" + host).start(() -> readLoop(newSocket));
+                Thread.ofPlatform().daemon().name("mrp-reader-" + host).start(() -> readLoop(newSocket));
                 MrpFutures.completeVoid(result);
             } catch (IOException e) {
                 result.completeExceptionally(new ConnectionFailedError("failed to connect to " + host + ":" + port, e));
@@ -141,11 +154,15 @@ public final class MrpConnection implements AbstractMrpConnection {
     @Override
     public void close() {
         LOGGER.debug("Closing connection to {}:{}", host, port);
-        closedLocally = true;
         @Nullable
-        Socket current = socket;
-        socket = null;
-        chacha = null;
+        Socket current;
+        synchronized (stateLock) {
+            closeGeneration++;
+            closedLocally = true;
+            current = socket;
+            socket = null;
+            chacha = null;
+        }
         if (current != null) {
             try {
                 current.close();
@@ -199,11 +216,11 @@ public final class MrpConnection implements AbstractMrpConnection {
         try {
             InputStream in = boundSocket.getInputStream();
             byte[] chunk = new byte[8192];
-            ByteBuffer buffer = ByteBuffer.allocate(0);
+            ReadBuffer buffer = new ReadBuffer();
             int read;
             while ((read = in.read(chunk)) != -1) {
-                buffer = append(buffer, chunk, read);
-                buffer = drainFrames(buffer);
+                buffer.append(chunk, 0, read);
+                drainFrames(buffer);
             }
             LOGGER.debug("Received EOF from server");
         } catch (IOException e) {
@@ -232,10 +249,14 @@ public final class MrpConnection implements AbstractMrpConnection {
         }
     }
 
-    private ByteBuffer drainFrames(ByteBuffer buffer) throws IOException {
+    private void drainFrames(ReadBuffer buffer) throws IOException {
         while (true) {
-            buffer.mark();
-            Optional<Variant.Result> length = Variant.tryReadVariant(buffer);
+            Optional<Variant.Result> length;
+            try {
+                length = Variant.tryReadVariant(buffer.view());
+            } catch (IllegalArgumentException e) {
+                throw new IOException("invalid frame length prefix", e);
+            }
             if (length.isEmpty()) {
                 break;
             }
@@ -245,42 +266,40 @@ public final class MrpConnection implements AbstractMrpConnection {
                 // with cause) instead of crashing the reader with an unchecked exception
                 throw new IOException("invalid frame length " + rawLength);
             }
+            int prefixLength = length.get().consumed();
             int payloadLength = (int) rawLength;
-            if (buffer.remaining() < payloadLength) {
-                buffer.reset();
-                LOGGER.trace("Require {} bytes but only {} in buffer", payloadLength, buffer.remaining());
+            if (buffer.size() - prefixLength < payloadLength) {
+                LOGGER.trace("Require {} bytes but only {} in buffer", payloadLength, buffer.size() - prefixLength);
                 break;
             }
-            byte[] data = new byte[payloadLength];
-            buffer.get(data);
+            buffer.skip(prefixLength);
+            byte[] data = decrypt(buffer.take(payloadLength));
             try {
                 handleMessage(data);
             } catch (Exception e) {
                 LOGGER.debug("Failed to handle message", e);
             }
         }
-        return compactRemaining(buffer);
     }
 
-    private static ByteBuffer compactRemaining(ByteBuffer buffer) {
-        ByteBuffer rest = ByteBuffer.allocate(buffer.remaining());
-        rest.put(buffer);
-        rest.flip();
-        return rest;
-    }
-
-    private static ByteBuffer append(ByteBuffer buffer, byte[] chunk, int length) {
-        ByteBuffer combined = ByteBuffer.allocate(buffer.remaining() + length);
-        combined.put(buffer);
-        combined.put(chunk, 0, length);
-        combined.flip();
-        return combined;
-    }
-
-    private void handleMessage(byte[] data) throws IOException {
+    /**
+     * Decrypts a frame. The cipher counter has already moved on when this fails, so every
+     * later frame would fail too; the connection is treated as lost instead.
+     */
+    private byte[] decrypt(byte[] data) throws IOException {
         @Nullable
         Chacha20Cipher cipher = chacha;
-        byte[] plain = cipher != null ? cipher.decrypt(data) : data;
+        if (cipher == null) {
+            return data;
+        }
+        try {
+            return cipher.decrypt(data);
+        } catch (AuthenticationError e) {
+            throw new IOException("failed to decrypt frame", e);
+        }
+    }
+
+    private void handleMessage(byte[] plain) throws IOException {
         ProtocolMessage parsed = ProtocolMessage.parseFrom(plain, MrpExtensions.EXTENSION_REGISTRY);
         LOGGER.trace("<< Receive: Protobuf type={}", parsed.getType());
         @Nullable

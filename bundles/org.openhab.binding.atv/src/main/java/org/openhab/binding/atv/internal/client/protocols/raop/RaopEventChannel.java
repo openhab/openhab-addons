@@ -15,7 +15,6 @@ package org.openhab.binding.atv.internal.client.protocols.raop;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
@@ -23,6 +22,7 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.atv.internal.client.auth.HapSession;
+import org.openhab.binding.atv.internal.client.support.Sockets;
 import org.openhab.binding.atv.internal.client.support.http.HttpParser;
 import org.openhab.binding.atv.internal.client.support.http.HttpRequest;
 import org.openhab.binding.atv.internal.client.support.http.HttpResponse;
@@ -38,7 +38,7 @@ import org.slf4j.LoggerFactory;
  * response to satisfy the other end; nothing is ever initiated from our side.
  *
  * <p>
- * A dedicated virtual thread serves the channel until {@link #close()}.
+ * A dedicated thread serves the channel until {@link #close()}.
  *
  * @author Dan Cunningham - Initial contribution
  */
@@ -62,11 +62,10 @@ final class RaopEventChannel implements AutoCloseable {
      * @throws IOException if the connection cannot be established
      */
     RaopEventChannel(String address, int port, byte[] outputKey, byte[] inputKey) throws IOException {
-        this.socket = new Socket();
-        this.socket.connect(new InetSocketAddress(address, port));
+        this.socket = Sockets.connect(address, port);
         this.session = new HapSession();
         this.session.enable(outputKey, inputKey);
-        this.readerThread = Thread.ofVirtual().name("raop-event-channel").start(this::readLoop);
+        this.readerThread = Thread.ofPlatform().daemon().name("raop-event-channel").start(this::readLoop);
         LOGGER.debug("Event channel connected to {}:{}", address, port);
     }
 
@@ -106,6 +105,7 @@ final class RaopEventChannel implements AutoCloseable {
         } catch (RuntimeException e) {
             LOGGER.debug("Failed to handle message on event channel", e);
         }
+        close();
         LOGGER.debug("Event channel closed");
     }
 

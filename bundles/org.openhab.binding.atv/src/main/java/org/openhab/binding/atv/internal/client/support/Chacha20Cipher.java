@@ -32,13 +32,17 @@ import org.openhab.binding.atv.internal.client.exceptions.AuthenticationError;
  * integer of {@code nonceLength} bytes and left-padded with zero bytes up to the 12-byte
  * ChaCha20-Poly1305 nonce size:
  * <ul>
- * <li>8-byte mode (default; used by MRP and RAOP v2): nonce is 4 zero bytes followed by
+ * <li>8-byte mode (the default, used by MRP and RAOP v2): nonce is 4 zero bytes followed by
  * the 8-byte little-endian counter.</li>
  * <li>12-byte mode (used by Companion): nonce is the 12-byte little-endian counter.</li>
  * <li>An explicit nonce may be passed per call (HAP pairing uses fixed ASCII nonces such
  * as {@code "PS-Msg05"}); a short explicit nonce is left-padded with zero bytes to
  * 12 bytes and the corresponding counter is <em>not</em> incremented.</li>
  * </ul>
+ *
+ * <p>
+ * The incoming counter only advances when a message authenticates, so a rejected message does
+ * not put the counter out of step with the peer.
  *
  * @author Dan Cunningham - Initial contribution
  */
@@ -48,7 +52,7 @@ public class Chacha20Cipher {
     /** ChaCha20-Poly1305 nonce length in bytes. */
     public static final int NONCE_LENGTH = 12;
 
-    private static final int MAC_SIZE_BITS = 128;
+    private static final int TAG_BITS = 128;
 
     private final byte[] outKey;
     private final byte[] inKey;
@@ -109,7 +113,7 @@ public class Chacha20Cipher {
      *
      * @param data plaintext to encrypt
      * @param nonce explicit nonce, or {@code null} to use the out counter (which is then
-     *            incremented; an explicit nonce leaves the counter untouched). A nonce
+     *            incremented. An explicit nonce leaves the counter untouched.) A nonce
      *            shorter than 12 bytes is left-padded with zero bytes.
      * @param aad additional authenticated data, or {@code null}
      * @return ciphertext followed by the 16-byte Poly1305 tag
@@ -121,7 +125,11 @@ public class Chacha20Cipher {
         } else if (nonce.length < NONCE_LENGTH) {
             nonce = padNonce(nonce);
         }
-        return process(true, outKey, nonce, aad, data);
+        try {
+            return process(true, outKey, nonce, aad, data);
+        } catch (InvalidCipherTextException e) {
+            throw new IllegalStateException("ChaCha20-Poly1305 encryption failed", e);
+        }
     }
 
     /** Decrypts data using the current in counter as nonce, then increments the counter. */
@@ -134,26 +142,39 @@ public class Chacha20Cipher {
      *
      * @param data ciphertext followed by the 16-byte Poly1305 tag
      * @param nonce explicit nonce, or {@code null} to use the in counter (which is then
-     *            incremented; an explicit nonce leaves the counter untouched). A nonce
-     *            shorter than 12 bytes is left-padded with zero bytes.
+     *            incremented if the message authenticates. An explicit nonce leaves the
+     *            counter untouched). A nonce shorter than 12 bytes is left-padded with zero
+     *            bytes.
      * @param aad additional authenticated data, or {@code null}
      * @return decrypted plaintext
      * @throws AuthenticationError if the authentication tag does not verify
      */
     public byte[] decrypt(byte[] data, byte @Nullable [] nonce, byte @Nullable [] aad) {
+        boolean useCounter = nonce == null;
+        byte[] effectiveNonce;
         if (nonce == null) {
-            nonce = inNonce();
-            inCounter++;
+            effectiveNonce = inNonce();
         } else if (nonce.length < NONCE_LENGTH) {
-            nonce = padNonce(nonce);
+            effectiveNonce = padNonce(nonce);
+        } else {
+            effectiveNonce = nonce;
         }
-        return process(false, inKey, nonce, aad, data);
+        byte[] plaintext;
+        try {
+            plaintext = process(false, inKey, effectiveNonce, aad, data);
+        } catch (InvalidCipherTextException e) {
+            throw new AuthenticationError("ChaCha20-Poly1305 authentication failed", e);
+        }
+        if (useCounter) {
+            inCounter++;
+        }
+        return plaintext;
     }
 
     private byte[] counterNonce(long counter) {
         byte[] nonce = new byte[NONCE_LENGTH];
         int offset = NONCE_LENGTH - nonceLength;
-        // A long has at most 8 significant bytes; any higher-order counter bytes stay 0.
+        // A long has at most 8 significant bytes. Any higher-order counter bytes stay 0.
         for (int i = 0; i < Math.min(nonceLength, Long.BYTES); i++) {
             nonce[offset + i] = (byte) (counter >>> (8 * i));
         }
@@ -166,16 +187,15 @@ public class Chacha20Cipher {
         return padded;
     }
 
-    private static byte[] process(boolean forEncryption, byte[] key, byte[] nonce, byte @Nullable [] aad, byte[] data) {
-        ChaCha20Poly1305 engine = new ChaCha20Poly1305();
-        engine.init(forEncryption, new AEADParameters(new KeyParameter(key), MAC_SIZE_BITS, nonce, aad));
-        byte[] output = new byte[engine.getOutputSize(data.length)];
-        int written = engine.processBytes(data, 0, data.length, output, 0);
-        try {
-            engine.doFinal(output, written);
-        } catch (InvalidCipherTextException e) {
-            throw new AuthenticationError("ChaCha20-Poly1305 authentication failed", e);
-        }
-        return output;
+    // BouncyCastle rather than the JDK cipher: the JDK rejects 256-bit keys when the JVM runs with the
+    // limited crypto policy, which the openHAB Docker image sets by default.
+    private static byte[] process(boolean encrypt, byte[] key, byte[] nonce, byte @Nullable [] aad, byte[] data)
+            throws InvalidCipherTextException {
+        ChaCha20Poly1305 cipher = new ChaCha20Poly1305();
+        cipher.init(encrypt, new AEADParameters(new KeyParameter(key), TAG_BITS, nonce, aad));
+        byte[] out = new byte[cipher.getOutputSize(data.length)];
+        int length = cipher.processBytes(data, 0, data.length, out, 0);
+        cipher.doFinal(out, length);
+        return out;
     }
 }

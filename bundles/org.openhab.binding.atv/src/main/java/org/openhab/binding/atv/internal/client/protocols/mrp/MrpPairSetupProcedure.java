@@ -57,7 +57,7 @@ public final class MrpPairSetupProcedure {
     @SuppressWarnings("PMD.AvoidCatchingGenericException")
     public CompletableFuture<Void> startPairing() {
         CompletableFuture<Void> result = new CompletableFuture<>();
-        Thread.ofVirtual().name("mrp-pair-setup").start(() -> {
+        Thread.ofPlatform().daemon().name("mrp-pair-setup").start(() -> {
             try {
                 protocol.start(true).join();
                 ProtocolMessage response = protocol.sendAndReceive(MrpMessages.cryptoPairing(srp.step1(), true), false)
@@ -82,7 +82,7 @@ public final class MrpPairSetupProcedure {
     @SuppressWarnings("PMD.AvoidCatchingGenericException")
     public CompletableFuture<HapCredentials> finishPairing(String pin) {
         CompletableFuture<HapCredentials> result = new CompletableFuture<>();
-        Thread.ofVirtual().name("mrp-pair-finish").start(() -> {
+        Thread.ofPlatform().daemon().name("mrp-pair-finish").start(() -> {
             try {
                 byte[] savedM2Tlv = m2Tlv;
                 if (savedM2Tlv == null) {

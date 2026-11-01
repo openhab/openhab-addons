@@ -87,7 +87,7 @@ public final class MrpPower implements Power, CapabilitySource {
     @SuppressWarnings("PMD.AvoidCatchingGenericException")
     public CompletableFuture<Void> turnOn(boolean awaitNewState) {
         CompletableFuture<Void> result = new CompletableFuture<>();
-        Thread.ofVirtual().name("mrp-turn-on").start(() -> {
+        Thread.ofPlatform().daemon().name("mrp-turn-on").start(() -> {
             try {
                 protocol.send(MrpMessages.wakeDevice()).join();
                 if (awaitNewState) {
@@ -105,7 +105,7 @@ public final class MrpPower implements Power, CapabilitySource {
     @SuppressWarnings("PMD.AvoidCatchingGenericException")
     public CompletableFuture<Void> turnOff(boolean awaitNewState) {
         CompletableFuture<Void> result = new CompletableFuture<>();
-        Thread.ofVirtual().name("mrp-turn-off").start(() -> {
+        Thread.ofPlatform().daemon().name("mrp-turn-off").start(() -> {
             try {
                 remote.home(InputAction.Hold).join();
                 Thread.sleep(DELAY_BETWEEN_COMMANDS.toMillis());

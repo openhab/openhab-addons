@@ -23,7 +23,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * Uses the RFC 5054 3072-bit group (generator 5), SHA-512, a fixed username {@code "Pair-Setup"},
  * and session key {@code K = H(S)}. The proofs follow the RFC 2945 form
  * {@code M1 = H((H(N) xor H(g)) || H(I) || salt || A || B || K)} and {@code M2 = H(A || M1 || K)},
- * computed by {@link SrpContext} rather than by BouncyCastle (whose proof formula differs).
+ * computed by {@link SrpContext}.
  *
  * @author Dan Cunningham - Initial contribution
  */

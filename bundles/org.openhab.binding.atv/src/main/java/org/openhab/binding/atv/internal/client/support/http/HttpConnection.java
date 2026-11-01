@@ -45,7 +45,7 @@ import org.slf4j.LoggerFactory;
  * A persistent HTTP/RTSP connection over a raw TCP socket.
  *
  * <p>
- * Incoming data is read on a dedicated virtual thread; public APIs return
+ * Incoming data is read on a dedicated thread; public APIs return
  * {@link CompletableFuture} and never block the caller.
  *
  * <p>
@@ -129,7 +129,7 @@ public final class HttpConnection implements AutoCloseable {
      */
     public static CompletableFuture<HttpConnection> connect(String address, int port, Duration timeout) {
         CompletableFuture<HttpConnection> result = new CompletableFuture<>();
-        Thread.startVirtualThread(() -> {
+        Thread.ofPlatform().daemon().name("atv-http-connect").start(() -> {
             Socket socket = new Socket();
             try {
                 socket.setTcpNoDelay(true);
@@ -163,7 +163,7 @@ public final class HttpConnection implements AutoCloseable {
     }
 
     private void startReader() {
-        Thread.startVirtualThread(this::readerLoop);
+        Thread.ofPlatform().daemon().name("atv-http-reader").start(this::readerLoop);
     }
 
     /** Returns the IP address of the local interface. */

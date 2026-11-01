@@ -188,7 +188,7 @@ public final class MrpAudio implements Audio, CapabilitySource {
     @SuppressWarnings("PMD.AvoidCatchingGenericException")
     public CompletableFuture<Void> setVolume(double level, @Nullable OutputDevice outputDevice) {
         CompletableFuture<Void> result = new CompletableFuture<>();
-        Thread.ofVirtual().name("mrp-set-volume").start(() -> {
+        Thread.ofPlatform().daemon().name("mrp-set-volume").start(() -> {
             try {
                 CompletableFuture<@Nullable Void> event = volumeEvent.waitFuture();
                 if (outputDevice == null) {
@@ -228,7 +228,7 @@ public final class MrpAudio implements Audio, CapabilitySource {
     @SuppressWarnings("PMD.AvoidCatchingGenericException")
     private CompletableFuture<Void> volumeStep(String key, double limit, double step) {
         CompletableFuture<Void> result = new CompletableFuture<>();
-        Thread.ofVirtual().name("mrp-" + key).start(() -> {
+        Thread.ofPlatform().daemon().name("mrp-" + key).start(() -> {
             try {
                 if (isVolumeAbsolute() && volume == limit) {
                     MrpFutures.completeVoid(result);
@@ -294,7 +294,7 @@ public final class MrpAudio implements Audio, CapabilitySource {
     @SuppressWarnings("PMD.AvoidCatchingGenericException")
     private CompletableFuture<Void> modifyOutputDevices(ProtocolMessage message) {
         CompletableFuture<Void> result = new CompletableFuture<>();
-        Thread.ofVirtual().name("mrp-output-devices").start(() -> {
+        Thread.ofPlatform().daemon().name("mrp-output-devices").start(() -> {
             try {
                 CompletableFuture<@Nullable Void> event = outputDevicesEvent.waitFuture();
                 protocol.send(message).join();

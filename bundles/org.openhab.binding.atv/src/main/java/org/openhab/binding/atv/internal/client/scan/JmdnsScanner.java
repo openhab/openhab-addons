@@ -31,7 +31,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Service discovery based on multicast browsing through a {@link JmDNS} instance.
+ * Service discovery based on multicast browsing through a {@link ServiceBrowser}.
  *
  * <p>
  * openHAB provides a shared jmDNS instance, so multicast scanning wraps it instead
@@ -53,7 +53,7 @@ public class JmdnsScanner extends ScanOrchestrator {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JmdnsScanner.class);
 
-    private final List<JmDNS> instances;
+    private final ServiceBrowser browser;
     private final boolean includeLoopback;
 
     /**
@@ -62,39 +62,28 @@ public class JmdnsScanner extends ScanOrchestrator {
      * @param jmdns jmDNS instance to browse with (not closed by this class)
      */
     public JmdnsScanner(JmDNS jmdns) {
-        this(jmdns, false);
+        this(ServiceBrowser.of(jmdns), false);
     }
 
     /**
-     * Creates a new scanner on an existing jmDNS instance.
+     * Creates a new scanner on a service browser. A browser that merges several network
+     * interfaces (like openHAB's {@code MDNSClient}) may report the same service more than
+     * once; duplicates are collapsed before aggregation.
      *
-     * @param jmdns jmDNS instance to browse with (not closed by this class)
+     * @param browser browser to list services with
      * @param includeLoopback whether loopback addresses are acceptable service
      *            addresses; filtered out by default, but tests running against a
      *            loopback-bound jmDNS instance need them included
      */
-    public JmdnsScanner(JmDNS jmdns, boolean includeLoopback) {
-        this(List.of(jmdns), includeLoopback);
-    }
-
-    /**
-     * Creates a new scanner browsing through several jmDNS instances, typically one per
-     * local network interface. Results from all instances are merged before
-     * aggregation, so a device answering on several interfaces collapses onto its
-     * per-address configurations.
-     *
-     * @param instances jmDNS instances to browse with (not closed by this class)
-     * @param includeLoopback whether loopback addresses are acceptable service addresses
-     */
-    public JmdnsScanner(List<JmDNS> instances, boolean includeLoopback) {
-        this.instances = List.copyOf(instances);
+    public JmdnsScanner(ServiceBrowser browser, boolean includeLoopback) {
+        this.browser = browser;
         this.includeLoopback = includeLoopback;
     }
 
     @Override
     protected CompletableFuture<@Nullable Void> process(Duration timeout) {
         CompletableFuture<@Nullable Void> result = new CompletableFuture<>();
-        Thread.ofVirtual().name("atv-jmdns-scan").start(() -> {
+        Thread.ofPlatform().daemon().name("atv-jmdns-scan").start(() -> {
             try {
                 processSync(timeout);
                 result.complete(null);
@@ -109,30 +98,28 @@ public class JmdnsScanner extends ScanOrchestrator {
         List<ServiceInfo> infos = new ArrayList<>();
         List<Thread> browsers = new ArrayList<>();
         Map<String, String> nameToModel = new LinkedHashMap<>();
-        for (JmDNS jmdns : instances) {
-            for (String serviceType : services()) {
-                if (Mdns.DEVICE_INFO_SERVICE.equals(serviceType)) {
-                    continue; // device-info is only queried per already known device, below
-                }
-                browsers.add(Thread.ofVirtual().start(() -> {
-                    ServiceInfo[] found = jmdns.list(serviceType + ".", timeout.toMillis());
-                    synchronized (infos) {
-                        infos.addAll(List.of(found));
-                    }
-                }));
+        for (String serviceType : services()) {
+            if (Mdns.DEVICE_INFO_SERVICE.equals(serviceType)) {
+                continue; // device-info is only queried per already known device, below
             }
-            // Also browse device-info to (best-effort) learn device models
-            browsers.add(Thread.ofVirtual().start(() -> {
-                for (ServiceInfo info : jmdns.list(Mdns.DEVICE_INFO_SERVICE + ".", timeout.toMillis())) {
-                    byte[] model = info.getPropertyBytes("model");
-                    if (model != null) {
-                        synchronized (nameToModel) {
-                            nameToModel.put(info.getName(), Mdns.decodeValue(model));
-                        }
-                    }
+            browsers.add(Thread.ofPlatform().daemon().name("atv-jmdns-browse").start(() -> {
+                ServiceInfo[] found = browser.list(serviceType + ".", timeout);
+                synchronized (infos) {
+                    infos.addAll(List.of(found));
                 }
             }));
         }
+        // Also browse device-info to (best-effort) learn device models
+        browsers.add(Thread.ofPlatform().daemon().name("atv-jmdns-browse").start(() -> {
+            for (ServiceInfo info : browser.list(Mdns.DEVICE_INFO_SERVICE + ".", timeout)) {
+                byte[] model = info.getPropertyBytes("model");
+                if (model != null) {
+                    synchronized (nameToModel) {
+                        nameToModel.put(info.getName(), Mdns.decodeValue(model));
+                    }
+                }
+            }
+        }));
         for (Thread browser : browsers) {
             try {
                 browser.join();
@@ -155,7 +142,7 @@ public class JmdnsScanner extends ScanOrchestrator {
                     continue;
                 }
                 if (!seen.add(type + "|" + info.getName() + "|" + address.getHostAddress())) {
-                    continue; // same service reported by several jmDNS instances
+                    continue; // same service reported on several interfaces
                 }
                 servicesByAddress.computeIfAbsent(address, a -> new ArrayList<>())
                         .add(toMdnsService(type, info, address));

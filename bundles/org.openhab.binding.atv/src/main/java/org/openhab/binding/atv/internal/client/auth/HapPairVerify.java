@@ -148,6 +148,21 @@ public final class HapPairVerify implements PairVerifyProcedure {
     }
 
     /**
+     * Final verification step: checks the device's M4 answer. A device that no longer knows
+     * our pairing (for example after it was removed in the Apple TV settings) answers M3
+     * with an error here.
+     *
+     * @param m4Tlv M4 TLV bytes received from the device
+     * @throws AuthenticationError if M4 contains an error entry
+     */
+    public void verify3(byte[] m4Tlv) {
+        Map<Integer, byte[]> tlv = Tlv8.read(m4Tlv);
+        if (tlv.containsKey(TlvValue.Error.value())) {
+            throw new AuthenticationError("device rejected the stored pairing: " + Tlv8.stringify(tlv));
+        }
+    }
+
+    /**
      * Derives the channel encryption keys from the X25519 shared secret.
      *
      * @throws InvalidStateError if called before {@link #verify2(byte[])}

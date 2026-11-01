@@ -44,7 +44,7 @@ public final class CompanionPairingHandler extends PairingHandler {
     private static final Logger LOGGER = LoggerFactory.getLogger(CompanionPairingHandler.class);
 
     private final ExecutorService executor = Executors
-            .newThreadPerTaskExecutor(Thread.ofVirtual().name("companion-pairing-", 0).factory());
+            .newThreadPerTaskExecutor(Thread.ofPlatform().daemon().name("companion-pairing-", 0).factory());
     private final CompanionProtocol protocol;
     private final CompanionPairSetupProcedure pairingProcedure;
 
@@ -121,7 +121,7 @@ public final class CompanionPairingHandler extends PairingHandler {
     @Override
     public void pin(String pin) {
         pinCode = zfill(pin, 4);
-        LOGGER.debug("Companion PIN changed to {}", pinCode);
+        LOGGER.debug("Companion PIN set");
     }
 
     private static String zfill(String value, int width) {
