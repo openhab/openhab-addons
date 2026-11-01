@@ -372,6 +372,52 @@ class ParakeetSTTServiceTest {
         assertEquals(Set.of(Locale.GERMAN), service.getSupportedLocales());
     }
 
+    @Test
+    void streamingModeFailureEmitsSpeechRecognitionErrorEvent() throws IOException, STTException, InterruptedException {
+        createDummyModelFile("fail-streaming.gguf");
+        fakeBinding.streamingSupported = false; // startTranscribeStream will fail
+
+        service.activate(Map.of( //
+                "modelName", "fail-streaming.gguf", //
+                "mode", "STREAMING"));
+
+        RecordingListener listener = new RecordingListener();
+        try (AudioStream audioStream = createAudioStream(SAMPLE_RATE / 10)) {
+            service.recognize(listener, audioStream, Locale.ENGLISH);
+            assertTrue(listener.awaitTerminalEvent());
+        }
+
+        assertThat(listener.events.getFirst(), instanceOf(RecognitionStartEvent.class));
+        assertThat(listener.events.get(1), instanceOf(SpeechRecognitionErrorEvent.class));
+        SpeechRecognitionErrorEvent errorEvent = (SpeechRecognitionErrorEvent) listener.events.get(1);
+        assertEquals("Speech recognition failed", errorEvent.getMessage());
+    }
+
+    @Test
+    void offlineModeFailureEmitsSpeechRecognitionErrorEvent() throws IOException, STTException, InterruptedException {
+        createDummyModelFile("offline-fail.gguf");
+        createDummyModelFile("silero-vad.gguf");
+        fakeBinding.batchTranscribeReturnsNull = true; // transcribe fails
+        fakeBinding.vadFeedJsonResponses.add(
+                "{\"frame_sec\":0.032,\"first_frame\":0,\"events\":[{\"type\":\"start\",\"time\":0.0},{\"type\":\"end\",\"time\":0.1}],\"probabilities\":[]}");
+
+        service.activate(Map.of( //
+                "modelName", "offline-fail", //
+                "vadModelName", "silero-vad", //
+                "mode", "OFFLINE"));
+
+        RecordingListener listener = new RecordingListener();
+        try (AudioStream audioStream = createAudioStream(SAMPLE_RATE / 10)) {
+            service.recognize(listener, audioStream, Locale.ENGLISH);
+            assertTrue(listener.awaitTerminalEvent());
+        }
+
+        assertThat(listener.events.getFirst(), instanceOf(RecognitionStartEvent.class));
+        assertThat(listener.events.get(1), instanceOf(SpeechRecognitionErrorEvent.class));
+        SpeechRecognitionErrorEvent errorEvent = (SpeechRecognitionErrorEvent) listener.events.get(1);
+        assertEquals("Speech recognition failed", errorEvent.getMessage());
+    }
+
     private static class RecordingListener implements STTListener {
         final List<STTEvent> events = new CopyOnWriteArrayList<>();
         final CountDownLatch terminalLatch = new CountDownLatch(1);
@@ -406,6 +452,7 @@ class ParakeetSTTServiceTest {
         final List<String> vadFeedJsonResponses = new CopyOnWriteArrayList<>();
 
         volatile boolean streamingSupported = true;
+        volatile boolean batchTranscribeReturnsNull = false;
         volatile String streamFinishJson = "{\"text\":\"\",\"eou\":false,\"eob\":false,\"frame_sec\":0.0}";
         volatile String batchTranscript = "";
         volatile @Nullable String bundleComponentsJson = null;
@@ -482,7 +529,7 @@ class ParakeetSTTServiceTest {
             batchTranscribeCalls.incrementAndGet();
             this.lastDecoder = decoder;
             this.lastTargetLang = targetLang;
-            return batchTranscript;
+            return batchTranscribeReturnsNull ? null : batchTranscript;
         }
 
         @Override
