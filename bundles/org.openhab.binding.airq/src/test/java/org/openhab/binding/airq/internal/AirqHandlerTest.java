@@ -286,6 +286,41 @@ class AirqHandlerTest {
         assertThat(value("measurements#no2", Units.MICROGRAM_PER_CUBICMETRE), closeTo(10, 1e-9));
     }
 
+    @ParameterizedTest
+    @CsvSource({ "200, true", "500, false" })
+    void ppmAndPpbChangedByCommandAppliesToTheNextMeasurement(int status, boolean changed) throws Exception {
+        // measurement.md: with ppm&ppb and no configured units, CO is sent in ppm
+        String password = "secret";
+        JsonObject configuration = new JsonObject();
+        configuration.addProperty("content", handler.encrypt(
+                "{\"SensorInfo\": {\"co\": {\"Molar Mass\": 28.01}}}".getBytes(StandardCharsets.UTF_8), password));
+        JsonObject data = new JsonObject();
+        data.addProperty("content",
+                handler.encrypt("{\"co\": [2, 0.2], \"temperature\": [20, 0.5], \"pressure\": [1013.25, 1]}"
+                        .getBytes(StandardCharsets.UTF_8), password));
+        JsonObject response = new JsonObject();
+        response.addProperty("content", handler.encrypt("{}".getBytes(StandardCharsets.UTF_8), password));
+        AirqHandler commandHandler = new AirqHandler(thing, requireNonNull(mock(HttpClient.class))) {
+            @Override
+            protected Result getData(String address, String method, @Nullable String body) {
+                if ("POST".equals(method)) {
+                    return new Result(response.toString(), status);
+                }
+                return new Result((address.endsWith("/config") ? configuration : data).toString(), 200);
+            }
+        };
+        commandHandler.setCallback(callback);
+        commandHandler.config.password = password;
+
+        commandHandler.pollData();
+        assertThat(value("measurements#co", AirqUnits.MILLIGRAM_PER_CUBICMETRE), closeTo(2, 1e-9));
+        commandHandler.handleCommand(new ChannelUID(thingUID, "settings#ppm-and-ppb"), OnOffType.ON);
+        commandHandler.pollData();
+
+        assertThat(value("measurements#co", AirqUnits.MILLIGRAM_PER_CUBICMETRE),
+                closeTo(changed ? 2 * milligramPerPpm(28.01, 20, 1013.25) : 2, 1e-9));
+    }
+
     @Test
     void concentrationsWithoutMolarMassAreUndefined() throws Exception {
         poll(thing, "{\"units\": {\"co\": \"ppm\"}}", """

@@ -541,7 +541,9 @@ public class AirqHandler extends BaseThingHandler {
                     break;
                 case "ppm_and_ppb":
                     newobj.addProperty("ppm&ppb", command == OnOffType.ON);
-                    changeSettings(newobj);
+                    if (changeSettings(newobj)) {
+                        ppmAndPpb = command == OnOffType.ON;
+                    }
                     break;
                 case "nightModeFanNightOff":
                     subjson.addProperty("FanNightOff", command == OnOffType.ON);
