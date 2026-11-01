@@ -115,8 +115,7 @@ public class GmeApiBridgeHandler extends BaseBridgeHandler {
         }
 
         if (config.username.isBlank() || config.password.isBlank()) {
-            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/status.gme.credentials-missing");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/status.gme.credentials-missing");
             return;
         }
 
@@ -148,8 +147,7 @@ public class GmeApiBridgeHandler extends BaseBridgeHandler {
             Thread.currentThread().interrupt();
             synchronized (lifecycleLock) {
                 if (isCurrentGeneration(generation)) {
-                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
-                            "@text/status.gme.authentication-interrupted");
+                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/status.gme.authentication-interrupted");
                 }
             }
         } catch (TimeoutException | ExecutionException | IllegalStateException e) {

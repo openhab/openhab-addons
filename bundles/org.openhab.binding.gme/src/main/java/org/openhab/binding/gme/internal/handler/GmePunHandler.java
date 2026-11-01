@@ -121,8 +121,7 @@ public class GmePunHandler extends BaseThingHandler {
     private boolean linkBridge() {
         Bridge bridge = getBridge();
         if (bridge == null) {
-            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE,
-                    "@text/status.gme.bridge-missing");
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE, "@text/status.gme.bridge-missing");
             return false;
         }
 
@@ -335,15 +334,13 @@ public class GmePunHandler extends BaseThingHandler {
                 }
                 GmeApiBridgeHandler currentBridgeHandler = bridgeHandler;
                 if (currentBridgeHandler == null) {
-                    updateStatus(ThingStatusDetail.BRIDGE_OFFLINE,
-                            "@text/status.gme.bridge-handler-unavailable");
+                    updateStatus(ThingStatusDetail.BRIDGE_OFFLINE, "@text/status.gme.bridge-handler-unavailable");
                     return;
                 }
 
                 GmeAuthManager authManager = currentBridgeHandler.getAuthManager();
                 if (authManager == null) {
-                    updateStatus(ThingStatusDetail.BRIDGE_OFFLINE,
-                            "@text/status.gme.auth-manager-unavailable");
+                    updateStatus(ThingStatusDetail.BRIDGE_OFFLINE, "@text/status.gme.auth-manager-unavailable");
                     return;
                 }
 
@@ -387,8 +384,7 @@ public class GmePunHandler extends BaseThingHandler {
                             List<GmePriceEntry> newTodayPrices = filterZone(marketPrices, "PUN");
 
                             if (!GmePriceTimeline.isCompleteDailySet(newTodayPrices, today, GME_ZONE, granularity)) {
-                                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
-                                        "@text/status.gme.incomplete-today-dataset");
+                                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/status.gme.incomplete-today-dataset");
                                 return;
                             }
 
@@ -529,8 +525,7 @@ public class GmePunHandler extends BaseThingHandler {
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
                 if (isCurrentGeneration(generation)) {
-                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
-                            "@text/status.gme.refresh-interrupted");
+                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/status.gme.refresh-interrupted");
                 }
             } catch (IOException | TimeoutException | ExecutionException | IllegalStateException e) {
                 if (isCurrentGeneration(generation)) {
