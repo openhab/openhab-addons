@@ -490,6 +490,8 @@ public enum MiIoDevices {
     XIAOMI_AIRP_MB6("xiaomi.airp.mb6", "Mijia Smart Air Purifier MAX", THING_TYPE_BASIC),
     XIAOMI_AIRP_MEB1("xiaomi.airp.meb1", "Xiaomi Smart Air Purifier Elite", THING_TYPE_BASIC),
     XIAOMI_AIRP_MEB2("xiaomi.airp.meb2", "Mijia Smart Air Purifier Elite", THING_TYPE_BASIC),
+    XIAOMI_DERH_30KH("xiaomi.derh.30kh", "Xiaomi Smart Inverter Dehumidifier", THING_TYPE_BASIC),
+    XIAOMI_DERH_30L("xiaomi.derh.30l", "Xiaomi Smart Inverter Dehumidifier 30L", THING_TYPE_BASIC),
     XIAOMI_FAN_2LITE("xiaomi.fan.2lite", "Mi Smart Standing Fan 2 Lite", THING_TYPE_BASIC),
     XIAOMI_FAN_P43("xiaomi.fan.p43", "Mijia Smart Standing Fan Pro", THING_TYPE_BASIC),
     XIAOMI_FAN_P45("xiaomi.fan.p45", "Xiaomi Smart Tower Fan 2", THING_TYPE_BASIC),
