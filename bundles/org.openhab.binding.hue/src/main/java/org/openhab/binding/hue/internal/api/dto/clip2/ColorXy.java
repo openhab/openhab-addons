@@ -54,8 +54,9 @@ public class ColorXy {
         return this;
     }
 
-    public void setXY(@Nullable PairXy xy) {
+    public ColorXy setXY(@Nullable PairXy xy) {
         this.xy = xy;
+        return this;
     }
 
     @Override

@@ -12,13 +12,14 @@
  */
 package org.openhab.binding.hue.internal;
 
-import static org.openhab.core.thing.ChannelUID.CHANNEL_GROUP_SEPARATOR;
-
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.hue.internal.api.dto.clip2.enums.Archetype;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.ResourceType;
+import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.type.ChannelTypeUID;
 
@@ -196,7 +197,14 @@ public class HueBindingConstants {
     public static final String CHANNEL_2_SECURITY_MOTION = "security-motion";
     public static final String CHANNEL_2_SECURITY_MOTION_LAST_UPDATED = "security-motion-last-updated";
     public static final String CHANNEL_2_UPDATE_READY_TO_INSTALL = //
-            CHANNEL_GROUP_SOFTWARE + CHANNEL_GROUP_SEPARATOR + "update-ready";
+            CHANNEL_GROUP_SOFTWARE + ChannelUID.CHANNEL_GROUP_SEPARATOR + "update-ready";
+
+    // gradient channels
+    private static final String CHANNEL_2_GRADIENT = "gradient-color-";
+    private static final String CHANNEL_2_GRADIENT_REGEX = "^" + CHANNEL_2_GRADIENT + "([1-5])$"; // 1-5 points max
+
+    public static final String CHANNEL_2_GRADIENT_FORMAT = CHANNEL_2_GRADIENT + "%d";
+    public static final Pattern CHANNEL_2_GRADIENT_PATTERN = Pattern.compile(CHANNEL_2_GRADIENT_REGEX);
 
     // channel IDs that (optionally) support dynamics
     public static final Set<String> DYNAMIC_CHANNELS = Set.of(CHANNEL_2_BRIGHTNESS, CHANNEL_2_COLOR,
@@ -223,9 +231,23 @@ public class HueBindingConstants {
             Map.entry(CHANNEL_LAST_UPDATED, CHANNEL_2_LAST_UPDATED));
 
     public static final String ALL_LIGHTS_KEY = "discovery.group.all-lights.label";
+    public static final String AUX_CHANNEL_PREFIX_KEY = "auxiliary.channel.label.prefix";
 
     public static final String CHANNEL_GROUP_AUTOMATION = "automation";
     public static final ChannelTypeUID CHANNEL_TYPE_AUTOMATION = new ChannelTypeUID(BINDING_ID, "automation-enable");
 
     public static final Set<ResourceType> LIGHT_TYPES = Set.of(ResourceType.LIGHT, ResourceType.GROUPED_LIGHT);
+
+    public static final int MAX_LIGHTS = 5;
+
+    private static final String LIGHT_GROUP = "light";
+    private static final String LIGHT_GROUP_REGEX = "^" + LIGHT_GROUP + "([2-5])$"; // 2-5 auxiliary lights max
+
+    public static final String LIGHT_GROUP_FORMAT = LIGHT_GROUP + "%d";
+    public static final Pattern LIGHT_GROUP_PATTERN = Pattern.compile(LIGHT_GROUP_REGEX);
+
+    // light service archetypes for dual light devices
+    public static final Set<Archetype> BACK_ARCHETYPES = Set.of(Archetype.TWILIGHT_BACK, Archetype.UP_AND_DOWN_UP);
+    public static final Set<Archetype> FRONT_ARCHETYPES = Set.of(Archetype.TWILIGHT, Archetype.TWILIGHT_FRONT,
+            Archetype.UP_AND_DOWN_DOWN, Archetype.HUE_CENTRIS);
 }

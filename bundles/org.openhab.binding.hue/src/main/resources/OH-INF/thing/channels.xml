@@ -414,4 +414,16 @@
 		<description>A software update is ready to install.</description>
 	</channel-type>
 
+	<channel-type id="gradient-color">
+		<item-type>Color</item-type>
+		<label>Color</label>
+		<description>Controls the color of the light.</description>
+		<category>ColorLight</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Color</tag>
+		</tags>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+
 </thing:thing-descriptions>
