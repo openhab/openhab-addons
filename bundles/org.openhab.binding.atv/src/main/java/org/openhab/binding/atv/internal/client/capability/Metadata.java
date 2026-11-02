@@ -57,7 +57,7 @@ public interface Metadata {
      * @param height requested height in pixels or {@code null}
      * @return future completing with artwork or {@code null} when none is available
      */
-    default CompletableFuture<ArtworkInfo> artwork(@Nullable Integer width, @Nullable Integer height) {
+    default CompletableFuture<@Nullable ArtworkInfo> artwork(@Nullable Integer width, @Nullable Integer height) {
         return CompletableFuture.failedFuture(new NotSupportedError("artwork is not supported"));
     }
 
@@ -66,7 +66,7 @@ public interface Metadata {
      *
      * @return future completing with artwork or {@code null} when none is available
      */
-    default CompletableFuture<ArtworkInfo> artwork() {
+    default CompletableFuture<@Nullable ArtworkInfo> artwork() {
         return artwork(512, null);
     }
 

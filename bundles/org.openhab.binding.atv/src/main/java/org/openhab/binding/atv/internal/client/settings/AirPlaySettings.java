@@ -102,4 +102,11 @@ public record AirPlaySettings(@Nullable String identifier, @Nullable String cred
     public AirPlaySettings withMrpTunnel(MrpTunnel mrpTunnel) {
         return new AirPlaySettings(identifier, credentials, password, mrpTunnel);
     }
+
+    /** Leaves out the credentials and password so they never end up in logs. */
+    @Override
+    public String toString() {
+        return "AirPlaySettings[identifier=" + identifier + ", credentials=" + (credentials == null ? "unset" : "set")
+                + ", password=" + (password == null ? "unset" : "set") + ", mrpTunnel=" + mrpTunnel + "]";
+    }
 }

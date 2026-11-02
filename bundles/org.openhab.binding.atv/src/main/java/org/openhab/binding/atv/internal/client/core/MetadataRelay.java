@@ -46,7 +46,7 @@ public final class MetadataRelay extends BaseRelay<Metadata> implements Metadata
     }
 
     @Override
-    public CompletableFuture<ArtworkInfo> artwork(@Nullable Integer width, @Nullable Integer height) {
+    public CompletableFuture<@Nullable ArtworkInfo> artwork(@Nullable Integer width, @Nullable Integer height) {
         guard.requireNotBlocked("artwork");
         return relayAsync(Capability.METADATA_ARTWORK, metadata -> metadata.artwork(width, height));
     }
