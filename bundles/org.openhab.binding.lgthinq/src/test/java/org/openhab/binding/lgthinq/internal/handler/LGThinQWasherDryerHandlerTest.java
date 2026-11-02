@@ -67,6 +67,17 @@ class LGThinQWasherDryerHandlerTest {
     }
 
     @Test
+    void unknownSmartCourseUsesTypeOfSelectedCourse() throws JsonProcessingException {
+        WasherDryerSnapshot shot = snapshot("COTTON");
+        shot.setSmartCourse("");
+
+        Map<String, Object> data = LGThinQWasherDryerHandler.buildRemoteStartData(cap, cmdTemplate, shot, "COTTON",
+                Map.of(), false);
+
+        assertEquals("Course", data.get("courseType"));
+    }
+
+    @Test
     void keepsMachineSettingsForCurrentCourse() throws JsonProcessingException {
         Map<String, Object> data = LGThinQWasherDryerHandler.buildRemoteStartData(cap, cmdTemplate, snapshot("COTTON"),
                 "COTTON", Map.of(), false);

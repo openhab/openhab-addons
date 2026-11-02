@@ -141,7 +141,7 @@ These channels are always available. A remote start is only sent while remote st
 
 When remote start gets enabled on the Washer, these channels are filled once with its settings. Changing `rs-course` does not change the other remote start channels, adjust them if needed.
 If the Washer goes to stand-by while waiting for remote start, the remote start channels keep their values, including changes made during stand-by.
-Wake the Washer with the `stand-by` channel before sending the remote start.
+Wake the Washer by sending `ON` to the `stand-by` channel before sending the remote start.
 
 ### Dryer Machine
 

@@ -33,7 +33,6 @@ import org.openhab.binding.lgthinq.lgservices.model.DevicePowerState;
 import org.openhab.binding.lgthinq.lgservices.model.DeviceTypes;
 import org.openhab.binding.lgthinq.lgservices.model.FeatureDefinition;
 import org.openhab.binding.lgthinq.lgservices.model.devices.commons.washers.CourseDefinition;
-import org.openhab.binding.lgthinq.lgservices.model.devices.commons.washers.CourseType;
 import org.openhab.binding.lgthinq.lgservices.model.devices.washerdryer.WasherDryerCapability;
 import org.openhab.binding.lgthinq.lgservices.model.devices.washerdryer.WasherDryerSnapshot;
 import org.openhab.core.io.net.http.HttpClientFactory;
@@ -44,7 +43,6 @@ import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelGroupUID;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
-import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.link.ItemChannelLinkRegistry;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.StateOption;
@@ -55,6 +53,7 @@ import org.slf4j.LoggerFactory;
  * The {@link LGThinQWasherDryerHandler} Handle Washer/Dryer And Washer Dryer Towers things
  *
  * @author Nemer Daud - Initial contribution
+ * @author Carlo Dischler - Fix remote start and keep its settings across stand-by
  */
 @NonNullByDefault
 public class LGThinQWasherDryerHandler
@@ -107,13 +106,6 @@ public class LGThinQWasherDryerHandler
         remoteStartFlagChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_WMD_REMOTE_START_ID);
         remoteStartStopChannelUID = new ChannelUID(channelGroupRemoteStartUID, CHANNEL_WMD_REMOTE_START_START_STOP);
         remoteStartCourseChannelUID = new ChannelUID(channelGroupRemoteStartUID, CHANNEL_WMD_REMOTE_COURSE);
-    }
-
-    @Override
-    protected void initializeThing(@Nullable ThingStatus bridgeStatus) {
-        super.initializeThing(bridgeStatus);
-        remoteStartShot = null;
-        remoteStartValuesInitialized = false;
     }
 
     private void loadOptionsCourse(WasherDryerCapability cap, ChannelUID courseChannel) {
@@ -221,7 +213,7 @@ public class LGThinQWasherDryerHandler
         updateState(remoteStartFlagChannelUID, OnOffType.from(shot.isRemoteStartEnabled()));
         updateState(spinChannelUID, new StringType(shot.getSpin()));
         updateState(rinseChannelUID, new StringType(shot.getRinse()));
-        // in standby the machine reports no course, so keep the settings it had while remote start was enabled
+        // in stand-by the machine reports no course, so keep the settings it had while remote start was enabled
         WasherDryerCapability cap = getCapabilities();
         if (!shot.isRemoteStartEnabled()) {
             remoteStartShot = null;
@@ -279,8 +271,7 @@ public class LGThinQWasherDryerHandler
         };
     }
 
-    private Map<String, Object> getRemoteStartData() throws LGThinqApiException {
-        WasherDryerSnapshot lastShot = getLastShot();
+    private Map<String, Object> getRemoteStartData(WasherDryerSnapshot lastShot) throws LGThinqApiException {
         if (lastShot.getRawData().isEmpty()) {
             return lastShot.getRawData();
         }
@@ -292,32 +283,26 @@ public class LGThinQWasherDryerHandler
         }
         WasherDryerSnapshot rsShot = selectRemoteStartShot(cap, lastShot, remoteStartShot);
         String selectedCourse = getItemLinkedValue(remoteStartCourseChannelUID);
-        if (selectedCourse == null || !cap.getCourses().containsKey(selectedCourse)) {
+        if (selectedCourse == null || WMD_COURSE_NOT_SELECTED_VALUE.equals(selectedCourse)
+                || !cap.getCourses().containsKey(selectedCourse)) {
             selectedCourse = getCurrentCourse(cap, rsShot);
         }
         Map<String, String> selectedFeatures = new HashMap<>();
         for (Channel c : getThing().getChannelsOfGroup(CHANNEL_WMD_REMOTE_START_GRP_ID)) {
             String simpleChannelUID = getSimpleChannelUID(c.getUID().getId());
-            String featureName;
-            switch (simpleChannelUID) {
-                case CHANNEL_WMD_REMOTE_START_START_STOP:
-                case CHANNEL_WMD_REMOTE_COURSE:
-                    continue;
-                case CHANNEL_WMD_REMOTE_START_RINSE:
-                    featureName = cap.getRinseFeat().getName();
-                    break;
-                case CHANNEL_WMD_REMOTE_START_TEMP:
-                    featureName = cap.getTemperatureFeat().getName();
-                    break;
-                case CHANNEL_WMD_REMOTE_START_SPIN:
-                    featureName = cap.getSpinFeat().getName();
-                    break;
-                default:
+            String featureName = switch (simpleChannelUID) {
+                case CHANNEL_WMD_REMOTE_START_START_STOP, CHANNEL_WMD_REMOTE_COURSE -> "";
+                case CHANNEL_WMD_REMOTE_START_RINSE -> cap.getRinseFeat().getName();
+                case CHANNEL_WMD_REMOTE_START_TEMP -> cap.getTemperatureFeat().getName();
+                case CHANNEL_WMD_REMOTE_START_SPIN -> cap.getSpinFeat().getName();
+                default -> {
                     logger.warn("channel [{}] not mapped for this binding. It is most likely a bug.", simpleChannelUID);
-                    continue;
-            }
+                    yield "";
+                }
+            };
             String value = getItemLinkedValue(c.getUID());
-            if (value != null && !value.isBlank()) {
+            // the name is also empty for static remote start channels whose feature the model doesn't have
+            if (!featureName.isEmpty() && value != null && !value.isBlank()) {
                 selectedFeatures.put(featureName, value);
             }
         }
@@ -344,11 +329,11 @@ public class LGThinQWasherDryerHandler
         String smartCourse = shot.getSmartCourse();
         data.put(cap.getDefaultCourseFieldName(), selectedCourse);
         data.put(cap.getDefaultSmartCourseFeatName(), smartCourse);
-        CourseType courseType = Objects
-                .requireNonNull(cap.getCourses().get("NOT_SELECTED".equals(smartCourse) ? selectedCourse : smartCourse),
-                        "NOT_SELECTED should be hardcoded. It is most likely a bug")
-                .getCourseType();
-        data.put("courseType", courseType.getValue());
+        CourseDefinition courseDef = cap.getCourses().get(smartCourse);
+        if (WMD_COURSE_NOT_SELECTED_VALUE.equals(smartCourse) || courseDef == null) {
+            courseDef = Objects.requireNonNull(selCourseDef, "The selected course must be a course of the device");
+        }
+        data.put("courseType", courseDef.getCourseType().getValue());
         // 3rd - replace custom selectable features with channel's ones.
         data.putAll(selectedFeatures);
         // a washer waiting in the initial state only runs the course and options from the command with this bit,
@@ -372,7 +357,7 @@ public class LGThinQWasherDryerHandler
                         if (!lastShot.isRemoteStartEnabled()) {
                             logger.warn("Remote start is not enabled on the washer. Ignoring command");
                         } else if (!lastShot.isStandBy()) {
-                            Map<String, Object> data = getRemoteStartData();
+                            Map<String, Object> data = getRemoteStartData(lastShot);
                             if (data.isEmpty()) {
                                 logger.warn("No data available for remote start. Ignoring command");
                             } else {
