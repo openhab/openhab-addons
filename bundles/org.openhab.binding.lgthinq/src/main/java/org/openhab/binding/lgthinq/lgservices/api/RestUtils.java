@@ -84,14 +84,21 @@ public class RestUtils {
         }
     }
 
-    public static byte[] getTokenSignature(String authUrl, String secretKey, Map<String, String> empData,
-            String timestamp) {
+    /**
+     * Builds the string-to-sign used by LG OAuth signatures: {@code "<path>?<query>\n<timestamp>"}.
+     */
+    static String getTokenSignatureMessage(String authUrl, Map<String, String> empData, String timestamp) {
         UriBuilder builder = UriBuilder.fromUri(authUrl);
         empData.forEach(builder::queryParam);
 
         URI reqUri = builder.build();
         String signUrl = !empData.isEmpty() ? reqUri.getPath() + "?" + reqUri.getRawQuery() : reqUri.getPath();
-        String messageToSign = String.format("%s\n%s", signUrl, timestamp);
+        return String.format("%s\n%s", signUrl, timestamp);
+    }
+
+    public static byte[] getTokenSignature(String authUrl, String secretKey, Map<String, String> empData,
+            String timestamp) {
+        String messageToSign = getTokenSignatureMessage(authUrl, empData, timestamp);
         return getOauth2Sig(messageToSign, secretKey);
     }
 
