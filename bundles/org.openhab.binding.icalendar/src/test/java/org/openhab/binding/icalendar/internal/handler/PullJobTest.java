@@ -149,4 +149,30 @@ public class PullJobTest {
         assertTrue(header != null && header.contains("username=\"user\""));
         assertTrue(Objects.requireNonNull(destination).exists());
     }
+
+    @Test
+    public void testBasicIsKeptOnRedirectWithinOrigin() throws Exception {
+        final AtomicReference<@Nullable String> authorization = new AtomicReference<>();
+        HttpServer originServer = startServer();
+        origin = originServer;
+        originServer.createContext("/old.ics", exchange -> {
+            exchange.getResponseHeaders().add("Location", "/cal.ics");
+            exchange.sendResponseHeaders(302, -1);
+            exchange.close();
+        });
+        originServer.createContext("/cal.ics", exchange -> {
+            authorization.set(exchange.getRequestHeaders().getFirst("Authorization"));
+            byte[] body = CALENDAR.getBytes(StandardCharsets.UTF_8);
+            exchange.sendResponseHeaders(200, body.length);
+            exchange.getResponseBody().write(body);
+            exchange.close();
+        });
+
+        runJob(URI.create("http://" + InetAddress.getLoopbackAddress().getHostAddress() + ":"
+                + originServer.getAddress().getPort() + "/old.ics"));
+
+        String header = authorization.get();
+        assertTrue(header != null && header.startsWith("Basic "));
+        assertTrue(Objects.requireNonNull(destination).exists());
+    }
 }

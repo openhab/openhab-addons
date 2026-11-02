@@ -52,6 +52,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 class PullJob implements Runnable {
+    private static final int MAX_REDIRECTS = 5;
     private static final String TMP_FILE_PREFIX = "icalendardld";
 
     private final Authentication.@Nullable Result authentication;
@@ -136,6 +137,17 @@ class PullJob implements Runnable {
         return null;
     }
 
+    private static @Nullable URI resolveRedirect(URI base, @Nullable String location) {
+        if (location == null) {
+            return null;
+        }
+        try {
+            return base.resolve(location);
+        } catch (IllegalArgumentException e) {
+            return null;
+        }
+    }
+
     @Override
     public void run() {
         Request request = createRequest(sourceURI, null);
@@ -143,6 +155,28 @@ class PullJob implements Runnable {
         Response response = sendRequest(request, asyncListener);
         if (response == null) {
             return;
+        }
+
+        // Redirects are followed manually when credentials are set, so they only reach the configured host.
+        int redirects = 0;
+        while (authentication != null && HttpStatus.isRedirection(response.getStatus())) {
+            final String location = response.getHeaders().get(HttpHeader.LOCATION);
+            final URI next = resolveRedirect(response.getRequest().getURI(), location);
+            if (next == null || ++redirects > MAX_REDIRECTS
+                    || !DigestAuthentication.isCredentialsAllowed(sourceURI, next)) {
+                logger.warn(
+                        "Calendar \"{}\" redirects to \"{}\". Not followed, credentials are only sent to the configured host.",
+                        sourceURI, location);
+                request.abort(new IllegalStateException("Redirect not followed"));
+                return;
+            }
+            request.abort(new IllegalStateException("Following redirect"));
+            request = createRequest(next, null);
+            asyncListener = new InputStreamResponseListener();
+            response = sendRequest(request, asyncListener);
+            if (response == null) {
+                return;
+            }
         }
 
         // Basic auth is sent preemptively. If the server asks for digest auth instead, retry with it.
@@ -154,7 +188,7 @@ class PullJob implements Runnable {
             if (challenge != null) {
                 // authenticate for the URI which actually answered (redirects are followed)
                 final URI target = response.getRequest().getURI();
-                if (!DigestAuthentication.isSameOrigin(sourceURI, target)) {
+                if (!DigestAuthentication.isCredentialsAllowed(sourceURI, target)) {
                     // never send credentials to another origin than the configured one
                     logger.warn(
                             "Server \"{}\" requested digest authentication after a redirect from \"{}\". Not sending credentials to a different origin.",
@@ -177,15 +211,6 @@ class PullJob implements Runnable {
                     }
                 }
             }
-        }
-
-        if (authentication != null && HttpStatus.isRedirection(response.getStatus())) {
-            // credentials must not follow a redirect to another origin
-            logger.warn(
-                    "Calendar \"{}\" redirects to \"{}\". Redirects are not followed when credentials are set, use the final URL.",
-                    sourceURI, response.getHeaders().get(HttpHeader.LOCATION));
-            request.abort(new IllegalStateException("Redirect not followed because credentials are configured"));
-            return;
         }
 
         if (response.getStatus() != HttpStatus.OK_200) {
