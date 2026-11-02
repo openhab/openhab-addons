@@ -16,6 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.mock;
 import static org.openhab.binding.dreame.internal.DreameBindingConstants.CHANNEL_BATTERY_LEVEL;
 import static org.openhab.binding.dreame.internal.DreameBindingConstants.CHANNEL_DND;
@@ -25,15 +26,26 @@ import static org.openhab.binding.dreame.internal.DreameBindingConstants.CHANNEL
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.Test;
+import org.openhab.binding.dreame.internal.api.DreameMowerApi;
+import org.openhab.binding.dreame.internal.model.DreameDevice;
 import org.openhab.binding.dreame.internal.model.DreameProperty;
 import org.openhab.binding.dreame.internal.model.DreameStatus;
+import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.ThingStatusInfo;
+import org.openhab.core.thing.binding.ThingHandlerCallback;
 import org.openhab.core.types.State;
 
 import com.google.gson.JsonParser;
@@ -143,6 +155,46 @@ class DreameMowerHandlerTest {
         assertEquals(null, DreameMowerHandler.dndStatusSchedule(JsonParser.parseString("{\"end\":480,\"value\":1}")));
     }
 
+    @Test
+    void disposalDuringPollPreventsOnlineAndMqttSetup() throws Exception {
+        Thing thing = Objects.requireNonNull(mock(Thing.class));
+        Configuration configuration = new Configuration();
+        configuration.put("deviceId", "device-id");
+        when(thing.getConfiguration()).thenReturn(configuration);
+        Bridge bridge = Objects.requireNonNull(mock(Bridge.class));
+        DreameAccountHandler account = Objects.requireNonNull(mock(DreameAccountHandler.class));
+        DreameMowerApi api = Objects.requireNonNull(mock(DreameMowerApi.class));
+        DreameDevice device = new DreameDevice("device-id", "Mower", "dreame.mower.g2540d", "", "", "", "");
+        when(bridge.getHandler()).thenReturn(account);
+        when(bridge.getStatusInfo()).thenReturn(new ThingStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.NONE, null));
+        when(account.getDevice("device-id")).thenReturn(device);
+        when(account.getApiClient()).thenReturn(api);
+        CountDownLatch started = new CountDownLatch(1);
+        CountDownLatch release = new CountDownLatch(1);
+        when(api.getProperties(eq(device), any())).thenAnswer(invocation -> {
+            started.countDown();
+            assertTrue(release.await(5, TimeUnit.SECONDS));
+            return new DreameStatus();
+        });
+        TestLifecycleMowerHandler handler = new TestLifecycleMowerHandler(thing, bridge);
+        ThingHandlerCallback callback = Objects.requireNonNull(mock(ThingHandlerCallback.class));
+        handler.setCallback(callback);
+        handler.initialize();
+        clearInvocations(callback);
+        Thread poll = new Thread(handler::poll);
+        poll.start();
+        assertTrue(started.await(5, TimeUnit.SECONDS));
+
+        handler.dispose();
+        clearInvocations(callback);
+        release.countDown();
+        poll.join(5000);
+
+        assertFalse(poll.isAlive());
+        verify(api, never()).mqttConfiguration(any());
+        verifyNoInteractions(callback);
+    }
+
     private static class TestMowerHandler extends DreameMowerHandler {
         private final Map<String, State> states = new HashMap<>();
 
@@ -153,6 +205,20 @@ class DreameMowerHandlerTest {
         @Override
         protected void updateState(String channel, State state) {
             states.put(channel, state);
+        }
+    }
+
+    private static class TestLifecycleMowerHandler extends DreameMowerHandler {
+        private final Bridge bridge;
+
+        TestLifecycleMowerHandler(Thing thing, Bridge bridge) {
+            super(thing);
+            this.bridge = bridge;
+        }
+
+        @Override
+        protected @Nullable Bridge getBridge() {
+            return bridge;
         }
     }
 }

@@ -438,6 +438,17 @@ public final class DreameVacuumCapabilities {
             r2569r r2570
             """);
 
+    // Models without the MOP_PAD_LIFTING capability in Tasshack/dreame-vacuum DEVICE_INFO at commit
+    // 8556ef85132c3d73a5288dd00738636392dac633. Models with a self-wash base are detected at runtime through 4/25.
+    private static final Set<String> NON_LIFTING_MODELS = prefixedModels("""
+            p2008 p2009 p2027 p2028 p2028a p2029 p2036 p2041 p2041o p2140 p2140a p2140o p2140p p2140q
+            p2148o p2150a p2150b p2150o p2156o p2157 p2187 p2259 r2104 r2205 r2209 r2211o r2240 r2243 r2250
+            r2254 r2260 r2312 r2312a r2322 r2328 r2380 r2380r r2388 r2422 r2422a r2422b r2423 r2423a r2438a
+            r2438b r2438i r2438r r2458a r2458h r2459a r2459h r2459k r2563b r2563v r2564b r2564s r2564z r2565a
+            r2565v r2566a r2566h r2567a r2569c r9523a r9523b r9523c r9523h r9523k r9524a r9524b r9524c r9524h
+            r9524k
+            """);
+
     private static final Map<String, Integer> NEW_STATE_MIN_FIRMWARE = Map.ofEntries(
             Map.entry("dreame.vacuum.r2253", 1051), Map.entry("dreame.vacuum.r2263", 1051),
             Map.entry("dreame.vacuum.r2273", 1051), Map.entry("dreame.vacuum.r2273a", 1051),
@@ -466,6 +477,10 @@ public final class DreameVacuumCapabilities {
         }
         Integer minimum = NEW_STATE_MIN_FIRMWARE.get(model);
         return minimum == null || firmwareBuild(device.version()) >= minimum;
+    }
+
+    public static boolean usesReversedCleaningMode(DreameDevice device, boolean selfWashBase) {
+        return selfWashBase || !NON_LIFTING_MODELS.contains(device.model());
     }
 
     private static Set<String> prefixedModels(String models) {

@@ -59,15 +59,16 @@ public class DreameVacuumMapStateTest {
     }
 
     @Test
-    void mergesNewerPartialFramesAfterCloudBaseSnapshot() {
+    void mergesOnlyConsecutivePartialFramesAndRecoversWithNewBase() {
         DreameVacuumMapState state = new DreameVacuumMapState();
         assertNotNull(state.accept(frame(7, 10, 'I', 0, 0, 2, 1, new byte[] { 1, 1 }, "{}")));
         assertNotNull(state.accept(frame(7, 11, 'P', 50, 0, 2, 1, new byte[] { 1, 2 }, "{\"tr\":\"M50,0L50,0\"}")));
         assertFalse(state.needsBase());
 
-        assertNotNull(state.accept(frame(7, 13, 'P', 0, 0, 1, 1, new byte[] { 1 }, "{}")));
-        assertFalse(state.needsBase());
-        assertNotNull(state.accept(frame(7, 14, 'P', 0, 0, 1, 1, new byte[] { 1 }, "{}")));
+        assertNull(state.accept(frame(7, 13, 'P', 0, 0, 1, 1, new byte[] { 1 }, "{}")));
+        assertTrue(state.needsBase());
+        assertTrue(state.diagnostic().contains("frame-gap/type=P/map=7/frame=13/expected=12"));
+        assertNull(state.accept(frame(7, 14, 'P', 0, 0, 1, 1, new byte[] { 1 }, "{}")));
         assertNotNull(state.accept(frame(7, 15, 'I', 0, 0, 1, 1, new byte[] { 1 }, "{}")));
         assertFalse(state.needsBase());
     }

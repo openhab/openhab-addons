@@ -54,14 +54,17 @@ public final class DreameVacuumMapImage {
         return stringPropertyFromMessage(payload, model, 1);
     }
 
-    /** Returns the map-list object name without exposing the accompanying checksum. */
-    public static @Nullable String mapListObjectNameFromMessage(byte[] payload, String model) {
-        String value = stringPropertyFromMessage(payload, model, 8);
-        return value == null ? null : mapListObjectName(value);
+    public record MapListRevision(String objectName, String checksum) {
     }
 
-    /** Returns the object name from a MAP_LIST property value. */
-    public static @Nullable String mapListObjectName(String value) {
+    /** Returns the map-list object name and checksum used to detect same-path revisions. */
+    public static @Nullable MapListRevision mapListRevisionFromMessage(byte[] payload, String model) {
+        String value = stringPropertyFromMessage(payload, model, 8);
+        return value == null ? null : mapListRevision(value);
+    }
+
+    /** Returns the object name and checksum from a MAP_LIST property value. */
+    public static @Nullable MapListRevision mapListRevision(String value) {
         if (value.length() > 2048 || !DreameVacuumDiagnostics.boundedDepth(value)) {
             return null;
         }
@@ -78,7 +81,13 @@ public final class DreameVacuumMapImage {
             if (parsed instanceof JsonObject descriptor
                     && descriptor.get("object_name") instanceof JsonPrimitive objectName && objectName.isString()) {
                 String result = objectName.getAsString();
-                return result.isBlank() || result.length() > 1024 ? null : result;
+                if (result.isBlank() || result.length() > 1024) {
+                    return null;
+                }
+                String checksum = descriptor.get("md5") instanceof JsonPrimitive md5 && md5.isString()
+                        ? md5.getAsString()
+                        : "";
+                return checksum.length() > 256 ? null : new MapListRevision(result, checksum);
             }
         } catch (RuntimeException e) {
             // Treat malformed device metadata as absent.

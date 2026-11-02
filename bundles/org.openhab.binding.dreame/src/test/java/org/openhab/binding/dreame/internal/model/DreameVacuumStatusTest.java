@@ -218,6 +218,18 @@ class DreameVacuumStatusTest {
     }
 
     @Test
+    void decodesDirectAndReversedCleaningModes() {
+        assertEquals(new StringType("SWEEPING"),
+                DreameVacuumStatus.channelUpdates(Map.of("4/23", 0), true, false).get("cleaning-mode"));
+        assertEquals(new StringType("SWEEPING_AND_MOPPING"),
+                DreameVacuumStatus.channelUpdates(Map.of("4/23", 2), true, false).get("cleaning-mode"));
+        assertEquals(new StringType("SWEEPING_AND_MOPPING"),
+                DreameVacuumStatus.channelUpdates(Map.of("4/23", 0), true, true).get("cleaning-mode"));
+        assertEquals(new StringType("SWEEPING"),
+                DreameVacuumStatus.channelUpdates(Map.of("4/23", 2), true, true).get("cleaning-mode"));
+    }
+
+    @Test
     void mapsDryingTimeAndStructuredAutoSwitchSettings() {
         var properties = new DreameVacuumProperties(Map.of("4/40", 3),
                 Map.of("4/50", "[{\"k\":\"SmartHost\",\"v\":2},{\"k\":\"CleanRoute\",\"v\":4}]"));

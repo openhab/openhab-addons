@@ -33,6 +33,7 @@ import org.openhab.binding.dreame.internal.model.DreameDevice;
 import org.openhab.binding.dreame.internal.model.DreameVacuumAction;
 import org.openhab.binding.dreame.internal.model.DreameVacuumProperties;
 import org.openhab.binding.dreame.internal.model.DreameVacuumSetting;
+import org.openhab.binding.dreame.internal.util.DreameVacuumMapImage;
 
 import com.google.gson.JsonParser;
 
@@ -64,6 +65,30 @@ class DreameVacuumCommandTest {
         var property = JsonParser.parseString(bodies.getLast()).getAsJsonObject().getAsJsonObject("data")
                 .getAsJsonArray("params").get(0).getAsJsonObject();
         assertEquals(5122, property.get("value").getAsInt());
+    }
+
+    @Test
+    void keepsDirectCleaningModeEncodingForNonLiftingModels() throws Exception {
+        Fixture f = new Fixture();
+        List<String> bodies = new ArrayList<>();
+        doAnswer(invocation -> {
+            ContentProvider content = invocation.getArgument(0);
+            StringBuilder body = new StringBuilder();
+            content.forEach(buffer -> body.append(StandardCharsets.UTF_8.decode(buffer.duplicate())));
+            bodies.add(body.toString());
+            return f.request;
+        }).when(f.request).content(any(ContentProvider.class));
+        doReturn(response("{\"code\":0,\"data\":{\"result\":[{\"siid\":4,\"piid\":23,\"code\":0,\"value\":2}]}}"),
+                response("{\"code\":0,\"data\":{\"result\":[{\"siid\":4,\"piid\":23,\"code\":0}]}}")).when(f.request)
+                .send();
+        DreameDevice device = device("dreame.vacuum.p2008");
+
+        f.client.getVacuumProperties(device, () -> true);
+        f.client.setVacuumSetting(device, DreameVacuumSetting.CLEANING_MODE, 0, () -> true);
+
+        var property = JsonParser.parseString(bodies.getLast()).getAsJsonObject().getAsJsonObject("data")
+                .getAsJsonArray("params").get(0).getAsJsonObject();
+        assertEquals(0, property.get("value").getAsInt());
     }
 
     @Test
@@ -392,8 +417,8 @@ class DreameVacuumCommandTest {
                 "value":"{\\"object_name\\":\\"ali_dreame/device/map-list\\",\\"md5\\":\\"private\\"}"}]}}
                 """)).when(f.request).send();
 
-        assertEquals("ali_dreame/device/map-list",
-                f.client.getVacuumMapListObjectName(device("dreame.vacuum.r9445d"), () -> true));
+        assertEquals(new DreameVacuumMapImage.MapListRevision("ali_dreame/device/map-list", "private"),
+                f.client.getVacuumMapListRevision(device("dreame.vacuum.r9445d"), () -> true));
         var parameter = JsonParser.parseString(bodies.getFirst()).getAsJsonObject().getAsJsonObject("data")
                 .getAsJsonArray("params").get(0).getAsJsonObject();
         assertEquals(6, parameter.get("siid").getAsInt());

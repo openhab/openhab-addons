@@ -21,6 +21,7 @@ import org.openhab.binding.dreame.internal.model.DreameDevice;
 import org.openhab.binding.dreame.internal.model.DreameVacuumAction;
 import org.openhab.binding.dreame.internal.model.DreameVacuumProperties;
 import org.openhab.binding.dreame.internal.model.DreameVacuumSetting;
+import org.openhab.binding.dreame.internal.util.DreameVacuumMapImage.MapListRevision;
 
 /**
  * Vacuum controls using the shared cloud session.
@@ -35,7 +36,8 @@ public interface DreameVacuumApi {
 
     /** Reads the saved-map list reference independently of MQTT updates. */
     @Nullable
-    String getVacuumMapListObjectName(DreameDevice device, BooleanSupplier isCurrent) throws DreameCloudException;
+    MapListRevision getVacuumMapListRevision(DreameDevice device, BooleanSupplier isCurrent)
+            throws DreameCloudException;
 
     /** Requests a complete current map frame directly from the device. */
     @Nullable

@@ -17,6 +17,8 @@ import static org.mockito.Mockito.*;
 
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -26,6 +28,7 @@ import org.openhab.binding.dreame.internal.api.DreameCloudException;
 import org.openhab.binding.dreame.internal.api.DreameVacuumApi;
 import org.openhab.binding.dreame.internal.model.DreameDevice;
 import org.openhab.binding.dreame.internal.model.DreameVacuumProperties;
+import org.openhab.binding.dreame.internal.util.DreameVacuumMapImage.MapListRevision;
 import org.openhab.binding.dreame.internal.util.DreameVacuumMapStateTest;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.DecimalType;
@@ -162,6 +165,41 @@ class DreameVacuumHandlerTest {
         }).when(f.api).getVacuumProperties(any(), any());
         f.handler.refreshProperties(f.api, device("dreame.vacuum.r9445d"), 1);
         verifyNoInteractions(f.callback);
+    }
+
+    @Test
+    void mqttReplacementClearsInFlightMapQuery() throws Exception {
+        SnapshotFixture f = new SnapshotFixture();
+        CountDownLatch started = new CountDownLatch(1);
+        CountDownLatch release = new CountDownLatch(1);
+        when(f.api.getVacuumMap(any(), any())).thenAnswer(invocation -> {
+            started.countDown();
+            assertTrue(release.await(5, TimeUnit.SECONDS));
+            return null;
+        }).thenReturn(null);
+        Thread query = new Thread(() -> f.handler.refreshMap(f.api, device("dreame.vacuum.r9445d"), 1));
+        query.start();
+        assertTrue(started.await(5, TimeUnit.SECONDS));
+
+        f.handler.bridgeStatusChanged(new org.openhab.core.thing.ThingStatusInfo(ThingStatus.OFFLINE,
+                org.openhab.core.thing.ThingStatusDetail.NONE, null));
+        release.countDown();
+        query.join(5000);
+        assertFalse(query.isAlive());
+
+        f.handler.refreshMap(f.api, device("dreame.vacuum.r9445d"), 2);
+        verify(f.api, times(2)).getVacuumMap(any(), any());
+        f.handler.dispose();
+    }
+
+    @Test
+    void mapListChecksumChangeInvalidatesSameObjectName() {
+        MapListRevision first = new MapListRevision("device/map-list", "md5-a");
+        MapListRevision changed = new MapListRevision("device/map-list", "md5-b");
+
+        assertFalse(DreameVacuumHandler.isNewMapListRevision(first, first));
+        assertTrue(DreameVacuumHandler.isNewMapListRevision(first, changed));
+        assertTrue(DreameVacuumHandler.isNewMapListRevision(null, first));
     }
 
     private static class SnapshotFixture {

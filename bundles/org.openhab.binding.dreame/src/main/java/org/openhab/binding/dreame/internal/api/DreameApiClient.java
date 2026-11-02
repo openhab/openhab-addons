@@ -17,9 +17,11 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.Clock;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BooleanSupplier;
 
@@ -40,6 +42,7 @@ import org.openhab.binding.dreame.internal.model.DreameVacuumSetting;
 import org.openhab.binding.dreame.internal.util.DreameDiagnostics;
 import org.openhab.binding.dreame.internal.util.DreameVacuumDiagnostics;
 import org.openhab.binding.dreame.internal.util.DreameVacuumMapImage;
+import org.openhab.binding.dreame.internal.util.DreameVacuumMapImage.MapListRevision;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -74,6 +77,7 @@ public class DreameApiClient implements DreameMowerApi, DreameVacuumApi {
     private final Gson gson = new Gson();
     private final AtomicInteger requestId = new AtomicInteger(1);
     private final Map<String, Integer> vacuumCleaningModes = new HashMap<>();
+    private final Set<String> vacuumSelfWashBases = new HashSet<>();
 
     public DreameApiClient(HttpClient httpClient) {
         this(httpClient, Clock.systemUTC());
@@ -240,12 +244,17 @@ public class DreameApiClient implements DreameMowerApi, DreameVacuumApi {
         if (cleaningMode != null) {
             vacuumCleaningModes.put(device.id(), cleaningMode);
         }
+        if (propertiesByAddress.containsKey("4/25")) {
+            vacuumSelfWashBases.add(device.id());
+        } else {
+            vacuumSelfWashBases.remove(device.id());
+        }
         return new DreameVacuumProperties(propertiesByAddress, textProperties);
     }
 
     @Override
-    public synchronized @Nullable String getVacuumMapListObjectName(DreameDevice device, BooleanSupplier isCurrent)
-            throws DreameCloudException {
+    public synchronized @Nullable MapListRevision getVacuumMapListRevision(DreameDevice device,
+            BooleanSupplier isCurrent) throws DreameCloudException {
         if (!DreameVacuumCapabilities.isSupported(device)) {
             throw new DreameCloudException("Vacuum map list is not supported for this model");
         }
@@ -264,7 +273,7 @@ public class DreameApiClient implements DreameMowerApi, DreameVacuumApi {
                 || !(property.get("value") instanceof JsonPrimitive value) || !value.isString()) {
             return null;
         }
-        return DreameVacuumMapImage.mapListObjectName(value.getAsString());
+        return DreameVacuumMapImage.mapListRevision(value.getAsString());
     }
 
     @Override
@@ -313,10 +322,12 @@ public class DreameApiClient implements DreameMowerApi, DreameVacuumApi {
         }
         if (setting == DreameVacuumSetting.CLEANING_MODE) {
             int current = vacuumCleaningModes.getOrDefault(device.id(), 0x1400);
+            boolean reversed = DreameVacuumCapabilities.usesReversedCleaningMode(device,
+                    vacuumSelfWashBases.contains(device.id()));
             int deviceMode = switch (value) {
-                case 0 -> 2;
+                case 0 -> reversed ? 2 : 0;
                 case 1 -> 1;
-                case 2 -> 0;
+                case 2 -> reversed ? 0 : 2;
                 default -> throw new DreameCloudException("Unsupported vacuum cleaning mode");
             };
             value = current & ~0x03 | deviceMode;

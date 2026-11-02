@@ -47,10 +47,15 @@ public final class DreameVacuumStatus {
     }
 
     public static Map<String, State> channelUpdates(Map<String, Integer> properties) {
-        return channelUpdates(properties, true);
+        return channelUpdates(properties, true, true);
     }
 
     public static Map<String, State> channelUpdates(Map<String, Integer> properties, boolean newStateSchema) {
+        return channelUpdates(properties, newStateSchema, true);
+    }
+
+    public static Map<String, State> channelUpdates(Map<String, Integer> properties, boolean newStateSchema,
+            boolean reversedCleaningMode) {
         Map<String, State> updates = new LinkedHashMap<>();
         properties.forEach((address, value) -> {
             switch (address) {
@@ -111,9 +116,9 @@ public final class DreameVacuumStatus {
                     default -> unknown(value);
                 });
                 case "4/23" -> updates.put("cleaning-mode", switch (value & 0x03) {
-                    case 0 -> new StringType("SWEEPING_AND_MOPPING");
+                    case 0 -> new StringType(reversedCleaningMode ? "SWEEPING_AND_MOPPING" : "SWEEPING");
                     case 1 -> new StringType("MOPPING");
-                    case 2 -> new StringType("SWEEPING");
+                    case 2 -> new StringType(reversedCleaningMode ? "SWEEPING" : "SWEEPING_AND_MOPPING");
                     default -> unknown(value);
                 });
                 case "4/25" -> updates.put("base-status", switch (value) {
@@ -298,7 +303,13 @@ public final class DreameVacuumStatus {
     }
 
     public static Map<String, State> channelUpdates(DreameVacuumProperties properties, boolean newStateSchema) {
-        Map<String, State> updates = new LinkedHashMap<>(channelUpdates(properties.numeric(), newStateSchema));
+        return channelUpdates(properties, newStateSchema, true);
+    }
+
+    public static Map<String, State> channelUpdates(DreameVacuumProperties properties, boolean newStateSchema,
+            boolean reversedCleaningMode) {
+        Map<String, State> updates = new LinkedHashMap<>(
+                channelUpdates(properties.numeric(), newStateSchema, reversedCleaningMode));
         String autoSwitch = properties.text().get("4/50");
         if (autoSwitch == null) {
             return updates;

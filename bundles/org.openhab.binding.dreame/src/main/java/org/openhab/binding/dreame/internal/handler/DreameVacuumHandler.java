@@ -27,7 +27,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.paho.client.mqttv3.MqttException;
 import org.openhab.binding.dreame.internal.api.DreameCloudException;
 import org.openhab.binding.dreame.internal.api.DreameVacuumApi;
 import org.openhab.binding.dreame.internal.api.DreameVacuumMqttClient;
@@ -41,6 +40,7 @@ import org.openhab.binding.dreame.internal.model.DreameVacuumSetting;
 import org.openhab.binding.dreame.internal.model.DreameVacuumStatus;
 import org.openhab.binding.dreame.internal.util.DreameDeviceMetadata;
 import org.openhab.binding.dreame.internal.util.DreameVacuumDiagnostics;
+import org.openhab.binding.dreame.internal.util.DreameVacuumMapImage.MapListRevision;
 import org.openhab.binding.dreame.internal.util.DreameVacuumMapState;
 import org.openhab.core.library.types.RawType;
 import org.openhab.core.library.types.StringType;
@@ -92,7 +92,7 @@ public class DreameVacuumHandler extends BaseThingHandler {
     private @Nullable DreameDevice mapDevice;
     private boolean mapQueryRunning;
     private boolean mapListQueryRunning;
-    private @Nullable String mapListObjectName;
+    private @Nullable MapListRevision mapListRevision;
     private boolean immediateBaseRequestTriggered;
 
     public DreameVacuumHandler(Thing thing) {
@@ -229,7 +229,9 @@ public class DreameVacuumHandler extends BaseThingHandler {
             DreameVacuumProperties properties = api.getVacuumProperties(device,
                     () -> generation.get() == currentGeneration);
             Map<String, State> updates = DreameVacuumStatus.channelUpdates(properties,
-                    DreameVacuumCapabilities.usesNewStateSchema(device));
+                    DreameVacuumCapabilities.usesNewStateSchema(device),
+                    DreameVacuumCapabilities.usesReversedCleaningMode(device,
+                            properties.numeric().containsKey("4/25") || availableProperties.contains("4/25")));
             if (updates.isEmpty()) {
                 throw new DreameCloudException("Vacuum returned no valid status properties");
             }
@@ -263,9 +265,10 @@ public class DreameVacuumHandler extends BaseThingHandler {
             }
         }
         try {
-            String objectName = api.getVacuumMapListObjectName(device, () -> generation.get() == currentGeneration);
-            if (objectName != null) {
-                receiveMapList(currentGeneration, currentConnection, objectName);
+            MapListRevision mapRevision = api.getVacuumMapListRevision(device,
+                    () -> generation.get() == currentGeneration);
+            if (mapRevision != null) {
+                receiveMapList(currentGeneration, currentConnection, mapRevision);
             }
         } catch (DreameCloudException | IllegalArgumentException e) {
             logger.trace("Vacuum saved-map reference query failed; retrying on the next refresh");
@@ -327,7 +330,7 @@ public class DreameVacuumHandler extends BaseThingHandler {
                     replacement.close();
                 }
             }
-        } catch (DreameCloudException | MqttException | IllegalArgumentException e) {
+        } catch (DreameCloudException | IllegalArgumentException e) {
             if (generation.get() == currentGeneration) {
                 logger.debug("Vacuum MQTT setup failed; retrying in 60 seconds");
             }
@@ -363,7 +366,7 @@ public class DreameVacuumHandler extends BaseThingHandler {
         mapDevice = null;
         mapQueryRunning = false;
         mapListQueryRunning = false;
-        mapListObjectName = null;
+        mapListRevision = null;
         immediateBaseRequestTriggered = false;
         if (client != null) {
             scheduler.execute(client::close);
@@ -582,7 +585,9 @@ public class DreameVacuumHandler extends BaseThingHandler {
         }
         DreameDevice device = mapDevice;
         Map<String, State> updates = DreameVacuumStatus.channelUpdates(properties,
-                device == null || DreameVacuumCapabilities.usesNewStateSchema(device));
+                device == null || DreameVacuumCapabilities.usesNewStateSchema(device),
+                device == null || DreameVacuumCapabilities.usesReversedCleaningMode(device,
+                        properties.containsKey("4/25") || availableProperties.contains("4/25")));
         availableProperties.addAll(properties.keySet());
         if (!updates.isEmpty()) {
             updates.forEach(this::publishState);
@@ -616,9 +621,9 @@ public class DreameVacuumHandler extends BaseThingHandler {
         }
     }
 
-    synchronized void receiveMapList(int currentGeneration, int currentConnection, String objectName) {
+    synchronized void receiveMapList(int currentGeneration, int currentConnection, MapListRevision revision) {
         if (!active || generation.get() != currentGeneration || connectionGeneration != currentConnection
-                || objectName.equals(mapListObjectName) || mapListQueryRunning) {
+                || !isNewMapListRevision(mapListRevision, revision) || mapListQueryRunning) {
             return;
         }
         DreameVacuumApi api = mapApi;
@@ -627,17 +632,22 @@ public class DreameVacuumHandler extends BaseThingHandler {
             return;
         }
         mapListQueryRunning = true;
-        commandExecutor.execute(() -> refreshMapList(api, device, currentGeneration, currentConnection, objectName));
+        commandExecutor.execute(() -> refreshMapList(api, device, currentGeneration, currentConnection, revision));
+    }
+
+    static boolean isNewMapListRevision(@Nullable MapListRevision current, MapListRevision incoming) {
+        return !incoming.equals(current);
     }
 
     private void refreshMapList(DreameVacuumApi api, DreameDevice device, int currentGeneration, int currentConnection,
-            String objectName) {
+            MapListRevision revision) {
         try {
-            String raw = api.getVacuumMapList(device, objectName, () -> generation.get() == currentGeneration);
+            String raw = api.getVacuumMapList(device, revision.objectName(),
+                    () -> generation.get() == currentGeneration);
             synchronized (this) {
                 if (active && generation.get() == currentGeneration && connectionGeneration == currentConnection) {
                     DreameVacuumMapState.Images images = mapState.acceptMapList(raw);
-                    mapListObjectName = objectName;
+                    mapListRevision = revision;
                     if (images != null) {
                         publishMap(images);
                         logger.debug("Vacuum saved-map room metadata published: {}", mapState.diagnostic());
@@ -688,8 +698,9 @@ public class DreameVacuumHandler extends BaseThingHandler {
 
     private void clearStates() {
         mapState.clear();
+        mapQueryRunning = false;
         mapListQueryRunning = false;
-        mapListObjectName = null;
+        mapListRevision = null;
         immediateBaseRequestTriggered = false;
         mapRevision++;
         updateState("map-png", UnDefType.UNDEF);

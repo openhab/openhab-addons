@@ -88,15 +88,17 @@ class DreameVacuumMapImageTest {
     }
 
     @Test
-    void extractsOnlyTheMapListObjectName() {
+    void extractsTheCompleteMapListRevision() {
         String payload = "{\"method\":\"properties_changed\",\"params\":[{\"siid\":6,\"piid\":8,\"code\":0,"
                 + "\"value\":\"{\\\"object_name\\\":\\\"ali_dreame/device/map-list\\\",\\\"md5\\\":\\\"private\\\"}\"}]}";
-        assertEquals("ali_dreame/device/map-list", DreameVacuumMapImage
-                .mapListObjectNameFromMessage(payload.getBytes(StandardCharsets.UTF_8), "dreame.vacuum.r9445d"));
-        assertNull(DreameVacuumMapImage.mapListObjectNameFromMessage(
+        assertEquals(new DreameVacuumMapImage.MapListRevision("ali_dreame/device/map-list", "private"),
+                DreameVacuumMapImage.mapListRevisionFromMessage(payload.getBytes(StandardCharsets.UTF_8),
+                        "dreame.vacuum.r9445d"));
+        assertNull(DreameVacuumMapImage.mapListRevisionFromMessage(
                 payload.replace("\"piid\":8", "\"piid\":9").getBytes(StandardCharsets.UTF_8), "dreame.vacuum.r9445d"));
-        assertEquals("ali_dreame/device/map-list", DreameVacuumMapImage.mapListObjectName(
-                "\"{\\\"object_name\\\":\\\"ali_dreame/device/map-list\\\",\\\"md5\\\":\\\"private\\\"}\""));
+        assertEquals(new DreameVacuumMapImage.MapListRevision("ali_dreame/device/map-list", "private"),
+                DreameVacuumMapImage.mapListRevision(
+                        "\"{\\\"object_name\\\":\\\"ali_dreame/device/map-list\\\",\\\"md5\\\":\\\"private\\\"}\""));
     }
 
     private static byte[] frame() {

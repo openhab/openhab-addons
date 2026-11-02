@@ -44,6 +44,16 @@ class DreameVacuumCapabilitiesTest {
         assertFalse(DreameVacuumCapabilities.usesNewStateSchema(device("dreame.vacuum.r2316", "unknown")));
     }
 
+    @Test
+    void selectsCleaningModeEncodingFromModelCapabilitiesAndBase() {
+        DreameDevice nonLifting = device("dreame.vacuum.p2008", "");
+        DreameDevice lifting = device("dreame.vacuum.r9445d", "");
+
+        assertFalse(DreameVacuumCapabilities.usesReversedCleaningMode(nonLifting, false));
+        assertTrue(DreameVacuumCapabilities.usesReversedCleaningMode(nonLifting, true));
+        assertTrue(DreameVacuumCapabilities.usesReversedCleaningMode(lifting, false));
+    }
+
     private static DreameDevice device(String model, String version) {
         return new DreameDevice("test", "test", model, version, "", "", "");
     }

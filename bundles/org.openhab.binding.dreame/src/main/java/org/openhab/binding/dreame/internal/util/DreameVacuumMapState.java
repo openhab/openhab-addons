@@ -128,6 +128,13 @@ public final class DreameVacuumMapState {
                             + incoming.grid;
                     return null;
                 }
+                if (incoming.frameId != base.frameId + 1) {
+                    current = null;
+                    needsBase = true;
+                    diagnostic = "frame-gap/type=P/map=" + incoming.mapId + "/frame=" + incoming.frameId + "/expected="
+                            + (base.frameId + 1);
+                    return null;
+                }
                 incoming = merge(base, incoming);
             }
             Images images = render(incoming);

@@ -34,7 +34,6 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.paho.client.mqttv3.MqttException;
 import org.openhab.binding.dreame.internal.api.DreameCloudException;
 import org.openhab.binding.dreame.internal.api.DreameMqttClient;
 import org.openhab.binding.dreame.internal.config.DreameMowerConfiguration;
@@ -108,6 +107,7 @@ public class DreameMowerHandler extends BaseThingHandler {
     private final AtomicBoolean pollInProgress = new AtomicBoolean();
     private final AtomicBoolean pollPending = new AtomicBoolean();
     private final AtomicInteger consecutivePollingFailures = new AtomicInteger();
+    private final AtomicInteger lifecycleGeneration = new AtomicInteger();
     private final Map<DreameProperty, Long> mqttPropertyRevisions = new ConcurrentHashMap<>();
     private DreameMowerConfiguration config = new DreameMowerConfiguration();
     private volatile boolean active;
@@ -128,6 +128,7 @@ public class DreameMowerHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
+        lifecycleGeneration.incrementAndGet();
         active = true;
         config = getConfigAs(DreameMowerConfiguration.class);
         if (config.deviceId.isBlank()) {
@@ -249,7 +250,8 @@ public class DreameMowerHandler extends BaseThingHandler {
     }
 
     @Override
-    public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
+    public synchronized void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
+        lifecycleGeneration.incrementAndGet();
         stopPolling();
         stopMqtt();
         if (active && bridgeStatusInfo.getStatus() == ThingStatus.ONLINE) {
@@ -259,7 +261,7 @@ public class DreameMowerHandler extends BaseThingHandler {
         }
     }
 
-    private void poll() {
+    void poll() {
         if (!active) {
             return;
         }
@@ -268,7 +270,7 @@ public class DreameMowerHandler extends BaseThingHandler {
             return;
         }
         try {
-            doPoll();
+            doPoll(lifecycleGeneration.get());
         } finally {
             pollInProgress.set(false);
             if (active && pollPending.getAndSet(false)) {
@@ -277,7 +279,10 @@ public class DreameMowerHandler extends BaseThingHandler {
         }
     }
 
-    private void doPoll() {
+    private void doPoll(int currentGeneration) {
+        if (!isCurrentLifecycle(currentGeneration)) {
+            return;
+        }
         DreameAccountHandler account = accountHandler();
         DreameDevice device = device(account);
         if (account == null || device == null) {
@@ -288,16 +293,28 @@ public class DreameMowerHandler extends BaseThingHandler {
         try {
             long pollRevision = updateSequence.get();
             DreameStatus status = account.getApiClient().getProperties(device, POLLED_PROPERTIES);
+            if (!isCurrentLifecycle(currentGeneration)) {
+                return;
+            }
             logger.trace("Received properties {} for device {} ({})", status.properties(),
                     DreameDiagnostics.maskIdentifier(device.id()), device.model());
             updateStatusChannels(status, pollRevision);
             refreshStatistics(account, device);
+            if (!isCurrentLifecycle(currentGeneration)) {
+                return;
+            }
             refreshMapData(account, device);
+            if (!isCurrentLifecycle(currentGeneration)) {
+                return;
+            }
             updateDeviceMetadata(device);
             consecutivePollingFailures.set(0);
             updateStatus(ThingStatus.ONLINE);
-            ensureMqtt(account, device);
+            ensureMqtt(account, device, currentGeneration);
         } catch (DreameCloudException e) {
+            if (!isCurrentLifecycle(currentGeneration)) {
+                return;
+            }
             int failures = consecutivePollingFailures.incrementAndGet();
             logger.debug("Cloud polling failed for device {}: {}", DreameDiagnostics.maskIdentifier(device.id()),
                     e.getMessage(), e);
@@ -419,23 +436,29 @@ public class DreameMowerHandler extends BaseThingHandler {
         }, delaySeconds, TimeUnit.SECONDS);
     }
 
-    private void ensureMqtt(DreameAccountHandler account, DreameDevice device) {
+    private void ensureMqtt(DreameAccountHandler account, DreameDevice device, int currentGeneration) {
+        DreameMqttClient replacement = null;
+        boolean accepted = false;
         try {
             DreameMqttConfiguration nextConfiguration = account.getApiClient().mqttConfiguration(device);
-            DreameMqttConfiguration currentConfiguration = mqttConfiguration;
-            DreameMqttClient currentClient = mqttClient;
-            if (currentConfiguration != null && currentConfiguration.sameConnection(nextConfiguration)
-                    && currentClient != null && currentClient.isConnected()) {
+            if (!isCurrentLifecycle(currentGeneration)) {
                 return;
             }
-            stopMqtt();
-            DreameMqttClient newClient = new DreameMqttClient(nextConfiguration, POLLED_PROPERTIES, status -> {
-                if (active) {
+            synchronized (this) {
+                DreameMqttConfiguration currentConfiguration = mqttConfiguration;
+                DreameMqttClient currentClient = mqttClient;
+                if (currentConfiguration != null && currentConfiguration.sameConnection(nextConfiguration)
+                        && currentClient != null && currentClient.isConnected()) {
+                    return;
+                }
+            }
+            replacement = new DreameMqttClient(nextConfiguration, POLLED_PROPERTIES, status -> {
+                if (isCurrentLifecycle(currentGeneration)) {
                     consecutivePollingFailures.set(0);
                     long revision = updateSequence.incrementAndGet();
                     status.properties().forEach(property -> mqttPropertyRevisions.put(property, revision));
                     scheduler.execute(() -> {
-                        if (active) {
+                        if (isCurrentLifecycle(currentGeneration)) {
                             updateStatus(ThingStatus.ONLINE);
                             updateChannelsFromMqtt(status);
                             if (status.mapChanged()) {
@@ -456,14 +479,30 @@ public class DreameMowerHandler extends BaseThingHandler {
                     });
                 }
             });
-            mqttConfiguration = nextConfiguration;
-            mqttClient = newClient;
-            newClient.connect();
-        } catch (DreameCloudException | MqttException e) {
-            stopMqtt();
-            logger.debug("Dreame MQTT connection failed for device {}: {}",
-                    DreameDiagnostics.maskIdentifier(device.id()), e.getMessage(), e);
+            replacement.connect();
+            synchronized (this) {
+                if (isCurrentLifecycle(currentGeneration)) {
+                    stopMqtt();
+                    mqttConfiguration = nextConfiguration;
+                    mqttClient = replacement;
+                    accepted = true;
+                }
+            }
+        } catch (DreameCloudException | IllegalArgumentException e) {
+            if (isCurrentLifecycle(currentGeneration)) {
+                stopMqtt();
+                logger.debug("Dreame MQTT connection failed for device {}: {}",
+                        DreameDiagnostics.maskIdentifier(device.id()), e.getMessage(), e);
+            }
+        } finally {
+            if (!accepted && replacement != null) {
+                replacement.close();
+            }
         }
+    }
+
+    private boolean isCurrentLifecycle(int currentGeneration) {
+        return active && lifecycleGeneration.get() == currentGeneration;
     }
 
     private void updateChannelsFromMqtt(DreameStatus status) {
@@ -718,7 +757,7 @@ public class DreameMowerHandler extends BaseThingHandler {
         }
     }
 
-    private void stopMqtt() {
+    private synchronized void stopMqtt() {
         DreameMqttClient client = mqttClient;
         mqttClient = null;
         mqttConfiguration = null;
@@ -728,7 +767,8 @@ public class DreameMowerHandler extends BaseThingHandler {
     }
 
     @Override
-    public void dispose() {
+    public synchronized void dispose() {
+        lifecycleGeneration.incrementAndGet();
         active = false;
         pollPending.set(false);
         consecutivePollingFailures.set(0);
