@@ -57,7 +57,7 @@ import org.openhab.persistence.victoriametrics.internal.VictoriaMetricsRepositor
 /**
  * @author Joan Pujol Espinar - Initial contribution
  * @author Franz - Initial VictoriaMetrics adaptation
- * @author Michael Weger - Add metric name, unsupported state and unit tag tests
+ * @author Michael Weger - Add metric name, unsupported state, unit tag and string state tests
  */
 @ExtendWith(MockitoExtension.class)
 @NonNullByDefault(value = { DefaultLocation.PARAMETER, DefaultLocation.RETURN_TYPE })
@@ -159,9 +159,58 @@ public class ItemToStorePointCreatorTest {
     }
 
     @Test
-    public void shouldNotConvertNonNumericStates() throws ExecutionException, InterruptedException {
+    public void shouldNotConvertStringStatesWithoutOptIn() throws ExecutionException, InterruptedException {
         StringItem stringItem = new StringItem("myString");
         assertThat(instance.convert(stringItem, new StringType("text"), Instant.now(), null).get(), nullValue());
+
+        MetadataKey metadataKey = new MetadataKey(VictoriaMetricsPersistenceService.SERVICE_NAME, "myString");
+        when(metadataRegistry.get(metadataKey)).thenReturn(
+                new Metadata(metadataKey, "", Map.of(VictoriaMetricsConstants.METADATA_STRING_STATES, "false")));
+        assertThat(instance.convert(stringItem, new StringType("text"), Instant.now(), null).get(), nullValue());
+    }
+
+    @ParameterizedTest
+    @MethodSource
+    public void shouldConvertStringStatesWithOptIn(Object optIn) throws ExecutionException, InterruptedException {
+        StringItem stringItem = new StringItem("myString");
+        MetadataKey metadataKey = new MetadataKey(VictoriaMetricsPersistenceService.SERVICE_NAME, "myString");
+        when(metadataRegistry.get(metadataKey)).thenReturn(new Metadata(metadataKey, "",
+                Map.of(VictoriaMetricsConstants.METADATA_STRING_STATES, optIn, "room", "kitchen")));
+
+        VictoriaMetricsPoint point = instance.convert(stringItem, new StringType("HEATING"), Instant.now(), null).get();
+
+        if (point == null) {
+            Assertions.fail("'point' is null");
+            return;
+        }
+
+        assertThat(point.getStringState(), is("HEATING"));
+        assertThat(point.getTags(), hasEntry("item", "myString"));
+        assertThat(point.getTags(), hasEntry("room", "kitchen"));
+        assertThat(point.getTags(), not(hasKey(VictoriaMetricsConstants.METADATA_STRING_STATES)));
+    }
+
+    @SuppressWarnings("unused")
+    private static Stream<Object> shouldConvertStringStatesWithOptIn() {
+        // Boolean when configured in the UI, String in .items files
+        return Stream.of(true, "true");
+    }
+
+    @Test
+    public void shouldNotConvertEmptyOrTooLongStringStates() throws ExecutionException, InterruptedException {
+        StringItem stringItem = new StringItem("myString");
+        MetadataKey metadataKey = new MetadataKey(VictoriaMetricsPersistenceService.SERVICE_NAME, "myString");
+        when(metadataRegistry.get(metadataKey)).thenReturn(
+                new Metadata(metadataKey, "", Map.of(VictoriaMetricsConstants.METADATA_STRING_STATES, true)));
+
+        assertThat(instance.convert(stringItem, new StringType(""), Instant.now(), null).get(), nullValue());
+        assertThat(instance.convert(stringItem, new StringType("x".repeat(4097)), Instant.now(), null).get(),
+                nullValue());
+        // the limit is in bytes, not characters
+        assertThat(instance.convert(stringItem, new StringType("ä".repeat(2049)), Instant.now(), null).get(),
+                nullValue());
+        assertThat(instance.convert(stringItem, new StringType("x".repeat(4096)), Instant.now(), null).get(),
+                notNullValue());
     }
 
     @Test

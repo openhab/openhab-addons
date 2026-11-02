@@ -12,7 +12,7 @@
  */
 package org.openhab.persistence.victoriametrics.internal;
 
-import static org.openhab.persistence.victoriametrics.internal.VictoriaMetricsConstants.TAG_COMPONENT_NAME;
+import static org.openhab.persistence.victoriametrics.internal.VictoriaMetricsConstants.*;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -24,24 +24,29 @@ import java.util.TreeMap;
 
 import org.eclipse.jdt.annotation.DefaultLocation;
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * Point data to be stored in VictoriaMetrics.
  * <p>
  * A point has either a single value or several components (e.g. hue, saturation and brightness), which are stored as
  * separate samples with the same timestamp and the additional label
- * {@link VictoriaMetricsConstants#TAG_COMPONENT_NAME}.
+ * {@link VictoriaMetricsConstants#TAG_COMPONENT_NAME}. A string state is stored as the label
+ * {@link VictoriaMetricsConstants#TAG_STATE_NAME} of a sample with the value 1.
  *
  * @author Joan Pujol Espinar - Initial contribution
  * @author Franz - Initial VictoriaMetrics adaptation
- * @author Michael Weger - Fix timestamp unit, numeric values and components only
+ * @author Michael Weger - Fix timestamp unit, numeric values, components and string states
  */
 @NonNullByDefault({ DefaultLocation.PARAMETER })
 public class VictoriaMetricsPoint {
+    static final Number STRING_STATE_VALUE = 1;
+
     private final String metricName;
     private final Instant time;
     private final Number value;
     private final Map<String, BigDecimal> components;
+    private final @Nullable String stringState;
     private final Map<String, String> tags;
 
     private VictoriaMetricsPoint(Builder builder) {
@@ -49,6 +54,7 @@ public class VictoriaMetricsPoint {
         time = builder.time;
         value = builder.value;
         components = builder.components;
+        stringState = builder.stringState;
         tags = builder.tags;
     }
 
@@ -75,6 +81,13 @@ public class VictoriaMetricsPoint {
         return Collections.unmodifiableMap(components);
     }
 
+    /**
+     * @return the string state, or <code>null</code> if the point has a numeric value or components
+     */
+    public @Nullable String getStringState() {
+        return stringState;
+    }
+
     public Map<String, String> getTags() {
         return Collections.unmodifiableMap(tags);
     }
@@ -84,6 +97,7 @@ public class VictoriaMetricsPoint {
         private Instant time;
         private Number value;
         private final Map<String, BigDecimal> components = new LinkedHashMap<>();
+        private @Nullable String stringState;
         private final Map<String, String> tags = new TreeMap<>();
 
         private Builder(String metricName) {
@@ -105,6 +119,12 @@ public class VictoriaMetricsPoint {
             return this;
         }
 
+        public Builder withStringState(String val) {
+            stringState = val;
+            value = STRING_STATE_VALUE;
+            return this;
+        }
+
         public Builder withTag(String name, Object value) {
             tags.put(name, value.toString());
             return this;
@@ -122,6 +142,12 @@ public class VictoriaMetricsPoint {
      * @return the formatted lines, without terminator after the last line
      */
     public String toPrometheusFormat() {
+        String localStringState = stringState;
+        if (localStringState != null) {
+            Map<String, String> stateTags = new TreeMap<>(tags);
+            stateTags.put(TAG_STATE_NAME, localStringState);
+            return formatLine(stateTags, value);
+        }
         if (components.isEmpty()) {
             return formatLine(tags, value);
         }
@@ -166,6 +192,7 @@ public class VictoriaMetricsPoint {
     @Override
     public String toString() {
         return "VictoriaMetricsPoint{" + "metricName='" + metricName + '\'' + ", time=" + time + ", value="
-                + (components.isEmpty() ? value : components) + ", tags=" + tags + '}';
+                + (stringState != null ? stringState : components.isEmpty() ? value : components) + ", tags=" + tags
+                + '}';
     }
 }

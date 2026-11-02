@@ -15,6 +15,7 @@ package org.openhab.persistence.victoriametrics;
 import static org.openhab.persistence.victoriametrics.internal.VictoriaMetricsConstants.*;
 
 import java.math.BigDecimal;
+import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -24,6 +25,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CompletableFuture;
@@ -43,7 +45,9 @@ import org.openhab.core.items.Item;
 import org.openhab.core.items.ItemFactory;
 import org.openhab.core.items.ItemRegistry;
 import org.openhab.core.items.ItemUtil;
+import org.openhab.core.items.Metadata;
 import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.types.StringType;
 import org.openhab.core.persistence.FilterCriteria;
 import org.openhab.core.persistence.HistoricItem;
 import org.openhab.core.persistence.ModifiablePersistenceService;
@@ -61,6 +65,7 @@ import org.openhab.persistence.victoriametrics.internal.VictoriaMetricsPersisten
 import org.openhab.persistence.victoriametrics.internal.VictoriaMetricsPoint;
 import org.openhab.persistence.victoriametrics.internal.VictoriaMetricsRepository;
 import org.openhab.persistence.victoriametrics.internal.VictoriaMetricsStateConvertUtils;
+import org.openhab.persistence.victoriametrics.internal.VictoriaMetricsStringStateLimiter;
 import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -79,7 +84,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Franz - Initial contribution
  * @author Joan Pujol Espinar - Original InfluxDB implementation
- * @author Michael Weger - Use Jetty, fix query with alias, store numeric states and components
+ * @author Michael Weger - Use Jetty, fix query with alias, store numeric states, components and string states
  */
 @NonNullByDefault
 @Component(service = { PersistenceService.class,
@@ -92,6 +97,8 @@ public class VictoriaMetricsPersistenceService implements ModifiablePersistenceS
     private final Logger logger = LoggerFactory.getLogger(VictoriaMetricsPersistenceService.class);
 
     private static final int COMMIT_INTERVAL = 3; // in s
+    // default -maxLabelValueLen of VictoriaMetrics
+    private static final int MAX_STRING_STATE_BYTES = 4096;
     protected static final String CONFIG_URI = "persistence:victoriametrics";
 
     // External dependencies
@@ -102,6 +109,7 @@ public class VictoriaMetricsPersistenceService implements ModifiablePersistenceS
     private final VictoriaMetricsConfiguration configuration;
     private final VictoriaMetricsMetricNameResolver metricNameResolver;
     private final VictoriaMetricsRepository repository;
+    private final VictoriaMetricsStringStateLimiter stringStateLimiter;
     private boolean serviceActivated;
 
     // storage
@@ -124,6 +132,8 @@ public class VictoriaMetricsPersistenceService implements ModifiablePersistenceS
         this.metricNameResolver = new VictoriaMetricsMetricNameResolver(configuration, metadataService);
         if (configuration.isValid()) {
             this.repository = createVictoriaMetricsRepository();
+            this.stringStateLimiter = new VictoriaMetricsStringStateLimiter(configuration.getMaxStringStates(),
+                    repository::getStringStates);
             this.repository.connect();
             this.storeJob = ThreadPoolManager.getScheduledPool("org.openhab.victoriametrics")
                     .scheduleWithFixedDelay(this::commit, COMMIT_INTERVAL, COMMIT_INTERVAL, TimeUnit.SECONDS);
@@ -220,7 +230,11 @@ public class VictoriaMetricsPersistenceService implements ModifiablePersistenceS
                 logger.warn("Item name is missing in filter {} when trying to remove data.", filter);
                 return false;
             }
-            return repository.remove(filter);
+            boolean removed = repository.remove(filter);
+            if (removed) {
+                stringStateLimiter.forget(Objects.requireNonNull(filter.getItemName()));
+            }
+            return removed;
         } else {
             logger.debug("Remove query {} ignored, VictoriaMetrics is not connected.", filter);
             return false;
@@ -277,9 +291,14 @@ public class VictoriaMetricsPersistenceService implements ModifiablePersistenceS
 
     private void commit() {
         if (!pointsQueue.isEmpty() && checkConnection()) {
-            List<VictoriaMetricsPoint> points = new ArrayList<>();
-            pointsQueue.drainTo(points);
-            if (!repository.write(points)) {
+            List<VictoriaMetricsPoint> queuedPoints = new ArrayList<>();
+            pointsQueue.drainTo(queuedPoints);
+            List<VictoriaMetricsPoint> points = stringStateLimiter.filter(queuedPoints);
+            if (points == null) {
+                logger.warn("Re-queuing {} elements, failed to read the stored string states.", queuedPoints.size());
+                pointsQueue.addAll(queuedPoints);
+                repository.disconnect();
+            } else if (!repository.write(points)) {
                 logger.warn("Re-queuing {} elements, failed to write batch.", points.size());
                 pointsQueue.addAll(points);
                 repository.disconnect();
@@ -326,10 +345,26 @@ public class VictoriaMetricsPersistenceService implements ModifiablePersistenceS
                 pointBuilder.withValue(value);
             } else if (components != null) {
                 pointBuilder.withComponents(components);
+            } else if (storeState instanceof StringType && isStringStatesEnabled(itemName)) {
+                String stringState = storeState.toFullString();
+                // an empty label value is the same as no label, VictoriaMetrics ignores series with longer values
+                if (stringState.isEmpty()
+                        || stringState.getBytes(StandardCharsets.UTF_8).length > MAX_STRING_STATE_BYTES) {
+                    logger.debug("String state of item '{}' is not stored, it is empty or longer than {} bytes",
+                            itemName, MAX_STRING_STATE_BYTES);
+                    return null;
+                }
+                pointBuilder.withStringState(stringState);
             } else {
                 if (loggedUnsupportedItems.add(itemName)) {
-                    logger.info("Item '{}' is not stored, VictoriaMetrics only supports numeric states, not {}",
-                            itemName, storeState.getClass().getSimpleName());
+                    if (storeState instanceof StringType) {
+                        logger.info(
+                                "Item '{}' is not stored, string states must be enabled with the item metadata '{}'",
+                                itemName, METADATA_STRING_STATES);
+                    } else {
+                        logger.info("Item '{}' is not stored, VictoriaMetrics only supports numeric states, not {}",
+                                itemName, storeState.getClass().getSimpleName());
+                    }
                 }
                 return null;
             }
@@ -356,11 +391,21 @@ public class VictoriaMetricsPersistenceService implements ModifiablePersistenceS
             }
 
             metadataService.getMetaData(alias)
-                    .ifPresent(metadata -> metadata.getConfiguration().forEach((key, tagValue) -> pointBuilder
-                            .withTag(VictoriaMetricsMetricNameResolver.sanitizeLabelName(key), tagValue)));
+                    .ifPresent(metadata -> metadata.getConfiguration().forEach((key, tagValue) -> {
+                        if (!METADATA_STRING_STATES.equals(key)) {
+                            pointBuilder.withTag(VictoriaMetricsMetricNameResolver.sanitizeLabelName(key), tagValue);
+                        }
+                    }));
 
             return pointBuilder.build();
         });
+    }
+
+    private boolean isStringStatesEnabled(String itemName) {
+        // the value is a Boolean when configured in the UI, but a String in .items files
+        Optional<Metadata> metadata = metadataService.getMetaData(itemName);
+        return metadata.isPresent()
+                && Boolean.parseBoolean(String.valueOf(metadata.get().getConfiguration().get(METADATA_STRING_STATES)));
     }
 
     @Reference(cardinality = ReferenceCardinality.AT_LEAST_ONE, policy = ReferencePolicy.DYNAMIC)

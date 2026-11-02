@@ -25,7 +25,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Joan Pujol Espinar - Initial contribution
  * @author Franz - Initial VictoriaMetrics adaptation
- * @author Michael Weger - Remove case conversion, add metric prefix and suffix
+ * @author Michael Weger - Remove case conversion, add metric prefix and suffix, limit string states
  */
 @NonNullByDefault
 public class VictoriaMetricsConfiguration {
@@ -39,6 +39,8 @@ public class VictoriaMetricsConfiguration {
     public static final String ADD_LABEL_TAG_PARAM = "addLabelTag";
     public static final String ADD_TYPE_TAG_PARAM = "addTypeTag";
     public static final String ADD_UNIT_TAG_PARAM = "addUnitTag";
+    public static final String MAX_STRING_STATES_PARAM = "maxStringStates";
+    public static final int DEFAULT_MAX_STRING_STATES = 50;
     private final Logger logger = LoggerFactory.getLogger(VictoriaMetricsConfiguration.class);
     private final String url;
     private final String user;
@@ -50,6 +52,7 @@ public class VictoriaMetricsConfiguration {
     private final boolean addTypeTag;
     private final boolean addLabelTag;
     private final boolean addUnitTag;
+    private final int maxStringStates;
 
     public VictoriaMetricsConfiguration(Map<String, Object> config) {
         url = ConfigParser.valueAsOrElse(config.get(URL_PARAM), String.class, "http://127.0.0.1:8428");
@@ -62,6 +65,8 @@ public class VictoriaMetricsConfiguration {
         addLabelTag = ConfigParser.valueAsOrElse(config.get(ADD_LABEL_TAG_PARAM), Boolean.class, false);
         addTypeTag = ConfigParser.valueAsOrElse(config.get(ADD_TYPE_TAG_PARAM), Boolean.class, false);
         addUnitTag = ConfigParser.valueAsOrElse(config.get(ADD_UNIT_TAG_PARAM), Boolean.class, false);
+        maxStringStates = ConfigParser.valueAsOrElse(config.get(MAX_STRING_STATES_PARAM), Integer.class,
+                DEFAULT_MAX_STRING_STATES);
     }
 
     public boolean isValid() {
@@ -71,8 +76,9 @@ public class VictoriaMetricsConfiguration {
         boolean hasValidPrefix = metricPrefix.isEmpty()
                 || VictoriaMetricsMetricNameResolver.isValidMetricName(metricPrefix);
         boolean hasValidSuffix = VictoriaMetricsMetricNameResolver.isValidMetricNameSuffix(metricSuffix);
+        boolean hasValidMaxStringStates = maxStringStates >= 1;
 
-        if (hasUrl && hasValidCredentials && hasValidPrefix && hasValidSuffix) {
+        if (hasUrl && hasValidCredentials && hasValidPrefix && hasValidSuffix && hasValidMaxStringStates) {
             return true;
         } else {
             String msg = "VictoriaMetrics configuration isn't valid. Addon won't work: ";
@@ -88,6 +94,9 @@ public class VictoriaMetricsConfiguration {
             }
             if (!hasValidSuffix) {
                 reason.add("Metric suffix contains characters not allowed in metric names");
+            }
+            if (!hasValidMaxStringStates) {
+                reason.add("Maximum number of string states must be at least 1");
             }
             logger.warn("{} {}", msg, reason);
             return false;
@@ -130,6 +139,10 @@ public class VictoriaMetricsConfiguration {
         return addLabelTag;
     }
 
+    public int getMaxStringStates() {
+        return maxStringStates;
+    }
+
     public boolean isAddUnitTag() {
         return addUnitTag;
     }
@@ -139,6 +152,6 @@ public class VictoriaMetricsConfiguration {
         return "VictoriaMetricsConfiguration{url='" + url + "', user='" + user + "', password='" + password.length()
                 + " chars', token='" + token.length() + " chars', metricPrefix='" + metricPrefix + "', metricSuffix='"
                 + metricSuffix + "', addCategoryTag=" + addCategoryTag + ", addTypeTag=" + addTypeTag + ", addLabelTag="
-                + addLabelTag + ", addUnitTag=" + addUnitTag + '}';
+                + addLabelTag + ", addUnitTag=" + addUnitTag + ", maxStringStates=" + maxStringStates + '}';
     }
 }

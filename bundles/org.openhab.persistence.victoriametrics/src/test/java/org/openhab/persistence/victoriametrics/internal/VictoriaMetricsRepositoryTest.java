@@ -152,6 +152,20 @@ public class VictoriaMetricsRepositoryTest {
     }
 
     @Test
+    public void writeStringStateAsLabel() {
+        VictoriaMetricsRepository repository = createRepository();
+        VictoriaMetricsPoint point = VictoriaMetricsPoint.newBuilder("Mode")
+                .withTime(Instant.ofEpochMilli(1_767_225_600_123L)).withStringState("Say \"hi\"")
+                .withTag("item", "Mode").build();
+
+        assertThat(repository.write(List.of(point)), is(true));
+
+        assertThat(capturedContent(), is("""
+                Mode{item="Mode",state="Say \\"hi\\""} 1 1767225600123
+                """));
+    }
+
+    @Test
     public void writeIsRetriedOnServerError() {
         when(response.getStatus()).thenReturn(503);
         assertThat(createRepository().write(List.of(createPoint())), is(false));
@@ -247,6 +261,45 @@ public class VictoriaMetricsRepositoryTest {
                         new VictoriaMetricsRow(Instant.ofEpochMilli(2000), "MyItem", new BigDecimal("2.5")),
                         new VictoriaMetricsRow(Instant.ofEpochMilli(3000), "MyItem", new BigDecimal("1.7e12")),
                         new VictoriaMetricsRow(Instant.ofEpochMilli(4000), "MyItem", new BigDecimal("3"))));
+    }
+
+    @Test
+    public void parseExportReadsStringStates() throws IOException {
+        String export = """
+                {"metric":{"__name__":"Mode","item":"Mode","state":"IDLE"},"values":[1,1],"timestamps":[1000,3000]}
+                {"metric":{"__name__":"Mode","item":"Mode","state":"HEATING"},"values":[1],"timestamps":[2000]}
+                """;
+        List<VictoriaMetricsRow> rows = createRepository()
+                .parseExport(new ByteArrayInputStream(export.getBytes(StandardCharsets.UTF_8)));
+
+        assertThat(rows,
+                contains(new VictoriaMetricsRow(Instant.ofEpochMilli(1000), "Mode", "IDLE"),
+                        new VictoriaMetricsRow(Instant.ofEpochMilli(3000), "Mode", "IDLE"),
+                        new VictoriaMetricsRow(Instant.ofEpochMilli(2000), "Mode", "HEATING")));
+    }
+
+    @Test
+    public void getStringStates() {
+        when(response.getStatus()).thenReturn(200);
+        when(response.getContentAsString()).thenReturn("{\"status\":\"success\",\"data\":[\"HEATING\",\"IDLE\"]}");
+
+        Set<String> result = createRepository().getStringStates("Mode", "Say \"hi\"");
+
+        assertThat(result, containsInAnyOrder("HEATING", "IDLE"));
+        verify(httpClient).newRequest("http://localhost:8428/api/v1/label/state/values");
+        verify(request).param("match[]", "{__name__=\"Mode\",item=\"Say \\\"hi\\\"\"}");
+        // the label values API only returns the current day without a start
+        verify(request).param("start", "0.000");
+    }
+
+    @Test
+    public void getStringStatesFailure() {
+        when(response.getStatus()).thenReturn(503);
+        assertThat(createRepository().getStringStates("Mode", "Mode"), nullValue());
+
+        when(response.getStatus()).thenReturn(200);
+        when(response.getContentAsString()).thenReturn("[]");
+        assertThat(createRepository().getStringStates("Mode", "Mode"), nullValue());
     }
 
     @Test

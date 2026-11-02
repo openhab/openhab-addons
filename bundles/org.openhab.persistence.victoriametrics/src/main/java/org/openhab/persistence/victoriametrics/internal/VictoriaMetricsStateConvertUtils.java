@@ -33,6 +33,7 @@ import org.openhab.core.library.items.LocationItem;
 import org.openhab.core.library.items.NumberItem;
 import org.openhab.core.library.items.PlayerItem;
 import org.openhab.core.library.items.RollershutterItem;
+import org.openhab.core.library.items.StringItem;
 import org.openhab.core.library.items.SwitchItem;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
@@ -56,12 +57,14 @@ import org.slf4j.LoggerFactory;
  * VictoriaMetrics samples are 64-bit floating point numbers, so only states with a numeric representation can be
  * stored. Player states are stored as numbers ({@code PAUSE}=0, {@code PLAY}=1, {@code REWIND}=2,
  * {@code FASTFORWARD}=3). {@link HSBType} and {@link PointType} are stored as one sample per component, see
- * {@link #stateToComponents(State)}. Unlike InfluxDB, other states that InfluxDB stores as strings (e.g.
- * {@link StringType}, {@code RawType}) are not supported.
+ * {@link #stateToComponents(State)}. {@link StringType} is only stored for items that opted in, as a label, see
+ * {@link VictoriaMetricsPoint}. Unlike InfluxDB, other states that InfluxDB stores as strings (e.g.
+ * {@code RawType}, {@code StringListType}) are not supported.
  *
  * @author Joan Pujol Espinar - Initial contribution
  * @author Franz - Initial VictoriaMetrics adaptation
- * @author Michael Weger - Restrict to numeric states, store player, color and location states as numbers
+ * @author Michael Weger - Restrict to numeric states, store player, color and location states as numbers,
+ *         restore string states
  */
 @NonNullByDefault
 public class VictoriaMetricsStateConvertUtils {
@@ -191,6 +194,8 @@ public class VictoriaMetricsStateConvertUtils {
                 case 3 -> RewindFastforwardType.FASTFORWARD;
                 default -> UnDefType.UNDEF;
             };
+        } else if (item instanceof StringItem) {
+            return value instanceof String string ? new StringType(string) : UnDefType.UNDEF;
         } else if (item == null) {
             return new StringType(valueStr);
         }

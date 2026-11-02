@@ -28,6 +28,7 @@ import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.core.library.types.StringType;
 import org.openhab.core.persistence.FilterCriteria;
 import org.openhab.core.types.State;
 import org.openhab.persistence.victoriametrics.internal.VictoriaMetricsRepository.VictoriaMetricsRow;
@@ -154,9 +155,11 @@ public class VictoriaMetricsFilterCriteriaQueryCreator {
                 result = result.filter(valueFilter(criteria.getOperator(), new BigDecimal(filterValue.toString())));
             } else if (filterComponents != null) {
                 result = result.filter(componentsFilter(criteria.getOperator(), filterComponents));
+            } else if (filterState instanceof StringType) {
+                result = result.filter(stringFilter(criteria.getOperator(), filterState.toFullString()));
             } else {
-                throw new IllegalArgumentException(
-                        "State " + filterState + " cannot be used as a filter, only numeric states are supported");
+                throw new IllegalArgumentException("State " + filterState
+                        + " cannot be used as a filter, only numeric and string states are supported");
             }
         }
 
@@ -215,6 +218,19 @@ public class VictoriaMetricsFilterCriteriaQueryCreator {
                     .allMatch(entry -> components.get(entry.getKey()) instanceof BigDecimal value
                             && value.compareTo(entry.getValue()) == 0);
             return operator == FilterCriteria.Operator.EQ ? equal : !equal;
+        };
+    }
+
+    private Predicate<VictoriaMetricsRow> stringFilter(FilterCriteria.Operator operator, String filterValue) {
+        // string states are labels without a meaningful order, only equality can be tested
+        if (operator != FilterCriteria.Operator.EQ && operator != FilterCriteria.Operator.NEQ) {
+            throw new IllegalArgumentException("Operator " + operator + " is not supported for string states");
+        }
+        return row -> {
+            if (!(row.value() instanceof String value)) {
+                return false;
+            }
+            return operator == FilterCriteria.Operator.EQ ? value.equals(filterValue) : !value.equals(filterValue);
         };
     }
 
