@@ -118,7 +118,7 @@ public class PullJobTest {
         runJob(URI.create("http://" + InetAddress.getLoopbackAddress().getHostAddress() + ":"
                 + originServer.getAddress().getPort() + "/cal.ics"));
 
-        assertEquals(1, foreignRequests.get(), "Redirect target should be requested exactly once (no retry)");
+        assertEquals(0, foreignRequests.get(), "Redirect must not be followed when credentials are set");
         assertEquals(null, foreignAuthorization.get(), "No credentials may reach the redirect target");
         assertFalse(Objects.requireNonNull(destination).exists());
     }

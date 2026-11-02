@@ -96,8 +96,9 @@ class PullJob implements Runnable {
     private Request createRequest(URI target, @Nullable String digestAuthorization) {
         // A calendar server can close a pooled connection without the client seeing it go, and the
         // next pull minutes later then fails with an EOFException. Do not keep the connection.
-        final Request request = httpClient.newRequest(target).followRedirects(true).method(HttpMethod.GET)
-                .timeout(HTTP_TIMEOUT_SECS, TimeUnit.SECONDS).header(HttpHeader.CONNECTION, "close");
+        final Request request = httpClient.newRequest(target).followRedirects(authentication == null)
+                .method(HttpMethod.GET).timeout(HTTP_TIMEOUT_SECS, TimeUnit.SECONDS)
+                .header(HttpHeader.CONNECTION, "close");
         if (userAgent != null && !userAgent.isBlank()) {
             request.agent(userAgent);
         }
@@ -176,6 +177,15 @@ class PullJob implements Runnable {
                     }
                 }
             }
+        }
+
+        if (authentication != null && HttpStatus.isRedirection(response.getStatus())) {
+            // credentials must not follow a redirect to another origin
+            logger.warn(
+                    "Calendar \"{}\" redirects to \"{}\". Redirects are not followed when credentials are set, use the final URL.",
+                    sourceURI, response.getHeaders().get(HttpHeader.LOCATION));
+            request.abort(new IllegalStateException("Redirect not followed because credentials are configured"));
+            return;
         }
 
         if (response.getStatus() != HttpStatus.OK_200) {
