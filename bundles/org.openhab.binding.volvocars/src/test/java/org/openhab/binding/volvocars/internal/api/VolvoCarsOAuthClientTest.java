@@ -144,6 +144,32 @@ class VolvoCarsOAuthClientTest {
     }
 
     @Test
+    void failedAuthorizationReportsOAuthError() {
+        VolvoCarsOAuthClient client = createClient();
+        String state = stateOf(client.createAuthorizationUrl());
+        http.respond(TOKEN_URL, 400,
+                "{\"error\":\"invalid_grant\",\"error_description\":\"Authorization code is invalid or expired.\"}");
+
+        VolvoCarsException e = assertThrows(VolvoCarsException.class, () -> client.authorize("code", state));
+
+        assertEquals(
+                "Volvo ID token endpoint returned HTTP 400: invalid_grant (Authorization code is invalid or expired.)",
+                e.getMessage());
+        assertFalse(client.isAuthorized());
+    }
+
+    @Test
+    void failedAuthorizationWithoutOAuthErrorReportsStatus() {
+        VolvoCarsOAuthClient client = createClient();
+        String state = stateOf(client.createAuthorizationUrl());
+        http.respond(TOKEN_URL, 503, "<html>Service Unavailable</html>");
+
+        VolvoCarsException e = assertThrows(VolvoCarsException.class, () -> client.authorize("code", state));
+
+        assertEquals("Volvo ID token endpoint returned HTTP 503", e.getMessage());
+    }
+
+    @Test
     void authorizeRejectsUnknownState() {
         VolvoCarsOAuthClient client = createClient();
         client.createAuthorizationUrl();

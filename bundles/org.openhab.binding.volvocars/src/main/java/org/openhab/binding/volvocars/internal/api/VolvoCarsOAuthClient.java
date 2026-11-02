@@ -49,6 +49,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonParser;
+import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSyntaxException;
 
 /**
@@ -248,7 +252,9 @@ public class VolvoCarsOAuthClient {
                     .timeout(REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS).send();
             int status = response.getStatus();
             if (status != HttpStatus.OK_200) {
-                throw new VolvoCarsException("Volvo ID token endpoint returned HTTP " + status, status, false);
+                throw new VolvoCarsException(
+                        "Volvo ID token endpoint returned HTTP " + status + errorDetails(response.getContentAsString()),
+                        status, false);
             }
             TokenResponse token = gson.fromJson(response.getContentAsString(), TokenResponse.class);
             String accessToken = token != null ? token.accessToken : null;
@@ -262,6 +268,25 @@ public class VolvoCarsOAuthClient {
         } catch (ExecutionException | TimeoutException | JsonSyntaxException e) {
             throw new VolvoCarsException("Token request failed: " + e.getMessage(), e);
         }
+    }
+
+    /**
+     * @return the OAuth error of a failed token request, e.g. ": invalid_grant (Authorization code is invalid)", or
+     *         an empty string if the response does not contain one
+     */
+    private static String errorDetails(String content) {
+        try {
+            if (JsonParser.parseString(content) instanceof JsonObject response
+                    && response.get("error") instanceof JsonPrimitive error) {
+                return ": " + error.getAsString()
+                        + (response.get("error_description") instanceof JsonPrimitive description
+                                ? " (" + description.getAsString() + ")"
+                                : "");
+            }
+        } catch (JsonParseException e) {
+            // no OAuth error response
+        }
+        return "";
     }
 
     private String randomUrlSafeString(int numBytes) {
