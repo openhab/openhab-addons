@@ -21,7 +21,8 @@ import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Consumer;
+import java.util.function.BiConsumer;
+import java.util.function.BooleanSupplier;
 import java.util.function.Function;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -32,6 +33,9 @@ import org.slf4j.LoggerFactory;
 /**
  * Serializes GENI exchanges and read-modify-write transactions within a Bluetooth connection.
  * Replies do not carry the requested data ID/sub-ID, so a timeout invalidates the session.
+ * <p>
+ * The writer, listener and connection failure callbacks are never invoked while holding the session lock, so callers
+ * may hold their own locks while calling into the session.
  *
  * @author Jacob Laursen - Initial contribution
  */
@@ -43,7 +47,7 @@ public class GeniSession {
     private final Logger logger = LoggerFactory.getLogger(GeniSession.class);
     private final ScheduledExecutorService scheduler;
     private final Function<byte[], CompletionStage<?>> writer;
-    private final Consumer<Map<GeniMeasurand, BigDecimal>> listener;
+    private final BiConsumer<Map<GeniMeasurand, BigDecimal>, BooleanSupplier> listener;
     private final Runnable connectionFailed;
     private final Deque<Request> queue = new ArrayDeque<>();
 
@@ -55,8 +59,14 @@ public class GeniSession {
     private boolean failed;
     private long generation;
 
+    /**
+     * @param listener receives decoded values together with a check telling whether the session that produced them
+     *            is still current. Values are delivered outside the session lock, so a listener that must not publish
+     *            stale values should perform this check while holding the lock it also holds when stopping or closing
+     *            the session.
+     */
     public GeniSession(ScheduledExecutorService scheduler, Function<byte[], CompletionStage<?>> writer,
-            Consumer<Map<GeniMeasurand, BigDecimal>> listener, Runnable connectionFailed) {
+            BiConsumer<Map<GeniMeasurand, BigDecimal>, BooleanSupplier> listener, Runnable connectionFailed) {
         this.scheduler = scheduler;
         this.writer = writer;
         this.listener = listener;
@@ -115,35 +125,53 @@ public class GeniSession {
         }
     }
 
-    private synchronized void sendNext(long generation) {
-        if (generation != this.generation) {
-            return;
+    private void sendNext(long generation) {
+        Exchange exchange;
+        synchronized (this) {
+            if (generation != this.generation) {
+                return;
+            }
+            sendFuture = null;
+            if (!active || pending != null || queue.isEmpty()) {
+                return;
+            }
+            Request request = queue.removeFirst();
+            exchange = new Exchange(request, request.readRequest.request(), false);
+            begin(exchange);
         }
-        sendFuture = null;
-        if (!active || pending != null || queue.isEmpty()) {
-            return;
-        }
-        Request request = queue.removeFirst();
-        send(new Exchange(request, request.readRequest.request(), false));
-    }
-
-    private void send(Exchange exchange) {
-        pending = exchange;
-        timeoutFuture = scheduler.schedule(() -> fail(exchange, "Timed out waiting for GENI reply"), 5,
-                TimeUnit.SECONDS);
         sendFragment(exchange, 0);
     }
 
-    private synchronized void sendFragment(Exchange exchange, int offset) {
-        if (!active || !exchange.equals(pending)) {
+    private void sendPrepared(Exchange exchange) {
+        synchronized (this) {
+            if (!active || !exchange.equals(pending)) {
+                return;
+            }
+            sendFuture = null;
+            begin(exchange);
+        }
+        sendFragment(exchange, 0);
+    }
+
+    private void begin(Exchange exchange) {
+        pending = exchange;
+        timeoutFuture = scheduler.schedule(() -> fail(exchange, "Timed out waiting for GENI reply"), 5,
+                TimeUnit.SECONDS);
+    }
+
+    private void sendFragment(Exchange exchange, int offset) {
+        if (offset == exchange.frame.length) {
+            completeWrite(exchange);
             return;
         }
-        if (offset == exchange.frame.length) {
-            exchange.written = true;
-            finish(exchange);
-            return;
+        synchronized (this) {
+            if (!active || !exchange.equals(pending)) {
+                return;
+            }
         }
         // The default BLE ATT payload is 20 bytes. Await each write before sending the next fragment.
+        // The write is issued outside the lock; if the session is stopped meanwhile, at most this fragment is sent
+        // on the connection being closed, and its completion is ignored.
         int end = Math.min(offset + 20, exchange.frame.length);
         try {
             writer.apply(Arrays.copyOfRange(exchange.frame, offset, end)).whenComplete((ignored, failure) -> {
@@ -158,63 +186,87 @@ public class GeniSession {
         }
     }
 
-    public synchronized void accept(byte[] notification) {
-        Exchange exchange = pending;
-        if (active && exchange != null && !exchange.received && exchange.decoder.addPacket(notification)) {
-            exchange.received = true;
-            finish(exchange);
+    private void completeWrite(Exchange exchange) {
+        Runnable delivery;
+        synchronized (this) {
+            if (!active || !exchange.equals(pending)) {
+                return;
+            }
+            exchange.written = true;
+            delivery = finish(exchange);
+        }
+        if (delivery != null) {
+            delivery.run();
         }
     }
 
-    private void finish(Exchange exchange) {
+    public void accept(byte[] notification) {
+        Runnable delivery;
+        synchronized (this) {
+            Exchange exchange = pending;
+            if (!active || exchange == null || exchange.received || !exchange.decoder.addPacket(notification)) {
+                return;
+            }
+            exchange.received = true;
+            delivery = finish(exchange);
+        }
+        if (delivery != null) {
+            delivery.run();
+        }
+    }
+
+    /**
+     * Completes the exchange and advances the session. Must be called while holding the session lock.
+     *
+     * @return the delivery of decoded values to run after releasing the lock, or {@code null} if there is none
+     */
+    private @Nullable Runnable finish(Exchange exchange) {
         if (!exchange.written || !exchange.received || !exchange.equals(pending)) {
-            return;
+            return null;
         }
         cancelTimeout();
+        pending = null;
         Request request = exchange.request;
         if (exchange.write) {
-            pending = null;
             if (!exchange.decoder.isWriteAcknowledged()) {
                 logger.debug("Pump rejected {} write; reading back its current setting", request.readRequest);
             }
             queue.addFirst(new Request(request.readRequest, null, 0));
+            scheduleNext();
+            return null;
+        }
+        Map<GeniMeasurand, BigDecimal> values = exchange.decoder.decode();
+        ModeSetting setting = request.setting;
+        byte[] data = exchange.decoder.objectData();
+        if (setting != null && data != null) {
+            // Keep the read-modify-write together, before any queued reads or other mode commands.
+            Exchange write = new Exchange(request, setting.writeRequest(data, request.value), true);
+            pending = write;
+            sendFuture = scheduler.schedule(() -> sendPrepared(write), REQUEST_DELAY_MS, TimeUnit.MILLISECONDS);
         } else {
-            Map<GeniMeasurand, BigDecimal> values = exchange.decoder.decode();
-            listener.accept(values);
+            if (setting != null) {
+                logger.debug("Cannot write {} without a supported settings object", setting);
+            }
+            scheduleNext();
+        }
+        long generation = this.generation;
+        return () -> listener.accept(values, () -> isCurrent(generation));
+    }
+
+    private synchronized boolean isCurrent(long generation) {
+        return active && generation == this.generation;
+    }
+
+    private void fail(Exchange exchange, String reason) {
+        synchronized (this) {
             if (!active || !exchange.equals(pending)) {
                 return;
             }
-            pending = null;
-            ModeSetting setting = request.setting;
-            byte[] data = exchange.decoder.objectData();
-            if (setting != null) {
-                if (data != null) {
-                    // Keep the read-modify-write together, before any queued reads or other mode commands.
-                    Exchange write = new Exchange(request, setting.writeRequest(data, request.value), true);
-                    pending = write;
-                    sendFuture = scheduler.schedule(() -> sendPrepared(write), REQUEST_DELAY_MS, TimeUnit.MILLISECONDS);
-                    return;
-                }
-                logger.debug("Cannot write {} without a supported settings object", setting);
-            }
-        }
-        scheduleNext();
-    }
-
-    private synchronized void sendPrepared(Exchange exchange) {
-        if (active && exchange.equals(pending)) {
-            sendFuture = null;
-            send(exchange);
-        }
-    }
-
-    private synchronized void fail(Exchange exchange, String reason) {
-        if (active && exchange.equals(pending)) {
             logger.debug("{}; reconnecting to discard uncorrelated replies", reason);
             stop();
             failed = true;
-            connectionFailed.run();
         }
+        connectionFailed.run();
     }
 
     private void cancelTimeout() {

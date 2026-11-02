@@ -25,6 +25,7 @@ import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.function.BooleanSupplier;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -77,7 +78,6 @@ public class GrundfosAlpha3Handler extends ConnectedBluetoothHandler {
 
     private volatile @Nullable GeniSession session;
     private volatile boolean disposed = true;
-    private volatile long sessionGeneration;
 
     private @Nullable ScheduledFuture<?> refreshFuture;
 
@@ -92,9 +92,7 @@ public class GrundfosAlpha3Handler extends ConnectedBluetoothHandler {
 
     @Override
     public synchronized void initialize() {
-        long generation = ++sessionGeneration;
-        session = new GeniSession(requestScheduler, this::writePacket, values -> updateChannels(generation, values),
-                this::disconnect);
+        session = new GeniSession(requestScheduler, this::writePacket, this::updateChannels, this::disconnect);
         disposed = false;
         super.initialize();
     }
@@ -289,10 +287,14 @@ public class GrundfosAlpha3Handler extends ConnectedBluetoothHandler {
         }
     }
 
-    private void updateChannels(long generation, Map<GeniMeasurand, BigDecimal> values) {
+    /**
+     * Publishes values while holding the handler lock, which is also held when the session is stopped or closed,
+     * so values from a disconnected, disposed or replaced session are never published.
+     */
+    private synchronized void updateChannels(Map<GeniMeasurand, BigDecimal> values, BooleanSupplier current) {
         for (Entry<GeniMeasurand, BigDecimal> entry : values.entrySet()) {
             // A state callback can dispose and reinitialize the handler before the remaining values are published.
-            if (disposed || generation != sessionGeneration) {
+            if (disposed || !current.getAsBoolean()) {
                 return;
             }
             BigDecimal stateValue = entry.getValue();

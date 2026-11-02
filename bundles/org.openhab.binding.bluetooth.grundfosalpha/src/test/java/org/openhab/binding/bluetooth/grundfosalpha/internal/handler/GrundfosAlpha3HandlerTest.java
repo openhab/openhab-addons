@@ -17,6 +17,10 @@ import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.*;
 import static org.openhab.binding.bluetooth.grundfosalpha.internal.GrundfosAlphaBindingConstants.*;
 
+import java.lang.management.LockInfo;
+import java.lang.management.ManagementFactory;
+import java.lang.management.ThreadInfo;
+import java.lang.management.ThreadMXBean;
 import java.math.BigDecimal;
 import java.nio.ByteBuffer;
 import java.util.ArrayDeque;
@@ -28,6 +32,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.LockSupport;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -47,6 +52,7 @@ import org.openhab.binding.bluetooth.BluetoothDevice;
 import org.openhab.binding.bluetooth.BluetoothDevice.ConnectionState;
 import org.openhab.binding.bluetooth.BluetoothService;
 import org.openhab.binding.bluetooth.grundfosalpha.internal.protocol.CRC16Calculator;
+import org.openhab.binding.bluetooth.notification.BluetoothConnectionStatusNotification;
 import org.openhab.binding.bluetooth.notification.BluetoothScanNotification;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.DecimalType;
@@ -85,6 +91,7 @@ class GrundfosAlpha3HandlerTest {
     private final Queue<Runnable> polls = new ArrayDeque<>();
     private final Queue<Runnable> timeouts = new ArrayDeque<>();
     private @NonNullByDefault({}) GrundfosAlpha3Handler handler;
+    private boolean deadlocked;
 
     @BeforeEach
     void prepareHandler() {
@@ -124,7 +131,10 @@ class GrundfosAlpha3HandlerTest {
 
     @AfterEach
     void disposeHandler() {
-        handler.dispose();
+        // A deadlocked thread still holds the handler lock.
+        if (!deadlocked) {
+            handler.dispose();
+        }
     }
 
     private void request(String channel) {
@@ -194,6 +204,54 @@ class GrundfosAlpha3HandlerTest {
                 "2430F8E70A2C000100010000254357878B439781803D21B00040F19C0040EA4A404536FDB4FFC00000421C000042040000017317"));
 
         verify(callback, times(1)).stateUpdated(any(), any());
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = { false, true })
+    void notificationRacingWithDisconnectOrDisposalNeitherDeadlocksNorPublishesStaleValues(boolean dispose)
+            throws InterruptedException {
+        var characteristic = new BluetoothCharacteristic(UUID.fromString("859cffd1-036e-432a-aa28-1a0085b87ba9"), 1);
+        request(CHANNEL_OPERATING_MODE);
+        var notifier = new Thread(() -> handler.onCharacteristicUpdate(characteristic,
+                HexUtils.hexToBytes("2412F8E70A0E00012F0100000700000046E5C600C536")));
+        // Hold the handler lock, as the framework does when disposing or reporting a connection state change, while
+        // the reply is being processed, and only then stop the session.
+        var closer = new Thread(() -> {
+            synchronized (handler) {
+                notifier.start();
+                awaitBlockedOnHandler(notifier);
+                if (dispose) {
+                    handler.dispose();
+                } else {
+                    handler.onConnectionStateChange(
+                            new BluetoothConnectionStatusNotification(ConnectionState.DISCONNECTED));
+                }
+            }
+        });
+        notifier.setDaemon(true);
+        closer.setDaemon(true);
+
+        closer.start();
+        closer.join(TimeUnit.SECONDS.toMillis(10));
+        notifier.join(TimeUnit.SECONDS.toMillis(10));
+
+        deadlocked = closer.isAlive() || notifier.isAlive();
+        assertThat(deadlocked, is(false));
+        verify(callback, never()).stateUpdated(any(), any());
+    }
+
+    private void awaitBlockedOnHandler(Thread thread) {
+        ThreadMXBean threads = ManagementFactory.getThreadMXBean();
+        long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(10);
+        while (System.nanoTime() < deadline) {
+            ThreadInfo info = threads.getThreadInfo(thread.threadId());
+            LockInfo lock = info == null ? null : info.getLockInfo();
+            if (info != null && info.getThreadState() == Thread.State.BLOCKED && lock != null
+                    && lock.getIdentityHashCode() == System.identityHashCode(handler)) {
+                return;
+            }
+            LockSupport.parkNanos(TimeUnit.MILLISECONDS.toNanos(1));
+        }
     }
 
     private void prepareInitialization() {

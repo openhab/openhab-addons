@@ -15,6 +15,7 @@ package org.openhab.binding.bluetooth.grundfosalpha.internal.protocol;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.everyItem;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.*;
@@ -29,9 +30,11 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.function.BooleanSupplier;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -55,6 +58,8 @@ class GeniSessionTest {
     private final Queue<CompletableFuture<@Nullable Void>> writes = new ArrayDeque<>();
     private final ScheduledFuture<?> timeoutFuture = mock(ScheduledFuture.class);
     private final Runnable connectionFailed = mock(Runnable.class);
+    private final List<Boolean> lockHeldDuringCallbacks = new ArrayList<>();
+    private final List<BooleanSupplier> currentChecks = new ArrayList<>();
     private Runnable afterUpdate = () -> {
     };
     private @NonNullByDefault({}) GeniSession session;
@@ -70,15 +75,26 @@ class GeniSessionTest {
             timeouts.add(call.getArgument(0));
             return timeoutFuture;
         });
+        doAnswer(call -> lockHeldDuringCallbacks.add(Thread.holdsLock(session))).when(connectionFailed).run();
         session = new GeniSession(scheduler, packet -> {
+            lockHeldDuringCallbacks.add(Thread.holdsLock(session));
             packets.add(HexUtils.bytesToHex(packet));
             CompletableFuture<@Nullable Void> write = writes.poll();
             return write == null ? CompletableFuture.completedFuture(null) : write;
-        }, values -> {
-            updates.add(values);
+        }, (values, current) -> {
+            lockHeldDuringCallbacks.add(Thread.holdsLock(session));
+            currentChecks.add(current);
+            if (current.getAsBoolean()) {
+                updates.add(values);
+            }
             afterUpdate.run();
         }, connectionFailed);
         session.start();
+    }
+
+    @AfterEach
+    void callbacksAreNeverInvokedWhileHoldingTheSessionLock() {
+        assertThat(lockHeldDuringCallbacks, everyItem(is(false)));
     }
 
     @Test
@@ -264,8 +280,24 @@ class GeniSessionTest {
         session.write(ModeSetting.ControlMode, 13);
         sends.remove().run();
         session.accept(HexUtils.hexToBytes(CONTROL_REPLY));
-        assertThat(sends, empty());
+        while (!sends.isEmpty()) {
+            sends.remove().run();
+        }
         assertThat(packets, contains("2707E7F80A0356000A04D6"));
+    }
+
+    @Test
+    void valuesFromAStoppedSessionAreReportedAsNotCurrent() {
+        session.read(GeniReadRequest.ControlMode);
+        sends.remove().run();
+        session.accept(HexUtils.hexToBytes(CONTROL_REPLY));
+        assertThat(currentChecks, hasSize(1));
+        assertThat(currentChecks.getFirst().getAsBoolean(), is(true));
+
+        session.stop();
+        session.start();
+
+        assertThat(currentChecks.getFirst().getAsBoolean(), is(false));
     }
 
     @Test
