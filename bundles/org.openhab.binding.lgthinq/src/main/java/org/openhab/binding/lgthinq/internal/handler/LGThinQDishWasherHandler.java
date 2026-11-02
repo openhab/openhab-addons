@@ -35,6 +35,7 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.link.ItemChannelLinkRegistry;
 import org.openhab.core.types.StateOption;
+import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -154,11 +155,11 @@ public class LGThinQDishWasherHandler extends LGThinQAbstractDeviceHandler<DishW
      */
     @Override
     public void onDeviceDisconnected() {
-        updateState(CHANNEL_AC_POWER_ID, OnOffType.OFF);
-        updateState(CHANNEL_WMD_STATE_ID, new StringType(WMD_POWER_OFF_VALUE));
-        updateState(CHANNEL_WMD_COURSE_ID, new StringType("NOT_SELECTED"));
-        updateState(CHANNEL_WMD_SMART_COURSE_ID, new StringType("NOT_SELECTED"));
-        updateState(CHANNEL_WMD_DOOR_LOCK_ID, new StringType("DOOR_LOCK_OFF"));
-        updateState(CHANNEL_WMD_REMAIN_TIME_ID, new StringType("00:00"));
+        updateState(CHANNEL_DASHBOARD_GRP_WITH_SEP + CHANNEL_AC_POWER_ID, OnOffType.OFF);
+        updateState(stateChannelUID, UnDefType.UNDEF);
+        updateState(processStateChannelUID, UnDefType.UNDEF);
+        updateState(courseChannelUID, UnDefType.UNDEF);
+        updateState(doorLockChannelUID, UnDefType.UNDEF);
+        updateState(remainTimeChannelUID, UnDefType.UNDEF);
     }
 }

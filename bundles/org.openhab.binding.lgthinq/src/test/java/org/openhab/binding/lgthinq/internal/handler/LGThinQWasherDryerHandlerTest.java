@@ -33,6 +33,7 @@ import org.openhab.binding.lgthinq.lgservices.model.CommandDefinition;
 import org.openhab.binding.lgthinq.lgservices.model.devices.washerdryer.WasherDryerCapability;
 import org.openhab.binding.lgthinq.lgservices.model.devices.washerdryer.WasherDryerSnapshot;
 import org.openhab.core.io.net.http.HttpClientFactory;
+import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -216,11 +217,17 @@ class LGThinQWasherDryerHandlerTest {
     }
 
     @Test
-    void clearsPreviousAndProcessStatesWhenDeviceDisconnects() {
+    void clearsDashboardChannelsWhenDeviceDisconnects() {
         handler.onDeviceDisconnected();
 
+        verify(callback).stateUpdated(channel(CHANNEL_AC_POWER_ID), OnOffType.OFF);
+        verify(callback).stateUpdated(channel(CHANNEL_WMD_STATE_ID), UnDefType.UNDEF);
         verify(callback).stateUpdated(channel(CHANNEL_WMD_PREVIOUS_STATE_ID), UnDefType.UNDEF);
         verify(callback).stateUpdated(channel(CHANNEL_WMD_PROCESS_STATE_ID), UnDefType.UNDEF);
+        verify(callback).stateUpdated(channel(CHANNEL_WMD_COURSE_ID), UnDefType.UNDEF);
+        verify(callback).stateUpdated(channel(CHANNEL_WMD_TEMP_LEVEL_ID), UnDefType.UNDEF);
+        verify(callback).stateUpdated(channel(CHANNEL_WMD_DOOR_LOCK_ID), UnDefType.UNDEF);
+        verify(callback).stateUpdated(channel(CHANNEL_WMD_REMAIN_TIME_ID), UnDefType.UNDEF);
     }
 
     private LGThinQWasherDryerHandler createHandler() {

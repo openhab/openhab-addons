@@ -428,15 +428,14 @@ public class LGThinQWasherDryerHandler
      */
     @Override
     public void onDeviceDisconnected() {
-        updateState(CHANNEL_AC_POWER_ID, OnOffType.OFF);
-        updateState(CHANNEL_WMD_STATE_ID, new StringType(WMD_POWER_OFF_VALUE));
+        updateState(CHANNEL_DASHBOARD_GRP_WITH_SEP + CHANNEL_AC_POWER_ID, OnOffType.OFF);
+        updateState(stateChannelUID, UnDefType.UNDEF);
         updateState(previousStateChannelUID, UnDefType.UNDEF);
         updateState(processStateChannelUID, UnDefType.UNDEF);
-        updateState(CHANNEL_WMD_COURSE_ID, new StringType("NOT_SELECTED"));
-        updateState(CHANNEL_WMD_SMART_COURSE_ID, new StringType("NOT_SELECTED"));
-        updateState(CHANNEL_WMD_TEMP_LEVEL_ID, new StringType("NOT_SELECTED"));
-        updateState(CHANNEL_WMD_DOOR_LOCK_ID, new StringType("DOOR_LOCK_OFF"));
-        updateState(CHANNEL_WMD_REMAIN_TIME_ID, new StringType("00:00"));
+        updateState(courseChannelUID, UnDefType.UNDEF);
+        updateState(temperatureChannelUID, UnDefType.UNDEF);
+        updateState(doorLockChannelUID, UnDefType.UNDEF);
+        updateState(remainTimeChannelUID, UnDefType.UNDEF);
     }
 
     private State stringState(String value) {
