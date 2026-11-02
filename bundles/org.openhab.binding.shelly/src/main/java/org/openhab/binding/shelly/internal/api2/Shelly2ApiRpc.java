@@ -91,6 +91,7 @@ import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.ShellyScriptPu
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.ShellyScriptResponse;
 import org.openhab.binding.shelly.internal.api2.dto.ShellyPresenceJsonDTO.Shelly2StatusPresence;
 import org.openhab.binding.shelly.internal.config.ShellyApiConfiguration;
+import org.openhab.binding.shelly.internal.handler.ShellyComponents;
 import org.openhab.binding.shelly.internal.handler.ShellyThingInterface;
 import org.openhab.binding.shelly.internal.handler.ShellyThingTable;
 import org.openhab.binding.shelly.internal.util.ShellyVersionComparator;
@@ -615,11 +616,15 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
                     logger.warn("{}: Device requires restart to activate changes", thingName);
                 }
                 status.uptime = params.sys.uptime;
-                status.restartRequired = params.sys.restartRequired;
-                status.ramTotal = params.sys.ramSize;
-                status.ramFree = params.sys.ramFree;
-                status.fsSize = params.sys.fsSize;
-                status.fsFree = params.sys.fsFree;
+                if (params.sys.ramSize != null) {
+                    // NotifyFullStatus only, a NotifyStatus delta must not clear the known values
+                    status.restartRequired = params.sys.restartRequired;
+                    status.ramTotal = params.sys.ramSize;
+                    status.ramFree = params.sys.ramFree;
+                    status.fsSize = params.sys.fsSize;
+                    status.fsFree = params.sys.fsFree;
+                    ShellyComponents.updateDeviceUtilization(getThing(), status);
+                }
                 if (params.sys.wakeupPeriod != null) {
                     profile.updateWakeupPeriod(params.sys.wakeupPeriod / 60);
                 }

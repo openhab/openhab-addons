@@ -376,6 +376,11 @@ public class ShellyHttpClient {
         return timeoutsRecovered.get();
     }
 
+    public void resetTimeoutCounters() {
+        timeoutErrors.set(0);
+        timeoutsRecovered.set(0);
+    }
+
     public void postEvent(String device, String index, String event, Map<String, String> parms)
             throws ShellyApiException {
     }

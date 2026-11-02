@@ -14,9 +14,7 @@ package org.openhab.binding.shelly.internal.handler;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.hasItem;
-import static org.hamcrest.Matchers.hasItems;
-import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
@@ -41,6 +39,7 @@ import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
+import org.openhab.core.types.UnDefType;
 
 /**
  * @author Markus Michels - Initial contribution
@@ -72,24 +71,27 @@ public class ShellyDiagnosticsChannelsTest {
         return handler;
     }
 
-    private static ThingTypeUID thingType(String id) {
-        return new ThingTypeUID(BINDING_ID, id);
-    }
-
     private static String diag(String channel) {
         return CHANNEL_GROUP_DIAG + "#" + channel;
     }
 
+    private static void verifyQuantity(ShellyThingInterface handler, String channel, long expected) {
+        verify(handler).updateChannel(eq(CHANNEL_GROUP_DIAG), eq(channel),
+                argThat(s -> s instanceof QuantityType<?> q && q.longValue() == expected));
+    }
+
     @ParameterizedTest
     @ValueSource(strings = { "shelly1", "shellyblubutton" })
-    void createDiagnosticsChannelsSkipsGen1AndBlu(String thingTypeId) {
+    void diagnosticsAreSkippedForGen1AndBlu(String thingTypeId) {
+        ShellyThingInterface handler = handler(new ThingTypeUID(BINDING_ID, thingTypeId));
         ShellySettingsStatus status = new ShellySettingsStatus();
         status.ramTotal = 50000L;
 
-        Map<String, Channel> channels = ShellyChannelDefinitions.createDiagnosticsChannels(thing(),
-                new ShellyDeviceProfile(thingType(thingTypeId)), status);
+        assertThat(ShellyChannelDefinitions.createDiagnosticsChannels(handler.getThing(), handler.getProfile(), status)
+                .isEmpty(), is(true));
+        ShellyComponents.updateDiagnosticsStats(handler, new ShellyDeviceStats());
 
-        assertThat(channels.isEmpty(), is(true));
+        verify(handler, never()).updateChannel(eq(CHANNEL_GROUP_DIAG), anyString(), any());
     }
 
     @Test
@@ -102,12 +104,9 @@ public class ShellyDiagnosticsChannelsTest {
                 new ShellyDeviceProfile(THING_TYPE_SHELLYPLUS1), status);
 
         assertThat(channels.keySet(),
-                hasItems(diag(CHANNEL_DIAG_TOTALMEM), diag(CHANNEL_DIAG_FREEFS), diag(CHANNEL_DIAG_RESTARTS),
+                containsInAnyOrder(diag(CHANNEL_DIAG_TOTALMEM), diag(CHANNEL_DIAG_FREEFS), diag(CHANNEL_DIAG_RESTARTS),
                         diag(CHANNEL_DIAG_TIMEOUTERRORS), diag(CHANNEL_DIAG_ALARMS), diag(CHANNEL_DIAG_LASTALARM),
                         diag(CHANNEL_DIAG_PROTOCOLERRORS)));
-        assertThat(channels.keySet(), not(hasItem(diag(CHANNEL_DIAG_FREEMEM))));
-        assertThat(channels.keySet(), not(hasItem(diag(CHANNEL_DIAG_TOTALFS))));
-        assertThat(channels.keySet(), not(hasItem(diag(CHANNEL_DIAG_RESTARTREQ))));
     }
 
     @Test
@@ -122,14 +121,10 @@ public class ShellyDiagnosticsChannelsTest {
 
         ShellyComponents.updateDeviceStatus(handler, status);
 
-        verify(handler).updateChannel(eq(CHANNEL_GROUP_DIAG), eq(CHANNEL_DIAG_TOTALMEM),
-                argThat(s -> s instanceof QuantityType<?> q && q.longValue() == 50000));
-        verify(handler).updateChannel(eq(CHANNEL_GROUP_DIAG), eq(CHANNEL_DIAG_FREEMEM),
-                argThat(s -> s instanceof QuantityType<?> q && q.longValue() == 20000));
-        verify(handler).updateChannel(eq(CHANNEL_GROUP_DIAG), eq(CHANNEL_DIAG_TOTALFS),
-                argThat(s -> s instanceof QuantityType<?> q && q.longValue() == 1000000));
-        verify(handler).updateChannel(eq(CHANNEL_GROUP_DIAG), eq(CHANNEL_DIAG_FREEFS),
-                argThat(s -> s instanceof QuantityType<?> q && q.longValue() == 400000));
+        verifyQuantity(handler, CHANNEL_DIAG_TOTALMEM, 50000);
+        verifyQuantity(handler, CHANNEL_DIAG_FREEMEM, 20000);
+        verifyQuantity(handler, CHANNEL_DIAG_TOTALFS, 1000000);
+        verifyQuantity(handler, CHANNEL_DIAG_FREEFS, 400000);
         verify(handler).updateChannel(CHANNEL_GROUP_DIAG, CHANNEL_DIAG_RESTARTREQ, OnOffType.ON);
     }
 
@@ -161,29 +156,22 @@ public class ShellyDiagnosticsChannelsTest {
         verify(handler).updateChannel(CHANNEL_GROUP_DIAG, CHANNEL_DIAG_TIMEOUTERRORS, new DecimalType(3));
         verify(handler).updateChannel(CHANNEL_GROUP_DIAG, CHANNEL_DIAG_ALARMS, new DecimalType(1));
         verify(handler).updateChannel(CHANNEL_GROUP_DIAG, CHANNEL_DIAG_PROTOCOLERRORS, new DecimalType(4));
-        verify(handler).updateChannel(eq(CHANNEL_GROUP_DIAG), eq(CHANNEL_DIAG_MAXITEMP),
-                argThat(s -> s instanceof QuantityType<?> q && q.intValue() == 55));
+        verifyQuantity(handler, CHANNEL_DIAG_MAXITEMP, 55);
         verify(handler).updateChannel(eq(CHANNEL_GROUP_DIAG), eq(CHANNEL_DIAG_LASTALARM),
                 argThat(s -> s instanceof StringType && s.toString().startsWith("OVERTEMP")));
     }
 
     @Test
-    void updateDiagnosticsStatsSkipsMaxTempAndLastAlarmWhenUnset() {
+    void updateDiagnosticsStatsClearsAlarmAndMaxTempAfterStatsReset() {
         ShellyThingInterface handler = handler(THING_TYPE_SHELLYPLUS1);
+        ShellyDeviceStats stats = new ShellyDeviceStats();
+        stats.maxInternalTemp.set(55);
+        stats.lastAlarm.set(new ShellyDeviceStats.ShellyDeviceAlarm("OVERTEMP", 0));
+        ShellyComponents.updateDiagnosticsStats(handler, stats);
 
         ShellyComponents.updateDiagnosticsStats(handler, new ShellyDeviceStats());
 
-        verify(handler, never()).updateChannel(eq(CHANNEL_GROUP_DIAG), eq(CHANNEL_DIAG_MAXITEMP), any());
-        verify(handler, never()).updateChannel(eq(CHANNEL_GROUP_DIAG), eq(CHANNEL_DIAG_LASTALARM), any());
-    }
-
-    @ParameterizedTest
-    @ValueSource(strings = { "shelly1", "shellyblubutton" })
-    void updateDiagnosticsStatsSkipsGen1AndBlu(String thingTypeId) {
-        ShellyThingInterface handler = handler(thingType(thingTypeId));
-
-        ShellyComponents.updateDiagnosticsStats(handler, new ShellyDeviceStats());
-
-        verify(handler, never()).updateChannel(eq(CHANNEL_GROUP_DIAG), anyString(), any());
+        verify(handler).updateChannel(CHANNEL_GROUP_DIAG, CHANNEL_DIAG_LASTALARM, UnDefType.UNDEF);
+        verify(handler).updateChannel(CHANNEL_GROUP_DIAG, CHANNEL_DIAG_MAXITEMP, UnDefType.UNDEF);
     }
 }

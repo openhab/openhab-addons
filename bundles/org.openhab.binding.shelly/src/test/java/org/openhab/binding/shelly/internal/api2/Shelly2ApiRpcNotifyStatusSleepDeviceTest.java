@@ -15,10 +15,17 @@ package org.openhab.binding.shelly.internal.api2;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.openhab.binding.shelly.internal.ShellyBindingConstants.CHANNEL_DIAG_FREEMEM;
+import static org.openhab.binding.shelly.internal.ShellyBindingConstants.CHANNEL_DIAG_RESTARTREQ;
+import static org.openhab.binding.shelly.internal.ShellyBindingConstants.CHANNEL_GROUP_DIAG;
 import static org.openhab.binding.shelly.internal.ShellyDevices.THING_TYPE_SHELLYPLUS1PM;
 import static org.openhab.binding.shelly.internal.ShellyDevices.THING_TYPE_SHELLYPLUSHT;
 
@@ -45,6 +52,8 @@ import org.openhab.binding.shelly.internal.config.ShellyBindingConfiguration;
 import org.openhab.binding.shelly.internal.config.ShellyBindingRuntimeConfig;
 import org.openhab.binding.shelly.internal.handler.ShellyThingInterface;
 import org.openhab.binding.shelly.internal.handler.ShellyThingTable;
+import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.net.NetworkAddressService;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatusDetail;
@@ -105,6 +114,31 @@ public class Shelly2ApiRpcNotifyStatusSleepDeviceTest {
 
         assertThat(f.profile.learnedWakeupPeriod, is(equalTo(0)));
         assertThat(f.profile.updatePeriod, is(equalTo((int) Math.round(7200 * 1.1) + 60)));
+    }
+
+    @Test
+    void fullStatusPushPublishesUtilizationChannels() throws ShellyApiException {
+        Fixture f = build(THING_TYPE_SHELLYPLUSHT, true, ThingStatusDetail.NONE);
+
+        f.rpc.onNotifyStatus(
+                message("""
+                        {"src":"test","method":"NotifyFullStatus","params":{"ts":1.0,"sys":{"ram_size":50000,"ram_free":20000,"fs_size":1000000,"fs_free":400000,"restart_required":true}}}
+                        """));
+
+        verify(f.thing).updateChannel(eq(CHANNEL_GROUP_DIAG), eq(CHANNEL_DIAG_FREEMEM),
+                argThat(s -> s instanceof QuantityType<?> q && q.longValue() == 20000));
+        verify(f.thing).updateChannel(CHANNEL_GROUP_DIAG, CHANNEL_DIAG_RESTARTREQ, OnOffType.ON);
+    }
+
+    @Test
+    void statusDeltaKeepsKnownUtilizationValues() throws ShellyApiException {
+        Fixture f = build(THING_TYPE_SHELLYPLUSHT, true, ThingStatusDetail.NONE);
+        f.profile.status.ramTotal = 50000L;
+
+        f.rpc.onNotifyStatus(message(WAKEUP_ONLY));
+
+        assertThat(f.profile.status.ramTotal, is(equalTo(50000L)));
+        verify(f.thing, never()).updateChannel(eq(CHANNEL_GROUP_DIAG), eq(CHANNEL_DIAG_FREEMEM), any());
     }
 
     private static String wakeupWithPeriod(int seconds) {

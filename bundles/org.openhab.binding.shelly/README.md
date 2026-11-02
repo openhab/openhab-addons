@@ -785,7 +785,7 @@ The add-on firmware version is shown in the Thing property `addonFirmware`; the 
 Gen2+ devices (Plus, Pro, Gen3, Gen4; not BLU) expose a `diagnostics` channel group.
 It provides device utilization data read from the device plus health counters the binding accumulates while the Thing is online.
 All channels are `advanced` and read-only.
-Counters reset when the Thing is re-initialized.
+Counters survive device restarts and reconnects; they reset when the Thing is restarted or its configuration changes.
 
 | Group       | Channel         | Type               | read-only | Description                                                                          |
 | ----------- | --------------- | ------------------ | --------- | ------------------------------------------------------------------------------------ |

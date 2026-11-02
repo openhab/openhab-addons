@@ -106,26 +106,7 @@ public class ShellyComponents {
                     ShellyChannelDefinitions.createLoraChannels(thingHandler.getThing(), profile));
             reconcileLoraChannels(thingHandler, profile);
 
-            if (status.ramTotal != null) {
-                thingHandler.updateChannel(CHANNEL_GROUP_DIAG, CHANNEL_DIAG_TOTALMEM,
-                        toQuantityType(status.ramTotal.doubleValue(), Units.BYTE));
-            }
-            if (status.ramFree != null) {
-                thingHandler.updateChannel(CHANNEL_GROUP_DIAG, CHANNEL_DIAG_FREEMEM,
-                        toQuantityType(status.ramFree.doubleValue(), Units.BYTE));
-            }
-            if (status.fsSize != null) {
-                thingHandler.updateChannel(CHANNEL_GROUP_DIAG, CHANNEL_DIAG_TOTALFS,
-                        toQuantityType(status.fsSize.doubleValue(), Units.BYTE));
-            }
-            if (status.fsFree != null) {
-                thingHandler.updateChannel(CHANNEL_GROUP_DIAG, CHANNEL_DIAG_FREEFS,
-                        toQuantityType(status.fsFree.doubleValue(), Units.BYTE));
-            }
-            if (status.restartRequired != null) {
-                thingHandler.updateChannel(CHANNEL_GROUP_DIAG, CHANNEL_DIAG_RESTARTREQ,
-                        getOnOff(status.restartRequired));
-            }
+            updateDeviceUtilization(thingHandler, status);
         }
 
         thingHandler.updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_FIRMWARE, getStringType(profile.fwVersion));
@@ -164,6 +145,28 @@ public class ShellyComponents {
     }
 
     /**
+     * Publish the utilization values reported by the device (Gen2+ only). Called from the status poll and for
+     * NotifyFullStatus pushes, because a sleeping device can't be polled.
+     *
+     * @param thingHandler Thing Handler instance
+     * @param status Status message
+     */
+    public static void updateDeviceUtilization(ShellyThingInterface thingHandler, ShellySettingsStatus status) {
+        if (status.ramTotal == null) {
+            return; // not reported yet, the device provides all utilization values together
+        }
+        thingHandler.updateChannel(CHANNEL_GROUP_DIAG, CHANNEL_DIAG_TOTALMEM,
+                toQuantityType(status.ramTotal.doubleValue(), Units.BYTE));
+        thingHandler.updateChannel(CHANNEL_GROUP_DIAG, CHANNEL_DIAG_FREEMEM,
+                toQuantityType(status.ramFree.doubleValue(), Units.BYTE));
+        thingHandler.updateChannel(CHANNEL_GROUP_DIAG, CHANNEL_DIAG_TOTALFS,
+                toQuantityType(status.fsSize.doubleValue(), Units.BYTE));
+        thingHandler.updateChannel(CHANNEL_GROUP_DIAG, CHANNEL_DIAG_FREEFS,
+                toQuantityType(status.fsFree.doubleValue(), Units.BYTE));
+        thingHandler.updateChannel(CHANNEL_GROUP_DIAG, CHANNEL_DIAG_RESTARTREQ, getOnOff(status.restartRequired));
+    }
+
+    /**
      * Publish the binding-computed health diagnostics (Gen2+ only): restart/error counters, the last alarm and the
      * maximum internal temperature measured since the Thing was initialized.
      *
@@ -183,17 +186,16 @@ public class ShellyComponents {
         thingHandler.updateChannel(CHANNEL_GROUP_DIAG, CHANNEL_DIAG_PROTOCOLERRORS,
                 getDecimal(stats.protocolErrors.get()));
 
+        // Resetting stats doesn't reset linked Item states, so unset values have to be published as UNDEF
         ShellyDeviceStats.ShellyDeviceAlarm lastAlarm = stats.lastAlarm.get();
-        if (lastAlarm != null) {
-            thingHandler.updateChannel(CHANNEL_GROUP_DIAG, CHANNEL_DIAG_LASTALARM,
-                    getStringType(lastAlarm.message() + " (" + convertTimestamp(lastAlarm.timeStamp()) + ")"));
-        }
+        thingHandler.updateChannel(CHANNEL_GROUP_DIAG, CHANNEL_DIAG_LASTALARM,
+                lastAlarm != null
+                        ? getStringType(lastAlarm.message() + " (" + convertTimestamp(lastAlarm.timeStamp()) + ")")
+                        : UnDefType.UNDEF);
 
         int maxTemp = stats.maxInternalTemp.get();
-        if (maxTemp > 0) {
-            thingHandler.updateChannel(CHANNEL_GROUP_DIAG, CHANNEL_DIAG_MAXITEMP,
-                    toQuantityType((double) maxTemp, DIGITS_TEMP, SIUnits.CELSIUS));
-        }
+        thingHandler.updateChannel(CHANNEL_GROUP_DIAG, CHANNEL_DIAG_MAXITEMP,
+                maxTemp > 0 ? toQuantityType((double) maxTemp, DIGITS_TEMP, SIUnits.CELSIUS) : UnDefType.UNDEF);
     }
 
     public static boolean updateRelay(ShellyBaseHandler thingHandler, ShellySettingsStatus status, int id) {
