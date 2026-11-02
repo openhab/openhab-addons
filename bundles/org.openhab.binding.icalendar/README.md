@@ -29,6 +29,12 @@ Each `calendar` Thing requires the following configuration parameters:
 | `authorizationCode` | The authorization code to permit the execution of embedded command tags. If set, the binding checks that the authorization code in the command tag matches before executing any commands. | optional                      |
 | `userAgent`         | Some providers require a specific user agent header. If left empty, the default Jetty header is used.                                                                                     | optional                      |
 
+If `username` and `password` are set, the credentials are only sent to the host of the `url`.
+Redirects are then followed by the binding itself (at most 5): within the same origin and from `http` to `https` on the same host.
+A redirect to another host, from `https` to `http` or with an invalid `Location` header is not followed, a warning is logged and the pull is aborted.
+In this case the final URL has to be used as `url`.
+Without credentials redirects are followed as usual.
+
 ### Configuration for `eventfilter`
 
 Each `eventfilter` Thing requires a bridge of type `calendar` and has following configuration options:
