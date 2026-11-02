@@ -241,8 +241,8 @@ public class AccountHandler extends BaseBridgeHandler {
     }
 
     private void setAuthorizationRequired() {
-        updateStatus(ThingStatusDetail.AUTHORIZATION_PENDING,
-                "@text/offline.authorization-pending [\"" + VolvoCarsAuthServlet.SERVLET_PATH + "\"]");
+        // the Main UI shows the placeholder URL in the text as a link to the authorization page of the openHAB server
+        updateStatus(ThingStatusDetail.AUTHORIZATION_PENDING, "@text/offline.authorization-pending");
     }
 
     /**

@@ -114,7 +114,7 @@ This does not need the redirect URI, so it also works if the redirect URI is not
 Volvo ID issues a new refresh token on every renewal and invalidates a refresh token that is not used within 7 days.
 The binding therefore renews the tokens at least once a day, even if no vehicle is polled.
 You have to authorize again if openHAB was not running for more than 7 days, or after the maximum validity of an authorization (6 months according to Volvo).
-In that case, or if Volvo revokes the authorization, the bridge goes offline with a hint to the authorization page.
+In that case, or if Volvo revokes the authorization, the bridge goes offline with a link to the authorization page in its status.
 Changing the client ID also requires a new authorization.
 
 ### `vehicle` Thing Configuration
