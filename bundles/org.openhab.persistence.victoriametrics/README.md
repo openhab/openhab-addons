@@ -176,14 +176,19 @@ Each state is stored as a sample with the value `1` and the state in the label `
 ```text
 Heating_Mode{item="Heating_Mode",state="HEATING"} 1 1793600000000
 Heating_Mode{item="Heating_Mode",state="IDLE"} 1 1793600060000
+Heating_Mode{item="Heating_Mode"} 1 1793600120000
 ```
+
+VictoriaMetrics treats an empty label value as no label, so an empty string is stored without the label `state`, as in the last line.
+In PromQL, `state=""` matches these samples.
 
 The states do not need to be configured, but every distinct state creates a new series in VictoriaMetrics.
 A few states per item have no measurable impact, but each series uses space in the index, so free text (messages, JSON, timestamps) would make the index grow without limit.
 To protect the database, only the first `maxStringStates` (default 50) distinct states of an item are stored.
 Further new states are not stored and a warning is logged once per item.
 The states already stored are read from VictoriaMetrics, so the limit also applies after a restart.
-Empty strings are not stored, because an empty label value is the same as no label, and neither are states longer than 4096 bytes, which VictoriaMetrics ignores by default (`-maxLabelValueLen`).
+The empty string does not count towards the limit.
+States longer than 4096 bytes are not stored, because VictoriaMetrics ignores them by default (`-maxLabelValueLen`).
 
 As a state filter in queries, only equality (`EQ` and `NEQ`) is supported.
 In Grafana, a _State timeline_ panel with the query `Heating_Mode{item="Heating_Mode"}` and the legend `{{state}}` shows the states over time.

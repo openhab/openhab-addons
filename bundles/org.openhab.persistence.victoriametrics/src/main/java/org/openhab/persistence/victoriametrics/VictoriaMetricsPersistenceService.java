@@ -347,11 +347,10 @@ public class VictoriaMetricsPersistenceService implements ModifiablePersistenceS
                 pointBuilder.withComponents(components);
             } else if (storeState instanceof StringType && isStringStatesEnabled(itemName)) {
                 String stringState = storeState.toFullString();
-                // an empty label value is the same as no label, VictoriaMetrics ignores series with longer values
-                if (stringState.isEmpty()
-                        || stringState.getBytes(StandardCharsets.UTF_8).length > MAX_STRING_STATE_BYTES) {
-                    logger.debug("String state of item '{}' is not stored, it is empty or longer than {} bytes",
-                            itemName, MAX_STRING_STATE_BYTES);
+                // VictoriaMetrics ignores series with longer label values
+                if (stringState.getBytes(StandardCharsets.UTF_8).length > MAX_STRING_STATE_BYTES) {
+                    logger.debug("String state of item '{}' is not stored, it is longer than {} bytes", itemName,
+                            MAX_STRING_STATE_BYTES);
                     return null;
                 }
                 pointBuilder.withStringState(stringState);

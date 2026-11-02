@@ -131,7 +131,9 @@ public class VictoriaMetricsStateConvertUtilsTest {
     public void convertStringToState() {
         StringItem item = new StringItem("name");
         assertThat(VictoriaMetricsStateConvertUtils.objectToState("HEATING", item), is(new StringType("HEATING")));
-        assertThat(VictoriaMetricsStateConvertUtils.objectToState(BigDecimal.ONE, item), is(UnDefType.UNDEF));
+        // the empty string state is stored without label
+        assertThat(VictoriaMetricsStateConvertUtils.objectToState(BigDecimal.ONE, item), is(new StringType("")));
+        assertThat(VictoriaMetricsStateConvertUtils.objectToState(new BigDecimal("2"), item), is(UnDefType.UNDEF));
     }
 
     @Test

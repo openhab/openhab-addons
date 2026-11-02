@@ -166,6 +166,20 @@ public class VictoriaMetricsRepositoryTest {
     }
 
     @Test
+    public void writeEmptyStringStateWithoutLabel() {
+        VictoriaMetricsRepository repository = createRepository();
+        VictoriaMetricsPoint point = VictoriaMetricsPoint.newBuilder("Mode")
+                .withTime(Instant.ofEpochMilli(1_767_225_600_123L)).withStringState("").withTag("item", "Mode").build();
+
+        assertThat(repository.write(List.of(point)), is(true));
+
+        // VictoriaMetrics treats an empty label value as no label
+        assertThat(capturedContent(), is("""
+                Mode{item="Mode"} 1 1767225600123
+                """));
+    }
+
+    @Test
     public void writeIsRetriedOnServerError() {
         when(response.getStatus()).thenReturn(503);
         assertThat(createRepository().write(List.of(createPoint())), is(false));

@@ -149,7 +149,9 @@ public class VictoriaMetricsFilterCriteriaQueryCreatorTest {
     public void testStringFilter() {
         List<VictoriaMetricsRow> states = List.of(new VictoriaMetricsRow(T0, ITEM_NAME, "HEATING"),
                 new VictoriaMetricsRow(T0.plusSeconds(1), ITEM_NAME, "IDLE"),
-                new VictoriaMetricsRow(T0.plusSeconds(2), ITEM_NAME, "HEATING"));
+                new VictoriaMetricsRow(T0.plusSeconds(2), ITEM_NAME, "HEATING"),
+                // the empty string state is stored without label
+                new VictoriaMetricsRow(T0.plusSeconds(3), ITEM_NAME, BigDecimal.ONE));
         FilterCriteria criteria = createBaseCriteria().setOrdering(FilterCriteria.Ordering.ASCENDING)
                 .setState(new StringType("HEATING"));
 
@@ -157,7 +159,11 @@ public class VictoriaMetricsFilterCriteriaQueryCreatorTest {
         assertThat(times(instance.applyCriteria(states.stream(), criteria)), contains(0L, 2L));
 
         criteria.setOperator(FilterCriteria.Operator.NEQ);
-        assertThat(times(instance.applyCriteria(states.stream(), criteria)), contains(1L));
+        assertThat(times(instance.applyCriteria(states.stream(), criteria)), contains(1L, 3L));
+
+        criteria.setState(new StringType(""));
+        criteria.setOperator(FilterCriteria.Operator.EQ);
+        assertThat(times(instance.applyCriteria(states.stream(), criteria)), contains(3L));
 
         criteria.setOperator(FilterCriteria.Operator.GT);
         assertThrows(IllegalArgumentException.class, () -> instance.applyCriteria(states.stream(), criteria));
