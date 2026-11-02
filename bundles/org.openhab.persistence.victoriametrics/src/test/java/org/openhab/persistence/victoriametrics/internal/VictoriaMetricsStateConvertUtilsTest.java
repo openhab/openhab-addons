@@ -21,6 +21,7 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
+import java.util.Map;
 
 import javax.measure.Unit;
 
@@ -29,9 +30,11 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.openhab.core.i18n.UnitProvider;
+import org.openhab.core.library.items.ColorItem;
 import org.openhab.core.library.items.ContactItem;
 import org.openhab.core.library.items.DateTimeItem;
 import org.openhab.core.library.items.DimmerItem;
+import org.openhab.core.library.items.LocationItem;
 import org.openhab.core.library.items.NumberItem;
 import org.openhab.core.library.items.PlayerItem;
 import org.openhab.core.library.items.RollershutterItem;
@@ -124,10 +127,52 @@ public class VictoriaMetricsStateConvertUtilsTest {
     }
 
     @Test
+    public void convertHSBStateToComponents() {
+        assertThat(VictoriaMetricsStateConvertUtils.stateToObject(new HSBType("120,100,50")), nullValue());
+        assertThat(VictoriaMetricsStateConvertUtils.stateToComponents(new HSBType("120.5,100,50")), is(Map.of("hue",
+                new BigDecimal("120.5"), "saturation", new BigDecimal("100"), "brightness", new BigDecimal("50"))));
+    }
+
+    @Test
+    public void convertPointStateToComponents() {
+        assertThat(VictoriaMetricsStateConvertUtils.stateToObject(new PointType("52.5,13.4")), nullValue());
+        assertThat(VictoriaMetricsStateConvertUtils.stateToComponents(new PointType("52.5200066,13.404954,34")),
+                is(Map.of("latitude", new BigDecimal("52.5200066"), "longitude", new BigDecimal("13.404954"),
+                        "altitude", new BigDecimal("34"))));
+    }
+
+    @Test
+    public void convertComponentsToColorState() {
+        ColorItem item = new ColorItem("name");
+        Map<String, BigDecimal> components = Map.of("hue", new BigDecimal("120.5"), "saturation", new BigDecimal("100"),
+                "brightness", new BigDecimal("50"));
+        assertThat(VictoriaMetricsStateConvertUtils.objectToState(components, item), is(new HSBType("120.5,100,50")));
+        // incomplete or single values cannot be converted
+        assertThat(VictoriaMetricsStateConvertUtils.objectToState(Map.of("hue", BigDecimal.ONE), item),
+                is(UnDefType.UNDEF));
+        assertThat(VictoriaMetricsStateConvertUtils.objectToState(BigDecimal.ONE, item), is(UnDefType.UNDEF));
+    }
+
+    @Test
+    public void convertComponentsToLocationState() {
+        LocationItem item = new LocationItem("name");
+        assertThat(
+                VictoriaMetricsStateConvertUtils.objectToState(Map.of("latitude", new BigDecimal("52.5200066"),
+                        "longitude", new BigDecimal("13.404954"), "altitude", new BigDecimal("34")), item),
+                is(new PointType("52.5200066,13.404954,34")));
+        assertThat(
+                VictoriaMetricsStateConvertUtils.objectToState(
+                        Map.of("latitude", new BigDecimal("52.5"), "longitude", new BigDecimal("13.4")), item),
+                is(new PointType("52.5,13.4")));
+        assertThat(VictoriaMetricsStateConvertUtils.objectToState(Map.of("latitude", BigDecimal.ONE), item),
+                is(UnDefType.UNDEF));
+    }
+
+    @Test
     public void convertNonNumericStatesIsNotSupported() {
         assertThat(VictoriaMetricsStateConvertUtils.stateToObject(new StringType("text")), nullValue());
-        assertThat(VictoriaMetricsStateConvertUtils.stateToObject(new HSBType("120,100,50")), nullValue());
-        assertThat(VictoriaMetricsStateConvertUtils.stateToObject(new PointType("52.5,13.4")), nullValue());
+        assertThat(VictoriaMetricsStateConvertUtils.stateToComponents(new StringType("text")), nullValue());
+        assertThat(VictoriaMetricsStateConvertUtils.stateToComponents(new DecimalType(1)), nullValue());
         assertThat(
                 VictoriaMetricsStateConvertUtils.stateToObject(
                         new RawType(new byte[] { 0x64, 0x66, 0x55, 0x00, 0x34 }, RawType.DEFAULT_MIME_TYPE)),

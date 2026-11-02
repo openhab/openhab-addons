@@ -29,6 +29,7 @@ public class VictoriaMetricsConstants {
     public static final String TAG_TYPE_NAME = "type";
     public static final String TAG_LABEL_NAME = "label";
     public static final String TAG_UNIT_NAME = "unit";
+    public static final String TAG_COMPONENT_NAME = "component";
 
     public static final String PATH_HEALTH = "/health";
     public static final String PATH_IMPORT = "/api/v1/import/prometheus";

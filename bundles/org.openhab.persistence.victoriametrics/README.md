@@ -14,7 +14,10 @@ VictoriaMetrics is compatible with the Prometheus query API, so tools such as [G
   - `OnOffType` and `OpenClosedType` (Switch and Contact items) are stored as 0 or 1.
   - `DateTimeType` is stored as milliseconds since 1970-01-01T00:00:00Z.
   - `PlayPauseType` and `RewindFastforwardType` (Player items) are stored as 0 (`PAUSE`), 1 (`PLAY`), 2 (`REWIND`) or 3 (`FASTFORWARD`).
-  - All other types (String, Color, Location, Image and Call items) are **not** persisted.
+  - `HSBType` (Color items) and `PointType` (Location items) are stored as three samples with the same timestamp, distinguished by the label `component`: `hue`, `saturation` and `brightness`, or `latitude`, `longitude` and `altitude`.
+    In Grafana, you can for example plot the brightness of a light with `MyLight{component="brightness"}`.
+    As a state filter in queries, only equality (`EQ` and `NEQ`) is supported for these types.
+  - All other types (String, Image and Call items) are **not** persisted.
     An info message is logged once per item.
 - If configured, extra labels for item category, label, type or unit can be added for each sample.
 
@@ -119,7 +122,7 @@ temperature{item="tempBath",floor="firstfloor"}
 
 You can now easily select all temperatures of the first floor (`temperature{floor="firstfloor"}`) or the average temperature of the ground floor (`avg(temperature{floor="groundfloor"})`).
 
-_Warning:_ Do **not** override the label `item` within the metadata.
+_Warning:_ Do **not** override the labels `item` and `component` within the metadata.
 This label is used internally by openHAB, and changing it will lead to problems querying the persisted data points.
 
 #### Extended Automatic Tagging
@@ -195,7 +198,7 @@ If items are persisted only on change, use `last_over_time(MyItem[1d])` to draw 
 
 ## Limitations
 
-- Only numeric states are persisted, see [Database Structure](#database-structure).
+- String, Image and Call items are not persisted, see [Database Structure](#database-structure).
 - Values are stored as 64-bit floating point numbers, so decimal values with more than 15 significant digits lose precision.
 - Removing persisted data (e.g. via the REST API) is only possible for all data of an item.
   VictoriaMetrics can only delete complete series, so removing a time range or values filtered by state is rejected.

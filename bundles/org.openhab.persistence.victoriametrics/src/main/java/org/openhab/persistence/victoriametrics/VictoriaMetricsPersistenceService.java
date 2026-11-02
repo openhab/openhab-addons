@@ -14,6 +14,7 @@ package org.openhab.persistence.victoriametrics;
 
 import static org.openhab.persistence.victoriametrics.internal.VictoriaMetricsConstants.*;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -78,7 +79,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Franz - Initial contribution
  * @author Joan Pujol Espinar - Original InfluxDB implementation
- * @author Michael Weger - Use Jetty, fix query with alias, skip non-numeric states
+ * @author Michael Weger - Use Jetty, fix query with alias, store numeric states and components
  */
 @NonNullByDefault
 @Component(service = { PersistenceService.class,
@@ -315,18 +316,23 @@ public class VictoriaMetricsPersistenceService implements ModifiablePersistenceS
 
             State storeState = Objects
                     .requireNonNullElse(state.as(desiredClasses.get(ItemUtil.getMainItemType(itemType))), state);
+            VictoriaMetricsPoint.Builder pointBuilder = VictoriaMetricsPoint
+                    .newBuilder(metricNameResolver.getMetricName(alias)).withTime(timeStamp)
+                    .withTag(TAG_ITEM_NAME, alias);
+
             Number value = VictoriaMetricsStateConvertUtils.stateToObject(storeState);
-            if (value == null) {
+            Map<String, BigDecimal> components = VictoriaMetricsStateConvertUtils.stateToComponents(storeState);
+            if (value != null) {
+                pointBuilder.withValue(value);
+            } else if (components != null) {
+                pointBuilder.withComponents(components);
+            } else {
                 if (loggedUnsupportedItems.add(itemName)) {
                     logger.info("Item '{}' is not stored, VictoriaMetrics only supports numeric states, not {}",
                             itemName, storeState.getClass().getSimpleName());
                 }
                 return null;
             }
-
-            VictoriaMetricsPoint.Builder pointBuilder = VictoriaMetricsPoint
-                    .newBuilder(metricNameResolver.getMetricName(alias)).withTime(timeStamp).withValue(value)
-                    .withTag(TAG_ITEM_NAME, alias);
 
             if (configuration.isAddCategoryTag()) {
                 String categoryName = Objects.requireNonNullElse(category, "n/a");

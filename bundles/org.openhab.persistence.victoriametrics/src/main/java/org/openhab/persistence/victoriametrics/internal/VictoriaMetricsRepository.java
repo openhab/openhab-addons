@@ -24,8 +24,11 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Base64;
+import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -59,7 +62,7 @@ import com.google.gson.JsonParser;
  *
  * @author Joan Pujol Espinar - Initial contribution
  * @author Franz - Initial VictoriaMetrics adaptation
- * @author Michael Weger - Use Jetty, query raw samples, restrict remove to whole series
+ * @author Michael Weger - Use Jetty, query raw samples, restrict remove to whole series, join state components
  */
 @NonNullByDefault
 public class VictoriaMetricsRepository {
@@ -254,7 +257,8 @@ public class VictoriaMetricsRepository {
     }
 
     /**
-     * Parse the JSON lines returned by the export API, skipping non-finite values
+     * Parse the JSON lines returned by the export API, skipping non-finite values and merging the components of a
+     * state into one row
      *
      * @param inputStream the response body
      * @return the samples of all exported series
@@ -262,6 +266,7 @@ public class VictoriaMetricsRepository {
      */
     List<VictoriaMetricsRow> parseExport(InputStream inputStream) throws IOException {
         List<VictoriaMetricsRow> rows = new ArrayList<>();
+        Map<ComponentKey, Map<String, BigDecimal>> componentRows = new LinkedHashMap<>();
         BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
         String line;
         while ((line = reader.readLine()) != null) {
@@ -280,15 +285,28 @@ public class VictoriaMetricsRepository {
                 itemElement = metric.get(LABEL_METRIC_NAME);
             }
             String itemName = itemElement != null ? itemElement.getAsString() : "";
+            JsonElement componentElement = metric.get(TAG_COMPONENT_NAME);
             for (int i = 0; i < values.size(); i++) {
                 BigDecimal value = toBigDecimal(values.get(i));
-                if (value != null) {
-                    rows.add(new VictoriaMetricsRow(Instant.ofEpochMilli(timestamps.get(i).getAsLong()), itemName,
-                            value));
+                if (value == null) {
+                    continue;
+                }
+                Instant time = Instant.ofEpochMilli(timestamps.get(i).getAsLong());
+                if (componentElement == null) {
+                    rows.add(new VictoriaMetricsRow(time, itemName, value));
+                } else {
+                    componentRows.computeIfAbsent(new ComponentKey(time, itemName), k -> new LinkedHashMap<>())
+                            .put(componentElement.getAsString(), value);
                 }
             }
         }
+        // the components of a state are stored as separate series with the same timestamp
+        componentRows.forEach((key, components) -> rows
+                .add(new VictoriaMetricsRow(key.time(), key.itemName(), Collections.unmodifiableMap(components))));
         return rows;
+    }
+
+    private record ComponentKey(Instant time, String itemName) {
     }
 
     private @Nullable BigDecimal toBigDecimal(JsonElement element) {
@@ -366,6 +384,11 @@ public class VictoriaMetricsRepository {
         return BigDecimal.valueOf(instant.toEpochMilli(), 3).toPlainString();
     }
 
-    public record VictoriaMetricsRow(Instant time, String itemName, BigDecimal value) {
+    /**
+     * A stored state
+     *
+     * @param value a {@link BigDecimal}, or a {@link Map} of component names to {@link BigDecimal} values
+     */
+    public record VictoriaMetricsRow(Instant time, String itemName, Object value) {
     }
 }

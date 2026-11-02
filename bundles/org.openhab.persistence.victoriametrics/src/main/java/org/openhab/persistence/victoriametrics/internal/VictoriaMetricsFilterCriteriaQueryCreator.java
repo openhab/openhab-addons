@@ -21,6 +21,7 @@ import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
@@ -148,11 +149,15 @@ public class VictoriaMetricsFilterCriteriaQueryCreator {
         State filterState = criteria.getState();
         if (filterState != null) {
             Number filterValue = VictoriaMetricsStateConvertUtils.stateToObject(filterState);
-            if (filterValue == null) {
+            Map<String, BigDecimal> filterComponents = VictoriaMetricsStateConvertUtils.stateToComponents(filterState);
+            if (filterValue != null) {
+                result = result.filter(valueFilter(criteria.getOperator(), new BigDecimal(filterValue.toString())));
+            } else if (filterComponents != null) {
+                result = result.filter(componentsFilter(criteria.getOperator(), filterComponents));
+            } else {
                 throw new IllegalArgumentException(
                         "State " + filterState + " cannot be used as a filter, only numeric states are supported");
             }
-            result = result.filter(valueFilter(criteria.getOperator(), new BigDecimal(filterValue.toString())));
         }
 
         // Samples of several series (e.g. after a tag change) are merged, so sort even if each series is ordered
@@ -180,7 +185,10 @@ public class VictoriaMetricsFilterCriteriaQueryCreator {
 
     private Predicate<VictoriaMetricsRow> valueFilter(FilterCriteria.Operator operator, BigDecimal filterValue) {
         return row -> {
-            int comparison = row.value().compareTo(filterValue);
+            if (!(row.value() instanceof BigDecimal value)) {
+                return false;
+            }
+            int comparison = value.compareTo(filterValue);
             return switch (operator) {
                 case EQ -> comparison == 0;
                 case NEQ -> comparison != 0;
@@ -189,6 +197,24 @@ public class VictoriaMetricsFilterCriteriaQueryCreator {
                 case LT -> comparison < 0;
                 case LTE -> comparison <= 0;
             };
+        };
+    }
+
+    private Predicate<VictoriaMetricsRow> componentsFilter(FilterCriteria.Operator operator,
+            Map<String, BigDecimal> filterComponents) {
+        // states with several components (e.g. colors) have no order, only equality can be tested
+        if (operator != FilterCriteria.Operator.EQ && operator != FilterCriteria.Operator.NEQ) {
+            throw new IllegalArgumentException(
+                    "Operator " + operator + " is not supported for states with several components");
+        }
+        return row -> {
+            if (!(row.value() instanceof Map<?, ?> components)) {
+                return false;
+            }
+            boolean equal = components.size() == filterComponents.size() && filterComponents.entrySet().stream()
+                    .allMatch(entry -> components.get(entry.getKey()) instanceof BigDecimal value
+                            && value.compareTo(entry.getValue()) == 0);
+            return operator == FilterCriteria.Operator.EQ ? equal : !equal;
         };
     }
 
