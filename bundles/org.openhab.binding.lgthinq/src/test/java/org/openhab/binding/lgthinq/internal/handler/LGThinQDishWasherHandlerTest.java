@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.lgthinq.internal.handler;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.*;
 import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.LG_API_PLATFORM_TYPE_V1;
@@ -22,6 +24,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.lgthinq.internal.LGThinQStateDescriptionProvider;
+import org.openhab.binding.lgthinq.lgservices.errors.LGThinqApiExhaustionException;
+import org.openhab.binding.lgthinq.lgservices.errors.LGThinqException;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.ChannelUID;
@@ -48,6 +52,20 @@ class LGThinQDishWasherHandlerTest {
         callback = mock(ThingHandlerCallback.class);
         handler = createHandler();
         handler.setCallback(callback);
+    }
+
+    @Test
+    void keepsStatusAndStateWhenV1MonitorReturnsNoData() throws LGThinqException {
+        LGThinQDishWasherHandler spiedHandler = spy(handler);
+        doThrow(new LGThinqApiExhaustionException("Exhausted trying to get monitor data")).when(spiedHandler)
+                .getSnapshotDeviceAdapter(anyString());
+
+        for (int i = 0; i < 10; i++) {
+            spiedHandler.updateThingStateFromLG();
+        }
+
+        verify(callback, never()).statusUpdated(any(), any());
+        verify(callback, never()).stateUpdated(any(), any());
     }
 
     @Test

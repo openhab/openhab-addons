@@ -65,8 +65,6 @@ public class LGThinQBindingConstants extends LGServicesConstants {
     public static final String CHANNEL_DASHBOARD_GRP_WITH_SEP = "dashboard#";
     public static final String CHANNEL_EXTENDED_INFO_GRP_ID = "extended-information";
     public static final String CHANNEL_EXTENDED_INFO_COLLECTOR_ID = "extra-info-collector";
-    // Max number of retries trying to get the monitor (V1) until consider ERROR in the connection
-    public static final int MAX_GET_MONITOR_RETRIES = 3;
     public static final int DISCOVERY_SEARCH_TIMEOUT = 20;
     // === Biding property info
     public static final String PROP_INFO_DEVICE_ALIAS = "deviceAlias";
