@@ -107,6 +107,14 @@
 		<state readOnly="true">
 		</state>
 	</channel-type>
+	<channel-type id="wakeupPeriod" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>Wakeup Period</label>
+		<description>Interval in which the battery device wakes up to report its status</description>
+		<category>Time</category>
+		<state readOnly="true" pattern="%.0f %unit%">
+		</state>
+	</channel-type>
 	<channel-type id="uptime" advanced="true">
 		<item-type>Number:Time</item-type>
 		<label>Uptime</label>

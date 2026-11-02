@@ -627,6 +627,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
                 }
                 if (params.sys.wakeupPeriod != null) {
                     profile.updateWakeupPeriod(params.sys.wakeupPeriod / 60);
+                    ShellyComponents.updateWakeupPeriod(getThing());
                 }
             }
             status.temperature = SHELLY_API_INVTEMP; // mark invalid

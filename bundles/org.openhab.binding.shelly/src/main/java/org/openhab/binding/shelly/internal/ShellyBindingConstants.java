@@ -271,6 +271,7 @@ public class ShellyBindingConstants {
     public static final String CHANNEL_DEVST_RSSI = "wifiSignal";
     public static final String CHANNEL_DEVST_ITEMP = "internalTemp";
     public static final String CHANNEL_DEVST_WAKEUP = "wakeupReason";
+    public static final String CHANNEL_DEVST_WAKEUP_PERIOD = "wakeupPeriod";
     public static final String CHANNEL_DEVST_ALARM = "alarm";
     public static final String CHANNEL_DEVST_ACCUWATTS = "accumulatedWatts";
     public static final String CHANNEL_DEVST_ACCUMULATEDPOWER = "accumulatedPower";

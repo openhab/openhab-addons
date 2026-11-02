@@ -117,6 +117,7 @@ public class ShellyComponents {
             thingHandler.updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_UPTIME,
                     toQuantityType((double) getLong(status.uptime), DIGITS_NONE, Units.SECOND));
         }
+        updateWakeupPeriod(thingHandler);
 
         Integer rssi = getInteger(status.wifiSta.rssi);
         thingHandler.updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_RSSI, mapSignalStrength(rssi));
@@ -142,6 +143,12 @@ public class ShellyComponents {
         ShellyComponentMedia.updateChannels(thingHandler, status);
 
         return false; // device status never triggers update
+    }
+
+    public static void updateWakeupPeriod(ShellyThingInterface thingHandler) {
+        int wakeupPeriod = thingHandler.getProfile().wakeupPeriod;
+        thingHandler.updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_WAKEUP_PERIOD,
+                wakeupPeriod > 0 ? toQuantityType((double) wakeupPeriod, DIGITS_NONE, Units.SECOND) : UnDefType.UNDEF);
     }
 
     /**

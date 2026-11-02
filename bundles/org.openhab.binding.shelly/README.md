@@ -504,6 +504,7 @@ Every device has a channel group `device` with the following channels:
 | ------ | ------------------------- | ------------- | --------- | ------------------------------------------------------------------------------ |
 | device | deviceName                | String        | yes       | Device name as configured in the Shelly App                                    |
 |        | uptime                    | Number        | yes       | Number of seconds since the device was powered up                              |
+|        | wakeupPeriod              | Number:Time   | yes       | Battery devices: Interval in which the device wakes up to report its status    |
 |        | wifiSignal                | Number        | yes       | WiFi signal strength (4=excellent, 3=good, 2=not string, 1=unreliable, 0=none) |
 |        | internalTemp              | Number        | yes       | Internal device temperature (when provided by the device)                      |
 |        | selfTest                  | String        | yes       | Result from device self-test (pending/not_completed/running/completed/unknown) |

@@ -193,6 +193,7 @@ public class ShellyChannelDefinitions {
                 .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_GATEWAY, "gatewayDevice", ITEMT_STRING))
                 .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_ITEMP, "system:indoor-temperature", ITEMT_TEMP))
                 .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_WAKEUP, "sensorWakeup", ITEMT_STRING))
+                .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_WAKEUP_PERIOD, "wakeupPeriod", ITEMT_TIME))
                 .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_ACCUWATTS, "meterAccuWatts", ITEMT_POWER))
                 .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_ACCUMULATEDPOWER, "accumulatedPower", ITEMT_POWER))
                 .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_ACCUTOTAL, "meterAccuTotal", ITEMT_ENERGY))
@@ -524,6 +525,7 @@ public class ShellyChannelDefinitions {
             addChannel(thing, add, hasTemp && profile.isGen2 && !profile.isBlu, CHGR_DIAG, CHANNEL_DIAG_MAXITEMP);
         }
         addChannel(thing, add, profile.settings.sleepTime != null, CHGR_SENSOR, CHANNEL_SENSOR_SLEEPTIME);
+        addChannel(thing, add, profile.wakeupPeriod > 0 && !profile.isBlu, CHGR_DEVST, CHANNEL_DEVST_WAKEUP_PERIOD);
 
         /*
          * Any multi-meter device (relay, pure meter like ProEM50, or a Gen2 RGBW2 device - Plus RGBW PM or
