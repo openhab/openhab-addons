@@ -54,4 +54,11 @@ public record CompanionSettings(@Nullable String identifier, @Nullable String cr
     public CompanionSettings withCredentials(String credentials) {
         return new CompanionSettings(identifier, credentials);
     }
+
+    /** Leaves out the credentials so they never end up in logs. */
+    @Override
+    public String toString() {
+        return "CompanionSettings[identifier=" + identifier + ", credentials=" + (credentials == null ? "unset" : "set")
+                + "]";
+    }
 }

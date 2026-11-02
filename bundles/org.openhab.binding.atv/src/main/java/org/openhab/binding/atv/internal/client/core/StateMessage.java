@@ -25,7 +25,7 @@ import org.openhab.binding.atv.internal.client.dto.Protocol;
  * <li>{@link UpdatedState#VOLUME} → {@code Double}</li>
  * <li>{@link UpdatedState#KEYBOARD_FOCUS} → {@code KeyboardFocusState}</li>
  * <li>{@link UpdatedState#OUTPUT_DEVICES} → {@code List<OutputDevice>}</li>
- * <li>{@link UpdatedState#OUTPUT_DEVICE_VOLUME} → {@code Double}</li>
+ * <li>{@link UpdatedState#OUTPUT_DEVICE_VOLUME} → {@code OutputDevice}</li>
  * </ul>
  *
  * @param protocol protocol the update originated from

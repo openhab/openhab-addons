@@ -66,7 +66,6 @@ import org.openhab.binding.atv.internal.client.conf.BaseService;
 import org.openhab.binding.atv.internal.client.core.AtvRuntime;
 import org.openhab.binding.atv.internal.client.core.FileHostService;
 import org.openhab.binding.atv.internal.client.dto.App;
-import org.openhab.binding.atv.internal.client.dto.ArtworkInfo;
 import org.openhab.binding.atv.internal.client.dto.ConnectOptions;
 import org.openhab.binding.atv.internal.client.dto.FeatureName;
 import org.openhab.binding.atv.internal.client.dto.FeatureState;
@@ -1218,10 +1217,9 @@ public class AtvHandler extends BaseThingHandler {
             logger.trace("Artwork identifier unavailable, fetching unconditionally", e);
         }
         atv.metadata().artwork().thenAccept(artwork -> {
-            @Nullable
-            ArtworkInfo info = artwork;
-            if (info != null && info.bytes().length > 0) {
-                updateState(CHANNEL_ARTWORK, new org.openhab.core.library.types.RawType(info.bytes(), info.mimetype()));
+            if (artwork != null && artwork.bytes().length > 0) {
+                updateState(CHANNEL_ARTWORK,
+                        new org.openhab.core.library.types.RawType(artwork.bytes(), artwork.mimetype()));
             } else {
                 updateState(CHANNEL_ARTWORK, UnDefType.UNDEF);
             }

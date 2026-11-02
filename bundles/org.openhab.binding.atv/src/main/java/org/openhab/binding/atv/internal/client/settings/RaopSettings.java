@@ -124,4 +124,12 @@ public record RaopSettings(@Nullable String identifier, @Nullable String credent
     public RaopSettings withControlPort(int controlPort) {
         return new RaopSettings(identifier, credentials, password, protocolVersion, timingPort, controlPort);
     }
+
+    /** Leaves out the credentials and password so they never end up in logs. */
+    @Override
+    public String toString() {
+        return "RaopSettings[identifier=" + identifier + ", credentials=" + (credentials == null ? "unset" : "set")
+                + ", password=" + (password == null ? "unset" : "set") + ", protocolVersion=" + protocolVersion
+                + ", timingPort=" + timingPort + ", controlPort=" + controlPort + "]";
+    }
 }

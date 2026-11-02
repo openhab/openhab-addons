@@ -156,15 +156,11 @@ public final class MrpMetadata implements Metadata, CapabilitySource {
 
     @Override
     @SuppressWarnings("PMD.AvoidCatchingGenericException")
-    public CompletableFuture<ArtworkInfo> artwork(@Nullable Integer width, @Nullable Integer height) {
-        CompletableFuture<ArtworkInfo> result = new CompletableFuture<>();
+    public CompletableFuture<@Nullable ArtworkInfo> artwork(@Nullable Integer width, @Nullable Integer height) {
+        CompletableFuture<@Nullable ArtworkInfo> result = new CompletableFuture<>();
         Thread.ofPlatform().daemon().name("mrp-artwork").start(() -> {
             try {
-                // Metadata#artwork is declared to complete with a non-null ArtworkInfo, but
-                // "no artwork available" is a legitimate outcome (see the capability javadoc);
-                // completeNullable is the single unavoidable spot where that contradiction
-                // surfaces.
-                MrpFutures.completeNullable(result, artworkBlocking(width, height));
+                result.complete(artworkBlocking(width, height));
             } catch (Throwable t) {
                 result.completeExceptionally(t);
             }

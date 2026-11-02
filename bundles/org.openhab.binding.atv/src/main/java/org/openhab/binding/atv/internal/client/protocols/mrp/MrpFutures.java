@@ -15,15 +15,9 @@ package org.openhab.binding.atv.internal.client.protocols.mrp;
 import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * Helper for completing plain (non-{@code @Nullable}) {@code CompletableFuture<T>} futures
- * declared by the capability interfaces with a value that is genuinely allowed to be
- * {@code null} per their javadoc (e.g. {@code Void}, which has no non-null instance at all,
- * or {@code ArtworkInfo} when no artwork is available). This isolates that single
- * unavoidable null assignment behind one helper instead of scattering unchecked casts
- * across every call site.
+ * Completes {@code CompletableFuture<Void>} futures, which can only hold {@code null}.
  *
  * @author Dan Cunningham - Initial contribution
  */
@@ -34,13 +28,8 @@ final class MrpFutures {
     }
 
     /** Completes {@code future} successfully. */
-    static void completeVoid(CompletableFuture<Void> future) {
-        completeNullable(future, null);
-    }
-
-    /** Completes {@code future} with a value that may legitimately be {@code null}. */
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    static <T> void completeNullable(CompletableFuture<T> future, @Nullable T value) {
-        ((CompletableFuture) future).complete(value);
+    static void completeVoid(CompletableFuture<Void> future) {
+        ((CompletableFuture) future).complete(null);
     }
 }

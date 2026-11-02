@@ -54,4 +54,11 @@ public record MrpSettings(@Nullable String identifier, @Nullable String credenti
     public MrpSettings withCredentials(String credentials) {
         return new MrpSettings(identifier, credentials);
     }
+
+    /** Leaves out the credentials so they never end up in logs. */
+    @Override
+    public String toString() {
+        return "MrpSettings[identifier=" + identifier + ", credentials=" + (credentials == null ? "unset" : "set")
+                + "]";
+    }
 }
