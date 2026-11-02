@@ -33,6 +33,7 @@ import org.openhab.core.library.items.ContactItem;
 import org.openhab.core.library.items.DateTimeItem;
 import org.openhab.core.library.items.DimmerItem;
 import org.openhab.core.library.items.NumberItem;
+import org.openhab.core.library.items.PlayerItem;
 import org.openhab.core.library.items.RollershutterItem;
 import org.openhab.core.library.items.SwitchItem;
 import org.openhab.core.library.types.DateTimeType;
@@ -49,6 +50,7 @@ import org.openhab.core.library.types.RewindFastforwardType;
 import org.openhab.core.library.types.StringListType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.SIUnits;
+import org.openhab.core.types.UnDefType;
 
 /**
  * @author Joan Pujol Espinar - Initial contribution
@@ -98,6 +100,30 @@ public class VictoriaMetricsStateConvertUtilsTest {
     }
 
     @Test
+    public void convertPlayPauseState() {
+        assertThat(VictoriaMetricsStateConvertUtils.stateToObject(PlayPauseType.PAUSE), equalTo(0));
+        assertThat(VictoriaMetricsStateConvertUtils.stateToObject(PlayPauseType.PLAY), equalTo(1));
+    }
+
+    @Test
+    public void convertRewindFastForwardState() {
+        assertThat(VictoriaMetricsStateConvertUtils.stateToObject(RewindFastforwardType.REWIND), equalTo(2));
+        assertThat(VictoriaMetricsStateConvertUtils.stateToObject(RewindFastforwardType.FASTFORWARD), equalTo(3));
+    }
+
+    @Test
+    public void convertPlayerToState() {
+        PlayerItem item = new PlayerItem("name");
+        assertThat(VictoriaMetricsStateConvertUtils.objectToState(new BigDecimal("0"), item), is(PlayPauseType.PAUSE));
+        assertThat(VictoriaMetricsStateConvertUtils.objectToState(new BigDecimal("1"), item), is(PlayPauseType.PLAY));
+        assertThat(VictoriaMetricsStateConvertUtils.objectToState(new BigDecimal("2"), item),
+                is(RewindFastforwardType.REWIND));
+        assertThat(VictoriaMetricsStateConvertUtils.objectToState(new BigDecimal("3"), item),
+                is(RewindFastforwardType.FASTFORWARD));
+        assertThat(VictoriaMetricsStateConvertUtils.objectToState(new BigDecimal("7"), item), is(UnDefType.UNDEF));
+    }
+
+    @Test
     public void convertNonNumericStatesIsNotSupported() {
         assertThat(VictoriaMetricsStateConvertUtils.stateToObject(new StringType("text")), nullValue());
         assertThat(VictoriaMetricsStateConvertUtils.stateToObject(new HSBType("120,100,50")), nullValue());
@@ -106,8 +132,6 @@ public class VictoriaMetricsStateConvertUtilsTest {
                 VictoriaMetricsStateConvertUtils.stateToObject(
                         new RawType(new byte[] { 0x64, 0x66, 0x55, 0x00, 0x34 }, RawType.DEFAULT_MIME_TYPE)),
                 nullValue());
-        assertThat(VictoriaMetricsStateConvertUtils.stateToObject(PlayPauseType.PLAY), nullValue());
-        assertThat(VictoriaMetricsStateConvertUtils.stateToObject(RewindFastforwardType.REWIND), nullValue());
         assertThat(VictoriaMetricsStateConvertUtils.stateToObject(new StringListType("a", "b")), nullValue());
     }
 
