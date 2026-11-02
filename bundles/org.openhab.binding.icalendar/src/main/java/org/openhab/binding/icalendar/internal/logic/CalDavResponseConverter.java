@@ -27,6 +27,8 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
@@ -85,24 +87,85 @@ public class CalDavResponseConverter {
         result.append("PRODID:-//openHAB//iCalendar Binding CalDAV//EN").append(CRLF);
 
         final Set<String> knownTimeZones = new HashSet<>();
-        final NodeList dataNodes = document.getElementsByTagNameNS(CALDAV_NS, "calendar-data");
-        for (int i = 0; i < dataNodes.getLength(); i++) {
-            final String data = dataNodes.item(i).getTextContent();
-            if (data == null || data.isBlank()) {
-                continue;
-            }
-            for (String component : extractComponents(data)) {
-                if (component.startsWith("BEGIN:VTIMEZONE")) {
-                    final String tzid = findTimeZoneId(component);
-                    if (tzid != null && !knownTimeZones.add(tzid)) {
-                        continue;
+        final NodeList responses = document.getElementsByTagNameNS(DAV_NS, "response");
+        for (int i = 0; i < responses.getLength(); i++) {
+            for (String data : extractCalendarData((Element) responses.item(i))) {
+                for (String component : extractComponents(data)) {
+                    if (component.startsWith("BEGIN:VTIMEZONE")) {
+                        final String tzid = findTimeZoneId(component);
+                        if (tzid != null && !knownTimeZones.add(tzid)) {
+                            continue;
+                        }
                     }
+                    result.append(component);
                 }
-                result.append(component);
             }
         }
         result.append("END:VCALENDAR").append(CRLF);
         return result.toString();
+    }
+
+    /**
+     * Collects the calendar data of one multistatus response. Fails if the resource or one of its property results
+     * reports an error or if no calendar data is contained, so that an incomplete result never replaces a valid
+     * calendar.
+     */
+    private static List<String> extractCalendarData(Element response) throws CalendarException {
+        final Element responseStatus = findChild(response, "status");
+        if (responseStatus != null && !isSuccess(responseStatus.getTextContent())) {
+            throw new CalendarException(
+                    "CalDAV server reported a failure for a resource: " + responseStatus.getTextContent().trim());
+        }
+        final List<String> result = new ArrayList<>();
+        for (Node node = response.getFirstChild(); node != null; node = node.getNextSibling()) {
+            if (!(node instanceof Element propstat) || !DAV_NS.equals(propstat.getNamespaceURI())
+                    || !"propstat".equals(propstat.getLocalName())) {
+                continue;
+            }
+            final Element status = findChild(propstat, "status");
+            if (status == null || !isSuccess(status.getTextContent())) {
+                throw new CalendarException("CalDAV server reported a failure for the calendar data: "
+                        + (status == null ? "no status" : status.getTextContent().trim()));
+            }
+            final NodeList dataNodes = propstat.getElementsByTagNameNS(CALDAV_NS, "calendar-data");
+            for (int i = 0; i < dataNodes.getLength(); i++) {
+                final String data = dataNodes.item(i).getTextContent();
+                if (data != null && !data.isBlank()) {
+                    result.add(data);
+                }
+            }
+        }
+        if (result.isEmpty()) {
+            throw new CalendarException("CalDAV response contains a resource without calendar data.");
+        }
+        return result;
+    }
+
+    private static @Nullable Element findChild(Element parent, String localName) {
+        for (Node node = parent.getFirstChild(); node != null; node = node.getNextSibling()) {
+            if (node instanceof Element element && DAV_NS.equals(element.getNamespaceURI())
+                    && localName.equals(element.getLocalName())) {
+                return element;
+            }
+        }
+        return null;
+    }
+
+    /** Checks a DAV status line (e.g. "HTTP/1.1 200 OK") for a 2xx status code. */
+    private static boolean isSuccess(@Nullable String statusLine) {
+        if (statusLine == null) {
+            return false;
+        }
+        final String[] parts = statusLine.trim().split("\\s+");
+        if (parts.length < 2) {
+            return false;
+        }
+        try {
+            final int code = Integer.parseInt(parts[1]);
+            return code >= 200 && code < 300;
+        } catch (NumberFormatException e) {
+            return false;
+        }
     }
 
     /**

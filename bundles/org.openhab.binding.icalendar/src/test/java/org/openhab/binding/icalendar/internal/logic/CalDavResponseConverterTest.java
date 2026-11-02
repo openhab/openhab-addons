@@ -33,8 +33,8 @@ public class CalDavResponseConverterTest {
         final StringBuilder sb = new StringBuilder(
                 "<?xml version=\"1.0\"?><d:multistatus xmlns:d=\"DAV:\" xmlns:c=\"urn:ietf:params:xml:ns:caldav\">");
         for (String calendar : calendars) {
-            sb.append("<d:response><d:propstat><d:prop><c:calendar-data>").append(calendar)
-                    .append("</c:calendar-data></d:prop></d:propstat></d:response>");
+            sb.append("<d:response><d:href>/x.ics</d:href><d:propstat><d:prop><c:calendar-data>").append(calendar)
+                    .append("</c:calendar-data></d:prop><d:status>HTTP/1.1 200 OK</d:status></d:propstat></d:response>");
         }
         return sb.append("</d:multistatus>").toString();
     }
@@ -74,6 +74,29 @@ public class CalDavResponseConverterTest {
     public void rejectsNonMultistatus() {
         assertThrows(CalendarException.class, () -> convert("<html/>"));
         assertThrows(CalendarException.class, () -> convert("no xml"));
+    }
+
+    @Test
+    public void rejectsFailedResourceStatus() {
+        final String xml = "<d:multistatus xmlns:d=\"DAV:\"><d:response><d:href>/x.ics</d:href>"
+                + "<d:status>HTTP/1.1 404 Not Found</d:status></d:response></d:multistatus>";
+        assertThrows(CalendarException.class, () -> convert(xml));
+    }
+
+    @Test
+    public void rejectsFailedPropertyStatus() {
+        final String xml = "<d:multistatus xmlns:d=\"DAV:\" xmlns:c=\"urn:ietf:params:xml:ns:caldav\">"
+                + "<d:response><d:href>/x.ics</d:href><d:propstat><d:prop><c:calendar-data/></d:prop>"
+                + "<d:status>HTTP/1.1 403 Forbidden</d:status></d:propstat></d:response></d:multistatus>";
+        assertThrows(CalendarException.class, () -> convert(xml));
+    }
+
+    @Test
+    public void rejectsResourceWithoutCalendarData() {
+        final String xml = "<d:multistatus xmlns:d=\"DAV:\" xmlns:c=\"urn:ietf:params:xml:ns:caldav\">"
+                + "<d:response><d:href>/x.ics</d:href><d:propstat><d:prop/>"
+                + "<d:status>HTTP/1.1 200 OK</d:status></d:propstat></d:response></d:multistatus>";
+        assertThrows(CalendarException.class, () -> convert(xml));
     }
 
     @Test
