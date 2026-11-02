@@ -27,6 +27,7 @@ import org.openhab.core.library.items.ContactItem;
 import org.openhab.core.library.items.DateTimeItem;
 import org.openhab.core.library.items.DimmerItem;
 import org.openhab.core.library.items.NumberItem;
+import org.openhab.core.library.items.PlayerItem;
 import org.openhab.core.library.items.RollershutterItem;
 import org.openhab.core.library.items.SwitchItem;
 import org.openhab.core.library.types.DateTimeType;
@@ -35,7 +36,9 @@ import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.PercentType;
+import org.openhab.core.library.types.PlayPauseType;
 import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.types.RewindFastforwardType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
@@ -46,17 +49,22 @@ import org.slf4j.LoggerFactory;
  * Conversion logic between openHAB {@link State} types and VictoriaMetrics sample values.
  * <p>
  * VictoriaMetrics samples are 64-bit floating point numbers, so only states with a numeric representation can be
- * stored. Unlike InfluxDB, states that InfluxDB stores as strings (e.g. {@link StringType}, {@link HSBType},
- * {@code PointType}, {@code RawType}, {@code PlayPauseType}) are not supported.
+ * stored. Player states are stored as numbers ({@code PAUSE}=0, {@code PLAY}=1, {@code REWIND}=2,
+ * {@code FASTFORWARD}=3). Unlike InfluxDB, states that InfluxDB stores as strings (e.g. {@link StringType},
+ * {@link HSBType}, {@code PointType}, {@code RawType}) are not supported.
  *
  * @author Joan Pujol Espinar - Initial contribution
  * @author Franz - Initial VictoriaMetrics adaptation
- * @author Michael Weger - Restrict to numeric states
+ * @author Michael Weger - Restrict to numeric states, store player states as numbers
  */
 @NonNullByDefault
 public class VictoriaMetricsStateConvertUtils {
     static final Number DIGITAL_VALUE_OFF = 0; // Visible for testing
     static final Number DIGITAL_VALUE_ON = 1; // Visible for testing
+    static final Number PLAYER_VALUE_PAUSE = 0; // Visible for testing
+    static final Number PLAYER_VALUE_PLAY = 1; // Visible for testing
+    static final Number PLAYER_VALUE_REWIND = 2; // Visible for testing
+    static final Number PLAYER_VALUE_FASTFORWARD = 3; // Visible for testing
     private static final Logger LOGGER = LoggerFactory.getLogger(VictoriaMetricsStateConvertUtils.class);
 
     /**
@@ -64,7 +72,8 @@ public class VictoriaMetricsStateConvertUtils {
      *
      * @param state to be converted
      * @return decimal value for DecimalType and QuantityType, 0 or 1 for OnOffType and OpenClosedType,
-     *         epoch milliseconds for DateTimeType, <code>null</code> for all others
+     *         epoch milliseconds for DateTimeType, 0 to 3 for PlayPauseType and RewindFastforwardType,
+     *         <code>null</code> for all others
      */
     public static @Nullable Number stateToObject(State state) {
         Number value;
@@ -80,6 +89,10 @@ public class VictoriaMetricsStateConvertUtils {
             value = state == OpenClosedType.OPEN ? DIGITAL_VALUE_ON : DIGITAL_VALUE_OFF;
         } else if (state instanceof DateTimeType type) {
             value = type.getInstant().toEpochMilli();
+        } else if (state instanceof PlayPauseType) {
+            value = state == PlayPauseType.PLAY ? PLAYER_VALUE_PLAY : PLAYER_VALUE_PAUSE;
+        } else if (state instanceof RewindFastforwardType) {
+            value = state == RewindFastforwardType.REWIND ? PLAYER_VALUE_REWIND : PLAYER_VALUE_FASTFORWARD;
         } else {
             value = null;
         }
@@ -131,6 +144,14 @@ public class VictoriaMetricsStateConvertUtils {
             return new PercentType(valueStr);
         } else if (item instanceof DateTimeItem) {
             return new DateTimeType(Instant.ofEpochMilli(new BigDecimal(valueStr).longValue()));
+        } else if (item instanceof PlayerItem) {
+            return switch (new BigDecimal(valueStr).intValue()) {
+                case 0 -> PlayPauseType.PAUSE;
+                case 1 -> PlayPauseType.PLAY;
+                case 2 -> RewindFastforwardType.REWIND;
+                case 3 -> RewindFastforwardType.FASTFORWARD;
+                default -> UnDefType.UNDEF;
+            };
         } else if (item == null) {
             return new StringType(valueStr);
         }

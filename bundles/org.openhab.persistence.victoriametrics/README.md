@@ -13,7 +13,8 @@ VictoriaMetrics is compatible with the Prometheus query API, so tools such as [G
     For items with a dimension, the value is stored in the unit of the state, which is the item's unit unless the state was stored with another unit.
   - `OnOffType` and `OpenClosedType` (Switch and Contact items) are stored as 0 or 1.
   - `DateTimeType` is stored as milliseconds since 1970-01-01T00:00:00Z.
-  - All other types (String, Color, Location, Image, Player and Call items) are **not** persisted.
+  - `PlayPauseType` and `RewindFastforwardType` (Player items) are stored as 0 (`PAUSE`), 1 (`PLAY`), 2 (`REWIND`) or 3 (`FASTFORWARD`).
+  - All other types (String, Color, Location, Image and Call items) are **not** persisted.
     An info message is logged once per item.
 - If configured, extra labels for item category, label, type or unit can be added for each sample.
 
