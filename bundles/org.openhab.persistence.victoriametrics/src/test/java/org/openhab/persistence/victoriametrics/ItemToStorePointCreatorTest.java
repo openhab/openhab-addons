@@ -26,6 +26,7 @@ import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.DefaultLocation;
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -197,13 +198,30 @@ public class ItemToStorePointCreatorTest {
     }
 
     @Test
-    public void shouldNotConvertEmptyOrTooLongStringStates() throws ExecutionException, InterruptedException {
+    public void shouldConvertEmptyStringState() throws ExecutionException, InterruptedException {
         StringItem stringItem = new StringItem("myString");
         MetadataKey metadataKey = new MetadataKey(VictoriaMetricsPersistenceService.SERVICE_NAME, "myString");
         when(metadataRegistry.get(metadataKey)).thenReturn(
                 new Metadata(metadataKey, "", Map.of(VictoriaMetricsConstants.METADATA_STRING_STATES, true)));
 
-        assertThat(instance.convert(stringItem, new StringType(""), Instant.now(), null).get(), nullValue());
+        VictoriaMetricsPoint point = instance.convert(stringItem, new StringType(""), Instant.now(), null).get();
+
+        if (point == null) {
+            Assertions.fail("'point' is null");
+            return;
+        }
+
+        assertThat(point.getStringState(), is(""));
+        assertThat(point.toPrometheusFormat(), Matchers.startsWith("myString{item=\"myString\"} 1 "));
+    }
+
+    @Test
+    public void shouldNotConvertTooLongStringStates() throws ExecutionException, InterruptedException {
+        StringItem stringItem = new StringItem("myString");
+        MetadataKey metadataKey = new MetadataKey(VictoriaMetricsPersistenceService.SERVICE_NAME, "myString");
+        when(metadataRegistry.get(metadataKey)).thenReturn(
+                new Metadata(metadataKey, "", Map.of(VictoriaMetricsConstants.METADATA_STRING_STATES, true)));
+
         assertThat(instance.convert(stringItem, new StringType("x".repeat(4097)), Instant.now(), null).get(),
                 nullValue());
         // the limit is in bytes, not characters

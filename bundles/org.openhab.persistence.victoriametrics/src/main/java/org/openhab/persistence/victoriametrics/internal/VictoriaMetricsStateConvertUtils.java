@@ -157,6 +157,23 @@ public class VictoriaMetricsStateConvertUtils {
         return new StringType(String.valueOf(value));
     }
 
+    /**
+     * Converts an exported value of a string state series to the string state
+     *
+     * @param value the exported value
+     * @return the label value, the empty string for a sample without the label (see {@link VictoriaMetricsPoint}), or
+     *         <code>null</code> if the value is not a string state
+     */
+    public static @Nullable String toStringState(@Nullable Object value) {
+        if (value instanceof String string) {
+            return string;
+        } else if (value instanceof BigDecimal number
+                && number.compareTo(new BigDecimal(VictoriaMetricsPoint.STRING_STATE_VALUE.toString())) == 0) {
+            return "";
+        }
+        return null;
+    }
+
     public static State objectToState(@Nullable Object value, Item itemToSetState) {
         String valueStr = String.valueOf(value);
 
@@ -195,7 +212,8 @@ public class VictoriaMetricsStateConvertUtils {
                 default -> UnDefType.UNDEF;
             };
         } else if (item instanceof StringItem) {
-            return value instanceof String string ? new StringType(string) : UnDefType.UNDEF;
+            String stringState = toStringState(value);
+            return stringState != null ? new StringType(stringState) : UnDefType.UNDEF;
         } else if (item == null) {
             return new StringType(valueStr);
         }

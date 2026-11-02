@@ -227,7 +227,8 @@ public class VictoriaMetricsFilterCriteriaQueryCreator {
             throw new IllegalArgumentException("Operator " + operator + " is not supported for string states");
         }
         return row -> {
-            if (!(row.value() instanceof String value)) {
+            String value = VictoriaMetricsStateConvertUtils.toStringState(row.value());
+            if (value == null) {
                 return false;
             }
             return operator == FilterCriteria.Operator.EQ ? value.equals(filterValue) : !value.equals(filterValue);

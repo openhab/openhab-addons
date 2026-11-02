@@ -69,7 +69,8 @@ public class VictoriaMetricsStringStateLimiter {
         List<VictoriaMetricsPoint> result = new ArrayList<>(points.size());
         for (VictoriaMetricsPoint point : points) {
             String stringState = point.getStringState();
-            if (stringState == null) {
+            // the empty string state is stored without label, so it does not add a label value
+            if (stringState == null || stringState.isEmpty()) {
                 result.add(point);
                 continue;
             }

@@ -32,7 +32,8 @@ import org.eclipse.jdt.annotation.Nullable;
  * A point has either a single value or several components (e.g. hue, saturation and brightness), which are stored as
  * separate samples with the same timestamp and the additional label
  * {@link VictoriaMetricsConstants#TAG_COMPONENT_NAME}. A string state is stored as the label
- * {@link VictoriaMetricsConstants#TAG_STATE_NAME} of a sample with the value 1.
+ * {@link VictoriaMetricsConstants#TAG_STATE_NAME} of a sample with the value 1. VictoriaMetrics treats an empty label
+ * value as no label, so an empty string state is stored without this label.
  *
  * @author Joan Pujol Espinar - Initial contribution
  * @author Franz - Initial VictoriaMetrics adaptation
@@ -143,7 +144,7 @@ public class VictoriaMetricsPoint {
      */
     public String toPrometheusFormat() {
         String localStringState = stringState;
-        if (localStringState != null) {
+        if (localStringState != null && !localStringState.isEmpty()) {
             Map<String, String> stateTags = new TreeMap<>(tags);
             stateTags.put(TAG_STATE_NAME, localStringState);
             return formatLine(stateTags, value);
