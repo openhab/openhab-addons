@@ -477,6 +477,13 @@ public class RachioValveProgramHandler extends AbstractRachioThingHandler implem
         renewWebhookRegistration(RequestPurpose.USER_COMMAND);
     }
 
+    @Nullable
+    String getWebhookRegistrationTargetId(RachioBridgeHandler expectedBridge) {
+        RachioValveProgram currentProgram = program;
+        return isSameInstance(cloudHandler, expectedBridge) && getHandlerLifecycleGeneration() >= 0
+                && currentProgram != null ? currentProgram.id : null;
+    }
+
     void renewWebhookRegistration(RequestPurpose requestPurpose) {
         RachioBridgeHandler handler = cloudHandler;
         RachioValveProgram currentProgram = program;

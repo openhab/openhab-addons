@@ -21,6 +21,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 import static org.openhab.binding.rachio.internal.RachioBindingConstants.*;
 
+import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -62,7 +63,7 @@ class RachioResourceReconciliationTest {
     private final Bridge bridge = mock(Bridge.class);
     private final RachioBridgeHandler handler;
 
-    RachioResourceReconciliationTest() {
+    RachioResourceReconciliationTest() throws ReflectiveOperationException {
         when(bridge.getUID()).thenReturn(new ThingUID(THING_TYPE_CLOUD, "bridge"));
         when(bridge.getStatus()).thenReturn(ThingStatus.ONLINE);
         when(bridge.getProperties()).thenReturn(new HashMap<>());
@@ -78,6 +79,10 @@ class RachioResourceReconciliationTest {
             }
         };
         handler.getWebhookConfiguration().apikey = "api-key";
+        // The fixture starts with a usable API and drives subsequent polls without running initialization.
+        Field ready = RachioBridgeHandler.class.getDeclaredField("apiReady");
+        ready.setAccessible(true);
+        ready.setBoolean(handler, true);
         handler.setCallback(callback);
         when(polledApi.getLastApiResult()).thenReturn(new RachioApiResult());
     }

@@ -2711,8 +2711,21 @@ end
 |         | lowBattery         | Switch   | yes       | ON: Battery of the attached sensor is low                                         |
 | device  | relayInThermostat  | Switch   | yes       | ON: The relay output is used by a thermostat/climate profile                      |
 |         | sensorInThermostat | Switch   | yes       | ON: The temperature sensor input is used by a thermostat/climate profile          |
+| media   | mediaControl       | Player   | r/w       | Control media playback (PLAY/PAUSE/NEXT/PREVIOUS)                                 |
+|         | volume             | Dimmer   | r/w       | Media player volume in percent (0-100%)                                           |
+|         | title              | String   | yes       | Title of the currently playing media                                              |
+|         | artist             | String   | yes       | Artist of the currently playing media                                             |
+|         | album              | String   | yes       | Album of the currently playing media                                              |
+|         | mediaType          | String   | yes       | Type of the currently playing media, e.g. AUDIO, RADIO                            |
+|         | playMediaId        | Number   | r/w       | Start playback of a media library item by its id                                  |
+|         | playRadioFavId     | Number   | r/w       | Start playback of a radio favorite by its id                                      |
 | control | thermostatEnable   | Switch   | r/w       | Enable or disable the Wall Display thermostat                                     |
 |         | targetTemp         | Number   | r/w       | Thermostat target temperature in °C                                               |
+
+The `media` group is only available while the media player is configured on the Wall Display.
+Media library and radio favorite ids can be looked up in the Shelly app; there is no channel to browse them.
+`title`, `artist`, `album` and `mediaType` are UNDEF while nothing is playing.
+Enabling the media player in the Shelly app adds these channels with the next status update, so the Thing doesn't need to be re-created.
 
 The `control` group is labeled `Thermostat Control` on the Wall Display.
 Its `thermostatEnable` and `targetTemp` channels are only available while the thermostat is enabled in the Shelly app.

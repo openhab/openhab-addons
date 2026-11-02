@@ -194,6 +194,7 @@ class RachioSmartHoseSnapshotRefreshTest {
         RachioBridgeHandler handler = new RachioBridgeHandler(bridge, Mockito.mock(HttpClient.class));
         when(api.getPersonId()).thenReturn("");
         setField(handler, "rachioApi", api);
+        setField(handler, "apiReady", true);
         return handler;
     }
 
