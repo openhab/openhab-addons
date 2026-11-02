@@ -17,7 +17,8 @@ VictoriaMetrics is compatible with the Prometheus query API, so tools such as [G
   - `HSBType` (Color items) and `PointType` (Location items) are stored as three samples with the same timestamp, distinguished by the label `component`: `hue`, `saturation` and `brightness`, or `latitude`, `longitude` and `altitude`.
     In Grafana, you can for example plot the brightness of a light with `MyLight{component="brightness"}`.
     As a state filter in queries, only equality (`EQ` and `NEQ`) is supported for these types.
-  - All other types (String, Image and Call items) are **not** persisted.
+  - `StringType` (String items) is only persisted for items that enable it, see [String States](#string-states).
+  - All other types (Image and Call items) are **not** persisted.
     An info message is logged once per item.
 - If configured, extra labels for item category, label, type or unit can be added for each sample.
 
@@ -56,14 +57,15 @@ Please check these VictoriaMetrics settings, as their defaults do not fit typica
 This service can be configured in the UI under `Settings` → `Other Services` → `VictoriaMetrics Persistence Service` or in the file `services/victoriametrics.cfg`.
 Attention: The file-based configuration overrides the UI configuration.
 
-| Property     | Default                 | Required | Description                                                                                                                                                                      |
-| ------------ | ----------------------- | -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| url          | <http://127.0.0.1:8428> | No       | Database URL                                                                                                                                                                     |
-| user         |                         | No       | Username for HTTP basic authentication, e.g. when VictoriaMetrics runs with `-httpAuth.username` or behind vmauth or a reverse proxy                                             |
-| password     |                         | No(\*)   | Password for HTTP basic authentication                                                                                                                                           |
-| token        |                         | No       | Bearer token to authenticate, e.g. for vmauth or a reverse proxy. Only used if no user is set                                                                                    |
-| metricPrefix |                         | No       | Prefix added to all metric names, e.g. `openhab_`. Must be a valid metric name. Useful if VictoriaMetrics also stores other metrics                                              |
-| metricSuffix |                         | No       | Suffix added to all metric names. Set it to `_value` to continue using data written by the InfluxDB persistence service, see [Migrating from InfluxDB](#migrating-from-influxdb) |
+| Property        | Default                 | Required | Description                                                                                                                                                                      |
+| --------------- | ----------------------- | -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| url             | <http://127.0.0.1:8428> | No       | Database URL                                                                                                                                                                     |
+| user            |                         | No       | Username for HTTP basic authentication, e.g. when VictoriaMetrics runs with `-httpAuth.username` or behind vmauth or a reverse proxy                                             |
+| password        |                         | No(\*)   | Password for HTTP basic authentication                                                                                                                                           |
+| token           |                         | No       | Bearer token to authenticate, e.g. for vmauth or a reverse proxy. Only used if no user is set                                                                                    |
+| metricPrefix    |                         | No       | Prefix added to all metric names, e.g. `openhab_`. Must be a valid metric name. Useful if VictoriaMetrics also stores other metrics                                              |
+| metricSuffix    |                         | No       | Suffix added to all metric names. Set it to `_value` to continue using data written by the InfluxDB persistence service, see [Migrating from InfluxDB](#migrating-from-influxdb) |
+| maxStringStates | 50                      | No       | Maximum number of distinct string states stored per item, see [String States](#string-states)                                                                                    |
 
 (\*) A single-node VictoriaMetrics server does not require authentication by default.
 If a user is set, a password must be set as well.
@@ -122,8 +124,69 @@ temperature{item="tempBath",floor="firstfloor"}
 
 You can now easily select all temperatures of the first floor (`temperature{floor="firstfloor"}`) or the average temperature of the ground floor (`avg(temperature{floor="groundfloor"})`).
 
-_Warning:_ Do **not** override the labels `item` and `component` within the metadata.
-This label is used internally by openHAB, and changing it will lead to problems querying the persisted data points.
+_Warning:_ Do **not** override the labels `item`, `component` and `state` within the metadata.
+These labels are used internally by openHAB, and changing them will lead to problems querying the persisted data points.
+The metadata configuration key `stringStates` is not stored as a label, see [String States](#string-states).
+
+#### String States
+
+String items are not persisted by default.
+Items whose states are one of a few values (e.g. modes or operating states) can enable it per item.
+Two steps are required:
+
+1. Include the item in the persistence configuration, like any other item.
+   The metadata alone does not persist the item.
+
+   ```java
+   Strategies {
+       default = everyChange
+   }
+
+   Items {
+       Heating_Mode : strategy = everyChange, restoreOnStartup
+   }
+   ```
+
+   In the UI, this is configured in _Settings_ → _Persistence_ → _VictoriaMetrics_.
+
+1. Enable string states for the item with the metadata configuration `stringStates` in the namespace `victoriametrics`.
+
+   In a `.items` file, `victoriametrics=""` is the namespace with an empty main value and `stringStates="true"` enables string states:
+
+   ```java
+   String Heating_Mode "Heating mode" { victoriametrics="" [stringStates="true"] }
+   ```
+
+   In the UI:
+
+   1. Open the item in _Settings_ → _Items_.
+   1. Click _Add Metadata_, then _Enter Custom Namespace..._ and enter `victoriametrics`.
+   1. Switch to the _Code_ tab, enter the following configuration and save it:
+
+      ```yaml
+      value: ""
+      config:
+        stringStates: true
+      ```
+
+String items without this metadata are not stored, and an info message is logged once per item.
+
+Each state is stored as a sample with the value `1` and the state in the label `state`:
+
+```text
+Heating_Mode{item="Heating_Mode",state="HEATING"} 1 1793600000000
+Heating_Mode{item="Heating_Mode",state="IDLE"} 1 1793600060000
+```
+
+The states do not need to be configured, but every distinct state creates a new series in VictoriaMetrics.
+A few states per item have no measurable impact, but each series uses space in the index, so free text (messages, JSON, timestamps) would make the index grow without limit.
+To protect the database, only the first `maxStringStates` (default 50) distinct states of an item are stored.
+Further new states are not stored and a warning is logged once per item.
+The states already stored are read from VictoriaMetrics, so the limit also applies after a restart.
+Empty strings are not stored, because an empty label value is the same as no label, and neither are states longer than 4096 bytes, which VictoriaMetrics ignores by default (`-maxLabelValueLen`).
+
+As a state filter in queries, only equality (`EQ` and `NEQ`) is supported.
+In Grafana, a _State timeline_ panel with the query `Heating_Mode{item="Heating_Mode"}` and the legend `{{state}}` shows the states over time.
 
 #### Extended Automatic Tagging
 
@@ -179,7 +242,7 @@ Notes:
 - If you used `replaceUnderscore=true` with InfluxDB, the measurement names contain dots instead of underscores.
   This service does not find these series, because it only uses letters, digits, `_` and `:` in metric names.
   Rename them during the import, e.g. with a [relabeling rule](https://docs.victoriametrics.com/victoriametrics/relabeling/) (`-relabelConfig`).
-- String values (e.g. of String items) are not used by this service.
+- String values written by the InfluxDB persistence service (e.g. of String items) are not used by this service, which stores [string states](#string-states) as labels.
 - vmctl does not support importing from InfluxDB 2.x and 3.x directly.
 
 ## Grafana
@@ -198,7 +261,8 @@ If items are persisted only on change, use `last_over_time(MyItem[1d])` to draw 
 
 ## Limitations
 
-- String, Image and Call items are not persisted, see [Database Structure](#database-structure).
+- String items are only persisted if enabled per item, with a limited number of distinct states, see [String States](#string-states).
+  Image and Call items are not persisted.
 - Values are stored as 64-bit floating point numbers, so decimal values with more than 15 significant digits lose precision.
 - Removing persisted data (e.g. via the REST API) is only possible for all data of an item.
   VictoriaMetrics can only delete complete series, so removing a time range or values filtered by state is rejected.

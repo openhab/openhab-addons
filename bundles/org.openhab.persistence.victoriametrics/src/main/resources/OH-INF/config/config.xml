@@ -61,6 +61,15 @@
 				service to VictoriaMetrics or imported with vmctl.</description>
 		</parameter>
 
+		<parameter name="maxStringStates" type="integer" min="1" required="false" groupName="misc">
+			<label>Maximum String States</label>
+			<description>Maximum number of distinct string states stored per item. String states are only stored for items
+				with
+				the metadata stringStates="true". Further new states are not stored.</description>
+			<default>50</default>
+			<advanced>true</advanced>
+		</parameter>
+
 		<parameter name="addCategoryTag" type="boolean" required="true" groupName="tags">
 			<label>Add Category Tag</label>
 			<description>Should the category of the item be included as tag "category"? If no category is set, "n/a" is

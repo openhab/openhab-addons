@@ -19,7 +19,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  *
  * @author Joan Pujol Espinar - Initial contribution
  * @author Franz - Initial VictoriaMetrics adaptation
- * @author Michael Weger - Add VictoriaMetrics API constants
+ * @author Michael Weger - Add VictoriaMetrics API and string state constants
  */
 @NonNullByDefault
 public class VictoriaMetricsConstants {
@@ -30,6 +30,8 @@ public class VictoriaMetricsConstants {
     public static final String TAG_LABEL_NAME = "label";
     public static final String TAG_UNIT_NAME = "unit";
     public static final String TAG_COMPONENT_NAME = "component";
+    public static final String TAG_STATE_NAME = "state";
+    public static final String METADATA_STRING_STATES = "stringStates";
 
     public static final String PATH_HEALTH = "/health";
     public static final String PATH_IMPORT = "/api/v1/import/prometheus";

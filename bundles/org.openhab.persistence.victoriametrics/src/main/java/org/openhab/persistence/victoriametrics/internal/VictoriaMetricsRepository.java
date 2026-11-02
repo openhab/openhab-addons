@@ -62,7 +62,8 @@ import com.google.gson.JsonParser;
  *
  * @author Joan Pujol Espinar - Initial contribution
  * @author Franz - Initial VictoriaMetrics adaptation
- * @author Michael Weger - Use Jetty, query raw samples, restrict remove to whole series, join state components
+ * @author Michael Weger - Use Jetty, query raw samples, restrict remove to whole series, join state components,
+ *         read string states
  */
 @NonNullByDefault
 public class VictoriaMetricsRepository {
@@ -286,13 +287,16 @@ public class VictoriaMetricsRepository {
             }
             String itemName = itemElement != null ? itemElement.getAsString() : "";
             JsonElement componentElement = metric.get(TAG_COMPONENT_NAME);
+            JsonElement stateElement = metric.get(TAG_STATE_NAME);
             for (int i = 0; i < values.size(); i++) {
                 BigDecimal value = toBigDecimal(values.get(i));
                 if (value == null) {
                     continue;
                 }
                 Instant time = Instant.ofEpochMilli(timestamps.get(i).getAsLong());
-                if (componentElement == null) {
+                if (stateElement != null) {
+                    rows.add(new VictoriaMetricsRow(time, itemName, stateElement.getAsString()));
+                } else if (componentElement == null) {
                     rows.add(new VictoriaMetricsRow(time, itemName, value));
                 } else {
                     componentRows.computeIfAbsent(new ComponentKey(time, itemName), k -> new LinkedHashMap<>())
@@ -337,30 +341,50 @@ public class VictoriaMetricsRepository {
                 : "{" + LABEL_METRIC_NAME + "=~\"" + prefix + ".*" + suffix + "\"," + TAG_ITEM_NAME + "!=\"\"}";
         Instant start = Instant.now().minus(ITEM_NAMES_RANGE_DAYS, ChronoUnit.DAYS);
 
-        Set<String> result = new LinkedHashSet<>();
+        Set<String> result = getLabelValues(TAG_ITEM_NAME, selector, start);
+        return result != null ? result : Set.of();
+    }
+
+    /**
+     * Return the string states stored for an item
+     *
+     * @param metricName the metric name of the item
+     * @param itemName the item name or alias
+     * @return the stored states, or <code>null</code> if they could not be read
+     */
+    public @Nullable Set<String> getStringStates(String metricName, String itemName) {
+        String selector = "{" + LABEL_METRIC_NAME + "=\"" + metricName + "\"," + TAG_ITEM_NAME + "=\""
+                + VictoriaMetricsPoint.escapeLabelValue(itemName) + "\"}";
+        // without a start, only the labels of the current day are returned
+        return getLabelValues(TAG_STATE_NAME, selector, Instant.EPOCH);
+    }
+
+    private @Nullable Set<String> getLabelValues(String labelName, String selector, Instant start) {
         try {
-            ContentResponse response = newRequest(PATH_LABEL_VALUES.formatted(TAG_ITEM_NAME)).param("match[]", selector)
+            ContentResponse response = newRequest(PATH_LABEL_VALUES.formatted(labelName)).param("match[]", selector)
                     .param("start", formatTimestamp(start)).send();
             if (response.getStatus() != HttpStatus.OK_200) {
-                logger.warn("Failed to query stored items: HTTP status {}: {}", response.getStatus(),
+                logger.warn("Failed to query values of label '{}': HTTP status {}: {}", labelName, response.getStatus(),
                         response.getContentAsString());
-                return result;
+                return null;
             }
-            JsonArray names = JsonParser.parseString(response.getContentAsString()).getAsJsonObject()
+            JsonArray values = JsonParser.parseString(response.getContentAsString()).getAsJsonObject()
                     .getAsJsonArray("data");
-            if (names == null) {
+            if (values == null) {
                 throw new JsonParseException("Unexpected query result: " + response.getContentAsString());
             }
-            for (JsonElement name : names) {
-                result.add(name.getAsString());
+            Set<String> result = new LinkedHashSet<>();
+            for (JsonElement value : values) {
+                result.add(value.getAsString());
             }
+            return result;
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         } catch (TimeoutException | ExecutionException | JsonParseException | IllegalStateException e) {
             // IllegalStateException is thrown for unexpected JSON types
-            logger.warn("Failed to query stored items: {}", e.getMessage());
+            logger.warn("Failed to query values of label '{}': {}", labelName, e.getMessage());
         }
-        return result;
+        return null;
     }
 
     private Request newRequest(String path) {
@@ -387,7 +411,8 @@ public class VictoriaMetricsRepository {
     /**
      * A stored state
      *
-     * @param value a {@link BigDecimal}, or a {@link Map} of component names to {@link BigDecimal} values
+     * @param value a {@link BigDecimal}, a {@link Map} of component names to {@link BigDecimal} values, or a
+     *            {@link String} for string states
      */
     public record VictoriaMetricsRow(Instant time, String itemName, Object value) {
     }

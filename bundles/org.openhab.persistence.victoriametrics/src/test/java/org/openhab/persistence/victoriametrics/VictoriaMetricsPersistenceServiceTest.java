@@ -103,6 +103,12 @@ public class VictoriaMetricsPersistenceServiceTest {
     }
 
     @Test
+    public void activateWithInvalidMaxStringStatesShouldFail() {
+        assertThrows(IllegalArgumentException.class,
+                () -> getService(Map.of(URL_PARAM, "http://localhost:8428", MAX_STRING_STATES_PARAM, 0)));
+    }
+
+    @Test
     public void deactivateShouldDisconnectRepository() {
         VictoriaMetricsPersistenceService instance = getService(VALID_CONFIGURATION_WITHOUT_AUTHENTICATION);
         instance.deactivate();

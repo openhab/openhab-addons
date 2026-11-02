@@ -41,6 +41,7 @@ import org.openhab.core.items.MetadataKey;
 import org.openhab.core.items.MetadataRegistry;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.PercentType;
+import org.openhab.core.library.types.StringListType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.persistence.FilterCriteria;
 import org.openhab.persistence.victoriametrics.VictoriaMetricsPersistenceService;
@@ -137,11 +138,29 @@ public class VictoriaMetricsFilterCriteriaQueryCreatorTest {
     }
 
     @Test
-    public void testNonNumericValueFilterIsRejected() {
+    public void testUnsupportedValueFilterIsRejected() {
         FilterCriteria criteria = createBaseCriteria();
-        criteria.setState(new StringType("text"));
+        criteria.setState(new StringListType("a", "b"));
 
         assertThrows(IllegalArgumentException.class, () -> instance.applyCriteria(rows(0, 1).stream(), criteria));
+    }
+
+    @Test
+    public void testStringFilter() {
+        List<VictoriaMetricsRow> states = List.of(new VictoriaMetricsRow(T0, ITEM_NAME, "HEATING"),
+                new VictoriaMetricsRow(T0.plusSeconds(1), ITEM_NAME, "IDLE"),
+                new VictoriaMetricsRow(T0.plusSeconds(2), ITEM_NAME, "HEATING"));
+        FilterCriteria criteria = createBaseCriteria().setOrdering(FilterCriteria.Ordering.ASCENDING)
+                .setState(new StringType("HEATING"));
+
+        criteria.setOperator(FilterCriteria.Operator.EQ);
+        assertThat(times(instance.applyCriteria(states.stream(), criteria)), contains(0L, 2L));
+
+        criteria.setOperator(FilterCriteria.Operator.NEQ);
+        assertThat(times(instance.applyCriteria(states.stream(), criteria)), contains(1L));
+
+        criteria.setOperator(FilterCriteria.Operator.GT);
+        assertThrows(IllegalArgumentException.class, () -> instance.applyCriteria(states.stream(), criteria));
     }
 
     @Test

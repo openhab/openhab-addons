@@ -38,6 +38,7 @@ import org.openhab.core.library.items.LocationItem;
 import org.openhab.core.library.items.NumberItem;
 import org.openhab.core.library.items.PlayerItem;
 import org.openhab.core.library.items.RollershutterItem;
+import org.openhab.core.library.items.StringItem;
 import org.openhab.core.library.items.SwitchItem;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
@@ -124,6 +125,13 @@ public class VictoriaMetricsStateConvertUtilsTest {
         assertThat(VictoriaMetricsStateConvertUtils.objectToState(new BigDecimal("3"), item),
                 is(RewindFastforwardType.FASTFORWARD));
         assertThat(VictoriaMetricsStateConvertUtils.objectToState(new BigDecimal("7"), item), is(UnDefType.UNDEF));
+    }
+
+    @Test
+    public void convertStringToState() {
+        StringItem item = new StringItem("name");
+        assertThat(VictoriaMetricsStateConvertUtils.objectToState("HEATING", item), is(new StringType("HEATING")));
+        assertThat(VictoriaMetricsStateConvertUtils.objectToState(BigDecimal.ONE, item), is(UnDefType.UNDEF));
     }
 
     @Test
