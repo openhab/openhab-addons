@@ -273,7 +273,7 @@ This will change the communication method and the Mi IO binding can communicate 
 
 # Mi IO Devices
 
-Currently the miio binding supports more than 570 different models.
+Currently the miio binding supports more than 600 different models.
 
 | Device                             | ThingType        | Device Model           | Supported    | Remark     |
 |------------------------------------|------------------|------------------------|--------------|------------|
@@ -308,6 +308,7 @@ Currently the miio binding supports more than 570 different models.
 | Xiaomi Smart Plug 2 (Wi-Fi)        | miio:basic       | [cuco.plug.v2eur](#cuco-plug-v2eur) | Yes          |            |
 | Mi Smart Antibacterial Humidifier  | miio:basic       | [deerma.humidifier.jsq](#deerma-humidifier-jsq) | Yes          |            |
 | Mi Smart Humidifier S              | miio:basic       | [deerma.humidifier.jsq1](#deerma-humidifier-jsq1) | Yes          |            |
+| Mijia Smart Anti-bacterial Humidifier 2 | miio:basic       | [deerma.humidifier.jsq2g](#deerma-humidifier-jsq2g) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Xiaomi Smart Humidifier 2          | miio:basic       | [deerma.humidifier.jsq2w](#deerma-humidifier-jsq2w) | Yes          |            |
 | Mi Smart Antibacterial Humidifier  | miio:basic       | [deerma.humidifier.jsq5](#deerma-humidifier-jsq5) | Yes          |            |
 | Mi Smart Humidifer S               | miio:basic       | [deerma.humidifier.jsqs](#deerma-humidifier-jsqs) | Yes          |            |
@@ -449,8 +450,20 @@ Currently the miio binding supports more than 570 different models.
 | MR.BOND                            | miio:basic       | [mrbond.airer.m1pro](#mrbond-airer-m1pro) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | MR.BOND                            | miio:basic       | [mrbond.airer.m1s](#mrbond-airer-m1s) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | MR.BOND                            | miio:basic       | [mrbond.airer.m1super](#mrbond-airer-m1super) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
-| NWT Internet Dehumidifier 30L      | miio:basic       | [nwt.derh.330ef](#nwt-derh-330ef) | Yes          | Reported to work only when the thing is configured to communicate via the cloud. |
-| NWT Internet Dehumidifier 18L      | miio:basic       | [nwt.derh.wdh318efw1](#nwt-derh-wdh318efw1) | Yes          |            |
+| NWT/Widetech Intelligent Dehumidifier 16L | miio:basic       | [nwt.derh.16l](#nwt-derh-16l) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| NWT/Widetech Internet Air Clean Dehumidifier 24L | miio:basic       | [nwt.derh.24wu1](#nwt-derh-24wu1) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| NWT/Widetech Internet Dehumidifier 12L | miio:basic       | [nwt.derh.312en](#nwt-derh-312en) | Experimental | The thing may need to communicate via the cloud, as reported for nwt.derh.330ef.<br />Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| NWT/Widetech Internet Dehumidifier 30L | miio:basic       | [nwt.derh.330ef](#nwt-derh-330ef) | Yes          | Reported to work only when the thing is configured to communicate via the cloud. |
+| Lumias 20L Dehumidifier            | miio:basic       | [nwt.derh.las20l](#nwt-derh-las20l) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Lumias 12L Dehumidifier            | miio:basic       | [nwt.derh.lua12l](#nwt-derh-lua12l) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Lumias 30L Dehumidifier            | miio:basic       | [nwt.derh.lua30l](#nwt-derh-lua30l) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Lumias 12L                         | miio:basic       | [nwt.derh.lus12l](#nwt-derh-lus12l) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Lumias 20L                         | miio:basic       | [nwt.derh.lus20l](#nwt-derh-lus20l) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Lumias 26L Dehumidifier            | miio:basic       | [nwt.derh.lus24l](#nwt-derh-lus24l) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Lumias 30L Dehumidifier            | miio:basic       | [nwt.derh.lus30l](#nwt-derh-lus30l) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Lumias 60L                         | miio:basic       | [nwt.derh.lus60l](#nwt-derh-lus60l) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| NWT/Widetech Intelligent Dehumidifier 12L | miio:basic       | [nwt.derh.nwt12l](#nwt-derh-nwt12l) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| NWT/Widetech Internet Dehumidifier 18L | miio:basic       | [nwt.derh.wdh318efw1](#nwt-derh-wdh318efw1) | Yes          |            |
 | Xiaomi Smart Sleep and Wake-up Light | miio:basic       | [philips.light.aibed](#philips-light-aibed) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Philips Zhirui Ceiling Lamp Living room 80W | miio:basic       | [philips.light.bceil](#philips-light-bceil) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Philips Zhirui Ceiling Lamp Bedroom 40W | miio:basic       | [philips.light.bceil1](#philips-light-bceil1) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
@@ -688,6 +701,9 @@ Currently the miio binding supports more than 570 different models.
 | Mijia Smart Air Purifier MAX       | miio:basic       | [xiaomi.airp.mb6](#xiaomi-airp-mb6) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Xiaomi Smart Air Purifier Elite    | miio:basic       | [xiaomi.airp.meb1](#xiaomi-airp-meb1) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Mijia Smart Air Purifier Elite     | miio:basic       | [xiaomi.airp.meb2](#xiaomi-airp-meb2) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Xiaomi Smart Inverter Dehumidifier | miio:basic       | [xiaomi.derh.30kh](#xiaomi-derh-30kh) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Xiaomi Smart Inverter Dehumidifier 30L | miio:basic       | [xiaomi.derh.30l](#xiaomi-derh-30l) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Mijia Smart Inverter Purifying Dehumidifier Max | miio:basic       | [xiaomi.derh.60l](#xiaomi-derh-60l) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Mi Smart Standing Fan 2 Lite       | miio:basic       | [xiaomi.fan.2lite](#xiaomi-fan-2lite) | Experimental | Created from the MIoT spec; not checked against the Mi Home app.<br />Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Mijia Smart Standing Fan Pro       | miio:basic       | [xiaomi.fan.p43](#xiaomi-fan-p43) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Xiaomi Smart Tower Fan 2           | miio:basic       | [xiaomi.fan.p45](#xiaomi-fan-p45) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
@@ -696,6 +712,14 @@ Currently the miio binding supports more than 570 different models.
 | Xiaomi Smart Standing Air Circulation Fan | miio:basic       | [xiaomi.fan.p76](#xiaomi-fan-p76) | Experimental | Created from the MIoT spec; not checked against the Mi Home app.<br />Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Mijia Smart Standing Fan Pro Slim  | miio:basic       | [xiaomi.fan.p85](#xiaomi-fan-p85) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Mijia Smart Air Circulation Fan Pro | miio:basic       | [xiaomi.fan.p90](#xiaomi-fan-p90) | Experimental | The Mi Home app sets the oscillation angles and the symmetrical flag in one command; here each is sent on its own.<br />Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Mijia Smart Dehumidifier 13L       | miio:basic       | [xiaomi.derh.13l](#xiaomi-derh-13l) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Xiaomi Smart Dehumidifier Lite     | miio:basic       | [xiaomi.derh.lite](#xiaomi-derh-lite) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Xiaomi Smart Evaporative Humidifier | miio:basic       | [xiaomi.humidifier.3lite](#xiaomi-humidifier-3lite) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Mijia Mist-Free Humidifier 3 400mL/h | miio:basic       | [xiaomi.humidifier.4lite](#xiaomi-humidifier-4lite) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Mijia Smart Evaporative Humidifier Pro | miio:basic       | [xiaomi.humidifier.600ek](#xiaomi-humidifier-600ek) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Mijia Smart Anti-bacterial Humidifier 2 | miio:basic       | [xiaomi.humidifier.jsq2g](#xiaomi-humidifier-jsq2g) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Xiaomi Smart Humidifier 2          | miio:basic       | [xiaomi.humidifier.jsq2w](#xiaomi-humidifier-jsq2w) | Yes          |            |
+| Mijia Mist-Free Humidifier 3 (400) | miio:basic       | [xiaomi.humidifier.p3](#xiaomi-humidifier-p3) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Mi Wi-Fi Repeater 2                | miio:unsupported | xiaomi.repeater.v2     | No           |            |
 | Xiaomi Robot Vacuum T12            | miio:basic       | [xiaomi.vacuum.b106bk](#xiaomi-vacuum-b106bk) | Yes          | Example command for room cleaning `xiaomi_robot_execute.sendCommand('action{"siid":7,"aiid":3,"in":[{"piid":24,"value":"11,12,etc room ids"},{"piid":25,"value":0},{"piid":26,"value":1}]}')` |
 | Xiaomi Robot Vacuum S12            | miio:basic       | [xiaomi.vacuum.b106eu](#xiaomi-vacuum-b106eu) | Yes          | Example command for room cleaning `xiaomi_robot_execute.sendCommand('action{"siid":7,"aiid":3,"in":[{"piid":24,"value":"11,12,etc room ids"},{"piid":25,"value":0},{"piid":26,"value":1}]}')` |
@@ -881,6 +905,7 @@ Currently the miio binding supports more than 570 different models.
 | Smartmi Smart Convector Heater 1S  | miio:basic       | [zhimi.heater.zb1](#zhimi-heater-zb1) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Smartmi Evaporative Humidifier     | miio:basic       | [zhimi.humidifier.ca1](#zhimi-humidifier-ca1) | Yes          |            |
 | Smartmi Evaporative Humidifer 2    | miio:basic       | [zhimi.humidifier.ca4](#zhimi-humidifier-ca4) | Yes          |            |
+| Smartmi Evaporative Humidifier 3   | miio:basic       | [zhimi.humidifier.ca6](#zhimi-humidifier-ca6) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Smartmi Evaporative Humidifier     | miio:basic       | [zhimi.humidifier.cb1](#zhimi-humidifier-cb1) | Yes          |            |
 | Smartmi Evaporative Humidifier     | miio:basic       | [zhimi.humidifier.cb2](#zhimi-humidifier-cb2) | Yes          |            |
 | Smartmi Humidifier                 | miio:basic       | [zhimi.humidifier.v1](#zhimi-humidifier-v1) | Yes          |            |
@@ -1271,89 +1296,121 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | Channel                    | Type                 | Description                              | Comment    |
 |----------------------------|----------------------|------------------------------------------|------------|
 | power                      | Switch               | Power                                    |            |
-| mode                       | Number               | Mode                                     | Value mapping `["1"="Low","2"="Medium","3"="High","4"="Humidity "]` |
+| fan_level                  | Number               | Fan Level                                | Value mapping `["1"="Low","2"="Medium","3"="High","4"="Constant Humidity"]` |
 | humidity                   | Number:Dimensionless | Humidity                                 |            |
-| humidity_set               | Number:Dimensionless | Humidity Setting                         |            |
-| led                        | Switch               | LED indicator Light                      |            |
-| sound                      | Switch               | Notification Sounds                      |            |
-| watertankstatus            | Number               | Watertank Status                         |            |
+| target_humidity            | Number:Dimensionless | Target Humidity                          |            |
+| temperature                | Number:Temperature   | Temperature                              |            |
+| led                        | Switch               | Indicator Light                          |            |
+| buzzer                     | Switch               | Notification Sound                       |            |
+| water_status               | Number               | Water                                    | Value mapping `["0"="No Water","1"="Normal"]` |
+| water_tank                 | Number               | Water Tank                               | Value mapping `["0"="Removed","1"="Installed"]` |
 
 ### Mi Smart Humidifier S (<a name="deerma-humidifier-jsq1">deerma.humidifier.jsq1</a>) Channels
 
 | Channel                    | Type                 | Description                              | Comment    |
 |----------------------------|----------------------|------------------------------------------|------------|
 | power                      | Switch               | Power                                    |            |
-| mode                       | Number               | Mode                                     | Value mapping `["1"="Low","2"="Medium","3"="High","4"="Humidity "]` |
+| fan_level                  | Number               | Fan Level                                | Value mapping `["1"="Low","2"="Medium","3"="High","4"="Constant Humidity"]` |
 | humidity                   | Number:Dimensionless | Humidity                                 |            |
-| humidity_set               | Number:Dimensionless | Humidity Setting                         |            |
-| led                        | Switch               | LED indicator Light                      |            |
-| sound                      | Switch               | Notification Sounds                      |            |
-| watertankstatus            | Number               | Watertank Status                         |            |
-| wet_and_protect            | Switch               | Wet and Protect                          |            |
+| target_humidity            | Number:Dimensionless | Target Humidity                          |            |
+| temperature                | Number:Temperature   | Temperature                              |            |
+| led                        | Switch               | Indicator Light                          |            |
+| buzzer                     | Switch               | Notification Sound                       |            |
+| water_status               | Number               | Water                                    | Value mapping `["0"="No Water","1"="Normal"]` |
+| water_tank                 | Number               | Water Tank                               | Value mapping `["0"="Removed","1"="Installed"]` |
+| overwet_protection         | Switch               | Over-Humidity Protection                 | Changes to low when the humidity stays above 70% for 1 hour |
+
+### Mijia Smart Anti-bacterial Humidifier 2 (<a name="deerma-humidifier-jsq2g">deerma.humidifier.jsq2g</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| power                      | Switch               | Power                                    |            |
+| fault                      | Number               | Device Fault                             | Value mapping `["0"="No Faults","1"="Insufficient Water","2"="Water Tank Removed"]` |
+| fan_level                  | Number               | Fan Level                                | Value mapping `["1"="Level 1","2"="Level 2","3"="Level 3","4"="Constant Humidity"]` |
+| target_humidity            | Number:Dimensionless | Target Humidity                          |            |
+| humidity                   | Number:Dimensionless | Humidity                                 |            |
+| temperature                | Number:Temperature   | Temperature                              |            |
+| buzzer                     | Switch               | Notification Sound                       |            |
+| led                        | Switch               | Indicator Light                          |            |
+| water_tank_removed         | Switch               | Water Tank Removed                       |            |
+| water_shortage             | Switch               | Insufficient Water                       |            |
+| humidity_sensor_fault      | Switch               | Humidity Sensor Fault                    |            |
+| temperature_sensor_fault   | Switch               | Temperature Sensor Fault                 |            |
+| overwet_protection_active  | Switch               | Over-Humidity Protection Active          |            |
+| overwet_protection         | Switch               | Over-Humidity Protection                 | Switches to level 1 at 85% humidity and turns off after 30 minutes at or above 85% |
+| constant_protection_active | Switch               | Auto Turn-Off Active                     |            |
+| constant_protection        | Switch               | Auto Turn-Off                            | Turns off when the target humidity is reached |
 
 ### Xiaomi Smart Humidifier 2 (<a name="deerma-humidifier-jsq2w">deerma.humidifier.jsq2w</a>) Channels
 
 | Channel                    | Type                 | Description                              | Comment    |
 |----------------------------|----------------------|------------------------------------------|------------|
-| on                         | Switch               | Humidifier - Switch Status               |            |
-| fault                      | Number               | Humidifier - Device Fault                | Value mapping `["0"="No Faults","1"="Insufficient Water","2"="Water Separation"]` |
-| fan_level                  | Number               | Humidifier - Fan Level                   | Value mapping `["1"="Level1","2"="Level2","3"="Level3","4"="Humidity"]` |
-| target_humidity            | Number:Dimensionless | Humidifier - Target Humidity             |            |
+| power                      | Switch               | Power                                    |            |
+| fault                      | Number               | Device Fault                             | Value mapping `["0"="No Faults","1"="Insufficient Water","2"="Water Tank Removed"]` |
+| fan_level                  | Number               | Fan Level                                | Value mapping `["1"="Level 1","2"="Level 2","3"="Level 3","4"="Constant Humidity"]` |
+| target_humidity            | Number:Dimensionless | Target Humidity                          |            |
 | status                     | Number               | Status                                   | Value mapping `["1"="Idle","2"="Busy"]` |
 | mode                       | Number               | Mode                                     | Value mapping `["0"="None","1"="Constant Humidity"]` |
-| relative_humidity          | Number:Dimensionless | Environment - Relative Humidity          |            |
-| temperature                | Number:Temperature   | Environment - Temperature                |            |
-| alarm                      | Switch               | Alarm - Alarm                            |            |
-| on1                        | Switch               | Indicator Light - Switch Status          |            |
-| tank_filed                 | Switch               | Tank Filed                               |            |
-| water_shortage_fault       | Switch               | Water Shortage Fault                     |            |
-| humi_sensor_fault          | Switch               | Humi-Sensor Fault                        |            |
-| temp_sensor_fault          | Switch               | Temp-Sensor Fault                        |            |
-| overwet_protect            | Switch               | Overwet Protect                          |            |
-| overwet_protect_on         | Switch               | Overwet Protect On                       |            |
-| overtop_humidity           | Switch               | Overtop Humidity                         |            |
+| humidity                   | Number:Dimensionless | Humidity                                 |            |
+| temperature                | Number:Temperature   | Temperature                              |            |
+| buzzer                     | Switch               | Notification Sound                       |            |
+| led                        | Switch               | Indicator Light                          |            |
+| water_tank_removed         | Switch               | Water Tank Removed                       |            |
+| water_shortage             | Switch               | Insufficient Water                       |            |
+| humidity_sensor_fault      | Switch               | Humidity Sensor Fault                    |            |
+| temperature_sensor_fault   | Switch               | Temperature Sensor Fault                 |            |
+| overwet_protection_active  | Switch               | Over-Humidity Protection Active          |            |
+| overwet_protection         | Switch               | Over-Humidity Protection                 |            |
+| high_humidity              | Switch               | High Humidity                            |            |
 
 ### Mi Smart Antibacterial Humidifier (<a name="deerma-humidifier-jsq5">deerma.humidifier.jsq5</a>) Channels
 
 | Channel                    | Type                 | Description                              | Comment    |
 |----------------------------|----------------------|------------------------------------------|------------|
-| on                         | Switch               | Humidifier - Switch Status               |            |
-| fault                      | Number               | Humidifier - Device Fault                | Value mapping `["0"="No Faults","1"="Insufficient Water","2"="Water Separation"]` |
-| fan_level                  | Number               | Humidifier - Fan Level                   | Value mapping `["1"="Level1","2"="Level2","3"="Level3","4"="Humidity"]` |
-| target_humidity            | Number:Dimensionless | Humidifier - Target Humidity             |            |
-| relative_humidity          | Number:Dimensionless | Environment - Relative Humidity          |            |
-| temperature                | Number:Temperature   | Environment - Temperature                |            |
-| alarm                      | Switch               | Alarm - Alarm                            |            |
-| on1                        | Switch               | Indicator Light - Switch Status          |            |
-| water_shortage_fault       | Switch               | Custom - Water Shortage Fault            |            |
-| the_tank_filed             | Switch               | Custom - The Tank Filed                  |            |
+| power                      | Switch               | Power                                    |            |
+| fault                      | Number               | Device Fault                             | Value mapping `["0"="No Faults","1"="Insufficient Water","2"="Water Tank Removed"]` |
+| fan_level                  | Number               | Fan Level                                | Value mapping `["1"="Low","2"="Medium","3"="High","4"="Constant Humidity"]` |
+| target_humidity            | Number:Dimensionless | Target Humidity                          |            |
+| humidity                   | Number:Dimensionless | Humidity                                 |            |
+| temperature                | Number:Temperature   | Temperature                              |            |
+| buzzer                     | Switch               | Notification Sound                       |            |
+| led                        | Switch               | Indicator Light                          |            |
+| water_shortage             | Switch               | Insufficient Water                       |            |
+| water_tank_removed         | Switch               | Water Tank Removed                       |            |
 
 ### Mi Smart Humidifer S (<a name="deerma-humidifier-jsqs">deerma.humidifier.jsqs</a>) Channels
 
 | Channel                    | Type                 | Description                              | Comment    |
 |----------------------------|----------------------|------------------------------------------|------------|
-| on                         | Switch               | Humidifier - Switch Status               |            |
-| fault                      | Number               | Humidifier - Device Fault                | Value mapping `["0"="No Faults","1"="Insufficient Water","2"="Water Separation"]` |
-| fan_level                  | Number               | Humidifier - Fan Level                   | Value mapping `["1"="Level1","2"="Level2","3"="Level3","4"="Humidity"]` |
-| target_humidity            | Number:Dimensionless | Humidifier - Target Humidity             |            |
-| relative_humidity          | Number:Dimensionless | Environment - Relative Humidity          |            |
-| temperature                | Number:Temperature   | Environment - Temperature                |            |
-| alarm                      | Switch               | Alarm - Alarm                            |            |
-| on1                        | Switch               | Indicator Light - Switch Status          |            |
-| water_shortage_fault       | Switch               | Custom - Water Shortage Fault            |            |
-| the_tank_filed             | Switch               | Custom - The Tank Filed                  |            |
+| power                      | Switch               | Power                                    |            |
+| fault                      | Number               | Device Fault                             | Value mapping `["0"="No Faults","1"="Insufficient Water","2"="Water Tank Removed"]` |
+| fan_level                  | Number               | Fan Level                                | Value mapping `["1"="Low","2"="Medium","3"="High","4"="Constant Humidity"]` |
+| target_humidity            | Number:Dimensionless | Target Humidity                          |            |
+| humidity                   | Number:Dimensionless | Humidity                                 |            |
+| temperature                | Number:Temperature   | Temperature                              |            |
+| buzzer                     | Switch               | Notification Sound                       |            |
+| led                        | Switch               | Indicator Light                          |            |
+| water_shortage             | Switch               | Insufficient Water                       |            |
+| water_tank_removed         | Switch               | Water Tank Removed                       |            |
+| overwet_protection         | Switch               | Over-Humidity Protection                 | Changes to low when the humidity stays above 70% for 1 hour |
+| humidity_sensor_source     | Number               | Humidity Sensor Source                   | Value mapping `["0"="This Device","1"="Other Device"]` |
+| filter_life_level          | Number:Dimensionless | Filter Life                              |            |
+| filter_left_time           | Number:Time          | Filter Time Left                         |            |
+| filter_used_time           | Number:Time          | Filter Used Time                         |            |
 
 ### Mi Smart Humidifier (<a name="deerma-humidifier-mjjsq">deerma.humidifier.mjjsq</a>) Channels
 
 | Channel                    | Type                 | Description                              | Comment    |
 |----------------------------|----------------------|------------------------------------------|------------|
 | power                      | Switch               | Power                                    |            |
-| mode                       | Number               | Mode                                     | Value mapping `["1"="Low","2"="Medium","3"="High","4"="Humidity "]` |
+| fan_level                  | Number               | Fan Level                                | Value mapping `["1"="Low","2"="Medium","3"="High","4"="Constant Humidity"]` |
 | humidity                   | Number:Dimensionless | Humidity                                 |            |
-| humidity_set               | Number:Dimensionless | Humidity Setting                         |            |
-| led                        | Switch               | LED indicator Light                      |            |
-| sound                      | Switch               | Notification Sounds                      |            |
-| watertankstatus            | Number               | Watertank Status                         |            |
+| target_humidity            | Number:Dimensionless | Target Humidity                          |            |
+| temperature                | Number:Temperature   | Temperature                              |            |
+| led                        | Switch               | Indicator Light                          |            |
+| buzzer                     | Switch               | Notification Sound                       |            |
+| water_status               | Number               | Water                                    | Value mapping `["0"="No Water","1"="Normal"]` |
+| water_tank                 | Number               | Water Tank                               | Value mapping `["0"="Removed","1"="Installed"]` |
 
 ### Mi Fresh Air Ventilator A1-150 (<a name="dmaker-airfresh-a1">dmaker.airfresh.a1</a>) Channels
 
@@ -5374,46 +5431,242 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | disinfect                  | Switch               | Disinfect                                | Only available when the airer is at its highest position. |
 | distime                    | Number:Time          | Disinfect Time                           |            |
 
-### NWT Internet Dehumidifier 30L (<a name="nwt-derh-330ef">nwt.derh.330ef</a>) Channels
-
-| Channel                    | Type                 | Description                              | Comment    |
-|----------------------------|----------------------|------------------------------------------|------------|
-| on                         | Switch               | Dehumidifier - Power                     |            |
-| fault                      | Number               | Dehumidifier - Device Fault              | Value mapping `["0"="No Faults"]` |
-| mode                       | Number               | Dehumidifier - Mode                      | Value mapping `["1"="Auto","2"="Smart","3"="Clothes Drying"]` |
-| target_humidity            | Number:Dimensionless | Dehumidifier - Target Humidity           | Value mapping `["30"="30%","40"="40%","50"="50%","60"="60%","70"="70%"]` |
-| relative_humidity          | Number:Dimensionless | Environment - Relative Humidity          |            |
-| temperature                | Number:Temperature   | Environment - Temperature                |            |
-| alarm                      | Switch               | Alarm - Beep Sound                       |            |
-| on1                        | Switch               | Indicator Light - Power                  |            |
-| physical_controls_locked   | Switch               | Child Lock                               |            |
-| coil_temp                  | Number:Temperature   | Status - Coil Temperature                |            |
-| compressor_status          | Switch               | Status - Compressor                      |            |
-| water_tank_status          | Switch               | Status - Water Tank                      |            |
-| defrost_status             | Switch               | Status - Defrosting                      |            |
-| fall_down_status           | Switch               | Status - Fallen Over                     |            |
-| pump                       | Switch               | Pump - Power                             |            |
-| pump_pipe_installed        | Switch               | Pump - Pump Pipe Installed               |            |
-| timer                      | Number               | Timer - Remaining Time                   |            |
-| timer_setting              | Number               | Timer - Timer Setting                    | Value mapping `["0"="Off","1"="1 Hour","2"="2 Hours","4"="4 Hours","8"="8 Hours","12"="12 Hours"]` |
-
-### NWT Internet Dehumidifier 18L (<a name="nwt-derh-wdh318efw1">nwt.derh.wdh318efw1</a>) Channels
+### NWT/Widetech Intelligent Dehumidifier 16L (<a name="nwt-derh-16l">nwt.derh.16l</a>) Channels
 
 | Channel                    | Type                 | Description                              | Comment    |
 |----------------------------|----------------------|------------------------------------------|------------|
 | power                      | Switch               | Power                                    |            |
-| mode                       | String               | Mode                                     |            |
-| autohumidity               | Number:Dimensionless | Auto humidity                            |            |
-| fanspeed                   | Number               | Fan Speed                                |            |
-| buzzer                     | Switch               | Buzzer                                   |            |
-| led                        | Switch               | LED                                      |            |
-| childlock                  | Switch               | Child Lock                               |            |
+| fault                      | Number               | Device Fault                             | Value mapping `["0"="No Faults","1"="E1: Temperature Sensor Fault","2"="E2: Copper Pipe Sensor Fault","3"="E4: Motor Fault"]` |
+| target_humidity            | Number:Dimensionless | Target Humidity                          | Used in the mode Dehumidify |
+| mode                       | Number               | Mode                                     | Value mapping `["1"="Dehumidify","2"="Dry"]` |
+| humidity                   | Number:Dimensionless | Humidity                                 |            |
+| buzzer                     | Switch               | Notification Sound                       |            |
+| led                        | Switch               | Indicator Light                          |            |
+| water_tank_full            | Switch               | Water Tank Full                          |            |
+| defrost                    | Switch               | Defrosting                               |            |
+| filter_cleaning            | Switch               | Filter Cleaning Reminder                 |            |
+
+### NWT/Widetech Internet Air Clean Dehumidifier 24L (<a name="nwt-derh-24wu1">nwt.derh.24wu1</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| power                      | Switch               | Power                                    |            |
+| fault                      | Number               | Device Fault                             | Value mapping `["0"="No Faults","2"="E2: Copper Pipe Sensor Fault","3"="E4: Motor Fault","4"="E5: MCU Communication Fault","5"="E9: Dust Sensor Fault"]` |
+| mode                       | Number               | Mode                                     | Value mapping `["0"="Auto","1"="Dehumidify","2"="Continuous","3"="Off"]` |
+| target_humidity            | Number:Dimensionless | Target Humidity                          | Used in the mode Dehumidify |
+| fan_level                  | Number               | Fan Level                                | Value mapping `["0"="Low","1"="Medium","2"="High"]` |
+| humidity                   | Number:Dimensionless | Humidity                                 |            |
+| buzzer                     | Switch               | Notification Sound                       |            |
+| led                        | Switch               | Indicator Light                          |            |
+| child_lock                 | Switch               | Child Lock                               |            |
+| dry_clothes                | Number               | Dry Clothes                              | Value mapping `["0"="Auto","1"="Low","2"="High","3"="Off"]` |
+| swing_wind                 | Number               | Swing                                    | Value mapping `["0"="Auto","1"="Horizontal","2"="Vertical","3"="Off"]` |
+| uv                         | Number               | UV-C                                     | Value mapping `["0"="Auto","1"="Low","2"="High","3"="Off"]` |
+| water_tank_full            | Switch               | Water Tank Full                          |            |
+| defrost                    | Switch               | Defrosting                               |            |
+
+### NWT/Widetech Internet Dehumidifier 12L (<a name="nwt-derh-312en">nwt.derh.312en</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| power                      | Switch               | Power                                    |            |
+| fault                      | Number               | Device Fault                             | Value mapping `["0"="No Faults"]` |
+| mode                       | Number               | Mode                                     | Value mapping `["1"="Target Humidity","2"="Dry Clothes"]` |
+| target_humidity            | Number:Dimensionless | Target Humidity                          | Value mapping `["30"="30%","40"="40%","50"="50%","60"="60%","70"="70%"]` |
 | humidity                   | Number:Dimensionless | Humidity                                 |            |
 | temperature                | Number:Temperature   | Temperature                              |            |
-| tankfull                   | Switch               | Tank Full                                |            |
-| compressorstatus           | Switch               | Compressor Status                        |            |
-| defroststatus              | Switch               | Defrost Status                           |            |
-| fanst                      | Number               | Fan St                                   |            |
+| buzzer                     | Switch               | Notification Sound                       |            |
+| led                        | Switch               | Indicator Light                          |            |
+| child_lock                 | Switch               | Child Lock                               |            |
+| coil_temperature           | Number:Temperature   | Coil Temperature                         |            |
+| compressor                 | Switch               | Compressor                               |            |
+| water_tank_full            | Switch               | Water Tank Full                          |            |
+| defrost                    | Switch               | Defrosting                               |            |
+| timer                      | Number:Time          | Timer Remaining                          |            |
+| timer_setting              | Number               | Off Timer                                | Value mapping `["0"="Off","1"="1 Hour","2"="2 Hours","4"="4 Hours","8"="8 Hours","12"="12 Hours"]` |
+
+### NWT/Widetech Internet Dehumidifier 30L (<a name="nwt-derh-330ef">nwt.derh.330ef</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| power                      | Switch               | Power                                    |            |
+| fault                      | Number               | Device Fault                             | Value mapping `["0"="No Faults"]` |
+| mode                       | Number               | Mode                                     | Value mapping `["1"="Target Humidity","2"="Continuous","3"="Dry Clothes"]` |
+| target_humidity            | Number:Dimensionless | Target Humidity                          | Value mapping `["30"="30%","40"="40%","50"="50%","60"="60%","70"="70%"]` |
+| humidity                   | Number:Dimensionless | Humidity                                 |            |
+| temperature                | Number:Temperature   | Temperature                              |            |
+| buzzer                     | Switch               | Notification Sound                       |            |
+| led                        | Switch               | Indicator Light                          |            |
+| child_lock                 | Switch               | Child Lock                               |            |
+| coil_temperature           | Number:Temperature   | Coil Temperature                         |            |
+| compressor                 | Switch               | Compressor                               |            |
+| water_tank_full            | Switch               | Water Tank Full                          |            |
+| defrost                    | Switch               | Defrosting                               |            |
+| fallen_over                | Switch               | Fallen Over                              |            |
+| pump                       | Switch               | Drain Pump                               | Read only: the app only allows switching the drain pump when the drain pipe is connected |
+| pump_pipe_installed        | Switch               | Drain Pipe Connected                     |            |
+| timer                      | Number:Time          | Timer Remaining                          |            |
+| timer_setting              | Number               | Off Timer                                | Value mapping `["0"="Off","1"="1 Hour","2"="2 Hours","4"="4 Hours","8"="8 Hours","12"="12 Hours"]` |
+
+### Lumias 20L Dehumidifier (<a name="nwt-derh-las20l">nwt.derh.las20l</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| power                      | Switch               | Power                                    |            |
+| fault                      | Number               | Device Fault                             | Value mapping `["0"="No Faults","1"="E1: Temperature Sensor Fault","2"="E2: Copper Pipe Sensor Fault"]` |
+| target_humidity            | Number:Dimensionless | Target Humidity                          |            |
+| fan_level                  | Number               | Fan Level                                | Value mapping `["0"="Low","1"="High"]` |
+| humidity                   | Number:Dimensionless | Humidity                                 |            |
+| buzzer                     | Switch               | Notification Sound                       |            |
+| led                        | Switch               | Indicator Light                          |            |
+| water_tank_full            | Switch               | Water Tank Full                          |            |
+| defrost                    | Switch               | Defrosting                               |            |
+| filter_cleaning            | Switch               | Filter Cleaning Reminder                 |            |
+| swing                      | Switch               | Swing                                    |            |
+
+### Lumias 12L Dehumidifier (<a name="nwt-derh-lua12l">nwt.derh.lua12l</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| power                      | Switch               | Power                                    |            |
+| fault                      | Number               | Device Fault                             | Value mapping `["0"="No Faults","1"="E1: Temperature Sensor Fault","2"="E2: Copper Pipe Sensor Fault"]` |
+| target_humidity            | Number:Dimensionless | Target Humidity                          | Used in the mode Dehumidify; Value mapping `["40"="40%","50"="50%","60"="60%"]` |
+| mode                       | Number               | Mode                                     | Value mapping `["0"="Dehumidify","1"="Continuous"]` |
+| humidity                   | Number:Dimensionless | Humidity                                 |            |
+| water_tank_full            | Switch               | Water Tank Full                          |            |
+| defrost                    | Switch               | Defrosting                               |            |
+
+### Lumias 30L Dehumidifier (<a name="nwt-derh-lua30l">nwt.derh.lua30l</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| power                      | Switch               | Power                                    |            |
+| fault                      | Number               | Device Fault                             | Value mapping `["0"="No Faults","1"="E1: Temperature Sensor Fault","2"="E2: Copper Pipe Sensor Fault"]` |
+| mode                       | Number               | Mode                                     | Value mapping `["0"="Dehumidify","1"="Continuous"]` |
+| target_humidity            | Number:Dimensionless | Target Humidity                          | Used in the mode Dehumidify |
+| fan_level                  | Number               | Fan Level                                | Value mapping `["0"="Low","1"="High"]` |
+| humidity                   | Number:Dimensionless | Humidity                                 |            |
+| buzzer                     | Switch               | Notification Sound                       |            |
+| led                        | Switch               | Indicator Light                          |            |
+| water_tank_full            | Switch               | Water Tank Full                          |            |
+| defrost                    | Switch               | Defrosting                               |            |
+| filter_cleaning            | Switch               | Filter Cleaning Reminder                 |            |
+
+### Lumias 12L (<a name="nwt-derh-lus12l">nwt.derh.lus12l</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| power                      | Switch               | Power                                    |            |
+| fault                      | Number               | Device Fault                             | Value mapping `["0"="No Faults","1"="Copper Pipe Sensor Fault","2"="MCU Communication Fault"]` |
+| mode                       | Number               | Mode                                     | Value mapping `["0"="Dehumidify","1"="Dry","2"="Continuous"]` |
+| target_humidity            | Number:Dimensionless | Target Humidity                          | Used in the mode Dehumidify |
+| buzzer                     | Switch               | Notification Sound                       |            |
+| child_lock                 | Switch               | Child Lock                               |            |
+| water_tank_full            | Switch               | Water Tank Full                          |            |
+| defrost                    | Switch               | Defrosting                               |            |
+| led                        | Switch               | Indicator Light                          |            |
+| humidity                   | Number:Dimensionless | Humidity                                 |            |
+
+### Lumias 20L (<a name="nwt-derh-lus20l">nwt.derh.lus20l</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| power                      | Switch               | Power                                    |            |
+| fault                      | Number               | Device Fault                             | Value mapping `["0"="No Faults","1"="Temperature Sensor Fault","2"="Copper Pipe Sensor Fault"]` |
+| fan_level                  | Number               | Fan Level                                | Used in the mode Dehumidify; Value mapping `["0"="Low","1"="High"]` |
+| target_humidity            | Number:Dimensionless | Target Humidity                          | Used in the mode Dehumidify |
+| mode                       | Number               | Mode                                     | Value mapping `["0"="Dehumidify","1"="Dry"]` |
+| buzzer                     | Switch               | Notification Sound                       |            |
+| led                        | Switch               | Indicator Light                          |            |
+| water_tank_full            | Switch               | Water Tank Full                          |            |
+| defrost                    | Switch               | Defrosting                               |            |
+| filter_cleaning            | Switch               | Filter Cleaning Reminder                 |            |
+| humidity                   | Number:Dimensionless | Humidity                                 |            |
+
+### Lumias 26L Dehumidifier (<a name="nwt-derh-lus24l">nwt.derh.lus24l</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| power                      | Switch               | Power                                    |            |
+| fault                      | Number               | Device Fault                             | Value mapping `["0"="No Faults","2"="Copper Pipe Sensor Fault","3"="Motor Fault","4"="MCU Communication Fault"]` |
+| mode                       | Number               | Mode                                     | Off while dry clothes or UV is active; Value mapping `["0"="Auto","1"="Dehumidify","2"="Continuous","3"="Off"]` |
+| fan_level                  | Number               | Fan Level                                | Value mapping `["0"="Silent","1"="Low","2"="High"]` |
+| target_humidity            | Number:Dimensionless | Target Humidity                          | Used in the mode Dehumidify |
+| buzzer                     | Switch               | Notification Sound                       |            |
+| child_lock                 | Switch               | Child Lock                               |            |
+| led                        | Switch               | Indicator Light                          |            |
+| dry_clothes                | Number               | Dry Clothes                              | Value mapping `["0"="Auto","1"="Low","2"="High","3"="Off"]` |
+| swing_wind                 | Number               | Swing                                    | Value mapping `["0"="Auto","1"="Horizontal","2"="Vertical","3"="Off"]` |
+| uv                         | Number               | UV                                       | Value mapping `["0"="Silent","1"="Low","2"="High","3"="Off"]` |
+| water_tank_full            | Switch               | Water Tank Full                          |            |
+| defrost                    | Switch               | Defrosting                               |            |
+| humidity                   | Number:Dimensionless | Humidity                                 |            |
+
+### Lumias 30L Dehumidifier (<a name="nwt-derh-lus30l">nwt.derh.lus30l</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| power                      | Switch               | Power                                    |            |
+| fault                      | Number               | Device Fault                             | Value mapping `["0"="No Faults","1"="Copper Pipe Sensor Fault","2"="Motor Fault"]` |
+| mode                       | Number               | Mode                                     | Value mapping `["0"="Auto","1"="Dry","2"="Dehumidify","3"="Sleep"]` |
+| fan_level                  | Number               | Fan Level                                | Used in the mode Dehumidify; Value mapping `["0"="Low","1"="Medium","2"="High"]` |
+| target_humidity            | Number:Dimensionless | Target Humidity                          | Used in the mode Dehumidify |
+| humidity                   | Number:Dimensionless | Humidity                                 |            |
+| buzzer                     | Switch               | Notification Sound                       |            |
+| led                        | Switch               | Indicator Light                          |            |
+| water_tank_full            | Switch               | Water Tank Full                          |            |
+| defrost                    | Switch               | Defrosting                               |            |
+| filter_cleaning            | Switch               | Filter Cleaning Reminder                 |            |
+| swing                      | Switch               | Swing                                    |            |
+
+### Lumias 60L (<a name="nwt-derh-lus60l">nwt.derh.lus60l</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| power                      | Switch               | Power                                    |            |
+| fault                      | Number               | Device Fault                             | Value mapping `["0"="No Faults","1"="Copper Pipe Sensor Fault"]` |
+| mode                       | Number               | Mode                                     | Value mapping `["0"="Dehumidify","1"="Dry"]` |
+| fan_level                  | Number               | Fan Level                                | Used in the mode Dehumidify; Value mapping `["0"="Low","1"="High"]` |
+| target_humidity            | Number:Dimensionless | Target Humidity                          | Used in the mode Dehumidify |
+| humidity                   | Number:Dimensionless | Humidity                                 |            |
+| buzzer                     | Switch               | Notification Sound                       |            |
+| led                        | Switch               | Indicator Light                          |            |
+| water_tank_full            | Switch               | Water Tank Full                          |            |
+| defrost                    | Switch               | Defrosting                               |            |
+| filter_cleaning            | Switch               | Filter Cleaning Reminder                 |            |
+
+### NWT/Widetech Intelligent Dehumidifier 12L (<a name="nwt-derh-nwt12l">nwt.derh.nwt12l</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| power                      | Switch               | Power                                    |            |
+| fault                      | Number               | Device Fault                             | Value mapping `["0"="No Faults","1"="E1: Temperature Sensor Fault","2"="E2: Copper Pipe Sensor Fault","3"="E4: Motor Fault"]` |
+| target_humidity            | Number:Dimensionless | Target Humidity                          | Used in the mode Dehumidify |
+| mode                       | Number               | Mode                                     | Value mapping `["1"="Dehumidify","2"="Dry"]` |
+| humidity                   | Number:Dimensionless | Humidity                                 |            |
+| buzzer                     | Switch               | Notification Sound                       |            |
+| led                        | Switch               | Indicator Light                          |            |
+| water_tank_full            | Switch               | Water Tank Full                          |            |
+| defrost                    | Switch               | Defrosting                               |            |
+| filter_cleaning            | Switch               | Filter Cleaning Reminder                 |            |
+
+### NWT/Widetech Internet Dehumidifier 18L (<a name="nwt-derh-wdh318efw1">nwt.derh.wdh318efw1</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| power                      | Switch               | Power                                    |            |
+| mode                       | String               | Mode                                     | Value mapping `["auto"="Target Humidity","on"="Continuous","dry_cloth"="Dry Clothes"]` |
+| target_humidity            | Number:Dimensionless | Target Humidity                          | Value mapping `["40"="40%","50"="50%","60"="60%"]` |
+| fan_level                  | Number               | Fan Level                                | Only in the modes target humidity and continuous; Value mapping `["1"="Level 1","2"="Level 2","3"="Level 3"]` |
+| fan_speed                  | Number               | Fan Speed                                |            |
+| buzzer                     | Switch               | Notification Sound                       |            |
+| led                        | Switch               | Indicator Light                          |            |
+| child_lock                 | Switch               | Child Lock                               |            |
+| humidity                   | Number:Dimensionless | Humidity                                 |            |
+| temperature                | Number:Temperature   | Temperature                              |            |
+| water_tank_full            | Switch               | Water Tank Full                          |            |
+| compressor                 | Switch               | Compressor                               |            |
+| defrost                    | Switch               | Defrosting                               |            |
 | alarm                      | String               | Alarm                                    |            |
 
 ### Xiaomi Smart Sleep and Wake-up Light (<a name="philips-light-aibed">philips.light.aibed</a>) Channels
@@ -9593,6 +9846,87 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | iic_error_count            | Number               | I2C Error Count                          |            |
 | country_code               | Number               | Country Code                             | Value mapping `["17230"="CN","17749"="EU","21843"="US","21591"="TW","19282"="KR","21835"="UK"]` |
 
+### Xiaomi Smart Inverter Dehumidifier (<a name="xiaomi-derh-30kh">xiaomi.derh.30kh</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| power                      | Switch               | Power                                    |            |
+| fault                      | Number               | Device Fault                             | Value mapping `["0"="No Faults","1"="Water Tank Full or Removed","2"="Temperature/Humidity Sensor Fault","3"="Copper Pipe Sensor Fault","4"="Communication Fault","5"="Clean the Filter","6"="Defrosting","7"="Fan Motor Fault","8"="Overload Protection","9"="Lack of Refrigerant","10"="Overheating"]` |
+| mode                       | Number               | Mode                                     | Value mapping `["0"="Smart","1"="Sleep","2"="Clothes Drying","3"="Favourite"]` |
+| target_humidity            | Number:Dimensionless | Target Humidity                          | Not used in the mode Clothes Drying |
+| fan_level                  | Number               | Fan Level                                | Used in the mode Favourite; Value mapping `["0"="Level 1","1"="Level 2","2"="Level 3","3"="Level 4","4"="Level 5","5"="Level 6","6"="Level 7"]` |
+| dry_after_off              | Switch               | Dry & Turn-Off                           | Dries the evaporator before the dehumidifier turns off |
+| dry_left_time              | Number:Time          | Drying Time Left                         |            |
+| humidity                   | Number:Dimensionless | Humidity                                 |            |
+| temperature                | Number:Temperature   | Temperature                              |            |
+| buzzer                     | Switch               | Notification Sound                       |            |
+| child_lock                 | Switch               | Child Lock                               |            |
+| led                        | Switch               | Display                                  |            |
+| led_brightness             | Number               | Display Brightness                       | Value mapping `["1"="Dim","2"="Bright"]` |
+| delay                      | Switch               | Turn-Off Delay                           |            |
+| delay_time                 | Number:Time          | Turn-Off Delay Time                      |            |
+| delay_remain_time          | Number:Time          | Turn-Off Delay Remaining                 |            |
+| defrost                    | Switch               | Defrosting                               |            |
+| plasma                     | Switch               | Plasma                                   |            |
+| actions                    | String               | Actions                                  | The filter reset is not yet confirmed on a device; Value mapping `["reset-filter"="Reset Filter"]` |
+
+### Xiaomi Smart Inverter Dehumidifier 30L (<a name="xiaomi-derh-30l">xiaomi.derh.30l</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| power                      | Switch               | Power                                    |            |
+| fault                      | Number               | Device Fault                             | Value mapping `["0"="No Faults","1"="Water Tank Full or Removed","2"="Temperature/Humidity Sensor Fault","3"="Copper Pipe Sensor Fault","4"="Communication Fault","5"="Clean the Filter","6"="Defrosting","7"="Fan Motor Fault","8"="Overload Protection","9"="Lack of Refrigerant","10"="Overheating"]` |
+| mode                       | Number               | Mode                                     | Value mapping `["0"="Smart","1"="Sleep","2"="Clothes Drying","3"="Favourite"]` |
+| target_humidity            | Number:Dimensionless | Target Humidity                          | Not used in the mode Clothes Drying |
+| fan_level                  | Number               | Fan Level                                | Used in the mode Favourite; Value mapping `["0"="Level 1","1"="Level 2","2"="Level 3","3"="Level 4","4"="Level 5","5"="Level 6","6"="Level 7"]` |
+| dry_after_off              | Switch               | Dry & Turn-Off                           | Dries the evaporator before the dehumidifier turns off |
+| dry_left_time              | Number:Time          | Drying Time Left                         |            |
+| humidity                   | Number:Dimensionless | Humidity                                 |            |
+| temperature                | Number:Temperature   | Temperature                              |            |
+| buzzer                     | Switch               | Notification Sound                       |            |
+| child_lock                 | Switch               | Child Lock                               |            |
+| led                        | Switch               | Display                                  |            |
+| led_brightness             | Number               | Display Brightness                       | Value mapping `["1"="Dim","2"="Bright"]` |
+| delay                      | Switch               | Turn-Off Delay                           |            |
+| delay_time                 | Number:Time          | Turn-Off Delay Time                      |            |
+| delay_remain_time          | Number:Time          | Turn-Off Delay Remaining                 |            |
+| defrost                    | Switch               | Defrosting                               |            |
+| plasma                     | Switch               | Plasma                                   |            |
+| actions                    | String               | Actions                                  | The filter reset is not yet confirmed on a device; Value mapping `["reset-filter"="Reset Filter"]` |
+
+### Mijia Smart Inverter Purifying Dehumidifier Max (<a name="xiaomi-derh-60l">xiaomi.derh.60l</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| power                      | Switch               | Power                                    |            |
+| fault                      | Number               | Device Fault                             | Value mapping `["0"="No Faults","1"="Water Tank Full","2"="Temperature/Humidity Sensor Fault","3"="Evaporator Temperature Sensor Fault","4"="Communication Fault","5"="Fan Fault","6"="Lack of Refrigerant","7"="Overheating Protection","8"="Tip-Over Protection","9"="Drive Fault","10"="Exhaust Temperature Sensor Fault","11"="Condenser Temperature Sensor Fault","12"="Back Cover Open","13"="Overload Protection","14"="Exhaust Temperature Too High","15"="Driver Fault","16"="Drainage Fault","17"="Valve Fault","18"="Target Water Level Reached","19"="Water Tank Removed"]` |
+| mode                       | Number               | Mode                                     | Value mapping `["0"="Smart","1"="Sleep","2"="Clothes Drying","3"="Favourite","4"="Purify"]` |
+| fan_level                  | Number               | Fan Level                                | Used in the modes Favourite and Purify; Value mapping `["0"="Level 1","1"="Level 2","2"="Level 3","3"="Level 4"]` |
+| dry_after_off              | Switch               | Dry & Turn-Off                           | Dries the evaporator before the dehumidifier turns off |
+| dry_left_time              | Number:Time          | Drying Time Left                         |            |
+| target_humidity            | Number:Dimensionless | Target Humidity                          | Not used in the modes Clothes Drying and Purify |
+| horizontal_swing           | Switch               | Oscillation                              |            |
+| plasma                     | Switch               | Plasma                                   |            |
+| uv                         | Switch               | UV-C Sterilization                       |            |
+| status                     | Number               | Status                                   | Value mapping `["1"="Idle","2"="Defrosting","3"="Clean the Filter","4"="Clean the Pump Pre-Filter","5"="Auxiliary Tank Full"]` |
+| humidity                   | Number:Dimensionless | Humidity                                 |            |
+| temperature                | Number:Temperature   | Temperature                              |            |
+| pm25                       | Number:Density       | PM2.5                                    |            |
+| pm10                       | Number:Density       | PM10                                     |            |
+| led                        | Switch               | Display                                  |            |
+| led_brightness             | Number               | Display Brightness                       | Value mapping `["1"="Dim","2"="Normal"]` |
+| buzzer                     | Switch               | Notification Sound                       |            |
+| child_lock                 | Switch               | Child Lock                               |            |
+| delay                      | Switch               | Turn-Off Delay                           |            |
+| delay_time                 | Number:Time          | Turn-Off Delay Time                      |            |
+| delay_remain_time          | Number:Time          | Turn-Off Delay Remaining                 |            |
+| filter_life_level          | Number:Dimensionless | Filter Life                              |            |
+| filter_left_time           | Number:Time          | Filter Time Left                         |            |
+| defrost                    | Switch               | Defrosting                               |            |
+| drainage                   | Number               | Continuous Drainage                      | Value mapping `["0"="Off","1"="Draining"]` |
+| water_target               | Number:Dimensionless | Full Water Level                         | Dehumidifying stops when this water level is reached; Value mapping `["50"="50%","70"="70%","100"="100%"]` |
+| actions                    | String               | Actions                                  | The filter reset is not yet confirmed on a device; Value mapping `["reset-filter"="Reset Filter","reset-pre-filter"="Reset Pre-Filter"]` |
+
 ### Mi Smart Standing Fan 2 Lite (<a name="xiaomi-fan-2lite">xiaomi.fan.2lite</a>) Channels
 
 | Channel                    | Type                 | Description                              | Comment    |
@@ -9756,6 +10090,187 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | led                        | Switch               | Screen                                   |            |
 | child_lock                 | Switch               | Child Lock                               |            |
 | fault                      | Number               | Device Fault                             | Value mapping `["0"="No Faults","1"="Motor Stuck","2"="Insufficient Power"]` |
+
+### Mijia Smart Dehumidifier 13L (<a name="xiaomi-derh-13l">xiaomi.derh.13l</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| power                      | Switch               | Power                                    |            |
+| fault                      | Number               | Device Fault                             | Value mapping `["0"="No Faults","1"="Water Tank Full or Removed","2"="Temperature/Humidity Sensor Fault","3"="Copper Pipe Sensor Fault","4"="Communication Fault","5"="Clean the Filter","6"="Defrosting","7"="Fan Motor Fault","8"="Overload Protection","9"="Lack of Refrigerant"]` |
+| mode                       | Number               | Mode                                     | Value mapping `["0"="Smart","1"="Sleep","2"="Clothes Drying"]` |
+| target_humidity            | Number:Dimensionless | Target Humidity                          |            |
+| humidity                   | Number:Dimensionless | Humidity                                 |            |
+| temperature                | Number:Temperature   | Temperature                              |            |
+| buzzer                     | Switch               | Notification Sound                       |            |
+| led                        | Switch               | Display                                  |            |
+| led_brightness             | Number               | Display Brightness                       | Value mapping `["1"="Dim","2"="Bright"]` |
+| child_lock                 | Switch               | Child Lock                               |            |
+| dry_after_off              | Switch               | Dry & Turn-Off                           | Dries the evaporator before the dehumidifier turns off |
+| dry_left_time              | Number:Time          | Drying Time Left                         |            |
+| defrost                    | Switch               | Defrosting                               |            |
+| delay                      | Switch               | Turn-Off Delay                           |            |
+| delay_time                 | Number:Time          | Turn-Off Delay Time                      |            |
+| delay_remain_time          | Number:Time          | Turn-Off Delay Remaining                 |            |
+| actions                    | String               | Actions                                  | The filter reset is not yet confirmed on a device; Value mapping `["reset-filter"="Reset Filter"]` |
+
+### Xiaomi Smart Dehumidifier Lite (<a name="xiaomi-derh-lite">xiaomi.derh.lite</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| power                      | Switch               | Power                                    |            |
+| fault                      | Number               | Device Fault                             | Value mapping `["0"="No Faults","1"="Water Tank Full or Removed","2"="Temperature/Humidity Sensor Fault","3"="Copper Pipe Sensor Fault","4"="Communication Fault","5"="Clean the Filter","6"="Defrosting","7"="Fan Motor Fault","8"="Overload Protection","9"="Lack of Refrigerant"]` |
+| mode                       | Number               | Mode                                     | Value mapping `["0"="Smart","1"="Sleep","2"="Clothes Drying"]` |
+| target_humidity            | Number:Dimensionless | Target Humidity                          |            |
+| humidity                   | Number:Dimensionless | Humidity                                 |            |
+| temperature                | Number:Temperature   | Temperature                              |            |
+| buzzer                     | Switch               | Notification Sound                       |            |
+| led                        | Switch               | Display                                  |            |
+| led_brightness             | Number               | Display Brightness                       | Value mapping `["1"="Dim","2"="Bright"]` |
+| child_lock                 | Switch               | Child Lock                               |            |
+| dry_after_off              | Switch               | Dry & Turn-Off                           | Dries the evaporator before the dehumidifier turns off |
+| dry_left_time              | Number:Time          | Drying Time Left                         |            |
+| defrost                    | Switch               | Defrosting                               |            |
+| delay                      | Switch               | Turn-Off Delay                           |            |
+| delay_time                 | Number:Time          | Turn-Off Delay Time                      |            |
+| delay_remain_time          | Number:Time          | Turn-Off Delay Remaining                 |            |
+| actions                    | String               | Actions                                  | The filter reset is not yet confirmed on a device; Value mapping `["reset-filter"="Reset Filter"]` |
+
+### Xiaomi Smart Evaporative Humidifier (<a name="xiaomi-humidifier-3lite">xiaomi.humidifier.3lite</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| power                      | Switch               | Power                                    |            |
+| fault                      | Number               | Device Fault                             | Value mapping `["0"="No Faults","1"="Fan Motor Fault","2"="Clean the Water Level Sensor","3"="Water Pump Fault","4"="Paused","5"="Lack of Water"]` |
+| mode                       | Number               | Mode                                     | Value mapping `["0"="Constant Humidity","1"="Sleep","2"="High Power"]` |
+| target_humidity            | Number:Dimensionless | Target Humidity                          |            |
+| dry                        | Switch               | Dry & Turn-Off                           | Dries the filter before the humidifier turns off |
+| dry_left_time              | Number:Time          | Drying Time Left                         |            |
+| overwet_protection         | Switch               | Over-Humidity Protection                 | Switches to a lower level when the ambient humidity is too high |
+| humidity                   | Number:Dimensionless | Humidity                                 |            |
+| filter_life_level          | Number:Dimensionless | Filter Life                              |            |
+| led                        | Switch               | Display                                  |            |
+| led_brightness             | Number               | Display Brightness                       | Value mapping `["0"="Dim","1"="Bright"]` |
+| buzzer                     | Switch               | Notification Sound                       |            |
+| child_lock                 | Switch               | Child Lock                               |            |
+| delay                      | Switch               | Turn-Off Delay                           |            |
+| delay_time                 | Number:Time          | Turn-Off Delay Time                      |            |
+| delay_remain_time          | Number:Time          | Turn-Off Delay Remaining                 |            |
+| clean                      | Switch               | Start Cleaning                           | Starts the 30 minute cleaning cycle while the humidifier is off; the cleaning time left shows the progress. Switch the humidifier off to stop |
+| clean_time_left            | Number:Time          | Cleaning Time Left                       |            |
+| actions                    | String               | Actions                                  | The filter reset is not yet confirmed on a device; Value mapping `["reset-filter-life"="Reset Filter Life"]` |
+
+### Mijia Mist-Free Humidifier 3 400mL/h (<a name="xiaomi-humidifier-4lite">xiaomi.humidifier.4lite</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| power                      | Switch               | Power                                    |            |
+| fault                      | Number               | Device Fault                             | Value mapping `["0"="No Faults","1"="Fan Motor Fault","2"="Water Pump Fault","3"="Water Pump Failure","4"="Lack of Water"]` |
+| mode                       | Number               | Mode                                     | Value mapping `["0"="Constant Humidity","1"="Sleep","2"="High Power","3"="Air Dry"]` |
+| target_humidity            | Number:Dimensionless | Target Humidity                          |            |
+| dry_left_time              | Number:Time          | Drying Time Left                         |            |
+| overwet_protection         | Switch               | Over-Humidity Protection                 | Switches to a lower level when the ambient humidity is too high |
+| humidity                   | Number:Dimensionless | Humidity                                 |            |
+| filter_life_level          | Number:Dimensionless | Filter Life                              |            |
+| led                        | Switch               | Display                                  |            |
+| led_brightness             | Number               | Display Brightness                       | Value mapping `["0"="Dim","1"="Bright"]` |
+| buzzer                     | Switch               | Notification Sound                       |            |
+| child_lock                 | Switch               | Child Lock                               |            |
+| delay                      | Switch               | Turn-Off Delay                           |            |
+| delay_time                 | Number:Time          | Turn-Off Delay Time                      |            |
+| delay_remain_time          | Number:Time          | Turn-Off Delay Remaining                 |            |
+| self_clean                 | Number               | Self-Cleaning                            | Value mapping `["1"="Ready","2"="In Progress","3"="Finished"]` |
+| clean_time_left            | Number:Time          | Self-Cleaning Time Left                  |            |
+| filter_clean               | Number               | Filter Cleaning                          | Value mapping `["0"="Not Needed","1"="Clean the Filter"]` |
+| actions                    | String               | Actions                                  | The filter reset is not yet confirmed on a device; Value mapping `["reset-filter-life"="Reset Filter Life","start-self-clean"="Start Self-Cleaning","stop-self-clean"="Stop Self-Cleaning"]` |
+
+### Mijia Smart Evaporative Humidifier Pro (<a name="xiaomi-humidifier-600ek">xiaomi.humidifier.600ek</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| power                      | Switch               | Power                                    |            |
+| fault                      | Number               | Device Fault                             | Value mapping `["0"="No Faults","1"="Fan Motor Fault","2"="Water Pump Fault","3"="Water Pump Failure","4"="Lack of Water"]` |
+| mode                       | Number               | Mode                                     | Value mapping `["0"="Constant Humidity","1"="Sleep","2"="High Power","3"="Air Dry"]` |
+| target_humidity            | Number:Dimensionless | Target Humidity                          |            |
+| dry_left_time              | Number:Time          | Drying Time Left                         |            |
+| overwet_protection         | Switch               | Over-Humidity Protection                 | Switches to a lower level when the ambient humidity is too high |
+| humidity                   | Number:Dimensionless | Humidity                                 |            |
+| led                        | Switch               | Display                                  |            |
+| led_brightness             | Number               | Display Brightness                       | Value mapping `["0"="Dim","1"="Bright"]` |
+| buzzer                     | Switch               | Notification Sound                       |            |
+| child_lock                 | Switch               | Child Lock                               |            |
+| delay                      | Switch               | Turn-Off Delay                           |            |
+| delay_time                 | Number:Time          | Turn-Off Delay Time                      |            |
+| delay_remain_time          | Number:Time          | Turn-Off Delay Remaining                 |            |
+| self_clean                 | Number               | Self-Cleaning                            | Value mapping `["1"="Ready","2"="In Progress","3"="Finished"]` |
+| clean_time_left            | Number:Time          | Self-Cleaning Time Left                  |            |
+| filter_clean               | Number               | Filter Cleaning                          | Value mapping `["0"="Not Needed","1"="Clean the Filter"]` |
+| actions                    | String               | Actions                                  | Value mapping `["start-self-clean"="Start Self-Cleaning","stop-self-clean"="Stop Self-Cleaning"]` |
+
+### Mijia Smart Anti-bacterial Humidifier 2 (<a name="xiaomi-humidifier-jsq2g">xiaomi.humidifier.jsq2g</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| power                      | Switch               | Power                                    |            |
+| fault                      | Number               | Device Fault                             | Value mapping `["0"="No Faults","1"="Insufficient Water","2"="Water Tank Removed"]` |
+| mode                       | Number               | Mode                                     | Value mapping `["0"="Constant Humidity","3"="Level"]` |
+| fan_level                  | Number               | Fan Level                                | Used in the mode Level; Value mapping `["0"="Level 1","1"="Level 2","2"="Level 3"]` |
+| target_humidity            | Number:Dimensionless | Target Humidity                          |            |
+| humidity                   | Number:Dimensionless | Humidity                                 |            |
+| temperature                | Number:Temperature   | Temperature                              |            |
+| led                        | Switch               | Indicator Light                          |            |
+| buzzer                     | Switch               | Notification Sound                       |            |
+| water_tank_removed         | Switch               | Water Tank Removed                       |            |
+| water_shortage             | Switch               | Insufficient Water                       |            |
+| humidity_sensor_fault      | Switch               | Humidity Sensor Fault                    |            |
+| temperature_sensor_fault   | Switch               | Temperature Sensor Fault                 |            |
+| overwet_protection_active  | Switch               | Over-Humidity Protection Active          |            |
+| overwet_protection         | Switch               | Over-Humidity Protection                 | Switches to level 1 at 85% humidity and turns off after 30 minutes at or above 85% |
+| constant_protection_active | Switch               | Auto Turn-Off Active                     |            |
+| constant_protection        | Switch               | Auto Turn-Off                            | Turns off when the target humidity is reached |
+
+### Xiaomi Smart Humidifier 2 (<a name="xiaomi-humidifier-jsq2w">xiaomi.humidifier.jsq2w</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| power                      | Switch               | Power                                    |            |
+| fault                      | Number               | Device Fault                             | Value mapping `["0"="No Faults","1"="Insufficient Water","2"="Water Tank Removed"]` |
+| fan_level                  | Number               | Fan Level                                | Value mapping `["1"="Level 1","2"="Level 2","3"="Level 3","4"="Constant Humidity"]` |
+| target_humidity            | Number:Dimensionless | Target Humidity                          |            |
+| status                     | Number               | Status                                   | Value mapping `["1"="Idle","2"="Busy"]` |
+| mode                       | Number               | Mode                                     | Value mapping `["0"="None","1"="Constant Humidity"]` |
+| humidity                   | Number:Dimensionless | Humidity                                 |            |
+| temperature                | Number:Temperature   | Temperature                              |            |
+| buzzer                     | Switch               | Notification Sound                       |            |
+| led                        | Switch               | Indicator Light                          |            |
+| water_tank_removed         | Switch               | Water Tank Removed                       |            |
+| water_shortage             | Switch               | Insufficient Water                       |            |
+| humidity_sensor_fault      | Switch               | Humidity Sensor Fault                    |            |
+| temperature_sensor_fault   | Switch               | Temperature Sensor Fault                 |            |
+| overwet_protection_active  | Switch               | Over-Humidity Protection Active          |            |
+| overwet_protection         | Switch               | Over-Humidity Protection                 |            |
+| high_humidity              | Switch               | High Humidity                            |            |
+
+### Mijia Mist-Free Humidifier 3 (400) (<a name="xiaomi-humidifier-p3">xiaomi.humidifier.p3</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| power                      | Switch               | Power                                    |            |
+| fault                      | Number               | Device Fault                             | Value mapping `["0"="No Faults","1"="Fan Motor Fault","2"="Clean the Water Level Sensor","3"="Water Pump Fault","4"="Paused","5"="Lack of Water"]` |
+| mode                       | Number               | Mode                                     | Value mapping `["0"="Constant Humidity","1"="Sleep","2"="High Power"]` |
+| target_humidity            | Number:Dimensionless | Target Humidity                          |            |
+| humidity                   | Number:Dimensionless | Humidity                                 |            |
+| buzzer                     | Switch               | Notification Sound                       |            |
+| child_lock                 | Switch               | Child Lock                               |            |
+| delay_time                 | Number:Time          | Turn-Off Delay Time                      | 0 switches the turn-off delay off |
+| water_status               | Number               | Water                                    | Value mapping `["0"="Normal","1"="Low Water"]` |
+| overwet_protection         | Switch               | Over-Humidity Protection                 | Switches to a lower level when the ambient humidity is too high |
+| dry_left_time              | Number:Time          | Drying Time Left                         |            |
+| clean                      | Switch               | Start Cleaning                           | Starts the 30 minute cleaning cycle while the humidifier is off; the cleaning time left shows the progress. Switch the humidifier off to stop |
+| clean_time_left            | Number:Time          | Cleaning Time Left                       |            |
+| led                        | Switch               | Display                                  |            |
+| led_brightness             | Number               | Display Brightness                       | Value mapping `["0"="Dim","1"="Bright"]` |
+| filter_life_level          | Number:Dimensionless | Filter Life                              |            |
+| actions                    | String               | Actions                                  | The filter reset is not yet confirmed on a device; Value mapping `["reset-filter-life"="Reset Filter Life"]` |
 
 ### Xiaomi Robot Vacuum T12 (<a name="xiaomi-vacuum-b106bk">xiaomi.vacuum.b106bk</a>) Channels
 
@@ -14073,94 +14588,110 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | Channel                    | Type                 | Description                              | Comment    |
 |----------------------------|----------------------|------------------------------------------|------------|
 | power                      | Switch               | Power                                    |            |
-| mode                       | String               | Mode                                     |            |
+| mode                       | String               | Mode                                     | Value mapping `["silent"="Silent","medium"="Medium","high"="High","auto"="Auto"]` |
 | humidity                   | Number:Dimensionless | Humidity                                 |            |
-| setHumidity                | Number               | Humidity Set                             |            |
-| aqi                        | Number               | Air Quality Index                        |            |
-| translevel                 | Number               | Trans_level                              |            |
-| bright                     | Dimmer               | LED Brightness                           |            |
-| buzzer                     | Switch               | Buzzer Status                            |            |
-| depth                      | Number               | Depth                                    |            |
-| dry                        | Switch               | Dry                                      |            |
-| usedhours                  | Number:Time          | Run Time                                 |            |
-| motorspeed                 | Number               | Motor Speed                              |            |
+| target_humidity            | Number:Dimensionless | Target Humidity                          |            |
+| led_brightness             | Number               | Indicator Light                          | Value mapping `["0"="Bright","1"="Dim","2"="Off"]` |
+| buzzer                     | Switch               | Notification Sound                       |            |
+| water_level                | Number:Dimensionless | Water Level                              | -1 when the water tank is removed |
+| dry                        | Switch               | Air Drying Mode                          | Keeps running for about 8 hours when the water runs out, to dry the wick |
+| clean                      | Switch               | Clean Mode                               | Starts the cleaning cycle; the app recommends cleaning at least once a week |
+| use_time                   | Number:Time          | Run Time                                 |            |
+| speed                      | Number               | Motor Speed                              |            |
 | temperature                | Number:Temperature   | Temperature                              |            |
-| childlock                  | Switch               | Child Lock                               |            |
+| child_lock                 | Switch               | Child Lock                               |            |
 
 ### Smartmi Evaporative Humidifer 2 (<a name="zhimi-humidifier-ca4">zhimi.humidifier.ca4</a>) Channels
 
 | Channel                    | Type                 | Description                              | Comment    |
 |----------------------------|----------------------|------------------------------------------|------------|
 | power                      | Switch               | Power                                    |            |
-| mode                       | Number               | Mode - Fan Level                         | Value mapping `["0"="Auto","1"="Silent","2"="Normal","3"="Maximum"]` |
-| Fault                      | Number               | Humidifier Device Fault                  |            |
+| mode                       | Number               | Mode                                     | Value mapping `["0"="Auto","1"="Level 1","2"="Level 2","3"="Level 3"]` |
+| fault                      | Number               | Device Fault                             |            |
 | humidity                   | Number:Dimensionless | Humidity                                 |            |
-| targetHumidity             | Number:Dimensionless | Target Humidity                          |            |
-| waterlevel                 | Number               | Water Level                              |            |
-| bright                     | Number               | LED Brightness                           | Value mapping `["0"="Dark","1"="Dimmed","2"="Brightest"]` |
-| buzzer                     | Switch               | Buzzer Status                            |            |
-| dry                        | Switch               | Dry                                      |            |
-| usedhours                  | Number:Time          | Run Time                                 |            |
-| powerhours                 | Number:Time          | Power Time                               |            |
-| targetmotorspeed           | Number               | Target Motor Speed                       |            |
-| actualmotorspeed           | Number               | Actual Motor Speed                       |            |
+| target_humidity            | Number:Dimensionless | Target Humidity                          |            |
+| water_level                | Number:Dimensionless | Water Level                              | -1 when the water tank is removed |
+| led_brightness             | Number               | Indicator Light                          | Value mapping `["0"="Off","1"="Dim","2"="Bright"]` |
+| buzzer                     | Switch               | Notification Sound                       |            |
+| dry                        | Switch               | Air Drying Mode                          | Keeps running for about 8 hours when the water runs out, to dry the wick |
+| use_time                   | Number:Time          | Run Time                                 |            |
+| power_time                 | Number:Time          | Power-On Time                            |            |
+| target_speed               | Number               | Target Motor Speed                       |            |
+| speed                      | Number               | Motor Speed                              |            |
 | temperature                | Number:Temperature   | Temperature                              |            |
-| childlock                  | Switch               | Child Lock                               |            |
-| ButtonPressed              | Number               | Button Pressed                           | Value mapping `["0"="none","1"="led","2"="power"]` |
-| clean                      | Switch               | Clean Mode                               |            |
+| child_lock                 | Switch               | Child Lock                               |            |
+| clean                      | Switch               | Clean Mode                               | Starts the cleaning cycle; the app recommends cleaning at least once a week |
+
+### Smartmi Evaporative Humidifier 3 (<a name="zhimi-humidifier-ca6">zhimi.humidifier.ca6</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| power                      | Switch               | Power                                    |            |
+| fault                      | Number               | Device Fault                             |            |
+| mode                       | Number               | Mode                                     | Value mapping `["0"="Max","1"="Auto","2"="Night"]` |
+| target_humidity            | Number:Dimensionless | Target Humidity                          | Used in Auto mode |
+| water_level                | Number               | Water Level                              | Value mapping `["0"="Low","1"="Normal","2"="Full"]` |
+| dry                        | Switch               | Air Drying Mode                          | Keeps running for about 3 hours when the water level is low |
+| status                     | Number               | Status                                   | Value mapping `["1"="Off","2"="Humidifying","3"="Drying","4"="Cleaning"]` |
+| temperature                | Number:Temperature   | Temperature                              |            |
+| humidity                   | Number:Dimensionless | Humidity                                 |            |
+| buzzer                     | Switch               | Notification Sound                       |            |
+| led_brightness             | Number               | Screen Brightness                        | Value mapping `["0"="Off","1"="Dim","2"="Bright"]` |
+| child_lock                 | Switch               | Child Lock                               |            |
+| speed                      | Number               | Motor Speed                              |            |
+| clean                      | Switch               | Clean Mode                               | Self-cleaning for about 30 minutes; fill the water tank first |
+| clean_time_left            | Number:Time          | Self-Cleaning Time Left                  |            |
 
 ### Smartmi Evaporative Humidifier (<a name="zhimi-humidifier-cb1">zhimi.humidifier.cb1</a>) Channels
 
 | Channel                    | Type                 | Description                              | Comment    |
 |----------------------------|----------------------|------------------------------------------|------------|
 | power                      | Switch               | Power                                    |            |
-| humidifierMode             | String               | Humidifier Mode                          |            |
+| mode                       | String               | Mode                                     | Value mapping `["silent"="Silent","medium"="Medium","high"="High","auto"="Auto"]` |
 | humidity                   | Number:Dimensionless | Humidity                                 |            |
-| setHumidity                | Number:Dimensionless | Humidity Set                             |            |
-| bright                     | Dimmer               | LED Brightness                           |            |
-| buzzer                     | Switch               | Buzzer Status                            |            |
-| depth                      | Number               | Depth                                    |            |
-| dry                        | Switch               | Dry                                      |            |
-| usedhours                  | Number:Time          | Run Time                                 |            |
-| motorspeed                 | Number               | Motor Speed                              |            |
+| target_humidity            | Number:Dimensionless | Target Humidity                          |            |
+| led_brightness             | Number               | Indicator Light                          | Value mapping `["0"="Bright","1"="Dim","2"="Off"]` |
+| buzzer                     | Switch               | Notification Sound                       |            |
+| water_level                | Number:Dimensionless | Water Level                              | -1 when the water tank is removed |
+| dry                        | Switch               | Air Drying Mode                          | Keeps running for about 8 hours when the water runs out, to dry the wick |
+| use_time                   | Number:Time          | Run Time                                 |            |
+| speed                      | Number               | Motor Speed                              |            |
 | temperature                | Number:Temperature   | Temperature                              |            |
-| childlock                  | Switch               | Child Lock                               |            |
+| child_lock                 | Switch               | Child Lock                               |            |
 
 ### Smartmi Evaporative Humidifier (<a name="zhimi-humidifier-cb2">zhimi.humidifier.cb2</a>) Channels
 
 | Channel                    | Type                 | Description                              | Comment    |
 |----------------------------|----------------------|------------------------------------------|------------|
 | power                      | Switch               | Power                                    |            |
-| humidifierMode             | String               | Humidifier Mode                          |            |
+| mode                       | String               | Mode                                     | Value mapping `["silent"="Silent","medium"="Medium","high"="High","auto"="Auto"]` |
 | humidity                   | Number:Dimensionless | Humidity                                 |            |
-| setHumidity                | Number:Dimensionless | Humidity Set                             |            |
-| bright                     | Dimmer               | LED Brightness                           |            |
-| buzzer                     | Switch               | Buzzer Status                            |            |
-| depth                      | Number               | Depth                                    |            |
-| dry                        | Switch               | Dry                                      |            |
-| usedhours                  | Number:Time          | Run Time                                 |            |
-| motorspeed                 | Number               | Motor Speed                              |            |
+| target_humidity            | Number:Dimensionless | Target Humidity                          |            |
+| led_brightness             | Number               | Indicator Light                          | Value mapping `["0"="Bright","1"="Dim","2"="Off"]` |
+| buzzer                     | Switch               | Notification Sound                       |            |
+| water_level                | Number:Dimensionless | Water Level                              | -1 when the water tank is removed |
+| dry                        | Switch               | Air Drying Mode                          | Keeps running for about 8 hours when the water runs out, to dry the wick |
+| use_time                   | Number:Time          | Run Time                                 |            |
+| speed                      | Number               | Motor Speed                              |            |
 | temperature                | Number:Temperature   | Temperature                              |            |
-| childlock                  | Switch               | Child Lock                               |            |
+| child_lock                 | Switch               | Child Lock                               |            |
 
 ### Smartmi Humidifier (<a name="zhimi-humidifier-v1">zhimi.humidifier.v1</a>) Channels
 
 | Channel                    | Type                 | Description                              | Comment    |
 |----------------------------|----------------------|------------------------------------------|------------|
 | power                      | Switch               | Power                                    |            |
-| mode                       | String               | Mode                                     |            |
+| mode                       | String               | Mode                                     | Value mapping `["silent"="Silent","medium"="Medium","high"="High"]` |
 | humidity                   | Number:Dimensionless | Humidity                                 |            |
-| setHumidity                | Number               | Humidity Set                             |            |
+| target_humidity            | Number:Dimensionless | Target Humidity                          |            |
 | aqi                        | Number               | Air Quality Index                        |            |
-| translevel                 | Number               | Trans_level                              |            |
-| bright                     | Dimmer               | LED Brightness                           |            |
-| buzzer                     | Switch               | Buzzer Status                            |            |
-| depth                      | Number               | Depth                                    |            |
-| dry                        | Switch               | Dry                                      |            |
-| usedhours                  | Number:Time          | Run Time                                 |            |
-| motorspeed                 | Number               | Motor Speed                              |            |
+| trans_level                | Number               | Transmission Level                       |            |
+| led_brightness             | Number               | Indicator Light                          | Value mapping `["0"="Bright","1"="Dim","2"="Off"]` |
+| buzzer                     | Switch               | Notification Sound                       |            |
+| use_time                   | Number:Time          | Run Time                                 |            |
+| speed                      | Number               | Motor Speed                              |            |
 | temperature                | Number:Temperature   | Temperature                              |            |
-| childlock                  | Switch               | Child Lock                               |            |
+| child_lock                 | Switch               | Child Lock                               |            |
 
 ### Mi Smart Power Strip (<a name="zimi-powerstrip-v2">zimi.powerstrip.v2</a>) Channels
 
@@ -14600,12 +15131,14 @@ note: Autogenerated example. Replace the id (humidifier) in the channel with you
 ```java
 Group G_humidifier "Mi Smart Antibacterial Humidifier" <status>
 Switch power "Power" (G_humidifier) {channel="miio:basic:humidifier:power"}
-Number mode "Mode" (G_humidifier) {channel="miio:basic:humidifier:mode"}
+Number fan_level "Fan Level" (G_humidifier) {channel="miio:basic:humidifier:fan_level"}
 Number:Dimensionless humidity "Humidity" (G_humidifier) {channel="miio:basic:humidifier:humidity"}
-Number:Dimensionless humidity_set "Humidity Setting" (G_humidifier) {channel="miio:basic:humidifier:humidity_set"}
-Switch led "LED indicator Light" (G_humidifier) {channel="miio:basic:humidifier:led"}
-Switch sound "Notification Sounds" (G_humidifier) {channel="miio:basic:humidifier:sound"}
-Number watertankstatus "Watertank Status" (G_humidifier) {channel="miio:basic:humidifier:watertankstatus"}
+Number:Dimensionless target_humidity "Target Humidity" (G_humidifier) {channel="miio:basic:humidifier:target_humidity"}
+Number:Temperature temperature "Temperature" (G_humidifier) {channel="miio:basic:humidifier:temperature"}
+Switch led "Indicator Light" (G_humidifier) {channel="miio:basic:humidifier:led"}
+Switch buzzer "Notification Sound" (G_humidifier) {channel="miio:basic:humidifier:buzzer"}
+Number water_status "Water" (G_humidifier) {channel="miio:basic:humidifier:water_status"}
+Number water_tank "Water Tank" (G_humidifier) {channel="miio:basic:humidifier:water_tank"}
 ```
 
 ### Mi Smart Humidifier S (deerma.humidifier.jsq1) item file lines
@@ -14615,13 +15148,39 @@ note: Autogenerated example. Replace the id (humidifier) in the channel with you
 ```java
 Group G_humidifier "Mi Smart Humidifier S" <status>
 Switch power "Power" (G_humidifier) {channel="miio:basic:humidifier:power"}
-Number mode "Mode" (G_humidifier) {channel="miio:basic:humidifier:mode"}
+Number fan_level "Fan Level" (G_humidifier) {channel="miio:basic:humidifier:fan_level"}
 Number:Dimensionless humidity "Humidity" (G_humidifier) {channel="miio:basic:humidifier:humidity"}
-Number:Dimensionless humidity_set "Humidity Setting" (G_humidifier) {channel="miio:basic:humidifier:humidity_set"}
-Switch led "LED indicator Light" (G_humidifier) {channel="miio:basic:humidifier:led"}
-Switch sound "Notification Sounds" (G_humidifier) {channel="miio:basic:humidifier:sound"}
-Number watertankstatus "Watertank Status" (G_humidifier) {channel="miio:basic:humidifier:watertankstatus"}
-Switch wet_and_protect "Wet and Protect" (G_humidifier) {channel="miio:basic:humidifier:wet_and_protect"}
+Number:Dimensionless target_humidity "Target Humidity" (G_humidifier) {channel="miio:basic:humidifier:target_humidity"}
+Number:Temperature temperature "Temperature" (G_humidifier) {channel="miio:basic:humidifier:temperature"}
+Switch led "Indicator Light" (G_humidifier) {channel="miio:basic:humidifier:led"}
+Switch buzzer "Notification Sound" (G_humidifier) {channel="miio:basic:humidifier:buzzer"}
+Number water_status "Water" (G_humidifier) {channel="miio:basic:humidifier:water_status"}
+Number water_tank "Water Tank" (G_humidifier) {channel="miio:basic:humidifier:water_tank"}
+Switch overwet_protection "Over-Humidity Protection" (G_humidifier) {channel="miio:basic:humidifier:overwet_protection"}
+```
+
+### Mijia Smart Anti-bacterial Humidifier 2 (deerma.humidifier.jsq2g) item file lines
+
+note: Autogenerated example. Replace the id (humidifier) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_humidifier "Mijia Smart Anti-bacterial Humidifier 2" <status>
+Switch power "Power" (G_humidifier) {channel="miio:basic:humidifier:power"}
+Number fault "Device Fault" (G_humidifier) {channel="miio:basic:humidifier:fault"}
+Number fan_level "Fan Level" (G_humidifier) {channel="miio:basic:humidifier:fan_level"}
+Number:Dimensionless target_humidity "Target Humidity" (G_humidifier) {channel="miio:basic:humidifier:target_humidity"}
+Number:Dimensionless humidity "Humidity" (G_humidifier) {channel="miio:basic:humidifier:humidity"}
+Number:Temperature temperature "Temperature" (G_humidifier) {channel="miio:basic:humidifier:temperature"}
+Switch buzzer "Notification Sound" (G_humidifier) {channel="miio:basic:humidifier:buzzer"}
+Switch led "Indicator Light" (G_humidifier) {channel="miio:basic:humidifier:led"}
+Switch water_tank_removed "Water Tank Removed" (G_humidifier) {channel="miio:basic:humidifier:water_tank_removed"}
+Switch water_shortage "Insufficient Water" (G_humidifier) {channel="miio:basic:humidifier:water_shortage"}
+Switch humidity_sensor_fault "Humidity Sensor Fault" (G_humidifier) {channel="miio:basic:humidifier:humidity_sensor_fault"}
+Switch temperature_sensor_fault "Temperature Sensor Fault" (G_humidifier) {channel="miio:basic:humidifier:temperature_sensor_fault"}
+Switch overwet_protection_active "Over-Humidity Protection Active" (G_humidifier) {channel="miio:basic:humidifier:overwet_protection_active"}
+Switch overwet_protection "Over-Humidity Protection" (G_humidifier) {channel="miio:basic:humidifier:overwet_protection"}
+Switch constant_protection_active "Auto Turn-Off Active" (G_humidifier) {channel="miio:basic:humidifier:constant_protection_active"}
+Switch constant_protection "Auto Turn-Off" (G_humidifier) {channel="miio:basic:humidifier:constant_protection"}
 ```
 
 ### Xiaomi Smart Humidifier 2 (deerma.humidifier.jsq2w) item file lines
@@ -14630,23 +15189,23 @@ note: Autogenerated example. Replace the id (humidifier) in the channel with you
 
 ```java
 Group G_humidifier "Xiaomi Smart Humidifier 2" <status>
-Switch on "Humidifier - Switch Status" (G_humidifier) {channel="miio:basic:humidifier:on"}
-Number fault "Humidifier - Device Fault" (G_humidifier) {channel="miio:basic:humidifier:fault"}
-Number fan_level "Humidifier - Fan Level" (G_humidifier) {channel="miio:basic:humidifier:fan_level"}
-Number:Dimensionless target_humidity "Humidifier - Target Humidity" (G_humidifier) {channel="miio:basic:humidifier:target_humidity"}
+Switch power "Power" (G_humidifier) {channel="miio:basic:humidifier:power"}
+Number fault "Device Fault" (G_humidifier) {channel="miio:basic:humidifier:fault"}
+Number fan_level "Fan Level" (G_humidifier) {channel="miio:basic:humidifier:fan_level"}
+Number:Dimensionless target_humidity "Target Humidity" (G_humidifier) {channel="miio:basic:humidifier:target_humidity"}
 Number status "Status" (G_humidifier) {channel="miio:basic:humidifier:status"}
 Number mode "Mode" (G_humidifier) {channel="miio:basic:humidifier:mode"}
-Number:Dimensionless relative_humidity "Environment - Relative Humidity" (G_humidifier) {channel="miio:basic:humidifier:relative_humidity"}
-Number:Temperature temperature "Environment - Temperature" (G_humidifier) {channel="miio:basic:humidifier:temperature"}
-Switch alarm "Alarm - Alarm" (G_humidifier) {channel="miio:basic:humidifier:alarm"}
-Switch on1 "Indicator Light - Switch Status" (G_humidifier) {channel="miio:basic:humidifier:on1"}
-Switch tank_filed "Tank Filed" (G_humidifier) {channel="miio:basic:humidifier:tank_filed"}
-Switch water_shortage_fault "Water Shortage Fault" (G_humidifier) {channel="miio:basic:humidifier:water_shortage_fault"}
-Switch humi_sensor_fault "Humi-Sensor Fault" (G_humidifier) {channel="miio:basic:humidifier:humi_sensor_fault"}
-Switch temp_sensor_fault "Temp-Sensor Fault" (G_humidifier) {channel="miio:basic:humidifier:temp_sensor_fault"}
-Switch overwet_protect "Overwet Protect" (G_humidifier) {channel="miio:basic:humidifier:overwet_protect"}
-Switch overwet_protect_on "Overwet Protect On" (G_humidifier) {channel="miio:basic:humidifier:overwet_protect_on"}
-Switch overtop_humidity "Overtop Humidity" (G_humidifier) {channel="miio:basic:humidifier:overtop_humidity"}
+Number:Dimensionless humidity "Humidity" (G_humidifier) {channel="miio:basic:humidifier:humidity"}
+Number:Temperature temperature "Temperature" (G_humidifier) {channel="miio:basic:humidifier:temperature"}
+Switch buzzer "Notification Sound" (G_humidifier) {channel="miio:basic:humidifier:buzzer"}
+Switch led "Indicator Light" (G_humidifier) {channel="miio:basic:humidifier:led"}
+Switch water_tank_removed "Water Tank Removed" (G_humidifier) {channel="miio:basic:humidifier:water_tank_removed"}
+Switch water_shortage "Insufficient Water" (G_humidifier) {channel="miio:basic:humidifier:water_shortage"}
+Switch humidity_sensor_fault "Humidity Sensor Fault" (G_humidifier) {channel="miio:basic:humidifier:humidity_sensor_fault"}
+Switch temperature_sensor_fault "Temperature Sensor Fault" (G_humidifier) {channel="miio:basic:humidifier:temperature_sensor_fault"}
+Switch overwet_protection_active "Over-Humidity Protection Active" (G_humidifier) {channel="miio:basic:humidifier:overwet_protection_active"}
+Switch overwet_protection "Over-Humidity Protection" (G_humidifier) {channel="miio:basic:humidifier:overwet_protection"}
+Switch high_humidity "High Humidity" (G_humidifier) {channel="miio:basic:humidifier:high_humidity"}
 ```
 
 ### Mi Smart Antibacterial Humidifier (deerma.humidifier.jsq5) item file lines
@@ -14655,16 +15214,16 @@ note: Autogenerated example. Replace the id (humidifier) in the channel with you
 
 ```java
 Group G_humidifier "Mi Smart Antibacterial Humidifier" <status>
-Switch on "Humidifier - Switch Status" (G_humidifier) {channel="miio:basic:humidifier:on"}
-Number fault "Humidifier - Device Fault" (G_humidifier) {channel="miio:basic:humidifier:fault"}
-Number fan_level "Humidifier - Fan Level" (G_humidifier) {channel="miio:basic:humidifier:fan_level"}
-Number:Dimensionless target_humidity "Humidifier - Target Humidity" (G_humidifier) {channel="miio:basic:humidifier:target_humidity"}
-Number:Dimensionless relative_humidity "Environment - Relative Humidity" (G_humidifier) {channel="miio:basic:humidifier:relative_humidity"}
-Number:Temperature temperature "Environment - Temperature" (G_humidifier) {channel="miio:basic:humidifier:temperature"}
-Switch alarm "Alarm - Alarm" (G_humidifier) {channel="miio:basic:humidifier:alarm"}
-Switch on1 "Indicator Light - Switch Status" (G_humidifier) {channel="miio:basic:humidifier:on1"}
-Switch water_shortage_fault "Custom - Water Shortage Fault" (G_humidifier) {channel="miio:basic:humidifier:water_shortage_fault"}
-Switch the_tank_filed "Custom - The Tank Filed" (G_humidifier) {channel="miio:basic:humidifier:the_tank_filed"}
+Switch power "Power" (G_humidifier) {channel="miio:basic:humidifier:power"}
+Number fault "Device Fault" (G_humidifier) {channel="miio:basic:humidifier:fault"}
+Number fan_level "Fan Level" (G_humidifier) {channel="miio:basic:humidifier:fan_level"}
+Number:Dimensionless target_humidity "Target Humidity" (G_humidifier) {channel="miio:basic:humidifier:target_humidity"}
+Number:Dimensionless humidity "Humidity" (G_humidifier) {channel="miio:basic:humidifier:humidity"}
+Number:Temperature temperature "Temperature" (G_humidifier) {channel="miio:basic:humidifier:temperature"}
+Switch buzzer "Notification Sound" (G_humidifier) {channel="miio:basic:humidifier:buzzer"}
+Switch led "Indicator Light" (G_humidifier) {channel="miio:basic:humidifier:led"}
+Switch water_shortage "Insufficient Water" (G_humidifier) {channel="miio:basic:humidifier:water_shortage"}
+Switch water_tank_removed "Water Tank Removed" (G_humidifier) {channel="miio:basic:humidifier:water_tank_removed"}
 ```
 
 ### Mi Smart Humidifer S (deerma.humidifier.jsqs) item file lines
@@ -14673,16 +15232,21 @@ note: Autogenerated example. Replace the id (humidifier) in the channel with you
 
 ```java
 Group G_humidifier "Mi Smart Humidifer S" <status>
-Switch on "Humidifier - Switch Status" (G_humidifier) {channel="miio:basic:humidifier:on"}
-Number fault "Humidifier - Device Fault" (G_humidifier) {channel="miio:basic:humidifier:fault"}
-Number fan_level "Humidifier - Fan Level" (G_humidifier) {channel="miio:basic:humidifier:fan_level"}
-Number:Dimensionless target_humidity "Humidifier - Target Humidity" (G_humidifier) {channel="miio:basic:humidifier:target_humidity"}
-Number:Dimensionless relative_humidity "Environment - Relative Humidity" (G_humidifier) {channel="miio:basic:humidifier:relative_humidity"}
-Number:Temperature temperature "Environment - Temperature" (G_humidifier) {channel="miio:basic:humidifier:temperature"}
-Switch alarm "Alarm - Alarm" (G_humidifier) {channel="miio:basic:humidifier:alarm"}
-Switch on1 "Indicator Light - Switch Status" (G_humidifier) {channel="miio:basic:humidifier:on1"}
-Switch water_shortage_fault "Custom - Water Shortage Fault" (G_humidifier) {channel="miio:basic:humidifier:water_shortage_fault"}
-Switch the_tank_filed "Custom - The Tank Filed" (G_humidifier) {channel="miio:basic:humidifier:the_tank_filed"}
+Switch power "Power" (G_humidifier) {channel="miio:basic:humidifier:power"}
+Number fault "Device Fault" (G_humidifier) {channel="miio:basic:humidifier:fault"}
+Number fan_level "Fan Level" (G_humidifier) {channel="miio:basic:humidifier:fan_level"}
+Number:Dimensionless target_humidity "Target Humidity" (G_humidifier) {channel="miio:basic:humidifier:target_humidity"}
+Number:Dimensionless humidity "Humidity" (G_humidifier) {channel="miio:basic:humidifier:humidity"}
+Number:Temperature temperature "Temperature" (G_humidifier) {channel="miio:basic:humidifier:temperature"}
+Switch buzzer "Notification Sound" (G_humidifier) {channel="miio:basic:humidifier:buzzer"}
+Switch led "Indicator Light" (G_humidifier) {channel="miio:basic:humidifier:led"}
+Switch water_shortage "Insufficient Water" (G_humidifier) {channel="miio:basic:humidifier:water_shortage"}
+Switch water_tank_removed "Water Tank Removed" (G_humidifier) {channel="miio:basic:humidifier:water_tank_removed"}
+Switch overwet_protection "Over-Humidity Protection" (G_humidifier) {channel="miio:basic:humidifier:overwet_protection"}
+Number humidity_sensor_source "Humidity Sensor Source" (G_humidifier) {channel="miio:basic:humidifier:humidity_sensor_source"}
+Number:Dimensionless filter_life_level "Filter Life" (G_humidifier) {channel="miio:basic:humidifier:filter_life_level"}
+Number:Time filter_left_time "Filter Time Left" (G_humidifier) {channel="miio:basic:humidifier:filter_left_time"}
+Number:Time filter_used_time "Filter Used Time" (G_humidifier) {channel="miio:basic:humidifier:filter_used_time"}
 ```
 
 ### Mi Smart Humidifier (deerma.humidifier.mjjsq) item file lines
@@ -14692,12 +15256,14 @@ note: Autogenerated example. Replace the id (humidifier) in the channel with you
 ```java
 Group G_humidifier "Mi Smart Humidifier" <status>
 Switch power "Power" (G_humidifier) {channel="miio:basic:humidifier:power"}
-Number mode "Mode" (G_humidifier) {channel="miio:basic:humidifier:mode"}
+Number fan_level "Fan Level" (G_humidifier) {channel="miio:basic:humidifier:fan_level"}
 Number:Dimensionless humidity "Humidity" (G_humidifier) {channel="miio:basic:humidifier:humidity"}
-Number:Dimensionless humidity_set "Humidity Setting" (G_humidifier) {channel="miio:basic:humidifier:humidity_set"}
-Switch led "LED indicator Light" (G_humidifier) {channel="miio:basic:humidifier:led"}
-Switch sound "Notification Sounds" (G_humidifier) {channel="miio:basic:humidifier:sound"}
-Number watertankstatus "Watertank Status" (G_humidifier) {channel="miio:basic:humidifier:watertankstatus"}
+Number:Dimensionless target_humidity "Target Humidity" (G_humidifier) {channel="miio:basic:humidifier:target_humidity"}
+Number:Temperature temperature "Temperature" (G_humidifier) {channel="miio:basic:humidifier:temperature"}
+Switch led "Indicator Light" (G_humidifier) {channel="miio:basic:humidifier:led"}
+Switch buzzer "Notification Sound" (G_humidifier) {channel="miio:basic:humidifier:buzzer"}
+Number water_status "Water" (G_humidifier) {channel="miio:basic:humidifier:water_status"}
+Number water_tank "Water Tank" (G_humidifier) {channel="miio:basic:humidifier:water_tank"}
 ```
 
 ### Mi Fresh Air Ventilator A1-150 (dmaker.airfresh.a1) item file lines
@@ -19109,51 +19675,283 @@ Switch disinfect "Disinfect" (G_airer) {channel="miio:basic:airer:disinfect"}
 Number:Time distime "Disinfect Time" (G_airer) {channel="miio:basic:airer:distime"}
 ```
 
-### NWT Internet Dehumidifier 30L (nwt.derh.330ef) item file lines
+### NWT/Widetech Intelligent Dehumidifier 16L (nwt.derh.16l) item file lines
 
 note: Autogenerated example. Replace the id (derh) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
-Group G_derh "NWT Internet Dehumidifier 30L" <status>
-Switch on "Dehumidifier - Power" (G_derh) {channel="miio:basic:derh:on"}
-Number fault "Dehumidifier - Device Fault" (G_derh) {channel="miio:basic:derh:fault"}
-Number mode "Dehumidifier - Mode" (G_derh) {channel="miio:basic:derh:mode"}
-Number:Dimensionless target_humidity "Dehumidifier - Target Humidity" (G_derh) {channel="miio:basic:derh:target_humidity"}
-Number:Dimensionless relative_humidity "Environment - Relative Humidity" (G_derh) {channel="miio:basic:derh:relative_humidity"}
-Number:Temperature temperature "Environment - Temperature" (G_derh) {channel="miio:basic:derh:temperature"}
-Switch alarm "Alarm - Beep Sound" (G_derh) {channel="miio:basic:derh:alarm"}
-Switch on1 "Indicator Light - Power" (G_derh) {channel="miio:basic:derh:on1"}
-Switch physical_controls_locked "Child Lock" (G_derh) {channel="miio:basic:derh:physical_controls_locked"}
-Number:Temperature coil_temp "Status - Coil Temperature" (G_derh) {channel="miio:basic:derh:coil_temp"}
-Switch compressor_status "Status - Compressor" (G_derh) {channel="miio:basic:derh:compressor_status"}
-Switch water_tank_status "Status - Water Tank" (G_derh) {channel="miio:basic:derh:water_tank_status"}
-Switch defrost_status "Status - Defrosting" (G_derh) {channel="miio:basic:derh:defrost_status"}
-Switch fall_down_status "Status - Fallen Over" (G_derh) {channel="miio:basic:derh:fall_down_status"}
-Switch pump "Pump - Power" (G_derh) {channel="miio:basic:derh:pump"}
-Switch pump_pipe_installed "Pump - Pump Pipe Installed" (G_derh) {channel="miio:basic:derh:pump_pipe_installed"}
-Number timer "Timer - Remaining Time" (G_derh) {channel="miio:basic:derh:timer"}
-Number timer_setting "Timer - Timer Setting" (G_derh) {channel="miio:basic:derh:timer_setting"}
+Group G_derh "NWT/Widetech Intelligent Dehumidifier 16L" <status>
+Switch power "Power" (G_derh) {channel="miio:basic:derh:power"}
+Number fault "Device Fault" (G_derh) {channel="miio:basic:derh:fault"}
+Number:Dimensionless target_humidity "Target Humidity" (G_derh) {channel="miio:basic:derh:target_humidity"}
+Number mode "Mode" (G_derh) {channel="miio:basic:derh:mode"}
+Number:Dimensionless humidity "Humidity" (G_derh) {channel="miio:basic:derh:humidity"}
+Switch buzzer "Notification Sound" (G_derh) {channel="miio:basic:derh:buzzer"}
+Switch led "Indicator Light" (G_derh) {channel="miio:basic:derh:led"}
+Switch water_tank_full "Water Tank Full" (G_derh) {channel="miio:basic:derh:water_tank_full"}
+Switch defrost "Defrosting" (G_derh) {channel="miio:basic:derh:defrost"}
+Switch filter_cleaning "Filter Cleaning Reminder" (G_derh) {channel="miio:basic:derh:filter_cleaning"}
 ```
 
-### NWT Internet Dehumidifier 18L (nwt.derh.wdh318efw1) item file lines
+### NWT/Widetech Internet Air Clean Dehumidifier 24L (nwt.derh.24wu1) item file lines
 
 note: Autogenerated example. Replace the id (derh) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
-Group G_derh "NWT Internet Dehumidifier 18L" <status>
+Group G_derh "NWT/Widetech Internet Air Clean Dehumidifier 24L" <status>
 Switch power "Power" (G_derh) {channel="miio:basic:derh:power"}
-String mode "Mode" (G_derh) {channel="miio:basic:derh:mode"}
-Number:Dimensionless autohumidity "Auto humidity" (G_derh) {channel="miio:basic:derh:autohumidity"}
-Number fanspeed "Fan Speed" (G_derh) {channel="miio:basic:derh:fanspeed"}
-Switch buzzer "Buzzer" (G_derh) {channel="miio:basic:derh:buzzer"}
-Switch led "LED" (G_derh) {channel="miio:basic:derh:led"}
-Switch childlock "Child Lock" (G_derh) {channel="miio:basic:derh:childlock"}
+Number fault "Device Fault" (G_derh) {channel="miio:basic:derh:fault"}
+Number mode "Mode" (G_derh) {channel="miio:basic:derh:mode"}
+Number:Dimensionless target_humidity "Target Humidity" (G_derh) {channel="miio:basic:derh:target_humidity"}
+Number fan_level "Fan Level" (G_derh) {channel="miio:basic:derh:fan_level"}
+Number:Dimensionless humidity "Humidity" (G_derh) {channel="miio:basic:derh:humidity"}
+Switch buzzer "Notification Sound" (G_derh) {channel="miio:basic:derh:buzzer"}
+Switch led "Indicator Light" (G_derh) {channel="miio:basic:derh:led"}
+Switch child_lock "Child Lock" (G_derh) {channel="miio:basic:derh:child_lock"}
+Number dry_clothes "Dry Clothes" (G_derh) {channel="miio:basic:derh:dry_clothes"}
+Number swing_wind "Swing" (G_derh) {channel="miio:basic:derh:swing_wind"}
+Number uv "UV-C" (G_derh) {channel="miio:basic:derh:uv"}
+Switch water_tank_full "Water Tank Full" (G_derh) {channel="miio:basic:derh:water_tank_full"}
+Switch defrost "Defrosting" (G_derh) {channel="miio:basic:derh:defrost"}
+```
+
+### NWT/Widetech Internet Dehumidifier 12L (nwt.derh.312en) item file lines
+
+note: Autogenerated example. Replace the id (derh) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_derh "NWT/Widetech Internet Dehumidifier 12L" <status>
+Switch power "Power" (G_derh) {channel="miio:basic:derh:power"}
+Number fault "Device Fault" (G_derh) {channel="miio:basic:derh:fault"}
+Number mode "Mode" (G_derh) {channel="miio:basic:derh:mode"}
+Number:Dimensionless target_humidity "Target Humidity" (G_derh) {channel="miio:basic:derh:target_humidity"}
 Number:Dimensionless humidity "Humidity" (G_derh) {channel="miio:basic:derh:humidity"}
 Number:Temperature temperature "Temperature" (G_derh) {channel="miio:basic:derh:temperature"}
-Switch tankfull "Tank Full" (G_derh) {channel="miio:basic:derh:tankfull"}
-Switch compressorstatus "Compressor Status" (G_derh) {channel="miio:basic:derh:compressorstatus"}
-Switch defroststatus "Defrost Status" (G_derh) {channel="miio:basic:derh:defroststatus"}
-Number fanst "Fan St" (G_derh) {channel="miio:basic:derh:fanst"}
+Switch buzzer "Notification Sound" (G_derh) {channel="miio:basic:derh:buzzer"}
+Switch led "Indicator Light" (G_derh) {channel="miio:basic:derh:led"}
+Switch child_lock "Child Lock" (G_derh) {channel="miio:basic:derh:child_lock"}
+Number:Temperature coil_temperature "Coil Temperature" (G_derh) {channel="miio:basic:derh:coil_temperature"}
+Switch compressor "Compressor" (G_derh) {channel="miio:basic:derh:compressor"}
+Switch water_tank_full "Water Tank Full" (G_derh) {channel="miio:basic:derh:water_tank_full"}
+Switch defrost "Defrosting" (G_derh) {channel="miio:basic:derh:defrost"}
+Number:Time timer "Timer Remaining" (G_derh) {channel="miio:basic:derh:timer"}
+Number timer_setting "Off Timer" (G_derh) {channel="miio:basic:derh:timer_setting"}
+```
+
+### NWT/Widetech Internet Dehumidifier 30L (nwt.derh.330ef) item file lines
+
+note: Autogenerated example. Replace the id (derh) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_derh "NWT/Widetech Internet Dehumidifier 30L" <status>
+Switch power "Power" (G_derh) {channel="miio:basic:derh:power"}
+Number fault "Device Fault" (G_derh) {channel="miio:basic:derh:fault"}
+Number mode "Mode" (G_derh) {channel="miio:basic:derh:mode"}
+Number:Dimensionless target_humidity "Target Humidity" (G_derh) {channel="miio:basic:derh:target_humidity"}
+Number:Dimensionless humidity "Humidity" (G_derh) {channel="miio:basic:derh:humidity"}
+Number:Temperature temperature "Temperature" (G_derh) {channel="miio:basic:derh:temperature"}
+Switch buzzer "Notification Sound" (G_derh) {channel="miio:basic:derh:buzzer"}
+Switch led "Indicator Light" (G_derh) {channel="miio:basic:derh:led"}
+Switch child_lock "Child Lock" (G_derh) {channel="miio:basic:derh:child_lock"}
+Number:Temperature coil_temperature "Coil Temperature" (G_derh) {channel="miio:basic:derh:coil_temperature"}
+Switch compressor "Compressor" (G_derh) {channel="miio:basic:derh:compressor"}
+Switch water_tank_full "Water Tank Full" (G_derh) {channel="miio:basic:derh:water_tank_full"}
+Switch defrost "Defrosting" (G_derh) {channel="miio:basic:derh:defrost"}
+Switch fallen_over "Fallen Over" (G_derh) {channel="miio:basic:derh:fallen_over"}
+Switch pump "Drain Pump" (G_derh) {channel="miio:basic:derh:pump"}
+Switch pump_pipe_installed "Drain Pipe Connected" (G_derh) {channel="miio:basic:derh:pump_pipe_installed"}
+Number:Time timer "Timer Remaining" (G_derh) {channel="miio:basic:derh:timer"}
+Number timer_setting "Off Timer" (G_derh) {channel="miio:basic:derh:timer_setting"}
+```
+
+### Lumias 20L Dehumidifier (nwt.derh.las20l) item file lines
+
+note: Autogenerated example. Replace the id (derh) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_derh "Lumias 20L Dehumidifier" <status>
+Switch power "Power" (G_derh) {channel="miio:basic:derh:power"}
+Number fault "Device Fault" (G_derh) {channel="miio:basic:derh:fault"}
+Number:Dimensionless target_humidity "Target Humidity" (G_derh) {channel="miio:basic:derh:target_humidity"}
+Number fan_level "Fan Level" (G_derh) {channel="miio:basic:derh:fan_level"}
+Number:Dimensionless humidity "Humidity" (G_derh) {channel="miio:basic:derh:humidity"}
+Switch buzzer "Notification Sound" (G_derh) {channel="miio:basic:derh:buzzer"}
+Switch led "Indicator Light" (G_derh) {channel="miio:basic:derh:led"}
+Switch water_tank_full "Water Tank Full" (G_derh) {channel="miio:basic:derh:water_tank_full"}
+Switch defrost "Defrosting" (G_derh) {channel="miio:basic:derh:defrost"}
+Switch filter_cleaning "Filter Cleaning Reminder" (G_derh) {channel="miio:basic:derh:filter_cleaning"}
+Switch swing "Swing" (G_derh) {channel="miio:basic:derh:swing"}
+```
+
+### Lumias 12L Dehumidifier (nwt.derh.lua12l) item file lines
+
+note: Autogenerated example. Replace the id (derh) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_derh "Lumias 12L Dehumidifier" <status>
+Switch power "Power" (G_derh) {channel="miio:basic:derh:power"}
+Number fault "Device Fault" (G_derh) {channel="miio:basic:derh:fault"}
+Number:Dimensionless target_humidity "Target Humidity" (G_derh) {channel="miio:basic:derh:target_humidity"}
+Number mode "Mode" (G_derh) {channel="miio:basic:derh:mode"}
+Number:Dimensionless humidity "Humidity" (G_derh) {channel="miio:basic:derh:humidity"}
+Switch water_tank_full "Water Tank Full" (G_derh) {channel="miio:basic:derh:water_tank_full"}
+Switch defrost "Defrosting" (G_derh) {channel="miio:basic:derh:defrost"}
+```
+
+### Lumias 30L Dehumidifier (nwt.derh.lua30l) item file lines
+
+note: Autogenerated example. Replace the id (derh) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_derh "Lumias 30L Dehumidifier" <status>
+Switch power "Power" (G_derh) {channel="miio:basic:derh:power"}
+Number fault "Device Fault" (G_derh) {channel="miio:basic:derh:fault"}
+Number mode "Mode" (G_derh) {channel="miio:basic:derh:mode"}
+Number:Dimensionless target_humidity "Target Humidity" (G_derh) {channel="miio:basic:derh:target_humidity"}
+Number fan_level "Fan Level" (G_derh) {channel="miio:basic:derh:fan_level"}
+Number:Dimensionless humidity "Humidity" (G_derh) {channel="miio:basic:derh:humidity"}
+Switch buzzer "Notification Sound" (G_derh) {channel="miio:basic:derh:buzzer"}
+Switch led "Indicator Light" (G_derh) {channel="miio:basic:derh:led"}
+Switch water_tank_full "Water Tank Full" (G_derh) {channel="miio:basic:derh:water_tank_full"}
+Switch defrost "Defrosting" (G_derh) {channel="miio:basic:derh:defrost"}
+Switch filter_cleaning "Filter Cleaning Reminder" (G_derh) {channel="miio:basic:derh:filter_cleaning"}
+```
+
+### Lumias 12L (nwt.derh.lus12l) item file lines
+
+note: Autogenerated example. Replace the id (derh) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_derh "Lumias 12L" <status>
+Switch power "Power" (G_derh) {channel="miio:basic:derh:power"}
+Number fault "Device Fault" (G_derh) {channel="miio:basic:derh:fault"}
+Number mode "Mode" (G_derh) {channel="miio:basic:derh:mode"}
+Number:Dimensionless target_humidity "Target Humidity" (G_derh) {channel="miio:basic:derh:target_humidity"}
+Switch buzzer "Notification Sound" (G_derh) {channel="miio:basic:derh:buzzer"}
+Switch child_lock "Child Lock" (G_derh) {channel="miio:basic:derh:child_lock"}
+Switch water_tank_full "Water Tank Full" (G_derh) {channel="miio:basic:derh:water_tank_full"}
+Switch defrost "Defrosting" (G_derh) {channel="miio:basic:derh:defrost"}
+Switch led "Indicator Light" (G_derh) {channel="miio:basic:derh:led"}
+Number:Dimensionless humidity "Humidity" (G_derh) {channel="miio:basic:derh:humidity"}
+```
+
+### Lumias 20L (nwt.derh.lus20l) item file lines
+
+note: Autogenerated example. Replace the id (derh) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_derh "Lumias 20L" <status>
+Switch power "Power" (G_derh) {channel="miio:basic:derh:power"}
+Number fault "Device Fault" (G_derh) {channel="miio:basic:derh:fault"}
+Number fan_level "Fan Level" (G_derh) {channel="miio:basic:derh:fan_level"}
+Number:Dimensionless target_humidity "Target Humidity" (G_derh) {channel="miio:basic:derh:target_humidity"}
+Number mode "Mode" (G_derh) {channel="miio:basic:derh:mode"}
+Switch buzzer "Notification Sound" (G_derh) {channel="miio:basic:derh:buzzer"}
+Switch led "Indicator Light" (G_derh) {channel="miio:basic:derh:led"}
+Switch water_tank_full "Water Tank Full" (G_derh) {channel="miio:basic:derh:water_tank_full"}
+Switch defrost "Defrosting" (G_derh) {channel="miio:basic:derh:defrost"}
+Switch filter_cleaning "Filter Cleaning Reminder" (G_derh) {channel="miio:basic:derh:filter_cleaning"}
+Number:Dimensionless humidity "Humidity" (G_derh) {channel="miio:basic:derh:humidity"}
+```
+
+### Lumias 26L Dehumidifier (nwt.derh.lus24l) item file lines
+
+note: Autogenerated example. Replace the id (derh) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_derh "Lumias 26L Dehumidifier" <status>
+Switch power "Power" (G_derh) {channel="miio:basic:derh:power"}
+Number fault "Device Fault" (G_derh) {channel="miio:basic:derh:fault"}
+Number mode "Mode" (G_derh) {channel="miio:basic:derh:mode"}
+Number fan_level "Fan Level" (G_derh) {channel="miio:basic:derh:fan_level"}
+Number:Dimensionless target_humidity "Target Humidity" (G_derh) {channel="miio:basic:derh:target_humidity"}
+Switch buzzer "Notification Sound" (G_derh) {channel="miio:basic:derh:buzzer"}
+Switch child_lock "Child Lock" (G_derh) {channel="miio:basic:derh:child_lock"}
+Switch led "Indicator Light" (G_derh) {channel="miio:basic:derh:led"}
+Number dry_clothes "Dry Clothes" (G_derh) {channel="miio:basic:derh:dry_clothes"}
+Number swing_wind "Swing" (G_derh) {channel="miio:basic:derh:swing_wind"}
+Number uv "UV" (G_derh) {channel="miio:basic:derh:uv"}
+Switch water_tank_full "Water Tank Full" (G_derh) {channel="miio:basic:derh:water_tank_full"}
+Switch defrost "Defrosting" (G_derh) {channel="miio:basic:derh:defrost"}
+Number:Dimensionless humidity "Humidity" (G_derh) {channel="miio:basic:derh:humidity"}
+```
+
+### Lumias 30L Dehumidifier (nwt.derh.lus30l) item file lines
+
+note: Autogenerated example. Replace the id (derh) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_derh "Lumias 30L Dehumidifier" <status>
+Switch power "Power" (G_derh) {channel="miio:basic:derh:power"}
+Number fault "Device Fault" (G_derh) {channel="miio:basic:derh:fault"}
+Number mode "Mode" (G_derh) {channel="miio:basic:derh:mode"}
+Number fan_level "Fan Level" (G_derh) {channel="miio:basic:derh:fan_level"}
+Number:Dimensionless target_humidity "Target Humidity" (G_derh) {channel="miio:basic:derh:target_humidity"}
+Number:Dimensionless humidity "Humidity" (G_derh) {channel="miio:basic:derh:humidity"}
+Switch buzzer "Notification Sound" (G_derh) {channel="miio:basic:derh:buzzer"}
+Switch led "Indicator Light" (G_derh) {channel="miio:basic:derh:led"}
+Switch water_tank_full "Water Tank Full" (G_derh) {channel="miio:basic:derh:water_tank_full"}
+Switch defrost "Defrosting" (G_derh) {channel="miio:basic:derh:defrost"}
+Switch filter_cleaning "Filter Cleaning Reminder" (G_derh) {channel="miio:basic:derh:filter_cleaning"}
+Switch swing "Swing" (G_derh) {channel="miio:basic:derh:swing"}
+```
+
+### Lumias 60L (nwt.derh.lus60l) item file lines
+
+note: Autogenerated example. Replace the id (derh) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_derh "Lumias 60L" <status>
+Switch power "Power" (G_derh) {channel="miio:basic:derh:power"}
+Number fault "Device Fault" (G_derh) {channel="miio:basic:derh:fault"}
+Number mode "Mode" (G_derh) {channel="miio:basic:derh:mode"}
+Number fan_level "Fan Level" (G_derh) {channel="miio:basic:derh:fan_level"}
+Number:Dimensionless target_humidity "Target Humidity" (G_derh) {channel="miio:basic:derh:target_humidity"}
+Number:Dimensionless humidity "Humidity" (G_derh) {channel="miio:basic:derh:humidity"}
+Switch buzzer "Notification Sound" (G_derh) {channel="miio:basic:derh:buzzer"}
+Switch led "Indicator Light" (G_derh) {channel="miio:basic:derh:led"}
+Switch water_tank_full "Water Tank Full" (G_derh) {channel="miio:basic:derh:water_tank_full"}
+Switch defrost "Defrosting" (G_derh) {channel="miio:basic:derh:defrost"}
+Switch filter_cleaning "Filter Cleaning Reminder" (G_derh) {channel="miio:basic:derh:filter_cleaning"}
+```
+
+### NWT/Widetech Intelligent Dehumidifier 12L (nwt.derh.nwt12l) item file lines
+
+note: Autogenerated example. Replace the id (derh) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_derh "NWT/Widetech Intelligent Dehumidifier 12L" <status>
+Switch power "Power" (G_derh) {channel="miio:basic:derh:power"}
+Number fault "Device Fault" (G_derh) {channel="miio:basic:derh:fault"}
+Number:Dimensionless target_humidity "Target Humidity" (G_derh) {channel="miio:basic:derh:target_humidity"}
+Number mode "Mode" (G_derh) {channel="miio:basic:derh:mode"}
+Number:Dimensionless humidity "Humidity" (G_derh) {channel="miio:basic:derh:humidity"}
+Switch buzzer "Notification Sound" (G_derh) {channel="miio:basic:derh:buzzer"}
+Switch led "Indicator Light" (G_derh) {channel="miio:basic:derh:led"}
+Switch water_tank_full "Water Tank Full" (G_derh) {channel="miio:basic:derh:water_tank_full"}
+Switch defrost "Defrosting" (G_derh) {channel="miio:basic:derh:defrost"}
+Switch filter_cleaning "Filter Cleaning Reminder" (G_derh) {channel="miio:basic:derh:filter_cleaning"}
+```
+
+### NWT/Widetech Internet Dehumidifier 18L (nwt.derh.wdh318efw1) item file lines
+
+note: Autogenerated example. Replace the id (derh) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_derh "NWT/Widetech Internet Dehumidifier 18L" <status>
+Switch power "Power" (G_derh) {channel="miio:basic:derh:power"}
+String mode "Mode" (G_derh) {channel="miio:basic:derh:mode"}
+Number:Dimensionless target_humidity "Target Humidity" (G_derh) {channel="miio:basic:derh:target_humidity"}
+Number fan_level "Fan Level" (G_derh) {channel="miio:basic:derh:fan_level"}
+Number fan_speed "Fan Speed" (G_derh) {channel="miio:basic:derh:fan_speed"}
+Switch buzzer "Notification Sound" (G_derh) {channel="miio:basic:derh:buzzer"}
+Switch led "Indicator Light" (G_derh) {channel="miio:basic:derh:led"}
+Switch child_lock "Child Lock" (G_derh) {channel="miio:basic:derh:child_lock"}
+Number:Dimensionless humidity "Humidity" (G_derh) {channel="miio:basic:derh:humidity"}
+Number:Temperature temperature "Temperature" (G_derh) {channel="miio:basic:derh:temperature"}
+Switch water_tank_full "Water Tank Full" (G_derh) {channel="miio:basic:derh:water_tank_full"}
+Switch compressor "Compressor" (G_derh) {channel="miio:basic:derh:compressor"}
+Switch defrost "Defrosting" (G_derh) {channel="miio:basic:derh:defrost"}
 String alarm "Alarm" (G_derh) {channel="miio:basic:derh:alarm"}
 ```
 
@@ -23841,6 +24639,96 @@ Number iic_error_count "I2C Error Count" (G_airp) {channel="miio:basic:airp:iic_
 Number country_code "Country Code" (G_airp) {channel="miio:basic:airp:country_code"}
 ```
 
+### Xiaomi Smart Inverter Dehumidifier (xiaomi.derh.30kh) item file lines
+
+note: Autogenerated example. Replace the id (derh) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_derh "Xiaomi Smart Inverter Dehumidifier" <status>
+Switch power "Power" (G_derh) {channel="miio:basic:derh:power"}
+Number fault "Device Fault" (G_derh) {channel="miio:basic:derh:fault"}
+Number mode "Mode" (G_derh) {channel="miio:basic:derh:mode"}
+Number:Dimensionless target_humidity "Target Humidity" (G_derh) {channel="miio:basic:derh:target_humidity"}
+Number fan_level "Fan Level" (G_derh) {channel="miio:basic:derh:fan_level"}
+Switch dry_after_off "Dry & Turn-Off" (G_derh) {channel="miio:basic:derh:dry_after_off"}
+Number:Time dry_left_time "Drying Time Left" (G_derh) {channel="miio:basic:derh:dry_left_time"}
+Number:Dimensionless humidity "Humidity" (G_derh) {channel="miio:basic:derh:humidity"}
+Number:Temperature temperature "Temperature" (G_derh) {channel="miio:basic:derh:temperature"}
+Switch buzzer "Notification Sound" (G_derh) {channel="miio:basic:derh:buzzer"}
+Switch child_lock "Child Lock" (G_derh) {channel="miio:basic:derh:child_lock"}
+Switch led "Display" (G_derh) {channel="miio:basic:derh:led"}
+Number led_brightness "Display Brightness" (G_derh) {channel="miio:basic:derh:led_brightness"}
+Switch delay "Turn-Off Delay" (G_derh) {channel="miio:basic:derh:delay"}
+Number:Time delay_time "Turn-Off Delay Time" (G_derh) {channel="miio:basic:derh:delay_time"}
+Number:Time delay_remain_time "Turn-Off Delay Remaining" (G_derh) {channel="miio:basic:derh:delay_remain_time"}
+Switch defrost "Defrosting" (G_derh) {channel="miio:basic:derh:defrost"}
+Switch plasma "Plasma" (G_derh) {channel="miio:basic:derh:plasma"}
+String actions "Actions" (G_derh) {channel="miio:basic:derh:actions"}
+```
+
+### Xiaomi Smart Inverter Dehumidifier 30L (xiaomi.derh.30l) item file lines
+
+note: Autogenerated example. Replace the id (derh) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_derh "Xiaomi Smart Inverter Dehumidifier 30L" <status>
+Switch power "Power" (G_derh) {channel="miio:basic:derh:power"}
+Number fault "Device Fault" (G_derh) {channel="miio:basic:derh:fault"}
+Number mode "Mode" (G_derh) {channel="miio:basic:derh:mode"}
+Number:Dimensionless target_humidity "Target Humidity" (G_derh) {channel="miio:basic:derh:target_humidity"}
+Number fan_level "Fan Level" (G_derh) {channel="miio:basic:derh:fan_level"}
+Switch dry_after_off "Dry & Turn-Off" (G_derh) {channel="miio:basic:derh:dry_after_off"}
+Number:Time dry_left_time "Drying Time Left" (G_derh) {channel="miio:basic:derh:dry_left_time"}
+Number:Dimensionless humidity "Humidity" (G_derh) {channel="miio:basic:derh:humidity"}
+Number:Temperature temperature "Temperature" (G_derh) {channel="miio:basic:derh:temperature"}
+Switch buzzer "Notification Sound" (G_derh) {channel="miio:basic:derh:buzzer"}
+Switch child_lock "Child Lock" (G_derh) {channel="miio:basic:derh:child_lock"}
+Switch led "Display" (G_derh) {channel="miio:basic:derh:led"}
+Number led_brightness "Display Brightness" (G_derh) {channel="miio:basic:derh:led_brightness"}
+Switch delay "Turn-Off Delay" (G_derh) {channel="miio:basic:derh:delay"}
+Number:Time delay_time "Turn-Off Delay Time" (G_derh) {channel="miio:basic:derh:delay_time"}
+Number:Time delay_remain_time "Turn-Off Delay Remaining" (G_derh) {channel="miio:basic:derh:delay_remain_time"}
+Switch defrost "Defrosting" (G_derh) {channel="miio:basic:derh:defrost"}
+Switch plasma "Plasma" (G_derh) {channel="miio:basic:derh:plasma"}
+String actions "Actions" (G_derh) {channel="miio:basic:derh:actions"}
+```
+
+### Mijia Smart Inverter Purifying Dehumidifier Max (xiaomi.derh.60l) item file lines
+
+note: Autogenerated example. Replace the id (derh) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_derh "Mijia Smart Inverter Purifying Dehumidifier Max" <status>
+Switch power "Power" (G_derh) {channel="miio:basic:derh:power"}
+Number fault "Device Fault" (G_derh) {channel="miio:basic:derh:fault"}
+Number mode "Mode" (G_derh) {channel="miio:basic:derh:mode"}
+Number fan_level "Fan Level" (G_derh) {channel="miio:basic:derh:fan_level"}
+Switch dry_after_off "Dry & Turn-Off" (G_derh) {channel="miio:basic:derh:dry_after_off"}
+Number:Time dry_left_time "Drying Time Left" (G_derh) {channel="miio:basic:derh:dry_left_time"}
+Number:Dimensionless target_humidity "Target Humidity" (G_derh) {channel="miio:basic:derh:target_humidity"}
+Switch horizontal_swing "Oscillation" (G_derh) {channel="miio:basic:derh:horizontal_swing"}
+Switch plasma "Plasma" (G_derh) {channel="miio:basic:derh:plasma"}
+Switch uv "UV-C Sterilization" (G_derh) {channel="miio:basic:derh:uv"}
+Number status "Status" (G_derh) {channel="miio:basic:derh:status"}
+Number:Dimensionless humidity "Humidity" (G_derh) {channel="miio:basic:derh:humidity"}
+Number:Temperature temperature "Temperature" (G_derh) {channel="miio:basic:derh:temperature"}
+Number:Density pm25 "PM2.5" (G_derh) {channel="miio:basic:derh:pm25"}
+Number:Density pm10 "PM10" (G_derh) {channel="miio:basic:derh:pm10"}
+Switch led "Display" (G_derh) {channel="miio:basic:derh:led"}
+Number led_brightness "Display Brightness" (G_derh) {channel="miio:basic:derh:led_brightness"}
+Switch buzzer "Notification Sound" (G_derh) {channel="miio:basic:derh:buzzer"}
+Switch child_lock "Child Lock" (G_derh) {channel="miio:basic:derh:child_lock"}
+Switch delay "Turn-Off Delay" (G_derh) {channel="miio:basic:derh:delay"}
+Number:Time delay_time "Turn-Off Delay Time" (G_derh) {channel="miio:basic:derh:delay_time"}
+Number:Time delay_remain_time "Turn-Off Delay Remaining" (G_derh) {channel="miio:basic:derh:delay_remain_time"}
+Number:Dimensionless filter_life_level "Filter Life" (G_derh) {channel="miio:basic:derh:filter_life_level"}
+Number:Time filter_left_time "Filter Time Left" (G_derh) {channel="miio:basic:derh:filter_left_time"}
+Switch defrost "Defrosting" (G_derh) {channel="miio:basic:derh:defrost"}
+Number drainage "Continuous Drainage" (G_derh) {channel="miio:basic:derh:drainage"}
+Number:Dimensionless water_target "Full Water Level" (G_derh) {channel="miio:basic:derh:water_target"}
+String actions "Actions" (G_derh) {channel="miio:basic:derh:actions"}
+```
+
 ### Mi Smart Standing Fan 2 Lite (xiaomi.fan.2lite) item file lines
 
 note: Autogenerated example. Replace the id (fan) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
@@ -24027,6 +24915,211 @@ Switch buzzer "Notification Sound" (G_fan) {channel="miio:basic:fan:buzzer"}
 Switch led "Screen" (G_fan) {channel="miio:basic:fan:led"}
 Switch child_lock "Child Lock" (G_fan) {channel="miio:basic:fan:child_lock"}
 Number fault "Device Fault" (G_fan) {channel="miio:basic:fan:fault"}
+```
+
+### Mijia Smart Dehumidifier 13L (xiaomi.derh.13l) item file lines
+
+note: Autogenerated example. Replace the id (derh) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_derh "Mijia Smart Dehumidifier 13L" <status>
+Switch power "Power" (G_derh) {channel="miio:basic:derh:power"}
+Number fault "Device Fault" (G_derh) {channel="miio:basic:derh:fault"}
+Number mode "Mode" (G_derh) {channel="miio:basic:derh:mode"}
+Number:Dimensionless target_humidity "Target Humidity" (G_derh) {channel="miio:basic:derh:target_humidity"}
+Number:Dimensionless humidity "Humidity" (G_derh) {channel="miio:basic:derh:humidity"}
+Number:Temperature temperature "Temperature" (G_derh) {channel="miio:basic:derh:temperature"}
+Switch buzzer "Notification Sound" (G_derh) {channel="miio:basic:derh:buzzer"}
+Switch led "Display" (G_derh) {channel="miio:basic:derh:led"}
+Number led_brightness "Display Brightness" (G_derh) {channel="miio:basic:derh:led_brightness"}
+Switch child_lock "Child Lock" (G_derh) {channel="miio:basic:derh:child_lock"}
+Switch dry_after_off "Dry & Turn-Off" (G_derh) {channel="miio:basic:derh:dry_after_off"}
+Number:Time dry_left_time "Drying Time Left" (G_derh) {channel="miio:basic:derh:dry_left_time"}
+Switch defrost "Defrosting" (G_derh) {channel="miio:basic:derh:defrost"}
+Switch delay "Turn-Off Delay" (G_derh) {channel="miio:basic:derh:delay"}
+Number:Time delay_time "Turn-Off Delay Time" (G_derh) {channel="miio:basic:derh:delay_time"}
+Number:Time delay_remain_time "Turn-Off Delay Remaining" (G_derh) {channel="miio:basic:derh:delay_remain_time"}
+String actions "Actions" (G_derh) {channel="miio:basic:derh:actions"}
+```
+
+### Xiaomi Smart Dehumidifier Lite (xiaomi.derh.lite) item file lines
+
+note: Autogenerated example. Replace the id (derh) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_derh "Xiaomi Smart Dehumidifier Lite" <status>
+Switch power "Power" (G_derh) {channel="miio:basic:derh:power"}
+Number fault "Device Fault" (G_derh) {channel="miio:basic:derh:fault"}
+Number mode "Mode" (G_derh) {channel="miio:basic:derh:mode"}
+Number:Dimensionless target_humidity "Target Humidity" (G_derh) {channel="miio:basic:derh:target_humidity"}
+Number:Dimensionless humidity "Humidity" (G_derh) {channel="miio:basic:derh:humidity"}
+Number:Temperature temperature "Temperature" (G_derh) {channel="miio:basic:derh:temperature"}
+Switch buzzer "Notification Sound" (G_derh) {channel="miio:basic:derh:buzzer"}
+Switch led "Display" (G_derh) {channel="miio:basic:derh:led"}
+Number led_brightness "Display Brightness" (G_derh) {channel="miio:basic:derh:led_brightness"}
+Switch child_lock "Child Lock" (G_derh) {channel="miio:basic:derh:child_lock"}
+Switch dry_after_off "Dry & Turn-Off" (G_derh) {channel="miio:basic:derh:dry_after_off"}
+Number:Time dry_left_time "Drying Time Left" (G_derh) {channel="miio:basic:derh:dry_left_time"}
+Switch defrost "Defrosting" (G_derh) {channel="miio:basic:derh:defrost"}
+Switch delay "Turn-Off Delay" (G_derh) {channel="miio:basic:derh:delay"}
+Number:Time delay_time "Turn-Off Delay Time" (G_derh) {channel="miio:basic:derh:delay_time"}
+Number:Time delay_remain_time "Turn-Off Delay Remaining" (G_derh) {channel="miio:basic:derh:delay_remain_time"}
+String actions "Actions" (G_derh) {channel="miio:basic:derh:actions"}
+```
+
+### Xiaomi Smart Evaporative Humidifier (xiaomi.humidifier.3lite) item file lines
+
+note: Autogenerated example. Replace the id (humidifier) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_humidifier "Xiaomi Smart Evaporative Humidifier" <status>
+Switch power "Power" (G_humidifier) {channel="miio:basic:humidifier:power"}
+Number fault "Device Fault" (G_humidifier) {channel="miio:basic:humidifier:fault"}
+Number mode "Mode" (G_humidifier) {channel="miio:basic:humidifier:mode"}
+Number:Dimensionless target_humidity "Target Humidity" (G_humidifier) {channel="miio:basic:humidifier:target_humidity"}
+Switch dry "Dry & Turn-Off" (G_humidifier) {channel="miio:basic:humidifier:dry"}
+Number:Time dry_left_time "Drying Time Left" (G_humidifier) {channel="miio:basic:humidifier:dry_left_time"}
+Switch overwet_protection "Over-Humidity Protection" (G_humidifier) {channel="miio:basic:humidifier:overwet_protection"}
+Number:Dimensionless humidity "Humidity" (G_humidifier) {channel="miio:basic:humidifier:humidity"}
+Number:Dimensionless filter_life_level "Filter Life" (G_humidifier) {channel="miio:basic:humidifier:filter_life_level"}
+Switch led "Display" (G_humidifier) {channel="miio:basic:humidifier:led"}
+Number led_brightness "Display Brightness" (G_humidifier) {channel="miio:basic:humidifier:led_brightness"}
+Switch buzzer "Notification Sound" (G_humidifier) {channel="miio:basic:humidifier:buzzer"}
+Switch child_lock "Child Lock" (G_humidifier) {channel="miio:basic:humidifier:child_lock"}
+Switch delay "Turn-Off Delay" (G_humidifier) {channel="miio:basic:humidifier:delay"}
+Number:Time delay_time "Turn-Off Delay Time" (G_humidifier) {channel="miio:basic:humidifier:delay_time"}
+Number:Time delay_remain_time "Turn-Off Delay Remaining" (G_humidifier) {channel="miio:basic:humidifier:delay_remain_time"}
+Switch clean "Start Cleaning" (G_humidifier) {channel="miio:basic:humidifier:clean"}
+Number:Time clean_time_left "Cleaning Time Left" (G_humidifier) {channel="miio:basic:humidifier:clean_time_left"}
+String actions "Actions" (G_humidifier) {channel="miio:basic:humidifier:actions"}
+```
+
+### Mijia Mist-Free Humidifier 3 400mL/h (xiaomi.humidifier.4lite) item file lines
+
+note: Autogenerated example. Replace the id (humidifier) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_humidifier "Mijia Mist-Free Humidifier 3 400mL/h" <status>
+Switch power "Power" (G_humidifier) {channel="miio:basic:humidifier:power"}
+Number fault "Device Fault" (G_humidifier) {channel="miio:basic:humidifier:fault"}
+Number mode "Mode" (G_humidifier) {channel="miio:basic:humidifier:mode"}
+Number:Dimensionless target_humidity "Target Humidity" (G_humidifier) {channel="miio:basic:humidifier:target_humidity"}
+Number:Time dry_left_time "Drying Time Left" (G_humidifier) {channel="miio:basic:humidifier:dry_left_time"}
+Switch overwet_protection "Over-Humidity Protection" (G_humidifier) {channel="miio:basic:humidifier:overwet_protection"}
+Number:Dimensionless humidity "Humidity" (G_humidifier) {channel="miio:basic:humidifier:humidity"}
+Number:Dimensionless filter_life_level "Filter Life" (G_humidifier) {channel="miio:basic:humidifier:filter_life_level"}
+Switch led "Display" (G_humidifier) {channel="miio:basic:humidifier:led"}
+Number led_brightness "Display Brightness" (G_humidifier) {channel="miio:basic:humidifier:led_brightness"}
+Switch buzzer "Notification Sound" (G_humidifier) {channel="miio:basic:humidifier:buzzer"}
+Switch child_lock "Child Lock" (G_humidifier) {channel="miio:basic:humidifier:child_lock"}
+Switch delay "Turn-Off Delay" (G_humidifier) {channel="miio:basic:humidifier:delay"}
+Number:Time delay_time "Turn-Off Delay Time" (G_humidifier) {channel="miio:basic:humidifier:delay_time"}
+Number:Time delay_remain_time "Turn-Off Delay Remaining" (G_humidifier) {channel="miio:basic:humidifier:delay_remain_time"}
+Number self_clean "Self-Cleaning" (G_humidifier) {channel="miio:basic:humidifier:self_clean"}
+Number:Time clean_time_left "Self-Cleaning Time Left" (G_humidifier) {channel="miio:basic:humidifier:clean_time_left"}
+Number filter_clean "Filter Cleaning" (G_humidifier) {channel="miio:basic:humidifier:filter_clean"}
+String actions "Actions" (G_humidifier) {channel="miio:basic:humidifier:actions"}
+```
+
+### Mijia Smart Evaporative Humidifier Pro (xiaomi.humidifier.600ek) item file lines
+
+note: Autogenerated example. Replace the id (humidifier) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_humidifier "Mijia Smart Evaporative Humidifier Pro" <status>
+Switch power "Power" (G_humidifier) {channel="miio:basic:humidifier:power"}
+Number fault "Device Fault" (G_humidifier) {channel="miio:basic:humidifier:fault"}
+Number mode "Mode" (G_humidifier) {channel="miio:basic:humidifier:mode"}
+Number:Dimensionless target_humidity "Target Humidity" (G_humidifier) {channel="miio:basic:humidifier:target_humidity"}
+Number:Time dry_left_time "Drying Time Left" (G_humidifier) {channel="miio:basic:humidifier:dry_left_time"}
+Switch overwet_protection "Over-Humidity Protection" (G_humidifier) {channel="miio:basic:humidifier:overwet_protection"}
+Number:Dimensionless humidity "Humidity" (G_humidifier) {channel="miio:basic:humidifier:humidity"}
+Switch led "Display" (G_humidifier) {channel="miio:basic:humidifier:led"}
+Number led_brightness "Display Brightness" (G_humidifier) {channel="miio:basic:humidifier:led_brightness"}
+Switch buzzer "Notification Sound" (G_humidifier) {channel="miio:basic:humidifier:buzzer"}
+Switch child_lock "Child Lock" (G_humidifier) {channel="miio:basic:humidifier:child_lock"}
+Switch delay "Turn-Off Delay" (G_humidifier) {channel="miio:basic:humidifier:delay"}
+Number:Time delay_time "Turn-Off Delay Time" (G_humidifier) {channel="miio:basic:humidifier:delay_time"}
+Number:Time delay_remain_time "Turn-Off Delay Remaining" (G_humidifier) {channel="miio:basic:humidifier:delay_remain_time"}
+Number self_clean "Self-Cleaning" (G_humidifier) {channel="miio:basic:humidifier:self_clean"}
+Number:Time clean_time_left "Self-Cleaning Time Left" (G_humidifier) {channel="miio:basic:humidifier:clean_time_left"}
+Number filter_clean "Filter Cleaning" (G_humidifier) {channel="miio:basic:humidifier:filter_clean"}
+String actions "Actions" (G_humidifier) {channel="miio:basic:humidifier:actions"}
+```
+
+### Mijia Smart Anti-bacterial Humidifier 2 (xiaomi.humidifier.jsq2g) item file lines
+
+note: Autogenerated example. Replace the id (humidifier) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_humidifier "Mijia Smart Anti-bacterial Humidifier 2" <status>
+Switch power "Power" (G_humidifier) {channel="miio:basic:humidifier:power"}
+Number fault "Device Fault" (G_humidifier) {channel="miio:basic:humidifier:fault"}
+Number mode "Mode" (G_humidifier) {channel="miio:basic:humidifier:mode"}
+Number fan_level "Fan Level" (G_humidifier) {channel="miio:basic:humidifier:fan_level"}
+Number:Dimensionless target_humidity "Target Humidity" (G_humidifier) {channel="miio:basic:humidifier:target_humidity"}
+Number:Dimensionless humidity "Humidity" (G_humidifier) {channel="miio:basic:humidifier:humidity"}
+Number:Temperature temperature "Temperature" (G_humidifier) {channel="miio:basic:humidifier:temperature"}
+Switch led "Indicator Light" (G_humidifier) {channel="miio:basic:humidifier:led"}
+Switch buzzer "Notification Sound" (G_humidifier) {channel="miio:basic:humidifier:buzzer"}
+Switch water_tank_removed "Water Tank Removed" (G_humidifier) {channel="miio:basic:humidifier:water_tank_removed"}
+Switch water_shortage "Insufficient Water" (G_humidifier) {channel="miio:basic:humidifier:water_shortage"}
+Switch humidity_sensor_fault "Humidity Sensor Fault" (G_humidifier) {channel="miio:basic:humidifier:humidity_sensor_fault"}
+Switch temperature_sensor_fault "Temperature Sensor Fault" (G_humidifier) {channel="miio:basic:humidifier:temperature_sensor_fault"}
+Switch overwet_protection_active "Over-Humidity Protection Active" (G_humidifier) {channel="miio:basic:humidifier:overwet_protection_active"}
+Switch overwet_protection "Over-Humidity Protection" (G_humidifier) {channel="miio:basic:humidifier:overwet_protection"}
+Switch constant_protection_active "Auto Turn-Off Active" (G_humidifier) {channel="miio:basic:humidifier:constant_protection_active"}
+Switch constant_protection "Auto Turn-Off" (G_humidifier) {channel="miio:basic:humidifier:constant_protection"}
+```
+
+### Xiaomi Smart Humidifier 2 (xiaomi.humidifier.jsq2w) item file lines
+
+note: Autogenerated example. Replace the id (humidifier) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_humidifier "Xiaomi Smart Humidifier 2" <status>
+Switch power "Power" (G_humidifier) {channel="miio:basic:humidifier:power"}
+Number fault "Device Fault" (G_humidifier) {channel="miio:basic:humidifier:fault"}
+Number fan_level "Fan Level" (G_humidifier) {channel="miio:basic:humidifier:fan_level"}
+Number:Dimensionless target_humidity "Target Humidity" (G_humidifier) {channel="miio:basic:humidifier:target_humidity"}
+Number status "Status" (G_humidifier) {channel="miio:basic:humidifier:status"}
+Number mode "Mode" (G_humidifier) {channel="miio:basic:humidifier:mode"}
+Number:Dimensionless humidity "Humidity" (G_humidifier) {channel="miio:basic:humidifier:humidity"}
+Number:Temperature temperature "Temperature" (G_humidifier) {channel="miio:basic:humidifier:temperature"}
+Switch buzzer "Notification Sound" (G_humidifier) {channel="miio:basic:humidifier:buzzer"}
+Switch led "Indicator Light" (G_humidifier) {channel="miio:basic:humidifier:led"}
+Switch water_tank_removed "Water Tank Removed" (G_humidifier) {channel="miio:basic:humidifier:water_tank_removed"}
+Switch water_shortage "Insufficient Water" (G_humidifier) {channel="miio:basic:humidifier:water_shortage"}
+Switch humidity_sensor_fault "Humidity Sensor Fault" (G_humidifier) {channel="miio:basic:humidifier:humidity_sensor_fault"}
+Switch temperature_sensor_fault "Temperature Sensor Fault" (G_humidifier) {channel="miio:basic:humidifier:temperature_sensor_fault"}
+Switch overwet_protection_active "Over-Humidity Protection Active" (G_humidifier) {channel="miio:basic:humidifier:overwet_protection_active"}
+Switch overwet_protection "Over-Humidity Protection" (G_humidifier) {channel="miio:basic:humidifier:overwet_protection"}
+Switch high_humidity "High Humidity" (G_humidifier) {channel="miio:basic:humidifier:high_humidity"}
+```
+
+### Mijia Mist-Free Humidifier 3 (400) (xiaomi.humidifier.p3) item file lines
+
+note: Autogenerated example. Replace the id (humidifier) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_humidifier "Mijia Mist-Free Humidifier 3 (400)" <status>
+Switch power "Power" (G_humidifier) {channel="miio:basic:humidifier:power"}
+Number fault "Device Fault" (G_humidifier) {channel="miio:basic:humidifier:fault"}
+Number mode "Mode" (G_humidifier) {channel="miio:basic:humidifier:mode"}
+Number:Dimensionless target_humidity "Target Humidity" (G_humidifier) {channel="miio:basic:humidifier:target_humidity"}
+Number:Dimensionless humidity "Humidity" (G_humidifier) {channel="miio:basic:humidifier:humidity"}
+Switch buzzer "Notification Sound" (G_humidifier) {channel="miio:basic:humidifier:buzzer"}
+Switch child_lock "Child Lock" (G_humidifier) {channel="miio:basic:humidifier:child_lock"}
+Number:Time delay_time "Turn-Off Delay Time" (G_humidifier) {channel="miio:basic:humidifier:delay_time"}
+Number water_status "Water" (G_humidifier) {channel="miio:basic:humidifier:water_status"}
+Switch overwet_protection "Over-Humidity Protection" (G_humidifier) {channel="miio:basic:humidifier:overwet_protection"}
+Number:Time dry_left_time "Drying Time Left" (G_humidifier) {channel="miio:basic:humidifier:dry_left_time"}
+Switch clean "Start Cleaning" (G_humidifier) {channel="miio:basic:humidifier:clean"}
+Number:Time clean_time_left "Cleaning Time Left" (G_humidifier) {channel="miio:basic:humidifier:clean_time_left"}
+Switch led "Display" (G_humidifier) {channel="miio:basic:humidifier:led"}
+Number led_brightness "Display Brightness" (G_humidifier) {channel="miio:basic:humidifier:led_brightness"}
+Number:Dimensionless filter_life_level "Filter Life" (G_humidifier) {channel="miio:basic:humidifier:filter_life_level"}
+String actions "Actions" (G_humidifier) {channel="miio:basic:humidifier:actions"}
 ```
 
 ### Xiaomi Robot Vacuum T12 (xiaomi.vacuum.b106bk) item file lines
@@ -28880,17 +29973,16 @@ Group G_humidifier "Smartmi Evaporative Humidifier" <status>
 Switch power "Power" (G_humidifier) {channel="miio:basic:humidifier:power"}
 String mode "Mode" (G_humidifier) {channel="miio:basic:humidifier:mode"}
 Number:Dimensionless humidity "Humidity" (G_humidifier) {channel="miio:basic:humidifier:humidity"}
-Number setHumidity "Humidity Set" (G_humidifier) {channel="miio:basic:humidifier:setHumidity"}
-Number aqi "Air Quality Index" (G_humidifier) {channel="miio:basic:humidifier:aqi"}
-Number translevel "Trans_level" (G_humidifier) {channel="miio:basic:humidifier:translevel"}
-Dimmer bright "LED Brightness" (G_humidifier) {channel="miio:basic:humidifier:bright"}
-Switch buzzer "Buzzer Status" (G_humidifier) {channel="miio:basic:humidifier:buzzer"}
-Number depth "Depth" (G_humidifier) {channel="miio:basic:humidifier:depth"}
-Switch dry "Dry" (G_humidifier) {channel="miio:basic:humidifier:dry"}
-Number:Time usedhours "Run Time" (G_humidifier) {channel="miio:basic:humidifier:usedhours"}
-Number motorspeed "Motor Speed" (G_humidifier) {channel="miio:basic:humidifier:motorspeed"}
+Number:Dimensionless target_humidity "Target Humidity" (G_humidifier) {channel="miio:basic:humidifier:target_humidity"}
+Number led_brightness "Indicator Light" (G_humidifier) {channel="miio:basic:humidifier:led_brightness"}
+Switch buzzer "Notification Sound" (G_humidifier) {channel="miio:basic:humidifier:buzzer"}
+Number:Dimensionless water_level "Water Level" (G_humidifier) {channel="miio:basic:humidifier:water_level"}
+Switch dry "Air Drying Mode" (G_humidifier) {channel="miio:basic:humidifier:dry"}
+Switch clean "Clean Mode" (G_humidifier) {channel="miio:basic:humidifier:clean"}
+Number:Time use_time "Run Time" (G_humidifier) {channel="miio:basic:humidifier:use_time"}
+Number speed "Motor Speed" (G_humidifier) {channel="miio:basic:humidifier:speed"}
 Number:Temperature temperature "Temperature" (G_humidifier) {channel="miio:basic:humidifier:temperature"}
-Switch childlock "Child Lock" (G_humidifier) {channel="miio:basic:humidifier:childlock"}
+Switch child_lock "Child Lock" (G_humidifier) {channel="miio:basic:humidifier:child_lock"}
 ```
 
 ### Smartmi Evaporative Humidifer 2 (zhimi.humidifier.ca4) item file lines
@@ -28900,22 +29992,44 @@ note: Autogenerated example. Replace the id (humidifier) in the channel with you
 ```java
 Group G_humidifier "Smartmi Evaporative Humidifer 2" <status>
 Switch power "Power" (G_humidifier) {channel="miio:basic:humidifier:power"}
-Number mode "Mode - Fan Level" (G_humidifier) {channel="miio:basic:humidifier:mode"}
-Number Fault "Humidifier Device Fault" (G_humidifier) {channel="miio:basic:humidifier:Fault"}
+Number mode "Mode" (G_humidifier) {channel="miio:basic:humidifier:mode"}
+Number fault "Device Fault" (G_humidifier) {channel="miio:basic:humidifier:fault"}
 Number:Dimensionless humidity "Humidity" (G_humidifier) {channel="miio:basic:humidifier:humidity"}
-Number:Dimensionless targetHumidity "Target Humidity" (G_humidifier) {channel="miio:basic:humidifier:targetHumidity"}
-Number waterlevel "Water Level" (G_humidifier) {channel="miio:basic:humidifier:waterlevel"}
-Number bright "LED Brightness" (G_humidifier) {channel="miio:basic:humidifier:bright"}
-Switch buzzer "Buzzer Status" (G_humidifier) {channel="miio:basic:humidifier:buzzer"}
-Switch dry "Dry" (G_humidifier) {channel="miio:basic:humidifier:dry"}
-Number:Time usedhours "Run Time" (G_humidifier) {channel="miio:basic:humidifier:usedhours"}
-Number:Time powerhours "Power Time" (G_humidifier) {channel="miio:basic:humidifier:powerhours"}
-Number targetmotorspeed "Target Motor Speed" (G_humidifier) {channel="miio:basic:humidifier:targetmotorspeed"}
-Number actualmotorspeed "Actual Motor Speed" (G_humidifier) {channel="miio:basic:humidifier:actualmotorspeed"}
+Number:Dimensionless target_humidity "Target Humidity" (G_humidifier) {channel="miio:basic:humidifier:target_humidity"}
+Number:Dimensionless water_level "Water Level" (G_humidifier) {channel="miio:basic:humidifier:water_level"}
+Number led_brightness "Indicator Light" (G_humidifier) {channel="miio:basic:humidifier:led_brightness"}
+Switch buzzer "Notification Sound" (G_humidifier) {channel="miio:basic:humidifier:buzzer"}
+Switch dry "Air Drying Mode" (G_humidifier) {channel="miio:basic:humidifier:dry"}
+Number:Time use_time "Run Time" (G_humidifier) {channel="miio:basic:humidifier:use_time"}
+Number:Time power_time "Power-On Time" (G_humidifier) {channel="miio:basic:humidifier:power_time"}
+Number target_speed "Target Motor Speed" (G_humidifier) {channel="miio:basic:humidifier:target_speed"}
+Number speed "Motor Speed" (G_humidifier) {channel="miio:basic:humidifier:speed"}
 Number:Temperature temperature "Temperature" (G_humidifier) {channel="miio:basic:humidifier:temperature"}
-Switch childlock "Child Lock" (G_humidifier) {channel="miio:basic:humidifier:childlock"}
-Number ButtonPressed "Button Pressed" (G_humidifier) {channel="miio:basic:humidifier:ButtonPressed"}
+Switch child_lock "Child Lock" (G_humidifier) {channel="miio:basic:humidifier:child_lock"}
 Switch clean "Clean Mode" (G_humidifier) {channel="miio:basic:humidifier:clean"}
+```
+
+### Smartmi Evaporative Humidifier 3 (zhimi.humidifier.ca6) item file lines
+
+note: Autogenerated example. Replace the id (humidifier) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_humidifier "Smartmi Evaporative Humidifier 3" <status>
+Switch power "Power" (G_humidifier) {channel="miio:basic:humidifier:power"}
+Number fault "Device Fault" (G_humidifier) {channel="miio:basic:humidifier:fault"}
+Number mode "Mode" (G_humidifier) {channel="miio:basic:humidifier:mode"}
+Number:Dimensionless target_humidity "Target Humidity" (G_humidifier) {channel="miio:basic:humidifier:target_humidity"}
+Number water_level "Water Level" (G_humidifier) {channel="miio:basic:humidifier:water_level"}
+Switch dry "Air Drying Mode" (G_humidifier) {channel="miio:basic:humidifier:dry"}
+Number status "Status" (G_humidifier) {channel="miio:basic:humidifier:status"}
+Number:Temperature temperature "Temperature" (G_humidifier) {channel="miio:basic:humidifier:temperature"}
+Number:Dimensionless humidity "Humidity" (G_humidifier) {channel="miio:basic:humidifier:humidity"}
+Switch buzzer "Notification Sound" (G_humidifier) {channel="miio:basic:humidifier:buzzer"}
+Number led_brightness "Screen Brightness" (G_humidifier) {channel="miio:basic:humidifier:led_brightness"}
+Switch child_lock "Child Lock" (G_humidifier) {channel="miio:basic:humidifier:child_lock"}
+Number speed "Motor Speed" (G_humidifier) {channel="miio:basic:humidifier:speed"}
+Switch clean "Clean Mode" (G_humidifier) {channel="miio:basic:humidifier:clean"}
+Number:Time clean_time_left "Self-Cleaning Time Left" (G_humidifier) {channel="miio:basic:humidifier:clean_time_left"}
 ```
 
 ### Smartmi Evaporative Humidifier (zhimi.humidifier.cb1) item file lines
@@ -28925,17 +30039,17 @@ note: Autogenerated example. Replace the id (humidifier) in the channel with you
 ```java
 Group G_humidifier "Smartmi Evaporative Humidifier" <status>
 Switch power "Power" (G_humidifier) {channel="miio:basic:humidifier:power"}
-String humidifierMode "Humidifier Mode" (G_humidifier) {channel="miio:basic:humidifier:humidifierMode"}
+String mode "Mode" (G_humidifier) {channel="miio:basic:humidifier:mode"}
 Number:Dimensionless humidity "Humidity" (G_humidifier) {channel="miio:basic:humidifier:humidity"}
-Number:Dimensionless setHumidity "Humidity Set" (G_humidifier) {channel="miio:basic:humidifier:setHumidity"}
-Dimmer bright "LED Brightness" (G_humidifier) {channel="miio:basic:humidifier:bright"}
-Switch buzzer "Buzzer Status" (G_humidifier) {channel="miio:basic:humidifier:buzzer"}
-Number depth "Depth" (G_humidifier) {channel="miio:basic:humidifier:depth"}
-Switch dry "Dry" (G_humidifier) {channel="miio:basic:humidifier:dry"}
-Number:Time usedhours "Run Time" (G_humidifier) {channel="miio:basic:humidifier:usedhours"}
-Number motorspeed "Motor Speed" (G_humidifier) {channel="miio:basic:humidifier:motorspeed"}
+Number:Dimensionless target_humidity "Target Humidity" (G_humidifier) {channel="miio:basic:humidifier:target_humidity"}
+Number led_brightness "Indicator Light" (G_humidifier) {channel="miio:basic:humidifier:led_brightness"}
+Switch buzzer "Notification Sound" (G_humidifier) {channel="miio:basic:humidifier:buzzer"}
+Number:Dimensionless water_level "Water Level" (G_humidifier) {channel="miio:basic:humidifier:water_level"}
+Switch dry "Air Drying Mode" (G_humidifier) {channel="miio:basic:humidifier:dry"}
+Number:Time use_time "Run Time" (G_humidifier) {channel="miio:basic:humidifier:use_time"}
+Number speed "Motor Speed" (G_humidifier) {channel="miio:basic:humidifier:speed"}
 Number:Temperature temperature "Temperature" (G_humidifier) {channel="miio:basic:humidifier:temperature"}
-Switch childlock "Child Lock" (G_humidifier) {channel="miio:basic:humidifier:childlock"}
+Switch child_lock "Child Lock" (G_humidifier) {channel="miio:basic:humidifier:child_lock"}
 ```
 
 ### Smartmi Evaporative Humidifier (zhimi.humidifier.cb2) item file lines
@@ -28945,17 +30059,17 @@ note: Autogenerated example. Replace the id (humidifier) in the channel with you
 ```java
 Group G_humidifier "Smartmi Evaporative Humidifier" <status>
 Switch power "Power" (G_humidifier) {channel="miio:basic:humidifier:power"}
-String humidifierMode "Humidifier Mode" (G_humidifier) {channel="miio:basic:humidifier:humidifierMode"}
+String mode "Mode" (G_humidifier) {channel="miio:basic:humidifier:mode"}
 Number:Dimensionless humidity "Humidity" (G_humidifier) {channel="miio:basic:humidifier:humidity"}
-Number:Dimensionless setHumidity "Humidity Set" (G_humidifier) {channel="miio:basic:humidifier:setHumidity"}
-Dimmer bright "LED Brightness" (G_humidifier) {channel="miio:basic:humidifier:bright"}
-Switch buzzer "Buzzer Status" (G_humidifier) {channel="miio:basic:humidifier:buzzer"}
-Number depth "Depth" (G_humidifier) {channel="miio:basic:humidifier:depth"}
-Switch dry "Dry" (G_humidifier) {channel="miio:basic:humidifier:dry"}
-Number:Time usedhours "Run Time" (G_humidifier) {channel="miio:basic:humidifier:usedhours"}
-Number motorspeed "Motor Speed" (G_humidifier) {channel="miio:basic:humidifier:motorspeed"}
+Number:Dimensionless target_humidity "Target Humidity" (G_humidifier) {channel="miio:basic:humidifier:target_humidity"}
+Number led_brightness "Indicator Light" (G_humidifier) {channel="miio:basic:humidifier:led_brightness"}
+Switch buzzer "Notification Sound" (G_humidifier) {channel="miio:basic:humidifier:buzzer"}
+Number:Dimensionless water_level "Water Level" (G_humidifier) {channel="miio:basic:humidifier:water_level"}
+Switch dry "Air Drying Mode" (G_humidifier) {channel="miio:basic:humidifier:dry"}
+Number:Time use_time "Run Time" (G_humidifier) {channel="miio:basic:humidifier:use_time"}
+Number speed "Motor Speed" (G_humidifier) {channel="miio:basic:humidifier:speed"}
 Number:Temperature temperature "Temperature" (G_humidifier) {channel="miio:basic:humidifier:temperature"}
-Switch childlock "Child Lock" (G_humidifier) {channel="miio:basic:humidifier:childlock"}
+Switch child_lock "Child Lock" (G_humidifier) {channel="miio:basic:humidifier:child_lock"}
 ```
 
 ### Smartmi Humidifier (zhimi.humidifier.v1) item file lines
@@ -28967,17 +30081,15 @@ Group G_humidifier "Smartmi Humidifier" <status>
 Switch power "Power" (G_humidifier) {channel="miio:basic:humidifier:power"}
 String mode "Mode" (G_humidifier) {channel="miio:basic:humidifier:mode"}
 Number:Dimensionless humidity "Humidity" (G_humidifier) {channel="miio:basic:humidifier:humidity"}
-Number setHumidity "Humidity Set" (G_humidifier) {channel="miio:basic:humidifier:setHumidity"}
+Number:Dimensionless target_humidity "Target Humidity" (G_humidifier) {channel="miio:basic:humidifier:target_humidity"}
 Number aqi "Air Quality Index" (G_humidifier) {channel="miio:basic:humidifier:aqi"}
-Number translevel "Trans_level" (G_humidifier) {channel="miio:basic:humidifier:translevel"}
-Dimmer bright "LED Brightness" (G_humidifier) {channel="miio:basic:humidifier:bright"}
-Switch buzzer "Buzzer Status" (G_humidifier) {channel="miio:basic:humidifier:buzzer"}
-Number depth "Depth" (G_humidifier) {channel="miio:basic:humidifier:depth"}
-Switch dry "Dry" (G_humidifier) {channel="miio:basic:humidifier:dry"}
-Number:Time usedhours "Run Time" (G_humidifier) {channel="miio:basic:humidifier:usedhours"}
-Number motorspeed "Motor Speed" (G_humidifier) {channel="miio:basic:humidifier:motorspeed"}
+Number trans_level "Transmission Level" (G_humidifier) {channel="miio:basic:humidifier:trans_level"}
+Number led_brightness "Indicator Light" (G_humidifier) {channel="miio:basic:humidifier:led_brightness"}
+Switch buzzer "Notification Sound" (G_humidifier) {channel="miio:basic:humidifier:buzzer"}
+Number:Time use_time "Run Time" (G_humidifier) {channel="miio:basic:humidifier:use_time"}
+Number speed "Motor Speed" (G_humidifier) {channel="miio:basic:humidifier:speed"}
 Number:Temperature temperature "Temperature" (G_humidifier) {channel="miio:basic:humidifier:temperature"}
-Switch childlock "Child Lock" (G_humidifier) {channel="miio:basic:humidifier:childlock"}
+Switch child_lock "Child Lock" (G_humidifier) {channel="miio:basic:humidifier:child_lock"}
 ```
 
 ### Mi Smart Power Strip (zimi.powerstrip.v2) item file lines
