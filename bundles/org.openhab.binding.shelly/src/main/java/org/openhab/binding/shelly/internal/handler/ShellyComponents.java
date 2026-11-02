@@ -170,7 +170,8 @@ public class ShellyComponents {
                 toQuantityType(status.fsSize.doubleValue(), Units.BYTE));
         thingHandler.updateChannel(CHANNEL_GROUP_DIAG, CHANNEL_DIAG_FREEFS,
                 toQuantityType(status.fsFree.doubleValue(), Units.BYTE));
-        thingHandler.updateChannel(CHANNEL_GROUP_DIAG, CHANNEL_DIAG_RESTARTREQ, getOnOff(status.restartRequired));
+        thingHandler.updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_RESTARTREQ,
+                getOnOff(status.restartRequired));
     }
 
     /**

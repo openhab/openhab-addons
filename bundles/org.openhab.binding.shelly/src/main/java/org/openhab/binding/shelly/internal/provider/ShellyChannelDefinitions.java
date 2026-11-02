@@ -194,6 +194,7 @@ public class ShellyChannelDefinitions {
                 .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_ITEMP, "system:indoor-temperature", ITEMT_TEMP))
                 .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_WAKEUP, "sensorWakeup", ITEMT_STRING))
                 .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_WAKEUP_PERIOD, "wakeupPeriod", ITEMT_TIME))
+                .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_RESTARTREQ, "restartReq", ITEMT_SWITCH))
                 .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_ACCUWATTS, "meterAccuWatts", ITEMT_POWER))
                 .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_ACCUMULATEDPOWER, "accumulatedPower", ITEMT_POWER))
                 .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_ACCUTOTAL, "meterAccuTotal", ITEMT_ENERGY))
@@ -224,7 +225,6 @@ public class ShellyChannelDefinitions {
                 .add(new ShellyChannel(m, CHGR_DIAG, CHANNEL_DIAG_FREEMEM, "diagFreeMem", ITEMT_DATA))
                 .add(new ShellyChannel(m, CHGR_DIAG, CHANNEL_DIAG_TOTALFS, "diagTotalFS", ITEMT_DATA))
                 .add(new ShellyChannel(m, CHGR_DIAG, CHANNEL_DIAG_FREEFS, "diagFreeFS", ITEMT_DATA))
-                .add(new ShellyChannel(m, CHGR_DIAG, CHANNEL_DIAG_RESTARTREQ, "diagRestartReq", ITEMT_SWITCH))
                 .add(new ShellyChannel(m, CHGR_DIAG, CHANNEL_DIAG_RESTARTS, "diagRestarts", ITEMT_NUMBER))
                 .add(new ShellyChannel(m, CHGR_DIAG, CHANNEL_DIAG_TIMEOUTERRORS, "diagTimeoutErrors", ITEMT_NUMBER))
                 .add(new ShellyChannel(m, CHGR_DIAG, CHANNEL_DIAG_ALARMS, "diagAlarms", ITEMT_NUMBER))
@@ -526,6 +526,8 @@ public class ShellyChannelDefinitions {
         }
         addChannel(thing, add, profile.settings.sleepTime != null, CHGR_SENSOR, CHANNEL_SENSOR_SLEEPTIME);
         addChannel(thing, add, profile.wakeupPeriod > 0 && !profile.isBlu, CHGR_DEVST, CHANNEL_DEVST_WAKEUP_PERIOD);
+        addChannel(thing, add, profile.isGen2 && !profile.isBlu && status.restartRequired != null, CHGR_DEVST,
+                CHANNEL_DEVST_RESTARTREQ);
 
         /*
          * Any multi-meter device (relay, pure meter like ProEM50, or a Gen2 RGBW2 device - Plus RGBW PM or
@@ -582,7 +584,6 @@ public class ShellyChannelDefinitions {
         addChannel(thing, add, status.ramFree != null, CHGR_DIAG, CHANNEL_DIAG_FREEMEM);
         addChannel(thing, add, status.fsSize != null, CHGR_DIAG, CHANNEL_DIAG_TOTALFS);
         addChannel(thing, add, status.fsFree != null, CHGR_DIAG, CHANNEL_DIAG_FREEFS);
-        addChannel(thing, add, status.restartRequired != null, CHGR_DIAG, CHANNEL_DIAG_RESTARTREQ);
 
         // Binding-computed health stats, always tracked once a Gen2+ Thing is initialized
         addChannel(thing, add, true, CHGR_DIAG, CHANNEL_DIAG_RESTARTS);

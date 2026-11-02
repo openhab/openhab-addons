@@ -505,6 +505,7 @@ Every device has a channel group `device` with the following channels:
 | device | deviceName                | String        | yes       | Device name as configured in the Shelly App                                    |
 |        | uptime                    | Number        | yes       | Number of seconds since the device was powered up                              |
 |        | wakeupPeriod              | Number:Time   | yes       | Battery devices: Interval in which the device wakes up to report its status    |
+|        | restartReq                | Switch        | yes       | ON: a configuration change needs a device restart to take effect               |
 |        | wifiSignal                | Number        | yes       | WiFi signal strength (4=excellent, 3=good, 2=not string, 1=unreliable, 0=none) |
 |        | internalTemp              | Number        | yes       | Internal device temperature (when provided by the device)                      |
 |        | selfTest                  | String        | yes       | Result from device self-test (pending/not_completed/running/completed/unknown) |
@@ -794,7 +795,6 @@ Counters survive device restarts and reconnects; they reset when the Thing is re
 |             | freeMem         | Number:DataAmount  | yes       | Currently free RAM.                                                                  |
 |             | totalFS         | Number:DataAmount  | yes       | Total size of the device's internal filesystem.                                      |
 |             | freeFS          | Number:DataAmount  | yes       | Currently free filesystem space.                                                     |
-|             | restartReq      | Switch             | yes       | ON: a configuration change needs a device restart to take effect.                    |
 |             | restarts        | Number             | yes       | Unexpected device restarts detected since the Thing was initialized.                 |
 |             | timeoutErrors   | Number             | yes       | API request timeouts since the Thing was initialized.                                |
 |             | alarms          | Number             | yes       | Alarms triggered since the Thing was initialized.                                    |

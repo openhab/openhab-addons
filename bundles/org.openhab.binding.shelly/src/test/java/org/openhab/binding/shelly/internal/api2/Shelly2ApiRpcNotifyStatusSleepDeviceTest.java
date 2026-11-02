@@ -23,9 +23,9 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.openhab.binding.shelly.internal.ShellyBindingConstants.CHANNEL_DEVST_RESTARTREQ;
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.CHANNEL_DEVST_WAKEUP_PERIOD;
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.CHANNEL_DIAG_FREEMEM;
-import static org.openhab.binding.shelly.internal.ShellyBindingConstants.CHANNEL_DIAG_RESTARTREQ;
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.CHANNEL_GROUP_DEV_STATUS;
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.CHANNEL_GROUP_DIAG;
 import static org.openhab.binding.shelly.internal.ShellyDevices.THING_TYPE_SHELLYPLUS1PM;
@@ -131,7 +131,7 @@ public class Shelly2ApiRpcNotifyStatusSleepDeviceTest {
 
         verify(f.thing).updateChannel(eq(CHANNEL_GROUP_DIAG), eq(CHANNEL_DIAG_FREEMEM),
                 argThat(s -> s instanceof QuantityType<?> q && q.longValue() == 20000));
-        verify(f.thing).updateChannel(CHANNEL_GROUP_DIAG, CHANNEL_DIAG_RESTARTREQ, OnOffType.ON);
+        verify(f.thing).updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_RESTARTREQ, OnOffType.ON);
     }
 
     @Test

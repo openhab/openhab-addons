@@ -272,6 +272,7 @@ public class ShellyBindingConstants {
     public static final String CHANNEL_DEVST_ITEMP = "internalTemp";
     public static final String CHANNEL_DEVST_WAKEUP = "wakeupReason";
     public static final String CHANNEL_DEVST_WAKEUP_PERIOD = "wakeupPeriod";
+    public static final String CHANNEL_DEVST_RESTARTREQ = "restartReq";
     public static final String CHANNEL_DEVST_ALARM = "alarm";
     public static final String CHANNEL_DEVST_ACCUWATTS = "accumulatedWatts";
     public static final String CHANNEL_DEVST_ACCUMULATEDPOWER = "accumulatedPower";
@@ -302,7 +303,6 @@ public class ShellyBindingConstants {
     public static final String CHANNEL_DIAG_FREEMEM = "freeMem";
     public static final String CHANNEL_DIAG_TOTALFS = "totalFS";
     public static final String CHANNEL_DIAG_FREEFS = "freeFS";
-    public static final String CHANNEL_DIAG_RESTARTREQ = "restartReq";
     public static final String CHANNEL_DIAG_RESTARTS = "restarts";
     public static final String CHANNEL_DIAG_TIMEOUTERRORS = "timeoutErrors";
     public static final String CHANNEL_DIAG_ALARMS = "alarms";

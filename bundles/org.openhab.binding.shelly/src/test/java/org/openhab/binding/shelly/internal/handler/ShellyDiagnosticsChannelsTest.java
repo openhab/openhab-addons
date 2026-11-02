@@ -125,7 +125,7 @@ public class ShellyDiagnosticsChannelsTest {
         verifyQuantity(handler, CHANNEL_DIAG_FREEMEM, 20000);
         verifyQuantity(handler, CHANNEL_DIAG_TOTALFS, 1000000);
         verifyQuantity(handler, CHANNEL_DIAG_FREEFS, 400000);
-        verify(handler).updateChannel(CHANNEL_GROUP_DIAG, CHANNEL_DIAG_RESTARTREQ, OnOffType.ON);
+        verify(handler).updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_RESTARTREQ, OnOffType.ON);
     }
 
     @Test

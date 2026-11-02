@@ -115,6 +115,14 @@
 		<state readOnly="true" pattern="%.0f %unit%">
 		</state>
 	</channel-type>
+	<channel-type id="restartReq" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Restart Required</label>
+		<description>ON: The device configuration changed and requires a restart to take effect</description>
+		<category>Status</category>
+		<state readOnly="true">
+		</state>
+	</channel-type>
 	<channel-type id="uptime" advanced="true">
 		<item-type>Number:Time</item-type>
 		<label>Uptime</label>
@@ -253,15 +261,6 @@
 			<tag>Measurement</tag>
 		</tags>
 		<state pattern="%.0f %unit%" readOnly="true">
-		</state>
-	</channel-type>
-
-	<channel-type id="diagRestartReq" advanced="true">
-		<item-type>Switch</item-type>
-		<label>Restart Required</label>
-		<description>ON: The device configuration changed and requires a restart to take effect</description>
-		<category>Status</category>
-		<state readOnly="true">
 		</state>
 	</channel-type>
 
