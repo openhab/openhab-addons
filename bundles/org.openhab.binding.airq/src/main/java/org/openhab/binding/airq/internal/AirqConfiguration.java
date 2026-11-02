@@ -24,4 +24,5 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class AirqConfiguration {
     public String ipAddress = "";
     public String password = "";
+    public boolean removeUnsupportedChannels = true;
 }

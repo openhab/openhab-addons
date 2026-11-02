@@ -20,7 +20,6 @@
 			<channel id="minutestoarrival" typeId="minutestoarrival"/>
 			<channel id="minutestofullcharge" typeId="minutestofullcharge"/>
 			<channel id="trafficminutesdelay" typeId="trafficminutesdelay"/>
-			<channel id="allowwakeup" typeId="allowwakeup"/>
 			<channel id="autoconditioning" typeId="autoconditioning"/>
 			<channel id="autoparkstate" typeId="autoparkstate"/>
 			<channel id="autoparkstate2" typeId="autoparkstate"/>

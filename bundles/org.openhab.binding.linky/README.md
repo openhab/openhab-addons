@@ -651,6 +651,21 @@ slots:
   | linky-tempo-calendar#tempo-info-tomorrow                       | tempo-value       | The tempo color for the tomorrow                                              |
   | linky-tempo-calendar#tempo-info-timeseries                     | tempo-value       | A timeseries channel that will expose full tempo information for one year     |
 
+### Knowing a Red Day Earlier
+
+The binding gives the color for today and tomorrow, as published by RTE the day before (around 10:30).
+
+From 1 November 2026, RTE also publishes "PP" days (peak days of the capacity mechanism) up to two days ahead: before 12:00 two days before when possible, and at the latest at 9:30 the day before.
+A PP day is a red Tempo day, except in rare cases linked to an EcoWatt signal.
+This information is not exposed by the binding. It is available:
+
+- on the [RTE PP signals page](https://www.services-rte.com/en/view-data-published-by-rte/pp-signals.html)
+- through the [RTE Signal API](https://data.rte-france.com/catalog/-/api/market/Signal/v2.0) (RTE account and OAuth token required)
+
+For a longer horizon, [Calendrier Tempo](https://www.calendrier-tempo.fr/api-tempo) provides a free JSON API, with no account or key, with color forecasts and probabilities up to 15 days ahead.
+It can be read with the HTTP binding and the JSONPath transformation.
+These forecasts are indicative: only the color published by RTE is official.
+
 ### Displaying Tempo Graph
 
 Using the timeseries channel, you will be able to esealy create a calendar graph to show the tempo calendar.

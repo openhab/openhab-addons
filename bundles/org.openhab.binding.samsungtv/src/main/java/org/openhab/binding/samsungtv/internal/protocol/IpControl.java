@@ -121,6 +121,23 @@ public class IpControl {
         request("powerControl", Map.of("AccessToken", token, "power", "powerOff"));
     }
 
+    /**
+     * Note: this is the last selected input, an app running on top of it is not reported. 2022 TV's do not answer in
+     * art mode.
+     *
+     * @return the input source, e.g. HDMI1 or TV
+     */
+    public String getInputSource(String token) throws IpControlException {
+        return getString(request("inputSourceControl", Map.of("AccessToken", token)), "inputSource");
+    }
+
+    /**
+     * Select an input source, e.g. HDMI1 or TV. Fails for an input the TV does not have.
+     */
+    public void setInputSource(String token, String source) throws IpControlException {
+        request("inputSourceControl", Map.of("AccessToken", token, "inputSource", source));
+    }
+
     private JsonObject request(String method, Map<String, String> params) throws IpControlException {
         return request(method, params, REQUEST_TIMEOUT_S);
     }

@@ -47,6 +47,7 @@ import org.openhab.binding.samsungtv.internal.protocol.IpControl;
 import org.openhab.binding.samsungtv.internal.protocol.IpControlException;
 import org.openhab.binding.samsungtv.internal.protocol.RemoteControllerException;
 import org.openhab.binding.samsungtv.internal.protocol.RemoteControllerLegacy;
+import org.openhab.binding.samsungtv.internal.service.IpControlService;
 import org.openhab.binding.samsungtv.internal.service.MainTVServerService;
 import org.openhab.binding.samsungtv.internal.service.MediaRendererService;
 import org.openhab.binding.samsungtv.internal.service.RemoteControllerService;
@@ -463,6 +464,52 @@ public class SamsungTvHandler extends BaseThingHandler implements RegistryListen
     }
 
     /**
+     * @return true if IP Control is enabled and paired
+     */
+    public boolean isIpControlReady() {
+        return ipControl != null && !configuration.getIpControlToken().isBlank();
+    }
+
+    /**
+     * @return the input source from IP Control, empty if IP Control is not available or did not answer
+     */
+    public Optional<String> ipControlInputSource() {
+        IpControl ipControl = this.ipControl;
+        String token = configuration.getIpControlToken();
+        if (ipControl == null || token.isBlank()) {
+            return Optional.empty();
+        }
+        try {
+            String source = ipControl.getInputSource(token);
+            return source.isBlank() ? Optional.empty() : Optional.of(source);
+        } catch (IpControlException e) {
+            handleIpControlError(e);
+            return Optional.empty();
+        }
+    }
+
+    /**
+     * Select an input source using IP Control
+     *
+     * @return true if the TV accepted the input, false if IP Control is not available or the TV refused it
+     */
+    public boolean ipControlSetInputSource(String source) {
+        IpControl ipControl = this.ipControl;
+        String token = configuration.getIpControlToken();
+        if (ipControl == null || token.isBlank()) {
+            return false;
+        }
+        try {
+            ipControl.setInputSource(token, source);
+            logger.debug("{}: IP Control input set to {}", host, source);
+            return true;
+        } catch (IpControlException e) {
+            handleIpControlError(e);
+            return false;
+        }
+    }
+
+    /**
      * Request an IP Control token if IP Control is enabled and there is no token yet.
      * Only call this when the TV is on and not in art mode, the user has to accept the request on the TV.
      */
@@ -819,6 +866,10 @@ public class SamsungTvHandler extends BaseThingHandler implements RegistryListen
         // Websocket services and Smartthings service
         if ((isOnline | getArtMode2022()) && configuration.isWebsocketProtocol()) {
             createService(RemoteControllerService.SERVICE_NAME, "");
+            // before SmartThings, so it handles sourceName first
+            if (configuration.getIpControl()) {
+                createService(IpControlService.SERVICE_NAME, "");
+            }
             if (!configuration.getSmartThingsApiKey().isBlank()) {
                 createService(SmartThingsApiService.SERVICE_NAME, "");
             }
@@ -890,6 +941,9 @@ public class SamsungTvHandler extends BaseThingHandler implements RegistryListen
                 } catch (RemoteControllerException e) {
                     logger.warn("{}: Not creating remote controller service: {}", host, e.getMessage());
                 }
+                break;
+            case IpControlService.SERVICE_NAME:
+                service = Optional.of(new IpControlService(host, this));
                 break;
             case SmartThingsApiService.SERVICE_NAME:
                 service = Optional.of(new SmartThingsApiService(host, this));

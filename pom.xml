@@ -78,6 +78,7 @@
     <eea.version>2.4.0</eea.version>
     <jackson.annotations.version>2.22</jackson.annotations.version>
     <jackson.version>2.22.2</jackson.version>
+    <jinjava.version>2.8.5</jinjava.version>
     <jna.version>5.19.1</jna.version>
     <json.version>20251224</json.version>
     <jsoup.version>1.23.2</jsoup.version>
@@ -351,7 +352,7 @@ Import-Package: \
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-enforcer-plugin</artifactId>
-          <version>3.6.3</version>
+          <version>3.7.0</version>
         </plugin>
 
         <plugin>
@@ -424,7 +425,7 @@ Import-Package: \
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-surefire-plugin</artifactId>
-          <version>3.6.0</version>
+          <version>3.6.1</version>
           <configuration>
             <argLine>--add-opens java.base/java.lang=ALL-UNNAMED
               --add-opens java.base/java.util=ALL-UNNAMED

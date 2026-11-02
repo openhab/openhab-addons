@@ -216,7 +216,13 @@ public class ShellyHttpClient {
             }
 
             if (response.contains("\"error\":{")) { // Gen2
-                Shelly2RpcBaseMessage message = gson.fromJson(response, Shelly2RpcBaseMessage.class);
+                Shelly2RpcBaseMessage message = null;
+                try {
+                    message = fromJson(gson, response, Shelly2RpcBaseMessage.class, false);
+                } catch (ShellyApiException e) {
+                    // keep the HTTP status and auth header handling below instead of failing on the body
+                    logger.debug("{}: Unable to parse error response: {}", thingName, e.getMessage());
+                }
                 if (message != null && message.error != null) {
                     builder.httpCode(message.error.code);
                     builder.response(message.error.message);
@@ -298,6 +304,12 @@ public class ShellyHttpClient {
         return rsp != null ? MessageFormat.format(HTTP_AUTH_TYPE_DIGEST
                 + " username=\"{0}\", realm=\"{1}\", uri=\"{2}\", nonce=\"{3}\", cnonce=\"{4}\", nc=\"{5}\", qop=\"auth\",response=\"{6}\", algorithm=\"{7}\", ",
                 rsp.username, rsp.realm, uri, rsp.nonce, rsp.cnonce, rsp.nc, rsp.response, rsp.algorithm) : "";
+    }
+
+    protected String buildAuthHeader(HttpMethod method, String uri, Shelly2AuthChallenge challenge)
+            throws ShellyApiException {
+        return formatAuthResponse(uri,
+                buildAuthResponse(challenge, SHELLY2_AUTHDEF_USER, config.getPassword(), sha256(method + ":" + uri)));
     }
 
     /**

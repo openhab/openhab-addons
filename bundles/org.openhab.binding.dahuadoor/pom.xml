@@ -15,32 +15,30 @@
   <name>openHAB Add-ons :: Bundles :: DahuaDoor Binding</name>
 
   <properties>
-    <!-- Exclude embedded Bouncy Castle packages from OSGi Import-Package.
-         bcprov + bctls are unpacked into the bundle (embed-dependencies).
-         Without this exclusion Karaf would try to resolve them as external deps. -->
-    <bnd.importpackage>!org.bouncycastle.*,!javax.sip.*,!gov.nist.*,com.sun.nio.sctp;resolution:=optional,*</bnd.importpackage>
+    <bnd.importpackage>!javax.sip.*,!gov.nist.*,com.sun.nio.sctp;resolution:=optional,*</bnd.importpackage>
   </properties>
 
   <dependencies>
     <!-- Bouncy Castle JSSE: provides TLS_RSA_WITH_AES_256_GCM_SHA384 which was
          removed from Java 21's built-in TLS implementation but is required by
-         Dahua firmware. Embedded into the bundle via embed-dependencies mechanism. -->
+         Dahua firmware. Provided by the Bouncy Castle bundles installed via feature.xml. -->
     <dependency>
       <groupId>org.bouncycastle</groupId>
       <artifactId>bcprov-jdk18on</artifactId>
       <version>${bouncycastle.version}</version>
-      <scope>compile</scope>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.bouncycastle</groupId>
       <artifactId>bctls-jdk18on</artifactId>
       <version>${bouncycastle.version}</version>
-      <scope>compile</scope>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.bouncycastle</groupId>
       <artifactId>bcutil-jdk18on</artifactId>
       <version>${bouncycastle.version}</version>
+      <scope>provided</scope>
     </dependency>
 
     <dependency>

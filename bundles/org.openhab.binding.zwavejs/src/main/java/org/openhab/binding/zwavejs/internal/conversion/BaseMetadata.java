@@ -78,6 +78,7 @@ public abstract class BaseMetadata {
             Map.entry("min/sec", ""), // special case ZUI sends min/sec as unit, but is actually dimensionless
             Map.entry("°(C/F)", ""), // special case where Zwave JS sends °F/C as unit, but is actually dimensionless
             Map.entry("°F/C", ""), // special case where Zwave JS sends °F/C as unit, but is actually dimensionless
+            Map.entry("°C/F", ""), // special case where Zwave JS sends °C/F as unit, but is actually dimensionless
             Map.entry("oC", "°C"), //
             Map.entry("%rH", "%") // ZUI uses %rH for relative humidity, but openHAB expects the % unit.
     );

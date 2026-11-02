@@ -63,6 +63,20 @@ public class IpControlTest {
     }
 
     @Test
+    public void parsesInputSource() throws IpControlException {
+        JsonObject result = IpControl.parseResult("inputSourceControl",
+                "{\"jsonrpc\":\"2.0\",\"id\":\"1\",\"result\":{\"inputSource\":\"HDMI1\"}}");
+        assertEquals("HDMI1", result.get("inputSource").getAsString());
+    }
+
+    @Test
+    public void missingInputIsNotTokenError() {
+        IpControlException e = assertThrows(IpControlException.class, () -> IpControl.parseResult("inputSourceControl",
+                "{\"jsonrpc\":\"2.0\",\"id\":\"1\",\"error\":{\"code\":-32002,\"message\":\"Server error\",\"data\":\"Failed\"}}"));
+        assertFalse(e.isTokenRejected());
+    }
+
+    @Test
     public void unauthorizedIsTokenError() {
         IpControlException e = assertThrows(IpControlException.class, () -> IpControl.parseResult("powerControl",
                 "{\"jsonrpc\":\"2.0\",\"id\":\"1\",\"error\":{\"code\":-32010,\"message\":\"Unauthorized\"}}"));

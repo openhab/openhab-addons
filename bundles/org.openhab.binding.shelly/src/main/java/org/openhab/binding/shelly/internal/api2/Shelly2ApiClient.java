@@ -110,6 +110,7 @@ import org.openhab.binding.shelly.internal.handler.ShellyBaseHandler;
 import org.openhab.binding.shelly.internal.handler.ShellyComponents;
 import org.openhab.binding.shelly.internal.handler.ShellyThingInterface;
 import org.openhab.binding.shelly.internal.handler.component.ShellyComponentBattery;
+import org.openhab.binding.shelly.internal.handler.component.ShellyComponentMedia;
 import org.openhab.binding.shelly.internal.handler.component.ShellyComponentThermostat;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.types.State;
@@ -722,6 +723,7 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
         updateBatteryStatus(sensorData, result.devicepower0);
         ShellyComponentBattery.fillExtStatus(sensorData, result.devicepower1, !channelUpdate);
         ShellyComponentThermostat.fillStatus(status, result, !channelUpdate);
+        ShellyComponentMedia.fillStatus(status, result, !channelUpdate);
         updateAddonStatus(status, result);
         updated |= ShellyComponents.updateSensors(getThing(), status);
         return updated;

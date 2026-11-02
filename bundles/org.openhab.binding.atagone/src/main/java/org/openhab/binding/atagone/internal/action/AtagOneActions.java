@@ -12,9 +12,13 @@
  */
 package org.openhab.binding.atagone.internal.action;
 
+import java.time.LocalTime;
+import java.time.format.DateTimeParseException;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.atagone.internal.AtagOneHandler;
+import org.openhab.core.automation.Visibility;
 import org.openhab.core.automation.annotation.ActionInput;
 import org.openhab.core.automation.annotation.ActionOutput;
 import org.openhab.core.automation.annotation.RuleAction;
@@ -54,139 +58,160 @@ public class AtagOneActions implements ThingActions {
 
     @RuleAction(label = "@text/action.activate-vacation.label", description = "@text/action.activate-vacation.description")
     public void activateVacation(
-            @ActionInput(name = "durationSeconds", label = "@text/action.activate-vacation.input.durationSeconds.label", description = "@text/action.activate-vacation.input.durationSeconds.description") long durationSeconds) {
+            @ActionInput(name = "days", label = "@text/action.activate-vacation.input.days.label", description = "@text/action.activate-vacation.input.days.description") int days) {
         AtagOneHandler theHandler = handler;
         if (theHandler == null) {
             logger.warn("activateVacation called with no handler bound");
             return;
         }
-        if (durationSeconds <= 0) {
-            logger.warn("activateVacation: duration must be positive, got {}", durationSeconds);
+        if (days <= 0) {
+            logger.warn("activateVacation: days must be positive, got {}", days);
             return;
         }
-        if (!AtagOneHandler.isWholeUnits(durationSeconds, AtagOneHandler.SECONDS_PER_DAY)) {
-            logger.warn("activateVacation: duration must be a whole number of days, got {} s", durationSeconds);
-            return;
-        }
-        theHandler.enqueueVacationActivation(durationSeconds);
+        theHandler.enqueueVacationActivation(days * AtagOneHandler.SECONDS_PER_DAY);
     }
 
     @RuleAction(label = "@text/action.activate-extend.label", description = "@text/action.activate-extend.description")
     public void activateExtend(
-            @ActionInput(name = "durationSeconds", label = "@text/action.activate-extend.input.durationSeconds.label", description = "@text/action.activate-extend.input.durationSeconds.description") long durationSeconds) {
+            @ActionInput(name = "minutes", label = "@text/action.activate-extend.input.minutes.label", description = "@text/action.activate-extend.input.minutes.description") int minutes) {
         AtagOneHandler theHandler = handler;
         if (theHandler == null) {
             logger.warn("activateExtend called with no handler bound");
             return;
         }
-        if (durationSeconds <= 0) {
-            logger.warn("activateExtend: duration must be positive, got {}", durationSeconds);
+        if (minutes <= 0 || minutes % 15 != 0) {
+            logger.warn("activateExtend: minutes must be a positive multiple of 15, got {}", minutes);
             return;
         }
-        if (!AtagOneHandler.isWholeUnits(durationSeconds, AtagOneHandler.SECONDS_PER_15_MINUTES)) {
-            logger.warn("activateExtend: duration must be a whole number of 15-minute increments, got {} s",
-                    durationSeconds);
-            return;
-        }
-        theHandler.enqueueExtendActivation(durationSeconds);
+        theHandler.enqueueExtendActivation(minutes * 60L);
     }
 
     @RuleAction(label = "@text/action.activate-fireplace.label", description = "@text/action.activate-fireplace.description")
     public void activateFireplace(
-            @ActionInput(name = "durationSeconds", label = "@text/action.activate-fireplace.input.durationSeconds.label", description = "@text/action.activate-fireplace.input.durationSeconds.description") long durationSeconds) {
+            @ActionInput(name = "hours", label = "@text/action.activate-fireplace.input.hours.label", description = "@text/action.activate-fireplace.input.hours.description") int hours) {
         AtagOneHandler theHandler = handler;
         if (theHandler == null) {
             logger.warn("activateFireplace called with no handler bound");
             return;
         }
-        if (durationSeconds <= 0) {
-            logger.warn("activateFireplace: duration must be positive, got {}", durationSeconds);
+        if (hours <= 0) {
+            logger.warn("activateFireplace: hours must be positive, got {}", hours);
             return;
         }
-        if (!AtagOneHandler.isWholeUnits(durationSeconds, AtagOneHandler.SECONDS_PER_HOUR)) {
-            logger.warn("activateFireplace: duration must be a whole number of hours, got {} s", durationSeconds);
-            return;
-        }
-        theHandler.enqueueFireplaceActivation(durationSeconds);
+        theHandler.enqueueFireplaceActivation(hours * AtagOneHandler.SECONDS_PER_HOUR);
     }
 
     @RuleAction(label = "@text/action.set-ch-schedule-period.label", description = "@text/action.set-ch-schedule-period.description")
     public boolean setChSchedulePeriod(
             @ActionInput(name = "weekday", label = "@text/action.set-ch-schedule-period.input.weekday.label", description = "@text/action.set-ch-schedule-period.input.weekday.description") String weekday,
-            @ActionInput(name = "periodIndex", label = "@text/action.set-ch-schedule-period.input.periodIndex.label", description = "@text/action.set-ch-schedule-period.input.periodIndex.description") int periodIndex,
-            @ActionInput(name = "startMinutes", label = "@text/action.set-ch-schedule-period.input.startMinutes.label", description = "@text/action.set-ch-schedule-period.input.startMinutes.description") int startMinutes,
-            @ActionInput(name = "endMinutes", label = "@text/action.set-ch-schedule-period.input.endMinutes.label", description = "@text/action.set-ch-schedule-period.input.endMinutes.description") int endMinutes,
+            @ActionInput(name = "start", label = "@text/action.set-ch-schedule-period.input.start.label", description = "@text/action.set-ch-schedule-period.input.start.description") LocalTime start,
+            @ActionInput(name = "end", label = "@text/action.set-ch-schedule-period.input.end.label", description = "@text/action.set-ch-schedule-period.input.end.description") LocalTime end,
             @ActionInput(name = "temperatureCelsius", label = "@text/action.set-ch-schedule-period.input.temperatureCelsius.label", description = "@text/action.set-ch-schedule-period.input.temperatureCelsius.description") double temperatureCelsius) {
         AtagOneHandler theHandler = handler;
         if (theHandler == null) {
             logger.warn("setChSchedulePeriod called with no handler bound");
             return false;
         }
-        boolean accepted = theHandler.enqueueChSchedulePeriodSet(weekday, periodIndex, startMinutes, endMinutes,
-                temperatureCelsius);
+        boolean accepted = theHandler.enqueueChSchedulePeriodSet(weekday, minutesSinceMidnight(start),
+                endMinutesSinceMidnight(end), temperatureCelsius);
         if (!accepted) {
             logger.warn(
-                    "setChSchedulePeriod: invalid weekday or periodIndex, no CH schedule polled yet, or Thing not ONLINE");
+                    "setChSchedulePeriod: invalid weekday or time range, an overlap that cannot be trimmed, no CH schedule polled yet, or Thing not ONLINE");
         }
         return accepted;
+    }
+
+    public boolean setChSchedulePeriod(String weekday, String start, String end, double temperatureCelsius) {
+        try {
+            return setChSchedulePeriod(weekday, LocalTime.parse(start), LocalTime.parse(end), temperatureCelsius);
+        } catch (DateTimeParseException e) {
+            logger.warn("setChSchedulePeriod: {}", e.getMessage());
+            return false;
+        }
     }
 
     @RuleAction(label = "@text/action.clear-ch-schedule-period.label", description = "@text/action.clear-ch-schedule-period.description")
     public boolean clearChSchedulePeriod(
             @ActionInput(name = "weekday", label = "@text/action.clear-ch-schedule-period.input.weekday.label", description = "@text/action.clear-ch-schedule-period.input.weekday.description") String weekday,
-            @ActionInput(name = "periodIndex", label = "@text/action.clear-ch-schedule-period.input.periodIndex.label", description = "@text/action.clear-ch-schedule-period.input.periodIndex.description") int periodIndex) {
+            @ActionInput(name = "start", label = "@text/action.clear-ch-schedule-period.input.start.label", description = "@text/action.clear-ch-schedule-period.input.start.description") LocalTime start) {
         AtagOneHandler theHandler = handler;
         if (theHandler == null) {
             logger.warn("clearChSchedulePeriod called with no handler bound");
             return false;
         }
-        boolean accepted = theHandler.enqueueChSchedulePeriodClear(weekday, periodIndex);
+        boolean accepted = theHandler.enqueueChSchedulePeriodClear(weekday, minutesSinceMidnight(start));
         if (!accepted) {
             logger.warn(
-                    "clearChSchedulePeriod: invalid weekday or periodIndex, no CH schedule polled yet, or Thing not ONLINE");
+                    "clearChSchedulePeriod: invalid weekday, no period starting at that time, no CH schedule polled yet, or Thing not ONLINE");
         }
         return accepted;
+    }
+
+    public boolean clearChSchedulePeriod(String weekday, String start) {
+        try {
+            return clearChSchedulePeriod(weekday, LocalTime.parse(start));
+        } catch (DateTimeParseException e) {
+            logger.warn("clearChSchedulePeriod: {}", e.getMessage());
+            return false;
+        }
     }
 
     @RuleAction(label = "@text/action.set-dhw-schedule-period.label", description = "@text/action.set-dhw-schedule-period.description")
     public boolean setDhwSchedulePeriod(
             @ActionInput(name = "weekday", label = "@text/action.set-dhw-schedule-period.input.weekday.label", description = "@text/action.set-dhw-schedule-period.input.weekday.description") String weekday,
-            @ActionInput(name = "periodIndex", label = "@text/action.set-dhw-schedule-period.input.periodIndex.label", description = "@text/action.set-dhw-schedule-period.input.periodIndex.description") int periodIndex,
-            @ActionInput(name = "startMinutes", label = "@text/action.set-dhw-schedule-period.input.startMinutes.label", description = "@text/action.set-dhw-schedule-period.input.startMinutes.description") int startMinutes,
-            @ActionInput(name = "endMinutes", label = "@text/action.set-dhw-schedule-period.input.endMinutes.label", description = "@text/action.set-dhw-schedule-period.input.endMinutes.description") int endMinutes,
+            @ActionInput(name = "start", label = "@text/action.set-dhw-schedule-period.input.start.label", description = "@text/action.set-dhw-schedule-period.input.start.description") LocalTime start,
+            @ActionInput(name = "end", label = "@text/action.set-dhw-schedule-period.input.end.label", description = "@text/action.set-dhw-schedule-period.input.end.description") LocalTime end,
             @ActionInput(name = "temperatureCelsius", label = "@text/action.set-dhw-schedule-period.input.temperatureCelsius.label", description = "@text/action.set-dhw-schedule-period.input.temperatureCelsius.description") double temperatureCelsius) {
         AtagOneHandler theHandler = handler;
         if (theHandler == null) {
             logger.warn("setDhwSchedulePeriod called with no handler bound");
             return false;
         }
-        boolean accepted = theHandler.enqueueDhwSchedulePeriodSet(weekday, periodIndex, startMinutes, endMinutes,
-                temperatureCelsius);
+        boolean accepted = theHandler.enqueueDhwSchedulePeriodSet(weekday, minutesSinceMidnight(start),
+                endMinutesSinceMidnight(end), temperatureCelsius);
         if (!accepted) {
             logger.warn(
-                    "setDhwSchedulePeriod: invalid weekday or periodIndex, no DHW schedule polled yet, or Thing not ONLINE");
+                    "setDhwSchedulePeriod: invalid weekday or time range, an overlap that cannot be trimmed, no DHW schedule polled yet, or Thing not ONLINE");
         }
         return accepted;
+    }
+
+    public boolean setDhwSchedulePeriod(String weekday, String start, String end, double temperatureCelsius) {
+        try {
+            return setDhwSchedulePeriod(weekday, LocalTime.parse(start), LocalTime.parse(end), temperatureCelsius);
+        } catch (DateTimeParseException e) {
+            logger.warn("setDhwSchedulePeriod: {}", e.getMessage());
+            return false;
+        }
     }
 
     @RuleAction(label = "@text/action.clear-dhw-schedule-period.label", description = "@text/action.clear-dhw-schedule-period.description")
     public boolean clearDhwSchedulePeriod(
             @ActionInput(name = "weekday", label = "@text/action.clear-dhw-schedule-period.input.weekday.label", description = "@text/action.clear-dhw-schedule-period.input.weekday.description") String weekday,
-            @ActionInput(name = "periodIndex", label = "@text/action.clear-dhw-schedule-period.input.periodIndex.label", description = "@text/action.clear-dhw-schedule-period.input.periodIndex.description") int periodIndex) {
+            @ActionInput(name = "start", label = "@text/action.clear-dhw-schedule-period.input.start.label", description = "@text/action.clear-dhw-schedule-period.input.start.description") LocalTime start) {
         AtagOneHandler theHandler = handler;
         if (theHandler == null) {
             logger.warn("clearDhwSchedulePeriod called with no handler bound");
             return false;
         }
-        boolean accepted = theHandler.enqueueDhwSchedulePeriodClear(weekday, periodIndex);
+        boolean accepted = theHandler.enqueueDhwSchedulePeriodClear(weekday, minutesSinceMidnight(start));
         if (!accepted) {
             logger.warn(
-                    "clearDhwSchedulePeriod: invalid weekday or periodIndex, no DHW schedule polled yet, or Thing not ONLINE");
+                    "clearDhwSchedulePeriod: invalid weekday, no period starting at that time, no DHW schedule polled yet, or Thing not ONLINE");
         }
         return accepted;
     }
 
-    @RuleAction(label = "@text/action.set-ch-schedule.label", description = "@text/action.set-ch-schedule.description")
+    public boolean clearDhwSchedulePeriod(String weekday, String start) {
+        try {
+            return clearDhwSchedulePeriod(weekday, LocalTime.parse(start));
+        } catch (DateTimeParseException e) {
+            logger.warn("clearDhwSchedulePeriod: {}", e.getMessage());
+            return false;
+        }
+    }
+
+    @RuleAction(label = "@text/action.set-ch-schedule.label", description = "@text/action.set-ch-schedule.description", visibility = Visibility.EXPERT)
     public boolean setChSchedule(
             @ActionInput(name = "json", label = "@text/action.set-ch-schedule.input.json.label", description = "@text/action.set-ch-schedule.input.json.description") String json) {
         AtagOneHandler theHandler = handler;
@@ -202,7 +227,7 @@ public class AtagOneActions implements ThingActions {
         return accepted;
     }
 
-    @RuleAction(label = "@text/action.set-dhw-schedule.label", description = "@text/action.set-dhw-schedule.description")
+    @RuleAction(label = "@text/action.set-dhw-schedule.label", description = "@text/action.set-dhw-schedule.description", visibility = Visibility.EXPERT)
     public boolean setDhwSchedule(
             @ActionInput(name = "json", label = "@text/action.set-dhw-schedule.input.json.label", description = "@text/action.set-dhw-schedule.input.json.description") String json) {
         AtagOneHandler theHandler = handler;
@@ -228,40 +253,64 @@ public class AtagOneActions implements ThingActions {
         return theHandler.enqueueCancel();
     }
 
-    public static void activateVacation(ThingActions actions, long durationSeconds) {
-        ((AtagOneActions) actions).activateVacation(durationSeconds);
+    private static int minutesSinceMidnight(LocalTime time) {
+        return time.getHour() * 60 + time.getMinute();
     }
 
-    public static void activateExtend(ThingActions actions, long durationSeconds) {
-        ((AtagOneActions) actions).activateExtend(durationSeconds);
+    private static int endMinutesSinceMidnight(LocalTime time) {
+        return LocalTime.MIDNIGHT.equals(time) ? 24 * 60 : minutesSinceMidnight(time);
     }
 
-    public static void activateFireplace(ThingActions actions, long durationSeconds) {
-        ((AtagOneActions) actions).activateFireplace(durationSeconds);
+    public static void activateVacation(ThingActions actions, int days) {
+        ((AtagOneActions) actions).activateVacation(days);
+    }
+
+    public static void activateExtend(ThingActions actions, int minutes) {
+        ((AtagOneActions) actions).activateExtend(minutes);
+    }
+
+    public static void activateFireplace(ThingActions actions, int hours) {
+        ((AtagOneActions) actions).activateFireplace(hours);
     }
 
     public static boolean cancelMode(ThingActions actions) {
         return ((AtagOneActions) actions).cancelMode();
     }
 
-    public static boolean setChSchedulePeriod(ThingActions actions, String weekday, int periodIndex, int startMinutes,
-            int endMinutes, double temperatureCelsius) {
-        return ((AtagOneActions) actions).setChSchedulePeriod(weekday, periodIndex, startMinutes, endMinutes,
-                temperatureCelsius);
+    public static boolean setChSchedulePeriod(ThingActions actions, String weekday, LocalTime start, LocalTime end,
+            double temperatureCelsius) {
+        return ((AtagOneActions) actions).setChSchedulePeriod(weekday, start, end, temperatureCelsius);
     }
 
-    public static boolean clearChSchedulePeriod(ThingActions actions, String weekday, int periodIndex) {
-        return ((AtagOneActions) actions).clearChSchedulePeriod(weekday, periodIndex);
+    public static boolean setChSchedulePeriod(ThingActions actions, String weekday, String start, String end,
+            double temperatureCelsius) {
+        return ((AtagOneActions) actions).setChSchedulePeriod(weekday, start, end, temperatureCelsius);
     }
 
-    public static boolean setDhwSchedulePeriod(ThingActions actions, String weekday, int periodIndex, int startMinutes,
-            int endMinutes, double temperatureCelsius) {
-        return ((AtagOneActions) actions).setDhwSchedulePeriod(weekday, periodIndex, startMinutes, endMinutes,
-                temperatureCelsius);
+    public static boolean clearChSchedulePeriod(ThingActions actions, String weekday, LocalTime start) {
+        return ((AtagOneActions) actions).clearChSchedulePeriod(weekday, start);
     }
 
-    public static boolean clearDhwSchedulePeriod(ThingActions actions, String weekday, int periodIndex) {
-        return ((AtagOneActions) actions).clearDhwSchedulePeriod(weekday, periodIndex);
+    public static boolean clearChSchedulePeriod(ThingActions actions, String weekday, String start) {
+        return ((AtagOneActions) actions).clearChSchedulePeriod(weekday, start);
+    }
+
+    public static boolean setDhwSchedulePeriod(ThingActions actions, String weekday, LocalTime start, LocalTime end,
+            double temperatureCelsius) {
+        return ((AtagOneActions) actions).setDhwSchedulePeriod(weekday, start, end, temperatureCelsius);
+    }
+
+    public static boolean setDhwSchedulePeriod(ThingActions actions, String weekday, String start, String end,
+            double temperatureCelsius) {
+        return ((AtagOneActions) actions).setDhwSchedulePeriod(weekday, start, end, temperatureCelsius);
+    }
+
+    public static boolean clearDhwSchedulePeriod(ThingActions actions, String weekday, LocalTime start) {
+        return ((AtagOneActions) actions).clearDhwSchedulePeriod(weekday, start);
+    }
+
+    public static boolean clearDhwSchedulePeriod(ThingActions actions, String weekday, String start) {
+        return ((AtagOneActions) actions).clearDhwSchedulePeriod(weekday, start);
     }
 
     public static boolean setChSchedule(ThingActions actions, String json) {

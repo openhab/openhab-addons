@@ -12,6 +12,25 @@
 				<type>epsonprojector:lamptime</type>
 			</update-channel>
 		</instruction-set>
+
+		<instruction-set targetVersion="2">
+			<update-channel id="power">
+				<type>system:power</type>
+				<label>Power</label>
+				<description>Powers the projector on or off</description>
+			</update-channel>
+			<update-channel id="volume">
+				<type>system:volume</type>
+				<label>Volume</label>
+				<description>Retrieve or set the volume</description>
+			</update-channel>
+			<update-channel id="keycode">
+				<type>epsonprojector:keycode</type>
+			</update-channel>
+			<update-channel id="source">
+				<type>epsonprojector:source</type>
+			</update-channel>
+		</instruction-set>
 	</thing-type>
 
 	<thing-type uid="epsonprojector:projector-tcp">
@@ -21,6 +40,25 @@
 			</update-channel>
 			<update-channel id="lamptime">
 				<type>epsonprojector:lamptime</type>
+			</update-channel>
+		</instruction-set>
+
+		<instruction-set targetVersion="2">
+			<update-channel id="power">
+				<type>system:power</type>
+				<label>Power</label>
+				<description>Powers the projector on or off</description>
+			</update-channel>
+			<update-channel id="volume">
+				<type>system:volume</type>
+				<label>Volume</label>
+				<description>Retrieve or set the volume</description>
+			</update-channel>
+			<update-channel id="keycode">
+				<type>epsonprojector:keycode</type>
+			</update-channel>
+			<update-channel id="source">
+				<type>epsonprojector:source</type>
 			</update-channel>
 		</instruction-set>
 	</thing-type>

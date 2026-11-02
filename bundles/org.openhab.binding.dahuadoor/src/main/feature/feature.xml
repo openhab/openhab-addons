@@ -4,6 +4,9 @@
 
 	<feature name="openhab-binding-dahuadoor" description="DahuaDoor Binding" version="${project.version}">
 		<feature>openhab-runtime-base</feature>
+		<bundle dependency="true">mvn:org.bouncycastle/bcprov-jdk18on/${bouncycastle.version}</bundle>
+		<bundle dependency="true">mvn:org.bouncycastle/bcutil-jdk18on/${bouncycastle.version}</bundle>
+		<bundle dependency="true">mvn:org.bouncycastle/bctls-jdk18on/${bouncycastle.version}</bundle>
 		<bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.dahuadoor/${project.version}</bundle>
 	</feature>
 </features>

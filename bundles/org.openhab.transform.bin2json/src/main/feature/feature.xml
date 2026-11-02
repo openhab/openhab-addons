@@ -4,6 +4,7 @@
 
 	<feature name="openhab-transformation-bin2json" description="Binary To JSON Transformation" version="${project.version}">
 		<feature>openhab-runtime-base</feature>
+		<feature>openhab-core-io-bin2json</feature>
 		<bundle start-level="75">mvn:org.openhab.addons.bundles/org.openhab.transform.bin2json/${project.version}</bundle>
 	</feature>
 </features>

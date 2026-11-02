@@ -239,14 +239,14 @@ and two for replacing a whole week's schedule in one device write.
 
 | Action | Description |
 |--------|-------------|
-| `activateVacation(long durationSeconds)` | Activates holiday mode immediately for the given duration |
-| `activateExtend(long durationSeconds)` | Activates extend mode immediately, additive to the time remaining until the next schedule boundary |
-| `activateFireplace(long durationSeconds)` | Activates fireplace mode immediately for the given duration |
+| `activateVacation(int days)` | Activates holiday mode immediately for the given number of days |
+| `activateExtend(int minutes)` | Activates extend mode immediately, additive to the time remaining until the next schedule boundary; `minutes` must be a multiple of 15 |
+| `activateFireplace(int hours)` | Activates fireplace mode immediately for the given number of hours |
 | `cancelMode()` | Cancels whichever timed preset is currently active or pending and returns to auto. Returns `true` if the mode being left is fireplace, meaning the write is accepted but requires confirming on the thermostat's physical display to actually take effect |
-| `setChSchedulePeriod(String weekday, int periodIndex, int startMinutes, int endMinutes, double temperatureCelsius)` | Sets or replaces one time period in a weekday's central heating schedule. `periodIndex` is 0-based within that day's existing periods; pass the day's current period count to append a new one |
-| `clearChSchedulePeriod(String weekday, int periodIndex)` | Removes one time period from a weekday's central heating schedule, shifting later periods down |
-| `setDhwSchedulePeriod(String weekday, int periodIndex, int startMinutes, int endMinutes, double temperatureCelsius)` | Same as `setChSchedulePeriod`, for the hot water schedule |
-| `clearDhwSchedulePeriod(String weekday, int periodIndex)` | Same as `clearChSchedulePeriod`, for the hot water schedule |
+| `setChSchedulePeriod(String weekday, LocalTime start, LocalTime end, double temperatureCelsius)` | Sets one time period in a weekday's central heating schedule, keyed by its `start`. A period that starts at the same time is replaced, and an earlier period that runs past `start` has its end trimmed to `start`. An `end` of `00:00` means midnight at the end of the day |
+| `clearChSchedulePeriod(String weekday, LocalTime start)` | Removes the time period that starts at `start` from a weekday's central heating schedule |
+| `setDhwSchedulePeriod(String weekday, LocalTime start, LocalTime end, double temperatureCelsius)` | Same as `setChSchedulePeriod`, for the hot water schedule |
+| `clearDhwSchedulePeriod(String weekday, LocalTime start)` | Same as `clearChSchedulePeriod`, for the hot water schedule |
 | `setChSchedule(String json)` | Replaces the central heating schedule in one device write, same JSON shape as the `heating#schedule` channel |
 | `setDhwSchedule(String json)` | Same as `setChSchedule`, for the hot water schedule |
 
@@ -258,20 +258,16 @@ automatically, so a script author never needs to know these details.
 
 The schedule actions take a weekday name (`monday`..`sunday`), not a raw day number — the device uses
 two different, unrelated weekday numbering schemes internally, and a name sidesteps that ambiguity.
-`weekday` is case-insensitive. Every call resends the entire week's schedule with only the targeted
+`weekday` is case-insensitive.
+Scripts that cannot construct a `LocalTime` can pass `"HH:mm"` strings for `start` and `end` to `setChSchedulePeriod` and `setDhwSchedulePeriod` instead.
+Every call resends the entire week's schedule with only the targeted
 period changed; **writing a schedule has been observed to make the thermostat briefly unresponsive
 (around 100 seconds)**, so avoid calling these from a tight loop or in response to frequent events.
 
-**All four schedule-write actions reject a period that overlaps another period already on the same
-weekday** — two periods `[aStart, aEnd)` and `[bStart, bEnd)` overlap if `aStart < bEnd && aEnd >
-bStart` (half-open intervals, so one period ending exactly when the next starts is not an overlap).
-`setChSchedulePeriod`/`setDhwSchedulePeriod` exclude the period being replaced from that comparison.
-Rejection returns `false` (or, for `setChSchedule`/`setDhwSchedule`, `null` from the underlying
-compose step) with no write sent — the same generic failure signal every other invalid input on
-these actions already uses (unknown weekday, out-of-range index, malformed JSON, invalid bounds).
-There's no separate exception type or error code to catch a schedule conflict specifically; a caller
-that needs to tell the two apart has to check its own input against `heating#schedule`/
-`hotwater#schedule` before calling, the same way it must already avoid the other rejection cases.
+Periods are half-open, so one period ending exactly when the next starts is not an overlap.
+`setChSchedulePeriod`/`setDhwSchedulePeriod` reject a period that overlaps a later one, or sits inside a longer earlier one, which would need splitting.
+`setChSchedule`/`setDhwSchedule` never trim: any overlap within a weekday rejects the whole call.
+Rejection returns `false` with no write sent.
 
 `setChSchedule`/`setDhwSchedule` take the same JSON shape `heating#schedule`/`hotwater#schedule`
 publish:
@@ -280,7 +276,7 @@ publish:
 {"baseTemp":22.5,"days":{"monday":[{"start":360,"end":1260,"temp":20.5}],"tuesday":[],"wednesday":[],"thursday":[],"friday":[],"saturday":[],"sunday":[]}}
 ```
 
-`start`/`end` are minutes since midnight, matching the per-period actions' own units. A weekday absent
+`start`/`end` here are minutes since midnight, unlike the `HH:mm` times the per-period actions take. A weekday absent
 from `days` is resent unchanged from the last poll, so a caller only needs to name the day(s) it
 actually edited — the device still requires the whole schedule object on every write, the binding
 composes that from the JSON given plus what it last polled. `baseTemp` is optional and defaults to the
@@ -293,8 +289,8 @@ as soon as the device acknowledges the write, to see the confirmed result.
 Example from a rule:
 
 ```javascript
-actions.thingActions("atagone", "atagone:thermostat:boiler").activateFireplace(7200);
-actions.thingActions("atagone", "atagone:thermostat:boiler").setChSchedulePeriod("monday", 0, 360, 1320, 20.0);
+actions.thingActions("atagone", "atagone:thermostat:boiler").activateFireplace(2);
+actions.thingActions("atagone", "atagone:thermostat:boiler").setChSchedulePeriod("monday", "06:00", "22:00", 20.0);
 actions.thingActions("atagone", "atagone:thermostat:boiler").setChSchedule('{"days":{"monday":[{"start":360,"end":1320,"temp":20.0}]}}');
 ```
 

@@ -110,6 +110,11 @@ Bridge Thing (connects directly to API) (deprecated)
 
 Channels are generated automatically for available features.
 
+Features that list active messages, such as `device.messages.status.raw`, get a String channel (for example `device-messages-status-raw#error-entries`) that holds the codes of the active messages as a comma separated list, for example `S.125,S.131`.
+The channel is for reading only and is empty while no message is active.
+The meaning of the codes is given in the service instructions of the device.
+For a heat pump with a heating water flow heater, `S.131`, `S.132` and `S.133` mean that stage 1, 2 or 3 of the heater is running.
+
 ## Examples: Thing Definitions in openHAB
 
 ### Account Thing

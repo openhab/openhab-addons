@@ -492,6 +492,10 @@ public class NodeHandler extends MatterBaseThingHandler implements BridgeHandler
                         if (e != null) {
                             logger.debug("Failed to check for firmware update for device {}", getNodeId(), e);
                         } else {
+                            ControllerHandler controller = controllerHandler();
+                            if (controller != null) {
+                                controller.updateFirmwareInfo(getThing().getUID(), updateInfo);
+                            }
                             handleOtaUpdateAvailable(updateInfo != null);
                         }
                     });
