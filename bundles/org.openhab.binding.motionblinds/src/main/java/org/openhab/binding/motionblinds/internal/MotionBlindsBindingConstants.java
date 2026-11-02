@@ -28,18 +28,15 @@ public class MotionBlindsBindingConstants {
 
     public static final String BINDING_ID = "motionblinds";
 
-    // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_WIFI_MOTOR = new ThingTypeUID(BINDING_ID, "wifi-motor");
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_WIFI_MOTOR);
 
-    // List of all Channel ids
     public static final String CHANNEL_POSITION = "position";
     public static final String CHANNEL_TILT = "tilt";
     public static final String CHANNEL_ANGLE = "angle";
     public static final String CHANNEL_RSSI = "rssi";
 
-    // Configuration and property names
     public static final String CONFIG_MAC_ADDRESS = "macAddress";
     public static final String PROPERTY_DEVICE_TYPE = "deviceType";
     public static final String PROPERTY_PROTOCOL_VERSION = "protocolVersion";
@@ -51,7 +48,6 @@ public class MotionBlindsBindingConstants {
     public static final Set<String> DEVICE_TYPES_WIFI = Set.of(DEVICE_TYPE_WIFI_CURTAIN, DEVICE_TYPE_WIFI_BLIND,
             DEVICE_TYPE_WIFI_GATE);
 
-    // Protocol
     public static final String MULTICAST_ADDRESS = "238.0.0.18";
     public static final int UDP_PORT_SEND = 32100;
     public static final int UDP_PORT_RECEIVE = 32101;
@@ -59,9 +55,7 @@ public class MotionBlindsBindingConstants {
     public static final String MSG_GET_DEVICE_LIST = "GetDeviceList";
     public static final String MSG_GET_DEVICE_LIST_ACK = "GetDeviceListAck";
     public static final String MSG_READ_DEVICE = "ReadDevice";
-    public static final String MSG_READ_DEVICE_ACK = "ReadDeviceAck";
     public static final String MSG_WRITE_DEVICE = "WriteDevice";
-    public static final String MSG_WRITE_DEVICE_ACK = "WriteDeviceAck";
     public static final String MSG_REPORT = "Report";
     public static final String MSG_HEARTBEAT = "Heartbeat";
 

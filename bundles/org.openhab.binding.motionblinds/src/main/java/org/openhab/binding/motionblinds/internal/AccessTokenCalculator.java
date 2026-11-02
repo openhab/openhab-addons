@@ -36,10 +36,6 @@ public final class AccessTokenCalculator {
     private AccessTokenCalculator() {
     }
 
-    /**
-     * Check the key as shown by the app: 16 printable ASCII characters (e.g. {@code 12ab345c-d67e-8f}), which gives
-     * the 16 bytes of the AES key.
-     */
     public static boolean isValidKey(String key) {
         return key.length() == KEY_LENGTH && key.chars().allMatch(c -> c > 0x20 && c < 0x7f);
     }

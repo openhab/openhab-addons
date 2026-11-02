@@ -50,7 +50,7 @@ import com.google.gson.JsonParseException;
 /**
  * The {@link MotionBlindsCommunicationManager} is shared by all motors. It
  * <ul>
- * <li>sends unicast requests to a motor on port 32100 and waits for the acknowledge on the same socket,</li>
+ * <li>sends unicast requests to a motor on port 32100 and waits for the acknowledgment on the same socket,</li>
  * <li>listens for multicast pushes ({@code Report}, {@code Heartbeat}) on 238.0.0.18:32101 and dispatches them to
  * the handler registered for the MAC address in the message,</li>
  * <li>sends a multicast {@code GetDeviceList} for discovery; the acknowledges arrive on the multicast socket.</li>
@@ -89,16 +89,10 @@ public class MotionBlindsCommunicationManager {
         this.requestTimeoutMs = requestTimeoutMs;
     }
 
-    /**
-     * Receives messages pushed by a motor.
-     */
     public interface MessageListener {
         void onMessage(MotionBlindsMessage message, String sourceIp);
     }
 
-    /**
-     * Receives {@code GetDeviceListAck} messages during discovery.
-     */
     public interface DiscoveryListener {
         void onDeviceFound(MotionBlindsMessage message, String sourceIp);
     }
@@ -120,14 +114,6 @@ public class MotionBlindsCommunicationManager {
         stopListenerIfUnused();
     }
 
-    /**
-     * Send a request to a motor and wait for its acknowledge. Only an acknowledge of the requested type (or an error
-     * reply), sent from the requested address by the motor with the expected MAC address, is accepted; other packets
-     * arriving at the socket are discarded.
-     *
-     * @param expectedMac MAC address of the motor that must answer
-     * @throws IOException if the motor did not answer after all attempts
-     */
     public MotionBlindsMessage sendRequest(String ipAddress, MotionBlindsRequest request, String expectedMac)
             throws IOException {
         String json = gson.toJson(request);
@@ -158,11 +144,6 @@ public class MotionBlindsCommunicationManager {
         }
     }
 
-    /**
-     * Wait for the response to a request until the request timeout has passed, discarding other packets.
-     *
-     * @return the response, or {@code null} on timeout
-     */
     private @Nullable MotionBlindsMessage receiveResponse(DatagramSocket socket, byte[] buffer, InetAddress address,
             String expectedType, String expectedMac) throws IOException {
         long deadline = System.nanoTime() + TimeUnit.MILLISECONDS.toNanos(requestTimeoutMs);
@@ -191,10 +172,6 @@ public class MotionBlindsCommunicationManager {
         }
     }
 
-    /**
-     * Check that a received message is the response to a request: sent from the requested address, of the expected
-     * acknowledge type (or an error reply, which carries an {@code actionResult}), by the expected motor.
-     */
     static boolean isResponse(InetAddress expectedAddress, InetAddress sender, MotionBlindsMessage message,
             String expectedType, String expectedMac) {
         if (!expectedAddress.equals(sender)) {
@@ -207,10 +184,6 @@ public class MotionBlindsCommunicationManager {
         return mac != null && normalizeMac(mac).equals(normalizeMac(expectedMac));
     }
 
-    /**
-     * Send a multicast {@code GetDeviceList}. Acknowledges are passed to the given listener until
-     * {@link #stopDiscovery} is called.
-     */
     public void startDiscovery(DiscoveryListener listener) {
         discoveryListener.set(listener);
         sendDiscoveryRequest();
@@ -221,11 +194,6 @@ public class MotionBlindsCommunicationManager {
         stopListenerIfUnused();
     }
 
-    /**
-     * Send a multicast {@code GetDeviceList} on all suitable network interfaces. Every motor answers with a
-     * {@code GetDeviceListAck}, which is passed to the discovery listener and to the listener registered for the MAC
-     * address of the motor. Handlers use this to find the IP address of their motor.
-     */
     public void sendDiscoveryRequest() {
         startListener();
 
@@ -290,11 +258,6 @@ public class MotionBlindsCommunicationManager {
         }
     }
 
-    /**
-     * Stop the listener when no handler and no discovery need it. The check is made while holding the lock: a
-     * listener registered concurrently either prevents the stop, or its subsequent {@link #startListener()} waits
-     * for the lock and starts a new receiver.
-     */
     private void stopListenerIfUnused() {
         synchronized (listenerLock) {
             if (listeners.isEmpty() && discoveryListener.get() == null) {

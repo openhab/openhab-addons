@@ -52,7 +52,6 @@ public class MotionBlindsDiscoveryService extends AbstractDiscoveryService imple
             final @Reference TranslationProvider i18nProvider, final @Reference LocaleProvider localeProvider) {
         super(SUPPORTED_THING_TYPES_UIDS, SCAN_TIMEOUT_SECONDS, false);
         this.communicationManager = communicationManager;
-        // needed to resolve the @text labels of the discovery results
         this.i18nProvider = i18nProvider;
         this.localeProvider = localeProvider;
     }
@@ -64,9 +63,6 @@ public class MotionBlindsDiscoveryService extends AbstractDiscoveryService imple
         super.deactivate();
     }
 
-    /**
-     * Start a scan; {@link AbstractDiscoveryService} calls {@link #stopScan()} after the scan timeout.
-     */
     @Override
     protected void startScan() {
         logger.debug("Starting discovery of Wi-Fi motors");
@@ -106,7 +102,6 @@ public class MotionBlindsDiscoveryService extends AbstractDiscoveryService imple
         String normalizedMac = MotionBlindsCommunicationManager.normalizeMac(mac);
         DiscoveryResultBuilder builder = DiscoveryResultBuilder
                 .create(new ThingUID(THING_TYPE_WIFI_MOTOR, normalizedMac))
-                // the IP address is only used for the label, the handler finds the motor by its MAC address
                 .withProperty(CONFIG_MAC_ADDRESS, normalizedMac).withProperty(PROPERTY_DEVICE_TYPE, deviceType)
                 .withRepresentationProperty(CONFIG_MAC_ADDRESS)
                 .withLabel("@text/discovery.wifi-motor.label [ \"%s\" ]".formatted(sourceIp));

@@ -56,7 +56,7 @@ public class SlatTracker {
     private static final int MIN_ANGLE_CHANGE = 3;
     /** The slats drop to horizontal when the bottom rail lifts off */
     private static final double TILT_AFTER_SLACK = 0.5;
-    /** Rest of the slack that counts as travelled when following the motor: its overshoot varies by a few degrees */
+    /** Rest of the slack that counts as traveled when following the motor: its overshoot varies by a few degrees */
     private static final int SLACK_TOLERANCE = 10;
     /** Rate of turning when moving down with the bottom rail setting down on the sill */
     private static final double SLACK_ZONE_RATE = 0.5;
@@ -100,7 +100,7 @@ public class SlatTracker {
                         ? untrackedTravel(oldAngle, newAngle, (newPosition - oldPosition) * MOTOR_ANGLE_PER_PERCENT)
                         : 0;
                 // travel at the end stop the motor angle started at happened before the angle changed, travel at
-                // the end stop it ended at afterwards
+                // the end stop it ended at afterward
                 boolean beforeAngleChange = untracked < 0 ? oldAngle <= 0 : oldAngle >= MAX_ANGLE;
                 if (untracked != 0 && beforeAngleChange) {
                     current = move(current, untracked, SLACK_TOLERANCE);
@@ -215,7 +215,7 @@ public class SlatTracker {
         int best = 0;
         double bestError = Math.abs(current.tilt() - target);
         for (int change = -currentAngle; change <= MAX_ANGLE - currentAngle; change++) {
-            // when choosing a move, the slack must be travelled completely
+            // when choosing a move, the slack must be traveled completely
             double error = Math.abs(move(current, change, 0).tilt() - target);
             if (error < bestError - TILT_EPSILON
                     || (error < bestError + TILT_EPSILON && Math.abs(change) < Math.abs(best))) {
@@ -229,7 +229,7 @@ public class SlatTracker {
     /**
      * Apply a change of the motor angle to the slats.
      *
-     * @param slackTolerance rest of the slack that counts as travelled when moving up
+     * @param slackTolerance rest of the slack that counts as traveled when moving up
      */
     private Slats move(Slats current, double angleChange, double slackTolerance) {
         double tilt = current.tilt();

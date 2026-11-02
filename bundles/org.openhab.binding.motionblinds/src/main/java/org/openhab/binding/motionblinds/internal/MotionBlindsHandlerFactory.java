@@ -26,8 +26,7 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
 /**
- * The {@link MotionBlindsHandlerFactory} is responsible for creating things and thing
- * handlers.
+ * The {@link MotionBlindsHandlerFactory} is responsible for creating things and thing handlers.
  *
  * @author Oleksandr Mishchuk - Initial contribution
  */

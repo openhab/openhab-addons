@@ -31,9 +31,6 @@ public class DeviceStatus {
     public @Nullable Integer currentAngle;
     /** 0 = closing, 1 = opening, 2 = stopped */
     public @Nullable Integer operation;
-    /** Limit status */
-    public @Nullable Integer currentState;
-    /** Blind type */
     public @Nullable Integer type;
     /** Wi-Fi signal strength in dBm */
     @SerializedName("RSSI")

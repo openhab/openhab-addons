@@ -22,19 +22,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class MotionBlindsConfiguration {
 
-    /**
-     * MAC address of the motor as reported by the device (12 hex digits, no separators).
-     */
     public String macAddress = "";
-
-    /**
-     * Key from the Connector / Motion Blinds app: 16 ASCII characters including the dashes.
-     */
     public String key = "";
-
-    /**
-     * Status polling interval in seconds. Push reports and heartbeats keep the state up to date in between.
-     */
     public int refreshInterval = 300;
 
     /**
@@ -43,7 +32,7 @@ public class MotionBlindsConfiguration {
     public double tiltTravel = 3;
 
     /**
-     * Travel in percent that does not turn the slats when the blind starts to move up from fully lowered.
+     * Travel of the blind in percent that does not turn the slats when the blind starts to move up from fully lowered.
      */
     public double tiltSlack = 2;
 }

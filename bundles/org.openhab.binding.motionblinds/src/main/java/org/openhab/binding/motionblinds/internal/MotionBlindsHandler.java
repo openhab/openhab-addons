@@ -61,15 +61,6 @@ import com.google.gson.reflect.TypeToken;
 /**
  * The {@link MotionBlindsHandler} controls a motor that is directly connected to Wi-Fi.
  *
- * <p>
- * Requests are authorized with an access token that is derived from the app key and a token that the motor hands
- * out in {@code GetDeviceListAck} and {@code Heartbeat} messages. When a request is rejected, the token is fetched
- * again and the request is retried once.
- *
- * <p>
- * The motor is identified by its MAC address only. Its IP address is learned from multicast messages and from the
- * answer to a multicast {@code GetDeviceList}, so it follows DHCP changes without configuration.
- *
  * @author Oleksandr Mishchuk - Initial contribution
  */
 @NonNullByDefault
@@ -79,7 +70,6 @@ public class MotionBlindsHandler extends BaseThingHandler implements MessageList
     private static final int MAX_ANGLE = 180;
     private static final int IP_RESOLUTION_TIMEOUT_MS = 3000;
     private static final int MAX_TILT_MOVES = 2;
-    /** A tilt move of a few percent takes 1-2 seconds; the motor has stopped when two checks agree */
     private static final int STOP_CHECK_INTERVAL_MS = 1000;
     private static final int MAX_STOP_CHECKS = 6;
 
@@ -87,35 +77,20 @@ public class MotionBlindsHandler extends BaseThingHandler implements MessageList
     private final Gson gson = new Gson();
     private final MotionBlindsCommunicationManager communicationManager;
     private final Object requestLock = new Object();
-    /**
-     * Guards {@link #session} and every update of the Thing, see {@link #publish}. It also keeps the decision for a
-     * status and its update together, so a rejected key is not overwritten by ONLINE.
-     */
     private final Object statusLock = new Object();
-    /** Incremented by every movement command, so an older one that is still queued or running is not sent */
     private final AtomicLong movementGeneration = new AtomicLong();
 
     private MotionBlindsConfiguration config = new MotionBlindsConfiguration();
     private String mac = "";
-    /** IP address the motor was last heard from; empty until it is found by its MAC address */
     private volatile String ipAddress = "";
     private volatile @Nullable CompletableFuture<String> ipResolution;
     private volatile String deviceType = "";
     private volatile @Nullable String token;
     private volatile @Nullable String accessToken;
-    /**
-     * The motor rejected the key; cleared only by an accepted request or a new initialization, not by messages that
-     * merely show the motor is reachable
-     */
     private boolean accessDenied;
     private @Nullable ScheduledFuture<?> pollJob;
-    /** Refresh, write and tilt tasks submitted to the scheduler, canceled on dispose */
+    // Refresh, write and tilt tasks submitted to the scheduler, canceled on dispose
     private final Set<Future<?>> tasks = ConcurrentHashMap.newKeySet();
-    /**
-     * Identifies the current initialization; {@code null} while disposed. Work captures it when it is started and
-     * checks it before each request, so work started before a dispose neither sends anything nor publishes state
-     * afterwards, also when the Thing has been initialized again meanwhile.
-     */
     private volatile @Nullable Object session;
     private SlatTracker slatTracker = new SlatTracker(3, 2);
 
@@ -168,8 +143,6 @@ public class MotionBlindsHandler extends BaseThingHandler implements MessageList
             job.cancel(true);
             pollJob = null;
         }
-        // a request already waiting for its answer is not interrupted by this, but the session check stops it
-        // from sending anything further
         tasks.forEach(task -> task.cancel(true));
         tasks.clear();
         communicationManager.unregisterListener(mac, this);
@@ -195,7 +168,6 @@ public class MotionBlindsHandler extends BaseThingHandler implements MessageList
                 logger.debug("Unsupported command {} for channel {}", command, channelUID);
                 return;
             }
-            // incremented here rather than in the task, so the order follows the arrival of the commands
             long generation = movementGeneration.incrementAndGet();
             submit(() -> tilt(currentSession, tilt, generation));
             return;
@@ -240,14 +212,13 @@ public class MotionBlindsHandler extends BaseThingHandler implements MessageList
     }
 
     /**
-     * Turn the slats to the given tilt at the current height, see {@link SlatTracker}. From fully lowered this can
-     * take two moves; the state is read again after the first one. A newer movement command cancels the tilt.
+     * Turn the slats to the given tilt at the current height, see {@link SlatTracker}.
+     * From fully lowered this can take two moves.
      */
     private void tilt(Object session, int tiltPercent, long generation) {
         for (int move = 1; move <= MAX_TILT_MOVES; move++) {
             Map<String, Object> data = slatTracker.tiltCommand(tiltPercent);
             if (data == null) {
-                // the state of the slats is not known yet
                 poll(session);
                 data = slatTracker.tiltCommand(tiltPercent);
             }
@@ -269,12 +240,8 @@ public class MotionBlindsHandler extends BaseThingHandler implements MessageList
     }
 
     /**
-     * Send a movement unless a newer movement command arrived. The commands run on the shared scheduler and may reach
-     * this out of order; the check is made under the request lock, so the write of a newer command cannot go out
-     * between the check and this write and then be overridden by it.
-     *
-     * @return {@code false} if the command was superseded and nothing was sent
-     */
+     * Send a movement unless a newer movement command arrived
+     **/
     private boolean writeIfCurrent(Object session, long generation, Map<String, Object> data) {
         synchronized (requestLock) {
             if (generation != movementGeneration.get()) {
@@ -289,11 +256,9 @@ public class MotionBlindsHandler extends BaseThingHandler implements MessageList
     /**
      * Read the status until the motor angle does not change anymore.
      *
-     * @return {@code true} if two consecutive checks found the same angle; {@code false} if interrupted, if a newer
-     *         movement command superseded the tilt, if the status could not be read (the last known angle is then
-     *         stale and must not be taken as the motor having stopped), or if the motor was still moving after all
-     *         checks: a tilt move takes 1-2 seconds, so the blind is then being moved by something else (remote,
-     *         app, another command) and a further move would be based on an intermediate state and interfere with it
+     * @return {@code false} if the tilt was superseded or interrupted, the status could not be read, or the motor
+     *         was still moving after all checks: a tilt move takes 1-2 seconds, so the blind is then moved by
+     *         something else (remote, app) and a further move would interfere with it
      */
     private boolean waitUntilStopped(Object session, long generation) {
         Integer previousAngle = null;
@@ -334,11 +299,6 @@ public class MotionBlindsHandler extends BaseThingHandler implements MessageList
         return angle == null ? null : Map.of("targetAngle", Math.max(0, Math.min(MAX_ANGLE, angle)));
     }
 
-    /**
-     * Read the status of the motor; on failure the Thing goes offline.
-     *
-     * @return {@code true} if the status was read
-     */
     private boolean poll(Object session) {
         try {
             request(session, MSG_READ_DEVICE, null);
@@ -351,7 +311,6 @@ public class MotionBlindsHandler extends BaseThingHandler implements MessageList
 
     private void write(Object session, Map<String, Object> data) {
         try {
-            // the acknowledge carries the state before the command; the new state arrives with Report messages
             request(session, MSG_WRITE_DEVICE, data);
         } catch (IOException e) {
             requestFailed(session, e);
@@ -372,13 +331,6 @@ public class MotionBlindsHandler extends BaseThingHandler implements MessageList
         }
     }
 
-    /**
-     * Update the Thing, unless the handler was disposed after the work of the given session was started. The update
-     * runs under {@link #statusLock}, under which {@link #dispose()} ends the session, so nothing is published after
-     * {@link #dispose()} returned.
-     *
-     * @return {@code false} if the session has ended and nothing was updated
-     */
     private boolean publish(Object session, Runnable update) {
         synchronized (statusLock) {
             if (!session.equals(this.session)) {
@@ -389,18 +341,11 @@ public class MotionBlindsHandler extends BaseThingHandler implements MessageList
         }
     }
 
-    /**
-     * The motor accepted an authenticated request, so the key is valid. Called by {@link #publish}.
-     */
     private void authenticated() {
         accessDenied = false;
         updateStatus(ThingStatus.ONLINE);
     }
 
-    /**
-     * The motor was heard from. That does not prove the key is accepted, so a rejected key stays reported. Called by
-     * {@link #publish}.
-     */
     private void reachable() {
         if (accessDenied) {
             updateAccessDeniedStatus();
@@ -413,19 +358,12 @@ public class MotionBlindsHandler extends BaseThingHandler implements MessageList
         updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.config-error-access-denied");
     }
 
-    /**
-     * @throws IOException if the handler was disposed after the work of the given session was started
-     */
     private void ensureCurrent(Object session) throws IOException {
         if (!session.equals(this.session)) {
             throw new IOException("Handler of motor " + mac + " was disposed");
         }
     }
 
-    /**
-     * Send a {@code ReadDevice} or {@code WriteDevice} request. If the motor rejects the access token, a new token
-     * is fetched and the request is retried once.
-     */
     private MotionBlindsMessage request(Object session, String msgType, @Nullable Map<String, Object> data)
             throws IOException {
         synchronized (requestLock) {
@@ -458,11 +396,6 @@ public class MotionBlindsHandler extends BaseThingHandler implements MessageList
         }
     }
 
-    /**
-     * Send a request to the motor. If the IP address is not known yet, or the motor does not answer on it anymore,
-     * the motor is found by its MAC address with a multicast {@code GetDeviceList} and the request is sent (again) to
-     * the address it answered from. Nothing is sent anymore once the handler was disposed.
-     */
     private MotionBlindsMessage send(Object session, MotionBlindsRequest request) throws IOException {
         ensureCurrent(session);
         String currentIp = ipAddress;
@@ -490,10 +423,6 @@ public class MotionBlindsHandler extends BaseThingHandler implements MessageList
         }
     }
 
-    /**
-     * Find the IP address of the motor: send a multicast {@code GetDeviceList} and wait for the answer of this
-     * motor, which {@link #onMessage} receives.
-     */
     private String resolveIpAddress() throws IOException {
         CompletableFuture<String> resolution = new CompletableFuture<>();
         ipResolution = resolution;
@@ -531,11 +460,6 @@ public class MotionBlindsHandler extends BaseThingHandler implements MessageList
         return current;
     }
 
-    /**
-     * Fetch the token and device type from the motor.
-     *
-     * @return the token
-     */
     private String fetchDeviceList(Object session) throws IOException {
         MotionBlindsMessage response = send(session, new MotionBlindsRequest(MSG_GET_DEVICE_LIST));
         String newToken = response.token;
@@ -588,9 +512,6 @@ public class MotionBlindsHandler extends BaseThingHandler implements MessageList
         }
     }
 
-    /**
-     * Called by the {@link MotionBlindsCommunicationManager} for multicast messages of this motor.
-     */
     @Override
     public void onMessage(MotionBlindsMessage message, String sourceIp) {
         // the communication manager may deliver a message it dispatched before the listener was unregistered
@@ -658,9 +579,6 @@ public class MotionBlindsHandler extends BaseThingHandler implements MessageList
         }
     }
 
-    /**
-     * The motor rejected the access token even after fetching a new token, so the key must be wrong.
-     */
     private static class AccessDeniedException extends IOException {
         private static final long serialVersionUID = 1L;
 
