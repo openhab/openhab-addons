@@ -5,8 +5,7 @@
 
 	<type>binding</type>
 	<name>MotionBlinds Binding</name>
-	<description>This is the binding for Wi-Fi motors of Motion Blinds, Dooya and other brands controlled by the
-		Connector
+	<description>This is the binding for Wi-Fi motors of Motion Blinds, Dooya and other brands controlled by the Connector
 		app, using the local network API.</description>
 	<connection>local</connection>
 

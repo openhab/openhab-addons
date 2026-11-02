@@ -8,8 +8,8 @@ It does not need the cloud or a hub, so the motors keep working when the vendor 
 
 ## Supported Things
 
-| Thing Type   | Description                                                                           |
-|--------------|---------------------------------------------------------------------------------------|
+| Thing Type   | Description                                                                             |
+|--------------|-----------------------------------------------------------------------------------------|
 | `wifi-motor` | A motor that is directly connected to Wi-Fi (device types 22000000, 22000002, 22000005) |
 
 Motors that are connected through a hub (e.g. DD7002B, CM-20) are not supported yet.
@@ -33,8 +33,8 @@ Enter it exactly as shown, including the dashes.
 
 ## Thing Configuration
 
-| Name              | Type    | Description                                                                                         | Default | Required | Advanced |
-|-------------------|---------|-----------------------------------------------------------------------------------------------------|---------|----------|----------|
+| Name              | Type    | Description                                                     | Default | Required | Advanced |
+|-------------------|---------|-----------------------------------------------------------------|---------|----------|----------|
 | `macAddress`      | text    | MAC address of the motor (12 hex digits, as found by discovery) | N/A     | yes      | no       |
 | `key`             | text    | Key from the app (16 ASCII characters including dashes)         | N/A     | yes      | no       |
 | `refreshInterval` | integer | Interval in seconds for polling the status                      | 300     | no       | yes      |
@@ -48,12 +48,12 @@ The motors push their status every 2 seconds while moving and send a heartbeat a
 
 ## Channels
 
-| Channel    | Type          | Read/Write | Description                                                  |
-|------------|---------------|------------|--------------------------------------------------------------|
-| `position` | Rollershutter | RW         | Position of the blind: 0% is fully open, 100% is fully closed |
+| Channel    | Type          | Read/Write | Description                                                                                  |
+|------------|---------------|------------|----------------------------------------------------------------------------------------------|
+| `position` | Rollershutter | RW         | Position of the blind: 0% is fully open, 100% is fully closed                                |
 | `tilt`     | Dimmer        | RW         | Tilt of the slats: 0% closed (bottom side visible), 50% open, 100% closed (top side visible) |
-| `angle`    | Number:Angle  | RW         | Slat angle as estimated by the motor (0-180°)                |
-| `rssi`     | Number:Power  | R          | Wi-Fi signal strength in dBm                                 |
+| `angle`    | Number:Angle  | RW         | Slat angle as estimated by the motor (0-180°)                                                |
+| `rssi`     | Number:Power  | R          | Wi-Fi signal strength in dBm                                                                 |
 
 The `position` channel accepts `UP`, `DOWN`, `STOP` and a percentage.
 
