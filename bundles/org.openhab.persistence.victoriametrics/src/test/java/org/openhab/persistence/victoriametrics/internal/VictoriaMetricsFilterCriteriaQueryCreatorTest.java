@@ -39,6 +39,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.openhab.core.items.Metadata;
 import org.openhab.core.items.MetadataKey;
 import org.openhab.core.items.MetadataRegistry;
+import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.persistence.FilterCriteria;
@@ -141,6 +142,27 @@ public class VictoriaMetricsFilterCriteriaQueryCreatorTest {
         criteria.setState(new StringType("text"));
 
         assertThrows(IllegalArgumentException.class, () -> instance.applyCriteria(rows(0, 1).stream(), criteria));
+    }
+
+    @Test
+    public void testComponentsFilter() {
+        List<VictoriaMetricsRow> colors = List.of(colorRow(0, "120"), colorRow(1, "240"), colorRow(2, "120.0"));
+        FilterCriteria criteria = createBaseCriteria().setOrdering(FilterCriteria.Ordering.ASCENDING)
+                .setState(new HSBType("120,100,50"));
+
+        criteria.setOperator(FilterCriteria.Operator.EQ);
+        assertThat(times(instance.applyCriteria(colors.stream(), criteria)), contains(0L, 2L));
+
+        criteria.setOperator(FilterCriteria.Operator.NEQ);
+        assertThat(times(instance.applyCriteria(colors.stream(), criteria)), contains(1L));
+
+        criteria.setOperator(FilterCriteria.Operator.GT);
+        assertThrows(IllegalArgumentException.class, () -> instance.applyCriteria(colors.stream(), criteria));
+    }
+
+    private static VictoriaMetricsRow colorRow(int seconds, String hue) {
+        return new VictoriaMetricsRow(T0.plusSeconds(seconds), ITEM_NAME, Map.of("hue", new BigDecimal(hue),
+                "saturation", new BigDecimal("100"), "brightness", new BigDecimal("50")));
     }
 
     @Test

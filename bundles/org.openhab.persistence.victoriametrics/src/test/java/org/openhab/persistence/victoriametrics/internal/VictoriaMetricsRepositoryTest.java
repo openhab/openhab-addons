@@ -26,6 +26,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -131,6 +132,26 @@ public class VictoriaMetricsRepositoryTest {
     }
 
     @Test
+    public void writeComponentsAsSeparateSamples() {
+        VictoriaMetricsRepository repository = createRepository();
+        Map<String, BigDecimal> components = new LinkedHashMap<>();
+        components.put("hue", new BigDecimal("120.5"));
+        components.put("saturation", new BigDecimal("100"));
+        components.put("brightness", new BigDecimal("50"));
+        VictoriaMetricsPoint point = VictoriaMetricsPoint.newBuilder("Light")
+                .withTime(Instant.ofEpochMilli(1_767_225_600_123L)).withComponents(components).withTag("item", "Light")
+                .build();
+
+        assertThat(repository.write(List.of(point)), is(true));
+
+        assertThat(capturedContent(), is("""
+                Light{component="hue",item="Light"} 120.5 1767225600123
+                Light{component="saturation",item="Light"} 100 1767225600123
+                Light{component="brightness",item="Light"} 50 1767225600123
+                """));
+    }
+
+    @Test
     public void writeIsRetriedOnServerError() {
         when(response.getStatus()).thenReturn(503);
         assertThat(createRepository().write(List.of(createPoint())), is(false));
@@ -189,6 +210,26 @@ public class VictoriaMetricsRepositoryTest {
         assertThat(repository.remove(new FilterCriteria().setItemName("MyItem").setState(new DecimalType(1))),
                 is(false));
         verifyNoInteractions(httpClient);
+    }
+
+    @Test
+    public void parseExportJoinsComponents() throws IOException {
+        // series of different components arrive in any order, possibly with different tags
+        String export = """
+                {"metric":{"__name__":"Light","item":"Light","component":"brightness"},"values":[50,60],"timestamps":[1000,2000]}
+                {"metric":{"__name__":"Light","item":"Light","component":"hue"},"values":[120,240],"timestamps":[1000,2000]}
+                {"metric":{"__name__":"Light","item":"Light","component":"saturation","label":"x"},"values":[100,90],"timestamps":[1000,2000]}
+                """;
+        List<VictoriaMetricsRow> rows = createRepository()
+                .parseExport(new ByteArrayInputStream(export.getBytes(StandardCharsets.UTF_8)));
+
+        assertThat(rows,
+                containsInAnyOrder(
+                        new VictoriaMetricsRow(Instant.ofEpochMilli(1000), "Light",
+                                Map.of("hue", new BigDecimal("120"), "saturation", new BigDecimal("100"), "brightness",
+                                        new BigDecimal("50"))),
+                        new VictoriaMetricsRow(Instant.ofEpochMilli(2000), "Light", Map.of("hue", new BigDecimal("240"),
+                                "saturation", new BigDecimal("90"), "brightness", new BigDecimal("60")))));
     }
 
     @Test

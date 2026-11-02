@@ -162,9 +162,22 @@ public class ItemToStorePointCreatorTest {
     public void shouldNotConvertNonNumericStates() throws ExecutionException, InterruptedException {
         StringItem stringItem = new StringItem("myString");
         assertThat(instance.convert(stringItem, new StringType("text"), Instant.now(), null).get(), nullValue());
+    }
 
+    @Test
+    public void shouldConvertColorToComponents() throws ExecutionException, InterruptedException {
         ColorItem colorItem = new ColorItem("myColor");
-        assertThat(instance.convert(colorItem, new HSBType("120,100,50"), Instant.now(), null).get(), nullValue());
+        VictoriaMetricsPoint point = instance.convert(colorItem, new HSBType("120,100,50"), Instant.now(), null).get();
+
+        if (point == null) {
+            Assertions.fail("'point' is null");
+            return;
+        }
+
+        assertThat(point.getMetricName(), is("myColor"));
+        assertThat(point.getTags(), hasEntry("item", "myColor"));
+        assertThat(point.getComponents(), is(Map.of("hue", new BigDecimal("120"), "saturation", new BigDecimal("100"),
+                "brightness", new BigDecimal("50"))));
     }
 
     @Test

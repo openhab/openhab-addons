@@ -14,6 +14,8 @@ package org.openhab.persistence.victoriametrics.internal;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import javax.measure.Unit;
 
@@ -23,9 +25,11 @@ import org.openhab.core.items.GroupItem;
 import org.openhab.core.items.Item;
 import org.openhab.core.items.ItemNotFoundException;
 import org.openhab.core.items.ItemRegistry;
+import org.openhab.core.library.items.ColorItem;
 import org.openhab.core.library.items.ContactItem;
 import org.openhab.core.library.items.DateTimeItem;
 import org.openhab.core.library.items.DimmerItem;
+import org.openhab.core.library.items.LocationItem;
 import org.openhab.core.library.items.NumberItem;
 import org.openhab.core.library.items.PlayerItem;
 import org.openhab.core.library.items.RollershutterItem;
@@ -37,6 +41,7 @@ import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.PlayPauseType;
+import org.openhab.core.library.types.PointType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.RewindFastforwardType;
 import org.openhab.core.library.types.StringType;
@@ -50,12 +55,13 @@ import org.slf4j.LoggerFactory;
  * <p>
  * VictoriaMetrics samples are 64-bit floating point numbers, so only states with a numeric representation can be
  * stored. Player states are stored as numbers ({@code PAUSE}=0, {@code PLAY}=1, {@code REWIND}=2,
- * {@code FASTFORWARD}=3). Unlike InfluxDB, states that InfluxDB stores as strings (e.g. {@link StringType},
- * {@link HSBType}, {@code PointType}, {@code RawType}) are not supported.
+ * {@code FASTFORWARD}=3). {@link HSBType} and {@link PointType} are stored as one sample per component, see
+ * {@link #stateToComponents(State)}. Unlike InfluxDB, other states that InfluxDB stores as strings (e.g.
+ * {@link StringType}, {@code RawType}) are not supported.
  *
  * @author Joan Pujol Espinar - Initial contribution
  * @author Franz - Initial VictoriaMetrics adaptation
- * @author Michael Weger - Restrict to numeric states, store player states as numbers
+ * @author Michael Weger - Restrict to numeric states, store player, color and location states as numbers
  */
 @NonNullByDefault
 public class VictoriaMetricsStateConvertUtils {
@@ -65,6 +71,12 @@ public class VictoriaMetricsStateConvertUtils {
     static final Number PLAYER_VALUE_PLAY = 1; // Visible for testing
     static final Number PLAYER_VALUE_REWIND = 2; // Visible for testing
     static final Number PLAYER_VALUE_FASTFORWARD = 3; // Visible for testing
+    public static final String COMPONENT_HUE = "hue";
+    public static final String COMPONENT_SATURATION = "saturation";
+    public static final String COMPONENT_BRIGHTNESS = "brightness";
+    public static final String COMPONENT_LATITUDE = "latitude";
+    public static final String COMPONENT_LONGITUDE = "longitude";
+    public static final String COMPONENT_ALTITUDE = "altitude";
     private static final Logger LOGGER = LoggerFactory.getLogger(VictoriaMetricsStateConvertUtils.class);
 
     /**
@@ -100,6 +112,29 @@ public class VictoriaMetricsStateConvertUtils {
     }
 
     /**
+     * Converts a {@link State} consisting of several numbers to its components, each stored as a separate sample.
+     *
+     * @param state to be converted
+     * @return hue, saturation and brightness for HSBType, latitude, longitude and altitude for PointType,
+     *         <code>null</code> for all others
+     */
+    public static @Nullable Map<String, BigDecimal> stateToComponents(State state) {
+        Map<String, BigDecimal> components = new LinkedHashMap<>();
+        if (state instanceof HSBType hsb) {
+            components.put(COMPONENT_HUE, hsb.getHue().toBigDecimal());
+            components.put(COMPONENT_SATURATION, hsb.getSaturation().toBigDecimal());
+            components.put(COMPONENT_BRIGHTNESS, hsb.getBrightness().toBigDecimal());
+        } else if (state instanceof PointType point) {
+            components.put(COMPONENT_LATITUDE, point.getLatitude().toBigDecimal());
+            components.put(COMPONENT_LONGITUDE, point.getLongitude().toBigDecimal());
+            components.put(COMPONENT_ALTITUDE, point.getAltitude().toBigDecimal());
+        } else {
+            return null;
+        }
+        return components;
+    }
+
+    /**
      * Converts a value to a {@link State} which is suitable for the given {@link Item}. This is
      * needed for querying a {@link VictoriaMetricsHistoricItem}.
      *
@@ -127,7 +162,11 @@ public class VictoriaMetricsStateConvertUtils {
         if (item instanceof GroupItem groupItem) {
             item = groupItem.getBaseItem();
         }
-        if (item instanceof NumberItem numberItem) {
+        if (item instanceof ColorItem) { // before DimmerItem, which ColorItem extends
+            return value instanceof Map<?, ?> components ? toHSBType(components) : UnDefType.UNDEF;
+        } else if (item instanceof LocationItem) {
+            return value instanceof Map<?, ?> components ? toPointType(components) : UnDefType.UNDEF;
+        } else if (item instanceof NumberItem numberItem) {
             Unit<?> unit = numberItem.getUnit();
             if (unit == null) {
                 return new DecimalType(valueStr);
@@ -154,6 +193,25 @@ public class VictoriaMetricsStateConvertUtils {
             };
         } else if (item == null) {
             return new StringType(valueStr);
+        }
+        return UnDefType.UNDEF;
+    }
+
+    private static State toHSBType(Map<?, ?> components) {
+        if (components.get(COMPONENT_HUE) instanceof BigDecimal hue
+                && components.get(COMPONENT_SATURATION) instanceof BigDecimal saturation
+                && components.get(COMPONENT_BRIGHTNESS) instanceof BigDecimal brightness) {
+            return new HSBType(new DecimalType(hue), new PercentType(saturation), new PercentType(brightness));
+        }
+        return UnDefType.UNDEF;
+    }
+
+    private static State toPointType(Map<?, ?> components) {
+        if (components.get(COMPONENT_LATITUDE) instanceof BigDecimal latitude
+                && components.get(COMPONENT_LONGITUDE) instanceof BigDecimal longitude) {
+            Object altitude = components.get(COMPONENT_ALTITUDE);
+            return new PointType(new DecimalType(latitude), new DecimalType(longitude),
+                    new DecimalType(altitude instanceof BigDecimal decimal ? decimal : BigDecimal.ZERO));
         }
         return UnDefType.UNDEF;
     }
