@@ -70,6 +70,23 @@ final class DigestAuthentication {
                 && effectivePort(configured) == effectivePort(target);
     }
 
+    /**
+     * Checks if credentials configured for one URI may be sent to another one. This is the case for the same origin and
+     * for an upgrade from http to https on the same host.
+     *
+     * @param configured the URI the credentials were configured for
+     * @param target the URI which should receive the credentials
+     * @return <code>true</code> if the credentials may be sent to the target
+     */
+    static boolean isCredentialsAllowed(URI configured, URI target) {
+        if (isSameOrigin(configured, target)) {
+            return true;
+        }
+        final String host = configured.getHost();
+        return host != null && "http".equalsIgnoreCase(configured.getScheme())
+                && "https".equalsIgnoreCase(target.getScheme()) && host.equalsIgnoreCase(target.getHost());
+    }
+
     private static int effectivePort(URI uri) {
         if (uri.getPort() >= 0) {
             return uri.getPort();
