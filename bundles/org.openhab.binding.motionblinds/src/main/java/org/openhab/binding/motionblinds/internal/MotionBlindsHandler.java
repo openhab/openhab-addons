@@ -131,13 +131,11 @@ public class MotionBlindsHandler extends BaseThingHandler implements MessageList
         ipAddress = "";
 
         if (mac.length() != 12) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.config-error-invalid-mac");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.config-error-invalid-mac");
             return;
         }
         if (!AccessTokenCalculator.isValidKey(config.key)) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.config-error-invalid-key");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.config-error-invalid-key");
             return;
         }
 
@@ -366,7 +364,7 @@ public class MotionBlindsHandler extends BaseThingHandler implements MessageList
                 accessDenied = true;
                 updateAccessDeniedStatus();
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
         });
         if (!published) {
@@ -412,8 +410,7 @@ public class MotionBlindsHandler extends BaseThingHandler implements MessageList
     }
 
     private void updateAccessDeniedStatus() {
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                "@text/offline.config-error-access-denied");
+        updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.config-error-access-denied");
     }
 
     /**
