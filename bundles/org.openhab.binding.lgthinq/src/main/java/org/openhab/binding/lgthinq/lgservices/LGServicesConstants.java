@@ -229,6 +229,7 @@ public class LGServicesConstants {
      */
     public static final String DW_SNAPSHOT_WASHER_DRYER_NODE_V2 = "dishwasher";
     public static final String DW_POWER_OFF_VALUE = "POWEROFF";
+    public static final String DW_STATE_POWER_OFF_LABEL = "@DW_STATE_POWER_OFF_W";
     public static final String DW_STATE_COMPLETE = "END";
     public static final Map<String, String> CAP_DW_DOOR_STATE = Map.of("@CP_OFF_EN_W", "Close", "@CP_ON_EN_W",
             "Opened");

@@ -311,6 +311,17 @@ public abstract class DefaultSnapshotBuilder<S extends AbstractSnapshotDefinitio
     }
 
     /**
+     * Check if the key is described as a bit-value in the Options feature values of the capability.
+     *
+     * @param key Key of the bit-value
+     * @param capDef capability
+     * @return true if {@link #bitValue} can resolve the key
+     */
+    protected boolean hasBitValue(String key, final CapabilityDefinition capDef) {
+        return !getBitKey(key, capDef.getFeatureValuesRawData(), getSpecificCacheBitKey(capDef)).isEmpty();
+    }
+
+    /**
      * Retrieves a specific cache bit key based on the provided CapabilityDefinition object.
      *
      * @param capDef The CapabilityDefinition object representing the device capabilities.
