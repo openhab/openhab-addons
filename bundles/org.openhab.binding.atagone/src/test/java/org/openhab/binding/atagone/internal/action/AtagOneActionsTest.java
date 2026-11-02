@@ -37,6 +37,7 @@ import org.openhab.binding.atagone.internal.api.AtagOneApiClient;
 import org.openhab.binding.atagone.internal.dto.ControlUpdateDTO;
 import org.openhab.binding.atagone.internal.dto.DeviceConfigUpdateDTO;
 import org.openhab.binding.atagone.internal.dto.ScheduleDTO;
+import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.SIUnits;
@@ -62,6 +63,7 @@ class AtagOneActionsTest {
 
     private @Mock @NonNullByDefault({}) Thing thing;
     private @Mock @NonNullByDefault({}) HttpClient httpClient;
+    private @Mock @NonNullByDefault({}) HttpClientFactory httpClientFactory;
     private @Mock @NonNullByDefault({}) AtagOneApiClient apiClient;
     private @NonNullByDefault({}) AtagOneHandler handler;
     private @NonNullByDefault({}) AtagOneActions actions;
@@ -70,7 +72,7 @@ class AtagOneActionsTest {
     void setUp() throws ReflectiveOperationException {
         lenient().when(thing.getUID()).thenReturn(new ThingUID(THING_TYPE_THERMOSTAT, "test"));
         lenient().when(thing.getStatus()).thenReturn(ThingStatus.ONLINE);
-        handler = new AtagOneHandler(thing, httpClient, new AtagOneStateDescriptionProvider());
+        handler = new AtagOneHandler(thing, httpClient, httpClientFactory, new AtagOneStateDescriptionProvider());
         seedApiClient(apiClient);
         actions = new AtagOneActions();
         actions.setThingHandler(handler);
@@ -208,6 +210,23 @@ class AtagOneActionsTest {
         assertEquals(CH_MODE_FIREPLACE, control.getValue().ch_mode);
         assertEquals(3600L, control.getValue().fireplace_duration);
         assertEquals(3600L, control.getValue().ch_mode_duration);
+    }
+
+    @Test
+    void activateFireplaceRejectsMoreHoursThanThePortalOffers() throws Exception {
+        actions.activateFireplace(25);
+        actions.activateFireplace(3600);
+
+        verify(apiClient, never()).updateControl(any(), any());
+    }
+
+    @Test
+    void activateFireplaceAcceptsTheLongestDuration() throws Exception {
+        actions.activateFireplace(24);
+
+        ArgumentCaptor<ControlUpdateDTO> control = ArgumentCaptor.forClass(ControlUpdateDTO.class);
+        verify(apiClient, timeout(VERIFY_TIMEOUT_MS)).updateControl(control.capture(), any());
+        assertEquals(86400L, control.getValue().fireplace_duration);
     }
 
     @Test

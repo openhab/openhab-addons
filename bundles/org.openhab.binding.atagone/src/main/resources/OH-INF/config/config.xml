@@ -5,10 +5,32 @@
 	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
 
 	<config-description uri="thing-type:atagone:thermostat">
-		<parameter name="hostname" type="text" required="true">
+		<parameter name="connection" type="text">
+			<label>Connection</label>
+			<description>Automatic uses the portal when credentials are set, otherwise the local network.</description>
+			<options>
+				<option value="auto">Automatic</option>
+				<option value="local">Local</option>
+				<option value="remote">Remote</option>
+			</options>
+			<limitToOptions>true</limitToOptions>
+			<default>auto</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="email" type="text">
+			<context>email</context>
+			<label>Email</label>
+			<description>Email address of the portal account.</description>
+		</parameter>
+		<parameter name="password" type="text">
+			<context>password</context>
+			<label>Password</label>
+			<description>Password of the portal account.</description>
+		</parameter>
+		<parameter name="hostname" type="text">
 			<context>network-address</context>
 			<label>Hostname</label>
-			<description>IP address or hostname of the ATAG ONE thermostat.</description>
+			<description>Network address of the thermostat, needed for a local connection.</description>
 		</parameter>
 		<parameter name="port" type="integer" min="1" max="65535">
 			<label>Port</label>
@@ -18,7 +40,7 @@
 		</parameter>
 		<parameter name="refreshInterval" type="integer" unit="s" min="10" max="3600">
 			<label>Refresh Interval</label>
-			<description>How often the thermostat is polled (seconds).</description>
+			<description>How often the thermostat is polled, at least 60 with the portal connection.</description>
 			<default>30</default>
 		</parameter>
 		<parameter name="clientId" type="text">
