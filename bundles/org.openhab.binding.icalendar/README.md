@@ -25,9 +25,26 @@ Each `calendar` Thing requires the following configuration parameters:
 | `refreshTime`       | The frequency in minutes with which the calendar gets refreshed from the source.                                                                                                          | mandatory                     |
 | `username`          | The username for pulling the calendar. If set, the binding pulls the calendar using basic auth. Only valid in combination with `password`.                                                | optional                      |
 | `password`          | The password for pulling the calendar. If set, the binding pulls the calendar using basic auth. Only valid in combination with `username`.                                                | optional                      |
+| `caldav`            | If `true`, the `url` is queried as CalDAV calendar collection (read-only `REPORT` request) instead of a plain GET request. Use together with `username`/`password`. Default: `false`.        | optional                      |
 | `maxSize`           | The maximum size of the iCal-file in Mebibytes.                                                                                                                                           | mandatory (default available) |
 | `authorizationCode` | The authorization code to permit the execution of embedded command tags. If set, the binding checks that the authorization code in the command tag matches before executing any commands. | optional                      |
 | `userAgent`         | Some providers require a specific user agent header. If left empty, the default Jetty header is used.                                                                                     | optional                      |
+
+### CalDAV Calendars
+
+Some calendar servers do not offer a downloadable iCal file for private calendars and only provide access via CalDAV (e.g. iCloud, Nextcloud, Radicale, Baikal, SOGo, Synology).
+Set `caldav` to `true` and use the URL of the CalDAV calendar collection as `url`, together with `username` and `password`.
+The same authentication as for plain iCal URLs is used.
+Many providers require an app-specific password instead of the account password (e.g. iCloud).
+The binding only reads the calendar (`REPORT` request for all events); it never modifies it.
+
+Example collection URLs (the exact form depends on the server):
+
+- iCloud: `https://pXX-caldav.icloud.com/<dsid>/calendars/<calendar-id>/`
+- Nextcloud: `https://cloud.example.com/remote.php/dav/calendars/<user>/<calendar>/`
+- Radicale: `https://radicale.example.com/<user>/<calendar>/`
+
+Automatic discovery of calendar collections is not supported; the URL must point directly to the calendar collection.
 
 ### Configuration for `eventfilter`
 

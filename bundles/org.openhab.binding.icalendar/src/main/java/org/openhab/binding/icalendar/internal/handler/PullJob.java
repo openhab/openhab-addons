@@ -20,6 +20,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.concurrent.ExecutionException;
@@ -34,10 +35,12 @@ import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.api.Response;
 import org.eclipse.jetty.client.util.BasicAuthentication;
 import org.eclipse.jetty.client.util.InputStreamResponseListener;
+import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.icalendar.internal.logic.AbstractPresentableCalendar;
+import org.openhab.binding.icalendar.internal.logic.CalDavResponseConverter;
 import org.openhab.binding.icalendar.internal.logic.CalendarException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,12 +52,14 @@ import org.slf4j.LoggerFactory;
  * @author Michael Wodniok - Initial contribution
  * @author Michael Wodniok - Added better descriptions for some errors while
  *         downloading calendar
+ * @author YOUR FULL NAME - Added read-only CalDAV support
  */
 @NonNullByDefault
 class PullJob implements Runnable {
     private static final String TMP_FILE_PREFIX = "icalendardld";
 
     private final Authentication.@Nullable Result authentication;
+    private final boolean caldav;
     private final File destination;
     private final HttpClient httpClient;
     private final CalendarUpdateListener listener;
@@ -73,9 +78,13 @@ class PullJob implements Runnable {
      * @param destination The destination the downloaded calendar should be saved to.
      * @param maxSize The maximum size of the downloaded calendar in bytes.
      * @param listener The listener that should be fired when update succeed.
+     * @param userAgent Optional user agent header.
+     * @param caldav If true, the source is a CalDAV calendar collection, which is queried (read-only) with a REPORT
+     *            request instead of a plain GET.
      */
     public PullJob(HttpClient httpClient, URI sourceURI, @Nullable String username, @Nullable String password,
-            File destination, int maxSize, CalendarUpdateListener listener, @Nullable String userAgent) {
+            File destination, int maxSize, CalendarUpdateListener listener, @Nullable String userAgent,
+            boolean caldav) {
         this.httpClient = httpClient;
         this.sourceURI = sourceURI;
         if (username != null && password != null) {
@@ -87,14 +96,22 @@ class PullJob implements Runnable {
         this.listener = listener;
         this.maxSize = maxSize;
         this.userAgent = userAgent;
+        this.caldav = caldav;
     }
 
     @Override
     public void run() {
         // A calendar server can close a pooled connection without the client seeing it go, and the
         // next pull minutes later then fails with an EOFException. Do not keep the connection.
-        final Request request = httpClient.newRequest(sourceURI).followRedirects(true).method(HttpMethod.GET)
+        final Request request = httpClient.newRequest(sourceURI).followRedirects(true)
                 .timeout(HTTP_TIMEOUT_SECS, TimeUnit.SECONDS).header(HttpHeader.CONNECTION, "close");
+        if (caldav) {
+            request.method("REPORT").header("Depth", "1").content(
+                    new StringContentProvider(CalDavResponseConverter.CALENDAR_QUERY_BODY, StandardCharsets.UTF_8),
+                    "application/xml; charset=utf-8");
+        } else {
+            request.method(HttpMethod.GET);
+        }
         if (userAgent != null && !userAgent.isBlank()) {
             request.agent(userAgent);
         }
@@ -124,9 +141,10 @@ class PullJob implements Runnable {
             return;
         }
 
-        if (response.getStatus() != HttpStatus.OK_200) {
-            logger.warn("Response status for getting \"{}\" was {} instead of 200. Ignoring it.", sourceURI,
-                    response.getStatus());
+        final int expectedStatus = caldav ? HttpStatus.MULTI_STATUS_207 : HttpStatus.OK_200;
+        if (response.getStatus() != expectedStatus) {
+            logger.warn("Response status for getting \"{}\" was {} instead of {}. Ignoring it.", sourceURI,
+                    response.getStatus(), expectedStatus);
             request.abort(new IllegalStateException(
                     "Got response status " + response.getStatus() + " while requesting " + sourceURI));
             return;
@@ -176,6 +194,16 @@ class PullJob implements Runnable {
         } catch (IOException e) {
             logger.warn("Not able to write temporary file with downloaded iCal. Error Message is: {}", e.getMessage());
             return;
+        }
+
+        if (caldav) {
+            try (final FileInputStream xmlInput = new FileInputStream(tmpTargetFile)) {
+                final String iCal = CalDavResponseConverter.toICalendar(xmlInput);
+                Files.write(tmpTargetFile.toPath(), iCal.getBytes(StandardCharsets.UTF_8));
+            } catch (IOException | CalendarException e) {
+                logger.warn("Not able to process CalDAV response. Error message is: {}", e.getMessage());
+                return;
+            }
         }
 
         try (final FileInputStream tmpInput = new FileInputStream(tmpTargetFile)) {

@@ -40,4 +40,5 @@ public class ICalendarConfiguration {
     public String username;
     @Nullable
     public String userAgent;
+    public boolean caldav;
 }

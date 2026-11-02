@@ -50,6 +50,12 @@
 				<description>Password for fetching the calendar (usable in combination with user name in HTTP basic auth)</description>
 				<context>password</context>
 			</parameter>
+			<parameter name="caldav" type="boolean" required="false" groupName="source">
+				<label>CalDAV</label>
+				<description>Query the URL as CalDAV calendar collection (read-only) instead of downloading it with a plain GET
+					request. Needed for providers that only serve calendars via CalDAV.</description>
+				<default>false</default>
+			</parameter>
 			<parameter name="maxSize" type="integer" required="true" min="1" groupName="source">
 				<label>Maximum Calendar Size</label>
 				<description>The maximum size of the calendar in Megabytes</description>
