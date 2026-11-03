@@ -988,7 +988,7 @@ public class RobonectHandlerTest {
         subject.configureUnofficialChannels(true);
         when(robonectClientMock.getWeatherInfo()).thenReturn(
                 new ModelParser().parse("{\"successful\":true,\"service\":{\"interval\":30}}", WeatherInfo.class));
-        ChannelUID channel = new ChannelUID(new ThingUID("1:2:3"), "weather-interval");
+        ChannelUID channel = new ChannelUID(new ThingUID("1:2:3"), "weather-service-interval");
         subject.handleCommand(channel, RefreshType.REFRESH);
         verify(callbackMock).stateUpdated(channel, new QuantityType<>(30, Units.MINUTE));
         verify(robonectClientMock, never()).getWeatherIntervalViaWebInterface();
@@ -999,7 +999,7 @@ public class RobonectHandlerTest {
         when(robonectClientMock.getWeatherInfo())
                 .thenReturn(new ModelParser().parse("{\"successful\":true,\"service\":{}}", WeatherInfo.class));
         when(robonectClientMock.getWeatherIntervalViaWebInterface()).thenReturn(10);
-        ChannelUID channel = new ChannelUID(new ThingUID("1:2:3"), "weather-interval");
+        ChannelUID channel = new ChannelUID(new ThingUID("1:2:3"), "weather-service-interval");
         subject.handleCommand(channel, RefreshType.REFRESH);
         verify(robonectClientMock, never()).getWeatherIntervalViaWebInterface();
         subject.configureUnofficialChannels(true);
@@ -1017,7 +1017,7 @@ public class RobonectHandlerTest {
                 .parse("{\"successful\":true,\"service\":{},\"weather\":{\"rain\":20}}", WeatherInfo.class));
         when(robonectClientMock.getWeatherIntervalViaWebInterface())
                 .thenThrow(new RobonectCommunicationException("Unavailable")).thenReturn(null).thenReturn(10);
-        ChannelUID channel = new ChannelUID(new ThingUID("1:2:3"), "weather-interval");
+        ChannelUID channel = new ChannelUID(new ThingUID("1:2:3"), "weather-service-interval");
         subject.handleCommand(channel, RefreshType.REFRESH);
         subject.handleCommand(channel, RefreshType.REFRESH);
         verify(callbackMock, never()).stateUpdated(eq(channel), any());
@@ -1032,7 +1032,7 @@ public class RobonectHandlerTest {
         subject.configureUnofficialChannels(true);
         when(robonectClientMock.getWeatherInfo())
                 .thenReturn(new ModelParser().parse("{\"successful\":false}", WeatherInfo.class));
-        subject.handleCommand(new ChannelUID(new ThingUID("1:2:3"), "weather-interval"), RefreshType.REFRESH);
+        subject.handleCommand(new ChannelUID(new ThingUID("1:2:3"), "weather-service-interval"), RefreshType.REFRESH);
         verify(robonectClientMock, never()).getWeatherIntervalViaWebInterface();
     }
 
@@ -1054,11 +1054,11 @@ public class RobonectHandlerTest {
                 new DecimalType(3208628));
         verify(callbackMock).stateUpdated(new ChannelUID(new ThingUID("1:2:3"), "weather-rain"),
                 new QuantityType<>(20, Units.PERCENT));
-        verify(callbackMock).stateUpdated(new ChannelUID(new ThingUID("1:2:3"), "weather-max-rain"),
+        verify(callbackMock).stateUpdated(new ChannelUID(new ThingUID("1:2:3"), "weather-config-max-rain"),
                 new QuantityType<>(40, Units.PERCENT));
-        verify(callbackMock).stateUpdated(new ChannelUID(new ThingUID("1:2:3"), "weather-min-humidity"),
+        verify(callbackMock).stateUpdated(new ChannelUID(new ThingUID("1:2:3"), "weather-config-min-humidity"),
                 new QuantityType<>(20, Units.PERCENT));
-        verify(callbackMock).stateUpdated(new ChannelUID(new ThingUID("1:2:3"), "weather-max-humidity"),
+        verify(callbackMock).stateUpdated(new ChannelUID(new ThingUID("1:2:3"), "weather-config-max-humidity"),
                 new QuantityType<>(90, Units.PERCENT));
         verify(callbackMock).stateUpdated(new ChannelUID(new ThingUID("1:2:3"), "weather-icon"),
                 new StringType("https://openweathermap.org/img/w/%s.png"));
@@ -1127,6 +1127,13 @@ public class RobonectHandlerTest {
     }
 
     @Test
+    public void shouldRejectWeatherCommandWithIncompatibleUnit() {
+        subject.handleCommand(new ChannelUID(new ThingUID("1:2:3"), "weather-config-min-temperature"),
+                new QuantityType<>(1, org.openhab.core.library.unit.SIUnits.METRE));
+        verifyNoInteractions(robonectClientMock, commandScheduler);
+    }
+
+    @Test
     public void shouldNotWriteReadOnlyWeatherChannels() {
         subject.handleCommand(new ChannelUID(new ThingUID("1:2:3"), "weather-location-country"), new StringType("de"));
         subject.handleCommand(new ChannelUID(new ThingUID("1:2:3"), "weather-condition-too-cold"), OnOffType.ON);
@@ -1165,8 +1172,9 @@ public class RobonectHandlerTest {
                 """, WeatherInfo.class);
         when(robonectClientMock.updateWeather("service", "1")).thenReturn(result);
         when(robonectClientMock.getWeatherInfo()).thenReturn(result);
-        subject.handleCommand(new ChannelUID(new ThingUID("1:2:3"), "weather-enabled"), OnOffType.ON);
-        verify(callbackMock).stateUpdated(new ChannelUID(new ThingUID("1:2:3"), "weather-enabled"), OnOffType.ON);
+        subject.handleCommand(new ChannelUID(new ThingUID("1:2:3"), "weather-service-enabled"), OnOffType.ON);
+        verify(callbackMock).stateUpdated(new ChannelUID(new ThingUID("1:2:3"), "weather-service-enabled"),
+                OnOffType.ON);
         verify(robonectClientMock, never()).getWeatherInfo();
         runScheduledRefresh();
         verify(robonectClientMock).getWeatherInfo();
@@ -1207,7 +1215,7 @@ public class RobonectHandlerTest {
     public void shouldScheduleReadWhenSuccessfulResponseHasNoState() {
         when(robonectClientMock.updateWeather("service", "1"))
                 .thenReturn(new ModelParser().parse("{\"successful\":true}", WeatherInfo.class));
-        subject.handleCommand(new ChannelUID(new ThingUID("1:2:3"), "weather-enabled"), OnOffType.ON);
+        subject.handleCommand(new ChannelUID(new ThingUID("1:2:3"), "weather-service-enabled"), OnOffType.ON);
         verify(callbackMock, never()).stateUpdated(any(), any());
         verify(robonectClientMock, never()).getWeatherInfo();
         verify(commandScheduler).schedule(any(Runnable.class), eq(5L), eq(TimeUnit.SECONDS));
@@ -1288,7 +1296,7 @@ public class RobonectHandlerTest {
     public void shouldIgnoreSupersededReadsAndCancelReadsOnDispose() {
         when(robonectClientMock.updateWeather("service", "1"))
                 .thenReturn(new ModelParser().parse("{\"successful\":true}", WeatherInfo.class));
-        ChannelUID channel = new ChannelUID(new ThingUID("1:2:3"), "weather-enabled");
+        ChannelUID channel = new ChannelUID(new ThingUID("1:2:3"), "weather-service-enabled");
         subject.handleCommand(channel, OnOffType.ON);
         subject.handleCommand(channel, OnOffType.ON);
         var refreshes = ArgumentCaptor.forClass(Runnable.class);
@@ -1312,7 +1320,7 @@ public class RobonectHandlerTest {
             subject.dispose();
             return result;
         });
-        subject.handleCommand(new ChannelUID(new ThingUID("1:2:3"), "weather-enabled"), OnOffType.ON);
+        subject.handleCommand(new ChannelUID(new ThingUID("1:2:3"), "weather-service-enabled"), OnOffType.ON);
         clearInvocations(callbackMock);
         runScheduledRefresh();
         verify(callbackMock, never()).stateUpdated(any(), any());
@@ -1322,9 +1330,27 @@ public class RobonectHandlerTest {
     public void shouldNotScheduleReadAfterRejectedWrite() {
         when(robonectClientMock.updateWeather("service", "1"))
                 .thenReturn(new ModelParser().parse("{\"successful\":false}", WeatherInfo.class));
-        subject.handleCommand(new ChannelUID(new ThingUID("1:2:3"), "weather-enabled"), OnOffType.ON);
+        subject.handleCommand(new ChannelUID(new ThingUID("1:2:3"), "weather-service-enabled"), OnOffType.ON);
         verifyNoInteractions(commandScheduler);
         verify(callbackMock, never()).stateUpdated(any(), any());
+    }
+
+    @Test
+    public void shouldCreateAndRemoveJobTimeChannelsWithAjaxScraping() {
+        useRealThingForPushMode();
+        subject.configureAjaxChannels(false);
+        assertTrue(subject.getThing().getChannels().isEmpty());
+        subject.configureUnofficialChannels(true);
+        subject.configureAjaxChannels(true);
+        subject.configureAjaxChannels(true);
+        assertEquals(3, subject.getThing().getChannels().size());
+        assertEquals("DateTime", subject.getThing().getChannel("job-start").getAcceptedItemType());
+        assertEquals("DateTime", subject.getThing().getChannel("job-end").getAcceptedItemType());
+        subject.configureAjaxChannels(false);
+        assertNull(subject.getThing().getChannel("job-start"));
+        assertNull(subject.getThing().getChannel("job-end"));
+        assertNotNull(subject.getThing().getChannel("push-mode"));
+        verifyNoInteractions(robonectClientMock);
     }
 
     @Test

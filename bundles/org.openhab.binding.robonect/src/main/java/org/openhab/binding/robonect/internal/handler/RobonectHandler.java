@@ -20,12 +20,8 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.IntSummaryStatistics;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -35,7 +31,6 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.BooleanSupplier;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -46,72 +41,13 @@ import org.openhab.binding.robonect.internal.RobonectClient;
 import org.openhab.binding.robonect.internal.RobonectCommunicationException;
 import org.openhab.binding.robonect.internal.RobonectEndpoint;
 import org.openhab.binding.robonect.internal.RobonectPushServlet;
-import org.openhab.binding.robonect.internal.config.JobChannelConfig;
 import org.openhab.binding.robonect.internal.config.RobonectConfig;
-import org.openhab.binding.robonect.internal.model.AccessPoint;
-import org.openhab.binding.robonect.internal.model.Address;
-import org.openhab.binding.robonect.internal.model.AjaxInfo;
-import org.openhab.binding.robonect.internal.model.Battery;
-import org.openhab.binding.robonect.internal.model.BatteryCapacity;
-import org.openhab.binding.robonect.internal.model.BatteryInfo;
-import org.openhab.binding.robonect.internal.model.BladeMotor;
-import org.openhab.binding.robonect.internal.model.Clock;
-import org.openhab.binding.robonect.internal.model.Door;
-import org.openhab.binding.robonect.internal.model.DoorInfo;
-import org.openhab.binding.robonect.internal.model.DoorState;
-import org.openhab.binding.robonect.internal.model.DriveMotor;
-import org.openhab.binding.robonect.internal.model.DriveMotors;
-import org.openhab.binding.robonect.internal.model.ErrorEntry;
-import org.openhab.binding.robonect.internal.model.ErrorList;
-import org.openhab.binding.robonect.internal.model.ExtInfo;
-import org.openhab.binding.robonect.internal.model.Extension;
-import org.openhab.binding.robonect.internal.model.Extensions;
-import org.openhab.binding.robonect.internal.model.Host;
-import org.openhab.binding.robonect.internal.model.HourGeneral;
-import org.openhab.binding.robonect.internal.model.HourInfo;
-import org.openhab.binding.robonect.internal.model.MotorInfo;
-import org.openhab.binding.robonect.internal.model.MowerInfo;
-import org.openhab.binding.robonect.internal.model.MowerMode;
-import org.openhab.binding.robonect.internal.model.Name;
-import org.openhab.binding.robonect.internal.model.PortalInfo;
-import org.openhab.binding.robonect.internal.model.Push;
-import org.openhab.binding.robonect.internal.model.PushInfo;
-import org.openhab.binding.robonect.internal.model.PushServer;
-import org.openhab.binding.robonect.internal.model.PushTriggers;
-import org.openhab.binding.robonect.internal.model.Remote;
-import org.openhab.binding.robonect.internal.model.RemoteInfo;
-import org.openhab.binding.robonect.internal.model.RobonectAnswer;
-import org.openhab.binding.robonect.internal.model.Sensor;
-import org.openhab.binding.robonect.internal.model.Status;
-import org.openhab.binding.robonect.internal.model.TimerFull;
-import org.openhab.binding.robonect.internal.model.TimerInfo;
-import org.openhab.binding.robonect.internal.model.TimersInfo;
-import org.openhab.binding.robonect.internal.model.VersionInfo;
-import org.openhab.binding.robonect.internal.model.Weather;
-import org.openhab.binding.robonect.internal.model.WeatherCondition;
-import org.openhab.binding.robonect.internal.model.WeatherConfig;
-import org.openhab.binding.robonect.internal.model.WeatherInfo;
-import org.openhab.binding.robonect.internal.model.WeatherLocation;
-import org.openhab.binding.robonect.internal.model.WeatherService;
-import org.openhab.binding.robonect.internal.model.Weekdays;
-import org.openhab.binding.robonect.internal.model.WifiStation;
-import org.openhab.binding.robonect.internal.model.WireInfo;
-import org.openhab.binding.robonect.internal.model.WlanInfo;
-import org.openhab.binding.robonect.internal.model.cmd.DoorCommand.Direction;
-import org.openhab.binding.robonect.internal.model.cmd.ModeCommand;
 import org.openhab.binding.robonect.internal.model.cmd.ServiceCommand.Operation;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.library.types.DateTimeType;
-import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
-import org.openhab.core.library.types.PercentType;
-import org.openhab.core.library.types.QuantityType;
-import org.openhab.core.library.types.StopMoveType;
 import org.openhab.core.library.types.StringType;
-import org.openhab.core.library.types.UpDownType;
-import org.openhab.core.library.unit.SIUnits;
-import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -166,21 +102,19 @@ public class RobonectHandler extends BaseThingHandler {
     private volatile ZoneId timeZone;
 
     private RobonectClient robonectClient;
+    private final RobonectMowerHandler mowerHandler;
+    private final RobonectDiagnosticsHandler diagnosticsHandler;
+    private final RobonectPushHandler pushHandler;
+    private final RobonectTimerHandler timerHandler;
+    private final RobonectRemoteStartHandler remoteStartHandler;
+    private final RobonectWeatherHandler weatherHandler;
     private final @Nullable RobonectPushServlet pushServlet;
     private boolean ajaxUiScraping;
     private volatile boolean useUnofficialApi;
 
-    private static final Set<String> JOB_TIMER_LABELS = Set.of("Auftrag", "Job", "Travail", "Ordine", "Jobb");
-    private static final Set<String> END_OF_DAY_LABELS = Set.of("Feierabend", "End of day", "Fin de journée de travail",
-            "Fine lavoro giornata", "Slutet av dagen");
-    private static final Pattern JOB_TIME_PATTERN = Pattern.compile("^(?:(\\d{1,2}:\\d{2})\\D+)?(\\d{1,2}:\\d{2})$");
-    private static final Pattern TIME_PATTERN = Pattern.compile("^(\\d{1,2}):(\\d{2})$");
     private static final Pattern BATTERY_CHANNEL_PATTERN = Pattern.compile("battery-\\d+-.+");
-    private static final Pattern TIMER_CHANNEL_PATTERN = Pattern.compile("timer-\\d+-.+");
     private static final Pattern WIRE_CHANNEL_PATTERN = Pattern.compile("wire-sensor-\\d+-.+");
     private static final Pattern PUSH_TRIGGER_CHANNEL_PATTERN = Pattern.compile("push-trigger-(.+)-(name|enter|leave)");
-    private static final Pattern PUSH_TRIGGER_COMMAND_PATTERN = Pattern
-            .compile("push-trigger-(\\d+)-[a-z0-9_-]+-(enter|leave)");
     private static final Pattern REMOTE_CHANNEL_PATTERN = Pattern
             .compile("remote-([1-5])-(name|distance|proportion|visible|path|corridor-cut)");
 
@@ -202,6 +136,12 @@ public class RobonectHandler extends BaseThingHandler {
         this.timeZoneProvider = timeZoneProvider;
         timeZone = timeZoneProvider.getTimeZone();
         this.pushServlet = pushServlet;
+        diagnosticsHandler = new RobonectDiagnosticsHandler(this);
+        mowerHandler = new RobonectMowerHandler(this, diagnosticsHandler);
+        pushHandler = new RobonectPushHandler(this);
+        timerHandler = new RobonectTimerHandler(this);
+        remoteStartHandler = new RobonectRemoteStartHandler(this);
+        weatherHandler = new RobonectWeatherHandler(this);
     }
 
     @Override
@@ -226,7 +166,7 @@ public class RobonectHandler extends BaseThingHandler {
         switch (channelUID.getId()) {
             case CHANNEL_MOWER_NAME:
                 if (command instanceof StringType stringCommand) {
-                    updateName(stringCommand);
+                    mowerHandler.updateName(stringCommand);
                 } else {
                     logger.debug("Got name update of type {} but StringType is expected.",
                             command.getClass().getName());
@@ -235,7 +175,7 @@ public class RobonectHandler extends BaseThingHandler {
 
             case CHANNEL_STATUS_MODE:
                 if (command instanceof StringType) {
-                    setMowerMode(command);
+                    mowerHandler.setMowerMode(command);
                 } else {
                     logger.debug("Got job remote start update of type {} but StringType is expected.",
                             command.getClass().getName());
@@ -244,7 +184,7 @@ public class RobonectHandler extends BaseThingHandler {
 
             case CHANNEL_MOWER_START:
                 if (command instanceof OnOffType onOffCommand) {
-                    handleStartStop(onOffCommand);
+                    mowerHandler.handleStartStop(onOffCommand);
                 } else {
                     logger.debug("Got stopped update of type {} but OnOffType is expected.",
                             command.getClass().getName());
@@ -253,7 +193,7 @@ public class RobonectHandler extends BaseThingHandler {
 
             case CHANNEL_JOB:
                 if (command instanceof OnOffType onOffCommand) {
-                    handleJobCommand(channelUID, onOffCommand);
+                    mowerHandler.handleJobCommand(channelUID, onOffCommand);
                 } else {
                     logger.debug("Got job update of type {} but OnOffType is expected.", command.getClass().getName());
                 }
@@ -261,22 +201,22 @@ public class RobonectHandler extends BaseThingHandler {
 
             case CHANNEL_RESET_ERROR:
                 if (command == OnOffType.ON) {
-                    resetErrors();
+                    mowerHandler.resetErrors();
                 } else {
                     logger.debug("Got error reset command {} but On is expected.", command);
                 }
                 break;
             case CHANNEL_SERVICE_REBOOT:
-                performServiceOperation(command, Operation.REBOOT);
+                mowerHandler.performServiceOperation(command, Operation.REBOOT);
                 break;
             case CHANNEL_SERVICE_SHUTDOWN:
-                performServiceOperation(command, Operation.SHUTDOWN);
+                mowerHandler.performServiceOperation(command, Operation.SHUTDOWN);
                 break;
             case CHANNEL_SERVICE_SLEEP:
-                performServiceOperation(command, Operation.SLEEP);
+                mowerHandler.performServiceOperation(command, Operation.SLEEP);
                 break;
             case CHANNEL_DOOR_STATE:
-                handleDoorCommand(command);
+                mowerHandler.handleDoorCommand(command);
                 break;
             case CHANNEL_WEATHER_ENABLED:
             case CHANNEL_WEATHER_INTERVAL:
@@ -289,263 +229,30 @@ public class RobonectHandler extends BaseThingHandler {
             case CHANNEL_WEATHER_SKIP_NIGHT:
             case CHANNEL_WEATHER_LOCATION_CITY_ID:
             case CHANNEL_WEATHER_LOCATION_ZIP:
-                updateWeather(channelUID.getId(), command);
+                weatherHandler.handleCommand(channelUID.getId(), command);
                 break;
             case CHANNEL_PUSH_URL:
             case CHANNEL_PUSH_USERNAME:
             case CHANNEL_PUSH_PASSWORD:
             case CHANNEL_PUSH_INTERVAL:
-                updatePush(channelUID.getId(), command);
+                pushHandler.updatePush(channelUID.getId(), command);
                 break;
             case CHANNEL_PUSH_MODE:
-                updatePushMode(command);
+                pushHandler.updatePushMode(command);
                 break;
             default:
                 if (REMOTE_CHANNEL_PATTERN.matcher(channelUID.getId()).matches()) {
-                    updateRemote(channelUID.getId(), command);
+                    remoteStartHandler.handleCommand(channelUID.getId(), command);
                 } else if (channelUID.getId().startsWith("timer-")) {
-                    updateTimer(channelUID.getId(), command);
+                    timerHandler.handleCommand(channelUID.getId(), command);
                 } else if (channelUID.getId().startsWith("push-trigger-")) {
-                    updatePushTrigger(channelUID.getId(), command);
+                    pushHandler.updatePushTrigger(channelUID.getId(), command);
                 }
                 break;
         }
     }
 
-    /** Sends a remote-start point setting and refreshes all values returned by the API. */
-    private void updateRemote(String channelId, Command command) {
-        Matcher matcher = REMOTE_CHANNEL_PATTERN.matcher(channelId);
-        if (!matcher.matches()) {
-            return;
-        }
-        int remoteStart = Integer.parseInt(matcher.group(1));
-        String setting = matcher.group(2);
-        if (setting.equals("visible") || setting.equals("path") || setting.equals("corridor-cut")) {
-            updateRemoteViaWebInterface(remoteStart, setting, command);
-            return;
-        }
-        String name = null;
-        Integer distance = null;
-        Integer proportion = null;
-        if (setting.equals("name") && command instanceof StringType string) {
-            name = string.toString();
-            if (name.length() > 16) {
-                logger.warn("Remote start {} name exceeds 16 characters; truncating it", remoteStart);
-                name = name.substring(0, 16);
-            }
-        } else if ((setting.equals("distance") || setting.equals("proportion")) && (command instanceof Number num)) {
-            try {
-                if (setting.equals("distance")) {
-                    int value = num instanceof QuantityType<?> quantity ? quantity.toUnit(SIUnits.METRE).intValue()
-                            : num.intValue();
-                    if (value < 0 || value > 300) {
-                        logger.warn("Ignoring invalid remote start distance {}", value);
-                        return;
-                    }
-                    distance = value;
-                } else {
-                    int value = num instanceof QuantityType<?> quantity ? quantity.toUnit(Units.PERCENT).intValue()
-                            : num.intValue();
-                    if (value < 0 || value > 100) {
-                        logger.warn("Ignoring invalid remote start proportion {}", value);
-                        return;
-                    }
-                    proportion = value;
-                }
-            } catch (ArithmeticException e) {
-                logger.warn("Ignoring non-integer remote start {} value", setting);
-                return;
-            }
-        } else {
-            return;
-        }
-        cancelCommandRefresh("remote");
-        RemoteInfo result = robonectClient.updateRemoteStart(remoteStart, name, distance, proportion);
-        if (result.isSuccessful()) {
-            applyRemoteInfo(result);
-            scheduleCommandRefresh("remote", this::refreshRemoteInfo);
-        }
-    }
-
-    /** Updates a setting supported only by the web interface endpoint. */
-    private void updateRemoteViaWebInterface(int remoteStart, String setting, Command command) {
-        if (!useUnofficialApi) {
-            logger.warn("Cannot update remote start {} {} because the unofficial API is disabled", remoteStart,
-                    setting);
-            return;
-        }
-        if ((setting.equals("visible") || setting.equals("corridor-cut")) && !(command instanceof OnOffType)
-                || setting.equals("path") && !(command instanceof DecimalType)) {
-            return;
-        }
-
-        RemoteInfo info = robonectClient.getRemoteInfo();
-        Remote remote = switch (remoteStart) {
-            case 1 -> info.getRemoteStart1();
-            case 2 -> info.getRemoteStart2();
-            case 3 -> info.getRemoteStart3();
-            case 4 -> info.getRemoteStart4();
-            case 5 -> info.getRemoteStart5();
-            default -> null;
-        };
-        if (!info.isSuccessful() || remote == null) {
-            logger.debug("Cannot update remote start {} because its current settings are incomplete", remoteStart);
-            return;
-        }
-
-        @Nullable
-        String name = remote.getName();
-        @Nullable
-        Integer proportion = remote.getProportion();
-        @Nullable
-        Integer distance = remote.getDistance();
-        @Nullable
-        Integer currentPath = remote.getPath();
-        @Nullable
-        Boolean currentVisible = remote.getVisible();
-        @Nullable
-        Boolean currentCorridorCut = remote.getCorridorcut();
-        if (name == null || proportion == null || distance == null || currentPath == null || currentVisible == null
-                || currentCorridorCut == null) {
-            logger.debug("Cannot update remote start {} because its current settings are incomplete", remoteStart);
-            return;
-        }
-
-        boolean visible = currentVisible;
-        boolean corridorCut = currentCorridorCut;
-        int path = currentPath;
-        if (setting.equals("visible")) {
-            visible = command == OnOffType.ON;
-        } else if (setting.equals("corridor-cut")) {
-            corridorCut = command == OnOffType.ON;
-        } else {
-            try {
-                path = ((DecimalType) command).toBigDecimal().intValueExact();
-            } catch (ArithmeticException e) {
-                logger.debug("Ignoring non-integer remote start path value");
-                return;
-            }
-        }
-        cancelCommandRefresh("remote");
-        robonectClient.updateRemoteStartViaWebInterface(remoteStart, name, proportion, distance, path, visible,
-                corridorCut);
-        scheduleCommandRefresh("remote", this::refreshRemoteInfo);
-    }
-
-    /** Updates a single setting for a configurable timer. */
-    private void updateTimer(String channelId, Command command) {
-        String[] parts = channelId.split("-");
-        if (parts.length != 3)
-            return;
-        try {
-            int timer = Integer.parseInt(parts[1]);
-            String setting = parts[2];
-            String value;
-            String parameter;
-            if (command instanceof OnOffType onOff && switch (setting) {
-                case "enabled", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday" -> true;
-                default -> false;
-            }) {
-                parameter = switch (setting) {
-                    case "enabled" -> "enable";
-                    case "monday" -> "mo";
-                    case "tuesday" -> "tu";
-                    case "wednesday" -> "we";
-                    case "thursday" -> "th";
-                    case "friday" -> "fr";
-                    case "saturday" -> "sa";
-                    default -> "su";
-                };
-                value = onOff == OnOffType.ON ? "1" : "0";
-            } else if (command instanceof DateTimeType dateTime && (setting.equals("start") || setting.equals("end"))) {
-                LocalTime time = dateTime.getZonedDateTime(timeZone).toLocalTime();
-                parameter = setting;
-                value = time.format(DateTimeFormatter.ofPattern("HH:mm"));
-            } else {
-                return;
-            }
-            cancelCommandRefresh("timer");
-            TimerInfo result = robonectClient.updateTimer(timer, parameter, value);
-            if (result.isSuccessful()) {
-                TimerFull updatedTimer = result.getTimer();
-                if (updatedTimer != null) {
-                    updateTimerState(updatedTimer);
-                }
-                scheduleCommandRefresh("timer", this::refreshTimersInfo);
-            }
-        } catch (NumberFormatException e) {
-            logger.debug("Ignoring malformed timer channel {}", channelId);
-        }
-    }
-
-    /** Updates timer channels from a complete timer response. */
-    private void updateTimerState(TimerFull timer) {
-        Integer id = timer.getId();
-        if (id == null || id < 0)
-            return;
-        String prefix = "timer-" + id + "-";
-        if (timer.getEnabled() != null)
-            updateState(prefix + "enabled", OnOffType.from(timer.getEnabled()));
-        updateTimerTime(prefix + "start", timer.getStart());
-        updateTimerTime(prefix + "end", timer.getEnd());
-        Weekdays days = timer.getWeekdays();
-        if (days == null)
-            return;
-        updateTimerDay(prefix, "monday", days.getMo());
-        updateTimerDay(prefix, "tuesday", days.getTu());
-        updateTimerDay(prefix, "wednesday", days.getWe());
-        updateTimerDay(prefix, "thursday", days.getTh());
-        updateTimerDay(prefix, "friday", days.getFr());
-        updateTimerDay(prefix, "saturday", days.getSa());
-        updateTimerDay(prefix, "sunday", days.getSu());
-    }
-
-    private void updateTimerTime(String channel, String time) {
-        if (time != null && time.matches("\\d{2}:\\d{2}")) {
-            int hours = Integer.parseInt(time.substring(0, 2));
-            int minutes = Integer.parseInt(time.substring(3, 5));
-            if (hours >= 24 || minutes >= 60) {
-                return;
-            }
-            updateState(channel, toTimeOnlyDateTime(LocalTime.of(hours, minutes)));
-        }
-    }
-
-    private void updateTimerDay(String prefix, String day, Boolean value) {
-        if (value != null)
-            updateState(prefix + day, OnOffType.from(value));
-    }
-
-    /** Refreshes all editable timer configurations. */
-    private void refreshTimersInfo() {
-        TimersInfo info = robonectClient.getTimersInfo();
-        @Nullable
-        List<TimerFull> timers = info.getTimers();
-        if (info.isSuccessful() && timers != null) {
-            updateTimerChannels(timers);
-            timers.forEach(this::updateTimerState);
-        }
-    }
-
-    private void updateTimerChannels(List<TimerFull> timers) {
-        Set<Integer> timerIds = timers.stream().map(TimerFull::getId).filter(id -> id != null && id >= 0)
-                .collect(Collectors.toSet());
-        List<Channel> channels = new ArrayList<>();
-        for (Integer id : timerIds.stream().sorted().toList()) {
-            String prefix = "timer-" + id + "-";
-            String label = "Timer " + id + " ";
-            channels.add(createChannel(prefix + "enabled", "Switch", "timerEnabledType", label + "Enabled"));
-            channels.add(createChannel(prefix + "start", "DateTime", "timerTimeType", label + "Start Time"));
-            channels.add(createChannel(prefix + "end", "DateTime", "timerTimeType", label + "End Time"));
-            for (String day : List.of("monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday")) {
-                channels.add(createChannel(prefix + day, "Switch", "timerDayType",
-                        label + Character.toUpperCase(day.charAt(0)) + day.substring(1)));
-            }
-        }
-        updateDynamicChannels(TIMER_CHANNEL_PATTERN, channels);
-    }
-
-    private Channel createChannel(String id, String itemType, String channelType, String label) {
+    Channel createChannel(String id, String itemType, String channelType, String label) {
         Channel existing = getThing().getChannel(id);
         if (existing != null) {
             return ChannelBuilder.create(existing).withLabel(label).build();
@@ -554,7 +261,7 @@ public class RobonectHandler extends BaseThingHandler {
                 .withType(new ChannelTypeUID(BINDING_ID, channelType)).withLabel(label).build();
     }
 
-    private void updateDynamicChannels(Pattern channelPattern, List<Channel> desiredChannels) {
+    void updateDynamicChannels(Pattern channelPattern, List<Channel> desiredChannels) {
         List<Channel> existingChannels = getThing().getChannels();
         Set<ChannelUID> current = existingChannels.stream()
                 .filter(channel -> channelPattern.matcher(channel.getUID().getId()).matches()).map(Channel::getUID)
@@ -572,7 +279,7 @@ public class RobonectHandler extends BaseThingHandler {
         updateThing(editThing().withChannels(channels).build());
     }
 
-    private void addDynamicChannels(List<Channel> desiredChannels) {
+    void addDynamicChannels(List<Channel> desiredChannels) {
         List<Channel> channels = new ArrayList<>(getThing().getChannels());
         boolean changed = false;
         for (Channel channel : desiredChannels) {
@@ -591,14 +298,14 @@ public class RobonectHandler extends BaseThingHandler {
         updateThing(editThing().withChannels(channels).build());
     }
 
-    private void cancelCommandRefresh(String endpoint) {
+    void cancelCommandRefresh(String endpoint) {
         CommandRefresh previous = commandRefreshJobs.remove(endpoint);
         if (previous != null) {
             previous.cancel();
         }
     }
 
-    private void scheduleCommandRefresh(String endpoint, Runnable refresh) {
+    void scheduleCommandRefresh(String endpoint, Runnable refresh) {
         if (disposed) {
             return;
         }
@@ -647,7 +354,7 @@ public class RobonectHandler extends BaseThingHandler {
         }
     }
 
-    private boolean canPublishState() {
+    boolean canPublishState() {
         // Responses may finish after disposal, reinitialization, or a newer command superseding a delayed read.
         BooleanSupplier active = commandRefreshActive.get();
         BooleanSupplier poll = pollingActive.get();
@@ -659,6 +366,34 @@ public class RobonectHandler extends BaseThingHandler {
         if (canPublishState()) {
             super.updateState(channelUID, state);
         }
+    }
+
+    void setState(String channelId, State state) {
+        updateState(new ChannelUID(getThing().getUID(), channelId), state);
+    }
+
+    RobonectClient getRobonectClient() {
+        return robonectClient;
+    }
+
+    Map<String, String> editEndpointProperties() {
+        return editProperties();
+    }
+
+    void updateEndpointProperties(Map<String, String> properties) {
+        updateProperties(properties);
+    }
+
+    ZoneId getTimeZone() {
+        return timeZone;
+    }
+
+    boolean isAjaxUiScraping() {
+        return ajaxUiScraping;
+    }
+
+    boolean isUnofficialApiEnabled() {
+        return useUnofficialApi;
     }
 
     @Override
@@ -680,267 +415,13 @@ public class RobonectHandler extends BaseThingHandler {
         }
     }
 
-    /**
-     * Updates the weather measurements and current mowing restriction.
-     */
-    private void refreshWeatherInfo() {
-        applyWeatherInfo(robonectClient.getWeatherInfo());
-    }
-
-    private void applyWeatherInfo(WeatherInfo info) {
-        Weather weather = info.getWeather();
-        if (!info.isSuccessful()) {
-            return;
-        }
-        if (weather != null) {
-            updateSwitch(CHANNEL_WEATHER_BREAK, weather.getWeatherBreak());
-            updateWeatherPercentage(CHANNEL_WEATHER_RAIN, weather.getRain());
-            Integer temperature = weather.getTemperature();
-            if (temperature != null)
-                updateState(CHANNEL_WEATHER_TEMPERATURE, new QuantityType<>(temperature, SIUnits.CELSIUS));
-            Integer humidity = weather.getHumidity();
-            if (humidity != null)
-                updateState(CHANNEL_WEATHER_HUMIDITY, new QuantityType<>(humidity, Units.PERCENT));
-            updateSwitch(CHANNEL_WEATHER_DAY, weather.getDay());
-            if (weather.getCity() != null)
-                updateState(CHANNEL_WEATHER_CITY, new StringType(weather.getCity()));
-            Integer remaining = weather.getRemaining();
-            if (remaining != null)
-                updateState(CHANNEL_WEATHER_REMAINING, new QuantityType<>(remaining, Units.SECOND));
-            updateWeatherDateTime(CHANNEL_WEATHER_SUNRISE, weather.getSunrise());
-            updateWeatherDateTime(CHANNEL_WEATHER_SUNSET, weather.getSunset());
-            if (weather.getIcon() != null) {
-                updateState(CHANNEL_WEATHER_ICON, new StringType(weather.getIcon()));
-            }
-            Clock timestamp = weather.getTimestamp();
-            if (timestamp != null) {
-                updateWeatherDateTime(CHANNEL_WEATHER_TIMESTAMP, timestamp.getUnix());
-            }
-            WeatherCondition condition = weather.getCondition();
-            if (condition != null) {
-                updateSwitch(CHANNEL_WEATHER_CONDITION_TOO_RAINY, condition.getTooRainy());
-                updateSwitch(CHANNEL_WEATHER_CONDITION_TOO_COLD, condition.getTooCold());
-                updateSwitch(CHANNEL_WEATHER_CONDITION_TOO_WARM, condition.getTooWarm());
-                updateSwitch(CHANNEL_WEATHER_CONDITION_TOO_DRY, condition.getTooDry());
-                updateSwitch(CHANNEL_WEATHER_CONDITION_TOO_WET, condition.getTooWet());
-                updateSwitch(CHANNEL_WEATHER_CONDITION_DAY, condition.getDay());
-                updateSwitch(CHANNEL_WEATHER_CONDITION_NIGHT, condition.getNight());
-            }
-        }
-        WeatherService service = info.getService();
-        if (service != null) {
-            WeatherLocation location = service.getLocation();
-            if (location != null) {
-                updateWeatherNumber(CHANNEL_WEATHER_LOCATION_CITY_ID, location.getCityId());
-                if (location.getZip() != null) {
-                    updateState(CHANNEL_WEATHER_LOCATION_ZIP, new StringType(location.getZip()));
-                }
-                if (location.getCountry() != null) {
-                    updateState(CHANNEL_WEATHER_LOCATION_COUNTRY, new StringType(location.getCountry()));
-                }
-            }
-            updateSwitch(CHANNEL_WEATHER_ENABLED, service.getEnable());
-            WeatherConfig config = service.getConfig();
-            if (config != null) {
-                updateWeatherPercentage(CHANNEL_WEATHER_MAX_RAIN, config.getMaxrain());
-                updateWeatherTemperature(CHANNEL_WEATHER_MIN_TEMPERATURE, config.getMintemp());
-                updateWeatherTemperature(CHANNEL_WEATHER_MAX_TEMPERATURE, config.getMaxtemp());
-                updateWeatherPercentage(CHANNEL_WEATHER_MIN_HUMIDITY, config.getMinhumidity());
-                updateWeatherPercentage(CHANNEL_WEATHER_MAX_HUMIDITY, config.getMaxhumidity());
-                updateSwitch(CHANNEL_WEATHER_SKIP_DAY, config.getDontmowduringday());
-                updateSwitch(CHANNEL_WEATHER_SKIP_NIGHT, config.getDontmowduringnight());
-            }
-            Integer interval = service.getInterval();
-            if (interval == null && useUnofficialApi && canPublishState()) {
-                try {
-                    interval = robonectClient.getWeatherIntervalViaWebInterface();
-                } catch (RobonectCommunicationException e) {
-                    logger.debug("Could not read weather interval from web interface: {}", e.getMessage());
-                }
-            }
-            if (interval != null) {
-                updateState(CHANNEL_WEATHER_INTERVAL, new QuantityType<>(interval, Units.MINUTE));
-            }
-        }
-    }
-
-    /** Sends a supported weather-service setting to the mower. */
-    private void updateWeather(String channelId, Command command) {
-        String parameter;
-        String value;
-        if (channelId.equals(CHANNEL_WEATHER_LOCATION_ZIP) && command instanceof StringType string) {
-            parameter = "zip";
-            value = string.toFullString();
-        } else if (channelId.equals(CHANNEL_WEATHER_LOCATION_CITY_ID) && command instanceof DecimalType decimal) {
-            int cityId;
-            try {
-                cityId = decimal.toBigDecimal().intValueExact();
-            } catch (ArithmeticException e) {
-                logger.debug("Ignoring non-integer or out-of-range weather city ID");
-                return;
-            }
-            if (cityId < 0) {
-                return;
-            }
-            parameter = "cityid";
-            value = Integer.toString(cityId);
-        } else if (command instanceof OnOffType onOff) {
-            parameter = switch (channelId) {
-                case CHANNEL_WEATHER_ENABLED -> "service";
-                case CHANNEL_WEATHER_SKIP_DAY -> "day";
-                case CHANNEL_WEATHER_SKIP_NIGHT -> "night";
-                default -> null;
-            };
-            value = onOff == OnOffType.ON ? "1" : "0";
-        } else if (command instanceof Number num) {
-            parameter = switch (channelId) {
-                case CHANNEL_WEATHER_INTERVAL -> {
-                    if (command instanceof QuantityType<?> quantity)
-                        num = quantity.toUnit(Units.MINUTE);
-                    yield "interval";
-                }
-                case CHANNEL_WEATHER_MAX_RAIN -> {
-                    if (command instanceof QuantityType<?> quantity)
-                        num = quantity.toUnit(Units.PERCENT);
-                    yield "rain";
-                }
-                case CHANNEL_WEATHER_MIN_TEMPERATURE -> {
-                    if (command instanceof QuantityType<?> quantity)
-                        num = quantity.toUnit(SIUnits.CELSIUS);
-                    yield "mintemp";
-                }
-                case CHANNEL_WEATHER_MAX_TEMPERATURE -> {
-                    if (command instanceof QuantityType<?> quantity)
-                        num = quantity.toUnit(SIUnits.CELSIUS);
-                    yield "maxtemp";
-                }
-                case CHANNEL_WEATHER_MIN_HUMIDITY -> {
-                    if (command instanceof QuantityType<?> quantity)
-                        num = quantity.toUnit(Units.PERCENT);
-                    yield "minhum";
-                }
-                case CHANNEL_WEATHER_MAX_HUMIDITY -> {
-                    if (command instanceof QuantityType<?> quantity)
-                        num = quantity.toUnit(Units.PERCENT);
-                    yield "maxhum";
-                }
-                default -> null;
-            };
-
-            if (num == null) {
-                return;
-            }
-
-            value = String.valueOf(num);
-        } else {
-            return;
-        }
-        if (parameter == null) {
-            return;
-        }
-        cancelCommandRefresh("weather");
-        WeatherInfo result = robonectClient.updateWeather(parameter, value);
-        if (result.isSuccessful()) {
-            applyWeatherInfo(result);
-            scheduleCommandRefresh("weather", this::refreshWeatherInfo);
-        }
-    }
-
-    private void updateWeatherTemperature(String channel, @Nullable Integer value) {
-        if (value != null)
-            updateState(channel, new QuantityType<>(value, SIUnits.CELSIUS));
-    }
-
-    private void updateWeatherDateTime(String channel, @Nullable String unix) {
-        if (unix == null) {
-            return;
-        }
-        try {
-            updateState(channel, convertUnixToDateTimeType(unix));
-        } catch (NumberFormatException | DateTimeException e) {
-            logger.debug("Ignoring invalid weather timestamp for {}", channel);
-            updateState(channel, UnDefType.UNDEF);
-        }
-    }
-
-    /** Updates non-sensitive WLAN and access-point state. */
-    private void refreshWlanInfo() {
-        WlanInfo info = robonectClient.getWlanInfo();
-        if (!info.isSuccessful()) {
-            return;
-        }
-        WifiStation station = info.getStation();
-        if (station != null) {
-            if (station.getEnable() != null)
-                updateState(CHANNEL_WLAN_ENABLED, OnOffType.from(station.getEnable()));
-            if (station.getMac() != null)
-                updateState(CHANNEL_WLAN_MAC, new StringType(station.getMac()));
-            if (station.getSsid() != null)
-                updateState(CHANNEL_WLAN_SSID, new StringType(station.getSsid()));
-            if (station.getIp() != null)
-                updateState(CHANNEL_WLAN_IP, new StringType(station.getIp()));
-            if (station.getDhcp() != null)
-                updateState(CHANNEL_WLAN_DHCP, OnOffType.from(station.getDhcp()));
-            if (station.getPing() != null)
-                updateState(CHANNEL_WLAN_PING, OnOffType.from(station.getPing()));
-            if (station.getPingtime() != null)
-                updateState(CHANNEL_WLAN_PING_TIME, new StringType(station.getPingtime()));
-            if (station.getNetmask() != null)
-                updateState(CHANNEL_WLAN_NETMASK, new StringType(station.getNetmask()));
-            if (station.getGateway() != null)
-                updateState(CHANNEL_WLAN_GATEWAY, new StringType(station.getGateway()));
-        }
-        AccessPoint ap = info.getAp();
-        if (ap != null) {
-            if (ap.getEnable() != null)
-                updateState(CHANNEL_WLAN_AP_ENABLED, OnOffType.from(ap.getEnable()));
-            if (ap.getMac() != null)
-                updateState(CHANNEL_WLAN_AP_MAC, new StringType(ap.getMac()));
-            if (ap.getHidden() != null)
-                updateState(CHANNEL_WLAN_AP_HIDDEN, OnOffType.from(ap.getHidden()));
-            if (ap.getSsid() != null)
-                updateState(CHANNEL_WLAN_AP_SSID, new StringType(ap.getSsid()));
-            Integer channel = ap.getChannel();
-            if (channel != null)
-                updateState(CHANNEL_WLAN_AP_CHANNEL, new DecimalType(channel));
-            if (ap.getEncryption() != null)
-                updateState(CHANNEL_WLAN_AP_ENCRYPTION, new StringType(ap.getEncryption()));
-            Integer maxConnections = ap.getMaxconn();
-            if (maxConnections != null)
-                updateState(CHANNEL_WLAN_AP_MAX_CONNECTIONS, new DecimalType(maxConnections));
-            if (ap.getIp() != null)
-                updateState(CHANNEL_WLAN_AP_IP, new StringType(ap.getIp()));
-            if (ap.getNetmask() != null)
-                updateState(CHANNEL_WLAN_AP_NETMASK, new StringType(ap.getNetmask()));
-            if (ap.getGateway() != null)
-                updateState(CHANNEL_WLAN_AP_GATEWAY, new StringType(ap.getGateway()));
-            if (ap.getDhcp() != null) {
-                if (ap.getDhcp().getEnable() != null)
-                    updateState(CHANNEL_WLAN_AP_DHCP, OnOffType.from(ap.getDhcp().getEnable()));
-                if (ap.getDhcp().getStart() != null)
-                    updateState(CHANNEL_WLAN_AP_DHCP_START, new StringType(ap.getDhcp().getStart()));
-                if (ap.getDhcp().getEnd() != null)
-                    updateState(CHANNEL_WLAN_AP_DHCP_END, new StringType(ap.getDhcp().getEnd()));
-            }
-        }
-    }
-
-    /** Updates optional GPIO and output extension state. */
-    private void refreshExtensionInfo() {
-        ExtInfo info = robonectClient.getExtInfo();
-        Extensions extensions = info.getExt();
-        if (!info.isSuccessful() || extensions == null) {
-            return;
-        }
-        updateExtension("extension-gpio-1-", extensions.getGpio1());
-        updateExtension("extension-gpio-2-", extensions.getGpio2());
-        updateExtension("extension-output-1-", extensions.getOut1());
-        updateExtension("extension-output-2-", extensions.getOut2());
-    }
-
-    /** Updates non-sensitive push-service settings. */
-    private void refreshPushInfo() {
-        applyPushInfo(robonectClient.getPushInfo(), true);
+    void configureAjaxChannels(boolean enabled) {
+        ajaxUiScraping = enabled;
+        updateDynamicChannels(
+                Pattern.compile(CHANNEL_JOB_START + "|" + CHANNEL_JOB_END), enabled
+                        ? List.of(createChannel(CHANNEL_JOB_START, "DateTime", "jobTimeType", "Mowing Job Start Time"),
+                                createChannel(CHANNEL_JOB_END, "DateTime", "jobTimeType", "Mowing Job End Time"))
+                        : List.of());
     }
 
     void configureUnofficialChannels(boolean enabled) {
@@ -950,237 +431,15 @@ public class RobonectHandler extends BaseThingHandler {
                         : List.of());
     }
 
-    private void refreshPushMode() {
-        if (!useUnofficialApi || !canPublishState()) {
-            return;
-        }
-        try {
-            applyPushMode(robonectClient.getPushModeViaWebInterface());
-        } catch (RobonectCommunicationException e) {
-            logger.debug("Could not retrieve push mode from the web interface: {}", e.getMessage());
-        }
-    }
-
-    private void applyPushMode(@Nullable Integer mode) {
-        if (useUnofficialApi) {
-            updateState(CHANNEL_PUSH_MODE, mode == null ? UnDefType.UNDEF : new DecimalType(mode));
-        }
-    }
-
-    private void updatePushMode(Command command) {
-        if (!useUnofficialApi || !(command instanceof DecimalType decimal)) {
-            return;
-        }
-        int mode;
-        try {
-            mode = decimal.toBigDecimal().intValueExact();
-        } catch (ArithmeticException e) {
-            logger.debug("Ignoring non-integer push mode {}", command);
-            return;
-        }
-        if (mode < 0 || mode > 2) {
-            logger.debug("Ignoring invalid push mode {}", mode);
-            return;
-        }
-        applyPushMode(robonectClient.updatePushModeViaWebInterface(mode));
-    }
-
-    private void applyPushInfo(PushInfo info, boolean fullResponse) {
-        Push push = info.getPush();
-        if (!info.isSuccessful() || push == null) {
-            return;
-        }
-        PushServer server = push.getServer();
-        if (server != null) {
-            updateState(CHANNEL_PUSH_URL, server.getUrl() != null ? new StringType(server.getUrl()) : UnDefType.NULL);
-            updateState(CHANNEL_PUSH_USERNAME,
-                    server.getName() != null ? new StringType(server.getName()) : UnDefType.NULL);
-        }
-        PushTriggers triggers = push.getTrigger();
-        if (triggers != null) {
-            Integer interval = triggers.getInterval();
-            if (interval != null)
-                updateState(CHANNEL_PUSH_INTERVAL, new QuantityType<>(interval, Units.SECOND));
-            List<Channel> channels = new ArrayList<>();
-            Map<String, PushTriggers.Trigger> namedTriggers = getNamedPushTriggers(triggers);
-            for (Map.Entry<String, PushTriggers.Trigger> entry : namedTriggers.entrySet().stream()
-                    .sorted(Map.Entry.comparingByKey()).toList()) {
-                String name = entry.getKey();
-                String prefix = "push-trigger-" + name + "-";
-                String label = "Push Trigger " + name.substring(0, name.indexOf('-')) + " " + entry.getValue().getName()
-                        + " ";
-                channels.add(createChannel(prefix + "enter", "Switch", "pushTriggerSwitchType", label + "Enter"));
-                channels.add(createChannel(prefix + "leave", "Switch", "pushTriggerSwitchType", label + "Leave"));
-            }
-            // A write response may contain only the updated trigger; preserve other dynamic channels.
-            if (fullResponse) {
-                updateDynamicChannels(PUSH_TRIGGER_CHANNEL_PATTERN, channels);
-            } else {
-                addDynamicChannels(channels);
-            }
-            for (Map.Entry<String, PushTriggers.Trigger> entry : namedTriggers.entrySet()) {
-                String prefix = "push-trigger-" + entry.getKey() + "-";
-                PushTriggers.Trigger trigger = entry.getValue();
-                updateSwitch(prefix + "enter", trigger.getEnter());
-                updateSwitch(prefix + "leave", trigger.getLeave());
-            }
-        }
-    }
-
-    private Map<String, PushTriggers.Trigger> getNamedPushTriggers(PushTriggers triggers) {
-        Map<String, PushTriggers.Trigger> namedTriggers = new HashMap<>();
-        for (Map.Entry<String, PushTriggers.Trigger> entry : triggers.getTriggers().entrySet()) {
-            String name = entry.getValue().getName();
-            if (name == null || name.isBlank()) {
-                continue;
-            }
-            String channelName = name.toLowerCase(Locale.ROOT).replace(' ', '_');
-            if (!channelName.matches("[a-z0-9_-]+")) {
-                logger.debug("Ignoring push trigger {} with an invalid channel name", entry.getKey());
-                continue;
-            }
-            namedTriggers.put(entry.getKey() + "-" + channelName, entry.getValue());
-        }
-        return namedTriggers;
-    }
-
-    private void updatePushTrigger(String channelId, Command command) {
-        Matcher matcher = PUSH_TRIGGER_COMMAND_PATTERN.matcher(channelId);
-        if (!matcher.matches() || !(command instanceof OnOffType onOff)) {
-            return;
-        }
-        PushInfo info = robonectClient.getPushInfo();
-        Push push = info.getPush();
-        PushTriggers triggers = push == null ? null : push.getTrigger();
-        PushTriggers.Trigger trigger = triggers == null ? null : triggers.getTriggers().get(matcher.group(1));
-        if (!info.isSuccessful() || trigger == null || trigger.getEnter() == null || trigger.getLeave() == null) {
-            return;
-        }
-        boolean enter = matcher.group(2).equals("enter") ? onOff == OnOffType.ON : trigger.getEnter();
-        boolean leave = matcher.group(2).equals("leave") ? onOff == OnOffType.ON : trigger.getLeave();
-        int value = (enter ? 1 : 0) | (leave ? 2 : 0);
-        cancelCommandRefresh("push");
-        PushInfo result = robonectClient.updatePush("trigger" + matcher.group(1), Integer.toString(value));
-        if (result.isSuccessful()) {
-            applyPushInfo(result, false);
-            scheduleCommandRefresh("push", this::refreshPushInfo);
-        }
-    }
-
-    private void updatePush(String channelId, Command command) {
-        if (channelId.equals(CHANNEL_PUSH_PASSWORD)) {
-            updateState(CHANNEL_PUSH_PASSWORD, UnDefType.UNDEF);
-        }
-        String parameter;
-        String value;
-        if (command instanceof StringType string) {
-            parameter = switch (channelId) {
-                case CHANNEL_PUSH_URL -> "url";
-                case CHANNEL_PUSH_USERNAME -> "name";
-                case CHANNEL_PUSH_PASSWORD -> "pass";
-                default -> null;
-            };
-            value = string.toFullString();
-        } else if (command instanceof Number num && channelId.equals(CHANNEL_PUSH_INTERVAL)) {
-            parameter = "interval";
-            value = String
-                    .valueOf(command instanceof QuantityType<?> quantity ? quantity.toUnit(Units.SECOND).intValue()
-                            : num.intValue());
-        } else {
-            return;
-        }
-        if (parameter != null) {
-            cancelCommandRefresh("push");
-            PushInfo result = robonectClient.updatePush(parameter, value);
-            if (result.isSuccessful()) {
-                applyPushInfo(result, false);
-                scheduleCommandRefresh("push", this::refreshPushInfo);
-            }
-        }
-    }
-
-    private void updateExtension(String prefix, @Nullable Extension extension) {
-        if (extension == null) {
-            return;
-        }
-        updateSwitch(prefix + "flash", extension.getFlashonerror());
-        updateSwitch(prefix + "inverted", extension.getInverted());
-        updateSwitch(prefix + "status", extension.getStatus());
-    }
-
-    private void updateSwitch(String channel, @Nullable Boolean value) {
+    void updateSwitch(String channel, @Nullable Boolean value) {
         if (value != null)
             updateState(channel, OnOffType.from(value));
-    }
-
-    private void updateWeatherNumber(String channel, @Nullable Integer value) {
-        if (value != null)
-            updateState(channel, new DecimalType(value));
-    }
-
-    private void updateWeatherPercentage(String channel, @Nullable Integer value) {
-        if (value != null)
-            updateState(channel, new QuantityType<>(value, Units.PERCENT));
-    }
-
-    /** Updates door channels from the optional door-system response. */
-    private void refreshDoorInfo() {
-        applyDoorInfo(robonectClient.getDoorInfo());
-    }
-
-    private void applyDoorInfo(DoorInfo info) {
-        Door door = info.getDoor();
-        if (!info.isSuccessful() || door == null) {
-            return;
-        }
-        if (door.getEnabled() != null) {
-            updateState(CHANNEL_DOOR_ENABLED, OnOffType.from(door.getEnabled()));
-        }
-        if (door.getArrested() != null) {
-            updateState(CHANNEL_DOOR_ARRESTED, OnOffType.from(door.getArrested()));
-        }
-        if (door.getState() != null || door.getPending() != null) {
-            updateDoorState(door.getState(), door.getPending());
-        }
-    }
-
-    private void updateDoorState(@Nullable DoorState state, @Nullable DoorState pending) {
-        if (pending != null && Boolean.TRUE.equals(pending.getOpen()) && !Boolean.TRUE.equals(pending.getClose())) {
-            updateState(CHANNEL_DOOR_STATE, new PercentType(75));
-        } else if (pending != null && !Boolean.TRUE.equals(pending.getOpen())
-                && Boolean.TRUE.equals(pending.getClose())) {
-            updateState(CHANNEL_DOOR_STATE, new PercentType(25));
-        } else if (state != null && Boolean.TRUE.equals(state.getOpen()) && !Boolean.TRUE.equals(state.getClose())) {
-            updateState(CHANNEL_DOOR_STATE, PercentType.ZERO);
-        } else if (state != null && !Boolean.TRUE.equals(state.getOpen()) && Boolean.TRUE.equals(state.getClose())) {
-            updateState(CHANNEL_DOOR_STATE, PercentType.HUNDRED);
-        } else {
-            updateState(CHANNEL_DOOR_STATE, UnDefType.UNDEF);
-        }
-    }
-
-    private void handleJobCommand(ChannelUID channelUID, OnOffType command) {
-        cancelCommandRefresh("status");
-        JobChannelConfig jobConfig = getThing().getChannel(channelUID.getId()).getConfiguration()
-                .as(JobChannelConfig.class);
-        if (command == OnOffType.ON) {
-            robonectClient.startJob(new RobonectClient.JobSettings()
-                    .withAfterMode(ModeCommand.Mode.valueOf(jobConfig.getAfterMode()))
-                    .withRemoteStart(ModeCommand.RemoteStart.valueOf(jobConfig.getRemoteStart()))
-                    .withDuration(jobConfig.getDuration()).withStart(jobConfig.getStart()).withEnd(jobConfig.getEnd()));
-        } else if (command == OnOffType.OFF) {
-            robonectClient.stopJob(
-                    new RobonectClient.JobSettings().withAfterMode(ModeCommand.Mode.valueOf(jobConfig.getAfterMode())));
-        } else {
-            return;
-        }
-        refreshMowerInfo();
     }
 
     private void refreshChannels(ChannelUID channelUID) {
         String channelId = channelUID.getId();
         if (channelId.startsWith("weather-")) {
-            refreshWeatherInfo();
+            weatherHandler.refreshWeatherInfo();
             return;
         }
         if (channelId.equals(CHANNEL_PUSH_PASSWORD)) {
@@ -1188,28 +447,28 @@ public class RobonectHandler extends BaseThingHandler {
             return;
         }
         if (channelId.equals(CHANNEL_PUSH_MODE)) {
-            refreshPushMode();
+            pushHandler.refreshPushMode();
             return;
         }
         if (channelId.startsWith("timer-") && !channelId.equals(CHANNEL_TIMER_NEXT_TIMER)
                 && !channelId.equals(CHANNEL_TIMER_STATUS)) {
-            refreshTimersInfo();
+            timerHandler.refreshTimersInfo();
             return;
         }
         if (BATTERY_CHANNEL_PATTERN.matcher(channelId).matches() || channelId.startsWith("battery-")) {
-            refreshBatteryInfo();
+            diagnosticsHandler.refreshBatteryInfo();
             return;
         }
         if (WIRE_CHANNEL_PATTERN.matcher(channelId).matches()) {
-            refreshWireInfo();
+            diagnosticsHandler.refreshWireInfo();
             return;
         }
         if (PUSH_TRIGGER_CHANNEL_PATTERN.matcher(channelId).matches() || channelId.startsWith("push-")) {
-            refreshPushInfo();
+            pushHandler.refreshPushInfo();
             return;
         }
         if (channelId.startsWith("statistics-")) {
-            refreshHourInfo();
+            diagnosticsHandler.refreshHourInfo();
             return;
         }
         switch (channelId) {
@@ -1225,623 +484,37 @@ public class RobonectHandler extends BaseThingHandler {
             case CHANNEL_TIMER_NEXT_TIMER:
             case CHANNEL_TIMER_STATUS:
             case CHANNEL_WLAN_SIGNAL:
-                refreshMowerInfo();
+                mowerHandler.refreshMowerInfo();
                 break;
             case CHANNEL_WLAN_ENABLED:
             case CHANNEL_WLAN_SSID:
             case CHANNEL_WLAN_IP:
             case CHANNEL_WLAN_AP_ENABLED:
             case CHANNEL_WLAN_AP_SSID:
-                refreshWlanInfo();
+                diagnosticsHandler.refreshWlanInfo();
                 break;
             case CHANNEL_JOB:
-                refreshMowerInfo();
+                mowerHandler.refreshMowerInfo();
                 break;
             case CHANNEL_DOOR_ENABLED:
             case CHANNEL_DOOR_STATE:
             case CHANNEL_DOOR_ARRESTED:
-                refreshDoorInfo();
+                mowerHandler.refreshDoorInfo();
                 break;
             default:
             case CHANNEL_LAST_ERROR_CODE:
             case CHANNEL_LAST_ERROR_DATE:
             case CHANNEL_LAST_ERROR_MESSAGE:
-                refreshLastErrorInfo();
+                diagnosticsHandler.refreshLastErrorInfo();
                 break;
         }
     }
 
-    private void setMowerMode(Command command) {
-        String modeStr = command.toFullString();
-        ModeCommand.Mode newMode = ModeCommand.Mode.valueOf(modeStr.toUpperCase());
-        cancelCommandRefresh("status");
-        robonectClient.setMode(newMode);
-        refreshMowerInfo();
-    }
-
-    private void logErrorFromResponse(RobonectAnswer result) {
-        if (!result.isSuccessful()) {
-            logger.debug("Could not send EOD Trigger. Robonect error message: {}", result.getErrorMessage());
-        }
-    }
-
-    private void resetErrors() {
-        cancelCommandRefresh("status");
-        RobonectAnswer answer = robonectClient.resetErrors();
-        if (answer.isSuccessful()) {
-            scheduleCommandRefresh("status", this::refreshMowerInfo);
-        } else {
-            logger.debug("Could not reset mower errors. Robonect error message: {}", answer.getErrorMessage());
-        }
-    }
-
-    /** Performs a service operation when the corresponding switch is turned on. */
-    private void performServiceOperation(Command command, Operation operation) {
-        if (command != OnOffType.ON) {
-            logger.debug("Got service operation command {} but On is expected.", command);
-            return;
-        }
-        RobonectAnswer answer = robonectClient.performServiceOperation(operation);
-        if (!answer.isSuccessful()) {
-            logger.debug("Could not perform service operation {}. Robonect error message: {}", operation,
-                    answer.getErrorMessage());
-        }
-    }
-
-    /** Controls the optional door system. */
-    private void handleDoorCommand(Command command) {
-        cancelCommandRefresh("door");
-        DoorInfo answer;
-        if (command == UpDownType.UP) {
-            answer = robonectClient.setDoorDirection(Direction.OPEN);
-        } else if (command == UpDownType.DOWN) {
-            answer = robonectClient.setDoorDirection(Direction.CLOSE);
-        } else if (command == StopMoveType.STOP) {
-            answer = robonectClient.releaseDoor();
-        } else {
-            logger.debug("Got door command of type {} but Up, Down, or Stop is expected.",
-                    command.getClass().getName());
-            return;
-        }
-        if (answer.isSuccessful()) {
-            applyDoorInfo(answer);
-            scheduleCommandRefresh("door", this::refreshDoorInfo);
-        } else {
-            logger.debug("Could not control the door. Robonect error message: {}", answer.getErrorMessage());
-        }
-    }
-
-    private void handleStartStop(final OnOffType command) {
-        cancelCommandRefresh("status");
-        if (command == OnOffType.ON) {
-            robonectClient.start();
-        } else {
-            robonectClient.stop();
-        }
-        refreshMowerInfo();
-    }
-
-    private void updateName(StringType command) {
-        String newName = command.toFullString();
-        cancelCommandRefresh("status");
-        Name name = robonectClient.setName(newName);
-        if (name.isSuccessful()) {
-            if (name.getName() != null) {
-                updateState(CHANNEL_MOWER_NAME, new StringType(name.getName()));
-            }
-            scheduleCommandRefresh("status", this::refreshMowerInfo);
-        } else {
-            logErrorFromResponse(name);
-            refreshMowerInfo();
-        }
-    }
-
-    private void refreshMowerInfo() {
-        MowerInfo info = robonectClient.getMowerInfo();
-        if (!canPublishState()) {
-            return;
-        }
-        Status status = info.getStatus();
-        if (info.isSuccessful() && status != null) {
-            if (info.getError() != null) {
-                updateErrorInfo(info.getError());
-                refreshLastErrorInfo();
-            } else {
-                clearErrorInfo();
-            }
-            updateState(CHANNEL_MOWER_NAME, new StringType(info.getName()));
-            if (info.getId() != null) {
-                updateState(CHANNEL_MOWER_ID, new StringType(info.getId()));
-            }
-            updateState(CHANNEL_STATUS_BATTERY, new DecimalType(status.getBattery()));
-            Integer prevent = status.getPrevent();
-            if (prevent != null) {
-                updateState(CHANNEL_STATUS_PREVENT, new DecimalType(prevent));
-            }
-            Boolean home = status.getHome();
-            if (home != null) {
-                updateState(CHANNEL_STATUS_HOME, OnOffType.from(home));
-            }
-            if (status.getStatus() != null) {
-                updateState(CHANNEL_STATUS, new DecimalType(status.getStatus().getStatusCode()));
-            }
-            updateState(CHANNEL_STATUS_DURATION, new QuantityType<>(status.getDuration(), Units.SECOND));
-            updateState(CHANNEL_STATUS_DISTANCE, new QuantityType<>(status.getDistance(), SIUnits.METRE));
-            updateState(CHANNEL_STATUS_HOURS, new QuantityType<>(status.getHours(), Units.HOUR));
-            updateMowerModeAndJob(status.getMode());
-            updateState(CHANNEL_MOWER_START, OnOffType.from(!status.isStopped()));
-            if (info.getHealth() != null) {
-                updateState(CHANNEL_HEALTH_TEMP,
-                        new QuantityType<>(info.getHealth().getTemperature(), SIUnits.CELSIUS));
-                updateState(CHANNEL_HEALTH_HUM, new QuantityType<>(info.getHealth().getHumidity(), Units.PERCENT));
-            }
-            if (info.getBlades() != null) {
-                updateState(CHANNEL_BLADES_QUALITY, new QuantityType<>(info.getBlades().getQuality(), Units.PERCENT));
-                updateState(CHANNEL_BLADES_REPL_DAYS, new QuantityType<>(info.getBlades().getDays(), Units.DAY));
-                updateState(CHANNEL_BLADES_USAGE_HOURS, new QuantityType<>(info.getBlades().getHours(), Units.HOUR));
-            }
-            if (info.getClock() != null && info.getClock().getUnix() != null) {
-                updateState(CHANNEL_TIMESTAMP, convertUnixToDateTimeType(info.getClock().getUnix()));
-            }
-            if (info.getTimer() != null) {
-                if (info.getTimer().getNext() != null) {
-                    updateNextTimer(info);
-                }
-                if (info.getTimer().getStatus() != null) {
-                    updateState(CHANNEL_TIMER_STATUS, new StringType(info.getTimer().getStatus().name()));
-                }
-            }
-            if (info.getWlan() != null) {
-                Integer signal = info.getWlan().getSignal();
-                if (signal != null) {
-                    updateState(CHANNEL_WLAN_SIGNAL_STRENGTH, new QuantityType<>(signal, Units.DECIBEL_MILLIWATTS));
-                    updateState(CHANNEL_WLAN_SIGNAL, new DecimalType(convertSignalStrength(signal)));
-                } else {
-                    updateState(CHANNEL_WLAN_SIGNAL, UnDefType.UNDEF);
-                    updateState(CHANNEL_WLAN_SIGNAL_STRENGTH, UnDefType.UNDEF);
-                }
-            } else {
-                updateState(CHANNEL_WLAN_SIGNAL, UnDefType.UNDEF);
-                updateState(CHANNEL_WLAN_SIGNAL_STRENGTH, UnDefType.UNDEF);
-            }
-        } else {
-            logger.debug("Could not retrieve complete mower information: {}", info.getErrorMessage());
-        }
-    }
-
-    /**
-     * Updates the job and mode channels using the optional localized web-interface response.
-     *
-     * The public JSON API does not expose end-of-day mode or the active job time window. UI scraping is therefore
-     * opt-in and falls back to the JSON API when the UI response changes or cannot be read.
-     *
-     * @param mowerMode mode reported by the JSON status endpoint
-     */
-    private void updateMowerModeAndJob(@Nullable MowerMode mowerMode) {
-        if (!ajaxUiScraping) {
-            if (mowerMode != null) {
-                updateState(CHANNEL_STATUS_MODE, new StringType(mowerMode.name()));
-            }
-            updateState(CHANNEL_JOB, OnOffType.from(robonectClient.isJobRunning()));
-            updateState(CHANNEL_JOB_START, UnDefType.NULL);
-            updateState(CHANNEL_JOB_END, UnDefType.NULL);
-            return;
-        }
-
-        try {
-            AjaxInfo ajaxInfo = robonectClient.getAjaxInfo();
-            if (ajaxInfo == null) {
-                throw new JsonSyntaxException("Robonect web-interface response is empty");
-            }
-            String controlText = ajaxInfo.getControlMenuText();
-            String timerText = ajaxInfo.getTimerMenuText();
-            if (timerText != null && JOB_TIMER_LABELS.contains(timerText)) {
-                updateState(CHANNEL_JOB, OnOffType.ON);
-                updateJobTimes(controlText);
-            } else {
-                updateState(CHANNEL_JOB, OnOffType.OFF);
-                updateState(CHANNEL_JOB_START, UnDefType.NULL);
-                updateState(CHANNEL_JOB_END, UnDefType.NULL);
-            }
-            if (mowerMode != null) {
-                String mode = mowerMode == MowerMode.HOME && END_OF_DAY_LABELS.contains(controlText) ? "EOD"
-                        : mowerMode.name();
-                updateState(CHANNEL_STATUS_MODE, new StringType(mode));
-            }
-        } catch (RobonectCommunicationException | JsonSyntaxException | IllegalArgumentException e) {
-            logger.debug("Could not retrieve Robonect web-interface status. Falling back to the JSON API.", e);
-            if (mowerMode != null) {
-                updateState(CHANNEL_STATUS_MODE, new StringType(mowerMode.name()));
-            }
-            updateState(CHANNEL_JOB, OnOffType.from(robonectClient.isJobRunning()));
-            updateState(CHANNEL_JOB_START, UnDefType.NULL);
-            updateState(CHANNEL_JOB_END, UnDefType.NULL);
-        }
-    }
-
-    /**
-     * Updates the active job start and end channels from the localized menu text.
-     *
-     * @param controlText localized menu text that contains the job time window
-     */
-    private void updateJobTimes(@Nullable String controlText) {
-        if (controlText == null) {
-            updateState(CHANNEL_JOB_START, UnDefType.UNDEF);
-            updateState(CHANNEL_JOB_END, UnDefType.UNDEF);
-            return;
-        }
-        Matcher matcher = JOB_TIME_PATTERN.matcher(controlText);
-        if (!matcher.matches()) {
-            updateState(CHANNEL_JOB_START, UnDefType.UNDEF);
-            updateState(CHANNEL_JOB_END, UnDefType.UNDEF);
-            return;
-        }
-        updateJobTime(CHANNEL_JOB_START, matcher.group(1));
-        updateJobTime(CHANNEL_JOB_END, matcher.group(2));
-    }
-
-    /**
-     * Updates one job time channel using the Unix epoch date and UTC to represent the time of day.
-     *
-     * @param channelId job time channel identifier
-     * @param value UI value in {@code HH:mm} format, or {@code null}
-     */
-    private void updateJobTime(String channelId, @Nullable String value) {
-        if (value == null) {
-            updateState(channelId, UnDefType.UNDEF);
-            return;
-        }
-        Matcher matcher = TIME_PATTERN.matcher(value);
-        if (!matcher.matches()) {
-            updateState(channelId, UnDefType.UNDEF);
-            return;
-        }
-        int hours = Integer.parseInt(matcher.group(1));
-        int minutes = Integer.parseInt(matcher.group(2));
-        if (hours >= 24 || minutes >= 60) {
-            updateState(channelId, UnDefType.UNDEF);
-            return;
-        }
-        updateState(channelId, toTimeOnlyDateTime(LocalTime.of(hours, minutes)));
-    }
-
-    private DateTimeType toTimeOnlyDateTime(LocalTime time) {
+    DateTimeType toTimeOnlyDateTime(LocalTime time) {
         return new DateTimeType(LocalDate.ofEpochDay(0).atTime(time).atZone(timeZone));
     }
 
-    /**
-     * Updates detailed battery channels when the mower supports the battery endpoint.
-     */
-    private void refreshBatteryInfo() {
-        BatteryInfo info = robonectClient.getBatteryInfo();
-        List<Battery> batteries = info.getBatteries();
-        if (!info.isSuccessful() || batteries == null) {
-            logger.debug("Could not retrieve detailed battery information: {}", info.getErrorMessage());
-            return;
-        }
-        List<Channel> channels = new ArrayList<>();
-        for (int index = 0; index < batteries.size(); index++) {
-            String prefix = "battery-" + (index + 1) + "-";
-            String label = "Battery " + (index + 1) + " ";
-            channels.add(createChannel(prefix + "id", "Number", "batteryIdType", label + "ID"));
-            channels.add(
-                    createChannel(prefix + "charge", "Number:Dimensionless", "batteryChargeType", label + "Charge"));
-            channels.add(createChannel(prefix + "voltage", "Number:ElectricPotential", "batteryVoltageType",
-                    label + "Voltage"));
-            channels.add(createChannel(prefix + "current", "Number:ElectricCurrent", "batteryCurrentType",
-                    label + "Current"));
-            channels.add(createChannel(prefix + "temperature", "Number:Temperature", "batteryTemperatureType",
-                    label + "Temperature"));
-            channels.add(createChannel(prefix + "capacity", "Number:ElectricCharge", "batteryCapacityType",
-                    label + "Full Capacity"));
-            channels.add(createChannel(prefix + "remaining-capacity", "Number:ElectricCharge",
-                    "batteryRemainingCapacityType", label + "Remaining Capacity"));
-        }
-        updateDynamicChannels(BATTERY_CHANNEL_PATTERN, channels);
-        for (int index = 0; index < batteries.size(); index++) {
-            updateBatteryState("battery-" + (index + 1) + "-", batteries.get(index));
-        }
-    }
-
-    private void updateBatteryState(String prefix, Battery battery) {
-        Integer id = battery.getId();
-        if (id != null) {
-            updateState(prefix + "id", new DecimalType(id));
-        }
-        Integer charge = battery.getCharge();
-        if (charge != null) {
-            updateState(prefix + "charge", new QuantityType<>(charge, Units.PERCENT));
-        }
-        Integer voltage = battery.getVoltage();
-        if (voltage != null) {
-            updateState(prefix + "voltage", new QuantityType<>(voltage / 1000.0, Units.VOLT));
-        }
-        Integer current = battery.getCurrent();
-        if (current != null) {
-            updateState(prefix + "current", new QuantityType<>(current / 1000.0, Units.AMPERE));
-        }
-        Integer temperature = battery.getTemperature();
-        if (temperature != null) {
-            updateState(prefix + "temperature", new QuantityType<>(temperature / 10.0, SIUnits.CELSIUS));
-        }
-        BatteryCapacity capacity = battery.getCapacity();
-        if (capacity != null) {
-            Integer full = capacity.getFull();
-            if (full != null) {
-                updateState(prefix + "capacity", new QuantityType<>(full, Units.MILLIAMPERE_HOUR));
-            }
-            Integer remainingCapacity = capacity.getRemaining();
-            if (remainingCapacity != null) {
-                updateState(prefix + "remaining-capacity",
-                        new QuantityType<>(remainingCapacity, Units.MILLIAMPERE_HOUR));
-            }
-        }
-    }
-
-    /**
-     * Updates motor channels when the mower supports the motor endpoint.
-     */
-    private void refreshMotorInfo() {
-        MotorInfo info = robonectClient.getMotorInfo();
-        if (!info.isSuccessful()) {
-            logger.debug("Could not retrieve motor information: {}", info.getErrorMessage());
-            return;
-        }
-        DriveMotors drive = info.getDrive();
-        if (drive != null) {
-            updateDriveMotor(CHANNEL_LEFT_DRIVE_POWER, CHANNEL_LEFT_DRIVE_SPEED, CHANNEL_LEFT_DRIVE_CURRENT,
-                    drive.getLeft());
-            updateDriveMotor(CHANNEL_RIGHT_DRIVE_POWER, CHANNEL_RIGHT_DRIVE_SPEED, CHANNEL_RIGHT_DRIVE_CURRENT,
-                    drive.getRight());
-        }
-        BladeMotor blade = info.getBlade();
-        if (blade != null) {
-            Integer average = blade.getAverage();
-            if (average != null) {
-                updateState(CHANNEL_BLADE_MOTOR_AVERAGE, new DecimalType(average));
-            }
-            Integer speed = blade.getSpeed();
-            if (speed != null) {
-                updateState(CHANNEL_BLADE_MOTOR_SPEED, new QuantityType<>(speed, Units.RPM));
-            }
-            if (blade.getCurrent() != null) {
-                updateState(CHANNEL_BLADE_MOTOR_CURRENT, new QuantityType<>(blade.getCurrent() / 1000.0, Units.AMPERE));
-            }
-        }
-    }
-
-    /**
-     * Updates aggregate operating statistics when the mower supports the hour endpoint.
-     */
-    private void refreshHourInfo() {
-        HourInfo info = robonectClient.getHourInfo();
-        if (!info.isSuccessful()) {
-            logger.debug("Could not retrieve operating statistics: {}", info.getErrorMessage());
-            return;
-        }
-        HourGeneral general = info.getGeneral();
-        if (general != null) {
-            updateHours(CHANNEL_STATISTICS_RUNNING_HOURS, general.getRun());
-            updateHours(CHANNEL_STATISTICS_MOWING_HOURS, general.getMow());
-            updateHours(CHANNEL_STATISTICS_SEARCHING_HOURS, general.getSearch());
-            updateHours(CHANNEL_STATISTICS_CHARGING_HOURS, general.getCharge());
-            Integer charges = general.getCharges();
-            if (charges != null) {
-                updateState(CHANNEL_STATISTICS_CHARGES, new DecimalType(charges));
-            }
-            Integer errors = general.getErrors();
-            if (errors != null) {
-                updateState(CHANNEL_STATISTICS_ERRORS, new DecimalType(errors));
-            }
-        }
-        updateRecentDurations(CHANNEL_STATISTICS_SEEK, info.getSeek());
-        updateRecentDurations(CHANNEL_STATISTICS_MOWING, info.getMowing());
-    }
-
-    private void updateRecentDurations(String channelId, @Nullable List<HourInfo.DurationEntry> entries) {
-        if (entries == null) {
-            return;
-        }
-        List<Integer> minutes = entries.stream().map(HourInfo.DurationEntry::getDuration).filter(value -> value != null)
-                .toList();
-        updateState(channelId, new StringType(minutes.stream().map(String::valueOf).collect(Collectors.joining(", "))));
-        if (minutes.isEmpty()) {
-            updateState(channelId + "-min", UnDefType.UNDEF);
-            updateState(channelId + "-max", UnDefType.UNDEF);
-            updateState(channelId + "-average", UnDefType.UNDEF);
-            return;
-        }
-        IntSummaryStatistics statistics = minutes.stream().mapToInt(Integer::intValue).summaryStatistics();
-        updateState(channelId + "-min", new QuantityType<>(statistics.getMin(), Units.MINUTE));
-        updateState(channelId + "-max", new QuantityType<>(statistics.getMax(), Units.MINUTE));
-        updateState(channelId + "-average", new QuantityType<>(statistics.getAverage(), Units.MINUTE));
-    }
-
-    /**
-     * Updates the five remote-start point configurations when available.
-     */
-    private void refreshRemoteInfo() {
-        applyRemoteInfo(robonectClient.getRemoteInfo());
-    }
-
-    private void applyRemoteInfo(RemoteInfo info) {
-        if (!info.isSuccessful()) {
-            logger.debug("Could not retrieve remote-start information: {}", info.getErrorMessage());
-            return;
-        }
-        updateRemoteStart(1, info.getRemoteStart1());
-        updateRemoteStart(2, info.getRemoteStart2());
-        updateRemoteStart(3, info.getRemoteStart3());
-        updateRemoteStart(4, info.getRemoteStart4());
-        updateRemoteStart(5, info.getRemoteStart5());
-    }
-
-    /**
-     * Updates the boundary-wire sensor measurements exposed by the mower.
-     */
-    private void refreshWireInfo() {
-        WireInfo info = robonectClient.getWireInfo();
-        List<Sensor> sensors = info.getSensors();
-        if (!info.isSuccessful() || sensors == null) {
-            logger.debug("Could not retrieve boundary-wire information: {}", info.getErrorMessage());
-            return;
-        }
-        List<Channel> channels = new ArrayList<>();
-        for (int index = 0; index < sensors.size(); index++) {
-            String prefix = "wire-sensor-" + (index + 1) + "-";
-            String label = "Wire Sensor " + (index + 1) + " ";
-            channels.add(createChannel(prefix + "label", "String", "wireSensorLabelType", label + "Label"));
-            channels.add(createChannel(prefix + "quality", "Number:Dimensionless", "wireSensorQualityType",
-                    label + "Signal Quality"));
-            for (String measurement : List.of("a", "n", "f", "g1", "g2")) {
-                channels.add(createChannel(prefix + measurement, "Number", "wireSensorValueType",
-                        label + "Signal " + measurement.toUpperCase(Locale.ROOT)));
-            }
-        }
-        updateDynamicChannels(WIRE_CHANNEL_PATTERN, channels);
-        for (int index = 0; index < sensors.size(); index++) {
-            updateWireSensor(index + 1, sensors.get(index));
-        }
-    }
-
-    /**
-     * Updates remote portal status when supported by the module.
-     */
-    private void refreshPortalInfo() {
-        PortalInfo info = robonectClient.getPortalInfo();
-        if (!info.isSuccessful()) {
-            logger.debug("Could not retrieve portal information: {}", info.getErrorMessage());
-            return;
-        }
-        if (info.getEnabled() != null)
-            updateState(CHANNEL_PORTAL_ENABLED, OnOffType.from(info.getEnabled()));
-        if (info.getConnected() != null)
-            updateState(CHANNEL_PORTAL_CONNECTED, OnOffType.from(info.getConnected()));
-        Address address = info.getAddress();
-        if (address != null) {
-            if (address.getUrl() != null)
-                updateState(CHANNEL_PORTAL_URL, new StringType(address.getUrl()));
-            Host host = address.getHost();
-            if (host != null && host.getDefault() != null)
-                updateState(CHANNEL_PORTAL_HOST, new StringType(host.getDefault()));
-        }
-    }
-
-    private void updateWireSensor(int number, Sensor sensor) {
-        String prefix = "wire-sensor-" + number + "-";
-        if (sensor.getDescription() != null)
-            updateState(prefix + "label", new StringType(sensor.getDescription()));
-        Integer quality = sensor.getQuality();
-        if (quality != null)
-            updateState(prefix + "quality", new QuantityType<>(quality, Units.PERCENT));
-        Integer a = sensor.getA();
-        if (a != null)
-            updateState(prefix + "a", new DecimalType(a));
-        Integer n = sensor.getN();
-        if (n != null)
-            updateState(prefix + "n", new DecimalType(n));
-        Integer f = sensor.getF();
-        if (f != null)
-            updateState(prefix + "f", new DecimalType(f));
-        Integer g1 = sensor.getG1();
-        if (g1 != null)
-            updateState(prefix + "g1", new DecimalType(g1));
-        Integer g2 = sensor.getG2();
-        if (g2 != null)
-            updateState(prefix + "g2", new DecimalType(g2));
-    }
-
-    private void updateRemoteStart(int number, @Nullable Remote remote) {
-        if (remote == null) {
-            return;
-        }
-        String prefix = "remote-" + number + "-";
-        if (remote.getName() != null)
-            updateState(prefix + "name", new StringType(remote.getName()));
-        if (remote.getVisible() != null)
-            updateState(prefix + "visible", OnOffType.from(remote.getVisible()));
-        Integer path = remote.getPath();
-        if (path != null)
-            updateState(prefix + "path", new DecimalType(path));
-        Integer proportion = remote.getProportion();
-        if (proportion != null)
-            updateState(prefix + "proportion", new QuantityType<>(proportion, Units.PERCENT));
-        Integer distance = remote.getDistance();
-        if (distance != null)
-            updateState(prefix + "distance", new QuantityType<>(distance, SIUnits.METRE));
-        if (remote.getCorridorcut() != null)
-            updateState(prefix + "corridor-cut", OnOffType.from(remote.getCorridorcut()));
-    }
-
-    private void updateHours(String channel, Integer value) {
-        if (value != null) {
-            updateState(channel, new QuantityType<>(value, Units.HOUR));
-        }
-    }
-
-    /**
-     * Updates the channels for one drive motor.
-     *
-     * @param powerChannel the channel for motor power
-     * @param speedChannel the channel for motor speed
-     * @param currentChannel the channel for motor current
-     * @param motor the API result for the motor
-     */
-    private void updateDriveMotor(String powerChannel, String speedChannel, String currentChannel,
-            @Nullable DriveMotor motor) {
-        if (motor == null) {
-            return;
-        }
-        Integer power = motor.getPower();
-        if (power != null) {
-            updateState(powerChannel, new QuantityType<>(power, Units.PERCENT));
-        }
-        if (motor.getSpeed() != null) {
-            updateState(speedChannel, new QuantityType<>(motor.getSpeed() / 100.0, Units.METRE_PER_SECOND));
-        }
-        if (motor.getCurrent() != null) {
-            updateState(currentChannel, new QuantityType<>(motor.getCurrent() / 1000.0, Units.AMPERE));
-        }
-    }
-
-    private void clearErrorInfo() {
-        updateState(CHANNEL_ERROR_DATE, UnDefType.UNDEF);
-        updateState(CHANNEL_ERROR_CODE, UnDefType.UNDEF);
-        updateState(CHANNEL_ERROR_MESSAGE, UnDefType.UNDEF);
-    }
-
-    private int convertSignalStrength(int signal) {
-        if (signal >= -70) {
-            return 4;
-        }
-        if (signal >= -78) {
-            return 3;
-        }
-        if (signal >= -87) {
-            return 2;
-        }
-        return signal >= -120 ? 1 : 0;
-    }
-
-    private void updateErrorInfo(ErrorEntry error) {
-        if (error.getErrorMessage() != null) {
-            updateState(CHANNEL_ERROR_MESSAGE, new StringType(error.getErrorMessage()));
-        }
-        if (error.getErrorCode() != null) {
-            updateState(CHANNEL_ERROR_CODE, new DecimalType(error.getErrorCode().intValue()));
-        }
-        if (error.getDate() != null) {
-            State dateTime = convertUnixToDateTimeType(error.getUnix());
-            updateState(CHANNEL_ERROR_DATE, dateTime);
-        }
-    }
-
-    private void updateNextTimer(MowerInfo info) {
-        State dateTime = convertUnixToDateTimeType(info.getTimer().getNext().getUnix());
-        updateState(CHANNEL_TIMER_NEXT_TIMER, dateTime);
-    }
-
-    private State convertUnixToDateTimeType(String unixTimeSec) {
+    State convertUnixToDateTimeType(String unixTimeSec) {
         // the value in unixTimeSec represents the time on the robot in its configured timezone. However, it does not
         // provide which zone this is. Thus we have to add the zone information from the Thing configuration in order to
         // provide correct results.
@@ -1854,75 +527,13 @@ public class RobonectHandler extends BaseThingHandler {
         return new DateTimeType(adjustedInstant);
     }
 
-    private void refreshVersionInfo() {
-        VersionInfo info = robonectClient.getVersionInfo();
-        if (!canPublishState()) {
-            return;
-        }
-        if (info.isSuccessful()) {
-            Map<String, String> properties = editProperties();
-            if (info.getApplication() != null) {
-                properties.put(Thing.PROPERTY_SERIAL_NUMBER, valueOrNotAvailable(info.getSerial()));
-                properties.put(Thing.PROPERTY_HARDWARE_VERSION, valueOrNotAvailable(info.getRobonect().getVersion()));
-                properties.put(Thing.PROPERTY_FIRMWARE_VERSION,
-                        valueOrNotAvailable(info.getApplication().getVersion()));
-                properties.put(PROPERTY_COMPILED, valueOrNotAvailable(info.getApplication().getCompiled()));
-                properties.put(PROPERTY_COMMENT, valueOrNotAvailable(info.getApplication().getComment()));
-            } else {
-                properties.put(Thing.PROPERTY_SERIAL_NUMBER, valueOrNotAvailable(info.getRobonect().getSerial()));
-                properties.put(Thing.PROPERTY_HARDWARE_VERSION, VersionInfo.NOT_AVAILABLE);
-                properties.put(Thing.PROPERTY_FIRMWARE_VERSION, valueOrNotAvailable(info.getRobonect().getVersion()));
-                properties.put(PROPERTY_COMPILED, valueOrNotAvailable(info.getRobonect().getCompiled()));
-                properties.put(PROPERTY_COMMENT, valueOrNotAvailable(info.getRobonect().getComment()));
-            }
-            updateProperties(properties);
-        } else {
-            logger.debug("Could not retrieve mower version info. Robonect error response message: {}",
-                    info.getErrorMessage());
-        }
-    }
-
-    private String valueOrNotAvailable(@Nullable String value) {
-        return value == null ? VersionInfo.NOT_AVAILABLE : value;
-    }
-
-    private void refreshLastErrorInfo() {
-        applyLastErrorInfo(robonectClient.errorList());
-    }
-
-    private void applyLastErrorInfo(ErrorList errorList) {
-        if (errorList.isSuccessful()) {
-            List<ErrorEntry> errors = errorList.getErrors();
-            if (errors != null && !errors.isEmpty()) {
-                ErrorEntry lastErrorEntry = errors.get(0);
-                updateLastErrorChannels(lastErrorEntry);
-            }
-        } else {
-            logger.debug("Could not retrieve mower error list. Robonect error response message: {}",
-                    errorList.getErrorMessage());
-        }
-    }
-
-    private void updateLastErrorChannels(ErrorEntry error) {
-        if (error.getErrorMessage() != null) {
-            updateState(CHANNEL_LAST_ERROR_MESSAGE, new StringType(error.getErrorMessage()));
-        }
-        if (error.getErrorCode() != null) {
-            updateState(CHANNEL_LAST_ERROR_CODE, new DecimalType(error.getErrorCode().intValue()));
-        }
-        if (error.getDate() != null) {
-            State dateTime = convertUnixToDateTimeType(error.getUnix());
-            updateState(CHANNEL_LAST_ERROR_DATE, dateTime);
-        }
-    }
-
     @Override
     public void initialize() {
         cancelPolling();
         disposed = false;
         updateState(CHANNEL_PUSH_PASSWORD, UnDefType.UNDEF);
         RobonectConfig robonectConfig = getConfigAs(RobonectConfig.class);
-        ajaxUiScraping = robonectConfig.isAjaxUiScraping();
+        configureAjaxChannels(robonectConfig.isAjaxUiScraping());
         configureUnofficialChannels(robonectConfig.isUseUnofficialApi());
         RobonectEndpoint endpoint = new RobonectEndpoint(robonectConfig.getHost(), robonectConfig.getUser(),
                 robonectConfig.getPassword());
@@ -1997,7 +608,7 @@ public class RobonectHandler extends BaseThingHandler {
     public void handlePushNotification() {
         scheduler.execute(() -> {
             try {
-                refreshMowerInfo();
+                mowerHandler.refreshMowerInfo();
             } catch (RobonectCommunicationException e) {
                 logger.debug("Could not refresh mower state after push notification: {}", e.getMessage());
             }
@@ -2042,10 +653,10 @@ public class RobonectHandler extends BaseThingHandler {
         private MowerChannelPoller(PollingSession session) {
             this(session, List.of(() -> {
                 if (session.loadVersionInfo) {
-                    refreshVersionInfo();
+                    diagnosticsHandler.refreshVersionInfo();
                     session.loadVersionInfo = false;
                 }
-            }, RobonectHandler.this::refreshMowerInfo, RobonectHandler.this::refreshWlanInfo));
+            }, mowerHandler::refreshMowerInfo, diagnosticsHandler::refreshWlanInfo));
         }
 
         private MowerChannelPoller(PollingSession session, List<Runnable> refreshes) {
@@ -2109,12 +720,14 @@ public class RobonectHandler extends BaseThingHandler {
     private List<Runnable> createDetailedRefreshes() {
         List<Runnable> updates = new ArrayList<>();
         if (useUnofficialApi) {
-            updates.add(this::refreshPushMode);
+            updates.add(pushHandler::refreshPushMode);
         }
 
-        updates.addAll(List.<Runnable> of(this::refreshBatteryInfo, this::refreshMotorInfo, this::refreshHourInfo,
-                this::refreshRemoteInfo, this::refreshWireInfo, this::refreshPortalInfo, this::refreshTimersInfo,
-                this::refreshWeatherInfo, this::refreshExtensionInfo, this::refreshPushInfo, this::refreshDoorInfo));
+        updates.addAll(List.<Runnable> of(diagnosticsHandler::refreshBatteryInfo, diagnosticsHandler::refreshMotorInfo,
+                diagnosticsHandler::refreshHourInfo, remoteStartHandler::refreshRemoteInfo,
+                diagnosticsHandler::refreshWireInfo, diagnosticsHandler::refreshPortalInfo,
+                timerHandler::refreshTimersInfo, weatherHandler::refreshWeatherInfo, pushHandler::refreshExtensionInfo,
+                pushHandler::refreshPushInfo, mowerHandler::refreshDoorInfo));
         return updates;
     }
 

@@ -417,40 +417,40 @@
 				<label>Weather Pause Remaining</label>
 				<description>Remaining waiting time before mowing may resume after a weather event.</description>
 			</channel>
-			<channel id="weather-enabled" typeId="switchCommandAdvancedType">
-				<label>Weather Service Enabled</label>
+			<channel id="weather-service-enabled" typeId="switchCommandAdvancedType">
+				<label>Weather Service: Enabled</label>
 				<description>Enable or disable the weather service used by Robonect.</description>
 			</channel>
-			<channel id="weather-interval" typeId="weatherIntervalType">
-				<label>Weather Update Interval</label>
+			<channel id="weather-service-interval" typeId="weatherIntervalType">
+				<label>Weather Service: Update Interval</label>
 				<description>Interval at which Robonect requests new data from the weather service.</description>
 			</channel>
-			<channel id="weather-max-rain" typeId="weatherPercentageSettingType">
-				<label>Maximum Rain Intensity</label>
+			<channel id="weather-config-max-rain" typeId="weatherPercentageSettingType">
+				<label>Weather Config: Maximum Rain Intensity</label>
 				<description>Maximum rain intensity allowed before Robonect pauses mowing.</description>
 			</channel>
-			<channel id="weather-min-temperature" typeId="weatherTemperatureSettingType">
-				<label>Minimum Mowing Temperature</label>
+			<channel id="weather-config-min-temperature" typeId="weatherTemperatureSettingType">
+				<label>Weather Config: Minimum Mowing Temperature</label>
 				<description>Minimum outdoor temperature allowed for mowing.</description>
 			</channel>
-			<channel id="weather-max-temperature" typeId="weatherTemperatureSettingType">
-				<label>Maximum Mowing Temperature</label>
+			<channel id="weather-config-max-temperature" typeId="weatherTemperatureSettingType">
+				<label>Weather Config: Maximum Mowing Temperature</label>
 				<description>Maximum outdoor temperature allowed for mowing.</description>
 			</channel>
-			<channel id="weather-min-humidity" typeId="weatherPercentageSettingType">
-				<label>Minimum Mowing Humidity</label>
+			<channel id="weather-config-min-humidity" typeId="weatherPercentageSettingType">
+				<label>Weather Config: Minimum Mowing Humidity</label>
 				<description>Minimum relative air humidity allowed for mowing.</description>
 			</channel>
-			<channel id="weather-max-humidity" typeId="weatherPercentageSettingType">
-				<label>Maximum Mowing Humidity</label>
+			<channel id="weather-config-max-humidity" typeId="weatherPercentageSettingType">
+				<label>Weather Config: Maximum Mowing Humidity</label>
 				<description>Maximum relative air humidity allowed for mowing.</description>
 			</channel>
-			<channel id="weather-skip-day" typeId="switchCommandAdvancedType">
-				<label>Prevent Daytime Mowing</label>
+			<channel id="weather-config-skip-day" typeId="switchCommandAdvancedType">
+				<label>Weather Config: Prevent Daytime Mowing</label>
 				<description>Prevent mowing during daytime as determined by the weather service.</description>
 			</channel>
-			<channel id="weather-skip-night" typeId="switchCommandAdvancedType">
-				<label>Prevent Nighttime Mowing</label>
+			<channel id="weather-config-skip-night" typeId="switchCommandAdvancedType">
+				<label>Weather Config: Prevent Nighttime Mowing</label>
 				<description>Prevent mowing during nighttime as determined by the weather service.</description>
 			</channel>
 			<channel id="extension-gpio-1-flash" typeId="extensionFlashType">
@@ -555,12 +555,6 @@
 					uses the localized Ajax web-interface response when ajaxUiScraping is enabled; otherwise it uses the binding's
 					tracked job state.</description>
 			</channel>
-			<channel id="job-start" typeId="jobTimeType">
-				<label>Mowing Job Start Time</label>
-			</channel>
-			<channel id="job-end" typeId="jobTimeType">
-				<label>Mowing Job End Time</label>
-			</channel>
 			<channel id="offlineTrigger" typeId="offlineTriggerType">
 				<label>Offline Timeout Event</label>
 				<description>Reports the configured offline timeout. The current handler publishes OFFLINE_TIMEOUT as a state
@@ -622,7 +616,7 @@
 			<property name="firmwareVersion">N/A</property>
 			<property name="compiled">N/A</property>
 			<property name="serialNumber">N/A</property>
-			<property name="thingTypeVersion">3</property>
+			<property name="thingTypeVersion">4</property>
 		</properties>
 
 		<config-description>
@@ -878,7 +872,7 @@
 
 	<channel-type id="weatherIntervalType" advanced="true">
 		<item-type unitHint="min">Number:Time</item-type>
-		<label>Weather Update Interval</label>
+		<label>Weather Service: Update Interval</label>
 		<state readOnly="false" pattern="%d %unit%"/>
 	</channel-type>
 

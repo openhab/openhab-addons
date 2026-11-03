@@ -27,15 +27,27 @@ Automatic discovery is not supported.
 
 The following configuration settings are supported for the `mower` Thing.
 
-| parameter name | mandatory | description                                                                                       |
-|----------------|-----------|---------------------------------------------------------------------------------------------------|
-| host           | yes       | the hostname or ip address of the mower.                                                          |
-| pollInterval   | no        | the interval for the binding to poll for mower status information.                                |
-| offlineTimeout | no        | the maximum time, the mower can be offline before the binding triggers the offlineTrigger channel |
-| user           | no        | the username if authentication is enabled in the firmware.                                        |
-| password       | no        | the password if authentication is enabled in the firmware.                                        |
-| timezone       | no        | the timezone as configured in Robonect on the robot (default: Europe/Berlin)                      |
-| ajaxUiScraping | no        | read job timing and end-of-day mode from the localized Robonect web interface (default: false).   |
+| parameter name       | mandatory | description                                                                                       |
+| -------------------- | --------- | ------------------------------------------------------------------------------------------------- |
+| host                 | yes       | the hostname or ip address of the mower.                                                          |
+| pollInterval         | no        | the interval in seconds for polling mower status information (default: 30).                       |
+| detailedPollInterval | no        | the interval in seconds for detailed polling; 0 disables detailed polling (default: 0).           |
+| offlineTimeout       | no        | the maximum time, the mower can be offline before the binding triggers the offlineTrigger channel |
+| user                 | no        | the username if authentication is enabled in the firmware.                                        |
+| password             | no        | the password if authentication is enabled in the firmware.                                        |
+| timezone             | no        | the timezone as configured in Robonect on the robot (default: Europe/Berlin)                      |
+| ajaxUiScraping       | no        | read job timing and end-of-day mode from the localized Robonect web interface (default: false).   |
+
+Normal and detailed information use separate polling schedules. Only one poller runs at a time for each mower;
+an overlapping poll waits until the other poll finishes. Both schedules poll immediately at initialization and then
+wait their configured interval after each completed poll. Detailed polling is enabled when `detailedPollInterval`
+is greater than 0; the default value of 0 disables it.
+It includes the push-service mode when `useUnofficialApi` is also enabled.
+
+`detailedPollInterval` replaces the former `detailedInfo` switch and `detailedInfoInterval` multiplier.
+Remove `detailedInfo` from existing configurations. To retain detailed polling, set `detailedPollInterval` to a positive
+interval in seconds (multiply `pollInterval` by the former multiplier when migrating from `detailedInfoInterval`).
+To disable detailed polling, set `detailedPollInterval` to 0 or omit it.
 
 An example things configuration might look like:
 
@@ -96,11 +108,22 @@ truncates longer names and logs a warning. The visible, path, and corridor-cut c
 firmware update. Its save request includes the current remote-start settings to preserve values not being changed.
 Remaining remote-start telemetry channels are read-only.
 
+When the weather API omits the update interval, enabling `useUnofficialApi` lets the binding read it from the
+`interval` input on the `/weather` web-interface page. Values returned by the API take precedence.
+If the web-interface value is missing, invalid, or unavailable, the existing `weather-service-interval` state is preserved.
+
+Weather mowing settings use the `weather-config-` channel prefix: `weather-config-max-rain`,
+`weather-config-min-temperature`, `weather-config-max-temperature`, `weather-config-min-humidity`,
+`weather-config-max-humidity`, `weather-config-skip-day`, and `weather-config-skip-night`.
+Update existing Item links from the former `weather-` IDs to these IDs.
+The weather-service settings are `weather-service-enabled` and `weather-service-interval`, replacing
+`weather-enabled` and `weather-interval`; update existing Item links accordingly.
+
 Enabling `useUnofficialApi` also creates the writable `push-mode` Number channel with options `0` (Off), `1` (GET),
 and `2` (POST). Disabling it removes the channel. The binding reads `/push` and extracts the selected mode radio
 input from the returned HTML. Commands use `/push&mode=<value>` and apply the mode selected in the returned HTML
 without an additional read. Missing or invalid selections produce `UNDEF`. Mode polling uses
-`detailedInfoInterval` even when `detailedInfo` is disabled.
+`detailedPollInterval` and requires a positive interval and `useUnofficialApi` to be enabled.
 
 Each push trigger in the response creates `push-trigger-<id>-<name>-enter` and `push-trigger-<id>-<name>-leave` channels.
 The name is converted to lowercase and spaces are replaced with underscores, for example `Way home` becomes
@@ -150,7 +173,9 @@ The `statistics-seek` and `statistics-mowing` String channels contain comma-sepa
 Each also has `-min`, `-max`, and `-average` `Number:Time` channels with a minute unit hint.
 
 The optional `ajaxUiScraping` configuration reads the localized, undocumented web-interface endpoint. It enables job
-start and end times and recognizes end-of-day mode where the JSON API reports only `HOME`. Because this interface can
+start and end times and recognizes end-of-day mode where the JSON API reports only `HOME`.
+The `job-start` and `job-end` channels are created only when `ajaxUiScraping` is enabled and removed when it is disabled.
+Because this interface can
 change with a Robonect firmware update and varies by language, it is disabled by default; failures fall back to normal
 JSON polling.
 

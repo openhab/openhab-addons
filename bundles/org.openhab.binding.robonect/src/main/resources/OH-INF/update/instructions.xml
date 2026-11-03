@@ -880,6 +880,62 @@
 			<remove-channel id="battery-capacity"/>
 			<remove-channel id="battery-remaining-capacity"/>
 		</instruction-set>
+		<instruction-set targetVersion="4">
+			<remove-channel id="weather-enabled"/>
+			<add-channel id="weather-service-enabled">
+				<type>robonect:switchCommandAdvancedType</type>
+				<label>Weather Service: Enabled</label>
+				<description>Enable or disable the weather service used by Robonect.</description>
+			</add-channel>
+			<remove-channel id="weather-interval"/>
+			<add-channel id="weather-service-interval">
+				<type>robonect:weatherIntervalType</type>
+				<label>Weather Service: Update Interval</label>
+				<description>Interval at which Robonect requests new data from the weather service.</description>
+			</add-channel>
+			<remove-channel id="weather-max-rain"/>
+			<add-channel id="weather-config-max-rain">
+				<type>robonect:weatherPercentageSettingType</type>
+				<label>Weather Config: Maximum Rain Intensity</label>
+				<description>Maximum rain intensity allowed before Robonect pauses mowing.</description>
+			</add-channel>
+			<remove-channel id="weather-min-temperature"/>
+			<add-channel id="weather-config-min-temperature">
+				<type>robonect:weatherTemperatureSettingType</type>
+				<label>Weather Config: Minimum Mowing Temperature</label>
+				<description>Minimum outdoor temperature allowed for mowing.</description>
+			</add-channel>
+			<remove-channel id="weather-max-temperature"/>
+			<add-channel id="weather-config-max-temperature">
+				<type>robonect:weatherTemperatureSettingType</type>
+				<label>Weather Config: Maximum Mowing Temperature</label>
+				<description>Maximum outdoor temperature allowed for mowing.</description>
+			</add-channel>
+			<remove-channel id="weather-min-humidity"/>
+			<add-channel id="weather-config-min-humidity">
+				<type>robonect:weatherPercentageSettingType</type>
+				<label>Weather Config: Minimum Mowing Humidity</label>
+				<description>Minimum relative air humidity allowed for mowing.</description>
+			</add-channel>
+			<remove-channel id="weather-max-humidity"/>
+			<add-channel id="weather-config-max-humidity">
+				<type>robonect:weatherPercentageSettingType</type>
+				<label>Weather Config: Maximum Mowing Humidity</label>
+				<description>Maximum relative air humidity allowed for mowing.</description>
+			</add-channel>
+			<remove-channel id="weather-skip-day"/>
+			<add-channel id="weather-config-skip-day">
+				<type>robonect:switchCommandAdvancedType</type>
+				<label>Weather Config: Prevent Daytime Mowing</label>
+				<description>Prevent mowing during daytime as determined by the weather service.</description>
+			</add-channel>
+			<remove-channel id="weather-skip-night"/>
+			<add-channel id="weather-config-skip-night">
+				<type>robonect:switchCommandAdvancedType</type>
+				<label>Weather Config: Prevent Nighttime Mowing</label>
+				<description>Prevent mowing during nighttime as determined by the weather service.</description>
+			</add-channel>
+		</instruction-set>
 	</thing-type>
 
 </update:update-descriptions>
