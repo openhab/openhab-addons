@@ -55,9 +55,10 @@ public class EvccBatteryHandler extends EvccBaseThingHandler {
 
             // Register route for battery handler with indexed array extraction
             MessageRouter router = handler.getMessageRouter();
-            router.registerRoute(
-                    new HandlerRoute(JSON_KEY_BATTERY, new FallbackExtraction(new MatchingJsonObjectExtraction("power"),
-                            new JsonPathExtraction("$.devices[" + index + "]")), this, JSON_KEY_BATTERY));
+            router.registerRoute(new HandlerRoute(JSON_KEY_BATTERY,
+                    new FallbackExtraction(new JsonPathExtraction("$.devices[" + index + "]"),
+                            new MatchingJsonObjectExtraction("power")),
+                    this, JSON_KEY_BATTERY));
         });
     }
 
