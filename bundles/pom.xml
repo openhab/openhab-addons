@@ -138,6 +138,7 @@
     <module>org.openhab.binding.dsmr</module>
     <module>org.openhab.binding.dwdpollenflug</module>
     <module>org.openhab.binding.dwdunwetter</module>
+    <module>org.openhab.binding.e3dc</module>
     <module>org.openhab.binding.easee</module>
     <module>org.openhab.binding.echonetlite</module>
     <module>org.openhab.binding.ecobee</module>

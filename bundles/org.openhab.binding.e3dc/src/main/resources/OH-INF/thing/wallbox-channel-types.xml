@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="e3dc"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-type id="power-l1">
+		<item-type>Number:Power</item-type>
+		<label>Session Power L1</label>
+		<description>Power on phase L1 in the charging session</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="power-l2">
+		<item-type>Number:Power</item-type>
+		<label>Session Power L2</label>
+		<description>Power on phase L2 in the charging session</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="power-l3">
+		<item-type>Number:Power</item-type>
+		<label>Session Power L3</label>
+		<description>Power on phase L3 in the charging session</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="counters-total">
+		<item-type>Number:Energy</item-type>
+		<label>Total Energy</label>
+		<description>Energy produced since commissioning</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="counters-solar">
+		<item-type>Number:Energy</item-type>
+		<label>Solar Energy</label>
+		<description>Energy taken from the photovoltaic system</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="status-soc">
+		<item-type>Number:Dimensionless</item-type>
+		<label>State of Charge</label>
+		<description>State of charge of the connected vehicle</description>
+		<state pattern="%.0f %%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="settings-min-charge-current">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>Minimum Charge Current</label>
+		<description>Lowest charging current allowed</description>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Current</tag>
+		</tags>
+		<state min="6" max="16" step="1" pattern="%.0f %unit%">
+			<options>
+				<option value="6">6 A</option>
+				<option value="7">7 A</option>
+				<option value="8">8 A</option>
+				<option value="9">9 A</option>
+				<option value="10">10 A</option>
+				<option value="11">11 A</option>
+				<option value="12">12 A</option>
+				<option value="13">13 A</option>
+				<option value="14">14 A</option>
+				<option value="15">15 A</option>
+				<option value="16">16 A</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="settings-max-charge-current">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>Maximum Charge Current</label>
+		<description>Highest charging current allowed</description>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Current</tag>
+		</tags>
+		<state min="6" max="16" step="1" pattern="%.0f %unit%">
+			<options>
+				<option value="6">6 A</option>
+				<option value="7">7 A</option>
+				<option value="8">8 A</option>
+				<option value="9">9 A</option>
+				<option value="10">10 A</option>
+				<option value="11">11 A</option>
+				<option value="12">12 A</option>
+				<option value="13">13 A</option>
+				<option value="14">14 A</option>
+				<option value="15">15 A</option>
+				<option value="16">16 A</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="settings-number-phases">
+		<item-type>Number</item-type>
+		<label>Number of Phases</label>
+		<description>Number of phases used for charging</description>
+		<state pattern="%s">
+			<options>
+				<option value="1">Single phase</option>
+				<option value="3">Three phases</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="settings-auto-phase-switch">
+		<item-type>Switch</item-type>
+		<label>Automatic Phase Switch</label>
+		<description>Whether the wallbox changes the number of phases by itself</description>
+		<state/>
+	</channel-type>
+
+	<channel-type id="status-key-state">
+		<item-type>Switch</item-type>
+		<label>Key State</label>
+		<description>State of the wallbox key switch</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="status-plugged">
+		<item-type>Switch</item-type>
+		<label>Plugged</label>
+		<description>A vehicle is connected</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="status-locked">
+		<item-type>Switch</item-type>
+		<label>Locked</label>
+		<description>The connector is locked</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="status-charging">
+		<item-type>Switch</item-type>
+		<label>Charging</label>
+		<description>A charging session is running</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="control-suspended">
+		<item-type>Switch</item-type>
+		<label>Suspended</label>
+		<description>Charging is currently suspended</description>
+		<state/>
+	</channel-type>
+
+	<channel-type id="control-toggle">
+		<item-type>Switch</item-type>
+		<label>Toggle Charging</label>
+		<description>Suspends a running charging session and resumes a suspended one</description>
+		<state/>
+	</channel-type>
+
+	<channel-type id="control-sun-mode">
+		<item-type>Switch</item-type>
+		<label>Sun Mode</label>
+		<description>Charging uses surplus photovoltaic power</description>
+		<state/>
+	</channel-type>
+
+	<channel-type id="last-charge-phase-l1">
+		<item-type>Switch</item-type>
+		<label>Session Phase L1</label>
+		<description>Whether the wallbox charged on phase L1 in the last charging session</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="last-charge-energy-l1">
+		<item-type>Number:Energy</item-type>
+		<label>Session Energy L1</label>
+		<description>Energy drawn on phase L1 in the last charging session</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="last-charge-phase-l2">
+		<item-type>Switch</item-type>
+		<label>Session Phase L2</label>
+		<description>Whether the wallbox charged on phase L2 in the last charging session</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="last-charge-energy-l2">
+		<item-type>Number:Energy</item-type>
+		<label>Session Energy L2</label>
+		<description>Energy drawn on phase L2 in the last charging session</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="last-charge-phase-l3">
+		<item-type>Switch</item-type>
+		<label>Session Phase L3</label>
+		<description>Whether the wallbox charged on phase L3 in the last charging session</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="last-charge-energy-l3">
+		<item-type>Number:Energy</item-type>
+		<label>Session Energy L3</label>
+		<description>Energy drawn on phase L3 in the last charging session</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+</thing:thing-descriptions>

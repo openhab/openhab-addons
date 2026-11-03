@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="e3dc"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-type id="statistics-loop-ratio" advanced="true">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Loop Ratio</label>
+		<description>Time the device was occupied by this connection during the last poll, in percent of the refresh interval</description>
+		<state pattern="%.1f %%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="statistics-loop-ratio-average" advanced="true">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Loop Ratio Average</label>
+		<description>Average loop ratio over the last 20 polls</description>
+		<state pattern="%.1f %%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="statistics-loop-ratio-peak" advanced="true">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Loop Ratio Peak</label>
+		<description>Highest loop ratio of the last 20 polls</description>
+		<state pattern="%.1f %%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="statistics-poll-duration" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>Poll Duration</label>
+		<description>Time the last request spent on the wire, from sending to the complete answer</description>
+		<state pattern="%.1f ms" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="statistics-device-wait" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>Device Wait</label>
+		<description>Time the device needed to start its answer to the last request</description>
+		<state pattern="%.1f ms" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="statistics-dispatch-time" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>Dispatch Time</label>
+		<description>Time openHAB needed to hand the answer of the last poll to the things</description>
+		<state pattern="%.1f ms" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="statistics-answer-size" advanced="true">
+		<item-type>Number:DataAmount</item-type>
+		<label>Answer Size</label>
+		<description>Size of the answer to the last request</description>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+
+</thing:thing-descriptions>

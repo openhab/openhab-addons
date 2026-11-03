@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="e3dc"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-group-type id="statistics-group">
+		<label>Statistics</label>
+		<description>Figures about the load the connection puts on the device</description>
+		<channels>
+			<channel id="loop-ratio" typeId="statistics-loop-ratio"/>
+			<channel id="loop-ratio-average" typeId="statistics-loop-ratio-average"/>
+			<channel id="loop-ratio-peak" typeId="statistics-loop-ratio-peak"/>
+			<channel id="poll-duration" typeId="statistics-poll-duration"/>
+			<channel id="device-wait" typeId="statistics-device-wait"/>
+			<channel id="dispatch-time" typeId="statistics-dispatch-time"/>
+			<channel id="answer-size" typeId="statistics-answer-size"/>
+		</channels>
+	</channel-group-type>
+
+</thing:thing-descriptions>

@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="e3dc"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-type id="power-solar-power">
+		<item-type>Number:Power</item-type>
+		<label>Solar Power</label>
+		<description>Photovoltaic power currently produced</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="power-battery-power">
+		<item-type>Number:Power</item-type>
+		<label>Battery Power</label>
+		<description>Power flowing into or out of the battery</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="power-house-power">
+		<item-type>Number:Power</item-type>
+		<label>House Power</label>
+		<description>Power currently consumed by the household</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="power-grid-power">
+		<item-type>Number:Power</item-type>
+		<label>Grid Power</label>
+		<description>Power drawn from or fed into the grid</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="power-additional-power">
+		<item-type>Number:Power</item-type>
+		<label>Additional Power</label>
+		<description>Power of an additional producer or consumer</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="power-autarky">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Autarky</label>
+		<description>Share of consumption covered by the power plant</description>
+		<state pattern="%.0f %%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="power-self-consumption">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Self Consumption</label>
+		<description>Share of production used on site</description>
+		<state pattern="%.0f %%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="power-wallbox-power">
+		<item-type>Number:Power</item-type>
+		<label>Wallbox Power</label>
+		<description>Power drawn by all wallboxes</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="power-wallbox-solar-power">
+		<item-type>Number:Power</item-type>
+		<label>Wallbox Solar Power</label>
+		<description>Part of the wallbox power that comes from solar</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+
+</thing:thing-descriptions>

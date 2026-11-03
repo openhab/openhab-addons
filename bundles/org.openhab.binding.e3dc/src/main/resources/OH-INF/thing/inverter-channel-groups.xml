@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="e3dc"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-group-type id="inverter">
+		<label>Inverter</label>
+		<channels>
+			<channel id="ac-frequency" typeId="inverter-ac-frequency"/>
+			<channel id="on-grid" typeId="inverter-on-grid"/>
+			<channel id="string-count" typeId="inverter-string-count"/>
+			<channel id="ac-power-l1" typeId="inverter-ac-power-l1"/>
+			<channel id="ac-power-l2" typeId="inverter-ac-power-l2"/>
+			<channel id="ac-power-l3" typeId="inverter-ac-power-l3"/>
+			<channel id="ac-voltage-l1" typeId="inverter-ac-voltage-l1"/>
+			<channel id="ac-voltage-l2" typeId="inverter-ac-voltage-l2"/>
+			<channel id="ac-voltage-l3" typeId="inverter-ac-voltage-l3"/>
+			<channel id="ac-current-l1" typeId="inverter-ac-current-l1"/>
+			<channel id="ac-current-l2" typeId="inverter-ac-current-l2"/>
+			<channel id="ac-current-l3" typeId="inverter-ac-current-l3"/>
+			<channel id="apparent-power-l1" typeId="inverter-apparent-power-l1"/>
+			<channel id="apparent-power-l2" typeId="inverter-apparent-power-l2"/>
+			<channel id="apparent-power-l3" typeId="inverter-apparent-power-l3"/>
+			<channel id="reactive-power-l1" typeId="inverter-reactive-power-l1"/>
+			<channel id="reactive-power-l2" typeId="inverter-reactive-power-l2"/>
+			<channel id="reactive-power-l3" typeId="inverter-reactive-power-l3"/>
+			<channel id="energy-total-l1" typeId="inverter-energy-total-l1"/>
+			<channel id="energy-total-l2" typeId="inverter-energy-total-l2"/>
+			<channel id="energy-total-l3" typeId="inverter-energy-total-l3"/>
+			<channel id="energy-day-l1" typeId="inverter-energy-day-l1"/>
+			<channel id="energy-day-l2" typeId="inverter-energy-day-l2"/>
+			<channel id="energy-day-l3" typeId="inverter-energy-day-l3"/>
+		</channels>
+	</channel-group-type>
+
+</thing:thing-descriptions>
