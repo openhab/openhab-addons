@@ -681,8 +681,8 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
      * Update device status and channels
      */
     protected void refreshStatus() {
-        // A wakeup runs this outside the status job. Return before anything else, so that the skipped cycle doesn't
-        // consume a pending update
+        // A wakeup runs this outside the status job. A cycle overlapping a running one returns before anything else,
+        // so it doesn't consume a pending update
         if (!statusRefreshRunning.compareAndSet(false, true)) {
             return;
         }
@@ -1520,13 +1520,25 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
     }
 
     /**
-     * A sleeping device goes back to sleep shortly after announcing itself, so the update runs right away rather than
-     * with the next cycle of the status job.
+     * A sleeping battery device announces itself via mDNS each time it wakes up, and is reachable only for a short
+     * while. A Thing that still waits for its device (ONLINE/CONFIGURATION_PENDING) is updated right away, the next
+     * cycle of the status job may come too late. Once initialized, the device reports its status itself, so other
+     * Things need no poll.
+     * <p>
+     * The announcement doesn't restart the watchdog, as it doesn't prove that status reporting works. A successful
+     * update does.
+     * <p>
+     * Always-on devices report their status event driven and BLU devices can't be polled, both are left out. These
+     * flags are derived from the Thing type, so they are valid before the device was initialized.
      */
     @Override
     public void onDeviceWakeup() {
-        requestUpdates(1, true);
-        scheduler.execute(this::refreshStatus);
+        if (!profile.alwaysOn && !profile.isBlu && getThingStatus() == ThingStatus.ONLINE
+                && getThingStatusDetail() == ThingStatusDetail.CONFIGURATION_PENDING) {
+            logger.debug("{}: Device woke up, requesting update", thingName);
+            requestUpdates(1, false);
+            scheduler.execute(this::refreshStatus);
+        }
     }
 
     /**

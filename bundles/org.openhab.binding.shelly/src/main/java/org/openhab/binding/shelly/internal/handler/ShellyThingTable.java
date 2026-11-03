@@ -13,6 +13,7 @@
 package org.openhab.binding.shelly.internal.handler;
 
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.PROPERTY_SERVICE_NAME;
+import static org.openhab.binding.shelly.internal.util.ShellyUtils.getString;
 
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -71,21 +72,29 @@ public class ShellyThingTable {
     }
 
     /**
-     * Find the Thing of a device by its mDNS service name, which is unique per device. Other than
-     * {@link #findThing(String)} this doesn't match an IP address, which another device may have used before.
+     * Find the Thing of an announced device by its mDNS service name, which is unique per device. Unlike
+     * {@link #findThing(String)}, the IP address, which another device may have used before, is only matched for a
+     * Thing that doesn't know its device yet: a Thing defined in a file that was never initialized has neither a
+     * service name nor a hostname.
      */
-    public @Nullable ShellyThingInterface findThingByServiceName(String serviceName) {
+    public @Nullable ShellyThingInterface findAnnouncedThing(String serviceName, String ipAddress) {
         List<ShellyThingInterface> values;
         synchronized (this) {
             values = List.copyOf(table.values());
         }
+        ShellyThingInterface unnamedThing = null;
         for (ShellyThingInterface thingInterface : values) {
-            if (serviceName.equalsIgnoreCase(thingInterface.getProperty(PROPERTY_SERVICE_NAME))
-                    || serviceName.equalsIgnoreCase(thingInterface.getProfile().device.hostname)) {
+            String thingServiceName = thingInterface.getProperty(PROPERTY_SERVICE_NAME);
+            String hostname = getString(thingInterface.getProfile().device.hostname);
+            if (serviceName.equalsIgnoreCase(thingServiceName) || serviceName.equalsIgnoreCase(hostname)) {
                 return thingInterface;
             }
+            if (unnamedThing == null && thingServiceName.isEmpty() && hostname.isEmpty()
+                    && thingInterface.checkRepresentation(ipAddress)) {
+                unnamedThing = thingInterface;
+            }
         }
-        return null;
+        return unnamedThing;
     }
 
     public ShellyThingInterface getThing(InetAddress deviceIp) {

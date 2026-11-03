@@ -16,9 +16,6 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.*;
-import static org.openhab.binding.shelly.internal.ShellyDevices.THING_TYPE_SHELLYBLUHT;
-import static org.openhab.binding.shelly.internal.ShellyDevices.THING_TYPE_SHELLYMOTION;
-import static org.openhab.binding.shelly.internal.ShellyDevices.THING_TYPE_SHELLYPLUSSMOKE;
 
 import java.io.IOException;
 import java.net.Inet4Address;
@@ -36,14 +33,12 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
 import org.openhab.binding.shelly.internal.handler.ShellyThingInterface;
 import org.openhab.binding.shelly.internal.handler.ShellyThingTable;
 import org.openhab.binding.shelly.internal.provider.ShellyTranslationProvider;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.net.NetworkAddressService;
-import org.openhab.core.thing.ThingTypeUID;
 import org.osgi.service.cm.Configuration;
 import org.osgi.service.cm.ConfigurationAdmin;
 import org.osgi.service.component.ComponentContext;
@@ -61,94 +56,26 @@ public class ShellyMDNSDiscoveryParticipantTest {
     private static final String IP_ADDRESS = "192.168.1.17";
 
     @Test
-    void createResultDoesNotRequestUpdateForAlwaysOnThing() throws Exception {
+    void createResultNotifiesThingOfAnnouncedDevice() throws Exception {
         ShellyThingTable thingTable = mock(ShellyThingTable.class);
-        ShellyThingInterface thing = mockThing(THING_TYPE_SHELLYMOTION);
-        thing.getProfile().initialized = true;
-        when(thingTable.findThingByServiceName(SERVICE_NAME)).thenReturn(thing);
+        ShellyThingInterface thing = mock(ShellyThingInterface.class);
+        when(thingTable.findAnnouncedThing(SERVICE_NAME, IP_ADDRESS)).thenReturn(thing);
 
         createParticipant(thingTable).createResult(mockService());
 
-        verify(thing, never()).onDeviceWakeup();
-        verify(thing, never()).restartWatchdog();
-    }
-
-    @Test
-    void createResultIgnoresBluThing() throws Exception {
-        ShellyThingTable thingTable = mock(ShellyThingTable.class);
-        ShellyThingInterface thing = mockThing(THING_TYPE_SHELLYBLUHT);
-        thing.getProfile().initialized = true;
-        when(thingTable.findThingByServiceName(SERVICE_NAME)).thenReturn(thing);
-
-        createParticipant(thingTable).createResult(mockService());
-
-        verify(thing, never()).onDeviceWakeup();
-        verify(thing, never()).restartWatchdog();
-    }
-
-    @Test
-    void createResultDoesNotRequestUpdateForInitializedOnlineThing() throws Exception {
-        ShellyThingTable thingTable = mock(ShellyThingTable.class);
-        ShellyThingInterface thing = mockThing(THING_TYPE_SHELLYPLUSSMOKE);
-        thing.getProfile().initialized = true;
-        when(thing.isThingOnline()).thenReturn(true);
-        when(thingTable.findThingByServiceName(SERVICE_NAME)).thenReturn(thing);
-
-        createParticipant(thingTable).createResult(mockService());
-
-        verify(thing, never()).onDeviceWakeup();
-        verify(thing).restartWatchdog();
-    }
-
-    @Test
-    void createResultRequestsUpdateForInitializedOfflineThing() throws Exception {
-        ShellyThingTable thingTable = mock(ShellyThingTable.class);
-        ShellyThingInterface thing = mockThing(THING_TYPE_SHELLYPLUSSMOKE);
-        thing.getProfile().initialized = true;
-        when(thingTable.findThingByServiceName(SERVICE_NAME)).thenReturn(thing);
-
-        createParticipant(thingTable).createResult(mockService());
-
+        verify(thing).checkRepresentation(IP_ADDRESS);
         verify(thing).onDeviceWakeup();
-        verify(thing).restartWatchdog();
-    }
-
-    @Test
-    void createResultRequestsUpdateForUninitializedThing() throws Exception {
-        ShellyThingTable thingTable = mock(ShellyThingTable.class);
-        ShellyThingInterface thing = mockThing(THING_TYPE_SHELLYPLUSSMOKE);
-        when(thingTable.findThingByServiceName(SERVICE_NAME)).thenReturn(thing);
-
-        createParticipant(thingTable).createResult(mockService());
-
-        verify(thing).onDeviceWakeup();
-        verify(thing, never()).restartWatchdog();
-    }
-
-    @Test
-    void createResultRequestsUpdateForUninitializedOnlineThing() throws Exception {
-        ShellyThingTable thingTable = mock(ShellyThingTable.class);
-        ShellyThingInterface thing = mockThing(THING_TYPE_SHELLYPLUSSMOKE);
-        when(thing.isThingOnline()).thenReturn(true);
-        when(thingTable.findThingByServiceName(SERVICE_NAME)).thenReturn(thing);
-
-        createParticipant(thingTable).createResult(mockService());
-
-        verify(thing).onDeviceWakeup();
-        verify(thing, never()).restartWatchdog();
     }
 
     @Test
     void createResultIgnoresThingOfOtherDeviceAtSameIpAddress() throws Exception {
         ShellyThingTable thingTable = mock(ShellyThingTable.class);
-        ShellyThingInterface thing = mockThing(THING_TYPE_SHELLYPLUSSMOKE);
-        thing.getProfile().initialized = true;
+        ShellyThingInterface thing = mock(ShellyThingInterface.class);
         when(thingTable.findThing(IP_ADDRESS)).thenReturn(thing);
 
         createParticipant(thingTable).createResult(mockService());
 
         verify(thing, never()).onDeviceWakeup();
-        verify(thing, never()).restartWatchdog();
     }
 
     @Test
@@ -157,13 +84,7 @@ public class ShellyMDNSDiscoveryParticipantTest {
 
         assertThat(createParticipant(thingTable).createResult(mockService()), is(nullValue()));
 
-        verify(thingTable).findThingByServiceName(SERVICE_NAME);
-    }
-
-    private static ShellyThingInterface mockThing(ThingTypeUID thingType) {
-        ShellyThingInterface thing = mock(ShellyThingInterface.class);
-        when(thing.getProfile()).thenReturn(new ShellyDeviceProfile(thingType));
-        return thing;
+        verify(thingTable).findAnnouncedThing(SERVICE_NAME, IP_ADDRESS);
     }
 
     private static ServiceInfo mockService() throws IOException {

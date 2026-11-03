@@ -14,7 +14,10 @@ package org.openhab.binding.shelly.internal.handler;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
+import static org.openhab.binding.shelly.internal.ShellyDevices.THING_TYPE_SHELLYBLUHT;
+import static org.openhab.binding.shelly.internal.ShellyDevices.THING_TYPE_SHELLYMOTION;
 import static org.openhab.binding.shelly.internal.ShellyDevices.THING_TYPE_SHELLYPLUS1PM;
+import static org.openhab.binding.shelly.internal.ShellyDevices.THING_TYPE_SHELLYPLUSSMOKE;
 
 import java.lang.reflect.Field;
 import java.util.concurrent.ScheduledExecutorService;
@@ -33,6 +36,7 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingStatusInfo;
+import org.openhab.core.thing.ThingTypeUID;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -43,20 +47,81 @@ import org.slf4j.LoggerFactory;
 class ShellyBaseHandlerWakeupTest {
 
     @Test
-    void onDeviceWakeupRunsStatusUpdateRightAway() throws Exception {
-        ShellyBaseHandler handler = mock(ShellyBaseHandler.class, CALLS_REAL_METHODS);
+    void onDeviceWakeupUpdatesInitializedThingWithPendingConfiguration() throws Exception {
+        assertWakeupRunsUpdate(true);
+    }
+
+    @Test
+    void onDeviceWakeupUpdatesUninitializedThingWithPendingConfiguration() throws Exception {
+        assertWakeupRunsUpdate(false);
+    }
+
+    @Test
+    void onDeviceWakeupIgnoresOnlineThing() throws Exception {
+        assertWakeupIgnored(THING_TYPE_SHELLYPLUSSMOKE, ThingStatus.ONLINE, ThingStatusDetail.NONE);
+    }
+
+    @Test
+    void onDeviceWakeupIgnoresOfflineThing() throws Exception {
+        assertWakeupIgnored(THING_TYPE_SHELLYPLUSSMOKE, ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+    }
+
+    @Test
+    void onDeviceWakeupIgnoresOfflineThingWithPendingConfiguration() throws Exception {
+        assertWakeupIgnored(THING_TYPE_SHELLYPLUSSMOKE, ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING);
+    }
+
+    @Test
+    void onDeviceWakeupIgnoresAlwaysOnThing() throws Exception {
+        assertWakeupIgnored(THING_TYPE_SHELLYMOTION, ThingStatus.ONLINE, ThingStatusDetail.CONFIGURATION_PENDING);
+    }
+
+    @Test
+    void onDeviceWakeupIgnoresBluThing() throws Exception {
+        assertWakeupIgnored(THING_TYPE_SHELLYBLUHT, ThingStatus.ONLINE, ThingStatusDetail.CONFIGURATION_PENDING);
+    }
+
+    private void assertWakeupRunsUpdate(boolean initialized) throws Exception {
         ScheduledExecutorService scheduler = mock(ScheduledExecutorService.class);
-        setField(handler, "scheduler", scheduler);
-        doReturn(true).when(handler).requestUpdates(1, true);
-        doNothing().when(handler).refreshStatus();
+        ShellyBaseHandler handler = buildWakeupHandler(THING_TYPE_SHELLYPLUSSMOKE, initialized, ThingStatus.ONLINE,
+                ThingStatusDetail.CONFIGURATION_PENDING, scheduler);
 
         handler.onDeviceWakeup();
 
-        verify(handler).requestUpdates(1, true);
+        verify(handler, never()).restartWatchdog();
+        verify(handler).requestUpdates(1, false);
         ArgumentCaptor<Runnable> job = ArgumentCaptor.forClass(Runnable.class);
         verify(scheduler).execute(job.capture());
         job.getValue().run();
         verify(handler).refreshStatus();
+    }
+
+    private void assertWakeupIgnored(ThingTypeUID thingType, ThingStatus status, ThingStatusDetail detail)
+            throws Exception {
+        ScheduledExecutorService scheduler = mock(ScheduledExecutorService.class);
+        ShellyBaseHandler handler = buildWakeupHandler(thingType, true, status, detail, scheduler);
+
+        handler.onDeviceWakeup();
+
+        verify(handler, never()).restartWatchdog();
+        verify(handler, never()).requestUpdates(anyInt(), anyBoolean());
+        verifyNoInteractions(scheduler);
+    }
+
+    private ShellyBaseHandler buildWakeupHandler(ThingTypeUID thingType, boolean initialized, ThingStatus status,
+            ThingStatusDetail detail, ScheduledExecutorService scheduler) throws Exception {
+        ShellyBaseHandler handler = mock(ShellyBaseHandler.class, CALLS_REAL_METHODS);
+        ShellyDeviceProfile profile = new ShellyDeviceProfile(thingType);
+        profile.initialized = initialized;
+        handler.profile = profile;
+        setField(handler, "logger", LoggerFactory.getLogger(ShellyBaseHandler.class));
+        setField(handler, "scheduler", scheduler);
+        doNothing().when(handler).restartWatchdog();
+        doReturn(status).when(handler).getThingStatus();
+        doReturn(detail).when(handler).getThingStatusDetail();
+        doReturn(true).when(handler).requestUpdates(1, false);
+        doNothing().when(handler).refreshStatus();
+        return handler;
     }
 
     @Test

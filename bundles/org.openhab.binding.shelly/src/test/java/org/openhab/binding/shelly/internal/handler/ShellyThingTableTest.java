@@ -43,6 +43,7 @@ public class ShellyThingTableTest {
 
     private static final String GATEWAY_IP = "192.168.1.100";
     private static final int CLIENT_PORT = 8080;
+    private static final String ANNOUNCED_IP = "192.168.1.17";
     private static final String CLIENT_KEY = GATEWAY_IP + ":" + CLIENT_PORT;
 
     // Returns a mock that answers true to checkRepresentation only for the supplied keys.
@@ -65,7 +66,7 @@ public class ShellyThingTableTest {
     }
 
     @Test
-    void findByServiceNameMatchesServiceNameProperty() {
+    void findAnnouncedThingMatchesServiceNameProperty() {
         ShellyThingInterface other = namedThing("shellyplussmoke-aabbccddeeff", "");
         ShellyThingInterface thing = namedThing("shellyplussmoke-666edfe225ed", "");
 
@@ -73,28 +74,52 @@ public class ShellyThingTableTest {
         table.addThing("other", other);
         table.addThing("thing", thing);
 
-        assertThat(table.findThingByServiceName("SHELLYPLUSSMOKE-666EDFE225ED"), is(thing));
+        assertThat(table.findAnnouncedThing("SHELLYPLUSSMOKE-666EDFE225ED", ANNOUNCED_IP), is(thing));
     }
 
     @Test
-    void findByServiceNameMatchesHostname() {
+    void findAnnouncedThingMatchesHostname() {
         ShellyThingInterface thing = namedThing("", "shellyplussmoke-666edfe225ed");
 
         ShellyThingTable table = new ShellyThingTable();
         table.addThing("thing", thing);
 
-        assertThat(table.findThingByServiceName("shellyplussmoke-666edfe225ed"), is(thing));
+        assertThat(table.findAnnouncedThing("shellyplussmoke-666edfe225ed", ANNOUNCED_IP), is(thing));
     }
 
     @Test
-    void findByServiceNameIgnoresOtherRepresentations() {
+    void findAnnouncedThingIgnoresThingOfOtherDeviceAtSameIpAddress() {
         ShellyThingInterface thing = namedThing("shellyplussmoke-aabbccddeeff", "shellyplussmoke-aabbccddeeff");
-        when(thing.checkRepresentation("shellyplussmoke-666edfe225ed")).thenReturn(true);
+        when(thing.checkRepresentation(ANNOUNCED_IP)).thenReturn(true);
 
         ShellyThingTable table = new ShellyThingTable();
-        table.addThing("shellyplussmoke-666edfe225ed", thing);
+        table.addThing(ANNOUNCED_IP, thing);
 
-        assertThat(table.findThingByServiceName("shellyplussmoke-666edfe225ed"), is(nullValue()));
+        assertThat(table.findAnnouncedThing("shellyplussmoke-666edfe225ed", ANNOUNCED_IP), is(nullValue()));
+    }
+
+    @Test
+    void findAnnouncedThingMatchesUnnamedThingByIpAddress() {
+        ShellyThingInterface thing = namedThing("", "");
+        when(thing.checkRepresentation(ANNOUNCED_IP)).thenReturn(true);
+
+        ShellyThingTable table = new ShellyThingTable();
+        table.addThing(ANNOUNCED_IP, thing);
+
+        assertThat(table.findAnnouncedThing("shellyplussmoke-666edfe225ed", ANNOUNCED_IP), is(thing));
+    }
+
+    @Test
+    void findAnnouncedThingPrefersNamedThingOverUnnamedThing() {
+        ShellyThingInterface unnamed = namedThing("", "");
+        when(unnamed.checkRepresentation(ANNOUNCED_IP)).thenReturn(true);
+        ShellyThingInterface named = namedThing("shellyplussmoke-666edfe225ed", "");
+
+        ShellyThingTable table = new ShellyThingTable();
+        table.addThing("unnamed", unnamed);
+        table.addThing("named", named);
+
+        assertThat(table.findAnnouncedThing("shellyplussmoke-666edfe225ed", ANNOUNCED_IP), is(named));
     }
 
     @Test

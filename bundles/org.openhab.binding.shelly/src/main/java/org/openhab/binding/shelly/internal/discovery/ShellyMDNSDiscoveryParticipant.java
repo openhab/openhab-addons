@@ -151,7 +151,7 @@ public class ShellyMDNSDiscoveryParticipant implements MDNSDiscoveryParticipant 
             return null;
         }
         logger.debug("{}: Shelly device discovered: IP address={}", serviceName, address);
-        requestUpdateOnWakeup(serviceName);
+        handleAnnouncement(serviceName, address);
 
         try {
             // Get device settings — capture a consistent local snapshot; @Modified may run concurrently
@@ -180,28 +180,22 @@ public class ShellyMDNSDiscoveryParticipant implements MDNSDiscoveryParticipant 
     }
 
     /**
-     * A sleeping battery device announces itself via mDNS every time it wakes up, and is reachable only for a short
-     * while. The announcement counts as a sign of life, so the watchdog of an initialized Thing is restarted. Should
-     * the push not arrive, the Thing is not set offline for a wakeup that did happen. A Thing that is not initialized
-     * yet has no wakeup period learned, restarting its watchdog would only start a short default timeout. A Thing that
-     * is not initialized or offline is asked to update now, its own poll would most likely come too late.
-     * <p>
-     * Always-on devices report their status event driven and BLU devices can't be reached by a poll, both are left out.
+     * A sleeping battery device announces itself each time it wakes up, the Thing of the device decides whether to
+     * use this short window for an update.
      */
-    private void requestUpdateOnWakeup(String serviceName) {
-        ShellyThingInterface thing = thingTable.findThingByServiceName(serviceName);
-        if (thing != null) {
-            ShellyDeviceProfile profile = thing.getProfile();
-            if (profile.hasBattery && !profile.alwaysOn && !profile.isBlu) {
-                if (profile.isInitialized()) {
-                    thing.restartWatchdog();
-                }
-                if (!profile.isInitialized() || !thing.isThingOnline()) {
-                    logger.debug("{}: Device woke up, requesting update", serviceName);
-                    thing.onDeviceWakeup();
-                }
-            }
+    private void handleAnnouncement(String serviceName, String address) {
+        ShellyThingInterface thing = thingTable.findAnnouncedThing(serviceName, address);
+        if (thing == null) {
+            return;
         }
+
+        if (!thing.checkRepresentation(address)) {
+            // Polls go to the configured address, which may no longer reach the device
+            logger.info("{}: Device announced a different IP address {}, check the Thing configuration",
+                    thing.getThingName(), address);
+        }
+
+        thing.onDeviceWakeup();
     }
 
     @Override
