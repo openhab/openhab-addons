@@ -46,8 +46,6 @@ import org.openhab.core.types.State;
 import org.openhab.core.types.TimeSeries;
 import org.openhab.core.types.UnDefType;
 import org.openhab.core.types.util.UnitUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link EnergyChartsHandler} retrieves day-ahead prices from Energy-Charts, sends them as time series and keeps
@@ -66,7 +64,6 @@ public class EnergyChartsHandler extends BaseThingHandler {
     private static final Duration MIN_TIME_BETWEEN_REQUESTS = Duration.ofHours(1);
     private static final int NEXT_DAY_AVAILABLE_HOUR = 13;
 
-    private final Logger logger = LoggerFactory.getLogger(EnergyChartsHandler.class);
     private final HttpClient httpClient;
     private final TimeZoneProvider timeZoneProvider;
     private final Clock clock;
@@ -94,7 +91,7 @@ public class EnergyChartsHandler extends BaseThingHandler {
     public void initialize() {
         EnergyChartsConfiguration config = getConfigAs(EnergyChartsConfiguration.class);
         if (!BIDDING_ZONES.contains(config.biddingZone)) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/error.unsupported.zone [\"" + config.biddingZone + "\"]");
             return;
         }
@@ -164,7 +161,7 @@ public class EnergyChartsHandler extends BaseThingHandler {
             updateCurrentStates();
             updateStatus(ThingStatus.ONLINE);
         } catch (EnergyChartsApiException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 
