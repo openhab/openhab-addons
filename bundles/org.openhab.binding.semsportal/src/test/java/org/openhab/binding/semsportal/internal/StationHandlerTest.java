@@ -168,6 +168,43 @@ public class StationHandlerTest {
     }
 
     @Test
+    public void testRefreshOfAllChannelsFetchesTheStatusOnce() throws Exception {
+        // the framework sends a REFRESH for each linked channel when it starts
+        ALL_CHANNELS.forEach(id -> handler.handleCommand(new ChannelUID(THING_UID, id), RefreshType.REFRESH));
+
+        verifyState(CHANNEL_CURRENT_OUTPUT, new QuantityType<>(2044.0, Units.WATT));
+        verifyState(CHANNEL_LASTUPDATE, new DateTimeType(lastUpdate()));
+        verify(portal, times(1)).getStationStatus(STATION);
+    }
+
+    @Test
+    public void testRefreshUsesTheRecentStatus() throws Exception {
+        handler.initialize();
+        verifyState(CHANNEL_CURRENT_OUTPUT, new QuantityType<>(2044.0, Units.WATT));
+
+        handler.handleCommand(new ChannelUID(THING_UID, CHANNEL_CURRENT_OUTPUT), RefreshType.REFRESH);
+
+        // once by the fetch and once by the command
+        verify(callback, timeout(TIMEOUT_MS).times(2)).stateUpdated(new ChannelUID(THING_UID, CHANNEL_CURRENT_OUTPUT),
+                new QuantityType<>(2044.0, Units.WATT));
+        verify(portal, times(1)).getStationStatus(STATION);
+    }
+
+    @Test
+    public void testRefreshFetchesAgainAfterAFailure() throws Exception {
+        when(portal.getStationStatus(STATION)).thenThrow(new CommunicationException("No response received"))
+                .thenReturn(status(true));
+        ChannelUID channel = new ChannelUID(THING_UID, CHANNEL_CURRENT_OUTPUT);
+
+        handler.handleCommand(channel, RefreshType.REFRESH);
+        verifyStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "No response received");
+        handler.handleCommand(channel, RefreshType.REFRESH);
+
+        verifyStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, null);
+        verify(portal, times(2)).getStationStatus(STATION);
+    }
+
+    @Test
     public void testTasksRestartWhenTheBridgeIsBackAfterAConfigurationError() throws Exception {
         handler.initialize();
         verify(portal, timeout(TIMEOUT_MS).times(1)).getStationStatus(STATION);

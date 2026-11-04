@@ -14,7 +14,8 @@ package org.openhab.binding.semsportal.internal;
 
 import static org.openhab.binding.semsportal.internal.SEMSPortalBindingConstants.*;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -48,8 +49,8 @@ public class StationHandler extends BaseThingHandler {
 
     private @Nullable ScheduledFuture<?> refreshStatusTask;
 
-    private @Nullable StationStatus currentStatus;
-    private LocalDateTime lastUpdate = LocalDateTime.MIN;
+    private volatile @Nullable StationStatus currentStatus;
+    private Instant lastUpdate = Instant.EPOCH;
 
     public StationHandler(Thing thing) {
         super(thing);
@@ -59,7 +60,10 @@ public class StationHandler extends BaseThingHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
             scheduler.execute(() -> {
-                if (ensureRecentStatus()) {
+                if (claimRefresh()) {
+                    // updates all the channels
+                    updateStation();
+                } else if (currentStatus != null) {
                     updateChannelState(channelUID);
                 }
             });
@@ -94,11 +98,26 @@ public class StationHandler extends BaseThingHandler {
         }
     }
 
-    private boolean ensureRecentStatus() {
-        if (lastUpdate.isBefore(LocalDateTime.now().minusMinutes(MAX_STATUS_AGE_MINUTES))) {
-            return updateStation();
+    /**
+     * Claims the right to fetch the status when the one we have is too old. Claiming before fetching keeps the
+     * REFRESH commands sent for every linked channel from each fetching it again; when the fetch is still running they
+     * find the status in place once it is done.
+     */
+    private boolean claimRefresh() {
+        Instant now = Instant.now();
+        synchronized (this) {
+            if (lastUpdate.isAfter(now.minus(MAX_STATUS_AGE_MINUTES, ChronoUnit.MINUTES))) {
+                return false;
+            }
+            lastUpdate = now;
+            return true;
         }
-        return false;
+    }
+
+    private void setLastUpdate(Instant lastUpdate) {
+        synchronized (this) {
+            this.lastUpdate = lastUpdate;
+        }
     }
 
     @Override
@@ -111,8 +130,8 @@ public class StationHandler extends BaseThingHandler {
         synchronized (this) {
             if (refreshStatusTask == null) {
                 try {
-                    refreshStatusTask = scheduler.scheduleWithFixedDelay(() -> ensureRecentStatus(), 0,
-                            getUpdateInterval(), TimeUnit.MINUTES);
+                    refreshStatusTask = scheduler.scheduleWithFixedDelay(() -> updateStation(), 0, getUpdateInterval(),
+                            TimeUnit.MINUTES);
                 } catch (Exception e) {
                     updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                             "Unable to update station info. Check Bridge status for details.");
@@ -159,9 +178,10 @@ public class StationHandler extends BaseThingHandler {
         PortalHandler portal = getPortal();
         if (portal != null) {
             try {
-                currentStatus = portal.getStationStatus(getStationUUID());
-                StationStatus localCurrentStatus = currentStatus;
-                if (localCurrentStatus != null && localCurrentStatus.isOperational()) {
+                StationStatus status = portal.getStationStatus(getStationUUID());
+                currentStatus = status;
+                setLastUpdate(Instant.now());
+                if (status != null && status.isOperational()) {
                     updateStatus(ThingStatus.ONLINE);
                 } else {
                     updateStatus(ThingStatus.OFFLINE, "Station not operational");
@@ -169,12 +189,15 @@ public class StationHandler extends BaseThingHandler {
                 updateAllChannels();
                 return true;
             } catch (CommunicationException commEx) {
+                setLastUpdate(Instant.EPOCH);
                 updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, commEx.getMessage());
             } catch (ConfigurationException confEx) {
+                setLastUpdate(Instant.EPOCH);
                 updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, confEx.getMessage());
             }
         } else {
             logger.debug("Unable to find portal for thing {}", getThing().getUID());
+            setLastUpdate(Instant.EPOCH);
             updateStatus(ThingStatusDetail.BRIDGE_OFFLINE,
                     "Unable to update station info. Check Bridge status for details.");
         }
