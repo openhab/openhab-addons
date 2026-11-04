@@ -1521,9 +1521,10 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
 
     /**
      * A sleeping battery device announces itself via mDNS each time it wakes up, and is reachable only for a short
-     * while. A Thing that still waits for its device (ONLINE/CONFIGURATION_PENDING) is updated right away, the next
-     * cycle of the status job may come too late. Once initialized, the device reports its status itself, so other
-     * Things need no poll.
+     * while. A Thing that still waits for its device is updated right away, the next cycle of the status job may come
+     * too late. That is a Thing that is ONLINE/CONFIGURATION_PENDING, or OFFLINE for a reason that can clear once the
+     * device is reachable again. Once initialized and online, the device reports its status itself, so such a Thing
+     * needs no poll.
      * <p>
      * The announcement doesn't restart the watchdog, as it doesn't prove that status reporting works. A successful
      * update does.
@@ -1533,12 +1534,21 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
      */
     @Override
     public void onDeviceWakeup() {
-        if (!profile.alwaysOn && !profile.isBlu && getThingStatus() == ThingStatus.ONLINE
-                && getThingStatusDetail() == ThingStatusDetail.CONFIGURATION_PENDING) {
+        if (!profile.alwaysOn && !profile.isBlu && isWaitingForDevice()) {
             logger.debug("{}: Device woke up, requesting update", thingName);
             requestUpdates(1, false);
             scheduler.execute(this::refreshStatus);
         }
+    }
+
+    private boolean isWaitingForDevice() {
+        ThingStatusDetail detail = getThingStatusDetail();
+        return switch (getThingStatus()) {
+            case ONLINE -> detail == ThingStatusDetail.CONFIGURATION_PENDING;
+            case OFFLINE -> detail == ThingStatusDetail.COMMUNICATION_ERROR
+                    || detail == ThingStatusDetail.CONFIGURATION_ERROR || detail == ThingStatusDetail.DUTY_CYCLE;
+            default -> false;
+        };
     }
 
     /**

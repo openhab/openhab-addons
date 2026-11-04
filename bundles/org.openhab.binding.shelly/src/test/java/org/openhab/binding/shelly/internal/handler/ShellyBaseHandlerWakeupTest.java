@@ -62,8 +62,28 @@ class ShellyBaseHandlerWakeupTest {
     }
 
     @Test
-    void onDeviceWakeupIgnoresOfflineThing() throws Exception {
-        assertWakeupIgnored(THING_TYPE_SHELLYPLUSSMOKE, ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+    void onDeviceWakeupUpdatesOfflineThingWithCommunicationError() throws Exception {
+        assertWakeupRunsUpdate(true, ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+    }
+
+    @Test
+    void onDeviceWakeupUpdatesOfflineThingWithConfigurationError() throws Exception {
+        assertWakeupRunsUpdate(true, ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
+    }
+
+    @Test
+    void onDeviceWakeupUpdatesOfflineThingWithDutyCycle() throws Exception {
+        assertWakeupRunsUpdate(true, ThingStatus.OFFLINE, ThingStatusDetail.DUTY_CYCLE);
+    }
+
+    @Test
+    void onDeviceWakeupIgnoresThingWhileFirmwareIsUpdating() throws Exception {
+        assertWakeupIgnored(THING_TYPE_SHELLYPLUSSMOKE, ThingStatus.OFFLINE, ThingStatusDetail.FIRMWARE_UPDATING);
+    }
+
+    @Test
+    void onDeviceWakeupIgnoresGoneThing() throws Exception {
+        assertWakeupIgnored(THING_TYPE_SHELLYPLUSSMOKE, ThingStatus.OFFLINE, ThingStatusDetail.GONE);
     }
 
     @Test
@@ -82,9 +102,14 @@ class ShellyBaseHandlerWakeupTest {
     }
 
     private void assertWakeupRunsUpdate(boolean initialized) throws Exception {
+        assertWakeupRunsUpdate(initialized, ThingStatus.ONLINE, ThingStatusDetail.CONFIGURATION_PENDING);
+    }
+
+    private void assertWakeupRunsUpdate(boolean initialized, ThingStatus status, ThingStatusDetail detail)
+            throws Exception {
         ScheduledExecutorService scheduler = mock(ScheduledExecutorService.class);
-        ShellyBaseHandler handler = buildWakeupHandler(THING_TYPE_SHELLYPLUSSMOKE, initialized, ThingStatus.ONLINE,
-                ThingStatusDetail.CONFIGURATION_PENDING, scheduler);
+        ShellyBaseHandler handler = buildWakeupHandler(THING_TYPE_SHELLYPLUSSMOKE, initialized, status, detail,
+                scheduler);
 
         handler.onDeviceWakeup();
 
