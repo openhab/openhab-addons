@@ -120,6 +120,7 @@ public class Constants {
     public static final String MB_KEY_TIRE_PRESS_MEAS_TIMESTAMP = "tirePressMeasTimestamp";
     public static final String MB_KEY_ENDOFCHARGETIME = "endofchargetime";
     public static final String MB_KEY_ENDOFCHARGEDAY = "endofChargeTimeWeekday";
+    public static final String MB_KEY_CHARGING_PREDICTION_MAX_SOC = "chargingPredictionMaxSoc";
     public static final String MB_KEY_LIQUIDCONSUMPTIONRESET = "liquidconsumptionreset";
     public static final String MB_KEY_LIQUIDCONSUMPTIONSTART = "liquidconsumptionstart";
     public static final String MB_KEY_ELECTRICCONSUMPTIONRESET = "electricconsumptionreset";
