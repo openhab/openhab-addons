@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.time.DateTimeException;
+import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -64,7 +65,7 @@ import org.slf4j.LoggerFactory;
 public class NtpHandler extends BaseThingHandler {
 
     /** timeout for requests to the NTP server */
-    private static final int NTP_TIMEOUT = 30000;
+    private static final Duration NTP_TIMEOUT = Duration.ofSeconds(30);
 
     public static final String DATE_PATTERN_WITH_TZ = "yyyy-MM-dd HH:mm:ss z";
     private static final DateTimeFormatter DATE_FORMATTER_WITH_TZ = DateTimeFormatter.ofPattern(DATE_PATTERN_WITH_TZ);
@@ -200,8 +201,7 @@ public class NtpHandler extends BaseThingHandler {
      *         error occurs.
      */
     private long getTime(String hostname, int port) {
-        try {
-            NTPUDPClient timeClient = new NTPUDPClient();
+        try (NTPUDPClient timeClient = new NTPUDPClient()) {
             timeClient.setDefaultTimeout(NTP_TIMEOUT);
             InetAddress inetAddress = InetAddress.getByName(hostname);
             TimeInfo timeInfo = timeClient.getTime(inetAddress, port);
