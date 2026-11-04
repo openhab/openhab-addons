@@ -83,7 +83,8 @@ public class OSHISystemInfo implements SystemInfoInterface {
     // Static objects, should be recreated on each request
     private @NonNullByDefault({}) ComputerSystem computerSystem;
     private @NonNullByDefault({}) OperatingSystem operatingSystem;
-    private @NonNullByDefault({}) List<NetworkIF> networks;
+    private @NonNullByDefault({}) volatile List<NetworkIF> networks;
+    private volatile long lastNetworksRefresh;
     private @NonNullByDefault({}) List<Display> displays;
     private @NonNullByDefault({}) List<OSFileStore> fileStores;
     private @NonNullByDefault({}) List<PowerSource> powerSources;
@@ -96,6 +97,9 @@ public class OSHISystemInfo implements SystemInfoInterface {
     private Map<Integer, OSProcess> processTicks = new HashMap<>();
 
     public static final int PRECISION_AFTER_DECIMAL_SIGN = 1;
+
+    // Minimum time between two re-reads of the network interface list (ms)
+    private static final long NETWORK_REFRESH_INTERVAL_MS = 30_000;
 
     /**
      * Some of the methods used in this constructor execute native code and require execute permissions
@@ -120,6 +124,7 @@ public class OSHISystemInfo implements SystemInfoInterface {
         computerSystem = hal.getComputerSystem();
         operatingSystem = systemInfo.getOperatingSystem();
         networks = hal.getNetworkIFs();
+        lastNetworksRefresh = System.currentTimeMillis();
         displays = hal.getDisplays();
         fileStores = operatingSystem.getFileSystem().getFileStores();
         powerSources = hal.getPowerSources();
@@ -138,6 +143,30 @@ public class OSHISystemInfo implements SystemInfoInterface {
             throw new DeviceNotFoundException("Device with index: " + index + " can not be found!");
         }
         return devices[index];
+    }
+
+    /**
+     * Returns the network interface with the given index. The list of interfaces is re-read before the lookup (at most
+     * once per {@link #NETWORK_REFRESH_INTERVAL_MS}), so interfaces that were not available at initialization (e.g.
+     * network not yet up during boot), were added, removed or reordered are always reflected.
+     */
+    private NetworkIF getNetworkIF(int index) throws DeviceNotFoundException {
+        refreshNetworks();
+        return getDevice(networks, index);
+    }
+
+    private synchronized void refreshNetworks() {
+        long now = System.currentTimeMillis();
+        if (now - lastNetworksRefresh < NETWORK_REFRESH_INTERVAL_MS) {
+            return;
+        }
+        lastNetworksRefresh = now;
+        try {
+            networks = hal.getNetworkIFs();
+            logger.debug("Network interface list refreshed, {} interface(s) found", networks.size());
+        } catch (RuntimeException e) {
+            logger.debug("Cannot refresh network interface list", e);
+        }
     }
 
     private OSProcess getProcess(int pid) throws DeviceNotFoundException {
@@ -317,7 +346,7 @@ public class OSHISystemInfo implements SystemInfoInterface {
 
     @Override
     public StringType getNetworkIp(int index) throws DeviceNotFoundException {
-        NetworkIF netInterface = getDevice(networks, index);
+        NetworkIF netInterface = getNetworkIF(index);
         netInterface.updateAttributes();
         String[] ipAddresses = netInterface.getIPv4addr();
         String ipv4 = getDevice(ipAddresses, 0);
@@ -326,14 +355,14 @@ public class OSHISystemInfo implements SystemInfoInterface {
 
     @Override
     public StringType getNetworkName(int index) throws DeviceNotFoundException {
-        NetworkIF netInterface = getDevice(networks, index);
+        NetworkIF netInterface = getNetworkIF(index);
         String name = netInterface.getName();
         return new StringType(name);
     }
 
     @Override
     public StringType getNetworkDisplayName(int index) throws DeviceNotFoundException {
-        NetworkIF netInterface = getDevice(networks, index);
+        NetworkIF netInterface = getNetworkIF(index);
         String adapterName = netInterface.getDisplayName();
         return new StringType(adapterName);
     }
@@ -597,14 +626,14 @@ public class OSHISystemInfo implements SystemInfoInterface {
 
     @Override
     public StringType getNetworkMac(int networkIndex) throws DeviceNotFoundException {
-        NetworkIF network = getDevice(networks, networkIndex);
+        NetworkIF network = getNetworkIF(networkIndex);
         String mac = network.getMacaddr();
         return new StringType(mac);
     }
 
     @Override
     public DecimalType getNetworkPacketsReceived(int networkIndex) throws DeviceNotFoundException {
-        NetworkIF network = getDevice(networks, networkIndex);
+        NetworkIF network = getNetworkIF(networkIndex);
         network.updateAttributes();
         long packRecv = network.getPacketsRecv();
         return new DecimalType(packRecv);
@@ -612,7 +641,7 @@ public class OSHISystemInfo implements SystemInfoInterface {
 
     @Override
     public DecimalType getNetworkPacketsSent(int networkIndex) throws DeviceNotFoundException {
-        NetworkIF network = getDevice(networks, networkIndex);
+        NetworkIF network = getNetworkIF(networkIndex);
         network.updateAttributes();
         long packSent = network.getPacketsSent();
         return new DecimalType(packSent);
@@ -620,7 +649,7 @@ public class OSHISystemInfo implements SystemInfoInterface {
 
     @Override
     public QuantityType<DataAmount> getNetworkDataSent(int networkIndex) throws DeviceNotFoundException {
-        NetworkIF network = getDevice(networks, networkIndex);
+        NetworkIF network = getNetworkIF(networkIndex);
         network.updateAttributes();
         long bytesSent = network.getBytesSent();
         return new QuantityType<>(getSizeInMB(bytesSent), Units.MEBIBYTE);
@@ -628,7 +657,7 @@ public class OSHISystemInfo implements SystemInfoInterface {
 
     @Override
     public QuantityType<DataAmount> getNetworkDataReceived(int networkIndex) throws DeviceNotFoundException {
-        NetworkIF network = getDevice(networks, networkIndex);
+        NetworkIF network = getNetworkIF(networkIndex);
         network.updateAttributes();
         long bytesRecv = network.getBytesRecv();
         return new QuantityType<>(getSizeInMB(bytesRecv), Units.MEBIBYTE);
@@ -700,6 +729,7 @@ public class OSHISystemInfo implements SystemInfoInterface {
 
     @Override
     public int getNetworkIFCount() {
+        refreshNetworks();
         return networks.size();
     }
 
