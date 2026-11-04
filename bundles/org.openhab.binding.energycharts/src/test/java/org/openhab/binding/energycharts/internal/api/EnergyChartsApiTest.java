@@ -69,8 +69,6 @@ class EnergyChartsApiTest extends JavaTest {
                 .thenReturn("{\"unix_seconds\":[1718400000,1718400900,1718401800,1718403600],"
                         + "\"price\":[100.0,200.0,null,400.0],\"unit\":\"EUR / MWh\"}");
         config.biddingZone = "DE-LU";
-        config.basePrice = 10.0;
-        config.vatPercent = 20.0;
     }
 
     @Test
@@ -83,8 +81,8 @@ class EnergyChartsApiTest extends JavaTest {
         assertThat(first.timerange().start(), is(1718400000000L));
         assertThat(first.timerange().end(), is(1718400900000L));
         assertThat(prices.last().timerange().end(), is(1718405400000L));
-        assertThat(first.netPrice(), is(10.0));
-        assertThat(first.grossTotal(), is(24.0));
+        // 100 EUR/MWh = 0.1 EUR/kWh
+        assertThat(first.price(), is(closeTo(0.1, 1e-12)));
     }
 
     @Test
@@ -93,17 +91,6 @@ class EnergyChartsApiTest extends JavaTest {
         new EnergyChartsApi(httpClient, config).getData(TODAY);
 
         verify(httpClient).newRequest("https://api.energy-charts.info/price?bzn=AT&start=2024-06-15&end=2024-06-17");
-    }
-
-    @Test
-    void testServiceFeeIsApplied() throws EnergyChartsApiException {
-        config.serviceFee = 10.0;
-
-        MarketPrice first = new EnergyChartsApi(httpClient, config).getData(TODAY).first();
-
-        // 10 ct market + 10 ct base = 20 ct net, +10 % service fee = 22 ct, +20 % VAT
-        assertThat(first.netTotal(), is(closeTo(22.0, 1e-9)));
-        assertThat(first.grossTotal(), is(closeTo(26.4, 1e-9)));
     }
 
     @Test

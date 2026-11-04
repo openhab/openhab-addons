@@ -44,7 +44,7 @@ class EnergyChartsHandlerTest {
         ZonedDateTime end = start.plusDays(days);
         for (ZonedDateTime t = start; t.isBefore(end); t = t.plusMinutes(15)) {
             long s = t.toInstant().toEpochMilli();
-            prices.add(new MarketPrice(1, 1, 1, 1, new TimeRange(s, s + Duration.ofMinutes(15).toMillis())));
+            prices.add(new MarketPrice(0.1, new TimeRange(s, s + Duration.ofMinutes(15).toMillis())));
         }
         return prices;
     }

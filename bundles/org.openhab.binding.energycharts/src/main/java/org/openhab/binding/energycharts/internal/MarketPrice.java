@@ -20,19 +20,15 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * @author Wolfgang Klimt - Initial contribution
  * @author Jan N. Klug - Refactored to record
  *
- * @param netPrice the net market price in ct/kWh
- * @param grossPrice the gross market price in ct/kWh
- * @param netTotal the net total price in ct/kWh
- * @param grossTotal the gross total price in ct/kWh
+ * @param price the day-ahead market price in EUR/kWh, without VAT
  * @param timerange the time range of the price
  */
 @NonNullByDefault
-public record MarketPrice(double netPrice, double grossPrice, double netTotal, double grossTotal,
-        TimeRange timerange) implements Comparable<MarketPrice> {
+public record MarketPrice(double price, TimeRange timerange) implements Comparable<MarketPrice> {
 
     @Override
     public String toString() {
-        return String.format("(%1$tF %1$tR - %2$tR: %3$.3f)", timerange.start(), timerange.end(), netPrice);
+        return String.format("(%1$tF %1$tR - %2$tR: %3$.5f)", timerange.start(), timerange.end(), price);
     }
 
     @Override

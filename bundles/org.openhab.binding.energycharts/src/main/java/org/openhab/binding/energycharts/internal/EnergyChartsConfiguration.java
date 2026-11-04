@@ -22,7 +22,4 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class EnergyChartsConfiguration {
     public String biddingZone = "";
-    public double basePrice;
-    public double vatPercent;
-    public double serviceFee;
 }

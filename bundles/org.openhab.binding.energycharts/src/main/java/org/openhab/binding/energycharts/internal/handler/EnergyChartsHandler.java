@@ -19,11 +19,9 @@ import java.time.Duration;
 import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.Map;
 import java.util.SortedSet;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.function.ToDoubleFunction;
 
 import javax.measure.Unit;
 
@@ -67,12 +65,6 @@ public class EnergyChartsHandler extends BaseThingHandler {
     private static final Duration REFRESH_CHECK_INTERVAL = Duration.ofMinutes(15);
     private static final Duration MIN_TIME_BETWEEN_REQUESTS = Duration.ofHours(1);
     private static final int NEXT_DAY_AVAILABLE_HOUR = 13;
-
-    private static final Map<String, ToDoubleFunction<MarketPrice>> CHANNELS = Map.of( //
-            CHANNEL_MARKET_NET, MarketPrice::netPrice, //
-            CHANNEL_MARKET_GROSS, MarketPrice::grossPrice, //
-            CHANNEL_TOTAL_NET, MarketPrice::netTotal, //
-            CHANNEL_TOTAL_GROSS, MarketPrice::grossTotal);
 
     private final Logger logger = LoggerFactory.getLogger(EnergyChartsHandler.class);
     private final HttpClient httpClient;
@@ -143,12 +135,11 @@ public class EnergyChartsHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (command instanceof RefreshType) {
+        if (command instanceof RefreshType && CHANNEL_SPOT_PRICE.equals(channelUID.getId())) {
             SortedSet<MarketPrice> localPrices = prices;
-            ToDoubleFunction<MarketPrice> valueFunction = CHANNELS.get(channelUID.getId());
-            if (localPrices != null && valueFunction != null) {
-                sendTimeSeries(channelUID.getId(), localPrices, valueFunction);
-                updateState(channelUID.getId(), toState(findCurrentPrice(localPrices), valueFunction));
+            if (localPrices != null) {
+                sendTimeSeries(localPrices);
+                updateState(CHANNEL_SPOT_PRICE, toState(findCurrentPrice(localPrices)));
             }
         }
     }
@@ -168,7 +159,7 @@ public class EnergyChartsHandler extends BaseThingHandler {
         try {
             SortedSet<MarketPrice> refreshedPrices = localApi.getData(now.toLocalDate());
             prices = refreshedPrices;
-            CHANNELS.forEach((channelId, valueFunction) -> sendTimeSeries(channelId, refreshedPrices, valueFunction));
+            sendTimeSeries(refreshedPrices);
             currentPrice = null;
             updateCurrentStates();
             updateStatus(ThingStatus.ONLINE);
@@ -216,7 +207,7 @@ public class EnergyChartsHandler extends BaseThingHandler {
             return;
         }
         currentPrice = price;
-        CHANNELS.forEach((channelId, valueFunction) -> updateState(channelId, toState(price, valueFunction)));
+        updateState(CHANNEL_SPOT_PRICE, toState(price));
     }
 
     private @Nullable MarketPrice findCurrentPrice(SortedSet<MarketPrice> localPrices) {
@@ -224,19 +215,13 @@ public class EnergyChartsHandler extends BaseThingHandler {
         return localPrices.stream().filter(p -> p.timerange().contains(now)).findFirst().orElse(null);
     }
 
-    private State toState(@Nullable MarketPrice price, ToDoubleFunction<MarketPrice> valueFunction) {
-        if (price == null) {
-            return UnDefType.UNDEF;
-        }
-        // prices are in ct/kWh, the channels use EUR/kWh
-        return new QuantityType<>(valueFunction.applyAsDouble(price) / 100.0, priceUnit);
+    private State toState(@Nullable MarketPrice price) {
+        return price == null ? UnDefType.UNDEF : new QuantityType<>(price.price(), priceUnit);
     }
 
-    private void sendTimeSeries(String channelId, SortedSet<MarketPrice> localPrices,
-            ToDoubleFunction<MarketPrice> valueFunction) {
+    private void sendTimeSeries(SortedSet<MarketPrice> localPrices) {
         TimeSeries timeSeries = new TimeSeries(TimeSeries.Policy.REPLACE);
-        localPrices
-                .forEach(p -> timeSeries.add(Instant.ofEpochMilli(p.timerange().start()), toState(p, valueFunction)));
-        sendTimeSeries(channelId, timeSeries);
+        localPrices.forEach(p -> timeSeries.add(Instant.ofEpochMilli(p.timerange().start()), toState(p)));
+        sendTimeSeries(CHANNEL_SPOT_PRICE, timeSeries);
     }
 }

@@ -52,17 +52,11 @@ public class EnergyChartsApi {
     private final HttpClient httpClient;
 
     private final String biddingZone;
-    private final double vatFactor;
-    private final double basePrice;
-    private final double serviceFee;
 
     public EnergyChartsApi(HttpClient httpClient, EnergyChartsConfiguration config) {
         this.httpClient = httpClient;
 
         biddingZone = config.biddingZone;
-        vatFactor = 1 + (config.vatPercent / 100);
-        basePrice = config.basePrice;
-        serviceFee = config.serviceFee;
     }
 
     /**
@@ -86,27 +80,15 @@ public class EnergyChartsApi {
     }
 
     /**
-     * Convert a market price into a {@link MarketPrice}, applying base price, service fee and VAT.
+     * Convert a market price as returned by the API into a {@link MarketPrice}.
      *
-     * @param marketPrice the net market price in €/MWh, as returned by the API
+     * @param marketPrice the market price in EUR/MWh
      * @param timeRange the time range the price is valid for
      *
-     * @return the price in €ct/kWh
+     * @return the price in EUR/kWh
      */
     MarketPrice toPrice(double marketPrice, TimeRange timeRange) {
-        // €/MWh -> €ct/kWh: divide by 10 (100/1000)
-        double netMarket = marketPrice / 10.0;
-        double grossMarket = netMarket * vatFactor;
-        double netTotal = netMarket + basePrice;
-
-        // add service fee
-        if (serviceFee > 0) {
-            netTotal += Math.abs(netTotal) * (serviceFee / 100);
-        }
-
-        double grossTotal = netTotal * vatFactor;
-
-        return new MarketPrice(netMarket, grossMarket, netTotal, grossTotal, timeRange);
+        return new MarketPrice(marketPrice / 1000.0, timeRange);
     }
 
     private String fetch(String url) throws EnergyChartsApiException {

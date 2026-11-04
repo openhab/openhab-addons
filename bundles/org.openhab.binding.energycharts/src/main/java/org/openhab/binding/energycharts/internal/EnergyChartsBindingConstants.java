@@ -28,10 +28,7 @@ public class EnergyChartsBindingConstants {
 
     public static final ThingTypeUID THING_TYPE_PRICES = new ThingTypeUID(BINDING_ID, "prices");
 
-    public static final String CHANNEL_MARKET_NET = "market-net";
-    public static final String CHANNEL_MARKET_GROSS = "market-gross";
-    public static final String CHANNEL_TOTAL_NET = "total-net";
-    public static final String CHANNEL_TOTAL_GROSS = "total-gross";
+    public static final String CHANNEL_SPOT_PRICE = "spot-price";
 
     /**
      * Bidding zones whose prices Energy-Charts publishes under CC BY 4.0.
