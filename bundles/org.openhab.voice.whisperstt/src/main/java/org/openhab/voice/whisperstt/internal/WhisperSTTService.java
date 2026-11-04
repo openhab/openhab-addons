@@ -290,8 +290,8 @@ public class WhisperSTTService implements STTService {
         try {
             logger.debug("Creating VAD instance...");
             final int nSamplesStep = (int) (config.stepSeconds * WHISPER_SAMPLE_RATE);
-            VAD vad = new VAD(VoiceActivityDetector.Mode.valueOf(config.vadMode), WHISPER_SAMPLE_RATE, nSamplesStep,
-                    config.vadStep, config.vadSensitivity);
+            VAD vad = new VAD(config.vadMode, WHISPER_SAMPLE_RATE, config.vadStep, config.vadSensitivity,
+                    config.sileroThreshold);
             logger.debug("VAD instance created");
             sttListener.sttEventReceived(new RecognitionStartEvent());
             backgroundRecognize(nSamplesStep, locale, sttListener, audioStream, vad, aborted);
@@ -385,6 +385,7 @@ public class WhisperSTTService implements STTService {
             int silenceSamplesCounter = 0;
             int nProcessedSamples = 0;
             boolean voiceDetected = false;
+            boolean endOfAudio = false;
             String transcription = "";
             VAD.@Nullable VADResult firstConsecutiveSilenceVADResult = null;
             try {
@@ -401,105 +402,118 @@ public class WhisperSTTService implements STTService {
                         // read until no remaining so we get the complete step samples
                         int numBytesRead = audioStream.read(captureBuffer.array(), captureBuffer.capacity() - remaining,
                                 remaining);
-                        if (aborted.get() || numBytesRead == -1) {
+                        if (aborted.get()) {
                             break;
                         }
-                        if (numBytesRead != remaining) {
-                            remaining = remaining - numBytesRead;
-                            continue;
+                        if (numBytesRead == -1) {
+                            if (!voiceDetected || audioSamplesOffset == 0) {
+                                break;
+                            }
+                            logger.debug("End of audio, transcribing what was captured");
+                            endOfAudio = true;
                         }
-                        // reset remaining to full capacity
-                        remaining = captureBuffer.capacity();
-                        // encode step samples and copy them to the audio buffers
-                        var shortBuffer = captureBuffer.asShortBuffer();
-                        while (shortBuffer.hasRemaining()) {
-                            var position = shortBuffer.position();
-                            short i16BitSample = shortBuffer.get();
-                            stepAudioSamples[position] = i16BitSample;
-                            audioSamples[audioSamplesOffset++] = i16BitSample;
-                            nProcessedSamples++;
-                        }
-                        // run vad
-                        if (nProcessedSamples + nSamplesStep > nSamplesMax - nSamplesStep) {
-                            logger.debug("VAD: Skipping, max length reached");
-                            break;
-                        } else {
-                            VAD.@Nullable VADResult lastVADResult = vad.analyze(stepAudioSamples);
-                            if (lastVADResult.isVoice()) {
-                                voiceDetected = true;
-                                logger.debug("VAD: voice detected");
-                                silenceSamplesCounter = 0;
-                                firstConsecutiveSilenceVADResult = null;
+                        if (!endOfAudio) {
+                            if (numBytesRead != remaining) {
+                                remaining = remaining - numBytesRead;
                                 continue;
-                            } else {
-                                if (firstConsecutiveSilenceVADResult == null) {
-                                    firstConsecutiveSilenceVADResult = lastVADResult;
+                            }
+                            // reset remaining to full capacity
+                            remaining = captureBuffer.capacity();
+                            // encode step samples and copy them to the audio buffers
+                            var shortBuffer = captureBuffer.asShortBuffer();
+                            while (shortBuffer.hasRemaining()) {
+                                var position = shortBuffer.position();
+                                short i16BitSample = shortBuffer.get();
+                                stepAudioSamples[position] = i16BitSample;
+                                audioSamples[audioSamplesOffset++] = i16BitSample;
+                                nProcessedSamples++;
+                            }
+                            // run vad
+                            if (nProcessedSamples + nSamplesStep > nSamplesMax - nSamplesStep) {
+                                if (!voiceDetected) {
+                                    logger.debug("VAD: max length reached without voice");
+                                    break;
                                 }
-                                silenceSamplesCounter += nSamplesStep;
-                                int maxSilenceSamples = voiceDetected ? nMaxSilenceSamples : nInitSilenceSamples;
-                                if (silenceSamplesCounter < maxSilenceSamples) {
-                                    if (logger.isDebugEnabled()) {
-                                        int totalSteps = maxSilenceSamples / nSamplesStep;
-                                        int currentSteps = totalSteps
-                                                - ((maxSilenceSamples - silenceSamplesCounter) / nSamplesStep);
-                                        logger.debug("VAD: silence detected {}/{}", currentSteps, totalSteps);
-                                    }
-                                    if (!voiceDetected && config.removeSilence) {
-                                        logger.debug("removing start silence");
-                                        int samplesToKeep = lastVADResult.voiceSamplesInTail();
-                                        if (samplesToKeep > 0) {
-                                            for (int i = 0; i < samplesToKeep; i++) {
-                                                audioSamples[i] = audioSamples[audioSamplesOffset
-                                                        - (samplesToKeep - i)];
-                                            }
-                                            audioSamplesOffset = samplesToKeep;
-                                            logger.debug("some audio was kept");
-                                        } else {
-                                            audioSamplesOffset = 0;
-                                        }
-                                    }
+                                logger.debug("VAD: max length reached, transcribing what was captured");
+                                endOfAudio = true;
+                            } else {
+                                VAD.@Nullable VADResult lastVADResult = vad.analyze(stepAudioSamples);
+                                if (lastVADResult.isVoice()) {
+                                    voiceDetected = true;
+                                    logger.debug("VAD: voice detected");
+                                    silenceSamplesCounter = 0;
+                                    firstConsecutiveSilenceVADResult = null;
                                     continue;
                                 } else {
-                                    logger.debug("VAD: silence detected");
-                                    if (audioSamplesOffset < nSamplesMin) {
-                                        logger.debug("Not enough samples, continue");
+                                    if (firstConsecutiveSilenceVADResult == null) {
+                                        firstConsecutiveSilenceVADResult = lastVADResult;
+                                    }
+                                    silenceSamplesCounter += nSamplesStep;
+                                    int maxSilenceSamples = voiceDetected ? nMaxSilenceSamples : nInitSilenceSamples;
+                                    if (silenceSamplesCounter < maxSilenceSamples) {
+                                        if (logger.isDebugEnabled()) {
+                                            int totalSteps = maxSilenceSamples / nSamplesStep;
+                                            int currentSteps = totalSteps
+                                                    - ((maxSilenceSamples - silenceSamplesCounter) / nSamplesStep);
+                                            logger.debug("VAD: silence detected {}/{}", currentSteps, totalSteps);
+                                        }
+                                        if (!voiceDetected && config.removeSilence) {
+                                            logger.debug("removing start silence");
+                                            int samplesToKeep = lastVADResult.voiceSamplesInTail();
+                                            if (samplesToKeep > 0) {
+                                                for (int i = 0; i < samplesToKeep; i++) {
+                                                    audioSamples[i] = audioSamples[audioSamplesOffset
+                                                            - (samplesToKeep - i)];
+                                                }
+                                                audioSamplesOffset = samplesToKeep;
+                                                logger.debug("some audio was kept");
+                                            } else {
+                                                audioSamplesOffset = 0;
+                                            }
+                                        }
+                                        continue;
+                                    } else {
+                                        logger.debug("VAD: silence detected");
+                                        if (audioSamplesOffset < nSamplesMin) {
+                                            logger.debug("Not enough samples, continue");
+                                            continue;
+                                        }
+                                        if (config.singleUtteranceMode) {
+                                            // close the audio stream to avoid keep getting audio we don't need
+                                            try {
+                                                audioStream.close();
+                                            } catch (IOException ignored) {
+                                            }
+                                        }
+                                    }
+                                }
+                                if (config.removeSilence) {
+                                    if (voiceDetected) {
+                                        logger.debug("removing end silence");
+                                        int samplesToKeep = firstConsecutiveSilenceVADResult.voiceSamplesInHead();
+                                        if (samplesToKeep > 0) {
+                                            logger.debug("some audio was kept");
+                                        }
+                                        var samplesToRemove = silenceSamplesCounter - samplesToKeep;
+                                        if (audioSamplesOffset - samplesToRemove < nSamplesMin) {
+                                            logger.debug("avoid removing under min audio seconds");
+                                            samplesToRemove = audioSamplesOffset - nSamplesMin;
+                                        }
+                                        if (samplesToRemove > 0) {
+                                            audioSamplesOffset -= samplesToRemove;
+                                        }
+                                    } else {
+                                        audioSamplesOffset = 0;
+                                    }
+                                }
+                                if (audioSamplesOffset == 0) {
+                                    if (config.singleUtteranceMode) {
+                                        logger.debug("no audio to transcribe, ending");
+                                        break;
+                                    } else {
+                                        logger.debug("no audio to transcribe, continue listening");
                                         continue;
                                     }
-                                    if (config.singleUtteranceMode) {
-                                        // close the audio stream to avoid keep getting audio we don't need
-                                        try {
-                                            audioStream.close();
-                                        } catch (IOException ignored) {
-                                        }
-                                    }
-                                }
-                            }
-                            if (config.removeSilence) {
-                                if (voiceDetected) {
-                                    logger.debug("removing end silence");
-                                    int samplesToKeep = firstConsecutiveSilenceVADResult.voiceSamplesInHead();
-                                    if (samplesToKeep > 0) {
-                                        logger.debug("some audio was kept");
-                                    }
-                                    var samplesToRemove = silenceSamplesCounter - samplesToKeep;
-                                    if (audioSamplesOffset - samplesToRemove < nSamplesMin) {
-                                        logger.debug("avoid removing under min audio seconds");
-                                        samplesToRemove = audioSamplesOffset - nSamplesMin;
-                                    }
-                                    if (samplesToRemove > 0) {
-                                        audioSamplesOffset -= samplesToRemove;
-                                    }
-                                } else {
-                                    audioSamplesOffset = 0;
-                                }
-                            }
-                            if (audioSamplesOffset == 0) {
-                                if (config.singleUtteranceMode) {
-                                    logger.debug("no audio to transcribe, ending");
-                                    break;
-                                } else {
-                                    logger.debug("no audio to transcribe, continue listening");
-                                    continue;
                                 }
                             }
                         }
@@ -523,6 +537,9 @@ public class WhisperSTTService implements STTService {
                             break;
                         }
 
+                        if (endOfAudio) {
+                            break;
+                        }
                         // reset state to start with next segment
                         voiceDetected = false;
                         silenceSamplesCounter = 0;

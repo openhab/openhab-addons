@@ -1,7 +1,7 @@
 # Whisper Speech-to-Text
 
 Whisper STT Service uses [whisper.cpp](https://github.com/ggerganov/whisper.cpp) to perform offline speech-to-text in openHAB.
-It also uses [libfvad](https://github.com/dpirch/libfvad) for voice activity detection to isolate single command to transcribe, speeding up the execution.
+It also uses [libfvad](https://github.com/dpirch/libfvad) or [Silero VAD](https://github.com/snakers4/silero-vad) for voice activity detection to isolate single command to transcribe, speeding up the execution.
 
 [Whisper.cpp](https://github.com/ggerganov/whisper.cpp) is a high-optimized lightweight c++ implementation of [whisper](https://github.com/openai/whisper) that allows to easily integrate it in different platforms and applications.
 
@@ -134,9 +134,10 @@ General options.
 Configure VAD options.
 
 - **Audio Step** - Audio processing step in seconds for the voice activity detection.
-- **Voice Activity Detection Mode** - Selected VAD Mode.
+- **Voice Activity Detection Mode** - Selected VAD Mode, `SILERO` by default. `SILERO` uses the Silero VAD neural network model, which better separates speech from background noise than the libfvad modes.
 - **Voice Activity Detection Sensitivity** - Percentage in range 0-1 of voice activity in one second to consider it as voice.
-- **Voice Activity Detection Step** - VAD detector internal step in ms (only allows 10, 20 or 30). (Audio Step / Voice Activity Detection Step = number of vad executions per audio step).
+- **Voice Activity Detection Step** - VAD detector internal step in ms (only allows 10, 20 or 30). (Audio Step / Voice Activity Detection Step = number of vad executions per audio step). Not used by the Silero mode, which always uses 32 ms.
+- **Silero Speech Threshold** - Speech probability in range 0-1 above which the Silero mode considers audio as voice. Raise it in noisy rooms, lower it for quiet speakers. Only used by the Silero mode.
 
 ### Whisper Configuration
 
