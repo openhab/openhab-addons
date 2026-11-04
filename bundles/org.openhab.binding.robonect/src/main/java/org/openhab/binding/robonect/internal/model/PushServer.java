@@ -11,10 +11,20 @@ public class PushServer {
     private @Nullable String url;
     private @Nullable String name;
 
+    /**
+     * Returns the URL.
+     *
+     * @return the URL, or {@code null} if not reported
+     */
     public @Nullable String getUrl() {
         return url;
     }
 
+    /**
+     * Returns the push server user name.
+     *
+     * @return the push server user name, or {@code null} if not reported
+     */
     public @Nullable String getName() {
         return name;
     }

@@ -85,15 +85,20 @@ public enum MowerStatus {
 
     private int statusCode;
 
+    /**
+     * Creates a status associated with a Robonect numeric code.
+     *
+     * @param statusCode the status code
+     */
     MowerStatus(int statusCode) {
         this.statusCode = statusCode;
     }
 
     /**
-     * translates a numeric code into an enum value. If code is not known the value {@link #UNKNOWN} is returned.
+     * Translates a numeric code into an enum value.
      * 
-     * @param code - the code to translate
-     * @return - the correpsonding enum value.
+     * @param code the status code
+     * @return the matching status, or {@link #UNKNOWN} if the code is not recognized
      */
     public static MowerStatus fromCode(int code) {
         for (MowerStatus status : MowerStatus.values()) {
@@ -106,9 +111,9 @@ public enum MowerStatus {
     }
 
     /**
-     * returns the numeric code of the status.
-     * 
-     * @return
+     * Returns the numeric code of the status.
+     *
+     * @return the numeric code of the status
      */
     public int getStatusCode() {
         return statusCode;

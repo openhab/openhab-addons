@@ -10,14 +10,29 @@ public class Dhcp {
     private @Nullable String start;
     private @Nullable String end;
 
+    /**
+     * Reports whether DHCP is enabled.
+     *
+     * @return whether DHCP is enabled, or {@code null} if absent
+     */
     public @Nullable Boolean getEnable() {
         return enable;
     }
 
+    /**
+     * Returns the start of the DHCP address range.
+     *
+     * @return the start of the DHCP address range, or {@code null} if absent
+     */
     public @Nullable String getStart() {
         return start;
     }
 
+    /**
+     * Returns the end of the DHCP address range.
+     *
+     * @return the end of the DHCP address range, or {@code null} if absent
+     */
     public @Nullable String getEnd() {
         return end;
     }

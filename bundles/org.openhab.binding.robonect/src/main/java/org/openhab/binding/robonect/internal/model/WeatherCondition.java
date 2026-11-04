@@ -30,30 +30,65 @@ public class WeatherCondition {
     private @Nullable Boolean day;
     private @Nullable Boolean night;
 
+    /**
+     * Reports whether the too rainy condition is active.
+     *
+     * @return whether the too rainy condition is active, or {@code null} if not reported
+     */
     public @Nullable Boolean getTooRainy() {
         return toorainy;
     }
 
+    /**
+     * Reports whether the too cold condition is active.
+     *
+     * @return whether the too cold condition is active, or {@code null} if not reported
+     */
     public @Nullable Boolean getTooCold() {
         return toocold;
     }
 
+    /**
+     * Reports whether the too warm condition is active.
+     *
+     * @return whether the too warm condition is active, or {@code null} if not reported
+     */
     public @Nullable Boolean getTooWarm() {
         return toowarm;
     }
 
+    /**
+     * Reports whether the too dry condition is active.
+     *
+     * @return whether the too dry condition is active, or {@code null} if not reported
+     */
     public @Nullable Boolean getTooDry() {
         return toodry;
     }
 
+    /**
+     * Reports whether the too wet condition is active.
+     *
+     * @return whether the too wet condition is active, or {@code null} if not reported
+     */
     public @Nullable Boolean getTooWet() {
         return toowet;
     }
 
+    /**
+     * Reports whether the day condition is active.
+     *
+     * @return whether the day condition is active, or {@code null} if not reported
+     */
     public @Nullable Boolean getDay() {
         return day;
     }
 
+    /**
+     * Reports whether the night condition is active.
+     *
+     * @return whether the night condition is active, or {@code null} if not reported
+     */
     public @Nullable Boolean getNight() {
         return night;
     }

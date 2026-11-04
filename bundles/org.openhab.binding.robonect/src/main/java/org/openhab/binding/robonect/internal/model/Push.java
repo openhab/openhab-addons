@@ -11,10 +11,20 @@ public class Push {
     private @Nullable PushServer server;
     private @Nullable PushTriggers trigger;
 
+    /**
+     * Returns the push server settings.
+     *
+     * @return the push server settings, or {@code null} if not reported
+     */
     public @Nullable PushServer getServer() {
         return server;
     }
 
+    /**
+     * Returns the push trigger settings.
+     *
+     * @return the push trigger settings, or {@code null} if not reported
+     */
     public @Nullable PushTriggers getTrigger() {
         return trigger;
     }

@@ -20,6 +20,11 @@ import org.eclipse.jdt.annotation.Nullable;
 public class DoorInfo extends RobonectAnswer {
     private @Nullable Door door;
 
+    /**
+     * Returns the door-system information.
+     *
+     * @return the door-system information, or {@code null} if absent
+     */
     public @Nullable Door getDoor() {
         return door;
     }

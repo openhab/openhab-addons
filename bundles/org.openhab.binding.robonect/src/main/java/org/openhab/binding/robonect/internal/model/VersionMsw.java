@@ -23,14 +23,29 @@ public class VersionMsw {
     private @Nullable String version;
     private @Nullable String compiled;
 
+    /**
+     * Returns the title.
+     *
+     * @return the title, or {@code null} if not reported
+     */
     public @Nullable String getTitle() {
         return title;
     }
 
+    /**
+     * Returns the version.
+     *
+     * @return the version, or {@code null} if not reported
+     */
     public @Nullable String getVersion() {
         return version;
     }
 
+    /**
+     * Returns the compilation timestamp.
+     *
+     * @return the compilation timestamp, or {@code null} if not reported
+     */
     public @Nullable String getCompiled() {
         return compiled;
     }

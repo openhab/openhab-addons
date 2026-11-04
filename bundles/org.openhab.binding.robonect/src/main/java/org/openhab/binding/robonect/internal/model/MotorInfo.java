@@ -25,10 +25,20 @@ public class MotorInfo extends RobonectAnswer {
     private @Nullable DriveMotors drive;
     private @Nullable BladeMotor blade;
 
+    /**
+     * Returns the drive motor measurements.
+     *
+     * @return the drive motor measurements, or {@code null} if absent
+     */
     public @Nullable DriveMotors getDrive() {
         return drive;
     }
 
+    /**
+     * Returns the blade motor measurements.
+     *
+     * @return the blade motor measurements, or {@code null} if absent
+     */
     public @Nullable BladeMotor getBlade() {
         return blade;
     }

@@ -21,6 +21,12 @@ import org.openhab.binding.robonect.internal.model.VersionInfo;
  * @author Marco Meyer - Initial contribution
  */
 public class VersionCommand implements Command {
+    /**
+     * Builds the version information URL for this {@link Command}.
+     *
+     * @param baseURL base URL to which the command parameters are appended
+     * @return the complete request URL
+     */
     @Override
     public String toCommandURL(String baseURL) {
         return baseURL + "?cmd=version";

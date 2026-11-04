@@ -23,14 +23,29 @@ public class VersionDetail {
     private @Nullable String compiled;
     private @Nullable String comment;
 
+    /**
+     * Returns the version.
+     *
+     * @return the version, or {@code null} if not reported
+     */
     public @Nullable String getVersion() {
         return version;
     }
 
+    /**
+     * Returns the compilation timestamp.
+     *
+     * @return the compilation timestamp, or {@code null} if not reported
+     */
     public @Nullable String getCompiled() {
         return compiled;
     }
 
+    /**
+     * Returns the comment.
+     *
+     * @return the comment, or {@code null} if not reported
+     */
     public @Nullable String getComment() {
         return comment;
     }

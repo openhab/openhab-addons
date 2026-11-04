@@ -18,6 +18,12 @@ package org.openhab.binding.robonect.internal.model.cmd;
  * @author Nico Brüttner - Initial contribution
  */
 public class WireCommand implements Command {
+    /**
+     * Builds the wire sensor URL for this {@link Command}.
+     *
+     * @param baseURL base URL to which the command parameters are appended
+     * @return the complete request URL
+     */
     @Override
     public String toCommandURL(String baseURL) {
         return baseURL + "?cmd=wire";

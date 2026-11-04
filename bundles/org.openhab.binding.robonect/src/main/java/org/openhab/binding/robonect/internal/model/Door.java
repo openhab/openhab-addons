@@ -23,18 +23,38 @@ public class Door {
     private @Nullable DoorState pending;
     private @Nullable Boolean arrested;
 
+    /**
+     * Reports whether the door system is enabled.
+     *
+     * @return whether the door system is enabled, or {@code null} if absent
+     */
     public @Nullable Boolean getEnabled() {
         return enabled;
     }
 
+    /**
+     * Returns the current door state.
+     *
+     * @return the current door state, or {@code null} if absent
+     */
     public @Nullable DoorState getState() {
         return state;
     }
 
+    /**
+     * Returns the pending door movement.
+     *
+     * @return the pending door movement, or {@code null} if absent
+     */
     public @Nullable DoorState getPending() {
         return pending;
     }
 
+    /**
+     * Reports whether the door is arrested.
+     *
+     * @return whether the door is arrested, or {@code null} if absent
+     */
     public @Nullable Boolean getArrested() {
         return arrested;
     }

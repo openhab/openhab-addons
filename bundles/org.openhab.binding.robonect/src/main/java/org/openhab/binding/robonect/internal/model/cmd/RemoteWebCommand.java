@@ -23,6 +23,19 @@ import java.nio.charset.StandardCharsets;
 public class RemoteWebCommand implements Command {
     private final String url;
 
+    /**
+     * Creates a web-interface request to update a remote-start point.
+     *
+     * @param baseUrl mower web-interface base URL
+     * @param remoteStart point number from 1 to 5
+     * @param name point name
+     * @param proportion selection proportion
+     * @param distance distance to the point
+     * @param path path setting
+     * @param visible whether the point is visible
+     * @param corridorCut whether corridor cutting is enabled
+     * @throws IllegalArgumentException if the point number is outside 1 to 5
+     */
     public RemoteWebCommand(String baseUrl, int remoteStart, String name, int proportion, int distance, int path,
             boolean visible, boolean corridorCut) {
         if (remoteStart < 1 || remoteStart > 5) {
@@ -43,6 +56,12 @@ public class RemoteWebCommand implements Command {
         this.url = requestUrl.append("&save=").toString();
     }
 
+    /**
+     * Returns the web-interface URL prepared when this command was created.
+     *
+     * @param baseURL ignored because the URL is supplied to the constructor
+     * @return the prepared request URL
+     */
     @Override
     public String toCommandURL(String baseURL) {
         return url;

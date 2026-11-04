@@ -25,10 +25,20 @@ public class DriveMotors {
     private @Nullable DriveMotor left;
     private @Nullable DriveMotor right;
 
+    /**
+     * Returns the left drive motor measurements.
+     *
+     * @return the left drive motor measurements, or {@code null} if absent
+     */
     public @Nullable DriveMotor getLeft() {
         return left;
     }
 
+    /**
+     * Returns the right drive motor measurements.
+     *
+     * @return the right drive motor measurements, or {@code null} if absent
+     */
     public @Nullable DriveMotor getRight() {
         return right;
     }

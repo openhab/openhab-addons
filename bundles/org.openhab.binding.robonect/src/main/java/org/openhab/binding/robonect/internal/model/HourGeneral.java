@@ -29,26 +29,56 @@ public class HourGeneral {
     private @Nullable Integer charges;
     private @Nullable Integer errors;
 
+    /**
+     * Returns the running hours.
+     *
+     * @return the running hours, or {@code null} if absent
+     */
     public @Nullable Integer getRun() {
         return run;
     }
 
+    /**
+     * Returns the mowing hours.
+     *
+     * @return the mowing hours, or {@code null} if absent
+     */
     public @Nullable Integer getMow() {
         return mow;
     }
 
+    /**
+     * Returns the searching hours.
+     *
+     * @return the searching hours, or {@code null} if absent
+     */
     public @Nullable Integer getSearch() {
         return search;
     }
 
+    /**
+     * Returns the charging hours.
+     *
+     * @return the charging hours, or {@code null} if absent
+     */
     public @Nullable Integer getCharge() {
         return charge;
     }
 
+    /**
+     * Returns the number of charging sessions.
+     *
+     * @return the number of charging sessions, or {@code null} if absent
+     */
     public @Nullable Integer getCharges() {
         return charges;
     }
 
+    /**
+     * Returns the number of errors.
+     *
+     * @return the number of errors, or {@code null} if absent
+     */
     public @Nullable Integer getErrors() {
         return errors;
     }

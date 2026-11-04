@@ -27,10 +27,20 @@ public class PushTriggers {
     private @Nullable Integer interval;
     private final Map<String, Trigger> triggers = new HashMap<>();
 
+    /**
+     * Returns the push polling interval in seconds.
+     *
+     * @return the push polling interval in seconds, or {@code null} if not reported
+     */
     public @Nullable Integer getInterval() {
         return interval;
     }
 
+    /**
+     * Returns an immutable map of numbered push triggers.
+     *
+     * @return an immutable map of numbered push triggers
+     */
     public Map<String, Trigger> getTriggers() {
         return Map.copyOf(triggers);
     }
@@ -40,20 +50,44 @@ public class PushTriggers {
         private @Nullable Boolean enter;
         private @Nullable Boolean leave;
 
+        /**
+         * Returns the trigger name.
+         *
+         * @return the trigger name, or {@code null} if not reported
+         */
         public @Nullable String getName() {
             return name;
         }
 
+        /**
+         * Reports whether entry triggers notifications.
+         *
+         * @return whether entry triggers notifications, or {@code null} if not reported
+         */
         public @Nullable Boolean getEnter() {
             return enter;
         }
 
+        /**
+         * Reports whether exit triggers notifications.
+         *
+         * @return whether exit triggers notifications, or {@code null} if not reported
+         */
         public @Nullable Boolean getLeave() {
             return leave;
         }
     }
 
     public static class Deserializer implements JsonDeserializer<PushTriggers> {
+        /**
+         * Deserializes push interval and trigger settings from a JSON object.
+         *
+         * @param json the JSON object containing the push settings
+         * @param type the requested result type, unused by this deserializer
+         * @param context the Gson context used to deserialize individual triggers
+         * @return the parsed push settings
+         * @throws JsonParseException if the JSON cannot be deserialized
+         */
         @Override
         public @Nullable PushTriggers deserialize(JsonElement json, Type type, JsonDeserializationContext context)
                 throws JsonParseException {

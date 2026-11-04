@@ -27,6 +27,11 @@ public class BatteryInfo extends RobonectAnswer {
 
     private @Nullable List<Battery> batteries;
 
+    /**
+     * Returns the reported batteries.
+     *
+     * @return the reported batteries, or {@code null} if absent
+     */
     public @Nullable List<Battery> getBatteries() {
         return batteries;
     }

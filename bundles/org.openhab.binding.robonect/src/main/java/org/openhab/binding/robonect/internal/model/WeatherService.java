@@ -16,18 +16,38 @@ public class WeatherService {
     private @Nullable WeatherConfig config;
     private @Nullable WeatherLocation location;
 
+    /**
+     * Reports whether the weather service is enabled.
+     *
+     * @return whether the weather service is enabled, or {@code null} if not reported
+     */
     public @Nullable Boolean getEnable() {
         return enable;
     }
 
+    /**
+     * Returns the weather update interval in minutes.
+     *
+     * @return the weather update interval in minutes, or {@code null} if not reported
+     */
     public @Nullable Integer getInterval() {
         return interval;
     }
 
+    /**
+     * Returns the weather restriction settings.
+     *
+     * @return the weather restriction settings, or {@code null} if not reported
+     */
     public @Nullable WeatherConfig getConfig() {
         return config;
     }
 
+    /**
+     * Returns the configured weather location.
+     *
+     * @return the configured weather location, or {@code null} if not reported
+     */
     public @Nullable WeatherLocation getLocation() {
         return location;
     }

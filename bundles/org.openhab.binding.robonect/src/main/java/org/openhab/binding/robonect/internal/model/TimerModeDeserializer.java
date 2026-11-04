@@ -26,6 +26,15 @@ import com.google.gson.JsonParseException;
  */
 public class TimerModeDeserializer implements JsonDeserializer<Timer.TimerMode> {
 
+    /**
+     * Converts a numeric JSON timer mode to a {@link Timer.TimerMode}.
+     *
+     * @param jsonElement the JSON value containing the timer mode code
+     * @param type the requested result type, unused by this deserializer
+     * @param jsonDeserializationContext the Gson context, unused by this deserializer
+     * @return the matching timer mode, or {@link Timer.TimerMode#INACTIVE} for an unknown code
+     * @throws JsonParseException if the JSON value cannot be deserialized
+     */
     @Override
     public Timer.TimerMode deserialize(JsonElement jsonElement, Type type,
             JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {

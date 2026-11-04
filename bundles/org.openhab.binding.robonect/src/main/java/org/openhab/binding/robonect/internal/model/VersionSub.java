@@ -21,6 +21,11 @@ public class VersionSub {
 
     private @Nullable String version;
 
+    /**
+     * Returns the version.
+     *
+     * @return the version, or {@code null} if not reported
+     */
     public @Nullable String getVersion() {
         return version;
     }

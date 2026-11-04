@@ -23,6 +23,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.robonect.internal.RobonectClient;
 import org.openhab.binding.robonect.internal.RobonectCommunicationException;
+import org.openhab.binding.robonect.internal.RobonectMowerApi;
 import org.openhab.binding.robonect.internal.config.JobChannelConfig;
 import org.openhab.binding.robonect.internal.model.AjaxInfo;
 import org.openhab.binding.robonect.internal.model.Door;
@@ -59,6 +60,7 @@ import com.google.gson.JsonSyntaxException;
  * Handles mower, job, door, and service endpoints.
  *
  * @author Nico Brüttner - Initial contribution
+ * @author Nico Brüttner - Direct mower API injection
  */
 @NonNullByDefault
 final class RobonectMowerHandler {
@@ -69,18 +71,32 @@ final class RobonectMowerHandler {
     private static final Pattern TIME_PATTERN = Pattern.compile("^(\\d{1,2}):(\\d{2})$");
     private final Logger logger = LoggerFactory.getLogger(RobonectMowerHandler.class);
     private final RobonectHandler handler;
+    private final RobonectMowerApi mowerApi;
     private final RobonectDiagnosticsHandler diagnostics;
 
-    RobonectMowerHandler(RobonectHandler handler, RobonectDiagnosticsHandler diagnostics) {
+    /**
+     * Creates a mower endpoint component with access to Thing state and diagnostics.
+     *
+     * @param handler the {@link RobonectHandler} providing state updates
+     * @param mowerApi the mower API for the current client
+     * @param diagnostics the diagnostics component used to refresh error information
+     */
+    RobonectMowerHandler(RobonectHandler handler, RobonectMowerApi mowerApi, RobonectDiagnosticsHandler diagnostics) {
         this.handler = handler;
+        this.mowerApi = mowerApi;
         this.diagnostics = diagnostics;
     }
 
     /** Updates door channels from the optional door-system response. */
     void refreshDoorInfo() {
-        applyDoorInfo(handler.getRobonectClient().getDoorInfo());
+        applyDoorInfo(mowerApi.getDoorInfo());
     }
 
+    /**
+     * Publishes door fields present in a successful door-system response.
+     *
+     * @param info the door response to apply
+     */
     private void applyDoorInfo(DoorInfo info) {
         Door door = info.getDoor();
         if (!info.isSuccessful() || door == null) {
@@ -97,6 +113,12 @@ final class RobonectMowerHandler {
         }
     }
 
+    /**
+     * Maps reported and pending door movement to the door channel state.
+     *
+     * @param state the current door state, or {@code null} if absent
+     * @param pending the pending door state, or {@code null} if absent
+     */
     private void updateDoorState(@Nullable DoorState state, @Nullable DoorState pending) {
         if (pending != null && Boolean.TRUE.equals(pending.getOpen()) && !Boolean.TRUE.equals(pending.getClose())) {
             handler.setState(CHANNEL_DOOR_STATE, new PercentType(75));
@@ -112,17 +134,40 @@ final class RobonectMowerHandler {
         }
     }
 
-    void handleJobCommand(ChannelUID channelUID, OnOffType command) {
+    /**
+     * Validates and applies a mower-name command.
+     *
+     * @param command the command received for the channel
+     */
+    void handleNameCommand(Command command) {
+        if (command instanceof StringType stringCommand) {
+            updateName(stringCommand);
+        } else {
+            logger.debug("Got name update of type {} but StringType is expected.", command.getClass().getName());
+        }
+    }
+
+    /**
+     * Starts or stops a job using the channel configuration, then refreshes mower state.
+     *
+     * @param channelUID the channel identifier
+     * @param command the command received for the channel
+     */
+    void handleJobCommand(ChannelUID channelUID, Command command) {
+        if (!(command instanceof OnOffType onOffCommand)) {
+            logger.debug("Got job update of type {} but OnOffType is expected.", command.getClass().getName());
+            return;
+        }
         handler.cancelCommandRefresh("status");
         JobChannelConfig jobConfig = handler.getThing().getChannel(channelUID.getId()).getConfiguration()
                 .as(JobChannelConfig.class);
-        if (command == OnOffType.ON) {
-            handler.getRobonectClient().startJob(new RobonectClient.JobSettings()
+        if (onOffCommand == OnOffType.ON) {
+            mowerApi.startJob(new RobonectClient.JobSettings()
                     .withAfterMode(ModeCommand.Mode.valueOf(jobConfig.getAfterMode()))
                     .withRemoteStart(ModeCommand.RemoteStart.valueOf(jobConfig.getRemoteStart()))
                     .withDuration(jobConfig.getDuration()).withStart(jobConfig.getStart()).withEnd(jobConfig.getEnd()));
-        } else if (command == OnOffType.OFF) {
-            handler.getRobonectClient().stopJob(
+        } else if (onOffCommand == OnOffType.OFF) {
+            mowerApi.stopJob(
                     new RobonectClient.JobSettings().withAfterMode(ModeCommand.Mode.valueOf(jobConfig.getAfterMode())));
         } else {
             return;
@@ -130,23 +175,39 @@ final class RobonectMowerHandler {
         refreshMowerInfo();
     }
 
-    void setMowerMode(Command command) {
+    /**
+     * Validates, sends a mower mode command, and refreshes mower state.
+     *
+     * @param command the command received for the channel
+     */
+    void handleModeCommand(Command command) {
+        if (!(command instanceof StringType)) {
+            logger.debug("Got job remote start update of type {} but StringType is expected.",
+                    command.getClass().getName());
+            return;
+        }
         String modeStr = command.toFullString();
         ModeCommand.Mode newMode = ModeCommand.Mode.valueOf(modeStr.toUpperCase());
         handler.cancelCommandRefresh("status");
-        handler.getRobonectClient().setMode(newMode);
+        mowerApi.setMode(newMode);
         refreshMowerInfo();
     }
 
+    /**
+     * Logs an unsuccessful mower command response at debug level.
+     *
+     * @param result the response to inspect for an error
+     */
     private void logErrorFromResponse(RobonectAnswer result) {
         if (!result.isSuccessful()) {
             logger.debug("Could not send EOD Trigger. Robonect error message: {}", result.getErrorMessage());
         }
     }
 
+    /** Requests an error reset and schedules a status refresh after success. */
     void resetErrors() {
         handler.cancelCommandRefresh("status");
-        RobonectAnswer answer = handler.getRobonectClient().resetErrors();
+        RobonectAnswer answer = mowerApi.resetErrors();
         if (answer.isSuccessful()) {
             handler.scheduleCommandRefresh("status", this::refreshMowerInfo);
         } else {
@@ -154,29 +215,70 @@ final class RobonectMowerHandler {
         }
     }
 
-    /** Performs a service operation when the corresponding switch is turned on. */
-    void performServiceOperation(Command command, Operation operation) {
-        if (command != OnOffType.ON) {
-            logger.debug("Got service operation command {} but On is expected.", command);
-            return;
+    /**
+     * Validates the error-reset switch command before resetting mower errors.
+     *
+     * @param command the command received for the channel
+     */
+    void handleResetErrorCommand(Command command) {
+        if (command == OnOffType.ON) {
+            resetErrors();
+        } else {
+            logger.debug("Got error reset command {} but On is expected.", command);
         }
-        RobonectAnswer answer = handler.getRobonectClient().performServiceOperation(operation);
+    }
+
+    /**
+     * Performs a previously validated service operation.
+     *
+     * @param operation the requested service operation
+     */
+    void performServiceOperation(Operation operation) {
+        RobonectAnswer answer = mowerApi.performServiceOperation(operation);
         if (!answer.isSuccessful()) {
             logger.debug("Could not perform service operation {}. Robonect error message: {}", operation,
                     answer.getErrorMessage());
         }
     }
 
-    /** Controls the optional door system. */
+    /**
+     * Validates a service switch command and maps its channel to an operation.
+     *
+     * @param channelUID the service channel identifier
+     * @param command the command received for the channel
+     */
+    void handleServiceCommand(ChannelUID channelUID, Command command) {
+        if (command != OnOffType.ON) {
+            logger.debug("Got service operation command {} but On is expected.", command);
+            return;
+        }
+        Operation operation;
+        switch (channelUID.getId()) {
+            case CHANNEL_SERVICE_REBOOT -> operation = Operation.REBOOT;
+            case CHANNEL_SERVICE_SHUTDOWN -> operation = Operation.SHUTDOWN;
+            case CHANNEL_SERVICE_SLEEP -> operation = Operation.SLEEP;
+            default -> {
+                logger.debug("Ignoring unsupported service channel {}.", channelUID.getId());
+                return;
+            }
+        }
+        performServiceOperation(operation);
+    }
+
+    /**
+     * Controls the optional door system.
+     *
+     * @param command the command received for the channel
+     */
     void handleDoorCommand(Command command) {
         handler.cancelCommandRefresh("door");
         DoorInfo answer;
         if (command == UpDownType.UP) {
-            answer = handler.getRobonectClient().setDoorDirection(Direction.OPEN);
+            answer = mowerApi.setDoorDirection(Direction.OPEN);
         } else if (command == UpDownType.DOWN) {
-            answer = handler.getRobonectClient().setDoorDirection(Direction.CLOSE);
+            answer = mowerApi.setDoorDirection(Direction.CLOSE);
         } else if (command == StopMoveType.STOP) {
-            answer = handler.getRobonectClient().releaseDoor();
+            answer = mowerApi.releaseDoor();
         } else {
             logger.debug("Got door command of type {} but Up, Down, or Stop is expected.",
                     command.getClass().getName());
@@ -190,20 +292,34 @@ final class RobonectMowerHandler {
         }
     }
 
-    void handleStartStop(final OnOffType command) {
+    /**
+     * Starts or stops the mower and refreshes its state.
+     *
+     * @param command the command received for the channel
+     */
+    void handleStartCommand(Command command) {
+        if (!(command instanceof OnOffType onOffCommand)) {
+            logger.debug("Got stopped update of type {} but OnOffType is expected.", command.getClass().getName());
+            return;
+        }
         handler.cancelCommandRefresh("status");
-        if (command == OnOffType.ON) {
-            handler.getRobonectClient().start();
+        if (onOffCommand == OnOffType.ON) {
+            mowerApi.start();
         } else {
-            handler.getRobonectClient().stop();
+            mowerApi.stop();
         }
         refreshMowerInfo();
     }
 
+    /**
+     * Updates the mower name and applies the returned name before a delayed refresh.
+     *
+     * @param command the command received for the channel
+     */
     void updateName(StringType command) {
         String newName = command.toFullString();
         handler.cancelCommandRefresh("status");
-        Name name = handler.getRobonectClient().setName(newName);
+        Name name = mowerApi.setName(newName);
         if (name.isSuccessful()) {
             if (name.getName() != null) {
                 handler.setState(CHANNEL_MOWER_NAME, new StringType(name.getName()));
@@ -215,8 +331,9 @@ final class RobonectMowerHandler {
         }
     }
 
+    /** Reads mower status and publishes the available mower and job channels. */
     void refreshMowerInfo() {
-        MowerInfo info = handler.getRobonectClient().getMowerInfo();
+        MowerInfo info = mowerApi.getMowerInfo();
         if (!handler.canPublishState()) {
             return;
         }
@@ -304,14 +421,14 @@ final class RobonectMowerHandler {
             if (mowerMode != null) {
                 handler.setState(CHANNEL_STATUS_MODE, new StringType(mowerMode.name()));
             }
-            handler.setState(CHANNEL_JOB, OnOffType.from(handler.getRobonectClient().isJobRunning()));
+            handler.setState(CHANNEL_JOB, OnOffType.from(mowerApi.isJobRunning()));
             handler.setState(CHANNEL_JOB_START, UnDefType.NULL);
             handler.setState(CHANNEL_JOB_END, UnDefType.NULL);
             return;
         }
 
         try {
-            AjaxInfo ajaxInfo = handler.getRobonectClient().getAjaxInfo();
+            AjaxInfo ajaxInfo = mowerApi.getAjaxInfo();
             if (ajaxInfo == null) {
                 throw new JsonSyntaxException("Robonect web-interface response is empty");
             }
@@ -335,7 +452,7 @@ final class RobonectMowerHandler {
             if (mowerMode != null) {
                 handler.setState(CHANNEL_STATUS_MODE, new StringType(mowerMode.name()));
             }
-            handler.setState(CHANNEL_JOB, OnOffType.from(handler.getRobonectClient().isJobRunning()));
+            handler.setState(CHANNEL_JOB, OnOffType.from(mowerApi.isJobRunning()));
             handler.setState(CHANNEL_JOB_START, UnDefType.NULL);
             handler.setState(CHANNEL_JOB_END, UnDefType.NULL);
         }
@@ -363,7 +480,7 @@ final class RobonectMowerHandler {
     }
 
     /**
-     * Updates one job time channel using the Unix epoch date and UTC to represent the time of day.
+     * Updates one job time channel using the Unix epoch date in the configured time zone.
      *
      * @param channelId job time channel identifier
      * @param value UI value in {@code HH:mm} format, or {@code null}
@@ -387,12 +504,19 @@ final class RobonectMowerHandler {
         handler.setState(channelId, handler.toTimeOnlyDateTime(LocalTime.of(hours, minutes)));
     }
 
+    /** Clears the current-error channels when no error is reported. */
     private void clearErrorInfo() {
         handler.setState(CHANNEL_ERROR_DATE, UnDefType.UNDEF);
         handler.setState(CHANNEL_ERROR_CODE, UnDefType.UNDEF);
         handler.setState(CHANNEL_ERROR_MESSAGE, UnDefType.UNDEF);
     }
 
+    /**
+     * Maps the mower WLAN signal level to the binding signal-strength scale.
+     *
+     * @param signal the WLAN signal strength
+     * @return the signal strength level from 0 through 4
+     */
     private int convertSignalStrength(int signal) {
         if (signal >= -70) {
             return 4;
@@ -406,6 +530,11 @@ final class RobonectMowerHandler {
         return signal >= -120 ? 1 : 0;
     }
 
+    /**
+     * Publishes the available fields of the current mower error.
+     *
+     * @param error the error information to publish
+     */
     private void updateErrorInfo(ErrorEntry error) {
         if (error.getErrorMessage() != null) {
             handler.setState(CHANNEL_ERROR_MESSAGE, new StringType(error.getErrorMessage()));
@@ -419,6 +548,11 @@ final class RobonectMowerHandler {
         }
     }
 
+    /**
+     * Publishes the next scheduled timer using the configured time zone.
+     *
+     * @param info the mower response containing the next timer
+     */
     private void updateNextTimer(MowerInfo info) {
         State dateTime = handler.convertUnixToDateTimeType(info.getTimer().getNext().getUnix());
         handler.setState(CHANNEL_TIMER_NEXT_TIMER, dateTime);

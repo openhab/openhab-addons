@@ -10,6 +10,11 @@ import org.eclipse.jdt.annotation.Nullable;
 public class ExtInfo extends RobonectAnswer {
     private @Nullable Extensions ext;
 
+    /**
+     * Returns the extension configuration.
+     *
+     * @return the extension configuration, or {@code null} if absent
+     */
     public @Nullable Extensions getExt() {
         return ext;
     }

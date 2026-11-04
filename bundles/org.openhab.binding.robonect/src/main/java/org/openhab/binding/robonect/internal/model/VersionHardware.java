@@ -22,10 +22,20 @@ public class VersionHardware {
     private @Nullable Integer serial;
     private @Nullable String production;
 
+    /**
+     * Returns the hardware serial number.
+     *
+     * @return the hardware serial number, or {@code null} if not reported
+     */
     public @Nullable Integer getSerial() {
         return serial;
     }
 
+    /**
+     * Returns the hardware production information.
+     *
+     * @return the hardware production information, or {@code null} if not reported
+     */
     public @Nullable String getProduction() {
         return production;
     }

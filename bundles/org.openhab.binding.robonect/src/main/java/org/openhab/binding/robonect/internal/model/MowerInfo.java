@@ -31,13 +31,17 @@ public class MowerInfo extends RobonectAnswer {
     private ErrorEntry error;
 
     /**
-     * @return - the name of the mower
+     * Returns the name of the mower.
+     *
+     * @return the name of the mower
      */
     public String getName() {
         return name;
     }
 
     /**
+     * Returns the identifier reported by Robonect.
+     *
      * @return the identifier reported by Robonect, if available
      */
     public String getId() {
@@ -45,86 +49,145 @@ public class MowerInfo extends RobonectAnswer {
     }
 
     /**
-     * @return - some status information of the mower. See {@link Status} for details.
+     * Returns some status information of the mower. See {@link Status} for details.
+     *
+     * @return some status information of the mower. See {@link Status} for details.
      */
     public Status getStatus() {
         return status;
     }
 
     /**
-     * @return - the current timer status information.
+     * Returns the current timer status information.
+     *
+     * @return the current timer status information.
      */
     public Timer getTimer() {
         return timer;
     }
 
     /**
-     * @return - the WLAN signal status.
+     * Returns the WLAN signal status.
+     *
+     * @return the WLAN signal status.
      */
     public Wlan getWlan() {
         return wlan;
     }
 
     /**
-     * @return - if the mower is in error status {@link #getStatus()} the error information is returned, null otherwise.
+     * Returns the error information reported by the mower.
+     *
+     * @return the error information reported by the mower, or {@code null} if absent
      */
     public ErrorEntry getError() {
         return error;
     }
 
     /**
-     * @return - the health status information.
+     * Returns the health status information.
+     *
+     * @return the health status information.
      */
     public Health getHealth() {
         return health;
     }
 
     /**
-     * @return - the blades status information.
+     * Returns the blades status information.
+     *
+     * @return the blades status information.
      */
     public Blades getBlades() {
         return blades;
     }
 
     /**
+     * Returns the clock reported by Robonect.
+     *
      * @return the clock reported by Robonect, if available
      */
     public Clock getClock() {
         return clock;
     }
 
+    /**
+     * Sets the mower name.
+     *
+     * @param name the mower name
+     */
     public void setName(String name) {
         this.name = name;
     }
 
+    /**
+     * Sets the mower identifier.
+     *
+     * @param id the mower identifier
+     */
     public void setId(String id) {
         this.id = id;
     }
 
+    /**
+     * Sets the mower status.
+     *
+     * @param status the mower status
+     */
     public void setStatus(Status status) {
         this.status = status;
     }
 
+    /**
+     * Sets the timer status.
+     *
+     * @param timer the timer status
+     */
     public void setTimer(Timer timer) {
         this.timer = timer;
     }
 
+    /**
+     * Sets the WLAN information.
+     *
+     * @param wlan the WLAN information
+     */
     public void setWlan(Wlan wlan) {
         this.wlan = wlan;
     }
 
+    /**
+     * Sets the mower health information.
+     *
+     * @param health the mower health information
+     */
     public void setHealth(Health health) {
         this.health = health;
     }
 
+    /**
+     * Sets the blade information.
+     *
+     * @param blades the blade information
+     */
     public void setBlades(Blades blades) {
         this.blades = blades;
     }
 
+    /**
+     * Sets the mower clock.
+     *
+     * @param clock the mower clock
+     */
     public void setClock(Clock clock) {
         this.clock = clock;
     }
 
+    /**
+     * Sets the mower error information.
+     *
+     * @param error the mower error information
+     */
     public void setError(ErrorEntry error) {
         this.error = error;
     }

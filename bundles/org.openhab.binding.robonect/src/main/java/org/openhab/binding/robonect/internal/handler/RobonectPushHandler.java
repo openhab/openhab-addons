@@ -25,6 +25,7 @@ import java.util.regex.Pattern;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.robonect.internal.RobonectCommunicationException;
+import org.openhab.binding.robonect.internal.RobonectPushApi;
 import org.openhab.binding.robonect.internal.model.ExtInfo;
 import org.openhab.binding.robonect.internal.model.Extension;
 import org.openhab.binding.robonect.internal.model.Extensions;
@@ -47,6 +48,7 @@ import org.slf4j.LoggerFactory;
  * Handles push and extension endpoints.
  *
  * @author Nico Brüttner - Initial contribution
+ * @author Nico Brüttner - Direct push API injection
  */
 @NonNullByDefault
 final class RobonectPushHandler {
@@ -55,14 +57,22 @@ final class RobonectPushHandler {
             .compile("push-trigger-(\\d+)-[a-z0-9_-]+-(enter|leave)");
     private final Logger logger = LoggerFactory.getLogger(RobonectPushHandler.class);
     private final RobonectHandler handler;
+    private final RobonectPushApi pushApi;
 
-    RobonectPushHandler(RobonectHandler handler) {
+    /**
+     * Creates a push and extension component backed by the Thing handler.
+     *
+     * @param handler the {@link RobonectHandler} providing state updates
+     * @param pushApi the push API for the current client
+     */
+    RobonectPushHandler(RobonectHandler handler, RobonectPushApi pushApi) {
         this.handler = handler;
+        this.pushApi = pushApi;
     }
 
     /** Updates optional GPIO and output extension state. */
     void refreshExtensionInfo() {
-        ExtInfo info = handler.getRobonectClient().getExtInfo();
+        ExtInfo info = pushApi.getExtInfo();
         Extensions extensions = info.getExt();
         if (!info.isSuccessful() || extensions == null) {
             return;
@@ -75,28 +85,44 @@ final class RobonectPushHandler {
 
     /** Updates non-sensitive push-service settings. */
     void refreshPushInfo() {
-        applyPushInfo(handler.getRobonectClient().getPushInfo(), true);
+        applyPushInfo(pushApi.getPushInfo(), true);
     }
 
+    /** Reads the push mode from the optional web interface when publishing is allowed. */
     void refreshPushMode() {
         if (!handler.isUnofficialApiEnabled() || !handler.canPublishState()) {
             return;
         }
         try {
-            applyPushMode(handler.getRobonectClient().getPushModeViaWebInterface());
+            applyPushMode(pushApi.getPushModeViaWebInterface());
         } catch (RobonectCommunicationException e) {
             logger.debug("Could not retrieve push mode from the web interface: {}", e.getMessage());
         }
     }
 
+    /**
+     * Publishes the push mode, or an undefined state if unavailable, while the unofficial API is enabled.
+     *
+     * @param mode the push mode, or {@code null} if unavailable
+     */
     private void applyPushMode(@Nullable Integer mode) {
         if (handler.isUnofficialApiEnabled()) {
             handler.setState(CHANNEL_PUSH_MODE, mode == null ? UnDefType.UNDEF : new DecimalType(mode));
         }
     }
 
-    void updatePushMode(Command command) {
-        if (!handler.isUnofficialApiEnabled() || !(command instanceof DecimalType decimal)) {
+    /**
+     * Validates and writes a push mode through the optional web interface.
+     *
+     * @param command the command received for the channel
+     */
+    void handleModeCommand(Command command) {
+        if (!(command instanceof DecimalType decimal)) {
+            logger.debug("Ignoring push mode command of type {}; DecimalType is expected.",
+                    command.getClass().getName());
+            return;
+        }
+        if (!handler.isUnofficialApiEnabled()) {
             return;
         }
         int mode;
@@ -110,9 +136,15 @@ final class RobonectPushHandler {
             logger.debug("Ignoring invalid push mode {}", mode);
             return;
         }
-        applyPushMode(handler.getRobonectClient().updatePushModeViaWebInterface(mode));
+        applyPushMode(pushApi.updatePushModeViaWebInterface(mode));
     }
 
+    /**
+     * Applies push settings and reconciles trigger channels using response completeness.
+     *
+     * @param info the push-service response to apply
+     * @param fullResponse whether the response contains all push triggers
+     */
     private void applyPushInfo(PushInfo info, boolean fullResponse) {
         Push push = info.getPush();
         if (!info.isSuccessful() || push == null) {
@@ -158,6 +190,12 @@ final class RobonectPushHandler {
         }
     }
 
+    /**
+     * Returns triggers keyed by their index and normalized valid name.
+     *
+     * @param triggers the push triggers returned by the mower
+     * @return the triggers indexed by their normalized channel-name suffix
+     */
     private Map<String, PushTriggers.Trigger> getNamedPushTriggers(PushTriggers triggers) {
         Map<String, PushTriggers.Trigger> namedTriggers = new HashMap<>();
         for (Map.Entry<String, PushTriggers.Trigger> entry : triggers.getTriggers().entrySet()) {
@@ -175,12 +213,23 @@ final class RobonectPushHandler {
         return namedTriggers;
     }
 
-    void updatePushTrigger(String channelId, Command command) {
+    /**
+     * Updates one trigger while preserving its other enter or leave setting.
+     *
+     * @param channelId the channel identifier
+     * @param command the command received for the channel
+     */
+    void handleTriggerCommand(String channelId, Command command) {
         Matcher matcher = PUSH_TRIGGER_COMMAND_PATTERN.matcher(channelId);
-        if (!matcher.matches() || !(command instanceof OnOffType onOff)) {
+        if (!matcher.matches()) {
             return;
         }
-        PushInfo info = handler.getRobonectClient().getPushInfo();
+        if (!(command instanceof OnOffType onOff)) {
+            logger.debug("Ignoring push trigger command of type {}; OnOffType is expected.",
+                    command.getClass().getName());
+            return;
+        }
+        PushInfo info = pushApi.getPushInfo();
         Push push = info.getPush();
         PushTriggers triggers = push == null ? null : push.getTrigger();
         PushTriggers.Trigger trigger = triggers == null ? null : triggers.getTriggers().get(matcher.group(1));
@@ -191,14 +240,20 @@ final class RobonectPushHandler {
         boolean leave = matcher.group(2).equals("leave") ? onOff == OnOffType.ON : trigger.getLeave();
         int value = (enter ? 1 : 0) | (leave ? 2 : 0);
         handler.cancelCommandRefresh("push");
-        PushInfo result = handler.getRobonectClient().updatePush("trigger" + matcher.group(1), Integer.toString(value));
+        PushInfo result = pushApi.updatePush("trigger" + matcher.group(1), Integer.toString(value));
         if (result.isSuccessful()) {
             applyPushInfo(result, false);
             handler.scheduleCommandRefresh("push", this::refreshPushInfo);
         }
     }
 
-    void updatePush(String channelId, Command command) {
+    /**
+     * Writes a supported push service setting and schedules a delayed refresh.
+     *
+     * @param channelId the channel identifier
+     * @param command the command received for the channel
+     */
+    void handleCommand(String channelId, Command command) {
         if (channelId.equals(CHANNEL_PUSH_PASSWORD)) {
             handler.setState(CHANNEL_PUSH_PASSWORD, UnDefType.UNDEF);
         }
@@ -218,18 +273,46 @@ final class RobonectPushHandler {
                     .valueOf(command instanceof QuantityType<?> quantity ? quantity.toUnit(Units.SECOND).intValue()
                             : num.intValue());
         } else {
+            logUnsupportedCommandType(channelId, command);
             return;
         }
         if (parameter != null) {
             handler.cancelCommandRefresh("push");
-            PushInfo result = handler.getRobonectClient().updatePush(parameter, value);
+            PushInfo result = pushApi.updatePush(parameter, value);
             if (result.isSuccessful()) {
                 applyPushInfo(result, false);
                 handler.scheduleCommandRefresh("push", this::refreshPushInfo);
             }
+        } else {
+            logUnsupportedCommandType(channelId, command);
         }
     }
 
+    /**
+     * Logs a command whose type is unsupported for a recognized push setting channel.
+     *
+     * @param channelId the push channel identifier
+     * @param command the unsupported command
+     */
+    private void logUnsupportedCommandType(String channelId, Command command) {
+        @Nullable
+        String expectedType = switch (channelId) {
+            case CHANNEL_PUSH_URL, CHANNEL_PUSH_USERNAME, CHANNEL_PUSH_PASSWORD -> "StringType";
+            case CHANNEL_PUSH_INTERVAL -> "Number";
+            default -> null;
+        };
+        if (expectedType != null) {
+            logger.debug("Ignoring command of type {} for push channel {}; {} is expected.",
+                    command.getClass().getName(), channelId, expectedType);
+        }
+    }
+
+    /**
+     * Publishes available fields for one GPIO or output extension.
+     *
+     * @param prefix the channel identifier prefix
+     * @param extension the extension information, or {@code null} if absent
+     */
     private void updateExtension(String prefix, @Nullable Extension extension) {
         if (extension == null) {
             return;

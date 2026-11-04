@@ -15,7 +15,6 @@ package org.openhab.binding.robonect.internal.model.cmd;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 
-import org.openhab.binding.robonect.internal.RobonectClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,7 +30,7 @@ public class NameCommand implements Command {
     private String newName;
 
     /**
-     * sets the mower name.
+     * Sets the mower name; a {@code null} name is sent as an empty string.
      *
      * @param newName - the mower name.
      * @return - the command instance.
@@ -42,9 +41,10 @@ public class NameCommand implements Command {
     }
 
     /**
-     * @param baseURL - will be passed by the {@link RobonectClient} in the form
-     *            http://xxx.xxx.xxx/json?
-     * @return
+     * Builds the mower name URL for this {@link Command}.
+     *
+     * @param baseURL base URL to which the command parameters are appended
+     * @return the complete request URL
      */
     @Override
     public String toCommandURL(String baseURL) {

@@ -22,12 +22,19 @@ public class Clock {
     private String unix;
 
     /**
+     * Returns the Unix timestamp in seconds.
+     *
      * @return the Unix timestamp in seconds
      */
     public String getUnix() {
         return unix;
     }
 
+    /**
+     * Sets the Unix timestamp in seconds.
+     *
+     * @param unix the Unix timestamp in seconds
+     */
     public void setUnix(String unix) {
         this.unix = unix;
     }

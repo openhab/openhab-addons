@@ -22,6 +22,11 @@ public class DoorCommand implements Command {
 
         private final String parameter;
 
+        /**
+         * Creates a door direction with its web request parameter.
+         *
+         * @param parameter direction parameter name
+         */
         Direction(String parameter) {
             this.parameter = parameter;
         }
@@ -30,16 +35,33 @@ public class DoorCommand implements Command {
     private @Nullable Direction direction;
     private boolean release;
 
+    /**
+     * Sets the direction to open or close the door.
+     *
+     * @param direction the requested door direction
+     * @return this command
+     */
     public DoorCommand withDirection(Direction direction) {
         this.direction = direction;
         return this;
     }
 
+    /**
+     * Requests release of the door when no direction has been set.
+     *
+     * @return this command
+     */
     public DoorCommand withRelease() {
         release = true;
         return this;
     }
 
+    /**
+     * Builds the door operation URL for this {@link Command}.
+     *
+     * @param baseUrl base URL to which the command parameters are appended
+     * @return the complete request URL
+     */
     @Override
     public String toCommandURL(String baseUrl) {
         if (direction != null) {

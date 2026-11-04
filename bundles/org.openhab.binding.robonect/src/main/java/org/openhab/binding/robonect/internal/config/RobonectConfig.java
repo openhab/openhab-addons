@@ -13,8 +13,7 @@
 package org.openhab.binding.robonect.internal.config;
 
 /**
- *
- * This class acts simply a structure for holding the thing configuration.
+ * Holds the mower Thing configuration.
  *
  * @author Marco Meyer - Initial contribution
  */
@@ -38,38 +37,83 @@ public class RobonectConfig {
 
     private boolean useUnofficialApi;
 
+    /**
+     * Returns the configured mower host.
+     *
+     * @return the host address
+     */
     public String getHost() {
         return host;
     }
 
+    /**
+     * Returns the configured username.
+     *
+     * @return the username
+     */
     public String getUser() {
         return user;
     }
 
+    /**
+     * Returns the configured password.
+     *
+     * @return the password
+     */
     public String getPassword() {
         return password;
     }
 
+    /**
+     * Returns the normal polling interval.
+     *
+     * @return the interval in seconds
+     */
     public int getPollInterval() {
         return pollInterval;
     }
 
+    /**
+     * Returns the configured offline timeout.
+     *
+     * @return the timeout in minutes
+     */
     public int getOfflineTimeout() {
         return offlineTimeout;
     }
 
+    /**
+     * Returns the mower time zone.
+     *
+     * @return the time zone identifier
+     */
     public String getTimezone() {
         return timezone;
     }
 
+    /**
+     * Returns the detailed polling interval.
+     *
+     * @return the interval in seconds, or zero when disabled
+     */
     public int getDetailedPollInterval() {
         return detailedPollInterval;
     }
 
+    /**
+     * Reports whether localized Ajax UI scraping is enabled.
+     *
+     * @return {@code true} if Ajax UI scraping is enabled
+     */
     public boolean isAjaxUiScraping() {
         return ajaxUiScraping;
     }
 
+    /**
+     * Reports whether unofficial web-interface operations are enabled.
+     *
+     * @return {@code true} if unofficial operations are enabled
+     */
     public boolean isUseUnofficialApi() {
         return useUnofficialApi;
     }

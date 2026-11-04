@@ -25,6 +25,15 @@ import com.google.gson.JsonParseException;
  * @author Marco Meyer - Initial contribution
  */
 public class MowerStatusDeserializer implements JsonDeserializer<MowerStatus> {
+    /**
+     * Converts a numeric JSON status code to the corresponding {@link MowerStatus}.
+     *
+     * @param jsonElement the JSON element containing the numeric status code
+     * @param type the requested target type supplied by Gson
+     * @param jsonDeserializationContext the deserialization context supplied by Gson
+     * @return the status resolved by {@link MowerStatus#fromCode(int)}
+     * @throws JsonParseException if Gson cannot deserialize the value
+     */
     @Override
     public MowerStatus deserialize(JsonElement jsonElement, Type type,
             JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {

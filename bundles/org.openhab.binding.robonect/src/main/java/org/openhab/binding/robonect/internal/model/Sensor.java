@@ -30,30 +30,65 @@ public class Sensor {
     private @Nullable Integer g1;
     private @Nullable Integer g2;
 
+    /**
+     * Returns the sensor label.
+     *
+     * @return the sensor label, or {@code null} if not reported
+     */
     public @Nullable String getDescription() {
         return description;
     }
 
+    /**
+     * Returns the signal quality in percent.
+     *
+     * @return the signal quality in percent, or {@code null} if not reported
+     */
     public @Nullable Integer getQuality() {
         return quality;
     }
 
+    /**
+     * Returns the A wire-sensor measurement.
+     *
+     * @return the A wire-sensor measurement, or {@code null} if not reported
+     */
     public @Nullable Integer getA() {
         return a;
     }
 
+    /**
+     * Returns the N wire-sensor measurement.
+     *
+     * @return the N wire-sensor measurement, or {@code null} if not reported
+     */
     public @Nullable Integer getN() {
         return n;
     }
 
+    /**
+     * Returns the F wire-sensor measurement.
+     *
+     * @return the F wire-sensor measurement, or {@code null} if not reported
+     */
     public @Nullable Integer getF() {
         return f;
     }
 
+    /**
+     * Returns the G1 wire-sensor measurement.
+     *
+     * @return the G1 wire-sensor measurement, or {@code null} if not reported
+     */
     public @Nullable Integer getG1() {
         return g1;
     }
 
+    /**
+     * Returns the G2 wire-sensor measurement.
+     *
+     * @return the G2 wire-sensor measurement, or {@code null} if not reported
+     */
     public @Nullable Integer getG2() {
         return g2;
     }

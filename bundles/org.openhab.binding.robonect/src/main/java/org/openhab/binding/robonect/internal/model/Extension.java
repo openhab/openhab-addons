@@ -12,14 +12,29 @@ public class Extension {
     private @Nullable Boolean inverted;
     private @Nullable Boolean status;
 
+    /**
+     * Reports whether flashing on error is enabled.
+     *
+     * @return whether flashing on error is enabled, or {@code null} if absent
+     */
     public @Nullable Boolean getFlashonerror() {
         return flashonerror;
     }
 
+    /**
+     * Reports whether the output is inverted.
+     *
+     * @return whether the output is inverted, or {@code null} if absent
+     */
     public @Nullable Boolean getInverted() {
         return inverted;
     }
 
+    /**
+     * Returns the extension output status.
+     *
+     * @return the extension output status, or {@code null} if absent
+     */
     public @Nullable Boolean getStatus() {
         return status;
     }

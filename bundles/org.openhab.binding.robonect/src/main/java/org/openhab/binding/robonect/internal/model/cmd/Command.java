@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.robonect.internal.model.cmd;
 
-import org.openhab.binding.robonect.internal.RobonectClient;
-
 /**
  * 
  * Interface implemented by all commands. The robonect module is called with urls like
@@ -25,12 +23,10 @@ import org.openhab.binding.robonect.internal.RobonectClient;
 public interface Command {
 
     /**
-     * Implementations of this interface have to return baseUrl + command specific extensions, where the baseURL
-     * already is in the form http://xxx.xxx.xxx/json?
-     * 
-     * @param baseURL - will be passed by the {@link RobonectClient} in the form
-     *            http://xxx.xxx.xxx/json?
-     * @return - the full command string like for example for a name command http://xxx.xxx.xxx/json?cmd=name
+     * Builds the URL for this command.
+     *
+     * @param baseURL API base URL, used by commands that do not already contain a request URL
+     * @return the complete request URL
      */
     String toCommandURL(String baseURL);
 }

@@ -26,14 +26,29 @@ public class BladeMotor {
     private @Nullable Integer current;
     private @Nullable Integer average;
 
+    /**
+     * Returns the blade motor speed in revolutions per minute.
+     *
+     * @return the blade motor speed in revolutions per minute, or {@code null} if absent
+     */
     public @Nullable Integer getSpeed() {
         return speed;
     }
 
+    /**
+     * Returns the blade motor current in milliamperes.
+     *
+     * @return the blade motor current in milliamperes, or {@code null} if absent
+     */
     public @Nullable Integer getCurrent() {
         return current;
     }
 
+    /**
+     * Returns the average blade motor value.
+     *
+     * @return the average blade motor value, or {@code null} if absent
+     */
     public @Nullable Integer getAverage() {
         return average;
     }

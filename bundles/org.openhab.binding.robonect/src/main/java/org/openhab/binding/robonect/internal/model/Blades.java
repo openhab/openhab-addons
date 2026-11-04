@@ -29,21 +29,27 @@ public class Blades {
     private int days;
 
     /**
-     * @return - the quality of the blades in %.
+     * Returns the quality of the blades in %.
+     *
+     * @return the quality of the blades in %.
      */
     public int getQuality() {
         return quality;
     }
 
     /**
-     * @return - the hours of how many days the blades have been actively in use
+     * Returns the number of hours the blades have been in use.
+     *
+     * @return the number of hours the blades have been in use
      */
     public int getHours() {
         return hours;
     }
 
     /**
-     * @return - the days since the blades have been changed the last time
+     * Returns the number of days since the blades were last changed.
+     *
+     * @return the number of days since the blades were last changed
      */
     public int getDays() {
         return days;

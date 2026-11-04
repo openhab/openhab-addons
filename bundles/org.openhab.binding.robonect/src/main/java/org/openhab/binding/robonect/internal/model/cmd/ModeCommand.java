@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.robonect.internal.model.cmd;
 
-import org.openhab.binding.robonect.internal.RobonectClient;
-
 /**
  * 
  * The mode commands sets the mower into the corresponding mode. In addition to the mowers standard modes
@@ -45,6 +43,12 @@ public class ModeCommand implements Command {
         int code;
         String cmd;
 
+        /**
+         * Creates a mower mode with its protocol values.
+         *
+         * @param code numeric mode code
+         * @param cmd mode command value
+         */
         Mode(int code, String cmd) {
             this.code = code;
             this.cmd = cmd;
@@ -81,6 +85,11 @@ public class ModeCommand implements Command {
 
         int code;
 
+        /**
+         * Creates a remote-start option with its protocol code.
+         *
+         * @param code numeric remote-start code
+         */
         RemoteStart(int code) {
             this.code = code;
         }
@@ -98,14 +107,19 @@ public class ModeCommand implements Command {
 
     private Integer duration;
 
+    /**
+     * Creates a mode command.
+     *
+     * @param mode the requested mower mode
+     */
     public ModeCommand(Mode mode) {
         this.mode = mode;
     }
 
     /**
-     * sets the desired remoteStart option.
+     * Sets the desired remote-start option.
      * 
-     * @param remoteStart - the remoteStart option.
+     * @param remoteStart the desired remote-start option
      * @return - the command instance.
      */
     public ModeCommand withRemoteStart(RemoteStart remoteStart) {
@@ -114,7 +128,7 @@ public class ModeCommand implements Command {
     }
 
     /**
-     * set the mode after the job is done.
+     * Sets the mode after the job finishes.
      * 
      * @param afterMode - the desired mode after job execution.
      * @return - the command instance.
@@ -125,7 +139,7 @@ public class ModeCommand implements Command {
     }
 
     /**
-     * The desired start time in the format HH:MM (H=Hour, M=Minute)
+     * Sets the desired start time in {@code HH:mm} format.
      * 
      * @param startTime - the start time.
      * @return - the command instance.
@@ -136,7 +150,7 @@ public class ModeCommand implements Command {
     }
 
     /**
-     * The desired end time in the format HH:MM (H=Hour, M=Minute)
+     * Sets the desired end time in {@code HH:mm} format.
      * 
      * @param endTime - the end time.
      * @return - the command instance.
@@ -158,11 +172,10 @@ public class ModeCommand implements Command {
     }
 
     /**
-     * {@inheritDoc}
-     * 
-     * @param baseURL - will be passed by the {@link RobonectClient} in the form
-     *            http://xxx.xxx.xxx/json?
-     * @return
+     * Builds the mower mode URL for this {@link Command}.
+     *
+     * @param baseURL base URL to which the command parameters are appended
+     * @return the complete request URL
      */
     @Override
     public String toCommandURL(String baseURL) {

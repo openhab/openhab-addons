@@ -23,14 +23,29 @@ public class VersionMower {
     private @Nullable VersionMsw msw;
     private @Nullable VersionSub sub;
 
+    /**
+     * Returns the hardware.
+     *
+     * @return the hardware, or {@code null} if not reported
+     */
     public @Nullable VersionHardware getHardware() {
         return hardware;
     }
 
+    /**
+     * Returns the mower software.
+     *
+     * @return the mower software, or {@code null} if not reported
+     */
     public @Nullable VersionMsw getMsw() {
         return msw;
     }
 
+    /**
+     * Returns the sub.
+     *
+     * @return the sub, or {@code null} if not reported
+     */
     public @Nullable VersionSub getSub() {
         return sub;
     }

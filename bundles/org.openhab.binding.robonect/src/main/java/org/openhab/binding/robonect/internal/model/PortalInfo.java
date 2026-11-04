@@ -26,14 +26,29 @@ public class PortalInfo extends RobonectAnswer {
     private @Nullable Boolean connected;
     private @Nullable Address address;
 
+    /**
+     * Reports whether the feature is enabled.
+     *
+     * @return whether the feature is enabled, or {@code null} if not reported
+     */
     public @Nullable Boolean getEnabled() {
         return enabled;
     }
 
+    /**
+     * Reports whether the service is connected.
+     *
+     * @return whether the service is connected, or {@code null} if not reported
+     */
     public @Nullable Boolean getConnected() {
         return connected;
     }
 
+    /**
+     * Returns the address.
+     *
+     * @return the address, or {@code null} if not reported
+     */
     public @Nullable Address getAddress() {
         return address;
     }

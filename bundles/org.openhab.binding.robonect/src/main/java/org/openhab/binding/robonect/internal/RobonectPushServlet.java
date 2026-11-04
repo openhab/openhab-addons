@@ -32,16 +32,32 @@ public class RobonectPushServlet extends HttpServlet {
 
     private final Map<String, RobonectHandler> handlers = new ConcurrentHashMap<>();
 
-    /** Registers a Thing handler for notifications at its Thing UID path. */
+    /**
+     * Registers a Thing handler for notifications at its Thing UID path.
+     *
+     * @param thingUID the Thing identifier used in the request path
+     * @param handler the handler to notify
+     */
     public void registerHandler(ThingUID thingUID, RobonectHandler handler) {
         handlers.put(thingUID.getAsString(), handler);
     }
 
-    /** Removes a Thing handler when it is disposed. */
+    /**
+     * Removes the handler registered for a Thing.
+     *
+     * @param thingUID the Thing identifier whose handler is removed
+     */
     public void unregisterHandler(ThingUID thingUID) {
         handlers.remove(thingUID.getAsString());
     }
 
+    /**
+     * Dispatches a push notification to the handler identified by the request path.
+     *
+     * @param request the incoming servlet request, or {@code null} if unavailable
+     * @param response the servlet response, or {@code null} if unavailable
+     * @throws IOException if writing the response fails
+     */
     @Override
     protected void doPost(@Nullable HttpServletRequest request, @Nullable HttpServletResponse response)
             throws IOException {

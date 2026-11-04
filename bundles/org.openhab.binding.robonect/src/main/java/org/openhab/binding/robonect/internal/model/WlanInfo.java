@@ -9,10 +9,20 @@ public class WlanInfo extends RobonectAnswer {
     private @Nullable AccessPoint ap;
     private @Nullable WifiStation station;
 
+    /**
+     * Returns the access-point information.
+     *
+     * @return the access-point information, or {@code null} if not reported
+     */
     public @Nullable AccessPoint getAp() {
         return ap;
     }
 
+    /**
+     * Returns the WLAN station information.
+     *
+     * @return the WLAN station information, or {@code null} if not reported
+     */
     public @Nullable WifiStation getStation() {
         return station;
     }

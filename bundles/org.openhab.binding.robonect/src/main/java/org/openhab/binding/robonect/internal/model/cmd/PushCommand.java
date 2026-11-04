@@ -10,13 +10,25 @@ public class PushCommand implements Command {
     private String parameter;
     private String value;
 
-    /** Sets a push-service property. */
+    /**
+     * Sets a push-service property.
+     *
+     * @param parameter property name
+     * @param value property value
+     * @return this command
+     */
     public PushCommand withValue(String parameter, String value) {
         this.parameter = parameter;
         this.value = value;
         return this;
     }
 
+    /**
+     * Builds the push service URL for this {@link Command}.
+     *
+     * @param baseUrl base URL to which the command parameters are appended
+     * @return the complete request URL
+     */
     @Override
     public String toCommandURL(String baseUrl) {
         if (parameter == null || value == null) {

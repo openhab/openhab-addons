@@ -26,6 +26,15 @@ import com.google.gson.JsonParseException;
  */
 public class MowerModeDeserializer implements JsonDeserializer<MowerMode> {
 
+    /**
+     * Converts a numeric JSON mode to the corresponding {@link MowerMode}.
+     *
+     * @param jsonElement the JSON element containing the numeric mode
+     * @param type the requested target type supplied by Gson
+     * @param jsonDeserializationContext the deserialization context supplied by Gson
+     * @return the mode resolved by {@link MowerMode#fromMode(int)}
+     * @throws JsonParseException if Gson cannot deserialize the value
+     */
     @Override
     public MowerMode deserialize(JsonElement jsonElement, Type type,
             JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {

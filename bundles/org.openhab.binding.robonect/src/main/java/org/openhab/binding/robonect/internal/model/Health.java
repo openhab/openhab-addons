@@ -25,14 +25,18 @@ public class Health {
     private int humidity;
 
     /**
-     * @return - the temperature in °C measured in the mower.
+     * Returns the temperature in °C measured in the mower.
+     *
+     * @return the temperature in °C measured in the mower.
      */
     public int getTemperature() {
         return temperature;
     }
 
     /**
-     * @return - the humidity in % measured in the mower.
+     * Returns the humidity in % measured in the mower.
+     *
+     * @return the humidity in % measured in the mower.
      */
     public int getHumidity() {
         return humidity;

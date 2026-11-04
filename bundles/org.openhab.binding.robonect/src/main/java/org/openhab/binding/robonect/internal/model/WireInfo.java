@@ -26,6 +26,11 @@ import org.eclipse.jdt.annotation.Nullable;
 public class WireInfo extends RobonectAnswer {
     private @Nullable List<Sensor> sensors;
 
+    /**
+     * Returns the boundary-wire sensor readings.
+     *
+     * @return the boundary-wire sensor readings, or {@code null} if not reported
+     */
     public @Nullable List<Sensor> getSensors() {
         return sensors;
     }

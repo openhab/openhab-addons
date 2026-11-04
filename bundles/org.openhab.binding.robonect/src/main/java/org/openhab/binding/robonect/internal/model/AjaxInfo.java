@@ -33,6 +33,11 @@ public class AjaxInfo {
         return tmnucontrol;
     }
 
+    /**
+     * Sets the localized control-menu text.
+     *
+     * @param controlMenuText the localized control-menu text
+     */
     public void setControlMenuText(@Nullable String controlMenuText) {
         tmnucontrol = controlMenuText;
     }
@@ -46,6 +51,11 @@ public class AjaxInfo {
         return tmnutimer;
     }
 
+    /**
+     * Sets the localized timer-menu text.
+     *
+     * @param timerMenuText the localized timer-menu text
+     */
     public void setTimerMenuText(@Nullable String timerMenuText) {
         tmnutimer = timerMenuText;
     }

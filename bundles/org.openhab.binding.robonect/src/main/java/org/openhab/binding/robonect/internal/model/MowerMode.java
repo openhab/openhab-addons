@@ -49,15 +49,20 @@ public enum MowerMode {
 
     private int code;
 
+    /**
+     * Creates a mode associated with a Robonect numeric code.
+     *
+     * @param code the mode code
+     */
     MowerMode(int code) {
         this.code = code;
     }
 
     /**
-     * Translate the numeric mode from the JSON response into enum values.
+     * Translates a numeric mode from the JSON response into an enum value.
      * 
-     * @param mode - the numeric value of the mode.
-     * @return - the enum value of the mode.
+     * @param mode the numeric mode code
+     * @return the matching mode, or {@link #UNKNOWN} if the code is not recognized
      */
     public static MowerMode fromMode(int mode) {
         for (MowerMode mowerMode : MowerMode.values()) {
@@ -69,7 +74,9 @@ public enum MowerMode {
     }
 
     /**
-     * @return - The numeric code of the mode.
+     * Returns the numeric code of the mode.
+     *
+     * @return The numeric code of the mode.
      */
     public int getCode() {
         return code;

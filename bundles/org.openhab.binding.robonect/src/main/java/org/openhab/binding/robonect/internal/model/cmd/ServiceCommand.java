@@ -24,6 +24,11 @@ public class ServiceCommand implements Command {
 
         private final String parameter;
 
+        /**
+         * Creates a service operation with its request parameter.
+         *
+         * @param parameter service operation parameter
+         */
         Operation(String parameter) {
             this.parameter = parameter;
         }
@@ -31,10 +36,21 @@ public class ServiceCommand implements Command {
 
     private final Operation operation;
 
+    /**
+     * Creates a service command.
+     *
+     * @param operation the requested service operation
+     */
     public ServiceCommand(Operation operation) {
         this.operation = operation;
     }
 
+    /**
+     * Builds the service operation URL for this {@link Command}.
+     *
+     * @param baseUrl base URL to which the command parameters are appended
+     * @return the complete request URL
+     */
     @Override
     public String toCommandURL(String baseUrl) {
         return baseUrl + "?cmd=service&" + operation.parameter;

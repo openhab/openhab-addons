@@ -24,6 +24,8 @@ public class NextTimer {
     private String unix;
 
     /**
+     * Returns the date (dd.MM.yy) of the next timer execution.
+     *
      * @return - The date (dd.MM.yy) of the next timer execution.
      */
     public String getDate() {
@@ -31,27 +33,46 @@ public class NextTimer {
     }
 
     /**
-     * @return - the timestamp (HH:mm:ss) of the next timer execution
+     * Returns the timestamp ({@code HH:mm}:ss) of the next timer execution.
+     *
+     * @return - the timestamp ({@code HH:mm}:ss) of the next timer execution
      */
     public String getTime() {
         return time;
     }
 
     /**
+     * Returns the next timer execution in the form of a unix timestamp.
+     *
      * @return - the next timer execution in the form of a unix timestamp.
      */
     public String getUnix() {
         return unix;
     }
 
+    /**
+     * Sets the date.
+     *
+     * @param date the date
+     */
     public void setDate(String date) {
         this.date = date;
     }
 
+    /**
+     * Sets the time.
+     *
+     * @param time the time
+     */
     public void setTime(String time) {
         this.time = time;
     }
 
+    /**
+     * Sets the Unix timestamp.
+     *
+     * @param unix the Unix timestamp
+     */
     public void setUnix(String unix) {
         this.unix = unix;
     }

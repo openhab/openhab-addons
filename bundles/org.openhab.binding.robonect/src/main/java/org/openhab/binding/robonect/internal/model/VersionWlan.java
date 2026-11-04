@@ -27,10 +27,20 @@ public class VersionWlan {
     @SerializedName("sdk-version")
     private @Nullable String sdkVersion;
 
+    /**
+     * Returns the AT firmware version.
+     *
+     * @return the AT firmware version, or {@code null} if not reported
+     */
     public @Nullable String getAtVersion() {
         return atVersion;
     }
 
+    /**
+     * Returns the SDK version.
+     *
+     * @return the SDK version, or {@code null} if not reported
+     */
     public @Nullable String getSdkVersion() {
         return sdkVersion;
     }

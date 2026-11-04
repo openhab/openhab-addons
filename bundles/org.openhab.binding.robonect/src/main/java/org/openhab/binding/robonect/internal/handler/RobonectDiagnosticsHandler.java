@@ -24,6 +24,7 @@ import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.robonect.internal.RobonectDiagnosticsApi;
 import org.openhab.binding.robonect.internal.model.AccessPoint;
 import org.openhab.binding.robonect.internal.model.Address;
 import org.openhab.binding.robonect.internal.model.Battery;
@@ -61,6 +62,7 @@ import org.slf4j.LoggerFactory;
  * Handles telemetry and diagnostic API endpoints.
  *
  * @author Nico Brüttner - Initial contribution
+ * @author Nico Brüttner - Direct diagnostics API injection
  */
 @NonNullByDefault
 final class RobonectDiagnosticsHandler {
@@ -68,14 +70,22 @@ final class RobonectDiagnosticsHandler {
     private static final Pattern WIRE_CHANNEL_PATTERN = Pattern.compile("wire-sensor-\\d+-.+");
     private final Logger logger = LoggerFactory.getLogger(RobonectDiagnosticsHandler.class);
     private final RobonectHandler handler;
+    private final RobonectDiagnosticsApi diagnosticsApi;
 
-    RobonectDiagnosticsHandler(RobonectHandler handler) {
+    /**
+     * Creates a diagnostics component using the Thing handler for client access and state updates.
+     *
+     * @param handler the {@link RobonectHandler} providing state updates
+     * @param diagnosticsApi the diagnostic API for the current client
+     */
+    RobonectDiagnosticsHandler(RobonectHandler handler, RobonectDiagnosticsApi diagnosticsApi) {
         this.handler = handler;
+        this.diagnosticsApi = diagnosticsApi;
     }
 
     /** Updates non-sensitive WLAN and access-point state. */
     void refreshWlanInfo() {
-        WlanInfo info = handler.getRobonectClient().getWlanInfo();
+        WlanInfo info = diagnosticsApi.getWlanInfo();
         if (!info.isSuccessful()) {
             return;
         }
@@ -139,7 +149,7 @@ final class RobonectDiagnosticsHandler {
      * Updates detailed battery channels when the mower supports the battery endpoint.
      */
     void refreshBatteryInfo() {
-        BatteryInfo info = handler.getRobonectClient().getBatteryInfo();
+        BatteryInfo info = diagnosticsApi.getBatteryInfo();
         List<Battery> batteries = info.getBatteries();
         if (!info.isSuccessful() || batteries == null) {
             logger.debug("Could not retrieve detailed battery information: {}", info.getErrorMessage());
@@ -169,6 +179,12 @@ final class RobonectDiagnosticsHandler {
         }
     }
 
+    /**
+     * Publishes the available measurements for one battery.
+     *
+     * @param prefix the channel identifier prefix
+     * @param battery the battery information to publish
+     */
     private void updateBatteryState(String prefix, Battery battery) {
         Integer id = battery.getId();
         if (id != null) {
@@ -208,7 +224,7 @@ final class RobonectDiagnosticsHandler {
      * Updates motor channels when the mower supports the motor endpoint.
      */
     void refreshMotorInfo() {
-        MotorInfo info = handler.getRobonectClient().getMotorInfo();
+        MotorInfo info = diagnosticsApi.getMotorInfo();
         if (!info.isSuccessful()) {
             logger.debug("Could not retrieve motor information: {}", info.getErrorMessage());
             return;
@@ -241,7 +257,7 @@ final class RobonectDiagnosticsHandler {
      * Updates aggregate operating statistics when the mower supports the hour endpoint.
      */
     void refreshHourInfo() {
-        HourInfo info = handler.getRobonectClient().getHourInfo();
+        HourInfo info = diagnosticsApi.getHourInfo();
         if (!info.isSuccessful()) {
             logger.debug("Could not retrieve operating statistics: {}", info.getErrorMessage());
             return;
@@ -265,6 +281,12 @@ final class RobonectDiagnosticsHandler {
         updateRecentDurations(CHANNEL_STATISTICS_MOWING, info.getMowing());
     }
 
+    /**
+     * Publishes recent durations and their minimum, maximum, and average in minutes.
+     *
+     * @param channelId the channel identifier
+     * @param entries the duration entries, or {@code null} if not reported
+     */
     private void updateRecentDurations(String channelId, @Nullable List<HourInfo.DurationEntry> entries) {
         if (entries == null) {
             return;
@@ -295,7 +317,7 @@ final class RobonectDiagnosticsHandler {
      * Updates the boundary-wire sensor measurements exposed by the mower.
      */
     void refreshWireInfo() {
-        WireInfo info = handler.getRobonectClient().getWireInfo();
+        WireInfo info = diagnosticsApi.getWireInfo();
         List<Sensor> sensors = info.getSensors();
         if (!info.isSuccessful() || sensors == null) {
             logger.debug("Could not retrieve boundary-wire information: {}", info.getErrorMessage());
@@ -323,7 +345,7 @@ final class RobonectDiagnosticsHandler {
      * Updates remote portal status when supported by the module.
      */
     void refreshPortalInfo() {
-        PortalInfo info = handler.getRobonectClient().getPortalInfo();
+        PortalInfo info = diagnosticsApi.getPortalInfo();
         if (!info.isSuccessful()) {
             logger.debug("Could not retrieve portal information: {}", info.getErrorMessage());
             return;
@@ -342,6 +364,12 @@ final class RobonectDiagnosticsHandler {
         }
     }
 
+    /**
+     * Publishes the available measurements for one boundary-wire sensor.
+     *
+     * @param number the one-based wire sensor number
+     * @param sensor the wire sensor information to publish
+     */
     private void updateWireSensor(int number, Sensor sensor) {
         String prefix = "wire-sensor-" + number + "-";
         if (sensor.getDescription() != null)
@@ -366,6 +394,12 @@ final class RobonectDiagnosticsHandler {
             handler.setState(prefix + "g2", new DecimalType(g2));
     }
 
+    /**
+     * Publishes an operating duration in hours when one is reported.
+     *
+     * @param channel the identifier of the channel to update
+     * @param value the number of hours, or {@code null} if absent
+     */
     private void updateHours(String channel, @Nullable Integer value) {
         if (value != null) {
             handler.setState(channel, new QuantityType<>(value, Units.HOUR));
@@ -397,8 +431,9 @@ final class RobonectDiagnosticsHandler {
         }
     }
 
+    /** Reads mower version information and updates the Thing properties. */
     void refreshVersionInfo() {
-        VersionInfo info = handler.getRobonectClient().getVersionInfo();
+        VersionInfo info = diagnosticsApi.getVersionInfo();
         if (!handler.canPublishState()) {
             return;
         }
@@ -425,14 +460,26 @@ final class RobonectDiagnosticsHandler {
         }
     }
 
+    /**
+     * Returns the reported version value or the not-available marker when absent.
+     *
+     * @param value the value returned by the mower, or {@code null} if absent
+     * @return the supplied value, or {@link VersionInfo#NOT_AVAILABLE} when it is absent
+     */
     private String valueOrNotAvailable(@Nullable String value) {
         return value == null ? VersionInfo.NOT_AVAILABLE : value;
     }
 
+    /** Reads the mower error list and applies its most recent entry. */
     void refreshLastErrorInfo() {
-        applyLastErrorInfo(handler.getRobonectClient().errorList());
+        applyLastErrorInfo(diagnosticsApi.errorList());
     }
 
+    /**
+     * Applies a successful error list, clearing last-error channels if the list is absent or empty.
+     *
+     * @param errorList the response containing the error list
+     */
     private void applyLastErrorInfo(ErrorList errorList) {
         if (errorList.isSuccessful()) {
             List<ErrorEntry> errors = errorList.getErrors();
@@ -450,6 +497,11 @@ final class RobonectDiagnosticsHandler {
         }
     }
 
+    /**
+     * Publishes the fields present in the most recent error entry.
+     *
+     * @param error the error information to publish
+     */
     private void updateLastErrorChannels(ErrorEntry error) {
         if (error.getErrorMessage() != null) {
             handler.setState(CHANNEL_LAST_ERROR_MESSAGE, new StringType(error.getErrorMessage()));

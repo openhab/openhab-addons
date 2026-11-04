@@ -28,14 +28,29 @@ public class HourInfo extends RobonectAnswer {
     private @Nullable List<DurationEntry> seek;
     private @Nullable List<DurationEntry> mowing;
 
+    /**
+     * Returns the aggregate operating statistics.
+     *
+     * @return the aggregate operating statistics, or {@code null} if absent
+     */
     public @Nullable HourGeneral getGeneral() {
         return general;
     }
 
+    /**
+     * Returns the recent searching durations.
+     *
+     * @return the recent searching durations, or {@code null} if absent
+     */
     public @Nullable List<DurationEntry> getSeek() {
         return seek;
     }
 
+    /**
+     * Returns the recent mowing durations.
+     *
+     * @return the recent mowing durations, or {@code null} if absent
+     */
     public @Nullable List<DurationEntry> getMowing() {
         return mowing;
     }
@@ -43,6 +58,11 @@ public class HourInfo extends RobonectAnswer {
     public static class DurationEntry {
         private @Nullable Integer duration;
 
+        /**
+         * Returns the duration of the recorded activity.
+         *
+         * @return the duration of the recorded activity, or {@code null} if absent
+         */
         public @Nullable Integer getDuration() {
             return duration;
         }

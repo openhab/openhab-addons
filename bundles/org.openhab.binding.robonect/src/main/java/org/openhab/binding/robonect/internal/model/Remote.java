@@ -29,26 +29,56 @@ public class Remote {
     private @Nullable Integer distance;
     private @Nullable Boolean corridorcut;
 
+    /**
+     * Returns the remote-start point name.
+     *
+     * @return the remote-start point name, or {@code null} if not reported
+     */
     public @Nullable String getName() {
         return name;
     }
 
+    /**
+     * Reports whether the point is visible.
+     *
+     * @return whether the point is visible, or {@code null} if not reported
+     */
     public @Nullable Boolean getVisible() {
         return visible;
     }
 
+    /**
+     * Returns the remote-start path setting.
+     *
+     * @return the remote-start path setting, or {@code null} if not reported
+     */
     public @Nullable Integer getPath() {
         return path;
     }
 
+    /**
+     * Returns the point selection proportion in percent.
+     *
+     * @return the point selection proportion in percent, or {@code null} if not reported
+     */
     public @Nullable Integer getProportion() {
         return proportion;
     }
 
+    /**
+     * Returns the distance to the point in metres.
+     *
+     * @return the distance to the point in metres, or {@code null} if not reported
+     */
     public @Nullable Integer getDistance() {
         return distance;
     }
 
+    /**
+     * Reports whether corridor cutting is enabled.
+     *
+     * @return whether corridor cutting is enabled, or {@code null} if not reported
+     */
     public @Nullable Boolean getCorridorcut() {
         return corridorcut;
     }

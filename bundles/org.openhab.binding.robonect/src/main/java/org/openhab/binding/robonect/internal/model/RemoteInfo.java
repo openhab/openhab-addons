@@ -28,22 +28,47 @@ public class RemoteInfo extends RobonectAnswer {
     private @Nullable Remote remotestart_4;
     private @Nullable Remote remotestart_5;
 
+    /**
+     * Returns remote-start point 1.
+     *
+     * @return remote-start point 1, or {@code null} if not reported
+     */
     public @Nullable Remote getRemoteStart1() {
         return remotestart_1;
     }
 
+    /**
+     * Returns remote-start point 2.
+     *
+     * @return remote-start point 2, or {@code null} if not reported
+     */
     public @Nullable Remote getRemoteStart2() {
         return remotestart_2;
     }
 
+    /**
+     * Returns remote-start point 3.
+     *
+     * @return remote-start point 3, or {@code null} if not reported
+     */
     public @Nullable Remote getRemoteStart3() {
         return remotestart_3;
     }
 
+    /**
+     * Returns remote-start point 4.
+     *
+     * @return remote-start point 4, or {@code null} if not reported
+     */
     public @Nullable Remote getRemoteStart4() {
         return remotestart_4;
     }
 
+    /**
+     * Returns remote-start point 5.
+     *
+     * @return remote-start point 5, or {@code null} if not reported
+     */
     public @Nullable Remote getRemoteStart5() {
         return remotestart_5;
     }

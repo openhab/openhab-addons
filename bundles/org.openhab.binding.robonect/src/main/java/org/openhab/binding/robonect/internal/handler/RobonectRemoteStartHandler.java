@@ -19,6 +19,7 @@ import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.robonect.internal.RobonectRemoteStartApi;
 import org.openhab.binding.robonect.internal.model.Remote;
 import org.openhab.binding.robonect.internal.model.RemoteInfo;
 import org.openhab.core.library.types.DecimalType;
@@ -35,6 +36,7 @@ import org.slf4j.LoggerFactory;
  * Handles writes to the mower's remote-start API endpoints.
  *
  * @author Nico Brüttner - Initial contribution
+ * @author Nico Brüttner - Direct remote-start API injection
  */
 @NonNullByDefault
 final class RobonectRemoteStartHandler {
@@ -43,11 +45,25 @@ final class RobonectRemoteStartHandler {
             .compile("remote-([1-5])-(name|distance|proportion|visible|path|corridor-cut)");
     private final Logger logger = LoggerFactory.getLogger(RobonectRemoteStartHandler.class);
     private final RobonectHandler handler;
+    private final RobonectRemoteStartApi remoteStartApi;
 
-    RobonectRemoteStartHandler(RobonectHandler handler) {
+    /**
+     * Creates a remote-start component backed by the Thing handler.
+     *
+     * @param handler the {@link RobonectHandler} providing state updates
+     * @param remoteStartApi the remote-start API for the current client
+     */
+    RobonectRemoteStartHandler(RobonectHandler handler, RobonectRemoteStartApi remoteStartApi) {
         this.handler = handler;
+        this.remoteStartApi = remoteStartApi;
     }
 
+    /**
+     * Validates and writes a remote-start setting using the appropriate API.
+     *
+     * @param channelId the channel identifier
+     * @param command the command received for the channel
+     */
     void handleCommand(String channelId, Command command) {
         Matcher matcher = REMOTE_CHANNEL_PATTERN.matcher(channelId);
         if (!matcher.matches()) {
@@ -62,13 +78,23 @@ final class RobonectRemoteStartHandler {
         String name = null;
         Integer distance = null;
         Integer proportion = null;
-        if (setting.equals("name") && command instanceof StringType string) {
+        if (setting.equals("name")) {
+            if (!(command instanceof StringType string)) {
+                logger.debug("Ignoring remote start name command of type {}; StringType is expected.",
+                        command.getClass().getName());
+                return;
+            }
             name = string.toString();
             if (name.length() > 16) {
                 logger.warn("Remote start {} name exceeds 16 characters; truncating it", remoteStart);
                 name = name.substring(0, 16);
             }
-        } else if ((setting.equals("distance") || setting.equals("proportion")) && command instanceof Number num) {
+        } else if (setting.equals("distance") || setting.equals("proportion")) {
+            if (!(command instanceof Number num)) {
+                logger.debug("Ignoring remote start {} command of type {}; Number is expected.", setting,
+                        command.getClass().getName());
+                return;
+            }
             try {
                 if (setting.equals("distance")) {
                     int value = num instanceof QuantityType<?> quantity ? quantity.toUnit(SIUnits.METRE).intValue()
@@ -91,29 +117,40 @@ final class RobonectRemoteStartHandler {
                 logger.warn("Ignoring non-integer remote start {} value", setting);
                 return;
             }
-        } else {
-            return;
         }
         handler.cancelCommandRefresh("remote");
-        RemoteInfo result = handler.getRobonectClient().updateRemoteStart(remoteStart, name, distance, proportion);
+        RemoteInfo result = remoteStartApi.updateRemoteStart(remoteStart, name, distance, proportion);
         if (result.isSuccessful()) {
             applyRemoteInfo(result);
             handler.scheduleCommandRefresh("remote", this::refreshRemoteInfo);
         }
     }
 
+    /**
+     * Reads existing remote-start settings before writing a web-interface-only setting.
+     *
+     * @param remoteStart the remote-start point number
+     * @param setting the remote-start setting to update
+     * @param command the command received for the channel
+     */
     private void updateViaWebInterface(int remoteStart, String setting, Command command) {
+        if ((setting.equals("visible") || setting.equals("corridor-cut")) && !(command instanceof OnOffType)) {
+            logger.debug("Ignoring remote start {} command of type {}; OnOffType is expected.", setting,
+                    command.getClass().getName());
+            return;
+        }
+        if (setting.equals("path") && !(command instanceof DecimalType)) {
+            logger.debug("Ignoring remote start path command of type {}; DecimalType is expected.",
+                    command.getClass().getName());
+            return;
+        }
         if (!handler.isUnofficialApiEnabled()) {
             logger.warn("Cannot update remote start {} {} because the unofficial API is disabled", remoteStart,
                     setting);
             return;
         }
-        if ((setting.equals("visible") || setting.equals("corridor-cut")) && !(command instanceof OnOffType)
-                || setting.equals("path") && !(command instanceof DecimalType)) {
-            return;
-        }
 
-        RemoteInfo info = handler.getRobonectClient().getRemoteInfo();
+        RemoteInfo info = remoteStartApi.getRemoteInfo();
         Remote remote = switch (remoteStart) {
             case 1 -> info.getRemoteStart1();
             case 2 -> info.getRemoteStart2();
@@ -158,15 +195,21 @@ final class RobonectRemoteStartHandler {
             }
         }
         handler.cancelCommandRefresh("remote");
-        handler.getRobonectClient().updateRemoteStartViaWebInterface(remoteStart, name, proportion, distance, path,
-                visible, corridorCut);
+        remoteStartApi.updateRemoteStartViaWebInterface(remoteStart, name, proportion, distance, path, visible,
+                corridorCut);
         handler.scheduleCommandRefresh("remote", this::refreshRemoteInfo);
     }
 
+    /** Reads and applies the mower remote-start configurations. */
     void refreshRemoteInfo() {
-        applyRemoteInfo(handler.getRobonectClient().getRemoteInfo());
+        applyRemoteInfo(remoteStartApi.getRemoteInfo());
     }
 
+    /**
+     * Publishes available remote-start configurations from a successful response.
+     *
+     * @param info the remote-start response to apply
+     */
     void applyRemoteInfo(RemoteInfo info) {
         if (!info.isSuccessful()) {
             logger.debug("Could not retrieve remote-start information: {}", info.getErrorMessage());
@@ -179,6 +222,12 @@ final class RobonectRemoteStartHandler {
         updateRemoteStart(5, info.getRemoteStart5());
     }
 
+    /**
+     * Publishes the available settings for one remote-start point.
+     *
+     * @param number the remote-start point number
+     * @param remote the remote-start configuration, or {@code null} if absent
+     */
     private void updateRemoteStart(int number, @Nullable Remote remote) {
         if (remote == null) {
             return;

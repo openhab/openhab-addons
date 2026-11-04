@@ -29,10 +29,20 @@ public class Host {
     @SerializedName("default")
     private @Nullable String defaultHost;
 
+    /**
+     * Returns the friendly host name.
+     *
+     * @return the friendly host name, or {@code null} if absent
+     */
     public @Nullable String getFriendly() {
         return friendly;
     }
 
+    /**
+     * Returns the default host name.
+     *
+     * @return the default host name, or {@code null} if absent
+     */
     public @Nullable String getDefault() {
         return defaultHost;
     }

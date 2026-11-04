@@ -26,14 +26,29 @@ public class DriveMotor {
     private @Nullable Integer speed;
     private @Nullable Integer current;
 
+    /**
+     * Returns the drive motor power as a percentage.
+     *
+     * @return the drive motor power as a percentage, or {@code null} if absent
+     */
     public @Nullable Integer getPower() {
         return power;
     }
 
+    /**
+     * Returns the drive motor speed in centimetres per second.
+     *
+     * @return the drive motor speed in centimetres per second, or {@code null} if absent
+     */
     public @Nullable Integer getSpeed() {
         return speed;
     }
 
+    /**
+     * Returns the drive motor current in milliamperes.
+     *
+     * @return the drive motor current in milliamperes, or {@code null} if absent
+     */
     public @Nullable Integer getCurrent() {
         return current;
     }

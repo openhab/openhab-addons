@@ -12,6 +12,13 @@ public class TimerCommand implements Command {
     private String parameter;
     private String value;
 
+    /**
+     * Selects the timer for this command.
+     *
+     * @param timer non-negative timer number
+     * @return this command
+     * @throws IllegalArgumentException if the timer number is negative
+     */
     public TimerCommand withTimer(int timer) {
         if (timer < 0)
             throw new IllegalArgumentException("Timer must be greater than 0");
@@ -19,12 +26,25 @@ public class TimerCommand implements Command {
         return this;
     }
 
+    /**
+     * Sets a timer parameter and its value.
+     *
+     * @param parameter timer parameter name
+     * @param value parameter value
+     * @return this command
+     */
     public TimerCommand withValue(String parameter, String value) {
         this.parameter = parameter;
         this.value = value;
         return this;
     }
 
+    /**
+     * Builds the timer configuration URL for this {@link Command}.
+     *
+     * @param baseURL base URL to which the command parameters are appended
+     * @return the complete request URL
+     */
     @Override
     public String toCommandURL(String baseURL) {
         String result = baseURL + "?cmd=timer";

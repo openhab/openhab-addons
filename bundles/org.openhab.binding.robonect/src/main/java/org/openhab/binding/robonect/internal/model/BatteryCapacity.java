@@ -26,10 +26,20 @@ public class BatteryCapacity {
     private @Nullable Integer full;
     private @Nullable Integer remaining;
 
+    /**
+     * Returns the full battery capacity in milliampere-hours.
+     *
+     * @return the full battery capacity in milliampere-hours, or {@code null} if absent
+     */
     public @Nullable Integer getFull() {
         return full;
     }
 
+    /**
+     * Returns the remaining battery capacity in milliampere-hours.
+     *
+     * @return the remaining battery capacity in milliampere-hours, or {@code null} if absent
+     */
     public @Nullable Integer getRemaining() {
         return remaining;
     }

@@ -24,7 +24,9 @@ public class ErrorList extends RobonectAnswer {
     private List<ErrorEntry> errors;
 
     /**
-     * @return - the list of errors.
+     * Returns the list of errors.
+     *
+     * @return the list of errors.
      */
     public List<ErrorEntry> getErrors() {
         return errors;

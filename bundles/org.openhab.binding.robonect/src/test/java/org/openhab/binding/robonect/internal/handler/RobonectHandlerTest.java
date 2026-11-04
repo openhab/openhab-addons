@@ -51,6 +51,12 @@ import org.mockito.quality.Strictness;
 import org.openhab.binding.robonect.internal.RobonectBindingConstants;
 import org.openhab.binding.robonect.internal.RobonectClient;
 import org.openhab.binding.robonect.internal.RobonectCommunicationException;
+import org.openhab.binding.robonect.internal.RobonectDiagnosticsApi;
+import org.openhab.binding.robonect.internal.RobonectMowerApi;
+import org.openhab.binding.robonect.internal.RobonectPushApi;
+import org.openhab.binding.robonect.internal.RobonectRemoteStartApi;
+import org.openhab.binding.robonect.internal.RobonectTimerApi;
+import org.openhab.binding.robonect.internal.RobonectWeatherApi;
 import org.openhab.binding.robonect.internal.model.AjaxInfo;
 import org.openhab.binding.robonect.internal.model.BatteryInfo;
 import org.openhab.binding.robonect.internal.model.DoorInfo;
@@ -124,6 +130,12 @@ public class RobonectHandlerTest {
 
     private @Mock Thing robonectThingMock;
     private @Mock RobonectClient robonectClientMock;
+    private @Mock RobonectMowerApi mowerApiMock;
+    private @Mock RobonectDiagnosticsApi diagnosticsApiMock;
+    private @Mock RobonectPushApi pushApiMock;
+    private @Mock RobonectRemoteStartApi remoteStartApiMock;
+    private @Mock RobonectTimerApi timerApiMock;
+    private @Mock RobonectWeatherApi weatherApiMock;
     private @Mock ThingHandlerCallback callbackMock;
     private @Mock HttpClientFactory httpClientFactoryMock;
     private @Mock TimeZoneProvider timeZoneProvider;
@@ -135,6 +147,12 @@ public class RobonectHandlerTest {
 
     @BeforeEach
     public void setUp() {
+        when(robonectClientMock.mower()).thenReturn(mowerApiMock);
+        when(robonectClientMock.diagnostics()).thenReturn(diagnosticsApiMock);
+        when(robonectClientMock.push()).thenReturn(pushApiMock);
+        when(robonectClientMock.remoteStart()).thenReturn(remoteStartApiMock);
+        when(robonectClientMock.timer()).thenReturn(timerApiMock);
+        when(robonectClientMock.weather()).thenReturn(weatherApiMock);
         Mockito.when(robonectThingMock.getUID()).thenReturn(new ThingUID("1:2:3"));
         Mockito.when(timeZoneProvider.getTimeZone()).thenReturn(TIME_ZONE);
         when(httpClientFactoryMock.createHttpClient(anyString())).thenReturn(httpClient);
@@ -161,27 +179,29 @@ public class RobonectHandlerTest {
                 eq(TimeUnit.SECONDS));
 
         pollers.getFirst().run();
-        verify(robonectClientMock).getVersionInfo();
-        verify(robonectClientMock).getMowerInfo();
-        verify(robonectClientMock).getWlanInfo();
-        verify(robonectClientMock, never()).getBatteryInfo();
-        clearInvocations(robonectClientMock);
+        verify(diagnosticsApiMock).getVersionInfo();
+        verify(mowerApiMock).getMowerInfo();
+        verify(diagnosticsApiMock).getWlanInfo();
+        verify(diagnosticsApiMock, never()).getBatteryInfo();
+        clearInvocations(mowerApiMock, diagnosticsApiMock, pushApiMock, remoteStartApiMock, timerApiMock,
+                weatherApiMock);
 
         pollers.getLast().run();
-        verify(robonectClientMock, times(unofficialApi ? 1 : 0)).getPushModeViaWebInterface();
-        verify(robonectClientMock).getBatteryInfo();
-        verify(robonectClientMock).getMotorInfo();
-        verify(robonectClientMock).getHourInfo();
-        verify(robonectClientMock).getRemoteInfo();
-        verify(robonectClientMock).getWireInfo();
-        verify(robonectClientMock).getPortalInfo();
-        verify(robonectClientMock).getTimersInfo();
-        verify(robonectClientMock).getWeatherInfo();
-        verify(robonectClientMock, times(unofficialApi ? 1 : 0)).getWeatherIntervalViaWebInterface();
-        verify(robonectClientMock).getExtInfo();
-        verify(robonectClientMock).getPushInfo();
-        verify(robonectClientMock).getDoorInfo();
-        verifyNoMoreInteractions(robonectClientMock);
+        verify(pushApiMock, times(unofficialApi ? 1 : 0)).getPushModeViaWebInterface();
+        verify(diagnosticsApiMock).getBatteryInfo();
+        verify(diagnosticsApiMock).getMotorInfo();
+        verify(diagnosticsApiMock).getHourInfo();
+        verify(remoteStartApiMock).getRemoteInfo();
+        verify(diagnosticsApiMock).getWireInfo();
+        verify(diagnosticsApiMock).getPortalInfo();
+        verify(timerApiMock).getTimersInfo();
+        verify(weatherApiMock).getWeatherInfo();
+        verify(weatherApiMock, times(unofficialApi ? 1 : 0)).getWeatherIntervalViaWebInterface();
+        verify(pushApiMock).getExtInfo();
+        verify(pushApiMock).getPushInfo();
+        verify(mowerApiMock).getDoorInfo();
+        verifyNoMoreInteractions(mowerApiMock, diagnosticsApiMock, pushApiMock, remoteStartApiMock, timerApiMock,
+                weatherApiMock);
     }
 
     @Test
@@ -196,17 +216,17 @@ public class RobonectHandlerTest {
         Runnable poller = initializePolling(Map.of()).getFirst();
         poller.run();
         poller.run();
-        verify(robonectClientMock).getVersionInfo();
-        verify(robonectClientMock, times(2)).getMowerInfo();
-        verify(robonectClientMock, times(2)).getWlanInfo();
+        verify(diagnosticsApiMock).getVersionInfo();
+        verify(mowerApiMock, times(2)).getMowerInfo();
+        verify(diagnosticsApiMock, times(2)).getWlanInfo();
 
-        when(robonectClientMock.getMowerInfo()).thenThrow(new RobonectCommunicationException("Unavailable"))
+        when(mowerApiMock.getMowerInfo()).thenThrow(new RobonectCommunicationException("Unavailable"))
                 .thenReturn(createSuccessfulMowerInfoResponse());
         poller.run();
         poller.run();
-        verify(robonectClientMock, times(2)).getVersionInfo();
-        verify(robonectClientMock, times(4)).getMowerInfo();
-        verify(robonectClientMock, times(3)).getWlanInfo();
+        verify(diagnosticsApiMock, times(2)).getVersionInfo();
+        verify(mowerApiMock, times(4)).getMowerInfo();
+        verify(diagnosticsApiMock, times(3)).getWlanInfo();
     }
 
     @Test
@@ -215,7 +235,8 @@ public class RobonectHandlerTest {
         assertEquals(1, pollers.size());
         verify(commandScheduler, times(1)).scheduleWithFixedDelay(any(Runnable.class), eq(0L), anyLong(),
                 eq(TimeUnit.SECONDS));
-        verifyNoInteractions(robonectClientMock);
+        verifyNoInteractions(mowerApiMock, diagnosticsApiMock, pushApiMock, remoteStartApiMock, timerApiMock,
+                weatherApiMock);
     }
 
     @Test
@@ -226,7 +247,8 @@ public class RobonectHandlerTest {
         verify(detailedPollingJob).cancel(true);
         clearInvocations(callbackMock);
         pollers.forEach(Runnable::run);
-        verifyNoInteractions(robonectClientMock, callbackMock);
+        verifyNoInteractions(mowerApiMock, diagnosticsApiMock, pushApiMock, remoteStartApiMock, timerApiMock,
+                weatherApiMock, callbackMock);
     }
 
     @Test
@@ -241,7 +263,8 @@ public class RobonectHandlerTest {
         verify(commandScheduler).scheduleWithFixedDelay(any(Runnable.class), eq(0L), eq(91L), eq(TimeUnit.SECONDS));
         clearInvocations(callbackMock);
         pollers.forEach(Runnable::run);
-        verifyNoInteractions(robonectClientMock, callbackMock);
+        verifyNoInteractions(mowerApiMock, diagnosticsApiMock, pushApiMock, remoteStartApiMock, timerApiMock,
+                weatherApiMock, callbackMock);
     }
 
     @ParameterizedTest
@@ -262,13 +285,14 @@ public class RobonectHandlerTest {
                 eq(61L), eq(TimeUnit.SECONDS));
         clearInvocations(callbackMock);
         pollers.forEach(Runnable::run);
-        verifyNoInteractions(robonectClientMock, callbackMock);
+        verifyNoInteractions(mowerApiMock, diagnosticsApiMock, pushApiMock, remoteStartApiMock, timerApiMock,
+                weatherApiMock, callbackMock);
 
         if (!initiallyEnabled) {
             var tasks = ArgumentCaptor.forClass(Runnable.class);
             verify(commandScheduler).scheduleWithFixedDelay(tasks.capture(), eq(0L), eq(61L), eq(TimeUnit.SECONDS));
             tasks.getValue().run();
-            verify(robonectClientMock).getBatteryInfo();
+            verify(diagnosticsApiMock).getBatteryInfo();
         }
     }
 
@@ -278,36 +302,37 @@ public class RobonectHandlerTest {
         List<Runnable> pollers = initializePolling(Map.of("detailedPollInterval", 61));
         RuntimeException failure = malformedJson ? new JsonSyntaxException("Malformed response")
                 : new RobonectCommunicationException("Unavailable");
-        when(robonectClientMock.getMowerInfo()).thenThrow(failure).thenReturn(createSuccessfulMowerInfoResponse());
+        when(mowerApiMock.getMowerInfo()).thenThrow(failure).thenReturn(createSuccessfulMowerInfoResponse());
         pollers.getFirst().run();
         pollers.getLast().run();
         pollers.getFirst().run();
-        verify(robonectClientMock, times(2)).getMowerInfo();
-        verify(robonectClientMock).getBatteryInfo();
+        verify(mowerApiMock, times(2)).getMowerInfo();
+        verify(diagnosticsApiMock).getBatteryInfo();
         verify(callbackMock, atLeastOnce()).statusUpdated(eq(subject.getThing()),
                 argThat(status -> status.getStatus() == ThingStatus.ONLINE));
         if (!malformedJson) {
             verify(callbackMock).statusUpdated(eq(subject.getThing()),
                     argThat(status -> status.getStatus() == ThingStatus.OFFLINE));
-            verify(robonectClientMock, times(2)).getVersionInfo();
+            verify(diagnosticsApiMock, times(2)).getVersionInfo();
         }
     }
 
     @Test
     public void shouldStopDetailedPollingAndDiscardResponseAfterReinitialization() {
         List<Runnable> pollers = initializePolling(Map.of("detailedPollInterval", 61));
-        BatteryInfo result = new ModelParser().parse("""
+        BatteryInfo result = ModelParser.parse("""
                 {"successful":true,"batteries":[{"charge":65}]}
                 """, BatteryInfo.class);
-        when(robonectClientMock.getBatteryInfo()).thenAnswer(invocation -> {
+        when(diagnosticsApiMock.getBatteryInfo()).thenAnswer(invocation -> {
             subject.initialize();
             subject.setRobonectClient(robonectClientMock);
             clearInvocations(callbackMock);
             return result;
         });
         pollers.getLast().run();
-        verify(robonectClientMock).getBatteryInfo();
-        verifyNoMoreInteractions(robonectClientMock);
+        verify(diagnosticsApiMock).getBatteryInfo();
+        verifyNoMoreInteractions(mowerApiMock, diagnosticsApiMock, pushApiMock, remoteStartApiMock, timerApiMock,
+                weatherApiMock);
         verifyNoInteractions(callbackMock);
     }
 
@@ -321,7 +346,7 @@ public class RobonectHandlerTest {
         CountDownLatch statusEntered = new CountDownLatch(1);
         CountDownLatch releaseStatus = new CountDownLatch(1);
         AtomicReference<Thread> detailedThread = new AtomicReference<>();
-        when(robonectClientMock.getMowerInfo()).thenAnswer(invocation -> {
+        when(mowerApiMock.getMowerInfo()).thenAnswer(invocation -> {
             statusEntered.countDown();
             assertTrue(releaseStatus.await(10, TimeUnit.SECONDS));
             return createSuccessfulMowerInfoResponse();
@@ -347,7 +372,7 @@ public class RobonectHandlerTest {
                     LockSupport.parkNanos(TimeUnit.MILLISECONDS.toNanos(1));
                 }
             });
-            verify(robonectClientMock, never()).getBatteryInfo();
+            verify(diagnosticsApiMock, never()).getBatteryInfo();
             if (dispose) {
                 subject.dispose();
                 clearInvocations(callbackMock);
@@ -360,16 +385,16 @@ public class RobonectHandlerTest {
             detailed.get(10, TimeUnit.SECONDS);
             if (dispose) {
                 verifyNoInteractions(callbackMock);
-                verify(robonectClientMock, never()).getWlanInfo();
-                verify(robonectClientMock, never()).getBatteryInfo();
+                verify(diagnosticsApiMock, never()).getWlanInfo();
+                verify(diagnosticsApiMock, never()).getBatteryInfo();
             } else if (interrupt) {
-                verify(robonectClientMock).getWlanInfo();
-                verify(robonectClientMock, never()).getBatteryInfo();
+                verify(diagnosticsApiMock).getWlanInfo();
+                verify(diagnosticsApiMock, never()).getBatteryInfo();
             } else {
-                var order = inOrder(robonectClientMock);
-                order.verify(robonectClientMock).getMowerInfo();
-                order.verify(robonectClientMock).getWlanInfo();
-                order.verify(robonectClientMock).getBatteryInfo();
+                var order = inOrder(mowerApiMock, diagnosticsApiMock);
+                order.verify(mowerApiMock).getMowerInfo();
+                order.verify(diagnosticsApiMock).getWlanInfo();
+                order.verify(diagnosticsApiMock).getBatteryInfo();
             }
         } finally {
             releaseStatus.countDown();
@@ -392,26 +417,30 @@ public class RobonectHandlerTest {
                 .scheduleWithFixedDelay(any(Runnable.class), eq(0L), anyLong(), eq(TimeUnit.SECONDS));
         subject.initialize();
         subject.setRobonectClient(robonectClientMock);
-        when(robonectClientMock.getVersionInfo()).thenReturn(new VersionInfo());
-        when(robonectClientMock.getMowerInfo()).thenReturn(createSuccessfulMowerInfoResponse());
-        ModelParser parser = new ModelParser();
-        when(robonectClientMock.getWlanInfo()).thenReturn(parser.parse("{\"successful\":true}", WlanInfo.class));
-        when(robonectClientMock.getBatteryInfo()).thenReturn(parser.parse("{\"successful\":true}", BatteryInfo.class));
-        when(robonectClientMock.getMotorInfo()).thenReturn(parser.parse("{\"successful\":true}", MotorInfo.class));
-        when(robonectClientMock.getHourInfo()).thenReturn(parser.parse("{\"successful\":true}", HourInfo.class));
-        when(robonectClientMock.getRemoteInfo()).thenReturn(parser.parse("{\"successful\":true}", RemoteInfo.class));
-        when(robonectClientMock.getWireInfo()).thenReturn(parser.parse("{\"successful\":true}", WireInfo.class));
-        when(robonectClientMock.getPortalInfo()).thenReturn(parser.parse("{\"successful\":true}", PortalInfo.class));
-        when(robonectClientMock.getTimersInfo()).thenReturn(parser.parse("{\"successful\":true}", TimersInfo.class));
-        when(robonectClientMock.getWeatherInfo())
-                .thenReturn(parser.parse("{\"successful\":true,\"service\":{}}", WeatherInfo.class));
-        when(robonectClientMock.getExtInfo()).thenReturn(parser.parse("{\"successful\":true}", ExtInfo.class));
-        when(robonectClientMock.getPushInfo()).thenReturn(parser.parse("{\"successful\":true}", PushInfo.class));
-        when(robonectClientMock.getDoorInfo()).thenReturn(parser.parse("{\"successful\":true}", DoorInfo.class));
+        when(diagnosticsApiMock.getVersionInfo()).thenReturn(new VersionInfo());
+        when(mowerApiMock.getMowerInfo()).thenReturn(createSuccessfulMowerInfoResponse());
+
+        when(diagnosticsApiMock.getWlanInfo()).thenReturn(ModelParser.parse("{\"successful\":true}", WlanInfo.class));
+        when(diagnosticsApiMock.getBatteryInfo())
+                .thenReturn(ModelParser.parse("{\"successful\":true}", BatteryInfo.class));
+        when(diagnosticsApiMock.getMotorInfo()).thenReturn(ModelParser.parse("{\"successful\":true}", MotorInfo.class));
+        when(diagnosticsApiMock.getHourInfo()).thenReturn(ModelParser.parse("{\"successful\":true}", HourInfo.class));
+        when(remoteStartApiMock.getRemoteInfo())
+                .thenReturn(ModelParser.parse("{\"successful\":true}", RemoteInfo.class));
+        when(diagnosticsApiMock.getWireInfo()).thenReturn(ModelParser.parse("{\"successful\":true}", WireInfo.class));
+        when(diagnosticsApiMock.getPortalInfo())
+                .thenReturn(ModelParser.parse("{\"successful\":true}", PortalInfo.class));
+        when(timerApiMock.getTimersInfo()).thenReturn(ModelParser.parse("{\"successful\":true}", TimersInfo.class));
+        when(weatherApiMock.getWeatherInfo())
+                .thenReturn(ModelParser.parse("{\"successful\":true,\"service\":{}}", WeatherInfo.class));
+        when(pushApiMock.getExtInfo()).thenReturn(ModelParser.parse("{\"successful\":true}", ExtInfo.class));
+        when(pushApiMock.getPushInfo()).thenReturn(ModelParser.parse("{\"successful\":true}", PushInfo.class));
+        when(mowerApiMock.getDoorInfo()).thenReturn(ModelParser.parse("{\"successful\":true}", DoorInfo.class));
         var tasks = ArgumentCaptor.forClass(Runnable.class);
         verify(commandScheduler, atLeastOnce()).scheduleWithFixedDelay(tasks.capture(), eq(0L), anyLong(),
                 eq(TimeUnit.SECONDS));
-        clearInvocations(robonectClientMock, callbackMock);
+        clearInvocations(mowerApiMock, diagnosticsApiMock, pushApiMock, remoteStartApiMock, timerApiMock,
+                weatherApiMock, callbackMock);
         return tasks.getAllValues();
     }
 
@@ -421,8 +450,8 @@ public class RobonectHandlerTest {
         subject = new RobonectHandler(thing, httpClientFactoryMock, timeZoneProvider, null, commandScheduler);
         subject.setCallback(callbackMock);
         subject.setRobonectClient(robonectClientMock);
-        ModelParser parser = new ModelParser();
-        when(robonectClientMock.getWireInfo()).thenReturn(parser.parse("""
+
+        when(diagnosticsApiMock.getWireInfo()).thenReturn(ModelParser.parse("""
                 {"successful":true,"sensors":[{"description":"Left","quality":70,"g2":0},
                 {"description":"Right","quality":80,"g2":-25},{"description":"Rear","quality":90},
                 {"description":"Extra","quality":60},{"description":"Fifth","quality":50,"g2":50}]}
@@ -439,7 +468,7 @@ public class RobonectHandlerTest {
         verify(callbackMock).stateUpdated(new ChannelUID(thing.getUID(), "wire-sensor-5-g2"), new DecimalType(50));
         verify(callbackMock, never()).stateUpdated(eq(new ChannelUID(thing.getUID(), "wire-sensor-3-g2")), any());
 
-        when(robonectClientMock.getBatteryInfo()).thenReturn(parser.parse("""
+        when(diagnosticsApiMock.getBatteryInfo()).thenReturn(ModelParser.parse("""
                 {"successful":true,"batteries":[{"id":0,"charge":70},{"id":1,"charge":80}]}
                 """, BatteryInfo.class));
         subject.handleCommand(new ChannelUID(thing.getUID(), "battery-1-charge"), RefreshType.REFRESH);
@@ -453,7 +482,7 @@ public class RobonectHandlerTest {
         verify(callbackMock).stateUpdated(new ChannelUID(thing.getUID(), "battery-2-charge"),
                 new QuantityType<>(80, Units.PERCENT));
 
-        when(robonectClientMock.getWireInfo()).thenReturn(parser.parse("""
+        when(diagnosticsApiMock.getWireInfo()).thenReturn(ModelParser.parse("""
                 {"successful":true,"sensors":[{"description":"Left","quality":70}]}
                 """, WireInfo.class));
         subject.handleCommand(new ChannelUID(thing.getUID(), "wire-sensor-1-label"), RefreshType.REFRESH);
@@ -463,7 +492,7 @@ public class RobonectHandlerTest {
         verify(callbackMock).stateUpdated(eq(new ChannelUID(thing.getUID(), "wire-sensor-1-g2")), any());
         assertNotNull(updated.getValue().getChannel("battery-2-charge"));
 
-        when(robonectClientMock.getBatteryInfo()).thenReturn(parser.parse("""
+        when(diagnosticsApiMock.getBatteryInfo()).thenReturn(ModelParser.parse("""
                 {"successful":true,"batteries":[]}
                 """, BatteryInfo.class));
         subject.handleCommand(new ChannelUID(thing.getUID(), "battery-1-charge"), RefreshType.REFRESH);
@@ -476,41 +505,41 @@ public class RobonectHandlerTest {
 
     @Test
     public void shouldPreserveOtherPushTriggerSettingWhenSendingCommand() {
-        PushInfo push = new ModelParser().parse("""
+        PushInfo push = ModelParser.parse("""
                 {"successful":true,"push":{"trigger":{"trigger12":
                 {"name":"Way home","enter":false,"leave":true}}}}
                 """, PushInfo.class);
-        when(robonectClientMock.getPushInfo()).thenReturn(push);
-        when(robonectClientMock.updatePush("trigger12", "3"))
-                .thenReturn(new ModelParser().parse("{\"successful\":false}", PushInfo.class));
+        when(pushApiMock.getPushInfo()).thenReturn(push);
+        when(pushApiMock.updatePush("trigger12", "3"))
+                .thenReturn(ModelParser.parse("{\"successful\":false}", PushInfo.class));
         subject.handleCommand(new ChannelUID(new ThingUID("1:2:3"), "push-trigger-12-way_home-enter"), OnOffType.ON);
-        verify(robonectClientMock).updatePush("trigger12", "3");
+        verify(pushApiMock).updatePush("trigger12", "3");
     }
 
     @Test
     public void shouldPreserveEnterSettingWhenSendingLeaveCommand() {
-        when(robonectClientMock.getPushInfo()).thenReturn(new ModelParser().parse("""
+        when(pushApiMock.getPushInfo()).thenReturn(ModelParser.parse("""
                 {"successful":true,"push":{"trigger":{"trigger12":
                 {"name":"Way home","enter":true,"leave":false}}}}
                 """, PushInfo.class));
-        when(robonectClientMock.updatePush("trigger12", "3"))
-                .thenReturn(new ModelParser().parse("{\"successful\":false}", PushInfo.class));
+        when(pushApiMock.updatePush("trigger12", "3"))
+                .thenReturn(ModelParser.parse("{\"successful\":false}", PushInfo.class));
         subject.handleCommand(new ChannelUID(new ThingUID("1:2:3"), "push-trigger-12-way_home-leave"), OnOffType.ON);
-        verify(robonectClientMock).updatePush("trigger12", "3");
+        verify(pushApiMock).updatePush("trigger12", "3");
     }
 
     @Test
     public void shouldUpdateAndTruncateRemoteStartName() {
         RemoteInfo response = new RemoteInfo();
         response.setSuccessful(true);
-        when(robonectClientMock.updateRemoteStart(eq(2), eq("1234567890123456"), isNull(Integer.class),
+        when(remoteStartApiMock.updateRemoteStart(eq(2), eq("1234567890123456"), isNull(Integer.class),
                 isNull(Integer.class))).thenReturn(response);
-        when(robonectClientMock.getRemoteInfo()).thenReturn(response);
+        when(remoteStartApiMock.getRemoteInfo()).thenReturn(response);
 
         subject.handleCommand(new ChannelUID(new ThingUID("1:2:3"), "remote-2-name"),
                 new StringType("12345678901234567890"));
 
-        verify(robonectClientMock).updateRemoteStart(eq(2), eq("1234567890123456"), isNull(Integer.class),
+        verify(remoteStartApiMock).updateRemoteStart(eq(2), eq("1234567890123456"), isNull(Integer.class),
                 isNull(Integer.class));
     }
 
@@ -519,7 +548,7 @@ public class RobonectHandlerTest {
         subject.handleCommand(new ChannelUID(new ThingUID("1:2:3"), "remote-2-distance"),
                 new QuantityType<>(301, org.openhab.core.library.unit.SIUnits.METRE));
 
-        verify(robonectClientMock, never()).updateRemoteStart(anyInt(), any(), any(), any());
+        verify(remoteStartApiMock, never()).updateRemoteStart(anyInt(), any(), any(), any());
     }
 
     @Test
@@ -535,7 +564,7 @@ public class RobonectHandlerTest {
         subject = new RobonectHandler(thing, httpClientFactoryMock, timeZoneProvider, null, commandScheduler);
         subject.setCallback(callbackMock);
         subject.setRobonectClient(robonectClientMock);
-        when(robonectClientMock.getPushInfo()).thenReturn(new ModelParser().parse("""
+        when(pushApiMock.getPushInfo()).thenReturn(ModelParser.parse("""
                 {"successful":true,"push":{"trigger":{
                 "trigger0":{"name":"Parked","enter":true,"leave":false}}}}
                 """, PushInfo.class));
@@ -562,7 +591,7 @@ public class RobonectHandlerTest {
         subject = new RobonectHandler(thing, httpClientFactoryMock, timeZoneProvider, null, commandScheduler);
         subject.setCallback(callbackMock);
         subject.setRobonectClient(robonectClientMock);
-        when(robonectClientMock.getPushInfo()).thenReturn(new ModelParser().parse("""
+        when(pushApiMock.getPushInfo()).thenReturn(ModelParser.parse("""
                 {"successful":true,"push":{"trigger":{"interval":30,
                 "trigger0":{"name":"Parked","enter":true,"leave":false},
                 "trigger12":{"name":"WAY Home","enter":false,"leave":true}}}}
@@ -579,12 +608,11 @@ public class RobonectHandlerTest {
         assertNull(updated.getValue().getChannel("push-trigger-12-enter"));
         verify(callbackMock).stateUpdated(new ChannelUID(uid, "push-trigger-12-way_home-leave"), OnOffType.ON);
 
-        when(robonectClientMock.getPushInfo())
-                .thenReturn(new ModelParser().parse("{\"successful\":false}", PushInfo.class));
+        when(pushApiMock.getPushInfo()).thenReturn(ModelParser.parse("{\"successful\":false}", PushInfo.class));
         subject.handleCommand(new ChannelUID(uid, "push-interval"), RefreshType.REFRESH);
         verify(callbackMock).thingUpdated(any());
 
-        when(robonectClientMock.getPushInfo()).thenReturn(new ModelParser().parse("""
+        when(pushApiMock.getPushInfo()).thenReturn(ModelParser.parse("""
                 {"successful":true,"push":{"trigger":{
                 "trigger12":{"name":"Mowing","enter":true,"leave":false}}}}
                 """, PushInfo.class));
@@ -592,10 +620,10 @@ public class RobonectHandlerTest {
         verify(callbackMock, times(2)).thingUpdated(updated.capture());
         assertNull(updated.getValue().getChannel("push-trigger-12-way_home-leave"));
         assertNotNull(updated.getValue().getChannel("push-trigger-12-mowing-enter"));
-        when(robonectClientMock.updatePush("trigger12", "1"))
-                .thenReturn(new ModelParser().parse("{\"successful\":false}", PushInfo.class));
+        when(pushApiMock.updatePush("trigger12", "1"))
+                .thenReturn(ModelParser.parse("{\"successful\":false}", PushInfo.class));
         subject.handleCommand(new ChannelUID(uid, "push-trigger-12-way_home-enter"), OnOffType.ON);
-        verify(robonectClientMock).updatePush("trigger12", "1");
+        verify(pushApiMock).updatePush("trigger12", "1");
     }
 
     @Test
@@ -605,7 +633,7 @@ public class RobonectHandlerTest {
         subject = new RobonectHandler(thing, httpClientFactoryMock, timeZoneProvider, null, commandScheduler);
         subject.setCallback(callbackMock);
         subject.setRobonectClient(robonectClientMock);
-        when(robonectClientMock.getPushInfo()).thenReturn(new ModelParser().parse("""
+        when(pushApiMock.getPushInfo()).thenReturn(ModelParser.parse("""
                 {"successful":true,"push":{"trigger":{
                 "trigger0":{"name":"Parked","enter":true,"leave":false},
                 "trigger1":{"name":"Way home","enter":true,"leave":false},
@@ -621,19 +649,19 @@ public class RobonectHandlerTest {
         assertNotNull(updated.getValue().getChannel("push-trigger-0-parked-enter"));
         assertNotNull(updated.getValue().getChannel("push-trigger-1-way_home-enter"));
         assertNotNull(updated.getValue().getChannel("push-trigger-2-way_home-enter"));
-        when(robonectClientMock.updatePush("trigger2", "3"))
-                .thenReturn(new ModelParser().parse("{\"successful\":false}", PushInfo.class));
+        when(pushApiMock.updatePush("trigger2", "3"))
+                .thenReturn(ModelParser.parse("{\"successful\":false}", PushInfo.class));
         subject.handleCommand(new ChannelUID(uid, "push-trigger-2-way_home-enter"), OnOffType.ON);
-        verify(robonectClientMock).updatePush("trigger2", "3");
+        verify(pushApiMock).updatePush("trigger2", "3");
     }
 
     @Test
     public void shouldPublishRecentDurationsAndStatistics() {
-        HourInfo hours = new ModelParser().parse("""
+        HourInfo hours = ModelParser.parse("""
                 {"successful":true,"seek":[{"duration":2},{"duration":4},{"duration":6}],
                 "mowing":[{"duration":10},{"duration":20}]}
                 """, HourInfo.class);
-        when(robonectClientMock.getHourInfo()).thenReturn(hours);
+        when(diagnosticsApiMock.getHourInfo()).thenReturn(hours);
         ThingUID uid = new ThingUID("1:2:3");
         subject.handleCommand(new ChannelUID(uid, "statistics-seek"), RefreshType.REFRESH);
         verify(callbackMock).stateUpdated(new ChannelUID(uid, "statistics-seek"), new StringType("2, 4, 6"));
@@ -648,12 +676,12 @@ public class RobonectHandlerTest {
 
     @Test
     public void shouldPublishHomeAndPreventionCode() {
-        MowerInfo info = new ModelParser().parse("""
+        MowerInfo info = ModelParser.parse("""
                 {"successful":true,"name":"Mower","status":{"status":2,"mode":0,
                 "stopped":false,"battery":50,"hours":1,"duration":2,"distance":0,
                 "home":true,"prevent":3}}
                 """, MowerInfo.class);
-        when(robonectClientMock.getMowerInfo()).thenReturn(info);
+        when(mowerApiMock.getMowerInfo()).thenReturn(info);
         ThingUID uid = new ThingUID("1:2:3");
         subject.handleCommand(new ChannelUID(uid, RobonectBindingConstants.CHANNEL_STATUS_HOME), RefreshType.REFRESH);
         verify(callbackMock).stateUpdated(new ChannelUID(uid, RobonectBindingConstants.CHANNEL_STATUS_HOME),
@@ -677,7 +705,7 @@ public class RobonectHandlerTest {
         timer.setNext(nextTimer);
 
         // when
-        when(robonectClientMock.getMowerInfo()).thenReturn(mowerInfo);
+        when(mowerApiMock.getMowerInfo()).thenReturn(mowerInfo);
 
         subject.handleCommand(new ChannelUID(new ThingUID("1:2:3"), RobonectBindingConstants.CHANNEL_TIMER_NEXT_TIMER),
                 RefreshType.REFRESH);
@@ -703,7 +731,7 @@ public class RobonectHandlerTest {
     public void shouldIgnoreIncompleteMowerStatus() {
         MowerInfo incompleteInfo = new MowerInfo();
         incompleteInfo.setSuccessful(true);
-        when(robonectClientMock.getMowerInfo()).thenReturn(incompleteInfo);
+        when(mowerApiMock.getMowerInfo()).thenReturn(incompleteInfo);
 
         assertDoesNotThrow(() -> subject.handleCommand(
                 new ChannelUID(new ThingUID("1:2:3"), RobonectBindingConstants.CHANNEL_STATUS), RefreshType.REFRESH));
@@ -729,8 +757,8 @@ public class RobonectHandlerTest {
         errorList.setSuccessful(true);
 
         // when
-        when(robonectClientMock.getMowerInfo()).thenReturn(mowerInfo);
-        when(robonectClientMock.errorList()).thenReturn(errorList);
+        when(mowerApiMock.getMowerInfo()).thenReturn(mowerInfo);
+        when(diagnosticsApiMock.errorList()).thenReturn(errorList);
 
         subject.handleCommand(new ChannelUID(new ThingUID("1:2:3"), RobonectBindingConstants.CHANNEL_STATUS),
                 RefreshType.REFRESH);
@@ -780,7 +808,7 @@ public class RobonectHandlerTest {
         mowerInfo.setError(null);
 
         // when
-        when(robonectClientMock.getMowerInfo()).thenReturn(mowerInfo);
+        when(mowerApiMock.getMowerInfo()).thenReturn(mowerInfo);
 
         subject.handleCommand(new ChannelUID(new ThingUID("1:2:3"), RobonectBindingConstants.CHANNEL_STATUS),
                 RefreshType.REFRESH);
@@ -810,7 +838,7 @@ public class RobonectHandlerTest {
         mowerInfo.getStatus().setStatus(MowerStatus.MOWING);
 
         // when
-        when(robonectClientMock.getMowerInfo()).thenReturn(mowerInfo);
+        when(mowerApiMock.getMowerInfo()).thenReturn(mowerInfo);
 
         subject.handleCommand(new ChannelUID(new ThingUID("1:2:3"), RobonectBindingConstants.CHANNEL_STATUS),
                 RefreshType.REFRESH);
@@ -837,8 +865,8 @@ public class RobonectHandlerTest {
         ajaxInfo.setControlMenuText("10:00 - 12:00");
 
         subject.setAjaxUiScraping(true);
-        when(robonectClientMock.getMowerInfo()).thenReturn(mowerInfo);
-        when(robonectClientMock.getAjaxInfo()).thenReturn(ajaxInfo);
+        when(mowerApiMock.getMowerInfo()).thenReturn(mowerInfo);
+        when(mowerApiMock.getAjaxInfo()).thenReturn(ajaxInfo);
 
         subject.handleCommand(new ChannelUID(new ThingUID("1:2:3"), RobonectBindingConstants.CHANNEL_STATUS),
                 RefreshType.REFRESH);
@@ -874,8 +902,8 @@ public class RobonectHandlerTest {
         ajaxInfo.setControlMenuText("End of day");
 
         subject.setAjaxUiScraping(true);
-        when(robonectClientMock.getMowerInfo()).thenReturn(mowerInfo);
-        when(robonectClientMock.getAjaxInfo()).thenReturn(ajaxInfo);
+        when(mowerApiMock.getMowerInfo()).thenReturn(mowerInfo);
+        when(mowerApiMock.getAjaxInfo()).thenReturn(ajaxInfo);
 
         subject.handleCommand(new ChannelUID(new ThingUID("1:2:3"), RobonectBindingConstants.CHANNEL_STATUS),
                 RefreshType.REFRESH);
@@ -887,35 +915,35 @@ public class RobonectHandlerTest {
 
     @Test
     public void shouldResetErrorsOnOnCommand() {
-        RobonectAnswer response = new ModelParser().parse("{\"successful\":true}", RobonectAnswer.class);
+        RobonectAnswer response = ModelParser.parse("{\"successful\":true}", RobonectAnswer.class);
 
-        when(robonectClientMock.resetErrors()).thenReturn(response);
-        when(robonectClientMock.getMowerInfo()).thenReturn(createSuccessfulMowerInfoResponse());
+        when(mowerApiMock.resetErrors()).thenReturn(response);
+        when(mowerApiMock.getMowerInfo()).thenReturn(createSuccessfulMowerInfoResponse());
 
         subject.handleCommand(new ChannelUID(new ThingUID("1:2:3"), RobonectBindingConstants.CHANNEL_RESET_ERROR),
                 OnOffType.ON);
 
-        verify(robonectClientMock).resetErrors();
+        verify(mowerApiMock).resetErrors();
         verify(callbackMock, never()).stateUpdated(any(), any());
-        verify(robonectClientMock, never()).getMowerInfo();
+        verify(mowerApiMock, never()).getMowerInfo();
         runScheduledRefresh();
-        verify(robonectClientMock).getMowerInfo();
+        verify(mowerApiMock).getMowerInfo();
     }
 
     @Test
     public void shouldReadStatusImmediatelyAfterStartCommand() {
         RobonectAnswer response = new RobonectAnswer();
         response.setSuccessful(true);
-        when(robonectClientMock.start()).thenReturn(response);
-        when(robonectClientMock.getMowerInfo()).thenReturn(createSuccessfulMowerInfoResponse());
+        when(mowerApiMock.start()).thenReturn(response);
+        when(mowerApiMock.getMowerInfo()).thenReturn(createSuccessfulMowerInfoResponse());
 
         subject.handleCommand(new ChannelUID(new ThingUID("1:2:3"), RobonectBindingConstants.CHANNEL_MOWER_START),
                 OnOffType.ON);
 
-        verify(robonectClientMock).start();
-        var order = inOrder(robonectClientMock);
-        order.verify(robonectClientMock).start();
-        order.verify(robonectClientMock).getMowerInfo();
+        verify(mowerApiMock).start();
+        var order = inOrder(mowerApiMock);
+        order.verify(mowerApiMock).start();
+        order.verify(mowerApiMock).getMowerInfo();
         verifyNoInteractions(commandScheduler);
     }
 
@@ -937,8 +965,8 @@ public class RobonectHandlerTest {
         errorList.setSuccessful(true);
 
         // when
-        when(robonectClientMock.getMowerInfo()).thenReturn(mowerInfo);
-        when(robonectClientMock.errorList()).thenReturn(errorList);
+        when(mowerApiMock.getMowerInfo()).thenReturn(mowerInfo);
+        when(diagnosticsApiMock.errorList()).thenReturn(errorList);
 
         subject.handleCommand(new ChannelUID(new ThingUID("1:2:3"), RobonectBindingConstants.CHANNEL_STATUS),
                 RefreshType.REFRESH);
@@ -986,36 +1014,36 @@ public class RobonectHandlerTest {
     @Test
     public void shouldUseApiWeatherIntervalWithoutWebRequest() {
         subject.configureUnofficialChannels(true);
-        when(robonectClientMock.getWeatherInfo()).thenReturn(
-                new ModelParser().parse("{\"successful\":true,\"service\":{\"interval\":30}}", WeatherInfo.class));
+        when(weatherApiMock.getWeatherInfo()).thenReturn(
+                ModelParser.parse("{\"successful\":true,\"service\":{\"interval\":30}}", WeatherInfo.class));
         ChannelUID channel = new ChannelUID(new ThingUID("1:2:3"), "weather-service-interval");
         subject.handleCommand(channel, RefreshType.REFRESH);
         verify(callbackMock).stateUpdated(channel, new QuantityType<>(30, Units.MINUTE));
-        verify(robonectClientMock, never()).getWeatherIntervalViaWebInterface();
+        verify(weatherApiMock, never()).getWeatherIntervalViaWebInterface();
     }
 
     @Test
     public void shouldReadMissingWeatherIntervalOnlyWhenUnofficialApiEnabled() {
-        when(robonectClientMock.getWeatherInfo())
-                .thenReturn(new ModelParser().parse("{\"successful\":true,\"service\":{}}", WeatherInfo.class));
-        when(robonectClientMock.getWeatherIntervalViaWebInterface()).thenReturn(10);
+        when(weatherApiMock.getWeatherInfo())
+                .thenReturn(ModelParser.parse("{\"successful\":true,\"service\":{}}", WeatherInfo.class));
+        when(weatherApiMock.getWeatherIntervalViaWebInterface()).thenReturn(10);
         ChannelUID channel = new ChannelUID(new ThingUID("1:2:3"), "weather-service-interval");
         subject.handleCommand(channel, RefreshType.REFRESH);
-        verify(robonectClientMock, never()).getWeatherIntervalViaWebInterface();
+        verify(weatherApiMock, never()).getWeatherIntervalViaWebInterface();
         subject.configureUnofficialChannels(true);
         subject.handleCommand(channel, RefreshType.REFRESH);
         verify(callbackMock).stateUpdated(channel, new QuantityType<>(10, Units.MINUTE));
         subject.configureUnofficialChannels(false);
         subject.handleCommand(channel, RefreshType.REFRESH);
-        verify(robonectClientMock, times(1)).getWeatherIntervalViaWebInterface();
+        verify(weatherApiMock, times(1)).getWeatherIntervalViaWebInterface();
     }
 
     @Test
     public void shouldPreserveWeatherDataAndRetryAfterIntervalFallbackFailure() {
         subject.configureUnofficialChannels(true);
-        when(robonectClientMock.getWeatherInfo()).thenReturn(new ModelParser()
-                .parse("{\"successful\":true,\"service\":{},\"weather\":{\"rain\":20}}", WeatherInfo.class));
-        when(robonectClientMock.getWeatherIntervalViaWebInterface())
+        when(weatherApiMock.getWeatherInfo()).thenReturn(
+                ModelParser.parse("{\"successful\":true,\"service\":{},\"weather\":{\"rain\":20}}", WeatherInfo.class));
+        when(weatherApiMock.getWeatherIntervalViaWebInterface())
                 .thenThrow(new RobonectCommunicationException("Unavailable")).thenReturn(null).thenReturn(10);
         ChannelUID channel = new ChannelUID(new ThingUID("1:2:3"), "weather-service-interval");
         subject.handleCommand(channel, RefreshType.REFRESH);
@@ -1030,15 +1058,15 @@ public class RobonectHandlerTest {
     @Test
     public void shouldNotReadWeatherIntervalForFailedApiResponse() {
         subject.configureUnofficialChannels(true);
-        when(robonectClientMock.getWeatherInfo())
-                .thenReturn(new ModelParser().parse("{\"successful\":false}", WeatherInfo.class));
+        when(weatherApiMock.getWeatherInfo())
+                .thenReturn(ModelParser.parse("{\"successful\":false}", WeatherInfo.class));
         subject.handleCommand(new ChannelUID(new ThingUID("1:2:3"), "weather-service-interval"), RefreshType.REFRESH);
-        verify(robonectClientMock, never()).getWeatherIntervalViaWebInterface();
+        verify(weatherApiMock, never()).getWeatherIntervalViaWebInterface();
     }
 
     @Test
     public void shouldRefreshWeatherLocationConditionsAndUnixTimes() {
-        when(robonectClientMock.getWeatherInfo()).thenReturn(new ModelParser().parse("""
+        when(weatherApiMock.getWeatherInfo()).thenReturn(ModelParser.parse("""
                 {"successful":true,"service":{"location":{"cityid":3208628},
                 "config":{"maxrain":40,"minhumidity":20,"maxhumidity":90}},
                 "weather":{"rain":20,"sunrise":1792482616,"sunset":1792519939,
@@ -1084,28 +1112,28 @@ public class RobonectHandlerTest {
 
     @Test
     public void shouldWriteCityIdAndApplyReturnedLocationBeforeDelayedRead() {
-        WeatherInfo result = new ModelParser().parse("""
+        WeatherInfo result = ModelParser.parse("""
                 {"successful":true,"service":{"location":{"cityid":3208628}}}
                 """, WeatherInfo.class);
-        when(robonectClientMock.updateWeather("cityid", "3208628")).thenReturn(result);
-        when(robonectClientMock.getWeatherInfo()).thenReturn(result);
+        when(weatherApiMock.updateWeather("cityid", "3208628")).thenReturn(result);
+        when(weatherApiMock.getWeatherInfo()).thenReturn(result);
         subject.handleCommand(new ChannelUID(new ThingUID("1:2:3"), "weather-location-cityid"),
                 new DecimalType(3208628));
 
         verify(callbackMock).stateUpdated(new ChannelUID(new ThingUID("1:2:3"), "weather-location-cityid"),
                 new DecimalType(3208628));
-        verify(robonectClientMock, never()).getWeatherInfo();
+        verify(weatherApiMock, never()).getWeatherInfo();
         runScheduledRefresh();
-        verify(robonectClientMock).getWeatherInfo();
+        verify(weatherApiMock).getWeatherInfo();
     }
 
     @Test
     public void shouldWriteZipWithoutLosingLeadingZeroAndApplyReturnedCountry() {
-        WeatherInfo result = new ModelParser().parse("""
+        WeatherInfo result = ModelParser.parse("""
                 {"successful":true,"service":{"location":{"zip":"01234","country":"de"}}}
                 """, WeatherInfo.class);
-        when(robonectClientMock.updateWeather("zip", "01234")).thenReturn(result);
-        when(robonectClientMock.getWeatherInfo()).thenReturn(result);
+        when(weatherApiMock.updateWeather("zip", "01234")).thenReturn(result);
+        when(weatherApiMock.getWeatherInfo()).thenReturn(result);
         subject.handleCommand(new ChannelUID(new ThingUID("1:2:3"), "weather-location-zip"), new StringType("01234"));
 
         verify(callbackMock).stateUpdated(new ChannelUID(new ThingUID("1:2:3"), "weather-location-zip"),
@@ -1114,23 +1142,25 @@ public class RobonectHandlerTest {
                 new StringType("de"));
         verify(callbackMock, never()).stateUpdated(eq(new ChannelUID(new ThingUID("1:2:3"), "weather-location-cityid")),
                 any());
-        verify(robonectClientMock, never()).getWeatherInfo();
+        verify(weatherApiMock, never()).getWeatherInfo();
         runScheduledRefresh();
-        verify(robonectClientMock).getWeatherInfo();
+        verify(weatherApiMock).getWeatherInfo();
     }
 
     @ParameterizedTest
     @ValueSource(strings = { "-1", "1.5", "2147483648" })
     public void shouldRejectInvalidWeatherCityIds(String value) {
         subject.handleCommand(new ChannelUID(new ThingUID("1:2:3"), "weather-location-cityid"), new DecimalType(value));
-        verifyNoInteractions(robonectClientMock, commandScheduler);
+        verifyNoInteractions(mowerApiMock, diagnosticsApiMock, pushApiMock, remoteStartApiMock, timerApiMock,
+                weatherApiMock, commandScheduler);
     }
 
     @Test
     public void shouldRejectWeatherCommandWithIncompatibleUnit() {
         subject.handleCommand(new ChannelUID(new ThingUID("1:2:3"), "weather-config-min-temperature"),
                 new QuantityType<>(1, org.openhab.core.library.unit.SIUnits.METRE));
-        verifyNoInteractions(robonectClientMock, commandScheduler);
+        verifyNoInteractions(mowerApiMock, diagnosticsApiMock, pushApiMock, remoteStartApiMock, timerApiMock,
+                weatherApiMock, commandScheduler);
     }
 
     @Test
@@ -1140,12 +1170,13 @@ public class RobonectHandlerTest {
         subject.handleCommand(new ChannelUID(new ThingUID("1:2:3"), "weather-icon"), new StringType("icon"));
         subject.handleCommand(new ChannelUID(new ThingUID("1:2:3"), "weather-sunrise"),
                 new DateTimeType(ZonedDateTime.of(2026, 10, 20, 7, 50, 16, 0, TIME_ZONE)));
-        verifyNoInteractions(robonectClientMock, commandScheduler);
+        verifyNoInteractions(mowerApiMock, diagnosticsApiMock, pushApiMock, remoteStartApiMock, timerApiMock,
+                weatherApiMock, commandScheduler);
     }
 
     @Test
     public void shouldIgnoreMissingWeatherFieldsAndDateTimeWithoutUnix() {
-        when(robonectClientMock.getWeatherInfo()).thenReturn(new ModelParser().parse("""
+        when(weatherApiMock.getWeatherInfo()).thenReturn(ModelParser.parse("""
                 {"successful":true,"service":{"location":{}},"weather":{"condition":{},
                 "timestamp":{"date":"2026-10-20","time":"22:44:42"}}}
                 """, WeatherInfo.class));
@@ -1156,7 +1187,7 @@ public class RobonectHandlerTest {
     @ParameterizedTest
     @ValueSource(strings = { "invalid", "9223372036854775807" })
     public void shouldMarkInvalidWeatherTimestampUndefinedAndStillApplyOtherFields(String unix) {
-        when(robonectClientMock.getWeatherInfo()).thenReturn(new ModelParser().parse("""
+        when(weatherApiMock.getWeatherInfo()).thenReturn(ModelParser.parse("""
                 {"successful":true,"weather":{"timestamp":{"unix":"%s"},"condition":{"toocold":true}}}
                 """.formatted(unix), WeatherInfo.class));
         subject.handleCommand(new ChannelUID(new ThingUID("1:2:3"), "weather-timestamp"), RefreshType.REFRESH);
@@ -1167,86 +1198,86 @@ public class RobonectHandlerTest {
 
     @Test
     public void shouldApplyPartialWeatherResponseBeforeDelayedRead() {
-        WeatherInfo result = new ModelParser().parse("""
+        WeatherInfo result = ModelParser.parse("""
                 {"successful":true,"service":{"enable":true}}
                 """, WeatherInfo.class);
-        when(robonectClientMock.updateWeather("service", "1")).thenReturn(result);
-        when(robonectClientMock.getWeatherInfo()).thenReturn(result);
+        when(weatherApiMock.updateWeather("service", "1")).thenReturn(result);
+        when(weatherApiMock.getWeatherInfo()).thenReturn(result);
         subject.handleCommand(new ChannelUID(new ThingUID("1:2:3"), "weather-service-enabled"), OnOffType.ON);
         verify(callbackMock).stateUpdated(new ChannelUID(new ThingUID("1:2:3"), "weather-service-enabled"),
                 OnOffType.ON);
-        verify(robonectClientMock, never()).getWeatherInfo();
+        verify(weatherApiMock, never()).getWeatherInfo();
         runScheduledRefresh();
-        verify(robonectClientMock).getWeatherInfo();
+        verify(weatherApiMock).getWeatherInfo();
     }
 
     @Test
     public void shouldApplyRemoteResponseBeforeDelayedRead() {
-        RemoteInfo result = new ModelParser().parse("""
+        RemoteInfo result = ModelParser.parse("""
                 {"successful":true,"remotestart_2":{"name":"Garden"}}
                 """, RemoteInfo.class);
-        when(robonectClientMock.updateRemoteStart(eq(2), eq("Garden"), isNull(), isNull())).thenReturn(result);
-        when(robonectClientMock.getRemoteInfo()).thenReturn(result);
+        when(remoteStartApiMock.updateRemoteStart(eq(2), eq("Garden"), isNull(), isNull())).thenReturn(result);
+        when(remoteStartApiMock.getRemoteInfo()).thenReturn(result);
         subject.handleCommand(new ChannelUID(new ThingUID("1:2:3"), "remote-2-name"), new StringType("Garden"));
         verify(callbackMock).stateUpdated(new ChannelUID(new ThingUID("1:2:3"), "remote-2-name"),
                 new StringType("Garden"));
-        verify(robonectClientMock, never()).getRemoteInfo();
+        verify(remoteStartApiMock, never()).getRemoteInfo();
         runScheduledRefresh();
-        verify(robonectClientMock).getRemoteInfo();
+        verify(remoteStartApiMock).getRemoteInfo();
     }
 
     @Test
     public void shouldApplyTimerResponseAndStillScheduleRead() {
-        TimerInfo result = new ModelParser().parse("""
+        TimerInfo result = ModelParser.parse("""
                 {"successful":true,"timer":{"id":1,"enabled":true}}
                 """, TimerInfo.class);
-        when(robonectClientMock.updateTimer(1, "enable", "1")).thenReturn(result);
-        when(robonectClientMock.getTimersInfo()).thenReturn(new ModelParser().parse("""
+        when(timerApiMock.updateTimer(1, "enable", "1")).thenReturn(result);
+        when(timerApiMock.getTimersInfo()).thenReturn(ModelParser.parse("""
                 {"successful":false}
                 """, TimersInfo.class));
         subject.handleCommand(new ChannelUID(new ThingUID("1:2:3"), "timer-1-enabled"), OnOffType.ON);
         verify(callbackMock).stateUpdated(new ChannelUID(new ThingUID("1:2:3"), "timer-1-enabled"), OnOffType.ON);
-        verify(robonectClientMock, never()).getTimersInfo();
+        verify(timerApiMock, never()).getTimersInfo();
         runScheduledRefresh();
-        verify(robonectClientMock).getTimersInfo();
+        verify(timerApiMock).getTimersInfo();
     }
 
     @Test
     public void shouldScheduleReadWhenSuccessfulResponseHasNoState() {
-        when(robonectClientMock.updateWeather("service", "1"))
-                .thenReturn(new ModelParser().parse("{\"successful\":true}", WeatherInfo.class));
+        when(weatherApiMock.updateWeather("service", "1"))
+                .thenReturn(ModelParser.parse("{\"successful\":true}", WeatherInfo.class));
         subject.handleCommand(new ChannelUID(new ThingUID("1:2:3"), "weather-service-enabled"), OnOffType.ON);
         verify(callbackMock, never()).stateUpdated(any(), any());
-        verify(robonectClientMock, never()).getWeatherInfo();
+        verify(weatherApiMock, never()).getWeatherInfo();
         verify(commandScheduler).schedule(any(Runnable.class), eq(5L), eq(TimeUnit.SECONDS));
     }
 
     @Test
     public void shouldApplyDoorResponseBeforeDelayedRead() {
-        DoorInfo result = new ModelParser().parse("""
+        DoorInfo result = ModelParser.parse("""
                 {"successful":true,"door":{"enabled":true,"state":{"open":true,"close":false}}}
                 """, DoorInfo.class);
-        when(robonectClientMock.setDoorDirection(Direction.OPEN)).thenReturn(result);
-        when(robonectClientMock.getDoorInfo()).thenReturn(result);
+        when(mowerApiMock.setDoorDirection(Direction.OPEN)).thenReturn(result);
+        when(mowerApiMock.getDoorInfo()).thenReturn(result);
         subject.handleCommand(new ChannelUID(new ThingUID("1:2:3"), "door-state"), UpDownType.UP);
         verify(callbackMock).stateUpdated(new ChannelUID(new ThingUID("1:2:3"), "door-state"),
                 org.openhab.core.library.types.PercentType.ZERO);
-        verify(robonectClientMock, never()).getDoorInfo();
+        verify(mowerApiMock, never()).getDoorInfo();
         runScheduledRefresh();
-        verify(robonectClientMock).getDoorInfo();
+        verify(mowerApiMock).getDoorInfo();
     }
 
     @Test
     public void shouldApplyNameResponseBeforeDelayedStatusRead() {
-        when(robonectClientMock.setName("Garden mower"))
-                .thenReturn(new ModelParser().parse("{\"successful\":true,\"name\":\"Garden mower\"}", Name.class));
-        when(robonectClientMock.getMowerInfo()).thenReturn(createSuccessfulMowerInfoResponse());
+        when(mowerApiMock.setName("Garden mower"))
+                .thenReturn(ModelParser.parse("{\"successful\":true,\"name\":\"Garden mower\"}", Name.class));
+        when(mowerApiMock.getMowerInfo()).thenReturn(createSuccessfulMowerInfoResponse());
         subject.handleCommand(new ChannelUID(new ThingUID("1:2:3"), "name"), new StringType("Garden mower"));
         verify(callbackMock).stateUpdated(new ChannelUID(new ThingUID("1:2:3"), "name"),
                 new StringType("Garden mower"));
-        verify(robonectClientMock, never()).getMowerInfo();
+        verify(mowerApiMock, never()).getMowerInfo();
         runScheduledRefresh();
-        verify(robonectClientMock).getMowerInfo();
+        verify(mowerApiMock).getMowerInfo();
     }
 
     @Test
@@ -1256,46 +1287,47 @@ public class RobonectHandlerTest {
                 httpClientFactoryMock, timeZoneProvider, null, commandScheduler);
         subject.setCallback(callbackMock);
         subject.setRobonectClient(robonectClientMock);
-        PushInfo full = new ModelParser().parse("""
+        PushInfo full = ModelParser.parse("""
                 {"successful":true,"push":{"trigger":{
                 "trigger0":{"name":"Parked","enter":false,"leave":false},
                 "trigger1":{"name":"Mowing","enter":false,"leave":true}}}}
                 """, PushInfo.class);
-        when(robonectClientMock.getPushInfo()).thenReturn(full);
+        when(pushApiMock.getPushInfo()).thenReturn(full);
         subject.handleCommand(new ChannelUID(uid, "push-interval"), RefreshType.REFRESH);
-        clearInvocations(robonectClientMock, callbackMock);
-        when(robonectClientMock.updatePush("trigger1", "3")).thenReturn(new ModelParser().parse("""
+        clearInvocations(mowerApiMock, diagnosticsApiMock, pushApiMock, remoteStartApiMock, timerApiMock,
+                weatherApiMock, callbackMock);
+        when(pushApiMock.updatePush("trigger1", "3")).thenReturn(ModelParser.parse("""
                 {"successful":true,"push":{"trigger":{
                 "trigger1":{"name":"Mowing","enter":true}}}}
                 """, PushInfo.class));
         subject.handleCommand(new ChannelUID(uid, "push-trigger-1-mowing-enter"), OnOffType.ON);
-        verify(robonectClientMock).getPushInfo();
+        verify(pushApiMock).getPushInfo();
         verify(callbackMock).stateUpdated(new ChannelUID(uid, "push-trigger-1-mowing-enter"), OnOffType.ON);
         verify(callbackMock, never()).stateUpdated(eq(new ChannelUID(uid, "push-trigger-1-mowing-leave")), any());
         assertNotNull(subject.getThing().getChannel("push-trigger-0-parked-enter"));
         runScheduledRefresh();
-        verify(robonectClientMock, times(2)).getPushInfo();
+        verify(pushApiMock, times(2)).getPushInfo();
     }
 
     @Test
     public void shouldReadStatusImmediatelyAfterModeAndStopWrites() {
-        when(robonectClientMock.setMode(ModeCommand.Mode.HOME)).thenReturn(null);
-        when(robonectClientMock.stop()).thenReturn(null);
-        when(robonectClientMock.getMowerInfo()).thenReturn(createSuccessfulMowerInfoResponse());
+        when(mowerApiMock.setMode(ModeCommand.Mode.HOME)).thenReturn(new RobonectAnswer());
+        when(mowerApiMock.stop()).thenReturn(new RobonectAnswer());
+        when(mowerApiMock.getMowerInfo()).thenReturn(createSuccessfulMowerInfoResponse());
         subject.handleCommand(new ChannelUID(new ThingUID("1:2:3"), "mode"), new StringType("HOME"));
         subject.handleCommand(new ChannelUID(new ThingUID("1:2:3"), "start"), OnOffType.OFF);
-        var order = inOrder(robonectClientMock);
-        order.verify(robonectClientMock).setMode(ModeCommand.Mode.HOME);
-        order.verify(robonectClientMock).getMowerInfo();
-        order.verify(robonectClientMock).stop();
-        order.verify(robonectClientMock).getMowerInfo();
+        var order = inOrder(mowerApiMock);
+        order.verify(mowerApiMock).setMode(ModeCommand.Mode.HOME);
+        order.verify(mowerApiMock).getMowerInfo();
+        order.verify(mowerApiMock).stop();
+        order.verify(mowerApiMock).getMowerInfo();
         verifyNoInteractions(commandScheduler);
     }
 
     @Test
     public void shouldIgnoreSupersededReadsAndCancelReadsOnDispose() {
-        when(robonectClientMock.updateWeather("service", "1"))
-                .thenReturn(new ModelParser().parse("{\"successful\":true}", WeatherInfo.class));
+        when(weatherApiMock.updateWeather("service", "1"))
+                .thenReturn(ModelParser.parse("{\"successful\":true}", WeatherInfo.class));
         ChannelUID channel = new ChannelUID(new ThingUID("1:2:3"), "weather-service-enabled");
         subject.handleCommand(channel, OnOffType.ON);
         subject.handleCommand(channel, OnOffType.ON);
@@ -1303,20 +1335,20 @@ public class RobonectHandlerTest {
         verify(commandScheduler, times(2)).schedule(refreshes.capture(), eq(5L), eq(TimeUnit.SECONDS));
         verify(commandRefreshJob).cancel(true);
         refreshes.getAllValues().getFirst().run();
-        verify(robonectClientMock, never()).getWeatherInfo();
+        verify(weatherApiMock, never()).getWeatherInfo();
         subject.dispose();
         refreshes.getAllValues().getLast().run();
-        verify(robonectClientMock, never()).getWeatherInfo();
+        verify(weatherApiMock, never()).getWeatherInfo();
         verify(commandRefreshJob, times(2)).cancel(true);
     }
 
     @Test
     public void shouldNotPublishReadResponseIfDisposedDuringRequest() {
-        WeatherInfo result = new ModelParser().parse("""
+        WeatherInfo result = ModelParser.parse("""
                 {"successful":true,"service":{"enable":true}}
                 """, WeatherInfo.class);
-        when(robonectClientMock.updateWeather("service", "1")).thenReturn(result);
-        when(robonectClientMock.getWeatherInfo()).thenAnswer(invocation -> {
+        when(weatherApiMock.updateWeather("service", "1")).thenReturn(result);
+        when(weatherApiMock.getWeatherInfo()).thenAnswer(invocation -> {
             subject.dispose();
             return result;
         });
@@ -1328,8 +1360,8 @@ public class RobonectHandlerTest {
 
     @Test
     public void shouldNotScheduleReadAfterRejectedWrite() {
-        when(robonectClientMock.updateWeather("service", "1"))
-                .thenReturn(new ModelParser().parse("{\"successful\":false}", WeatherInfo.class));
+        when(weatherApiMock.updateWeather("service", "1"))
+                .thenReturn(ModelParser.parse("{\"successful\":false}", WeatherInfo.class));
         subject.handleCommand(new ChannelUID(new ThingUID("1:2:3"), "weather-service-enabled"), OnOffType.ON);
         verifyNoInteractions(commandScheduler);
         verify(callbackMock, never()).stateUpdated(any(), any());
@@ -1350,7 +1382,8 @@ public class RobonectHandlerTest {
         assertNull(subject.getThing().getChannel("job-start"));
         assertNull(subject.getThing().getChannel("job-end"));
         assertNotNull(subject.getThing().getChannel("push-mode"));
-        verifyNoInteractions(robonectClientMock);
+        verifyNoInteractions(mowerApiMock, diagnosticsApiMock, pushApiMock, remoteStartApiMock, timerApiMock,
+                weatherApiMock);
     }
 
     @Test
@@ -1364,7 +1397,8 @@ public class RobonectHandlerTest {
         assertEquals(1, subject.getThing().getChannels().size());
         subject.configureUnofficialChannels(false);
         assertNull(subject.getThing().getChannel("push-mode"));
-        verifyNoInteractions(robonectClientMock);
+        verifyNoInteractions(mowerApiMock, diagnosticsApiMock, pushApiMock, remoteStartApiMock, timerApiMock,
+                weatherApiMock);
     }
 
     @Test
@@ -1372,18 +1406,19 @@ public class RobonectHandlerTest {
         ChannelUID uid = new ChannelUID(new ThingUID("1:2:3"), "push-mode");
         subject.handleCommand(uid, RefreshType.REFRESH);
         subject.handleCommand(uid, new DecimalType(2));
-        verifyNoInteractions(robonectClientMock);
+        verifyNoInteractions(mowerApiMock, diagnosticsApiMock, pushApiMock, remoteStartApiMock, timerApiMock,
+                weatherApiMock);
         useRealThingForPushMode();
         subject.configureUnofficialChannels(true);
-        when(robonectClientMock.getPushModeViaWebInterface()).thenReturn(1);
+        when(pushApiMock.getPushModeViaWebInterface()).thenReturn(1);
         subject.handleCommand(uid, RefreshType.REFRESH);
         verify(callbackMock).stateUpdated(uid, new DecimalType(1));
-        when(robonectClientMock.updatePushModeViaWebInterface(2)).thenReturn(2);
+        when(pushApiMock.updatePushModeViaWebInterface(2)).thenReturn(2);
         subject.handleCommand(uid, new DecimalType(2));
         verify(callbackMock).stateUpdated(uid, new DecimalType(2));
-        verify(robonectClientMock).getPushModeViaWebInterface();
+        verify(pushApiMock).getPushModeViaWebInterface();
         verifyNoInteractions(commandScheduler);
-        verify(robonectClientMock, never()).getPushInfo();
+        verify(pushApiMock, never()).getPushInfo();
     }
 
     @Test
@@ -1394,7 +1429,8 @@ public class RobonectHandlerTest {
         for (String value : new String[] { "-1", "3", "1.5", "2147483648" }) {
             subject.handleCommand(uid, new DecimalType(value));
         }
-        verifyNoInteractions(robonectClientMock, commandScheduler);
+        verifyNoInteractions(mowerApiMock, diagnosticsApiMock, pushApiMock, remoteStartApiMock, timerApiMock,
+                weatherApiMock, commandScheduler);
     }
 
     @Test
@@ -1402,7 +1438,7 @@ public class RobonectHandlerTest {
         useRealThingForPushMode();
         subject.configureUnofficialChannels(true);
         ChannelUID uid = new ChannelUID(new ThingUID("1:2:3"), "push-mode");
-        when(robonectClientMock.getPushModeViaWebInterface()).thenReturn(null, 0);
+        when(pushApiMock.getPushModeViaWebInterface()).thenReturn(null, 0);
         subject.handleCommand(uid, RefreshType.REFRESH);
         verify(callbackMock).stateUpdated(uid, UnDefType.UNDEF);
         subject.handleCommand(uid, RefreshType.REFRESH);
@@ -1413,12 +1449,12 @@ public class RobonectHandlerTest {
     public void shouldApplyMissingPushModeWriteResponseWithoutSchedulingRead() {
         useRealThingForPushMode();
         subject.configureUnofficialChannels(true);
-        when(robonectClientMock.updatePushModeViaWebInterface(2)).thenReturn(null);
+        when(pushApiMock.updatePushModeViaWebInterface(2)).thenReturn(null);
         ChannelUID uid = new ChannelUID(new ThingUID("1:2:3"), "push-mode");
         subject.handleCommand(uid, new DecimalType(2));
         verify(callbackMock).stateUpdated(uid, UnDefType.UNDEF);
         verifyNoInteractions(commandScheduler);
-        verify(robonectClientMock, never()).getPushModeViaWebInterface();
+        verify(pushApiMock, never()).getPushModeViaWebInterface();
     }
 
     private void useRealThingForPushMode() {
@@ -1436,13 +1472,13 @@ public class RobonectHandlerTest {
         subject.configureUnofficialChannels(true);
         ChannelUID channel = new ChannelUID(new ThingUID("1:2:3"), "push-mode");
         if (write) {
-            when(robonectClientMock.updatePushModeViaWebInterface(2)).thenAnswer(invocation -> {
+            when(pushApiMock.updatePushModeViaWebInterface(2)).thenAnswer(invocation -> {
                 subject.configureUnofficialChannels(false);
                 return 2;
             });
             subject.handleCommand(channel, new DecimalType(2));
         } else {
-            when(robonectClientMock.getPushModeViaWebInterface()).thenAnswer(invocation -> {
+            when(pushApiMock.getPushModeViaWebInterface()).thenAnswer(invocation -> {
                 subject.configureUnofficialChannels(false);
                 return 2;
             });
@@ -1460,7 +1496,7 @@ public class RobonectHandlerTest {
                 httpClientFactoryMock, timeZoneProvider, null, commandScheduler);
         subject.setCallback(callbackMock);
         subject.setRobonectClient(robonectClientMock);
-        when(robonectClientMock.getTimersInfo()).thenReturn(new ModelParser().parse("""
+        when(timerApiMock.getTimersInfo()).thenReturn(ModelParser.parse("""
                 {"successful":true,"timer":[{"id":1,"start":"%s","end":"%s"}]}
                 """.formatted(time, time), TimersInfo.class));
         ChannelUID start = new ChannelUID(uid, "timer-1-start");
@@ -1476,39 +1512,39 @@ public class RobonectHandlerTest {
         DateTimeType state = (DateTimeType) value.getValue();
         assertEquals(LocalTime.parse(time), state.getZonedDateTime(TIME_ZONE).toLocalTime());
         verify(callbackMock).stateUpdated(new ChannelUID(uid, "timer-1-end"), state);
-        when(robonectClientMock.updateTimer(1, "start", time))
-                .thenReturn(new ModelParser().parse("{\"successful\":true}", TimerInfo.class));
+        when(timerApiMock.updateTimer(1, "start", time))
+                .thenReturn(ModelParser.parse("{\"successful\":true}", TimerInfo.class));
         subject.handleCommand(start, state);
-        verify(robonectClientMock).updateTimer(1, "start", time);
+        verify(timerApiMock).updateTimer(1, "start", time);
     }
 
     @ParameterizedTest
     @ValueSource(ints = { 1, 7 })
     public void shouldConvertTimerCommandsInBindingTimeZoneInWinterAndSummer(int month) {
-        when(robonectClientMock.updateTimer(1, "start", "08:15"))
-                .thenReturn(new ModelParser().parse("{\"successful\":true}", TimerInfo.class));
+        when(timerApiMock.updateTimer(1, "start", "08:15"))
+                .thenReturn(ModelParser.parse("{\"successful\":true}", TimerInfo.class));
         DateTimeType command = new DateTimeType(ZonedDateTime.of(2026, month, 15, 8, 15, 0, 0, TIME_ZONE).toInstant());
         subject.handleCommand(new ChannelUID(new ThingUID("1:2:3"), "timer-1-start"), command);
-        verify(robonectClientMock).updateTimer(1, "start", "08:15");
+        verify(timerApiMock).updateTimer(1, "start", "08:15");
     }
 
     @Test
     public void shouldWritePushPasswordWithoutPublishingItAndApplyReturnedSettings() {
-        var response = new ModelParser().parse("""
+        var response = ModelParser.parse("""
                 {"successful":true,"push":{"server":{"name":"push-user"}}}
                 """, PushInfo.class);
-        when(robonectClientMock.updatePush("pass", "new-password")).thenReturn(response);
-        when(robonectClientMock.getPushInfo()).thenReturn(response);
+        when(pushApiMock.updatePush("pass", "new-password")).thenReturn(response);
+        when(pushApiMock.getPushInfo()).thenReturn(response);
         ChannelUID password = new ChannelUID(new ThingUID("1:2:3"), "push-password");
         subject.handleCommand(password, new StringType("new-password"));
-        verify(robonectClientMock).updatePush("pass", "new-password");
+        verify(pushApiMock).updatePush("pass", "new-password");
         verify(callbackMock).stateUpdated(password, UnDefType.UNDEF);
         verify(callbackMock).stateUpdated(new ChannelUID(new ThingUID("1:2:3"), "push-username"),
                 new StringType("push-user"));
         verify(callbackMock, never()).stateUpdated(eq(password), any(StringType.class));
-        verify(robonectClientMock, never()).getPushInfo();
+        verify(pushApiMock, never()).getPushInfo();
         runScheduledRefresh();
-        verify(robonectClientMock).getPushInfo();
+        verify(pushApiMock).getPushInfo();
     }
 
     @Test
@@ -1517,13 +1553,14 @@ public class RobonectHandlerTest {
         subject.channelLinked(password);
         subject.handleCommand(password, RefreshType.REFRESH);
         verify(callbackMock, times(2)).stateUpdated(password, UnDefType.UNDEF);
-        verifyNoInteractions(robonectClientMock, commandScheduler);
+        verifyNoInteractions(mowerApiMock, diagnosticsApiMock, pushApiMock, remoteStartApiMock, timerApiMock,
+                weatherApiMock, commandScheduler);
     }
 
     @Test
     public void shouldKeepPushPasswordUndefinedAfterRejectedWrite() {
-        when(robonectClientMock.updatePush("pass", "new-password"))
-                .thenReturn(new ModelParser().parse("{\"successful\":false}", PushInfo.class));
+        when(pushApiMock.updatePush("pass", "new-password"))
+                .thenReturn(ModelParser.parse("{\"successful\":false}", PushInfo.class));
         ChannelUID password = new ChannelUID(new ThingUID("1:2:3"), "push-password");
         subject.handleCommand(password, new StringType("new-password"));
         verify(callbackMock).stateUpdated(password, UnDefType.UNDEF);

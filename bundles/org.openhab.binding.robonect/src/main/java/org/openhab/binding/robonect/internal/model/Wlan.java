@@ -22,12 +22,19 @@ public class Wlan {
     private int signal;
 
     /**
-     * @return - The signal strength in dB.
+     * Returns the signal strength in dBm.
+     *
+     * @return the signal strength in dBm
      */
     public int getSignal() {
         return signal;
     }
 
+    /**
+     * Sets the signal.
+     *
+     * @param signal the signal
+     */
     public void setSignal(int signal) {
         this.signal = signal;
     }

@@ -14,13 +14,25 @@ public class WeatherCommand implements Command {
     private String parameter;
     private String value;
 
-    /** Sets a weather-service property. */
+    /**
+     * Sets a weather-service property.
+     *
+     * @param parameter property name
+     * @param value property value
+     * @return this command
+     */
     public WeatherCommand withValue(String parameter, String value) {
         this.parameter = parameter;
         this.value = value;
         return this;
     }
 
+    /**
+     * Builds the weather service URL for this {@link Command}.
+     *
+     * @param baseURL base URL to which the command parameters are appended
+     * @return the complete request URL
+     */
     @Override
     public String toCommandURL(String baseURL) {
         if (parameter == null || value == null) {

@@ -25,10 +25,20 @@ public class Address {
     private @Nullable String url;
     private @Nullable Host host;
 
+    /**
+     * Returns the portal URL.
+     *
+     * @return the portal URL, or {@code null} if absent
+     */
     public @Nullable String getUrl() {
         return url;
     }
 
+    /**
+     * Returns the portal host information.
+     *
+     * @return the portal host information, or {@code null} if absent
+     */
     public @Nullable Host getHost() {
         return host;
     }

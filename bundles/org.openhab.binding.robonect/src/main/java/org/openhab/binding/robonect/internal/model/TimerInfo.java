@@ -14,6 +14,11 @@ import org.eclipse.jdt.annotation.Nullable;
 public class TimerInfo extends RobonectAnswer {
     private @Nullable TimerFull timer;
 
+    /**
+     * Returns the timer returned by the request.
+     *
+     * @return the timer returned by the request, or {@code null} if not reported
+     */
     public @Nullable TimerFull getTimer() {
         return timer;
     }

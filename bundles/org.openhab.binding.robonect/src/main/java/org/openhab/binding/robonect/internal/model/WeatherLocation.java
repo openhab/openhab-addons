@@ -26,14 +26,29 @@ public class WeatherLocation {
     private @Nullable String zip;
     private @Nullable String country;
 
+    /**
+     * Returns the city identifier.
+     *
+     * @return the city identifier, or {@code null} if not reported
+     */
     public @Nullable Integer getCityId() {
         return cityid;
     }
 
+    /**
+     * Returns the postal code.
+     *
+     * @return the postal code, or {@code null} if not reported
+     */
     public @Nullable String getZip() {
         return zip;
     }
 
+    /**
+     * Returns the country.
+     *
+     * @return the country, or {@code null} if not reported
+     */
     public @Nullable String getCountry() {
         return country;
     }

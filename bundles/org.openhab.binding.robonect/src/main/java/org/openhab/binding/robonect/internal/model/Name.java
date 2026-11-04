@@ -22,6 +22,8 @@ public class Name extends RobonectAnswer {
     private String name;
 
     /**
+     * Returns the mower name.
+     *
      * @return - The mower name.
      */
     public String getName() {

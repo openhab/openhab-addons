@@ -10,6 +10,11 @@ import org.eclipse.jdt.annotation.Nullable;
 public class PushInfo extends RobonectAnswer {
     private @Nullable Push push;
 
+    /**
+     * Returns the push service settings.
+     *
+     * @return the push service settings, or {@code null} if not reported
+     */
     public @Nullable Push getPush() {
         return push;
     }

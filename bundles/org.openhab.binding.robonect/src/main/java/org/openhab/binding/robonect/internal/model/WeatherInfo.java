@@ -14,10 +14,20 @@ public class WeatherInfo extends RobonectAnswer {
     private @Nullable Weather weather;
     private @Nullable WeatherService service;
 
+    /**
+     * Returns the weather measurements.
+     *
+     * @return the weather measurements, or {@code null} if not reported
+     */
     public @Nullable Weather getWeather() {
         return weather;
     }
 
+    /**
+     * Returns the weather service settings.
+     *
+     * @return the weather service settings, or {@code null} if not reported
+     */
     public @Nullable WeatherService getService() {
         return service;
     }

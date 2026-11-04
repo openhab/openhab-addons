@@ -20,10 +20,21 @@ package org.openhab.binding.robonect.internal;
  */
 public class RobonectCommunicationException extends RuntimeException {
 
+    /**
+     * Creates a communication failure.
+     *
+     * @param message the failure description
+     */
     public RobonectCommunicationException(String message) {
         super(message);
     }
 
+    /**
+     * Creates a communication failure with its underlying cause.
+     *
+     * @param message the failure description
+     * @param cause the underlying cause
+     */
     public RobonectCommunicationException(String message, Throwable cause) {
         super(message, cause);
     }

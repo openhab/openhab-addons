@@ -16,35 +16,32 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 /**
- * This class is responsible for parsing JSNON formatted answers from the Robonect module using the Gson library.
+ * Parses JSON responses from the Robonect module using Gson.
  * 
  * @author Marco Meyer - Initial contribution
  */
-public class ModelParser {
+public final class ModelParser {
 
-    private final Gson gson;
+    private static final Gson GSON = new GsonBuilder()
+            .registerTypeAdapter(MowerStatus.class, new MowerStatusDeserializer())
+            .registerTypeAdapter(MowerMode.class, new MowerModeDeserializer())
+            .registerTypeAdapter(Timer.TimerMode.class, new TimerModeDeserializer()).create();
 
     /**
-     * Creates a parser with containing a preconfigured Gson object capable of parsing the JSON answers from the
-     * Robonect module.
+     * Prevents creation of parser instances because parsing uses the shared, immutable Gson configuration.
      */
-    public ModelParser() {
-        GsonBuilder gsonBuilder = new GsonBuilder();
-        gsonBuilder.registerTypeAdapter(MowerStatus.class, new MowerStatusDeserializer());
-        gsonBuilder.registerTypeAdapter(MowerMode.class, new MowerModeDeserializer());
-        gsonBuilder.registerTypeAdapter(Timer.TimerMode.class, new TimerModeDeserializer());
-        this.gson = gsonBuilder.create();
+    private ModelParser() {
     }
 
     /**
-     * Parses a jsonString to a Java Object of the specified type.
+     * Parses a JSON response into the specified type.
      * 
-     * @param jsonString - the json string to parse
-     * @param type - the class of the type of the expected object to be returned.
-     * @param <T> - the type of expected return value.
-     * @return
+     * @param jsonString the JSON response
+     * @param type the class of the expected result
+     * @param <T> the result type
+     * @return the parsed object, or {@code null} when the JSON represents {@code null}
      */
-    public <T> T parse(String jsonString, Class<T> type) {
-        return gson.fromJson(jsonString, type);
+    public static <T> T parse(String jsonString, Class<T> type) {
+        return GSON.fromJson(jsonString, type);
     }
 }

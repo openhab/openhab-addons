@@ -21,10 +21,20 @@ public class DoorState {
     private @Nullable Boolean open;
     private @Nullable Boolean close;
 
+    /**
+     * Reports whether the open state is active.
+     *
+     * @return whether the open state is active, or {@code null} if absent
+     */
     public @Nullable Boolean getOpen() {
         return open;
     }
 
+    /**
+     * Reports whether the closed state is active.
+     *
+     * @return whether the closed state is active, or {@code null} if absent
+     */
     public @Nullable Boolean getClose() {
         return close;
     }

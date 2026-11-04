@@ -19,6 +19,7 @@ import java.time.DateTimeException;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.robonect.internal.RobonectCommunicationException;
+import org.openhab.binding.robonect.internal.RobonectWeatherApi;
 import org.openhab.binding.robonect.internal.model.Clock;
 import org.openhab.binding.robonect.internal.model.Weather;
 import org.openhab.binding.robonect.internal.model.WeatherCondition;
@@ -41,17 +42,32 @@ import org.slf4j.LoggerFactory;
  * Handles the mower's weather API endpoint.
  *
  * @author Nico Brüttner - Initial contribution
+ * @author Nico Brüttner - Direct weather API injection
  */
 @NonNullByDefault
 final class RobonectWeatherHandler {
 
     private final Logger logger = LoggerFactory.getLogger(RobonectWeatherHandler.class);
     private final RobonectHandler handler;
+    private final RobonectWeatherApi weatherApi;
 
-    RobonectWeatherHandler(RobonectHandler handler) {
+    /**
+     * Creates a weather component backed by the Thing handler.
+     *
+     * @param handler the {@link RobonectHandler} providing state updates
+     * @param weatherApi the weather API for the current client
+     */
+    RobonectWeatherHandler(RobonectHandler handler, RobonectWeatherApi weatherApi) {
         this.handler = handler;
+        this.weatherApi = weatherApi;
     }
 
+    /**
+     * Validates and writes a supported weather-service setting.
+     *
+     * @param channelId the channel identifier
+     * @param command the command received for the channel
+     */
     void handleCommand(String channelId, Command command) {
         String parameter;
         String value;
@@ -122,27 +138,65 @@ final class RobonectWeatherHandler {
                 default -> null;
             };
             if (parameter == null || valueNumber == null) {
+                if (parameter == null) {
+                    logUnsupportedCommandType(channelId, command);
+                }
+                if (valueNumber == null) {
+                    // unit could not be converted to the expected type
+                    logger.debug("Ignoring command with unsupported unit for weather channel {}; value: {}", channelId,
+                            command);
+                }
                 return;
             }
             value = String.valueOf(valueNumber);
         } else {
+            logUnsupportedCommandType(channelId, command);
             return;
         }
         if (parameter == null) {
             return;
         }
         handler.cancelCommandRefresh("weather");
-        WeatherInfo result = handler.getRobonectClient().updateWeather(parameter, value);
+        WeatherInfo result = weatherApi.updateWeather(parameter, value);
         if (result.isSuccessful()) {
             applyWeatherInfo(result);
             handler.scheduleCommandRefresh("weather", this::refreshWeatherInfo);
         }
     }
 
-    void refreshWeatherInfo() {
-        applyWeatherInfo(handler.getRobonectClient().getWeatherInfo());
+    /**
+     * Logs a command whose type is unsupported for a recognized weather setting channel.
+     *
+     * @param channelId the weather channel identifier
+     * @param command the unsupported command
+     */
+    private void logUnsupportedCommandType(String channelId, Command command) {
+        @Nullable
+        String expectedType = switch (channelId) {
+            case CHANNEL_WEATHER_LOCATION_ZIP -> "StringType";
+            case CHANNEL_WEATHER_LOCATION_CITY_ID -> "DecimalType";
+            case CHANNEL_WEATHER_ENABLED, CHANNEL_WEATHER_SKIP_DAY, CHANNEL_WEATHER_SKIP_NIGHT -> "OnOffType";
+            case CHANNEL_WEATHER_INTERVAL, CHANNEL_WEATHER_MAX_RAIN, CHANNEL_WEATHER_MIN_TEMPERATURE,
+                    CHANNEL_WEATHER_MAX_TEMPERATURE, CHANNEL_WEATHER_MIN_HUMIDITY, CHANNEL_WEATHER_MAX_HUMIDITY ->
+                "Number";
+            default -> null;
+        };
+        if (expectedType != null) {
+            logger.debug("Ignoring command of type {} for weather channel {}; {} is expected.",
+                    command.getClass().getName(), channelId, expectedType);
+        }
     }
 
+    /** Reads and applies weather measurements and service settings. */
+    void refreshWeatherInfo() {
+        applyWeatherInfo(weatherApi.getWeatherInfo());
+    }
+
+    /**
+     * Publishes available weather data, conditions, and service configuration.
+     *
+     * @param info the weather response to apply
+     */
     void applyWeatherInfo(WeatherInfo info) {
         Weather weather = info.getWeather();
         if (!info.isSuccessful()) {
@@ -209,7 +263,7 @@ final class RobonectWeatherHandler {
             Integer interval = service.getInterval();
             if (interval == null && handler.isUnofficialApiEnabled() && handler.canPublishState()) {
                 try {
-                    interval = handler.getRobonectClient().getWeatherIntervalViaWebInterface();
+                    interval = weatherApi.getWeatherIntervalViaWebInterface();
                 } catch (RobonectCommunicationException e) {
                     logger.debug("Could not read weather interval from web interface: {}", e.getMessage());
                 }
@@ -220,11 +274,23 @@ final class RobonectWeatherHandler {
         }
     }
 
+    /**
+     * Publishes a reported weather temperature in degrees Celsius.
+     *
+     * @param channel the channel identifier
+     * @param value the temperature in degrees Celsius, or {@code null} if absent
+     */
     private void updateWeatherTemperature(String channel, @Nullable Integer value) {
         if (value != null)
             handler.setState(channel, new QuantityType<>(value, SIUnits.CELSIUS));
     }
 
+    /**
+     * Publishes a weather timestamp or an undefined state when it is invalid.
+     *
+     * @param channel the channel identifier
+     * @param unix the Unix timestamp in seconds, or {@code null} if absent
+     */
     private void updateWeatherDateTime(String channel, @Nullable String unix) {
         if (unix == null) {
             return;
@@ -237,11 +303,23 @@ final class RobonectWeatherHandler {
         }
     }
 
+    /**
+     * Publishes a reported numeric weather setting.
+     *
+     * @param channel the channel identifier
+     * @param value the numeric value, or {@code null} if absent
+     */
     private void updateWeatherNumber(String channel, @Nullable Integer value) {
         if (value != null)
             handler.setState(channel, new DecimalType(value));
     }
 
+    /**
+     * Publishes a reported weather percentage.
+     *
+     * @param channel the channel identifier
+     * @param value the percentage, or {@code null} if absent
+     */
     private void updateWeatherPercentage(String channel, @Nullable Integer value) {
         if (value != null)
             handler.setState(channel, new QuantityType<>(value, Units.PERCENT));

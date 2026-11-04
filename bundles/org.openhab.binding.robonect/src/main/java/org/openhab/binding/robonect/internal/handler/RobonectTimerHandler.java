@@ -24,6 +24,7 @@ import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.robonect.internal.RobonectTimerApi;
 import org.openhab.binding.robonect.internal.model.TimerFull;
 import org.openhab.binding.robonect.internal.model.TimerInfo;
 import org.openhab.binding.robonect.internal.model.TimersInfo;
@@ -38,18 +39,35 @@ import org.slf4j.LoggerFactory;
  * Handles reads, updates, and dynamic channels for timer API responses.
  *
  * @author Nico Brüttner - Initial contribution
+ * @author Nico Brüttner - Direct timer API injection
  */
 @NonNullByDefault
 final class RobonectTimerHandler {
 
     private static final Pattern TIMER_CHANNEL_PATTERN = Pattern.compile("timer-\\d+-.+");
+    private static final Set<String> TIMER_SWITCH_SETTINGS = Set.of("enabled", "monday", "tuesday", "wednesday",
+            "thursday", "friday", "saturday", "sunday");
     private final Logger logger = LoggerFactory.getLogger(RobonectTimerHandler.class);
     private final RobonectHandler handler;
+    private final RobonectTimerApi timerApi;
 
-    RobonectTimerHandler(RobonectHandler handler) {
+    /**
+     * Creates a timer component backed by the Thing handler.
+     *
+     * @param handler the {@link RobonectHandler} providing state updates
+     * @param timerApi the timer API for the current client
+     */
+    RobonectTimerHandler(RobonectHandler handler, RobonectTimerApi timerApi) {
         this.handler = handler;
+        this.timerApi = timerApi;
     }
 
+    /**
+     * Writes a supported timer setting and schedules a refresh after success.
+     *
+     * @param channelId the channel identifier
+     * @param command the command received for the channel
+     */
     void handleCommand(String channelId, Command command) {
         String[] parts = channelId.split("-");
         if (parts.length != 3) {
@@ -80,10 +98,17 @@ final class RobonectTimerHandler {
                 parameter = setting;
                 value = time.format(DateTimeFormatter.ofPattern("HH:mm"));
             } else {
+                if (TIMER_SWITCH_SETTINGS.contains(setting)) {
+                    logger.debug("Ignoring timer command of type {}; OnOffType is expected for {}.",
+                            command.getClass().getName(), channelId);
+                } else if (setting.equals("start") || setting.equals("end")) {
+                    logger.debug("Ignoring timer command of type {}; DateTimeType is expected for {}.",
+                            command.getClass().getName(), channelId);
+                }
                 return;
             }
             handler.cancelCommandRefresh("timer");
-            TimerInfo result = handler.getRobonectClient().updateTimer(timer, parameter, value);
+            TimerInfo result = timerApi.updateTimer(timer, parameter, value);
             if (result.isSuccessful()) {
                 TimerFull updatedTimer = result.getTimer();
                 if (updatedTimer != null) {
@@ -96,8 +121,9 @@ final class RobonectTimerHandler {
         }
     }
 
+    /** Reads timer configurations and reconciles their channels and states. */
     void refreshTimersInfo() {
-        TimersInfo info = handler.getRobonectClient().getTimersInfo();
+        TimersInfo info = timerApi.getTimersInfo();
         @Nullable
         List<TimerFull> timers = info.getTimers();
         if (info.isSuccessful() && timers != null) {
@@ -106,6 +132,11 @@ final class RobonectTimerHandler {
         }
     }
 
+    /**
+     * Publishes the available fields for a timer with a valid identifier.
+     *
+     * @param timer the timer configuration to publish
+     */
     private void updateTimerState(TimerFull timer) {
         Integer id = timer.getId();
         if (id == null || id < 0) {
@@ -130,6 +161,12 @@ final class RobonectTimerHandler {
         updateTimerDay(prefix, "sunday", days.getSu());
     }
 
+    /**
+     * Publishes a valid timer time using the configured time zone.
+     *
+     * @param channel the channel identifier
+     * @param time the timer time in {@code HH:mm} format, or {@code null} if absent
+     */
     private void updateTimerTime(String channel, @Nullable String time) {
         if (time != null && time.matches("\\d{2}:\\d{2}")) {
             int hours = Integer.parseInt(time.substring(0, 2));
@@ -140,12 +177,24 @@ final class RobonectTimerHandler {
         }
     }
 
+    /**
+     * Publishes a reported weekday enablement value for a timer.
+     *
+     * @param prefix the channel identifier prefix
+     * @param day the weekday suffix of the channel identifier
+     * @param value whether the timer is enabled for that weekday, or {@code null} if absent
+     */
     private void updateTimerDay(String prefix, String day, @Nullable Boolean value) {
         if (value != null) {
             handler.setState(prefix + day, OnOffType.from(value));
         }
     }
 
+    /**
+     * Reconciles dynamic timer channels for the reported valid timer identifiers.
+     *
+     * @param timers the timer configurations used to build channels
+     */
     private void updateTimerChannels(List<TimerFull> timers) {
         Set<Integer> timerIds = new TreeSet<>();
         for (TimerFull timer : timers) {

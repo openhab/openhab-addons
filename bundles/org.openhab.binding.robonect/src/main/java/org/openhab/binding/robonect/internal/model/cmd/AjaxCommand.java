@@ -33,6 +33,12 @@ public class AjaxCommand implements Command {
         this.group = group;
     }
 
+    /**
+     * Builds the Ajax request URL for this {@link Command}.
+     *
+     * @param baseUrl base URL to which the command parameters are appended
+     * @return the complete request URL
+     */
     @Override
     public String toCommandURL(String baseUrl) {
         return baseUrl + "?type=" + type + "&group=" + group;
