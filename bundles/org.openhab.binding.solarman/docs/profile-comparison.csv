@@ -1,0 +1,926 @@
+profile,advanced_id,kind,registers,unit,factor,mask,writable,min,max,category,legacy_candidates,legacy_numeric_candidates,notes
+single_phase,pv_power,PVDynamicTotalSensor,[0],W,1,0,False,,,computed_or_constant,[],[],[]
+single_phase,battery_temperature,TempSensor,[182],°C,0.1,0,False,,,same_tuple_numeric_candidate,"[""deye_hybrid:battery-battery-temperature""]","[""deye_hybrid:battery-battery-temperature""]",[]
+single_phase,battery_voltage,Sensor,[183],V,0.01,0,False,,,same_tuple_numeric_candidate,"[""deye_hybrid:battery-battery-voltage""]","[""deye_hybrid:battery-battery-voltage""]",[]
+single_phase,battery_soc,Sensor,[184],%,1,0,False,,,same_tuple_numeric_candidate,"[""deye_hybrid:battery-battery-soc""]","[""deye_hybrid:battery-battery-soc""]",[]
+single_phase,battery_power,Sensor,[190],W,-1,0,False,,,same_tuple_numeric_candidate,"[""deye_hybrid:battery-battery-power""]","[""deye_hybrid:battery-battery-power""]",[]
+single_phase,battery_current,Sensor,[191],A,-0.01,0,False,,,same_tuple_numeric_candidate,"[""deye_hybrid:battery-battery-current""]","[""deye_hybrid:battery-battery-current""]",[]
+single_phase,battery_charge_limit_current,Sensor,[314],A,-1,0,False,,,no_shared_yaml_address,[],[],[]
+single_phase,battery_discharge_limit_current,Sensor,[315],A,-1,0,False,,,no_shared_yaml_address,[],[],[]
+single_phase,inverter_power,Sensor,[175],W,-1,0,False,,,same_tuple_numeric_candidate,"[""deye_hybrid:inverter-total-power""]","[""deye_hybrid:inverter-total-power""]",[]
+single_phase,inverter_voltage,Sensor,[154],V,0.1,0,False,,,no_shared_yaml_address,[],[],[]
+single_phase,inverter_current,Sensor,[164],A,0.01,0,False,,,same_tuple_semantic_review,"[""deye_hybrid:inverter-current-l1""]",[],[]
+single_phase,inverter_frequency,Sensor,[193],Hz,0.01,0,False,,,no_shared_yaml_address,[],[],[]
+single_phase,grid_frequency,Sensor,[79],Hz,0.01,0,False,,,same_tuple_numeric_candidate,"[""deye_hybrid:inverter-grid-frequency""]","[""deye_hybrid:inverter-grid-frequency""]",[]
+single_phase,grid_power,Sensor,[169],W,-1,0,False,,,same_tuple_numeric_candidate,"[""deye_hybrid:grid-total-grid-power""]","[""deye_hybrid:grid-total-grid-power""]",[]
+single_phase,grid_ld_power,Sensor,[167],W,-1,0,False,,,same_tuple_numeric_candidate,"[""deye_hybrid:grid-internal-ct-l1-power""]","[""deye_hybrid:grid-internal-ct-l1-power""]",[]
+single_phase,grid_l2_power,Sensor,[168],W,-1,0,False,,,same_tuple_numeric_candidate,"[""deye_hybrid:grid-internal-ct-l2-power""]","[""deye_hybrid:grid-internal-ct-l2-power""]",[]
+single_phase,grid_voltage,Sensor,[150],V,0.1,0,False,,,same_tuple_numeric_candidate,"[""deye_hybrid:grid-grid-voltage-l1""]","[""deye_hybrid:grid-grid-voltage-l1""]",[]
+single_phase,grid_current,MathSensor,"[160, 161]",A,1,0,False,,,computed_or_constant,[],[],[]
+single_phase,grid_ct_power,Sensor,[172],W,-1,0,False,,,no_shared_yaml_address,[],[],[]
+single_phase,grid_trickle_feed_power,NumberRWSensor,[206],W,-1,0,True,-500,500,no_shared_yaml_address,[],[],"[""no same-tuple explicitly writable YAML entry""]"
+single_phase,load_power,Sensor,[178],W,-1,0,False,,,same_tuple_semantic_review,"[""deye_hybrid:upload-total-load-power""]",[],[]
+single_phase,load_l1_power,Sensor,[176],W,-1,0,False,,,same_tuple_semantic_review,"[""deye_hybrid:upload-load-l1-power""]",[],[]
+single_phase,load_l2_power,Sensor,[177],W,-1,0,False,,,same_tuple_semantic_review,"[""deye_hybrid:upload-load-l2-power""]",[],[]
+single_phase,load_frequency,Sensor,[192],Hz,0.01,0,False,,,same_tuple_numeric_candidate,"[""deye_hybrid:inverter-load-frequency""]","[""deye_hybrid:inverter-load-frequency""]",[]
+single_phase,aux_port_usage,SelectRWSensor,[235],,1,0,True,,,no_shared_yaml_address,[],[],"[""no same-tuple explicitly writable YAML entry""]"
+single_phase,generator_input,SelectRWSensor,[235],,1,0,True,,,no_shared_yaml_address,[],[],"[""no same-tuple explicitly writable YAML entry""]"
+single_phase,gen_power,Sensor,[166],W,-1,0,False,,,same_tuple_semantic_review,"[""deye_hybrid:solar-micro-inverter-power""]",[],[]
+single_phase,aux_power,Sensor,[166],W,-1,0,False,,,same_tuple_semantic_review,"[""deye_hybrid:solar-micro-inverter-power""]",[],[]
+single_phase,pv1_power,Sensor,[186],W,-1,0,False,,,same_tuple_semantic_review,"[""deye_hybrid:solar-pv1-power""]",[],[]
+single_phase,pv1_voltage,Sensor,[109],V,0.1,0,False,,,same_tuple_numeric_candidate,"[""deye_hybrid:solar-pv1-voltage""]","[""deye_hybrid:solar-pv1-voltage""]",[]
+single_phase,pv1_current,Sensor,[110],A,0.1,0,False,,,same_tuple_numeric_candidate,"[""deye_hybrid:solar-pv1-current""]","[""deye_hybrid:solar-pv1-current""]",[]
+single_phase,pv2_power,Sensor,[187],W,-1,0,False,,,same_tuple_semantic_review,"[""deye_hybrid:solar-pv2-power""]",[],[]
+single_phase,pv2_voltage,Sensor,[111],V,0.1,0,False,,,same_tuple_numeric_candidate,"[""deye_hybrid:solar-pv2-voltage""]","[""deye_hybrid:solar-pv2-voltage""]",[]
+single_phase,pv2_current,Sensor,[112],A,0.1,0,False,,,same_tuple_numeric_candidate,"[""deye_hybrid:solar-pv2-current""]","[""deye_hybrid:solar-pv2-current""]",[]
+single_phase,pv3_power,Sensor,[188],W,-1,0,False,,,no_shared_yaml_address,[],[],[]
+single_phase,pv3_voltage,Sensor,[113],V,0.1,0,False,,,no_shared_yaml_address,[],[],[]
+single_phase,pv3_current,Sensor,[114],A,0.1,0,False,,,no_shared_yaml_address,[],[],[]
+single_phase,pv4_power,Sensor,[189],W,-1,0,False,,,same_tuple_semantic_review,"[""deye_hybrid:battery-battery-status""]",[],[]
+single_phase,pv4_voltage,Sensor,[115],V,0.1,0,False,,,no_shared_yaml_address,[],[],[]
+single_phase,pv4_current,Sensor,[116],A,0.1,0,False,,,no_shared_yaml_address,[],[],[]
+single_phase,essential_power,MathSensor,"[175, 169, 166]",W,1,0,False,,,computed_or_constant,[],[],[]
+single_phase,essential_1_power,MathSensor,"[175, 167, 166]",W,1,0,False,,,computed_or_constant,[],[],[]
+single_phase,essential_2_power,MathSensor,"[175, 169, 166]",W,1,0,False,,,computed_or_constant,[],[],[]
+single_phase,non_essential_power,MathSensor,"[172, 167]",W,1,0,False,,,computed_or_constant,[],[],[]
+single_phase,day_active_energy,Sensor,[60],kWh,-0.1,0,False,,,no_shared_yaml_address,[],[],[]
+single_phase,day_battery_charge,Sensor,[70],kWh,0.1,0,False,,,same_tuple_numeric_candidate,"[""deye_hybrid:battery-daily-battery-charge""]","[""deye_hybrid:battery-daily-battery-charge""]",[]
+single_phase,day_battery_discharge,Sensor,[71],kWh,0.1,0,False,,,same_tuple_numeric_candidate,"[""deye_hybrid:battery-daily-battery-discharge""]","[""deye_hybrid:battery-daily-battery-discharge""]",[]
+single_phase,day_grid_import,Sensor,[76],kWh,0.1,0,False,,,same_tuple_numeric_candidate,"[""deye_hybrid:grid-daily-energy-bought""]","[""deye_hybrid:grid-daily-energy-bought""]",[]
+single_phase,day_grid_export,Sensor,[77],kWh,0.1,0,False,,,same_tuple_numeric_candidate,"[""deye_hybrid:grid-daily-energy-sold""]","[""deye_hybrid:grid-daily-energy-sold""]",[]
+single_phase,day_load_energy,Sensor,[84],kWh,0.1,0,False,,,same_tuple_numeric_candidate,"[""deye_hybrid:upload-daily-load-consumption""]","[""deye_hybrid:upload-daily-load-consumption""]",[]
+single_phase,day_pv_energy,Sensor,[108],kWh,0.1,0,False,,,same_tuple_numeric_candidate,"[""deye_hybrid:solar-daily-production""]","[""deye_hybrid:solar-daily-production""]",[]
+single_phase,day_reactive_energy,Sensor,[61],kVarh,-0.1,0,False,,,no_shared_yaml_address,[],[],[]
+single_phase,month_grid_energy,Sensor,[67],kWh,0.1,0,False,,,no_shared_yaml_address,[],[],[]
+single_phase,month_load_energy,Sensor,[66],kWh,0.1,0,False,,,no_shared_yaml_address,[],[],[]
+single_phase,month_pv_energy,Sensor,[65],kWh,0.1,0,False,,,no_shared_yaml_address,[],[],[]
+single_phase,total_active_energy,Sensor,"[63, 64]",kWh,0.1,0,False,,,same_tuple_semantic_review,"[""deye_hybrid:grid-total-grid-production""]",[],[]
+single_phase,total_battery_charge,Sensor,"[72, 73]",kWh,0.1,0,False,,,same_tuple_numeric_candidate,"[""deye_hybrid:battery-total-battery-charge""]","[""deye_hybrid:battery-total-battery-charge""]",[]
+single_phase,total_battery_discharge,Sensor,"[74, 75]",kWh,0.1,0,False,,,same_tuple_numeric_candidate,"[""deye_hybrid:battery-total-battery-discharge""]","[""deye_hybrid:battery-total-battery-discharge""]",[]
+single_phase,total_grid_export,Sensor,"[81, 82]",kWh,0.1,0,False,,,same_tuple_numeric_candidate,"[""deye_hybrid:grid-total-energy-sold""]","[""deye_hybrid:grid-total-energy-sold""]",[]
+single_phase,total_grid_import,Sensor,"[78, 80]",kWh,0.1,0,False,,,same_tuple_numeric_candidate,"[""deye_hybrid:grid-total-energy-bought""]","[""deye_hybrid:grid-total-energy-bought""]",[]
+single_phase,total_load_energy,Sensor,"[85, 86]",kWh,0.1,0,False,,,same_tuple_numeric_candidate,"[""deye_hybrid:upload-total-load-consumption""]","[""deye_hybrid:upload-total-load-consumption""]",[]
+single_phase,total_pv_energy,Sensor,"[96, 97]",kWh,0.1,0,False,,,same_tuple_numeric_candidate,"[""deye_hybrid:solar-total-production""]","[""deye_hybrid:solar-total-production""]",[]
+single_phase,year_grid_export,Sensor,"[98, 99]",kWh,0.1,0,False,,,no_shared_yaml_address,[],[],[]
+single_phase,year_load_energy,Sensor,"[87, 88]",kWh,0.1,0,False,,,no_shared_yaml_address,[],[],[]
+single_phase,year_pv_energy,Sensor,"[68, 69]",kWh,0.1,0,False,,,no_shared_yaml_address,[],[],[]
+single_phase,rated_power,Sensor,"[16, 17]",W,0.1,0,False,,,no_shared_yaml_address,[],[],[]
+single_phase,fault,FaultSensor,"[103, 104, 105, 106]",,1,0,False,,,partial_tuple_review,[],[],[]
+single_phase,overall_state,InverterStateSensor,[59],,1,0,False,,,same_tuple_semantic_review,"[""deye_hybrid:inverter-running-status""]",[],[]
+single_phase,sd_status,SDStatusSensor,[92],,1,0,False,,,no_shared_yaml_address,[],[],[]
+single_phase,dc_transformer_temperature,TempSensor,[90],°C,0.1,0,False,,,same_tuple_semantic_review,"[""deye_hybrid:inverter-dc-temperature""]",[],[]
+single_phase,environment_temperature,TempSensor,[95],°C,0.1,0,False,,,no_shared_yaml_address,[],[],[]
+single_phase,radiator_temperature,TempSensor,[91],°C,0.1,0,False,,,same_tuple_semantic_review,"[""deye_hybrid:inverter-ac-temperature""]",[],[]
+single_phase,grid_connected,BinarySensor,[194],,1,0,False,,,same_tuple_semantic_review,"[""deye_hybrid:inverter-grid-connected-status""]",[],[]
+single_phase,date_time,SystemTimeRWSensor,"[22, 23, 24]",,1,0,True,,,no_shared_yaml_address,[],[],"[""no same-tuple explicitly writable YAML entry""]"
+single_phase,inverter_enabled,SwitchRWSensor,[43],,1,0,True,,,no_shared_yaml_address,[],[],"[""no same-tuple explicitly writable YAML entry""]"
+single_phase,control_mode,Sensor,[200],,1,0,False,,,no_shared_yaml_address,[],[],[]
+single_phase,grid_charge_enabled,SwitchRWSensor,[232],,1,1,True,,,no_shared_yaml_address,[],[],"[""masked control/decoding"", ""no same-tuple explicitly writable YAML entry""]"
+single_phase,battery_charging_voltage,Sensor,[312],V,0.01,0,False,,,no_shared_yaml_address,[],[],[]
+single_phase,bat1_soc,Sensor,[603],%,1,0,False,,,no_shared_yaml_address,[],[],[]
+single_phase,bat1_cycle,Sensor,[611],,1,0,False,,,no_shared_yaml_address,[],[],[]
+single_phase,battery_equalization_voltage,NumberRWSensor,[201],V,0.01,0,True,41,60,no_shared_yaml_address,[],[],"[""no same-tuple explicitly writable YAML entry""]"
+single_phase,battery_absorption_voltage,NumberRWSensor,[202],V,0.01,0,True,41,60,no_shared_yaml_address,[],[],"[""no same-tuple explicitly writable YAML entry""]"
+single_phase,battery_float_voltage,NumberRWSensor,[203],V,0.01,0,True,41,60,no_shared_yaml_address,[],[],"[""no same-tuple explicitly writable YAML entry""]"
+single_phase,battery_shutdown_capacity,NumberRWSensor,[217],%,1,0,True,0,"{""sensor"": ""battery_low_capacity""}",no_shared_yaml_address,[],[],"[""dependent write limits"", ""no same-tuple explicitly writable YAML entry""]"
+single_phase,battery_restart_capacity,NumberRWSensor,[218],%,1,0,True,"{""sensor"": ""battery_shutdown_capacity""}",100,no_shared_yaml_address,[],[],"[""dependent write limits"", ""no same-tuple explicitly writable YAML entry""]"
+single_phase,battery_low_capacity,NumberRWSensor,[219],%,1,0,True,"{""sensor"": ""battery_shutdown_capacity""}",50,no_shared_yaml_address,[],[],"[""dependent write limits"", ""no same-tuple explicitly writable YAML entry""]"
+single_phase,battery_shutdown_voltage,NumberRWSensor,[220],V,0.01,0,True,41,100,no_shared_yaml_address,[],[],"[""no same-tuple explicitly writable YAML entry""]"
+single_phase,battery_restart_voltage,NumberRWSensor,[221],V,0.01,0,True,"{""sensor"": ""battery_shutdown_voltage""}",60,no_shared_yaml_address,[],[],"[""dependent write limits"", ""no same-tuple explicitly writable YAML entry""]"
+single_phase,battery_low_voltage,NumberRWSensor,[222],V,0.01,0,True,"{""sensor"": ""battery_shutdown_voltage""}",60,no_shared_yaml_address,[],[],"[""dependent write limits"", ""no same-tuple explicitly writable YAML entry""]"
+single_phase,priority_load,SwitchRWSensor,[243],,1,1,True,,,no_shared_yaml_address,[],[],"[""masked control/decoding"", ""no same-tuple explicitly writable YAML entry""]"
+single_phase,load_limit,SelectRWSensor,[244],,1,0,True,,,partial_tuple_review,[],[],"[""no same-tuple explicitly writable YAML entry""]"
+single_phase,max_solar_power,NumberRWSensor,[53],W,1,0,True,0,"{""sensor"": ""rated_power""}",no_shared_yaml_address,[],[],"[""dependent write limits"", ""no same-tuple explicitly writable YAML entry""]"
+single_phase,max_sell_power,NumberRWSensor,[245],W,1,0,True,0,"{""sensor"": ""rated_power""}",no_shared_yaml_address,[],[],"[""dependent write limits"", ""no same-tuple explicitly writable YAML entry""]"
+single_phase,solar_export,SwitchRWSensor,[247],,1,1,True,,,partial_tuple_review,[],[],"[""masked control/decoding"", ""no same-tuple explicitly writable YAML entry""]"
+single_phase,use_timer,SwitchRWSensor,[248],,1,1,True,,,same_tuple_semantic_review,"[""deye_hybrid:time-of-use-time-of-use""]",[],"[""masked control/decoding"", ""no same-tuple explicitly writable YAML entry""]"
+single_phase,peak_shaving,SwitchRWSensor,[280],,1,15,True,,,no_shared_yaml_address,[],[],"[""masked control/decoding"", ""no same-tuple explicitly writable YAML entry""]"
+single_phase,gen_peak_shaving,SwitchRWSensor,[280],,1,240,True,,,no_shared_yaml_address,[],[],"[""masked control/decoding"", ""no same-tuple explicitly writable YAML entry""]"
+single_phase,grid_peak_shaving,SwitchRWSensor,[280],,1,3840,True,,,no_shared_yaml_address,[],[],"[""masked control/decoding"", ""no same-tuple explicitly writable YAML entry""]"
+single_phase,grid_always_on,SwitchRWSensor,[280],,1,61440,True,,,no_shared_yaml_address,[],[],"[""masked control/decoding"", ""no same-tuple explicitly writable YAML entry""]"
+single_phase,gen_peak_shaving_power,NumberRWSensor,[292],W,1,0,True,0,"{""sensor"": ""rated_power""}",no_shared_yaml_address,[],[],"[""dependent write limits"", ""no same-tuple explicitly writable YAML entry""]"
+single_phase,grid_peak_shaving_power,NumberRWSensor,[293],W,1,0,True,0,"{""sensor"": ""rated_power""}",no_shared_yaml_address,[],[],"[""dependent write limits"", ""no same-tuple explicitly writable YAML entry""]"
+single_phase,prog1_time,TimeRWSensor,[250],,1,0,True,"{""sensor"": ""prog6_time""}","{""sensor"": ""prog2_time""}",same_tuple_semantic_review,"[""deye_hybrid:time-of-use-time-of-use-time-1""]",[],"[""dependent write limits""]"
+single_phase,prog2_time,TimeRWSensor,[251],,1,0,True,"{""sensor"": ""prog1_time""}","{""sensor"": ""prog3_time""}",same_tuple_semantic_review,"[""deye_hybrid:time-of-use-time-of-use-time-2""]",[],"[""dependent write limits""]"
+single_phase,prog3_time,TimeRWSensor,[252],,1,0,True,"{""sensor"": ""prog2_time""}","{""sensor"": ""prog4_time""}",same_tuple_semantic_review,"[""deye_hybrid:time-of-use-time-of-use-time-3""]",[],"[""dependent write limits""]"
+single_phase,prog4_time,TimeRWSensor,[253],,1,0,True,"{""sensor"": ""prog3_time""}","{""sensor"": ""prog5_time""}",same_tuple_semantic_review,"[""deye_hybrid:time-of-use-time-of-use-time-4""]",[],"[""dependent write limits""]"
+single_phase,prog5_time,TimeRWSensor,[254],,1,0,True,"{""sensor"": ""prog4_time""}","{""sensor"": ""prog6_time""}",same_tuple_semantic_review,"[""deye_hybrid:time-of-use-time-of-use-time-5""]",[],"[""dependent write limits""]"
+single_phase,prog6_time,TimeRWSensor,[255],,1,0,True,"{""sensor"": ""prog5_time""}","{""sensor"": ""prog1_time""}",same_tuple_semantic_review,"[""deye_hybrid:time-of-use-time-of-use-time-6""]",[],"[""dependent write limits""]"
+single_phase,prog1_power,NumberRWSensor,[256],W,1,0,True,0,"{""sensor"": ""rated_power""}",same_tuple_numeric_candidate,"[""deye_hybrid:time-of-use-time-of-use-power-1""]","[""deye_hybrid:time-of-use-time-of-use-power-1""]","[""dependent write limits""]"
+single_phase,prog2_power,NumberRWSensor,[257],W,1,0,True,0,"{""sensor"": ""rated_power""}",same_tuple_numeric_candidate,"[""deye_hybrid:time-of-use-time-of-use-power-2""]","[""deye_hybrid:time-of-use-time-of-use-power-2""]","[""dependent write limits""]"
+single_phase,prog3_power,NumberRWSensor,[258],W,1,0,True,0,"{""sensor"": ""rated_power""}",same_tuple_numeric_candidate,"[""deye_hybrid:time-of-use-time-of-use-power-3""]","[""deye_hybrid:time-of-use-time-of-use-power-3""]","[""dependent write limits""]"
+single_phase,prog4_power,NumberRWSensor,[259],W,1,0,True,0,"{""sensor"": ""rated_power""}",same_tuple_numeric_candidate,"[""deye_hybrid:time-of-use-time-of-use-power-4""]","[""deye_hybrid:time-of-use-time-of-use-power-4""]","[""dependent write limits""]"
+single_phase,prog5_power,NumberRWSensor,[260],W,1,0,True,0,"{""sensor"": ""rated_power""}",same_tuple_numeric_candidate,"[""deye_hybrid:time-of-use-time-of-use-power-5""]","[""deye_hybrid:time-of-use-time-of-use-power-5""]","[""dependent write limits""]"
+single_phase,prog6_power,NumberRWSensor,[261],W,1,0,True,0,"{""sensor"": ""rated_power""}",same_tuple_numeric_candidate,"[""deye_hybrid:time-of-use-time-of-use-power-6""]","[""deye_hybrid:time-of-use-time-of-use-power-6""]","[""dependent write limits""]"
+single_phase,prog1_capacity,NumberRWSensor,[268],%,1,0,True,"{""sensor"": ""battery_low_capacity""}",100,same_tuple_numeric_candidate,"[""deye_hybrid:time-of-use-time-of-use-soc-1""]","[""deye_hybrid:time-of-use-time-of-use-soc-1""]","[""dependent write limits""]"
+single_phase,prog2_capacity,NumberRWSensor,[269],%,1,0,True,"{""sensor"": ""battery_low_capacity""}",100,same_tuple_numeric_candidate,"[""deye_hybrid:time-of-use-time-of-use-soc-2""]","[""deye_hybrid:time-of-use-time-of-use-soc-2""]","[""dependent write limits""]"
+single_phase,prog3_capacity,NumberRWSensor,[270],%,1,0,True,"{""sensor"": ""battery_low_capacity""}",100,same_tuple_numeric_candidate,"[""deye_hybrid:time-of-use-time-of-use-soc-3""]","[""deye_hybrid:time-of-use-time-of-use-soc-3""]","[""dependent write limits""]"
+single_phase,prog4_capacity,NumberRWSensor,[271],%,1,0,True,"{""sensor"": ""battery_low_capacity""}",100,same_tuple_numeric_candidate,"[""deye_hybrid:time-of-use-time-of-use-soc-4""]","[""deye_hybrid:time-of-use-time-of-use-soc-4""]","[""dependent write limits""]"
+single_phase,prog5_capacity,NumberRWSensor,[272],%,1,0,True,"{""sensor"": ""battery_low_capacity""}",100,same_tuple_numeric_candidate,"[""deye_hybrid:time-of-use-time-of-use-soc-5""]","[""deye_hybrid:time-of-use-time-of-use-soc-5""]","[""dependent write limits""]"
+single_phase,prog6_capacity,NumberRWSensor,[273],%,1,0,True,"{""sensor"": ""battery_low_capacity""}",100,same_tuple_numeric_candidate,"[""deye_hybrid:time-of-use-time-of-use-soc-6""]","[""deye_hybrid:time-of-use-time-of-use-soc-6""]","[""dependent write limits""]"
+single_phase,prog1_charge,SelectRWSensor,[274],,1,3,True,,,same_tuple_semantic_review,"[""deye_hybrid:time-of-use-time-of-use-enable-1""]",[],"[""masked control/decoding"", ""no same-tuple explicitly writable YAML entry""]"
+single_phase,prog2_charge,SelectRWSensor,[275],,1,3,True,,,same_tuple_semantic_review,"[""deye_hybrid:time-of-use-time-of-use-enable-2""]",[],"[""masked control/decoding"", ""no same-tuple explicitly writable YAML entry""]"
+single_phase,prog3_charge,SelectRWSensor,[276],,1,3,True,,,same_tuple_semantic_review,"[""deye_hybrid:time-of-use-time-of-use-enable-3""]",[],"[""masked control/decoding"", ""no same-tuple explicitly writable YAML entry""]"
+single_phase,prog4_charge,SelectRWSensor,[277],,1,3,True,,,same_tuple_semantic_review,"[""deye_hybrid:time-of-use-time-of-use-enable-4""]",[],"[""masked control/decoding"", ""no same-tuple explicitly writable YAML entry""]"
+single_phase,prog5_charge,SelectRWSensor,[278],,1,3,True,,,same_tuple_semantic_review,"[""deye_hybrid:time-of-use-time-of-use-enable-5""]",[],"[""masked control/decoding"", ""no same-tuple explicitly writable YAML entry""]"
+single_phase,prog6_charge,SelectRWSensor,[279],,1,3,True,,,same_tuple_semantic_review,"[""deye_hybrid:time-of-use-time-of-use-enable-6""]",[],"[""masked control/decoding"", ""no same-tuple explicitly writable YAML entry""]"
+single_phase,prog1_mode,SelectRWSensor,[274],,1,28,True,,,same_tuple_semantic_review,"[""deye_hybrid:time-of-use-time-of-use-enable-1""]",[],"[""masked control/decoding"", ""no same-tuple explicitly writable YAML entry""]"
+single_phase,prog2_mode,SelectRWSensor,[275],,1,28,True,,,same_tuple_semantic_review,"[""deye_hybrid:time-of-use-time-of-use-enable-2""]",[],"[""masked control/decoding"", ""no same-tuple explicitly writable YAML entry""]"
+single_phase,prog3_mode,SelectRWSensor,[276],,1,28,True,,,same_tuple_semantic_review,"[""deye_hybrid:time-of-use-time-of-use-enable-3""]",[],"[""masked control/decoding"", ""no same-tuple explicitly writable YAML entry""]"
+single_phase,prog4_mode,SelectRWSensor,[277],,1,28,True,,,same_tuple_semantic_review,"[""deye_hybrid:time-of-use-time-of-use-enable-4""]",[],"[""masked control/decoding"", ""no same-tuple explicitly writable YAML entry""]"
+single_phase,prog5_mode,SelectRWSensor,[278],,1,28,True,,,same_tuple_semantic_review,"[""deye_hybrid:time-of-use-time-of-use-enable-5""]",[],"[""masked control/decoding"", ""no same-tuple explicitly writable YAML entry""]"
+single_phase,prog6_mode,SelectRWSensor,[279],,1,28,True,,,same_tuple_semantic_review,"[""deye_hybrid:time-of-use-time-of-use-enable-6""]",[],"[""masked control/decoding"", ""no same-tuple explicitly writable YAML entry""]"
+single_phase,prog1_sell,SwitchRWSensor,[274],,1,64,True,,,same_tuple_semantic_review,"[""deye_hybrid:time-of-use-time-of-use-enable-1""]",[],"[""masked control/decoding"", ""no same-tuple explicitly writable YAML entry""]"
+single_phase,prog2_sell,SwitchRWSensor,[275],,1,64,True,,,same_tuple_semantic_review,"[""deye_hybrid:time-of-use-time-of-use-enable-2""]",[],"[""masked control/decoding"", ""no same-tuple explicitly writable YAML entry""]"
+single_phase,prog3_sell,SwitchRWSensor,[276],,1,64,True,,,same_tuple_semantic_review,"[""deye_hybrid:time-of-use-time-of-use-enable-3""]",[],"[""masked control/decoding"", ""no same-tuple explicitly writable YAML entry""]"
+single_phase,prog4_sell,SwitchRWSensor,[277],,1,64,True,,,same_tuple_semantic_review,"[""deye_hybrid:time-of-use-time-of-use-enable-4""]",[],"[""masked control/decoding"", ""no same-tuple explicitly writable YAML entry""]"
+single_phase,prog5_sell,SwitchRWSensor,[278],,1,64,True,,,same_tuple_semantic_review,"[""deye_hybrid:time-of-use-time-of-use-enable-5""]",[],"[""masked control/decoding"", ""no same-tuple explicitly writable YAML entry""]"
+single_phase,prog6_sell,SwitchRWSensor,[279],,1,64,True,,,same_tuple_semantic_review,"[""deye_hybrid:time-of-use-time-of-use-enable-6""]",[],"[""masked control/decoding"", ""no same-tuple explicitly writable YAML entry""]"
+single_phase,prog1_voltage,NumberRWSensor,[262],V,0.01,0,True,"{""sensor"": ""battery_low_voltage""}","{""sensor"": ""battery_float_voltage""}",no_shared_yaml_address,[],[],"[""dependent write limits"", ""no same-tuple explicitly writable YAML entry""]"
+single_phase,prog2_voltage,NumberRWSensor,[263],V,0.01,0,True,"{""sensor"": ""battery_low_voltage""}","{""sensor"": ""battery_float_voltage""}",no_shared_yaml_address,[],[],"[""dependent write limits"", ""no same-tuple explicitly writable YAML entry""]"
+single_phase,prog3_voltage,NumberRWSensor,[264],V,0.01,0,True,"{""sensor"": ""battery_low_voltage""}","{""sensor"": ""battery_float_voltage""}",no_shared_yaml_address,[],[],"[""dependent write limits"", ""no same-tuple explicitly writable YAML entry""]"
+single_phase,prog4_voltage,NumberRWSensor,[265],V,0.01,0,True,"{""sensor"": ""battery_low_voltage""}","{""sensor"": ""battery_float_voltage""}",no_shared_yaml_address,[],[],"[""dependent write limits"", ""no same-tuple explicitly writable YAML entry""]"
+single_phase,prog5_voltage,NumberRWSensor,[266],V,0.01,0,True,"{""sensor"": ""battery_low_voltage""}","{""sensor"": ""battery_float_voltage""}",no_shared_yaml_address,[],[],"[""dependent write limits"", ""no same-tuple explicitly writable YAML entry""]"
+single_phase,prog6_voltage,NumberRWSensor,[267],V,0.01,0,True,"{""sensor"": ""battery_low_voltage""}","{""sensor"": ""battery_float_voltage""}",no_shared_yaml_address,[],[],"[""dependent write limits"", ""no same-tuple explicitly writable YAML entry""]"
+single_phase,grid_charge_battery_current,NumberRWSensor,[230],A,1,0,True,0,185,no_shared_yaml_address,[],[],"[""no same-tuple explicitly writable YAML entry""]"
+single_phase,battery_max_charge_current,NumberRWSensor,[210],A,1,0,True,0,185,no_shared_yaml_address,[],[],"[""no same-tuple explicitly writable YAML entry""]"
+single_phase,battery_max_discharge_current,NumberRWSensor,[211],A,1,0,True,0,185,no_shared_yaml_address,[],[],"[""no same-tuple explicitly writable YAML entry""]"
+single_phase,bms_protocol,SelectRWSensor,[325],,1,0,True,,,no_shared_yaml_address,[],[],"[""no same-tuple explicitly writable YAML entry""]"
+single_phase_16kw,pv_power,PVDynamicTotalSensor,[0],W,1,0,False,,,computed_or_constant,[],[],[]
+single_phase_16kw,battery_temperature,TempSensor,[182],°C,0.1,0,False,,,same_tuple_numeric_candidate,"[""deye_hybrid:battery-battery-temperature""]","[""deye_hybrid:battery-battery-temperature""]",[]
+single_phase_16kw,battery_voltage,Sensor,[183],V,0.01,0,False,,,same_tuple_numeric_candidate,"[""deye_hybrid:battery-battery-voltage""]","[""deye_hybrid:battery-battery-voltage""]",[]
+single_phase_16kw,battery_soc,Sensor,[184],%,1,0,False,,,same_tuple_numeric_candidate,"[""deye_hybrid:battery-battery-soc""]","[""deye_hybrid:battery-battery-soc""]",[]
+single_phase_16kw,battery_power,Sensor,[190],W,-1,0,False,,,same_tuple_numeric_candidate,"[""deye_hybrid:battery-battery-power""]","[""deye_hybrid:battery-battery-power""]",[]
+single_phase_16kw,battery_current,Sensor,[191],A,-0.01,0,False,,,same_tuple_numeric_candidate,"[""deye_hybrid:battery-battery-current""]","[""deye_hybrid:battery-battery-current""]",[]
+single_phase_16kw,battery_charge_limit_current,Sensor,[314],A,-1,0,False,,,no_shared_yaml_address,[],[],[]
+single_phase_16kw,battery_discharge_limit_current,Sensor,[315],A,-1,0,False,,,no_shared_yaml_address,[],[],[]
+single_phase_16kw,inverter_power,Sensor,[175],W,-1,0,False,,,same_tuple_numeric_candidate,"[""deye_hybrid:inverter-total-power""]","[""deye_hybrid:inverter-total-power""]",[]
+single_phase_16kw,inverter_voltage,Sensor,[154],V,0.1,0,False,,,no_shared_yaml_address,[],[],[]
+single_phase_16kw,inverter_current,Sensor,[164],A,0.01,0,False,,,same_tuple_semantic_review,"[""deye_hybrid:inverter-current-l1""]",[],[]
+single_phase_16kw,inverter_frequency,Sensor,[193],Hz,0.01,0,False,,,no_shared_yaml_address,[],[],[]
+single_phase_16kw,grid_frequency,Sensor,[79],Hz,0.01,0,False,,,same_tuple_numeric_candidate,"[""deye_hybrid:inverter-grid-frequency""]","[""deye_hybrid:inverter-grid-frequency""]",[]
+single_phase_16kw,grid_power,Sensor,[169],W,-10,0,False,,,same_tuple_semantic_review,"[""deye_hybrid:grid-total-grid-power""]",[],[]
+single_phase_16kw,grid_ld_power,Sensor,[167],W,-1,0,False,,,same_tuple_numeric_candidate,"[""deye_hybrid:grid-internal-ct-l1-power""]","[""deye_hybrid:grid-internal-ct-l1-power""]",[]
+single_phase_16kw,grid_l2_power,Sensor,[168],W,-1,0,False,,,same_tuple_numeric_candidate,"[""deye_hybrid:grid-internal-ct-l2-power""]","[""deye_hybrid:grid-internal-ct-l2-power""]",[]
+single_phase_16kw,grid_voltage,Sensor,[150],V,0.1,0,False,,,same_tuple_numeric_candidate,"[""deye_hybrid:grid-grid-voltage-l1""]","[""deye_hybrid:grid-grid-voltage-l1""]",[]
+single_phase_16kw,grid_current,MathSensor,"[160, 161]",A,1,0,False,,,computed_or_constant,[],[],[]
+single_phase_16kw,grid_ct_power,Sensor,[172],W,-10,0,False,,,no_shared_yaml_address,[],[],[]
+single_phase_16kw,grid_trickle_feed_power,NumberRWSensor,[206],W,-1,0,True,-500,500,no_shared_yaml_address,[],[],"[""no same-tuple explicitly writable YAML entry""]"
+single_phase_16kw,load_power,Sensor,[178],W,-1,0,False,,,same_tuple_semantic_review,"[""deye_hybrid:upload-total-load-power""]",[],[]
+single_phase_16kw,load_l1_power,Sensor,[176],W,-1,0,False,,,same_tuple_semantic_review,"[""deye_hybrid:upload-load-l1-power""]",[],[]
+single_phase_16kw,load_l2_power,Sensor,[177],W,-1,0,False,,,same_tuple_semantic_review,"[""deye_hybrid:upload-load-l2-power""]",[],[]
+single_phase_16kw,load_frequency,Sensor,[192],Hz,0.01,0,False,,,same_tuple_numeric_candidate,"[""deye_hybrid:inverter-load-frequency""]","[""deye_hybrid:inverter-load-frequency""]",[]
+single_phase_16kw,aux_port_usage,SelectRWSensor,[235],,1,0,True,,,no_shared_yaml_address,[],[],"[""no same-tuple explicitly writable YAML entry""]"
+single_phase_16kw,generator_input,SelectRWSensor,[235],,1,0,True,,,no_shared_yaml_address,[],[],"[""no same-tuple explicitly writable YAML entry""]"
+single_phase_16kw,gen_power,Sensor,[166],W,-1,0,False,,,same_tuple_semantic_review,"[""deye_hybrid:solar-micro-inverter-power""]",[],[]
+single_phase_16kw,aux_power,Sensor,[166],W,-1,0,False,,,same_tuple_semantic_review,"[""deye_hybrid:solar-micro-inverter-power""]",[],[]
+single_phase_16kw,pv1_power,Sensor,[186],W,-1,0,False,,,same_tuple_semantic_review,"[""deye_hybrid:solar-pv1-power""]",[],[]
+single_phase_16kw,pv1_voltage,Sensor,[109],V,0.1,0,False,,,same_tuple_numeric_candidate,"[""deye_hybrid:solar-pv1-voltage""]","[""deye_hybrid:solar-pv1-voltage""]",[]
+single_phase_16kw,pv1_current,Sensor,[110],A,0.1,0,False,,,same_tuple_numeric_candidate,"[""deye_hybrid:solar-pv1-current""]","[""deye_hybrid:solar-pv1-current""]",[]
+single_phase_16kw,pv2_power,Sensor,[187],W,-1,0,False,,,same_tuple_semantic_review,"[""deye_hybrid:solar-pv2-power""]",[],[]
+single_phase_16kw,pv2_voltage,Sensor,[111],V,0.1,0,False,,,same_tuple_numeric_candidate,"[""deye_hybrid:solar-pv2-voltage""]","[""deye_hybrid:solar-pv2-voltage""]",[]
+single_phase_16kw,pv2_current,Sensor,[112],A,0.1,0,False,,,same_tuple_numeric_candidate,"[""deye_hybrid:solar-pv2-current""]","[""deye_hybrid:solar-pv2-current""]",[]
+single_phase_16kw,pv3_power,Sensor,[188],W,-1,0,False,,,no_shared_yaml_address,[],[],[]
+single_phase_16kw,pv3_voltage,Sensor,[113],V,0.1,0,False,,,no_shared_yaml_address,[],[],[]
+single_phase_16kw,pv3_current,Sensor,[114],A,0.1,0,False,,,no_shared_yaml_address,[],[],[]
+single_phase_16kw,pv4_power,Sensor,[189],W,-1,0,False,,,same_tuple_semantic_review,"[""deye_hybrid:battery-battery-status""]",[],[]
+single_phase_16kw,pv4_voltage,Sensor,[115],V,0.1,0,False,,,no_shared_yaml_address,[],[],[]
+single_phase_16kw,pv4_current,Sensor,[116],A,0.1,0,False,,,no_shared_yaml_address,[],[],[]
+single_phase_16kw,essential_power,MathSensor,"[175, 169, 166]",W,1,0,False,,,computed_or_constant,[],[],[]
+single_phase_16kw,essential_1_power,MathSensor,"[175, 167, 166]",W,1,0,False,,,computed_or_constant,[],[],[]
+single_phase_16kw,essential_2_power,MathSensor,"[175, 169, 166]",W,1,0,False,,,computed_or_constant,[],[],[]
+single_phase_16kw,non_essential_power,MathSensor,"[172, 167]",W,1,0,False,,,computed_or_constant,[],[],[]
+single_phase_16kw,day_active_energy,Sensor,[60],kWh,-0.1,0,False,,,no_shared_yaml_address,[],[],[]
+single_phase_16kw,day_battery_charge,Sensor,[70],kWh,0.1,0,False,,,same_tuple_numeric_candidate,"[""deye_hybrid:battery-daily-battery-charge""]","[""deye_hybrid:battery-daily-battery-charge""]",[]
+single_phase_16kw,day_battery_discharge,Sensor,[71],kWh,0.1,0,False,,,same_tuple_numeric_candidate,"[""deye_hybrid:battery-daily-battery-discharge""]","[""deye_hybrid:battery-daily-battery-discharge""]",[]
+single_phase_16kw,day_grid_import,Sensor,[76],kWh,0.1,0,False,,,same_tuple_numeric_candidate,"[""deye_hybrid:grid-daily-energy-bought""]","[""deye_hybrid:grid-daily-energy-bought""]",[]
+single_phase_16kw,day_grid_export,Sensor,[77],kWh,0.1,0,False,,,same_tuple_numeric_candidate,"[""deye_hybrid:grid-daily-energy-sold""]","[""deye_hybrid:grid-daily-energy-sold""]",[]
+single_phase_16kw,day_load_energy,Sensor,[84],kWh,0.1,0,False,,,same_tuple_numeric_candidate,"[""deye_hybrid:upload-daily-load-consumption""]","[""deye_hybrid:upload-daily-load-consumption""]",[]
+single_phase_16kw,day_pv_energy,Sensor,[108],kWh,0.1,0,False,,,same_tuple_numeric_candidate,"[""deye_hybrid:solar-daily-production""]","[""deye_hybrid:solar-daily-production""]",[]
+single_phase_16kw,day_reactive_energy,Sensor,[61],kVarh,-0.1,0,False,,,no_shared_yaml_address,[],[],[]
+single_phase_16kw,month_grid_energy,Sensor,[67],kWh,0.1,0,False,,,no_shared_yaml_address,[],[],[]
+single_phase_16kw,month_load_energy,Sensor,[66],kWh,0.1,0,False,,,no_shared_yaml_address,[],[],[]
+single_phase_16kw,month_pv_energy,Sensor,[65],kWh,0.1,0,False,,,no_shared_yaml_address,[],[],[]
+single_phase_16kw,total_active_energy,Sensor,"[63, 64]",kWh,0.1,0,False,,,same_tuple_semantic_review,"[""deye_hybrid:grid-total-grid-production""]",[],[]
+single_phase_16kw,total_battery_charge,Sensor,"[72, 73]",kWh,0.1,0,False,,,same_tuple_numeric_candidate,"[""deye_hybrid:battery-total-battery-charge""]","[""deye_hybrid:battery-total-battery-charge""]",[]
+single_phase_16kw,total_battery_discharge,Sensor,"[74, 75]",kWh,0.1,0,False,,,same_tuple_numeric_candidate,"[""deye_hybrid:battery-total-battery-discharge""]","[""deye_hybrid:battery-total-battery-discharge""]",[]
+single_phase_16kw,total_grid_export,Sensor,"[81, 82]",kWh,0.1,0,False,,,same_tuple_numeric_candidate,"[""deye_hybrid:grid-total-energy-sold""]","[""deye_hybrid:grid-total-energy-sold""]",[]
+single_phase_16kw,total_grid_import,Sensor,"[78, 80]",kWh,0.1,0,False,,,same_tuple_numeric_candidate,"[""deye_hybrid:grid-total-energy-bought""]","[""deye_hybrid:grid-total-energy-bought""]",[]
+single_phase_16kw,total_load_energy,Sensor,"[85, 86]",kWh,0.1,0,False,,,same_tuple_numeric_candidate,"[""deye_hybrid:upload-total-load-consumption""]","[""deye_hybrid:upload-total-load-consumption""]",[]
+single_phase_16kw,total_pv_energy,Sensor,"[96, 97]",kWh,0.1,0,False,,,same_tuple_numeric_candidate,"[""deye_hybrid:solar-total-production""]","[""deye_hybrid:solar-total-production""]",[]
+single_phase_16kw,year_grid_export,Sensor,"[98, 99]",kWh,0.1,0,False,,,no_shared_yaml_address,[],[],[]
+single_phase_16kw,year_load_energy,Sensor,"[87, 88]",kWh,0.1,0,False,,,no_shared_yaml_address,[],[],[]
+single_phase_16kw,year_pv_energy,Sensor,"[68, 69]",kWh,0.1,0,False,,,no_shared_yaml_address,[],[],[]
+single_phase_16kw,rated_power,Sensor,"[16, 17]",W,0.1,0,False,,,no_shared_yaml_address,[],[],[]
+single_phase_16kw,fault,FaultSensor,"[103, 104, 105, 106]",,1,0,False,,,partial_tuple_review,[],[],[]
+single_phase_16kw,overall_state,InverterStateSensor,[59],,1,0,False,,,same_tuple_semantic_review,"[""deye_hybrid:inverter-running-status""]",[],[]
+single_phase_16kw,sd_status,SDStatusSensor,[92],,1,0,False,,,no_shared_yaml_address,[],[],[]
+single_phase_16kw,dc_transformer_temperature,TempSensor,[90],°C,0.1,0,False,,,same_tuple_semantic_review,"[""deye_hybrid:inverter-dc-temperature""]",[],[]
+single_phase_16kw,environment_temperature,TempSensor,[95],°C,0.1,0,False,,,no_shared_yaml_address,[],[],[]
+single_phase_16kw,radiator_temperature,TempSensor,[91],°C,0.1,0,False,,,same_tuple_semantic_review,"[""deye_hybrid:inverter-ac-temperature""]",[],[]
+single_phase_16kw,grid_connected,BinarySensor,[194],,1,0,False,,,same_tuple_semantic_review,"[""deye_hybrid:inverter-grid-connected-status""]",[],[]
+single_phase_16kw,date_time,SystemTimeRWSensor,"[22, 23, 24]",,1,0,True,,,no_shared_yaml_address,[],[],"[""no same-tuple explicitly writable YAML entry""]"
+single_phase_16kw,inverter_enabled,SwitchRWSensor,[43],,1,0,True,,,no_shared_yaml_address,[],[],"[""no same-tuple explicitly writable YAML entry""]"
+single_phase_16kw,control_mode,Sensor,[200],,1,0,False,,,no_shared_yaml_address,[],[],[]
+single_phase_16kw,grid_charge_enabled,SwitchRWSensor,[232],,1,1,True,,,no_shared_yaml_address,[],[],"[""masked control/decoding"", ""no same-tuple explicitly writable YAML entry""]"
+single_phase_16kw,battery_charging_voltage,Sensor,[312],V,0.01,0,False,,,no_shared_yaml_address,[],[],[]
+single_phase_16kw,bat1_soc,Sensor,[603],%,1,0,False,,,no_shared_yaml_address,[],[],[]
+single_phase_16kw,bat1_cycle,Sensor,[611],,1,0,False,,,no_shared_yaml_address,[],[],[]
+single_phase_16kw,battery_equalization_voltage,NumberRWSensor,[201],V,0.01,0,True,41,60,no_shared_yaml_address,[],[],"[""no same-tuple explicitly writable YAML entry""]"
+single_phase_16kw,battery_absorption_voltage,NumberRWSensor,[202],V,0.01,0,True,41,60,no_shared_yaml_address,[],[],"[""no same-tuple explicitly writable YAML entry""]"
+single_phase_16kw,battery_float_voltage,NumberRWSensor,[203],V,0.01,0,True,41,60,no_shared_yaml_address,[],[],"[""no same-tuple explicitly writable YAML entry""]"
+single_phase_16kw,battery_shutdown_capacity,NumberRWSensor,[217],%,1,0,True,0,"{""sensor"": ""battery_low_capacity""}",no_shared_yaml_address,[],[],"[""dependent write limits"", ""no same-tuple explicitly writable YAML entry""]"
+single_phase_16kw,battery_restart_capacity,NumberRWSensor,[218],%,1,0,True,"{""sensor"": ""battery_shutdown_capacity""}",100,no_shared_yaml_address,[],[],"[""dependent write limits"", ""no same-tuple explicitly writable YAML entry""]"
+single_phase_16kw,battery_low_capacity,NumberRWSensor,[219],%,1,0,True,"{""sensor"": ""battery_shutdown_capacity""}",50,no_shared_yaml_address,[],[],"[""dependent write limits"", ""no same-tuple explicitly writable YAML entry""]"
+single_phase_16kw,battery_shutdown_voltage,NumberRWSensor,[220],V,0.01,0,True,41,100,no_shared_yaml_address,[],[],"[""no same-tuple explicitly writable YAML entry""]"
+single_phase_16kw,battery_restart_voltage,NumberRWSensor,[221],V,0.01,0,True,"{""sensor"": ""battery_shutdown_voltage""}",60,no_shared_yaml_address,[],[],"[""dependent write limits"", ""no same-tuple explicitly writable YAML entry""]"
+single_phase_16kw,battery_low_voltage,NumberRWSensor,[222],V,0.01,0,True,"{""sensor"": ""battery_shutdown_voltage""}",60,no_shared_yaml_address,[],[],"[""dependent write limits"", ""no same-tuple explicitly writable YAML entry""]"
+single_phase_16kw,priority_load,SwitchRWSensor,[243],,1,1,True,,,no_shared_yaml_address,[],[],"[""masked control/decoding"", ""no same-tuple explicitly writable YAML entry""]"
+single_phase_16kw,load_limit,SelectRWSensor,[244],,1,0,True,,,partial_tuple_review,[],[],"[""no same-tuple explicitly writable YAML entry""]"
+single_phase_16kw,max_solar_power,NumberRWSensor,[53],W,1,0,True,0,"{""sensor"": ""rated_power""}",no_shared_yaml_address,[],[],"[""dependent write limits"", ""no same-tuple explicitly writable YAML entry""]"
+single_phase_16kw,max_sell_power,NumberRWSensor,[245],W,1,0,True,0,"{""sensor"": ""rated_power""}",no_shared_yaml_address,[],[],"[""dependent write limits"", ""no same-tuple explicitly writable YAML entry""]"
+single_phase_16kw,solar_export,SwitchRWSensor,[247],,1,1,True,,,partial_tuple_review,[],[],"[""masked control/decoding"", ""no same-tuple explicitly writable YAML entry""]"
+single_phase_16kw,use_timer,SwitchRWSensor,[248],,1,1,True,,,same_tuple_semantic_review,"[""deye_hybrid:time-of-use-time-of-use""]",[],"[""masked control/decoding"", ""no same-tuple explicitly writable YAML entry""]"
+single_phase_16kw,peak_shaving,SwitchRWSensor,[280],,1,15,True,,,no_shared_yaml_address,[],[],"[""masked control/decoding"", ""no same-tuple explicitly writable YAML entry""]"
+single_phase_16kw,gen_peak_shaving,SwitchRWSensor,[280],,1,240,True,,,no_shared_yaml_address,[],[],"[""masked control/decoding"", ""no same-tuple explicitly writable YAML entry""]"
+single_phase_16kw,grid_peak_shaving,SwitchRWSensor,[280],,1,3840,True,,,no_shared_yaml_address,[],[],"[""masked control/decoding"", ""no same-tuple explicitly writable YAML entry""]"
+single_phase_16kw,grid_always_on,SwitchRWSensor,[280],,1,61440,True,,,no_shared_yaml_address,[],[],"[""masked control/decoding"", ""no same-tuple explicitly writable YAML entry""]"
+single_phase_16kw,gen_peak_shaving_power,NumberRWSensor,[292],W,1,0,True,0,"{""sensor"": ""rated_power""}",no_shared_yaml_address,[],[],"[""dependent write limits"", ""no same-tuple explicitly writable YAML entry""]"
+single_phase_16kw,grid_peak_shaving_power,NumberRWSensor,[293],W,1,0,True,0,"{""sensor"": ""rated_power""}",no_shared_yaml_address,[],[],"[""dependent write limits"", ""no same-tuple explicitly writable YAML entry""]"
+single_phase_16kw,prog1_time,TimeRWSensor,[250],,1,0,True,"{""sensor"": ""prog6_time""}","{""sensor"": ""prog2_time""}",same_tuple_semantic_review,"[""deye_hybrid:time-of-use-time-of-use-time-1""]",[],"[""dependent write limits""]"
+single_phase_16kw,prog2_time,TimeRWSensor,[251],,1,0,True,"{""sensor"": ""prog1_time""}","{""sensor"": ""prog3_time""}",same_tuple_semantic_review,"[""deye_hybrid:time-of-use-time-of-use-time-2""]",[],"[""dependent write limits""]"
+single_phase_16kw,prog3_time,TimeRWSensor,[252],,1,0,True,"{""sensor"": ""prog2_time""}","{""sensor"": ""prog4_time""}",same_tuple_semantic_review,"[""deye_hybrid:time-of-use-time-of-use-time-3""]",[],"[""dependent write limits""]"
+single_phase_16kw,prog4_time,TimeRWSensor,[253],,1,0,True,"{""sensor"": ""prog3_time""}","{""sensor"": ""prog5_time""}",same_tuple_semantic_review,"[""deye_hybrid:time-of-use-time-of-use-time-4""]",[],"[""dependent write limits""]"
+single_phase_16kw,prog5_time,TimeRWSensor,[254],,1,0,True,"{""sensor"": ""prog4_time""}","{""sensor"": ""prog6_time""}",same_tuple_semantic_review,"[""deye_hybrid:time-of-use-time-of-use-time-5""]",[],"[""dependent write limits""]"
+single_phase_16kw,prog6_time,TimeRWSensor,[255],,1,0,True,"{""sensor"": ""prog5_time""}","{""sensor"": ""prog1_time""}",same_tuple_semantic_review,"[""deye_hybrid:time-of-use-time-of-use-time-6""]",[],"[""dependent write limits""]"
+single_phase_16kw,prog1_power,NumberRWSensor,[256],W,1,0,True,0,"{""sensor"": ""rated_power""}",same_tuple_numeric_candidate,"[""deye_hybrid:time-of-use-time-of-use-power-1""]","[""deye_hybrid:time-of-use-time-of-use-power-1""]","[""dependent write limits""]"
+single_phase_16kw,prog2_power,NumberRWSensor,[257],W,1,0,True,0,"{""sensor"": ""rated_power""}",same_tuple_numeric_candidate,"[""deye_hybrid:time-of-use-time-of-use-power-2""]","[""deye_hybrid:time-of-use-time-of-use-power-2""]","[""dependent write limits""]"
+single_phase_16kw,prog3_power,NumberRWSensor,[258],W,1,0,True,0,"{""sensor"": ""rated_power""}",same_tuple_numeric_candidate,"[""deye_hybrid:time-of-use-time-of-use-power-3""]","[""deye_hybrid:time-of-use-time-of-use-power-3""]","[""dependent write limits""]"
+single_phase_16kw,prog4_power,NumberRWSensor,[259],W,1,0,True,0,"{""sensor"": ""rated_power""}",same_tuple_numeric_candidate,"[""deye_hybrid:time-of-use-time-of-use-power-4""]","[""deye_hybrid:time-of-use-time-of-use-power-4""]","[""dependent write limits""]"
+single_phase_16kw,prog5_power,NumberRWSensor,[260],W,1,0,True,0,"{""sensor"": ""rated_power""}",same_tuple_numeric_candidate,"[""deye_hybrid:time-of-use-time-of-use-power-5""]","[""deye_hybrid:time-of-use-time-of-use-power-5""]","[""dependent write limits""]"
+single_phase_16kw,prog6_power,NumberRWSensor,[261],W,1,0,True,0,"{""sensor"": ""rated_power""}",same_tuple_numeric_candidate,"[""deye_hybrid:time-of-use-time-of-use-power-6""]","[""deye_hybrid:time-of-use-time-of-use-power-6""]","[""dependent write limits""]"
+single_phase_16kw,prog1_capacity,NumberRWSensor,[268],%,1,0,True,"{""sensor"": ""battery_low_capacity""}",100,same_tuple_numeric_candidate,"[""deye_hybrid:time-of-use-time-of-use-soc-1""]","[""deye_hybrid:time-of-use-time-of-use-soc-1""]","[""dependent write limits""]"
+single_phase_16kw,prog2_capacity,NumberRWSensor,[269],%,1,0,True,"{""sensor"": ""battery_low_capacity""}",100,same_tuple_numeric_candidate,"[""deye_hybrid:time-of-use-time-of-use-soc-2""]","[""deye_hybrid:time-of-use-time-of-use-soc-2""]","[""dependent write limits""]"
+single_phase_16kw,prog3_capacity,NumberRWSensor,[270],%,1,0,True,"{""sensor"": ""battery_low_capacity""}",100,same_tuple_numeric_candidate,"[""deye_hybrid:time-of-use-time-of-use-soc-3""]","[""deye_hybrid:time-of-use-time-of-use-soc-3""]","[""dependent write limits""]"
+single_phase_16kw,prog4_capacity,NumberRWSensor,[271],%,1,0,True,"{""sensor"": ""battery_low_capacity""}",100,same_tuple_numeric_candidate,"[""deye_hybrid:time-of-use-time-of-use-soc-4""]","[""deye_hybrid:time-of-use-time-of-use-soc-4""]","[""dependent write limits""]"
+single_phase_16kw,prog5_capacity,NumberRWSensor,[272],%,1,0,True,"{""sensor"": ""battery_low_capacity""}",100,same_tuple_numeric_candidate,"[""deye_hybrid:time-of-use-time-of-use-soc-5""]","[""deye_hybrid:time-of-use-time-of-use-soc-5""]","[""dependent write limits""]"
+single_phase_16kw,prog6_capacity,NumberRWSensor,[273],%,1,0,True,"{""sensor"": ""battery_low_capacity""}",100,same_tuple_numeric_candidate,"[""deye_hybrid:time-of-use-time-of-use-soc-6""]","[""deye_hybrid:time-of-use-time-of-use-soc-6""]","[""dependent write limits""]"
+single_phase_16kw,prog1_charge,SelectRWSensor,[274],,1,3,True,,,same_tuple_semantic_review,"[""deye_hybrid:time-of-use-time-of-use-enable-1""]",[],"[""masked control/decoding"", ""no same-tuple explicitly writable YAML entry""]"
+single_phase_16kw,prog2_charge,SelectRWSensor,[275],,1,3,True,,,same_tuple_semantic_review,"[""deye_hybrid:time-of-use-time-of-use-enable-2""]",[],"[""masked control/decoding"", ""no same-tuple explicitly writable YAML entry""]"
+single_phase_16kw,prog3_charge,SelectRWSensor,[276],,1,3,True,,,same_tuple_semantic_review,"[""deye_hybrid:time-of-use-time-of-use-enable-3""]",[],"[""masked control/decoding"", ""no same-tuple explicitly writable YAML entry""]"
+single_phase_16kw,prog4_charge,SelectRWSensor,[277],,1,3,True,,,same_tuple_semantic_review,"[""deye_hybrid:time-of-use-time-of-use-enable-4""]",[],"[""masked control/decoding"", ""no same-tuple explicitly writable YAML entry""]"
+single_phase_16kw,prog5_charge,SelectRWSensor,[278],,1,3,True,,,same_tuple_semantic_review,"[""deye_hybrid:time-of-use-time-of-use-enable-5""]",[],"[""masked control/decoding"", ""no same-tuple explicitly writable YAML entry""]"
+single_phase_16kw,prog6_charge,SelectRWSensor,[279],,1,3,True,,,same_tuple_semantic_review,"[""deye_hybrid:time-of-use-time-of-use-enable-6""]",[],"[""masked control/decoding"", ""no same-tuple explicitly writable YAML entry""]"
+single_phase_16kw,prog1_mode,SelectRWSensor,[274],,1,28,True,,,same_tuple_semantic_review,"[""deye_hybrid:time-of-use-time-of-use-enable-1""]",[],"[""masked control/decoding"", ""no same-tuple explicitly writable YAML entry""]"
+single_phase_16kw,prog2_mode,SelectRWSensor,[275],,1,28,True,,,same_tuple_semantic_review,"[""deye_hybrid:time-of-use-time-of-use-enable-2""]",[],"[""masked control/decoding"", ""no same-tuple explicitly writable YAML entry""]"
+single_phase_16kw,prog3_mode,SelectRWSensor,[276],,1,28,True,,,same_tuple_semantic_review,"[""deye_hybrid:time-of-use-time-of-use-enable-3""]",[],"[""masked control/decoding"", ""no same-tuple explicitly writable YAML entry""]"
+single_phase_16kw,prog4_mode,SelectRWSensor,[277],,1,28,True,,,same_tuple_semantic_review,"[""deye_hybrid:time-of-use-time-of-use-enable-4""]",[],"[""masked control/decoding"", ""no same-tuple explicitly writable YAML entry""]"
+single_phase_16kw,prog5_mode,SelectRWSensor,[278],,1,28,True,,,same_tuple_semantic_review,"[""deye_hybrid:time-of-use-time-of-use-enable-5""]",[],"[""masked control/decoding"", ""no same-tuple explicitly writable YAML entry""]"
+single_phase_16kw,prog6_mode,SelectRWSensor,[279],,1,28,True,,,same_tuple_semantic_review,"[""deye_hybrid:time-of-use-time-of-use-enable-6""]",[],"[""masked control/decoding"", ""no same-tuple explicitly writable YAML entry""]"
+single_phase_16kw,prog1_sell,SwitchRWSensor,[274],,1,64,True,,,same_tuple_semantic_review,"[""deye_hybrid:time-of-use-time-of-use-enable-1""]",[],"[""masked control/decoding"", ""no same-tuple explicitly writable YAML entry""]"
+single_phase_16kw,prog2_sell,SwitchRWSensor,[275],,1,64,True,,,same_tuple_semantic_review,"[""deye_hybrid:time-of-use-time-of-use-enable-2""]",[],"[""masked control/decoding"", ""no same-tuple explicitly writable YAML entry""]"
+single_phase_16kw,prog3_sell,SwitchRWSensor,[276],,1,64,True,,,same_tuple_semantic_review,"[""deye_hybrid:time-of-use-time-of-use-enable-3""]",[],"[""masked control/decoding"", ""no same-tuple explicitly writable YAML entry""]"
+single_phase_16kw,prog4_sell,SwitchRWSensor,[277],,1,64,True,,,same_tuple_semantic_review,"[""deye_hybrid:time-of-use-time-of-use-enable-4""]",[],"[""masked control/decoding"", ""no same-tuple explicitly writable YAML entry""]"
+single_phase_16kw,prog5_sell,SwitchRWSensor,[278],,1,64,True,,,same_tuple_semantic_review,"[""deye_hybrid:time-of-use-time-of-use-enable-5""]",[],"[""masked control/decoding"", ""no same-tuple explicitly writable YAML entry""]"
+single_phase_16kw,prog6_sell,SwitchRWSensor,[279],,1,64,True,,,same_tuple_semantic_review,"[""deye_hybrid:time-of-use-time-of-use-enable-6""]",[],"[""masked control/decoding"", ""no same-tuple explicitly writable YAML entry""]"
+single_phase_16kw,prog1_voltage,NumberRWSensor,[262],V,0.01,0,True,"{""sensor"": ""battery_low_voltage""}","{""sensor"": ""battery_float_voltage""}",no_shared_yaml_address,[],[],"[""dependent write limits"", ""no same-tuple explicitly writable YAML entry""]"
+single_phase_16kw,prog2_voltage,NumberRWSensor,[263],V,0.01,0,True,"{""sensor"": ""battery_low_voltage""}","{""sensor"": ""battery_float_voltage""}",no_shared_yaml_address,[],[],"[""dependent write limits"", ""no same-tuple explicitly writable YAML entry""]"
+single_phase_16kw,prog3_voltage,NumberRWSensor,[264],V,0.01,0,True,"{""sensor"": ""battery_low_voltage""}","{""sensor"": ""battery_float_voltage""}",no_shared_yaml_address,[],[],"[""dependent write limits"", ""no same-tuple explicitly writable YAML entry""]"
+single_phase_16kw,prog4_voltage,NumberRWSensor,[265],V,0.01,0,True,"{""sensor"": ""battery_low_voltage""}","{""sensor"": ""battery_float_voltage""}",no_shared_yaml_address,[],[],"[""dependent write limits"", ""no same-tuple explicitly writable YAML entry""]"
+single_phase_16kw,prog5_voltage,NumberRWSensor,[266],V,0.01,0,True,"{""sensor"": ""battery_low_voltage""}","{""sensor"": ""battery_float_voltage""}",no_shared_yaml_address,[],[],"[""dependent write limits"", ""no same-tuple explicitly writable YAML entry""]"
+single_phase_16kw,prog6_voltage,NumberRWSensor,[267],V,0.01,0,True,"{""sensor"": ""battery_low_voltage""}","{""sensor"": ""battery_float_voltage""}",no_shared_yaml_address,[],[],"[""dependent write limits"", ""no same-tuple explicitly writable YAML entry""]"
+single_phase_16kw,grid_charge_battery_current,NumberRWSensor,[230],A,1,0,True,0,140,no_shared_yaml_address,[],[],"[""no same-tuple explicitly writable YAML entry""]"
+single_phase_16kw,battery_max_charge_current,NumberRWSensor,[210],A,1,0,True,0,290,no_shared_yaml_address,[],[],"[""no same-tuple explicitly writable YAML entry""]"
+single_phase_16kw,battery_max_discharge_current,NumberRWSensor,[211],A,1,0,True,0,290,no_shared_yaml_address,[],[],"[""no same-tuple explicitly writable YAML entry""]"
+single_phase_16kw,bms_protocol,SelectRWSensor,[325],,1,0,True,,,no_shared_yaml_address,[],[],"[""no same-tuple explicitly writable YAML entry""]"
+three_phase_lv,pv_power,PVDynamicTotalSensor,[0],W,1,0,False,,,computed_or_constant,[],[],[]
+three_phase_lv,inverter_l1_power,Sensor16,"[633, 691]",W,-1,0,False,,,partial_tuple_review,[],[],"[""history-dependent 16/32-bit interpretation""]"
+three_phase_lv,inverter_l2_power,Sensor16,"[634, 692]",W,-1,0,False,,,partial_tuple_review,[],[],"[""history-dependent 16/32-bit interpretation""]"
+three_phase_lv,inverter_l3_power,Sensor16,"[635, 693]",W,-1,0,False,,,partial_tuple_review,[],[],"[""history-dependent 16/32-bit interpretation""]"
+three_phase_lv,inverter_power,Sensor16,"[636, 694]",W,-1,0,False,,,no_shared_yaml_address,[],[],"[""history-dependent 16/32-bit interpretation""]"
+three_phase_lv,inverter_l1_voltage,Sensor,[627],V,0.1,0,False,,,no_shared_yaml_address,[],[],[]
+three_phase_lv,inverter_l2_voltage,Sensor,[628],V,0.1,0,False,,,no_shared_yaml_address,[],[],[]
+three_phase_lv,inverter_l3_voltage,Sensor,[629],V,0.1,0,False,,,no_shared_yaml_address,[],[],[]
+three_phase_lv,inverter_l1_current,Sensor,[630],A,-0.01,0,False,,,same_tuple_numeric_candidate,"[""deye_sg04lp3:inverter-current-l1""]","[""deye_sg04lp3:inverter-current-l1""]",[]
+three_phase_lv,inverter_l2_current,Sensor,[631],A,-0.01,0,False,,,same_tuple_numeric_candidate,"[""deye_sg04lp3:inverter-current-l2""]","[""deye_sg04lp3:inverter-current-l2""]",[]
+three_phase_lv,inverter_l3_current,Sensor,[632],A,-0.01,0,False,,,same_tuple_numeric_candidate,"[""deye_sg04lp3:inverter-current-l3""]","[""deye_sg04lp3:inverter-current-l3""]",[]
+three_phase_lv,inverter_frequency,Sensor,[638],Hz,0.01,0,False,,,no_shared_yaml_address,[],[],[]
+three_phase_lv,grid_frequency,Sensor,[609],Hz,0.01,0,False,,,no_shared_yaml_address,[],[],[]
+three_phase_lv,grid_l1_power,Sensor16,"[622, 687]",W,-1,0,False,,,no_shared_yaml_address,[],[],"[""history-dependent 16/32-bit interpretation""]"
+three_phase_lv,grid_l2_power,Sensor16,"[623, 688]",W,-1,0,False,,,no_shared_yaml_address,[],[],"[""history-dependent 16/32-bit interpretation""]"
+three_phase_lv,grid_l3_power,Sensor16,"[624, 689]",W,-1,0,False,,,no_shared_yaml_address,[],[],"[""history-dependent 16/32-bit interpretation""]"
+three_phase_lv,grid_power,Sensor16,"[625, 690]",W,-1,0,False,,,partial_tuple_review,[],[],"[""history-dependent 16/32-bit interpretation""]"
+three_phase_lv,grid_l1_voltage,Sensor,[598],V,0.1,0,False,,,same_tuple_numeric_candidate,"[""deye_sg04lp3:grid-grid-voltage-l1""]","[""deye_sg04lp3:grid-grid-voltage-l1""]",[]
+three_phase_lv,grid_l2_voltage,Sensor,[599],V,0.1,0,False,,,same_tuple_numeric_candidate,"[""deye_sg04lp3:grid-grid-voltage-l2""]","[""deye_sg04lp3:grid-grid-voltage-l2""]",[]
+three_phase_lv,grid_l3_voltage,Sensor,[600],V,0.1,0,False,,,same_tuple_numeric_candidate,"[""deye_sg04lp3:grid-grid-voltage-l3""]","[""deye_sg04lp3:grid-grid-voltage-l3""]",[]
+three_phase_lv,grid_l1_inner_side_power,Sensor16,"[604, 700]",W,-1,0,False,,,partial_tuple_review,[],[],"[""history-dependent 16/32-bit interpretation""]"
+three_phase_lv,grid_l2_inner_side_power,Sensor16,"[605, 701]",W,-1,0,False,,,partial_tuple_review,[],[],"[""history-dependent 16/32-bit interpretation""]"
+three_phase_lv,grid_l3_inner_side_power,Sensor16,"[606, 702]",W,-1,0,False,,,partial_tuple_review,[],[],"[""history-dependent 16/32-bit interpretation""]"
+three_phase_lv,total_active_power_from_side_to_side_of_the_grid,Sensor16,"[607, 703]",W,-1,0,False,,,no_shared_yaml_address,[],[],"[""history-dependent 16/32-bit interpretation""]"
+three_phase_lv,grid_side___inside_total_apparent_power,Sensor16,"[608, 704]",W,-1,0,False,,,no_shared_yaml_address,[],[],"[""history-dependent 16/32-bit interpretation""]"
+three_phase_lv,grid_current,MathSensor,"[610, 611, 612]",A,1,0,False,,,computed_or_constant,[],[],[]
+three_phase_lv,grid_ct_l1_power,Sensor16,"[616, 705]",W,-1,0,False,,,partial_tuple_review,[],[],"[""history-dependent 16/32-bit interpretation""]"
+three_phase_lv,grid_ct_l2_power,Sensor16,"[617, 706]",W,-1,0,False,,,partial_tuple_review,[],[],"[""history-dependent 16/32-bit interpretation""]"
+three_phase_lv,grid_ct_l3_power,Sensor16,"[618, 707]",W,-1,0,False,,,partial_tuple_review,[],[],"[""history-dependent 16/32-bit interpretation""]"
+three_phase_lv,grid_ct_power,Sensor16,"[619, 708]",W,-1,0,False,,,no_shared_yaml_address,[],[],"[""history-dependent 16/32-bit interpretation""]"
+three_phase_lv,grid_ct_current,MathSensor,"[613, 614, 615]",A,1,0,False,,,computed_or_constant,[],[],[]
+three_phase_lv,load_l1_power,Sensor16,"[650, 656]",W,-1,0,False,,,partial_tuple_review,[],[],"[""history-dependent 16/32-bit interpretation""]"
+three_phase_lv,load_l2_power,Sensor16,"[651, 657]",W,-1,0,False,,,partial_tuple_review,[],[],"[""history-dependent 16/32-bit interpretation""]"
+three_phase_lv,load_l3_power,Sensor16,"[652, 658]",W,-1,0,False,,,partial_tuple_review,[],[],"[""history-dependent 16/32-bit interpretation""]"
+three_phase_lv,load_power,Sensor16,"[653, 659]",W,-1,0,False,,,partial_tuple_review,[],[],"[""history-dependent 16/32-bit interpretation""]"
+three_phase_lv,load_l1_voltage,Sensor,[644],V,0.1,0,False,,,same_tuple_numeric_candidate,"[""deye_sg04lp3:upload-load-voltage-l1""]","[""deye_sg04lp3:upload-load-voltage-l1""]",[]
+three_phase_lv,load_l2_voltage,Sensor,[645],V,0.1,0,False,,,same_tuple_numeric_candidate,"[""deye_sg04lp3:upload-load-voltage-l2""]","[""deye_sg04lp3:upload-load-voltage-l2""]",[]
+three_phase_lv,load_l3_voltage,Sensor,[646],V,0.1,0,False,,,same_tuple_numeric_candidate,"[""deye_sg04lp3:upload-load-voltage-l3""]","[""deye_sg04lp3:upload-load-voltage-l3""]",[]
+three_phase_lv,load_frequency,Sensor,[655],Hz,0.01,0,False,,,no_shared_yaml_address,[],[],[]
+three_phase_lv,aux_port_usage,SelectRWSensor,[133],,1,0,True,,,same_tuple_semantic_review,"[""deye_sg04lp3:smartload-smartload-enable-status""]",[],"[""no same-tuple explicitly writable YAML entry""]"
+three_phase_lv,generator_port_usage,SelectRWSensor,[133],,1,0,True,,,same_tuple_semantic_review,"[""deye_sg04lp3:smartload-smartload-enable-status""]",[],"[""no same-tuple explicitly writable YAML entry""]"
+three_phase_lv,gen_l1_power,Sensor16,"[664, 668]",W,-1,0,False,,,same_tuple_semantic_review,"[""deye_sg04lp3:smartload-phase-power-of-gen-port-a""]",[],"[""history-dependent 16/32-bit interpretation""]"
+three_phase_lv,aux_l1_power,Sensor16,"[664, 668]",W,-1,0,False,,,same_tuple_semantic_review,"[""deye_sg04lp3:smartload-phase-power-of-gen-port-a""]",[],"[""history-dependent 16/32-bit interpretation""]"
+three_phase_lv,gen_l2_power,Sensor16,"[665, 669]",W,-1,0,False,,,same_tuple_semantic_review,"[""deye_sg04lp3:smartload-phase-power-of-gen-port-b""]",[],"[""history-dependent 16/32-bit interpretation""]"
+three_phase_lv,aux_l2_power,Sensor16,"[665, 669]",W,-1,0,False,,,same_tuple_semantic_review,"[""deye_sg04lp3:smartload-phase-power-of-gen-port-b""]",[],"[""history-dependent 16/32-bit interpretation""]"
+three_phase_lv,gen_l3_power,Sensor16,"[666, 670]",W,-1,0,False,,,same_tuple_semantic_review,"[""deye_sg04lp3:smartload-phase-power-of-gen-port-c""]",[],"[""history-dependent 16/32-bit interpretation""]"
+three_phase_lv,aux_l3_power,Sensor16,"[666, 670]",W,-1,0,False,,,same_tuple_semantic_review,"[""deye_sg04lp3:smartload-phase-power-of-gen-port-c""]",[],"[""history-dependent 16/32-bit interpretation""]"
+three_phase_lv,gen_power,Sensor16,"[667, 671]",W,-1,0,False,,,same_tuple_semantic_review,"[""deye_sg04lp3:smartload-total-power-of-gen-port""]",[],"[""history-dependent 16/32-bit interpretation""]"
+three_phase_lv,aux_power,Sensor16,"[667, 671]",W,-1,0,False,,,same_tuple_semantic_review,"[""deye_sg04lp3:smartload-total-power-of-gen-port""]",[],"[""history-dependent 16/32-bit interpretation""]"
+three_phase_lv,gen_l1_voltage,Sensor,[661],V,0.1,0,False,,,same_tuple_numeric_candidate,"[""deye_sg04lp3:smartload-phase-voltage-of-gen-port-a""]","[""deye_sg04lp3:smartload-phase-voltage-of-gen-port-a""]",[]
+three_phase_lv,aux_l1_voltage,Sensor,[661],V,0.1,0,False,,,same_tuple_numeric_candidate,"[""deye_sg04lp3:smartload-phase-voltage-of-gen-port-a""]","[""deye_sg04lp3:smartload-phase-voltage-of-gen-port-a""]",[]
+three_phase_lv,gen_l2_voltage,Sensor,[662],V,0.1,0,False,,,same_tuple_numeric_candidate,"[""deye_sg04lp3:smartload-phase-voltage-of-gen-port-b""]","[""deye_sg04lp3:smartload-phase-voltage-of-gen-port-b""]",[]
+three_phase_lv,aux_l2_voltage,Sensor,[662],V,0.1,0,False,,,same_tuple_numeric_candidate,"[""deye_sg04lp3:smartload-phase-voltage-of-gen-port-b""]","[""deye_sg04lp3:smartload-phase-voltage-of-gen-port-b""]",[]
+three_phase_lv,gen_l3_voltage,Sensor,[663],V,0.1,0,False,,,same_tuple_numeric_candidate,"[""deye_sg04lp3:smartload-phase-voltage-of-gen-port-c""]","[""deye_sg04lp3:smartload-phase-voltage-of-gen-port-c""]",[]
+three_phase_lv,aux_l3_voltage,Sensor,[663],V,0.1,0,False,,,same_tuple_numeric_candidate,"[""deye_sg04lp3:smartload-phase-voltage-of-gen-port-c""]","[""deye_sg04lp3:smartload-phase-voltage-of-gen-port-c""]",[]
+three_phase_lv,ups_load_l1_power,Sensor16,"[640, 696]",W,1,0,False,,,no_shared_yaml_address,[],[],"[""history-dependent 16/32-bit interpretation""]"
+three_phase_lv,ups_load_l2_power,Sensor16,"[641, 697]",W,1,0,False,,,no_shared_yaml_address,[],[],"[""history-dependent 16/32-bit interpretation""]"
+three_phase_lv,ups_load_l3_power,Sensor16,"[642, 698]",W,1,0,False,,,no_shared_yaml_address,[],[],"[""history-dependent 16/32-bit interpretation""]"
+three_phase_lv,ups_load_total_power,Sensor16,"[643, 699]",W,1,0,False,,,no_shared_yaml_address,[],[],"[""history-dependent 16/32-bit interpretation""]"
+three_phase_lv,pv1_power,Sensor,[672],W,-1,0,False,,,same_tuple_semantic_review,"[""deye_sg04lp3:solar-pv1-power""]",[],[]
+three_phase_lv,pv1_voltage,Sensor,[676],V,0.1,0,False,,,same_tuple_numeric_candidate,"[""deye_sg04lp3:solar-pv1-voltage""]","[""deye_sg04lp3:solar-pv1-voltage""]",[]
+three_phase_lv,pv1_current,Sensor,[677],A,0.1,0,False,,,same_tuple_numeric_candidate,"[""deye_sg04lp3:solar-pv1-current""]","[""deye_sg04lp3:solar-pv1-current""]",[]
+three_phase_lv,pv2_power,Sensor,[673],W,-1,0,False,,,same_tuple_semantic_review,"[""deye_sg04lp3:solar-pv2-power""]",[],[]
+three_phase_lv,pv2_voltage,Sensor,[678],V,0.1,0,False,,,same_tuple_numeric_candidate,"[""deye_sg04lp3:solar-pv2-voltage""]","[""deye_sg04lp3:solar-pv2-voltage""]",[]
+three_phase_lv,pv2_current,Sensor,[679],A,0.1,0,False,,,same_tuple_numeric_candidate,"[""deye_sg04lp3:solar-pv2-current""]","[""deye_sg04lp3:solar-pv2-current""]",[]
+three_phase_lv,pv3_power,Sensor,[674],W,-1,0,False,,,no_shared_yaml_address,[],[],[]
+three_phase_lv,pv3_voltage,Sensor,[680],V,0.1,0,False,,,no_shared_yaml_address,[],[],[]
+three_phase_lv,pv3_current,Sensor,[681],A,0.1,0,False,,,no_shared_yaml_address,[],[],[]
+three_phase_lv,pv4_power,Sensor,[675],W,-1,0,False,,,no_shared_yaml_address,[],[],[]
+three_phase_lv,pv4_voltage,Sensor,[682],V,0.1,0,False,,,no_shared_yaml_address,[],[],[]
+three_phase_lv,pv4_current,Sensor,[683],A,0.1,0,False,,,no_shared_yaml_address,[],[],[]
+three_phase_lv,day_active_energy,Sensor,[502],kWh,-0.1,0,False,,,no_shared_yaml_address,[],[],[]
+three_phase_lv,day_battery_charge,Sensor,[514],kWh,0.1,0,False,,,same_tuple_numeric_candidate,"[""deye_sg04lp3:battery-daily-battery-charge""]","[""deye_sg04lp3:battery-daily-battery-charge""]",[]
+three_phase_lv,day_battery_discharge,Sensor,[515],kWh,0.1,0,False,,,same_tuple_numeric_candidate,"[""deye_sg04lp3:battery-daily-battery-discharge""]","[""deye_sg04lp3:battery-daily-battery-discharge""]",[]
+three_phase_lv,day_grid_export,Sensor,[521],kWh,0.1,0,False,,,same_tuple_numeric_candidate,"[""deye_sg04lp3:grid-daily-energy-sold""]","[""deye_sg04lp3:grid-daily-energy-sold""]",[]
+three_phase_lv,day_grid_import,Sensor,[520],kWh,0.1,0,False,,,same_tuple_numeric_candidate,"[""deye_sg04lp3:grid-daily-energy-bought""]","[""deye_sg04lp3:grid-daily-energy-bought""]",[]
+three_phase_lv,day_gen_energy,Sensor,[536],kWh,0.1,0,False,,,same_tuple_numeric_candidate,"[""deye_sg04lp3:smartload-generator-daily-power-generation""]","[""deye_sg04lp3:smartload-generator-daily-power-generation""]",[]
+three_phase_lv,day_load_energy,Sensor,[526],kWh,0.1,0,False,,,same_tuple_numeric_candidate,"[""deye_sg04lp3:upload-daily-load-consumption""]","[""deye_sg04lp3:upload-daily-load-consumption""]",[]
+three_phase_lv,day_pv_energy,Sensor,[529],kWh,0.1,0,False,,,same_tuple_numeric_candidate,"[""deye_sg04lp3:solar-daily-production""]","[""deye_sg04lp3:solar-daily-production""]",[]
+three_phase_lv,total_active_energy,Sensor,"[506, 507]",kWh,0.1,0,False,,,no_shared_yaml_address,[],[],[]
+three_phase_lv,total_battery_charge,Sensor,"[516, 517]",kWh,0.1,0,False,,,same_tuple_numeric_candidate,"[""deye_sg04lp3:battery-total-battery-charge""]","[""deye_sg04lp3:battery-total-battery-charge""]",[]
+three_phase_lv,total_battery_discharge,Sensor,"[518, 519]",kWh,0.1,0,False,,,same_tuple_numeric_candidate,"[""deye_sg04lp3:battery-total-battery-discharge""]","[""deye_sg04lp3:battery-total-battery-discharge""]",[]
+three_phase_lv,total_grid_export,Sensor,"[524, 525]",kWh,0.1,0,False,,,same_tuple_numeric_candidate,"[""deye_sg04lp3:grid-total-energy-sold"", ""deye_sg04lp3:grid-total-grid-production""]","[""deye_sg04lp3:grid-total-energy-sold""]",[]
+three_phase_lv,total_grid_import,Sensor,"[522, 523]",kWh,0.1,0,False,,,same_tuple_numeric_candidate,"[""deye_sg04lp3:grid-total-energy-bought""]","[""deye_sg04lp3:grid-total-energy-bought""]",[]
+three_phase_lv,total_load_energy,Sensor,"[527, 528]",kWh,0.1,0,False,,,same_tuple_numeric_candidate,"[""deye_sg04lp3:upload-total-load-consumption""]","[""deye_sg04lp3:upload-total-load-consumption""]",[]
+three_phase_lv,total_pv_energy,Sensor,"[534, 535]",kWh,0.1,0,False,,,same_tuple_numeric_candidate,"[""deye_sg04lp3:solar-total-production""]","[""deye_sg04lp3:solar-total-production""]",[]
+three_phase_lv,rated_power,Sensor,"[20, 21]",W,0.1,0,False,,,no_shared_yaml_address,[],[],[]
+three_phase_lv,fault,FaultSensor,"[555, 556, 557, 558]",,1,0,False,,,partial_tuple_review,[],[],[]
+three_phase_lv,overall_state,InverterStateSensor,[500],,1,0,False,,,no_shared_yaml_address,[],[],[]
+three_phase_lv,dc_transformer_temperature,TempSensor,[540],°C,0.1,0,False,,,same_tuple_semantic_review,"[""deye_sg04lp3:inverter-dc-temperature""]",[],[]
+three_phase_lv,radiator_temperature,TempSensor,[541],°C,0.1,0,False,,,same_tuple_semantic_review,"[""deye_sg04lp3:inverter-ac-temperature""]",[],[]
+three_phase_lv,date_time,SystemTimeRWSensor,"[62, 63, 64]",,1,0,True,,,no_shared_yaml_address,[],[],"[""no same-tuple explicitly writable YAML entry""]"
+three_phase_lv,inv_relay_status,BinarySensor,[552],,1,1,False,,,no_shared_yaml_address,[],[],"[""masked control/decoding""]"
+three_phase_lv,undefined_load_relay_status,BinarySensor,[552],,1,2,False,,,no_shared_yaml_address,[],[],"[""masked control/decoding""]"
+three_phase_lv,grid_connected,BinarySensor,[552],,1,4,False,,,no_shared_yaml_address,[],[],"[""masked control/decoding""]"
+three_phase_lv,grid_relay_status,BinarySensor,[552],,1,4,False,,,no_shared_yaml_address,[],[],"[""masked control/decoding""]"
+three_phase_lv,generator_relay_status,BinarySensor,[552],,1,8,False,,,no_shared_yaml_address,[],[],"[""masked control/decoding""]"
+three_phase_lv,grid_give_power_to_relay_status,BinarySensor,[552],,1,16,False,,,no_shared_yaml_address,[],[],"[""masked control/decoding""]"
+three_phase_lv,dry_contact1_status,BinarySensor,[552],,1,32,False,,,no_shared_yaml_address,[],[],"[""masked control/decoding""]"
+three_phase_lv,dry_contact2_status,BinarySensor,[552],,1,64,False,,,no_shared_yaml_address,[],[],"[""masked control/decoding""]"
+three_phase_lv,inverter_enabled,SwitchRWSensor,[80],,1,0,True,,,no_shared_yaml_address,[],[],"[""no same-tuple explicitly writable YAML entry""]"
+three_phase_lv,off_grid_mode,SwitchRWSensor,[179],,1,1,True,,,no_shared_yaml_address,[],[],"[""masked control/decoding"", ""no same-tuple explicitly writable YAML entry""]"
+three_phase_lv,grid_charge_battery_current,NumberRWSensor,[128],A,1,0,True,0,185,no_shared_yaml_address,[],[],"[""no same-tuple explicitly writable YAML entry""]"
+three_phase_lv,grid_charge_start_battery_voltage,NumberRWSensor,[126],V,0.01,0,True,0,6300,no_shared_yaml_address,[],[],"[""no same-tuple explicitly writable YAML entry""]"
+three_phase_lv,grid_charge_start_battery_soc,NumberRWSensor,[127],%,1,0,True,0,100,no_shared_yaml_address,[],[],"[""no same-tuple explicitly writable YAML entry""]"
+three_phase_lv,grid_charge_enabled,SwitchRWSensor,[130],,1,0,True,,,no_shared_yaml_address,[],[],"[""no same-tuple explicitly writable YAML entry""]"
+three_phase_lv,solar_export,SwitchRWSensor,[145],,1,0,True,,,no_shared_yaml_address,[],[],"[""no same-tuple explicitly writable YAML entry""]"
+three_phase_lv,export_limit_power,NumberRWSensor,[143],W,1,0,True,0,"{""sensor"": ""rated_power""}",no_shared_yaml_address,[],[],"[""dependent write limits"", ""no same-tuple explicitly writable YAML entry""]"
+three_phase_lv,battery_max_charge_current,NumberRWSensor,[108],A,1,0,True,0,240,same_tuple_numeric_candidate,"[""deye_sg04lp3:battery-battery-max-a-charge""]","[""deye_sg04lp3:battery-battery-max-a-charge""]","[""no same-tuple explicitly writable YAML entry""]"
+three_phase_lv,battery_max_discharge_current,NumberRWSensor,[109],A,1,0,True,0,240,same_tuple_numeric_candidate,"[""deye_sg04lp3:battery-battery-max-a-discharge""]","[""deye_sg04lp3:battery-battery-max-a-discharge""]","[""no same-tuple explicitly writable YAML entry""]"
+three_phase_lv,battery_capacity_current,NumberRWSensor,[102],A,1,0,True,0,2000,same_tuple_semantic_review,"[""deye_sg04lp3:battery-battery-capacity"", ""deye_sg04lp3:battery-battery-empty-v""]",[],"[""no same-tuple explicitly writable YAML entry""]"
+three_phase_lv,grid_peak_shaving_power,NumberRWSensor,[191],W,1,0,True,0,100000,no_shared_yaml_address,[],[],"[""no same-tuple explicitly writable YAML entry""]"
+three_phase_lv,max_solar_power,NumberRWSensor,[340],W,1,0,True,0,32000,no_shared_yaml_address,[],[],"[""no same-tuple explicitly writable YAML entry""]"
+three_phase_lv,battery_low_voltage,NumberRWSensor,[120],V,0.01,0,True,"{""sensor"": ""battery_shutdown_voltage""}","{""sensor"": ""battery_max_voltage""}",no_shared_yaml_address,[],[],"[""dependent write limits"", ""no same-tuple explicitly writable YAML entry""]"
+three_phase_lv,system_zero_export_power,NumberRWSensor,[104],W,-1,0,True,-500,500,no_shared_yaml_address,[],[],"[""no same-tuple explicitly writable YAML entry""]"
+three_phase_lv,battery_equalization_days,NumberRWSensor,[105],days,-1,0,True,0,100,no_shared_yaml_address,[],[],"[""no same-tuple explicitly writable YAML entry""]"
+three_phase_lv,battery_equalization_hours,NumberRWSensor,[106],h,-1,0,True,0,100,no_shared_yaml_address,[],[],"[""no same-tuple explicitly writable YAML entry""]"
+three_phase_lv,generator_charge_battery_current,NumberRWSensor,[125],A,1,0,True,0,185,no_shared_yaml_address,[],[],"[""no same-tuple explicitly writable YAML entry""]"
+three_phase_lv,generator_charge_start_battery_voltage,NumberRWSensor,[123],V,0.01,0,True,0,6300,no_shared_yaml_address,[],[],"[""no same-tuple explicitly writable YAML entry""]"
+three_phase_lv,generator_charge_start_battery_soc,NumberRWSensor,[124],%,1,0,True,0,100,no_shared_yaml_address,[],[],"[""no same-tuple explicitly writable YAML entry""]"
+three_phase_lv,generator_charge_enabled,SwitchRWSensor,[129],,1,0,True,,,no_shared_yaml_address,[],[],"[""no same-tuple explicitly writable YAML entry""]"
+three_phase_lv,battery_type,SelectRWSensor,[111],,1,0,True,,,no_shared_yaml_address,[],[],"[""no same-tuple explicitly writable YAML entry""]"
+three_phase_lv,battery_wake_up,SelectRWSensor,[112],,1,1,True,,,no_shared_yaml_address,[],[],"[""masked control/decoding"", ""no same-tuple explicitly writable YAML entry""]"
+three_phase_lv,battery_resistance,NumberRWSensor,[113],mΩ,1,0,True,0,6000,no_shared_yaml_address,[],[],"[""no same-tuple explicitly writable YAML entry""]"
+three_phase_lv,battery_charge_efficiency,Sensor,[114],%,0.1,0,False,,,no_shared_yaml_address,[],[],[]
+three_phase_lv,battery_min_voltage,Constant,[],V,1,0,False,,,computed_or_constant,[],[],[]
+three_phase_lv,battery_max_voltage,Constant,[],V,1,0,False,,,computed_or_constant,[],[],[]
+three_phase_lv,battery_equalization_voltage,NumberRWSensor,[99],V,0.01,0,True,"{""sensor"": ""battery_min_voltage""}","{""sensor"": ""battery_max_voltage""}",same_tuple_numeric_candidate,"[""deye_sg04lp3:battery-battery-equalization-v""]","[""deye_sg04lp3:battery-battery-equalization-v""]","[""dependent write limits"", ""no same-tuple explicitly writable YAML entry""]"
+three_phase_lv,battery_absorption_voltage,NumberRWSensor,[100],V,0.01,0,True,"{""sensor"": ""battery_min_voltage""}","{""sensor"": ""battery_max_voltage""}",same_tuple_numeric_candidate,"[""deye_sg04lp3:battery-battery-absorption-v""]","[""deye_sg04lp3:battery-battery-absorption-v""]","[""dependent write limits"", ""no same-tuple explicitly writable YAML entry""]"
+three_phase_lv,battery_float_voltage,NumberRWSensor,[101],V,0.01,0,True,"{""sensor"": ""battery_min_voltage""}","{""sensor"": ""battery_max_voltage""}",same_tuple_numeric_candidate,"[""deye_sg04lp3:battery-battery-float-v""]","[""deye_sg04lp3:battery-battery-float-v""]","[""dependent write limits"", ""no same-tuple explicitly writable YAML entry""]"
+three_phase_lv,battery_shutdown_capacity,NumberRWSensor,[115],%,1,0,True,0,"{""sensor"": ""battery_low_capacity""}",no_shared_yaml_address,[],[],"[""dependent write limits"", ""no same-tuple explicitly writable YAML entry""]"
+three_phase_lv,battery_restart_capacity,NumberRWSensor,[116],%,1,0,True,"{""sensor"": ""battery_low_capacity""}",100,no_shared_yaml_address,[],[],"[""dependent write limits"", ""no same-tuple explicitly writable YAML entry""]"
+three_phase_lv,battery_low_capacity,NumberRWSensor,[117],%,1,0,True,"{""sensor"": ""battery_shutdown_capacity""}","{""sensor"": ""battery_restart_capacity""}",no_shared_yaml_address,[],[],"[""dependent write limits"", ""no same-tuple explicitly writable YAML entry""]"
+three_phase_lv,battery_shutdown_voltage,NumberRWSensor,[118],V,0.01,0,True,"{""sensor"": ""battery_min_voltage""}","{""sensor"": ""battery_low_voltage""}",no_shared_yaml_address,[],[],"[""dependent write limits"", ""no same-tuple explicitly writable YAML entry""]"
+three_phase_lv,battery_restart_voltage,NumberRWSensor,[119],V,0.01,0,True,"{""sensor"": ""battery_low_voltage""}","{""sensor"": ""battery_max_voltage""}",no_shared_yaml_address,[],[],"[""dependent write limits"", ""no same-tuple explicitly writable YAML entry""]"
+three_phase_lv,battery_1_bms_charging_voltage,Sensor,[210],V,0.01,0,False,,,no_shared_yaml_address,[],[],[]
+three_phase_lv,battery_1_bms_discharging_voltage,Sensor,[211],V,0.01,0,False,,,no_shared_yaml_address,[],[],[]
+three_phase_lv,battery_1_bms_charging_current_limit,Sensor,[212],A,1,0,False,,,no_shared_yaml_address,[],[],[]
+three_phase_lv,battery_1_bms_discharging_current_limit,Sensor,[213],A,1,0,False,,,no_shared_yaml_address,[],[],[]
+three_phase_lv,battery_1_bms_soc,Sensor,[214],%,1,0,False,,,no_shared_yaml_address,[],[],[]
+three_phase_lv,battery_1_bms_voltage,Sensor,[215],V,0.01,0,False,,,no_shared_yaml_address,[],[],[]
+three_phase_lv,battery_1_bms_current,Sensor,[216],A,0.01,0,False,,,no_shared_yaml_address,[],[],[]
+three_phase_lv,battery_1_bms_temperature,TempSensor,[217],°C,0.1,0,False,,,no_shared_yaml_address,[],[],[]
+three_phase_lv,battery_1_bms_max_charge_current_limit,Sensor,[218],A,1,0,False,,,no_shared_yaml_address,[],[],[]
+three_phase_lv,battery_1_bms_max_discharge_current_limit,Sensor,[219],A,1,0,False,,,no_shared_yaml_address,[],[],[]
+three_phase_lv,battery_1_bms_alarm_flag,Sensor,[220],,1,0,False,,,no_shared_yaml_address,[],[],[]
+three_phase_lv,priority_load,SwitchRWSensor,[141],,1,0,True,,,no_shared_yaml_address,[],[],"[""no same-tuple explicitly writable YAML entry""]"
+three_phase_lv,load_limit,SelectRWSensor,[142],,1,0,True,,,no_shared_yaml_address,[],[],"[""no same-tuple explicitly writable YAML entry""]"
+three_phase_lv,prog1_time,TimeRWSensor,[148],,1,0,True,"{""sensor"": ""prog6_time""}","{""sensor"": ""prog2_time""}",same_tuple_semantic_review,"[""deye_sg04lp3:time-of-use-tou-time-1""]",[],"[""dependent write limits""]"
+three_phase_lv,prog2_time,TimeRWSensor,[149],,1,0,True,"{""sensor"": ""prog1_time""}","{""sensor"": ""prog3_time""}",same_tuple_semantic_review,"[""deye_sg04lp3:time-of-use-tou-time-2""]",[],"[""dependent write limits""]"
+three_phase_lv,prog3_time,TimeRWSensor,[150],,1,0,True,"{""sensor"": ""prog2_time""}","{""sensor"": ""prog4_time""}",same_tuple_semantic_review,"[""deye_sg04lp3:time-of-use-tou-time-3""]",[],"[""dependent write limits""]"
+three_phase_lv,prog4_time,TimeRWSensor,[151],,1,0,True,"{""sensor"": ""prog3_time""}","{""sensor"": ""prog5_time""}",same_tuple_semantic_review,"[""deye_sg04lp3:time-of-use-tou-time-4""]",[],"[""dependent write limits""]"
+three_phase_lv,prog5_time,TimeRWSensor,[152],,1,0,True,"{""sensor"": ""prog4_time""}","{""sensor"": ""prog6_time""}",same_tuple_semantic_review,"[""deye_sg04lp3:time-of-use-tou-time-5""]",[],"[""dependent write limits""]"
+three_phase_lv,prog6_time,TimeRWSensor,[153],,1,0,True,"{""sensor"": ""prog5_time""}","{""sensor"": ""prog1_time""}",same_tuple_semantic_review,"[""deye_sg04lp3:time-of-use-tou-time-6""]",[],"[""dependent write limits""]"
+three_phase_lv,prog_time_of_use_enabled,SwitchRWSensor,[146],,1,1,True,,,no_shared_yaml_address,[],[],"[""masked control/decoding"", ""no same-tuple explicitly writable YAML entry""]"
+three_phase_lv,use_timer,SwitchRWSensor,[146],,1,1,True,,,no_shared_yaml_address,[],[],"[""masked control/decoding"", ""no same-tuple explicitly writable YAML entry""]"
+three_phase_lv,prog_monday_enabled,SwitchRWSensor,[146],,1,2,True,,,no_shared_yaml_address,[],[],"[""masked control/decoding"", ""no same-tuple explicitly writable YAML entry""]"
+three_phase_lv,prog_tuesday_enabled,SwitchRWSensor,[146],,1,4,True,,,no_shared_yaml_address,[],[],"[""masked control/decoding"", ""no same-tuple explicitly writable YAML entry""]"
+three_phase_lv,prog_wednesday_enabled,SwitchRWSensor,[146],,1,8,True,,,no_shared_yaml_address,[],[],"[""masked control/decoding"", ""no same-tuple explicitly writable YAML entry""]"
+three_phase_lv,prog_thursday_enabled,SwitchRWSensor,[146],,1,16,True,,,no_shared_yaml_address,[],[],"[""masked control/decoding"", ""no same-tuple explicitly writable YAML entry""]"
+three_phase_lv,prog_friday_enabled,SwitchRWSensor,[146],,1,32,True,,,no_shared_yaml_address,[],[],"[""masked control/decoding"", ""no same-tuple explicitly writable YAML entry""]"
+three_phase_lv,prog_saturday_enabled,SwitchRWSensor,[146],,1,64,True,,,no_shared_yaml_address,[],[],"[""masked control/decoding"", ""no same-tuple explicitly writable YAML entry""]"
+three_phase_lv,prog_sunday_enabled,SwitchRWSensor,[146],,1,128,True,,,no_shared_yaml_address,[],[],"[""masked control/decoding"", ""no same-tuple explicitly writable YAML entry""]"
+three_phase_lv,prog1_power,NumberRWSensor,[154],W,1,0,True,0,"{""sensor"": ""rated_power""}",same_tuple_numeric_candidate,"[""deye_sg04lp3:time-of-use-tou-power-1""]","[""deye_sg04lp3:time-of-use-tou-power-1""]","[""dependent write limits""]"
+three_phase_lv,prog2_power,NumberRWSensor,[155],W,1,0,True,0,"{""sensor"": ""rated_power""}",same_tuple_numeric_candidate,"[""deye_sg04lp3:time-of-use-tou-power-2""]","[""deye_sg04lp3:time-of-use-tou-power-2""]","[""dependent write limits""]"
+three_phase_lv,prog3_power,NumberRWSensor,[156],W,1,0,True,0,"{""sensor"": ""rated_power""}",same_tuple_numeric_candidate,"[""deye_sg04lp3:time-of-use-tou-power-3""]","[""deye_sg04lp3:time-of-use-tou-power-3""]","[""dependent write limits""]"
+three_phase_lv,prog4_power,NumberRWSensor,[157],W,1,0,True,0,"{""sensor"": ""rated_power""}",same_tuple_numeric_candidate,"[""deye_sg04lp3:time-of-use-tou-power-4""]","[""deye_sg04lp3:time-of-use-tou-power-4""]","[""dependent write limits""]"
+three_phase_lv,prog5_power,NumberRWSensor,[158],W,1,0,True,0,"{""sensor"": ""rated_power""}",same_tuple_numeric_candidate,"[""deye_sg04lp3:time-of-use-tou-power-5""]","[""deye_sg04lp3:time-of-use-tou-power-5""]","[""dependent write limits""]"
+three_phase_lv,prog6_power,NumberRWSensor,[159],W,1,0,True,0,"{""sensor"": ""rated_power""}",same_tuple_numeric_candidate,"[""deye_sg04lp3:time-of-use-tou-power-6""]","[""deye_sg04lp3:time-of-use-tou-power-6""]","[""dependent write limits""]"
+three_phase_lv,prog1_capacity,NumberRWSensor,[166],%,1,0,True,"{""sensor"": ""battery_low_capacity""}",100,same_tuple_numeric_candidate,"[""deye_sg04lp3:time-of-use-tou-battery-soc-1""]","[""deye_sg04lp3:time-of-use-tou-battery-soc-1""]","[""dependent write limits""]"
+three_phase_lv,prog2_capacity,NumberRWSensor,[167],%,1,0,True,"{""sensor"": ""battery_low_capacity""}",100,same_tuple_numeric_candidate,"[""deye_sg04lp3:time-of-use-tou-battery-soc-2""]","[""deye_sg04lp3:time-of-use-tou-battery-soc-2""]","[""dependent write limits""]"
+three_phase_lv,prog3_capacity,NumberRWSensor,[168],%,1,0,True,"{""sensor"": ""battery_low_capacity""}",100,same_tuple_numeric_candidate,"[""deye_sg04lp3:time-of-use-tou-battery-soc-3""]","[""deye_sg04lp3:time-of-use-tou-battery-soc-3""]","[""dependent write limits""]"
+three_phase_lv,prog4_capacity,NumberRWSensor,[169],%,1,0,True,"{""sensor"": ""battery_low_capacity""}",100,same_tuple_numeric_candidate,"[""deye_sg04lp3:time-of-use-tou-battery-soc-4""]","[""deye_sg04lp3:time-of-use-tou-battery-soc-4""]","[""dependent write limits""]"
+three_phase_lv,prog5_capacity,NumberRWSensor,[170],%,1,0,True,"{""sensor"": ""battery_low_capacity""}",100,same_tuple_numeric_candidate,"[""deye_sg04lp3:time-of-use-tou-battery-soc-5""]","[""deye_sg04lp3:time-of-use-tou-battery-soc-5""]","[""dependent write limits""]"
+three_phase_lv,prog6_capacity,NumberRWSensor,[171],%,1,0,True,"{""sensor"": ""battery_low_capacity""}",100,same_tuple_numeric_candidate,"[""deye_sg04lp3:time-of-use-tou-battery-soc-6""]","[""deye_sg04lp3:time-of-use-tou-battery-soc-6""]","[""dependent write limits""]"
+three_phase_lv,prog1_charge,SelectRWSensor,[172],,1,3,True,,,same_tuple_semantic_review,"[""deye_sg04lp3:time-of-use-tou-charge-enable-1""]",[],"[""masked control/decoding""]"
+three_phase_lv,prog2_charge,SelectRWSensor,[173],,1,3,True,,,same_tuple_semantic_review,"[""deye_sg04lp3:time-of-use-tou-charge-enable-2""]",[],"[""masked control/decoding""]"
+three_phase_lv,prog3_charge,SelectRWSensor,[174],,1,3,True,,,same_tuple_semantic_review,"[""deye_sg04lp3:time-of-use-tou-charge-enable-3""]",[],"[""masked control/decoding""]"
+three_phase_lv,prog4_charge,SelectRWSensor,[175],,1,3,True,,,same_tuple_semantic_review,"[""deye_sg04lp3:time-of-use-tou-charge-enable-4""]",[],"[""masked control/decoding""]"
+three_phase_lv,prog5_charge,SelectRWSensor,[176],,1,3,True,,,same_tuple_semantic_review,"[""deye_sg04lp3:time-of-use-tou-charge-enable-5""]",[],"[""masked control/decoding""]"
+three_phase_lv,prog6_charge,SelectRWSensor,[177],,1,3,True,,,same_tuple_semantic_review,"[""deye_sg04lp3:time-of-use-tou-charge-enable-6""]",[],"[""masked control/decoding""]"
+three_phase_lv,prog1_mode,SelectRWSensor,[172],,1,28,True,,,same_tuple_semantic_review,"[""deye_sg04lp3:time-of-use-tou-charge-enable-1""]",[],"[""masked control/decoding""]"
+three_phase_lv,prog2_mode,SelectRWSensor,[173],,1,28,True,,,same_tuple_semantic_review,"[""deye_sg04lp3:time-of-use-tou-charge-enable-2""]",[],"[""masked control/decoding""]"
+three_phase_lv,prog3_mode,SelectRWSensor,[174],,1,28,True,,,same_tuple_semantic_review,"[""deye_sg04lp3:time-of-use-tou-charge-enable-3""]",[],"[""masked control/decoding""]"
+three_phase_lv,prog4_mode,SelectRWSensor,[175],,1,28,True,,,same_tuple_semantic_review,"[""deye_sg04lp3:time-of-use-tou-charge-enable-4""]",[],"[""masked control/decoding""]"
+three_phase_lv,prog5_mode,SelectRWSensor,[176],,1,28,True,,,same_tuple_semantic_review,"[""deye_sg04lp3:time-of-use-tou-charge-enable-5""]",[],"[""masked control/decoding""]"
+three_phase_lv,prog6_mode,SelectRWSensor,[177],,1,28,True,,,same_tuple_semantic_review,"[""deye_sg04lp3:time-of-use-tou-charge-enable-6""]",[],"[""masked control/decoding""]"
+three_phase_lv,prog1_voltage,NumberRWSensor,[160],V,0.01,0,True,"{""sensor"": ""battery_low_voltage""}","{""sensor"": ""battery_float_voltage""}",no_shared_yaml_address,[],[],"[""dependent write limits"", ""no same-tuple explicitly writable YAML entry""]"
+three_phase_lv,prog2_voltage,NumberRWSensor,[161],V,0.01,0,True,"{""sensor"": ""battery_low_voltage""}","{""sensor"": ""battery_float_voltage""}",no_shared_yaml_address,[],[],"[""dependent write limits"", ""no same-tuple explicitly writable YAML entry""]"
+three_phase_lv,prog3_voltage,NumberRWSensor,[162],V,0.01,0,True,"{""sensor"": ""battery_low_voltage""}","{""sensor"": ""battery_float_voltage""}",no_shared_yaml_address,[],[],"[""dependent write limits"", ""no same-tuple explicitly writable YAML entry""]"
+three_phase_lv,prog4_voltage,NumberRWSensor,[163],V,0.01,0,True,"{""sensor"": ""battery_low_voltage""}","{""sensor"": ""battery_float_voltage""}",no_shared_yaml_address,[],[],"[""dependent write limits"", ""no same-tuple explicitly writable YAML entry""]"
+three_phase_lv,prog5_voltage,NumberRWSensor,[164],V,0.01,0,True,"{""sensor"": ""battery_low_voltage""}","{""sensor"": ""battery_float_voltage""}",no_shared_yaml_address,[],[],"[""dependent write limits"", ""no same-tuple explicitly writable YAML entry""]"
+three_phase_lv,prog6_voltage,NumberRWSensor,[165],V,0.01,0,True,"{""sensor"": ""battery_low_voltage""}","{""sensor"": ""battery_float_voltage""}",no_shared_yaml_address,[],[],"[""dependent write limits"", ""no same-tuple explicitly writable YAML entry""]"
+three_phase_lv,prog1_sell,SwitchRWSensor,[172],,1,32,True,,,same_tuple_semantic_review,"[""deye_sg04lp3:time-of-use-tou-charge-enable-1""]",[],"[""masked control/decoding""]"
+three_phase_lv,prog2_sell,SwitchRWSensor,[173],,1,32,True,,,same_tuple_semantic_review,"[""deye_sg04lp3:time-of-use-tou-charge-enable-2""]",[],"[""masked control/decoding""]"
+three_phase_lv,prog3_sell,SwitchRWSensor,[174],,1,32,True,,,same_tuple_semantic_review,"[""deye_sg04lp3:time-of-use-tou-charge-enable-3""]",[],"[""masked control/decoding""]"
+three_phase_lv,prog4_sell,SwitchRWSensor,[175],,1,32,True,,,same_tuple_semantic_review,"[""deye_sg04lp3:time-of-use-tou-charge-enable-4""]",[],"[""masked control/decoding""]"
+three_phase_lv,prog5_sell,SwitchRWSensor,[176],,1,32,True,,,same_tuple_semantic_review,"[""deye_sg04lp3:time-of-use-tou-charge-enable-5""]",[],"[""masked control/decoding""]"
+three_phase_lv,prog6_sell,SwitchRWSensor,[177],,1,32,True,,,same_tuple_semantic_review,"[""deye_sg04lp3:time-of-use-tou-charge-enable-6""]",[],"[""masked control/decoding""]"
+three_phase_lv,microinverter_export_to_grid_cutoff,SelectRWSensor,[178],,1,3,True,,,no_shared_yaml_address,[],[],"[""masked control/decoding"", ""no same-tuple explicitly writable YAML entry""]"
+three_phase_lv,gen_peak_shaving,SelectRWSensor,[178],,1,12,True,,,no_shared_yaml_address,[],[],"[""masked control/decoding"", ""no same-tuple explicitly writable YAML entry""]"
+three_phase_lv,grid_peak_shaving,SelectRWSensor,[178],,1,48,True,,,no_shared_yaml_address,[],[],"[""masked control/decoding"", ""no same-tuple explicitly writable YAML entry""]"
+three_phase_lv,on_grid_always_on,SelectRWSensor,[178],,1,192,True,,,no_shared_yaml_address,[],[],"[""masked control/decoding"", ""no same-tuple explicitly writable YAML entry""]"
+three_phase_lv,external_relay,SelectRWSensor,[178],,1,768,True,,,no_shared_yaml_address,[],[],"[""masked control/decoding"", ""no same-tuple explicitly writable YAML entry""]"
+three_phase_lv,loss_of_lithium_battery_report_fault,SelectRWSensor,[178],,1,3072,True,,,no_shared_yaml_address,[],[],"[""masked control/decoding"", ""no same-tuple explicitly writable YAML entry""]"
+three_phase_lv,drm,SelectRWSensor,[178],,1,12288,True,,,no_shared_yaml_address,[],[],"[""masked control/decoding"", ""no same-tuple explicitly writable YAML entry""]"
+three_phase_lv,us_version_grounding_fault,SelectRWSensor,[178],,1,49152,True,,,no_shared_yaml_address,[],[],"[""masked control/decoding"", ""no same-tuple explicitly writable YAML entry""]"
+three_phase_lv,generator_ac_couple_frz_high,NumberRWSensor,[131],Hz,0.01,0,True,0,100,no_shared_yaml_address,[],[],"[""no same-tuple explicitly writable YAML entry""]"
+three_phase_lv,generator_off_soc,NumberRWSensor,[135],%,1,0,True,0,100,no_shared_yaml_address,[],[],"[""no same-tuple explicitly writable YAML entry""]"
+three_phase_lv,generator_on_soc,NumberRWSensor,[137],%,1,0,True,0,100,no_shared_yaml_address,[],[],"[""no same-tuple explicitly writable YAML entry""]"
+three_phase_lv,generator_max_operating_time,NumberRWSensor,[121],Hours,0.1,0,True,0,100,no_shared_yaml_address,[],[],"[""no same-tuple explicitly writable YAML entry""]"
+three_phase_lv,generator_cooling_time,NumberRWSensor,[122],Hours,0.1,0,True,0,100,no_shared_yaml_address,[],[],"[""no same-tuple explicitly writable YAML entry""]"
+three_phase_lv,min_pv_power_for_gen_start,NumberRWSensor,[139],W,1,0,True,0,100,no_shared_yaml_address,[],[],"[""no same-tuple explicitly writable YAML entry""]"
+three_phase_lv,grid_signal_on,SwitchRWSensor,[140],,1,1,True,,,no_shared_yaml_address,[],[],"[""masked control/decoding"", ""no same-tuple explicitly writable YAML entry""]"
+three_phase_lv,gen_signal_on,SwitchRWSensor,[140],,1,2,True,,,no_shared_yaml_address,[],[],"[""masked control/decoding"", ""no same-tuple explicitly writable YAML entry""]"
+three_phase_lv,force_on_generator_as_load_function,SwitchRWSensor,[132],,1,0,True,,,no_shared_yaml_address,[],[],"[""no same-tuple explicitly writable YAML entry""]"
+three_phase_lv,generator_connected_to_grid_input,SwitchRWSensor,[189],,1,0,True,,,no_shared_yaml_address,[],[],"[""no same-tuple explicitly writable YAML entry""]"
+three_phase_lv,parallel_enable,SwitchRWSensor,[336],,1,1,True,,,no_shared_yaml_address,[],[],"[""masked control/decoding"", ""no same-tuple explicitly writable YAML entry""]"
+three_phase_lv,parallel_mode,SelectRWSensor,[336],,1,2,True,,,no_shared_yaml_address,[],[],"[""masked control/decoding"", ""no same-tuple explicitly writable YAML entry""]"
+three_phase_lv,parallel_phase,SelectRWSensor,[336],,1,768,True,,,no_shared_yaml_address,[],[],"[""masked control/decoding"", ""no same-tuple explicitly writable YAML entry""]"
+three_phase_lv,parallel_modbus_sn,NumberRWSensor,[336],,1,64512,True,0,63,no_shared_yaml_address,[],[],"[""masked control/decoding"", ""no same-tuple explicitly writable YAML entry""]"
+three_phase_lv,grid_standard,SelectRWSensor,[182],,1,0,True,,,no_shared_yaml_address,[],[],"[""no same-tuple explicitly writable YAML entry""]"
+three_phase_lv,configured_grid_frequency,SelectRWSensor,[183],,1,0,True,,,no_shared_yaml_address,[],[],"[""no same-tuple explicitly writable YAML entry""]"
+three_phase_lv,configured_grid_phases,SelectRWSensor,[184],,1,0,True,,,no_shared_yaml_address,[],[],"[""no same-tuple explicitly writable YAML entry""]"
+three_phase_lv,time_synchronization,SelectRWSensor,[228],,1,3,True,,,no_shared_yaml_address,[],[],"[""masked control/decoding"", ""no same-tuple explicitly writable YAML entry""]"
+three_phase_lv,beep,SelectRWSensor,[228],,1,12,True,,,no_shared_yaml_address,[],[],"[""masked control/decoding"", ""no same-tuple explicitly writable YAML entry""]"
+three_phase_lv,am_pm,SelectRWSensor,[228],,1,48,True,,,no_shared_yaml_address,[],[],"[""masked control/decoding"", ""no same-tuple explicitly writable YAML entry""]"
+three_phase_lv,auto_dim,SelectRWSensor,[228],,1,192,True,,,no_shared_yaml_address,[],[],"[""masked control/decoding"", ""no same-tuple explicitly writable YAML entry""]"
+three_phase_lv,allow_remote,SelectRWSensor,[228],,1,49152,True,,,no_shared_yaml_address,[],[],"[""masked control/decoding"", ""no same-tuple explicitly writable YAML entry""]"
+three_phase_lv,track_grid_phase,SwitchRWSensor,[235],,1,0,True,,,no_shared_yaml_address,[],[],"[""no same-tuple explicitly writable YAML entry""]"
+three_phase_lv,ups_delay_time,NumberRWSensor,[209],s,1,0,True,0,100,no_shared_yaml_address,[],[],"[""no same-tuple explicitly writable YAML entry""]"
+three_phase_lv,drm0_code,EnumSensor,[544],,1,1,False,,,no_shared_yaml_address,[],[],"[""masked control/decoding""]"
+three_phase_lv,drm1_code,EnumSensor,[544],,1,2,False,,,no_shared_yaml_address,[],[],"[""masked control/decoding""]"
+three_phase_lv,drm2_code,EnumSensor,[544],,1,4,False,,,no_shared_yaml_address,[],[],"[""masked control/decoding""]"
+three_phase_lv,drm3_code,EnumSensor,[544],,1,8,False,,,no_shared_yaml_address,[],[],"[""masked control/decoding""]"
+three_phase_lv,drm4_code,EnumSensor,[544],,1,16,False,,,no_shared_yaml_address,[],[],"[""masked control/decoding""]"
+three_phase_lv,drm5_code,EnumSensor,[544],,1,32,False,,,no_shared_yaml_address,[],[],"[""masked control/decoding""]"
+three_phase_lv,drm6_code,EnumSensor,[544],,1,64,False,,,no_shared_yaml_address,[],[],"[""masked control/decoding""]"
+three_phase_lv,drm7_code,EnumSensor,[544],,1,128,False,,,no_shared_yaml_address,[],[],"[""masked control/decoding""]"
+three_phase_lv,drm8_code,EnumSensor,[544],,1,256,False,,,no_shared_yaml_address,[],[],"[""masked control/decoding""]"
+three_phase_lv,battery_temperature,TempSensor,[586],°C,0.1,0,False,,,same_tuple_numeric_candidate,"[""deye_sg04lp3:battery-battery-temperature""]","[""deye_sg04lp3:battery-battery-temperature""]",[]
+three_phase_lv,battery_voltage,Sensor,[587],V,0.01,0,False,,,same_tuple_numeric_candidate,"[""deye_sg04lp3:battery-battery-voltage""]","[""deye_sg04lp3:battery-battery-voltage""]",[]
+three_phase_lv,battery_soc,Sensor,[588],%,1,0,False,,,same_tuple_numeric_candidate,"[""deye_sg04lp3:battery-battery-soc""]","[""deye_sg04lp3:battery-battery-soc""]",[]
+three_phase_lv,battery_power,Sensor,[590],W,-1,0,False,,,same_tuple_numeric_candidate,"[""deye_sg04lp3:battery-battery-power""]","[""deye_sg04lp3:battery-battery-power""]",[]
+three_phase_lv,battery_current,Sensor,[591],A,-0.01,0,False,,,same_tuple_numeric_candidate,"[""deye_sg04lp3:battery-battery-current""]","[""deye_sg04lp3:battery-battery-current""]",[]
+three_phase_lv,battery_2_soc,Sensor,[589],%,1,0,False,,,no_shared_yaml_address,[],[],[]
+three_phase_lv,battery_2_voltage,Sensor,[593],V,0.01,0,False,,,no_shared_yaml_address,[],[],[]
+three_phase_lv,battery_2_current,Sensor,[594],A,-0.01,0,False,,,no_shared_yaml_address,[],[],[]
+three_phase_lv,battery_2_power,Sensor,[595],W,-1,0,False,,,no_shared_yaml_address,[],[],[]
+three_phase_lv,battery_2_temperature,TempSensor,[596],°C,0.1,0,False,,,no_shared_yaml_address,[],[],[]
+three_phase_lv,battery_1_manufacturer,SelectRWSensor,[229],,1,0,True,,,no_shared_yaml_address,[],[],"[""no same-tuple explicitly writable YAML entry""]"
+three_phase_hv,pv_power,PVDynamicTotalSensor,[0],W,1,0,False,,,computed_or_constant,[],[],[]
+three_phase_hv,inverter_l1_power,Sensor16,"[633, 691]",W,-1,0,False,,,partial_tuple_review,[],[],"[""history-dependent 16/32-bit interpretation""]"
+three_phase_hv,inverter_l2_power,Sensor16,"[634, 692]",W,-1,0,False,,,partial_tuple_review,[],[],"[""history-dependent 16/32-bit interpretation""]"
+three_phase_hv,inverter_l3_power,Sensor16,"[635, 693]",W,-1,0,False,,,partial_tuple_review,[],[],"[""history-dependent 16/32-bit interpretation""]"
+three_phase_hv,inverter_power,Sensor16,"[636, 694]",W,-1,0,False,,,no_shared_yaml_address,[],[],"[""history-dependent 16/32-bit interpretation""]"
+three_phase_hv,inverter_l1_voltage,Sensor,[627],V,0.1,0,False,,,no_shared_yaml_address,[],[],[]
+three_phase_hv,inverter_l2_voltage,Sensor,[628],V,0.1,0,False,,,no_shared_yaml_address,[],[],[]
+three_phase_hv,inverter_l3_voltage,Sensor,[629],V,0.1,0,False,,,no_shared_yaml_address,[],[],[]
+three_phase_hv,inverter_l1_current,Sensor,[630],A,-0.01,0,False,,,same_tuple_numeric_candidate,"[""deye_sg01hp3:inverter-current-l1""]","[""deye_sg01hp3:inverter-current-l1""]",[]
+three_phase_hv,inverter_l2_current,Sensor,[631],A,-0.01,0,False,,,same_tuple_numeric_candidate,"[""deye_sg01hp3:inverter-current-l2""]","[""deye_sg01hp3:inverter-current-l2""]",[]
+three_phase_hv,inverter_l3_current,Sensor,[632],A,-0.01,0,False,,,same_tuple_numeric_candidate,"[""deye_sg01hp3:inverter-current-l3""]","[""deye_sg01hp3:inverter-current-l3""]",[]
+three_phase_hv,inverter_frequency,Sensor,[638],Hz,0.01,0,False,,,no_shared_yaml_address,[],[],[]
+three_phase_hv,grid_frequency,Sensor,[609],Hz,0.01,0,False,,,no_shared_yaml_address,[],[],[]
+three_phase_hv,grid_l1_power,Sensor16,"[622, 687]",W,-1,0,False,,,no_shared_yaml_address,[],[],"[""history-dependent 16/32-bit interpretation""]"
+three_phase_hv,grid_l2_power,Sensor16,"[623, 688]",W,-1,0,False,,,no_shared_yaml_address,[],[],"[""history-dependent 16/32-bit interpretation""]"
+three_phase_hv,grid_l3_power,Sensor16,"[624, 689]",W,-1,0,False,,,no_shared_yaml_address,[],[],"[""history-dependent 16/32-bit interpretation""]"
+three_phase_hv,grid_power,Sensor16,"[625, 690]",W,-1,0,False,,,partial_tuple_review,[],[],"[""history-dependent 16/32-bit interpretation""]"
+three_phase_hv,grid_l1_voltage,Sensor,[598],V,0.1,0,False,,,same_tuple_numeric_candidate,"[""deye_sg01hp3:grid-grid-voltage-l1""]","[""deye_sg01hp3:grid-grid-voltage-l1""]",[]
+three_phase_hv,grid_l2_voltage,Sensor,[599],V,0.1,0,False,,,same_tuple_numeric_candidate,"[""deye_sg01hp3:grid-grid-voltage-l2""]","[""deye_sg01hp3:grid-grid-voltage-l2""]",[]
+three_phase_hv,grid_l3_voltage,Sensor,[600],V,0.1,0,False,,,same_tuple_numeric_candidate,"[""deye_sg01hp3:grid-grid-voltage-l3""]","[""deye_sg01hp3:grid-grid-voltage-l3""]",[]
+three_phase_hv,grid_l1_inner_side_power,Sensor16,"[604, 700]",W,-1,0,False,,,partial_tuple_review,[],[],"[""history-dependent 16/32-bit interpretation""]"
+three_phase_hv,grid_l2_inner_side_power,Sensor16,"[605, 701]",W,-1,0,False,,,partial_tuple_review,[],[],"[""history-dependent 16/32-bit interpretation""]"
+three_phase_hv,grid_l3_inner_side_power,Sensor16,"[606, 702]",W,-1,0,False,,,partial_tuple_review,[],[],"[""history-dependent 16/32-bit interpretation""]"
+three_phase_hv,total_active_power_from_side_to_side_of_the_grid,Sensor16,"[607, 703]",W,-1,0,False,,,no_shared_yaml_address,[],[],"[""history-dependent 16/32-bit interpretation""]"
+three_phase_hv,grid_side___inside_total_apparent_power,Sensor16,"[608, 704]",W,-1,0,False,,,no_shared_yaml_address,[],[],"[""history-dependent 16/32-bit interpretation""]"
+three_phase_hv,grid_current,MathSensor,"[610, 611, 612]",A,1,0,False,,,computed_or_constant,[],[],[]
+three_phase_hv,grid_ct_l1_power,Sensor16,"[616, 705]",W,-1,0,False,,,partial_tuple_review,[],[],"[""history-dependent 16/32-bit interpretation""]"
+three_phase_hv,grid_ct_l2_power,Sensor16,"[617, 706]",W,-1,0,False,,,partial_tuple_review,[],[],"[""history-dependent 16/32-bit interpretation""]"
+three_phase_hv,grid_ct_l3_power,Sensor16,"[618, 707]",W,-1,0,False,,,partial_tuple_review,[],[],"[""history-dependent 16/32-bit interpretation""]"
+three_phase_hv,grid_ct_power,Sensor16,"[619, 708]",W,-1,0,False,,,no_shared_yaml_address,[],[],"[""history-dependent 16/32-bit interpretation""]"
+three_phase_hv,grid_ct_current,MathSensor,"[613, 614, 615]",A,1,0,False,,,computed_or_constant,[],[],[]
+three_phase_hv,load_l1_power,Sensor16,"[650, 656]",W,-1,0,False,,,partial_tuple_review,[],[],"[""history-dependent 16/32-bit interpretation""]"
+three_phase_hv,load_l2_power,Sensor16,"[651, 657]",W,-1,0,False,,,partial_tuple_review,[],[],"[""history-dependent 16/32-bit interpretation""]"
+three_phase_hv,load_l3_power,Sensor16,"[652, 658]",W,-1,0,False,,,partial_tuple_review,[],[],"[""history-dependent 16/32-bit interpretation""]"
+three_phase_hv,load_power,Sensor16,"[653, 659]",W,-1,0,False,,,partial_tuple_review,[],[],"[""history-dependent 16/32-bit interpretation""]"
+three_phase_hv,load_l1_voltage,Sensor,[644],V,0.1,0,False,,,same_tuple_numeric_candidate,"[""deye_sg01hp3:upload-load-voltage-l1""]","[""deye_sg01hp3:upload-load-voltage-l1""]",[]
+three_phase_hv,load_l2_voltage,Sensor,[645],V,0.1,0,False,,,same_tuple_numeric_candidate,"[""deye_sg01hp3:upload-load-voltage-l2""]","[""deye_sg01hp3:upload-load-voltage-l2""]",[]
+three_phase_hv,load_l3_voltage,Sensor,[646],V,0.1,0,False,,,same_tuple_numeric_candidate,"[""deye_sg01hp3:upload-load-voltage-l3""]","[""deye_sg01hp3:upload-load-voltage-l3""]",[]
+three_phase_hv,load_frequency,Sensor,[655],Hz,0.01,0,False,,,no_shared_yaml_address,[],[],[]
+three_phase_hv,aux_port_usage,SelectRWSensor,[133],,1,0,True,,,same_tuple_semantic_review,"[""deye_sg01hp3:smartload-smartload-enable-status""]",[],"[""no same-tuple explicitly writable YAML entry""]"
+three_phase_hv,generator_port_usage,SelectRWSensor,[133],,1,0,True,,,same_tuple_semantic_review,"[""deye_sg01hp3:smartload-smartload-enable-status""]",[],"[""no same-tuple explicitly writable YAML entry""]"
+three_phase_hv,gen_l1_power,Sensor16,"[664, 668]",W,-1,0,False,,,partial_tuple_review,[],[],"[""history-dependent 16/32-bit interpretation""]"
+three_phase_hv,aux_l1_power,Sensor16,"[664, 668]",W,-1,0,False,,,partial_tuple_review,[],[],"[""history-dependent 16/32-bit interpretation""]"
+three_phase_hv,gen_l2_power,Sensor16,"[665, 669]",W,-1,0,False,,,partial_tuple_review,[],[],"[""history-dependent 16/32-bit interpretation""]"
+three_phase_hv,aux_l2_power,Sensor16,"[665, 669]",W,-1,0,False,,,partial_tuple_review,[],[],"[""history-dependent 16/32-bit interpretation""]"
+three_phase_hv,gen_l3_power,Sensor16,"[666, 670]",W,-1,0,False,,,partial_tuple_review,[],[],"[""history-dependent 16/32-bit interpretation""]"
+three_phase_hv,aux_l3_power,Sensor16,"[666, 670]",W,-1,0,False,,,partial_tuple_review,[],[],"[""history-dependent 16/32-bit interpretation""]"
+three_phase_hv,gen_power,Sensor16,"[667, 671]",W,-1,0,False,,,partial_tuple_review,[],[],"[""history-dependent 16/32-bit interpretation""]"
+three_phase_hv,aux_power,Sensor16,"[667, 671]",W,-1,0,False,,,partial_tuple_review,[],[],"[""history-dependent 16/32-bit interpretation""]"
+three_phase_hv,gen_l1_voltage,Sensor,[661],V,0.1,0,False,,,same_tuple_numeric_candidate,"[""deye_sg01hp3:smartload-phase-voltage-of-gen-port-a""]","[""deye_sg01hp3:smartload-phase-voltage-of-gen-port-a""]",[]
+three_phase_hv,aux_l1_voltage,Sensor,[661],V,0.1,0,False,,,same_tuple_numeric_candidate,"[""deye_sg01hp3:smartload-phase-voltage-of-gen-port-a""]","[""deye_sg01hp3:smartload-phase-voltage-of-gen-port-a""]",[]
+three_phase_hv,gen_l2_voltage,Sensor,[662],V,0.1,0,False,,,same_tuple_numeric_candidate,"[""deye_sg01hp3:smartload-phase-voltage-of-gen-port-b""]","[""deye_sg01hp3:smartload-phase-voltage-of-gen-port-b""]",[]
+three_phase_hv,aux_l2_voltage,Sensor,[662],V,0.1,0,False,,,same_tuple_numeric_candidate,"[""deye_sg01hp3:smartload-phase-voltage-of-gen-port-b""]","[""deye_sg01hp3:smartload-phase-voltage-of-gen-port-b""]",[]
+three_phase_hv,gen_l3_voltage,Sensor,[663],V,0.1,0,False,,,same_tuple_numeric_candidate,"[""deye_sg01hp3:smartload-phase-voltage-of-gen-port-c""]","[""deye_sg01hp3:smartload-phase-voltage-of-gen-port-c""]",[]
+three_phase_hv,aux_l3_voltage,Sensor,[663],V,0.1,0,False,,,same_tuple_numeric_candidate,"[""deye_sg01hp3:smartload-phase-voltage-of-gen-port-c""]","[""deye_sg01hp3:smartload-phase-voltage-of-gen-port-c""]",[]
+three_phase_hv,ups_load_l1_power,Sensor16,"[640, 696]",W,1,0,False,,,no_shared_yaml_address,[],[],"[""history-dependent 16/32-bit interpretation""]"
+three_phase_hv,ups_load_l2_power,Sensor16,"[641, 697]",W,1,0,False,,,no_shared_yaml_address,[],[],"[""history-dependent 16/32-bit interpretation""]"
+three_phase_hv,ups_load_l3_power,Sensor16,"[642, 698]",W,1,0,False,,,no_shared_yaml_address,[],[],"[""history-dependent 16/32-bit interpretation""]"
+three_phase_hv,ups_load_total_power,Sensor16,"[643, 699]",W,1,0,False,,,no_shared_yaml_address,[],[],"[""history-dependent 16/32-bit interpretation""]"
+three_phase_hv,pv1_power,Sensor,[672],W,10,0,False,,,same_tuple_numeric_candidate,"[""deye_sg01hp3:solar-pv1-power""]","[""deye_sg01hp3:solar-pv1-power""]",[]
+three_phase_hv,pv1_voltage,Sensor,[676],V,0.1,0,False,,,same_tuple_numeric_candidate,"[""deye_sg01hp3:solar-pv1-voltage""]","[""deye_sg01hp3:solar-pv1-voltage""]",[]
+three_phase_hv,pv1_current,Sensor,[677],A,0.1,0,False,,,same_tuple_numeric_candidate,"[""deye_sg01hp3:solar-pv1-current""]","[""deye_sg01hp3:solar-pv1-current""]",[]
+three_phase_hv,pv2_power,Sensor,[673],W,10,0,False,,,same_tuple_numeric_candidate,"[""deye_sg01hp3:solar-pv2-power""]","[""deye_sg01hp3:solar-pv2-power""]",[]
+three_phase_hv,pv2_voltage,Sensor,[678],V,0.1,0,False,,,same_tuple_numeric_candidate,"[""deye_sg01hp3:solar-pv2-voltage""]","[""deye_sg01hp3:solar-pv2-voltage""]",[]
+three_phase_hv,pv2_current,Sensor,[679],A,0.1,0,False,,,same_tuple_numeric_candidate,"[""deye_sg01hp3:solar-pv3-voltage"", ""deye_sg01hp3:solar-pv2-current""]","[""deye_sg01hp3:solar-pv2-current""]",[]
+three_phase_hv,pv3_power,Sensor,[674],W,10,0,False,,,same_tuple_numeric_candidate,"[""deye_sg01hp3:solar-pv3-power""]","[""deye_sg01hp3:solar-pv3-power""]",[]
+three_phase_hv,pv3_voltage,Sensor,[680],V,0.1,0,False,,,no_shared_yaml_address,[],[],[]
+three_phase_hv,pv3_current,Sensor,[681],A,0.1,0,False,,,same_tuple_numeric_candidate,"[""deye_sg01hp3:solar-pv3-current""]","[""deye_sg01hp3:solar-pv3-current""]",[]
+three_phase_hv,pv4_power,Sensor,[675],W,10,0,False,,,no_shared_yaml_address,[],[],[]
+three_phase_hv,pv4_voltage,Sensor,[682],V,0.1,0,False,,,no_shared_yaml_address,[],[],[]
+three_phase_hv,pv4_current,Sensor,[683],A,0.1,0,False,,,no_shared_yaml_address,[],[],[]
+three_phase_hv,day_active_energy,Sensor,[502],kWh,-0.1,0,False,,,no_shared_yaml_address,[],[],[]
+three_phase_hv,day_battery_charge,Sensor,[514],kWh,0.1,0,False,,,same_tuple_numeric_candidate,"[""deye_sg01hp3:battery-daily-battery-charge""]","[""deye_sg01hp3:battery-daily-battery-charge""]",[]
+three_phase_hv,day_battery_discharge,Sensor,[515],kWh,0.1,0,False,,,same_tuple_numeric_candidate,"[""deye_sg01hp3:battery-daily-battery-discharge""]","[""deye_sg01hp3:battery-daily-battery-discharge""]",[]
+three_phase_hv,day_grid_export,Sensor,[521],kWh,0.1,0,False,,,same_tuple_numeric_candidate,"[""deye_sg01hp3:grid-daily-energy-sold""]","[""deye_sg01hp3:grid-daily-energy-sold""]",[]
+three_phase_hv,day_grid_import,Sensor,[520],kWh,0.1,0,False,,,same_tuple_numeric_candidate,"[""deye_sg01hp3:grid-daily-energy-bought""]","[""deye_sg01hp3:grid-daily-energy-bought""]",[]
+three_phase_hv,day_gen_energy,Sensor,[536],kWh,0.1,0,False,,,same_tuple_numeric_candidate,"[""deye_sg01hp3:smartload-generator-daily-power-generation""]","[""deye_sg01hp3:smartload-generator-daily-power-generation""]",[]
+three_phase_hv,day_load_energy,Sensor,[526],kWh,0.1,0,False,,,same_tuple_numeric_candidate,"[""deye_sg01hp3:upload-daily-load-consumption""]","[""deye_sg01hp3:upload-daily-load-consumption""]",[]
+three_phase_hv,day_pv_energy,Sensor,[529],kWh,0.1,0,False,,,same_tuple_numeric_candidate,"[""deye_sg01hp3:solar-daily-production""]","[""deye_sg01hp3:solar-daily-production""]",[]
+three_phase_hv,total_active_energy,Sensor,"[506, 507]",kWh,0.1,0,False,,,no_shared_yaml_address,[],[],[]
+three_phase_hv,total_battery_charge,Sensor,"[516, 517]",kWh,0.1,0,False,,,same_tuple_numeric_candidate,"[""deye_sg01hp3:battery-total-battery-charge""]","[""deye_sg01hp3:battery-total-battery-charge""]",[]
+three_phase_hv,total_battery_discharge,Sensor,"[518, 519]",kWh,0.1,0,False,,,same_tuple_numeric_candidate,"[""deye_sg01hp3:battery-total-battery-discharge""]","[""deye_sg01hp3:battery-total-battery-discharge""]",[]
+three_phase_hv,total_grid_export,Sensor,"[524, 525]",kWh,0.1,0,False,,,same_tuple_numeric_candidate,"[""deye_sg01hp3:grid-total-energy-sold"", ""deye_sg01hp3:grid-total-grid-production""]","[""deye_sg01hp3:grid-total-energy-sold""]",[]
+three_phase_hv,total_grid_import,Sensor,"[522, 523]",kWh,0.1,0,False,,,same_tuple_numeric_candidate,"[""deye_sg01hp3:grid-total-energy-bought""]","[""deye_sg01hp3:grid-total-energy-bought""]",[]
+three_phase_hv,total_load_energy,Sensor,"[527, 528]",kWh,0.1,0,False,,,same_tuple_numeric_candidate,"[""deye_sg01hp3:upload-total-load-consumption""]","[""deye_sg01hp3:upload-total-load-consumption""]",[]
+three_phase_hv,total_pv_energy,Sensor,"[534, 535]",kWh,0.1,0,False,,,same_tuple_numeric_candidate,"[""deye_sg01hp3:solar-total-production""]","[""deye_sg01hp3:solar-total-production""]",[]
+three_phase_hv,rated_power,Sensor,"[20, 21]",W,0.1,0,False,,,no_shared_yaml_address,[],[],[]
+three_phase_hv,fault,HVFaultSensor,"[555, 556, 557, 558]",,1,0,False,,,partial_tuple_review,[],[],[]
+three_phase_hv,overall_state,InverterStateSensor,[500],,1,0,False,,,no_shared_yaml_address,[],[],[]
+three_phase_hv,dc_transformer_temperature,TempSensor,[540],°C,0.1,0,False,,,same_tuple_semantic_review,"[""deye_sg01hp3:inverter-dc-temperature""]",[],[]
+three_phase_hv,radiator_temperature,TempSensor,[541],°C,0.1,0,False,,,same_tuple_semantic_review,"[""deye_sg01hp3:inverter-ac-temperature""]",[],[]
+three_phase_hv,date_time,SystemTimeRWSensor,"[62, 63, 64]",,1,0,True,,,no_shared_yaml_address,[],[],"[""no same-tuple explicitly writable YAML entry""]"
+three_phase_hv,inv_relay_status,BinarySensor,[552],,1,1,False,,,no_shared_yaml_address,[],[],"[""masked control/decoding""]"
+three_phase_hv,undefined_load_relay_status,BinarySensor,[552],,1,2,False,,,no_shared_yaml_address,[],[],"[""masked control/decoding""]"
+three_phase_hv,grid_connected,BinarySensor,[552],,1,4,False,,,no_shared_yaml_address,[],[],"[""masked control/decoding""]"
+three_phase_hv,grid_relay_status,BinarySensor,[552],,1,4,False,,,no_shared_yaml_address,[],[],"[""masked control/decoding""]"
+three_phase_hv,generator_relay_status,BinarySensor,[552],,1,8,False,,,no_shared_yaml_address,[],[],"[""masked control/decoding""]"
+three_phase_hv,grid_give_power_to_relay_status,BinarySensor,[552],,1,16,False,,,no_shared_yaml_address,[],[],"[""masked control/decoding""]"
+three_phase_hv,dry_contact1_status,BinarySensor,[552],,1,32,False,,,no_shared_yaml_address,[],[],"[""masked control/decoding""]"
+three_phase_hv,dry_contact2_status,BinarySensor,[552],,1,64,False,,,no_shared_yaml_address,[],[],"[""masked control/decoding""]"
+three_phase_hv,inverter_enabled,SwitchRWSensor,[80],,1,0,True,,,no_shared_yaml_address,[],[],"[""no same-tuple explicitly writable YAML entry""]"
+three_phase_hv,off_grid_mode,SwitchRWSensor,[179],,1,1,True,,,no_shared_yaml_address,[],[],"[""masked control/decoding"", ""no same-tuple explicitly writable YAML entry""]"
+three_phase_hv,grid_charge_battery_current,NumberRWSensor,[128],A,1,0,True,0,185,no_shared_yaml_address,[],[],"[""no same-tuple explicitly writable YAML entry""]"
+three_phase_hv,grid_charge_start_battery_voltage,NumberRWSensor,[126],V,0.01,0,True,0,6300,no_shared_yaml_address,[],[],"[""no same-tuple explicitly writable YAML entry""]"
+three_phase_hv,grid_charge_start_battery_soc,NumberRWSensor,[127],%,1,0,True,0,100,no_shared_yaml_address,[],[],"[""no same-tuple explicitly writable YAML entry""]"
+three_phase_hv,grid_charge_enabled,SwitchRWSensor,[130],,1,0,True,,,no_shared_yaml_address,[],[],"[""no same-tuple explicitly writable YAML entry""]"
+three_phase_hv,solar_export,SwitchRWSensor,[145],,1,0,True,,,no_shared_yaml_address,[],[],"[""no same-tuple explicitly writable YAML entry""]"
+three_phase_hv,export_limit_power,NumberRWSensor,[143],W,10,0,True,0,"{""sensor"": ""rated_power""}",no_shared_yaml_address,[],[],"[""dependent write limits"", ""no same-tuple explicitly writable YAML entry""]"
+three_phase_hv,battery_max_charge_current,NumberRWSensor,[108],A,1,0,True,0,240,same_tuple_numeric_candidate,"[""deye_sg01hp3:battery-battery-max-a-charge""]","[""deye_sg01hp3:battery-battery-max-a-charge""]","[""no same-tuple explicitly writable YAML entry""]"
+three_phase_hv,battery_max_discharge_current,NumberRWSensor,[109],A,1,0,True,0,240,same_tuple_numeric_candidate,"[""deye_sg01hp3:battery-battery-max-a-discharge""]","[""deye_sg01hp3:battery-battery-max-a-discharge""]","[""no same-tuple explicitly writable YAML entry""]"
+three_phase_hv,battery_capacity_current,NumberRWSensor,[102],A,1,0,True,0,2000,same_tuple_semantic_review,"[""deye_sg01hp3:battery-battery-capacity""]",[],"[""no same-tuple explicitly writable YAML entry""]"
+three_phase_hv,grid_peak_shaving_power,NumberRWSensor,[191],W,10,0,True,0,100000,no_shared_yaml_address,[],[],"[""no same-tuple explicitly writable YAML entry""]"
+three_phase_hv,max_solar_power,NumberRWSensor,[340],W,10,0,True,1000,128000,no_shared_yaml_address,[],[],"[""no same-tuple explicitly writable YAML entry""]"
+three_phase_hv,battery_low_voltage,NumberRWSensor,[120],V,0.01,0,True,"{""sensor"": ""battery_shutdown_voltage""}","{""sensor"": ""battery_max_voltage""}",no_shared_yaml_address,[],[],"[""dependent write limits"", ""no same-tuple explicitly writable YAML entry""]"
+three_phase_hv,system_zero_export_power,NumberRWSensor,[104],W,-10,0,True,-500,500,no_shared_yaml_address,[],[],"[""no same-tuple explicitly writable YAML entry""]"
+three_phase_hv,battery_equalization_days,NumberRWSensor,[105],days,-1,0,True,0,100,no_shared_yaml_address,[],[],"[""no same-tuple explicitly writable YAML entry""]"
+three_phase_hv,battery_equalization_hours,NumberRWSensor,[106],h,-1,0,True,0,100,no_shared_yaml_address,[],[],"[""no same-tuple explicitly writable YAML entry""]"
+three_phase_hv,generator_charge_battery_current,NumberRWSensor,[125],A,1,0,True,0,185,no_shared_yaml_address,[],[],"[""no same-tuple explicitly writable YAML entry""]"
+three_phase_hv,generator_charge_start_battery_voltage,NumberRWSensor,[123],V,0.01,0,True,0,6300,no_shared_yaml_address,[],[],"[""no same-tuple explicitly writable YAML entry""]"
+three_phase_hv,generator_charge_start_battery_soc,NumberRWSensor,[124],%,1,0,True,0,100,no_shared_yaml_address,[],[],"[""no same-tuple explicitly writable YAML entry""]"
+three_phase_hv,generator_charge_enabled,SwitchRWSensor,[129],,1,0,True,,,no_shared_yaml_address,[],[],"[""no same-tuple explicitly writable YAML entry""]"
+three_phase_hv,battery_type,SelectRWSensor,[111],,1,0,True,,,no_shared_yaml_address,[],[],"[""no same-tuple explicitly writable YAML entry""]"
+three_phase_hv,battery_wake_up,SelectRWSensor,[112],,1,1,True,,,no_shared_yaml_address,[],[],"[""masked control/decoding"", ""no same-tuple explicitly writable YAML entry""]"
+three_phase_hv,battery_resistance,NumberRWSensor,[113],mΩ,1,0,True,0,6000,no_shared_yaml_address,[],[],"[""no same-tuple explicitly writable YAML entry""]"
+three_phase_hv,battery_charge_efficiency,Sensor,[114],%,0.1,0,False,,,no_shared_yaml_address,[],[],[]
+three_phase_hv,battery_min_voltage,Constant,[],V,1,0,False,,,computed_or_constant,[],[],[]
+three_phase_hv,battery_max_voltage,Constant,[],V,1,0,False,,,computed_or_constant,[],[],[]
+three_phase_hv,battery_equalization_voltage,NumberRWSensor,[99],V,0.01,0,True,"{""sensor"": ""battery_min_voltage""}","{""sensor"": ""battery_max_voltage""}",same_tuple_numeric_candidate,"[""deye_sg01hp3:battery-battery-equalization-v""]","[""deye_sg01hp3:battery-battery-equalization-v""]","[""dependent write limits"", ""no same-tuple explicitly writable YAML entry""]"
+three_phase_hv,battery_absorption_voltage,NumberRWSensor,[100],V,0.01,0,True,"{""sensor"": ""battery_min_voltage""}","{""sensor"": ""battery_max_voltage""}",same_tuple_numeric_candidate,"[""deye_sg01hp3:battery-battery-absorption-v""]","[""deye_sg01hp3:battery-battery-absorption-v""]","[""dependent write limits"", ""no same-tuple explicitly writable YAML entry""]"
+three_phase_hv,battery_float_voltage,NumberRWSensor,[101],V,0.01,0,True,"{""sensor"": ""battery_min_voltage""}","{""sensor"": ""battery_max_voltage""}",same_tuple_numeric_candidate,"[""deye_sg01hp3:battery-battery-float-v""]","[""deye_sg01hp3:battery-battery-float-v""]","[""dependent write limits"", ""no same-tuple explicitly writable YAML entry""]"
+three_phase_hv,battery_shutdown_capacity,NumberRWSensor,[115],%,1,0,True,0,"{""sensor"": ""battery_low_capacity""}",no_shared_yaml_address,[],[],"[""dependent write limits"", ""no same-tuple explicitly writable YAML entry""]"
+three_phase_hv,battery_restart_capacity,NumberRWSensor,[116],%,1,0,True,"{""sensor"": ""battery_low_capacity""}",100,no_shared_yaml_address,[],[],"[""dependent write limits"", ""no same-tuple explicitly writable YAML entry""]"
+three_phase_hv,battery_low_capacity,NumberRWSensor,[117],%,1,0,True,"{""sensor"": ""battery_shutdown_capacity""}","{""sensor"": ""battery_restart_capacity""}",no_shared_yaml_address,[],[],"[""dependent write limits"", ""no same-tuple explicitly writable YAML entry""]"
+three_phase_hv,battery_shutdown_voltage,NumberRWSensor,[118],V,0.01,0,True,"{""sensor"": ""battery_min_voltage""}","{""sensor"": ""battery_low_voltage""}",no_shared_yaml_address,[],[],"[""dependent write limits"", ""no same-tuple explicitly writable YAML entry""]"
+three_phase_hv,battery_restart_voltage,NumberRWSensor,[119],V,0.01,0,True,"{""sensor"": ""battery_low_voltage""}","{""sensor"": ""battery_max_voltage""}",no_shared_yaml_address,[],[],"[""dependent write limits"", ""no same-tuple explicitly writable YAML entry""]"
+three_phase_hv,battery_1_bms_charging_voltage,Sensor,[210],V,0.1,0,False,,,no_shared_yaml_address,[],[],[]
+three_phase_hv,battery_1_bms_discharging_voltage,Sensor,[211],V,0.1,0,False,,,no_shared_yaml_address,[],[],[]
+three_phase_hv,battery_1_bms_charging_current_limit,Sensor,[212],A,1,0,False,,,no_shared_yaml_address,[],[],[]
+three_phase_hv,battery_1_bms_discharging_current_limit,Sensor,[213],A,1,0,False,,,no_shared_yaml_address,[],[],[]
+three_phase_hv,battery_1_bms_soc,Sensor,[214],%,1,0,False,,,no_shared_yaml_address,[],[],[]
+three_phase_hv,battery_1_bms_voltage,Sensor,[215],V,0.1,0,False,,,no_shared_yaml_address,[],[],[]
+three_phase_hv,battery_1_bms_current,Sensor,[216],A,0.1,0,False,,,no_shared_yaml_address,[],[],[]
+three_phase_hv,battery_1_bms_temperature,TempSensor,[217],°C,0.1,0,False,,,no_shared_yaml_address,[],[],[]
+three_phase_hv,battery_1_bms_max_charge_current_limit,Sensor,[218],A,1,0,False,,,no_shared_yaml_address,[],[],[]
+three_phase_hv,battery_1_bms_max_discharge_current_limit,Sensor,[219],A,1,0,False,,,no_shared_yaml_address,[],[],[]
+three_phase_hv,battery_1_bms_alarm_flag,Sensor,[220],,1,0,False,,,no_shared_yaml_address,[],[],[]
+three_phase_hv,priority_load,SwitchRWSensor,[141],,1,0,True,,,no_shared_yaml_address,[],[],"[""no same-tuple explicitly writable YAML entry""]"
+three_phase_hv,load_limit,SelectRWSensor,[142],,1,0,True,,,no_shared_yaml_address,[],[],"[""no same-tuple explicitly writable YAML entry""]"
+three_phase_hv,prog1_time,TimeRWSensor,[148],,1,0,True,"{""sensor"": ""prog6_time""}","{""sensor"": ""prog2_time""}",same_tuple_semantic_review,"[""deye_sg01hp3:time-of-use-tou-time-1""]",[],"[""dependent write limits""]"
+three_phase_hv,prog2_time,TimeRWSensor,[149],,1,0,True,"{""sensor"": ""prog1_time""}","{""sensor"": ""prog3_time""}",same_tuple_semantic_review,"[""deye_sg01hp3:time-of-use-tou-time-2""]",[],"[""dependent write limits""]"
+three_phase_hv,prog3_time,TimeRWSensor,[150],,1,0,True,"{""sensor"": ""prog2_time""}","{""sensor"": ""prog4_time""}",same_tuple_semantic_review,"[""deye_sg01hp3:time-of-use-tou-time-3""]",[],"[""dependent write limits""]"
+three_phase_hv,prog4_time,TimeRWSensor,[151],,1,0,True,"{""sensor"": ""prog3_time""}","{""sensor"": ""prog5_time""}",same_tuple_semantic_review,"[""deye_sg01hp3:time-of-use-tou-time-4""]",[],"[""dependent write limits""]"
+three_phase_hv,prog5_time,TimeRWSensor,[152],,1,0,True,"{""sensor"": ""prog4_time""}","{""sensor"": ""prog6_time""}",same_tuple_semantic_review,"[""deye_sg01hp3:time-of-use-tou-time-5""]",[],"[""dependent write limits""]"
+three_phase_hv,prog6_time,TimeRWSensor,[153],,1,0,True,"{""sensor"": ""prog5_time""}","{""sensor"": ""prog1_time""}",same_tuple_semantic_review,"[""deye_sg01hp3:time-of-use-tou-time-6""]",[],"[""dependent write limits""]"
+three_phase_hv,prog_time_of_use_enabled,SwitchRWSensor,[146],,1,1,True,,,no_shared_yaml_address,[],[],"[""masked control/decoding"", ""no same-tuple explicitly writable YAML entry""]"
+three_phase_hv,use_timer,SwitchRWSensor,[146],,1,1,True,,,no_shared_yaml_address,[],[],"[""masked control/decoding"", ""no same-tuple explicitly writable YAML entry""]"
+three_phase_hv,prog_monday_enabled,SwitchRWSensor,[146],,1,2,True,,,no_shared_yaml_address,[],[],"[""masked control/decoding"", ""no same-tuple explicitly writable YAML entry""]"
+three_phase_hv,prog_tuesday_enabled,SwitchRWSensor,[146],,1,4,True,,,no_shared_yaml_address,[],[],"[""masked control/decoding"", ""no same-tuple explicitly writable YAML entry""]"
+three_phase_hv,prog_wednesday_enabled,SwitchRWSensor,[146],,1,8,True,,,no_shared_yaml_address,[],[],"[""masked control/decoding"", ""no same-tuple explicitly writable YAML entry""]"
+three_phase_hv,prog_thursday_enabled,SwitchRWSensor,[146],,1,16,True,,,no_shared_yaml_address,[],[],"[""masked control/decoding"", ""no same-tuple explicitly writable YAML entry""]"
+three_phase_hv,prog_friday_enabled,SwitchRWSensor,[146],,1,32,True,,,no_shared_yaml_address,[],[],"[""masked control/decoding"", ""no same-tuple explicitly writable YAML entry""]"
+three_phase_hv,prog_saturday_enabled,SwitchRWSensor,[146],,1,64,True,,,no_shared_yaml_address,[],[],"[""masked control/decoding"", ""no same-tuple explicitly writable YAML entry""]"
+three_phase_hv,prog_sunday_enabled,SwitchRWSensor,[146],,1,128,True,,,no_shared_yaml_address,[],[],"[""masked control/decoding"", ""no same-tuple explicitly writable YAML entry""]"
+three_phase_hv,prog1_power,NumberRWSensor,[154],W,10,0,True,0,"{""sensor"": ""rated_power""}",same_tuple_numeric_candidate,"[""deye_sg01hp3:time-of-use-tou-power-1""]","[""deye_sg01hp3:time-of-use-tou-power-1""]","[""dependent write limits""]"
+three_phase_hv,prog2_power,NumberRWSensor,[155],W,10,0,True,0,"{""sensor"": ""rated_power""}",same_tuple_numeric_candidate,"[""deye_sg01hp3:time-of-use-tou-power-2""]","[""deye_sg01hp3:time-of-use-tou-power-2""]","[""dependent write limits""]"
+three_phase_hv,prog3_power,NumberRWSensor,[156],W,10,0,True,0,"{""sensor"": ""rated_power""}",same_tuple_numeric_candidate,"[""deye_sg01hp3:time-of-use-tou-power-3""]","[""deye_sg01hp3:time-of-use-tou-power-3""]","[""dependent write limits""]"
+three_phase_hv,prog4_power,NumberRWSensor,[157],W,10,0,True,0,"{""sensor"": ""rated_power""}",same_tuple_numeric_candidate,"[""deye_sg01hp3:time-of-use-tou-power-4""]","[""deye_sg01hp3:time-of-use-tou-power-4""]","[""dependent write limits""]"
+three_phase_hv,prog5_power,NumberRWSensor,[158],W,10,0,True,0,"{""sensor"": ""rated_power""}",same_tuple_numeric_candidate,"[""deye_sg01hp3:time-of-use-tou-power-5""]","[""deye_sg01hp3:time-of-use-tou-power-5""]","[""dependent write limits""]"
+three_phase_hv,prog6_power,NumberRWSensor,[159],W,10,0,True,0,"{""sensor"": ""rated_power""}",same_tuple_numeric_candidate,"[""deye_sg01hp3:time-of-use-tou-power-6""]","[""deye_sg01hp3:time-of-use-tou-power-6""]","[""dependent write limits""]"
+three_phase_hv,prog1_capacity,NumberRWSensor,[166],%,1,0,True,"{""sensor"": ""battery_low_capacity""}",100,same_tuple_numeric_candidate,"[""deye_sg01hp3:time-of-use-tou-battery-soc-1""]","[""deye_sg01hp3:time-of-use-tou-battery-soc-1""]","[""dependent write limits""]"
+three_phase_hv,prog2_capacity,NumberRWSensor,[167],%,1,0,True,"{""sensor"": ""battery_low_capacity""}",100,same_tuple_numeric_candidate,"[""deye_sg01hp3:time-of-use-tou-battery-soc-2""]","[""deye_sg01hp3:time-of-use-tou-battery-soc-2""]","[""dependent write limits""]"
+three_phase_hv,prog3_capacity,NumberRWSensor,[168],%,1,0,True,"{""sensor"": ""battery_low_capacity""}",100,same_tuple_numeric_candidate,"[""deye_sg01hp3:time-of-use-tou-battery-soc-3""]","[""deye_sg01hp3:time-of-use-tou-battery-soc-3""]","[""dependent write limits""]"
+three_phase_hv,prog4_capacity,NumberRWSensor,[169],%,1,0,True,"{""sensor"": ""battery_low_capacity""}",100,same_tuple_numeric_candidate,"[""deye_sg01hp3:time-of-use-tou-battery-soc-4""]","[""deye_sg01hp3:time-of-use-tou-battery-soc-4""]","[""dependent write limits""]"
+three_phase_hv,prog5_capacity,NumberRWSensor,[170],%,1,0,True,"{""sensor"": ""battery_low_capacity""}",100,same_tuple_numeric_candidate,"[""deye_sg01hp3:time-of-use-tou-battery-soc-5""]","[""deye_sg01hp3:time-of-use-tou-battery-soc-5""]","[""dependent write limits""]"
+three_phase_hv,prog6_capacity,NumberRWSensor,[171],%,1,0,True,"{""sensor"": ""battery_low_capacity""}",100,same_tuple_numeric_candidate,"[""deye_sg01hp3:time-of-use-tou-battery-soc-6""]","[""deye_sg01hp3:time-of-use-tou-battery-soc-6""]","[""dependent write limits""]"
+three_phase_hv,prog1_charge,SelectRWSensor,[172],,1,3,True,,,same_tuple_semantic_review,"[""deye_sg01hp3:time-of-use-tou-charge-enable-1""]",[],"[""masked control/decoding""]"
+three_phase_hv,prog2_charge,SelectRWSensor,[173],,1,3,True,,,same_tuple_semantic_review,"[""deye_sg01hp3:time-of-use-tou-charge-enable-2""]",[],"[""masked control/decoding""]"
+three_phase_hv,prog3_charge,SelectRWSensor,[174],,1,3,True,,,same_tuple_semantic_review,"[""deye_sg01hp3:time-of-use-tou-charge-enable-3""]",[],"[""masked control/decoding""]"
+three_phase_hv,prog4_charge,SelectRWSensor,[175],,1,3,True,,,same_tuple_semantic_review,"[""deye_sg01hp3:time-of-use-tou-charge-enable-4""]",[],"[""masked control/decoding""]"
+three_phase_hv,prog5_charge,SelectRWSensor,[176],,1,3,True,,,same_tuple_semantic_review,"[""deye_sg01hp3:time-of-use-tou-charge-enable-5""]",[],"[""masked control/decoding""]"
+three_phase_hv,prog6_charge,SelectRWSensor,[177],,1,3,True,,,same_tuple_semantic_review,"[""deye_sg01hp3:time-of-use-tou-charge-enable-6""]",[],"[""masked control/decoding""]"
+three_phase_hv,prog1_mode,SelectRWSensor,[172],,1,28,True,,,same_tuple_semantic_review,"[""deye_sg01hp3:time-of-use-tou-charge-enable-1""]",[],"[""masked control/decoding""]"
+three_phase_hv,prog2_mode,SelectRWSensor,[173],,1,28,True,,,same_tuple_semantic_review,"[""deye_sg01hp3:time-of-use-tou-charge-enable-2""]",[],"[""masked control/decoding""]"
+three_phase_hv,prog3_mode,SelectRWSensor,[174],,1,28,True,,,same_tuple_semantic_review,"[""deye_sg01hp3:time-of-use-tou-charge-enable-3""]",[],"[""masked control/decoding""]"
+three_phase_hv,prog4_mode,SelectRWSensor,[175],,1,28,True,,,same_tuple_semantic_review,"[""deye_sg01hp3:time-of-use-tou-charge-enable-4""]",[],"[""masked control/decoding""]"
+three_phase_hv,prog5_mode,SelectRWSensor,[176],,1,28,True,,,same_tuple_semantic_review,"[""deye_sg01hp3:time-of-use-tou-charge-enable-5""]",[],"[""masked control/decoding""]"
+three_phase_hv,prog6_mode,SelectRWSensor,[177],,1,28,True,,,same_tuple_semantic_review,"[""deye_sg01hp3:time-of-use-tou-charge-enable-6""]",[],"[""masked control/decoding""]"
+three_phase_hv,prog1_voltage,NumberRWSensor,[160],V,0.01,0,True,"{""sensor"": ""battery_low_voltage""}","{""sensor"": ""battery_float_voltage""}",no_shared_yaml_address,[],[],"[""dependent write limits"", ""no same-tuple explicitly writable YAML entry""]"
+three_phase_hv,prog2_voltage,NumberRWSensor,[161],V,0.01,0,True,"{""sensor"": ""battery_low_voltage""}","{""sensor"": ""battery_float_voltage""}",no_shared_yaml_address,[],[],"[""dependent write limits"", ""no same-tuple explicitly writable YAML entry""]"
+three_phase_hv,prog3_voltage,NumberRWSensor,[162],V,0.01,0,True,"{""sensor"": ""battery_low_voltage""}","{""sensor"": ""battery_float_voltage""}",no_shared_yaml_address,[],[],"[""dependent write limits"", ""no same-tuple explicitly writable YAML entry""]"
+three_phase_hv,prog4_voltage,NumberRWSensor,[163],V,0.01,0,True,"{""sensor"": ""battery_low_voltage""}","{""sensor"": ""battery_float_voltage""}",no_shared_yaml_address,[],[],"[""dependent write limits"", ""no same-tuple explicitly writable YAML entry""]"
+three_phase_hv,prog5_voltage,NumberRWSensor,[164],V,0.01,0,True,"{""sensor"": ""battery_low_voltage""}","{""sensor"": ""battery_float_voltage""}",no_shared_yaml_address,[],[],"[""dependent write limits"", ""no same-tuple explicitly writable YAML entry""]"
+three_phase_hv,prog6_voltage,NumberRWSensor,[165],V,0.01,0,True,"{""sensor"": ""battery_low_voltage""}","{""sensor"": ""battery_float_voltage""}",no_shared_yaml_address,[],[],"[""dependent write limits"", ""no same-tuple explicitly writable YAML entry""]"
+three_phase_hv,prog1_sell,SwitchRWSensor,[172],,1,32,True,,,same_tuple_semantic_review,"[""deye_sg01hp3:time-of-use-tou-charge-enable-1""]",[],"[""masked control/decoding""]"
+three_phase_hv,prog2_sell,SwitchRWSensor,[173],,1,32,True,,,same_tuple_semantic_review,"[""deye_sg01hp3:time-of-use-tou-charge-enable-2""]",[],"[""masked control/decoding""]"
+three_phase_hv,prog3_sell,SwitchRWSensor,[174],,1,32,True,,,same_tuple_semantic_review,"[""deye_sg01hp3:time-of-use-tou-charge-enable-3""]",[],"[""masked control/decoding""]"
+three_phase_hv,prog4_sell,SwitchRWSensor,[175],,1,32,True,,,same_tuple_semantic_review,"[""deye_sg01hp3:time-of-use-tou-charge-enable-4""]",[],"[""masked control/decoding""]"
+three_phase_hv,prog5_sell,SwitchRWSensor,[176],,1,32,True,,,same_tuple_semantic_review,"[""deye_sg01hp3:time-of-use-tou-charge-enable-5""]",[],"[""masked control/decoding""]"
+three_phase_hv,prog6_sell,SwitchRWSensor,[177],,1,32,True,,,same_tuple_semantic_review,"[""deye_sg01hp3:time-of-use-tou-charge-enable-6""]",[],"[""masked control/decoding""]"
+three_phase_hv,microinverter_export_to_grid_cutoff,SelectRWSensor,[178],,1,3,True,,,no_shared_yaml_address,[],[],"[""masked control/decoding"", ""no same-tuple explicitly writable YAML entry""]"
+three_phase_hv,gen_peak_shaving,SelectRWSensor,[178],,1,12,True,,,no_shared_yaml_address,[],[],"[""masked control/decoding"", ""no same-tuple explicitly writable YAML entry""]"
+three_phase_hv,grid_peak_shaving,SelectRWSensor,[178],,1,48,True,,,no_shared_yaml_address,[],[],"[""masked control/decoding"", ""no same-tuple explicitly writable YAML entry""]"
+three_phase_hv,on_grid_always_on,SelectRWSensor,[178],,1,192,True,,,no_shared_yaml_address,[],[],"[""masked control/decoding"", ""no same-tuple explicitly writable YAML entry""]"
+three_phase_hv,external_relay,SelectRWSensor,[178],,1,768,True,,,no_shared_yaml_address,[],[],"[""masked control/decoding"", ""no same-tuple explicitly writable YAML entry""]"
+three_phase_hv,loss_of_lithium_battery_report_fault,SelectRWSensor,[178],,1,3072,True,,,no_shared_yaml_address,[],[],"[""masked control/decoding"", ""no same-tuple explicitly writable YAML entry""]"
+three_phase_hv,drm,SelectRWSensor,[178],,1,12288,True,,,no_shared_yaml_address,[],[],"[""masked control/decoding"", ""no same-tuple explicitly writable YAML entry""]"
+three_phase_hv,us_version_grounding_fault,SelectRWSensor,[178],,1,49152,True,,,no_shared_yaml_address,[],[],"[""masked control/decoding"", ""no same-tuple explicitly writable YAML entry""]"
+three_phase_hv,generator_ac_couple_frz_high,NumberRWSensor,[131],Hz,0.01,0,True,0,100,no_shared_yaml_address,[],[],"[""no same-tuple explicitly writable YAML entry""]"
+three_phase_hv,generator_off_soc,NumberRWSensor,[135],%,1,0,True,0,100,no_shared_yaml_address,[],[],"[""no same-tuple explicitly writable YAML entry""]"
+three_phase_hv,generator_on_soc,NumberRWSensor,[137],%,1,0,True,0,100,no_shared_yaml_address,[],[],"[""no same-tuple explicitly writable YAML entry""]"
+three_phase_hv,generator_max_operating_time,NumberRWSensor,[121],Hours,0.1,0,True,0,100,no_shared_yaml_address,[],[],"[""no same-tuple explicitly writable YAML entry""]"
+three_phase_hv,generator_cooling_time,NumberRWSensor,[122],Hours,0.1,0,True,0,100,no_shared_yaml_address,[],[],"[""no same-tuple explicitly writable YAML entry""]"
+three_phase_hv,min_pv_power_for_gen_start,NumberRWSensor,[139],W,1,0,True,0,100,no_shared_yaml_address,[],[],"[""no same-tuple explicitly writable YAML entry""]"
+three_phase_hv,grid_signal_on,SwitchRWSensor,[140],,1,1,True,,,no_shared_yaml_address,[],[],"[""masked control/decoding"", ""no same-tuple explicitly writable YAML entry""]"
+three_phase_hv,gen_signal_on,SwitchRWSensor,[140],,1,2,True,,,no_shared_yaml_address,[],[],"[""masked control/decoding"", ""no same-tuple explicitly writable YAML entry""]"
+three_phase_hv,force_on_generator_as_load_function,SwitchRWSensor,[132],,1,0,True,,,no_shared_yaml_address,[],[],"[""no same-tuple explicitly writable YAML entry""]"
+three_phase_hv,generator_connected_to_grid_input,SwitchRWSensor,[189],,1,0,True,,,no_shared_yaml_address,[],[],"[""no same-tuple explicitly writable YAML entry""]"
+three_phase_hv,parallel_enable,SwitchRWSensor,[336],,1,1,True,,,no_shared_yaml_address,[],[],"[""masked control/decoding"", ""no same-tuple explicitly writable YAML entry""]"
+three_phase_hv,parallel_mode,SelectRWSensor,[336],,1,2,True,,,no_shared_yaml_address,[],[],"[""masked control/decoding"", ""no same-tuple explicitly writable YAML entry""]"
+three_phase_hv,parallel_phase,SelectRWSensor,[336],,1,768,True,,,no_shared_yaml_address,[],[],"[""masked control/decoding"", ""no same-tuple explicitly writable YAML entry""]"
+three_phase_hv,parallel_modbus_sn,NumberRWSensor,[336],,1,64512,True,0,63,no_shared_yaml_address,[],[],"[""masked control/decoding"", ""no same-tuple explicitly writable YAML entry""]"
+three_phase_hv,grid_standard,SelectRWSensor,[182],,1,0,True,,,no_shared_yaml_address,[],[],"[""no same-tuple explicitly writable YAML entry""]"
+three_phase_hv,configured_grid_frequency,SelectRWSensor,[183],,1,0,True,,,no_shared_yaml_address,[],[],"[""no same-tuple explicitly writable YAML entry""]"
+three_phase_hv,configured_grid_phases,SelectRWSensor,[184],,1,0,True,,,no_shared_yaml_address,[],[],"[""no same-tuple explicitly writable YAML entry""]"
+three_phase_hv,time_synchronization,SelectRWSensor,[228],,1,3,True,,,no_shared_yaml_address,[],[],"[""masked control/decoding"", ""no same-tuple explicitly writable YAML entry""]"
+three_phase_hv,beep,SelectRWSensor,[228],,1,12,True,,,no_shared_yaml_address,[],[],"[""masked control/decoding"", ""no same-tuple explicitly writable YAML entry""]"
+three_phase_hv,am_pm,SelectRWSensor,[228],,1,48,True,,,no_shared_yaml_address,[],[],"[""masked control/decoding"", ""no same-tuple explicitly writable YAML entry""]"
+three_phase_hv,auto_dim,SelectRWSensor,[228],,1,192,True,,,no_shared_yaml_address,[],[],"[""masked control/decoding"", ""no same-tuple explicitly writable YAML entry""]"
+three_phase_hv,allow_remote,SelectRWSensor,[228],,1,49152,True,,,no_shared_yaml_address,[],[],"[""masked control/decoding"", ""no same-tuple explicitly writable YAML entry""]"
+three_phase_hv,track_grid_phase,SwitchRWSensor,[235],,1,0,True,,,no_shared_yaml_address,[],[],"[""no same-tuple explicitly writable YAML entry""]"
+three_phase_hv,ups_delay_time,NumberRWSensor,[209],s,1,0,True,0,100,no_shared_yaml_address,[],[],"[""no same-tuple explicitly writable YAML entry""]"
+three_phase_hv,drm0_code,EnumSensor,[544],,1,1,False,,,no_shared_yaml_address,[],[],"[""masked control/decoding""]"
+three_phase_hv,drm1_code,EnumSensor,[544],,1,2,False,,,no_shared_yaml_address,[],[],"[""masked control/decoding""]"
+three_phase_hv,drm2_code,EnumSensor,[544],,1,4,False,,,no_shared_yaml_address,[],[],"[""masked control/decoding""]"
+three_phase_hv,drm3_code,EnumSensor,[544],,1,8,False,,,no_shared_yaml_address,[],[],"[""masked control/decoding""]"
+three_phase_hv,drm4_code,EnumSensor,[544],,1,16,False,,,no_shared_yaml_address,[],[],"[""masked control/decoding""]"
+three_phase_hv,drm5_code,EnumSensor,[544],,1,32,False,,,no_shared_yaml_address,[],[],"[""masked control/decoding""]"
+three_phase_hv,drm6_code,EnumSensor,[544],,1,64,False,,,no_shared_yaml_address,[],[],"[""masked control/decoding""]"
+three_phase_hv,drm7_code,EnumSensor,[544],,1,128,False,,,no_shared_yaml_address,[],[],"[""masked control/decoding""]"
+three_phase_hv,drm8_code,EnumSensor,[544],,1,256,False,,,no_shared_yaml_address,[],[],"[""masked control/decoding""]"
+three_phase_hv,battery_1_temperature,TempSensor,[586],°C,0.1,0,False,,,same_tuple_numeric_candidate,"[""deye_sg01hp3:battery-battery-temperature""]","[""deye_sg01hp3:battery-battery-temperature""]",[]
+three_phase_hv,battery_1_voltage,Sensor,[587],V,0.1,0,False,,,same_tuple_semantic_review,"[""deye_sg01hp3:battery-battery-voltage""]",[],[]
+three_phase_hv,battery_1_soc,Sensor,[588],%,1,0,False,,,same_tuple_numeric_candidate,"[""deye_sg01hp3:battery-battery-soc""]","[""deye_sg01hp3:battery-battery-soc""]",[]
+three_phase_hv,battery_1_power,Sensor,[590],W,-10,0,False,,,same_tuple_numeric_candidate,"[""deye_sg01hp3:battery-battery-power""]","[""deye_sg01hp3:battery-battery-power""]",[]
+three_phase_hv,battery_1_current,Sensor,[591],A,-0.01,0,False,,,same_tuple_numeric_candidate,"[""deye_sg01hp3:battery-battery-current""]","[""deye_sg01hp3:battery-battery-current""]",[]
+three_phase_hv,battery_2_soc,Sensor,[589],%,1,0,False,,,no_shared_yaml_address,[],[],[]
+three_phase_hv,battery_2_voltage,Sensor,[593],V,0.1,0,False,,,no_shared_yaml_address,[],[],[]
+three_phase_hv,battery_2_current,Sensor,[594],A,-0.01,0,False,,,no_shared_yaml_address,[],[],[]
+three_phase_hv,battery_2_power,Sensor,[595],W,-10,0,False,,,no_shared_yaml_address,[],[],[]
+three_phase_hv,battery_2_temperature,TempSensor,[596],°C,0.1,0,False,,,no_shared_yaml_address,[],[],[]
+three_phase_hv,pv5_power,Sensor,[727],W,10,0,False,,,no_shared_yaml_address,[],[],[]
+three_phase_hv,pv6_power,Sensor,[728],W,10,0,False,,,no_shared_yaml_address,[],[],[]
+three_phase_hv,pv7_power,Sensor,[729],W,10,0,False,,,no_shared_yaml_address,[],[],[]
+three_phase_hv,pv8_power,Sensor,[730],W,10,0,False,,,no_shared_yaml_address,[],[],[]
+three_phase_hv,fan_warning,EnumSensor,[553],,1,2,False,,,partial_tuple_review,[],[],"[""masked control/decoding""]"
+three_phase_hv,grid_phase_warning,EnumSensor,[553],,1,4,False,,,partial_tuple_review,[],[],"[""masked control/decoding""]"
+three_phase_hv,lithium_battery_loss_warning,EnumSensor,[554],,1,16384,False,,,partial_tuple_review,[],[],"[""masked control/decoding""]"
+three_phase_hv,parallel_communication_quality_warning,EnumSensor,[554],,1,32768,False,,,partial_tuple_review,[],[],"[""masked control/decoding""]"
+three_phase_hv,parallel_battery_1_and_2,SwitchRWSensor,[110],,1,0,True,,,no_shared_yaml_address,[],[],"[""no same-tuple explicitly writable YAML entry""]"
+three_phase_hv,parallel_bat1&bat2,SwitchRWSensor,[110],,1,0,True,,,no_shared_yaml_address,[],[],"[""no same-tuple explicitly writable YAML entry""]"
+three_phase_hv,battery_1_wake_up,SelectRWSensor,[112],,1,1,True,,,no_shared_yaml_address,[],[],"[""masked control/decoding"", ""no same-tuple explicitly writable YAML entry""]"
+three_phase_hv,battery_2_wake_up,SelectRWSensor,[112],,1,256,True,,,no_shared_yaml_address,[],[],"[""masked control/decoding"", ""no same-tuple explicitly writable YAML entry""]"
+three_phase_hv,lithium_hv_bms_protocol,SelectRWSensor,[223],,1,0,True,,,no_shared_yaml_address,[],[],"[""no same-tuple explicitly writable YAML entry""]"
+three_phase_hv,battery_1_bms_type,SelectRWSensor,[223],,1,0,True,,,no_shared_yaml_address,[],[],"[""no same-tuple explicitly writable YAML entry""]"
+three_phase_hv,battery_1_manufacturer,EnumSensor,[229],,1,0,False,,,no_shared_yaml_address,[],[],[]
+three_phase_hv,battery_1_bms_fault_flag,Sensor,[221],,1,0,False,,,no_shared_yaml_address,[],[],[]
+three_phase_hv,battery_1_bms_other_flag___battery_1_force_charge,SwitchRWSensor,[222],,1,2,True,,,no_shared_yaml_address,[],[],"[""masked control/decoding"", ""no same-tuple explicitly writable YAML entry""]"
+three_phase_hv,battery_1_bms_other_flag___battery_2_force_charge,SwitchRWSensor,[222],,1,4,True,,,no_shared_yaml_address,[],[],"[""masked control/decoding"", ""no same-tuple explicitly writable YAML entry""]"
+three_phase_hv,battery_1_bms_other_flag___battery_1_sleep,SwitchRWSensor,[222],,1,8,True,,,no_shared_yaml_address,[],[],"[""masked control/decoding"", ""no same-tuple explicitly writable YAML entry""]"
+three_phase_hv,battery_1_bms_soh,Sensor,[224],%,1,0,False,,,no_shared_yaml_address,[],[],[]
+three_phase_hv,battery_1_bms_software_version,Sensor,[225],,1,0,False,,,no_shared_yaml_address,[],[],[]
+three_phase_hv,battery_1_bms_rated_ah,Sensor,[226],Ah,1,0,False,,,no_shared_yaml_address,[],[],[]
+three_phase_hv,battery_1_bms_hardware_version,Sensor,[227],,1,0,False,,,no_shared_yaml_address,[],[],[]
+three_phase_hv,battery_2_manufacturer,EnumSensor,[230],,1,0,False,,,no_shared_yaml_address,[],[],[]
+three_phase_hv,battery_2_bms_charging_voltage,Sensor,[241],V,0.1,0,False,,,no_shared_yaml_address,[],[],[]
+three_phase_hv,battery_2_bms_discharging_voltage,Sensor,[242],V,0.1,0,False,,,no_shared_yaml_address,[],[],[]
+three_phase_hv,battery_2_bms_charging_current_limit,Sensor,[243],A,1,0,False,,,no_shared_yaml_address,[],[],[]
+three_phase_hv,battery_2_bms_discharging_current_limit,Sensor,[244],A,1,0,False,,,no_shared_yaml_address,[],[],[]
+three_phase_hv,battery_2_bms_soc,Sensor,[245],%,1,0,False,,,no_shared_yaml_address,[],[],[]
+three_phase_hv,battery_2_bms_voltage,Sensor,[246],V,0.1,0,False,,,no_shared_yaml_address,[],[],[]
+three_phase_hv,battery_2_bms_current,Sensor,[247],A,0.1,0,False,,,no_shared_yaml_address,[],[],[]
+three_phase_hv,battery_2_bms_temperature,TempSensor,[248],°C,0.1,0,False,,,no_shared_yaml_address,[],[],[]
+three_phase_hv,battery_2_bms_max_charge_current_limit,Sensor,[249],A,1,0,False,,,no_shared_yaml_address,[],[],[]
+three_phase_hv,battery_2_bms_max_discharge_current_limit,Sensor,[250],A,1,0,False,,,no_shared_yaml_address,[],[],[]
+three_phase_hv,battery_2_bms_alarm_flag,Sensor,[251],,1,0,False,,,no_shared_yaml_address,[],[],[]
+three_phase_hv,battery_2_bms_fault_flag,Sensor,[252],,1,0,False,,,no_shared_yaml_address,[],[],[]
+three_phase_hv,battery_2_bms_other_flag___battery_1_force_charge,SwitchRWSensor,[253],,1,2,True,,,no_shared_yaml_address,[],[],"[""masked control/decoding"", ""no same-tuple explicitly writable YAML entry""]"
+three_phase_hv,battery_2_bms_other_flag___battery_2_force_charge,SwitchRWSensor,[253],,1,4,True,,,no_shared_yaml_address,[],[],"[""masked control/decoding"", ""no same-tuple explicitly writable YAML entry""]"
+three_phase_hv,battery_2_bms_other_flag___battery_1_sleep,SwitchRWSensor,[253],,1,8,True,,,no_shared_yaml_address,[],[],"[""masked control/decoding"", ""no same-tuple explicitly writable YAML entry""]"
+three_phase_hv,battery_2_bms_type,Sensor,[254],,1,0,False,,,no_shared_yaml_address,[],[],[]
+three_phase_hv,battery_2_bms_soh,Sensor,[255],%,1,0,False,,,no_shared_yaml_address,[],[],[]
+three_phase_hv,battery_2_bms_software_version,Sensor,[256],,1,0,False,,,no_shared_yaml_address,[],[],[]
+three_phase_hv,battery_2_bms_rated_ah,Sensor,[257],Ah,1,0,False,,,no_shared_yaml_address,[],[],[]
+three_phase_hv,battery_2_bms_hardware_version,Sensor,[258],,1,0,False,,,no_shared_yaml_address,[],[],[]
+micro_hybrid_ess,pv_power,PVDynamicTotalSensor,[0],W,1,0,False,,,different_device_family_context_only,[],[],[]
+micro_hybrid_ess,battery_soc,Sensor,[1069],%,1,0,False,,,different_device_family_context_only,[],[],[]
+micro_hybrid_ess,battery_voltage,Sensor,[1067],V,0.01,0,False,,,different_device_family_context_only,[],[],[]
+micro_hybrid_ess,battery_current,Sensor,[1068],A,-0.01,0,False,,,different_device_family_context_only,[],[],[]
+micro_hybrid_ess,battery_power,Sensor,[1071],W,-1,0,False,,,different_device_family_context_only,[],[],[]
+micro_hybrid_ess,battery_temperature,Sensor,[1070],°C,-0.1,0,False,,,different_device_family_context_only,[],[],[]
+micro_hybrid_ess,battery_cell_voltage_max,Sensor,[408],V,0.001,0,False,,,different_device_family_context_only,[],[],[]
+micro_hybrid_ess,battery_cell_voltage_min,Sensor,[409],V,0.001,0,False,,,different_device_family_context_only,[],[],[]
+micro_hybrid_ess,battery_cell_temperature_max,Sensor,[410],°C,-0.1,0,False,,,different_device_family_context_only,[],[],[]
+micro_hybrid_ess,battery_cell_temperature_min,Sensor,[411],°C,-0.1,0,False,,,different_device_family_context_only,[],[],[]
+micro_hybrid_ess,battery_modules,Sensor,[412],,1,0,False,,,different_device_family_context_only,[],[],[]
+micro_hybrid_ess,battery_capacity,Sensor,[407],Ah,0.1,0,False,,,different_device_family_context_only,[],[],[]
+micro_hybrid_ess,battery_soh,Sensor,[392],%,1,0,False,,,different_device_family_context_only,[],[],[]
+micro_hybrid_ess,bms_charge_voltage,Sensor,[372],V,0.01,0,False,,,different_device_family_context_only,[],[],[]
+micro_hybrid_ess,battery_charge_limit_current,Sensor,[374],A,1,0,False,,,different_device_family_context_only,[],[],[]
+micro_hybrid_ess,battery_discharge_limit_current,Sensor,[375],A,1,0,False,,,different_device_family_context_only,[],[],[]
+micro_hybrid_ess,bms_soc,Sensor,[376],%,1,0,False,,,different_device_family_context_only,[],[],[]
+micro_hybrid_ess,bms_voltage,Sensor,[377],V,0.01,0,False,,,different_device_family_context_only,[],[],[]
+micro_hybrid_ess,bms_current,Sensor,[378],A,-1,0,False,,,different_device_family_context_only,[],[],[]
+micro_hybrid_ess,bms_temperature,Sensor,[379],°C,-0.1,0,False,,,different_device_family_context_only,[],[],[]
+micro_hybrid_ess,grid_voltage,Sensor,[1034],V,0.1,0,False,,,different_device_family_context_only,[],[],[]
+micro_hybrid_ess,grid_frequency,Sensor,[1035],Hz,0.01,0,False,,,different_device_family_context_only,[],[],[]
+micro_hybrid_ess,grid_current,Sensor,[1078],A,0.1,0,False,,,different_device_family_context_only,[],[],[]
+micro_hybrid_ess,grid_power,Sensor,[1083],W,-1,0,False,,,different_device_family_context_only,[],[],[]
+micro_hybrid_ess,grid_connected,BinarySensor,[1080],,1,0,False,,,different_device_family_context_only,[],[],[]
+micro_hybrid_ess,load_voltage,Sensor,[1033],V,0.1,0,False,,,different_device_family_context_only,[],[],[]
+micro_hybrid_ess,load_frequency,Sensor,[1037],Hz,0.01,0,False,,,different_device_family_context_only,[],[],[]
+micro_hybrid_ess,load_power,Sensor,[1087],W,1,0,False,,,different_device_family_context_only,[],[],[]
+micro_hybrid_ess,inverter_power,Sensor,"[1028, 1029]",W,-0.1,0,False,,,different_device_family_context_only,[],[],[]
+micro_hybrid_ess,inverter_current,Sensor,[1081],A,0.1,0,False,,,different_device_family_context_only,[],[],[]
+micro_hybrid_ess,radiator_temperature,TempSensor,[1032],°C,0.01,0,False,,,different_device_family_context_only,[],[],[]
+micro_hybrid_ess,inverter_temperature,Sensor,[1127],°C,1,0,False,,,different_device_family_context_only,[],[],[]
+micro_hybrid_ess,overall_state,EnumSensor,[1001],,1,0,False,,,different_device_family_context_only,[],[],[]
+micro_hybrid_ess,day_battery_charge,Sensor,[1073],kWh,0.1,0,False,,,different_device_family_context_only,[],[],[]
+micro_hybrid_ess,day_battery_discharge,Sensor,[1072],kWh,0.1,0,False,,,different_device_family_context_only,[],[],[]
+micro_hybrid_ess,day_grid_import,Sensor,[1089],kWh,0.1,0,False,,,different_device_family_context_only,[],[],[]
+micro_hybrid_ess,day_grid_export,Sensor,[1090],kWh,0.1,0,False,,,different_device_family_context_only,[],[],[]
+micro_hybrid_ess,day_load_energy,Sensor,[1098],kWh,0.1,0,False,,,different_device_family_context_only,[],[],[]
+micro_hybrid_ess,total_battery_charge,Sensor,"[1076, 1077]",kWh,0.1,0,False,,,different_device_family_context_only,[],[],[]
+micro_hybrid_ess,total_battery_discharge,Sensor,"[1074, 1075]",kWh,0.1,0,False,,,different_device_family_context_only,[],[],[]
+micro_hybrid_ess,total_grid_import,Sensor,"[1091, 1092]",kWh,0.1,0,False,,,different_device_family_context_only,[],[],[]
+micro_hybrid_ess,total_grid_export,Sensor,"[1093, 1094]",kWh,0.1,0,False,,,different_device_family_context_only,[],[],[]
+micro_hybrid_ess,total_load_energy,Sensor,"[1099, 1100]",kWh,0.1,0,False,,,different_device_family_context_only,[],[],[]
+micro_hybrid_ess,rated_power,Sensor,[17],W,0.1,0,False,,,different_device_family_context_only,[],[],[]
+micro_hybrid_ess,date_time,SystemTimeRWSensor,"[22, 23, 24]",,1,0,True,,,different_device_family_context_only,"[""deye_2mppt:inverter-update-time""]",[],"[""no same-tuple explicitly writable YAML entry""]"
+micro_hybrid_ess,battery_shutdown_capacity,NumberRWSensor,[319],%,1,0,True,0,"{""sensor"": ""battery_low_capacity""}",different_device_family_context_only,[],[],"[""dependent write limits"", ""no same-tuple explicitly writable YAML entry""]"
+micro_hybrid_ess,battery_restart_capacity,NumberRWSensor,[320],%,1,0,True,"{""sensor"": ""battery_low_capacity""}",100,different_device_family_context_only,[],[],"[""dependent write limits"", ""no same-tuple explicitly writable YAML entry""]"
+micro_hybrid_ess,battery_low_capacity,NumberRWSensor,[321],%,1,0,True,"{""sensor"": ""battery_shutdown_capacity""}",50,different_device_family_context_only,[],[],"[""dependent write limits"", ""no same-tuple explicitly writable YAML entry""]"
+micro_hybrid_ess,battery_max_charge_current,NumberRWSensor,[312],A,0.01,0,True,5,50,different_device_family_context_only,[],[],"[""no same-tuple explicitly writable YAML entry""]"
+micro_hybrid_ess,battery_max_discharge_current,NumberRWSensor,[313],A,0.01,0,True,5,50,different_device_family_context_only,[],[],"[""no same-tuple explicitly writable YAML entry""]"
+micro_hybrid_ess,work_mode,SelectRWSensor,[334],,1,0,True,,,different_device_family_context_only,[],[],"[""no same-tuple explicitly writable YAML entry""]"
+micro_hybrid_ess,use_timer,SwitchRWSensor,[335],,1,0,True,,,different_device_family_context_only,[],[],"[""no same-tuple explicitly writable YAML entry""]"
+micro_hybrid_ess,grid_charge_enabled,SwitchRWSensor,[328],,1,0,True,,,different_device_family_context_only,[],[],"[""no same-tuple explicitly writable YAML entry""]"
+micro_hybrid_ess,priority_load,SelectRWSensor,[329],,1,0,True,,,different_device_family_context_only,[],[],"[""no same-tuple explicitly writable YAML entry""]"
+micro_hybrid_ess,solar_export,SwitchRWSensor,[333],,1,0,True,,,different_device_family_context_only,[],[],"[""no same-tuple explicitly writable YAML entry""]"
+micro_hybrid_ess,max_sell_power,NumberRWSensor,[331],W,1,0,True,0,"{""sensor"": ""rated_power""}",different_device_family_context_only,[],[],"[""dependent write limits"", ""no same-tuple explicitly writable YAML entry""]"
+micro_hybrid_ess,load_limit,EnumSensor,[330],,1,0,False,,,different_device_family_context_only,[],[],[]
+micro_hybrid_ess,prog1_time,TimeRWSensor,[336],,1,0,True,"{""sensor"": ""prog6_time""}","{""sensor"": ""prog2_time""}",different_device_family_context_only,[],[],"[""dependent write limits"", ""no same-tuple explicitly writable YAML entry""]"
+micro_hybrid_ess,prog2_time,TimeRWSensor,[337],,1,0,True,"{""sensor"": ""prog1_time""}","{""sensor"": ""prog3_time""}",different_device_family_context_only,[],[],"[""dependent write limits"", ""no same-tuple explicitly writable YAML entry""]"
+micro_hybrid_ess,prog3_time,TimeRWSensor,[338],,1,0,True,"{""sensor"": ""prog2_time""}","{""sensor"": ""prog4_time""}",different_device_family_context_only,[],[],"[""dependent write limits"", ""no same-tuple explicitly writable YAML entry""]"
+micro_hybrid_ess,prog4_time,TimeRWSensor,[339],,1,0,True,"{""sensor"": ""prog3_time""}","{""sensor"": ""prog5_time""}",different_device_family_context_only,[],[],"[""dependent write limits"", ""no same-tuple explicitly writable YAML entry""]"
+micro_hybrid_ess,prog5_time,TimeRWSensor,[340],,1,0,True,"{""sensor"": ""prog4_time""}","{""sensor"": ""prog6_time""}",different_device_family_context_only,[],[],"[""dependent write limits"", ""no same-tuple explicitly writable YAML entry""]"
+micro_hybrid_ess,prog6_time,TimeRWSensor,[341],,1,0,True,"{""sensor"": ""prog5_time""}","{""sensor"": ""prog1_time""}",different_device_family_context_only,[],[],"[""dependent write limits"", ""no same-tuple explicitly writable YAML entry""]"
+micro_hybrid_ess,prog1_power,NumberRWSensor,[342],W,1,0,True,0,"{""sensor"": ""rated_power""}",different_device_family_context_only,[],[],"[""dependent write limits"", ""no same-tuple explicitly writable YAML entry""]"
+micro_hybrid_ess,prog2_power,NumberRWSensor,[343],W,1,0,True,0,"{""sensor"": ""rated_power""}",different_device_family_context_only,[],[],"[""dependent write limits"", ""no same-tuple explicitly writable YAML entry""]"
+micro_hybrid_ess,prog3_power,NumberRWSensor,[344],W,1,0,True,0,"{""sensor"": ""rated_power""}",different_device_family_context_only,[],[],"[""dependent write limits"", ""no same-tuple explicitly writable YAML entry""]"
+micro_hybrid_ess,prog4_power,NumberRWSensor,[345],W,1,0,True,0,"{""sensor"": ""rated_power""}",different_device_family_context_only,[],[],"[""dependent write limits"", ""no same-tuple explicitly writable YAML entry""]"
+micro_hybrid_ess,prog5_power,NumberRWSensor,[346],W,1,0,True,0,"{""sensor"": ""rated_power""}",different_device_family_context_only,[],[],"[""dependent write limits"", ""no same-tuple explicitly writable YAML entry""]"
+micro_hybrid_ess,prog6_power,NumberRWSensor,[347],W,1,0,True,0,"{""sensor"": ""rated_power""}",different_device_family_context_only,[],[],"[""dependent write limits"", ""no same-tuple explicitly writable YAML entry""]"
+micro_hybrid_ess,prog1_capacity,NumberRWSensor,[354],%,1,0,True,"{""sensor"": ""battery_low_capacity""}",100,different_device_family_context_only,[],[],"[""dependent write limits"", ""no same-tuple explicitly writable YAML entry""]"
+micro_hybrid_ess,prog2_capacity,NumberRWSensor,[355],%,1,0,True,"{""sensor"": ""battery_low_capacity""}",100,different_device_family_context_only,[],[],"[""dependent write limits"", ""no same-tuple explicitly writable YAML entry""]"
+micro_hybrid_ess,prog3_capacity,NumberRWSensor,[356],%,1,0,True,"{""sensor"": ""battery_low_capacity""}",100,different_device_family_context_only,[],[],"[""dependent write limits"", ""no same-tuple explicitly writable YAML entry""]"
+micro_hybrid_ess,prog4_capacity,NumberRWSensor,[357],%,1,0,True,"{""sensor"": ""battery_low_capacity""}",100,different_device_family_context_only,[],[],"[""dependent write limits"", ""no same-tuple explicitly writable YAML entry""]"
+micro_hybrid_ess,prog5_capacity,NumberRWSensor,[358],%,1,0,True,"{""sensor"": ""battery_low_capacity""}",100,different_device_family_context_only,[],[],"[""dependent write limits"", ""no same-tuple explicitly writable YAML entry""]"
+micro_hybrid_ess,prog6_capacity,NumberRWSensor,[359],%,1,0,True,"{""sensor"": ""battery_low_capacity""}",100,different_device_family_context_only,[],[],"[""dependent write limits"", ""no same-tuple explicitly writable YAML entry""]"
+micro_hybrid_ess,prog1_charge,SwitchRWSensor,[360],,1,0,True,,,different_device_family_context_only,[],[],"[""no same-tuple explicitly writable YAML entry""]"
+micro_hybrid_ess,prog2_charge,SwitchRWSensor,[361],,1,0,True,,,different_device_family_context_only,[],[],"[""no same-tuple explicitly writable YAML entry""]"
+micro_hybrid_ess,prog3_charge,SwitchRWSensor,[362],,1,0,True,,,different_device_family_context_only,[],[],"[""no same-tuple explicitly writable YAML entry""]"
+micro_hybrid_ess,prog4_charge,SwitchRWSensor,[363],,1,0,True,,,different_device_family_context_only,[],[],"[""no same-tuple explicitly writable YAML entry""]"
+micro_hybrid_ess,prog5_charge,SwitchRWSensor,[364],,1,0,True,,,different_device_family_context_only,[],[],"[""no same-tuple explicitly writable YAML entry""]"
+micro_hybrid_ess,prog6_charge,SwitchRWSensor,[365],,1,0,True,,,different_device_family_context_only,[],[],"[""no same-tuple explicitly writable YAML entry""]"
+micro_hybrid_ess,grid_reconnect_delay,Sensor,[32],s,1,0,False,,,different_device_family_context_only,[],[],[]
+micro_hybrid_ess,inverter_enabled,BinarySensor,[34],,1,0,False,,,different_device_family_context_only,"[""deye_2mppt:grid-overfrequency-and-load-reduction-starting-point""]",[],[]
+micro_hybrid_ess,island_mode,BinarySensor,[35],,1,0,False,,,different_device_family_context_only,"[""deye_2mppt:grid-overfrequency-and-load-reduction-percentage""]",[],[]
+micro_hybrid_ess,insulation_check,BinarySensor,[36],,1,0,False,,,different_device_family_context_only,[],[],[]
+micro_hybrid_ess,neutral_to_earth,BinarySensor,[38],,1,0,False,,,different_device_family_context_only,[],[],[]

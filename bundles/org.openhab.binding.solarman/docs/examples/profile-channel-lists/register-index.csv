@@ -1,0 +1,1407 @@
+source,profile,register_decimal,register_hex,channel,complete_register_tuple,register_role,position,kind,unit
+advanced,sunsynk_single_phase,3,0x0003,inverter-id,"[3, 4, 5, 6, 7]",direct value,0,RegisterTextSensor,
+legacy,deye_hybrid,3,0x0003,inverter-inverter-id,"[3, 4, 5, 6, 7]",direct value,0,rule 5,
+legacy,deye_sg01hp3,3,0x0003,inverter-inverter-id,"[3, 4, 5, 6, 7]",direct value,0,rule 5,
+legacy,deye_sg04lp3,3,0x0003,inverter-inverter-id,"[3, 4, 5, 6, 7]",direct value,0,rule 5,
+advanced,sunsynk_single_phase,4,0x0004,inverter-id,"[3, 4, 5, 6, 7]",direct value,1,RegisterTextSensor,
+legacy,deye_hybrid,4,0x0004,inverter-inverter-id,"[3, 4, 5, 6, 7]",direct value,1,rule 5,
+legacy,deye_sg01hp3,4,0x0004,inverter-inverter-id,"[3, 4, 5, 6, 7]",direct value,1,rule 5,
+legacy,deye_sg04lp3,4,0x0004,inverter-inverter-id,"[3, 4, 5, 6, 7]",direct value,1,rule 5,
+advanced,sunsynk_single_phase,5,0x0005,inverter-id,"[3, 4, 5, 6, 7]",direct value,2,RegisterTextSensor,
+legacy,deye_hybrid,5,0x0005,inverter-inverter-id,"[3, 4, 5, 6, 7]",direct value,2,rule 5,
+legacy,deye_sg01hp3,5,0x0005,inverter-inverter-id,"[3, 4, 5, 6, 7]",direct value,2,rule 5,
+legacy,deye_sg04lp3,5,0x0005,inverter-inverter-id,"[3, 4, 5, 6, 7]",direct value,2,rule 5,
+advanced,sunsynk_single_phase,6,0x0006,inverter-id,"[3, 4, 5, 6, 7]",direct value,3,RegisterTextSensor,
+legacy,deye_hybrid,6,0x0006,inverter-inverter-id,"[3, 4, 5, 6, 7]",direct value,3,rule 5,
+legacy,deye_sg01hp3,6,0x0006,inverter-inverter-id,"[3, 4, 5, 6, 7]",direct value,3,rule 5,
+legacy,deye_sg04lp3,6,0x0006,inverter-inverter-id,"[3, 4, 5, 6, 7]",direct value,3,rule 5,
+advanced,sunsynk_single_phase,7,0x0007,inverter-id,"[3, 4, 5, 6, 7]",direct value,4,RegisterTextSensor,
+legacy,deye_hybrid,7,0x0007,inverter-inverter-id,"[3, 4, 5, 6, 7]",direct value,4,rule 5,
+legacy,deye_sg01hp3,7,0x0007,inverter-inverter-id,"[3, 4, 5, 6, 7]",direct value,4,rule 5,
+legacy,deye_sg04lp3,7,0x0007,inverter-inverter-id,"[3, 4, 5, 6, 7]",direct value,4,rule 5,
+advanced,sunsynk_single_phase,13,0x000D,control-board-version,[13],direct value,0,RegisterStringSensor,
+legacy,deye_hybrid,13,0x000D,inverter-control-board-version-no-,[13],direct value,0,rule 1,
+legacy,deye_sg01hp3,13,0x000D,inverter-control-board-version-no-,[13],direct value,0,rule 1,
+legacy,deye_sg04lp3,13,0x000D,inverter-control-board-version-no-,[13],direct value,0,rule 1,
+advanced,sunsynk_single_phase,14,0x000E,communication-board-version,[14],direct value,0,RegisterStringSensor,
+legacy,deye_hybrid,14,0x000E,inverter-communication-board-version-no-,[14],direct value,0,rule 1,
+advanced,sunsynk_single_phase,16,0x0010,rated-power,"[16, 17]",direct value,0,Sensor,W
+advanced,sunsynk_single_phase_16kw,16,0x0010,rated-power,"[16, 17]",direct value,0,Sensor,W
+advanced,sunsynk_micro_hybrid_ess,17,0x0011,rated-power,[17],direct value,0,Sensor,W
+advanced,sunsynk_single_phase,17,0x0011,rated-power,"[16, 17]",direct value,1,Sensor,W
+advanced,sunsynk_single_phase_16kw,17,0x0011,rated-power,"[16, 17]",direct value,1,Sensor,W
+legacy,deye_sg01hp3,17,0x0011,inverter-communication-board-version-no-,[17],direct value,0,rule 1,
+legacy,deye_sg04lp3,17,0x0011,inverter-communication-board-version-no-,[17],direct value,0,rule 1,
+advanced,sunsynk_three_phase_hv,20,0x0014,rated-power,"[20, 21]",direct value,0,Sensor,W
+advanced,sunsynk_three_phase_lv,20,0x0014,rated-power,"[20, 21]",direct value,0,Sensor,W
+advanced,sunsynk_three_phase_hv,21,0x0015,rated-power,"[20, 21]",direct value,1,Sensor,W
+advanced,sunsynk_three_phase_lv,21,0x0015,rated-power,"[20, 21]",direct value,1,Sensor,W
+advanced,sunsynk_micro_hybrid_ess,22,0x0016,date-time,"[22, 23, 24]",direct value,0,SystemTimeRWSensor,
+advanced,sunsynk_single_phase,22,0x0016,date-time,"[22, 23, 24]",direct value,0,SystemTimeRWSensor,
+advanced,sunsynk_single_phase_16kw,22,0x0016,date-time,"[22, 23, 24]",direct value,0,SystemTimeRWSensor,
+advanced,sunsynk_micro_hybrid_ess,23,0x0017,date-time,"[22, 23, 24]",direct value,1,SystemTimeRWSensor,
+advanced,sunsynk_single_phase,23,0x0017,date-time,"[22, 23, 24]",direct value,1,SystemTimeRWSensor,
+advanced,sunsynk_single_phase_16kw,23,0x0017,date-time,"[22, 23, 24]",direct value,1,SystemTimeRWSensor,
+advanced,sunsynk_micro_hybrid_ess,24,0x0018,date-time,"[22, 23, 24]",direct value,2,SystemTimeRWSensor,
+advanced,sunsynk_single_phase,24,0x0018,date-time,"[22, 23, 24]",direct value,2,SystemTimeRWSensor,
+advanced,sunsynk_single_phase_16kw,24,0x0018,date-time,"[22, 23, 24]",direct value,2,SystemTimeRWSensor,
+advanced,sunsynk_micro_hybrid_ess,32,0x0020,grid-reconnect-delay,[32],direct value,0,Sensor,s
+advanced,sunsynk_micro_hybrid_ess,34,0x0022,inverter-enabled,[34],direct value,0,BinarySensor,
+advanced,sunsynk_micro_hybrid_ess,35,0x0023,island-mode,[35],direct value,0,BinarySensor,
+advanced,sunsynk_micro_hybrid_ess,36,0x0024,insulation-check,[36],direct value,0,BinarySensor,
+advanced,sunsynk_micro_hybrid_ess,38,0x0026,neutral-to-earth,[38],direct value,0,BinarySensor,
+advanced,sunsynk_single_phase,43,0x002B,inverter-enabled,[43],direct value,0,SwitchRWSensor,
+advanced,sunsynk_single_phase_16kw,43,0x002B,inverter-enabled,[43],direct value,0,SwitchRWSensor,
+advanced,sunsynk_single_phase,53,0x0035,max-solar-power,[53],direct value,0,NumberRWSensor,W
+advanced,sunsynk_single_phase_16kw,53,0x0035,max-solar-power,[53],direct value,0,NumberRWSensor,W
+advanced,sunsynk_single_phase,59,0x003B,overall-state,[59],direct value,0,InverterStateSensor,
+advanced,sunsynk_single_phase_16kw,59,0x003B,overall-state,[59],direct value,0,InverterStateSensor,
+legacy,deye_hybrid,59,0x003B,inverter-running-status,[59],direct value,0,rule 1,
+advanced,sunsynk_single_phase,60,0x003C,day-active-energy,[60],direct value,0,Sensor,kWh
+advanced,sunsynk_single_phase_16kw,60,0x003C,day-active-energy,[60],direct value,0,Sensor,kWh
+advanced,sunsynk_single_phase,61,0x003D,day-reactive-energy,[61],direct value,0,Sensor,kVarh
+advanced,sunsynk_single_phase_16kw,61,0x003D,day-reactive-energy,[61],direct value,0,Sensor,kVarh
+advanced,sunsynk_three_phase_hv,62,0x003E,date-time,"[62, 63, 64]",direct value,0,SystemTimeRWSensor,
+advanced,sunsynk_three_phase_lv,62,0x003E,date-time,"[62, 63, 64]",direct value,0,SystemTimeRWSensor,
+advanced,sunsynk_single_phase,63,0x003F,total-active-energy,"[63, 64]",direct value,0,Sensor,kWh
+advanced,sunsynk_single_phase_16kw,63,0x003F,total-active-energy,"[63, 64]",direct value,0,Sensor,kWh
+advanced,sunsynk_three_phase_hv,63,0x003F,date-time,"[62, 63, 64]",direct value,1,SystemTimeRWSensor,
+advanced,sunsynk_three_phase_lv,63,0x003F,date-time,"[62, 63, 64]",direct value,1,SystemTimeRWSensor,
+legacy,deye_hybrid,63,0x003F,grid-total-grid-production,"[63, 64]",direct value,0,rule 4,kWh
+advanced,sunsynk_single_phase,64,0x0040,total-active-energy,"[63, 64]",direct value,1,Sensor,kWh
+advanced,sunsynk_single_phase_16kw,64,0x0040,total-active-energy,"[63, 64]",direct value,1,Sensor,kWh
+advanced,sunsynk_three_phase_hv,64,0x0040,date-time,"[62, 63, 64]",direct value,2,SystemTimeRWSensor,
+advanced,sunsynk_three_phase_lv,64,0x0040,date-time,"[62, 63, 64]",direct value,2,SystemTimeRWSensor,
+legacy,deye_hybrid,64,0x0040,grid-total-grid-production,"[63, 64]",direct value,1,rule 4,kWh
+advanced,sunsynk_single_phase,65,0x0041,month-pv-energy,[65],direct value,0,Sensor,kWh
+advanced,sunsynk_single_phase_16kw,65,0x0041,month-pv-energy,[65],direct value,0,Sensor,kWh
+advanced,sunsynk_single_phase,66,0x0042,month-load-energy,[66],direct value,0,Sensor,kWh
+advanced,sunsynk_single_phase_16kw,66,0x0042,month-load-energy,[66],direct value,0,Sensor,kWh
+advanced,sunsynk_single_phase,67,0x0043,month-grid-energy,[67],direct value,0,Sensor,kWh
+advanced,sunsynk_single_phase_16kw,67,0x0043,month-grid-energy,[67],direct value,0,Sensor,kWh
+advanced,sunsynk_single_phase,68,0x0044,year-pv-energy,"[68, 69]",direct value,0,Sensor,kWh
+advanced,sunsynk_single_phase_16kw,68,0x0044,year-pv-energy,"[68, 69]",direct value,0,Sensor,kWh
+advanced,sunsynk_single_phase,69,0x0045,year-pv-energy,"[68, 69]",direct value,1,Sensor,kWh
+advanced,sunsynk_single_phase_16kw,69,0x0045,year-pv-energy,"[68, 69]",direct value,1,Sensor,kWh
+advanced,sunsynk_single_phase,70,0x0046,day-battery-charge,[70],direct value,0,Sensor,kWh
+advanced,sunsynk_single_phase_16kw,70,0x0046,day-battery-charge,[70],direct value,0,Sensor,kWh
+legacy,deye_hybrid,70,0x0046,battery-daily-battery-charge,[70],direct value,0,rule 1,kWh
+advanced,sunsynk_single_phase,71,0x0047,day-battery-discharge,[71],direct value,0,Sensor,kWh
+advanced,sunsynk_single_phase_16kw,71,0x0047,day-battery-discharge,[71],direct value,0,Sensor,kWh
+legacy,deye_hybrid,71,0x0047,battery-daily-battery-discharge,[71],direct value,0,rule 1,kWh
+advanced,sunsynk_single_phase,72,0x0048,total-battery-charge,"[72, 73]",direct value,0,Sensor,kWh
+advanced,sunsynk_single_phase_16kw,72,0x0048,total-battery-charge,"[72, 73]",direct value,0,Sensor,kWh
+legacy,deye_hybrid,72,0x0048,battery-total-battery-charge,"[72, 73]",direct value,0,rule 3,kWh
+advanced,sunsynk_single_phase,73,0x0049,total-battery-charge,"[72, 73]",direct value,1,Sensor,kWh
+advanced,sunsynk_single_phase_16kw,73,0x0049,total-battery-charge,"[72, 73]",direct value,1,Sensor,kWh
+legacy,deye_hybrid,73,0x0049,battery-total-battery-charge,"[72, 73]",direct value,1,rule 3,kWh
+advanced,sunsynk_single_phase,74,0x004A,total-battery-discharge,"[74, 75]",direct value,0,Sensor,kWh
+advanced,sunsynk_single_phase_16kw,74,0x004A,total-battery-discharge,"[74, 75]",direct value,0,Sensor,kWh
+legacy,deye_hybrid,74,0x004A,battery-total-battery-discharge,"[74, 75]",direct value,0,rule 3,kWh
+advanced,sunsynk_single_phase,75,0x004B,total-battery-discharge,"[74, 75]",direct value,1,Sensor,kWh
+advanced,sunsynk_single_phase_16kw,75,0x004B,total-battery-discharge,"[74, 75]",direct value,1,Sensor,kWh
+legacy,deye_hybrid,75,0x004B,battery-total-battery-discharge,"[74, 75]",direct value,1,rule 3,kWh
+advanced,sunsynk_single_phase,76,0x004C,day-grid-import,[76],direct value,0,Sensor,kWh
+advanced,sunsynk_single_phase_16kw,76,0x004C,day-grid-import,[76],direct value,0,Sensor,kWh
+legacy,deye_hybrid,76,0x004C,grid-daily-energy-bought,[76],direct value,0,rule 1,kWh
+advanced,sunsynk_single_phase,77,0x004D,day-grid-export,[77],direct value,0,Sensor,kWh
+advanced,sunsynk_single_phase_16kw,77,0x004D,day-grid-export,[77],direct value,0,Sensor,kWh
+legacy,deye_hybrid,77,0x004D,grid-daily-energy-sold,[77],direct value,0,rule 1,kWh
+advanced,sunsynk_single_phase,78,0x004E,total-grid-import,"[78, 80]",direct value,0,Sensor,kWh
+advanced,sunsynk_single_phase_16kw,78,0x004E,total-grid-import,"[78, 80]",direct value,0,Sensor,kWh
+legacy,deye_hybrid,78,0x004E,grid-total-energy-bought,"[78, 80]",direct value,0,rule 1,kWh
+advanced,sunsynk_single_phase,79,0x004F,grid-frequency,[79],direct value,0,Sensor,Hz
+advanced,sunsynk_single_phase_16kw,79,0x004F,grid-frequency,[79],direct value,0,Sensor,Hz
+legacy,deye_hybrid,79,0x004F,inverter-grid-frequency,[79],direct value,0,rule 1,Hz
+advanced,sunsynk_single_phase,80,0x0050,total-grid-import,"[78, 80]",direct value,1,Sensor,kWh
+advanced,sunsynk_single_phase_16kw,80,0x0050,total-grid-import,"[78, 80]",direct value,1,Sensor,kWh
+advanced,sunsynk_three_phase_hv,80,0x0050,inverter-enabled,[80],direct value,0,SwitchRWSensor,
+advanced,sunsynk_three_phase_lv,80,0x0050,inverter-enabled,[80],direct value,0,SwitchRWSensor,
+legacy,deye_hybrid,80,0x0050,grid-total-energy-bought,"[78, 80]",direct value,1,rule 1,kWh
+advanced,sunsynk_single_phase,81,0x0051,total-grid-export,"[81, 82]",direct value,0,Sensor,kWh
+advanced,sunsynk_single_phase_16kw,81,0x0051,total-grid-export,"[81, 82]",direct value,0,Sensor,kWh
+legacy,deye_hybrid,81,0x0051,grid-total-energy-sold,"[81, 82]",direct value,0,rule 3,kWh
+advanced,sunsynk_single_phase,82,0x0052,total-grid-export,"[81, 82]",direct value,1,Sensor,kWh
+advanced,sunsynk_single_phase_16kw,82,0x0052,total-grid-export,"[81, 82]",direct value,1,Sensor,kWh
+legacy,deye_hybrid,82,0x0052,grid-total-energy-sold,"[81, 82]",direct value,1,rule 3,kWh
+advanced,sunsynk_single_phase,84,0x0054,day-load-energy,[84],direct value,0,Sensor,kWh
+advanced,sunsynk_single_phase_16kw,84,0x0054,day-load-energy,[84],direct value,0,Sensor,kWh
+legacy,deye_hybrid,84,0x0054,upload-daily-load-consumption,[84],direct value,0,rule 1,kWh
+advanced,sunsynk_single_phase,85,0x0055,total-load-energy,"[85, 86]",direct value,0,Sensor,kWh
+advanced,sunsynk_single_phase_16kw,85,0x0055,total-load-energy,"[85, 86]",direct value,0,Sensor,kWh
+legacy,deye_hybrid,85,0x0055,upload-total-load-consumption,"[85, 86]",direct value,0,rule 3,kWh
+advanced,sunsynk_single_phase,86,0x0056,total-load-energy,"[85, 86]",direct value,1,Sensor,kWh
+advanced,sunsynk_single_phase_16kw,86,0x0056,total-load-energy,"[85, 86]",direct value,1,Sensor,kWh
+legacy,deye_hybrid,86,0x0056,upload-total-load-consumption,"[85, 86]",direct value,1,rule 3,kWh
+advanced,sunsynk_single_phase,87,0x0057,year-load-energy,"[87, 88]",direct value,0,Sensor,kWh
+advanced,sunsynk_single_phase_16kw,87,0x0057,year-load-energy,"[87, 88]",direct value,0,Sensor,kWh
+advanced,sunsynk_single_phase,88,0x0058,year-load-energy,"[87, 88]",direct value,1,Sensor,kWh
+advanced,sunsynk_single_phase_16kw,88,0x0058,year-load-energy,"[87, 88]",direct value,1,Sensor,kWh
+advanced,sunsynk_single_phase,90,0x005A,dc-transformer-temperature,[90],direct value,0,TempSensor,°C
+advanced,sunsynk_single_phase_16kw,90,0x005A,dc-transformer-temperature,[90],direct value,0,TempSensor,°C
+legacy,deye_hybrid,90,0x005A,inverter-dc-temperature,[90],direct value,0,rule 2,°C
+advanced,sunsynk_single_phase,91,0x005B,radiator-temperature,[91],direct value,0,TempSensor,°C
+advanced,sunsynk_single_phase_16kw,91,0x005B,radiator-temperature,[91],direct value,0,TempSensor,°C
+legacy,deye_hybrid,91,0x005B,inverter-ac-temperature,[91],direct value,0,rule 2,°C
+advanced,sunsynk_single_phase,92,0x005C,sd-status,[92],direct value,0,SDStatusSensor,
+advanced,sunsynk_single_phase_16kw,92,0x005C,sd-status,[92],direct value,0,SDStatusSensor,
+advanced,sunsynk_single_phase,95,0x005F,environment-temperature,[95],direct value,0,TempSensor,°C
+advanced,sunsynk_single_phase_16kw,95,0x005F,environment-temperature,[95],direct value,0,TempSensor,°C
+advanced,sunsynk_single_phase,96,0x0060,total-pv-energy,"[96, 97]",direct value,0,Sensor,kWh
+advanced,sunsynk_single_phase_16kw,96,0x0060,total-pv-energy,"[96, 97]",direct value,0,Sensor,kWh
+legacy,deye_hybrid,96,0x0060,solar-total-production,"[96, 97]",direct value,0,rule 3,kWh
+advanced,sunsynk_single_phase,97,0x0061,total-pv-energy,"[96, 97]",direct value,1,Sensor,kWh
+advanced,sunsynk_single_phase_16kw,97,0x0061,total-pv-energy,"[96, 97]",direct value,1,Sensor,kWh
+legacy,deye_hybrid,97,0x0061,solar-total-production,"[96, 97]",direct value,1,rule 3,kWh
+advanced,sunsynk_single_phase,98,0x0062,year-grid-export,"[98, 99]",direct value,0,Sensor,kWh
+advanced,sunsynk_single_phase_16kw,98,0x0062,year-grid-export,"[98, 99]",direct value,0,Sensor,kWh
+advanced,sunsynk_single_phase,99,0x0063,year-grid-export,"[98, 99]",direct value,1,Sensor,kWh
+advanced,sunsynk_single_phase_16kw,99,0x0063,year-grid-export,"[98, 99]",direct value,1,Sensor,kWh
+advanced,sunsynk_three_phase_hv,99,0x0063,battery-equalization-voltage,[99],direct value,0,NumberRWSensor,V
+advanced,sunsynk_three_phase_lv,99,0x0063,battery-equalization-voltage,[99],direct value,0,NumberRWSensor,V
+legacy,deye_sg01hp3,99,0x0063,battery-battery-equalization-v,[99],direct value,0,rule 1,V
+legacy,deye_sg04lp3,99,0x0063,battery-battery-equalization-v,[99],direct value,0,rule 1,V
+advanced,sunsynk_three_phase_hv,100,0x0064,battery-absorption-voltage,[100],direct value,0,NumberRWSensor,V
+advanced,sunsynk_three_phase_lv,100,0x0064,battery-absorption-voltage,[100],direct value,0,NumberRWSensor,V
+legacy,deye_sg01hp3,100,0x0064,battery-battery-absorption-v,[100],direct value,0,rule 1,V
+legacy,deye_sg04lp3,100,0x0064,battery-battery-absorption-v,[100],direct value,0,rule 1,V
+advanced,sunsynk_three_phase_hv,101,0x0065,battery-float-voltage,[101],direct value,0,NumberRWSensor,V
+advanced,sunsynk_three_phase_lv,101,0x0065,battery-float-voltage,[101],direct value,0,NumberRWSensor,V
+legacy,deye_hybrid,101,0x0065,alert-alert,"[101, 102, 103, 104, 105, 106]",direct value,0,rule 6,
+legacy,deye_sg01hp3,101,0x0065,battery-battery-float-v,[101],direct value,0,rule 1,V
+legacy,deye_sg04lp3,101,0x0065,battery-battery-float-v,[101],direct value,0,rule 1,V
+advanced,sunsynk_three_phase_hv,102,0x0066,battery-capacity-current,[102],direct value,0,NumberRWSensor,A
+advanced,sunsynk_three_phase_lv,102,0x0066,battery-capacity-current,[102],direct value,0,NumberRWSensor,A
+legacy,deye_hybrid,102,0x0066,alert-alert,"[101, 102, 103, 104, 105, 106]",direct value,1,rule 6,
+legacy,deye_sg01hp3,102,0x0066,battery-battery-capacity,[102],direct value,0,rule 1,Ah
+legacy,deye_sg04lp3,102,0x0066,battery-battery-capacity,[102],direct value,0,rule 1,Ah
+legacy,deye_sg04lp3,102,0x0066,battery-battery-empty-v,[102],direct value,0,rule 1,V
+advanced,sunsynk_single_phase,103,0x0067,fault,"[103, 104, 105, 106]",direct value,0,FaultSensor,
+advanced,sunsynk_single_phase_16kw,103,0x0067,fault,"[103, 104, 105, 106]",direct value,0,FaultSensor,
+legacy,deye_hybrid,103,0x0067,alert-alert,"[101, 102, 103, 104, 105, 106]",direct value,2,rule 6,
+legacy,deye_sg01hp3,103,0x0067,battery-battery-empty-v,[103],direct value,0,rule 1,V
+advanced,sunsynk_single_phase,104,0x0068,fault,"[103, 104, 105, 106]",direct value,1,FaultSensor,
+advanced,sunsynk_single_phase_16kw,104,0x0068,fault,"[103, 104, 105, 106]",direct value,1,FaultSensor,
+advanced,sunsynk_three_phase_hv,104,0x0068,system-zero-export-power,[104],direct value,0,NumberRWSensor,W
+advanced,sunsynk_three_phase_lv,104,0x0068,system-zero-export-power,[104],direct value,0,NumberRWSensor,W
+legacy,deye_hybrid,104,0x0068,alert-alert,"[101, 102, 103, 104, 105, 106]",direct value,3,rule 6,
+advanced,sunsynk_single_phase,105,0x0069,fault,"[103, 104, 105, 106]",direct value,2,FaultSensor,
+advanced,sunsynk_single_phase_16kw,105,0x0069,fault,"[103, 104, 105, 106]",direct value,2,FaultSensor,
+advanced,sunsynk_three_phase_hv,105,0x0069,battery-equalization-days,[105],direct value,0,NumberRWSensor,days
+advanced,sunsynk_three_phase_lv,105,0x0069,battery-equalization-days,[105],direct value,0,NumberRWSensor,days
+legacy,deye_hybrid,105,0x0069,alert-alert,"[101, 102, 103, 104, 105, 106]",direct value,4,rule 6,
+advanced,sunsynk_single_phase,106,0x006A,fault,"[103, 104, 105, 106]",direct value,3,FaultSensor,
+advanced,sunsynk_single_phase_16kw,106,0x006A,fault,"[103, 104, 105, 106]",direct value,3,FaultSensor,
+advanced,sunsynk_three_phase_hv,106,0x006A,battery-equalization-hours,[106],direct value,0,NumberRWSensor,h
+advanced,sunsynk_three_phase_lv,106,0x006A,battery-equalization-hours,[106],direct value,0,NumberRWSensor,h
+legacy,deye_hybrid,106,0x006A,alert-alert,"[101, 102, 103, 104, 105, 106]",direct value,5,rule 6,
+advanced,sunsynk_single_phase,108,0x006C,day-pv-energy,[108],direct value,0,Sensor,kWh
+advanced,sunsynk_single_phase_16kw,108,0x006C,day-pv-energy,[108],direct value,0,Sensor,kWh
+advanced,sunsynk_three_phase_hv,108,0x006C,battery-max-charge-current,[108],direct value,0,NumberRWSensor,A
+advanced,sunsynk_three_phase_lv,108,0x006C,battery-max-charge-current,[108],direct value,0,NumberRWSensor,A
+legacy,deye_hybrid,108,0x006C,solar-daily-production,[108],direct value,0,rule 1,kWh
+legacy,deye_sg01hp3,108,0x006C,battery-battery-max-a-charge,[108],direct value,0,rule 1,A
+legacy,deye_sg04lp3,108,0x006C,battery-battery-max-a-charge,[108],direct value,0,rule 1,A
+advanced,sunsynk_single_phase,109,0x006D,pv1-voltage,[109],direct value,0,Sensor,V
+advanced,sunsynk_single_phase_16kw,109,0x006D,pv1-voltage,[109],direct value,0,Sensor,V
+advanced,sunsynk_three_phase_hv,109,0x006D,battery-max-discharge-current,[109],direct value,0,NumberRWSensor,A
+advanced,sunsynk_three_phase_lv,109,0x006D,battery-max-discharge-current,[109],direct value,0,NumberRWSensor,A
+legacy,deye_hybrid,109,0x006D,solar-pv1-voltage,[109],direct value,0,rule 1,V
+legacy,deye_sg01hp3,109,0x006D,battery-battery-max-a-discharge,[109],direct value,0,rule 1,A
+legacy,deye_sg04lp3,109,0x006D,battery-battery-max-a-discharge,[109],direct value,0,rule 1,A
+advanced,sunsynk_single_phase,110,0x006E,pv1-current,[110],direct value,0,Sensor,A
+advanced,sunsynk_single_phase_16kw,110,0x006E,pv1-current,[110],direct value,0,Sensor,A
+advanced,sunsynk_three_phase_hv,110,0x006E,parallel-bat1&bat2,[110],direct value,0,SwitchRWSensor,
+advanced,sunsynk_three_phase_hv,110,0x006E,parallel-battery-1-and-2,[110],direct value,0,SwitchRWSensor,
+legacy,deye_hybrid,110,0x006E,solar-pv1-current,[110],direct value,0,rule 1,A
+advanced,sunsynk_single_phase,111,0x006F,pv2-voltage,[111],direct value,0,Sensor,V
+advanced,sunsynk_single_phase_16kw,111,0x006F,pv2-voltage,[111],direct value,0,Sensor,V
+advanced,sunsynk_three_phase_hv,111,0x006F,battery-type,[111],direct value,0,SelectRWSensor,
+advanced,sunsynk_three_phase_lv,111,0x006F,battery-type,[111],direct value,0,SelectRWSensor,
+legacy,deye_hybrid,111,0x006F,solar-pv2-voltage,[111],direct value,0,rule 1,V
+advanced,sunsynk_single_phase,112,0x0070,pv2-current,[112],direct value,0,Sensor,A
+advanced,sunsynk_single_phase_16kw,112,0x0070,pv2-current,[112],direct value,0,Sensor,A
+advanced,sunsynk_three_phase_hv,112,0x0070,battery-1-wake-up,[112],direct value,0,SelectRWSensor,
+advanced,sunsynk_three_phase_hv,112,0x0070,battery-2-wake-up,[112],direct value,0,SelectRWSensor,
+advanced,sunsynk_three_phase_hv,112,0x0070,battery-wake-up,[112],direct value,0,SelectRWSensor,
+advanced,sunsynk_three_phase_lv,112,0x0070,battery-wake-up,[112],direct value,0,SelectRWSensor,
+legacy,deye_hybrid,112,0x0070,solar-pv2-current,[112],direct value,0,rule 1,A
+advanced,sunsynk_single_phase,113,0x0071,pv3-voltage,[113],direct value,0,Sensor,V
+advanced,sunsynk_single_phase_16kw,113,0x0071,pv3-voltage,[113],direct value,0,Sensor,V
+advanced,sunsynk_three_phase_hv,113,0x0071,battery-resistance,[113],direct value,0,NumberRWSensor,mΩ
+advanced,sunsynk_three_phase_lv,113,0x0071,battery-resistance,[113],direct value,0,NumberRWSensor,mΩ
+advanced,sunsynk_single_phase,114,0x0072,pv3-current,[114],direct value,0,Sensor,A
+advanced,sunsynk_single_phase_16kw,114,0x0072,pv3-current,[114],direct value,0,Sensor,A
+advanced,sunsynk_three_phase_hv,114,0x0072,battery-charge-efficiency,[114],direct value,0,Sensor,%
+advanced,sunsynk_three_phase_lv,114,0x0072,battery-charge-efficiency,[114],direct value,0,Sensor,%
+advanced,sunsynk_single_phase,115,0x0073,pv4-voltage,[115],direct value,0,Sensor,V
+advanced,sunsynk_single_phase_16kw,115,0x0073,pv4-voltage,[115],direct value,0,Sensor,V
+advanced,sunsynk_three_phase_hv,115,0x0073,battery-shutdown-capacity,[115],direct value,0,NumberRWSensor,%
+advanced,sunsynk_three_phase_lv,115,0x0073,battery-shutdown-capacity,[115],direct value,0,NumberRWSensor,%
+advanced,sunsynk_single_phase,116,0x0074,pv4-current,[116],direct value,0,Sensor,A
+advanced,sunsynk_single_phase_16kw,116,0x0074,pv4-current,[116],direct value,0,Sensor,A
+advanced,sunsynk_three_phase_hv,116,0x0074,battery-restart-capacity,[116],direct value,0,NumberRWSensor,%
+advanced,sunsynk_three_phase_lv,116,0x0074,battery-restart-capacity,[116],direct value,0,NumberRWSensor,%
+advanced,sunsynk_three_phase_hv,117,0x0075,battery-low-capacity,[117],direct value,0,NumberRWSensor,%
+advanced,sunsynk_three_phase_lv,117,0x0075,battery-low-capacity,[117],direct value,0,NumberRWSensor,%
+advanced,sunsynk_three_phase_hv,118,0x0076,battery-shutdown-voltage,[118],direct value,0,NumberRWSensor,V
+advanced,sunsynk_three_phase_lv,118,0x0076,battery-shutdown-voltage,[118],direct value,0,NumberRWSensor,V
+advanced,sunsynk_three_phase_hv,119,0x0077,battery-restart-voltage,[119],direct value,0,NumberRWSensor,V
+advanced,sunsynk_three_phase_lv,119,0x0077,battery-restart-voltage,[119],direct value,0,NumberRWSensor,V
+advanced,sunsynk_three_phase_hv,120,0x0078,battery-low-voltage,[120],direct value,0,NumberRWSensor,V
+advanced,sunsynk_three_phase_lv,120,0x0078,battery-low-voltage,[120],direct value,0,NumberRWSensor,V
+advanced,sunsynk_three_phase_hv,121,0x0079,generator-max-operating-time,[121],direct value,0,NumberRWSensor,Hours
+advanced,sunsynk_three_phase_lv,121,0x0079,generator-max-operating-time,[121],direct value,0,NumberRWSensor,Hours
+advanced,sunsynk_three_phase_hv,122,0x007A,generator-cooling-time,[122],direct value,0,NumberRWSensor,Hours
+advanced,sunsynk_three_phase_lv,122,0x007A,generator-cooling-time,[122],direct value,0,NumberRWSensor,Hours
+advanced,sunsynk_three_phase_hv,123,0x007B,generator-charge-start-battery-voltage,[123],direct value,0,NumberRWSensor,V
+advanced,sunsynk_three_phase_lv,123,0x007B,generator-charge-start-battery-voltage,[123],direct value,0,NumberRWSensor,V
+advanced,sunsynk_three_phase_hv,124,0x007C,generator-charge-start-battery-soc,[124],direct value,0,NumberRWSensor,%
+advanced,sunsynk_three_phase_lv,124,0x007C,generator-charge-start-battery-soc,[124],direct value,0,NumberRWSensor,%
+advanced,sunsynk_three_phase_hv,125,0x007D,generator-charge-battery-current,[125],direct value,0,NumberRWSensor,A
+advanced,sunsynk_three_phase_lv,125,0x007D,generator-charge-battery-current,[125],direct value,0,NumberRWSensor,A
+advanced,sunsynk_three_phase_hv,126,0x007E,grid-charge-start-battery-voltage,[126],direct value,0,NumberRWSensor,V
+advanced,sunsynk_three_phase_lv,126,0x007E,grid-charge-start-battery-voltage,[126],direct value,0,NumberRWSensor,V
+advanced,sunsynk_three_phase_hv,127,0x007F,grid-charge-start-battery-soc,[127],direct value,0,NumberRWSensor,%
+advanced,sunsynk_three_phase_lv,127,0x007F,grid-charge-start-battery-soc,[127],direct value,0,NumberRWSensor,%
+advanced,sunsynk_three_phase_hv,128,0x0080,grid-charge-battery-current,[128],direct value,0,NumberRWSensor,A
+advanced,sunsynk_three_phase_lv,128,0x0080,grid-charge-battery-current,[128],direct value,0,NumberRWSensor,A
+advanced,sunsynk_three_phase_hv,129,0x0081,generator-charge-enabled,[129],direct value,0,SwitchRWSensor,
+advanced,sunsynk_three_phase_lv,129,0x0081,generator-charge-enabled,[129],direct value,0,SwitchRWSensor,
+advanced,sunsynk_three_phase_hv,130,0x0082,grid-charge-enabled,[130],direct value,0,SwitchRWSensor,
+advanced,sunsynk_three_phase_lv,130,0x0082,grid-charge-enabled,[130],direct value,0,SwitchRWSensor,
+advanced,sunsynk_three_phase_hv,131,0x0083,generator-ac-couple-frz-high,[131],direct value,0,NumberRWSensor,Hz
+advanced,sunsynk_three_phase_lv,131,0x0083,generator-ac-couple-frz-high,[131],direct value,0,NumberRWSensor,Hz
+advanced,sunsynk_three_phase_hv,132,0x0084,force-on-generator-as-load-function,[132],direct value,0,SwitchRWSensor,
+advanced,sunsynk_three_phase_lv,132,0x0084,force-on-generator-as-load-function,[132],direct value,0,SwitchRWSensor,
+advanced,sunsynk_three_phase_hv,133,0x0085,aux-port-usage,[133],direct value,0,SelectRWSensor,
+advanced,sunsynk_three_phase_hv,133,0x0085,generator-port-usage,[133],direct value,0,SelectRWSensor,
+advanced,sunsynk_three_phase_lv,133,0x0085,aux-port-usage,[133],direct value,0,SelectRWSensor,
+advanced,sunsynk_three_phase_lv,133,0x0085,generator-port-usage,[133],direct value,0,SelectRWSensor,
+legacy,deye_sg01hp3,133,0x0085,smartload-smartload-enable-status,[133],direct value,0,rule 1,
+legacy,deye_sg04lp3,133,0x0085,smartload-smartload-enable-status,[133],direct value,0,rule 1,
+advanced,sunsynk_three_phase_hv,135,0x0087,generator-off-soc,[135],direct value,0,NumberRWSensor,%
+advanced,sunsynk_three_phase_lv,135,0x0087,generator-off-soc,[135],direct value,0,NumberRWSensor,%
+advanced,sunsynk_three_phase_hv,137,0x0089,generator-on-soc,[137],direct value,0,NumberRWSensor,%
+advanced,sunsynk_three_phase_lv,137,0x0089,generator-on-soc,[137],direct value,0,NumberRWSensor,%
+advanced,sunsynk_three_phase_hv,139,0x008B,min-pv-power-for-gen-start,[139],direct value,0,NumberRWSensor,W
+advanced,sunsynk_three_phase_lv,139,0x008B,min-pv-power-for-gen-start,[139],direct value,0,NumberRWSensor,W
+advanced,sunsynk_three_phase_hv,140,0x008C,gen-signal-on,[140],direct value,0,SwitchRWSensor,
+advanced,sunsynk_three_phase_hv,140,0x008C,grid-signal-on,[140],direct value,0,SwitchRWSensor,
+advanced,sunsynk_three_phase_lv,140,0x008C,gen-signal-on,[140],direct value,0,SwitchRWSensor,
+advanced,sunsynk_three_phase_lv,140,0x008C,grid-signal-on,[140],direct value,0,SwitchRWSensor,
+advanced,sunsynk_three_phase_hv,141,0x008D,priority-load,[141],direct value,0,SwitchRWSensor,
+advanced,sunsynk_three_phase_lv,141,0x008D,priority-load,[141],direct value,0,SwitchRWSensor,
+advanced,sunsynk_three_phase_hv,142,0x008E,load-limit,[142],direct value,0,SelectRWSensor,
+advanced,sunsynk_three_phase_lv,142,0x008E,load-limit,[142],direct value,0,SelectRWSensor,
+advanced,sunsynk_three_phase_hv,143,0x008F,export-limit-power,[143],direct value,0,NumberRWSensor,W
+advanced,sunsynk_three_phase_lv,143,0x008F,export-limit-power,[143],direct value,0,NumberRWSensor,W
+advanced,sunsynk_three_phase_hv,145,0x0091,solar-export,[145],direct value,0,SwitchRWSensor,
+advanced,sunsynk_three_phase_lv,145,0x0091,solar-export,[145],direct value,0,SwitchRWSensor,
+advanced,sunsynk_three_phase_hv,146,0x0092,prog-friday-enabled,[146],direct value,0,SwitchRWSensor,
+advanced,sunsynk_three_phase_hv,146,0x0092,prog-monday-enabled,[146],direct value,0,SwitchRWSensor,
+advanced,sunsynk_three_phase_hv,146,0x0092,prog-saturday-enabled,[146],direct value,0,SwitchRWSensor,
+advanced,sunsynk_three_phase_hv,146,0x0092,prog-sunday-enabled,[146],direct value,0,SwitchRWSensor,
+advanced,sunsynk_three_phase_hv,146,0x0092,prog-thursday-enabled,[146],direct value,0,SwitchRWSensor,
+advanced,sunsynk_three_phase_hv,146,0x0092,prog-time-of-use-enabled,[146],direct value,0,SwitchRWSensor,
+advanced,sunsynk_three_phase_hv,146,0x0092,prog-tuesday-enabled,[146],direct value,0,SwitchRWSensor,
+advanced,sunsynk_three_phase_hv,146,0x0092,prog-wednesday-enabled,[146],direct value,0,SwitchRWSensor,
+advanced,sunsynk_three_phase_hv,146,0x0092,use-timer,[146],direct value,0,SwitchRWSensor,
+advanced,sunsynk_three_phase_lv,146,0x0092,prog-friday-enabled,[146],direct value,0,SwitchRWSensor,
+advanced,sunsynk_three_phase_lv,146,0x0092,prog-monday-enabled,[146],direct value,0,SwitchRWSensor,
+advanced,sunsynk_three_phase_lv,146,0x0092,prog-saturday-enabled,[146],direct value,0,SwitchRWSensor,
+advanced,sunsynk_three_phase_lv,146,0x0092,prog-sunday-enabled,[146],direct value,0,SwitchRWSensor,
+advanced,sunsynk_three_phase_lv,146,0x0092,prog-thursday-enabled,[146],direct value,0,SwitchRWSensor,
+advanced,sunsynk_three_phase_lv,146,0x0092,prog-time-of-use-enabled,[146],direct value,0,SwitchRWSensor,
+advanced,sunsynk_three_phase_lv,146,0x0092,prog-tuesday-enabled,[146],direct value,0,SwitchRWSensor,
+advanced,sunsynk_three_phase_lv,146,0x0092,prog-wednesday-enabled,[146],direct value,0,SwitchRWSensor,
+advanced,sunsynk_three_phase_lv,146,0x0092,use-timer,[146],direct value,0,SwitchRWSensor,
+advanced,sunsynk_three_phase_hv,148,0x0094,prog1-time,[148],direct value,0,TimeRWSensor,
+advanced,sunsynk_three_phase_lv,148,0x0094,prog1-time,[148],direct value,0,TimeRWSensor,
+legacy,deye_sg01hp3,148,0x0094,time-of-use-tou-time-1,[148],direct value,0,rule 9,
+legacy,deye_sg04lp3,148,0x0094,time-of-use-tou-time-1,[148],direct value,0,rule 9,
+advanced,sunsynk_three_phase_hv,149,0x0095,prog2-time,[149],direct value,0,TimeRWSensor,
+advanced,sunsynk_three_phase_lv,149,0x0095,prog2-time,[149],direct value,0,TimeRWSensor,
+legacy,deye_sg01hp3,149,0x0095,time-of-use-tou-time-2,[149],direct value,0,rule 9,
+legacy,deye_sg04lp3,149,0x0095,time-of-use-tou-time-2,[149],direct value,0,rule 9,
+advanced,sunsynk_single_phase,150,0x0096,grid-voltage,[150],direct value,0,Sensor,V
+advanced,sunsynk_single_phase_16kw,150,0x0096,grid-voltage,[150],direct value,0,Sensor,V
+advanced,sunsynk_three_phase_hv,150,0x0096,prog3-time,[150],direct value,0,TimeRWSensor,
+advanced,sunsynk_three_phase_lv,150,0x0096,prog3-time,[150],direct value,0,TimeRWSensor,
+legacy,deye_hybrid,150,0x0096,grid-grid-voltage-l1,[150],direct value,0,rule 1,V
+legacy,deye_sg01hp3,150,0x0096,time-of-use-tou-time-3,[150],direct value,0,rule 9,
+legacy,deye_sg04lp3,150,0x0096,time-of-use-tou-time-3,[150],direct value,0,rule 9,
+advanced,sunsynk_three_phase_hv,151,0x0097,prog4-time,[151],direct value,0,TimeRWSensor,
+advanced,sunsynk_three_phase_lv,151,0x0097,prog4-time,[151],direct value,0,TimeRWSensor,
+legacy,deye_hybrid,151,0x0097,grid-grid-voltage-l2,[151],direct value,0,rule 1,V
+legacy,deye_sg01hp3,151,0x0097,time-of-use-tou-time-4,[151],direct value,0,rule 9,
+legacy,deye_sg04lp3,151,0x0097,time-of-use-tou-time-4,[151],direct value,0,rule 9,
+advanced,sunsynk_three_phase_hv,152,0x0098,prog5-time,[152],direct value,0,TimeRWSensor,
+advanced,sunsynk_three_phase_lv,152,0x0098,prog5-time,[152],direct value,0,TimeRWSensor,
+legacy,deye_sg01hp3,152,0x0098,time-of-use-tou-time-5,[152],direct value,0,rule 9,
+legacy,deye_sg04lp3,152,0x0098,time-of-use-tou-time-5,[152],direct value,0,rule 9,
+advanced,sunsynk_three_phase_hv,153,0x0099,prog6-time,[153],direct value,0,TimeRWSensor,
+advanced,sunsynk_three_phase_lv,153,0x0099,prog6-time,[153],direct value,0,TimeRWSensor,
+legacy,deye_sg01hp3,153,0x0099,time-of-use-tou-time-6,[153],direct value,0,rule 9,
+legacy,deye_sg04lp3,153,0x0099,time-of-use-tou-time-6,[153],direct value,0,rule 9,
+advanced,sunsynk_single_phase,154,0x009A,inverter-voltage,[154],direct value,0,Sensor,V
+advanced,sunsynk_single_phase_16kw,154,0x009A,inverter-voltage,[154],direct value,0,Sensor,V
+advanced,sunsynk_three_phase_hv,154,0x009A,prog1-power,[154],direct value,0,NumberRWSensor,W
+advanced,sunsynk_three_phase_lv,154,0x009A,prog1-power,[154],direct value,0,NumberRWSensor,W
+legacy,deye_sg01hp3,154,0x009A,time-of-use-tou-power-1,[154],direct value,0,rule 1,W
+legacy,deye_sg04lp3,154,0x009A,time-of-use-tou-power-1,[154],direct value,0,rule 1,W
+advanced,sunsynk_three_phase_hv,155,0x009B,prog2-power,[155],direct value,0,NumberRWSensor,W
+advanced,sunsynk_three_phase_lv,155,0x009B,prog2-power,[155],direct value,0,NumberRWSensor,W
+legacy,deye_sg01hp3,155,0x009B,time-of-use-tou-power-2,[155],direct value,0,rule 1,W
+legacy,deye_sg04lp3,155,0x009B,time-of-use-tou-power-2,[155],direct value,0,rule 1,W
+advanced,sunsynk_three_phase_hv,156,0x009C,prog3-power,[156],direct value,0,NumberRWSensor,W
+advanced,sunsynk_three_phase_lv,156,0x009C,prog3-power,[156],direct value,0,NumberRWSensor,W
+legacy,deye_sg01hp3,156,0x009C,time-of-use-tou-power-3,[156],direct value,0,rule 1,W
+legacy,deye_sg04lp3,156,0x009C,time-of-use-tou-power-3,[156],direct value,0,rule 1,W
+advanced,sunsynk_three_phase_hv,157,0x009D,prog4-power,[157],direct value,0,NumberRWSensor,W
+advanced,sunsynk_three_phase_lv,157,0x009D,prog4-power,[157],direct value,0,NumberRWSensor,W
+legacy,deye_hybrid,157,0x009D,upload-load-voltage,[157],direct value,0,rule 1,V
+legacy,deye_sg01hp3,157,0x009D,time-of-use-tou-power-4,[157],direct value,0,rule 1,W
+legacy,deye_sg04lp3,157,0x009D,time-of-use-tou-power-4,[157],direct value,0,rule 1,W
+advanced,sunsynk_three_phase_hv,158,0x009E,prog5-power,[158],direct value,0,NumberRWSensor,W
+advanced,sunsynk_three_phase_lv,158,0x009E,prog5-power,[158],direct value,0,NumberRWSensor,W
+legacy,deye_sg01hp3,158,0x009E,time-of-use-tou-power-5,[158],direct value,0,rule 1,W
+legacy,deye_sg04lp3,158,0x009E,time-of-use-tou-power-5,[158],direct value,0,rule 1,W
+advanced,sunsynk_three_phase_hv,159,0x009F,prog6-power,[159],direct value,0,NumberRWSensor,W
+advanced,sunsynk_three_phase_lv,159,0x009F,prog6-power,[159],direct value,0,NumberRWSensor,W
+legacy,deye_sg01hp3,159,0x009F,time-of-use-tou-power-6,[159],direct value,0,rule 1,W
+legacy,deye_sg04lp3,159,0x009F,time-of-use-tou-power-6,[159],direct value,0,rule 1,W
+advanced,sunsynk_single_phase,160,0x00A0,grid-current,"[160, 161]",computed input,0,MathSensor,A
+advanced,sunsynk_single_phase_16kw,160,0x00A0,grid-current,"[160, 161]",computed input,0,MathSensor,A
+advanced,sunsynk_three_phase_hv,160,0x00A0,prog1-voltage,[160],direct value,0,NumberRWSensor,V
+advanced,sunsynk_three_phase_lv,160,0x00A0,prog1-voltage,[160],direct value,0,NumberRWSensor,V
+legacy,deye_hybrid,160,0x00A0,grid-grid-current-l1,[160],direct value,0,rule 1,A
+advanced,sunsynk_single_phase,161,0x00A1,grid-current,"[160, 161]",computed input,1,MathSensor,A
+advanced,sunsynk_single_phase_16kw,161,0x00A1,grid-current,"[160, 161]",computed input,1,MathSensor,A
+advanced,sunsynk_three_phase_hv,161,0x00A1,prog2-voltage,[161],direct value,0,NumberRWSensor,V
+advanced,sunsynk_three_phase_lv,161,0x00A1,prog2-voltage,[161],direct value,0,NumberRWSensor,V
+legacy,deye_hybrid,161,0x00A1,grid-grid-current-l2,[161],direct value,0,rule 1,A
+advanced,sunsynk_three_phase_hv,162,0x00A2,prog3-voltage,[162],direct value,0,NumberRWSensor,V
+advanced,sunsynk_three_phase_lv,162,0x00A2,prog3-voltage,[162],direct value,0,NumberRWSensor,V
+advanced,sunsynk_three_phase_hv,163,0x00A3,prog4-voltage,[163],direct value,0,NumberRWSensor,V
+advanced,sunsynk_three_phase_lv,163,0x00A3,prog4-voltage,[163],direct value,0,NumberRWSensor,V
+advanced,sunsynk_single_phase,164,0x00A4,inverter-current,[164],direct value,0,Sensor,A
+advanced,sunsynk_single_phase_16kw,164,0x00A4,inverter-current,[164],direct value,0,Sensor,A
+advanced,sunsynk_three_phase_hv,164,0x00A4,prog5-voltage,[164],direct value,0,NumberRWSensor,V
+advanced,sunsynk_three_phase_lv,164,0x00A4,prog5-voltage,[164],direct value,0,NumberRWSensor,V
+legacy,deye_hybrid,164,0x00A4,inverter-current-l1,[164],direct value,0,rule 2,A
+advanced,sunsynk_three_phase_hv,165,0x00A5,prog6-voltage,[165],direct value,0,NumberRWSensor,V
+advanced,sunsynk_three_phase_lv,165,0x00A5,prog6-voltage,[165],direct value,0,NumberRWSensor,V
+legacy,deye_hybrid,165,0x00A5,inverter-current-l2,[165],direct value,0,rule 2,A
+advanced,sunsynk_single_phase,166,0x00A6,aux-power,[166],direct value,0,Sensor,W
+advanced,sunsynk_single_phase,166,0x00A6,essential-1-power,"[175, 167, 166]",computed input,2,MathSensor,W
+advanced,sunsynk_single_phase,166,0x00A6,essential-2-power,"[175, 169, 166]",computed input,2,MathSensor,W
+advanced,sunsynk_single_phase,166,0x00A6,essential-power,"[175, 169, 166]",computed input,2,MathSensor,W
+advanced,sunsynk_single_phase,166,0x00A6,gen-power,[166],direct value,0,Sensor,W
+advanced,sunsynk_single_phase_16kw,166,0x00A6,aux-power,[166],direct value,0,Sensor,W
+advanced,sunsynk_single_phase_16kw,166,0x00A6,essential-1-power,"[175, 167, 166]",computed input,2,MathSensor,W
+advanced,sunsynk_single_phase_16kw,166,0x00A6,essential-2-power,"[175, 169, 166]",computed input,2,MathSensor,W
+advanced,sunsynk_single_phase_16kw,166,0x00A6,essential-power,"[175, 169, 166]",computed input,2,MathSensor,W
+advanced,sunsynk_single_phase_16kw,166,0x00A6,gen-power,[166],direct value,0,Sensor,W
+advanced,sunsynk_three_phase_hv,166,0x00A6,prog1-capacity,[166],direct value,0,NumberRWSensor,%
+advanced,sunsynk_three_phase_lv,166,0x00A6,prog1-capacity,[166],direct value,0,NumberRWSensor,%
+legacy,deye_hybrid,166,0x00A6,solar-micro-inverter-power,[166],direct value,0,rule 1,W
+legacy,deye_sg01hp3,166,0x00A6,time-of-use-tou-battery-soc-1,[166],direct value,0,rule 1,%
+legacy,deye_sg04lp3,166,0x00A6,time-of-use-tou-battery-soc-1,[166],direct value,0,rule 1,%
+advanced,sunsynk_single_phase,167,0x00A7,essential-1-power,"[175, 167, 166]",computed input,1,MathSensor,W
+advanced,sunsynk_single_phase,167,0x00A7,grid-ld-power,[167],direct value,0,Sensor,W
+advanced,sunsynk_single_phase,167,0x00A7,non-essential-power,"[172, 167]",computed input,1,MathSensor,W
+advanced,sunsynk_single_phase_16kw,167,0x00A7,essential-1-power,"[175, 167, 166]",computed input,1,MathSensor,W
+advanced,sunsynk_single_phase_16kw,167,0x00A7,grid-ld-power,[167],direct value,0,Sensor,W
+advanced,sunsynk_single_phase_16kw,167,0x00A7,non-essential-power,"[172, 167]",computed input,1,MathSensor,W
+advanced,sunsynk_three_phase_hv,167,0x00A7,prog2-capacity,[167],direct value,0,NumberRWSensor,%
+advanced,sunsynk_three_phase_lv,167,0x00A7,prog2-capacity,[167],direct value,0,NumberRWSensor,%
+legacy,deye_hybrid,167,0x00A7,grid-internal-ct-l1-power,[167],direct value,0,rule 2,W
+legacy,deye_sg01hp3,167,0x00A7,time-of-use-tou-battery-soc-2,[167],direct value,0,rule 1,%
+legacy,deye_sg04lp3,167,0x00A7,time-of-use-tou-battery-soc-2,[167],direct value,0,rule 1,%
+advanced,sunsynk_single_phase,168,0x00A8,grid-l2-power,[168],direct value,0,Sensor,W
+advanced,sunsynk_single_phase_16kw,168,0x00A8,grid-l2-power,[168],direct value,0,Sensor,W
+advanced,sunsynk_three_phase_hv,168,0x00A8,prog3-capacity,[168],direct value,0,NumberRWSensor,%
+advanced,sunsynk_three_phase_lv,168,0x00A8,prog3-capacity,[168],direct value,0,NumberRWSensor,%
+legacy,deye_hybrid,168,0x00A8,grid-internal-ct-l2-power,[168],direct value,0,rule 2,W
+legacy,deye_sg01hp3,168,0x00A8,time-of-use-tou-battery-soc-3,[168],direct value,0,rule 1,%
+legacy,deye_sg04lp3,168,0x00A8,time-of-use-tou-battery-soc-3,[168],direct value,0,rule 1,%
+advanced,sunsynk_single_phase,169,0x00A9,essential-2-power,"[175, 169, 166]",computed input,1,MathSensor,W
+advanced,sunsynk_single_phase,169,0x00A9,essential-power,"[175, 169, 166]",computed input,1,MathSensor,W
+advanced,sunsynk_single_phase,169,0x00A9,grid-power,[169],direct value,0,Sensor,W
+advanced,sunsynk_single_phase_16kw,169,0x00A9,essential-2-power,"[175, 169, 166]",computed input,1,MathSensor,W
+advanced,sunsynk_single_phase_16kw,169,0x00A9,essential-power,"[175, 169, 166]",computed input,1,MathSensor,W
+advanced,sunsynk_single_phase_16kw,169,0x00A9,grid-power,[169],direct value,0,Sensor,W
+advanced,sunsynk_three_phase_hv,169,0x00A9,prog4-capacity,[169],direct value,0,NumberRWSensor,%
+advanced,sunsynk_three_phase_lv,169,0x00A9,prog4-capacity,[169],direct value,0,NumberRWSensor,%
+legacy,deye_hybrid,169,0x00A9,grid-total-grid-power,[169],direct value,0,rule 2,W
+legacy,deye_sg01hp3,169,0x00A9,time-of-use-tou-battery-soc-4,[169],direct value,0,rule 1,%
+legacy,deye_sg04lp3,169,0x00A9,time-of-use-tou-battery-soc-4,[169],direct value,0,rule 1,%
+advanced,sunsynk_three_phase_hv,170,0x00AA,prog5-capacity,[170],direct value,0,NumberRWSensor,%
+advanced,sunsynk_three_phase_lv,170,0x00AA,prog5-capacity,[170],direct value,0,NumberRWSensor,%
+legacy,deye_hybrid,170,0x00AA,grid-external-ct-l1-power,[170],direct value,0,rule 2,W
+legacy,deye_sg01hp3,170,0x00AA,time-of-use-tou-battery-soc-5,[170],direct value,0,rule 1,%
+legacy,deye_sg04lp3,170,0x00AA,time-of-use-tou-battery-soc-5,[170],direct value,0,rule 1,%
+advanced,sunsynk_three_phase_hv,171,0x00AB,prog6-capacity,[171],direct value,0,NumberRWSensor,%
+advanced,sunsynk_three_phase_lv,171,0x00AB,prog6-capacity,[171],direct value,0,NumberRWSensor,%
+legacy,deye_hybrid,171,0x00AB,grid-external-ct-l2-power,[171],direct value,0,rule 2,W
+legacy,deye_sg01hp3,171,0x00AB,time-of-use-tou-battery-soc-6,[171],direct value,0,rule 1,%
+legacy,deye_sg04lp3,171,0x00AB,time-of-use-tou-battery-soc-6,[171],direct value,0,rule 1,%
+advanced,sunsynk_single_phase,172,0x00AC,grid-ct-power,[172],direct value,0,Sensor,W
+advanced,sunsynk_single_phase,172,0x00AC,non-essential-power,"[172, 167]",computed input,0,MathSensor,W
+advanced,sunsynk_single_phase_16kw,172,0x00AC,grid-ct-power,[172],direct value,0,Sensor,W
+advanced,sunsynk_single_phase_16kw,172,0x00AC,non-essential-power,"[172, 167]",computed input,0,MathSensor,W
+advanced,sunsynk_three_phase_hv,172,0x00AC,prog1-charge,[172],direct value,0,SelectRWSensor,
+advanced,sunsynk_three_phase_hv,172,0x00AC,prog1-mode,[172],direct value,0,SelectRWSensor,
+advanced,sunsynk_three_phase_hv,172,0x00AC,prog1-sell,[172],direct value,0,SwitchRWSensor,
+advanced,sunsynk_three_phase_lv,172,0x00AC,prog1-charge,[172],direct value,0,SelectRWSensor,
+advanced,sunsynk_three_phase_lv,172,0x00AC,prog1-mode,[172],direct value,0,SelectRWSensor,
+advanced,sunsynk_three_phase_lv,172,0x00AC,prog1-sell,[172],direct value,0,SwitchRWSensor,
+legacy,deye_sg01hp3,172,0x00AC,time-of-use-tou-charge-enable-1,[172],direct value,0,rule 1,
+legacy,deye_sg04lp3,172,0x00AC,time-of-use-tou-charge-enable-1,[172],direct value,0,rule 1,
+advanced,sunsynk_three_phase_hv,173,0x00AD,prog2-charge,[173],direct value,0,SelectRWSensor,
+advanced,sunsynk_three_phase_hv,173,0x00AD,prog2-mode,[173],direct value,0,SelectRWSensor,
+advanced,sunsynk_three_phase_hv,173,0x00AD,prog2-sell,[173],direct value,0,SwitchRWSensor,
+advanced,sunsynk_three_phase_lv,173,0x00AD,prog2-charge,[173],direct value,0,SelectRWSensor,
+advanced,sunsynk_three_phase_lv,173,0x00AD,prog2-mode,[173],direct value,0,SelectRWSensor,
+advanced,sunsynk_three_phase_lv,173,0x00AD,prog2-sell,[173],direct value,0,SwitchRWSensor,
+legacy,deye_hybrid,173,0x00AD,inverter-inverter-l1-power,[173],direct value,0,rule 2,W
+legacy,deye_sg01hp3,173,0x00AD,time-of-use-tou-charge-enable-2,[173],direct value,0,rule 1,
+legacy,deye_sg04lp3,173,0x00AD,time-of-use-tou-charge-enable-2,[173],direct value,0,rule 1,
+advanced,sunsynk_three_phase_hv,174,0x00AE,prog3-charge,[174],direct value,0,SelectRWSensor,
+advanced,sunsynk_three_phase_hv,174,0x00AE,prog3-mode,[174],direct value,0,SelectRWSensor,
+advanced,sunsynk_three_phase_hv,174,0x00AE,prog3-sell,[174],direct value,0,SwitchRWSensor,
+advanced,sunsynk_three_phase_lv,174,0x00AE,prog3-charge,[174],direct value,0,SelectRWSensor,
+advanced,sunsynk_three_phase_lv,174,0x00AE,prog3-mode,[174],direct value,0,SelectRWSensor,
+advanced,sunsynk_three_phase_lv,174,0x00AE,prog3-sell,[174],direct value,0,SwitchRWSensor,
+legacy,deye_hybrid,174,0x00AE,inverter-inverter-l2-power,[174],direct value,0,rule 2,W
+legacy,deye_sg01hp3,174,0x00AE,time-of-use-tou-charge-enable-3,[174],direct value,0,rule 1,
+legacy,deye_sg04lp3,174,0x00AE,time-of-use-tou-charge-enable-3,[174],direct value,0,rule 1,
+advanced,sunsynk_single_phase,175,0x00AF,essential-1-power,"[175, 167, 166]",computed input,0,MathSensor,W
+advanced,sunsynk_single_phase,175,0x00AF,essential-2-power,"[175, 169, 166]",computed input,0,MathSensor,W
+advanced,sunsynk_single_phase,175,0x00AF,essential-power,"[175, 169, 166]",computed input,0,MathSensor,W
+advanced,sunsynk_single_phase,175,0x00AF,inverter-power,[175],direct value,0,Sensor,W
+advanced,sunsynk_single_phase_16kw,175,0x00AF,essential-1-power,"[175, 167, 166]",computed input,0,MathSensor,W
+advanced,sunsynk_single_phase_16kw,175,0x00AF,essential-2-power,"[175, 169, 166]",computed input,0,MathSensor,W
+advanced,sunsynk_single_phase_16kw,175,0x00AF,essential-power,"[175, 169, 166]",computed input,0,MathSensor,W
+advanced,sunsynk_single_phase_16kw,175,0x00AF,inverter-power,[175],direct value,0,Sensor,W
+advanced,sunsynk_three_phase_hv,175,0x00AF,prog4-charge,[175],direct value,0,SelectRWSensor,
+advanced,sunsynk_three_phase_hv,175,0x00AF,prog4-mode,[175],direct value,0,SelectRWSensor,
+advanced,sunsynk_three_phase_hv,175,0x00AF,prog4-sell,[175],direct value,0,SwitchRWSensor,
+advanced,sunsynk_three_phase_lv,175,0x00AF,prog4-charge,[175],direct value,0,SelectRWSensor,
+advanced,sunsynk_three_phase_lv,175,0x00AF,prog4-mode,[175],direct value,0,SelectRWSensor,
+advanced,sunsynk_three_phase_lv,175,0x00AF,prog4-sell,[175],direct value,0,SwitchRWSensor,
+legacy,deye_hybrid,175,0x00AF,inverter-total-power,[175],direct value,0,rule 2,W
+legacy,deye_sg01hp3,175,0x00AF,time-of-use-tou-charge-enable-4,[175],direct value,0,rule 1,
+legacy,deye_sg04lp3,175,0x00AF,time-of-use-tou-charge-enable-4,[175],direct value,0,rule 1,
+advanced,sunsynk_single_phase,176,0x00B0,load-l1-power,[176],direct value,0,Sensor,W
+advanced,sunsynk_single_phase_16kw,176,0x00B0,load-l1-power,[176],direct value,0,Sensor,W
+advanced,sunsynk_three_phase_hv,176,0x00B0,prog5-charge,[176],direct value,0,SelectRWSensor,
+advanced,sunsynk_three_phase_hv,176,0x00B0,prog5-mode,[176],direct value,0,SelectRWSensor,
+advanced,sunsynk_three_phase_hv,176,0x00B0,prog5-sell,[176],direct value,0,SwitchRWSensor,
+advanced,sunsynk_three_phase_lv,176,0x00B0,prog5-charge,[176],direct value,0,SelectRWSensor,
+advanced,sunsynk_three_phase_lv,176,0x00B0,prog5-mode,[176],direct value,0,SelectRWSensor,
+advanced,sunsynk_three_phase_lv,176,0x00B0,prog5-sell,[176],direct value,0,SwitchRWSensor,
+legacy,deye_hybrid,176,0x00B0,upload-load-l1-power,[176],direct value,0,rule 1,W
+legacy,deye_sg01hp3,176,0x00B0,time-of-use-tou-charge-enable-5,[176],direct value,0,rule 1,
+legacy,deye_sg04lp3,176,0x00B0,time-of-use-tou-charge-enable-5,[176],direct value,0,rule 1,
+advanced,sunsynk_single_phase,177,0x00B1,load-l2-power,[177],direct value,0,Sensor,W
+advanced,sunsynk_single_phase_16kw,177,0x00B1,load-l2-power,[177],direct value,0,Sensor,W
+advanced,sunsynk_three_phase_hv,177,0x00B1,prog6-charge,[177],direct value,0,SelectRWSensor,
+advanced,sunsynk_three_phase_hv,177,0x00B1,prog6-mode,[177],direct value,0,SelectRWSensor,
+advanced,sunsynk_three_phase_hv,177,0x00B1,prog6-sell,[177],direct value,0,SwitchRWSensor,
+advanced,sunsynk_three_phase_lv,177,0x00B1,prog6-charge,[177],direct value,0,SelectRWSensor,
+advanced,sunsynk_three_phase_lv,177,0x00B1,prog6-mode,[177],direct value,0,SelectRWSensor,
+advanced,sunsynk_three_phase_lv,177,0x00B1,prog6-sell,[177],direct value,0,SwitchRWSensor,
+legacy,deye_hybrid,177,0x00B1,upload-load-l2-power,[177],direct value,0,rule 1,W
+legacy,deye_sg01hp3,177,0x00B1,time-of-use-tou-charge-enable-6,[177],direct value,0,rule 1,
+legacy,deye_sg04lp3,177,0x00B1,time-of-use-tou-charge-enable-6,[177],direct value,0,rule 1,
+advanced,sunsynk_single_phase,178,0x00B2,load-power,[178],direct value,0,Sensor,W
+advanced,sunsynk_single_phase_16kw,178,0x00B2,load-power,[178],direct value,0,Sensor,W
+advanced,sunsynk_three_phase_hv,178,0x00B2,drm,[178],direct value,0,SelectRWSensor,
+advanced,sunsynk_three_phase_hv,178,0x00B2,external-relay,[178],direct value,0,SelectRWSensor,
+advanced,sunsynk_three_phase_hv,178,0x00B2,gen-peak-shaving,[178],direct value,0,SelectRWSensor,
+advanced,sunsynk_three_phase_hv,178,0x00B2,grid-peak-shaving,[178],direct value,0,SelectRWSensor,
+advanced,sunsynk_three_phase_hv,178,0x00B2,loss-of-lithium-battery-report-fault,[178],direct value,0,SelectRWSensor,
+advanced,sunsynk_three_phase_hv,178,0x00B2,microinverter-export-to-grid-cutoff,[178],direct value,0,SelectRWSensor,
+advanced,sunsynk_three_phase_hv,178,0x00B2,on-grid-always-on,[178],direct value,0,SelectRWSensor,
+advanced,sunsynk_three_phase_hv,178,0x00B2,us-version-grounding-fault,[178],direct value,0,SelectRWSensor,
+advanced,sunsynk_three_phase_lv,178,0x00B2,drm,[178],direct value,0,SelectRWSensor,
+advanced,sunsynk_three_phase_lv,178,0x00B2,external-relay,[178],direct value,0,SelectRWSensor,
+advanced,sunsynk_three_phase_lv,178,0x00B2,gen-peak-shaving,[178],direct value,0,SelectRWSensor,
+advanced,sunsynk_three_phase_lv,178,0x00B2,grid-peak-shaving,[178],direct value,0,SelectRWSensor,
+advanced,sunsynk_three_phase_lv,178,0x00B2,loss-of-lithium-battery-report-fault,[178],direct value,0,SelectRWSensor,
+advanced,sunsynk_three_phase_lv,178,0x00B2,microinverter-export-to-grid-cutoff,[178],direct value,0,SelectRWSensor,
+advanced,sunsynk_three_phase_lv,178,0x00B2,on-grid-always-on,[178],direct value,0,SelectRWSensor,
+advanced,sunsynk_three_phase_lv,178,0x00B2,us-version-grounding-fault,[178],direct value,0,SelectRWSensor,
+legacy,deye_hybrid,178,0x00B2,upload-total-load-power,[178],direct value,0,rule 1,W
+advanced,sunsynk_three_phase_hv,179,0x00B3,off-grid-mode,[179],direct value,0,SwitchRWSensor,
+advanced,sunsynk_three_phase_lv,179,0x00B3,off-grid-mode,[179],direct value,0,SwitchRWSensor,
+advanced,sunsynk_single_phase,182,0x00B6,battery-temperature,[182],direct value,0,TempSensor,°C
+advanced,sunsynk_single_phase_16kw,182,0x00B6,battery-temperature,[182],direct value,0,TempSensor,°C
+advanced,sunsynk_three_phase_hv,182,0x00B6,grid-standard,[182],direct value,0,SelectRWSensor,
+advanced,sunsynk_three_phase_lv,182,0x00B6,grid-standard,[182],direct value,0,SelectRWSensor,
+legacy,deye_hybrid,182,0x00B6,battery-battery-temperature,[182],direct value,0,rule 1,°C
+advanced,sunsynk_single_phase,183,0x00B7,battery-voltage,[183],direct value,0,Sensor,V
+advanced,sunsynk_single_phase_16kw,183,0x00B7,battery-voltage,[183],direct value,0,Sensor,V
+advanced,sunsynk_three_phase_hv,183,0x00B7,configured-grid-frequency,[183],direct value,0,SelectRWSensor,
+advanced,sunsynk_three_phase_lv,183,0x00B7,configured-grid-frequency,[183],direct value,0,SelectRWSensor,
+legacy,deye_hybrid,183,0x00B7,battery-battery-voltage,[183],direct value,0,rule 1,V
+advanced,sunsynk_single_phase,184,0x00B8,battery-soc,[184],direct value,0,Sensor,%
+advanced,sunsynk_single_phase_16kw,184,0x00B8,battery-soc,[184],direct value,0,Sensor,%
+advanced,sunsynk_three_phase_hv,184,0x00B8,configured-grid-phases,[184],direct value,0,SelectRWSensor,
+advanced,sunsynk_three_phase_lv,184,0x00B8,configured-grid-phases,[184],direct value,0,SelectRWSensor,
+legacy,deye_hybrid,184,0x00B8,battery-battery-soc,[184],direct value,0,rule 1,%
+advanced,sunsynk_single_phase,186,0x00BA,pv1-power,[186],direct value,0,Sensor,W
+advanced,sunsynk_single_phase_16kw,186,0x00BA,pv1-power,[186],direct value,0,Sensor,W
+legacy,deye_hybrid,186,0x00BA,solar-pv1-power,[186],direct value,0,rule 1,W
+advanced,sunsynk_single_phase,187,0x00BB,pv2-power,[187],direct value,0,Sensor,W
+advanced,sunsynk_single_phase_16kw,187,0x00BB,pv2-power,[187],direct value,0,Sensor,W
+legacy,deye_hybrid,187,0x00BB,solar-pv2-power,[187],direct value,0,rule 1,W
+advanced,sunsynk_single_phase,188,0x00BC,pv3-power,[188],direct value,0,Sensor,W
+advanced,sunsynk_single_phase_16kw,188,0x00BC,pv3-power,[188],direct value,0,Sensor,W
+advanced,sunsynk_single_phase,189,0x00BD,pv4-power,[189],direct value,0,Sensor,W
+advanced,sunsynk_single_phase_16kw,189,0x00BD,pv4-power,[189],direct value,0,Sensor,W
+advanced,sunsynk_three_phase_hv,189,0x00BD,generator-connected-to-grid-input,[189],direct value,0,SwitchRWSensor,
+advanced,sunsynk_three_phase_lv,189,0x00BD,generator-connected-to-grid-input,[189],direct value,0,SwitchRWSensor,
+legacy,deye_hybrid,189,0x00BD,battery-battery-status,[189],direct value,0,rule 1,
+advanced,sunsynk_single_phase,190,0x00BE,battery-power,[190],direct value,0,Sensor,W
+advanced,sunsynk_single_phase_16kw,190,0x00BE,battery-power,[190],direct value,0,Sensor,W
+legacy,deye_hybrid,190,0x00BE,battery-battery-power,[190],direct value,0,rule 2,W
+advanced,sunsynk_single_phase,191,0x00BF,battery-current,[191],direct value,0,Sensor,A
+advanced,sunsynk_single_phase_16kw,191,0x00BF,battery-current,[191],direct value,0,Sensor,A
+advanced,sunsynk_three_phase_hv,191,0x00BF,grid-peak-shaving-power,[191],direct value,0,NumberRWSensor,W
+advanced,sunsynk_three_phase_lv,191,0x00BF,grid-peak-shaving-power,[191],direct value,0,NumberRWSensor,W
+legacy,deye_hybrid,191,0x00BF,battery-battery-current,[191],direct value,0,rule 2,A
+advanced,sunsynk_single_phase,192,0x00C0,load-frequency,[192],direct value,0,Sensor,Hz
+advanced,sunsynk_single_phase_16kw,192,0x00C0,load-frequency,[192],direct value,0,Sensor,Hz
+legacy,deye_hybrid,192,0x00C0,inverter-load-frequency,[192],direct value,0,rule 1,Hz
+advanced,sunsynk_single_phase,193,0x00C1,inverter-frequency,[193],direct value,0,Sensor,Hz
+advanced,sunsynk_single_phase_16kw,193,0x00C1,inverter-frequency,[193],direct value,0,Sensor,Hz
+advanced,sunsynk_single_phase,194,0x00C2,grid-connected,[194],direct value,0,BinarySensor,
+advanced,sunsynk_single_phase_16kw,194,0x00C2,grid-connected,[194],direct value,0,BinarySensor,
+legacy,deye_hybrid,194,0x00C2,inverter-grid-connected-status,[194],direct value,0,rule 1,
+legacy,deye_hybrid,195,0x00C3,upload-smartload-enable-status,[195],direct value,0,rule 1,
+advanced,sunsynk_single_phase,200,0x00C8,control-mode,[200],direct value,0,Sensor,
+advanced,sunsynk_single_phase_16kw,200,0x00C8,control-mode,[200],direct value,0,Sensor,
+advanced,sunsynk_single_phase,201,0x00C9,battery-equalization-voltage,[201],direct value,0,NumberRWSensor,V
+advanced,sunsynk_single_phase_16kw,201,0x00C9,battery-equalization-voltage,[201],direct value,0,NumberRWSensor,V
+advanced,sunsynk_single_phase,202,0x00CA,battery-absorption-voltage,[202],direct value,0,NumberRWSensor,V
+advanced,sunsynk_single_phase_16kw,202,0x00CA,battery-absorption-voltage,[202],direct value,0,NumberRWSensor,V
+advanced,sunsynk_single_phase,203,0x00CB,battery-float-voltage,[203],direct value,0,NumberRWSensor,V
+advanced,sunsynk_single_phase_16kw,203,0x00CB,battery-float-voltage,[203],direct value,0,NumberRWSensor,V
+advanced,sunsynk_single_phase,206,0x00CE,grid-trickle-feed-power,[206],direct value,0,NumberRWSensor,W
+advanced,sunsynk_single_phase_16kw,206,0x00CE,grid-trickle-feed-power,[206],direct value,0,NumberRWSensor,W
+advanced,sunsynk_three_phase_hv,209,0x00D1,ups-delay-time,[209],direct value,0,NumberRWSensor,s
+advanced,sunsynk_three_phase_lv,209,0x00D1,ups-delay-time,[209],direct value,0,NumberRWSensor,s
+advanced,sunsynk_single_phase,210,0x00D2,battery-max-charge-current,[210],direct value,0,NumberRWSensor,A
+advanced,sunsynk_single_phase_16kw,210,0x00D2,battery-max-charge-current,[210],direct value,0,NumberRWSensor,A
+advanced,sunsynk_three_phase_hv,210,0x00D2,battery-1-bms-charging-voltage,[210],direct value,0,Sensor,V
+advanced,sunsynk_three_phase_lv,210,0x00D2,battery-1-bms-charging-voltage,[210],direct value,0,Sensor,V
+advanced,sunsynk_single_phase,211,0x00D3,battery-max-discharge-current,[211],direct value,0,NumberRWSensor,A
+advanced,sunsynk_single_phase_16kw,211,0x00D3,battery-max-discharge-current,[211],direct value,0,NumberRWSensor,A
+advanced,sunsynk_three_phase_hv,211,0x00D3,battery-1-bms-discharging-voltage,[211],direct value,0,Sensor,V
+advanced,sunsynk_three_phase_lv,211,0x00D3,battery-1-bms-discharging-voltage,[211],direct value,0,Sensor,V
+advanced,sunsynk_three_phase_hv,212,0x00D4,battery-1-bms-charging-current-limit,[212],direct value,0,Sensor,A
+advanced,sunsynk_three_phase_lv,212,0x00D4,battery-1-bms-charging-current-limit,[212],direct value,0,Sensor,A
+advanced,sunsynk_three_phase_hv,213,0x00D5,battery-1-bms-discharging-current-limit,[213],direct value,0,Sensor,A
+advanced,sunsynk_three_phase_lv,213,0x00D5,battery-1-bms-discharging-current-limit,[213],direct value,0,Sensor,A
+advanced,sunsynk_three_phase_hv,214,0x00D6,battery-1-bms-soc,[214],direct value,0,Sensor,%
+advanced,sunsynk_three_phase_lv,214,0x00D6,battery-1-bms-soc,[214],direct value,0,Sensor,%
+advanced,sunsynk_three_phase_hv,215,0x00D7,battery-1-bms-voltage,[215],direct value,0,Sensor,V
+advanced,sunsynk_three_phase_lv,215,0x00D7,battery-1-bms-voltage,[215],direct value,0,Sensor,V
+advanced,sunsynk_three_phase_hv,216,0x00D8,battery-1-bms-current,[216],direct value,0,Sensor,A
+advanced,sunsynk_three_phase_lv,216,0x00D8,battery-1-bms-current,[216],direct value,0,Sensor,A
+advanced,sunsynk_single_phase,217,0x00D9,battery-shutdown-capacity,[217],direct value,0,NumberRWSensor,%
+advanced,sunsynk_single_phase_16kw,217,0x00D9,battery-shutdown-capacity,[217],direct value,0,NumberRWSensor,%
+advanced,sunsynk_three_phase_hv,217,0x00D9,battery-1-bms-temperature,[217],direct value,0,TempSensor,°C
+advanced,sunsynk_three_phase_lv,217,0x00D9,battery-1-bms-temperature,[217],direct value,0,TempSensor,°C
+advanced,sunsynk_single_phase,218,0x00DA,battery-restart-capacity,[218],direct value,0,NumberRWSensor,%
+advanced,sunsynk_single_phase_16kw,218,0x00DA,battery-restart-capacity,[218],direct value,0,NumberRWSensor,%
+advanced,sunsynk_three_phase_hv,218,0x00DA,battery-1-bms-max-charge-current-limit,[218],direct value,0,Sensor,A
+advanced,sunsynk_three_phase_lv,218,0x00DA,battery-1-bms-max-charge-current-limit,[218],direct value,0,Sensor,A
+advanced,sunsynk_single_phase,219,0x00DB,battery-low-capacity,[219],direct value,0,NumberRWSensor,%
+advanced,sunsynk_single_phase_16kw,219,0x00DB,battery-low-capacity,[219],direct value,0,NumberRWSensor,%
+advanced,sunsynk_three_phase_hv,219,0x00DB,battery-1-bms-max-discharge-current-limit,[219],direct value,0,Sensor,A
+advanced,sunsynk_three_phase_lv,219,0x00DB,battery-1-bms-max-discharge-current-limit,[219],direct value,0,Sensor,A
+advanced,sunsynk_single_phase,220,0x00DC,battery-shutdown-voltage,[220],direct value,0,NumberRWSensor,V
+advanced,sunsynk_single_phase_16kw,220,0x00DC,battery-shutdown-voltage,[220],direct value,0,NumberRWSensor,V
+advanced,sunsynk_three_phase_hv,220,0x00DC,battery-1-bms-alarm-flag,[220],direct value,0,Sensor,
+advanced,sunsynk_three_phase_lv,220,0x00DC,battery-1-bms-alarm-flag,[220],direct value,0,Sensor,
+advanced,sunsynk_single_phase,221,0x00DD,battery-restart-voltage,[221],direct value,0,NumberRWSensor,V
+advanced,sunsynk_single_phase_16kw,221,0x00DD,battery-restart-voltage,[221],direct value,0,NumberRWSensor,V
+advanced,sunsynk_three_phase_hv,221,0x00DD,battery-1-bms-fault-flag,[221],direct value,0,Sensor,
+advanced,sunsynk_single_phase,222,0x00DE,battery-low-voltage,[222],direct value,0,NumberRWSensor,V
+advanced,sunsynk_single_phase_16kw,222,0x00DE,battery-low-voltage,[222],direct value,0,NumberRWSensor,V
+advanced,sunsynk_three_phase_hv,222,0x00DE,battery-1-bms-other-flag---battery-1-force-charge,[222],direct value,0,SwitchRWSensor,
+advanced,sunsynk_three_phase_hv,222,0x00DE,battery-1-bms-other-flag---battery-1-sleep,[222],direct value,0,SwitchRWSensor,
+advanced,sunsynk_three_phase_hv,222,0x00DE,battery-1-bms-other-flag---battery-2-force-charge,[222],direct value,0,SwitchRWSensor,
+advanced,sunsynk_three_phase_hv,223,0x00DF,battery-1-bms-type,[223],direct value,0,SelectRWSensor,
+advanced,sunsynk_three_phase_hv,223,0x00DF,lithium-hv-bms-protocol,[223],direct value,0,SelectRWSensor,
+advanced,sunsynk_three_phase_hv,224,0x00E0,battery-1-bms-soh,[224],direct value,0,Sensor,%
+advanced,sunsynk_three_phase_hv,225,0x00E1,battery-1-bms-software-version,[225],direct value,0,Sensor,
+advanced,sunsynk_three_phase_hv,226,0x00E2,battery-1-bms-rated-ah,[226],direct value,0,Sensor,Ah
+advanced,sunsynk_three_phase_hv,227,0x00E3,battery-1-bms-hardware-version,[227],direct value,0,Sensor,
+advanced,sunsynk_three_phase_hv,228,0x00E4,allow-remote,[228],direct value,0,SelectRWSensor,
+advanced,sunsynk_three_phase_hv,228,0x00E4,am-pm,[228],direct value,0,SelectRWSensor,
+advanced,sunsynk_three_phase_hv,228,0x00E4,auto-dim,[228],direct value,0,SelectRWSensor,
+advanced,sunsynk_three_phase_hv,228,0x00E4,beep,[228],direct value,0,SelectRWSensor,
+advanced,sunsynk_three_phase_hv,228,0x00E4,time-synchronization,[228],direct value,0,SelectRWSensor,
+advanced,sunsynk_three_phase_lv,228,0x00E4,allow-remote,[228],direct value,0,SelectRWSensor,
+advanced,sunsynk_three_phase_lv,228,0x00E4,am-pm,[228],direct value,0,SelectRWSensor,
+advanced,sunsynk_three_phase_lv,228,0x00E4,auto-dim,[228],direct value,0,SelectRWSensor,
+advanced,sunsynk_three_phase_lv,228,0x00E4,beep,[228],direct value,0,SelectRWSensor,
+advanced,sunsynk_three_phase_lv,228,0x00E4,time-synchronization,[228],direct value,0,SelectRWSensor,
+advanced,sunsynk_three_phase_hv,229,0x00E5,battery-1-manufacturer,[229],direct value,0,EnumSensor,
+advanced,sunsynk_three_phase_lv,229,0x00E5,battery-1-manufacturer,[229],direct value,0,SelectRWSensor,
+advanced,sunsynk_single_phase,230,0x00E6,grid-charge-battery-current,[230],direct value,0,NumberRWSensor,A
+advanced,sunsynk_single_phase_16kw,230,0x00E6,grid-charge-battery-current,[230],direct value,0,NumberRWSensor,A
+advanced,sunsynk_three_phase_hv,230,0x00E6,battery-2-manufacturer,[230],direct value,0,EnumSensor,
+advanced,sunsynk_single_phase,232,0x00E8,grid-charge-enabled,[232],direct value,0,SwitchRWSensor,
+advanced,sunsynk_single_phase_16kw,232,0x00E8,grid-charge-enabled,[232],direct value,0,SwitchRWSensor,
+advanced,sunsynk_single_phase,235,0x00EB,aux-port-usage,[235],direct value,0,SelectRWSensor,
+advanced,sunsynk_single_phase,235,0x00EB,generator-input,[235],direct value,0,SelectRWSensor,
+advanced,sunsynk_single_phase_16kw,235,0x00EB,aux-port-usage,[235],direct value,0,SelectRWSensor,
+advanced,sunsynk_single_phase_16kw,235,0x00EB,generator-input,[235],direct value,0,SelectRWSensor,
+advanced,sunsynk_three_phase_hv,235,0x00EB,track-grid-phase,[235],direct value,0,SwitchRWSensor,
+advanced,sunsynk_three_phase_lv,235,0x00EB,track-grid-phase,[235],direct value,0,SwitchRWSensor,
+advanced,sunsynk_three_phase_hv,241,0x00F1,battery-2-bms-charging-voltage,[241],direct value,0,Sensor,V
+advanced,sunsynk_three_phase_hv,242,0x00F2,battery-2-bms-discharging-voltage,[242],direct value,0,Sensor,V
+advanced,sunsynk_single_phase,243,0x00F3,priority-load,[243],direct value,0,SwitchRWSensor,
+advanced,sunsynk_single_phase_16kw,243,0x00F3,priority-load,[243],direct value,0,SwitchRWSensor,
+advanced,sunsynk_three_phase_hv,243,0x00F3,battery-2-bms-charging-current-limit,[243],direct value,0,Sensor,A
+advanced,sunsynk_single_phase,244,0x00F4,load-limit,[244],direct value,0,SelectRWSensor,
+advanced,sunsynk_single_phase_16kw,244,0x00F4,load-limit,[244],direct value,0,SelectRWSensor,
+advanced,sunsynk_three_phase_hv,244,0x00F4,battery-2-bms-discharging-current-limit,[244],direct value,0,Sensor,A
+legacy,deye_hybrid,244,0x00F4,inverter-work-mode,"[244, 247]",direct value,0,rule 3,
+advanced,sunsynk_single_phase,245,0x00F5,max-sell-power,[245],direct value,0,NumberRWSensor,W
+advanced,sunsynk_single_phase_16kw,245,0x00F5,max-sell-power,[245],direct value,0,NumberRWSensor,W
+advanced,sunsynk_three_phase_hv,245,0x00F5,battery-2-bms-soc,[245],direct value,0,Sensor,%
+advanced,sunsynk_three_phase_hv,246,0x00F6,battery-2-bms-voltage,[246],direct value,0,Sensor,V
+advanced,sunsynk_single_phase,247,0x00F7,solar-export,[247],direct value,0,SwitchRWSensor,
+advanced,sunsynk_single_phase_16kw,247,0x00F7,solar-export,[247],direct value,0,SwitchRWSensor,
+advanced,sunsynk_three_phase_hv,247,0x00F7,battery-2-bms-current,[247],direct value,0,Sensor,A
+legacy,deye_hybrid,247,0x00F7,inverter-work-mode,"[244, 247]",direct value,1,rule 3,
+advanced,sunsynk_single_phase,248,0x00F8,use-timer,[248],direct value,0,SwitchRWSensor,
+advanced,sunsynk_single_phase_16kw,248,0x00F8,use-timer,[248],direct value,0,SwitchRWSensor,
+advanced,sunsynk_three_phase_hv,248,0x00F8,battery-2-bms-temperature,[248],direct value,0,TempSensor,°C
+legacy,deye_hybrid,248,0x00F8,time-of-use-time-of-use,[248],direct value,0,rule 1,
+advanced,sunsynk_three_phase_hv,249,0x00F9,battery-2-bms-max-charge-current-limit,[249],direct value,0,Sensor,A
+advanced,sunsynk_single_phase,250,0x00FA,prog1-time,[250],direct value,0,TimeRWSensor,
+advanced,sunsynk_single_phase_16kw,250,0x00FA,prog1-time,[250],direct value,0,TimeRWSensor,
+advanced,sunsynk_three_phase_hv,250,0x00FA,battery-2-bms-max-discharge-current-limit,[250],direct value,0,Sensor,A
+legacy,deye_hybrid,250,0x00FA,time-of-use-time-of-use-time-1,[250],direct value,0,rule 9,
+advanced,sunsynk_single_phase,251,0x00FB,prog2-time,[251],direct value,0,TimeRWSensor,
+advanced,sunsynk_single_phase_16kw,251,0x00FB,prog2-time,[251],direct value,0,TimeRWSensor,
+advanced,sunsynk_three_phase_hv,251,0x00FB,battery-2-bms-alarm-flag,[251],direct value,0,Sensor,
+legacy,deye_hybrid,251,0x00FB,time-of-use-time-of-use-time-2,[251],direct value,0,rule 9,
+advanced,sunsynk_single_phase,252,0x00FC,prog3-time,[252],direct value,0,TimeRWSensor,
+advanced,sunsynk_single_phase_16kw,252,0x00FC,prog3-time,[252],direct value,0,TimeRWSensor,
+advanced,sunsynk_three_phase_hv,252,0x00FC,battery-2-bms-fault-flag,[252],direct value,0,Sensor,
+legacy,deye_hybrid,252,0x00FC,time-of-use-time-of-use-time-3,[252],direct value,0,rule 9,
+advanced,sunsynk_single_phase,253,0x00FD,prog4-time,[253],direct value,0,TimeRWSensor,
+advanced,sunsynk_single_phase_16kw,253,0x00FD,prog4-time,[253],direct value,0,TimeRWSensor,
+advanced,sunsynk_three_phase_hv,253,0x00FD,battery-2-bms-other-flag---battery-1-force-charge,[253],direct value,0,SwitchRWSensor,
+advanced,sunsynk_three_phase_hv,253,0x00FD,battery-2-bms-other-flag---battery-1-sleep,[253],direct value,0,SwitchRWSensor,
+advanced,sunsynk_three_phase_hv,253,0x00FD,battery-2-bms-other-flag---battery-2-force-charge,[253],direct value,0,SwitchRWSensor,
+legacy,deye_hybrid,253,0x00FD,time-of-use-time-of-use-time-4,[253],direct value,0,rule 9,
+advanced,sunsynk_single_phase,254,0x00FE,prog5-time,[254],direct value,0,TimeRWSensor,
+advanced,sunsynk_single_phase_16kw,254,0x00FE,prog5-time,[254],direct value,0,TimeRWSensor,
+advanced,sunsynk_three_phase_hv,254,0x00FE,battery-2-bms-type,[254],direct value,0,Sensor,
+legacy,deye_hybrid,254,0x00FE,time-of-use-time-of-use-time-5,[254],direct value,0,rule 9,
+advanced,sunsynk_single_phase,255,0x00FF,prog6-time,[255],direct value,0,TimeRWSensor,
+advanced,sunsynk_single_phase_16kw,255,0x00FF,prog6-time,[255],direct value,0,TimeRWSensor,
+advanced,sunsynk_three_phase_hv,255,0x00FF,battery-2-bms-soh,[255],direct value,0,Sensor,%
+legacy,deye_hybrid,255,0x00FF,time-of-use-time-of-use-time-6,[255],direct value,0,rule 9,
+advanced,sunsynk_single_phase,256,0x0100,prog1-power,[256],direct value,0,NumberRWSensor,W
+advanced,sunsynk_single_phase_16kw,256,0x0100,prog1-power,[256],direct value,0,NumberRWSensor,W
+advanced,sunsynk_three_phase_hv,256,0x0100,battery-2-bms-software-version,[256],direct value,0,Sensor,
+legacy,deye_hybrid,256,0x0100,time-of-use-time-of-use-power-1,[256],direct value,0,rule 1,W
+advanced,sunsynk_single_phase,257,0x0101,prog2-power,[257],direct value,0,NumberRWSensor,W
+advanced,sunsynk_single_phase_16kw,257,0x0101,prog2-power,[257],direct value,0,NumberRWSensor,W
+advanced,sunsynk_three_phase_hv,257,0x0101,battery-2-bms-rated-ah,[257],direct value,0,Sensor,Ah
+legacy,deye_hybrid,257,0x0101,time-of-use-time-of-use-power-2,[257],direct value,0,rule 1,W
+advanced,sunsynk_single_phase,258,0x0102,prog3-power,[258],direct value,0,NumberRWSensor,W
+advanced,sunsynk_single_phase_16kw,258,0x0102,prog3-power,[258],direct value,0,NumberRWSensor,W
+advanced,sunsynk_three_phase_hv,258,0x0102,battery-2-bms-hardware-version,[258],direct value,0,Sensor,
+legacy,deye_hybrid,258,0x0102,time-of-use-time-of-use-power-3,[258],direct value,0,rule 1,W
+advanced,sunsynk_single_phase,259,0x0103,prog4-power,[259],direct value,0,NumberRWSensor,W
+advanced,sunsynk_single_phase_16kw,259,0x0103,prog4-power,[259],direct value,0,NumberRWSensor,W
+legacy,deye_hybrid,259,0x0103,time-of-use-time-of-use-power-4,[259],direct value,0,rule 1,W
+advanced,sunsynk_single_phase,260,0x0104,prog5-power,[260],direct value,0,NumberRWSensor,W
+advanced,sunsynk_single_phase_16kw,260,0x0104,prog5-power,[260],direct value,0,NumberRWSensor,W
+legacy,deye_hybrid,260,0x0104,time-of-use-time-of-use-power-5,[260],direct value,0,rule 1,W
+advanced,sunsynk_single_phase,261,0x0105,prog6-power,[261],direct value,0,NumberRWSensor,W
+advanced,sunsynk_single_phase_16kw,261,0x0105,prog6-power,[261],direct value,0,NumberRWSensor,W
+legacy,deye_hybrid,261,0x0105,time-of-use-time-of-use-power-6,[261],direct value,0,rule 1,W
+advanced,sunsynk_single_phase,262,0x0106,prog1-voltage,[262],direct value,0,NumberRWSensor,V
+advanced,sunsynk_single_phase_16kw,262,0x0106,prog1-voltage,[262],direct value,0,NumberRWSensor,V
+advanced,sunsynk_single_phase,263,0x0107,prog2-voltage,[263],direct value,0,NumberRWSensor,V
+advanced,sunsynk_single_phase_16kw,263,0x0107,prog2-voltage,[263],direct value,0,NumberRWSensor,V
+advanced,sunsynk_single_phase,264,0x0108,prog3-voltage,[264],direct value,0,NumberRWSensor,V
+advanced,sunsynk_single_phase_16kw,264,0x0108,prog3-voltage,[264],direct value,0,NumberRWSensor,V
+advanced,sunsynk_single_phase,265,0x0109,prog4-voltage,[265],direct value,0,NumberRWSensor,V
+advanced,sunsynk_single_phase_16kw,265,0x0109,prog4-voltage,[265],direct value,0,NumberRWSensor,V
+advanced,sunsynk_single_phase,266,0x010A,prog5-voltage,[266],direct value,0,NumberRWSensor,V
+advanced,sunsynk_single_phase_16kw,266,0x010A,prog5-voltage,[266],direct value,0,NumberRWSensor,V
+advanced,sunsynk_single_phase,267,0x010B,prog6-voltage,[267],direct value,0,NumberRWSensor,V
+advanced,sunsynk_single_phase_16kw,267,0x010B,prog6-voltage,[267],direct value,0,NumberRWSensor,V
+advanced,sunsynk_single_phase,268,0x010C,prog1-capacity,[268],direct value,0,NumberRWSensor,%
+advanced,sunsynk_single_phase_16kw,268,0x010C,prog1-capacity,[268],direct value,0,NumberRWSensor,%
+legacy,deye_hybrid,268,0x010C,time-of-use-time-of-use-soc-1,[268],direct value,0,rule 1,%
+advanced,sunsynk_single_phase,269,0x010D,prog2-capacity,[269],direct value,0,NumberRWSensor,%
+advanced,sunsynk_single_phase_16kw,269,0x010D,prog2-capacity,[269],direct value,0,NumberRWSensor,%
+legacy,deye_hybrid,269,0x010D,time-of-use-time-of-use-soc-2,[269],direct value,0,rule 1,%
+advanced,sunsynk_single_phase,270,0x010E,prog3-capacity,[270],direct value,0,NumberRWSensor,%
+advanced,sunsynk_single_phase_16kw,270,0x010E,prog3-capacity,[270],direct value,0,NumberRWSensor,%
+legacy,deye_hybrid,270,0x010E,time-of-use-time-of-use-soc-3,[270],direct value,0,rule 1,%
+advanced,sunsynk_single_phase,271,0x010F,prog4-capacity,[271],direct value,0,NumberRWSensor,%
+advanced,sunsynk_single_phase_16kw,271,0x010F,prog4-capacity,[271],direct value,0,NumberRWSensor,%
+legacy,deye_hybrid,271,0x010F,time-of-use-time-of-use-soc-4,[271],direct value,0,rule 1,%
+advanced,sunsynk_single_phase,272,0x0110,prog5-capacity,[272],direct value,0,NumberRWSensor,%
+advanced,sunsynk_single_phase_16kw,272,0x0110,prog5-capacity,[272],direct value,0,NumberRWSensor,%
+legacy,deye_hybrid,272,0x0110,time-of-use-time-of-use-soc-5,[272],direct value,0,rule 1,%
+advanced,sunsynk_single_phase,273,0x0111,prog6-capacity,[273],direct value,0,NumberRWSensor,%
+advanced,sunsynk_single_phase_16kw,273,0x0111,prog6-capacity,[273],direct value,0,NumberRWSensor,%
+legacy,deye_hybrid,273,0x0111,time-of-use-time-of-use-soc-6,[273],direct value,0,rule 1,%
+advanced,sunsynk_single_phase,274,0x0112,prog1-charge,[274],direct value,0,SelectRWSensor,
+advanced,sunsynk_single_phase,274,0x0112,prog1-mode,[274],direct value,0,SelectRWSensor,
+advanced,sunsynk_single_phase,274,0x0112,prog1-sell,[274],direct value,0,SwitchRWSensor,
+advanced,sunsynk_single_phase_16kw,274,0x0112,prog1-charge,[274],direct value,0,SelectRWSensor,
+advanced,sunsynk_single_phase_16kw,274,0x0112,prog1-mode,[274],direct value,0,SelectRWSensor,
+advanced,sunsynk_single_phase_16kw,274,0x0112,prog1-sell,[274],direct value,0,SwitchRWSensor,
+legacy,deye_hybrid,274,0x0112,time-of-use-time-of-use-enable-1,[274],direct value,0,rule 1,
+advanced,sunsynk_single_phase,275,0x0113,prog2-charge,[275],direct value,0,SelectRWSensor,
+advanced,sunsynk_single_phase,275,0x0113,prog2-mode,[275],direct value,0,SelectRWSensor,
+advanced,sunsynk_single_phase,275,0x0113,prog2-sell,[275],direct value,0,SwitchRWSensor,
+advanced,sunsynk_single_phase_16kw,275,0x0113,prog2-charge,[275],direct value,0,SelectRWSensor,
+advanced,sunsynk_single_phase_16kw,275,0x0113,prog2-mode,[275],direct value,0,SelectRWSensor,
+advanced,sunsynk_single_phase_16kw,275,0x0113,prog2-sell,[275],direct value,0,SwitchRWSensor,
+legacy,deye_hybrid,275,0x0113,time-of-use-time-of-use-enable-2,[275],direct value,0,rule 1,
+advanced,sunsynk_single_phase,276,0x0114,prog3-charge,[276],direct value,0,SelectRWSensor,
+advanced,sunsynk_single_phase,276,0x0114,prog3-mode,[276],direct value,0,SelectRWSensor,
+advanced,sunsynk_single_phase,276,0x0114,prog3-sell,[276],direct value,0,SwitchRWSensor,
+advanced,sunsynk_single_phase_16kw,276,0x0114,prog3-charge,[276],direct value,0,SelectRWSensor,
+advanced,sunsynk_single_phase_16kw,276,0x0114,prog3-mode,[276],direct value,0,SelectRWSensor,
+advanced,sunsynk_single_phase_16kw,276,0x0114,prog3-sell,[276],direct value,0,SwitchRWSensor,
+legacy,deye_hybrid,276,0x0114,time-of-use-time-of-use-enable-3,[276],direct value,0,rule 1,
+advanced,sunsynk_single_phase,277,0x0115,prog4-charge,[277],direct value,0,SelectRWSensor,
+advanced,sunsynk_single_phase,277,0x0115,prog4-mode,[277],direct value,0,SelectRWSensor,
+advanced,sunsynk_single_phase,277,0x0115,prog4-sell,[277],direct value,0,SwitchRWSensor,
+advanced,sunsynk_single_phase_16kw,277,0x0115,prog4-charge,[277],direct value,0,SelectRWSensor,
+advanced,sunsynk_single_phase_16kw,277,0x0115,prog4-mode,[277],direct value,0,SelectRWSensor,
+advanced,sunsynk_single_phase_16kw,277,0x0115,prog4-sell,[277],direct value,0,SwitchRWSensor,
+legacy,deye_hybrid,277,0x0115,time-of-use-time-of-use-enable-4,[277],direct value,0,rule 1,
+advanced,sunsynk_single_phase,278,0x0116,prog5-charge,[278],direct value,0,SelectRWSensor,
+advanced,sunsynk_single_phase,278,0x0116,prog5-mode,[278],direct value,0,SelectRWSensor,
+advanced,sunsynk_single_phase,278,0x0116,prog5-sell,[278],direct value,0,SwitchRWSensor,
+advanced,sunsynk_single_phase_16kw,278,0x0116,prog5-charge,[278],direct value,0,SelectRWSensor,
+advanced,sunsynk_single_phase_16kw,278,0x0116,prog5-mode,[278],direct value,0,SelectRWSensor,
+advanced,sunsynk_single_phase_16kw,278,0x0116,prog5-sell,[278],direct value,0,SwitchRWSensor,
+legacy,deye_hybrid,278,0x0116,time-of-use-time-of-use-enable-5,[278],direct value,0,rule 1,
+advanced,sunsynk_single_phase,279,0x0117,prog6-charge,[279],direct value,0,SelectRWSensor,
+advanced,sunsynk_single_phase,279,0x0117,prog6-mode,[279],direct value,0,SelectRWSensor,
+advanced,sunsynk_single_phase,279,0x0117,prog6-sell,[279],direct value,0,SwitchRWSensor,
+advanced,sunsynk_single_phase_16kw,279,0x0117,prog6-charge,[279],direct value,0,SelectRWSensor,
+advanced,sunsynk_single_phase_16kw,279,0x0117,prog6-mode,[279],direct value,0,SelectRWSensor,
+advanced,sunsynk_single_phase_16kw,279,0x0117,prog6-sell,[279],direct value,0,SwitchRWSensor,
+legacy,deye_hybrid,279,0x0117,time-of-use-time-of-use-enable-6,[279],direct value,0,rule 1,
+advanced,sunsynk_single_phase,280,0x0118,gen-peak-shaving,[280],direct value,0,SwitchRWSensor,
+advanced,sunsynk_single_phase,280,0x0118,grid-always-on,[280],direct value,0,SwitchRWSensor,
+advanced,sunsynk_single_phase,280,0x0118,grid-peak-shaving,[280],direct value,0,SwitchRWSensor,
+advanced,sunsynk_single_phase,280,0x0118,peak-shaving,[280],direct value,0,SwitchRWSensor,
+advanced,sunsynk_single_phase_16kw,280,0x0118,gen-peak-shaving,[280],direct value,0,SwitchRWSensor,
+advanced,sunsynk_single_phase_16kw,280,0x0118,grid-always-on,[280],direct value,0,SwitchRWSensor,
+advanced,sunsynk_single_phase_16kw,280,0x0118,grid-peak-shaving,[280],direct value,0,SwitchRWSensor,
+advanced,sunsynk_single_phase_16kw,280,0x0118,peak-shaving,[280],direct value,0,SwitchRWSensor,
+advanced,sunsynk_single_phase,292,0x0124,gen-peak-shaving-power,[292],direct value,0,NumberRWSensor,W
+advanced,sunsynk_single_phase_16kw,292,0x0124,gen-peak-shaving-power,[292],direct value,0,NumberRWSensor,W
+advanced,sunsynk_single_phase,293,0x0125,grid-peak-shaving-power,[293],direct value,0,NumberRWSensor,W
+advanced,sunsynk_single_phase_16kw,293,0x0125,grid-peak-shaving-power,[293],direct value,0,NumberRWSensor,W
+advanced,sunsynk_micro_hybrid_ess,312,0x0138,battery-max-charge-current,[312],direct value,0,NumberRWSensor,A
+advanced,sunsynk_single_phase,312,0x0138,battery-charging-voltage,[312],direct value,0,Sensor,V
+advanced,sunsynk_single_phase_16kw,312,0x0138,battery-charging-voltage,[312],direct value,0,Sensor,V
+advanced,sunsynk_micro_hybrid_ess,313,0x0139,battery-max-discharge-current,[313],direct value,0,NumberRWSensor,A
+advanced,sunsynk_single_phase,314,0x013A,battery-charge-limit-current,[314],direct value,0,Sensor,A
+advanced,sunsynk_single_phase_16kw,314,0x013A,battery-charge-limit-current,[314],direct value,0,Sensor,A
+advanced,sunsynk_single_phase,315,0x013B,battery-discharge-limit-current,[315],direct value,0,Sensor,A
+advanced,sunsynk_single_phase_16kw,315,0x013B,battery-discharge-limit-current,[315],direct value,0,Sensor,A
+advanced,sunsynk_micro_hybrid_ess,319,0x013F,battery-shutdown-capacity,[319],direct value,0,NumberRWSensor,%
+advanced,sunsynk_micro_hybrid_ess,320,0x0140,battery-restart-capacity,[320],direct value,0,NumberRWSensor,%
+advanced,sunsynk_micro_hybrid_ess,321,0x0141,battery-low-capacity,[321],direct value,0,NumberRWSensor,%
+advanced,sunsynk_single_phase,325,0x0145,bms-protocol,[325],direct value,0,SelectRWSensor,
+advanced,sunsynk_single_phase_16kw,325,0x0145,bms-protocol,[325],direct value,0,SelectRWSensor,
+advanced,sunsynk_micro_hybrid_ess,328,0x0148,grid-charge-enabled,[328],direct value,0,SwitchRWSensor,
+advanced,sunsynk_micro_hybrid_ess,329,0x0149,priority-load,[329],direct value,0,SelectRWSensor,
+advanced,sunsynk_micro_hybrid_ess,330,0x014A,load-limit,[330],direct value,0,EnumSensor,
+advanced,sunsynk_micro_hybrid_ess,331,0x014B,max-sell-power,[331],direct value,0,NumberRWSensor,W
+advanced,sunsynk_micro_hybrid_ess,333,0x014D,solar-export,[333],direct value,0,SwitchRWSensor,
+advanced,sunsynk_micro_hybrid_ess,334,0x014E,work-mode,[334],direct value,0,SelectRWSensor,
+advanced,sunsynk_micro_hybrid_ess,335,0x014F,use-timer,[335],direct value,0,SwitchRWSensor,
+advanced,sunsynk_micro_hybrid_ess,336,0x0150,prog1-time,[336],direct value,0,TimeRWSensor,
+advanced,sunsynk_three_phase_hv,336,0x0150,parallel-enable,[336],direct value,0,SwitchRWSensor,
+advanced,sunsynk_three_phase_hv,336,0x0150,parallel-modbus-sn,[336],direct value,0,NumberRWSensor,
+advanced,sunsynk_three_phase_hv,336,0x0150,parallel-mode,[336],direct value,0,SelectRWSensor,
+advanced,sunsynk_three_phase_hv,336,0x0150,parallel-phase,[336],direct value,0,SelectRWSensor,
+advanced,sunsynk_three_phase_lv,336,0x0150,parallel-enable,[336],direct value,0,SwitchRWSensor,
+advanced,sunsynk_three_phase_lv,336,0x0150,parallel-modbus-sn,[336],direct value,0,NumberRWSensor,
+advanced,sunsynk_three_phase_lv,336,0x0150,parallel-mode,[336],direct value,0,SelectRWSensor,
+advanced,sunsynk_three_phase_lv,336,0x0150,parallel-phase,[336],direct value,0,SelectRWSensor,
+advanced,sunsynk_micro_hybrid_ess,337,0x0151,prog2-time,[337],direct value,0,TimeRWSensor,
+advanced,sunsynk_micro_hybrid_ess,338,0x0152,prog3-time,[338],direct value,0,TimeRWSensor,
+advanced,sunsynk_micro_hybrid_ess,339,0x0153,prog4-time,[339],direct value,0,TimeRWSensor,
+advanced,sunsynk_micro_hybrid_ess,340,0x0154,prog5-time,[340],direct value,0,TimeRWSensor,
+advanced,sunsynk_three_phase_hv,340,0x0154,max-solar-power,[340],direct value,0,NumberRWSensor,W
+advanced,sunsynk_three_phase_lv,340,0x0154,max-solar-power,[340],direct value,0,NumberRWSensor,W
+advanced,sunsynk_micro_hybrid_ess,341,0x0155,prog6-time,[341],direct value,0,TimeRWSensor,
+advanced,sunsynk_micro_hybrid_ess,342,0x0156,prog1-power,[342],direct value,0,NumberRWSensor,W
+advanced,sunsynk_micro_hybrid_ess,343,0x0157,prog2-power,[343],direct value,0,NumberRWSensor,W
+advanced,sunsynk_micro_hybrid_ess,344,0x0158,prog3-power,[344],direct value,0,NumberRWSensor,W
+advanced,sunsynk_micro_hybrid_ess,345,0x0159,prog4-power,[345],direct value,0,NumberRWSensor,W
+advanced,sunsynk_micro_hybrid_ess,346,0x015A,prog5-power,[346],direct value,0,NumberRWSensor,W
+advanced,sunsynk_micro_hybrid_ess,347,0x015B,prog6-power,[347],direct value,0,NumberRWSensor,W
+advanced,sunsynk_micro_hybrid_ess,354,0x0162,prog1-capacity,[354],direct value,0,NumberRWSensor,%
+advanced,sunsynk_micro_hybrid_ess,355,0x0163,prog2-capacity,[355],direct value,0,NumberRWSensor,%
+advanced,sunsynk_micro_hybrid_ess,356,0x0164,prog3-capacity,[356],direct value,0,NumberRWSensor,%
+advanced,sunsynk_micro_hybrid_ess,357,0x0165,prog4-capacity,[357],direct value,0,NumberRWSensor,%
+advanced,sunsynk_micro_hybrid_ess,358,0x0166,prog5-capacity,[358],direct value,0,NumberRWSensor,%
+advanced,sunsynk_micro_hybrid_ess,359,0x0167,prog6-capacity,[359],direct value,0,NumberRWSensor,%
+advanced,sunsynk_micro_hybrid_ess,360,0x0168,prog1-charge,[360],direct value,0,SwitchRWSensor,
+advanced,sunsynk_micro_hybrid_ess,361,0x0169,prog2-charge,[361],direct value,0,SwitchRWSensor,
+advanced,sunsynk_micro_hybrid_ess,362,0x016A,prog3-charge,[362],direct value,0,SwitchRWSensor,
+advanced,sunsynk_micro_hybrid_ess,363,0x016B,prog4-charge,[363],direct value,0,SwitchRWSensor,
+advanced,sunsynk_micro_hybrid_ess,364,0x016C,prog5-charge,[364],direct value,0,SwitchRWSensor,
+advanced,sunsynk_micro_hybrid_ess,365,0x016D,prog6-charge,[365],direct value,0,SwitchRWSensor,
+advanced,sunsynk_micro_hybrid_ess,372,0x0174,bms-charge-voltage,[372],direct value,0,Sensor,V
+advanced,sunsynk_micro_hybrid_ess,374,0x0176,battery-charge-limit-current,[374],direct value,0,Sensor,A
+advanced,sunsynk_micro_hybrid_ess,375,0x0177,battery-discharge-limit-current,[375],direct value,0,Sensor,A
+advanced,sunsynk_micro_hybrid_ess,376,0x0178,bms-soc,[376],direct value,0,Sensor,%
+advanced,sunsynk_micro_hybrid_ess,377,0x0179,bms-voltage,[377],direct value,0,Sensor,V
+advanced,sunsynk_micro_hybrid_ess,378,0x017A,bms-current,[378],direct value,0,Sensor,A
+advanced,sunsynk_micro_hybrid_ess,379,0x017B,bms-temperature,[379],direct value,0,Sensor,°C
+advanced,sunsynk_micro_hybrid_ess,392,0x0188,battery-soh,[392],direct value,0,Sensor,%
+advanced,sunsynk_micro_hybrid_ess,407,0x0197,battery-capacity,[407],direct value,0,Sensor,Ah
+advanced,sunsynk_micro_hybrid_ess,408,0x0198,battery-cell-voltage-max,[408],direct value,0,Sensor,V
+advanced,sunsynk_micro_hybrid_ess,409,0x0199,battery-cell-voltage-min,[409],direct value,0,Sensor,V
+advanced,sunsynk_micro_hybrid_ess,410,0x019A,battery-cell-temperature-max,[410],direct value,0,Sensor,°C
+advanced,sunsynk_micro_hybrid_ess,411,0x019B,battery-cell-temperature-min,[411],direct value,0,Sensor,°C
+advanced,sunsynk_micro_hybrid_ess,412,0x019C,battery-modules,[412],direct value,0,Sensor,
+advanced,sunsynk_three_phase_hv,500,0x01F4,overall-state,[500],direct value,0,InverterStateSensor,
+advanced,sunsynk_three_phase_lv,500,0x01F4,overall-state,[500],direct value,0,InverterStateSensor,
+advanced,sunsynk_three_phase_hv,502,0x01F6,day-active-energy,[502],direct value,0,Sensor,kWh
+advanced,sunsynk_three_phase_lv,502,0x01F6,day-active-energy,[502],direct value,0,Sensor,kWh
+advanced,sunsynk_three_phase_hv,506,0x01FA,total-active-energy,"[506, 507]",direct value,0,Sensor,kWh
+advanced,sunsynk_three_phase_lv,506,0x01FA,total-active-energy,"[506, 507]",direct value,0,Sensor,kWh
+advanced,sunsynk_three_phase_hv,507,0x01FB,total-active-energy,"[506, 507]",direct value,1,Sensor,kWh
+advanced,sunsynk_three_phase_lv,507,0x01FB,total-active-energy,"[506, 507]",direct value,1,Sensor,kWh
+advanced,sunsynk_three_phase_hv,514,0x0202,day-battery-charge,[514],direct value,0,Sensor,kWh
+advanced,sunsynk_three_phase_lv,514,0x0202,day-battery-charge,[514],direct value,0,Sensor,kWh
+legacy,deye_sg01hp3,514,0x0202,battery-daily-battery-charge,[514],direct value,0,rule 1,kWh
+legacy,deye_sg04lp3,514,0x0202,battery-daily-battery-charge,[514],direct value,0,rule 1,kWh
+advanced,sunsynk_three_phase_hv,515,0x0203,day-battery-discharge,[515],direct value,0,Sensor,kWh
+advanced,sunsynk_three_phase_lv,515,0x0203,day-battery-discharge,[515],direct value,0,Sensor,kWh
+legacy,deye_sg01hp3,515,0x0203,battery-daily-battery-discharge,[515],direct value,0,rule 1,kWh
+legacy,deye_sg04lp3,515,0x0203,battery-daily-battery-discharge,[515],direct value,0,rule 1,kWh
+advanced,sunsynk_three_phase_hv,516,0x0204,total-battery-charge,"[516, 517]",direct value,0,Sensor,kWh
+advanced,sunsynk_three_phase_lv,516,0x0204,total-battery-charge,"[516, 517]",direct value,0,Sensor,kWh
+legacy,deye_sg01hp3,516,0x0204,battery-total-battery-charge,"[516, 517]",direct value,0,rule 3,kWh
+legacy,deye_sg04lp3,516,0x0204,battery-total-battery-charge,"[516, 517]",direct value,0,rule 3,kWh
+advanced,sunsynk_three_phase_hv,517,0x0205,total-battery-charge,"[516, 517]",direct value,1,Sensor,kWh
+advanced,sunsynk_three_phase_lv,517,0x0205,total-battery-charge,"[516, 517]",direct value,1,Sensor,kWh
+legacy,deye_sg01hp3,517,0x0205,battery-total-battery-charge,"[516, 517]",direct value,1,rule 3,kWh
+legacy,deye_sg04lp3,517,0x0205,battery-total-battery-charge,"[516, 517]",direct value,1,rule 3,kWh
+advanced,sunsynk_three_phase_hv,518,0x0206,total-battery-discharge,"[518, 519]",direct value,0,Sensor,kWh
+advanced,sunsynk_three_phase_lv,518,0x0206,total-battery-discharge,"[518, 519]",direct value,0,Sensor,kWh
+legacy,deye_sg01hp3,518,0x0206,battery-total-battery-discharge,"[518, 519]",direct value,0,rule 3,kWh
+legacy,deye_sg04lp3,518,0x0206,battery-total-battery-discharge,"[518, 519]",direct value,0,rule 3,kWh
+advanced,sunsynk_three_phase_hv,519,0x0207,total-battery-discharge,"[518, 519]",direct value,1,Sensor,kWh
+advanced,sunsynk_three_phase_lv,519,0x0207,total-battery-discharge,"[518, 519]",direct value,1,Sensor,kWh
+legacy,deye_sg01hp3,519,0x0207,battery-total-battery-discharge,"[518, 519]",direct value,1,rule 3,kWh
+legacy,deye_sg04lp3,519,0x0207,battery-total-battery-discharge,"[518, 519]",direct value,1,rule 3,kWh
+advanced,sunsynk_three_phase_hv,520,0x0208,day-grid-import,[520],direct value,0,Sensor,kWh
+advanced,sunsynk_three_phase_lv,520,0x0208,day-grid-import,[520],direct value,0,Sensor,kWh
+legacy,deye_sg01hp3,520,0x0208,grid-daily-energy-bought,[520],direct value,0,rule 1,kWh
+legacy,deye_sg04lp3,520,0x0208,grid-daily-energy-bought,[520],direct value,0,rule 1,kWh
+advanced,sunsynk_three_phase_hv,521,0x0209,day-grid-export,[521],direct value,0,Sensor,kWh
+advanced,sunsynk_three_phase_lv,521,0x0209,day-grid-export,[521],direct value,0,Sensor,kWh
+legacy,deye_sg01hp3,521,0x0209,grid-daily-energy-sold,[521],direct value,0,rule 1,kWh
+legacy,deye_sg04lp3,521,0x0209,grid-daily-energy-sold,[521],direct value,0,rule 1,kWh
+advanced,sunsynk_three_phase_hv,522,0x020A,total-grid-import,"[522, 523]",direct value,0,Sensor,kWh
+advanced,sunsynk_three_phase_lv,522,0x020A,total-grid-import,"[522, 523]",direct value,0,Sensor,kWh
+legacy,deye_sg01hp3,522,0x020A,grid-total-energy-bought,"[522, 523]",direct value,0,rule 1,kWh
+legacy,deye_sg04lp3,522,0x020A,grid-total-energy-bought,"[522, 523]",direct value,0,rule 1,kWh
+advanced,sunsynk_three_phase_hv,523,0x020B,total-grid-import,"[522, 523]",direct value,1,Sensor,kWh
+advanced,sunsynk_three_phase_lv,523,0x020B,total-grid-import,"[522, 523]",direct value,1,Sensor,kWh
+legacy,deye_sg01hp3,523,0x020B,grid-total-energy-bought,"[522, 523]",direct value,1,rule 1,kWh
+legacy,deye_sg04lp3,523,0x020B,grid-total-energy-bought,"[522, 523]",direct value,1,rule 1,kWh
+advanced,sunsynk_three_phase_hv,524,0x020C,total-grid-export,"[524, 525]",direct value,0,Sensor,kWh
+advanced,sunsynk_three_phase_lv,524,0x020C,total-grid-export,"[524, 525]",direct value,0,Sensor,kWh
+legacy,deye_sg01hp3,524,0x020C,grid-total-energy-sold,"[524, 525]",direct value,0,rule 3,kWh
+legacy,deye_sg01hp3,524,0x020C,grid-total-grid-production,"[524, 525]",direct value,0,rule 4,kWh
+legacy,deye_sg04lp3,524,0x020C,grid-total-energy-sold,"[524, 525]",direct value,0,rule 3,kWh
+legacy,deye_sg04lp3,524,0x020C,grid-total-grid-production,"[524, 525]",direct value,0,rule 4,kWh
+advanced,sunsynk_three_phase_hv,525,0x020D,total-grid-export,"[524, 525]",direct value,1,Sensor,kWh
+advanced,sunsynk_three_phase_lv,525,0x020D,total-grid-export,"[524, 525]",direct value,1,Sensor,kWh
+legacy,deye_sg01hp3,525,0x020D,grid-total-energy-sold,"[524, 525]",direct value,1,rule 3,kWh
+legacy,deye_sg01hp3,525,0x020D,grid-total-grid-production,"[524, 525]",direct value,1,rule 4,kWh
+legacy,deye_sg04lp3,525,0x020D,grid-total-energy-sold,"[524, 525]",direct value,1,rule 3,kWh
+legacy,deye_sg04lp3,525,0x020D,grid-total-grid-production,"[524, 525]",direct value,1,rule 4,kWh
+advanced,sunsynk_three_phase_hv,526,0x020E,day-load-energy,[526],direct value,0,Sensor,kWh
+advanced,sunsynk_three_phase_lv,526,0x020E,day-load-energy,[526],direct value,0,Sensor,kWh
+legacy,deye_sg01hp3,526,0x020E,upload-daily-load-consumption,[526],direct value,0,rule 1,kWh
+legacy,deye_sg04lp3,526,0x020E,upload-daily-load-consumption,[526],direct value,0,rule 1,kWh
+advanced,sunsynk_three_phase_hv,527,0x020F,total-load-energy,"[527, 528]",direct value,0,Sensor,kWh
+advanced,sunsynk_three_phase_lv,527,0x020F,total-load-energy,"[527, 528]",direct value,0,Sensor,kWh
+legacy,deye_sg01hp3,527,0x020F,upload-total-load-consumption,"[527, 528]",direct value,0,rule 3,kWh
+legacy,deye_sg04lp3,527,0x020F,upload-total-load-consumption,"[527, 528]",direct value,0,rule 3,kWh
+advanced,sunsynk_three_phase_hv,528,0x0210,total-load-energy,"[527, 528]",direct value,1,Sensor,kWh
+advanced,sunsynk_three_phase_lv,528,0x0210,total-load-energy,"[527, 528]",direct value,1,Sensor,kWh
+legacy,deye_sg01hp3,528,0x0210,upload-total-load-consumption,"[527, 528]",direct value,1,rule 3,kWh
+legacy,deye_sg04lp3,528,0x0210,upload-total-load-consumption,"[527, 528]",direct value,1,rule 3,kWh
+advanced,sunsynk_three_phase_hv,529,0x0211,day-pv-energy,[529],direct value,0,Sensor,kWh
+advanced,sunsynk_three_phase_lv,529,0x0211,day-pv-energy,[529],direct value,0,Sensor,kWh
+legacy,deye_sg01hp3,529,0x0211,solar-daily-production,[529],direct value,0,rule 1,kWh
+legacy,deye_sg04lp3,529,0x0211,solar-daily-production,[529],direct value,0,rule 1,kWh
+advanced,sunsynk_three_phase_hv,534,0x0216,total-pv-energy,"[534, 535]",direct value,0,Sensor,kWh
+advanced,sunsynk_three_phase_lv,534,0x0216,total-pv-energy,"[534, 535]",direct value,0,Sensor,kWh
+legacy,deye_sg01hp3,534,0x0216,solar-total-production,"[534, 535]",direct value,0,rule 3,kWh
+legacy,deye_sg04lp3,534,0x0216,solar-total-production,"[534, 535]",direct value,0,rule 3,kWh
+advanced,sunsynk_three_phase_hv,535,0x0217,total-pv-energy,"[534, 535]",direct value,1,Sensor,kWh
+advanced,sunsynk_three_phase_lv,535,0x0217,total-pv-energy,"[534, 535]",direct value,1,Sensor,kWh
+legacy,deye_sg01hp3,535,0x0217,solar-total-production,"[534, 535]",direct value,1,rule 3,kWh
+legacy,deye_sg04lp3,535,0x0217,solar-total-production,"[534, 535]",direct value,1,rule 3,kWh
+advanced,sunsynk_three_phase_hv,536,0x0218,day-gen-energy,[536],direct value,0,Sensor,kWh
+advanced,sunsynk_three_phase_lv,536,0x0218,day-gen-energy,[536],direct value,0,Sensor,kWh
+legacy,deye_sg01hp3,536,0x0218,smartload-generator-daily-power-generation,[536],direct value,0,rule 1,kWh
+legacy,deye_sg04lp3,536,0x0218,smartload-generator-daily-power-generation,[536],direct value,0,rule 3,kWh
+legacy,deye_sg01hp3,537,0x0219,smartload-generator-total-power-generation,"[537, 538]",direct value,0,rule 3,kWh
+legacy,deye_sg04lp3,537,0x0219,smartload-generator-total-power-generation,"[537, 538]",direct value,0,rule 3,kWh
+legacy,deye_sg01hp3,538,0x021A,smartload-generator-total-power-generation,"[537, 538]",direct value,1,rule 3,kWh
+legacy,deye_sg04lp3,538,0x021A,smartload-generator-total-power-generation,"[537, 538]",direct value,1,rule 3,kWh
+advanced,sunsynk_three_phase_hv,540,0x021C,dc-transformer-temperature,[540],direct value,0,TempSensor,°C
+advanced,sunsynk_three_phase_lv,540,0x021C,dc-transformer-temperature,[540],direct value,0,TempSensor,°C
+legacy,deye_sg01hp3,540,0x021C,inverter-dc-temperature,[540],direct value,0,rule 2,°C
+legacy,deye_sg04lp3,540,0x021C,inverter-dc-temperature,[540],direct value,0,rule 2,°C
+advanced,sunsynk_three_phase_hv,541,0x021D,radiator-temperature,[541],direct value,0,TempSensor,°C
+advanced,sunsynk_three_phase_lv,541,0x021D,radiator-temperature,[541],direct value,0,TempSensor,°C
+legacy,deye_sg01hp3,541,0x021D,inverter-ac-temperature,[541],direct value,0,rule 2,°C
+legacy,deye_sg04lp3,541,0x021D,inverter-ac-temperature,[541],direct value,0,rule 2,°C
+advanced,sunsynk_three_phase_hv,544,0x0220,drm0-code,[544],direct value,0,EnumSensor,
+advanced,sunsynk_three_phase_hv,544,0x0220,drm1-code,[544],direct value,0,EnumSensor,
+advanced,sunsynk_three_phase_hv,544,0x0220,drm2-code,[544],direct value,0,EnumSensor,
+advanced,sunsynk_three_phase_hv,544,0x0220,drm3-code,[544],direct value,0,EnumSensor,
+advanced,sunsynk_three_phase_hv,544,0x0220,drm4-code,[544],direct value,0,EnumSensor,
+advanced,sunsynk_three_phase_hv,544,0x0220,drm5-code,[544],direct value,0,EnumSensor,
+advanced,sunsynk_three_phase_hv,544,0x0220,drm6-code,[544],direct value,0,EnumSensor,
+advanced,sunsynk_three_phase_hv,544,0x0220,drm7-code,[544],direct value,0,EnumSensor,
+advanced,sunsynk_three_phase_hv,544,0x0220,drm8-code,[544],direct value,0,EnumSensor,
+advanced,sunsynk_three_phase_lv,544,0x0220,drm0-code,[544],direct value,0,EnumSensor,
+advanced,sunsynk_three_phase_lv,544,0x0220,drm1-code,[544],direct value,0,EnumSensor,
+advanced,sunsynk_three_phase_lv,544,0x0220,drm2-code,[544],direct value,0,EnumSensor,
+advanced,sunsynk_three_phase_lv,544,0x0220,drm3-code,[544],direct value,0,EnumSensor,
+advanced,sunsynk_three_phase_lv,544,0x0220,drm4-code,[544],direct value,0,EnumSensor,
+advanced,sunsynk_three_phase_lv,544,0x0220,drm5-code,[544],direct value,0,EnumSensor,
+advanced,sunsynk_three_phase_lv,544,0x0220,drm6-code,[544],direct value,0,EnumSensor,
+advanced,sunsynk_three_phase_lv,544,0x0220,drm7-code,[544],direct value,0,EnumSensor,
+advanced,sunsynk_three_phase_lv,544,0x0220,drm8-code,[544],direct value,0,EnumSensor,
+advanced,sunsynk_three_phase_hv,552,0x0228,dry-contact1-status,[552],direct value,0,BinarySensor,
+advanced,sunsynk_three_phase_hv,552,0x0228,dry-contact2-status,[552],direct value,0,BinarySensor,
+advanced,sunsynk_three_phase_hv,552,0x0228,generator-relay-status,[552],direct value,0,BinarySensor,
+advanced,sunsynk_three_phase_hv,552,0x0228,grid-connected,[552],direct value,0,BinarySensor,
+advanced,sunsynk_three_phase_hv,552,0x0228,grid-give-power-to-relay-status,[552],direct value,0,BinarySensor,
+advanced,sunsynk_three_phase_hv,552,0x0228,grid-relay-status,[552],direct value,0,BinarySensor,
+advanced,sunsynk_three_phase_hv,552,0x0228,inv-relay-status,[552],direct value,0,BinarySensor,
+advanced,sunsynk_three_phase_hv,552,0x0228,undefined-load-relay-status,[552],direct value,0,BinarySensor,
+advanced,sunsynk_three_phase_lv,552,0x0228,dry-contact1-status,[552],direct value,0,BinarySensor,
+advanced,sunsynk_three_phase_lv,552,0x0228,dry-contact2-status,[552],direct value,0,BinarySensor,
+advanced,sunsynk_three_phase_lv,552,0x0228,generator-relay-status,[552],direct value,0,BinarySensor,
+advanced,sunsynk_three_phase_lv,552,0x0228,grid-connected,[552],direct value,0,BinarySensor,
+advanced,sunsynk_three_phase_lv,552,0x0228,grid-give-power-to-relay-status,[552],direct value,0,BinarySensor,
+advanced,sunsynk_three_phase_lv,552,0x0228,grid-relay-status,[552],direct value,0,BinarySensor,
+advanced,sunsynk_three_phase_lv,552,0x0228,inv-relay-status,[552],direct value,0,BinarySensor,
+advanced,sunsynk_three_phase_lv,552,0x0228,undefined-load-relay-status,[552],direct value,0,BinarySensor,
+advanced,sunsynk_three_phase_hv,553,0x0229,fan-warning,[553],direct value,0,EnumSensor,
+advanced,sunsynk_three_phase_hv,553,0x0229,grid-phase-warning,[553],direct value,0,EnumSensor,
+legacy,deye_sg01hp3,553,0x0229,alert-alert,"[553, 554, 555, 556, 557, 558]",direct value,0,rule 6,
+legacy,deye_sg04lp3,553,0x0229,alert-alert,"[553, 554, 555, 556, 557, 558]",direct value,0,rule 6,
+advanced,sunsynk_three_phase_hv,554,0x022A,lithium-battery-loss-warning,[554],direct value,0,EnumSensor,
+advanced,sunsynk_three_phase_hv,554,0x022A,parallel-communication-quality-warning,[554],direct value,0,EnumSensor,
+legacy,deye_sg01hp3,554,0x022A,alert-alert,"[553, 554, 555, 556, 557, 558]",direct value,1,rule 6,
+legacy,deye_sg04lp3,554,0x022A,alert-alert,"[553, 554, 555, 556, 557, 558]",direct value,1,rule 6,
+advanced,sunsynk_three_phase_hv,555,0x022B,fault,"[555, 556, 557, 558]",direct value,0,HVFaultSensor,
+advanced,sunsynk_three_phase_lv,555,0x022B,fault,"[555, 556, 557, 558]",direct value,0,FaultSensor,
+legacy,deye_sg01hp3,555,0x022B,alert-alert,"[553, 554, 555, 556, 557, 558]",direct value,2,rule 6,
+legacy,deye_sg04lp3,555,0x022B,alert-alert,"[553, 554, 555, 556, 557, 558]",direct value,2,rule 6,
+advanced,sunsynk_three_phase_hv,556,0x022C,fault,"[555, 556, 557, 558]",direct value,1,HVFaultSensor,
+advanced,sunsynk_three_phase_lv,556,0x022C,fault,"[555, 556, 557, 558]",direct value,1,FaultSensor,
+legacy,deye_sg01hp3,556,0x022C,alert-alert,"[553, 554, 555, 556, 557, 558]",direct value,3,rule 6,
+legacy,deye_sg04lp3,556,0x022C,alert-alert,"[553, 554, 555, 556, 557, 558]",direct value,3,rule 6,
+advanced,sunsynk_three_phase_hv,557,0x022D,fault,"[555, 556, 557, 558]",direct value,2,HVFaultSensor,
+advanced,sunsynk_three_phase_lv,557,0x022D,fault,"[555, 556, 557, 558]",direct value,2,FaultSensor,
+legacy,deye_sg01hp3,557,0x022D,alert-alert,"[553, 554, 555, 556, 557, 558]",direct value,4,rule 6,
+legacy,deye_sg04lp3,557,0x022D,alert-alert,"[553, 554, 555, 556, 557, 558]",direct value,4,rule 6,
+advanced,sunsynk_three_phase_hv,558,0x022E,fault,"[555, 556, 557, 558]",direct value,3,HVFaultSensor,
+advanced,sunsynk_three_phase_lv,558,0x022E,fault,"[555, 556, 557, 558]",direct value,3,FaultSensor,
+legacy,deye_sg01hp3,558,0x022E,alert-alert,"[553, 554, 555, 556, 557, 558]",direct value,5,rule 6,
+legacy,deye_sg04lp3,558,0x022E,alert-alert,"[553, 554, 555, 556, 557, 558]",direct value,5,rule 6,
+advanced,sunsynk_three_phase_hv,586,0x024A,battery-1-temperature,[586],direct value,0,TempSensor,°C
+advanced,sunsynk_three_phase_lv,586,0x024A,battery-temperature,[586],direct value,0,TempSensor,°C
+legacy,deye_sg01hp3,586,0x024A,battery-battery-temperature,[586],direct value,0,rule 1,°C
+legacy,deye_sg04lp3,586,0x024A,battery-battery-temperature,[586],direct value,0,rule 1,°C
+advanced,sunsynk_three_phase_hv,587,0x024B,battery-1-voltage,[587],direct value,0,Sensor,V
+advanced,sunsynk_three_phase_lv,587,0x024B,battery-voltage,[587],direct value,0,Sensor,V
+legacy,deye_sg01hp3,587,0x024B,battery-battery-voltage,[587],direct value,0,rule 1,V
+legacy,deye_sg04lp3,587,0x024B,battery-battery-voltage,[587],direct value,0,rule 1,V
+advanced,sunsynk_three_phase_hv,588,0x024C,battery-1-soc,[588],direct value,0,Sensor,%
+advanced,sunsynk_three_phase_lv,588,0x024C,battery-soc,[588],direct value,0,Sensor,%
+legacy,deye_sg01hp3,588,0x024C,battery-battery-soc,[588],direct value,0,rule 1,%
+legacy,deye_sg04lp3,588,0x024C,battery-battery-soc,[588],direct value,0,rule 1,%
+advanced,sunsynk_three_phase_hv,589,0x024D,battery-2-soc,[589],direct value,0,Sensor,%
+advanced,sunsynk_three_phase_lv,589,0x024D,battery-2-soc,[589],direct value,0,Sensor,%
+advanced,sunsynk_three_phase_hv,590,0x024E,battery-1-power,[590],direct value,0,Sensor,W
+advanced,sunsynk_three_phase_lv,590,0x024E,battery-power,[590],direct value,0,Sensor,W
+legacy,deye_sg01hp3,590,0x024E,battery-battery-power,[590],direct value,0,rule 2,W
+legacy,deye_sg04lp3,590,0x024E,battery-battery-power,[590],direct value,0,rule 2,W
+advanced,sunsynk_three_phase_hv,591,0x024F,battery-1-current,[591],direct value,0,Sensor,A
+advanced,sunsynk_three_phase_lv,591,0x024F,battery-current,[591],direct value,0,Sensor,A
+legacy,deye_sg01hp3,591,0x024F,battery-battery-current,[591],direct value,0,rule 2,A
+legacy,deye_sg04lp3,591,0x024F,battery-battery-current,[591],direct value,0,rule 2,A
+advanced,sunsynk_three_phase_hv,593,0x0251,battery-2-voltage,[593],direct value,0,Sensor,V
+advanced,sunsynk_three_phase_lv,593,0x0251,battery-2-voltage,[593],direct value,0,Sensor,V
+advanced,sunsynk_three_phase_hv,594,0x0252,battery-2-current,[594],direct value,0,Sensor,A
+advanced,sunsynk_three_phase_lv,594,0x0252,battery-2-current,[594],direct value,0,Sensor,A
+advanced,sunsynk_three_phase_hv,595,0x0253,battery-2-power,[595],direct value,0,Sensor,W
+advanced,sunsynk_three_phase_lv,595,0x0253,battery-2-power,[595],direct value,0,Sensor,W
+advanced,sunsynk_three_phase_hv,596,0x0254,battery-2-temperature,[596],direct value,0,TempSensor,°C
+advanced,sunsynk_three_phase_lv,596,0x0254,battery-2-temperature,[596],direct value,0,TempSensor,°C
+advanced,sunsynk_three_phase_hv,598,0x0256,grid-l1-voltage,[598],direct value,0,Sensor,V
+advanced,sunsynk_three_phase_lv,598,0x0256,grid-l1-voltage,[598],direct value,0,Sensor,V
+legacy,deye_sg01hp3,598,0x0256,grid-grid-voltage-l1,[598],direct value,0,rule 1,V
+legacy,deye_sg04lp3,598,0x0256,grid-grid-voltage-l1,[598],direct value,0,rule 1,V
+advanced,sunsynk_three_phase_hv,599,0x0257,grid-l2-voltage,[599],direct value,0,Sensor,V
+advanced,sunsynk_three_phase_lv,599,0x0257,grid-l2-voltage,[599],direct value,0,Sensor,V
+legacy,deye_sg01hp3,599,0x0257,grid-grid-voltage-l2,[599],direct value,0,rule 1,V
+legacy,deye_sg04lp3,599,0x0257,grid-grid-voltage-l2,[599],direct value,0,rule 1,V
+advanced,sunsynk_three_phase_hv,600,0x0258,grid-l3-voltage,[600],direct value,0,Sensor,V
+advanced,sunsynk_three_phase_lv,600,0x0258,grid-l3-voltage,[600],direct value,0,Sensor,V
+legacy,deye_sg01hp3,600,0x0258,grid-grid-voltage-l3,[600],direct value,0,rule 1,V
+legacy,deye_sg04lp3,600,0x0258,grid-grid-voltage-l3,[600],direct value,0,rule 1,V
+advanced,sunsynk_single_phase,603,0x025B,bat1-soc,[603],direct value,0,Sensor,%
+advanced,sunsynk_single_phase_16kw,603,0x025B,bat1-soc,[603],direct value,0,Sensor,%
+advanced,sunsynk_three_phase_hv,604,0x025C,grid-l1-inner-side-power,"[604, 700]",direct value,0,Sensor16,W
+advanced,sunsynk_three_phase_lv,604,0x025C,grid-l1-inner-side-power,"[604, 700]",direct value,0,Sensor16,W
+legacy,deye_sg01hp3,604,0x025C,grid-internal-ct-l1-power,[604],direct value,0,rule 2,W
+legacy,deye_sg04lp3,604,0x025C,grid-internal-ct-l1-power,[604],direct value,0,rule 2,W
+advanced,sunsynk_three_phase_hv,605,0x025D,grid-l2-inner-side-power,"[605, 701]",direct value,0,Sensor16,W
+advanced,sunsynk_three_phase_lv,605,0x025D,grid-l2-inner-side-power,"[605, 701]",direct value,0,Sensor16,W
+legacy,deye_sg01hp3,605,0x025D,grid-internal-ct-l2-power,[605],direct value,0,rule 2,W
+legacy,deye_sg04lp3,605,0x025D,grid-internal-ct-l2-power,[605],direct value,0,rule 2,W
+advanced,sunsynk_three_phase_hv,606,0x025E,grid-l3-inner-side-power,"[606, 702]",direct value,0,Sensor16,W
+advanced,sunsynk_three_phase_lv,606,0x025E,grid-l3-inner-side-power,"[606, 702]",direct value,0,Sensor16,W
+legacy,deye_sg01hp3,606,0x025E,grid-internal-ct-l3-power,[606],direct value,0,rule 2,W
+legacy,deye_sg04lp3,606,0x025E,grid-internal-ct-l3-power,[606],direct value,0,rule 2,W
+advanced,sunsynk_three_phase_hv,607,0x025F,total-active-power-from-side-to-side-of-the-grid,"[607, 703]",direct value,0,Sensor16,W
+advanced,sunsynk_three_phase_lv,607,0x025F,total-active-power-from-side-to-side-of-the-grid,"[607, 703]",direct value,0,Sensor16,W
+advanced,sunsynk_three_phase_hv,608,0x0260,grid-side---inside-total-apparent-power,"[608, 704]",direct value,0,Sensor16,W
+advanced,sunsynk_three_phase_lv,608,0x0260,grid-side---inside-total-apparent-power,"[608, 704]",direct value,0,Sensor16,W
+advanced,sunsynk_three_phase_hv,609,0x0261,grid-frequency,[609],direct value,0,Sensor,Hz
+advanced,sunsynk_three_phase_lv,609,0x0261,grid-frequency,[609],direct value,0,Sensor,Hz
+advanced,sunsynk_three_phase_hv,610,0x0262,grid-current,"[610, 611, 612]",computed input,0,MathSensor,A
+advanced,sunsynk_three_phase_lv,610,0x0262,grid-current,"[610, 611, 612]",computed input,0,MathSensor,A
+advanced,sunsynk_single_phase,611,0x0263,bat1-cycle,[611],direct value,0,Sensor,
+advanced,sunsynk_single_phase_16kw,611,0x0263,bat1-cycle,[611],direct value,0,Sensor,
+advanced,sunsynk_three_phase_hv,611,0x0263,grid-current,"[610, 611, 612]",computed input,1,MathSensor,A
+advanced,sunsynk_three_phase_lv,611,0x0263,grid-current,"[610, 611, 612]",computed input,1,MathSensor,A
+advanced,sunsynk_three_phase_hv,612,0x0264,grid-current,"[610, 611, 612]",computed input,2,MathSensor,A
+advanced,sunsynk_three_phase_lv,612,0x0264,grid-current,"[610, 611, 612]",computed input,2,MathSensor,A
+advanced,sunsynk_three_phase_hv,613,0x0265,grid-ct-current,"[613, 614, 615]",computed input,0,MathSensor,A
+advanced,sunsynk_three_phase_lv,613,0x0265,grid-ct-current,"[613, 614, 615]",computed input,0,MathSensor,A
+advanced,sunsynk_three_phase_hv,614,0x0266,grid-ct-current,"[613, 614, 615]",computed input,1,MathSensor,A
+advanced,sunsynk_three_phase_lv,614,0x0266,grid-ct-current,"[613, 614, 615]",computed input,1,MathSensor,A
+advanced,sunsynk_three_phase_hv,615,0x0267,grid-ct-current,"[613, 614, 615]",computed input,2,MathSensor,A
+advanced,sunsynk_three_phase_lv,615,0x0267,grid-ct-current,"[613, 614, 615]",computed input,2,MathSensor,A
+advanced,sunsynk_three_phase_hv,616,0x0268,grid-ct-l1-power,"[616, 705]",direct value,0,Sensor16,W
+advanced,sunsynk_three_phase_lv,616,0x0268,grid-ct-l1-power,"[616, 705]",direct value,0,Sensor16,W
+legacy,deye_sg01hp3,616,0x0268,grid-external-ct-l1-power,[616],direct value,0,rule 2,W
+legacy,deye_sg04lp3,616,0x0268,grid-external-ct-l1-power,[616],direct value,0,rule 2,W
+advanced,sunsynk_three_phase_hv,617,0x0269,grid-ct-l2-power,"[617, 706]",direct value,0,Sensor16,W
+advanced,sunsynk_three_phase_lv,617,0x0269,grid-ct-l2-power,"[617, 706]",direct value,0,Sensor16,W
+legacy,deye_sg01hp3,617,0x0269,grid-external-ct-l2-power,[617],direct value,0,rule 2,W
+legacy,deye_sg04lp3,617,0x0269,grid-external-ct-l2-power,[617],direct value,0,rule 2,W
+advanced,sunsynk_three_phase_hv,618,0x026A,grid-ct-l3-power,"[618, 707]",direct value,0,Sensor16,W
+advanced,sunsynk_three_phase_lv,618,0x026A,grid-ct-l3-power,"[618, 707]",direct value,0,Sensor16,W
+legacy,deye_sg01hp3,618,0x026A,grid-external-ct-l3-power,[618],direct value,0,rule 2,W
+legacy,deye_sg04lp3,618,0x026A,grid-external-ct-l3-power,[618],direct value,0,rule 2,W
+advanced,sunsynk_three_phase_hv,619,0x026B,grid-ct-power,"[619, 708]",direct value,0,Sensor16,W
+advanced,sunsynk_three_phase_lv,619,0x026B,grid-ct-power,"[619, 708]",direct value,0,Sensor16,W
+advanced,sunsynk_three_phase_hv,622,0x026E,grid-l1-power,"[622, 687]",direct value,0,Sensor16,W
+advanced,sunsynk_three_phase_lv,622,0x026E,grid-l1-power,"[622, 687]",direct value,0,Sensor16,W
+advanced,sunsynk_three_phase_hv,623,0x026F,grid-l2-power,"[623, 688]",direct value,0,Sensor16,W
+advanced,sunsynk_three_phase_lv,623,0x026F,grid-l2-power,"[623, 688]",direct value,0,Sensor16,W
+advanced,sunsynk_three_phase_hv,624,0x0270,grid-l3-power,"[624, 689]",direct value,0,Sensor16,W
+advanced,sunsynk_three_phase_lv,624,0x0270,grid-l3-power,"[624, 689]",direct value,0,Sensor16,W
+advanced,sunsynk_three_phase_hv,625,0x0271,grid-power,"[625, 690]",direct value,0,Sensor16,W
+advanced,sunsynk_three_phase_lv,625,0x0271,grid-power,"[625, 690]",direct value,0,Sensor16,W
+legacy,deye_sg01hp3,625,0x0271,grid-total-grid-power,[625],direct value,0,rule 2,W
+legacy,deye_sg04lp3,625,0x0271,grid-total-grid-power,[625],direct value,0,rule 2,W
+advanced,sunsynk_three_phase_hv,627,0x0273,inverter-l1-voltage,[627],direct value,0,Sensor,V
+advanced,sunsynk_three_phase_lv,627,0x0273,inverter-l1-voltage,[627],direct value,0,Sensor,V
+advanced,sunsynk_three_phase_hv,628,0x0274,inverter-l2-voltage,[628],direct value,0,Sensor,V
+advanced,sunsynk_three_phase_lv,628,0x0274,inverter-l2-voltage,[628],direct value,0,Sensor,V
+advanced,sunsynk_three_phase_hv,629,0x0275,inverter-l3-voltage,[629],direct value,0,Sensor,V
+advanced,sunsynk_three_phase_lv,629,0x0275,inverter-l3-voltage,[629],direct value,0,Sensor,V
+advanced,sunsynk_three_phase_hv,630,0x0276,inverter-l1-current,[630],direct value,0,Sensor,A
+advanced,sunsynk_three_phase_lv,630,0x0276,inverter-l1-current,[630],direct value,0,Sensor,A
+legacy,deye_sg01hp3,630,0x0276,inverter-current-l1,[630],direct value,0,rule 2,A
+legacy,deye_sg04lp3,630,0x0276,inverter-current-l1,[630],direct value,0,rule 2,A
+advanced,sunsynk_three_phase_hv,631,0x0277,inverter-l2-current,[631],direct value,0,Sensor,A
+advanced,sunsynk_three_phase_lv,631,0x0277,inverter-l2-current,[631],direct value,0,Sensor,A
+legacy,deye_sg01hp3,631,0x0277,inverter-current-l2,[631],direct value,0,rule 2,A
+legacy,deye_sg04lp3,631,0x0277,inverter-current-l2,[631],direct value,0,rule 2,A
+advanced,sunsynk_three_phase_hv,632,0x0278,inverter-l3-current,[632],direct value,0,Sensor,A
+advanced,sunsynk_three_phase_lv,632,0x0278,inverter-l3-current,[632],direct value,0,Sensor,A
+legacy,deye_sg01hp3,632,0x0278,inverter-current-l3,[632],direct value,0,rule 2,A
+legacy,deye_sg04lp3,632,0x0278,inverter-current-l3,[632],direct value,0,rule 2,A
+advanced,sunsynk_three_phase_hv,633,0x0279,inverter-l1-power,"[633, 691]",direct value,0,Sensor16,W
+advanced,sunsynk_three_phase_lv,633,0x0279,inverter-l1-power,"[633, 691]",direct value,0,Sensor16,W
+legacy,deye_sg01hp3,633,0x0279,inverter-inverter-l1-power,[633],direct value,0,rule 2,W
+legacy,deye_sg04lp3,633,0x0279,inverter-inverter-l1-power,[633],direct value,0,rule 2,W
+advanced,sunsynk_three_phase_hv,634,0x027A,inverter-l2-power,"[634, 692]",direct value,0,Sensor16,W
+advanced,sunsynk_three_phase_lv,634,0x027A,inverter-l2-power,"[634, 692]",direct value,0,Sensor16,W
+legacy,deye_sg01hp3,634,0x027A,inverter-inverter-l2-power,[634],direct value,0,rule 2,W
+legacy,deye_sg04lp3,634,0x027A,inverter-inverter-l2-power,[634],direct value,0,rule 2,W
+advanced,sunsynk_three_phase_hv,635,0x027B,inverter-l3-power,"[635, 693]",direct value,0,Sensor16,W
+advanced,sunsynk_three_phase_lv,635,0x027B,inverter-l3-power,"[635, 693]",direct value,0,Sensor16,W
+legacy,deye_sg01hp3,635,0x027B,inverter-inverter-l3-power,[635],direct value,0,rule 2,W
+legacy,deye_sg04lp3,635,0x027B,inverter-inverter-l3-power,[635],direct value,0,rule 2,W
+advanced,sunsynk_three_phase_hv,636,0x027C,inverter-power,"[636, 694]",direct value,0,Sensor16,W
+advanced,sunsynk_three_phase_lv,636,0x027C,inverter-power,"[636, 694]",direct value,0,Sensor16,W
+advanced,sunsynk_three_phase_hv,638,0x027E,inverter-frequency,[638],direct value,0,Sensor,Hz
+advanced,sunsynk_three_phase_lv,638,0x027E,inverter-frequency,[638],direct value,0,Sensor,Hz
+advanced,sunsynk_three_phase_hv,640,0x0280,ups-load-l1-power,"[640, 696]",direct value,0,Sensor16,W
+advanced,sunsynk_three_phase_lv,640,0x0280,ups-load-l1-power,"[640, 696]",direct value,0,Sensor16,W
+advanced,sunsynk_three_phase_hv,641,0x0281,ups-load-l2-power,"[641, 697]",direct value,0,Sensor16,W
+advanced,sunsynk_three_phase_lv,641,0x0281,ups-load-l2-power,"[641, 697]",direct value,0,Sensor16,W
+advanced,sunsynk_three_phase_hv,642,0x0282,ups-load-l3-power,"[642, 698]",direct value,0,Sensor16,W
+advanced,sunsynk_three_phase_lv,642,0x0282,ups-load-l3-power,"[642, 698]",direct value,0,Sensor16,W
+advanced,sunsynk_three_phase_hv,643,0x0283,ups-load-total-power,"[643, 699]",direct value,0,Sensor16,W
+advanced,sunsynk_three_phase_lv,643,0x0283,ups-load-total-power,"[643, 699]",direct value,0,Sensor16,W
+advanced,sunsynk_three_phase_hv,644,0x0284,load-l1-voltage,[644],direct value,0,Sensor,V
+advanced,sunsynk_three_phase_lv,644,0x0284,load-l1-voltage,[644],direct value,0,Sensor,V
+legacy,deye_sg01hp3,644,0x0284,upload-load-voltage-l1,[644],direct value,0,rule 1,V
+legacy,deye_sg04lp3,644,0x0284,upload-load-voltage-l1,[644],direct value,0,rule 1,V
+advanced,sunsynk_three_phase_hv,645,0x0285,load-l2-voltage,[645],direct value,0,Sensor,V
+advanced,sunsynk_three_phase_lv,645,0x0285,load-l2-voltage,[645],direct value,0,Sensor,V
+legacy,deye_sg01hp3,645,0x0285,upload-load-voltage-l2,[645],direct value,0,rule 1,V
+legacy,deye_sg04lp3,645,0x0285,upload-load-voltage-l2,[645],direct value,0,rule 1,V
+advanced,sunsynk_three_phase_hv,646,0x0286,load-l3-voltage,[646],direct value,0,Sensor,V
+advanced,sunsynk_three_phase_lv,646,0x0286,load-l3-voltage,[646],direct value,0,Sensor,V
+legacy,deye_sg01hp3,646,0x0286,upload-load-voltage-l3,[646],direct value,0,rule 1,V
+legacy,deye_sg04lp3,646,0x0286,upload-load-voltage-l3,[646],direct value,0,rule 1,V
+advanced,sunsynk_three_phase_hv,650,0x028A,load-l1-power,"[650, 656]",direct value,0,Sensor16,W
+advanced,sunsynk_three_phase_lv,650,0x028A,load-l1-power,"[650, 656]",direct value,0,Sensor16,W
+legacy,deye_sg01hp3,650,0x028A,upload-load-l1-power,[650],direct value,0,rule 1,W
+legacy,deye_sg04lp3,650,0x028A,upload-load-l1-power,[650],direct value,0,rule 1,W
+advanced,sunsynk_three_phase_hv,651,0x028B,load-l2-power,"[651, 657]",direct value,0,Sensor16,W
+advanced,sunsynk_three_phase_lv,651,0x028B,load-l2-power,"[651, 657]",direct value,0,Sensor16,W
+legacy,deye_sg01hp3,651,0x028B,upload-load-l2-power,[651],direct value,0,rule 1,W
+legacy,deye_sg04lp3,651,0x028B,upload-load-l2-power,[651],direct value,0,rule 1,W
+advanced,sunsynk_three_phase_hv,652,0x028C,load-l3-power,"[652, 658]",direct value,0,Sensor16,W
+advanced,sunsynk_three_phase_lv,652,0x028C,load-l3-power,"[652, 658]",direct value,0,Sensor16,W
+legacy,deye_sg01hp3,652,0x028C,upload-load-l3-power,[652],direct value,0,rule 1,W
+legacy,deye_sg04lp3,652,0x028C,upload-load-l3-power,[652],direct value,0,rule 1,W
+advanced,sunsynk_three_phase_hv,653,0x028D,load-power,"[653, 659]",direct value,0,Sensor16,W
+advanced,sunsynk_three_phase_lv,653,0x028D,load-power,"[653, 659]",direct value,0,Sensor16,W
+legacy,deye_sg01hp3,653,0x028D,upload-total-load-power,[653],direct value,0,rule 1,W
+legacy,deye_sg04lp3,653,0x028D,upload-total-load-power,[653],direct value,0,rule 1,W
+advanced,sunsynk_three_phase_hv,655,0x028F,load-frequency,[655],direct value,0,Sensor,Hz
+advanced,sunsynk_three_phase_lv,655,0x028F,load-frequency,[655],direct value,0,Sensor,Hz
+advanced,sunsynk_three_phase_hv,656,0x0290,load-l1-power,"[650, 656]",direct value,1,Sensor16,W
+advanced,sunsynk_three_phase_lv,656,0x0290,load-l1-power,"[650, 656]",direct value,1,Sensor16,W
+advanced,sunsynk_three_phase_hv,657,0x0291,load-l2-power,"[651, 657]",direct value,1,Sensor16,W
+advanced,sunsynk_three_phase_lv,657,0x0291,load-l2-power,"[651, 657]",direct value,1,Sensor16,W
+advanced,sunsynk_three_phase_hv,658,0x0292,load-l3-power,"[652, 658]",direct value,1,Sensor16,W
+advanced,sunsynk_three_phase_lv,658,0x0292,load-l3-power,"[652, 658]",direct value,1,Sensor16,W
+advanced,sunsynk_three_phase_hv,659,0x0293,load-power,"[653, 659]",direct value,1,Sensor16,W
+advanced,sunsynk_three_phase_lv,659,0x0293,load-power,"[653, 659]",direct value,1,Sensor16,W
+advanced,sunsynk_three_phase_hv,661,0x0295,aux-l1-voltage,[661],direct value,0,Sensor,V
+advanced,sunsynk_three_phase_hv,661,0x0295,gen-l1-voltage,[661],direct value,0,Sensor,V
+advanced,sunsynk_three_phase_lv,661,0x0295,aux-l1-voltage,[661],direct value,0,Sensor,V
+advanced,sunsynk_three_phase_lv,661,0x0295,gen-l1-voltage,[661],direct value,0,Sensor,V
+legacy,deye_sg01hp3,661,0x0295,smartload-phase-voltage-of-gen-port-a,[661],direct value,0,rule 1,V
+legacy,deye_sg04lp3,661,0x0295,smartload-phase-voltage-of-gen-port-a,[661],direct value,0,rule 1,V
+advanced,sunsynk_three_phase_hv,662,0x0296,aux-l2-voltage,[662],direct value,0,Sensor,V
+advanced,sunsynk_three_phase_hv,662,0x0296,gen-l2-voltage,[662],direct value,0,Sensor,V
+advanced,sunsynk_three_phase_lv,662,0x0296,aux-l2-voltage,[662],direct value,0,Sensor,V
+advanced,sunsynk_three_phase_lv,662,0x0296,gen-l2-voltage,[662],direct value,0,Sensor,V
+legacy,deye_sg01hp3,662,0x0296,smartload-phase-voltage-of-gen-port-b,[662],direct value,0,rule 1,V
+legacy,deye_sg04lp3,662,0x0296,smartload-phase-voltage-of-gen-port-b,[662],direct value,0,rule 1,V
+advanced,sunsynk_three_phase_hv,663,0x0297,aux-l3-voltage,[663],direct value,0,Sensor,V
+advanced,sunsynk_three_phase_hv,663,0x0297,gen-l3-voltage,[663],direct value,0,Sensor,V
+advanced,sunsynk_three_phase_lv,663,0x0297,aux-l3-voltage,[663],direct value,0,Sensor,V
+advanced,sunsynk_three_phase_lv,663,0x0297,gen-l3-voltage,[663],direct value,0,Sensor,V
+legacy,deye_sg01hp3,663,0x0297,smartload-phase-voltage-of-gen-port-c,[663],direct value,0,rule 1,V
+legacy,deye_sg04lp3,663,0x0297,smartload-phase-voltage-of-gen-port-c,[663],direct value,0,rule 1,V
+advanced,sunsynk_three_phase_hv,664,0x0298,aux-l1-power,"[664, 668]",direct value,0,Sensor16,W
+advanced,sunsynk_three_phase_hv,664,0x0298,gen-l1-power,"[664, 668]",direct value,0,Sensor16,W
+advanced,sunsynk_three_phase_lv,664,0x0298,aux-l1-power,"[664, 668]",direct value,0,Sensor16,W
+advanced,sunsynk_three_phase_lv,664,0x0298,gen-l1-power,"[664, 668]",direct value,0,Sensor16,W
+legacy,deye_sg01hp3,664,0x0298,smartload-phase-power-of-gen-port-a,[664],direct value,0,rule 1,W
+legacy,deye_sg04lp3,664,0x0298,smartload-phase-power-of-gen-port-a,"[664, 668]",direct value,0,rule 1,W
+advanced,sunsynk_three_phase_hv,665,0x0299,aux-l2-power,"[665, 669]",direct value,0,Sensor16,W
+advanced,sunsynk_three_phase_hv,665,0x0299,gen-l2-power,"[665, 669]",direct value,0,Sensor16,W
+advanced,sunsynk_three_phase_lv,665,0x0299,aux-l2-power,"[665, 669]",direct value,0,Sensor16,W
+advanced,sunsynk_three_phase_lv,665,0x0299,gen-l2-power,"[665, 669]",direct value,0,Sensor16,W
+legacy,deye_sg01hp3,665,0x0299,smartload-phase-power-of-gen-port-b,[665],direct value,0,rule 1,W
+legacy,deye_sg04lp3,665,0x0299,smartload-phase-power-of-gen-port-b,"[665, 669]",direct value,0,rule 1,W
+advanced,sunsynk_three_phase_hv,666,0x029A,aux-l3-power,"[666, 670]",direct value,0,Sensor16,W
+advanced,sunsynk_three_phase_hv,666,0x029A,gen-l3-power,"[666, 670]",direct value,0,Sensor16,W
+advanced,sunsynk_three_phase_lv,666,0x029A,aux-l3-power,"[666, 670]",direct value,0,Sensor16,W
+advanced,sunsynk_three_phase_lv,666,0x029A,gen-l3-power,"[666, 670]",direct value,0,Sensor16,W
+legacy,deye_sg01hp3,666,0x029A,smartload-phase-power-of-gen-port-c,[666],direct value,0,rule 1,W
+legacy,deye_sg04lp3,666,0x029A,smartload-phase-power-of-gen-port-c,"[666, 670]",direct value,0,rule 1,W
+advanced,sunsynk_three_phase_hv,667,0x029B,aux-power,"[667, 671]",direct value,0,Sensor16,W
+advanced,sunsynk_three_phase_hv,667,0x029B,gen-power,"[667, 671]",direct value,0,Sensor16,W
+advanced,sunsynk_three_phase_lv,667,0x029B,aux-power,"[667, 671]",direct value,0,Sensor16,W
+advanced,sunsynk_three_phase_lv,667,0x029B,gen-power,"[667, 671]",direct value,0,Sensor16,W
+legacy,deye_sg01hp3,667,0x029B,smartload-total-power-of-gen-port,[667],direct value,0,rule 1,W
+legacy,deye_sg04lp3,667,0x029B,smartload-total-power-of-gen-port,"[667, 671]",direct value,0,rule 1,W
+advanced,sunsynk_three_phase_hv,668,0x029C,aux-l1-power,"[664, 668]",direct value,1,Sensor16,W
+advanced,sunsynk_three_phase_hv,668,0x029C,gen-l1-power,"[664, 668]",direct value,1,Sensor16,W
+advanced,sunsynk_three_phase_lv,668,0x029C,aux-l1-power,"[664, 668]",direct value,1,Sensor16,W
+advanced,sunsynk_three_phase_lv,668,0x029C,gen-l1-power,"[664, 668]",direct value,1,Sensor16,W
+legacy,deye_sg04lp3,668,0x029C,smartload-phase-power-of-gen-port-a,"[664, 668]",direct value,1,rule 1,W
+advanced,sunsynk_three_phase_hv,669,0x029D,aux-l2-power,"[665, 669]",direct value,1,Sensor16,W
+advanced,sunsynk_three_phase_hv,669,0x029D,gen-l2-power,"[665, 669]",direct value,1,Sensor16,W
+advanced,sunsynk_three_phase_lv,669,0x029D,aux-l2-power,"[665, 669]",direct value,1,Sensor16,W
+advanced,sunsynk_three_phase_lv,669,0x029D,gen-l2-power,"[665, 669]",direct value,1,Sensor16,W
+legacy,deye_sg04lp3,669,0x029D,smartload-phase-power-of-gen-port-b,"[665, 669]",direct value,1,rule 1,W
+advanced,sunsynk_three_phase_hv,670,0x029E,aux-l3-power,"[666, 670]",direct value,1,Sensor16,W
+advanced,sunsynk_three_phase_hv,670,0x029E,gen-l3-power,"[666, 670]",direct value,1,Sensor16,W
+advanced,sunsynk_three_phase_lv,670,0x029E,aux-l3-power,"[666, 670]",direct value,1,Sensor16,W
+advanced,sunsynk_three_phase_lv,670,0x029E,gen-l3-power,"[666, 670]",direct value,1,Sensor16,W
+legacy,deye_sg04lp3,670,0x029E,smartload-phase-power-of-gen-port-c,"[666, 670]",direct value,1,rule 1,W
+advanced,sunsynk_three_phase_hv,671,0x029F,aux-power,"[667, 671]",direct value,1,Sensor16,W
+advanced,sunsynk_three_phase_hv,671,0x029F,gen-power,"[667, 671]",direct value,1,Sensor16,W
+advanced,sunsynk_three_phase_lv,671,0x029F,aux-power,"[667, 671]",direct value,1,Sensor16,W
+advanced,sunsynk_three_phase_lv,671,0x029F,gen-power,"[667, 671]",direct value,1,Sensor16,W
+legacy,deye_sg04lp3,671,0x029F,smartload-total-power-of-gen-port,"[667, 671]",direct value,1,rule 1,W
+advanced,sunsynk_three_phase_hv,672,0x02A0,pv1-power,[672],direct value,0,Sensor,W
+advanced,sunsynk_three_phase_lv,672,0x02A0,pv1-power,[672],direct value,0,Sensor,W
+legacy,deye_sg01hp3,672,0x02A0,solar-pv1-power,[672],direct value,0,rule 1,W
+legacy,deye_sg04lp3,672,0x02A0,solar-pv1-power,[672],direct value,0,rule 1,W
+advanced,sunsynk_three_phase_hv,673,0x02A1,pv2-power,[673],direct value,0,Sensor,W
+advanced,sunsynk_three_phase_lv,673,0x02A1,pv2-power,[673],direct value,0,Sensor,W
+legacy,deye_sg01hp3,673,0x02A1,solar-pv2-power,[673],direct value,0,rule 1,W
+legacy,deye_sg04lp3,673,0x02A1,solar-pv2-power,[673],direct value,0,rule 1,W
+advanced,sunsynk_three_phase_hv,674,0x02A2,pv3-power,[674],direct value,0,Sensor,W
+advanced,sunsynk_three_phase_lv,674,0x02A2,pv3-power,[674],direct value,0,Sensor,W
+legacy,deye_sg01hp3,674,0x02A2,solar-pv3-power,[674],direct value,0,rule 1,W
+advanced,sunsynk_three_phase_hv,675,0x02A3,pv4-power,[675],direct value,0,Sensor,W
+advanced,sunsynk_three_phase_lv,675,0x02A3,pv4-power,[675],direct value,0,Sensor,W
+advanced,sunsynk_three_phase_hv,676,0x02A4,pv1-voltage,[676],direct value,0,Sensor,V
+advanced,sunsynk_three_phase_lv,676,0x02A4,pv1-voltage,[676],direct value,0,Sensor,V
+legacy,deye_sg01hp3,676,0x02A4,solar-pv1-voltage,[676],direct value,0,rule 1,V
+legacy,deye_sg04lp3,676,0x02A4,solar-pv1-voltage,[676],direct value,0,rule 1,V
+advanced,sunsynk_three_phase_hv,677,0x02A5,pv1-current,[677],direct value,0,Sensor,A
+advanced,sunsynk_three_phase_lv,677,0x02A5,pv1-current,[677],direct value,0,Sensor,A
+legacy,deye_sg01hp3,677,0x02A5,solar-pv1-current,[677],direct value,0,rule 1,A
+legacy,deye_sg04lp3,677,0x02A5,solar-pv1-current,[677],direct value,0,rule 1,A
+advanced,sunsynk_three_phase_hv,678,0x02A6,pv2-voltage,[678],direct value,0,Sensor,V
+advanced,sunsynk_three_phase_lv,678,0x02A6,pv2-voltage,[678],direct value,0,Sensor,V
+legacy,deye_sg01hp3,678,0x02A6,solar-pv2-voltage,[678],direct value,0,rule 1,V
+legacy,deye_sg04lp3,678,0x02A6,solar-pv2-voltage,[678],direct value,0,rule 1,V
+advanced,sunsynk_three_phase_hv,679,0x02A7,pv2-current,[679],direct value,0,Sensor,A
+advanced,sunsynk_three_phase_lv,679,0x02A7,pv2-current,[679],direct value,0,Sensor,A
+legacy,deye_sg01hp3,679,0x02A7,solar-pv2-current,[679],direct value,0,rule 1,A
+legacy,deye_sg01hp3,679,0x02A7,solar-pv3-voltage,[679],direct value,0,rule 1,V
+legacy,deye_sg04lp3,679,0x02A7,solar-pv2-current,[679],direct value,0,rule 1,A
+advanced,sunsynk_three_phase_hv,680,0x02A8,pv3-voltage,[680],direct value,0,Sensor,V
+advanced,sunsynk_three_phase_lv,680,0x02A8,pv3-voltage,[680],direct value,0,Sensor,V
+advanced,sunsynk_three_phase_hv,681,0x02A9,pv3-current,[681],direct value,0,Sensor,A
+advanced,sunsynk_three_phase_lv,681,0x02A9,pv3-current,[681],direct value,0,Sensor,A
+legacy,deye_sg01hp3,681,0x02A9,solar-pv3-current,[681],direct value,0,rule 1,A
+advanced,sunsynk_three_phase_hv,682,0x02AA,pv4-voltage,[682],direct value,0,Sensor,V
+advanced,sunsynk_three_phase_lv,682,0x02AA,pv4-voltage,[682],direct value,0,Sensor,V
+advanced,sunsynk_three_phase_hv,683,0x02AB,pv4-current,[683],direct value,0,Sensor,A
+advanced,sunsynk_three_phase_lv,683,0x02AB,pv4-current,[683],direct value,0,Sensor,A
+advanced,sunsynk_three_phase_hv,687,0x02AF,grid-l1-power,"[622, 687]",direct value,1,Sensor16,W
+advanced,sunsynk_three_phase_lv,687,0x02AF,grid-l1-power,"[622, 687]",direct value,1,Sensor16,W
+advanced,sunsynk_three_phase_hv,688,0x02B0,grid-l2-power,"[623, 688]",direct value,1,Sensor16,W
+advanced,sunsynk_three_phase_lv,688,0x02B0,grid-l2-power,"[623, 688]",direct value,1,Sensor16,W
+advanced,sunsynk_three_phase_hv,689,0x02B1,grid-l3-power,"[624, 689]",direct value,1,Sensor16,W
+advanced,sunsynk_three_phase_lv,689,0x02B1,grid-l3-power,"[624, 689]",direct value,1,Sensor16,W
+advanced,sunsynk_three_phase_hv,690,0x02B2,grid-power,"[625, 690]",direct value,1,Sensor16,W
+advanced,sunsynk_three_phase_lv,690,0x02B2,grid-power,"[625, 690]",direct value,1,Sensor16,W
+advanced,sunsynk_three_phase_hv,691,0x02B3,inverter-l1-power,"[633, 691]",direct value,1,Sensor16,W
+advanced,sunsynk_three_phase_lv,691,0x02B3,inverter-l1-power,"[633, 691]",direct value,1,Sensor16,W
+advanced,sunsynk_three_phase_hv,692,0x02B4,inverter-l2-power,"[634, 692]",direct value,1,Sensor16,W
+advanced,sunsynk_three_phase_lv,692,0x02B4,inverter-l2-power,"[634, 692]",direct value,1,Sensor16,W
+advanced,sunsynk_three_phase_hv,693,0x02B5,inverter-l3-power,"[635, 693]",direct value,1,Sensor16,W
+advanced,sunsynk_three_phase_lv,693,0x02B5,inverter-l3-power,"[635, 693]",direct value,1,Sensor16,W
+advanced,sunsynk_three_phase_hv,694,0x02B6,inverter-power,"[636, 694]",direct value,1,Sensor16,W
+advanced,sunsynk_three_phase_lv,694,0x02B6,inverter-power,"[636, 694]",direct value,1,Sensor16,W
+advanced,sunsynk_three_phase_hv,696,0x02B8,ups-load-l1-power,"[640, 696]",direct value,1,Sensor16,W
+advanced,sunsynk_three_phase_lv,696,0x02B8,ups-load-l1-power,"[640, 696]",direct value,1,Sensor16,W
+advanced,sunsynk_three_phase_hv,697,0x02B9,ups-load-l2-power,"[641, 697]",direct value,1,Sensor16,W
+advanced,sunsynk_three_phase_lv,697,0x02B9,ups-load-l2-power,"[641, 697]",direct value,1,Sensor16,W
+advanced,sunsynk_three_phase_hv,698,0x02BA,ups-load-l3-power,"[642, 698]",direct value,1,Sensor16,W
+advanced,sunsynk_three_phase_lv,698,0x02BA,ups-load-l3-power,"[642, 698]",direct value,1,Sensor16,W
+advanced,sunsynk_three_phase_hv,699,0x02BB,ups-load-total-power,"[643, 699]",direct value,1,Sensor16,W
+advanced,sunsynk_three_phase_lv,699,0x02BB,ups-load-total-power,"[643, 699]",direct value,1,Sensor16,W
+advanced,sunsynk_three_phase_hv,700,0x02BC,grid-l1-inner-side-power,"[604, 700]",direct value,1,Sensor16,W
+advanced,sunsynk_three_phase_lv,700,0x02BC,grid-l1-inner-side-power,"[604, 700]",direct value,1,Sensor16,W
+advanced,sunsynk_three_phase_hv,701,0x02BD,grid-l2-inner-side-power,"[605, 701]",direct value,1,Sensor16,W
+advanced,sunsynk_three_phase_lv,701,0x02BD,grid-l2-inner-side-power,"[605, 701]",direct value,1,Sensor16,W
+advanced,sunsynk_three_phase_hv,702,0x02BE,grid-l3-inner-side-power,"[606, 702]",direct value,1,Sensor16,W
+advanced,sunsynk_three_phase_lv,702,0x02BE,grid-l3-inner-side-power,"[606, 702]",direct value,1,Sensor16,W
+advanced,sunsynk_three_phase_hv,703,0x02BF,total-active-power-from-side-to-side-of-the-grid,"[607, 703]",direct value,1,Sensor16,W
+advanced,sunsynk_three_phase_lv,703,0x02BF,total-active-power-from-side-to-side-of-the-grid,"[607, 703]",direct value,1,Sensor16,W
+advanced,sunsynk_three_phase_hv,704,0x02C0,grid-side---inside-total-apparent-power,"[608, 704]",direct value,1,Sensor16,W
+advanced,sunsynk_three_phase_lv,704,0x02C0,grid-side---inside-total-apparent-power,"[608, 704]",direct value,1,Sensor16,W
+advanced,sunsynk_three_phase_hv,705,0x02C1,grid-ct-l1-power,"[616, 705]",direct value,1,Sensor16,W
+advanced,sunsynk_three_phase_lv,705,0x02C1,grid-ct-l1-power,"[616, 705]",direct value,1,Sensor16,W
+advanced,sunsynk_three_phase_hv,706,0x02C2,grid-ct-l2-power,"[617, 706]",direct value,1,Sensor16,W
+advanced,sunsynk_three_phase_lv,706,0x02C2,grid-ct-l2-power,"[617, 706]",direct value,1,Sensor16,W
+advanced,sunsynk_three_phase_hv,707,0x02C3,grid-ct-l3-power,"[618, 707]",direct value,1,Sensor16,W
+advanced,sunsynk_three_phase_lv,707,0x02C3,grid-ct-l3-power,"[618, 707]",direct value,1,Sensor16,W
+advanced,sunsynk_three_phase_hv,708,0x02C4,grid-ct-power,"[619, 708]",direct value,1,Sensor16,W
+advanced,sunsynk_three_phase_lv,708,0x02C4,grid-ct-power,"[619, 708]",direct value,1,Sensor16,W
+advanced,sunsynk_three_phase_hv,727,0x02D7,pv5-power,[727],direct value,0,Sensor,W
+advanced,sunsynk_three_phase_hv,728,0x02D8,pv6-power,[728],direct value,0,Sensor,W
+advanced,sunsynk_three_phase_hv,729,0x02D9,pv7-power,[729],direct value,0,Sensor,W
+advanced,sunsynk_three_phase_hv,730,0x02DA,pv8-power,[730],direct value,0,Sensor,W
+advanced,sunsynk_micro_hybrid_ess,1001,0x03E9,overall-state,[1001],direct value,0,EnumSensor,
+advanced,sunsynk_micro_hybrid_ess,1028,0x0404,inverter-power,"[1028, 1029]",direct value,0,Sensor,W
+advanced,sunsynk_micro_hybrid_ess,1029,0x0405,inverter-power,"[1028, 1029]",direct value,1,Sensor,W
+advanced,sunsynk_micro_hybrid_ess,1032,0x0408,radiator-temperature,[1032],direct value,0,TempSensor,°C
+advanced,sunsynk_micro_hybrid_ess,1033,0x0409,load-voltage,[1033],direct value,0,Sensor,V
+advanced,sunsynk_micro_hybrid_ess,1034,0x040A,grid-voltage,[1034],direct value,0,Sensor,V
+advanced,sunsynk_micro_hybrid_ess,1035,0x040B,grid-frequency,[1035],direct value,0,Sensor,Hz
+advanced,sunsynk_micro_hybrid_ess,1037,0x040D,load-frequency,[1037],direct value,0,Sensor,Hz
+advanced,sunsynk_micro_hybrid_ess,1067,0x042B,battery-voltage,[1067],direct value,0,Sensor,V
+advanced,sunsynk_micro_hybrid_ess,1068,0x042C,battery-current,[1068],direct value,0,Sensor,A
+advanced,sunsynk_micro_hybrid_ess,1069,0x042D,battery-soc,[1069],direct value,0,Sensor,%
+advanced,sunsynk_micro_hybrid_ess,1070,0x042E,battery-temperature,[1070],direct value,0,Sensor,°C
+advanced,sunsynk_micro_hybrid_ess,1071,0x042F,battery-power,[1071],direct value,0,Sensor,W
+advanced,sunsynk_micro_hybrid_ess,1072,0x0430,day-battery-discharge,[1072],direct value,0,Sensor,kWh
+advanced,sunsynk_micro_hybrid_ess,1073,0x0431,day-battery-charge,[1073],direct value,0,Sensor,kWh
+advanced,sunsynk_micro_hybrid_ess,1074,0x0432,total-battery-discharge,"[1074, 1075]",direct value,0,Sensor,kWh
+advanced,sunsynk_micro_hybrid_ess,1075,0x0433,total-battery-discharge,"[1074, 1075]",direct value,1,Sensor,kWh
+advanced,sunsynk_micro_hybrid_ess,1076,0x0434,total-battery-charge,"[1076, 1077]",direct value,0,Sensor,kWh
+advanced,sunsynk_micro_hybrid_ess,1077,0x0435,total-battery-charge,"[1076, 1077]",direct value,1,Sensor,kWh
+advanced,sunsynk_micro_hybrid_ess,1078,0x0436,grid-current,[1078],direct value,0,Sensor,A
+advanced,sunsynk_micro_hybrid_ess,1080,0x0438,grid-connected,[1080],direct value,0,BinarySensor,
+advanced,sunsynk_micro_hybrid_ess,1081,0x0439,inverter-current,[1081],direct value,0,Sensor,A
+advanced,sunsynk_micro_hybrid_ess,1083,0x043B,grid-power,[1083],direct value,0,Sensor,W
+advanced,sunsynk_micro_hybrid_ess,1087,0x043F,load-power,[1087],direct value,0,Sensor,W
+advanced,sunsynk_micro_hybrid_ess,1089,0x0441,day-grid-import,[1089],direct value,0,Sensor,kWh
+advanced,sunsynk_micro_hybrid_ess,1090,0x0442,day-grid-export,[1090],direct value,0,Sensor,kWh
+advanced,sunsynk_micro_hybrid_ess,1091,0x0443,total-grid-import,"[1091, 1092]",direct value,0,Sensor,kWh
+advanced,sunsynk_micro_hybrid_ess,1092,0x0444,total-grid-import,"[1091, 1092]",direct value,1,Sensor,kWh
+advanced,sunsynk_micro_hybrid_ess,1093,0x0445,total-grid-export,"[1093, 1094]",direct value,0,Sensor,kWh
+advanced,sunsynk_micro_hybrid_ess,1094,0x0446,total-grid-export,"[1093, 1094]",direct value,1,Sensor,kWh
+advanced,sunsynk_micro_hybrid_ess,1098,0x044A,day-load-energy,[1098],direct value,0,Sensor,kWh
+advanced,sunsynk_micro_hybrid_ess,1099,0x044B,total-load-energy,"[1099, 1100]",direct value,0,Sensor,kWh
+advanced,sunsynk_micro_hybrid_ess,1100,0x044C,total-load-energy,"[1099, 1100]",direct value,1,Sensor,kWh
+advanced,sunsynk_micro_hybrid_ess,1127,0x0467,inverter-temperature,[1127],direct value,0,Sensor,°C

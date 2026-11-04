@@ -11,3 +11,16 @@ https://www.eclipse.org/legal/epl-2.0/.
 == Source Code
 
 https://github.com/openhab/openhab-addons
+
+== Third-party register definitions
+
+The resources in src/main/resources/sunsynk/*.json are derived from
+kellerza/sunsynk, revision f1ecbc28e3ccf2b9f87b1ccee85a41628567da43.
+Copyright the kellerza/sunsynk contributors, including Johann Kellerman.
+These definitions are available under the Apache License, Version 2.0.
+The original license is included in the bundle as sunsynk/LICENSE.
+The Java interpreter is part of this openHAB binding under EPL-2.0.
+
+The separate sunsynk/metadata/single_phase.json identification and version
+channels derive from this binding's bundled deye_hybrid.yaml under EPL-2.0.
+They are binding additions and are not Kellerza profile definitions.

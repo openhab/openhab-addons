@@ -18,6 +18,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * @author Catalin Sanda - Initial contribution
+ * @author Ricardo Costa - Advanced profiles and shared compatibility corrections
  */
 @NonNullByDefault
 public class SolarmanProtocolException extends SolarmanException {
@@ -26,5 +27,9 @@ public class SolarmanProtocolException extends SolarmanException {
 
     public SolarmanProtocolException(String message) {
         super(message);
+    }
+
+    public SolarmanProtocolException(String message, Exception cause) {
+        super(message, cause);
     }
 }

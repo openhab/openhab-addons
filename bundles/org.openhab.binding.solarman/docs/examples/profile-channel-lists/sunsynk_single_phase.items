@@ -1,0 +1,155 @@
+// Complete example for inverterType=sunsynk_single_phase.
+// Replace solarman:logger:example with the actual Thing UID locally.
+// Use only the Item file matching the selected inverterType.
+// Creating Items does not issue write commands.
+
+Number:Power AdvancedPvPower "PV power [%s]" { channel="solarman:logger:example:pv-power", unit="W" }
+Number:Temperature AdvancedBatteryTemperature "Battery temperature [%s]" { channel="solarman:logger:example:battery-temperature", unit="°C" }
+Number:ElectricPotential AdvancedBatteryVoltage "Battery voltage [%s]" { channel="solarman:logger:example:battery-voltage", unit="V" }
+Number:Dimensionless AdvancedBatterySoc "Battery SOC [%s]" { channel="solarman:logger:example:battery-soc", unit="%" }
+Number:Power AdvancedBatteryPower "Battery power [%s]" { channel="solarman:logger:example:battery-power", unit="W" }
+Number:ElectricCurrent AdvancedBatteryCurrent "Battery current [%s]" { channel="solarman:logger:example:battery-current", unit="A" }
+Number:ElectricCurrent AdvancedBatteryChargeLimitCurrent "Battery charge limit current [%s]" { channel="solarman:logger:example:battery-charge-limit-current", unit="A" }
+Number:ElectricCurrent AdvancedBatteryDischargeLimitCurrent "Battery discharge limit current [%s]" { channel="solarman:logger:example:battery-discharge-limit-current", unit="A" }
+Number:Power AdvancedInverterPower "Inverter power [%s]" { channel="solarman:logger:example:inverter-power", unit="W" }
+Number:ElectricPotential AdvancedInverterVoltage "Inverter voltage [%s]" { channel="solarman:logger:example:inverter-voltage", unit="V" }
+Number:ElectricCurrent AdvancedInverterCurrent "Inverter current [%s]" { channel="solarman:logger:example:inverter-current", unit="A" }
+Number:Frequency AdvancedInverterFrequency "Inverter frequency [%s]" { channel="solarman:logger:example:inverter-frequency", unit="Hz" }
+Number:Frequency AdvancedGridFrequency "Grid frequency [%s]" { channel="solarman:logger:example:grid-frequency", unit="Hz" }
+Number:Power AdvancedGridPower "Grid power [%s]" { channel="solarman:logger:example:grid-power", unit="W" }
+Number:Power AdvancedGridLdPower "Grid LD power [%s]" { channel="solarman:logger:example:grid-ld-power", unit="W" }
+Number:Power AdvancedGridL2Power "Grid L2 power [%s]" { channel="solarman:logger:example:grid-l2-power", unit="W" }
+Number:ElectricPotential AdvancedGridVoltage "Grid voltage [%s]" { channel="solarman:logger:example:grid-voltage", unit="V" }
+Number:ElectricCurrent AdvancedGridCurrent "Grid current [%s]" { channel="solarman:logger:example:grid-current", unit="A" }
+Number:Power AdvancedGridCtPower "Grid CT power [%s]" { channel="solarman:logger:example:grid-ct-power", unit="W" }
+Number:Power AdvancedGridTrickleFeedPower "Grid Trickle Feed power [%s]" { channel="solarman:logger:example:grid-trickle-feed-power", unit="W", autoupdate="false" }
+Number:Power AdvancedLoadPower "Load power [%s]" { channel="solarman:logger:example:load-power", unit="W" }
+Number:Power AdvancedLoadL1Power "Load L1 power [%s]" { channel="solarman:logger:example:load-l1-power", unit="W" }
+Number:Power AdvancedLoadL2Power "Load L2 power [%s]" { channel="solarman:logger:example:load-l2-power", unit="W" }
+Number:Frequency AdvancedLoadFrequency "Load frequency [%s]" { channel="solarman:logger:example:load-frequency", unit="Hz" }
+String AdvancedAuxPortUsage "AUX port usage [%s]" { channel="solarman:logger:example:aux-port-usage", autoupdate="false" }
+String AdvancedGeneratorInput "Generator input [%s]" { channel="solarman:logger:example:generator-input", autoupdate="false" }
+Number:Power AdvancedGenPower "Gen power [%s]" { channel="solarman:logger:example:gen-power", unit="W" }
+Number:Power AdvancedAuxPower "AUX power [%s]" { channel="solarman:logger:example:aux-power", unit="W" }
+Number:Power AdvancedPv1Power "PV1 power [%s]" { channel="solarman:logger:example:pv1-power", unit="W" }
+Number:ElectricPotential AdvancedPv1Voltage "PV1 voltage [%s]" { channel="solarman:logger:example:pv1-voltage", unit="V" }
+Number:ElectricCurrent AdvancedPv1Current "PV1 current [%s]" { channel="solarman:logger:example:pv1-current", unit="A" }
+Number:Power AdvancedPv2Power "PV2 power [%s]" { channel="solarman:logger:example:pv2-power", unit="W" }
+Number:ElectricPotential AdvancedPv2Voltage "PV2 voltage [%s]" { channel="solarman:logger:example:pv2-voltage", unit="V" }
+Number:ElectricCurrent AdvancedPv2Current "PV2 current [%s]" { channel="solarman:logger:example:pv2-current", unit="A" }
+Number:Power AdvancedPv3Power "PV3 power [%s]" { channel="solarman:logger:example:pv3-power", unit="W" }
+Number:ElectricPotential AdvancedPv3Voltage "PV3 voltage [%s]" { channel="solarman:logger:example:pv3-voltage", unit="V" }
+Number:ElectricCurrent AdvancedPv3Current "PV3 current [%s]" { channel="solarman:logger:example:pv3-current", unit="A" }
+Number:Power AdvancedPv4Power "PV4 power [%s]" { channel="solarman:logger:example:pv4-power", unit="W" }
+Number:ElectricPotential AdvancedPv4Voltage "PV4 voltage [%s]" { channel="solarman:logger:example:pv4-voltage", unit="V" }
+Number:ElectricCurrent AdvancedPv4Current "PV4 current [%s]" { channel="solarman:logger:example:pv4-current", unit="A" }
+Number:Power AdvancedEssentialPower "Essential power [%s]" { channel="solarman:logger:example:essential-power", unit="W" }
+Number:Power AdvancedEssential1Power "Essential 1 power [%s]" { channel="solarman:logger:example:essential-1-power", unit="W" }
+Number:Power AdvancedEssential2Power "Essential 2 power [%s]" { channel="solarman:logger:example:essential-2-power", unit="W" }
+Number:Power AdvancedNonEssentialPower "Non-essential power [%s]" { channel="solarman:logger:example:non-essential-power", unit="W" }
+Number:Energy AdvancedDayActiveEnergy "Day active energy [%s]" { channel="solarman:logger:example:day-active-energy", unit="kWh" }
+Number:Energy AdvancedDayBatteryCharge "Day battery charge [%s]" { channel="solarman:logger:example:day-battery-charge", unit="kWh" }
+Number:Energy AdvancedDayBatteryDischarge "Day battery Discharge [%s]" { channel="solarman:logger:example:day-battery-discharge", unit="kWh" }
+Number:Energy AdvancedDayGridImport "Day grid import [%s]" { channel="solarman:logger:example:day-grid-import", unit="kWh" }
+Number:Energy AdvancedDayGridExport "Day grid export [%s]" { channel="solarman:logger:example:day-grid-export", unit="kWh" }
+Number:Energy AdvancedDayLoadEnergy "Day load energy [%s]" { channel="solarman:logger:example:day-load-energy", unit="kWh" }
+Number:Energy AdvancedDayPvEnergy "Day PV energy [%s]" { channel="solarman:logger:example:day-pv-energy", unit="kWh" }
+Number:Energy AdvancedDayReactiveEnergy "Day reactive energy [%s]" { channel="solarman:logger:example:day-reactive-energy", unit="kVarh" }
+Number:Energy AdvancedMonthGridEnergy "Month grid energy [%s]" { channel="solarman:logger:example:month-grid-energy", unit="kWh" }
+Number:Energy AdvancedMonthLoadEnergy "Month load energy [%s]" { channel="solarman:logger:example:month-load-energy", unit="kWh" }
+Number:Energy AdvancedMonthPvEnergy "Month PV energy [%s]" { channel="solarman:logger:example:month-pv-energy", unit="kWh" }
+Number:Energy AdvancedTotalActiveEnergy "Total active energy [%s]" { channel="solarman:logger:example:total-active-energy", unit="kWh" }
+Number:Energy AdvancedTotalBatteryCharge "Total battery charge [%s]" { channel="solarman:logger:example:total-battery-charge", unit="kWh" }
+Number:Energy AdvancedTotalBatteryDischarge "Total battery discharge [%s]" { channel="solarman:logger:example:total-battery-discharge", unit="kWh" }
+Number:Energy AdvancedTotalGridExport "Total grid export [%s]" { channel="solarman:logger:example:total-grid-export", unit="kWh" }
+Number:Energy AdvancedTotalGridImport "Total grid import [%s]" { channel="solarman:logger:example:total-grid-import", unit="kWh" }
+Number:Energy AdvancedTotalLoadEnergy "Total load energy [%s]" { channel="solarman:logger:example:total-load-energy", unit="kWh" }
+Number:Energy AdvancedTotalPvEnergy "Total PV energy [%s]" { channel="solarman:logger:example:total-pv-energy", unit="kWh" }
+Number:Energy AdvancedYearGridExport "Year grid export [%s]" { channel="solarman:logger:example:year-grid-export", unit="kWh" }
+Number:Energy AdvancedYearLoadEnergy "Year load energy [%s]" { channel="solarman:logger:example:year-load-energy", unit="kWh" }
+Number:Energy AdvancedYearPvEnergy "Year PV energy [%s]" { channel="solarman:logger:example:year-pv-energy", unit="kWh" }
+Number:Power AdvancedRatedPower "Rated power [%s]" { channel="solarman:logger:example:rated-power", unit="W" }
+String AdvancedFault "Fault [%s]" { channel="solarman:logger:example:fault" }
+String AdvancedOverallState "Overall state [%s]" { channel="solarman:logger:example:overall-state" }
+String AdvancedSdStatus "SD status [%s]" { channel="solarman:logger:example:sd-status" }
+Number:Temperature AdvancedDcTransformerTemperature "DC transformer temperature [%s]" { channel="solarman:logger:example:dc-transformer-temperature", unit="°C" }
+Number:Temperature AdvancedEnvironmentTemperature "Environment temperature [%s]" { channel="solarman:logger:example:environment-temperature", unit="°C" }
+Number:Temperature AdvancedRadiatorTemperature "Radiator temperature [%s]" { channel="solarman:logger:example:radiator-temperature", unit="°C" }
+Switch AdvancedGridConnected "Grid connected [%s]" { channel="solarman:logger:example:grid-connected" }
+DateTime AdvancedDateTime "Date time [%s]" { channel="solarman:logger:example:date-time", autoupdate="false" }
+Switch AdvancedInverterEnabled "Inverter enabled [%s]" { channel="solarman:logger:example:inverter-enabled", autoupdate="false" }
+Number AdvancedControlMode "Control mode [%s]" { channel="solarman:logger:example:control-mode" }
+Switch AdvancedGridChargeEnabled "Grid charge enabled [%s]" { channel="solarman:logger:example:grid-charge-enabled", autoupdate="false" }
+Number:ElectricPotential AdvancedBatteryChargingVoltage "Battery charging voltage [%s]" { channel="solarman:logger:example:battery-charging-voltage", unit="V" }
+Number:Dimensionless AdvancedBat1Soc "Bat1 SOC [%s]" { channel="solarman:logger:example:bat1-soc", unit="%" }
+Number AdvancedBat1Cycle "Bat1 Cycle [%s]" { channel="solarman:logger:example:bat1-cycle" }
+Number:ElectricPotential AdvancedBatteryEqualizationVoltage "Battery Equalization voltage [%s]" { channel="solarman:logger:example:battery-equalization-voltage", unit="V", autoupdate="false" }
+Number:ElectricPotential AdvancedBatteryAbsorptionVoltage "Battery Absorption voltage [%s]" { channel="solarman:logger:example:battery-absorption-voltage", unit="V", autoupdate="false" }
+Number:ElectricPotential AdvancedBatteryFloatVoltage "Battery Float voltage [%s]" { channel="solarman:logger:example:battery-float-voltage", unit="V", autoupdate="false" }
+Number:Dimensionless AdvancedBatteryShutdownCapacity "Battery shutdown capacity [%s]" { channel="solarman:logger:example:battery-shutdown-capacity", unit="%", autoupdate="false" }
+Number:Dimensionless AdvancedBatteryRestartCapacity "Battery restart capacity [%s]" { channel="solarman:logger:example:battery-restart-capacity", unit="%", autoupdate="false" }
+Number:Dimensionless AdvancedBatteryLowCapacity "Battery low capacity [%s]" { channel="solarman:logger:example:battery-low-capacity", unit="%", autoupdate="false" }
+Number:ElectricPotential AdvancedBatteryShutdownVoltage "Battery shutdown voltage [%s]" { channel="solarman:logger:example:battery-shutdown-voltage", unit="V", autoupdate="false" }
+Number:ElectricPotential AdvancedBatteryRestartVoltage "Battery restart voltage [%s]" { channel="solarman:logger:example:battery-restart-voltage", unit="V", autoupdate="false" }
+Number:ElectricPotential AdvancedBatteryLowVoltage "Battery low voltage [%s]" { channel="solarman:logger:example:battery-low-voltage", unit="V", autoupdate="false" }
+Switch AdvancedPriorityLoad "Priority Load [%s]" { channel="solarman:logger:example:priority-load", autoupdate="false" }
+String AdvancedLoadLimit "Load Limit [%s]" { channel="solarman:logger:example:load-limit", autoupdate="false" }
+Number:Power AdvancedMaxSolarPower "Max Solar power [%s]" { channel="solarman:logger:example:max-solar-power", unit="W", autoupdate="false" }
+Number:Power AdvancedMaxSellPower "Max Sell power [%s]" { channel="solarman:logger:example:max-sell-power", unit="W", autoupdate="false" }
+Switch AdvancedSolarExport "Solar Export [%s]" { channel="solarman:logger:example:solar-export", autoupdate="false" }
+Switch AdvancedUseTimer "Use Timer [%s]" { channel="solarman:logger:example:use-timer", autoupdate="false" }
+Switch AdvancedPeakShaving "Peak shaving [%s]" { channel="solarman:logger:example:peak-shaving", autoupdate="false" }
+Switch AdvancedGenPeakShaving "Gen peak shaving [%s]" { channel="solarman:logger:example:gen-peak-shaving", autoupdate="false" }
+Switch AdvancedGridPeakShaving "Grid peak shaving [%s]" { channel="solarman:logger:example:grid-peak-shaving", autoupdate="false" }
+Switch AdvancedGridAlwaysOn "Grid always on [%s]" { channel="solarman:logger:example:grid-always-on", autoupdate="false" }
+Number:Power AdvancedGenPeakShavingPower "Gen peak shaving power [%s]" { channel="solarman:logger:example:gen-peak-shaving-power", unit="W", autoupdate="false" }
+Number:Power AdvancedGridPeakShavingPower "Grid peak shaving power [%s]" { channel="solarman:logger:example:grid-peak-shaving-power", unit="W", autoupdate="false" }
+String AdvancedProg1Time "Prog1 Time [%s]" { channel="solarman:logger:example:prog1-time", autoupdate="false" }
+String AdvancedProg2Time "Prog2 Time [%s]" { channel="solarman:logger:example:prog2-time", autoupdate="false" }
+String AdvancedProg3Time "Prog3 Time [%s]" { channel="solarman:logger:example:prog3-time", autoupdate="false" }
+String AdvancedProg4Time "Prog4 Time [%s]" { channel="solarman:logger:example:prog4-time", autoupdate="false" }
+String AdvancedProg5Time "Prog5 Time [%s]" { channel="solarman:logger:example:prog5-time", autoupdate="false" }
+String AdvancedProg6Time "Prog6 Time [%s]" { channel="solarman:logger:example:prog6-time", autoupdate="false" }
+Number:Power AdvancedProg1Power "Prog1 power [%s]" { channel="solarman:logger:example:prog1-power", unit="W", autoupdate="false" }
+Number:Power AdvancedProg2Power "Prog2 power [%s]" { channel="solarman:logger:example:prog2-power", unit="W", autoupdate="false" }
+Number:Power AdvancedProg3Power "Prog3 power [%s]" { channel="solarman:logger:example:prog3-power", unit="W", autoupdate="false" }
+Number:Power AdvancedProg4Power "Prog4 power [%s]" { channel="solarman:logger:example:prog4-power", unit="W", autoupdate="false" }
+Number:Power AdvancedProg5Power "Prog5 power [%s]" { channel="solarman:logger:example:prog5-power", unit="W", autoupdate="false" }
+Number:Power AdvancedProg6Power "Prog6 power [%s]" { channel="solarman:logger:example:prog6-power", unit="W", autoupdate="false" }
+Number:Dimensionless AdvancedProg1Capacity "Prog1 Capacity [%s]" { channel="solarman:logger:example:prog1-capacity", unit="%", autoupdate="false" }
+Number:Dimensionless AdvancedProg2Capacity "Prog2 Capacity [%s]" { channel="solarman:logger:example:prog2-capacity", unit="%", autoupdate="false" }
+Number:Dimensionless AdvancedProg3Capacity "Prog3 Capacity [%s]" { channel="solarman:logger:example:prog3-capacity", unit="%", autoupdate="false" }
+Number:Dimensionless AdvancedProg4Capacity "Prog4 Capacity [%s]" { channel="solarman:logger:example:prog4-capacity", unit="%", autoupdate="false" }
+Number:Dimensionless AdvancedProg5Capacity "Prog5 Capacity [%s]" { channel="solarman:logger:example:prog5-capacity", unit="%", autoupdate="false" }
+Number:Dimensionless AdvancedProg6Capacity "Prog6 Capacity [%s]" { channel="solarman:logger:example:prog6-capacity", unit="%", autoupdate="false" }
+String AdvancedProg1Charge "Prog1 charge [%s]" { channel="solarman:logger:example:prog1-charge", autoupdate="false" }
+String AdvancedProg2Charge "Prog2 charge [%s]" { channel="solarman:logger:example:prog2-charge", autoupdate="false" }
+String AdvancedProg3Charge "Prog3 charge [%s]" { channel="solarman:logger:example:prog3-charge", autoupdate="false" }
+String AdvancedProg4Charge "Prog4 charge [%s]" { channel="solarman:logger:example:prog4-charge", autoupdate="false" }
+String AdvancedProg5Charge "Prog5 charge [%s]" { channel="solarman:logger:example:prog5-charge", autoupdate="false" }
+String AdvancedProg6Charge "Prog6 charge [%s]" { channel="solarman:logger:example:prog6-charge", autoupdate="false" }
+String AdvancedProg1Mode "Prog1 mode [%s]" { channel="solarman:logger:example:prog1-mode", autoupdate="false" }
+String AdvancedProg2Mode "Prog2 mode [%s]" { channel="solarman:logger:example:prog2-mode", autoupdate="false" }
+String AdvancedProg3Mode "Prog3 mode [%s]" { channel="solarman:logger:example:prog3-mode", autoupdate="false" }
+String AdvancedProg4Mode "Prog4 mode [%s]" { channel="solarman:logger:example:prog4-mode", autoupdate="false" }
+String AdvancedProg5Mode "Prog5 mode [%s]" { channel="solarman:logger:example:prog5-mode", autoupdate="false" }
+String AdvancedProg6Mode "Prog6 mode [%s]" { channel="solarman:logger:example:prog6-mode", autoupdate="false" }
+Switch AdvancedProg1Sell "Prog1 sell [%s]" { channel="solarman:logger:example:prog1-sell", autoupdate="false" }
+Switch AdvancedProg2Sell "Prog2 sell [%s]" { channel="solarman:logger:example:prog2-sell", autoupdate="false" }
+Switch AdvancedProg3Sell "Prog3 sell [%s]" { channel="solarman:logger:example:prog3-sell", autoupdate="false" }
+Switch AdvancedProg4Sell "Prog4 sell [%s]" { channel="solarman:logger:example:prog4-sell", autoupdate="false" }
+Switch AdvancedProg5Sell "Prog5 sell [%s]" { channel="solarman:logger:example:prog5-sell", autoupdate="false" }
+Switch AdvancedProg6Sell "Prog6 sell [%s]" { channel="solarman:logger:example:prog6-sell", autoupdate="false" }
+Number:ElectricPotential AdvancedProg1Voltage "Prog1 voltage [%s]" { channel="solarman:logger:example:prog1-voltage", unit="V", autoupdate="false" }
+Number:ElectricPotential AdvancedProg2Voltage "Prog2 voltage [%s]" { channel="solarman:logger:example:prog2-voltage", unit="V", autoupdate="false" }
+Number:ElectricPotential AdvancedProg3Voltage "Prog3 voltage [%s]" { channel="solarman:logger:example:prog3-voltage", unit="V", autoupdate="false" }
+Number:ElectricPotential AdvancedProg4Voltage "Prog4 voltage [%s]" { channel="solarman:logger:example:prog4-voltage", unit="V", autoupdate="false" }
+Number:ElectricPotential AdvancedProg5Voltage "Prog5 voltage [%s]" { channel="solarman:logger:example:prog5-voltage", unit="V", autoupdate="false" }
+Number:ElectricPotential AdvancedProg6Voltage "Prog6 voltage [%s]" { channel="solarman:logger:example:prog6-voltage", unit="V", autoupdate="false" }
+Number:ElectricCurrent AdvancedGridChargeBatteryCurrent "Grid Charge Battery current [%s]" { channel="solarman:logger:example:grid-charge-battery-current", unit="A", autoupdate="false" }
+Number:ElectricCurrent AdvancedBatteryMaxChargeCurrent "Battery Max Charge current [%s]" { channel="solarman:logger:example:battery-max-charge-current", unit="A", autoupdate="false" }
+Number:ElectricCurrent AdvancedBatteryMaxDischargeCurrent "Battery Max Discharge current [%s]" { channel="solarman:logger:example:battery-max-discharge-current", unit="A", autoupdate="false" }
+String AdvancedBmsProtocol "BMS Protocol [%s]" { channel="solarman:logger:example:bms-protocol", autoupdate="false" }
+String AdvancedCommunicationBoardVersion "Communication Board Version [%s]" { channel="solarman:logger:example:communication-board-version" }
+String AdvancedControlBoardVersion "Control Board Version [%s]" { channel="solarman:logger:example:control-board-version" }
+String AdvancedInverterId "Inverter ID [%s]" { channel="solarman:logger:example:inverter-id" }

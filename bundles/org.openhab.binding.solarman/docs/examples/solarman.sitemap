@@ -1,0 +1,93 @@
+sitemap solarman label="Solarman"
+{
+    Frame label="Inverter"{
+        Text item=Communication_Board_Version_No icon="solar"
+        Text item=Control_Board_Version_No icon="solar"
+        Text item=Inverter_Id icon="solar"
+        Text item=AC_Temperature icon="temperature"
+        Text item=DC_Temperature icon="temperature"
+        Text item=Inverter_L1_Power icon="poweroutlet"
+        Text item=Inverter_L2_Power icon="poweroutlet"
+        Text item=Inverter_L3_Power icon="poweroutlet"
+        Text item=Current_L1 icon="line"
+        Text item=Current_L2 icon="line"
+        Text item=Current_L3 icon="line"
+        Text item=Inverter_Frequency icon="line"
+    }
+
+    Frame label="Battery"{
+        Text item=Battery_SOC icon="battery"
+        Text item=Battery_Current icon="current"
+        Text item=Battery_Power icon="power"
+        Text item=Battery_Voltage icon="voltage"
+        Text item=Battery_Temperature icon="temperature"
+        Text item=Daily_Battery_Charge icon="renewable"
+        Text item=Daily_Battery_Discharge icon="battery"
+        Text item=Total_Battery_Charge icon="renewable"
+        Text item=Total_Battery_Discharge icon="battery"
+        Text item=Battery_Absorption_V icon="voltage"
+        Text item=Battery_Equalization_V icon="voltage"
+        Text item=Battery_Float_V icon="voltage"
+        Text item=Battery_Empty_V icon="voltage"
+        Text item=Battery_Capacity icon="battery"
+        Text item=Battery_Max_A_Charge icon="battery"
+        Text item=Battery_Max_A_Discharge icon="battery"
+    }
+
+    Frame label="Solar"{
+        Text item=Total_Solar_Production icon="solar"
+        Text item=Daily_Production icon="solar"
+        Text item=PV1_Current icon="solar"
+        Text item=PV1_Power icon="solar"
+        Text item=PV1_Voltage icon="solar"
+        Text item=PV2_Current icon="solar"
+        Text item=PV2_Power icon="solar"
+        Text item=PV2_Voltage icon="solar"
+    }
+
+    Frame label="Grid"{
+        Text item=Total_Grid_Production icon="power"
+        Text item=Total_Grid_Power icon="power"
+        Text item=External_CT_L1_Power icon="power"
+        Text item=External_CT_L2_Power icon="power"
+        Text item=External_CT_L3_Power icon="power"
+        Text item=Internal_CT_L1_Power icon="power"
+        Text item=Internal_CT_L2_Power icon="power"
+        Text item=Internal_CT_L3_Power icon="power"
+        Text item=Grid_Voltage_L1 icon="power"
+        Text item=Grid_Voltage_L2 icon="power"
+        Text item=Grid_Voltage_L3 icon="power"
+        Text item=Daily_Energy_Sold icon="power"
+        Text item=Total_Energy_Sold icon="power"
+        Text item=Daily_Energy_Bought icon="power"
+        Text item=Total_Energy_Bought icon="power"
+    }
+
+    Frame label="Load"{
+        Text item=Daily_Load_Consumption icon="power"
+        Text item=Total_Load_Consumption icon="power"
+        Text item=Load_L1_Power icon="power"
+        Text item=Load_L2_Power icon="power"
+        Text item=Load_L3_Power icon="power"
+        Text item=Load_Voltage_L1 icon="power"
+        Text item=Load_Voltage_L2 icon="power"
+        Text item=Load_Voltage_L3 icon="power"
+        Text item=Total_Load_Power icon="power"
+    }
+
+    Frame label="Generator"{
+        Text item=Gen_Port_A_Phase_Power icon="poweroutlet"
+        Text item=Gen_Port_B_Phase_Power icon="poweroutlet"
+        Text item=Gen_Port_C_Phase_Power icon="poweroutlet"
+        Text item=Gen_Port_A_Phase_Voltage icon="voltage"
+        Text item=Gen_Port_B_Phase_Voltage icon="voltage"
+        Text item=Gen_Port_C_Phase_Voltage icon="voltage"
+        Text item=Total_Gen_Port_Power icon="power"
+        Text item=Generator_Daily_Power_Generation icon="power"
+        Text item=Generator_Total_Power_Generation icon="power"
+    }
+
+    Frame label="Alert"{
+        Text item=Alert icon="alert"
+    }
+}

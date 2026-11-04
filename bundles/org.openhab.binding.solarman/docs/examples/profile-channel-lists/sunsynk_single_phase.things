@@ -1,0 +1,8 @@
+// Alternative profile configuration: install only one .things example for this logger.
+Thing solarman:logger:example [
+    inverterType="sunsynk_single_phase",
+    hostname="192.168.1.100",
+    serialNumber="1234567890",
+    refreshInterval=60,
+    solarmanLoggerMode="V5MODBUS"
+]

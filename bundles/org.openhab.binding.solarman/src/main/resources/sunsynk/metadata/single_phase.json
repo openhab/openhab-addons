@@ -1,0 +1,45 @@
+[
+  {
+    "id": "communication_board_version",
+    "name": "Communication Board Version",
+    "kind": "RegisterStringSensor",
+    "registers": [
+      14
+    ],
+    "unit": "",
+    "factor": 1,
+    "mask": 0,
+    "writable": false,
+    "source": "binding:deye_hybrid"
+  },
+  {
+    "id": "control_board_version",
+    "name": "Control Board Version",
+    "kind": "RegisterStringSensor",
+    "registers": [
+      13
+    ],
+    "unit": "",
+    "factor": 1,
+    "mask": 0,
+    "writable": false,
+    "source": "binding:deye_hybrid"
+  },
+  {
+    "id": "inverter_id",
+    "name": "Inverter ID",
+    "kind": "RegisterTextSensor",
+    "registers": [
+      3,
+      4,
+      5,
+      6,
+      7
+    ],
+    "unit": "",
+    "factor": 1,
+    "mask": 0,
+    "writable": false,
+    "source": "binding:deye_hybrid"
+  }
+]

@@ -12,22 +12,46 @@
  */
 package org.openhab.binding.solarman.internal.modbus;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.solarman.internal.SolarmanLoggerConfiguration;
 
 /**
+ * Registers sockets before connecting, allowing disposal to cancel pending I/O.
+ *
  * @author Catalin Sanda - Initial contribution
+ * @author Ricardo Costa - Advanced profiles and shared compatibility corrections
  */
 @NonNullByDefault
-public class SolarmanLoggerConnector {
-    private final SolarmanLoggerConfiguration solarmanLoggerConfiguration;
+public class SolarmanLoggerConnector implements AutoCloseable {
+    private final SolarmanLoggerConfiguration configuration;
+    private final Set<SolarmanLoggerConnection> connections = new HashSet<>();
+    private boolean closed;
 
-    public SolarmanLoggerConnector(SolarmanLoggerConfiguration solarmanLoggerConfiguration) {
-        this.solarmanLoggerConfiguration = solarmanLoggerConfiguration;
+    public SolarmanLoggerConnector(SolarmanLoggerConfiguration configuration) {
+        this.configuration = configuration;
     }
 
     public SolarmanLoggerConnection createConnection() {
-        return new SolarmanLoggerConnection(solarmanLoggerConfiguration.getHostname(),
-                solarmanLoggerConfiguration.getPort());
+        SolarmanLoggerConnection connection = new SolarmanLoggerConnection();
+        synchronized (this) {
+            connections.removeIf(c -> !c.isOpen());
+            if (closed) {
+                connection.close();
+                return connection;
+            }
+            connections.add(connection);
+        }
+        connection.connect(configuration.getHostname(), configuration.getPort());
+        return connection;
+    }
+
+    @Override
+    public synchronized void close() {
+        closed = true;
+        connections.forEach(SolarmanLoggerConnection::close);
+        connections.clear();
     }
 }
