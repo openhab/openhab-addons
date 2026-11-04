@@ -116,6 +116,7 @@ public abstract class AbstractWasherDryerCapabilityFactory extends AbstractCapab
                         getSpinFeatureNodeName(), new WasherDryerCapability.SpinFeatureFunction()));
         wdCap.setMonitoringDataFormat(getMonitorDataFormat(rootNode));
         wdCap.setDefaultCourseId(rootNode.path("Config").path(getDefaultCourseIdNodeName()).asText());
+        wdCap.setNotSelectedCourseKey(getNotSelectedCourseKey());
         return wdCap;
     }
 

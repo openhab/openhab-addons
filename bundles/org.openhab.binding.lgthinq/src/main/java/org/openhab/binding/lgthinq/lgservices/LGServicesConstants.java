@@ -223,6 +223,7 @@ public class LGServicesConstants {
     public static final Map<String, Map<String, String>> CAP_WM_DICT_V2 = Map.of("spin", CAP_WM_SPIN, "rinse",
             CAP_WM_RINSE, "temp", CAP_WMD_TEMPERATURE, "state", CAP_WMD_STATE);
     public static final String WMD_COMMAND_REMOTE_START_V2 = "WMStart";
+    public static final String WMD_STATE_INITIAL = "INITIAL";
     /**
      * ============ Dish Washer's Label/Feature Translation Constants =============
      */
