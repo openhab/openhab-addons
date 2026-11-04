@@ -21,21 +21,22 @@ import java.io.IOException;
 import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.util.Hashtable;
-import java.util.concurrent.TimeoutException;
 import java.util.stream.Stream;
 
 import javax.jmdns.ServiceInfo;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.Request;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.openhab.binding.shelly.internal.config.ShellyBindingRuntimeConfig;
 import org.openhab.binding.shelly.internal.handler.ShellyThingInterface;
 import org.openhab.binding.shelly.internal.handler.ShellyThingTable;
 import org.openhab.binding.shelly.internal.provider.ShellyTranslationProvider;
+import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.net.NetworkAddressService;
@@ -61,10 +62,22 @@ public class ShellyMDNSDiscoveryParticipantTest {
         ShellyThingInterface thing = mock(ShellyThingInterface.class);
         when(thingTable.findAnnouncedThing(SERVICE_NAME, IP_ADDRESS)).thenReturn(thing);
 
-        createParticipant(thingTable).createResult(mockService());
+        createParticipant(thingTable, mock(DiscoveryResult.class)).createResult(mockService());
 
         verify(thing).checkRepresentation(IP_ADDRESS);
         verify(thing).onDeviceWakeup();
+    }
+
+    @Test
+    void createResultIgnoresAnnouncementWhenDeviceDoesNotAnswer() throws Exception {
+        ShellyThingTable thingTable = mock(ShellyThingTable.class);
+        ShellyThingInterface thing = mock(ShellyThingInterface.class);
+        when(thingTable.findAnnouncedThing(SERVICE_NAME, IP_ADDRESS)).thenReturn(thing);
+
+        assertThat(createParticipant(thingTable, null).createResult(mockService()), is(nullValue()));
+
+        verify(thingTable, never()).findAnnouncedThing(anyString(), anyString());
+        verify(thing, never()).onDeviceWakeup();
     }
 
     @Test
@@ -73,16 +86,17 @@ public class ShellyMDNSDiscoveryParticipantTest {
         ShellyThingInterface thing = mock(ShellyThingInterface.class);
         when(thingTable.findThing(IP_ADDRESS)).thenReturn(thing);
 
-        createParticipant(thingTable).createResult(mockService());
+        createParticipant(thingTable, mock(DiscoveryResult.class)).createResult(mockService());
 
         verify(thing, never()).onDeviceWakeup();
     }
 
     @Test
-    void createResultForUnknownDeviceReturnsNull() throws Exception {
+    void createResultForUnknownDeviceReturnsResult() throws Exception {
         ShellyThingTable thingTable = mock(ShellyThingTable.class);
+        DiscoveryResult result = mock(DiscoveryResult.class);
 
-        assertThat(createParticipant(thingTable).createResult(mockService()), is(nullValue()));
+        assertThat(createParticipant(thingTable, result).createResult(mockService()), is(result));
 
         verify(thingTable).findAnnouncedThing(SERVICE_NAME, IP_ADDRESS);
     }
@@ -96,11 +110,9 @@ public class ShellyMDNSDiscoveryParticipantTest {
         return service;
     }
 
-    private static ShellyMDNSDiscoveryParticipant createParticipant(ShellyThingTable thingTable) throws Exception {
-        Request request = mock(Request.class, RETURNS_SELF);
-        when(request.send()).thenThrow(new TimeoutException());
+    private static ShellyMDNSDiscoveryParticipant createParticipant(ShellyThingTable thingTable,
+            @Nullable DiscoveryResult discoveryResult) throws Exception {
         HttpClient httpClient = mock(HttpClient.class);
-        when(httpClient.newRequest(anyString())).thenReturn(request);
         HttpClientFactory httpClientFactory = mock(HttpClientFactory.class);
         when(httpClientFactory.getCommonHttpClient()).thenReturn(httpClient);
         ConfigurationAdmin configurationAdmin = mock(ConfigurationAdmin.class);
@@ -108,7 +120,14 @@ public class ShellyMDNSDiscoveryParticipantTest {
         ComponentContext componentContext = mock(ComponentContext.class);
         when(componentContext.getProperties()).thenReturn(new Hashtable<String, Object>());
         return new ShellyMDNSDiscoveryParticipant(configurationAdmin, httpClientFactory, mock(LocaleProvider.class),
-                mock(ShellyTranslationProvider.class), thingTable, mock(NetworkAddressService.class), componentContext);
+                mock(ShellyTranslationProvider.class), thingTable, mock(NetworkAddressService.class),
+                componentContext) {
+            @Override
+            protected @Nullable DiscoveryResult discoverDevice(boolean gen2, String serviceName, String address,
+                    ShellyBindingRuntimeConfig cfg) {
+                return discoveryResult;
+            }
+        };
     }
 
     @ParameterizedTest

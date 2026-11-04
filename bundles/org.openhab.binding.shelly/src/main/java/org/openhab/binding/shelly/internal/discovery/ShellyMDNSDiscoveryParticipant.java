@@ -151,8 +151,9 @@ public class ShellyMDNSDiscoveryParticipant implements MDNSDiscoveryParticipant 
             return null;
         }
         logger.debug("{}: Shelly device discovered: IP address={}", serviceName, address);
-        handleAnnouncement(serviceName, address);
 
+        @Nullable
+        DiscoveryResult result;
         try {
             // Get device settings — capture a consistent local snapshot; @Modified may run concurrently
             ShellyBindingRuntimeConfig cfg = this.bindingConfig;
@@ -166,8 +167,7 @@ public class ShellyMDNSDiscoveryParticipant implements MDNSDiscoveryParticipant 
             String gen = getString(service.getPropertyString("gen"));
             boolean gen2 = "2".equals(gen) || "3".equals(gen) || "4".equals(gen)
                     || ShellyDeviceProfile.isGeneration2(serviceName);
-            return ShellyBasicDiscoveryService.createResult(gen2, serviceName, address, cfg, httpClient, messages,
-                    thingTable);
+            result = discoverDevice(gen2, serviceName, address, cfg);
         } catch (IOException e) {
             logger.debug("{}: Exception on processing serviceInfo '{}'", serviceName, service.getNiceTextString(), e);
             return null;
@@ -177,6 +177,17 @@ public class ShellyMDNSDiscoveryParticipant implements MDNSDiscoveryParticipant 
             logger.debug("{}: Configuration Admin unavailable, skipping discovery result", serviceName);
             return null;
         }
+
+        if (result != null) {
+            handleAnnouncement(serviceName, address);
+        }
+        return result;
+    }
+
+    protected @Nullable DiscoveryResult discoverDevice(boolean gen2, String serviceName, String address,
+            ShellyBindingRuntimeConfig cfg) {
+        return ShellyBasicDiscoveryService.createResult(gen2, serviceName, address, cfg, httpClient, messages,
+                thingTable);
     }
 
     /**
