@@ -247,6 +247,28 @@ class E3DCCommandHandlerTest {
                 "the byte channel rounds the same share to the whole percent");
     }
 
+    /**
+     * The device answers a reserve write that carries no index with -1 and keeps the old value, so the
+     * container has to start with the index of the data set, a signed four byte zero, before the value.
+     */
+    @Test
+    void theReserveIsWrittenWithTheIndexOfTheDataSetBeforeTheValue() {
+        E3DCCommandHandler handler = handlerWithSettings();
+
+        for (String channel : List.of("percent", "energy")) {
+            RscpValue container = request(handler, spec(E3DCBindingConstants.GROUP_EMERGENCY, channel),
+                    new DecimalType(40));
+
+            assertEquals(RscpTag.SE_REQ_SET_EP_RESERVE, container.getTag(), channel + " targets the reserve write");
+            List<RscpValue> children = container.getChildren();
+            assertEquals(2, children.size(), channel + " carries the index and the value");
+            assertEquals(RscpTag.SE_PARAM_INDEX, children.get(0).getTag(), channel + " starts with the index");
+            assertEquals(RscpType.INT32, children.get(0).getType(), channel + " sends the index as INT32");
+            assertEquals(0, ((Number) children.get(0).getValue()).intValue(), channel + " addresses data set zero");
+            assertEquals(RscpType.FLOAT32, children.get(1).getType(), channel + " sends the value as Float32");
+        }
+    }
+
     // ------------------------------------------------------------------ acknowledged writes
 
     /** The device answers a write with its own settings container, which holds the acknowledged values. */
