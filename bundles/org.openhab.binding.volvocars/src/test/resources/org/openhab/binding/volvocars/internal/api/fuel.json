@@ -1,0 +1,6 @@
+{
+  "data": {
+    "fuelAmount": { "value": "47.3", "unit": "l", "timestamp": "2026-01-01T10:00:00.000Z" },
+    "batteryChargeLevel": { "value": "87.3", "unit": "%", "timestamp": "2026-01-01T10:00:00.000Z" }
+  }
+}
