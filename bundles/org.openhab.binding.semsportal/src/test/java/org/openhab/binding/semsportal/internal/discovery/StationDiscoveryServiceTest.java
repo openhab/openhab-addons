@@ -51,6 +51,7 @@ import com.google.gson.Gson;
 @MockitoSettings(strictness = Strictness.LENIENT)
 public class StationDiscoveryServiceTest {
     private static final String STATION = "00000000-0000-0000-0000-0000000000a1";
+    private static final long TIMEOUT_MS = 10_000;
 
     private @Mock @NonNullByDefault({}) PortalHandler portal;
     private @Mock @NonNullByDefault({}) Bridge bridge;
@@ -114,7 +115,8 @@ public class StationDiscoveryServiceTest {
         service.startScan();
 
         ArgumentCaptor<DiscoveryResult> result = ArgumentCaptor.forClass(DiscoveryResult.class);
-        verify(listener).thingDiscovered(any(), result.capture());
+        // the framework hands the results to the listeners on its scheduler
+        verify(listener, timeout(TIMEOUT_MS)).thingDiscovered(any(), result.capture());
         return result.getValue();
     }
 }
