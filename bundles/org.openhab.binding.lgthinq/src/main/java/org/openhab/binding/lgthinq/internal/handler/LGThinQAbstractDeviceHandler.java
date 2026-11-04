@@ -66,6 +66,8 @@ import org.openhab.core.thing.type.ChannelKind;
 import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
+import org.openhab.core.types.State;
+import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 
 /**
@@ -343,14 +345,15 @@ public abstract class LGThinQAbstractDeviceHandler<@NonNull C extends Capability
      * Get the first item value associated to the channel
      *
      * @param channelUID channel
-     * @return value of the first item related to this channel.
+     * @return value of the first item related to this channel, or null if unlinked or undefined.
      */
     @Nullable
     protected String getItemLinkedValue(ChannelUID channelUID) {
         Set<Item> items = itemChannelLinkRegistry.getLinkedItems(channelUID);
         if (!items.isEmpty()) {
             for (Item i : items) {
-                return i.getState().toString();
+                State state = i.getState();
+                return state instanceof UnDefType ? null : state.toString();
             }
         }
         return null;

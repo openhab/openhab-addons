@@ -24,6 +24,8 @@ import org.openhab.binding.lgthinq.lgservices.model.CommandDefinition;
 import org.openhab.binding.lgthinq.lgservices.model.DevicePowerState;
 import org.openhab.binding.lgthinq.lgservices.model.devices.washerdryer.WasherDryerCapability;
 import org.openhab.binding.lgthinq.lgservices.model.devices.washerdryer.WasherDryerSnapshot;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -37,6 +39,8 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 public class LGThinQWMApiV2ClientServiceImpl
         extends LGThinQAbstractApiV2ClientService<WasherDryerCapability, WasherDryerSnapshot>
         implements LGThinQWMApiClientService {
+
+    private final Logger logger = LoggerFactory.getLogger(LGThinQWMApiV2ClientServiceImpl.class);
 
     protected LGThinQWMApiV2ClientServiceImpl(HttpClient httpClient) {
         super(WasherDryerCapability.class, WasherDryerSnapshot.class, httpClient);
@@ -78,6 +82,7 @@ public class LGThinQWMApiV2ClientServiceImpl
                 }
             }
 
+            logger.debug("Remote start data for device {}: {}", deviceId, dataSetList);
             RestResult result = sendCommand(bridgeName, deviceId, "control-sync", WMD_COMMAND_REMOTE_START_V2, "Set",
                     null, null, dataSetList);
             handleGenericErrorResult(result);

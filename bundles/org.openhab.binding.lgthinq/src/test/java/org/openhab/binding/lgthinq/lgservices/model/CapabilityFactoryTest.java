@@ -16,11 +16,14 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.lgthinq.handler.JsonUtils;
 import org.openhab.binding.lgthinq.lgservices.errors.LGThinqException;
+import org.openhab.binding.lgthinq.lgservices.model.devices.commons.washers.CourseDefinition;
+import org.openhab.binding.lgthinq.lgservices.model.devices.commons.washers.CourseFunction;
 import org.openhab.binding.lgthinq.lgservices.model.devices.washerdryer.WasherDryerCapability;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -50,6 +53,16 @@ class CapabilityFactoryTest {
             assertTrue(wpCap.getSoilWash().getValuesMapping().size() > 1);
             assertTrue(wpCap.getTemperatureFeat().getValuesMapping().size() > 1);
             assertTrue(wpCap.hasDoorLook());
+            CourseDefinition cotton = wpCap.getCourses().get("COTTON");
+            assertNotNull(cotton);
+            for (CourseFunction f : cotton.getFunctions()) {
+                assertNotNull(f.getDefaultValue(), f.getValue());
+            }
+            assertEquals(Set.of("steam", "preWash", "turboWash", "medicRinse", "soilWash", "steamSoftener"),
+                    wpCap.getOptionFeatures().keySet());
+            FeatureDefinition steam = wpCap.getOptionFeatures().get("steam");
+            assertNotNull(steam);
+            assertTrue(steam.getValuesMapping().containsKey("STEAM_ON"));
         }
     }
 }

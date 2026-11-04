@@ -39,6 +39,7 @@ public class WasherDryerCapability extends AbstractCapability<WasherDryerCapabil
     private String commandWakeUp = "";
     private String commandStop = "";
     private String defaultCourseId = "";
+    private String notSelectedCourseKey = "";
     private FeatureDefinition state = FeatureDefinition.NULL_DEFINITION;
     private FeatureDefinition soilWash = FeatureDefinition.NULL_DEFINITION;
     private FeatureDefinition spin = FeatureDefinition.NULL_DEFINITION;
@@ -50,6 +51,7 @@ public class WasherDryerCapability extends AbstractCapability<WasherDryerCapabil
     private boolean hasDoorLook;
     private Map<String, CommandDefinition> commandsDefinition = new HashMap<>();
     private Map<String, CourseDefinition> courses = new LinkedHashMap<>();
+    private Map<String, FeatureDefinition> optionFeatures = new HashMap<>();
 
     public String getDefaultCourseId() {
         return defaultCourseId;
@@ -59,12 +61,28 @@ public class WasherDryerCapability extends AbstractCapability<WasherDryerCapabil
         this.defaultCourseId = defaultCourseId;
     }
 
+    public String getNotSelectedCourseKey() {
+        return notSelectedCourseKey;
+    }
+
+    public void setNotSelectedCourseKey(String notSelectedCourseKey) {
+        this.notSelectedCourseKey = notSelectedCourseKey;
+    }
+
     public Map<String, CommandDefinition> getCommandsDefinition() {
         return commandsDefinition;
     }
 
     public void setCommandsDefinition(Map<String, CommandDefinition> commandsDefinition) {
         this.commandsDefinition = commandsDefinition;
+    }
+
+    public Map<String, FeatureDefinition> getOptionFeatures() {
+        return optionFeatures;
+    }
+
+    public void setOptionFeatures(Map<String, FeatureDefinition> optionFeatures) {
+        this.optionFeatures = optionFeatures;
     }
 
     public FeatureDefinition getDryLevel() {

@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.lgthinq.lgservices.model.devices.washerdryer;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -133,6 +134,11 @@ public class WasherDryerCapabilityFactoryV1 extends AbstractWasherDryerCapabilit
     @Override
     protected String getDryLevelNodeName() {
         return "DryLevel";
+    }
+
+    @Override
+    protected Collection<String> getOptionFeatureNodeNames() {
+        return List.of();
     }
 
     @Override

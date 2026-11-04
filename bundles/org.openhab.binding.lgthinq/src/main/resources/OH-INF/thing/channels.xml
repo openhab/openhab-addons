@@ -240,6 +240,163 @@
 		</tags>
 	</channel-type>
 
+	<channel-type id="washer-eco-hybrid">
+		<item-type>String</item-type>
+		<label>Eco Hybrid</label>
+		<description>Eco hybrid drying option of the selected course</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="washer-steam">
+		<item-type>String</item-type>
+		<label>Steam</label>
+		<description>Steam option of the selected course</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="washer-pre-wash">
+		<item-type>String</item-type>
+		<label>Pre-Wash</label>
+		<description>Pre-wash option of the selected course</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="washer-turbo-wash">
+		<item-type>String</item-type>
+		<label>TurboWash</label>
+		<description>TurboWash option of the selected course</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="washer-medic-rinse">
+		<item-type>String</item-type>
+		<label>Medic Rinse</label>
+		<description>Medic rinse option of the selected course</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="washer-soil-wash">
+		<item-type>String</item-type>
+		<label>Soil Level</label>
+		<description>Soil level of the selected course</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="washer-steam-softener">
+		<item-type>String</item-type>
+		<label>Steam Softener</label>
+		<description>Steam softener option of the selected course</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="rs-dry-level">
+		<item-type>String</item-type>
+		<label>Dry Level</label>
+		<description>Dry level used for remote start</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="rs-eco-hybrid">
+		<item-type>String</item-type>
+		<label>Eco Hybrid</label>
+		<description>Eco hybrid drying option used for remote start</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="rs-steam">
+		<item-type>String</item-type>
+		<label>Steam</label>
+		<description>Steam option used for remote start</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="rs-pre-wash">
+		<item-type>String</item-type>
+		<label>Pre-Wash</label>
+		<description>Pre-wash option used for remote start</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="rs-turbo-wash">
+		<item-type>String</item-type>
+		<label>TurboWash</label>
+		<description>TurboWash option used for remote start</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="rs-medic-rinse">
+		<item-type>String</item-type>
+		<label>Medic Rinse</label>
+		<description>Medic rinse option used for remote start</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="rs-soil-wash">
+		<item-type>String</item-type>
+		<label>Soil Level</label>
+		<description>Soil level used for remote start</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="rs-steam-softener">
+		<item-type>String</item-type>
+		<label>Steam Softener</label>
+		<description>Steam softener option used for remote start</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
+	</channel-type>
+
 	<channel-type id="washer-state">
 		<item-type>String</item-type>
 		<label>Washer State</label>

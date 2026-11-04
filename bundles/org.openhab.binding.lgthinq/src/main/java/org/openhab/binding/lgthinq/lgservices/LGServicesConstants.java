@@ -187,6 +187,11 @@ public class LGServicesConstants {
             entry("@WM_STATE_SPINNING_W", "@WM_STATE_DRYING_W"), entry("WM_STATE_COOLDOWN_W", "Cool Down"),
             entry("@WM_STATE_RINSEHOLD_W", "Rinse Hold"), entry("@WM_STATE_WASH_REFRESHING_W", "Refreshing"),
             entry("@WM_STATE_STEAMSOFTENING_W", "Steam Softening"), entry("@WM_STATE_ERROR_W", "Error"));
+    public static final Map<String, String> CAP_WM_OPTION = Map.ofEntries(entry("@CP_OFF_EN_W", "Off"),
+            entry("@CP_ON_EN_W", "On"), entry("@WM_TERM_NO_SELECT_W", "Not Selected"),
+            entry("@WM_TITAN2_OPTION_TURBO_WASH_W", "TurboWash"),
+            entry("@WM_TITAN2_OPTION_WASH_TIMESAVE_W", "Time Save"), entry("@WM_TITAN2_OPTION_WASH_NORMAL_W", "Normal"),
+            entry("@WM_TITAN2_OPTION_WASH_INTENSIVE_W", "Intensive"));
     public static final Map<String, String> CAP_DR_DRY_LEVEL = Map.ofEntries(
             entry("@WM_DRY24_DRY_LEVEL_IRON_W", "Iron"), entry("@WM_DRY24_DRY_LEVEL_CUPBOARD_W", "Cupboard"),
             entry("@WM_DRY24_DRY_LEVEL_EXTRA_W", "Extra"));
@@ -223,6 +228,7 @@ public class LGServicesConstants {
     public static final Map<String, Map<String, String>> CAP_WM_DICT_V2 = Map.of("spin", CAP_WM_SPIN, "rinse",
             CAP_WM_RINSE, "temp", CAP_WMD_TEMPERATURE, "state", CAP_WMD_STATE);
     public static final String WMD_COMMAND_REMOTE_START_V2 = "WMStart";
+    public static final String WMD_STATE_INITIAL = "INITIAL";
     /**
      * ============ Dish Washer's Label/Feature Translation Constants =============
      */
