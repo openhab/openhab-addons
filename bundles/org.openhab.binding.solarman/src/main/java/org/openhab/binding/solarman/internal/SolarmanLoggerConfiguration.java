@@ -19,6 +19,7 @@ import org.eclipse.jdt.annotation.Nullable;
  * The {@link SolarmanLoggerConfiguration} class contains fields mapping thing configuration parameters.
  *
  * @author Catalin Sanda - Initial contribution
+ * @author Ricardo Costa - Advanced profiles and shared compatibility corrections
  */
 @NonNullByDefault
 public class SolarmanLoggerConfiguration {
@@ -31,6 +32,7 @@ public class SolarmanLoggerConfiguration {
     public String serialNumber = "";
     public String inverterType = "sg04lp3";
     public int refreshInterval = 30;
+    public int slaveId = 1;
     public String solarmanLoggerMode = SolarmanLoggerMode.V5MODBUS.toString();
     @Nullable
     public String additionalRequests;

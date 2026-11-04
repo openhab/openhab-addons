@@ -43,6 +43,7 @@ import org.openhab.binding.solarman.internal.modbus.SolarmanProtocol;
 import org.openhab.binding.solarman.internal.modbus.exception.SolarmanConnectionException;
 import org.openhab.binding.solarman.internal.modbus.exception.SolarmanException;
 import org.openhab.binding.solarman.internal.typeprovider.ChannelUtils;
+import org.openhab.binding.solarman.internal.util.ModbusRegisterCodec;
 import org.openhab.binding.solarman.internal.util.StreamUtils;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
@@ -55,6 +56,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * @author Catalin Sanda - Initial contribution
+ * @author Ricardo Costa - Advanced profiles and shared compatibility corrections
  */
 @NonNullByDefault
 public class SolarmanChannelUpdater {
@@ -231,12 +233,7 @@ public class SolarmanChannelUpdater {
 
     private BigInteger extractNumericValue(List<Integer> registers, Map<Integer, byte[]> readRegistersMap,
             IntegerValueType valueType) {
-        return reversed(registers).stream().map(readRegistersMap::get).reduce(
-                BigInteger.ZERO, (acc,
-                        val) -> acc.shiftLeft(Short.SIZE)
-                                .add(BigInteger.valueOf(ByteBuffer.wrap(val).getShort()
-                                        & (valueType == IntegerValueType.UNSIGNED ? 0xFFFF : 0xFFFFFFFF))),
-                BigInteger::add);
+        return ModbusRegisterCodec.decode(registers, readRegistersMap, valueType == IntegerValueType.SIGNED);
     }
 
     @FunctionalInterface

@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.solarman.internal.typeprovider;
 
+import java.util.Locale;
+
 import javax.measure.Unit;
 import javax.measure.quantity.Dimensionless;
 import javax.measure.quantity.ElectricCharge;
 import javax.measure.quantity.ElectricCurrent;
 import javax.measure.quantity.ElectricPotential;
+import javax.measure.quantity.ElectricResistance;
 import javax.measure.quantity.Energy;
 import javax.measure.quantity.Frequency;
 import javax.measure.quantity.Power;
@@ -39,6 +42,7 @@ import org.openhab.core.thing.type.ChannelTypeUID;
  * It includes methods for determining item types, units of measure, and channel type IDs.
  *
  * @author Catalin Sanda - Initial contribution
+ * @author Ricardo Costa - Advanced profiles and shared compatibility corrections
  */
 @NonNullByDefault
 public class ChannelUtils {
@@ -79,14 +83,15 @@ public class ChannelUtils {
      * @return The number type as a string
      */
     private static String computeNumberType(String uom) {
-        return switch (uom.toUpperCase()) {
+        return switch (uom.toUpperCase(Locale.ROOT)) {
             case "A" -> CoreItemFactory.NUMBER + ":" + ElectricCurrent.class.getSimpleName();
             case "AH" -> CoreItemFactory.NUMBER + ":" + ElectricCharge.class.getSimpleName();
             case "V" -> CoreItemFactory.NUMBER + ":" + ElectricPotential.class.getSimpleName();
             case "°C" -> CoreItemFactory.NUMBER + ":" + Temperature.class.getSimpleName();
             case "W", "KW", "VA", "KVA", "VAR", "KVAR" -> CoreItemFactory.NUMBER + ":" + Power.class.getSimpleName();
-            case "WH", "KWH" -> CoreItemFactory.NUMBER + ":" + Energy.class.getSimpleName();
-            case "S" -> CoreItemFactory.NUMBER + ":" + Time.class.getSimpleName();
+            case "WH", "KWH", "KVARH" -> CoreItemFactory.NUMBER + ":" + Energy.class.getSimpleName();
+            case "S", "H", "HOURS", "DAYS" -> CoreItemFactory.NUMBER + ":" + Time.class.getSimpleName();
+            case "MΩ" -> CoreItemFactory.NUMBER + ":" + ElectricResistance.class.getSimpleName();
             case "HZ" -> CoreItemFactory.NUMBER + ":" + Frequency.class.getSimpleName();
             case "%" -> CoreItemFactory.NUMBER + ":" + Dimensionless.class.getSimpleName();
             default -> CoreItemFactory.NUMBER;
@@ -100,7 +105,7 @@ public class ChannelUtils {
      * @return The corresponding {@link Unit}, or null if not found
      */
     public static @Nullable Unit<?> getUnitFromDefinition(String uom) {
-        return switch (uom.toUpperCase()) {
+        return switch (uom.toUpperCase(Locale.ROOT)) {
             case "A" -> Units.AMPERE;
             case "AH" -> Units.AMPERE_HOUR;
             case "V" -> Units.VOLT;
@@ -113,7 +118,11 @@ public class ChannelUtils {
             case "KVAR" -> MetricPrefix.KILO(Units.VAR);
             case "WH" -> Units.WATT_HOUR;
             case "KWH" -> MetricPrefix.KILO(Units.WATT_HOUR);
+            case "KVARH" -> Units.KILOVAR_HOUR;
             case "S" -> Units.SECOND;
+            case "H", "HOURS" -> Units.HOUR;
+            case "DAYS" -> Units.DAY;
+            case "MΩ" -> MetricPrefix.MILLI(Units.OHM);
             case "HZ" -> Units.HERTZ;
             case "%" -> Units.PERCENT;
             default -> null;
@@ -129,7 +138,7 @@ public class ChannelUtils {
     public static String escapeName(String name) {
         name = name.trim();
         name = name.replace("+", "plus");
-        name = name.toLowerCase();
+        name = name.toLowerCase(Locale.ROOT);
         name = name.replaceAll("[ .()/\\\\&_]", "-");
         return name;
     }
