@@ -19,6 +19,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.AbstractMap;
+import java.util.Base64;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -50,13 +51,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @NonNullByDefault
 public class LGThinqOauthEmpAuthenticator {
 
-    private static final Map<String, String> OAUTH_SEARCH_KEY_QUERY_PARAMS = new LinkedHashMap<>();
     private static final ObjectMapper MAPPER = new ObjectMapper();
-
-    static {
-        OAUTH_SEARCH_KEY_QUERY_PARAMS.put("key_name", "OAUTH_SECRETKEY");
-        OAUTH_SEARCH_KEY_QUERY_PARAMS.put("sever_type", "OP");
-    }
 
     private final Logger logger = LoggerFactory.getLogger(LGThinqOauthEmpAuthenticator.class);
     private final HttpClient httpClient;
@@ -194,21 +189,7 @@ public class LGThinqOauthEmpAuthenticator {
     }
 
     TokenResult getToken(LGThinqGateway gw, LoginAccountResult accountResult) throws IOException {
-        // 3 - get secret key from emp signature
-        String empSearchKeyUrl = gw.getLoginBaseUri() + LG_API_OAUTH_SEARCH_KEY_PATH;
-
-        RestResult resp = RestUtils.getCall(httpClient, empSearchKeyUrl, null, OAUTH_SEARCH_KEY_QUERY_PARAMS);
-        if (resp.getStatusCode() != 200) {
-            throw new IllegalStateException(
-                    String.format("Error loggin into acccount. The reason is:%s", resp.getJsonResponse()));
-        }
-        Map<String, String> secretResult = MAPPER.readValue(resp.getJsonResponse(), new TypeReference<>() {
-        });
-        String secretKey = Objects.requireNonNull(secretResult.get("returnData"),
-                "Unexpected json returned. Expected 'returnData' node here");
-        logger.debug("Secret found:{}", secretResult.get("returnData"));
-
-        // 4 - get OAuth Token Key from EMP API
+        // 3 - get OAuth Token Key from EMP API
         Map<String, String> empData = new LinkedHashMap<>();
         empData.put("account_type", accountResult.userIdType());
         empData.put("client_id", LG_API_CLIENT_ID);
@@ -216,22 +197,55 @@ public class LGThinqOauthEmpAuthenticator {
         empData.put("username", accountResult.userId());
         String timestamp = getCurrentTimestamp();
 
-        byte[] oauthSig = RestUtils.getTokenSignature(gw.getTokenSessionEmpUrl(), secretKey, empData, timestamp);
+        String oauthSig = requestEmpSessionSignature(gw, empData, timestamp);
 
         Map<String, String> oauthEmpHeaders = getOauthEmpHeaders(accountResult, timestamp, oauthSig);
         logger.debug("===> Localized timestamp used: [{}]", timestamp);
-        logger.debug("===> signature created: [{}]", new String(oauthSig));
-        resp = RestUtils.postCall(httpClient, gw.getTokenSessionEmpUrl(), oauthEmpHeaders, empData);
+        RestResult resp = RestUtils.postCall(httpClient, gw.getTokenSessionEmpUrl(), oauthEmpHeaders, empData);
         return handleTokenResult(resp);
     }
 
+    /**
+     * Requests the {@code empsession} signature from LG's SPX server.
+     * <p>
+     * LG removed the {@code searchKey} endpoint that exposed the EMP secret key, so this signature can no longer be
+     * computed locally. The SPX {@code signature} endpoint signs the same string-to-sign and returns the Base64
+     * HMAC-SHA1 signature as plain text.
+     */
+    private String requestEmpSessionSignature(LGThinqGateway gw, Map<String, String> empData, String timestamp)
+            throws IOException {
+        Map<String, String> params = new LinkedHashMap<>();
+        params.put("kind", "oauth2");
+        params.put("key_name", "OAUTH_SECRETKEY");
+        params.put("sever_type", "OP");
+        params.put("timestamp", RestUtils.getTokenSignatureMessage(gw.getTokenSessionEmpUrl(), empData, timestamp));
+
+        RestResult resp = RestUtils.getCall(httpClient, gw.getLoginBaseUri() + LG_API_OAUTH_SIGNATURE_PATH, null,
+                params);
+        if (resp.getStatusCode() != 200) {
+            throw new IllegalStateException(
+                    String.format("Error getting the EMP session signature from LG server. HTTP Status Code is:%s",
+                            resp.getStatusCode()));
+        }
+        String signature = resp.getJsonResponse().strip();
+        if (signature.isEmpty()) {
+            throw new IllegalStateException("Empty EMP session signature returned by LG server");
+        }
+        try {
+            Base64.getDecoder().decode(signature);
+        } catch (IllegalArgumentException e) {
+            throw new IllegalStateException("Unexpected EMP session signature returned by LG server (not Base64)", e);
+        }
+        return signature;
+    }
+
     private Map<String, String> getOauthEmpHeaders(LoginAccountResult accountResult, String timestamp,
-            byte[] oauthSig) {
+            String oauthSig) {
         Map<String, String> oauthEmpHeaders = new LinkedHashMap<>();
         oauthEmpHeaders.put("lgemp-x-app-key", LG_API_OAUTH_CLIENT_KEY);
         oauthEmpHeaders.put("lgemp-x-date", timestamp);
         oauthEmpHeaders.put("lgemp-x-session-key", accountResult.loginSessionId());
-        oauthEmpHeaders.put("lgemp-x-signature", new String(oauthSig));
+        oauthEmpHeaders.put("lgemp-x-signature", oauthSig);
         oauthEmpHeaders.put("Accept", "application/json");
         oauthEmpHeaders.put("X-Device-Type", "M01");
         oauthEmpHeaders.put("X-Device-Platform", "ADR");
