@@ -43,11 +43,13 @@ import org.eclipse.jetty.client.api.ContentProvider;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.http.HttpFields;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.ArgumentCaptor;
+import org.mockito.MockedStatic;
 import org.openhab.binding.evohome.internal.api.models.v2.dto.response.ZoneStatus;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.DecimalType;
@@ -77,7 +79,7 @@ class EvohomeCommandSequenceTest {
     private static final String TOKEN = "{\"access_token\":\"test-token\",\"expires_in\":3600}";
     private static final String ACCOUNT = "{\"userId\":\"user\"}";
     private static final String LOCATIONS = """
-            [{"locationInfo":{"locationId":"location"},"gateways":[
+            [{"locationInfo":{"locationId":"location","timeZone":{"timeZoneId":"Europe/Budapest"}},"gateways":[
               {"gatewayInfo":{"gatewayId":"gateway"},"temperatureControlSystems":[
                 {"systemId":"controller","zones":[{"zoneId":"zone"},{"zoneId":"second-zone"},
                   {"zoneId":"third-zone"}],"dhw":{"dhwId":"water"},
@@ -219,8 +221,179 @@ class EvohomeCommandSequenceTest {
             case "temporary" -> zone.setTemporarySetPoint(21, expiry);
             case "permanent" -> zone.setPermanentSetPoint(21);
             case "cancel" -> zone.cancelSetPointOverride();
+            case "next" -> zone.setTemporarySetPointUntilNextSwitchpoint(21);
+            case "default" -> zone.setTemporarySetPoint(21);
             default -> throw new IllegalArgumentException(operation);
         };
+    }
+
+    @ParameterizedTest
+    @CsvSource({ "SetPoint,true", "SetPoint,false", "temporary,true", "permanent,true", "cancel,true", "next,true",
+            "default,true" })
+    void queuedZoneWriteCannotSurviveZoneReinitialization(String operation, boolean changeZone) throws Exception {
+        try (Fixture fixture = new Fixture(false)) {
+            fixture.start();
+            EvohomeHeatingZoneHandler zone = fixture.zone("zone");
+            Instant expiry = Instant.now().plusSeconds(7200).truncatedTo(ChronoUnit.SECONDS);
+            readback(zone, "FollowSchedule", 20, expiry);
+
+            assertTrue(overlappingCommands(fixture, () -> zone.setTemporarySetPoint(21, expiry), () -> {
+                if ("SetPoint".equals(operation)) {
+                    zone.handleCommand(channel(zone, "SetPoint"), new DecimalType(22));
+                } else {
+                    firstCommand(zone, operation, expiry);
+                }
+            }, 201, () -> {
+                if (changeZone) {
+                    zone.getThing().getConfiguration().put("id", "second-zone");
+                }
+                zone.thingUpdated(zone.getThing());
+            }));
+
+            assertEquals(changeZone ? "second-zone" : "zone", zone.getId());
+            ArgumentCaptor<String> urls = ArgumentCaptor.forClass(String.class);
+            verify(fixture.http, atLeastOnce()).newRequest(urls.capture());
+            List<String> writeZones = urls.getAllValues().stream().filter(url -> url.endsWith("/heatSetpoint"))
+                    .map(url -> url.contains("/temperatureZone/second-zone/") ? "second-zone" : "zone").toList();
+            assertEquals(List.of("zone"), writeZones, "The queued old-lifecycle write must be discarded");
+            zone.handleCommand(channel(zone, "SetPoint"), new DecimalType(22));
+            assertEquals(2, fixture.commandBodies().size());
+            assertSetPoint(fixture.commandBodies().getLast(), "PermanentOverride", 22, expiry);
+        }
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = { "temporary", "permanent", "cancel", "next", "default" })
+    void disposedZoneRejectsDirectWrite(String operation) throws Exception {
+        try (Fixture fixture = new Fixture(false)) {
+            fixture.start();
+            EvohomeHeatingZoneHandler zone = fixture.zone("zone");
+            Instant expiry = Instant.now().plusSeconds(7200).truncatedTo(ChronoUnit.SECONDS);
+            readback(zone, "FollowSchedule", 20, expiry);
+            doReturn(response(201, "{}")).when(fixture.request).send();
+            zone.dispose();
+            clearInvocations(fixture.http, fixture.request);
+
+            assertFalse(firstCommand(zone, operation, expiry), "Disposed zone must reject " + operation);
+            verifyNoInteractions(fixture.http, fixture.request);
+        }
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = { true, false })
+    void lateAcceptanceCannotSeedReinitializedZoneContext(boolean reinitializeBeforeAcceptance) throws Exception {
+        try (Fixture fixture = new Fixture(false)) {
+            fixture.start();
+            EvohomeHeatingZoneHandler zone = fixture.zone("zone");
+            Instant expiry = Instant.now().plusSeconds(7200).truncatedTo(ChronoUnit.SECONDS);
+            readback(zone, "FollowSchedule", 20, expiry);
+
+            assertTrue(overlappingCommands(fixture, () -> zone.setTemporarySetPoint(21, expiry),
+                    () -> fixture.handler.executeZoneCommand(() -> {
+                    }), 201, () -> {
+                        zone.dispose();
+                        if (reinitializeBeforeAcceptance) {
+                            zone.initialize();
+                        }
+                    }));
+            if (!reinitializeBeforeAcceptance) {
+                zone.initialize();
+            }
+            readback(zone, "FollowSchedule", 20, expiry);
+            zone.handleCommand(channel(zone, "SetPoint"), new DecimalType(22));
+
+            assertSetPoint(fixture.commandBodies().getLast(), "PermanentOverride", 22, expiry);
+        }
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = { true, false })
+    void confirmedRoundedTargetDoesNotMaskExternalCancellation(boolean untilNextSwitchpoint) throws Exception {
+        try (Fixture fixture = new Fixture(false)) {
+            fixture.start();
+            EvohomeHeatingZoneHandler zone = fixture.zone("zone");
+            Instant expiry = Instant.now().plusSeconds(7200).truncatedTo(ChronoUnit.SECONDS);
+            readback(zone, "FollowSchedule", 20, expiry);
+            doReturn(response(201, "{}")).when(fixture.request).send();
+
+            if (untilNextSwitchpoint) {
+                String schedule = "{\"dailySchedules\":[" + String.join(",",
+                        List.of("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday").stream()
+                                .map(day -> "{\"dayOfWeek\":\"%s\",\"switchpoints\":[{\"timeOfDay\":\"12:00:00\"}]}"
+                                        .formatted(day))
+                                .toList())
+                        + "]}";
+                doReturn(response(200, schedule), response(201, "{}")).when(fixture.request).send();
+                assertTrue(zone.setTemporarySetPointUntilNextSwitchpoint(21.2));
+                expiry = Instant.parse(fixture.commandBodies().getLast().get("timeUntil").getAsString());
+            } else {
+                assertTrue(zone.setTemporarySetPoint(21.2, expiry));
+            }
+            assertSetPoint(fixture.commandBodies().getLast(), "TemporaryOverride", 21, expiry);
+            readback(zone, "TemporaryOverride", 21, expiry);
+            readback(zone, "FollowSchedule", 20, expiry);
+            zone.handleCommand(channel(zone, "SetPoint"), new DecimalType(22));
+
+            assertSetPoint(fixture.commandBodies().getLast(), "PermanentOverride", 22, expiry);
+        }
+    }
+
+    @Test
+    void lateResetAcceptanceCannotReplaceReinitializedZoneContext() throws Exception {
+        try (Fixture fixture = new Fixture(false)) {
+            fixture.start();
+            EvohomeHeatingZoneHandler zone = fixture.zone("zone");
+            Instant expiry = Instant.now().plusSeconds(7200).truncatedTo(ChronoUnit.SECONDS);
+            assertTrue(overlappingCommands(fixture, () -> fixture.handler.resetSystem("controller"),
+                    () -> fixture.handler.executeZoneCommand(() -> {
+                    }), 201, () -> {
+                        zone.dispose();
+                        zone.initialize();
+                        readback(zone, "TemporaryOverride", 21, expiry);
+                    }));
+            zone.handleCommand(channel(zone, "SetPoint"), new DecimalType(22));
+            assertSetPoint(fixture.commandBodies().getLast(), "TemporaryOverride", 22, expiry);
+        }
+    }
+
+    @Test
+    void acceptedPartialResetRemainsEffectiveWhenReadbackIsDelayed() throws Exception {
+        try (Fixture fixture = new Fixture(false)) {
+            fixture.start();
+            EvohomeHeatingZoneHandler zone = fixture.zone("zone");
+            Instant expiry = Instant.now().plusSeconds(7200).truncatedTo(ChronoUnit.SECONDS);
+            readback(zone, "TemporaryOverride", 21, expiry);
+            doReturn(response(201, "{}"), response(201, "{}"), response(400, "{}")).when(fixture.request).send();
+            assertFalse(fixture.handler.resetSystem("controller"));
+
+            doReturn(response(201, "{}")).when(fixture.request).send();
+            Instant afterPendingWindow = Instant.now().plusSeconds(31);
+            try (MockedStatic<Instant> clock = mockStatic(Instant.class, CALLS_REAL_METHODS)) {
+                clock.when(Instant::now).thenReturn(afterPendingWindow);
+                zone.handleCommand(channel(zone, "SetPoint"), new DecimalType(22));
+            }
+
+            assertSetPoint(fixture.commandBodies().getLast(), "PermanentOverride", 22, expiry);
+        }
+    }
+
+    @Test
+    void freshReadbackAfterGraceReplacesAcceptedCancellationContext() throws Exception {
+        try (Fixture fixture = new Fixture(false)) {
+            fixture.start();
+            EvohomeHeatingZoneHandler zone = fixture.zone("zone");
+            Instant expiry = Instant.now().plusSeconds(7200).truncatedTo(ChronoUnit.SECONDS);
+            readback(zone, "TemporaryOverride", 21, expiry);
+            doReturn(response(201, "{}")).when(fixture.request).send();
+            assertTrue(zone.cancelSetPointOverride());
+            Instant afterGrace = Instant.now().plusSeconds(31);
+            try (MockedStatic<Instant> clock = mockStatic(Instant.class, CALLS_REAL_METHODS)) {
+                clock.when(Instant::now).thenReturn(afterGrace);
+                readback(zone, "TemporaryOverride", 23, expiry);
+                zone.handleCommand(channel(zone, "SetPoint"), new DecimalType(22));
+            }
+            assertSetPoint(fixture.commandBodies().getLast(), "TemporaryOverride", 22, expiry);
+        }
     }
 
     private static ChannelUID channel(EvohomeHeatingZoneHandler zone, String id) {

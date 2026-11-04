@@ -41,6 +41,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.ArgumentCaptor;
+import org.mockito.MockedStatic;
 import org.openhab.binding.evohome.internal.api.EvohomeApiClient.CachedSchedule;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.thing.Bridge;
@@ -401,9 +402,48 @@ class EvohomeAccountBridgeHandlerTest {
         EvohomeHeatingZoneHandler zoneHandler = mock(EvohomeHeatingZoneHandler.class);
         when(zoneHandler.getId()).thenReturn(zoneId);
         when(zoneHandler.getThing()).thenReturn(zone);
+        when(zoneHandler.resetCommandContextCallback()).thenReturn(resetId -> {
+            if (zoneId.equals(resetId)) {
+                zoneHandler.resetCommandContext();
+            }
+        });
         zone.setHandler(zoneHandler);
         ((BridgeImpl) bridge).addThing(zone);
         return zoneHandler;
+    }
+
+    @Test
+    void repeatedlyDueSchedulesDoNotStarveOtherZones() throws Exception {
+        EvohomeHeatingZoneHandler firstZone = attachedZone("zone");
+        EvohomeHeatingZoneHandler secondZone = attachedZone("other-zone");
+        when(firstZone.hasScheduleLinks()).thenReturn(true);
+        when(secondZone.hasScheduleLinks()).thenReturn(true);
+        bridge.getConfiguration().put("refreshInterval", 120);
+        bridge.getConfiguration().put("scheduleRefreshInterval", 1);
+        when(request.send()).thenReturn(response(200, TOKEN), response(200, ACCOUNT),
+                response(200, CONTROLLER_INSTALLATION), response(200, STATUS), response(200, SCHEDULE),
+                response(200, STATUS), response(200, SCHEDULE), response(200, STATUS), response(200, SCHEDULE));
+        Instant start = Instant.now();
+        try (MockedStatic<Instant> clock = mockStatic(Instant.class, CALLS_REAL_METHODS)) {
+            clock.when(Instant::now).thenReturn(start);
+            handler.initialize();
+            tasks.getFirst().run();
+            clock.when(Instant::now).thenReturn(start.plusSeconds(120));
+            tasks.getLast().run();
+            clock.when(Instant::now).thenReturn(start.plusSeconds(240));
+            tasks.getLast().run();
+
+            ArgumentCaptor<String> urls = ArgumentCaptor.forClass(String.class);
+            verify(http, atLeastOnce()).newRequest(urls.capture());
+            List<String> zonesRead = urls.getAllValues().stream().filter(url -> url.endsWith("/schedule"))
+                    .map(url -> url.contains("temperatureZone/other-zone/") ? "other-zone" : "zone").toList();
+            assertEquals(3, zonesRead.size());
+            assertNotEquals(zonesRead.getFirst(), zonesRead.get(1), "Later zones must not starve: " + zonesRead);
+            assertEquals(zonesRead.getFirst(), zonesRead.getLast());
+            assertEquals(List.of(0L, 120L, 120L, 120L), delays);
+        } finally {
+            handler.dispose();
+        }
     }
 
     @Test
@@ -725,7 +765,7 @@ class EvohomeAccountBridgeHandlerTest {
         tasks.getFirst().run();
         var executor = Executors.newSingleThreadExecutor();
         try {
-            var work = executor.submit(() -> handler.setPermanentSetPoint("zone", 21, onAccepted));
+            var work = executor.submit(() -> handler.setPermanentSetPoint("zone", 21, accepted -> onAccepted.run()));
             assertTrue(entered.await(10, TimeUnit.SECONDS));
             handler.dispose();
             clearInvocations(callback);

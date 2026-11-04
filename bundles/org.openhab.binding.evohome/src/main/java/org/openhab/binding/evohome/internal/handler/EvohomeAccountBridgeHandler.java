@@ -37,6 +37,8 @@ import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.evohome.internal.EvohomeBindingConstants;
 import org.openhab.binding.evohome.internal.RunnableWithTimeout;
 import org.openhab.binding.evohome.internal.api.EvohomeApiClient;
+import org.openhab.binding.evohome.internal.api.EvohomeApiClient.AcceptedSetPoint;
+import org.openhab.binding.evohome.internal.api.EvohomeApiClient.CachedSchedule;
 import org.openhab.binding.evohome.internal.api.EvohomeApiClientException;
 import org.openhab.binding.evohome.internal.api.models.v2.dto.response.Gateway;
 import org.openhab.binding.evohome.internal.api.models.v2.dto.response.GatewayStatus;
@@ -71,6 +73,7 @@ import org.slf4j.LoggerFactory;
  * @author Kovacs Istvan - Validated override commands and system reset
  * @author Kovacs Istvan - Cached weekly schedule polling
  * @author Kovacs Istvan - Discovery lifecycle and partial reset recovery
+ * @author Kovacs Istvan - Fair schedule refresh and accepted command propagation
  *
  */
 @NonNullByDefault
@@ -189,66 +192,67 @@ public class EvohomeAccountBridgeHandler extends BaseBridgeHandler {
 
     public boolean resetSystem(String tcsId) {
         EvohomeApiClient client = apiClient;
+        List<Consumer<String>> resetCallbacks = getThing().getThings().stream().map(Thing::getHandler)
+                .filter(EvohomeHeatingZoneHandler.class::isInstance).map(EvohomeHeatingZoneHandler.class::cast)
+                .map(EvohomeHeatingZoneHandler::resetCommandContextCallback).toList();
         return client != null
                 && tryToCall(client, "reset system to schedule", tcsId, () -> client.resetTcs(tcsId, zoneId -> {
                     synchronized (this) {
                         if (client.equals(apiClient)) {
-                            for (Thing thing : getThing().getThings()) {
-                                if (thing.getHandler() instanceof EvohomeHeatingZoneHandler zoneHandler
-                                        && zoneId.equals(zoneHandler.getId())) {
-                                    zoneHandler.resetCommandContext();
-                                }
-                            }
+                            resetCallbacks.forEach(callback -> callback.accept(zoneId));
                         }
                     }
                 }));
     }
 
-    public boolean setPermanentSetPoint(String zoneId, double doubleValue) {
-        return setPermanentSetPoint(zoneId, doubleValue, () -> {
+    public boolean setPermanentSetPoint(String zoneId, double temperature) {
+        return setPermanentSetPoint(zoneId, temperature, accepted -> {
         });
     }
 
-    boolean setPermanentSetPoint(String zoneId, double doubleValue, Runnable onAccepted) {
+    boolean setPermanentSetPoint(String zoneId, double temperature, Consumer<AcceptedSetPoint> onAccepted) {
         logger.trace("Account {}: permanent setpoint command for zone {}: {} Celsius", getThing().getUID(), zoneId,
-                doubleValue);
-        EvohomeApiClient localApiCLient = apiClient;
-        if (localApiCLient != null) {
-            return tryToCall(localApiCLient, "set permanent setpoint", zoneId,
-                    () -> localApiCLient.setHeatingZoneOverride(zoneId, doubleValue), onAccepted);
-        }
-        return false;
+                temperature);
+        EvohomeApiClient client = apiClient;
+        AtomicReference<@Nullable AcceptedSetPoint> accepted = new AtomicReference<>();
+        return client != null && tryToCall(client, "set permanent setpoint", zoneId,
+                () -> accepted.set(client.setHeatingZoneOverride(zoneId, temperature)),
+                () -> onAccepted.accept(Objects.requireNonNull(accepted.get())));
     }
 
     public boolean setTemporarySetPoint(String zoneId, double temperature, Instant until) {
-        return setTemporarySetPoint(zoneId, temperature, until, () -> {
+        return setTemporarySetPoint(zoneId, temperature, until, accepted -> {
         });
     }
 
-    boolean setTemporarySetPoint(String zoneId, double temperature, Instant until, Runnable onAccepted) {
-        EvohomeApiClient client = apiClient;
+    boolean setTemporarySetPoint(String zoneId, double temperature, Instant until,
+            Consumer<AcceptedSetPoint> onAccepted) {
         logger.trace("Account {}: temporary setpoint command for zone {}: {} Celsius until {}", getThing().getUID(),
                 zoneId, temperature, until);
+        EvohomeApiClient client = apiClient;
+        AtomicReference<@Nullable AcceptedSetPoint> accepted = new AtomicReference<>();
         return client != null && tryToCall(client, "set temporary setpoint", zoneId,
-                () -> client.setHeatingZoneTemporaryOverride(zoneId, temperature, until), onAccepted);
+                () -> accepted.set(client.setHeatingZoneTemporaryOverride(zoneId, temperature, until)),
+                () -> onAccepted.accept(Objects.requireNonNull(accepted.get())));
     }
 
     public @Nullable Instant setTemporarySetPointUntilNextSwitchpoint(String zoneId, double temperature) {
-        return setTemporarySetPointUntilNextSwitchpoint(zoneId, temperature, until -> {
+        return setTemporarySetPointUntilNextSwitchpoint(zoneId, temperature, accepted -> {
         });
     }
 
     @Nullable
-    Instant setTemporarySetPointUntilNextSwitchpoint(String zoneId, double temperature, Consumer<Instant> onAccepted) {
+    Instant setTemporarySetPointUntilNextSwitchpoint(String zoneId, double temperature,
+            Consumer<AcceptedSetPoint> onAccepted) {
         EvohomeApiClient client = apiClient;
         if (client == null) {
             return null;
         }
-        AtomicReference<@Nullable Instant> until = new AtomicReference<>();
-        boolean accepted = tryToCall(client, "set temporary setpoint until next switchpoint", zoneId,
-                () -> until.set(client.setHeatingZoneTemporaryOverrideUntilNextSwitchpoint(zoneId, temperature)),
-                () -> onAccepted.accept(Objects.requireNonNull(until.get())));
-        return accepted ? until.get() : null;
+        AtomicReference<@Nullable AcceptedSetPoint> accepted = new AtomicReference<>();
+        boolean success = tryToCall(client, "set temporary setpoint until next switchpoint", zoneId,
+                () -> accepted.set(client.setHeatingZoneTemporaryOverrideUntilNextSwitchpoint(zoneId, temperature)),
+                () -> onAccepted.accept(Objects.requireNonNull(accepted.get())));
+        return success ? Objects.requireNonNull(accepted.get()).until() : null;
     }
 
     public boolean cancelSetPointOverride(String zoneId) {
@@ -471,12 +475,20 @@ public class EvohomeAccountBridgeHandler extends BaseBridgeHandler {
                 forced.remove();
             } else {
                 Instant now = Instant.now();
+                Instant oldest = Instant.MAX;
                 for (Thing thing : getThing().getThings()) {
                     if (thing.getHandler() instanceof EvohomeHeatingZoneHandler zoneHandler
                             && zoneHandler.hasScheduleLinks() && client.isZoneScheduleDue(zoneHandler.getId(), now,
                                     configuration.scheduleRefreshInterval)) {
-                        zoneId = zoneHandler.getId();
-                        break;
+                        CachedSchedule cached = client.getCachedZoneSchedule(zoneHandler.getId());
+                        if (cached == null) {
+                            zoneId = zoneHandler.getId();
+                            break;
+                        }
+                        if (zoneId == null || cached.updatedAt().isBefore(oldest)) {
+                            zoneId = zoneHandler.getId();
+                            oldest = cached.updatedAt();
+                        }
                     }
                 }
             }

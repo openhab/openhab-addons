@@ -16,16 +16,19 @@ import java.time.DateTimeException;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
-import java.time.temporal.ChronoUnit;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.evohome.internal.EvohomeBindingConstants;
 import org.openhab.binding.evohome.internal.action.EvohomeZoneActions;
+import org.openhab.binding.evohome.internal.api.EvohomeApiClient.AcceptedSetPoint;
 import org.openhab.binding.evohome.internal.api.EvohomeApiClient.CachedSchedule;
 import org.openhab.binding.evohome.internal.api.models.v2.dto.response.HeatSetpointStatus;
 import org.openhab.binding.evohome.internal.api.models.v2.dto.response.TemperatureStatus;
@@ -59,6 +62,7 @@ import org.slf4j.LoggerFactory;
  * @author Kovacs Istvan - Schedule and temporary override controls
  * @author Kovacs Istvan - Weekly program and next scheduled target
  * @author Kovacs Istvan - Serialized set point mode selection
+ * @author Kovacs Istvan - Lifecycle-safe commands and accepted override context
  */
 @NonNullByDefault
 public class EvohomeHeatingZoneHandler extends BaseEvohomeHandler {
@@ -71,12 +75,16 @@ public class EvohomeHeatingZoneHandler extends BaseEvohomeHandler {
     private final Logger logger = LoggerFactory.getLogger(EvohomeHeatingZoneHandler.class);
     private volatile @Nullable SetPointContext actualSetPoint;
     private final AtomicReference<@Nullable PendingSetPoint> pendingSetPoint = new AtomicReference<>();
-    private volatile boolean disposed;
+    private volatile boolean disposed = true;
+    private long commandGeneration;
 
     private record SetPointContext(double temperature, String mode, @Nullable Instant until) {
     }
 
-    private record PendingSetPoint(SetPointContext context, Instant validUntil) {
+    private record PendingSetPoint(SetPointContext context, Instant readbackGraceUntil) {
+    }
+
+    private record ZoneCommand(EvohomeAccountBridgeHandler bridge, String zoneId, long generation, int duration) {
     }
 
     public EvohomeHeatingZoneHandler(Thing thing) {
@@ -84,9 +92,12 @@ public class EvohomeHeatingZoneHandler extends BaseEvohomeHandler {
     }
 
     @Override
-    public void initialize() {
-        disposed = false;
+    public synchronized void initialize() {
+        commandGeneration++;
+        actualSetPoint = null;
+        pendingSetPoint.set(null);
         super.initialize();
+        disposed = false;
         int duration = getEvohomeThingConfig().temporaryOverrideDuration;
         if (duration < 0 || duration > 1440) {
             updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
@@ -102,6 +113,7 @@ public class EvohomeHeatingZoneHandler extends BaseEvohomeHandler {
     @Override
     public synchronized void dispose() {
         disposed = true;
+        commandGeneration++;
         actualSetPoint = null;
         pendingSetPoint.set(null);
         super.dispose();
@@ -208,7 +220,7 @@ public class EvohomeHeatingZoneHandler extends BaseEvohomeHandler {
                 actualSetPoint = context;
                 PendingSetPoint pending = pendingSetPoint.get();
                 if (pending != null && (context.equals(pending.context())
-                        || !pending.validUntil().isAfter(Instant.now())
+                        || !pending.readbackGraceUntil().isAfter(Instant.now())
                         || "FollowSchedule".equals(mode) && "FollowSchedule".equals(pending.context().mode()))) {
                     pendingSetPoint.compareAndSet(pending, null);
                 }
@@ -244,15 +256,16 @@ public class EvohomeHeatingZoneHandler extends BaseEvohomeHandler {
             if ("FollowSchedule".equals(mode)) {
                 cancelSetPointOverride();
             } else if ("PermanentOverride".equals(mode) || "TemporaryOverride".equals(mode)) {
-                executeZoneCommand(() -> {
+                executeZoneCommand(zoneCommand -> {
                     SetPointContext context = getSetPointContext();
                     if (context == null) {
                         logger.debug("Thing {}: cannot change override mode without a known target temperature",
                                 getThing().getUID());
+                        return false;
                     } else if ("PermanentOverride".equals(mode)) {
-                        setPermanentSetPoint(context.temperature());
+                        return setPermanentSetPoint(zoneCommand, context.temperature());
                     } else {
-                        setTemporarySetPoint(context.temperature());
+                        return setTemporarySetPoint(zoneCommand, context.temperature());
                     }
                 });
             } else {
@@ -271,86 +284,125 @@ public class EvohomeHeatingZoneHandler extends BaseEvohomeHandler {
             } else if (temperature == CANCEL_SET_POINT_OVERRIDE) {
                 cancelSetPointOverride();
             } else {
-                executeZoneCommand(() -> {
+                executeZoneCommand(zoneCommand -> {
                     SetPointContext context = getSetPointContext();
                     if (context != null && "TemporaryOverride".equals(context.mode())) {
                         Instant until = context.until();
                         if (until != null && until.isAfter(Instant.now())) {
-                            setTemporarySetPoint(temperature, until);
+                            return setTemporarySetPoint(zoneCommand, temperature, until);
                         } else {
                             // An expired or unparseable temporary override must never become permanent implicitly.
-                            setTemporarySetPoint(temperature);
+                            return setTemporarySetPoint(zoneCommand, temperature);
                         }
                     } else {
-                        setPermanentSetPoint(temperature);
+                        return setPermanentSetPoint(zoneCommand, temperature);
                     }
                 });
             }
         }
     }
 
-    private void executeZoneCommand(Runnable command) {
+    private synchronized @Nullable ZoneCommand captureZoneCommand() {
         EvohomeAccountBridgeHandler bridge = getEvohomeBridge();
-        if (bridge != null && !disposed) {
-            bridge.executeZoneCommand(() -> {
-                if (!disposed && bridge.equals(getEvohomeBridge())) {
-                    command.run();
-                }
-            });
+        return bridge == null || disposed ? null
+                : new ZoneCommand(bridge, getId(), commandGeneration,
+                        getEvohomeThingConfig().temporaryOverrideDuration);
+    }
+
+    private synchronized boolean isCurrent(ZoneCommand command) {
+        return !disposed && command.generation() == commandGeneration && command.bridge().equals(getEvohomeBridge())
+                && command.zoneId().equals(getId());
+    }
+
+    private boolean executeZoneCommand(Function<ZoneCommand, Boolean> operation) {
+        ZoneCommand command = captureZoneCommand();
+        if (command == null) {
+            return false;
         }
+        AtomicBoolean accepted = new AtomicBoolean();
+        command.bridge().executeZoneCommand(() -> {
+            if (isCurrent(command)) {
+                accepted.set(operation.apply(command));
+            }
+        });
+        return accepted.get();
     }
 
     public boolean setPermanentSetPoint(double temperature) {
-        EvohomeAccountBridgeHandler bridge = getEvohomeBridge();
-        return bridge != null && bridge.setPermanentSetPoint(getId(), temperature,
-                () -> rememberCommand(temperature, "PermanentOverride", null));
+        return executeZoneCommand(command -> setPermanentSetPoint(command, temperature));
+    }
+
+    private boolean setPermanentSetPoint(ZoneCommand command, double temperature) {
+        return command.bridge().setPermanentSetPoint(command.zoneId(), temperature,
+                accepted -> rememberCommand(command, accepted, "PermanentOverride"));
     }
 
     public boolean setTemporarySetPoint(double temperature, Instant until) {
-        EvohomeAccountBridgeHandler bridge = getEvohomeBridge();
-        return bridge != null && bridge.setTemporarySetPoint(getId(), temperature, until,
-                () -> rememberCommand(temperature, "TemporaryOverride", until));
+        return executeZoneCommand(command -> setTemporarySetPoint(command, temperature, until));
+    }
+
+    private boolean setTemporarySetPoint(ZoneCommand command, double temperature, Instant until) {
+        return command.bridge().setTemporarySetPoint(command.zoneId(), temperature, until,
+                accepted -> rememberCommand(command, accepted, "TemporaryOverride"));
     }
 
     public boolean setTemporarySetPoint(double temperature) {
-        int duration = getEvohomeThingConfig().temporaryOverrideDuration;
+        return executeZoneCommand(command -> setTemporarySetPoint(command, temperature));
+    }
+
+    private boolean setTemporarySetPoint(ZoneCommand command, double temperature) {
+        int duration = command.duration();
         if (duration == 0) {
-            return setTemporarySetPointUntilNextSwitchpoint(temperature);
+            return setTemporarySetPointUntilNextSwitchpoint(command, temperature);
         }
         return duration > 0 && duration <= 1440
-                && setTemporarySetPoint(temperature, Instant.now().plusSeconds(duration * 60L));
+                && setTemporarySetPoint(command, temperature, Instant.now().plusSeconds(duration * 60L));
     }
 
     public boolean setTemporarySetPointUntilNextSwitchpoint(double temperature) {
-        EvohomeAccountBridgeHandler bridge = getEvohomeBridge();
-        return bridge != null && bridge.setTemporarySetPointUntilNextSwitchpoint(getId(), temperature,
-                until -> rememberCommand(temperature, "TemporaryOverride", until)) != null;
+        return executeZoneCommand(command -> setTemporarySetPointUntilNextSwitchpoint(command, temperature));
+    }
+
+    private boolean setTemporarySetPointUntilNextSwitchpoint(ZoneCommand command, double temperature) {
+        return command.bridge().setTemporarySetPointUntilNextSwitchpoint(command.zoneId(), temperature,
+                accepted -> rememberCommand(command, accepted, "TemporaryOverride")) != null;
     }
 
     public boolean cancelSetPointOverride() {
-        EvohomeAccountBridgeHandler bridge = getEvohomeBridge();
-        return bridge != null && bridge.cancelSetPointOverride(getId(), () -> {
-            SetPointContext context = getSetPointContext();
-            rememberCommand(context == null ? 0 : context.temperature(), "FollowSchedule", null);
-        });
+        return executeZoneCommand(command -> command.bridge().cancelSetPointOverride(command.zoneId(),
+                () -> rememberCancellation(command)));
+    }
+
+    Consumer<String> resetCommandContextCallback() {
+        ZoneCommand command = captureZoneCommand();
+        return zoneId -> {
+            if (command != null && command.zoneId().equals(zoneId)) {
+                rememberCancellation(command);
+            }
+        };
     }
 
     void resetCommandContext() {
-        SetPointContext context = getSetPointContext();
-        rememberCommand(context == null ? 0 : context.temperature(), "FollowSchedule", null);
+        resetCommandContextCallback().accept(getId());
     }
 
-    private void rememberCommand(double temperature, String mode, @Nullable Instant until) {
-        // Retain command intent briefly while the API readback may still show the previous override.
-        // This context never publishes optimistic channel states.
-        pendingSetPoint.set(new PendingSetPoint(
-                new SetPointContext(temperature, mode, until == null ? null : until.truncatedTo(ChronoUnit.SECONDS)),
-                Instant.now().plusSeconds(30)));
+    private void rememberCancellation(ZoneCommand command) {
+        SetPointContext context = getSetPointContext();
+        rememberCommand(command, new AcceptedSetPoint(context == null ? 0 : context.temperature(), null),
+                "FollowSchedule");
+    }
+
+    private synchronized void rememberCommand(ZoneCommand command, AcceptedSetPoint accepted, String mode) {
+        if (isCurrent(command)) {
+            // Retain accepted intent until fresh readback, allowing time for the cloud to apply it.
+            pendingSetPoint.set(new PendingSetPoint(new SetPointContext(accepted.temperature(), mode, accepted.until()),
+                    Instant.now().plusSeconds(30)));
+        }
     }
 
     private @Nullable SetPointContext getSetPointContext() {
         PendingSetPoint pending = pendingSetPoint.get();
-        return pending != null && pending.validUntil().isAfter(Instant.now()) ? pending.context() : actualSetPoint;
+        return pending != null ? pending.context() : actualSetPoint;
     }
 
     private @Nullable Double toCelsius(Command command) {

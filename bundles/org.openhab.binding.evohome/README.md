@@ -130,6 +130,8 @@ If a valid next switch point cannot be determined, the command fails without rep
 
 Commands are acknowledged by TCC before the physical system necessarily applies them.
 The binding requests fresh status after an accepted command; controller and radiator updates can take longer than this first status read.
+Until status is read back, subsequent commands retain the accepted override mode and expiry, including after a partially successful `Reset`.
+Channel states continue to report values read from TCC.
 Managed Things receive the additional channels through openHAB's Thing update instructions, preserving existing channel links.
 The program lookup supports IANA time zone identifiers and common European Windows time zone identifiers returned by TCC.
 An unknown time zone rejects the next-switchpoint command; explicit times and fixed durations remain available.
@@ -143,6 +145,7 @@ No additional rule action is needed, and these channels accept no program change
 Programs are cached for `scheduleRefreshInterval` minutes, 60 by default.
 At most one zone's program is fetched during each status poll.
 Newly linked zones therefore populate over successive status polls.
+Zones without a cached program are fetched first, followed by the oldest due program, so all linked zones are serviced even with short cache intervals.
 The next switch point and its temperature are recalculated from cached data on each status update, without an additional program request.
 After editing a program in the Evohome app or controller, send `REFRESH` to read the change before the cache interval expires:
 

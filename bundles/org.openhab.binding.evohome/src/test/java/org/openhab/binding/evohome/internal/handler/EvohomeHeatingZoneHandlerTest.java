@@ -33,6 +33,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.ArgumentCaptor;
+import org.openhab.binding.evohome.internal.api.EvohomeApiClient.AcceptedSetPoint;
 import org.openhab.binding.evohome.internal.api.EvohomeApiClient.CachedSchedule;
 import org.openhab.binding.evohome.internal.api.models.v2.dto.response.ZoneSchedule;
 import org.openhab.binding.evohome.internal.api.models.v2.dto.response.ZoneStatus;
@@ -311,7 +312,8 @@ class EvohomeHeatingZoneHandlerTest {
         assertEquals(ThingStatus.OFFLINE, status.getValue().getStatus());
         assertEquals(ThingStatusDetail.CONFIGURATION_ERROR, status.getValue().getStatusDetail());
         fixture.command("TemporarySetPoint", new DecimalType(22));
-        verifyNoInteractions(fixture.bridge);
+        verify(fixture.bridge, never()).setTemporarySetPoint(anyString(), anyDouble(), any());
+        verify(fixture.bridge, never()).setTemporarySetPointUntilNextSwitchpoint(anyString(), anyDouble());
     }
 
     @Test
@@ -548,23 +550,27 @@ class EvohomeHeatingZoneHandlerTest {
             doAnswer(invocation -> {
                 boolean accepted = bridge.setPermanentSetPoint("zone", invocation.getArgument(1, Double.class));
                 if (accepted) {
-                    invocation.getArgument(2, Runnable.class).run();
+                    invocation.<Consumer<AcceptedSetPoint>> getArgument(2)
+                            .accept(new AcceptedSetPoint(invocation.getArgument(1, Double.class), null));
                 }
                 return accepted;
-            }).when(bridge).setPermanentSetPoint(eq("zone"), anyDouble(), any(Runnable.class));
+            }).when(bridge).setPermanentSetPoint(eq("zone"), anyDouble(), any());
             doAnswer(invocation -> {
                 boolean accepted = bridge.setTemporarySetPoint("zone", invocation.getArgument(1, Double.class),
                         invocation.getArgument(2, Instant.class));
                 if (accepted) {
-                    invocation.getArgument(3, Runnable.class).run();
+                    invocation.<Consumer<AcceptedSetPoint>> getArgument(3)
+                            .accept(new AcceptedSetPoint(invocation.getArgument(1, Double.class),
+                                    invocation.getArgument(2, Instant.class).truncatedTo(ChronoUnit.SECONDS)));
                 }
                 return accepted;
-            }).when(bridge).setTemporarySetPoint(eq("zone"), anyDouble(), any(Instant.class), any(Runnable.class));
+            }).when(bridge).setTemporarySetPoint(eq("zone"), anyDouble(), any(Instant.class), any());
             doAnswer(invocation -> {
                 Instant until = bridge.setTemporarySetPointUntilNextSwitchpoint("zone",
                         invocation.getArgument(1, Double.class));
                 if (until != null) {
-                    invocation.<Consumer<Instant>> getArgument(2).accept(until);
+                    invocation.<Consumer<AcceptedSetPoint>> getArgument(2)
+                            .accept(new AcceptedSetPoint(invocation.getArgument(1, Double.class), until));
                 }
                 return until;
             }).when(bridge).setTemporarySetPointUntilNextSwitchpoint(eq("zone"), anyDouble(), any());

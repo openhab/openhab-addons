@@ -207,7 +207,9 @@ class EvohomeApiClientTest {
     void temporaryOverrideUsesUtcTimeUntilAndAdvertisedTemperatureResolution() throws Exception {
         EvohomeApiClient client = installed(installation(CAPABILITIES, "[]", "", "Europe/Budapest"));
         Instant until = Instant.now().plusSeconds(3600).truncatedTo(ChronoUnit.SECONDS);
-        client.setHeatingZoneTemporaryOverride("zone", 20.37, until);
+        var accepted = client.setHeatingZoneTemporaryOverride("zone", 20.37, until);
+        assertEquals(20.25, accepted.temperature());
+        assertEquals(until, accepted.until());
         JsonObject body = commandBodies().getFirst();
         assertEquals("TemporaryOverride", body.get("setpointMode").getAsString());
         assertEquals(20.25, body.get("heatSetpointValue").getAsDouble());
@@ -228,7 +230,9 @@ class EvohomeApiClientTest {
     @Test
     void missingCapabilitiesRetainHalfDegreeResolution() throws Exception {
         EvohomeApiClient client = installed(installation("{}", "[]", "", "Europe/Budapest"));
-        client.setHeatingZoneOverride("zone", 21.2);
+        var accepted = client.setHeatingZoneOverride("zone", 21.2);
+        assertEquals(21.0, accepted.temperature());
+        assertNull(accepted.until());
         assertEquals(21.0, commandBodies().getFirst().get("heatSetpointValue").getAsDouble());
     }
 
@@ -320,7 +324,8 @@ class EvohomeApiClientTest {
         EvohomeApiClient client = installed(installation(CAPABILITIES, "[]", "", timeZone));
         String schedule = scheduleAt("23:59:00", "00:00:00");
         when(request.send()).thenReturn(response(200, schedule), response(201, "{}"));
-        Instant until = client.setHeatingZoneTemporaryOverrideUntilNextSwitchpoint("zone", 21);
+        Instant until = Objects
+                .requireNonNull(client.setHeatingZoneTemporaryOverrideUntilNextSwitchpoint("zone", 21).until());
         assertTrue(until.isAfter(Instant.now()));
         assertEquals(until.toString(), commandBodies().getFirst().get("timeUntil").getAsString());
         verify(http).newRequest(EvohomeApiConstants.URL_V2_BASE + "temperatureZone/zone/schedule");

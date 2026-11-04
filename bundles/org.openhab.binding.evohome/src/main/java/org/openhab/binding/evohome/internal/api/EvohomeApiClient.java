@@ -63,6 +63,7 @@ import org.openhab.binding.evohome.internal.configuration.EvohomeAccountConfigur
  * @author Kovacs Istvan - Temporary controller modes
  * @author Kovacs Istvan - Validated weekly program cache
  * @author Kovacs Istvan - Incremental reset acknowledgement
+ * @author Kovacs Istvan - Accepted normalized setpoints
  *
  */
 @NonNullByDefault
@@ -89,6 +90,12 @@ public class EvohomeApiClient {
     private final Map<String, Instant> zoneScheduleRetryAfter = new ConcurrentHashMap<>();
 
     public record CachedSchedule(ZoneSchedule schedule, Instant updatedAt, @Nullable ZoneId timeZone) {
+    }
+
+    /**
+     * Values sent in an accepted request; actual controller state is obtained by status readback.
+     */
+    public record AcceptedSetPoint(double temperature, @Nullable Instant until) {
     }
 
     /**
@@ -202,12 +209,13 @@ public class EvohomeApiClient {
         return null;
     }
 
-    public synchronized void setHeatingZoneOverride(String zoneId, double setPoint)
+    public synchronized AcceptedSetPoint setHeatingZoneOverride(String zoneId, double setPoint)
             throws TimeoutException, EvohomeApiClientException {
         checkOpen();
         setPoint = validateTemperature(zoneId, setPoint, "PermanentOverride");
         HeatSetPoint setPointCommand = new HeatSetPointBuilder().setSetPoint(setPoint).build();
         setHeatingZoneOverride(zoneId, setPointCommand);
+        return new AcceptedSetPoint(setPoint, null);
     }
 
     public synchronized void cancelHeatingZoneOverride(String zoneId)
@@ -218,7 +226,7 @@ public class EvohomeApiClient {
         setHeatingZoneOverride(zoneId, setPointCommand);
     }
 
-    public synchronized void setHeatingZoneTemporaryOverride(String zoneId, double setPoint, Instant until)
+    public synchronized AcceptedSetPoint setHeatingZoneTemporaryOverride(String zoneId, double setPoint, Instant until)
             throws TimeoutException, EvohomeApiClientException {
         checkOpen();
         setPoint = validateTemperature(zoneId, setPoint, "TemporaryOverride");
@@ -238,15 +246,15 @@ public class EvohomeApiClient {
         }
         HeatSetPoint command = new HeatSetPointBuilder().setTemporarySetPoint(setPoint, until).build();
         setHeatingZoneOverride(zoneId, command);
+        return new AcceptedSetPoint(setPoint, until);
     }
 
-    public synchronized Instant setHeatingZoneTemporaryOverrideUntilNextSwitchpoint(String zoneId, double setPoint)
-            throws TimeoutException, EvohomeApiClientException {
+    public synchronized AcceptedSetPoint setHeatingZoneTemporaryOverrideUntilNextSwitchpoint(String zoneId,
+            double setPoint) throws TimeoutException, EvohomeApiClientException {
         checkOpen();
         validateTemperature(zoneId, setPoint, "TemporaryOverride");
         Instant until = getNextSwitchpoint(zoneId);
-        setHeatingZoneTemporaryOverride(zoneId, setPoint, until);
-        return until;
+        return setHeatingZoneTemporaryOverride(zoneId, setPoint, until);
     }
 
     public synchronized Instant getNextSwitchpoint(String zoneId) throws TimeoutException, EvohomeApiClientException {
