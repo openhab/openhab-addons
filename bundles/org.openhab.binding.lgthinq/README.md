@@ -129,19 +129,19 @@ LG ThinQ Washer Machine supports the following channels
 
 #### Washer Machine Remote Start Option
 
-These channels are always available. A remote start is only sent while remote start is enabled on the Washer (`rs-flag` is ON).
+These channels are always present, but a remote start only works while it is enabled on the washer (`rs-flag` is ON).
 
-| channel #            | channel           | type               | description                                                                                             |
-|----------------------|-------------------|--------------------|---------------------------------------------------------------------------------------------------------|
-| rs-start-stop        | Remote Start/Stop | Switch             | Switch to control if you want to start/stop the cycle remotely                                          |
-| rs-course            | Course to Run     | String (Selection) | The pre-programmed course (or default) is shown. You can change-it if you want before remote start      |
-| rs-temperature-level | Temperature Level | String (Selection) | The pre-programmed temperature (or default) is shown. You can change-it if you want before remote start |
-| rs-spin              | Spin              | String             | The pre-programmed spin (or default) is shown. You can change-it if you want before remote start        |
-| rs-rinse             | Rinse             | String             | The pre-programmed rinse (or default) is shown. You can change-it if you want before remote start       |
+| channel #            | channel           | type               | description                         |
+|----------------------|-------------------|--------------------|-------------------------------------|
+| rs-start-stop        | Remote Start/Stop | Switch             | `ON` starts the washer              |
+| rs-course            | Course to Run     | String (Selection) | Course to use for the remote start  |
+| rs-temperature-level | Temperature Level | String (Selection) | Temperature for the remote start    |
+| rs-spin              | Spin              | String             | Spin speed for the remote start     |
+| rs-rinse             | Rinse             | String             | Rinse option for the remote start   |
 
-When remote start gets enabled on the Washer, these channels are filled once with its settings. Changing `rs-course` does not change the other remote start channels, adjust them if needed.
-If the Washer goes to stand-by while waiting for remote start, the remote start channels keep their values, including changes made during stand-by.
-Wake the Washer by sending `ON` to the `stand-by` channel before sending the remote start.
+When remote start gets enabled on the washer, these channels take over its current settings once.
+After that they keep your values, also while the washer is in stand-by. Changing `rs-course` doesn't change the other channels.
+A washer in stand-by must be woken up by sending `ON` to `stand-by` before the remote start.
 
 ### Dryer Machine
 
@@ -165,12 +165,12 @@ LG ThinQ Dryer Machine supports the following channels
 
 #### Dryer Machine Remote Start Option
 
-These channels are always available. A remote start is only sent while remote start is enabled on the Dryer (`rs-flag` is ON).
+These channels are always present, but a remote start only works while it is enabled on the dryer (`rs-flag` is ON).
 
-| channel #     | channel           | type               | description                                                                                             |
-|---------------|-------------------|--------------------|---------------------------------------------------------------------------------------------------------|
-| rs-start-stop | Remote Start/Stop | Switch             | Switch to control if you want to start/stop the cycle remotely                                          |
-| rs-course     | Course to Run     | String (Selection) | The pre-programmed course (or default) is shown. You can change-it if you want before remote start      |
+| channel #     | channel           | type               | description                        |
+|---------------|-------------------|--------------------|------------------------------------|
+| rs-start-stop | Remote Start/Stop | Switch             | `ON` starts the dryer              |
+| rs-course     | Course to Run     | String (Selection) | Course to use for the remote start |
 
 ### Dryer/Washer Tower
 
