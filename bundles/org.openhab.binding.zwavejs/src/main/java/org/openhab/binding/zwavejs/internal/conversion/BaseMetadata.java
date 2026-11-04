@@ -473,6 +473,7 @@ public abstract class BaseMetadata {
      */
     protected MetadataType correctedType(MetadataType type, @Nullable Object value, int commandClass,
             @Nullable Map<String, String> optionList, @Nullable Object property, @Nullable Object propertyKey) {
+        // Aggregate color values are typed "any"; when null, the type can't be inferred from the value
         if (type == MetadataType.ANY && commandClass == COMMAND_CLASS_SWITCH_COLOR && propertyKey == null
                 && ("currentColor".equals(property) || "targetColor".equals(property))) {
             return MetadataType.COLOR;
