@@ -15,6 +15,7 @@ package org.openhab.binding.semsportal.internal;
 import static org.openhab.binding.semsportal.internal.SEMSPortalBindingConstants.*;
 
 import java.time.LocalDateTime;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -26,6 +27,7 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
@@ -37,11 +39,14 @@ import org.slf4j.LoggerFactory;
  * sent to one of the channels.
  *
  * @author Iwan Bron - Initial contribution
+ * @author Julio Vilmar Gesser - Refresh task lifecycle and recovery
  */
 @NonNullByDefault
 public class StationHandler extends BaseThingHandler {
     private Logger logger = LoggerFactory.getLogger(StationHandler.class);
     private static final long MAX_STATUS_AGE_MINUTES = 1;
+
+    private @Nullable ScheduledFuture<?> refreshStatusTask;
 
     private @Nullable StationStatus currentStatus;
     private LocalDateTime lastUpdate = LocalDateTime.MIN;
@@ -52,27 +57,16 @@ public class StationHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (isPortalOK()) {
-            if (command instanceof RefreshType) {
-                scheduler.execute(() -> {
-                    ensureRecentStatus();
+        if (command instanceof RefreshType) {
+            scheduler.execute(() -> {
+                if (ensureRecentStatus()) {
                     updateChannelState(channelUID);
-                });
-            }
+                }
+            });
         }
-    }
-
-    private boolean isPortalOK() {
-        PortalHandler portal = getPortal();
-        return portal != null && portal.isLoggedIn();
     }
 
     private void updateChannelState(ChannelUID channelUID) {
-        if (!isPortalOK()) {
-            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE,
-                    "Unable to update station info. Check Bridge status for details.");
-            return;
-        }
         switch (channelUID.getId()) {
             case CHANNEL_CURRENT_OUTPUT:
                 updateState(channelUID.getId(), StateHelper.getCurrentOutput(currentStatus));
@@ -100,23 +94,57 @@ public class StationHandler extends BaseThingHandler {
         }
     }
 
-    private void ensureRecentStatus() {
+    private boolean ensureRecentStatus() {
         if (lastUpdate.isBefore(LocalDateTime.now().minusMinutes(MAX_STATUS_AGE_MINUTES))) {
-            updateStation();
+            return updateStation();
         }
+        return false;
     }
 
     @Override
     public void initialize() {
         updateStatus(ThingStatus.UNKNOWN);
-        scheduler.execute(() -> {
-            try {
-                scheduler.scheduleWithFixedDelay(() -> ensureRecentStatus(), 0, getUpdateInterval(), TimeUnit.MINUTES);
-            } catch (Exception e) {
-                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
-                        "Unable to update station info. Check Bridge status for details.");
+        startTasks();
+    }
+
+    private void startTasks() {
+        synchronized (this) {
+            if (refreshStatusTask == null) {
+                try {
+                    refreshStatusTask = scheduler.scheduleWithFixedDelay(() -> ensureRecentStatus(), 0,
+                            getUpdateInterval(), TimeUnit.MINUTES);
+                } catch (Exception e) {
+                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
+                            "Unable to update station info. Check Bridge status for details.");
+                }
             }
-        });
+        }
+    }
+
+    private void stopTasks() {
+        synchronized (this) {
+            ScheduledFuture<?> task = refreshStatusTask;
+            if (task != null) {
+                task.cancel(true);
+                refreshStatusTask = null;
+            }
+        }
+    }
+
+    @Override
+    public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
+        super.bridgeStatusChanged(bridgeStatusInfo);
+        if (bridgeStatusInfo.getStatus() == ThingStatus.ONLINE) {
+            startTasks();
+        } else if (bridgeStatusInfo.getStatus() == ThingStatus.OFFLINE
+                && bridgeStatusInfo.getStatusDetail() != ThingStatusDetail.COMMUNICATION_ERROR) {
+            stopTasks();
+        }
+    }
+
+    @Override
+    public void dispose() {
+        stopTasks();
     }
 
     private long getUpdateInterval() {
@@ -127,12 +155,7 @@ public class StationHandler extends BaseThingHandler {
         return portal.getUpdateInterval();
     }
 
-    private void updateStation() {
-        if (!isPortalOK()) {
-            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE,
-                    "Unable to update station info. Check Bridge status for details.");
-            return;
-        }
+    private boolean updateStation() {
         PortalHandler portal = getPortal();
         if (portal != null) {
             try {
@@ -144,6 +167,7 @@ public class StationHandler extends BaseThingHandler {
                     updateStatus(ThingStatus.OFFLINE, "Station not operational");
                 }
                 updateAllChannels();
+                return true;
             } catch (CommunicationException commEx) {
                 updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, commEx.getMessage());
             } catch (ConfigurationException confEx) {
@@ -151,13 +175,16 @@ public class StationHandler extends BaseThingHandler {
             }
         } else {
             logger.debug("Unable to find portal for thing {}", getThing().getUID());
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE,
+                    "Unable to update station info. Check Bridge status for details.");
         }
+        return false;
     }
 
     private String getStationUUID() {
         String uuid = getThing().getProperties().get(STATION_UUID);
         if (uuid == null) {
-            Object uuidObj = getThing().getConfiguration().get(STATION_UUID);
+            Object uuidObj = getConfig().get(STATION_UUID);
             if (uuidObj instanceof String stringValue) {
                 uuid = stringValue;
             }

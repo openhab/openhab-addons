@@ -15,15 +15,22 @@ package org.openhab.binding.semsportal.internal.dto;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * POJO containing details about the inverter. Only a very small subset of the available properties is mapped
+ * POJO containing the response to the {@link ProductionRequest}
  *
- * @author Iwan Bron - Initial contribution
+ * @author Julio Vilmar Gesser - Initial contribution
  */
-public class InverterDetails {
-    @SerializedName("last_refresh_time")
-    private String lastUpdate;
+public class ProductionResponse extends BaseResponse {
+    private Production data;
 
-    public String getLastUpdate() {
-        return lastUpdate;
+    /**
+     * @return the income in the period, in the currency that is set in the portal
+     */
+    public Double getIncome() {
+        return data == null ? null : data.income;
+    }
+
+    private static class Production {
+        @SerializedName("profitProStats")
+        private Double income;
     }
 }

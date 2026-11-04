@@ -14,30 +14,16 @@ package org.openhab.binding.semsportal.internal.dto;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
-import com.google.gson.annotations.SerializedName;
-
 /**
- * Request to list all available power stations in an account. Answer can be deserialized in a
- * {@link StationListResponse}
+ * POJO for the request to list the power stations of the account. Properties are private but used by Gson to
+ * construct the request.
  *
  * @author Iwan Bron - Initial contribution
- *
+ * @author Julio Vilmar Gesser - Migrated to the SEMS+ API
  */
+@SuppressWarnings("unused") // the fields are used by Gson
 @NonNullByDefault
 public class StationListRequest {
-    // Properties are private but used by Gson to construct the request
-    @SerializedName("page_size")
-    private int pageSize = 5;
-    @SerializedName("page_index")
-    private int pageIndex = 1;
-    @SerializedName("order_by")
-    private String orderBy = "";
-    @SerializedName("powerstation_status")
-    private String powerstationStatus = "";
-    // @SerializedName("key")
-    // private String key = "";
-    @SerializedName("powerstation_id")
-    private String powerstationId = "";
-    @SerializedName("powerstation_type")
-    private String powerstationType = "";
+    private int current = 1;
+    private int size = 100;
 }
