@@ -88,9 +88,8 @@ public class PortalHandlerTest {
     private final AtomicInteger logins = new AtomicInteger();
     private final Set<String> invalidTokens = ConcurrentHashMap.newKeySet();
     private final Map<String, Deque<String>> responses = new HashMap<>();
-    // runs while the login request is on its way, before the portal answers it
-    private volatile Runnable onLogin = () -> {
-    };
+    // runs while the request is on its way, before the portal answers it, by the last part of the url
+    private final Map<String, Runnable> onRequest = new ConcurrentHashMap<>();
 
     private @NonNullByDefault({}) PortalHandler handler;
 
@@ -109,8 +108,9 @@ public class PortalHandlerTest {
                 tokens.add(token);
                 payloads.add(payload == null ? "" : payload);
                 String last = url.substring(url.lastIndexOf('/') + 1);
-                if ("cross-login".equals(last)) {
-                    onLogin.run();
+                Runnable hook = onRequest.get(last);
+                if (hook != null) {
+                    hook.run();
                 }
                 if (!"cross-login".equals(last) && invalidTokens.contains(token.getToken())) {
                     return "{\"code\": \"C0602\", \"description\": \"expired\"}";
@@ -227,13 +227,26 @@ public class PortalHandlerTest {
     @Test
     public void testLoginFinishingAfterDisposeIsDropped() throws Exception {
         // the handler is stopped while the login request is on its way
-        onLogin = () -> handler.dispose();
+        onRequest.put("cross-login", () -> handler.dispose());
 
         assertThrows(CommunicationException.class, () -> handler.getStationStatus(STATION));
 
         // the session of that login is not kept, and nothing is requested with it
         assertEquals(1, requests.size());
         verify(callback, never()).statusUpdated(any(), any());
+    }
+
+    @Test
+    public void testNoLoginAfterDisposeWhenTheSessionIsInvalid() throws Exception {
+        // the handler is stopped while the request is on its way, and the portal says that the session is not valid
+        respond("flow", "{\"code\": \"C0602\", \"description\": \"expired\"}", file("success_flow.json"));
+        onRequest.put("flow", () -> handler.dispose());
+
+        assertThrows(CommunicationException.class, () -> handler.getStationStatus(STATION));
+
+        // not logged in again, and the request not repeated on the stopped bridge
+        assertEquals(1, requests.stream().filter(request -> request.endsWith("cross-login")).count());
+        assertEquals(1, requests.stream().filter(request -> request.endsWith("stations/flow")).count());
     }
 
     @Test

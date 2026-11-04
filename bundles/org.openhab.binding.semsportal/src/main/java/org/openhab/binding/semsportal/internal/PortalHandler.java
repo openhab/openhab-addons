@@ -148,7 +148,7 @@ public class PortalHandler extends BaseBridgeHandler {
 
         loginJob = scheduler.schedule(() -> {
             try {
-                renewSession(null);
+                renewSession(started, null);
             } catch (CommunicationException e) {
                 logger.debug("Unable to login to SEMS portal: {}", e.getMessage()); // the status tells why
             } catch (RuntimeException e) {
@@ -300,14 +300,17 @@ public class PortalHandler extends BaseBridgeHandler {
     /**
      * Sends a request to the gateway of the account, and parses the response. If the session is not valid (anymore),
      * it logs in again and repeats the request once.
+     *
+     * @param started the generation of the operation that sends the request: nothing is sent, and no login is done,
+     *            for an operation of a previous generation
      */
-    private <T extends BaseResponse> T call(Class<T> type, HttpMethod method, String path, Map<String, String> params,
-            @Nullable Object body) throws CommunicationException {
-        SEMSToken token = getSession();
+    private <T extends BaseResponse> T call(int started, Class<T> type, HttpMethod method, String path,
+            Map<String, String> params, @Nullable Object body) throws CommunicationException {
+        SEMSToken token = getSession(started);
         T response = request(type, method, token, path, params, body);
         if (response.isSessionInvalid()) {
             logger.debug("Session is invalidated. Trying again.");
-            token = renewSession(token);
+            token = renewSession(started, token);
             response = request(type, method, token, path, params, body);
         }
         return response;
@@ -336,23 +339,32 @@ public class PortalHandler extends BaseBridgeHandler {
         return parsed;
     }
 
-    private SEMSToken getSession() throws CommunicationException {
-        if (disposed) {
+    /**
+     * A bridge that was stopped, or initialized again, has nothing to do for the operations that started before.
+     */
+    private void checkActive(int started) throws CommunicationException {
+        if (disposed || started != generation) {
             throw new CommunicationException("The bridge is stopped");
         }
+    }
+
+    private SEMSToken getSession(int started) throws CommunicationException {
+        checkActive(started);
         SEMSToken token = sessionToken;
-        return token != null ? token : renewSession(null);
+        return token != null ? token : renewSession(started, null);
     }
 
     /**
      * Logs in, unless another request already did after it found the given token invalid. A login makes the previous
      * session token invalid, so logging in twice would invalidate the session that the first login just got.
+     *
+     * @param started the generation of the operation that needs the session
      */
-    private SEMSToken renewSession(@Nullable SEMSToken invalidToken) throws CommunicationException {
-        int started = generation;
+    private SEMSToken renewSession(int started, @Nullable SEMSToken invalidToken) throws CommunicationException {
         ThingStatusInfo status;
         // The request is part of the critical section: the logins must not overlap. The framework is called outside it.
         synchronized (loginLock) {
+            checkActive(started);
             SEMSToken current = sessionToken;
             if (current != null && (invalidToken == null || !invalidToken.getToken().equals(current.getToken()))) {
                 return current;
@@ -388,12 +400,12 @@ public class PortalHandler extends BaseBridgeHandler {
         }
         int started = generation;
         Map<String, String> station = Map.of("stationId", stationUUID);
-        FlowResponse flow = call(FlowResponse.class, HttpMethod.GET, FLOW_PATH, station, null);
+        FlowResponse flow = call(started, FlowResponse.class, HttpMethod.GET, FLOW_PATH, station, null);
         if (flow.isNoAccess()) {
             throw new ConfigurationException("No access to this power station. Please check your station ID");
         }
         checkOk(flow);
-        List<Inverter> inverters = requestInverters(stationUUID);
+        List<Inverter> inverters = requestInverters(started, stationUUID);
 
         List<@Nullable Double> dayCounters = new ArrayList<>();
         List<@Nullable Double> monthCounters = new ArrayList<>();
@@ -401,7 +413,7 @@ public class PortalHandler extends BaseBridgeHandler {
         boolean operational = false;
         for (Inverter inverter : inverters) {
             operational |= NORMAL_STATUSES.contains(inverter.getStatus());
-            CountingResponse counters = call(CountingResponse.class, HttpMethod.GET,
+            CountingResponse counters = call(started, CountingResponse.class, HttpMethod.GET,
                     String.format(COUNTING_PATH, inverter.getSerialNumber()),
                     Map.of("deviceType", "INVERTER", "pwId", stationUUID), null);
             checkOk(counters);
@@ -418,9 +430,9 @@ public class PortalHandler extends BaseBridgeHandler {
         publish(started, ONLINE);
 
         LocalDate today = LocalDate.now(ZoneId.systemDefault());
-        Double dayIncome = getIncome(stationUUID, "day", today.atStartOfDay().format(PERIOD_FORMAT),
+        Double dayIncome = getIncome(started, stationUUID, "day", today.atStartOfDay().format(PERIOD_FORMAT),
                 today.atTime(23, 59, 59).format(PERIOD_FORMAT));
-        Double totalIncome = getIncome(stationUUID, "year", INSTALLATION_START,
+        Double totalIncome = getIncome(started, stationUUID, "year", INSTALLATION_START,
                 today.atTime(23, 59, 59).format(PERIOD_FORMAT));
 
         Double currentOutput = flow.getCurrentOutput();
@@ -428,8 +440,8 @@ public class PortalHandler extends BaseBridgeHandler {
                 overallTotal, dayIncome, totalIncome, operational, toDateTime(flow.getRefreshTime()));
     }
 
-    private List<Inverter> requestInverters(String stationUUID) throws CommunicationException {
-        InverterStatusResponse response = call(InverterStatusResponse.class, HttpMethod.GET, DEVICES_PATH,
+    private List<Inverter> requestInverters(int started, String stationUUID) throws CommunicationException {
+        InverterStatusResponse response = call(started, InverterStatusResponse.class, HttpMethod.GET, DEVICES_PATH,
                 Map.of("stationId", stationUUID), null);
         checkOk(response);
         return response.getInverters();
@@ -441,7 +453,7 @@ public class PortalHandler extends BaseBridgeHandler {
      */
     public List<Inverter> getInverters(String stationUUID) {
         try {
-            return requestInverters(stationUUID);
+            return requestInverters(generation, stationUUID);
         } catch (CommunicationException e) {
             logger.debug("Unable to retrieve the inverters of the station: {}", e.getMessage());
             return Collections.emptyList();
@@ -471,10 +483,10 @@ public class PortalHandler extends BaseBridgeHandler {
      * The income is optional: the portal might not know it, for instance if no tariffs are set. That is not a reason
      * to fail the update.
      */
-    private @Nullable Double getIncome(String stationUUID, String dimension, String start, String end) {
+    private @Nullable Double getIncome(int started, String stationUUID, String dimension, String start, String end) {
         try {
-            ProductionResponse response = call(ProductionResponse.class, HttpMethod.POST, PRODUCTION_PATH, Map.of(),
-                    new ProductionRequest(stationUUID, dimension, start, end));
+            ProductionResponse response = call(started, ProductionResponse.class, HttpMethod.POST, PRODUCTION_PATH,
+                    Map.of(), new ProductionRequest(stationUUID, dimension, start, end));
             if (response.isOk()) {
                 return response.getIncome();
             }
@@ -505,8 +517,8 @@ public class PortalHandler extends BaseBridgeHandler {
     public List<Station> getAllStations() {
         int started = generation;
         try {
-            StationListResponse listResponse = call(StationListResponse.class, HttpMethod.POST, LIST_PATH, Map.of(),
-                    new StationListRequest());
+            StationListResponse listResponse = call(started, StationListResponse.class, HttpMethod.POST, LIST_PATH,
+                    Map.of(), new StationListRequest());
             if (listResponse.isOk()) {
                 logger.debug("Received list of {} stations from SEMS portal", listResponse.getStations().size());
                 publish(started, ONLINE);

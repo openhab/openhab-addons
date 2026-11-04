@@ -130,8 +130,13 @@ public class StationHandler extends BaseThingHandler {
         }
     }
 
+    /**
+     * Stops the periodic task. A fetch that is running is cancelled, and its result is dropped.
+     */
     private void stopTasks() {
         synchronized (this) {
+            generation++;
+            refreshing = false;
             ScheduledFuture<?> task = refreshStatusTask;
             if (task != null) {
                 task.cancel(true);
@@ -155,10 +160,8 @@ public class StationHandler extends BaseThingHandler {
     public void dispose() {
         synchronized (this) {
             disposed = true;
-            generation++;
-            refreshing = false;
+            stopTasks();
         }
-        stopTasks();
     }
 
     private long getUpdateInterval() {

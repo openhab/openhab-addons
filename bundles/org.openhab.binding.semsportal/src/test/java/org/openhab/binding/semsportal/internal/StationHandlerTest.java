@@ -250,6 +250,22 @@ public class StationHandlerTest {
     }
 
     @Test
+    public void testStatusFetchedWhenTheBridgeStopsTheUpdatesIsNotPublished() throws Exception {
+        CountDownLatch release = new CountDownLatch(1);
+        slowPortal(release);
+        handler.initialize();
+        verify(portal, timeout(TIMEOUT_MS).times(1)).getStationStatus(STATION);
+
+        // the Bridge reports that the login is refused while the status is being fetched
+        handler.bridgeStatusChanged(
+                new ThingStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Check username"));
+        release.countDown();
+
+        verify(callback, after(500).never()).stateUpdated(any(), any());
+        verify(callback, never()).statusUpdated(eq(thing), argThat(info -> info.getStatus() == ThingStatus.ONLINE));
+    }
+
+    @Test
     public void testStatusFetchedBeforeDisposeIsNotPublished() throws Exception {
         CountDownLatch release = new CountDownLatch(1);
         slowPortal(release);
