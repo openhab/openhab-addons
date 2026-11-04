@@ -46,6 +46,7 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.link.ItemChannelLinkRegistry;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.StateOption;
+import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -176,6 +177,28 @@ public class LGThinQWasherDryerHandler
             stateDescriptionProvider.setStateOptions(
                     addRemoteStartChannel(CHANNEL_WMD_REMOTE_START_RINSE, CoreItemFactory.STRING), optionsRinse);
         }
+
+        CommandDefinition cmd = wmCap.getCommandsDefinition().get(wmCap.getCommandRemoteStart());
+        for (Map.Entry<String, String> option : WMD_OPTION_CHANNELS.entrySet()) {
+            FeatureDefinition fd = wmCap.getOptionFeatures().get(option.getKey());
+            if (fd == null) {
+                continue;
+            }
+            ChannelUID optionChannelUID = new ChannelUID(channelGroupDashboardUID, option.getValue());
+            if (getThing().getChannel(optionChannelUID) == null && getCallback() != null) {
+                String typeId = CHANNEL_WMD_DRY_LEVEL_ID.equals(option.getValue()) ? "dryer-dry-level"
+                        : "washer-" + option.getValue();
+                createDynChannel(typeId, optionChannelUID, CoreItemFactory.STRING);
+            }
+            if (!CHANNEL_WMD_DRY_LEVEL_ID.equals(option.getValue())) {
+                stateDescriptionProvider.setStateOptions(optionChannelUID, getOptionStates(fd));
+            }
+            if (cmd != null && cmd.getData().containsKey(option.getKey())) {
+                stateDescriptionProvider
+                        .setStateOptions(addRemoteStartChannel(CHANNEL_WMD_REMOTE_START_PREFIX + option.getValue(),
+                                CoreItemFactory.STRING), getOptionStates(fd));
+            }
+        }
     }
 
     private ChannelUID addRemoteStartChannel(String channelId, String itemType) {
@@ -184,6 +207,19 @@ public class LGThinQWasherDryerHandler
             createDynChannel(channelId, channelUID, itemType);
         }
         return channelUID;
+    }
+
+    private static List<StateOption> getOptionStates(FeatureDefinition fd) {
+        return fd.getValuesMapping().entrySet().stream().sorted(Map.Entry.comparingByKey())
+                .map(e -> new StateOption(e.getKey(), getOptionLabel(e.getKey(), e.getValue()))).toList();
+    }
+
+    private static String getOptionLabel(String value, String labelKey) {
+        String label = CAP_WM_OPTION.get(labelKey);
+        if (label == null) {
+            label = CAP_DR_DRY_LEVEL.get(labelKey);
+        }
+        return label != null ? label : value;
     }
 
     @Override
@@ -213,12 +249,20 @@ public class LGThinQWasherDryerHandler
         updateState(remoteStartFlagChannelUID, OnOffType.from(shot.isRemoteStartEnabled()));
         updateState(spinChannelUID, new StringType(shot.getSpin()));
         updateState(rinseChannelUID, new StringType(shot.getRinse()));
+        WasherDryerCapability wmCap = getCapabilities();
+        for (Map.Entry<String, String> option : WMD_OPTION_CHANNELS.entrySet()) {
+            Object value = shot.getRawData().get(option.getKey());
+            if (value != null && !CHANNEL_WMD_DRY_LEVEL_ID.equals(option.getValue())
+                    && wmCap.getOptionFeatures().containsKey(option.getKey())) {
+                updateState(new ChannelUID(channelGroupDashboardUID, option.getValue()),
+                        new StringType(value.toString()));
+            }
+        }
         // in stand-by the machine reports no course, so keep the settings it had while remote start was enabled
-        WasherDryerCapability cap = getCapabilities();
         if (!shot.isRemoteStartEnabled()) {
             remoteStartShot = null;
             remoteStartValuesInitialized = false;
-        } else if (hasSelectedCourse(cap, shot)) {
+        } else if (hasSelectedCourse(wmCap, shot)) {
             remoteStartShot = shot;
             // fill the remote start items once with the washer's settings, afterwards they keep the user's values
             if (!remoteStartValuesInitialized) {
@@ -229,6 +273,16 @@ public class LGThinQWasherDryerHandler
                         CHANNEL_WMD_REMOTE_START_RINSE)) {
                     updateState(new ChannelUID(channelGroupRemoteStartUID, channelId),
                             new StringType(getFeatureValue(channelId, shot)));
+                }
+                for (Map.Entry<String, String> option : WMD_OPTION_CHANNELS.entrySet()) {
+                    Object value = shot.getRawData().get(option.getKey());
+                    ChannelUID optionChannelUID = new ChannelUID(channelGroupRemoteStartUID,
+                            CHANNEL_WMD_REMOTE_START_PREFIX + option.getValue());
+                    // an option the washer doesn't report must not keep the value of an earlier session
+                    if (getThing().getChannel(optionChannelUID) != null) {
+                        updateState(optionChannelUID,
+                                value != null ? new StringType(value.toString()) : UnDefType.UNDEF);
+                    }
                 }
             }
         }
@@ -271,6 +325,12 @@ public class LGThinQWasherDryerHandler
         };
     }
 
+    static @Nullable String getOptionFeature(String remoteStartChannelId) {
+        return WMD_OPTION_CHANNELS.entrySet().stream()
+                .filter(e -> (CHANNEL_WMD_REMOTE_START_PREFIX + e.getValue()).equals(remoteStartChannelId))
+                .map(Map.Entry::getKey).findFirst().orElse(null);
+    }
+
     private Map<String, Object> getRemoteStartData(WasherDryerSnapshot lastShot) throws LGThinqApiException {
         if (lastShot.getRawData().isEmpty()) {
             return lastShot.getRawData();
@@ -296,8 +356,12 @@ public class LGThinQWasherDryerHandler
                 case CHANNEL_WMD_REMOTE_START_TEMP -> cap.getTemperatureFeat().getName();
                 case CHANNEL_WMD_REMOTE_START_SPIN -> cap.getSpinFeat().getName();
                 default -> {
-                    logger.warn("channel [{}] not mapped for this binding. It is most likely a bug.", simpleChannelUID);
-                    yield "";
+                    String optionFeature = getOptionFeature(simpleChannelUID);
+                    if (optionFeature == null) {
+                        logger.warn("channel [{}] not mapped for this binding. It is most likely a bug.",
+                                simpleChannelUID);
+                    }
+                    yield optionFeature != null ? optionFeature : "";
                 }
             };
             String value = getItemLinkedValue(c.getUID());
@@ -394,7 +458,9 @@ public class LGThinQWasherDryerHandler
                 // the values are read from the linked items when the remote start is sent
                 break;
             default: {
-                logger.warn("Command {} to the channel {} not supported. Ignored.", command, params.channelUID);
+                if (getOptionFeature(simpleChannelUID) == null) {
+                    logger.warn("Command {} to the channel {} not supported. Ignored.", command, params.channelUID);
+                }
             }
         }
     }
