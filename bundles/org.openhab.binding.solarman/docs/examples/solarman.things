@@ -1,0 +1,9 @@
+Thing solarman:logger:local [
+    hostname="192.168.1.100",
+    inverterType="deye_sg04lp3",
+    serialNumber="1234567890",
+    additionalRequests="0x03:0x027E-0x027E"
+] {
+    Channels:
+        Type number : inverter-frequency [scale=0.01, uom="Hz", rule=3, registers="0x027E"]
+}

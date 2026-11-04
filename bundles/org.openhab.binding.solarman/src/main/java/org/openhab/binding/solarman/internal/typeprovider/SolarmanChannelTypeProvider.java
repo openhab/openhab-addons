@@ -35,14 +35,17 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.solarman.internal.DefinitionParser;
 import org.openhab.binding.solarman.internal.defmodel.InverterDefinition;
+import org.openhab.binding.solarman.internal.defmodel.Lookup;
 import org.openhab.binding.solarman.internal.defmodel.ParameterItem;
 import org.openhab.core.library.CoreItemFactory;
+import org.openhab.core.thing.type.AutoUpdatePolicy;
 import org.openhab.core.thing.type.ChannelType;
 import org.openhab.core.thing.type.ChannelTypeBuilder;
 import org.openhab.core.thing.type.ChannelTypeProvider;
 import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.thing.type.StateChannelTypeBuilder;
 import org.openhab.core.types.StateDescriptionFragmentBuilder;
+import org.openhab.core.types.StateOption;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -51,6 +54,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * @author Catalin Sanda - Initial contribution
+ * @author Ricardo Costa - Advanced profiles and shared compatibility corrections
  */
 @Component(service = { ChannelTypeProvider.class, SolarmanChannelTypeProvider.class })
 @NonNullByDefault
@@ -101,10 +105,14 @@ public class SolarmanChannelTypeProvider implements ChannelTypeProvider {
         String itemType = getItemType(item);
 
         StateDescriptionFragmentBuilder stateDescriptionFragmentBuilder = StateDescriptionFragmentBuilder.create()
-                .withReadOnly(true);
+                .withReadOnly(!Boolean.FALSE.equals(item.getIsReadOnly()));
         String pattern = computePatternForItem(item, itemType);
         if (pattern != null) {
             stateDescriptionFragmentBuilder.withPattern(pattern);
+        }
+        if (item.hasLookup()) {
+            stateDescriptionFragmentBuilder.withOptions(item.getLookup().stream().map(Lookup::getValue).distinct()
+                    .map(value -> new StateOption(value, value)).toList());
         }
 
         StateChannelTypeBuilder stateChannelTypeBuilder = ChannelTypeBuilder
@@ -113,6 +121,9 @@ public class SolarmanChannelTypeProvider implements ChannelTypeProvider {
                 .withDescription(String.format("%s %s", item.getName(), buildRegisterDescription(item)))
                 .withStateDescriptionFragment(stateDescriptionFragmentBuilder.build());
 
+        if (Boolean.FALSE.equals(item.getIsReadOnly())) {
+            stateChannelTypeBuilder.withAutoUpdatePolicy(AutoUpdatePolicy.VETO);
+        }
         return stateChannelTypeBuilder.build();
     }
 

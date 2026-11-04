@@ -1,0 +1,1039 @@
+{
+  "delivery": "0.5.6",
+  "bundle_version": "5.2.4.202611012143",
+  "artifact_sha256": "fc00425487332951d444d6815aa993190d98002a4a1ec92989c3dd2b73f3e1ed",
+  "resource": "OH-INF/thing/sunsynk.xml",
+  "resource_sha256": "2386d40b42f9b1a9640701147fd473682e941d8ee09fbe7ea96a6db5ee3735ee",
+  "scope": "Historical channel declarations seed a unified solarman:logger Thing with the 0.5.6 single-phase structure; the archived hidden Thing type is not the upgrade target.",
+  "channels": [
+    {
+      "id": "aux-port-usage",
+      "type": "solarman:sunsynk-single-phase-aux-port-usage",
+      "itemType": "String",
+      "label": "AUX port usage",
+      "kind": "STATE"
+    },
+    {
+      "id": "aux-power",
+      "type": "solarman:sunsynk-single-phase-aux-power",
+      "itemType": "Number:Power",
+      "label": "AUX power",
+      "kind": "STATE"
+    },
+    {
+      "id": "bat1-cycle",
+      "type": "solarman:sunsynk-single-phase-bat1-cycle",
+      "itemType": "Number",
+      "label": "Bat1 Cycle",
+      "kind": "STATE"
+    },
+    {
+      "id": "bat1-soc",
+      "type": "solarman:sunsynk-single-phase-bat1-soc",
+      "itemType": "Number:Dimensionless",
+      "label": "Bat1 SOC",
+      "kind": "STATE"
+    },
+    {
+      "id": "battery-absorption-voltage",
+      "type": "solarman:sunsynk-single-phase-battery-absorption-voltage",
+      "itemType": "Number:ElectricPotential",
+      "label": "Battery Absorption voltage",
+      "kind": "STATE"
+    },
+    {
+      "id": "battery-charge-limit-current",
+      "type": "solarman:sunsynk-single-phase-battery-charge-limit-current",
+      "itemType": "Number:ElectricCurrent",
+      "label": "Battery charge limit current",
+      "kind": "STATE"
+    },
+    {
+      "id": "battery-charging-voltage",
+      "type": "solarman:sunsynk-single-phase-battery-charging-voltage",
+      "itemType": "Number:ElectricPotential",
+      "label": "Battery charging voltage",
+      "kind": "STATE"
+    },
+    {
+      "id": "battery-current",
+      "type": "solarman:sunsynk-single-phase-battery-current",
+      "itemType": "Number:ElectricCurrent",
+      "label": "Battery current",
+      "kind": "STATE"
+    },
+    {
+      "id": "battery-discharge-limit-current",
+      "type": "solarman:sunsynk-single-phase-battery-discharge-limit-current",
+      "itemType": "Number:ElectricCurrent",
+      "label": "Battery discharge limit current",
+      "kind": "STATE"
+    },
+    {
+      "id": "battery-equalization-voltage",
+      "type": "solarman:sunsynk-single-phase-battery-equalization-voltage",
+      "itemType": "Number:ElectricPotential",
+      "label": "Battery Equalization voltage",
+      "kind": "STATE"
+    },
+    {
+      "id": "battery-float-voltage",
+      "type": "solarman:sunsynk-single-phase-battery-float-voltage",
+      "itemType": "Number:ElectricPotential",
+      "label": "Battery Float voltage",
+      "kind": "STATE"
+    },
+    {
+      "id": "battery-low-capacity",
+      "type": "solarman:sunsynk-single-phase-battery-low-capacity",
+      "itemType": "Number:Dimensionless",
+      "label": "Battery low capacity",
+      "kind": "STATE"
+    },
+    {
+      "id": "battery-low-voltage",
+      "type": "solarman:sunsynk-single-phase-battery-low-voltage",
+      "itemType": "Number:ElectricPotential",
+      "label": "Battery low voltage",
+      "kind": "STATE"
+    },
+    {
+      "id": "battery-max-charge-current",
+      "type": "solarman:sunsynk-single-phase-battery-max-charge-current",
+      "itemType": "Number:ElectricCurrent",
+      "label": "Battery Max Charge current",
+      "kind": "STATE"
+    },
+    {
+      "id": "battery-max-discharge-current",
+      "type": "solarman:sunsynk-single-phase-battery-max-discharge-current",
+      "itemType": "Number:ElectricCurrent",
+      "label": "Battery Max Discharge current",
+      "kind": "STATE"
+    },
+    {
+      "id": "battery-power",
+      "type": "solarman:sunsynk-single-phase-battery-power",
+      "itemType": "Number:Power",
+      "label": "Battery power",
+      "kind": "STATE"
+    },
+    {
+      "id": "battery-restart-capacity",
+      "type": "solarman:sunsynk-single-phase-battery-restart-capacity",
+      "itemType": "Number:Dimensionless",
+      "label": "Battery restart capacity",
+      "kind": "STATE"
+    },
+    {
+      "id": "battery-restart-voltage",
+      "type": "solarman:sunsynk-single-phase-battery-restart-voltage",
+      "itemType": "Number:ElectricPotential",
+      "label": "Battery restart voltage",
+      "kind": "STATE"
+    },
+    {
+      "id": "battery-shutdown-capacity",
+      "type": "solarman:sunsynk-single-phase-battery-shutdown-capacity",
+      "itemType": "Number:Dimensionless",
+      "label": "Battery shutdown capacity",
+      "kind": "STATE"
+    },
+    {
+      "id": "battery-shutdown-voltage",
+      "type": "solarman:sunsynk-single-phase-battery-shutdown-voltage",
+      "itemType": "Number:ElectricPotential",
+      "label": "Battery shutdown voltage",
+      "kind": "STATE"
+    },
+    {
+      "id": "battery-soc",
+      "type": "solarman:sunsynk-single-phase-battery-soc",
+      "itemType": "Number:Dimensionless",
+      "label": "Battery SOC",
+      "kind": "STATE"
+    },
+    {
+      "id": "battery-temperature",
+      "type": "solarman:sunsynk-single-phase-battery-temperature",
+      "itemType": "Number:Temperature",
+      "label": "Battery temperature",
+      "kind": "STATE"
+    },
+    {
+      "id": "battery-voltage",
+      "type": "solarman:sunsynk-single-phase-battery-voltage",
+      "itemType": "Number:ElectricPotential",
+      "label": "Battery voltage",
+      "kind": "STATE"
+    },
+    {
+      "id": "bms-protocol",
+      "type": "solarman:sunsynk-single-phase-bms-protocol",
+      "itemType": "String",
+      "label": "BMS Protocol",
+      "kind": "STATE"
+    },
+    {
+      "id": "control-mode",
+      "type": "solarman:sunsynk-single-phase-control-mode",
+      "itemType": "Number",
+      "label": "Control mode",
+      "kind": "STATE"
+    },
+    {
+      "id": "date-time",
+      "type": "solarman:sunsynk-single-phase-date-time",
+      "itemType": "DateTime",
+      "label": "Date time",
+      "kind": "STATE"
+    },
+    {
+      "id": "day-active-energy",
+      "type": "solarman:sunsynk-single-phase-day-active-energy",
+      "itemType": "Number:Energy",
+      "label": "Day active energy",
+      "kind": "STATE"
+    },
+    {
+      "id": "day-battery-charge",
+      "type": "solarman:sunsynk-single-phase-day-battery-charge",
+      "itemType": "Number:Energy",
+      "label": "Day battery charge",
+      "kind": "STATE"
+    },
+    {
+      "id": "day-battery-discharge",
+      "type": "solarman:sunsynk-single-phase-day-battery-discharge",
+      "itemType": "Number:Energy",
+      "label": "Day battery Discharge",
+      "kind": "STATE"
+    },
+    {
+      "id": "day-grid-export",
+      "type": "solarman:sunsynk-single-phase-day-grid-export",
+      "itemType": "Number:Energy",
+      "label": "Day grid export",
+      "kind": "STATE"
+    },
+    {
+      "id": "day-grid-import",
+      "type": "solarman:sunsynk-single-phase-day-grid-import",
+      "itemType": "Number:Energy",
+      "label": "Day grid import",
+      "kind": "STATE"
+    },
+    {
+      "id": "day-load-energy",
+      "type": "solarman:sunsynk-single-phase-day-load-energy",
+      "itemType": "Number:Energy",
+      "label": "Day load energy",
+      "kind": "STATE"
+    },
+    {
+      "id": "day-pv-energy",
+      "type": "solarman:sunsynk-single-phase-day-pv-energy",
+      "itemType": "Number:Energy",
+      "label": "Day PV energy",
+      "kind": "STATE"
+    },
+    {
+      "id": "day-reactive-energy",
+      "type": "solarman:sunsynk-single-phase-day-reactive-energy",
+      "itemType": "Number:Energy",
+      "label": "Day reactive energy",
+      "kind": "STATE"
+    },
+    {
+      "id": "dc-transformer-temperature",
+      "type": "solarman:sunsynk-single-phase-dc-transformer-temperature",
+      "itemType": "Number:Temperature",
+      "label": "DC transformer temperature",
+      "kind": "STATE"
+    },
+    {
+      "id": "environment-temperature",
+      "type": "solarman:sunsynk-single-phase-environment-temperature",
+      "itemType": "Number:Temperature",
+      "label": "Environment temperature",
+      "kind": "STATE"
+    },
+    {
+      "id": "essential-1-power",
+      "type": "solarman:sunsynk-single-phase-essential-1-power",
+      "itemType": "Number:Power",
+      "label": "Essential 1 power",
+      "kind": "STATE"
+    },
+    {
+      "id": "essential-2-power",
+      "type": "solarman:sunsynk-single-phase-essential-2-power",
+      "itemType": "Number:Power",
+      "label": "Essential 2 power",
+      "kind": "STATE"
+    },
+    {
+      "id": "essential-power",
+      "type": "solarman:sunsynk-single-phase-essential-power",
+      "itemType": "Number:Power",
+      "label": "Essential power",
+      "kind": "STATE"
+    },
+    {
+      "id": "fault",
+      "type": "solarman:sunsynk-single-phase-fault",
+      "itemType": "String",
+      "label": "Fault",
+      "kind": "STATE"
+    },
+    {
+      "id": "gen-peak-shaving",
+      "type": "solarman:sunsynk-single-phase-gen-peak-shaving",
+      "itemType": "Switch",
+      "label": "Gen peak shaving",
+      "kind": "STATE"
+    },
+    {
+      "id": "gen-peak-shaving-power",
+      "type": "solarman:sunsynk-single-phase-gen-peak-shaving-power",
+      "itemType": "Number:Power",
+      "label": "Gen peak shaving power",
+      "kind": "STATE"
+    },
+    {
+      "id": "gen-power",
+      "type": "solarman:sunsynk-single-phase-gen-power",
+      "itemType": "Number:Power",
+      "label": "Gen power",
+      "kind": "STATE"
+    },
+    {
+      "id": "generator-input",
+      "type": "solarman:sunsynk-single-phase-generator-input",
+      "itemType": "String",
+      "label": "Generator input",
+      "kind": "STATE"
+    },
+    {
+      "id": "grid-always-on",
+      "type": "solarman:sunsynk-single-phase-grid-always-on",
+      "itemType": "Switch",
+      "label": "Grid always on",
+      "kind": "STATE"
+    },
+    {
+      "id": "grid-charge-battery-current",
+      "type": "solarman:sunsynk-single-phase-grid-charge-battery-current",
+      "itemType": "Number:ElectricCurrent",
+      "label": "Grid Charge Battery current",
+      "kind": "STATE"
+    },
+    {
+      "id": "grid-charge-enabled",
+      "type": "solarman:sunsynk-single-phase-grid-charge-enabled",
+      "itemType": "Switch",
+      "label": "Grid charge enabled",
+      "kind": "STATE"
+    },
+    {
+      "id": "grid-connected",
+      "type": "solarman:sunsynk-single-phase-grid-connected",
+      "itemType": "Switch",
+      "label": "Grid connected",
+      "kind": "STATE"
+    },
+    {
+      "id": "grid-ct-power",
+      "type": "solarman:sunsynk-single-phase-grid-ct-power",
+      "itemType": "Number:Power",
+      "label": "Grid CT power",
+      "kind": "STATE"
+    },
+    {
+      "id": "grid-current",
+      "type": "solarman:sunsynk-single-phase-grid-current",
+      "itemType": "Number:ElectricCurrent",
+      "label": "Grid current",
+      "kind": "STATE"
+    },
+    {
+      "id": "grid-frequency",
+      "type": "solarman:sunsynk-single-phase-grid-frequency",
+      "itemType": "Number:Frequency",
+      "label": "Grid frequency",
+      "kind": "STATE"
+    },
+    {
+      "id": "grid-l2-power",
+      "type": "solarman:sunsynk-single-phase-grid-l2-power",
+      "itemType": "Number:Power",
+      "label": "Grid L2 power",
+      "kind": "STATE"
+    },
+    {
+      "id": "grid-ld-power",
+      "type": "solarman:sunsynk-single-phase-grid-ld-power",
+      "itemType": "Number:Power",
+      "label": "Grid LD power",
+      "kind": "STATE"
+    },
+    {
+      "id": "grid-peak-shaving",
+      "type": "solarman:sunsynk-single-phase-grid-peak-shaving",
+      "itemType": "Switch",
+      "label": "Grid peak shaving",
+      "kind": "STATE"
+    },
+    {
+      "id": "grid-peak-shaving-power",
+      "type": "solarman:sunsynk-single-phase-grid-peak-shaving-power",
+      "itemType": "Number:Power",
+      "label": "Grid peak shaving power",
+      "kind": "STATE"
+    },
+    {
+      "id": "grid-power",
+      "type": "solarman:sunsynk-single-phase-grid-power",
+      "itemType": "Number:Power",
+      "label": "Grid power",
+      "kind": "STATE"
+    },
+    {
+      "id": "grid-trickle-feed-power",
+      "type": "solarman:sunsynk-single-phase-grid-trickle-feed-power",
+      "itemType": "Number:Power",
+      "label": "Grid Trickle Feed power",
+      "kind": "STATE"
+    },
+    {
+      "id": "grid-voltage",
+      "type": "solarman:sunsynk-single-phase-grid-voltage",
+      "itemType": "Number:ElectricPotential",
+      "label": "Grid voltage",
+      "kind": "STATE"
+    },
+    {
+      "id": "inverter-current",
+      "type": "solarman:sunsynk-single-phase-inverter-current",
+      "itemType": "Number:ElectricCurrent",
+      "label": "Inverter current",
+      "kind": "STATE"
+    },
+    {
+      "id": "inverter-enabled",
+      "type": "solarman:sunsynk-single-phase-inverter-enabled",
+      "itemType": "Switch",
+      "label": "Inverter enabled",
+      "kind": "STATE"
+    },
+    {
+      "id": "inverter-frequency",
+      "type": "solarman:sunsynk-single-phase-inverter-frequency",
+      "itemType": "Number:Frequency",
+      "label": "Inverter frequency",
+      "kind": "STATE"
+    },
+    {
+      "id": "inverter-power",
+      "type": "solarman:sunsynk-single-phase-inverter-power",
+      "itemType": "Number:Power",
+      "label": "Inverter power",
+      "kind": "STATE"
+    },
+    {
+      "id": "inverter-voltage",
+      "type": "solarman:sunsynk-single-phase-inverter-voltage",
+      "itemType": "Number:ElectricPotential",
+      "label": "Inverter voltage",
+      "kind": "STATE"
+    },
+    {
+      "id": "load-frequency",
+      "type": "solarman:sunsynk-single-phase-load-frequency",
+      "itemType": "Number:Frequency",
+      "label": "Load frequency",
+      "kind": "STATE"
+    },
+    {
+      "id": "load-l1-power",
+      "type": "solarman:sunsynk-single-phase-load-l1-power",
+      "itemType": "Number:Power",
+      "label": "Load L1 power",
+      "kind": "STATE"
+    },
+    {
+      "id": "load-l2-power",
+      "type": "solarman:sunsynk-single-phase-load-l2-power",
+      "itemType": "Number:Power",
+      "label": "Load L2 power",
+      "kind": "STATE"
+    },
+    {
+      "id": "load-limit",
+      "type": "solarman:sunsynk-single-phase-load-limit",
+      "itemType": "String",
+      "label": "Load Limit",
+      "kind": "STATE"
+    },
+    {
+      "id": "load-power",
+      "type": "solarman:sunsynk-single-phase-load-power",
+      "itemType": "Number:Power",
+      "label": "Load power",
+      "kind": "STATE"
+    },
+    {
+      "id": "max-sell-power",
+      "type": "solarman:sunsynk-single-phase-max-sell-power",
+      "itemType": "Number:Power",
+      "label": "Max Sell power",
+      "kind": "STATE"
+    },
+    {
+      "id": "max-solar-power",
+      "type": "solarman:sunsynk-single-phase-max-solar-power",
+      "itemType": "Number:Power",
+      "label": "Max Solar power",
+      "kind": "STATE"
+    },
+    {
+      "id": "month-grid-energy",
+      "type": "solarman:sunsynk-single-phase-month-grid-energy",
+      "itemType": "Number:Energy",
+      "label": "Month grid energy",
+      "kind": "STATE"
+    },
+    {
+      "id": "month-load-energy",
+      "type": "solarman:sunsynk-single-phase-month-load-energy",
+      "itemType": "Number:Energy",
+      "label": "Month load energy",
+      "kind": "STATE"
+    },
+    {
+      "id": "month-pv-energy",
+      "type": "solarman:sunsynk-single-phase-month-pv-energy",
+      "itemType": "Number:Energy",
+      "label": "Month PV energy",
+      "kind": "STATE"
+    },
+    {
+      "id": "non-essential-power",
+      "type": "solarman:sunsynk-single-phase-non-essential-power",
+      "itemType": "Number:Power",
+      "label": "Non-essential power",
+      "kind": "STATE"
+    },
+    {
+      "id": "overall-state",
+      "type": "solarman:sunsynk-single-phase-overall-state",
+      "itemType": "String",
+      "label": "Overall state",
+      "kind": "STATE"
+    },
+    {
+      "id": "peak-shaving",
+      "type": "solarman:sunsynk-single-phase-peak-shaving",
+      "itemType": "Switch",
+      "label": "Peak shaving",
+      "kind": "STATE"
+    },
+    {
+      "id": "priority-load",
+      "type": "solarman:sunsynk-single-phase-priority-load",
+      "itemType": "Switch",
+      "label": "Priority Load",
+      "kind": "STATE"
+    },
+    {
+      "id": "prog1-capacity",
+      "type": "solarman:sunsynk-single-phase-prog1-capacity",
+      "itemType": "Number:Dimensionless",
+      "label": "Prog1 Capacity",
+      "kind": "STATE"
+    },
+    {
+      "id": "prog1-charge",
+      "type": "solarman:sunsynk-single-phase-prog1-charge",
+      "itemType": "String",
+      "label": "Prog1 charge",
+      "kind": "STATE"
+    },
+    {
+      "id": "prog1-mode",
+      "type": "solarman:sunsynk-single-phase-prog1-mode",
+      "itemType": "String",
+      "label": "Prog1 mode",
+      "kind": "STATE"
+    },
+    {
+      "id": "prog1-power",
+      "type": "solarman:sunsynk-single-phase-prog1-power",
+      "itemType": "Number:Power",
+      "label": "Prog1 power",
+      "kind": "STATE"
+    },
+    {
+      "id": "prog1-sell",
+      "type": "solarman:sunsynk-single-phase-prog1-sell",
+      "itemType": "Switch",
+      "label": "Prog1 sell",
+      "kind": "STATE"
+    },
+    {
+      "id": "prog1-time",
+      "type": "solarman:sunsynk-single-phase-prog1-time",
+      "itemType": "String",
+      "label": "Prog1 Time",
+      "kind": "STATE"
+    },
+    {
+      "id": "prog1-voltage",
+      "type": "solarman:sunsynk-single-phase-prog1-voltage",
+      "itemType": "Number:ElectricPotential",
+      "label": "Prog1 voltage",
+      "kind": "STATE"
+    },
+    {
+      "id": "prog2-capacity",
+      "type": "solarman:sunsynk-single-phase-prog2-capacity",
+      "itemType": "Number:Dimensionless",
+      "label": "Prog2 Capacity",
+      "kind": "STATE"
+    },
+    {
+      "id": "prog2-charge",
+      "type": "solarman:sunsynk-single-phase-prog2-charge",
+      "itemType": "String",
+      "label": "Prog2 charge",
+      "kind": "STATE"
+    },
+    {
+      "id": "prog2-mode",
+      "type": "solarman:sunsynk-single-phase-prog2-mode",
+      "itemType": "String",
+      "label": "Prog2 mode",
+      "kind": "STATE"
+    },
+    {
+      "id": "prog2-power",
+      "type": "solarman:sunsynk-single-phase-prog2-power",
+      "itemType": "Number:Power",
+      "label": "Prog2 power",
+      "kind": "STATE"
+    },
+    {
+      "id": "prog2-sell",
+      "type": "solarman:sunsynk-single-phase-prog2-sell",
+      "itemType": "Switch",
+      "label": "Prog2 sell",
+      "kind": "STATE"
+    },
+    {
+      "id": "prog2-time",
+      "type": "solarman:sunsynk-single-phase-prog2-time",
+      "itemType": "String",
+      "label": "Prog2 Time",
+      "kind": "STATE"
+    },
+    {
+      "id": "prog2-voltage",
+      "type": "solarman:sunsynk-single-phase-prog2-voltage",
+      "itemType": "Number:ElectricPotential",
+      "label": "Prog2 voltage",
+      "kind": "STATE"
+    },
+    {
+      "id": "prog3-capacity",
+      "type": "solarman:sunsynk-single-phase-prog3-capacity",
+      "itemType": "Number:Dimensionless",
+      "label": "Prog3 Capacity",
+      "kind": "STATE"
+    },
+    {
+      "id": "prog3-charge",
+      "type": "solarman:sunsynk-single-phase-prog3-charge",
+      "itemType": "String",
+      "label": "Prog3 charge",
+      "kind": "STATE"
+    },
+    {
+      "id": "prog3-mode",
+      "type": "solarman:sunsynk-single-phase-prog3-mode",
+      "itemType": "String",
+      "label": "Prog3 mode",
+      "kind": "STATE"
+    },
+    {
+      "id": "prog3-power",
+      "type": "solarman:sunsynk-single-phase-prog3-power",
+      "itemType": "Number:Power",
+      "label": "Prog3 power",
+      "kind": "STATE"
+    },
+    {
+      "id": "prog3-sell",
+      "type": "solarman:sunsynk-single-phase-prog3-sell",
+      "itemType": "Switch",
+      "label": "Prog3 sell",
+      "kind": "STATE"
+    },
+    {
+      "id": "prog3-time",
+      "type": "solarman:sunsynk-single-phase-prog3-time",
+      "itemType": "String",
+      "label": "Prog3 Time",
+      "kind": "STATE"
+    },
+    {
+      "id": "prog3-voltage",
+      "type": "solarman:sunsynk-single-phase-prog3-voltage",
+      "itemType": "Number:ElectricPotential",
+      "label": "Prog3 voltage",
+      "kind": "STATE"
+    },
+    {
+      "id": "prog4-capacity",
+      "type": "solarman:sunsynk-single-phase-prog4-capacity",
+      "itemType": "Number:Dimensionless",
+      "label": "Prog4 Capacity",
+      "kind": "STATE"
+    },
+    {
+      "id": "prog4-charge",
+      "type": "solarman:sunsynk-single-phase-prog4-charge",
+      "itemType": "String",
+      "label": "Prog4 charge",
+      "kind": "STATE"
+    },
+    {
+      "id": "prog4-mode",
+      "type": "solarman:sunsynk-single-phase-prog4-mode",
+      "itemType": "String",
+      "label": "Prog4 mode",
+      "kind": "STATE"
+    },
+    {
+      "id": "prog4-power",
+      "type": "solarman:sunsynk-single-phase-prog4-power",
+      "itemType": "Number:Power",
+      "label": "Prog4 power",
+      "kind": "STATE"
+    },
+    {
+      "id": "prog4-sell",
+      "type": "solarman:sunsynk-single-phase-prog4-sell",
+      "itemType": "Switch",
+      "label": "Prog4 sell",
+      "kind": "STATE"
+    },
+    {
+      "id": "prog4-time",
+      "type": "solarman:sunsynk-single-phase-prog4-time",
+      "itemType": "String",
+      "label": "Prog4 Time",
+      "kind": "STATE"
+    },
+    {
+      "id": "prog4-voltage",
+      "type": "solarman:sunsynk-single-phase-prog4-voltage",
+      "itemType": "Number:ElectricPotential",
+      "label": "Prog4 voltage",
+      "kind": "STATE"
+    },
+    {
+      "id": "prog5-capacity",
+      "type": "solarman:sunsynk-single-phase-prog5-capacity",
+      "itemType": "Number:Dimensionless",
+      "label": "Prog5 Capacity",
+      "kind": "STATE"
+    },
+    {
+      "id": "prog5-charge",
+      "type": "solarman:sunsynk-single-phase-prog5-charge",
+      "itemType": "String",
+      "label": "Prog5 charge",
+      "kind": "STATE"
+    },
+    {
+      "id": "prog5-mode",
+      "type": "solarman:sunsynk-single-phase-prog5-mode",
+      "itemType": "String",
+      "label": "Prog5 mode",
+      "kind": "STATE"
+    },
+    {
+      "id": "prog5-power",
+      "type": "solarman:sunsynk-single-phase-prog5-power",
+      "itemType": "Number:Power",
+      "label": "Prog5 power",
+      "kind": "STATE"
+    },
+    {
+      "id": "prog5-sell",
+      "type": "solarman:sunsynk-single-phase-prog5-sell",
+      "itemType": "Switch",
+      "label": "Prog5 sell",
+      "kind": "STATE"
+    },
+    {
+      "id": "prog5-time",
+      "type": "solarman:sunsynk-single-phase-prog5-time",
+      "itemType": "String",
+      "label": "Prog5 Time",
+      "kind": "STATE"
+    },
+    {
+      "id": "prog5-voltage",
+      "type": "solarman:sunsynk-single-phase-prog5-voltage",
+      "itemType": "Number:ElectricPotential",
+      "label": "Prog5 voltage",
+      "kind": "STATE"
+    },
+    {
+      "id": "prog6-capacity",
+      "type": "solarman:sunsynk-single-phase-prog6-capacity",
+      "itemType": "Number:Dimensionless",
+      "label": "Prog6 Capacity",
+      "kind": "STATE"
+    },
+    {
+      "id": "prog6-charge",
+      "type": "solarman:sunsynk-single-phase-prog6-charge",
+      "itemType": "String",
+      "label": "Prog6 charge",
+      "kind": "STATE"
+    },
+    {
+      "id": "prog6-mode",
+      "type": "solarman:sunsynk-single-phase-prog6-mode",
+      "itemType": "String",
+      "label": "Prog6 mode",
+      "kind": "STATE"
+    },
+    {
+      "id": "prog6-power",
+      "type": "solarman:sunsynk-single-phase-prog6-power",
+      "itemType": "Number:Power",
+      "label": "Prog6 power",
+      "kind": "STATE"
+    },
+    {
+      "id": "prog6-sell",
+      "type": "solarman:sunsynk-single-phase-prog6-sell",
+      "itemType": "Switch",
+      "label": "Prog6 sell",
+      "kind": "STATE"
+    },
+    {
+      "id": "prog6-time",
+      "type": "solarman:sunsynk-single-phase-prog6-time",
+      "itemType": "String",
+      "label": "Prog6 Time",
+      "kind": "STATE"
+    },
+    {
+      "id": "prog6-voltage",
+      "type": "solarman:sunsynk-single-phase-prog6-voltage",
+      "itemType": "Number:ElectricPotential",
+      "label": "Prog6 voltage",
+      "kind": "STATE"
+    },
+    {
+      "id": "pv-power",
+      "type": "solarman:sunsynk-single-phase-pv-power",
+      "itemType": "Number:Power",
+      "label": "PV power",
+      "kind": "STATE"
+    },
+    {
+      "id": "pv1-current",
+      "type": "solarman:sunsynk-single-phase-pv1-current",
+      "itemType": "Number:ElectricCurrent",
+      "label": "PV1 current",
+      "kind": "STATE"
+    },
+    {
+      "id": "pv1-power",
+      "type": "solarman:sunsynk-single-phase-pv1-power",
+      "itemType": "Number:Power",
+      "label": "PV1 power",
+      "kind": "STATE"
+    },
+    {
+      "id": "pv1-voltage",
+      "type": "solarman:sunsynk-single-phase-pv1-voltage",
+      "itemType": "Number:ElectricPotential",
+      "label": "PV1 voltage",
+      "kind": "STATE"
+    },
+    {
+      "id": "pv2-current",
+      "type": "solarman:sunsynk-single-phase-pv2-current",
+      "itemType": "Number:ElectricCurrent",
+      "label": "PV2 current",
+      "kind": "STATE"
+    },
+    {
+      "id": "pv2-power",
+      "type": "solarman:sunsynk-single-phase-pv2-power",
+      "itemType": "Number:Power",
+      "label": "PV2 power",
+      "kind": "STATE"
+    },
+    {
+      "id": "pv2-voltage",
+      "type": "solarman:sunsynk-single-phase-pv2-voltage",
+      "itemType": "Number:ElectricPotential",
+      "label": "PV2 voltage",
+      "kind": "STATE"
+    },
+    {
+      "id": "pv3-current",
+      "type": "solarman:sunsynk-single-phase-pv3-current",
+      "itemType": "Number:ElectricCurrent",
+      "label": "PV3 current",
+      "kind": "STATE"
+    },
+    {
+      "id": "pv3-power",
+      "type": "solarman:sunsynk-single-phase-pv3-power",
+      "itemType": "Number:Power",
+      "label": "PV3 power",
+      "kind": "STATE"
+    },
+    {
+      "id": "pv3-voltage",
+      "type": "solarman:sunsynk-single-phase-pv3-voltage",
+      "itemType": "Number:ElectricPotential",
+      "label": "PV3 voltage",
+      "kind": "STATE"
+    },
+    {
+      "id": "pv4-current",
+      "type": "solarman:sunsynk-single-phase-pv4-current",
+      "itemType": "Number:ElectricCurrent",
+      "label": "PV4 current",
+      "kind": "STATE"
+    },
+    {
+      "id": "pv4-power",
+      "type": "solarman:sunsynk-single-phase-pv4-power",
+      "itemType": "Number:Power",
+      "label": "PV4 power",
+      "kind": "STATE"
+    },
+    {
+      "id": "pv4-voltage",
+      "type": "solarman:sunsynk-single-phase-pv4-voltage",
+      "itemType": "Number:ElectricPotential",
+      "label": "PV4 voltage",
+      "kind": "STATE"
+    },
+    {
+      "id": "radiator-temperature",
+      "type": "solarman:sunsynk-single-phase-radiator-temperature",
+      "itemType": "Number:Temperature",
+      "label": "Radiator temperature",
+      "kind": "STATE"
+    },
+    {
+      "id": "rated-power",
+      "type": "solarman:sunsynk-single-phase-rated-power",
+      "itemType": "Number:Power",
+      "label": "Rated power",
+      "kind": "STATE"
+    },
+    {
+      "id": "sd-status",
+      "type": "solarman:sunsynk-single-phase-sd-status",
+      "itemType": "String",
+      "label": "SD status",
+      "kind": "STATE"
+    },
+    {
+      "id": "solar-export",
+      "type": "solarman:sunsynk-single-phase-solar-export",
+      "itemType": "Switch",
+      "label": "Solar Export",
+      "kind": "STATE"
+    },
+    {
+      "id": "total-active-energy",
+      "type": "solarman:sunsynk-single-phase-total-active-energy",
+      "itemType": "Number:Energy",
+      "label": "Total active energy",
+      "kind": "STATE"
+    },
+    {
+      "id": "total-battery-charge",
+      "type": "solarman:sunsynk-single-phase-total-battery-charge",
+      "itemType": "Number:Energy",
+      "label": "Total battery charge",
+      "kind": "STATE"
+    },
+    {
+      "id": "total-battery-discharge",
+      "type": "solarman:sunsynk-single-phase-total-battery-discharge",
+      "itemType": "Number:Energy",
+      "label": "Total battery discharge",
+      "kind": "STATE"
+    },
+    {
+      "id": "total-grid-export",
+      "type": "solarman:sunsynk-single-phase-total-grid-export",
+      "itemType": "Number:Energy",
+      "label": "Total grid export",
+      "kind": "STATE"
+    },
+    {
+      "id": "total-grid-import",
+      "type": "solarman:sunsynk-single-phase-total-grid-import",
+      "itemType": "Number:Energy",
+      "label": "Total grid import",
+      "kind": "STATE"
+    },
+    {
+      "id": "total-load-energy",
+      "type": "solarman:sunsynk-single-phase-total-load-energy",
+      "itemType": "Number:Energy",
+      "label": "Total load energy",
+      "kind": "STATE"
+    },
+    {
+      "id": "total-pv-energy",
+      "type": "solarman:sunsynk-single-phase-total-pv-energy",
+      "itemType": "Number:Energy",
+      "label": "Total PV energy",
+      "kind": "STATE"
+    },
+    {
+      "id": "use-timer",
+      "type": "solarman:sunsynk-single-phase-use-timer",
+      "itemType": "Switch",
+      "label": "Use Timer",
+      "kind": "STATE"
+    },
+    {
+      "id": "year-grid-export",
+      "type": "solarman:sunsynk-single-phase-year-grid-export",
+      "itemType": "Number:Energy",
+      "label": "Year grid export",
+      "kind": "STATE"
+    },
+    {
+      "id": "year-load-energy",
+      "type": "solarman:sunsynk-single-phase-year-load-energy",
+      "itemType": "Number:Energy",
+      "label": "Year load energy",
+      "kind": "STATE"
+    },
+    {
+      "id": "year-pv-energy",
+      "type": "solarman:sunsynk-single-phase-year-pv-energy",
+      "itemType": "Number:Energy",
+      "label": "Year PV energy",
+      "kind": "STATE"
+    }
+  ]
+}

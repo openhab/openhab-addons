@@ -1,0 +1,86 @@
+// Complete example for inverterType=deye_hybrid.
+// Replace solarman:logger:example with the actual Thing UID locally.
+// Use only the Item file matching the selected inverterType.
+// Creating Items does not issue write commands.
+
+Number:Power LegacySolarPv1Power "PV1 Power [%s]" { channel="solarman:logger:example:solar-pv1-power", unit="W" }
+Number:Power LegacySolarPv2Power "PV2 Power [%s]" { channel="solarman:logger:example:solar-pv2-power", unit="W" }
+Number:ElectricPotential LegacySolarPv1Voltage "PV1 Voltage [%s]" { channel="solarman:logger:example:solar-pv1-voltage", unit="V" }
+Number:ElectricPotential LegacySolarPv2Voltage "PV2 Voltage [%s]" { channel="solarman:logger:example:solar-pv2-voltage", unit="V" }
+Number:ElectricCurrent LegacySolarPv1Current "PV1 Current [%s]" { channel="solarman:logger:example:solar-pv1-current", unit="A" }
+Number:ElectricCurrent LegacySolarPv2Current "PV2 Current [%s]" { channel="solarman:logger:example:solar-pv2-current", unit="A" }
+Number:Energy LegacySolarDailyProduction "Daily Production [%s]" { channel="solarman:logger:example:solar-daily-production", unit="kWh" }
+Number:Energy LegacySolarTotalProduction "Total Production [%s]" { channel="solarman:logger:example:solar-total-production", unit="kWh" }
+Number:Power LegacySolarMicroInverterPower "Micro-inverter Power [%s]" { channel="solarman:logger:example:solar-micro-inverter-power", unit="W" }
+Number:Energy LegacyBatteryTotalBatteryCharge "Total Battery Charge [%s]" { channel="solarman:logger:example:battery-total-battery-charge", unit="kWh" }
+Number:Energy LegacyBatteryTotalBatteryDischarge "Total Battery Discharge [%s]" { channel="solarman:logger:example:battery-total-battery-discharge", unit="kWh" }
+Number:Energy LegacyBatteryDailyBatteryCharge "Daily Battery Charge [%s]" { channel="solarman:logger:example:battery-daily-battery-charge", unit="kWh" }
+Number:Energy LegacyBatteryDailyBatteryDischarge "Daily Battery Discharge [%s]" { channel="solarman:logger:example:battery-daily-battery-discharge", unit="kWh" }
+String LegacyBatteryBatteryStatus "Battery Status [%s]" { channel="solarman:logger:example:battery-battery-status" }
+Number:Power LegacyBatteryBatteryPower "Battery Power [%s]" { channel="solarman:logger:example:battery-battery-power", unit="W" }
+Number:ElectricPotential LegacyBatteryBatteryVoltage "Battery Voltage [%s]" { channel="solarman:logger:example:battery-battery-voltage", unit="V" }
+Number:Dimensionless LegacyBatteryBatterySoc "Battery SOC [%s]" { channel="solarman:logger:example:battery-battery-soc", unit="%" }
+Number:ElectricCurrent LegacyBatteryBatteryCurrent "Battery Current [%s]" { channel="solarman:logger:example:battery-battery-current", unit="A" }
+Number:Temperature LegacyBatteryBatteryTemperature "Battery Temperature [%s]" { channel="solarman:logger:example:battery-battery-temperature", unit="°C" }
+Number:Power LegacyGridTotalGridPower "Total Grid Power [%s]" { channel="solarman:logger:example:grid-total-grid-power", unit="W" }
+Number:ElectricPotential LegacyGridGridVoltageL1 "Grid Voltage L1 [%s]" { channel="solarman:logger:example:grid-grid-voltage-l1", unit="V" }
+Number:ElectricCurrent LegacyGridGridCurrentL1 "Grid Current L1 [%s]" { channel="solarman:logger:example:grid-grid-current-l1", unit="A" }
+Number:ElectricPotential LegacyGridGridVoltageL2 "Grid Voltage L2 [%s]" { channel="solarman:logger:example:grid-grid-voltage-l2", unit="V" }
+Number:ElectricCurrent LegacyGridGridCurrentL2 "Grid Current L2 [%s]" { channel="solarman:logger:example:grid-grid-current-l2", unit="A" }
+Number:Power LegacyGridInternalCtL1Power "Internal CT L1 Power [%s]" { channel="solarman:logger:example:grid-internal-ct-l1-power", unit="W" }
+Number:Power LegacyGridInternalCtL2Power "Internal CT L2 Power [%s]" { channel="solarman:logger:example:grid-internal-ct-l2-power", unit="W" }
+Number:Power LegacyGridExternalCtL1Power "External CT L1 Power [%s]" { channel="solarman:logger:example:grid-external-ct-l1-power", unit="W" }
+Number:Power LegacyGridExternalCtL2Power "External CT L2 Power [%s]" { channel="solarman:logger:example:grid-external-ct-l2-power", unit="W" }
+Number:Energy LegacyGridDailyEnergyBought "Daily Energy Bought [%s]" { channel="solarman:logger:example:grid-daily-energy-bought", unit="kWh" }
+Number:Energy LegacyGridTotalEnergyBought "Total Energy Bought [%s]" { channel="solarman:logger:example:grid-total-energy-bought", unit="kWh" }
+Number:Energy LegacyGridDailyEnergySold "Daily Energy Sold [%s]" { channel="solarman:logger:example:grid-daily-energy-sold", unit="kWh" }
+Number:Energy LegacyGridTotalEnergySold "Total Energy Sold [%s]" { channel="solarman:logger:example:grid-total-energy-sold", unit="kWh" }
+Number:Energy LegacyGridTotalGridProduction "Total Grid Production [%s]" { channel="solarman:logger:example:grid-total-grid-production", unit="kWh" }
+Number:Power LegacyUploadTotalLoadPower "Total Load Power [%s]" { channel="solarman:logger:example:upload-total-load-power", unit="W" }
+Number:Power LegacyUploadLoadL1Power "Load L1 Power [%s]" { channel="solarman:logger:example:upload-load-l1-power", unit="W" }
+Number:Power LegacyUploadLoadL2Power "Load L2 Power [%s]" { channel="solarman:logger:example:upload-load-l2-power", unit="W" }
+Number:ElectricPotential LegacyUploadLoadVoltage "Load Voltage [%s]" { channel="solarman:logger:example:upload-load-voltage", unit="V" }
+Number:Energy LegacyUploadDailyLoadConsumption "Daily Load Consumption [%s]" { channel="solarman:logger:example:upload-daily-load-consumption", unit="kWh" }
+Number:Energy LegacyUploadTotalLoadConsumption "Total Load Consumption [%s]" { channel="solarman:logger:example:upload-total-load-consumption", unit="kWh" }
+String LegacyUploadSmartloadEnableStatus "SmartLoad Enable Status [%s]" { channel="solarman:logger:example:upload-smartload-enable-status" }
+String LegacyInverterRunningStatus "Running Status [%s]" { channel="solarman:logger:example:inverter-running-status" }
+Number:Power LegacyInverterTotalPower "Total Power [%s]" { channel="solarman:logger:example:inverter-total-power", unit="W" }
+Number:Frequency LegacyInverterGridFrequency "Grid Frequency [%s]" { channel="solarman:logger:example:inverter-grid-frequency", unit="Hz" }
+Number:ElectricCurrent LegacyInverterCurrentL1 "Current L1 [%s]" { channel="solarman:logger:example:inverter-current-l1", unit="A" }
+Number:ElectricCurrent LegacyInverterCurrentL2 "Current L2 [%s]" { channel="solarman:logger:example:inverter-current-l2", unit="A" }
+Number:Power LegacyInverterInverterL1Power "Inverter L1 Power [%s]" { channel="solarman:logger:example:inverter-inverter-l1-power", unit="W" }
+Number:Power LegacyInverterInverterL2Power "Inverter L2 Power [%s]" { channel="solarman:logger:example:inverter-inverter-l2-power", unit="W" }
+Number:Frequency LegacyInverterLoadFrequency "Load Frequency [%s]" { channel="solarman:logger:example:inverter-load-frequency", unit="Hz" }
+Number:Temperature LegacyInverterDcTemperature "DC Temperature [%s]" { channel="solarman:logger:example:inverter-dc-temperature", unit="°C" }
+Number:Temperature LegacyInverterAcTemperature "AC Temperature [%s]" { channel="solarman:logger:example:inverter-ac-temperature", unit="°C" }
+String LegacyInverterInverterId "Inverter ID [%s]" { channel="solarman:logger:example:inverter-inverter-id" }
+String LegacyInverterCommunicationBoardVersionNo "Communication Board Version No. [%s]" { channel="solarman:logger:example:inverter-communication-board-version-no-" }
+String LegacyInverterControlBoardVersionNo "Control Board Version No. [%s]" { channel="solarman:logger:example:inverter-control-board-version-no-" }
+String LegacyInverterGridConnectedStatus "Grid-connected Status [%s]" { channel="solarman:logger:example:inverter-grid-connected-status" }
+String LegacyInverterWorkMode "Work Mode [%s]" { channel="solarman:logger:example:inverter-work-mode" }
+String LegacyAlertAlert "Alert [%s]" { channel="solarman:logger:example:alert-alert" }
+String LegacyTimeOfUseTimeOfUseTime1 "Time of use Time 1 [%s]" { channel="solarman:logger:example:time-of-use-time-of-use-time-1", autoupdate="false" }
+String LegacyTimeOfUseTimeOfUseTime2 "Time of use Time 2 [%s]" { channel="solarman:logger:example:time-of-use-time-of-use-time-2", autoupdate="false" }
+String LegacyTimeOfUseTimeOfUseTime3 "Time of Use Time 3 [%s]" { channel="solarman:logger:example:time-of-use-time-of-use-time-3", autoupdate="false" }
+String LegacyTimeOfUseTimeOfUseTime4 "Time of Use Time 4 [%s]" { channel="solarman:logger:example:time-of-use-time-of-use-time-4", autoupdate="false" }
+String LegacyTimeOfUseTimeOfUseTime5 "Time of Use Time 5 [%s]" { channel="solarman:logger:example:time-of-use-time-of-use-time-5", autoupdate="false" }
+String LegacyTimeOfUseTimeOfUseTime6 "Time of Use Time 6 [%s]" { channel="solarman:logger:example:time-of-use-time-of-use-time-6", autoupdate="false" }
+Number:Power LegacyTimeOfUseTimeOfUsePower1 "Time of Use Power 1 [%s]" { channel="solarman:logger:example:time-of-use-time-of-use-power-1", unit="W", autoupdate="false" }
+Number:Power LegacyTimeOfUseTimeOfUsePower2 "Time of Use Power 2 [%s]" { channel="solarman:logger:example:time-of-use-time-of-use-power-2", unit="W", autoupdate="false" }
+Number:Power LegacyTimeOfUseTimeOfUsePower3 "Time of Use Power 3 [%s]" { channel="solarman:logger:example:time-of-use-time-of-use-power-3", unit="W", autoupdate="false" }
+Number:Power LegacyTimeOfUseTimeOfUsePower4 "Time of Use Power 4 [%s]" { channel="solarman:logger:example:time-of-use-time-of-use-power-4", unit="W", autoupdate="false" }
+Number:Power LegacyTimeOfUseTimeOfUsePower5 "Time of Use Power 5 [%s]" { channel="solarman:logger:example:time-of-use-time-of-use-power-5", unit="W", autoupdate="false" }
+Number:Power LegacyTimeOfUseTimeOfUsePower6 "Time of Use Power 6 [%s]" { channel="solarman:logger:example:time-of-use-time-of-use-power-6", unit="W", autoupdate="false" }
+Number:Dimensionless LegacyTimeOfUseTimeOfUseSoc1 "Time of Use SOC 1 [%s]" { channel="solarman:logger:example:time-of-use-time-of-use-soc-1", unit="%", autoupdate="false" }
+Number:Dimensionless LegacyTimeOfUseTimeOfUseSoc2 "Time of Use SOC 2 [%s]" { channel="solarman:logger:example:time-of-use-time-of-use-soc-2", unit="%", autoupdate="false" }
+Number:Dimensionless LegacyTimeOfUseTimeOfUseSoc3 "Time of Use SOC 3 [%s]" { channel="solarman:logger:example:time-of-use-time-of-use-soc-3", unit="%", autoupdate="false" }
+Number:Dimensionless LegacyTimeOfUseTimeOfUseSoc4 "Time of Use SOC 4 [%s]" { channel="solarman:logger:example:time-of-use-time-of-use-soc-4", unit="%", autoupdate="false" }
+Number:Dimensionless LegacyTimeOfUseTimeOfUseSoc5 "Time of Use SOC 5 [%s]" { channel="solarman:logger:example:time-of-use-time-of-use-soc-5", unit="%", autoupdate="false" }
+Number:Dimensionless LegacyTimeOfUseTimeOfUseSoc6 "Time of Use SOC 6 [%s]" { channel="solarman:logger:example:time-of-use-time-of-use-soc-6", unit="%", autoupdate="false" }
+Number LegacyTimeOfUseTimeOfUseEnable1 "Time of Use Enable 1 [%s]" { channel="solarman:logger:example:time-of-use-time-of-use-enable-1" }
+Number LegacyTimeOfUseTimeOfUseEnable2 "Time of Use Enable 2 [%s]" { channel="solarman:logger:example:time-of-use-time-of-use-enable-2" }
+Number LegacyTimeOfUseTimeOfUseEnable3 "Time of Use Enable 3 [%s]" { channel="solarman:logger:example:time-of-use-time-of-use-enable-3" }
+Number LegacyTimeOfUseTimeOfUseEnable4 "Time of Use Enable 4 [%s]" { channel="solarman:logger:example:time-of-use-time-of-use-enable-4" }
+Number LegacyTimeOfUseTimeOfUseEnable5 "Time of Use Enable 5 [%s]" { channel="solarman:logger:example:time-of-use-time-of-use-enable-5" }
+Number LegacyTimeOfUseTimeOfUseEnable6 "Time of Use Enable 6 [%s]" { channel="solarman:logger:example:time-of-use-time-of-use-enable-6" }
+String LegacyTimeOfUseTimeOfUse "Time of use [%s]" { channel="solarman:logger:example:time-of-use-time-of-use" }

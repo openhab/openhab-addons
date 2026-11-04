@@ -13,11 +13,17 @@
 package org.openhab.binding.solarman.internal.updater;
 
 import java.math.BigDecimal;
+import java.math.MathContext;
 import java.math.RoundingMode;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -33,8 +39,11 @@ import org.openhab.binding.solarman.internal.modbus.SolarmanLoggerConnector;
 import org.openhab.binding.solarman.internal.modbus.SolarmanProtocol;
 import org.openhab.binding.solarman.internal.modbus.exception.SolarmanConnectionException;
 import org.openhab.binding.solarman.internal.modbus.exception.SolarmanException;
+import org.openhab.binding.solarman.internal.util.ModbusRegisterCodec;
+import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.types.Command;
@@ -47,12 +56,13 @@ import org.slf4j.LoggerFactory;
  * The {@link SolarmanRegisterUpdater} is responsible for updating registers from received commands
  *
  * @author Oleksandr Mishchuk - Initial contribution
+ * @author Ricardo Costa - Advanced profiles and shared compatibility corrections
  */
 @NonNullByDefault
 public class SolarmanRegisterUpdater {
-    private static final Logger logger = LoggerFactory.getLogger(SolarmanRegisterUpdater.class);
+    private final Logger logger;
 
-    private static final Pattern TIME_PATTERN = Pattern.compile("^([0-1][0-9])|(2[0-3]):[0-5][0-9]");
+    private static final Pattern TIME_PATTERN = Pattern.compile("^(?:[01][0-9]|2[0-3]):[0-5][0-9]$");
 
     private final SolarmanLoggerConnector solarmanLoggerConnector;
     private final SolarmanProtocol solarmanProtocol;
@@ -60,6 +70,13 @@ public class SolarmanRegisterUpdater {
 
     public SolarmanRegisterUpdater(Map<ParameterItem, ChannelUID> paramToChannelMapping,
             SolarmanLoggerConnector solarmanLoggerConnector, SolarmanProtocol solarmanProtocol) {
+        this(paramToChannelMapping, solarmanLoggerConnector, solarmanProtocol,
+                LoggerFactory.getLogger(SolarmanRegisterUpdater.class));
+    }
+
+    SolarmanRegisterUpdater(Map<ParameterItem, ChannelUID> paramToChannelMapping,
+            SolarmanLoggerConnector solarmanLoggerConnector, SolarmanProtocol solarmanProtocol, Logger logger) {
+        this.logger = logger;
         this.solarmanProtocol = solarmanProtocol;
         this.solarmanLoggerConnector = solarmanLoggerConnector;
 
@@ -114,6 +131,14 @@ public class SolarmanRegisterUpdater {
     private void updateIntRegisters(ChannelUID channelUID, ParameterItem channelToUpdate, Command command, int size,
             IntegerValueType integerValueType) {
         final DecimalType decimalValue = switch (command) {
+            case QuantityType<?> quantity -> {
+                String unit = channelToUpdate.getUom();
+                QuantityType<?> converted = unit == null || unit.isBlank() ? null : quantity.toUnit(unit);
+                if (converted == null) {
+                    throw new IllegalArgumentException("Command unit is incompatible with the channel");
+                }
+                yield new DecimalType(converted.toBigDecimal());
+            }
             case Number number -> new DecimalType(number);
             case OnOffType onOff -> onOff == OnOffType.ON ? new DecimalType(1) : DecimalType.ZERO;
             case StringType stringType -> {
@@ -139,29 +164,26 @@ public class SolarmanRegisterUpdater {
         };
 
         if (decimalValue != null) {
-            long value = convertNumericValue(decimalValue, channelToUpdate.getOffset(), channelToUpdate.getScale())
-                    .longValue();
-            if (IntegerValueType.UNSIGNED == integerValueType) {
-                long mask = (1L << (size * 8)) - 1;
-                value = value & mask;
+            if (channelToUpdate.getRegisters().size() != size / 2) {
+                throw new IllegalArgumentException("Conversion width does not match channel registers");
             }
-            ByteBuffer buffer = ByteBuffer.allocate(size);
-            switch (size) {
-                case Short.BYTES -> buffer.putShort((short) value);
-                case Integer.BYTES -> buffer.putInt((int) value);
-                case Long.BYTES -> buffer.putLong(value);
-            }
-            byte[] data = buffer.array();
-            writeRegisters(channelToUpdate.getRegisters().getFirst(), size / 2, data);
+            byte[] data = ModbusRegisterCodec.encode(
+                    convertNumericValue(decimalValue, channelToUpdate.getOffset(), channelToUpdate.getScale())
+                            .setScale(0, RoundingMode.HALF_UP).toBigIntegerExact(),
+                    size / 2, integerValueType == IntegerValueType.SIGNED);
+            writeRegisters(channelUID, channelToUpdate, command, data, true);
         }
     }
 
     private void updateStringRegisters(ChannelUID channelUID, ParameterItem channelToUpdate, Command command) {
         if (command instanceof StringType stringType) {
-            String string = stringType.toString();
-            int length = (string.length() + 1) / 2 * 2;
-            byte[] data = ByteBuffer.allocate(length).put(string.getBytes(StandardCharsets.UTF_8)).array();
-            writeRegisters(channelToUpdate.getRegisters().getFirst(), length / 2, data);
+            byte[] encoded = stringType.toString().getBytes(StandardCharsets.UTF_8);
+            int length = channelToUpdate.getRegisters().size() * 2;
+            if (encoded.length > length) {
+                throw new IllegalArgumentException("String exceeds the configured register capacity");
+            }
+            byte[] data = ByteBuffer.allocate(length).put(encoded).array();
+            writeRegisters(channelUID, channelToUpdate, command, data, false);
         } else {
             logUnexpectedCommand(channelUID, command);
         }
@@ -176,7 +198,19 @@ public class SolarmanRegisterUpdater {
     }
 
     private void updateDateTimeRegisters(ChannelUID channelUID, ParameterItem channelToUpdate, Command command) {
-        logger.warn("Writing DateTime to logger is not implemented yet");
+        if (command instanceof DateTimeType dateTime && channelToUpdate.getRegisters().size() == 3) {
+            ZonedDateTime value = dateTime.getZonedDateTime(ZoneId.systemDefault());
+            int year = value.getYear() - 2000;
+            if (year < 0 || year > 255) {
+                throw new IllegalArgumentException("Device clock year must be between 2000 and 2255");
+            }
+            byte[] data = ByteBuffer.allocate(6).putShort((short) ((year << 8) | value.getMonthValue()))
+                    .putShort((short) ((value.getDayOfMonth() << 8) | value.getHour()))
+                    .putShort((short) ((value.getMinute() << 8) | value.getSecond())).array();
+            writeRegisters(channelUID, channelToUpdate, command, data, false);
+        } else {
+            logUnexpectedCommand(channelUID, command);
+        }
     }
 
     private void updateTimeRegisters(ChannelUID channelUID, ParameterItem channelToUpdate, Command command) {
@@ -188,7 +222,7 @@ public class SolarmanRegisterUpdater {
                 final int minute = Integer.parseInt(timeString.substring(3, 5));
                 final short value = (short) (hour * 100 + minute);
                 byte[] data = ByteBuffer.allocate(2).putShort(value).array();
-                writeRegisters(channelToUpdate.getRegisters().getFirst(), 1, data);
+                writeRegisters(channelUID, channelToUpdate, command, data, false);
             } else {
                 logger.warn("Received string '{}' is not correct time format 'HH:mm'", timeString);
             }
@@ -199,39 +233,110 @@ public class SolarmanRegisterUpdater {
 
     private BigDecimal convertNumericValue(DecimalType decimal, @Nullable BigDecimal offset,
             @Nullable BigDecimal scale) {
-        return decimal.toBigDecimal().divide(scale != null ? scale : BigDecimal.ONE, RoundingMode.HALF_UP)
+        return decimal.toBigDecimal().divide(scale != null ? scale : BigDecimal.ONE, MathContext.DECIMAL128)
                 .add(offset != null ? offset : BigDecimal.ZERO);
     }
 
-    private void writeRegisters(int firstRegister, int registerCount, byte[] data) {
-        if (data.length > registerCount * 2) {
-            logger.warn(
-                    "Data to be written ({}) is longer than the number of 2 byte registers declared for channel ({}). Data will be truncated!",
-                    data.length, registerCount);
+    private void writeRegisters(ChannelUID channelUID, ParameterItem item, Command command, byte[] data,
+            boolean retryNumericMismatch) {
+        int firstRegister = item.getRegisters().getFirst();
+        int registerCount = item.getRegisters().size();
+        String addresses = item.getRegisters().stream().map(register -> String.format(Locale.ROOT, "0x%04X", register))
+                .collect(Collectors.joining(","));
+        if (data.length != registerCount * 2) {
+            throw new IllegalArgumentException("Payload size does not match the declared register count");
         }
-
-        data = ByteBuffer.wrap(data, 0, registerCount * 2).array();
-
-        try (SolarmanLoggerConnection solarmanLoggerConnection = solarmanLoggerConnector.createConnection()) {
-            logger.debug("Writing data {} to {} logger register(s) starting from 0x{}", HexUtils.bytesToHex(data),
-                    registerCount, String.format("%04X", firstRegister));
-
-            if (!solarmanLoggerConnection.isConnected()) {
+        try (SolarmanLoggerConnection connection = solarmanLoggerConnector.createConnection()) {
+            if (!connection.isConnected()) {
                 throw new SolarmanConnectionException("Unable to connect to logger");
             }
-
-            if (solarmanProtocol.writeRegisters(solarmanLoggerConnection, firstRegister, data)) {
-                if (logger.isDebugEnabled()) {
-                    logger.debug("Successfully updated {} register(s) starting from 0x{}", registerCount,
-                            String.format("%04X", firstRegister));
+            Map<Integer, byte[]> before = readWriteRegisters(connection, firstRegister, registerCount);
+            int attempts = retryNumericMismatch ? 2 : 1;
+            for (int attempt = 1; attempt <= attempts; attempt++) {
+                logger.debug("Writing channel {} registers [{}]: requested={}, payload={}", channelUID, addresses,
+                        command, HexUtils.bytesToHex(data));
+                if (!solarmanProtocol.writeRegisters(connection, firstRegister, data)) {
+                    throw new SolarmanConnectionException("Logger rejected the register write");
                 }
-            } else {
-                logger.error("Failed to update {} register(s) starting from 0x{}", registerCount,
-                        String.format("%04X", firstRegister));
+                Map<Integer, byte[]> after = readWriteRegisters(connection, firstRegister, registerCount);
+                if (Arrays.equals(data, registerBytes(item, after))) {
+                    if (!Arrays.equals(registerBytes(item, before), registerBytes(item, after))) {
+                        logger.info(
+                                "Confirmed register change: channel={}, registers=[{}], previous={}, requested={}, confirmed={}",
+                                channelUID, addresses, auditValue(item, before), command, auditValue(item, after));
+                    } else {
+                        logger.debug(
+                                "Confirmed unchanged value: channel={}, registers=[{}], requested={}, confirmed={}",
+                                channelUID, addresses, command, auditValue(item, after));
+                    }
+                    return;
+                }
+                if (item.getRule() == 8) {
+                    // A running device clock can advance between the write and the read; do not claim exact success.
+                    logger.debug(
+                            "Clock write acknowledged without exact confirmation: channel={}, registers=[{}], requested={}, observed={}",
+                            channelUID, addresses, command, auditValue(item, after));
+                    return;
+                }
+                logger.warn(
+                        "Write confirmation mismatch: channel={}, registers=[{}], requested={}, observed={}, attempt={}/{}",
+                        channelUID, addresses, command, auditValue(item, after), attempt, attempts);
+                if (attempt < attempts) {
+                    logger.warn(
+                            "Repeating numeric write after confirmed mismatch: channel={}, registers=[{}], requested={}",
+                            channelUID, addresses, command);
+                }
             }
+            throw new SolarmanConnectionException("Register write did not match device readback at " + addresses);
         } catch (SolarmanException e) {
-            logger.error("Failed to communicate with logger", e);
+            logger.warn("Write or confirmation failed: channel={}, registers=[{}], requested={}, reason={}", channelUID,
+                    addresses, command, e.getMessage());
+            throw new IllegalStateException("Failed to write logger registers: " + e.getMessage(), e);
         }
+    }
+
+    private Map<Integer, byte[]> readWriteRegisters(SolarmanLoggerConnection connection, int firstRegister,
+            int registerCount) throws SolarmanException {
+        Map<Integer, byte[]> values = solarmanProtocol.readRegisters(connection, (byte) 3, firstRegister,
+                firstRegister + registerCount - 1);
+        for (int index = 0; index < registerCount; index++) {
+            byte @Nullable [] word = values.get(firstRegister + index);
+            if (word == null || word.length != Short.BYTES) {
+                throw new SolarmanConnectionException("Incomplete write audit read at 0x"
+                        + String.format(Locale.ROOT, "%04X", firstRegister + index));
+            }
+        }
+        return values;
+    }
+
+    private byte[] registerBytes(ParameterItem item, Map<Integer, byte[]> values) {
+        ByteBuffer bytes = ByteBuffer.allocate(item.getRegisters().size() * Short.BYTES);
+        item.getRegisters().forEach(register -> bytes.put(Objects.requireNonNull(values.get(register))));
+        return bytes.array();
+    }
+
+    private String auditValue(ParameterItem item, Map<Integer, byte[]> values) {
+        if (item.getRule() >= 1 && item.getRule() <= 4) {
+            var raw = ModbusRegisterCodec.decode(item.getRegisters(), values,
+                    item.getRule() == 2 || item.getRule() == 4);
+            if (item.hasLookup()) {
+                return Objects
+                        .requireNonNull(item.getLookup().stream().filter(option -> option.getKey() == raw.intValue())
+                                .map(Lookup::getValue).findFirst().orElse(raw.toString()));
+            }
+            BigDecimal value = new BigDecimal(raw)
+                    .subtract(Objects.requireNonNullElse(item.getOffset(), BigDecimal.ZERO))
+                    .multiply(Objects.requireNonNullElse(item.getScale(), BigDecimal.ONE));
+            return value.stripTrailingZeros().toPlainString() + " " + Objects.requireNonNullElse(item.getUom(), "");
+        }
+        if (item.getRule() == 5) {
+            return new String(registerBytes(item, values), StandardCharsets.UTF_8).replace("\u0000", "");
+        }
+        if (item.getRule() == 9) {
+            int time = Short.toUnsignedInt(ByteBuffer.wrap(registerBytes(item, values)).getShort());
+            return String.format(Locale.ROOT, "%02d:%02d", time / 100, time % 100);
+        }
+        return HexUtils.bytesToHex(registerBytes(item, values));
     }
 
     private void logUnexpectedCommand(ChannelUID uid, Command command) {

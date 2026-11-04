@@ -1,0 +1,6087 @@
+[
+  {
+    "profile": "single_phase",
+    "sensor": "aux_port_usage",
+    "kind": "SelectRWSensor",
+    "command": "Disable",
+    "expected": [
+      0
+    ]
+  },
+  {
+    "profile": "single_phase",
+    "sensor": "aux_port_usage",
+    "kind": "SelectRWSensor",
+    "command": "Smartload",
+    "expected": [
+      1
+    ]
+  },
+  {
+    "profile": "single_phase",
+    "sensor": "aux_port_usage",
+    "kind": "SelectRWSensor",
+    "command": "Generator",
+    "expected": [
+      2
+    ]
+  },
+  {
+    "profile": "single_phase",
+    "sensor": "generator_input",
+    "kind": "SelectRWSensor",
+    "command": "Disable",
+    "expected": [
+      0
+    ]
+  },
+  {
+    "profile": "single_phase",
+    "sensor": "generator_input",
+    "kind": "SelectRWSensor",
+    "command": "Smartload",
+    "expected": [
+      1
+    ]
+  },
+  {
+    "profile": "single_phase",
+    "sensor": "generator_input",
+    "kind": "SelectRWSensor",
+    "command": "Generator",
+    "expected": [
+      2
+    ]
+  },
+  {
+    "profile": "single_phase",
+    "sensor": "date_time",
+    "kind": "SystemTimeRWSensor",
+    "command": "2026-10-30T12:34:56Z",
+    "expected": [
+      6666,
+      7692,
+      8760
+    ]
+  },
+  {
+    "profile": "single_phase",
+    "sensor": "inverter_enabled",
+    "kind": "SwitchRWSensor",
+    "command": "ON",
+    "expected": [
+      1
+    ]
+  },
+  {
+    "profile": "single_phase",
+    "sensor": "inverter_enabled",
+    "kind": "SwitchRWSensor",
+    "command": "OFF",
+    "expected": [
+      0
+    ]
+  },
+  {
+    "profile": "single_phase",
+    "sensor": "grid_charge_enabled",
+    "kind": "SwitchRWSensor",
+    "command": "ON",
+    "expected": [
+      42405
+    ]
+  },
+  {
+    "profile": "single_phase",
+    "sensor": "grid_charge_enabled",
+    "kind": "SwitchRWSensor",
+    "command": "OFF",
+    "expected": [
+      42404
+    ]
+  },
+  {
+    "profile": "single_phase",
+    "sensor": "priority_load",
+    "kind": "SwitchRWSensor",
+    "command": "ON",
+    "expected": [
+      42405
+    ]
+  },
+  {
+    "profile": "single_phase",
+    "sensor": "priority_load",
+    "kind": "SwitchRWSensor",
+    "command": "OFF",
+    "expected": [
+      42404
+    ]
+  },
+  {
+    "profile": "single_phase",
+    "sensor": "load_limit",
+    "kind": "SelectRWSensor",
+    "command": "Allow Export",
+    "expected": [
+      0
+    ]
+  },
+  {
+    "profile": "single_phase",
+    "sensor": "load_limit",
+    "kind": "SelectRWSensor",
+    "command": "Essentials",
+    "expected": [
+      1
+    ]
+  },
+  {
+    "profile": "single_phase",
+    "sensor": "load_limit",
+    "kind": "SelectRWSensor",
+    "command": "Zero Export",
+    "expected": [
+      2
+    ]
+  },
+  {
+    "profile": "single_phase",
+    "sensor": "solar_export",
+    "kind": "SwitchRWSensor",
+    "command": "ON",
+    "expected": [
+      42405
+    ]
+  },
+  {
+    "profile": "single_phase",
+    "sensor": "solar_export",
+    "kind": "SwitchRWSensor",
+    "command": "OFF",
+    "expected": [
+      42404
+    ]
+  },
+  {
+    "profile": "single_phase",
+    "sensor": "use_timer",
+    "kind": "SwitchRWSensor",
+    "command": "ON",
+    "expected": [
+      42405
+    ]
+  },
+  {
+    "profile": "single_phase",
+    "sensor": "use_timer",
+    "kind": "SwitchRWSensor",
+    "command": "OFF",
+    "expected": [
+      42404
+    ]
+  },
+  {
+    "profile": "single_phase",
+    "sensor": "peak_shaving",
+    "kind": "SwitchRWSensor",
+    "command": "ON",
+    "expected": [
+      42401
+    ]
+  },
+  {
+    "profile": "single_phase",
+    "sensor": "peak_shaving",
+    "kind": "SwitchRWSensor",
+    "command": "OFF",
+    "expected": [
+      42400
+    ]
+  },
+  {
+    "profile": "single_phase",
+    "sensor": "gen_peak_shaving",
+    "kind": "SwitchRWSensor",
+    "command": "ON",
+    "expected": [
+      42261
+    ]
+  },
+  {
+    "profile": "single_phase",
+    "sensor": "gen_peak_shaving",
+    "kind": "SwitchRWSensor",
+    "command": "OFF",
+    "expected": [
+      42245
+    ]
+  },
+  {
+    "profile": "single_phase",
+    "sensor": "grid_peak_shaving",
+    "kind": "SwitchRWSensor",
+    "command": "ON",
+    "expected": [
+      41381
+    ]
+  },
+  {
+    "profile": "single_phase",
+    "sensor": "grid_peak_shaving",
+    "kind": "SwitchRWSensor",
+    "command": "OFF",
+    "expected": [
+      41125
+    ]
+  },
+  {
+    "profile": "single_phase",
+    "sensor": "grid_always_on",
+    "kind": "SwitchRWSensor",
+    "command": "ON",
+    "expected": [
+      5541
+    ]
+  },
+  {
+    "profile": "single_phase",
+    "sensor": "grid_always_on",
+    "kind": "SwitchRWSensor",
+    "command": "OFF",
+    "expected": [
+      1445
+    ]
+  },
+  {
+    "profile": "single_phase",
+    "sensor": "prog1_time",
+    "kind": "TimeRWSensor",
+    "command": "23:59",
+    "expected": [
+      2359
+    ]
+  },
+  {
+    "profile": "single_phase",
+    "sensor": "prog2_time",
+    "kind": "TimeRWSensor",
+    "command": "23:59",
+    "expected": [
+      2359
+    ]
+  },
+  {
+    "profile": "single_phase",
+    "sensor": "prog3_time",
+    "kind": "TimeRWSensor",
+    "command": "23:59",
+    "expected": [
+      2359
+    ]
+  },
+  {
+    "profile": "single_phase",
+    "sensor": "prog4_time",
+    "kind": "TimeRWSensor",
+    "command": "23:59",
+    "expected": [
+      2359
+    ]
+  },
+  {
+    "profile": "single_phase",
+    "sensor": "prog5_time",
+    "kind": "TimeRWSensor",
+    "command": "23:59",
+    "expected": [
+      2359
+    ]
+  },
+  {
+    "profile": "single_phase",
+    "sensor": "prog6_time",
+    "kind": "TimeRWSensor",
+    "command": "23:59",
+    "expected": [
+      2359
+    ]
+  },
+  {
+    "profile": "single_phase",
+    "sensor": "prog1_charge",
+    "kind": "SelectRWSensor",
+    "command": "No Grid or Gen",
+    "expected": [
+      42404
+    ]
+  },
+  {
+    "profile": "single_phase",
+    "sensor": "prog1_charge",
+    "kind": "SelectRWSensor",
+    "command": "Allow Grid",
+    "expected": [
+      42405
+    ]
+  },
+  {
+    "profile": "single_phase",
+    "sensor": "prog1_charge",
+    "kind": "SelectRWSensor",
+    "command": "Allow Gen",
+    "expected": [
+      42406
+    ]
+  },
+  {
+    "profile": "single_phase",
+    "sensor": "prog1_charge",
+    "kind": "SelectRWSensor",
+    "command": "Allow Grid & Gen",
+    "expected": [
+      42407
+    ]
+  },
+  {
+    "profile": "single_phase",
+    "sensor": "prog2_charge",
+    "kind": "SelectRWSensor",
+    "command": "No Grid or Gen",
+    "expected": [
+      42404
+    ]
+  },
+  {
+    "profile": "single_phase",
+    "sensor": "prog2_charge",
+    "kind": "SelectRWSensor",
+    "command": "Allow Grid",
+    "expected": [
+      42405
+    ]
+  },
+  {
+    "profile": "single_phase",
+    "sensor": "prog2_charge",
+    "kind": "SelectRWSensor",
+    "command": "Allow Gen",
+    "expected": [
+      42406
+    ]
+  },
+  {
+    "profile": "single_phase",
+    "sensor": "prog2_charge",
+    "kind": "SelectRWSensor",
+    "command": "Allow Grid & Gen",
+    "expected": [
+      42407
+    ]
+  },
+  {
+    "profile": "single_phase",
+    "sensor": "prog3_charge",
+    "kind": "SelectRWSensor",
+    "command": "No Grid or Gen",
+    "expected": [
+      42404
+    ]
+  },
+  {
+    "profile": "single_phase",
+    "sensor": "prog3_charge",
+    "kind": "SelectRWSensor",
+    "command": "Allow Grid",
+    "expected": [
+      42405
+    ]
+  },
+  {
+    "profile": "single_phase",
+    "sensor": "prog3_charge",
+    "kind": "SelectRWSensor",
+    "command": "Allow Gen",
+    "expected": [
+      42406
+    ]
+  },
+  {
+    "profile": "single_phase",
+    "sensor": "prog3_charge",
+    "kind": "SelectRWSensor",
+    "command": "Allow Grid & Gen",
+    "expected": [
+      42407
+    ]
+  },
+  {
+    "profile": "single_phase",
+    "sensor": "prog4_charge",
+    "kind": "SelectRWSensor",
+    "command": "No Grid or Gen",
+    "expected": [
+      42404
+    ]
+  },
+  {
+    "profile": "single_phase",
+    "sensor": "prog4_charge",
+    "kind": "SelectRWSensor",
+    "command": "Allow Grid",
+    "expected": [
+      42405
+    ]
+  },
+  {
+    "profile": "single_phase",
+    "sensor": "prog4_charge",
+    "kind": "SelectRWSensor",
+    "command": "Allow Gen",
+    "expected": [
+      42406
+    ]
+  },
+  {
+    "profile": "single_phase",
+    "sensor": "prog4_charge",
+    "kind": "SelectRWSensor",
+    "command": "Allow Grid & Gen",
+    "expected": [
+      42407
+    ]
+  },
+  {
+    "profile": "single_phase",
+    "sensor": "prog5_charge",
+    "kind": "SelectRWSensor",
+    "command": "No Grid or Gen",
+    "expected": [
+      42404
+    ]
+  },
+  {
+    "profile": "single_phase",
+    "sensor": "prog5_charge",
+    "kind": "SelectRWSensor",
+    "command": "Allow Grid",
+    "expected": [
+      42405
+    ]
+  },
+  {
+    "profile": "single_phase",
+    "sensor": "prog5_charge",
+    "kind": "SelectRWSensor",
+    "command": "Allow Gen",
+    "expected": [
+      42406
+    ]
+  },
+  {
+    "profile": "single_phase",
+    "sensor": "prog5_charge",
+    "kind": "SelectRWSensor",
+    "command": "Allow Grid & Gen",
+    "expected": [
+      42407
+    ]
+  },
+  {
+    "profile": "single_phase",
+    "sensor": "prog6_charge",
+    "kind": "SelectRWSensor",
+    "command": "No Grid or Gen",
+    "expected": [
+      42404
+    ]
+  },
+  {
+    "profile": "single_phase",
+    "sensor": "prog6_charge",
+    "kind": "SelectRWSensor",
+    "command": "Allow Grid",
+    "expected": [
+      42405
+    ]
+  },
+  {
+    "profile": "single_phase",
+    "sensor": "prog6_charge",
+    "kind": "SelectRWSensor",
+    "command": "Allow Gen",
+    "expected": [
+      42406
+    ]
+  },
+  {
+    "profile": "single_phase",
+    "sensor": "prog6_charge",
+    "kind": "SelectRWSensor",
+    "command": "Allow Grid & Gen",
+    "expected": [
+      42407
+    ]
+  },
+  {
+    "profile": "single_phase",
+    "sensor": "prog1_mode",
+    "kind": "SelectRWSensor",
+    "command": "None",
+    "expected": [
+      42401
+    ]
+  },
+  {
+    "profile": "single_phase",
+    "sensor": "prog1_mode",
+    "kind": "SelectRWSensor",
+    "command": "General",
+    "expected": [
+      42405
+    ]
+  },
+  {
+    "profile": "single_phase",
+    "sensor": "prog1_mode",
+    "kind": "SelectRWSensor",
+    "command": "Backup",
+    "expected": [
+      42409
+    ]
+  },
+  {
+    "profile": "single_phase",
+    "sensor": "prog1_mode",
+    "kind": "SelectRWSensor",
+    "command": "Charge",
+    "expected": [
+      42413
+    ]
+  },
+  {
+    "profile": "single_phase",
+    "sensor": "prog2_mode",
+    "kind": "SelectRWSensor",
+    "command": "None",
+    "expected": [
+      42401
+    ]
+  },
+  {
+    "profile": "single_phase",
+    "sensor": "prog2_mode",
+    "kind": "SelectRWSensor",
+    "command": "General",
+    "expected": [
+      42405
+    ]
+  },
+  {
+    "profile": "single_phase",
+    "sensor": "prog2_mode",
+    "kind": "SelectRWSensor",
+    "command": "Backup",
+    "expected": [
+      42409
+    ]
+  },
+  {
+    "profile": "single_phase",
+    "sensor": "prog2_mode",
+    "kind": "SelectRWSensor",
+    "command": "Charge",
+    "expected": [
+      42413
+    ]
+  },
+  {
+    "profile": "single_phase",
+    "sensor": "prog3_mode",
+    "kind": "SelectRWSensor",
+    "command": "None",
+    "expected": [
+      42401
+    ]
+  },
+  {
+    "profile": "single_phase",
+    "sensor": "prog3_mode",
+    "kind": "SelectRWSensor",
+    "command": "General",
+    "expected": [
+      42405
+    ]
+  },
+  {
+    "profile": "single_phase",
+    "sensor": "prog3_mode",
+    "kind": "SelectRWSensor",
+    "command": "Backup",
+    "expected": [
+      42409
+    ]
+  },
+  {
+    "profile": "single_phase",
+    "sensor": "prog3_mode",
+    "kind": "SelectRWSensor",
+    "command": "Charge",
+    "expected": [
+      42413
+    ]
+  },
+  {
+    "profile": "single_phase",
+    "sensor": "prog4_mode",
+    "kind": "SelectRWSensor",
+    "command": "None",
+    "expected": [
+      42401
+    ]
+  },
+  {
+    "profile": "single_phase",
+    "sensor": "prog4_mode",
+    "kind": "SelectRWSensor",
+    "command": "General",
+    "expected": [
+      42405
+    ]
+  },
+  {
+    "profile": "single_phase",
+    "sensor": "prog4_mode",
+    "kind": "SelectRWSensor",
+    "command": "Backup",
+    "expected": [
+      42409
+    ]
+  },
+  {
+    "profile": "single_phase",
+    "sensor": "prog4_mode",
+    "kind": "SelectRWSensor",
+    "command": "Charge",
+    "expected": [
+      42413
+    ]
+  },
+  {
+    "profile": "single_phase",
+    "sensor": "prog5_mode",
+    "kind": "SelectRWSensor",
+    "command": "None",
+    "expected": [
+      42401
+    ]
+  },
+  {
+    "profile": "single_phase",
+    "sensor": "prog5_mode",
+    "kind": "SelectRWSensor",
+    "command": "General",
+    "expected": [
+      42405
+    ]
+  },
+  {
+    "profile": "single_phase",
+    "sensor": "prog5_mode",
+    "kind": "SelectRWSensor",
+    "command": "Backup",
+    "expected": [
+      42409
+    ]
+  },
+  {
+    "profile": "single_phase",
+    "sensor": "prog5_mode",
+    "kind": "SelectRWSensor",
+    "command": "Charge",
+    "expected": [
+      42413
+    ]
+  },
+  {
+    "profile": "single_phase",
+    "sensor": "prog6_mode",
+    "kind": "SelectRWSensor",
+    "command": "None",
+    "expected": [
+      42401
+    ]
+  },
+  {
+    "profile": "single_phase",
+    "sensor": "prog6_mode",
+    "kind": "SelectRWSensor",
+    "command": "General",
+    "expected": [
+      42405
+    ]
+  },
+  {
+    "profile": "single_phase",
+    "sensor": "prog6_mode",
+    "kind": "SelectRWSensor",
+    "command": "Backup",
+    "expected": [
+      42409
+    ]
+  },
+  {
+    "profile": "single_phase",
+    "sensor": "prog6_mode",
+    "kind": "SelectRWSensor",
+    "command": "Charge",
+    "expected": [
+      42413
+    ]
+  },
+  {
+    "profile": "single_phase",
+    "sensor": "prog1_sell",
+    "kind": "SwitchRWSensor",
+    "command": "ON",
+    "expected": [
+      42469
+    ]
+  },
+  {
+    "profile": "single_phase",
+    "sensor": "prog1_sell",
+    "kind": "SwitchRWSensor",
+    "command": "OFF",
+    "expected": [
+      42405
+    ]
+  },
+  {
+    "profile": "single_phase",
+    "sensor": "prog2_sell",
+    "kind": "SwitchRWSensor",
+    "command": "ON",
+    "expected": [
+      42469
+    ]
+  },
+  {
+    "profile": "single_phase",
+    "sensor": "prog2_sell",
+    "kind": "SwitchRWSensor",
+    "command": "OFF",
+    "expected": [
+      42405
+    ]
+  },
+  {
+    "profile": "single_phase",
+    "sensor": "prog3_sell",
+    "kind": "SwitchRWSensor",
+    "command": "ON",
+    "expected": [
+      42469
+    ]
+  },
+  {
+    "profile": "single_phase",
+    "sensor": "prog3_sell",
+    "kind": "SwitchRWSensor",
+    "command": "OFF",
+    "expected": [
+      42405
+    ]
+  },
+  {
+    "profile": "single_phase",
+    "sensor": "prog4_sell",
+    "kind": "SwitchRWSensor",
+    "command": "ON",
+    "expected": [
+      42469
+    ]
+  },
+  {
+    "profile": "single_phase",
+    "sensor": "prog4_sell",
+    "kind": "SwitchRWSensor",
+    "command": "OFF",
+    "expected": [
+      42405
+    ]
+  },
+  {
+    "profile": "single_phase",
+    "sensor": "prog5_sell",
+    "kind": "SwitchRWSensor",
+    "command": "ON",
+    "expected": [
+      42469
+    ]
+  },
+  {
+    "profile": "single_phase",
+    "sensor": "prog5_sell",
+    "kind": "SwitchRWSensor",
+    "command": "OFF",
+    "expected": [
+      42405
+    ]
+  },
+  {
+    "profile": "single_phase",
+    "sensor": "prog6_sell",
+    "kind": "SwitchRWSensor",
+    "command": "ON",
+    "expected": [
+      42469
+    ]
+  },
+  {
+    "profile": "single_phase",
+    "sensor": "prog6_sell",
+    "kind": "SwitchRWSensor",
+    "command": "OFF",
+    "expected": [
+      42405
+    ]
+  },
+  {
+    "profile": "single_phase",
+    "sensor": "bms_protocol",
+    "kind": "SelectRWSensor",
+    "command": "PYLON CAN",
+    "expected": [
+      0
+    ]
+  },
+  {
+    "profile": "single_phase",
+    "sensor": "bms_protocol",
+    "kind": "SelectRWSensor",
+    "command": "SACRED SUN RS485",
+    "expected": [
+      1
+    ]
+  },
+  {
+    "profile": "single_phase",
+    "sensor": "bms_protocol",
+    "kind": "SelectRWSensor",
+    "command": "02",
+    "expected": [
+      2
+    ]
+  },
+  {
+    "profile": "single_phase",
+    "sensor": "bms_protocol",
+    "kind": "SelectRWSensor",
+    "command": "DYNESS CAN",
+    "expected": [
+      3
+    ]
+  },
+  {
+    "profile": "single_phase",
+    "sensor": "bms_protocol",
+    "kind": "SelectRWSensor",
+    "command": "04",
+    "expected": [
+      4
+    ]
+  },
+  {
+    "profile": "single_phase",
+    "sensor": "bms_protocol",
+    "kind": "SelectRWSensor",
+    "command": "05",
+    "expected": [
+      5
+    ]
+  },
+  {
+    "profile": "single_phase",
+    "sensor": "bms_protocol",
+    "kind": "SelectRWSensor",
+    "command": "GenixGreen RS485",
+    "expected": [
+      6
+    ]
+  },
+  {
+    "profile": "single_phase",
+    "sensor": "bms_protocol",
+    "kind": "SelectRWSensor",
+    "command": "07",
+    "expected": [
+      7
+    ]
+  },
+  {
+    "profile": "single_phase",
+    "sensor": "bms_protocol",
+    "kind": "SelectRWSensor",
+    "command": "08",
+    "expected": [
+      8
+    ]
+  },
+  {
+    "profile": "single_phase",
+    "sensor": "bms_protocol",
+    "kind": "SelectRWSensor",
+    "command": "09",
+    "expected": [
+      9
+    ]
+  },
+  {
+    "profile": "single_phase",
+    "sensor": "bms_protocol",
+    "kind": "SelectRWSensor",
+    "command": "10",
+    "expected": [
+      10
+    ]
+  },
+  {
+    "profile": "single_phase",
+    "sensor": "bms_protocol",
+    "kind": "SelectRWSensor",
+    "command": "11",
+    "expected": [
+      11
+    ]
+  },
+  {
+    "profile": "single_phase",
+    "sensor": "bms_protocol",
+    "kind": "SelectRWSensor",
+    "command": "PYLON RS485",
+    "expected": [
+      12
+    ]
+  },
+  {
+    "profile": "single_phase",
+    "sensor": "bms_protocol",
+    "kind": "SelectRWSensor",
+    "command": "VISION CAN",
+    "expected": [
+      13
+    ]
+  },
+  {
+    "profile": "single_phase",
+    "sensor": "bms_protocol",
+    "kind": "SelectRWSensor",
+    "command": "WATTSONIC RS485",
+    "expected": [
+      14
+    ]
+  },
+  {
+    "profile": "single_phase",
+    "sensor": "bms_protocol",
+    "kind": "SelectRWSensor",
+    "command": "UNIPOWER RS485",
+    "expected": [
+      15
+    ]
+  },
+  {
+    "profile": "single_phase",
+    "sensor": "bms_protocol",
+    "kind": "SelectRWSensor",
+    "command": "16",
+    "expected": [
+      16
+    ]
+  },
+  {
+    "profile": "single_phase",
+    "sensor": "bms_protocol",
+    "kind": "SelectRWSensor",
+    "command": "LD RS485",
+    "expected": [
+      17
+    ]
+  },
+  {
+    "profile": "single_phase",
+    "sensor": "bms_protocol",
+    "kind": "SelectRWSensor",
+    "command": "18",
+    "expected": [
+      18
+    ]
+  },
+  {
+    "profile": "single_phase",
+    "sensor": "bms_protocol",
+    "kind": "SelectRWSensor",
+    "command": "UNKNOWN RS485",
+    "expected": [
+      19
+    ]
+  },
+  {
+    "profile": "single_phase_16kw",
+    "sensor": "aux_port_usage",
+    "kind": "SelectRWSensor",
+    "command": "Disable",
+    "expected": [
+      0
+    ]
+  },
+  {
+    "profile": "single_phase_16kw",
+    "sensor": "aux_port_usage",
+    "kind": "SelectRWSensor",
+    "command": "Smartload",
+    "expected": [
+      1
+    ]
+  },
+  {
+    "profile": "single_phase_16kw",
+    "sensor": "aux_port_usage",
+    "kind": "SelectRWSensor",
+    "command": "Generator",
+    "expected": [
+      2
+    ]
+  },
+  {
+    "profile": "single_phase_16kw",
+    "sensor": "generator_input",
+    "kind": "SelectRWSensor",
+    "command": "Disable",
+    "expected": [
+      0
+    ]
+  },
+  {
+    "profile": "single_phase_16kw",
+    "sensor": "generator_input",
+    "kind": "SelectRWSensor",
+    "command": "Smartload",
+    "expected": [
+      1
+    ]
+  },
+  {
+    "profile": "single_phase_16kw",
+    "sensor": "generator_input",
+    "kind": "SelectRWSensor",
+    "command": "Generator",
+    "expected": [
+      2
+    ]
+  },
+  {
+    "profile": "single_phase_16kw",
+    "sensor": "date_time",
+    "kind": "SystemTimeRWSensor",
+    "command": "2026-10-30T12:34:56Z",
+    "expected": [
+      6666,
+      7692,
+      8760
+    ]
+  },
+  {
+    "profile": "single_phase_16kw",
+    "sensor": "inverter_enabled",
+    "kind": "SwitchRWSensor",
+    "command": "ON",
+    "expected": [
+      1
+    ]
+  },
+  {
+    "profile": "single_phase_16kw",
+    "sensor": "inverter_enabled",
+    "kind": "SwitchRWSensor",
+    "command": "OFF",
+    "expected": [
+      0
+    ]
+  },
+  {
+    "profile": "single_phase_16kw",
+    "sensor": "grid_charge_enabled",
+    "kind": "SwitchRWSensor",
+    "command": "ON",
+    "expected": [
+      42405
+    ]
+  },
+  {
+    "profile": "single_phase_16kw",
+    "sensor": "grid_charge_enabled",
+    "kind": "SwitchRWSensor",
+    "command": "OFF",
+    "expected": [
+      42404
+    ]
+  },
+  {
+    "profile": "single_phase_16kw",
+    "sensor": "priority_load",
+    "kind": "SwitchRWSensor",
+    "command": "ON",
+    "expected": [
+      42405
+    ]
+  },
+  {
+    "profile": "single_phase_16kw",
+    "sensor": "priority_load",
+    "kind": "SwitchRWSensor",
+    "command": "OFF",
+    "expected": [
+      42404
+    ]
+  },
+  {
+    "profile": "single_phase_16kw",
+    "sensor": "load_limit",
+    "kind": "SelectRWSensor",
+    "command": "Allow Export",
+    "expected": [
+      0
+    ]
+  },
+  {
+    "profile": "single_phase_16kw",
+    "sensor": "load_limit",
+    "kind": "SelectRWSensor",
+    "command": "Essentials",
+    "expected": [
+      1
+    ]
+  },
+  {
+    "profile": "single_phase_16kw",
+    "sensor": "load_limit",
+    "kind": "SelectRWSensor",
+    "command": "Zero Export",
+    "expected": [
+      2
+    ]
+  },
+  {
+    "profile": "single_phase_16kw",
+    "sensor": "solar_export",
+    "kind": "SwitchRWSensor",
+    "command": "ON",
+    "expected": [
+      42405
+    ]
+  },
+  {
+    "profile": "single_phase_16kw",
+    "sensor": "solar_export",
+    "kind": "SwitchRWSensor",
+    "command": "OFF",
+    "expected": [
+      42404
+    ]
+  },
+  {
+    "profile": "single_phase_16kw",
+    "sensor": "use_timer",
+    "kind": "SwitchRWSensor",
+    "command": "ON",
+    "expected": [
+      42405
+    ]
+  },
+  {
+    "profile": "single_phase_16kw",
+    "sensor": "use_timer",
+    "kind": "SwitchRWSensor",
+    "command": "OFF",
+    "expected": [
+      42404
+    ]
+  },
+  {
+    "profile": "single_phase_16kw",
+    "sensor": "peak_shaving",
+    "kind": "SwitchRWSensor",
+    "command": "ON",
+    "expected": [
+      42401
+    ]
+  },
+  {
+    "profile": "single_phase_16kw",
+    "sensor": "peak_shaving",
+    "kind": "SwitchRWSensor",
+    "command": "OFF",
+    "expected": [
+      42400
+    ]
+  },
+  {
+    "profile": "single_phase_16kw",
+    "sensor": "gen_peak_shaving",
+    "kind": "SwitchRWSensor",
+    "command": "ON",
+    "expected": [
+      42261
+    ]
+  },
+  {
+    "profile": "single_phase_16kw",
+    "sensor": "gen_peak_shaving",
+    "kind": "SwitchRWSensor",
+    "command": "OFF",
+    "expected": [
+      42245
+    ]
+  },
+  {
+    "profile": "single_phase_16kw",
+    "sensor": "grid_peak_shaving",
+    "kind": "SwitchRWSensor",
+    "command": "ON",
+    "expected": [
+      41381
+    ]
+  },
+  {
+    "profile": "single_phase_16kw",
+    "sensor": "grid_peak_shaving",
+    "kind": "SwitchRWSensor",
+    "command": "OFF",
+    "expected": [
+      41125
+    ]
+  },
+  {
+    "profile": "single_phase_16kw",
+    "sensor": "grid_always_on",
+    "kind": "SwitchRWSensor",
+    "command": "ON",
+    "expected": [
+      5541
+    ]
+  },
+  {
+    "profile": "single_phase_16kw",
+    "sensor": "grid_always_on",
+    "kind": "SwitchRWSensor",
+    "command": "OFF",
+    "expected": [
+      1445
+    ]
+  },
+  {
+    "profile": "single_phase_16kw",
+    "sensor": "prog1_time",
+    "kind": "TimeRWSensor",
+    "command": "23:59",
+    "expected": [
+      2359
+    ]
+  },
+  {
+    "profile": "single_phase_16kw",
+    "sensor": "prog2_time",
+    "kind": "TimeRWSensor",
+    "command": "23:59",
+    "expected": [
+      2359
+    ]
+  },
+  {
+    "profile": "single_phase_16kw",
+    "sensor": "prog3_time",
+    "kind": "TimeRWSensor",
+    "command": "23:59",
+    "expected": [
+      2359
+    ]
+  },
+  {
+    "profile": "single_phase_16kw",
+    "sensor": "prog4_time",
+    "kind": "TimeRWSensor",
+    "command": "23:59",
+    "expected": [
+      2359
+    ]
+  },
+  {
+    "profile": "single_phase_16kw",
+    "sensor": "prog5_time",
+    "kind": "TimeRWSensor",
+    "command": "23:59",
+    "expected": [
+      2359
+    ]
+  },
+  {
+    "profile": "single_phase_16kw",
+    "sensor": "prog6_time",
+    "kind": "TimeRWSensor",
+    "command": "23:59",
+    "expected": [
+      2359
+    ]
+  },
+  {
+    "profile": "single_phase_16kw",
+    "sensor": "prog1_charge",
+    "kind": "SelectRWSensor",
+    "command": "No Grid or Gen",
+    "expected": [
+      42404
+    ]
+  },
+  {
+    "profile": "single_phase_16kw",
+    "sensor": "prog1_charge",
+    "kind": "SelectRWSensor",
+    "command": "Allow Grid",
+    "expected": [
+      42405
+    ]
+  },
+  {
+    "profile": "single_phase_16kw",
+    "sensor": "prog1_charge",
+    "kind": "SelectRWSensor",
+    "command": "Allow Gen",
+    "expected": [
+      42406
+    ]
+  },
+  {
+    "profile": "single_phase_16kw",
+    "sensor": "prog1_charge",
+    "kind": "SelectRWSensor",
+    "command": "Allow Grid & Gen",
+    "expected": [
+      42407
+    ]
+  },
+  {
+    "profile": "single_phase_16kw",
+    "sensor": "prog2_charge",
+    "kind": "SelectRWSensor",
+    "command": "No Grid or Gen",
+    "expected": [
+      42404
+    ]
+  },
+  {
+    "profile": "single_phase_16kw",
+    "sensor": "prog2_charge",
+    "kind": "SelectRWSensor",
+    "command": "Allow Grid",
+    "expected": [
+      42405
+    ]
+  },
+  {
+    "profile": "single_phase_16kw",
+    "sensor": "prog2_charge",
+    "kind": "SelectRWSensor",
+    "command": "Allow Gen",
+    "expected": [
+      42406
+    ]
+  },
+  {
+    "profile": "single_phase_16kw",
+    "sensor": "prog2_charge",
+    "kind": "SelectRWSensor",
+    "command": "Allow Grid & Gen",
+    "expected": [
+      42407
+    ]
+  },
+  {
+    "profile": "single_phase_16kw",
+    "sensor": "prog3_charge",
+    "kind": "SelectRWSensor",
+    "command": "No Grid or Gen",
+    "expected": [
+      42404
+    ]
+  },
+  {
+    "profile": "single_phase_16kw",
+    "sensor": "prog3_charge",
+    "kind": "SelectRWSensor",
+    "command": "Allow Grid",
+    "expected": [
+      42405
+    ]
+  },
+  {
+    "profile": "single_phase_16kw",
+    "sensor": "prog3_charge",
+    "kind": "SelectRWSensor",
+    "command": "Allow Gen",
+    "expected": [
+      42406
+    ]
+  },
+  {
+    "profile": "single_phase_16kw",
+    "sensor": "prog3_charge",
+    "kind": "SelectRWSensor",
+    "command": "Allow Grid & Gen",
+    "expected": [
+      42407
+    ]
+  },
+  {
+    "profile": "single_phase_16kw",
+    "sensor": "prog4_charge",
+    "kind": "SelectRWSensor",
+    "command": "No Grid or Gen",
+    "expected": [
+      42404
+    ]
+  },
+  {
+    "profile": "single_phase_16kw",
+    "sensor": "prog4_charge",
+    "kind": "SelectRWSensor",
+    "command": "Allow Grid",
+    "expected": [
+      42405
+    ]
+  },
+  {
+    "profile": "single_phase_16kw",
+    "sensor": "prog4_charge",
+    "kind": "SelectRWSensor",
+    "command": "Allow Gen",
+    "expected": [
+      42406
+    ]
+  },
+  {
+    "profile": "single_phase_16kw",
+    "sensor": "prog4_charge",
+    "kind": "SelectRWSensor",
+    "command": "Allow Grid & Gen",
+    "expected": [
+      42407
+    ]
+  },
+  {
+    "profile": "single_phase_16kw",
+    "sensor": "prog5_charge",
+    "kind": "SelectRWSensor",
+    "command": "No Grid or Gen",
+    "expected": [
+      42404
+    ]
+  },
+  {
+    "profile": "single_phase_16kw",
+    "sensor": "prog5_charge",
+    "kind": "SelectRWSensor",
+    "command": "Allow Grid",
+    "expected": [
+      42405
+    ]
+  },
+  {
+    "profile": "single_phase_16kw",
+    "sensor": "prog5_charge",
+    "kind": "SelectRWSensor",
+    "command": "Allow Gen",
+    "expected": [
+      42406
+    ]
+  },
+  {
+    "profile": "single_phase_16kw",
+    "sensor": "prog5_charge",
+    "kind": "SelectRWSensor",
+    "command": "Allow Grid & Gen",
+    "expected": [
+      42407
+    ]
+  },
+  {
+    "profile": "single_phase_16kw",
+    "sensor": "prog6_charge",
+    "kind": "SelectRWSensor",
+    "command": "No Grid or Gen",
+    "expected": [
+      42404
+    ]
+  },
+  {
+    "profile": "single_phase_16kw",
+    "sensor": "prog6_charge",
+    "kind": "SelectRWSensor",
+    "command": "Allow Grid",
+    "expected": [
+      42405
+    ]
+  },
+  {
+    "profile": "single_phase_16kw",
+    "sensor": "prog6_charge",
+    "kind": "SelectRWSensor",
+    "command": "Allow Gen",
+    "expected": [
+      42406
+    ]
+  },
+  {
+    "profile": "single_phase_16kw",
+    "sensor": "prog6_charge",
+    "kind": "SelectRWSensor",
+    "command": "Allow Grid & Gen",
+    "expected": [
+      42407
+    ]
+  },
+  {
+    "profile": "single_phase_16kw",
+    "sensor": "prog1_mode",
+    "kind": "SelectRWSensor",
+    "command": "None",
+    "expected": [
+      42401
+    ]
+  },
+  {
+    "profile": "single_phase_16kw",
+    "sensor": "prog1_mode",
+    "kind": "SelectRWSensor",
+    "command": "General",
+    "expected": [
+      42405
+    ]
+  },
+  {
+    "profile": "single_phase_16kw",
+    "sensor": "prog1_mode",
+    "kind": "SelectRWSensor",
+    "command": "Backup",
+    "expected": [
+      42409
+    ]
+  },
+  {
+    "profile": "single_phase_16kw",
+    "sensor": "prog1_mode",
+    "kind": "SelectRWSensor",
+    "command": "Charge",
+    "expected": [
+      42413
+    ]
+  },
+  {
+    "profile": "single_phase_16kw",
+    "sensor": "prog2_mode",
+    "kind": "SelectRWSensor",
+    "command": "None",
+    "expected": [
+      42401
+    ]
+  },
+  {
+    "profile": "single_phase_16kw",
+    "sensor": "prog2_mode",
+    "kind": "SelectRWSensor",
+    "command": "General",
+    "expected": [
+      42405
+    ]
+  },
+  {
+    "profile": "single_phase_16kw",
+    "sensor": "prog2_mode",
+    "kind": "SelectRWSensor",
+    "command": "Backup",
+    "expected": [
+      42409
+    ]
+  },
+  {
+    "profile": "single_phase_16kw",
+    "sensor": "prog2_mode",
+    "kind": "SelectRWSensor",
+    "command": "Charge",
+    "expected": [
+      42413
+    ]
+  },
+  {
+    "profile": "single_phase_16kw",
+    "sensor": "prog3_mode",
+    "kind": "SelectRWSensor",
+    "command": "None",
+    "expected": [
+      42401
+    ]
+  },
+  {
+    "profile": "single_phase_16kw",
+    "sensor": "prog3_mode",
+    "kind": "SelectRWSensor",
+    "command": "General",
+    "expected": [
+      42405
+    ]
+  },
+  {
+    "profile": "single_phase_16kw",
+    "sensor": "prog3_mode",
+    "kind": "SelectRWSensor",
+    "command": "Backup",
+    "expected": [
+      42409
+    ]
+  },
+  {
+    "profile": "single_phase_16kw",
+    "sensor": "prog3_mode",
+    "kind": "SelectRWSensor",
+    "command": "Charge",
+    "expected": [
+      42413
+    ]
+  },
+  {
+    "profile": "single_phase_16kw",
+    "sensor": "prog4_mode",
+    "kind": "SelectRWSensor",
+    "command": "None",
+    "expected": [
+      42401
+    ]
+  },
+  {
+    "profile": "single_phase_16kw",
+    "sensor": "prog4_mode",
+    "kind": "SelectRWSensor",
+    "command": "General",
+    "expected": [
+      42405
+    ]
+  },
+  {
+    "profile": "single_phase_16kw",
+    "sensor": "prog4_mode",
+    "kind": "SelectRWSensor",
+    "command": "Backup",
+    "expected": [
+      42409
+    ]
+  },
+  {
+    "profile": "single_phase_16kw",
+    "sensor": "prog4_mode",
+    "kind": "SelectRWSensor",
+    "command": "Charge",
+    "expected": [
+      42413
+    ]
+  },
+  {
+    "profile": "single_phase_16kw",
+    "sensor": "prog5_mode",
+    "kind": "SelectRWSensor",
+    "command": "None",
+    "expected": [
+      42401
+    ]
+  },
+  {
+    "profile": "single_phase_16kw",
+    "sensor": "prog5_mode",
+    "kind": "SelectRWSensor",
+    "command": "General",
+    "expected": [
+      42405
+    ]
+  },
+  {
+    "profile": "single_phase_16kw",
+    "sensor": "prog5_mode",
+    "kind": "SelectRWSensor",
+    "command": "Backup",
+    "expected": [
+      42409
+    ]
+  },
+  {
+    "profile": "single_phase_16kw",
+    "sensor": "prog5_mode",
+    "kind": "SelectRWSensor",
+    "command": "Charge",
+    "expected": [
+      42413
+    ]
+  },
+  {
+    "profile": "single_phase_16kw",
+    "sensor": "prog6_mode",
+    "kind": "SelectRWSensor",
+    "command": "None",
+    "expected": [
+      42401
+    ]
+  },
+  {
+    "profile": "single_phase_16kw",
+    "sensor": "prog6_mode",
+    "kind": "SelectRWSensor",
+    "command": "General",
+    "expected": [
+      42405
+    ]
+  },
+  {
+    "profile": "single_phase_16kw",
+    "sensor": "prog6_mode",
+    "kind": "SelectRWSensor",
+    "command": "Backup",
+    "expected": [
+      42409
+    ]
+  },
+  {
+    "profile": "single_phase_16kw",
+    "sensor": "prog6_mode",
+    "kind": "SelectRWSensor",
+    "command": "Charge",
+    "expected": [
+      42413
+    ]
+  },
+  {
+    "profile": "single_phase_16kw",
+    "sensor": "prog1_sell",
+    "kind": "SwitchRWSensor",
+    "command": "ON",
+    "expected": [
+      42469
+    ]
+  },
+  {
+    "profile": "single_phase_16kw",
+    "sensor": "prog1_sell",
+    "kind": "SwitchRWSensor",
+    "command": "OFF",
+    "expected": [
+      42405
+    ]
+  },
+  {
+    "profile": "single_phase_16kw",
+    "sensor": "prog2_sell",
+    "kind": "SwitchRWSensor",
+    "command": "ON",
+    "expected": [
+      42469
+    ]
+  },
+  {
+    "profile": "single_phase_16kw",
+    "sensor": "prog2_sell",
+    "kind": "SwitchRWSensor",
+    "command": "OFF",
+    "expected": [
+      42405
+    ]
+  },
+  {
+    "profile": "single_phase_16kw",
+    "sensor": "prog3_sell",
+    "kind": "SwitchRWSensor",
+    "command": "ON",
+    "expected": [
+      42469
+    ]
+  },
+  {
+    "profile": "single_phase_16kw",
+    "sensor": "prog3_sell",
+    "kind": "SwitchRWSensor",
+    "command": "OFF",
+    "expected": [
+      42405
+    ]
+  },
+  {
+    "profile": "single_phase_16kw",
+    "sensor": "prog4_sell",
+    "kind": "SwitchRWSensor",
+    "command": "ON",
+    "expected": [
+      42469
+    ]
+  },
+  {
+    "profile": "single_phase_16kw",
+    "sensor": "prog4_sell",
+    "kind": "SwitchRWSensor",
+    "command": "OFF",
+    "expected": [
+      42405
+    ]
+  },
+  {
+    "profile": "single_phase_16kw",
+    "sensor": "prog5_sell",
+    "kind": "SwitchRWSensor",
+    "command": "ON",
+    "expected": [
+      42469
+    ]
+  },
+  {
+    "profile": "single_phase_16kw",
+    "sensor": "prog5_sell",
+    "kind": "SwitchRWSensor",
+    "command": "OFF",
+    "expected": [
+      42405
+    ]
+  },
+  {
+    "profile": "single_phase_16kw",
+    "sensor": "prog6_sell",
+    "kind": "SwitchRWSensor",
+    "command": "ON",
+    "expected": [
+      42469
+    ]
+  },
+  {
+    "profile": "single_phase_16kw",
+    "sensor": "prog6_sell",
+    "kind": "SwitchRWSensor",
+    "command": "OFF",
+    "expected": [
+      42405
+    ]
+  },
+  {
+    "profile": "single_phase_16kw",
+    "sensor": "bms_protocol",
+    "kind": "SelectRWSensor",
+    "command": "PYLON CAN",
+    "expected": [
+      0
+    ]
+  },
+  {
+    "profile": "single_phase_16kw",
+    "sensor": "bms_protocol",
+    "kind": "SelectRWSensor",
+    "command": "SACRED SUN RS485",
+    "expected": [
+      1
+    ]
+  },
+  {
+    "profile": "single_phase_16kw",
+    "sensor": "bms_protocol",
+    "kind": "SelectRWSensor",
+    "command": "02",
+    "expected": [
+      2
+    ]
+  },
+  {
+    "profile": "single_phase_16kw",
+    "sensor": "bms_protocol",
+    "kind": "SelectRWSensor",
+    "command": "DYNESS CAN",
+    "expected": [
+      3
+    ]
+  },
+  {
+    "profile": "single_phase_16kw",
+    "sensor": "bms_protocol",
+    "kind": "SelectRWSensor",
+    "command": "04",
+    "expected": [
+      4
+    ]
+  },
+  {
+    "profile": "single_phase_16kw",
+    "sensor": "bms_protocol",
+    "kind": "SelectRWSensor",
+    "command": "05",
+    "expected": [
+      5
+    ]
+  },
+  {
+    "profile": "single_phase_16kw",
+    "sensor": "bms_protocol",
+    "kind": "SelectRWSensor",
+    "command": "GenixGreen RS485",
+    "expected": [
+      6
+    ]
+  },
+  {
+    "profile": "single_phase_16kw",
+    "sensor": "bms_protocol",
+    "kind": "SelectRWSensor",
+    "command": "07",
+    "expected": [
+      7
+    ]
+  },
+  {
+    "profile": "single_phase_16kw",
+    "sensor": "bms_protocol",
+    "kind": "SelectRWSensor",
+    "command": "08",
+    "expected": [
+      8
+    ]
+  },
+  {
+    "profile": "single_phase_16kw",
+    "sensor": "bms_protocol",
+    "kind": "SelectRWSensor",
+    "command": "09",
+    "expected": [
+      9
+    ]
+  },
+  {
+    "profile": "single_phase_16kw",
+    "sensor": "bms_protocol",
+    "kind": "SelectRWSensor",
+    "command": "10",
+    "expected": [
+      10
+    ]
+  },
+  {
+    "profile": "single_phase_16kw",
+    "sensor": "bms_protocol",
+    "kind": "SelectRWSensor",
+    "command": "11",
+    "expected": [
+      11
+    ]
+  },
+  {
+    "profile": "single_phase_16kw",
+    "sensor": "bms_protocol",
+    "kind": "SelectRWSensor",
+    "command": "PYLON RS485",
+    "expected": [
+      12
+    ]
+  },
+  {
+    "profile": "single_phase_16kw",
+    "sensor": "bms_protocol",
+    "kind": "SelectRWSensor",
+    "command": "VISION CAN",
+    "expected": [
+      13
+    ]
+  },
+  {
+    "profile": "single_phase_16kw",
+    "sensor": "bms_protocol",
+    "kind": "SelectRWSensor",
+    "command": "WATTSONIC RS485",
+    "expected": [
+      14
+    ]
+  },
+  {
+    "profile": "single_phase_16kw",
+    "sensor": "bms_protocol",
+    "kind": "SelectRWSensor",
+    "command": "UNIPOWER RS485",
+    "expected": [
+      15
+    ]
+  },
+  {
+    "profile": "single_phase_16kw",
+    "sensor": "bms_protocol",
+    "kind": "SelectRWSensor",
+    "command": "16",
+    "expected": [
+      16
+    ]
+  },
+  {
+    "profile": "single_phase_16kw",
+    "sensor": "bms_protocol",
+    "kind": "SelectRWSensor",
+    "command": "LD RS485",
+    "expected": [
+      17
+    ]
+  },
+  {
+    "profile": "single_phase_16kw",
+    "sensor": "bms_protocol",
+    "kind": "SelectRWSensor",
+    "command": "18",
+    "expected": [
+      18
+    ]
+  },
+  {
+    "profile": "single_phase_16kw",
+    "sensor": "bms_protocol",
+    "kind": "SelectRWSensor",
+    "command": "UNKNOWN RS485",
+    "expected": [
+      19
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "aux_port_usage",
+    "kind": "SelectRWSensor",
+    "command": "Generator",
+    "expected": [
+      0
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "aux_port_usage",
+    "kind": "SelectRWSensor",
+    "command": "Smartload",
+    "expected": [
+      1
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "aux_port_usage",
+    "kind": "SelectRWSensor",
+    "command": "Micro Inverter",
+    "expected": [
+      2
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "generator_port_usage",
+    "kind": "SelectRWSensor",
+    "command": "Generator",
+    "expected": [
+      0
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "generator_port_usage",
+    "kind": "SelectRWSensor",
+    "command": "Smartload",
+    "expected": [
+      1
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "generator_port_usage",
+    "kind": "SelectRWSensor",
+    "command": "Micro Inverter",
+    "expected": [
+      2
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "date_time",
+    "kind": "SystemTimeRWSensor",
+    "command": "2026-10-30T12:34:56Z",
+    "expected": [
+      6666,
+      7692,
+      8760
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "inverter_enabled",
+    "kind": "SwitchRWSensor",
+    "command": "ON",
+    "expected": [
+      1
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "inverter_enabled",
+    "kind": "SwitchRWSensor",
+    "command": "OFF",
+    "expected": [
+      0
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "off_grid_mode",
+    "kind": "SwitchRWSensor",
+    "command": "ON",
+    "expected": [
+      42405
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "off_grid_mode",
+    "kind": "SwitchRWSensor",
+    "command": "OFF",
+    "expected": [
+      42404
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "grid_charge_enabled",
+    "kind": "SwitchRWSensor",
+    "command": "ON",
+    "expected": [
+      1
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "grid_charge_enabled",
+    "kind": "SwitchRWSensor",
+    "command": "OFF",
+    "expected": [
+      0
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "solar_export",
+    "kind": "SwitchRWSensor",
+    "command": "ON",
+    "expected": [
+      1
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "solar_export",
+    "kind": "SwitchRWSensor",
+    "command": "OFF",
+    "expected": [
+      0
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "generator_charge_enabled",
+    "kind": "SwitchRWSensor",
+    "command": "ON",
+    "expected": [
+      255
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "generator_charge_enabled",
+    "kind": "SwitchRWSensor",
+    "command": "OFF",
+    "expected": [
+      0
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "battery_type",
+    "kind": "SelectRWSensor",
+    "command": "Use Battery Voltage",
+    "expected": [
+      0
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "battery_type",
+    "kind": "SelectRWSensor",
+    "command": "Lithium (Use BMS)",
+    "expected": [
+      1
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "battery_type",
+    "kind": "SelectRWSensor",
+    "command": "No Battery",
+    "expected": [
+      2
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "battery_wake_up",
+    "kind": "SelectRWSensor",
+    "command": "Disabled",
+    "expected": [
+      42404
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "battery_wake_up",
+    "kind": "SelectRWSensor",
+    "command": "Enabled",
+    "expected": [
+      42405
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "priority_load",
+    "kind": "SwitchRWSensor",
+    "command": "ON",
+    "expected": [
+      255
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "priority_load",
+    "kind": "SwitchRWSensor",
+    "command": "OFF",
+    "expected": [
+      0
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "load_limit",
+    "kind": "SelectRWSensor",
+    "command": "Allow Export",
+    "expected": [
+      0
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "load_limit",
+    "kind": "SelectRWSensor",
+    "command": "Essentials",
+    "expected": [
+      1
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "load_limit",
+    "kind": "SelectRWSensor",
+    "command": "Zero Export",
+    "expected": [
+      2
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "prog1_time",
+    "kind": "TimeRWSensor",
+    "command": "23:59",
+    "expected": [
+      2359
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "prog2_time",
+    "kind": "TimeRWSensor",
+    "command": "23:59",
+    "expected": [
+      2359
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "prog3_time",
+    "kind": "TimeRWSensor",
+    "command": "23:59",
+    "expected": [
+      2359
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "prog4_time",
+    "kind": "TimeRWSensor",
+    "command": "23:59",
+    "expected": [
+      2359
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "prog5_time",
+    "kind": "TimeRWSensor",
+    "command": "23:59",
+    "expected": [
+      2359
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "prog6_time",
+    "kind": "TimeRWSensor",
+    "command": "23:59",
+    "expected": [
+      2359
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "prog_time_of_use_enabled",
+    "kind": "SwitchRWSensor",
+    "command": "ON",
+    "expected": [
+      42405
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "prog_time_of_use_enabled",
+    "kind": "SwitchRWSensor",
+    "command": "OFF",
+    "expected": [
+      42404
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "use_timer",
+    "kind": "SwitchRWSensor",
+    "command": "ON",
+    "expected": [
+      42405
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "use_timer",
+    "kind": "SwitchRWSensor",
+    "command": "OFF",
+    "expected": [
+      42404
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "prog_monday_enabled",
+    "kind": "SwitchRWSensor",
+    "command": "ON",
+    "expected": [
+      42407
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "prog_monday_enabled",
+    "kind": "SwitchRWSensor",
+    "command": "OFF",
+    "expected": [
+      42405
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "prog_tuesday_enabled",
+    "kind": "SwitchRWSensor",
+    "command": "ON",
+    "expected": [
+      42405
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "prog_tuesday_enabled",
+    "kind": "SwitchRWSensor",
+    "command": "OFF",
+    "expected": [
+      42401
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "prog_wednesday_enabled",
+    "kind": "SwitchRWSensor",
+    "command": "ON",
+    "expected": [
+      42413
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "prog_wednesday_enabled",
+    "kind": "SwitchRWSensor",
+    "command": "OFF",
+    "expected": [
+      42405
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "prog_thursday_enabled",
+    "kind": "SwitchRWSensor",
+    "command": "ON",
+    "expected": [
+      42421
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "prog_thursday_enabled",
+    "kind": "SwitchRWSensor",
+    "command": "OFF",
+    "expected": [
+      42405
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "prog_friday_enabled",
+    "kind": "SwitchRWSensor",
+    "command": "ON",
+    "expected": [
+      42405
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "prog_friday_enabled",
+    "kind": "SwitchRWSensor",
+    "command": "OFF",
+    "expected": [
+      42373
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "prog_saturday_enabled",
+    "kind": "SwitchRWSensor",
+    "command": "ON",
+    "expected": [
+      42469
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "prog_saturday_enabled",
+    "kind": "SwitchRWSensor",
+    "command": "OFF",
+    "expected": [
+      42405
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "prog_sunday_enabled",
+    "kind": "SwitchRWSensor",
+    "command": "ON",
+    "expected": [
+      42405
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "prog_sunday_enabled",
+    "kind": "SwitchRWSensor",
+    "command": "OFF",
+    "expected": [
+      42277
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "prog1_charge",
+    "kind": "SelectRWSensor",
+    "command": "No Grid or Gen",
+    "expected": [
+      42404
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "prog1_charge",
+    "kind": "SelectRWSensor",
+    "command": "Allow Grid",
+    "expected": [
+      42405
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "prog1_charge",
+    "kind": "SelectRWSensor",
+    "command": "Allow Gen",
+    "expected": [
+      42406
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "prog1_charge",
+    "kind": "SelectRWSensor",
+    "command": "Allow Grid & Gen",
+    "expected": [
+      42407
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "prog2_charge",
+    "kind": "SelectRWSensor",
+    "command": "No Grid or Gen",
+    "expected": [
+      42404
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "prog2_charge",
+    "kind": "SelectRWSensor",
+    "command": "Allow Grid",
+    "expected": [
+      42405
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "prog2_charge",
+    "kind": "SelectRWSensor",
+    "command": "Allow Gen",
+    "expected": [
+      42406
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "prog2_charge",
+    "kind": "SelectRWSensor",
+    "command": "Allow Grid & Gen",
+    "expected": [
+      42407
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "prog3_charge",
+    "kind": "SelectRWSensor",
+    "command": "No Grid or Gen",
+    "expected": [
+      42404
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "prog3_charge",
+    "kind": "SelectRWSensor",
+    "command": "Allow Grid",
+    "expected": [
+      42405
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "prog3_charge",
+    "kind": "SelectRWSensor",
+    "command": "Allow Gen",
+    "expected": [
+      42406
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "prog3_charge",
+    "kind": "SelectRWSensor",
+    "command": "Allow Grid & Gen",
+    "expected": [
+      42407
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "prog4_charge",
+    "kind": "SelectRWSensor",
+    "command": "No Grid or Gen",
+    "expected": [
+      42404
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "prog4_charge",
+    "kind": "SelectRWSensor",
+    "command": "Allow Grid",
+    "expected": [
+      42405
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "prog4_charge",
+    "kind": "SelectRWSensor",
+    "command": "Allow Gen",
+    "expected": [
+      42406
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "prog4_charge",
+    "kind": "SelectRWSensor",
+    "command": "Allow Grid & Gen",
+    "expected": [
+      42407
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "prog5_charge",
+    "kind": "SelectRWSensor",
+    "command": "No Grid or Gen",
+    "expected": [
+      42404
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "prog5_charge",
+    "kind": "SelectRWSensor",
+    "command": "Allow Grid",
+    "expected": [
+      42405
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "prog5_charge",
+    "kind": "SelectRWSensor",
+    "command": "Allow Gen",
+    "expected": [
+      42406
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "prog5_charge",
+    "kind": "SelectRWSensor",
+    "command": "Allow Grid & Gen",
+    "expected": [
+      42407
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "prog6_charge",
+    "kind": "SelectRWSensor",
+    "command": "No Grid or Gen",
+    "expected": [
+      42404
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "prog6_charge",
+    "kind": "SelectRWSensor",
+    "command": "Allow Grid",
+    "expected": [
+      42405
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "prog6_charge",
+    "kind": "SelectRWSensor",
+    "command": "Allow Gen",
+    "expected": [
+      42406
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "prog6_charge",
+    "kind": "SelectRWSensor",
+    "command": "Allow Grid & Gen",
+    "expected": [
+      42407
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "prog1_mode",
+    "kind": "SelectRWSensor",
+    "command": "None",
+    "expected": [
+      42401
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "prog1_mode",
+    "kind": "SelectRWSensor",
+    "command": "General",
+    "expected": [
+      42405
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "prog1_mode",
+    "kind": "SelectRWSensor",
+    "command": "Backup",
+    "expected": [
+      42409
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "prog1_mode",
+    "kind": "SelectRWSensor",
+    "command": "Charge",
+    "expected": [
+      42413
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "prog2_mode",
+    "kind": "SelectRWSensor",
+    "command": "None",
+    "expected": [
+      42401
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "prog2_mode",
+    "kind": "SelectRWSensor",
+    "command": "General",
+    "expected": [
+      42405
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "prog2_mode",
+    "kind": "SelectRWSensor",
+    "command": "Backup",
+    "expected": [
+      42409
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "prog2_mode",
+    "kind": "SelectRWSensor",
+    "command": "Charge",
+    "expected": [
+      42413
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "prog3_mode",
+    "kind": "SelectRWSensor",
+    "command": "None",
+    "expected": [
+      42401
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "prog3_mode",
+    "kind": "SelectRWSensor",
+    "command": "General",
+    "expected": [
+      42405
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "prog3_mode",
+    "kind": "SelectRWSensor",
+    "command": "Backup",
+    "expected": [
+      42409
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "prog3_mode",
+    "kind": "SelectRWSensor",
+    "command": "Charge",
+    "expected": [
+      42413
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "prog4_mode",
+    "kind": "SelectRWSensor",
+    "command": "None",
+    "expected": [
+      42401
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "prog4_mode",
+    "kind": "SelectRWSensor",
+    "command": "General",
+    "expected": [
+      42405
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "prog4_mode",
+    "kind": "SelectRWSensor",
+    "command": "Backup",
+    "expected": [
+      42409
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "prog4_mode",
+    "kind": "SelectRWSensor",
+    "command": "Charge",
+    "expected": [
+      42413
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "prog5_mode",
+    "kind": "SelectRWSensor",
+    "command": "None",
+    "expected": [
+      42401
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "prog5_mode",
+    "kind": "SelectRWSensor",
+    "command": "General",
+    "expected": [
+      42405
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "prog5_mode",
+    "kind": "SelectRWSensor",
+    "command": "Backup",
+    "expected": [
+      42409
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "prog5_mode",
+    "kind": "SelectRWSensor",
+    "command": "Charge",
+    "expected": [
+      42413
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "prog6_mode",
+    "kind": "SelectRWSensor",
+    "command": "None",
+    "expected": [
+      42401
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "prog6_mode",
+    "kind": "SelectRWSensor",
+    "command": "General",
+    "expected": [
+      42405
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "prog6_mode",
+    "kind": "SelectRWSensor",
+    "command": "Backup",
+    "expected": [
+      42409
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "prog6_mode",
+    "kind": "SelectRWSensor",
+    "command": "Charge",
+    "expected": [
+      42413
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "prog1_sell",
+    "kind": "SwitchRWSensor",
+    "command": "ON",
+    "expected": [
+      42405
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "prog1_sell",
+    "kind": "SwitchRWSensor",
+    "command": "OFF",
+    "expected": [
+      42373
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "prog2_sell",
+    "kind": "SwitchRWSensor",
+    "command": "ON",
+    "expected": [
+      42405
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "prog2_sell",
+    "kind": "SwitchRWSensor",
+    "command": "OFF",
+    "expected": [
+      42373
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "prog3_sell",
+    "kind": "SwitchRWSensor",
+    "command": "ON",
+    "expected": [
+      42405
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "prog3_sell",
+    "kind": "SwitchRWSensor",
+    "command": "OFF",
+    "expected": [
+      42373
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "prog4_sell",
+    "kind": "SwitchRWSensor",
+    "command": "ON",
+    "expected": [
+      42405
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "prog4_sell",
+    "kind": "SwitchRWSensor",
+    "command": "OFF",
+    "expected": [
+      42373
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "prog5_sell",
+    "kind": "SwitchRWSensor",
+    "command": "ON",
+    "expected": [
+      42405
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "prog5_sell",
+    "kind": "SwitchRWSensor",
+    "command": "OFF",
+    "expected": [
+      42373
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "prog6_sell",
+    "kind": "SwitchRWSensor",
+    "command": "ON",
+    "expected": [
+      42405
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "prog6_sell",
+    "kind": "SwitchRWSensor",
+    "command": "OFF",
+    "expected": [
+      42373
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "microinverter_export_to_grid_cutoff",
+    "kind": "SelectRWSensor",
+    "command": "Disable",
+    "expected": [
+      42406
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "microinverter_export_to_grid_cutoff",
+    "kind": "SelectRWSensor",
+    "command": "Enable",
+    "expected": [
+      42407
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "gen_peak_shaving",
+    "kind": "SelectRWSensor",
+    "command": "Disable",
+    "expected": [
+      42409
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "gen_peak_shaving",
+    "kind": "SelectRWSensor",
+    "command": "Enable",
+    "expected": [
+      42413
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "grid_peak_shaving",
+    "kind": "SelectRWSensor",
+    "command": "Disable",
+    "expected": [
+      42405
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "grid_peak_shaving",
+    "kind": "SelectRWSensor",
+    "command": "Enable",
+    "expected": [
+      42421
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "on_grid_always_on",
+    "kind": "SelectRWSensor",
+    "command": "Disable",
+    "expected": [
+      42405
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "on_grid_always_on",
+    "kind": "SelectRWSensor",
+    "command": "Enable",
+    "expected": [
+      42469
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "external_relay",
+    "kind": "SelectRWSensor",
+    "command": "Disable",
+    "expected": [
+      42661
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "external_relay",
+    "kind": "SelectRWSensor",
+    "command": "Enable",
+    "expected": [
+      42917
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "loss_of_lithium_battery_report_fault",
+    "kind": "SelectRWSensor",
+    "command": "Disable",
+    "expected": [
+      43429
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "loss_of_lithium_battery_report_fault",
+    "kind": "SelectRWSensor",
+    "command": "Enable",
+    "expected": [
+      44453
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "drm",
+    "kind": "SelectRWSensor",
+    "command": "Disable",
+    "expected": [
+      42405
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "drm",
+    "kind": "SelectRWSensor",
+    "command": "Enable",
+    "expected": [
+      46501
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "us_version_grounding_fault",
+    "kind": "SelectRWSensor",
+    "command": "Disable",
+    "expected": [
+      42405
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "us_version_grounding_fault",
+    "kind": "SelectRWSensor",
+    "command": "Enable",
+    "expected": [
+      58789
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "grid_signal_on",
+    "kind": "SwitchRWSensor",
+    "command": "ON",
+    "expected": [
+      42405
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "grid_signal_on",
+    "kind": "SwitchRWSensor",
+    "command": "OFF",
+    "expected": [
+      42404
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "gen_signal_on",
+    "kind": "SwitchRWSensor",
+    "command": "ON",
+    "expected": [
+      42407
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "gen_signal_on",
+    "kind": "SwitchRWSensor",
+    "command": "OFF",
+    "expected": [
+      42405
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "force_on_generator_as_load_function",
+    "kind": "SwitchRWSensor",
+    "command": "ON",
+    "expected": [
+      1
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "force_on_generator_as_load_function",
+    "kind": "SwitchRWSensor",
+    "command": "OFF",
+    "expected": [
+      0
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "generator_connected_to_grid_input",
+    "kind": "SwitchRWSensor",
+    "command": "ON",
+    "expected": [
+      1
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "generator_connected_to_grid_input",
+    "kind": "SwitchRWSensor",
+    "command": "OFF",
+    "expected": [
+      0
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "parallel_enable",
+    "kind": "SwitchRWSensor",
+    "command": "ON",
+    "expected": [
+      42405
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "parallel_enable",
+    "kind": "SwitchRWSensor",
+    "command": "OFF",
+    "expected": [
+      42404
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "parallel_mode",
+    "kind": "SelectRWSensor",
+    "command": "Server",
+    "expected": [
+      42405
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "parallel_mode",
+    "kind": "SelectRWSensor",
+    "command": "Client",
+    "expected": [
+      42407
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "parallel_phase",
+    "kind": "SelectRWSensor",
+    "command": "Phase A",
+    "expected": [
+      42149
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "parallel_phase",
+    "kind": "SelectRWSensor",
+    "command": "Phase B",
+    "expected": [
+      42405
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "parallel_phase",
+    "kind": "SelectRWSensor",
+    "command": "Phase C",
+    "expected": [
+      42661
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "parallel_phase",
+    "kind": "SelectRWSensor",
+    "command": "Void",
+    "expected": [
+      42917
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "grid_standard",
+    "kind": "SelectRWSensor",
+    "command": "Generic",
+    "expected": [
+      0
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "grid_standard",
+    "kind": "SelectRWSensor",
+    "command": "IEEE1547",
+    "expected": [
+      1
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "grid_standard",
+    "kind": "SelectRWSensor",
+    "command": "RULE21",
+    "expected": [
+      2
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "grid_standard",
+    "kind": "SelectRWSensor",
+    "command": "SRD_UL1741",
+    "expected": [
+      3
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "grid_standard",
+    "kind": "SelectRWSensor",
+    "command": "CEI_0_21",
+    "expected": [
+      4
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "grid_standard",
+    "kind": "SelectRWSensor",
+    "command": "EN50549_CZ",
+    "expected": [
+      5
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "grid_standard",
+    "kind": "SelectRWSensor",
+    "command": "AS4777_A",
+    "expected": [
+      6
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "grid_standard",
+    "kind": "SelectRWSensor",
+    "command": "AS4777_B",
+    "expected": [
+      7
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "grid_standard",
+    "kind": "SelectRWSensor",
+    "command": "AS4777_C",
+    "expected": [
+      8
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "grid_standard",
+    "kind": "SelectRWSensor",
+    "command": "AS4777_NewZealand",
+    "expected": [
+      9
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "grid_standard",
+    "kind": "SelectRWSensor",
+    "command": "VDE4105",
+    "expected": [
+      10
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "grid_standard",
+    "kind": "SelectRWSensor",
+    "command": "OVE_Directive_R25",
+    "expected": [
+      11
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "grid_standard",
+    "kind": "SelectRWSensor",
+    "command": "EN50549_CZ_PPDS_L16A",
+    "expected": [
+      12
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "configured_grid_frequency",
+    "kind": "SelectRWSensor",
+    "command": "50Hz",
+    "expected": [
+      0
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "configured_grid_frequency",
+    "kind": "SelectRWSensor",
+    "command": "60Hz",
+    "expected": [
+      1
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "configured_grid_phases",
+    "kind": "SelectRWSensor",
+    "command": "Three Phase",
+    "expected": [
+      0
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "configured_grid_phases",
+    "kind": "SelectRWSensor",
+    "command": "Single Phase",
+    "expected": [
+      1
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "configured_grid_phases",
+    "kind": "SelectRWSensor",
+    "command": "Split Phase",
+    "expected": [
+      2
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "time_synchronization",
+    "kind": "SelectRWSensor",
+    "command": "No work",
+    "expected": [
+      42405
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "time_synchronization",
+    "kind": "SelectRWSensor",
+    "command": "Disable",
+    "expected": [
+      42406
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "time_synchronization",
+    "kind": "SelectRWSensor",
+    "command": "Enable",
+    "expected": [
+      42407
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "beep",
+    "kind": "SelectRWSensor",
+    "command": "No work",
+    "expected": [
+      42405
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "beep",
+    "kind": "SelectRWSensor",
+    "command": "Disable",
+    "expected": [
+      42409
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "beep",
+    "kind": "SelectRWSensor",
+    "command": "Enable",
+    "expected": [
+      42413
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "am_pm",
+    "kind": "SelectRWSensor",
+    "command": "No work",
+    "expected": [
+      42389
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "am_pm",
+    "kind": "SelectRWSensor",
+    "command": "Disable",
+    "expected": [
+      42405
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "am_pm",
+    "kind": "SelectRWSensor",
+    "command": "Enable",
+    "expected": [
+      42421
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "auto_dim",
+    "kind": "SelectRWSensor",
+    "command": "No work",
+    "expected": [
+      42341
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "auto_dim",
+    "kind": "SelectRWSensor",
+    "command": "Disable",
+    "expected": [
+      42405
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "auto_dim",
+    "kind": "SelectRWSensor",
+    "command": "Enable",
+    "expected": [
+      42469
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "allow_remote",
+    "kind": "SelectRWSensor",
+    "command": "No work",
+    "expected": [
+      26021
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "allow_remote",
+    "kind": "SelectRWSensor",
+    "command": "Disable",
+    "expected": [
+      42405
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "allow_remote",
+    "kind": "SelectRWSensor",
+    "command": "Enable",
+    "expected": [
+      58789
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "track_grid_phase",
+    "kind": "SwitchRWSensor",
+    "command": "ON",
+    "expected": [
+      1
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "track_grid_phase",
+    "kind": "SwitchRWSensor",
+    "command": "OFF",
+    "expected": [
+      0
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "battery_1_manufacturer",
+    "kind": "SelectRWSensor",
+    "command": "HereYin",
+    "expected": [
+      0
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "battery_1_manufacturer",
+    "kind": "SelectRWSensor",
+    "command": "PYLON",
+    "expected": [
+      1
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "battery_1_manufacturer",
+    "kind": "SelectRWSensor",
+    "command": "SOLAX",
+    "expected": [
+      2
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "battery_1_manufacturer",
+    "kind": "SelectRWSensor",
+    "command": "DYNESS_L",
+    "expected": [
+      3
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "battery_1_manufacturer",
+    "kind": "SelectRWSensor",
+    "command": "CCGX",
+    "expected": [
+      4
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "battery_1_manufacturer",
+    "kind": "SelectRWSensor",
+    "command": "Alpha_ESS",
+    "expected": [
+      5
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "battery_1_manufacturer",
+    "kind": "SelectRWSensor",
+    "command": "SUNGO_CAN",
+    "expected": [
+      6
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "battery_1_manufacturer",
+    "kind": "SelectRWSensor",
+    "command": "VISION_CAN",
+    "expected": [
+      7
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "battery_1_manufacturer",
+    "kind": "SelectRWSensor",
+    "command": "WATTSONIC_CAN",
+    "expected": [
+      8
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "battery_1_manufacturer",
+    "kind": "SelectRWSensor",
+    "command": "KUNLAN",
+    "expected": [
+      9
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "battery_1_manufacturer",
+    "kind": "SelectRWSensor",
+    "command": "GSEnergy",
+    "expected": [
+      10
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "battery_1_manufacturer",
+    "kind": "SelectRWSensor",
+    "command": "GS_HUB",
+    "expected": [
+      11
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "battery_1_manufacturer",
+    "kind": "SelectRWSensor",
+    "command": "BYD_LV",
+    "expected": [
+      12
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "battery_1_manufacturer",
+    "kind": "SelectRWSensor",
+    "command": "AOBO",
+    "expected": [
+      13
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "battery_1_manufacturer",
+    "kind": "SelectRWSensor",
+    "command": "DEYE",
+    "expected": [
+      14
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "battery_1_manufacturer",
+    "kind": "SelectRWSensor",
+    "command": "CFE",
+    "expected": [
+      15
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "battery_1_manufacturer",
+    "kind": "SelectRWSensor",
+    "command": "DMEGC",
+    "expected": [
+      16
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "battery_1_manufacturer",
+    "kind": "SelectRWSensor",
+    "command": "UZENERGY",
+    "expected": [
+      17
+    ]
+  },
+  {
+    "profile": "three_phase_lv",
+    "sensor": "battery_1_manufacturer",
+    "kind": "SelectRWSensor",
+    "command": "GROWATT",
+    "expected": [
+      18
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "aux_port_usage",
+    "kind": "SelectRWSensor",
+    "command": "Generator",
+    "expected": [
+      0
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "aux_port_usage",
+    "kind": "SelectRWSensor",
+    "command": "Smartload",
+    "expected": [
+      1
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "aux_port_usage",
+    "kind": "SelectRWSensor",
+    "command": "Micro Inverter",
+    "expected": [
+      2
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "generator_port_usage",
+    "kind": "SelectRWSensor",
+    "command": "Generator",
+    "expected": [
+      0
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "generator_port_usage",
+    "kind": "SelectRWSensor",
+    "command": "Smartload",
+    "expected": [
+      1
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "generator_port_usage",
+    "kind": "SelectRWSensor",
+    "command": "Micro Inverter",
+    "expected": [
+      2
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "date_time",
+    "kind": "SystemTimeRWSensor",
+    "command": "2026-10-30T12:34:56Z",
+    "expected": [
+      6666,
+      7692,
+      8760
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "inverter_enabled",
+    "kind": "SwitchRWSensor",
+    "command": "ON",
+    "expected": [
+      1
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "inverter_enabled",
+    "kind": "SwitchRWSensor",
+    "command": "OFF",
+    "expected": [
+      0
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "off_grid_mode",
+    "kind": "SwitchRWSensor",
+    "command": "ON",
+    "expected": [
+      42405
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "off_grid_mode",
+    "kind": "SwitchRWSensor",
+    "command": "OFF",
+    "expected": [
+      42404
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "grid_charge_enabled",
+    "kind": "SwitchRWSensor",
+    "command": "ON",
+    "expected": [
+      1
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "grid_charge_enabled",
+    "kind": "SwitchRWSensor",
+    "command": "OFF",
+    "expected": [
+      0
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "solar_export",
+    "kind": "SwitchRWSensor",
+    "command": "ON",
+    "expected": [
+      1
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "solar_export",
+    "kind": "SwitchRWSensor",
+    "command": "OFF",
+    "expected": [
+      0
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "generator_charge_enabled",
+    "kind": "SwitchRWSensor",
+    "command": "ON",
+    "expected": [
+      255
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "generator_charge_enabled",
+    "kind": "SwitchRWSensor",
+    "command": "OFF",
+    "expected": [
+      0
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "battery_type",
+    "kind": "SelectRWSensor",
+    "command": "Use Battery Voltage",
+    "expected": [
+      0
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "battery_type",
+    "kind": "SelectRWSensor",
+    "command": "Lithium (Use BMS)",
+    "expected": [
+      1
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "battery_type",
+    "kind": "SelectRWSensor",
+    "command": "No Battery",
+    "expected": [
+      2
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "battery_wake_up",
+    "kind": "SelectRWSensor",
+    "command": "Enabled",
+    "expected": [
+      42404
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "battery_wake_up",
+    "kind": "SelectRWSensor",
+    "command": "Disabled",
+    "expected": [
+      42405
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "priority_load",
+    "kind": "SwitchRWSensor",
+    "command": "ON",
+    "expected": [
+      255
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "priority_load",
+    "kind": "SwitchRWSensor",
+    "command": "OFF",
+    "expected": [
+      0
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "load_limit",
+    "kind": "SelectRWSensor",
+    "command": "Allow Export",
+    "expected": [
+      0
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "load_limit",
+    "kind": "SelectRWSensor",
+    "command": "Essentials",
+    "expected": [
+      1
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "load_limit",
+    "kind": "SelectRWSensor",
+    "command": "Zero Export",
+    "expected": [
+      2
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "prog1_time",
+    "kind": "TimeRWSensor",
+    "command": "23:59",
+    "expected": [
+      2359
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "prog2_time",
+    "kind": "TimeRWSensor",
+    "command": "23:59",
+    "expected": [
+      2359
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "prog3_time",
+    "kind": "TimeRWSensor",
+    "command": "23:59",
+    "expected": [
+      2359
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "prog4_time",
+    "kind": "TimeRWSensor",
+    "command": "23:59",
+    "expected": [
+      2359
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "prog5_time",
+    "kind": "TimeRWSensor",
+    "command": "23:59",
+    "expected": [
+      2359
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "prog6_time",
+    "kind": "TimeRWSensor",
+    "command": "23:59",
+    "expected": [
+      2359
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "prog_time_of_use_enabled",
+    "kind": "SwitchRWSensor",
+    "command": "ON",
+    "expected": [
+      42405
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "prog_time_of_use_enabled",
+    "kind": "SwitchRWSensor",
+    "command": "OFF",
+    "expected": [
+      42404
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "use_timer",
+    "kind": "SwitchRWSensor",
+    "command": "ON",
+    "expected": [
+      42405
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "use_timer",
+    "kind": "SwitchRWSensor",
+    "command": "OFF",
+    "expected": [
+      42404
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "prog_monday_enabled",
+    "kind": "SwitchRWSensor",
+    "command": "ON",
+    "expected": [
+      42407
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "prog_monday_enabled",
+    "kind": "SwitchRWSensor",
+    "command": "OFF",
+    "expected": [
+      42405
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "prog_tuesday_enabled",
+    "kind": "SwitchRWSensor",
+    "command": "ON",
+    "expected": [
+      42405
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "prog_tuesday_enabled",
+    "kind": "SwitchRWSensor",
+    "command": "OFF",
+    "expected": [
+      42401
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "prog_wednesday_enabled",
+    "kind": "SwitchRWSensor",
+    "command": "ON",
+    "expected": [
+      42413
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "prog_wednesday_enabled",
+    "kind": "SwitchRWSensor",
+    "command": "OFF",
+    "expected": [
+      42405
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "prog_thursday_enabled",
+    "kind": "SwitchRWSensor",
+    "command": "ON",
+    "expected": [
+      42421
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "prog_thursday_enabled",
+    "kind": "SwitchRWSensor",
+    "command": "OFF",
+    "expected": [
+      42405
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "prog_friday_enabled",
+    "kind": "SwitchRWSensor",
+    "command": "ON",
+    "expected": [
+      42405
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "prog_friday_enabled",
+    "kind": "SwitchRWSensor",
+    "command": "OFF",
+    "expected": [
+      42373
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "prog_saturday_enabled",
+    "kind": "SwitchRWSensor",
+    "command": "ON",
+    "expected": [
+      42469
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "prog_saturday_enabled",
+    "kind": "SwitchRWSensor",
+    "command": "OFF",
+    "expected": [
+      42405
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "prog_sunday_enabled",
+    "kind": "SwitchRWSensor",
+    "command": "ON",
+    "expected": [
+      42405
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "prog_sunday_enabled",
+    "kind": "SwitchRWSensor",
+    "command": "OFF",
+    "expected": [
+      42277
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "prog1_charge",
+    "kind": "SelectRWSensor",
+    "command": "No Grid or Gen",
+    "expected": [
+      42404
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "prog1_charge",
+    "kind": "SelectRWSensor",
+    "command": "Allow Grid",
+    "expected": [
+      42405
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "prog1_charge",
+    "kind": "SelectRWSensor",
+    "command": "Allow Gen",
+    "expected": [
+      42406
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "prog1_charge",
+    "kind": "SelectRWSensor",
+    "command": "Allow Grid & Gen",
+    "expected": [
+      42407
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "prog2_charge",
+    "kind": "SelectRWSensor",
+    "command": "No Grid or Gen",
+    "expected": [
+      42404
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "prog2_charge",
+    "kind": "SelectRWSensor",
+    "command": "Allow Grid",
+    "expected": [
+      42405
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "prog2_charge",
+    "kind": "SelectRWSensor",
+    "command": "Allow Gen",
+    "expected": [
+      42406
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "prog2_charge",
+    "kind": "SelectRWSensor",
+    "command": "Allow Grid & Gen",
+    "expected": [
+      42407
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "prog3_charge",
+    "kind": "SelectRWSensor",
+    "command": "No Grid or Gen",
+    "expected": [
+      42404
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "prog3_charge",
+    "kind": "SelectRWSensor",
+    "command": "Allow Grid",
+    "expected": [
+      42405
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "prog3_charge",
+    "kind": "SelectRWSensor",
+    "command": "Allow Gen",
+    "expected": [
+      42406
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "prog3_charge",
+    "kind": "SelectRWSensor",
+    "command": "Allow Grid & Gen",
+    "expected": [
+      42407
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "prog4_charge",
+    "kind": "SelectRWSensor",
+    "command": "No Grid or Gen",
+    "expected": [
+      42404
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "prog4_charge",
+    "kind": "SelectRWSensor",
+    "command": "Allow Grid",
+    "expected": [
+      42405
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "prog4_charge",
+    "kind": "SelectRWSensor",
+    "command": "Allow Gen",
+    "expected": [
+      42406
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "prog4_charge",
+    "kind": "SelectRWSensor",
+    "command": "Allow Grid & Gen",
+    "expected": [
+      42407
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "prog5_charge",
+    "kind": "SelectRWSensor",
+    "command": "No Grid or Gen",
+    "expected": [
+      42404
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "prog5_charge",
+    "kind": "SelectRWSensor",
+    "command": "Allow Grid",
+    "expected": [
+      42405
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "prog5_charge",
+    "kind": "SelectRWSensor",
+    "command": "Allow Gen",
+    "expected": [
+      42406
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "prog5_charge",
+    "kind": "SelectRWSensor",
+    "command": "Allow Grid & Gen",
+    "expected": [
+      42407
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "prog6_charge",
+    "kind": "SelectRWSensor",
+    "command": "No Grid or Gen",
+    "expected": [
+      42404
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "prog6_charge",
+    "kind": "SelectRWSensor",
+    "command": "Allow Grid",
+    "expected": [
+      42405
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "prog6_charge",
+    "kind": "SelectRWSensor",
+    "command": "Allow Gen",
+    "expected": [
+      42406
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "prog6_charge",
+    "kind": "SelectRWSensor",
+    "command": "Allow Grid & Gen",
+    "expected": [
+      42407
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "prog1_mode",
+    "kind": "SelectRWSensor",
+    "command": "None",
+    "expected": [
+      42401
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "prog1_mode",
+    "kind": "SelectRWSensor",
+    "command": "General",
+    "expected": [
+      42405
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "prog1_mode",
+    "kind": "SelectRWSensor",
+    "command": "Backup",
+    "expected": [
+      42409
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "prog1_mode",
+    "kind": "SelectRWSensor",
+    "command": "Charge",
+    "expected": [
+      42413
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "prog2_mode",
+    "kind": "SelectRWSensor",
+    "command": "None",
+    "expected": [
+      42401
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "prog2_mode",
+    "kind": "SelectRWSensor",
+    "command": "General",
+    "expected": [
+      42405
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "prog2_mode",
+    "kind": "SelectRWSensor",
+    "command": "Backup",
+    "expected": [
+      42409
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "prog2_mode",
+    "kind": "SelectRWSensor",
+    "command": "Charge",
+    "expected": [
+      42413
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "prog3_mode",
+    "kind": "SelectRWSensor",
+    "command": "None",
+    "expected": [
+      42401
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "prog3_mode",
+    "kind": "SelectRWSensor",
+    "command": "General",
+    "expected": [
+      42405
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "prog3_mode",
+    "kind": "SelectRWSensor",
+    "command": "Backup",
+    "expected": [
+      42409
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "prog3_mode",
+    "kind": "SelectRWSensor",
+    "command": "Charge",
+    "expected": [
+      42413
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "prog4_mode",
+    "kind": "SelectRWSensor",
+    "command": "None",
+    "expected": [
+      42401
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "prog4_mode",
+    "kind": "SelectRWSensor",
+    "command": "General",
+    "expected": [
+      42405
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "prog4_mode",
+    "kind": "SelectRWSensor",
+    "command": "Backup",
+    "expected": [
+      42409
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "prog4_mode",
+    "kind": "SelectRWSensor",
+    "command": "Charge",
+    "expected": [
+      42413
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "prog5_mode",
+    "kind": "SelectRWSensor",
+    "command": "None",
+    "expected": [
+      42401
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "prog5_mode",
+    "kind": "SelectRWSensor",
+    "command": "General",
+    "expected": [
+      42405
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "prog5_mode",
+    "kind": "SelectRWSensor",
+    "command": "Backup",
+    "expected": [
+      42409
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "prog5_mode",
+    "kind": "SelectRWSensor",
+    "command": "Charge",
+    "expected": [
+      42413
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "prog6_mode",
+    "kind": "SelectRWSensor",
+    "command": "None",
+    "expected": [
+      42401
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "prog6_mode",
+    "kind": "SelectRWSensor",
+    "command": "General",
+    "expected": [
+      42405
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "prog6_mode",
+    "kind": "SelectRWSensor",
+    "command": "Backup",
+    "expected": [
+      42409
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "prog6_mode",
+    "kind": "SelectRWSensor",
+    "command": "Charge",
+    "expected": [
+      42413
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "prog1_sell",
+    "kind": "SwitchRWSensor",
+    "command": "ON",
+    "expected": [
+      42405
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "prog1_sell",
+    "kind": "SwitchRWSensor",
+    "command": "OFF",
+    "expected": [
+      42373
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "prog2_sell",
+    "kind": "SwitchRWSensor",
+    "command": "ON",
+    "expected": [
+      42405
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "prog2_sell",
+    "kind": "SwitchRWSensor",
+    "command": "OFF",
+    "expected": [
+      42373
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "prog3_sell",
+    "kind": "SwitchRWSensor",
+    "command": "ON",
+    "expected": [
+      42405
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "prog3_sell",
+    "kind": "SwitchRWSensor",
+    "command": "OFF",
+    "expected": [
+      42373
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "prog4_sell",
+    "kind": "SwitchRWSensor",
+    "command": "ON",
+    "expected": [
+      42405
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "prog4_sell",
+    "kind": "SwitchRWSensor",
+    "command": "OFF",
+    "expected": [
+      42373
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "prog5_sell",
+    "kind": "SwitchRWSensor",
+    "command": "ON",
+    "expected": [
+      42405
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "prog5_sell",
+    "kind": "SwitchRWSensor",
+    "command": "OFF",
+    "expected": [
+      42373
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "prog6_sell",
+    "kind": "SwitchRWSensor",
+    "command": "ON",
+    "expected": [
+      42405
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "prog6_sell",
+    "kind": "SwitchRWSensor",
+    "command": "OFF",
+    "expected": [
+      42373
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "microinverter_export_to_grid_cutoff",
+    "kind": "SelectRWSensor",
+    "command": "Disable",
+    "expected": [
+      42406
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "microinverter_export_to_grid_cutoff",
+    "kind": "SelectRWSensor",
+    "command": "Enable",
+    "expected": [
+      42407
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "gen_peak_shaving",
+    "kind": "SelectRWSensor",
+    "command": "Disable",
+    "expected": [
+      42409
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "gen_peak_shaving",
+    "kind": "SelectRWSensor",
+    "command": "Enable",
+    "expected": [
+      42413
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "grid_peak_shaving",
+    "kind": "SelectRWSensor",
+    "command": "Disable",
+    "expected": [
+      42405
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "grid_peak_shaving",
+    "kind": "SelectRWSensor",
+    "command": "Enable",
+    "expected": [
+      42421
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "on_grid_always_on",
+    "kind": "SelectRWSensor",
+    "command": "Disable",
+    "expected": [
+      42405
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "on_grid_always_on",
+    "kind": "SelectRWSensor",
+    "command": "Enable",
+    "expected": [
+      42469
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "external_relay",
+    "kind": "SelectRWSensor",
+    "command": "Disable",
+    "expected": [
+      42661
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "external_relay",
+    "kind": "SelectRWSensor",
+    "command": "Enable",
+    "expected": [
+      42917
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "loss_of_lithium_battery_report_fault",
+    "kind": "SelectRWSensor",
+    "command": "Disable",
+    "expected": [
+      43429
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "loss_of_lithium_battery_report_fault",
+    "kind": "SelectRWSensor",
+    "command": "Enable",
+    "expected": [
+      44453
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "drm",
+    "kind": "SelectRWSensor",
+    "command": "Disable",
+    "expected": [
+      42405
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "drm",
+    "kind": "SelectRWSensor",
+    "command": "Enable",
+    "expected": [
+      46501
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "us_version_grounding_fault",
+    "kind": "SelectRWSensor",
+    "command": "Disable",
+    "expected": [
+      42405
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "us_version_grounding_fault",
+    "kind": "SelectRWSensor",
+    "command": "Enable",
+    "expected": [
+      58789
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "grid_signal_on",
+    "kind": "SwitchRWSensor",
+    "command": "ON",
+    "expected": [
+      42405
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "grid_signal_on",
+    "kind": "SwitchRWSensor",
+    "command": "OFF",
+    "expected": [
+      42404
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "gen_signal_on",
+    "kind": "SwitchRWSensor",
+    "command": "ON",
+    "expected": [
+      42407
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "gen_signal_on",
+    "kind": "SwitchRWSensor",
+    "command": "OFF",
+    "expected": [
+      42405
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "force_on_generator_as_load_function",
+    "kind": "SwitchRWSensor",
+    "command": "ON",
+    "expected": [
+      1
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "force_on_generator_as_load_function",
+    "kind": "SwitchRWSensor",
+    "command": "OFF",
+    "expected": [
+      0
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "generator_connected_to_grid_input",
+    "kind": "SwitchRWSensor",
+    "command": "ON",
+    "expected": [
+      1
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "generator_connected_to_grid_input",
+    "kind": "SwitchRWSensor",
+    "command": "OFF",
+    "expected": [
+      0
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "parallel_enable",
+    "kind": "SwitchRWSensor",
+    "command": "ON",
+    "expected": [
+      42405
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "parallel_enable",
+    "kind": "SwitchRWSensor",
+    "command": "OFF",
+    "expected": [
+      42404
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "parallel_mode",
+    "kind": "SelectRWSensor",
+    "command": "Server",
+    "expected": [
+      42405
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "parallel_mode",
+    "kind": "SelectRWSensor",
+    "command": "Client",
+    "expected": [
+      42407
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "parallel_phase",
+    "kind": "SelectRWSensor",
+    "command": "Phase A",
+    "expected": [
+      42149
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "parallel_phase",
+    "kind": "SelectRWSensor",
+    "command": "Phase B",
+    "expected": [
+      42405
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "parallel_phase",
+    "kind": "SelectRWSensor",
+    "command": "Phase C",
+    "expected": [
+      42661
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "parallel_phase",
+    "kind": "SelectRWSensor",
+    "command": "Void",
+    "expected": [
+      42917
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "grid_standard",
+    "kind": "SelectRWSensor",
+    "command": "Generic",
+    "expected": [
+      0
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "grid_standard",
+    "kind": "SelectRWSensor",
+    "command": "IEEE1547",
+    "expected": [
+      1
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "grid_standard",
+    "kind": "SelectRWSensor",
+    "command": "RULE21",
+    "expected": [
+      2
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "grid_standard",
+    "kind": "SelectRWSensor",
+    "command": "SRD_UL1741",
+    "expected": [
+      3
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "grid_standard",
+    "kind": "SelectRWSensor",
+    "command": "CEI_0_21",
+    "expected": [
+      4
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "grid_standard",
+    "kind": "SelectRWSensor",
+    "command": "EN50549_CZ",
+    "expected": [
+      5
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "grid_standard",
+    "kind": "SelectRWSensor",
+    "command": "AS4777_A",
+    "expected": [
+      6
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "grid_standard",
+    "kind": "SelectRWSensor",
+    "command": "AS4777_B",
+    "expected": [
+      7
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "grid_standard",
+    "kind": "SelectRWSensor",
+    "command": "AS4777_C",
+    "expected": [
+      8
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "grid_standard",
+    "kind": "SelectRWSensor",
+    "command": "AS4777_NewZealand",
+    "expected": [
+      9
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "grid_standard",
+    "kind": "SelectRWSensor",
+    "command": "VDE4105",
+    "expected": [
+      10
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "grid_standard",
+    "kind": "SelectRWSensor",
+    "command": "OVE_Directive_R25",
+    "expected": [
+      11
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "grid_standard",
+    "kind": "SelectRWSensor",
+    "command": "EN50549_CZ_PPDS_L16A",
+    "expected": [
+      12
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "configured_grid_frequency",
+    "kind": "SelectRWSensor",
+    "command": "50Hz",
+    "expected": [
+      0
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "configured_grid_frequency",
+    "kind": "SelectRWSensor",
+    "command": "60Hz",
+    "expected": [
+      1
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "configured_grid_phases",
+    "kind": "SelectRWSensor",
+    "command": "Three Phase",
+    "expected": [
+      0
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "configured_grid_phases",
+    "kind": "SelectRWSensor",
+    "command": "Single Phase",
+    "expected": [
+      1
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "configured_grid_phases",
+    "kind": "SelectRWSensor",
+    "command": "Split Phase",
+    "expected": [
+      2
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "time_synchronization",
+    "kind": "SelectRWSensor",
+    "command": "No work",
+    "expected": [
+      42405
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "time_synchronization",
+    "kind": "SelectRWSensor",
+    "command": "Disable",
+    "expected": [
+      42406
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "time_synchronization",
+    "kind": "SelectRWSensor",
+    "command": "Enable",
+    "expected": [
+      42407
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "beep",
+    "kind": "SelectRWSensor",
+    "command": "No work",
+    "expected": [
+      42405
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "beep",
+    "kind": "SelectRWSensor",
+    "command": "Disable",
+    "expected": [
+      42409
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "beep",
+    "kind": "SelectRWSensor",
+    "command": "Enable",
+    "expected": [
+      42413
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "am_pm",
+    "kind": "SelectRWSensor",
+    "command": "No work",
+    "expected": [
+      42389
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "am_pm",
+    "kind": "SelectRWSensor",
+    "command": "Disable",
+    "expected": [
+      42405
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "am_pm",
+    "kind": "SelectRWSensor",
+    "command": "Enable",
+    "expected": [
+      42421
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "auto_dim",
+    "kind": "SelectRWSensor",
+    "command": "No work",
+    "expected": [
+      42341
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "auto_dim",
+    "kind": "SelectRWSensor",
+    "command": "Disable",
+    "expected": [
+      42405
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "auto_dim",
+    "kind": "SelectRWSensor",
+    "command": "Enable",
+    "expected": [
+      42469
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "allow_remote",
+    "kind": "SelectRWSensor",
+    "command": "No work",
+    "expected": [
+      26021
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "allow_remote",
+    "kind": "SelectRWSensor",
+    "command": "Disable",
+    "expected": [
+      42405
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "allow_remote",
+    "kind": "SelectRWSensor",
+    "command": "Enable",
+    "expected": [
+      58789
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "track_grid_phase",
+    "kind": "SwitchRWSensor",
+    "command": "ON",
+    "expected": [
+      1
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "track_grid_phase",
+    "kind": "SwitchRWSensor",
+    "command": "OFF",
+    "expected": [
+      0
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "parallel_battery_1_and_2",
+    "kind": "SwitchRWSensor",
+    "command": "ON",
+    "expected": [
+      255
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "parallel_battery_1_and_2",
+    "kind": "SwitchRWSensor",
+    "command": "OFF",
+    "expected": [
+      0
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "parallel_bat1&bat2",
+    "kind": "SwitchRWSensor",
+    "command": "ON",
+    "expected": [
+      255
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "parallel_bat1&bat2",
+    "kind": "SwitchRWSensor",
+    "command": "OFF",
+    "expected": [
+      0
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "battery_1_wake_up",
+    "kind": "SelectRWSensor",
+    "command": "Enabled",
+    "expected": [
+      42404
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "battery_1_wake_up",
+    "kind": "SelectRWSensor",
+    "command": "Disabled",
+    "expected": [
+      42405
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "battery_2_wake_up",
+    "kind": "SelectRWSensor",
+    "command": "Enabled",
+    "expected": [
+      42149
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "battery_2_wake_up",
+    "kind": "SelectRWSensor",
+    "command": "Disabled",
+    "expected": [
+      42405
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "lithium_hv_bms_protocol",
+    "kind": "SelectRWSensor",
+    "command": "PYLON SOLAX (CAN)",
+    "expected": [
+      0
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "lithium_hv_bms_protocol",
+    "kind": "SelectRWSensor",
+    "command": "Tianbanda RS485 Modbus Protocol (BYD CAN)",
+    "expected": [
+      1
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "lithium_hv_bms_protocol",
+    "kind": "SelectRWSensor",
+    "command": "KOK Protocol",
+    "expected": [
+      2
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "lithium_hv_bms_protocol",
+    "kind": "SelectRWSensor",
+    "command": "Keith",
+    "expected": [
+      3
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "lithium_hv_bms_protocol",
+    "kind": "SelectRWSensor",
+    "command": "Topai Protocol",
+    "expected": [
+      4
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "lithium_hv_bms_protocol",
+    "kind": "SelectRWSensor",
+    "command": "Pai Energy 485 Protocol",
+    "expected": [
+      5
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "lithium_hv_bms_protocol",
+    "kind": "SelectRWSensor",
+    "command": "Jelis 485 Protocol",
+    "expected": [
+      6
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "lithium_hv_bms_protocol",
+    "kind": "SelectRWSensor",
+    "command": "Xinwangda 485 Protocol",
+    "expected": [
+      7
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "lithium_hv_bms_protocol",
+    "kind": "SelectRWSensor",
+    "command": "Xinruineng 485 Protocol",
+    "expected": [
+      8
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "lithium_hv_bms_protocol",
+    "kind": "SelectRWSensor",
+    "command": "Tianbanda 485 Protocol",
+    "expected": [
+      9
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "lithium_hv_bms_protocol",
+    "kind": "SelectRWSensor",
+    "command": "Shenggao Electrical CAN Protocol",
+    "expected": [
+      10
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "battery_1_bms_type",
+    "kind": "SelectRWSensor",
+    "command": "PYLON SOLAX (CAN)",
+    "expected": [
+      0
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "battery_1_bms_type",
+    "kind": "SelectRWSensor",
+    "command": "Tianbanda RS485 Modbus Protocol (BYD CAN)",
+    "expected": [
+      1
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "battery_1_bms_type",
+    "kind": "SelectRWSensor",
+    "command": "KOK Protocol",
+    "expected": [
+      2
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "battery_1_bms_type",
+    "kind": "SelectRWSensor",
+    "command": "Keith",
+    "expected": [
+      3
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "battery_1_bms_type",
+    "kind": "SelectRWSensor",
+    "command": "Topai Protocol",
+    "expected": [
+      4
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "battery_1_bms_type",
+    "kind": "SelectRWSensor",
+    "command": "Pai Energy 485 Protocol",
+    "expected": [
+      5
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "battery_1_bms_type",
+    "kind": "SelectRWSensor",
+    "command": "Jelis 485 Protocol",
+    "expected": [
+      6
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "battery_1_bms_type",
+    "kind": "SelectRWSensor",
+    "command": "Xinwangda 485 Protocol",
+    "expected": [
+      7
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "battery_1_bms_type",
+    "kind": "SelectRWSensor",
+    "command": "Xinruineng 485 Protocol",
+    "expected": [
+      8
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "battery_1_bms_type",
+    "kind": "SelectRWSensor",
+    "command": "Tianbanda 485 Protocol",
+    "expected": [
+      9
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "battery_1_bms_type",
+    "kind": "SelectRWSensor",
+    "command": "Shenggao Electrical CAN Protocol",
+    "expected": [
+      10
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "battery_1_bms_other_flag___battery_1_force_charge",
+    "kind": "SwitchRWSensor",
+    "command": "ON",
+    "expected": [
+      42407
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "battery_1_bms_other_flag___battery_1_force_charge",
+    "kind": "SwitchRWSensor",
+    "command": "OFF",
+    "expected": [
+      42405
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "battery_1_bms_other_flag___battery_2_force_charge",
+    "kind": "SwitchRWSensor",
+    "command": "ON",
+    "expected": [
+      42405
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "battery_1_bms_other_flag___battery_2_force_charge",
+    "kind": "SwitchRWSensor",
+    "command": "OFF",
+    "expected": [
+      42401
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "battery_1_bms_other_flag___battery_1_sleep",
+    "kind": "SwitchRWSensor",
+    "command": "ON",
+    "expected": [
+      42413
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "battery_1_bms_other_flag___battery_1_sleep",
+    "kind": "SwitchRWSensor",
+    "command": "OFF",
+    "expected": [
+      42405
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "battery_2_bms_other_flag___battery_1_force_charge",
+    "kind": "SwitchRWSensor",
+    "command": "ON",
+    "expected": [
+      42407
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "battery_2_bms_other_flag___battery_1_force_charge",
+    "kind": "SwitchRWSensor",
+    "command": "OFF",
+    "expected": [
+      42405
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "battery_2_bms_other_flag___battery_2_force_charge",
+    "kind": "SwitchRWSensor",
+    "command": "ON",
+    "expected": [
+      42405
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "battery_2_bms_other_flag___battery_2_force_charge",
+    "kind": "SwitchRWSensor",
+    "command": "OFF",
+    "expected": [
+      42401
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "battery_2_bms_other_flag___battery_1_sleep",
+    "kind": "SwitchRWSensor",
+    "command": "ON",
+    "expected": [
+      42413
+    ]
+  },
+  {
+    "profile": "three_phase_hv",
+    "sensor": "battery_2_bms_other_flag___battery_1_sleep",
+    "kind": "SwitchRWSensor",
+    "command": "OFF",
+    "expected": [
+      42405
+    ]
+  },
+  {
+    "profile": "micro_hybrid_ess",
+    "sensor": "date_time",
+    "kind": "SystemTimeRWSensor",
+    "command": "2026-10-30T12:34:56Z",
+    "expected": [
+      6666,
+      7692,
+      8760
+    ]
+  },
+  {
+    "profile": "micro_hybrid_ess",
+    "sensor": "work_mode",
+    "kind": "SelectRWSensor",
+    "command": "Green Power",
+    "expected": [
+      0
+    ]
+  },
+  {
+    "profile": "micro_hybrid_ess",
+    "sensor": "work_mode",
+    "kind": "SelectRWSensor",
+    "command": "Full Charge",
+    "expected": [
+      2
+    ]
+  },
+  {
+    "profile": "micro_hybrid_ess",
+    "sensor": "work_mode",
+    "kind": "SelectRWSensor",
+    "command": "Customized",
+    "expected": [
+      3
+    ]
+  },
+  {
+    "profile": "micro_hybrid_ess",
+    "sensor": "use_timer",
+    "kind": "SwitchRWSensor",
+    "command": "ON",
+    "expected": [
+      1
+    ]
+  },
+  {
+    "profile": "micro_hybrid_ess",
+    "sensor": "use_timer",
+    "kind": "SwitchRWSensor",
+    "command": "OFF",
+    "expected": [
+      0
+    ]
+  },
+  {
+    "profile": "micro_hybrid_ess",
+    "sensor": "grid_charge_enabled",
+    "kind": "SwitchRWSensor",
+    "command": "ON",
+    "expected": [
+      1
+    ]
+  },
+  {
+    "profile": "micro_hybrid_ess",
+    "sensor": "grid_charge_enabled",
+    "kind": "SwitchRWSensor",
+    "command": "OFF",
+    "expected": [
+      0
+    ]
+  },
+  {
+    "profile": "micro_hybrid_ess",
+    "sensor": "priority_load",
+    "kind": "SelectRWSensor",
+    "command": "Battery first",
+    "expected": [
+      0
+    ]
+  },
+  {
+    "profile": "micro_hybrid_ess",
+    "sensor": "priority_load",
+    "kind": "SelectRWSensor",
+    "command": "Load first",
+    "expected": [
+      1
+    ]
+  },
+  {
+    "profile": "micro_hybrid_ess",
+    "sensor": "solar_export",
+    "kind": "SwitchRWSensor",
+    "command": "ON",
+    "expected": [
+      1
+    ]
+  },
+  {
+    "profile": "micro_hybrid_ess",
+    "sensor": "solar_export",
+    "kind": "SwitchRWSensor",
+    "command": "OFF",
+    "expected": [
+      0
+    ]
+  },
+  {
+    "profile": "micro_hybrid_ess",
+    "sensor": "prog1_time",
+    "kind": "TimeRWSensor",
+    "command": "23:59",
+    "expected": [
+      2359
+    ]
+  },
+  {
+    "profile": "micro_hybrid_ess",
+    "sensor": "prog2_time",
+    "kind": "TimeRWSensor",
+    "command": "23:59",
+    "expected": [
+      2359
+    ]
+  },
+  {
+    "profile": "micro_hybrid_ess",
+    "sensor": "prog3_time",
+    "kind": "TimeRWSensor",
+    "command": "23:59",
+    "expected": [
+      2359
+    ]
+  },
+  {
+    "profile": "micro_hybrid_ess",
+    "sensor": "prog4_time",
+    "kind": "TimeRWSensor",
+    "command": "23:59",
+    "expected": [
+      2359
+    ]
+  },
+  {
+    "profile": "micro_hybrid_ess",
+    "sensor": "prog5_time",
+    "kind": "TimeRWSensor",
+    "command": "23:59",
+    "expected": [
+      2359
+    ]
+  },
+  {
+    "profile": "micro_hybrid_ess",
+    "sensor": "prog6_time",
+    "kind": "TimeRWSensor",
+    "command": "23:59",
+    "expected": [
+      2359
+    ]
+  },
+  {
+    "profile": "micro_hybrid_ess",
+    "sensor": "prog1_charge",
+    "kind": "SwitchRWSensor",
+    "command": "ON",
+    "expected": [
+      1
+    ]
+  },
+  {
+    "profile": "micro_hybrid_ess",
+    "sensor": "prog1_charge",
+    "kind": "SwitchRWSensor",
+    "command": "OFF",
+    "expected": [
+      0
+    ]
+  },
+  {
+    "profile": "micro_hybrid_ess",
+    "sensor": "prog2_charge",
+    "kind": "SwitchRWSensor",
+    "command": "ON",
+    "expected": [
+      1
+    ]
+  },
+  {
+    "profile": "micro_hybrid_ess",
+    "sensor": "prog2_charge",
+    "kind": "SwitchRWSensor",
+    "command": "OFF",
+    "expected": [
+      0
+    ]
+  },
+  {
+    "profile": "micro_hybrid_ess",
+    "sensor": "prog3_charge",
+    "kind": "SwitchRWSensor",
+    "command": "ON",
+    "expected": [
+      1
+    ]
+  },
+  {
+    "profile": "micro_hybrid_ess",
+    "sensor": "prog3_charge",
+    "kind": "SwitchRWSensor",
+    "command": "OFF",
+    "expected": [
+      0
+    ]
+  },
+  {
+    "profile": "micro_hybrid_ess",
+    "sensor": "prog4_charge",
+    "kind": "SwitchRWSensor",
+    "command": "ON",
+    "expected": [
+      1
+    ]
+  },
+  {
+    "profile": "micro_hybrid_ess",
+    "sensor": "prog4_charge",
+    "kind": "SwitchRWSensor",
+    "command": "OFF",
+    "expected": [
+      0
+    ]
+  },
+  {
+    "profile": "micro_hybrid_ess",
+    "sensor": "prog5_charge",
+    "kind": "SwitchRWSensor",
+    "command": "ON",
+    "expected": [
+      1
+    ]
+  },
+  {
+    "profile": "micro_hybrid_ess",
+    "sensor": "prog5_charge",
+    "kind": "SwitchRWSensor",
+    "command": "OFF",
+    "expected": [
+      0
+    ]
+  },
+  {
+    "profile": "micro_hybrid_ess",
+    "sensor": "prog6_charge",
+    "kind": "SwitchRWSensor",
+    "command": "ON",
+    "expected": [
+      1
+    ]
+  },
+  {
+    "profile": "micro_hybrid_ess",
+    "sensor": "prog6_charge",
+    "kind": "SwitchRWSensor",
+    "command": "OFF",
+    "expected": [
+      0
+    ]
+  }
+]

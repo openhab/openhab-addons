@@ -1,0 +1,232 @@
+{
+  "baseline_revision": "821bb618754b6a0973ae4a11a28ac93133be278c",
+  "item_type_changes": {
+    "sofar_hyd3k-6k-es/batteries-periods-of-discharge-time": {
+      "before": "Number",
+      "after": "Number:Time",
+      "reason": "Existing time-unit dimension correction; channel identity and register configuration retained."
+    },
+    "sofar_hyd3k-6k-es/solar-total-generation-time": {
+      "before": "Number",
+      "after": "Number:Time",
+      "reason": "Existing time-unit dimension correction; channel identity and register configuration retained."
+    },
+    "sofar_lsw3/solar-total-generation-time": {
+      "before": "Number",
+      "after": "Number:Time",
+      "reason": "Existing time-unit dimension correction; channel identity and register configuration retained."
+    },
+    "sofar_wifikit/generation-total-generation-time": {
+      "before": "Number",
+      "after": "Number:Time",
+      "reason": "Existing time-unit dimension correction; channel identity and register configuration retained."
+    },
+    "solis_hybrid/timedcharge-timed-charge-end-hour": {
+      "before": "Number",
+      "after": "Number:Time",
+      "reason": "Existing time-unit dimension correction; channel identity and register configuration retained."
+    },
+    "solis_hybrid/timedcharge-timed-charge-start-hour": {
+      "before": "Number",
+      "after": "Number:Time",
+      "reason": "Existing time-unit dimension correction; channel identity and register configuration retained."
+    },
+    "solis_hybrid/timedcharge-timed-discharge-end-hour": {
+      "before": "Number",
+      "after": "Number:Time",
+      "reason": "Existing time-unit dimension correction; channel identity and register configuration retained."
+    },
+    "solis_hybrid/timedcharge-timed-discharge-start-hour": {
+      "before": "Number",
+      "after": "Number:Time",
+      "reason": "Existing time-unit dimension correction; channel identity and register configuration retained."
+    }
+  },
+  "request_changes": {
+    "deye_hybrid": {
+      "reason": "Existing normalization sorts by function/address, merges overlap/adjacency and splits at 125 registers; coverage must equal upstream.",
+      "expected": [
+        {
+          "function": 3,
+          "start": 3,
+          "end": 112
+        },
+        {
+          "function": 3,
+          "start": 150,
+          "end": 274
+        },
+        {
+          "function": 3,
+          "start": 275,
+          "end": 279
+        }
+      ]
+    },
+    "deye_sg01hp3": {
+      "reason": "Existing normalization sorts by function/address, merges overlap/adjacency and splits at 125 registers; coverage must equal upstream.",
+      "expected": [
+        {
+          "function": 3,
+          "start": 3,
+          "end": 89
+        },
+        {
+          "function": 3,
+          "start": 99,
+          "end": 109
+        },
+        {
+          "function": 3,
+          "start": 133,
+          "end": 133
+        },
+        {
+          "function": 3,
+          "start": 148,
+          "end": 159
+        },
+        {
+          "function": 3,
+          "start": 166,
+          "end": 177
+        },
+        {
+          "function": 3,
+          "start": 514,
+          "end": 558
+        },
+        {
+          "function": 3,
+          "start": 586,
+          "end": 591
+        },
+        {
+          "function": 3,
+          "start": 598,
+          "end": 636
+        },
+        {
+          "function": 3,
+          "start": 644,
+          "end": 653
+        },
+        {
+          "function": 3,
+          "start": 661,
+          "end": 681
+        }
+      ]
+    },
+    "deye_sg04lp3": {
+      "reason": "Existing normalization sorts by function/address, merges overlap/adjacency and splits at 125 registers; coverage must equal upstream.",
+      "expected": [
+        {
+          "function": 3,
+          "start": 3,
+          "end": 89
+        },
+        {
+          "function": 3,
+          "start": 99,
+          "end": 109
+        },
+        {
+          "function": 3,
+          "start": 133,
+          "end": 133
+        },
+        {
+          "function": 3,
+          "start": 148,
+          "end": 159
+        },
+        {
+          "function": 3,
+          "start": 166,
+          "end": 177
+        },
+        {
+          "function": 3,
+          "start": 514,
+          "end": 558
+        },
+        {
+          "function": 3,
+          "start": 586,
+          "end": 591
+        },
+        {
+          "function": 3,
+          "start": 598,
+          "end": 636
+        },
+        {
+          "function": 3,
+          "start": 644,
+          "end": 653
+        },
+        {
+          "function": 3,
+          "start": 661,
+          "end": 679
+        }
+      ]
+    },
+    "kstar_hybrid": {
+      "reason": "Existing normalization sorts by function/address, merges overlap/adjacency and splits at 125 registers; coverage must equal upstream.",
+      "expected": [
+        {
+          "function": 3,
+          "start": 3200,
+          "end": 3217
+        },
+        {
+          "function": 4,
+          "start": 3000,
+          "end": 3124
+        },
+        {
+          "function": 4,
+          "start": 3125,
+          "end": 3199
+        },
+        {
+          "function": 4,
+          "start": 3228,
+          "end": 3301
+        }
+      ]
+    },
+    "solis_hybrid": {
+      "reason": "Existing normalization sorts by function/address, merges overlap/adjacency and splits at 125 registers; coverage must equal upstream.",
+      "expected": [
+        {
+          "function": 3,
+          "start": 43000,
+          "end": 43124
+        },
+        {
+          "function": 3,
+          "start": 43125,
+          "end": 43150
+        },
+        {
+          "function": 4,
+          "start": 33022,
+          "end": 33095
+        },
+        {
+          "function": 4,
+          "start": 33116,
+          "end": 33179
+        },
+        {
+          "function": 4,
+          "start": 33206,
+          "end": 33282
+        }
+      ]
+    }
+  }
+}

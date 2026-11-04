@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
+	<config-description uri="thing-type:solarman:sunsynk">
+		<parameter name="hostname" type="text" required="true">
+			<context>network-address</context>
+			<label>Hostname</label>
+			<description>Hostname or IP address of the Solarman logger.</description>
+		</parameter>
+		<parameter name="port" type="integer" min="1" max="65535">
+			<label>Port</label>
+			<description>TCP port of the logger.</description>
+			<default>8899</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="serialNumber" type="text" required="true">
+			<label>Logger Serial Number</label>
+			<description>Unsigned serial number of the Solarman logger, not the inverter serial number.</description>
+		</parameter>
+		<parameter name="refreshInterval" type="integer" min="5" unit="s">
+			<label>Refresh Interval</label>
+			<description>Interval between batched reads. A write requests an immediate readback.</description>
+			<default>30</default>
+		</parameter>
+		<parameter name="solarmanLoggerMode" type="text">
+			<label>Logger Mode</label>
+			<description>Select V5 for Wi-Fi loggers or RAW Modbus for compatible LAN loggers.</description>
+			<default>V5MODBUS</default>
+			<options>
+				<option value="V5MODBUS">V5 Modbus</option>
+				<option value="RAWMODBUS">RAW Modbus</option>
+			</options>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="timeZone" type="text">
+			<label>Device Time Zone</label>
+			<description>IANA time zone used for the inverter clock, for example Europe/Lisbon. Defaults to the openHAB system
+				time zone.</description>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="slaveId" type="integer" min="1" max="247">
+			<label>Modbus Slave ID</label>
+			<description>Modbus unit address of the inverter connected to the logger.</description>
+			<default>1</default>
+			<advanced>true</advanced>
+		</parameter>
+	</config-description>
+</config-description:config-descriptions>
