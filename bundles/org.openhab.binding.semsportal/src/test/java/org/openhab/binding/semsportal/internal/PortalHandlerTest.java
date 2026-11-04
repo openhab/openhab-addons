@@ -88,6 +88,9 @@ public class PortalHandlerTest {
     private final AtomicInteger logins = new AtomicInteger();
     private final Set<String> invalidTokens = ConcurrentHashMap.newKeySet();
     private final Map<String, Deque<String>> responses = new HashMap<>();
+    // runs while the login request is on its way, before the portal answers it
+    private volatile Runnable onLogin = () -> {
+    };
 
     private @NonNullByDefault({}) PortalHandler handler;
 
@@ -106,6 +109,9 @@ public class PortalHandlerTest {
                 tokens.add(token);
                 payloads.add(payload == null ? "" : payload);
                 String last = url.substring(url.lastIndexOf('/') + 1);
+                if ("cross-login".equals(last)) {
+                    onLogin.run();
+                }
                 if (!"cross-login".equals(last) && invalidTokens.contains(token.getToken())) {
                     return "{\"code\": \"C0602\", \"description\": \"expired\"}";
                 }
@@ -219,11 +225,38 @@ public class PortalHandlerTest {
     }
 
     @Test
+    public void testLoginFinishingAfterDisposeIsDropped() throws Exception {
+        // the handler is stopped while the login request is on its way
+        onLogin = () -> handler.dispose();
+
+        assertThrows(CommunicationException.class, () -> handler.getStationStatus(STATION));
+
+        // the session of that login is not kept, and nothing is requested with it
+        assertEquals(1, requests.size());
+        verify(callback, never()).statusUpdated(any(), any());
+    }
+
+    @Test
     public void testSessionIsReused() throws Exception {
         handler.getStationStatus(STATION);
         handler.getStationStatus(STATION);
 
         assertEquals(1, requests.stream().filter(request -> request.endsWith("cross-login")).count());
+    }
+
+    @Test
+    public void testTotalsNeedTheCounterOfEveryInverter() throws Exception {
+        // the second inverter has no month counter, and its total is not a number
+        respond("telecounting", file("success_counting.json"),
+                "{\"code\": \"00000\", \"data\": [{\"code\": \"telecounting_today\", \"factors\": "
+                        + "[{\"code\": \"proPvStatsToday\", \"data\": \"9.1\"}]}, {\"code\": \"telecounting_total\", "
+                        + "\"factors\": [{\"code\": \"proPvStatsTotal\", \"data\": \"n/a\"}]}]}");
+
+        StationStatus status = requireStatus();
+
+        assertEquals(18.2, status.getDayTotal(), 0.0001);
+        assertNull(status.getMonthTotal(), "A total without an inverter would drop, and jump back later");
+        assertNull(status.getOverallTotal());
     }
 
     @Test
@@ -256,6 +289,22 @@ public class PortalHandlerTest {
         assertNull(status.getDayIncome());
         assertNull(status.getTotalIncome());
         assertEquals(2044.0, status.getCurrentOutput());
+    }
+
+    @Test
+    public void testLoginRefusedWhileRequestingTheIncomeStaysVisible() throws Exception {
+        // the session is not valid anymore when the income is requested, and the login that follows is refused
+        respond("cross-login", file("success_login.json"), file("error_login.json"));
+        respond("production", "{\"code\": \"C0602\", \"description\": \"expired\"}");
+
+        StationStatus status = requireStatus();
+
+        assertNull(status.getDayIncome());
+        ArgumentCaptor<ThingStatusInfo> info = ArgumentCaptor.forClass(ThingStatusInfo.class);
+        verify(callback, atLeastOnce()).statusUpdated(eq(bridge), info.capture());
+        ThingStatusInfo last = info.getValue();
+        assertEquals(ThingStatus.OFFLINE, last.getStatus(), "Not hidden by the status of the telemetry");
+        assertEquals(ThingStatusDetail.CONFIGURATION_ERROR, last.getStatusDetail());
     }
 
     @Test

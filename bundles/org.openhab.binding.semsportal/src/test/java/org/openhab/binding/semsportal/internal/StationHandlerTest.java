@@ -19,6 +19,8 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -218,14 +220,61 @@ public class StationHandlerTest {
     }
 
     @Test
-    public void testTasksRestartAfterDispose() throws Exception {
+    public void testTasksOnlyRestartByInitializeAfterDispose() throws Exception {
         handler.initialize();
         verify(portal, timeout(TIMEOUT_MS).times(1)).getStationStatus(STATION);
 
         handler.dispose();
+        // a late notification of the bridge does not bring the updates back
         handler.bridgeStatusChanged(new ThingStatusInfo(ThingStatus.ONLINE, ThingStatusDetail.NONE, null));
+        verify(portal, after(500).times(1)).getStationStatus(STATION);
 
+        handler.initialize();
         verify(portal, timeout(TIMEOUT_MS).times(2)).getStationStatus(STATION);
+    }
+
+    @Test
+    public void testStartupFetchesTheStatusOnce() throws Exception {
+        CountDownLatch release = new CountDownLatch(1);
+        slowPortal(release);
+
+        handler.initialize();
+        verify(portal, timeout(TIMEOUT_MS).times(1)).getStationStatus(STATION);
+        // the framework sends the REFRESH commands while the periodic task is still fetching
+        ALL_CHANNELS.forEach(id -> handler.handleCommand(new ChannelUID(THING_UID, id), RefreshType.REFRESH));
+        verify(portal, after(500).times(1)).getStationStatus(STATION);
+
+        release.countDown();
+        verifyState(CHANNEL_CURRENT_OUTPUT, new QuantityType<>(2044.0, Units.WATT));
+        verify(portal, times(1)).getStationStatus(STATION);
+    }
+
+    @Test
+    public void testStatusFetchedBeforeDisposeIsNotPublished() throws Exception {
+        CountDownLatch release = new CountDownLatch(1);
+        slowPortal(release);
+        handler.initialize();
+        verify(portal, timeout(TIMEOUT_MS).times(1)).getStationStatus(STATION);
+
+        handler.dispose();
+        release.countDown();
+
+        verify(callback, after(500).never()).stateUpdated(any(), any());
+        verify(callback, never()).statusUpdated(eq(thing), argThat(info -> info.getStatus() == ThingStatus.ONLINE));
+    }
+
+    /**
+     * The portal answers when the latch is released, also when the task that waits for it is cancelled.
+     */
+    private void slowPortal(CountDownLatch release) throws Exception {
+        when(portal.getStationStatus(STATION)).thenAnswer(invocation -> {
+            try {
+                release.await(TIMEOUT_MS, TimeUnit.MILLISECONDS);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+            return status(true);
+        });
     }
 
     private ZonedDateTime lastUpdate() {

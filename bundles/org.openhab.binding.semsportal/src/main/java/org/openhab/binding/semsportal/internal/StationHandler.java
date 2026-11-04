@@ -50,7 +50,14 @@ public class StationHandler extends BaseThingHandler {
     private @Nullable ScheduledFuture<?> refreshStatusTask;
 
     private volatile @Nullable StationStatus currentStatus;
+    private volatile boolean disposed;
+
+    // all guarded by "this"
     private Instant lastUpdate = Instant.EPOCH;
+    private boolean refreshing;
+    // Changes when the handler is initialized or disposed: the result of a refresh that started in a previous
+    // generation is dropped
+    private int generation;
 
     public StationHandler(Thing thing) {
         super(thing);
@@ -60,10 +67,8 @@ public class StationHandler extends BaseThingHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
             scheduler.execute(() -> {
-                if (claimRefresh()) {
-                    // updates all the channels
-                    updateStation();
-                } else if (currentStatus != null) {
+                // when the status is being fetched, or is recent, the channel gets it from there
+                if (!disposed && !refresh(false) && currentStatus != null) {
                     updateChannelState(channelUID);
                 }
             });
@@ -98,39 +103,24 @@ public class StationHandler extends BaseThingHandler {
         }
     }
 
-    /**
-     * Claims the right to fetch the status when the one we have is too old. Claiming before fetching keeps the
-     * REFRESH commands sent for every linked channel from each fetching it again; when the fetch is still running they
-     * find the status in place once it is done.
-     */
-    private boolean claimRefresh() {
-        Instant now = Instant.now();
-        synchronized (this) {
-            if (lastUpdate.isAfter(now.minus(MAX_STATUS_AGE_MINUTES, ChronoUnit.MINUTES))) {
-                return false;
-            }
-            lastUpdate = now;
-            return true;
-        }
-    }
-
-    private void setLastUpdate(Instant lastUpdate) {
-        synchronized (this) {
-            this.lastUpdate = lastUpdate;
-        }
-    }
-
     @Override
     public void initialize() {
+        synchronized (this) {
+            disposed = false;
+            generation++;
+            refreshing = false;
+            currentStatus = null;
+            lastUpdate = Instant.EPOCH;
+        }
         updateStatus(ThingStatus.UNKNOWN);
         startTasks();
     }
 
     private void startTasks() {
         synchronized (this) {
-            if (refreshStatusTask == null) {
+            if (refreshStatusTask == null && !disposed) {
                 try {
-                    refreshStatusTask = scheduler.scheduleWithFixedDelay(() -> updateStation(), 0, getUpdateInterval(),
+                    refreshStatusTask = scheduler.scheduleWithFixedDelay(() -> refresh(true), 0, getUpdateInterval(),
                             TimeUnit.MINUTES);
                 } catch (Exception e) {
                     updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
@@ -163,6 +153,11 @@ public class StationHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
+        synchronized (this) {
+            disposed = true;
+            generation++;
+            refreshing = false;
+        }
         stopTasks();
     }
 
@@ -174,34 +169,86 @@ public class StationHandler extends BaseThingHandler {
         return portal.getUpdateInterval();
     }
 
-    private boolean updateStation() {
-        PortalHandler portal = getPortal();
-        if (portal != null) {
-            try {
-                StationStatus status = portal.getStationStatus(getStationUUID());
-                currentStatus = status;
-                setLastUpdate(Instant.now());
-                if (status != null && status.isOperational()) {
-                    updateStatus(ThingStatus.ONLINE);
-                } else {
-                    updateStatus(ThingStatus.OFFLINE, "Station not operational");
-                }
-                updateAllChannels();
-                return true;
-            } catch (CommunicationException commEx) {
-                setLastUpdate(Instant.EPOCH);
-                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, commEx.getMessage());
-            } catch (ConfigurationException confEx) {
-                setLastUpdate(Instant.EPOCH);
-                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, confEx.getMessage());
+    /**
+     * Fetches the status of the station and publishes it, unless the status is being fetched already, or it is recent
+     * and the fetch is not forced. That keeps the REFRESH commands sent for every linked channel when openHAB starts,
+     * and the periodic task, from each fetching it again.
+     *
+     * @param force fetch also when the status is recent
+     * @return whether the status was fetched
+     */
+    private boolean refresh(boolean force) {
+        int started;
+        synchronized (this) {
+            if (disposed || refreshing || (!force
+                    && lastUpdate.isAfter(Instant.now().minus(MAX_STATUS_AGE_MINUTES, ChronoUnit.MINUTES)))) {
+                return false;
             }
-        } else {
+            refreshing = true;
+            started = generation;
+        }
+        Result result = fetch();
+        boolean current;
+        // The next refresh can start before the result is published
+        synchronized (this) {
+            current = started == generation;
+            if (current) {
+                refreshing = false;
+                lastUpdate = result.error == null ? Instant.now() : Instant.EPOCH;
+            }
+        }
+        if (current) {
+            publish(result);
+        }
+        return true;
+    }
+
+    private Result fetch() {
+        PortalHandler portal = getPortal();
+        if (portal == null) {
             logger.debug("Unable to find portal for thing {}", getThing().getUID());
-            setLastUpdate(Instant.EPOCH);
-            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE,
+            return Result.failure(ThingStatusDetail.BRIDGE_OFFLINE,
                     "Unable to update station info. Check Bridge status for details.");
         }
-        return false;
+        try {
+            return Result.success(portal.getStationStatus(getStationUUID()));
+        } catch (CommunicationException commEx) {
+            return Result.failure(ThingStatusDetail.COMMUNICATION_ERROR, commEx.getMessage());
+        } catch (ConfigurationException confEx) {
+            return Result.failure(ThingStatusDetail.CONFIGURATION_ERROR, confEx.getMessage());
+        } catch (RuntimeException e) {
+            logger.debug("Unexpected error when updating the station", e);
+            return Result.failure(ThingStatusDetail.COMMUNICATION_ERROR, "Unexpected error when updating the station");
+        }
+    }
+
+    private void publish(Result result) {
+        ThingStatusDetail error = result.error;
+        if (error != null) {
+            updateStatus(error, result.message);
+            return;
+        }
+        StationStatus status = result.status;
+        currentStatus = status;
+        if (status != null && status.isOperational()) {
+            updateStatus(ThingStatus.ONLINE);
+        } else {
+            updateStatus(ThingStatus.OFFLINE, "Station not operational");
+        }
+        updateAllChannels();
+    }
+
+    /**
+     * What the portal gave: the status, or why there is none.
+     */
+    private record Result(@Nullable StationStatus status, @Nullable ThingStatusDetail error, @Nullable String message) {
+        static Result success(@Nullable StationStatus status) {
+            return new Result(status, null, null);
+        }
+
+        static Result failure(ThingStatusDetail error, @Nullable String message) {
+            return new Result(null, error, message);
+        }
     }
 
     private String getStationUUID() {

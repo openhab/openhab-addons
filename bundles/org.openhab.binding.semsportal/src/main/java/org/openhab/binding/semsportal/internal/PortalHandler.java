@@ -21,6 +21,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -101,6 +102,7 @@ public class PortalHandler extends BaseBridgeHandler {
     private static final DateTimeFormatter PERIOD_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     // The portal sums the income of any period of the type 'year': this one starts before the first installations
     private static final String INSTALLATION_START = "2000-01-01 00:00:00";
+    private static final ThingStatusInfo ONLINE = new ThingStatusInfo(ThingStatus.ONLINE, ThingStatusDetail.NONE, null);
 
     // used to parse json from / to the SEMS portal API
     private final Gson gson;
@@ -113,7 +115,11 @@ public class PortalHandler extends BaseBridgeHandler {
     // A login replaces the previous session of the same client type of the account, so logins are done one at a time
     private final Object loginLock = new Object();
     private volatile @Nullable ScheduledFuture<?> loginJob;
-    // a login that is still running when the handler is disposed must not publish a stale status
+    // A request that is still running when the handler is disposed (or initialized again) must not restore the session
+    // or publish a status from before: the generation changes with the lifecycle, and the results of an older one are
+    // dropped. It only changes together with the session, with the stateLock held.
+    private final Object stateLock = new Object();
+    private volatile int generation;
     private volatile boolean disposed;
 
     public PortalHandler(Bridge bridge, HttpClientFactory httpClientFactory) {
@@ -137,7 +143,7 @@ public class PortalHandler extends BaseBridgeHandler {
             return;
         }
         disposed = false;
-        sessionToken = null;
+        int started = startLifecycle();
         updateStatus(ThingStatus.UNKNOWN);
 
         loginJob = scheduler.schedule(() -> {
@@ -147,7 +153,7 @@ public class PortalHandler extends BaseBridgeHandler {
                 logger.debug("Unable to login to SEMS portal: {}", e.getMessage()); // the status tells why
             } catch (RuntimeException e) {
                 logger.debug("Unexpected error when logging in to SEMS portal", e);
-                publish(offline(ThingStatusDetail.CONFIGURATION_ERROR,
+                publish(started, offline(ThingStatusDetail.CONFIGURATION_ERROR,
                         "Error when loggin in. Check your username and password"));
             }
         }, 0, TimeUnit.SECONDS);
@@ -161,17 +167,43 @@ public class PortalHandler extends BaseBridgeHandler {
             job.cancel(true);
             loginJob = null;
         }
-        sessionToken = null;
+        startLifecycle();
         super.dispose();
+    }
+
+    /**
+     * Starts a new generation, without a session: what the requests of the previous one get is dropped.
+     *
+     * @return the new generation
+     */
+    private int startLifecycle() {
+        synchronized (stateLock) {
+            sessionToken = null;
+            return ++generation;
+        }
+    }
+
+    /**
+     * Keeps the session of a login, unless the handler was disposed or initialized again since the login started.
+     */
+    private boolean commitSession(int started, SEMSToken token) {
+        synchronized (stateLock) {
+            if (started != generation) {
+                return false;
+            }
+            sessionToken = token;
+            return true;
+        }
     }
 
     /**
      * Logs in. Only to be called with the loginLock held. It does not call the framework: the caller publishes the
      * status that results from the login.
      *
+     * @param started the generation that the login is for
      * @return the status of the portal after the login
      */
-    private ThingStatusInfo requestLogin() {
+    private ThingStatusInfo requestLogin(int started) {
         sessionToken = null;
         LoginRequest request = new LoginRequest(config.username, SEMSSecurity.hashPassword(config.password));
         String response = send(HttpMethod.POST, LOGIN_URL, new SEMSToken(config.clientType), Map.of(),
@@ -191,9 +223,11 @@ public class PortalHandler extends BaseBridgeHandler {
         }
         SEMSToken token = loginResponse.getToken();
         if (loginResponse.isOk() && token != null && token.getApi() != null) {
+            if (!commitSession(started, token)) {
+                return offline(ThingStatusDetail.COMMUNICATION_ERROR, "The bridge was stopped while logging in");
+            }
             logger.debug("Successfuly logged in to SEMS portal");
-            sessionToken = token;
-            return new ThingStatusInfo(ThingStatus.ONLINE, ThingStatusDetail.NONE, null);
+            return ONLINE;
         }
         logger.debug("Unable to login to SEMS portal. Response code {} message {}", loginResponse.getCode(),
                 loginResponse.getMsg());
@@ -208,8 +242,11 @@ public class PortalHandler extends BaseBridgeHandler {
         return new ThingStatusInfo(ThingStatus.OFFLINE, detail, description);
     }
 
-    private void publish(ThingStatusInfo status) {
-        if (disposed) {
+    /**
+     * Publishes the status, unless the handler was disposed or initialized again since the generation started.
+     */
+    private void publish(int started, ThingStatusInfo status) {
+        if (disposed || started != generation) {
             return;
         }
         if (status.getStatus() == ThingStatus.ONLINE) {
@@ -300,6 +337,9 @@ public class PortalHandler extends BaseBridgeHandler {
     }
 
     private SEMSToken getSession() throws CommunicationException {
+        if (disposed) {
+            throw new CommunicationException("The bridge is stopped");
+        }
         SEMSToken token = sessionToken;
         return token != null ? token : renewSession(null);
     }
@@ -309,6 +349,7 @@ public class PortalHandler extends BaseBridgeHandler {
      * session token invalid, so logging in twice would invalidate the session that the first login just got.
      */
     private SEMSToken renewSession(@Nullable SEMSToken invalidToken) throws CommunicationException {
+        int started = generation;
         ThingStatusInfo status;
         // The request is part of the critical section: the logins must not overlap. The framework is called outside it.
         synchronized (loginLock) {
@@ -316,9 +357,9 @@ public class PortalHandler extends BaseBridgeHandler {
             if (current != null && (invalidToken == null || !invalidToken.getToken().equals(current.getToken()))) {
                 return current;
             }
-            status = requestLogin();
+            status = requestLogin(started);
         }
-        publish(status);
+        publish(started, status);
         SEMSToken token = sessionToken;
         if (token == null) {
             throw new CommunicationException("Unable to login to SEMS portal");
@@ -345,6 +386,7 @@ public class PortalHandler extends BaseBridgeHandler {
             logger.debug("Not logged in because of configuration error. Not updating.");
             return null;
         }
+        int started = generation;
         Map<String, String> station = Map.of("stationId", stationUUID);
         FlowResponse flow = call(FlowResponse.class, HttpMethod.GET, FLOW_PATH, station, null);
         if (flow.isNoAccess()) {
@@ -353,9 +395,9 @@ public class PortalHandler extends BaseBridgeHandler {
         checkOk(flow);
         List<Inverter> inverters = requestInverters(stationUUID);
 
-        Double dayTotal = null;
-        Double monthTotal = null;
-        Double overallTotal = null;
+        List<@Nullable Double> dayCounters = new ArrayList<>();
+        List<@Nullable Double> monthCounters = new ArrayList<>();
+        List<@Nullable Double> overallCounters = new ArrayList<>();
         boolean operational = false;
         for (Inverter inverter : inverters) {
             operational |= NORMAL_STATUSES.contains(inverter.getStatus());
@@ -363,10 +405,17 @@ public class PortalHandler extends BaseBridgeHandler {
                     String.format(COUNTING_PATH, inverter.getSerialNumber()),
                     Map.of("deviceType", "INVERTER", "pwId", stationUUID), null);
             checkOk(counters);
-            dayTotal = add(dayTotal, counters.getValue(CountingResponse.TODAY));
-            monthTotal = add(monthTotal, counters.getValue(CountingResponse.MONTH));
-            overallTotal = add(overallTotal, counters.getValue(CountingResponse.TOTAL));
+            dayCounters.add(counters.getValue(CountingResponse.TODAY));
+            monthCounters.add(counters.getValue(CountingResponse.MONTH));
+            overallCounters.add(counters.getValue(CountingResponse.TOTAL));
         }
+        Double dayTotal = sum(dayCounters);
+        Double monthTotal = sum(monthCounters);
+        Double overallTotal = sum(overallCounters);
+
+        // The station is reachable. The income that follows is optional, and a login that fails while it is requested
+        // must stay visible: this status is published before.
+        publish(started, ONLINE);
 
         LocalDate today = LocalDate.now(ZoneId.systemDefault());
         Double dayIncome = getIncome(stationUUID, "day", today.atStartOfDay().format(PERIOD_FORMAT),
@@ -375,7 +424,6 @@ public class PortalHandler extends BaseBridgeHandler {
                 today.atTime(23, 59, 59).format(PERIOD_FORMAT));
 
         Double currentOutput = flow.getCurrentOutput();
-        updateStatus(ThingStatus.ONLINE); // we got a valid response, register as online
         return new StationStatus(currentOutput == null ? null : currentOutput * 1000, dayTotal, monthTotal,
                 overallTotal, dayIncome, totalIncome, operational, toDateTime(flow.getRefreshTime()));
     }
@@ -400,11 +448,23 @@ public class PortalHandler extends BaseBridgeHandler {
         }
     }
 
-    private @Nullable Double add(@Nullable Double total, @Nullable Double value) {
-        if (value == null) {
-            return total;
+    /**
+     * @param values the value of each inverter, null when the inverter has none
+     * @return the sum, null unless every inverter has a value: a total without an inverter would drop and then jump
+     *         back when its value returns
+     */
+    private @Nullable Double sum(List<@Nullable Double> values) {
+        if (values.isEmpty()) {
+            return null;
         }
-        return total == null ? value : total + value;
+        double total = 0;
+        for (Double value : values) {
+            if (value == null) {
+                return null;
+            }
+            total += value;
+        }
+        return total;
     }
 
     /**
@@ -443,12 +503,13 @@ public class PortalHandler extends BaseBridgeHandler {
     }
 
     public List<Station> getAllStations() {
+        int started = generation;
         try {
             StationListResponse listResponse = call(StationListResponse.class, HttpMethod.POST, LIST_PATH, Map.of(),
                     new StationListRequest());
             if (listResponse.isOk()) {
                 logger.debug("Received list of {} stations from SEMS portal", listResponse.getStations().size());
-                updateStatus(ThingStatus.ONLINE);
+                publish(started, ONLINE);
                 return listResponse.getStations();
             }
             logger.debug("Received error response with code {} and message {} from SEMS portal", listResponse.getCode(),
