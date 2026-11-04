@@ -138,7 +138,7 @@ public abstract class BaseMetadata {
         this.factor = determineFactor(value.metadata.unit);
         this.unit = UnitUtils.parseUnit(this.unitSymbol);
         this.itemType = itemTypeFromMetadata(value.metadata.type, value.value, value.commandClass,
-                value.metadata.states);
+                value.metadata.states, value.property, value.propertyKey);
         if (unitSymbol != null && unit == null) {
             logger.warn("Node {}, unable to parse unitSymbol '{}', please file a bug report", nodeId, unitSymbol);
         }
@@ -473,7 +473,13 @@ public abstract class BaseMetadata {
      * @return The corrected metadata type.
      */
     protected MetadataType correctedType(MetadataType type, @Nullable Object value, int commandClass,
-            @Nullable Map<String, String> optionList) {
+            @Nullable Map<String, String> optionList, @Nullable Object property, @Nullable Object propertyKey) {
+        // Aggregate color values are typed "any"; when null, the type can't be inferred from the value
+        if (type == MetadataType.ANY && commandClass == COMMAND_CLASS_SWITCH_COLOR && propertyKey == null
+                && ("currentColor".equals(property) || "targetColor".equals(property))) {
+            return MetadataType.COLOR;
+        }
+
         switch (type) {
             case ANY:
                 return determineTypeFromValue(value, commandClass);
@@ -537,8 +543,8 @@ public abstract class BaseMetadata {
     }
 
     protected String itemTypeFromMetadata(MetadataType type, @Nullable Object value, int commandClass,
-            @Nullable Map<String, String> optionList) {
-        type = correctedType(type, value, commandClass, optionList);
+            @Nullable Map<String, String> optionList, @Nullable Object property, @Nullable Object propertyKey) {
+        type = correctedType(type, value, commandClass, optionList, property, propertyKey);
 
         switch (type) {
             case DURATION:

@@ -44,7 +44,7 @@ public class ConfigMetadata extends BaseMetadata {
     }
 
     private Type configTypeFromMetadata(MetadataType type, Object value, int commandClass) {
-        type = correctedType(type, value, commandClass, null);
+        type = correctedType(type, value, commandClass, null, null, null);
         switch (type) {
             case TIMEOUT:
             case NUMBER:

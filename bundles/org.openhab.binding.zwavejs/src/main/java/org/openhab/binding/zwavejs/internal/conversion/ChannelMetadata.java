@@ -70,8 +70,8 @@ public class ChannelMetadata extends BaseMetadata {
 
     @Override
     protected String itemTypeFromMetadata(MetadataType type, @Nullable Object value, int commandClass,
-            @Nullable Map<String, String> optionList) {
-        String baseItemType = super.itemTypeFromMetadata(type, value, commandClass, optionList);
+            @Nullable Map<String, String> optionList, @Nullable Object property, @Nullable Object propertyKey) {
+        String baseItemType = super.itemTypeFromMetadata(type, value, commandClass, optionList, property, propertyKey);
         if (CoreItemFactory.NUMBER.equals(baseItemType) && writable && min != null && max != null) {
             if (min == 0 && max == 99) {
                 this.max = 100L; // ZUI uses 0-99, but openHAB uses 0-100
