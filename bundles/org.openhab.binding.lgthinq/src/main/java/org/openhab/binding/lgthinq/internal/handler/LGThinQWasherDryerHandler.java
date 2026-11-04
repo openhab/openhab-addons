@@ -250,7 +250,7 @@ public class LGThinQWasherDryerHandler
 
     private static boolean hasSelectedCourse(WasherDryerCapability cap, WasherDryerSnapshot shot) {
         String course = shot.getCourse();
-        return !WMD_COURSE_NOT_SELECTED_VALUE.equals(course) && cap.getCourses().containsKey(course);
+        return !cap.getNotSelectedCourseKey().equals(course) && cap.getCourses().containsKey(course);
     }
 
     private static String getCurrentCourse(WasherDryerCapability cap, WasherDryerSnapshot shot) {
@@ -283,7 +283,7 @@ public class LGThinQWasherDryerHandler
         }
         WasherDryerSnapshot rsShot = selectRemoteStartShot(cap, lastShot, remoteStartShot);
         String selectedCourse = getItemLinkedValue(remoteStartCourseChannelUID);
-        if (selectedCourse == null || WMD_COURSE_NOT_SELECTED_VALUE.equals(selectedCourse)
+        if (selectedCourse == null || cap.getNotSelectedCourseKey().equals(selectedCourse)
                 || !cap.getCourses().containsKey(selectedCourse)) {
             selectedCourse = getCurrentCourse(cap, rsShot);
         }
@@ -320,26 +320,29 @@ public class LGThinQWasherDryerHandler
             Object value = rawData.get(k);
             data.put(k, value != null ? value : v);
         });
-        // 2nd - for a course other than the one set on the machine, use its default values
+        // 2nd - use the defaults of the selected course for another course and for values the snapshot lacks
         CourseDefinition selCourseDef = cap.getCourses().get(selectedCourse);
-        if (selCourseDef != null && !selectedCourse.equals(shot.getCourse())) {
+        if (selCourseDef != null) {
+            boolean otherCourse = !selectedCourse.equals(shot.getCourse());
             selCourseDef.getFunctions().stream().filter(f -> !f.getDefaultValue().isBlank())
+                    .filter(f -> otherCourse || rawData.get(f.getValue()) == null)
                     .forEach(f -> data.put(f.getValue(), f.getDefaultValue()));
         }
         String smartCourse = shot.getSmartCourse();
-        data.put(cap.getDefaultCourseFieldName(), selectedCourse);
-        data.put(cap.getDefaultSmartCourseFeatName(), smartCourse);
         CourseDefinition courseDef = cap.getCourses().get(smartCourse);
-        if (WMD_COURSE_NOT_SELECTED_VALUE.equals(smartCourse) || courseDef == null) {
+        if (cap.getNotSelectedCourseKey().equals(smartCourse) || courseDef == null) {
+            smartCourse = cap.getNotSelectedCourseKey();
             courseDef = Objects.requireNonNull(selCourseDef, "The selected course must be a course of the device");
         }
+        data.put(cap.getDefaultCourseFieldName(), selectedCourse);
+        data.put(cap.getDefaultSmartCourseFeatName(), smartCourse);
         data.put("courseType", courseDef.getCourseType().getValue());
         // 3rd - replace custom selectable features with channel's ones.
         data.putAll(selectedFeatures);
         // a washer waiting in the initial state only runs the course and options from the command with this bit,
         // otherwise it starts whatever is set on its panel, which is nothing after stand-by
-        if (initialStart && data.containsKey("initialBit")) {
-            data.put("initialBit", "INITIAL_BIT_ON");
+        if (data.containsKey("initialBit")) {
+            data.put("initialBit", initialStart ? "INITIAL_BIT_ON" : "INITIAL_BIT_OFF");
         }
         return data;
     }
