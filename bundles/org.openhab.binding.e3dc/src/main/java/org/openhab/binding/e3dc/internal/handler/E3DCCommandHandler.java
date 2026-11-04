@@ -126,6 +126,11 @@ public class E3DCCommandHandler {
         if (indexTag != 0) {
             items.add(RscpValue.uchar8(indexTag, deviceIndex));
         }
+        if (spec.container() == RscpTag.SE_REQ_SET_EP_RESERVE) {
+            // the reserve addresses no device, but the device rejects a write without the index of the data set
+            // (it answers -1): the index is a signed four byte value that is always zero
+            items.add(RscpValue.int32(RscpTag.SE_PARAM_INDEX, 0));
+        }
         items.add(value);
         return List.of(RscpValue.container(spec.container(), items));
     }
