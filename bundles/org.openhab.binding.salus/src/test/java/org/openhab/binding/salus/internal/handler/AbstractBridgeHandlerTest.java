@@ -30,6 +30,7 @@ import org.openhab.binding.salus.internal.rest.exceptions.AuthSalusApiException;
 import org.openhab.binding.salus.internal.rest.exceptions.SalusApiException;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
 import org.openhab.core.thing.binding.builder.BridgeBuilder;
@@ -44,6 +45,7 @@ class AbstractBridgeHandlerTest {
     private final HttpClientFactory httpClientFactory = mock(HttpClientFactory.class);
     private final Bridge bridge = BridgeBuilder.create(new ThingTypeUID("salus", "salus-cloud-bridge"), "test").build();
     private final CloudBridgeConfig config = new CloudBridgeConfig();
+    private final ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
     private final AbstractBridgeHandler<CloudBridgeConfig> handler = new AbstractBridgeHandler<>(bridge,
             httpClientFactory, CloudBridgeConfig.class) {
         @Override
@@ -79,8 +81,12 @@ class AbstractBridgeHandlerTest {
                 .thenReturn(new TreeSet<>(GsonMapper.INSTANCE.parseAwsDeviceProperties("""
                         {"state":{"reported":{"11":{"properties":{"ep9:sIT600TH:LockKey":0}}}}}
                         """)));
-        handler.setCallback(mock(ThingHandlerCallback.class));
+        handler.setCallback(callback);
         handler.initialize();
+        // initialize() connects to the cloud on a pool thread; wait until that call to the api mock is done, so the
+        // tests can stub the mock without racing with it.
+        verify(callback, timeout(5000)).statusUpdated(eq(bridge),
+                argThat(status -> status.getStatus() == ThingStatus.ONLINE));
     }
 
     @AfterEach
