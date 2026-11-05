@@ -348,7 +348,7 @@ public class VictoriaMetricsPersistenceService implements QueryablePersistenceSe
         }
 
         return CompletableFuture.supplyAsync(() -> {
-            String alias = storeAlias != null && !storeAlias.isBlank() ? storeAlias : itemName;
+            String alias = VictoriaMetricsMetricNameResolver.getStoredName(itemName, storeAlias);
 
             VictoriaMetricsPoint.Builder pointBuilder = VictoriaMetricsPoint
                     .newBuilder(metricNameResolver.getMetricName(alias)).withTime(timeStamp)

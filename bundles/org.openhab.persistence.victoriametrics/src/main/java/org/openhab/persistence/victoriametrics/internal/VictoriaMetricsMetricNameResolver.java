@@ -17,6 +17,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,6 +51,18 @@ public class VictoriaMetricsMetricNameResolver {
             VictoriaMetricsMetadataService metadataService) {
         this.configuration = configuration;
         this.metadataService = metadataService;
+    }
+
+    /**
+     * Get the name an item is stored with in the {@code item} label, shared by storing and querying so that both use
+     * the same series
+     *
+     * @param itemName the item name
+     * @param alias the alias, a <code>null</code> or blank alias means no alias
+     * @return the alias, or the item name if there is no alias
+     */
+    public static String getStoredName(String itemName, @Nullable String alias) {
+        return alias != null && !alias.isBlank() ? alias : itemName;
     }
 
     /**

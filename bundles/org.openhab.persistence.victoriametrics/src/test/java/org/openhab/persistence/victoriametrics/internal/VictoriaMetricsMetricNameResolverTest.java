@@ -19,6 +19,7 @@ import static org.mockito.Mockito.mock;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -75,6 +76,12 @@ public class VictoriaMetricsMetricNameResolverTest {
     @CsvSource({ "'', true", "_value, true", "1, true", "ns:x, true", ".value, false", "-x, false" })
     public void suffixValidation(String suffix, boolean valid) {
         assertThat(VictoriaMetricsMetricNameResolver.isValidMetricNameSuffix(suffix), is(valid));
+    }
+
+    @ParameterizedTest
+    @CsvSource(value = { "alias, alias", "'', MyLamp", "' ', MyLamp", "NULL, MyLamp" }, nullValues = "NULL")
+    public void storedNameIsAliasIfNotBlank(@Nullable String alias, String expected) {
+        assertThat(VictoriaMetricsMetricNameResolver.getStoredName("MyLamp", alias), is(expected));
     }
 
     @Test

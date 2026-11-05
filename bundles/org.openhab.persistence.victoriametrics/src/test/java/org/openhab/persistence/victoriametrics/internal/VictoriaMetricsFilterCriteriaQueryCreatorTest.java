@@ -34,6 +34,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.openhab.core.items.Metadata;
@@ -251,6 +252,14 @@ public class VictoriaMetricsFilterCriteriaQueryCreatorTest {
 
         VictoriaMetricsQuery query = instance.createQuery(criteria, alias);
         assertThat(query.selector(), equalTo("{__name__=\"measurementName\",item=\"aliasName\"}"));
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = { "", " " })
+    public void testBlankAliasUsesItemName(String alias) {
+        // blank aliases are stored with the item name
+        VictoriaMetricsQuery query = instance.createQuery(createBaseCriteria(), alias);
+        assertThat(query.selector(), equalTo("{__name__=\"sampleItem\",item=\"sampleItem\"}"));
     }
 
     @Test

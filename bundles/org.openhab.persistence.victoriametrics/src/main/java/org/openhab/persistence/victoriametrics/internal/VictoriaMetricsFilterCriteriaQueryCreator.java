@@ -59,12 +59,12 @@ public class VictoriaMetricsFilterCriteriaQueryCreator {
      * Create query from {@link FilterCriteria}
      *
      * @param criteria Criteria to create query from
-     * @param alias the alias the item is stored with, or <code>null</code> to use the item name
+     * @param alias the alias the item is stored with, or <code>null</code> or blank to use the item name
      * @return Created query
      */
     public VictoriaMetricsQuery createQuery(FilterCriteria criteria, @Nullable String alias) {
         String itemName = Objects.requireNonNull(criteria.getItemName()); // we checked non-null before
-        String localAlias = alias != null ? alias : itemName;
+        String localAlias = VictoriaMetricsMetricNameResolver.getStoredName(itemName, alias);
         ZonedDateTime begin = criteria.getBeginDate();
         ZonedDateTime end = criteria.getEndDate();
         // the export API defaults the end to the current time, which would exclude future states
@@ -82,7 +82,7 @@ public class VictoriaMetricsFilterCriteriaQueryCreator {
      * {@code last()} optimization of the InfluxDB persistence service.
      *
      * @param criteria Criteria to create the queries from
-     * @param alias the alias the item is stored with, or <code>null</code> to use the item name
+     * @param alias the alias the item is stored with, or <code>null</code> or blank to use the item name
      * @param now the current time
      * @return the queries, covering the complete time range of the criteria
      */
