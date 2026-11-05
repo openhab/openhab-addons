@@ -29,9 +29,12 @@ import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -82,7 +85,8 @@ import org.slf4j.LoggerFactory;
  *
  * @author Franz - Initial contribution
  * @author Joan Pujol Espinar - Original InfluxDB implementation
- * @author Michael Weger - Use Jetty, fix query with alias, store numeric states, components and string states
+ * @author Michael Weger - Use Jetty, fix query with alias, store numeric states, components and string states, flush
+ *         pending states on deactivation
  */
 @NonNullByDefault
 @Component(service = { PersistenceService.class,
@@ -95,6 +99,7 @@ public class VictoriaMetricsPersistenceService implements QueryablePersistenceSe
     private final Logger logger = LoggerFactory.getLogger(VictoriaMetricsPersistenceService.class);
 
     private static final int COMMIT_INTERVAL = 3; // in s
+    private static final int STOP_TIMEOUT = 10; // in s
     // default -maxLabelValueLen of VictoriaMetrics
     private static final int MAX_STRING_STATE_BYTES = 4096;
     protected static final String CONFIG_URI = "persistence:victoriametrics";
@@ -108,11 +113,15 @@ public class VictoriaMetricsPersistenceService implements QueryablePersistenceSe
     private final VictoriaMetricsMetricNameResolver metricNameResolver;
     private final VictoriaMetricsRepository repository;
     private final VictoriaMetricsStringStateLimiter stringStateLimiter;
-    private boolean serviceActivated;
+    private volatile boolean serviceActivated;
 
     // storage
     private final ScheduledFuture<?> storeJob;
     private final BlockingQueue<VictoriaMetricsPoint> pointsQueue = new LinkedBlockingQueue<>();
+    // stores whose conversion has not yet queued the point, guarded by this set together with serviceActivated
+    private final Set<CompletableFuture<@Nullable Void>> pendingStores = new HashSet<>();
+    // serializes the scheduled commits and the final commit on deactivation, which may re-queue points
+    private final ReentrantLock commitLock = new ReentrantLock();
     private final Set<String> loggedUnsupportedItems = ConcurrentHashMap.newKeySet();
 
     // conversion
@@ -153,10 +162,39 @@ public class VictoriaMetricsPersistenceService implements QueryablePersistenceSe
      */
     @Deactivate
     public void deactivate() {
-        serviceActivated = false;
-
+        List<CompletableFuture<@Nullable Void>> stores;
+        synchronized (pendingStores) {
+            serviceActivated = false;
+            stores = List.copyOf(pendingStores);
+        }
         storeJob.cancel(false);
-        commit(); // ensure we at least tried to store the data;
+
+        try {
+            // conversions run asynchronously, so their points may not be queued yet
+            CompletableFuture.allOf(stores.toArray(new CompletableFuture<?>[0])).get(STOP_TIMEOUT, TimeUnit.SECONDS);
+        } catch (TimeoutException e) {
+            logger.warn("VictoriaMetrics did not finish converting states within {} s.", STOP_TIMEOUT);
+        } catch (ExecutionException e) {
+            // not possible, the pending stores are only completed normally
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+
+        try {
+            // a running scheduled commit may still write or re-queue points
+            if (commitLock.tryLock(STOP_TIMEOUT, TimeUnit.SECONDS)) {
+                try {
+                    commit(); // ensure we at least tried to store the data
+                } finally {
+                    commitLock.unlock();
+                }
+            } else {
+                logger.warn("VictoriaMetrics did not finish writing within {} s, the final commit is skipped.",
+                        STOP_TIMEOUT);
+            }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
 
         if (!pointsQueue.isEmpty()) {
             logger.warn("VictoriaMetrics failed to finally store {} points.", pointsQueue.size());
@@ -194,9 +232,13 @@ public class VictoriaMetricsPersistenceService implements QueryablePersistenceSe
 
     @Override
     public void store(Item item, @Nullable String alias) {
-        if (!serviceActivated) {
-            logger.warn("VictoriaMetrics service not ready. Storing {} rejected.", item);
-            return;
+        CompletableFuture<@Nullable Void> pendingStore = new CompletableFuture<>();
+        synchronized (pendingStores) {
+            if (!serviceActivated) {
+                logger.warn("VictoriaMetrics service not ready. Storing {} rejected.", item);
+                return;
+            }
+            pendingStores.add(pendingStore);
         }
         convert(item, item.getState(), Instant.now(), alias).thenAccept(point -> {
             if (point == null) {
@@ -208,6 +250,14 @@ public class VictoriaMetricsPersistenceService implements QueryablePersistenceSe
             } else {
                 logger.warn("Failed to queue {} for item {}", point, item);
             }
+        }).whenComplete((result, e) -> {
+            if (e != null) {
+                logger.warn("Failed to convert the state of item {}", item.getName(), e);
+            }
+            synchronized (pendingStores) {
+                pendingStores.remove(pendingStore);
+            }
+            pendingStore.complete(null);
         });
     }
 
@@ -260,21 +310,27 @@ public class VictoriaMetricsPersistenceService implements QueryablePersistenceSe
     }
 
     private void commit() {
-        if (!pointsQueue.isEmpty() && checkConnection()) {
-            List<VictoriaMetricsPoint> queuedPoints = new ArrayList<>();
-            pointsQueue.drainTo(queuedPoints);
-            List<VictoriaMetricsPoint> points = stringStateLimiter.filter(queuedPoints);
-            if (points == null) {
-                logger.warn("Re-queuing {} elements, failed to read the stored string states.", queuedPoints.size());
-                pointsQueue.addAll(queuedPoints);
-                repository.disconnect();
-            } else if (!repository.write(points)) {
-                logger.warn("Re-queuing {} elements, failed to write batch.", points.size());
-                pointsQueue.addAll(points);
-                repository.disconnect();
-            } else {
-                logger.trace("Wrote {} elements to database", points.size());
+        commitLock.lock();
+        try {
+            if (!pointsQueue.isEmpty() && checkConnection()) {
+                List<VictoriaMetricsPoint> queuedPoints = new ArrayList<>();
+                pointsQueue.drainTo(queuedPoints);
+                List<VictoriaMetricsPoint> points = stringStateLimiter.filter(queuedPoints);
+                if (points == null) {
+                    logger.warn("Re-queuing {} elements, failed to read the stored string states.",
+                            queuedPoints.size());
+                    pointsQueue.addAll(queuedPoints);
+                    repository.disconnect();
+                } else if (!repository.write(points)) {
+                    logger.warn("Re-queuing {} elements, failed to write batch.", points.size());
+                    pointsQueue.addAll(points);
+                    repository.disconnect();
+                } else {
+                    logger.trace("Wrote {} elements to database", points.size());
+                }
             }
+        } finally {
+            commitLock.unlock();
         }
     }
 
