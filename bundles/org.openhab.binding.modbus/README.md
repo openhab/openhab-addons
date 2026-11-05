@@ -20,6 +20,22 @@ The rest of this page contains details for configuring this binding:
 
 [[toc]]
 
+## Installation
+
+This add-on is called **Modbus Core Binding** (ID `modbus-core`).
+It provides generic Modbus TCP and serial devices.
+Device-specific extensions are separate add-ons named _Modbus \<Device\> Binding_.
+Installing one of them also installs the Modbus core, so you only need the add-ons for the devices you own.
+
+The add-on _Modbus Binding (All Devices)_ (ID `modbus`) installs the Modbus core and all device add-ons at once.
+It keeps installations working that already have `modbus` in their configuration.
+It is frozen: devices added later are not part of it.
+
+The Main UI lists things of an installed add-on only through the entry whose ID equals the binding ID `modbus`.
+With _Modbus Binding (All Devices)_ installed, add things through that entry (_Settings > Things > +_).
+With only the core or device add-ons installed, add things by opening `/settings/things/add/modbus` in the Main UI, or define them in a `.things` file.
+Existing things and configurations stay as they are.
+
 ## Main Features
 
 The binding polls (or _reads_) Modbus data using function codes (FC) FC01 (Read coils), FC02 (Read discrete inputs), FC03 (Read multiple holding registers) or FC04 (Read input registers).
