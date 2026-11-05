@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledExecutorService;
@@ -31,6 +32,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.BooleanSupplier;
+import java.util.function.Function;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -403,10 +405,13 @@ public class RobonectHandler extends BaseThingHandler {
      * Publishes a state for a channel identifier through the lifecycle guard.
      *
      * @param channelId the channel identifier
-     * @param state the state to publish
+     * @param state the state to publish, or {@code null} if absent
+     * @param fullResponse whether an absent state should be published as undefined
      */
-    void setState(String channelId, State state) {
-        updateState(new ChannelUID(getThing().getUID(), channelId), state);
+    void setState(String channelId, @Nullable State state, boolean fullResponse) {
+        if (fullResponse || state != null) {
+            updateState(new ChannelUID(getThing().getUID(), channelId), state == null ? UnDefType.UNDEF : state);
+        }
     }
 
     /**
@@ -522,14 +527,26 @@ public class RobonectHandler extends BaseThingHandler {
     }
 
     /**
-     * Publishes a switch state when the mower reports a Boolean value.
+     * Reads a nullable field through a possibly absent response object.
+     *
+     * @param <T> the response object type
+     * @param <V> the field value type
+     * @param root the response object, or {@code null} if absent
+     * @param getter the accessor for the field
+     * @return the field value, or an empty optional if the object or field is absent
+     */
+    static <T, V> Optional<V> read(@Nullable T root, Function<T, @Nullable V> getter) {
+        return Optional.ofNullable(root).flatMap(value -> Optional.ofNullable(getter.apply(value)));
+    }
+
+    /**
+     * Publishes the reported switch value, or an undefined state if absent.
      *
      * @param channel the channel identifier
-     * @param value the switch value, or {@code null} if absent
+     * @param value the reported switch value, or {@code null} if absent
      */
     void updateSwitch(String channel, @Nullable Boolean value) {
-        if (value != null)
-            updateState(channel, OnOffType.from(value));
+        setState(channel, value == null ? null : OnOffType.from(value), true);
     }
 
     /**

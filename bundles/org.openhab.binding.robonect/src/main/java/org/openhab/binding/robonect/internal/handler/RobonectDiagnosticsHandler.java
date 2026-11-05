@@ -13,6 +13,7 @@
 package org.openhab.binding.robonect.internal.handler;
 
 import static org.openhab.binding.robonect.internal.RobonectBindingConstants.*;
+import static org.openhab.binding.robonect.internal.handler.RobonectHandler.read;
 
 import java.util.ArrayList;
 import java.util.IntSummaryStatistics;
@@ -31,6 +32,7 @@ import org.openhab.binding.robonect.internal.model.Battery;
 import org.openhab.binding.robonect.internal.model.BatteryCapacity;
 import org.openhab.binding.robonect.internal.model.BatteryInfo;
 import org.openhab.binding.robonect.internal.model.BladeMotor;
+import org.openhab.binding.robonect.internal.model.Dhcp;
 import org.openhab.binding.robonect.internal.model.DriveMotor;
 import org.openhab.binding.robonect.internal.model.DriveMotors;
 import org.openhab.binding.robonect.internal.model.ErrorEntry;
@@ -46,14 +48,12 @@ import org.openhab.binding.robonect.internal.model.WifiStation;
 import org.openhab.binding.robonect.internal.model.WireInfo;
 import org.openhab.binding.robonect.internal.model.WlanInfo;
 import org.openhab.core.library.types.DecimalType;
-import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.Thing;
-import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -89,59 +89,40 @@ final class RobonectDiagnosticsHandler {
             return;
         }
         WifiStation station = info.getStation();
-        if (station != null) {
-            if (station.getEnable() != null)
-                handler.setState(CHANNEL_WLAN_ENABLED, OnOffType.from(station.getEnable()));
-            if (station.getMac() != null)
-                handler.setState(CHANNEL_WLAN_MAC, new StringType(station.getMac()));
-            if (station.getSsid() != null)
-                handler.setState(CHANNEL_WLAN_SSID, new StringType(station.getSsid()));
-            if (station.getIp() != null)
-                handler.setState(CHANNEL_WLAN_IP, new StringType(station.getIp()));
-            if (station.getDhcp() != null)
-                handler.setState(CHANNEL_WLAN_DHCP, OnOffType.from(station.getDhcp()));
-            if (station.getPing() != null)
-                handler.setState(CHANNEL_WLAN_PING, OnOffType.from(station.getPing()));
-            if (station.getPingtime() != null)
-                handler.setState(CHANNEL_WLAN_PING_TIME, new StringType(station.getPingtime()));
-            if (station.getNetmask() != null)
-                handler.setState(CHANNEL_WLAN_NETMASK, new StringType(station.getNetmask()));
-            if (station.getGateway() != null)
-                handler.setState(CHANNEL_WLAN_GATEWAY, new StringType(station.getGateway()));
-        }
         AccessPoint ap = info.getAp();
-        if (ap != null) {
-            if (ap.getEnable() != null)
-                handler.setState(CHANNEL_WLAN_AP_ENABLED, OnOffType.from(ap.getEnable()));
-            if (ap.getMac() != null)
-                handler.setState(CHANNEL_WLAN_AP_MAC, new StringType(ap.getMac()));
-            if (ap.getHidden() != null)
-                handler.setState(CHANNEL_WLAN_AP_HIDDEN, OnOffType.from(ap.getHidden()));
-            if (ap.getSsid() != null)
-                handler.setState(CHANNEL_WLAN_AP_SSID, new StringType(ap.getSsid()));
-            Integer channel = ap.getChannel();
-            if (channel != null)
-                handler.setState(CHANNEL_WLAN_AP_CHANNEL, new DecimalType(channel));
-            if (ap.getEncryption() != null)
-                handler.setState(CHANNEL_WLAN_AP_ENCRYPTION, new StringType(ap.getEncryption()));
-            Integer maxConnections = ap.getMaxconn();
-            if (maxConnections != null)
-                handler.setState(CHANNEL_WLAN_AP_MAX_CONNECTIONS, new DecimalType(maxConnections));
-            if (ap.getIp() != null)
-                handler.setState(CHANNEL_WLAN_AP_IP, new StringType(ap.getIp()));
-            if (ap.getNetmask() != null)
-                handler.setState(CHANNEL_WLAN_AP_NETMASK, new StringType(ap.getNetmask()));
-            if (ap.getGateway() != null)
-                handler.setState(CHANNEL_WLAN_AP_GATEWAY, new StringType(ap.getGateway()));
-            if (ap.getDhcp() != null) {
-                if (ap.getDhcp().getEnable() != null)
-                    handler.setState(CHANNEL_WLAN_AP_DHCP, OnOffType.from(ap.getDhcp().getEnable()));
-                if (ap.getDhcp().getStart() != null)
-                    handler.setState(CHANNEL_WLAN_AP_DHCP_START, new StringType(ap.getDhcp().getStart()));
-                if (ap.getDhcp().getEnd() != null)
-                    handler.setState(CHANNEL_WLAN_AP_DHCP_END, new StringType(ap.getDhcp().getEnd()));
-            }
-        }
+        handler.updateSwitch(CHANNEL_WLAN_ENABLED, read(station, WifiStation::getEnable).orElse(null));
+        handler.setState(CHANNEL_WLAN_MAC, read(station, WifiStation::getMac).map(StringType::new).orElse(null), true);
+        handler.setState(CHANNEL_WLAN_SSID, read(station, WifiStation::getSsid).map(StringType::new).orElse(null),
+                true);
+        handler.setState(CHANNEL_WLAN_IP, read(station, WifiStation::getIp).map(StringType::new).orElse(null), true);
+        handler.updateSwitch(CHANNEL_WLAN_DHCP, read(station, WifiStation::getDhcp).orElse(null));
+        handler.updateSwitch(CHANNEL_WLAN_PING, read(station, WifiStation::getPing).orElse(null));
+        handler.setState(CHANNEL_WLAN_PING_TIME,
+                read(station, WifiStation::getPingtime).map(StringType::new).orElse(null), true);
+        handler.setState(CHANNEL_WLAN_NETMASK, read(station, WifiStation::getNetmask).map(StringType::new).orElse(null),
+                true);
+        handler.setState(CHANNEL_WLAN_GATEWAY, read(station, WifiStation::getGateway).map(StringType::new).orElse(null),
+                true);
+        handler.updateSwitch(CHANNEL_WLAN_AP_ENABLED, read(ap, AccessPoint::getEnable).orElse(null));
+        handler.setState(CHANNEL_WLAN_AP_MAC, read(ap, AccessPoint::getMac).map(StringType::new).orElse(null), true);
+        handler.updateSwitch(CHANNEL_WLAN_AP_HIDDEN, read(ap, AccessPoint::getHidden).orElse(null));
+        handler.setState(CHANNEL_WLAN_AP_SSID, read(ap, AccessPoint::getSsid).map(StringType::new).orElse(null), true);
+        handler.setState(CHANNEL_WLAN_AP_CHANNEL, read(ap, AccessPoint::getChannel).map(DecimalType::new).orElse(null),
+                true);
+        handler.setState(CHANNEL_WLAN_AP_ENCRYPTION,
+                read(ap, AccessPoint::getEncryption).map(StringType::new).orElse(null), true);
+        handler.setState(CHANNEL_WLAN_AP_MAX_CONNECTIONS,
+                read(ap, AccessPoint::getMaxconn).map(DecimalType::new).orElse(null), true);
+        handler.setState(CHANNEL_WLAN_AP_IP, read(ap, AccessPoint::getIp).map(StringType::new).orElse(null), true);
+        handler.setState(CHANNEL_WLAN_AP_NETMASK, read(ap, AccessPoint::getNetmask).map(StringType::new).orElse(null),
+                true);
+        handler.setState(CHANNEL_WLAN_AP_GATEWAY, read(ap, AccessPoint::getGateway).map(StringType::new).orElse(null),
+                true);
+        handler.updateSwitch(CHANNEL_WLAN_AP_DHCP, read(ap, AccessPoint::getDhcp).map(Dhcp::getEnable).orElse(null));
+        handler.setState(CHANNEL_WLAN_AP_DHCP_START,
+                read(ap, AccessPoint::getDhcp).map(Dhcp::getStart).map(StringType::new).orElse(null), true);
+        handler.setState(CHANNEL_WLAN_AP_DHCP_END,
+                read(ap, AccessPoint::getDhcp).map(Dhcp::getEnd).map(StringType::new).orElse(null), true);
     }
 
     /**
@@ -184,39 +165,23 @@ final class RobonectDiagnosticsHandler {
      * @param prefix the channel identifier prefix
      * @param battery the battery information to publish
      */
-    private void updateBatteryState(String prefix, Battery battery) {
-        Integer id = battery.getId();
-        if (id != null) {
-            handler.setState(prefix + "id", new DecimalType(id));
-        }
-        Integer charge = battery.getCharge();
-        if (charge != null) {
-            handler.setState(prefix + "charge", new QuantityType<>(charge, Units.PERCENT));
-        }
-        Integer voltage = battery.getVoltage();
-        if (voltage != null) {
-            handler.setState(prefix + "voltage", new QuantityType<>(voltage / 1000.0, Units.VOLT));
-        }
-        Integer current = battery.getCurrent();
-        if (current != null) {
-            handler.setState(prefix + "current", new QuantityType<>(current / 1000.0, Units.AMPERE));
-        }
-        Integer temperature = battery.getTemperature();
-        if (temperature != null) {
-            handler.setState(prefix + "temperature", new QuantityType<>(temperature / 10.0, SIUnits.CELSIUS));
-        }
-        BatteryCapacity capacity = battery.getCapacity();
-        if (capacity != null) {
-            Integer full = capacity.getFull();
-            if (full != null) {
-                handler.setState(prefix + "capacity", new QuantityType<>(full, Units.MILLIAMPERE_HOUR));
-            }
-            Integer remainingCapacity = capacity.getRemaining();
-            if (remainingCapacity != null) {
-                handler.setState(prefix + "remaining-capacity",
-                        new QuantityType<>(remainingCapacity, Units.MILLIAMPERE_HOUR));
-            }
-        }
+    private void updateBatteryState(String prefix, @Nullable Battery battery) {
+        handler.setState(prefix + "id", read(battery, Battery::getId).map(DecimalType::new).orElse(null), true);
+        handler.setState(prefix + "charge",
+                read(battery, Battery::getCharge).map(value -> new QuantityType<>(value, Units.PERCENT)).orElse(null),
+                true);
+        handler.setState(prefix + "voltage", read(battery, Battery::getVoltage)
+                .map(value -> new QuantityType<>(value / 1000.0, Units.VOLT)).orElse(null), true);
+        handler.setState(prefix + "current", read(battery, Battery::getCurrent)
+                .map(value -> new QuantityType<>(value / 1000.0, Units.AMPERE)).orElse(null), true);
+        handler.setState(prefix + "temperature", read(battery, Battery::getTemperature)
+                .map(value -> new QuantityType<>(value / 10.0, SIUnits.CELSIUS)).orElse(null), true);
+        handler.setState(prefix + "capacity", read(battery, Battery::getCapacity).map(BatteryCapacity::getFull)
+                .map(value -> new QuantityType<>(value, Units.MILLIAMPERE_HOUR)).orElse(null), true);
+        handler.setState(prefix + "remaining-capacity",
+                read(battery, Battery::getCapacity).map(BatteryCapacity::getRemaining)
+                        .map(value -> new QuantityType<>(value, Units.MILLIAMPERE_HOUR)).orElse(null),
+                true);
     }
 
     /**
@@ -229,27 +194,18 @@ final class RobonectDiagnosticsHandler {
             return;
         }
         DriveMotors drive = info.getDrive();
-        if (drive != null) {
-            updateDriveMotor(CHANNEL_LEFT_DRIVE_POWER, CHANNEL_LEFT_DRIVE_SPEED, CHANNEL_LEFT_DRIVE_CURRENT,
-                    drive.getLeft());
-            updateDriveMotor(CHANNEL_RIGHT_DRIVE_POWER, CHANNEL_RIGHT_DRIVE_SPEED, CHANNEL_RIGHT_DRIVE_CURRENT,
-                    drive.getRight());
-        }
+        updateDriveMotor(CHANNEL_LEFT_DRIVE_POWER, CHANNEL_LEFT_DRIVE_SPEED, CHANNEL_LEFT_DRIVE_CURRENT,
+                read(drive, DriveMotors::getLeft).orElse(null));
+        updateDriveMotor(CHANNEL_RIGHT_DRIVE_POWER, CHANNEL_RIGHT_DRIVE_SPEED, CHANNEL_RIGHT_DRIVE_CURRENT,
+                read(drive, DriveMotors::getRight).orElse(null));
         BladeMotor blade = info.getBlade();
-        if (blade != null) {
-            Integer average = blade.getAverage();
-            if (average != null) {
-                handler.setState(CHANNEL_BLADE_MOTOR_AVERAGE, new DecimalType(average));
-            }
-            Integer speed = blade.getSpeed();
-            if (speed != null) {
-                handler.setState(CHANNEL_BLADE_MOTOR_SPEED, new QuantityType<>(speed, Units.RPM));
-            }
-            if (blade.getCurrent() != null) {
-                handler.setState(CHANNEL_BLADE_MOTOR_CURRENT,
-                        new QuantityType<>(blade.getCurrent() / 1000.0, Units.AMPERE));
-            }
-        }
+        handler.setState(CHANNEL_BLADE_MOTOR_AVERAGE,
+                read(blade, BladeMotor::getAverage).map(DecimalType::new).orElse(null), true);
+        handler.setState(CHANNEL_BLADE_MOTOR_SPEED,
+                read(blade, BladeMotor::getSpeed).map(value -> new QuantityType<>(value, Units.RPM)).orElse(null),
+                true);
+        handler.setState(CHANNEL_BLADE_MOTOR_CURRENT, read(blade, BladeMotor::getCurrent)
+                .map(value -> new QuantityType<>(value / 1000.0, Units.AMPERE)).orElse(null), true);
     }
 
     /**
@@ -262,20 +218,22 @@ final class RobonectDiagnosticsHandler {
             return;
         }
         HourGeneral general = info.getGeneral();
-        if (general != null) {
-            updateHours(CHANNEL_STATISTICS_RUNNING_HOURS, general.getRun());
-            updateHours(CHANNEL_STATISTICS_MOWING_HOURS, general.getMow());
-            updateHours(CHANNEL_STATISTICS_SEARCHING_HOURS, general.getSearch());
-            updateHours(CHANNEL_STATISTICS_CHARGING_HOURS, general.getCharge());
-            Integer charges = general.getCharges();
-            if (charges != null) {
-                handler.setState(CHANNEL_STATISTICS_CHARGES, new DecimalType(charges));
-            }
-            Integer errors = general.getErrors();
-            if (errors != null) {
-                handler.setState(CHANNEL_STATISTICS_ERRORS, new DecimalType(errors));
-            }
-        }
+        handler.setState(CHANNEL_STATISTICS_RUNNING_HOURS,
+                read(general, HourGeneral::getRun).map(value -> new QuantityType<>(value, Units.HOUR)).orElse(null),
+                true);
+        handler.setState(CHANNEL_STATISTICS_MOWING_HOURS,
+                read(general, HourGeneral::getMow).map(value -> new QuantityType<>(value, Units.HOUR)).orElse(null),
+                true);
+        handler.setState(CHANNEL_STATISTICS_SEARCHING_HOURS,
+                read(general, HourGeneral::getSearch).map(value -> new QuantityType<>(value, Units.HOUR)).orElse(null),
+                true);
+        handler.setState(CHANNEL_STATISTICS_CHARGING_HOURS,
+                read(general, HourGeneral::getCharge).map(value -> new QuantityType<>(value, Units.HOUR)).orElse(null),
+                true);
+        handler.setState(CHANNEL_STATISTICS_CHARGES,
+                read(general, HourGeneral::getCharges).map(DecimalType::new).orElse(null), true);
+        handler.setState(CHANNEL_STATISTICS_ERRORS,
+                read(general, HourGeneral::getErrors).map(DecimalType::new).orElse(null), true);
         updateRecentDurations(CHANNEL_STATISTICS_SEEK, info.getSeek());
         updateRecentDurations(CHANNEL_STATISTICS_MOWING, info.getMowing());
     }
@@ -287,29 +245,22 @@ final class RobonectDiagnosticsHandler {
      * @param entries the duration entries, or {@code null} if not reported
      */
     private void updateRecentDurations(String channelId, @Nullable List<HourInfo.DurationEntry> entries) {
-        if (entries == null) {
-            return;
-        }
-        List<Integer> minutes = new ArrayList<>();
-        for (HourInfo.DurationEntry entry : entries) {
-            @Nullable
-            Integer duration = entry.getDuration();
-            if (duration != null) {
-                minutes.add(duration);
-            }
-        }
+        List<Integer> minutes = entries == null ? List.of()
+                : entries.stream().flatMap(entry -> read(entry, HourInfo.DurationEntry::getDuration).stream()).toList();
         handler.setState(channelId,
-                new StringType(minutes.stream().map(String::valueOf).collect(Collectors.joining(", "))));
+                entries == null || (!entries.isEmpty() && minutes.isEmpty()) ? null
+                        : new StringType(minutes.stream().map(String::valueOf).collect(Collectors.joining(", "))),
+                true);
         if (minutes.isEmpty()) {
-            handler.setState(channelId + "-min", UnDefType.UNDEF);
-            handler.setState(channelId + "-max", UnDefType.UNDEF);
-            handler.setState(channelId + "-average", UnDefType.UNDEF);
+            handler.setState(channelId + "-min", UnDefType.UNDEF, true);
+            handler.setState(channelId + "-max", UnDefType.UNDEF, true);
+            handler.setState(channelId + "-average", UnDefType.UNDEF, true);
             return;
         }
         IntSummaryStatistics statistics = minutes.stream().mapToInt(Integer::intValue).summaryStatistics();
-        handler.setState(channelId + "-min", new QuantityType<>(statistics.getMin(), Units.MINUTE));
-        handler.setState(channelId + "-max", new QuantityType<>(statistics.getMax(), Units.MINUTE));
-        handler.setState(channelId + "-average", new QuantityType<>(statistics.getAverage(), Units.MINUTE));
+        handler.setState(channelId + "-min", new QuantityType<>(statistics.getMin(), Units.MINUTE), true);
+        handler.setState(channelId + "-max", new QuantityType<>(statistics.getMax(), Units.MINUTE), true);
+        handler.setState(channelId + "-average", new QuantityType<>(statistics.getAverage(), Units.MINUTE), true);
     }
 
     /**
@@ -349,18 +300,12 @@ final class RobonectDiagnosticsHandler {
             logger.debug("Could not retrieve portal information: {}", info.getErrorMessage());
             return;
         }
-        if (info.getEnabled() != null)
-            handler.setState(CHANNEL_PORTAL_ENABLED, OnOffType.from(info.getEnabled()));
-        if (info.getConnected() != null)
-            handler.setState(CHANNEL_PORTAL_CONNECTED, OnOffType.from(info.getConnected()));
-        Address address = info.getAddress();
-        if (address != null) {
-            if (address.getUrl() != null)
-                handler.setState(CHANNEL_PORTAL_URL, new StringType(address.getUrl()));
-            Host host = address.getHost();
-            if (host != null && host.getDefault() != null)
-                handler.setState(CHANNEL_PORTAL_HOST, new StringType(host.getDefault()));
-        }
+        handler.updateSwitch(CHANNEL_PORTAL_ENABLED, read(info, PortalInfo::getEnabled).orElse(null));
+        handler.updateSwitch(CHANNEL_PORTAL_CONNECTED, read(info, PortalInfo::getConnected).orElse(null));
+        handler.setState(CHANNEL_PORTAL_URL,
+                read(info, PortalInfo::getAddress).map(Address::getUrl).map(StringType::new).orElse(null), true);
+        handler.setState(CHANNEL_PORTAL_HOST, read(info, PortalInfo::getAddress).map(Address::getHost)
+                .map(Host::getDefault).map(StringType::new).orElse(null), true);
     }
 
     /**
@@ -369,40 +314,18 @@ final class RobonectDiagnosticsHandler {
      * @param number the one-based wire sensor number
      * @param sensor the wire sensor information to publish
      */
-    private void updateWireSensor(int number, Sensor sensor) {
+    private void updateWireSensor(int number, @Nullable Sensor sensor) {
         String prefix = "wire-sensor-" + number + "-";
-        if (sensor.getDescription() != null)
-            handler.setState(prefix + "label", new StringType(sensor.getDescription()));
-        Integer quality = sensor.getQuality();
-        if (quality != null)
-            handler.setState(prefix + "quality", new QuantityType<>(quality, Units.PERCENT));
-        Integer a = sensor.getA();
-        if (a != null)
-            handler.setState(prefix + "a", new DecimalType(a));
-        Integer n = sensor.getN();
-        if (n != null)
-            handler.setState(prefix + "n", new DecimalType(n));
-        Integer f = sensor.getF();
-        if (f != null)
-            handler.setState(prefix + "f", new DecimalType(f));
-        Integer g1 = sensor.getG1();
-        if (g1 != null)
-            handler.setState(prefix + "g1", new DecimalType(g1));
-        Integer g2 = sensor.getG2();
-        if (g2 != null)
-            handler.setState(prefix + "g2", new DecimalType(g2));
-    }
-
-    /**
-     * Publishes an operating duration in hours when one is reported.
-     *
-     * @param channel the identifier of the channel to update
-     * @param value the number of hours, or {@code null} if absent
-     */
-    private void updateHours(String channel, @Nullable Integer value) {
-        if (value != null) {
-            handler.setState(channel, new QuantityType<>(value, Units.HOUR));
-        }
+        handler.setState(prefix + "label", read(sensor, Sensor::getDescription).map(StringType::new).orElse(null),
+                true);
+        handler.setState(prefix + "quality",
+                read(sensor, Sensor::getQuality).map(value -> new QuantityType<>(value, Units.PERCENT)).orElse(null),
+                true);
+        handler.setState(prefix + "a", read(sensor, Sensor::getA).map(DecimalType::new).orElse(null), true);
+        handler.setState(prefix + "n", read(sensor, Sensor::getN).map(DecimalType::new).orElse(null), true);
+        handler.setState(prefix + "f", read(sensor, Sensor::getF).map(DecimalType::new).orElse(null), true);
+        handler.setState(prefix + "g1", read(sensor, Sensor::getG1).map(DecimalType::new).orElse(null), true);
+        handler.setState(prefix + "g2", read(sensor, Sensor::getG2).map(DecimalType::new).orElse(null), true);
     }
 
     /**
@@ -415,22 +338,15 @@ final class RobonectDiagnosticsHandler {
      */
     private void updateDriveMotor(String powerChannel, String speedChannel, String currentChannel,
             @Nullable DriveMotor motor) {
-        if (motor == null) {
-            return;
-        }
-        Integer power = motor.getPower();
-        if (power != null) {
-            handler.setState(powerChannel, new QuantityType<>(power, Units.PERCENT));
-        }
-        if (motor.getSpeed() != null) {
-            handler.setState(speedChannel, new QuantityType<>(motor.getSpeed() / 100.0, Units.METRE_PER_SECOND));
-        }
-        if (motor.getCurrent() != null) {
-            handler.setState(currentChannel, new QuantityType<>(motor.getCurrent() / 1000.0, Units.AMPERE));
-        }
+        handler.setState(powerChannel,
+                read(motor, DriveMotor::getPower).map(value -> new QuantityType<>(value, Units.PERCENT)).orElse(null),
+                true);
+        handler.setState(speedChannel, read(motor, DriveMotor::getSpeed)
+                .map(value -> new QuantityType<>(value / 100.0, Units.METRE_PER_SECOND)).orElse(null), true);
+        handler.setState(currentChannel, read(motor, DriveMotor::getCurrent)
+                .map(value -> new QuantityType<>(value / 1000.0, Units.AMPERE)).orElse(null), true);
     }
 
-    /** Reads mower version information and updates the Thing properties. */
     void refreshVersionInfo() {
         VersionInfo info = diagnosticsApi.getVersionInfo();
         if (!handler.canPublishState()) {
@@ -486,9 +402,9 @@ final class RobonectDiagnosticsHandler {
                 ErrorEntry lastErrorEntry = errors.get(0);
                 updateLastErrorChannels(lastErrorEntry);
             } else {
-                handler.setState(CHANNEL_LAST_ERROR_MESSAGE, UnDefType.UNDEF);
-                handler.setState(CHANNEL_LAST_ERROR_CODE, UnDefType.UNDEF);
-                handler.setState(CHANNEL_LAST_ERROR_DATE, UnDefType.UNDEF);
+                handler.setState(CHANNEL_LAST_ERROR_MESSAGE, UnDefType.UNDEF, true);
+                handler.setState(CHANNEL_LAST_ERROR_CODE, UnDefType.UNDEF, true);
+                handler.setState(CHANNEL_LAST_ERROR_DATE, UnDefType.UNDEF, true);
             }
         } else {
             logger.debug("Could not retrieve mower error list. Robonect error response message: {}",
@@ -501,16 +417,12 @@ final class RobonectDiagnosticsHandler {
      *
      * @param error the error information to publish
      */
-    private void updateLastErrorChannels(ErrorEntry error) {
-        if (error.getErrorMessage() != null) {
-            handler.setState(CHANNEL_LAST_ERROR_MESSAGE, new StringType(error.getErrorMessage()));
-        }
-        if (error.getErrorCode() != null) {
-            handler.setState(CHANNEL_LAST_ERROR_CODE, new DecimalType(error.getErrorCode().intValue()));
-        }
-        if (error.getDate() != null) {
-            State dateTime = handler.convertUnixToDateTimeType(error.getUnix());
-            handler.setState(CHANNEL_LAST_ERROR_DATE, dateTime);
-        }
+    private void updateLastErrorChannels(@Nullable ErrorEntry error) {
+        handler.setState(CHANNEL_LAST_ERROR_MESSAGE,
+                read(error, ErrorEntry::getErrorMessage).map(StringType::new).orElse(null), true);
+        handler.setState(CHANNEL_LAST_ERROR_CODE,
+                read(error, ErrorEntry::getErrorCode).map(DecimalType::new).orElse(null), true);
+        handler.setState(CHANNEL_LAST_ERROR_DATE,
+                read(error, ErrorEntry::getUnix).map(handler::convertUnixToDateTimeType).orElse(null), true);
     }
 }

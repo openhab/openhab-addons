@@ -13,6 +13,7 @@
 package org.openhab.binding.robonect.internal.handler;
 
 import static org.openhab.binding.robonect.internal.RobonectBindingConstants.*;
+import static org.openhab.binding.robonect.internal.handler.RobonectHandler.read;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -120,7 +121,7 @@ final class RobonectRemoteStartHandler {
         handler.cancelCommandRefresh("remote");
         RemoteInfo result = remoteStartApi.updateRemoteStart(remoteStart, name, distance, proportion);
         if (result.isSuccessful()) {
-            applyRemoteInfo(result);
+            applyRemoteInfo(result, false);
             handler.scheduleCommandRefresh("remote", this::refreshRemoteInfo);
         }
     }
@@ -201,51 +202,49 @@ final class RobonectRemoteStartHandler {
 
     /** Reads and applies the mower remote-start configurations. */
     void refreshRemoteInfo() {
-        applyRemoteInfo(remoteStartApi.getRemoteInfo());
+        applyRemoteInfo(remoteStartApi.getRemoteInfo(), true);
     }
 
     /**
      * Publishes available remote-start configurations from a successful response.
      *
      * @param info the remote-start response to apply
+     * @param fullResponse whether to clear missing values
      */
-    void applyRemoteInfo(RemoteInfo info) {
+    private void applyRemoteInfo(RemoteInfo info, boolean fullResponse) {
         if (!info.isSuccessful()) {
             logger.debug("Could not retrieve remote-start information: {}", info.getErrorMessage());
             return;
         }
-        updateRemoteStart(1, info.getRemoteStart1());
-        updateRemoteStart(2, info.getRemoteStart2());
-        updateRemoteStart(3, info.getRemoteStart3());
-        updateRemoteStart(4, info.getRemoteStart4());
-        updateRemoteStart(5, info.getRemoteStart5());
+        updateRemoteStart(1, info.getRemoteStart1(), fullResponse);
+        updateRemoteStart(2, info.getRemoteStart2(), fullResponse);
+        updateRemoteStart(3, info.getRemoteStart3(), fullResponse);
+        updateRemoteStart(4, info.getRemoteStart4(), fullResponse);
+        updateRemoteStart(5, info.getRemoteStart5(), fullResponse);
     }
 
     /**
-     * Publishes the available settings for one remote-start point.
+     * Publishes settings for one remote-start point.
      *
      * @param number the remote-start point number
-     * @param remote the remote-start configuration, or {@code null} if absent
+     * @param remote the reported configuration, or {@code null} if absent
+     * @param fullResponse whether missing settings should be published as undefined
      */
-    private void updateRemoteStart(int number, @Nullable Remote remote) {
-        if (remote == null) {
-            return;
-        }
+    private void updateRemoteStart(int number, @Nullable Remote remote, boolean fullResponse) {
         String prefix = "remote-" + number + "-";
-        if (remote.getName() != null)
-            handler.setState(prefix + "name", new StringType(remote.getName()));
-        if (remote.getVisible() != null)
-            handler.setState(prefix + "visible", OnOffType.from(remote.getVisible()));
-        Integer path = remote.getPath();
-        if (path != null)
-            handler.setState(prefix + "path", new DecimalType(path));
-        Integer proportion = remote.getProportion();
-        if (proportion != null)
-            handler.setState(prefix + "proportion", new QuantityType<>(proportion, Units.PERCENT));
-        Integer distance = remote.getDistance();
-        if (distance != null)
-            handler.setState(prefix + "distance", new QuantityType<>(distance, SIUnits.METRE));
-        if (remote.getCorridorcut() != null)
-            handler.setState(prefix + "corridor-cut", OnOffType.from(remote.getCorridorcut()));
+        handler.setState(prefix + "name", read(remote, Remote::getName).map(StringType::new).orElse(null),
+                fullResponse);
+        handler.setState(prefix + "visible", read(remote, Remote::getVisible).map(OnOffType::from).orElse(null),
+                fullResponse);
+        handler.setState(prefix + "path", read(remote, Remote::getPath).map(DecimalType::new).orElse(null),
+                fullResponse);
+        handler.setState(prefix + "proportion",
+                read(remote, Remote::getProportion).map(value -> new QuantityType<>(value, Units.PERCENT)).orElse(null),
+                fullResponse);
+        handler.setState(prefix + "distance",
+                read(remote, Remote::getDistance).map(value -> new QuantityType<>(value, SIUnits.METRE)).orElse(null),
+                fullResponse);
+        handler.setState(prefix + "corridor-cut",
+                read(remote, Remote::getCorridorcut).map(OnOffType::from).orElse(null), fullResponse);
     }
 }

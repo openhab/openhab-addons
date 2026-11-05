@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.robonect.internal.model;
 
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * Object holding the wlan signal strength.
  * 
@@ -19,14 +21,14 @@ package org.openhab.binding.robonect.internal.model;
  */
 public class Wlan {
 
-    private int signal;
+    private @Nullable Integer signal;
 
     /**
      * Returns the signal strength in dBm.
      *
      * @return the signal strength in dBm
      */
-    public int getSignal() {
+    public @Nullable Integer getSignal() {
         return signal;
     }
 

@@ -13,6 +13,7 @@
 package org.openhab.binding.robonect.internal.handler;
 
 import static org.openhab.binding.robonect.internal.RobonectBindingConstants.*;
+import static org.openhab.binding.robonect.internal.handler.RobonectHandler.read;
 
 import java.time.DateTimeException;
 
@@ -34,6 +35,7 @@ import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.Command;
+import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -158,7 +160,7 @@ final class RobonectWeatherHandler {
         handler.cancelCommandRefresh("weather");
         WeatherInfo result = weatherApi.updateWeather(parameter, value);
         if (result.isSuccessful()) {
-            applyWeatherInfo(result);
+            applyWeatherInfo(result, false);
             handler.scheduleCommandRefresh("weather", this::refreshWeatherInfo);
         }
     }
@@ -188,139 +190,117 @@ final class RobonectWeatherHandler {
 
     /** Reads and applies weather measurements and service settings. */
     void refreshWeatherInfo() {
-        applyWeatherInfo(weatherApi.getWeatherInfo());
+        applyWeatherInfo(weatherApi.getWeatherInfo(), true);
     }
 
     /**
-     * Publishes available weather data, conditions, and service configuration.
+     * Publishes weather measurements and service settings from a successful response.
      *
-     * @param info the weather response to apply
+     * @param info the weather response
+     * @param fullResponse whether missing fields should be published as undefined
      */
-    void applyWeatherInfo(WeatherInfo info) {
-        Weather weather = info.getWeather();
+    private void applyWeatherInfo(WeatherInfo info, boolean fullResponse) {
         if (!info.isSuccessful()) {
             return;
         }
-        if (weather != null) {
-            handler.updateSwitch(CHANNEL_WEATHER_BREAK, weather.getWeatherBreak());
-            updateWeatherPercentage(CHANNEL_WEATHER_RAIN, weather.getRain());
-            Integer temperature = weather.getTemperature();
-            if (temperature != null)
-                handler.setState(CHANNEL_WEATHER_TEMPERATURE, new QuantityType<>(temperature, SIUnits.CELSIUS));
-            Integer humidity = weather.getHumidity();
-            if (humidity != null)
-                handler.setState(CHANNEL_WEATHER_HUMIDITY, new QuantityType<>(humidity, Units.PERCENT));
-            handler.updateSwitch(CHANNEL_WEATHER_DAY, weather.getDay());
-            if (weather.getCity() != null)
-                handler.setState(CHANNEL_WEATHER_CITY, new StringType(weather.getCity()));
-            Integer remaining = weather.getRemaining();
-            if (remaining != null)
-                handler.setState(CHANNEL_WEATHER_REMAINING, new QuantityType<>(remaining, Units.SECOND));
-            updateWeatherDateTime(CHANNEL_WEATHER_SUNRISE, weather.getSunrise());
-            updateWeatherDateTime(CHANNEL_WEATHER_SUNSET, weather.getSunset());
-            if (weather.getIcon() != null) {
-                handler.setState(CHANNEL_WEATHER_ICON, new StringType(weather.getIcon()));
-            }
-            Clock timestamp = weather.getTimestamp();
-            if (timestamp != null) {
-                updateWeatherDateTime(CHANNEL_WEATHER_TIMESTAMP, timestamp.getUnix());
-            }
-            WeatherCondition condition = weather.getCondition();
-            if (condition != null) {
-                handler.updateSwitch(CHANNEL_WEATHER_CONDITION_TOO_RAINY, condition.getTooRainy());
-                handler.updateSwitch(CHANNEL_WEATHER_CONDITION_TOO_COLD, condition.getTooCold());
-                handler.updateSwitch(CHANNEL_WEATHER_CONDITION_TOO_WARM, condition.getTooWarm());
-                handler.updateSwitch(CHANNEL_WEATHER_CONDITION_TOO_DRY, condition.getTooDry());
-                handler.updateSwitch(CHANNEL_WEATHER_CONDITION_TOO_WET, condition.getTooWet());
-                handler.updateSwitch(CHANNEL_WEATHER_CONDITION_DAY, condition.getDay());
-                handler.updateSwitch(CHANNEL_WEATHER_CONDITION_NIGHT, condition.getNight());
-            }
-        }
+        Weather weather = info.getWeather();
+        handler.setState(CHANNEL_WEATHER_BREAK,
+                read(weather, Weather::getWeatherBreak).map(OnOffType::from).orElse(null), fullResponse);
+        handler.setState(CHANNEL_WEATHER_RAIN,
+                read(weather, Weather::getRain).map(value -> new QuantityType<>(value, Units.PERCENT)).orElse(null),
+                fullResponse);
+        handler.setState(CHANNEL_WEATHER_TEMPERATURE, read(weather, Weather::getTemperature)
+                .map(value -> new QuantityType<>(value, SIUnits.CELSIUS)).orElse(null), fullResponse);
+        handler.setState(CHANNEL_WEATHER_HUMIDITY,
+                read(weather, Weather::getHumidity).map(value -> new QuantityType<>(value, Units.PERCENT)).orElse(null),
+                fullResponse);
+        handler.setState(CHANNEL_WEATHER_DAY, read(weather, Weather::getDay).map(OnOffType::from).orElse(null),
+                fullResponse);
+        handler.setState(CHANNEL_WEATHER_CITY, read(weather, Weather::getCity).map(StringType::new).orElse(null),
+                fullResponse);
+        handler.setState(CHANNEL_WEATHER_REMAINING,
+                read(weather, Weather::getRemaining).map(value -> new QuantityType<>(value, Units.SECOND)).orElse(null),
+                fullResponse);
+        handler.setState(CHANNEL_WEATHER_SUNRISE,
+                read(weather, Weather::getSunrise).map(this::weatherDateTime).orElse(null), fullResponse);
+        handler.setState(CHANNEL_WEATHER_SUNSET,
+                read(weather, Weather::getSunset).map(this::weatherDateTime).orElse(null), fullResponse);
+        handler.setState(CHANNEL_WEATHER_ICON, read(weather, Weather::getIcon).map(StringType::new).orElse(null),
+                fullResponse);
+        handler.setState(CHANNEL_WEATHER_TIMESTAMP,
+                read(weather, Weather::getTimestamp).map(Clock::getUnix).map(this::weatherDateTime).orElse(null),
+                fullResponse);
+        handler.setState(CHANNEL_WEATHER_CONDITION_TOO_RAINY, read(weather, Weather::getCondition)
+                .map(WeatherCondition::getTooRainy).map(OnOffType::from).orElse(null), fullResponse);
+        handler.setState(CHANNEL_WEATHER_CONDITION_TOO_COLD, read(weather, Weather::getCondition)
+                .map(WeatherCondition::getTooCold).map(OnOffType::from).orElse(null), fullResponse);
+        handler.setState(CHANNEL_WEATHER_CONDITION_TOO_WARM, read(weather, Weather::getCondition)
+                .map(WeatherCondition::getTooWarm).map(OnOffType::from).orElse(null), fullResponse);
+        handler.setState(CHANNEL_WEATHER_CONDITION_TOO_DRY,
+                read(weather, Weather::getCondition).map(WeatherCondition::getTooDry).map(OnOffType::from).orElse(null),
+                fullResponse);
+        handler.setState(CHANNEL_WEATHER_CONDITION_TOO_WET,
+                read(weather, Weather::getCondition).map(WeatherCondition::getTooWet).map(OnOffType::from).orElse(null),
+                fullResponse);
+        handler.setState(CHANNEL_WEATHER_CONDITION_DAY,
+                read(weather, Weather::getCondition).map(WeatherCondition::getDay).map(OnOffType::from).orElse(null),
+                fullResponse);
+        handler.setState(CHANNEL_WEATHER_CONDITION_NIGHT,
+                read(weather, Weather::getCondition).map(WeatherCondition::getNight).map(OnOffType::from).orElse(null),
+                fullResponse);
         WeatherService service = info.getService();
-        if (service != null) {
-            WeatherLocation location = service.getLocation();
-            if (location != null) {
-                updateWeatherNumber(CHANNEL_WEATHER_LOCATION_CITY_ID, location.getCityId());
-                if (location.getZip() != null) {
-                    handler.setState(CHANNEL_WEATHER_LOCATION_ZIP, new StringType(location.getZip()));
-                }
-                if (location.getCountry() != null) {
-                    handler.setState(CHANNEL_WEATHER_LOCATION_COUNTRY, new StringType(location.getCountry()));
-                }
-            }
-            handler.updateSwitch(CHANNEL_WEATHER_ENABLED, service.getEnable());
-            WeatherConfig config = service.getConfig();
-            if (config != null) {
-                updateWeatherPercentage(CHANNEL_WEATHER_MAX_RAIN, config.getMaxrain());
-                updateWeatherTemperature(CHANNEL_WEATHER_MIN_TEMPERATURE, config.getMintemp());
-                updateWeatherTemperature(CHANNEL_WEATHER_MAX_TEMPERATURE, config.getMaxtemp());
-                updateWeatherPercentage(CHANNEL_WEATHER_MIN_HUMIDITY, config.getMinhumidity());
-                updateWeatherPercentage(CHANNEL_WEATHER_MAX_HUMIDITY, config.getMaxhumidity());
-                handler.updateSwitch(CHANNEL_WEATHER_SKIP_DAY, config.getDontmowduringday());
-                handler.updateSwitch(CHANNEL_WEATHER_SKIP_NIGHT, config.getDontmowduringnight());
-            }
-            Integer interval = service.getInterval();
-            if (interval == null && handler.isUnofficialApiEnabled() && handler.canPublishState()) {
-                try {
-                    interval = weatherApi.getWeatherIntervalViaWebInterface();
-                } catch (RobonectCommunicationException e) {
-                    logger.debug("Could not read weather interval from web interface: {}", e.getMessage());
-                }
-            }
-            if (interval != null) {
-                handler.setState(CHANNEL_WEATHER_INTERVAL, new QuantityType<>(interval, Units.MINUTE));
+        handler.setState(CHANNEL_WEATHER_LOCATION_CITY_ID, read(service, WeatherService::getLocation)
+                .map(WeatherLocation::getCityId).map(DecimalType::new).orElse(null), fullResponse);
+        handler.setState(CHANNEL_WEATHER_LOCATION_ZIP, read(service, WeatherService::getLocation)
+                .map(WeatherLocation::getZip).map(StringType::new).orElse(null), fullResponse);
+        handler.setState(CHANNEL_WEATHER_LOCATION_COUNTRY, read(service, WeatherService::getLocation)
+                .map(WeatherLocation::getCountry).map(StringType::new).orElse(null), fullResponse);
+        handler.setState(CHANNEL_WEATHER_ENABLED,
+                read(service, WeatherService::getEnable).map(OnOffType::from).orElse(null), fullResponse);
+        handler.setState(CHANNEL_WEATHER_MAX_RAIN, read(service, WeatherService::getConfig)
+                .map(WeatherConfig::getMaxrain).map(value -> new QuantityType<>(value, Units.PERCENT)).orElse(null),
+                fullResponse);
+        handler.setState(CHANNEL_WEATHER_MIN_TEMPERATURE, read(service, WeatherService::getConfig)
+                .map(WeatherConfig::getMintemp).map(value -> new QuantityType<>(value, SIUnits.CELSIUS)).orElse(null),
+                fullResponse);
+        handler.setState(CHANNEL_WEATHER_MAX_TEMPERATURE, read(service, WeatherService::getConfig)
+                .map(WeatherConfig::getMaxtemp).map(value -> new QuantityType<>(value, SIUnits.CELSIUS)).orElse(null),
+                fullResponse);
+        handler.setState(CHANNEL_WEATHER_MIN_HUMIDITY, read(service, WeatherService::getConfig)
+                .map(WeatherConfig::getMinhumidity).map(value -> new QuantityType<>(value, Units.PERCENT)).orElse(null),
+                fullResponse);
+        handler.setState(CHANNEL_WEATHER_MAX_HUMIDITY, read(service, WeatherService::getConfig)
+                .map(WeatherConfig::getMaxhumidity).map(value -> new QuantityType<>(value, Units.PERCENT)).orElse(null),
+                fullResponse);
+        handler.setState(CHANNEL_WEATHER_SKIP_DAY, read(service, WeatherService::getConfig)
+                .map(WeatherConfig::getDontmowduringday).map(OnOffType::from).orElse(null), fullResponse);
+        handler.setState(CHANNEL_WEATHER_SKIP_NIGHT, read(service, WeatherService::getConfig)
+                .map(WeatherConfig::getDontmowduringnight).map(OnOffType::from).orElse(null), fullResponse);
+        Integer interval = read(service, WeatherService::getInterval).orElse(null);
+        if (interval == null && (fullResponse || service != null) && handler.isUnofficialApiEnabled()
+                && handler.canPublishState()) {
+            try {
+                interval = weatherApi.getWeatherIntervalViaWebInterface();
+            } catch (RobonectCommunicationException e) {
+                logger.debug("Could not read weather interval from web interface: {}", e.getMessage());
             }
         }
+        handler.setState(CHANNEL_WEATHER_INTERVAL, interval == null ? null : new QuantityType<>(interval, Units.MINUTE),
+                fullResponse);
     }
 
     /**
-     * Publishes a reported weather temperature in degrees Celsius.
+     * Converts a weather timestamp using the configured time zone.
      *
-     * @param channel the channel identifier
-     * @param value the temperature in degrees Celsius, or {@code null} if absent
+     * @param unix the reported Unix timestamp in seconds
+     * @return the date-time state, or {@link UnDefType#UNDEF} if the timestamp is invalid
      */
-    private void updateWeatherTemperature(String channel, @Nullable Integer value) {
-        if (value != null)
-            handler.setState(channel, new QuantityType<>(value, SIUnits.CELSIUS));
-    }
-
-    /**
-     * Publishes a weather timestamp or an undefined state when it is invalid.
-     *
-     * @param channel the channel identifier
-     * @param unix the Unix timestamp in seconds, or {@code null} if absent
-     */
-    private void updateWeatherDateTime(String channel, @Nullable String unix) {
-        if (unix == null) {
-            return;
-        }
+    private State weatherDateTime(String unix) {
         try {
-            handler.setState(channel, handler.convertUnixToDateTimeType(unix));
+            return handler.convertUnixToDateTimeType(unix);
         } catch (NumberFormatException | DateTimeException e) {
-            logger.debug("Ignoring invalid weather timestamp for {}", channel);
-            handler.setState(channel, UnDefType.UNDEF);
+            logger.debug("Ignoring invalid weather timestamp: {}", e.getMessage());
+            return UnDefType.UNDEF;
         }
-    }
-
-    /**
-     * Publishes a reported numeric weather setting.
-     *
-     * @param channel the channel identifier
-     * @param value the numeric value, or {@code null} if absent
-     */
-    private void updateWeatherNumber(String channel, @Nullable Integer value) {
-        if (value != null)
-            handler.setState(channel, new DecimalType(value));
-    }
-
-    /**
-     * Publishes a reported weather percentage.
-     *
-     * @param channel the channel identifier
-     * @param value the percentage, or {@code null} if absent
-     */
-    private void updateWeatherPercentage(String channel, @Nullable Integer value) {
-        if (value != null)
-            handler.setState(channel, new QuantityType<>(value, Units.PERCENT));
     }
 }

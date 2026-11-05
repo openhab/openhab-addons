@@ -89,7 +89,7 @@ public class ModelParserTest {
         assertTrue(mowerInfo.isSuccessful());
         assertEquals("Mein Automower", mowerInfo.getName());
         assertEquals(MowerStatus.SLEEPING, mowerInfo.getStatus().getStatus());
-        assertFalse(mowerInfo.getStatus().isStopped());
+        assertEquals(Boolean.FALSE, mowerInfo.getStatus().isStopped());
         assertEquals(4359, mowerInfo.getStatus().getDuration());
         assertEquals(MowerMode.AUTO, mowerInfo.getStatus().getMode());
         assertEquals(100, mowerInfo.getStatus().getBattery());
@@ -109,7 +109,7 @@ public class ModelParserTest {
         assertTrue(mowerInfo.isSuccessful());
         assertEquals("Rosenlund Automower", mowerInfo.getName());
         assertEquals(MowerStatus.CHARGING, mowerInfo.getStatus().getStatus());
-        assertFalse(mowerInfo.getStatus().isStopped());
+        assertEquals(Boolean.FALSE, mowerInfo.getStatus().isStopped());
         assertEquals(47493, mowerInfo.getStatus().getDuration());
         assertEquals(MowerMode.AUTO, mowerInfo.getStatus().getMode());
         assertEquals(20, mowerInfo.getStatus().getBattery());
@@ -145,7 +145,7 @@ public class ModelParserTest {
         assertTrue(mowerInfo.isSuccessful());
         assertEquals("Grasi", mowerInfo.getName());
         assertEquals(MowerStatus.ERROR_STATUS, mowerInfo.getStatus().getStatus());
-        assertTrue(mowerInfo.getStatus().isStopped());
+        assertEquals(Boolean.TRUE, mowerInfo.getStatus().isStopped());
         assertEquals(9, mowerInfo.getError().getErrorCode().intValue());
         assertEquals("Grasi ist eingeklemmt", mowerInfo.getError().getErrorMessage());
     }
@@ -157,7 +157,7 @@ public class ModelParserTest {
         assertTrue(mowerInfo.isSuccessful());
         assertEquals("Mein Automower", mowerInfo.getName());
         assertEquals(MowerStatus.MOWING, mowerInfo.getStatus().getStatus());
-        assertFalse(mowerInfo.getStatus().isStopped());
+        assertEquals(Boolean.FALSE, mowerInfo.getStatus().isStopped());
         assertEquals(MowerMode.MANUAL, mowerInfo.getStatus().getMode());
     }
 
@@ -168,7 +168,7 @@ public class ModelParserTest {
         assertTrue(mowerInfo.isSuccessful());
         assertEquals("Mein Automower", mowerInfo.getName());
         assertEquals(MowerStatus.ERROR_STATUS, mowerInfo.getStatus().getStatus());
-        assertTrue(mowerInfo.getStatus().isStopped());
+        assertEquals(Boolean.TRUE, mowerInfo.getStatus().isStopped());
         assertNotNull(mowerInfo.getError());
         assertEquals("Mein Automower ist angehoben", mowerInfo.getError().getErrorMessage());
         assertEquals(Integer.valueOf(15), mowerInfo.getError().getErrorCode());

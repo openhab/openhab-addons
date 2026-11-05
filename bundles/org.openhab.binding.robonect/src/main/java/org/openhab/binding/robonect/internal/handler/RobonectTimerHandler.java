@@ -13,6 +13,7 @@
 package org.openhab.binding.robonect.internal.handler;
 
 import static org.openhab.binding.robonect.internal.RobonectBindingConstants.*;
+import static org.openhab.binding.robonect.internal.handler.RobonectHandler.read;
 
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -32,6 +33,7 @@ import org.openhab.binding.robonect.internal.model.Weekdays;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.types.Command;
+import org.openhab.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -111,7 +113,7 @@ final class RobonectTimerHandler {
             if (result.isSuccessful()) {
                 TimerFull updatedTimer = result.getTimer();
                 if (updatedTimer != null) {
-                    updateTimerState(updatedTimer);
+                    updateTimerState(updatedTimer, false);
                 }
                 handler.scheduleCommandRefresh("timer", this::refreshTimersInfo);
             }
@@ -127,7 +129,7 @@ final class RobonectTimerHandler {
         List<TimerFull> timers = info.getTimers();
         if (info.isSuccessful() && timers != null) {
             updateTimerChannels(timers);
-            timers.forEach(this::updateTimerState);
+            timers.forEach(timer -> updateTimerState(timer, true));
         }
     }
 
@@ -135,58 +137,50 @@ final class RobonectTimerHandler {
      * Publishes the available fields for a timer with a valid identifier.
      *
      * @param timer the timer configuration to publish
+     * @param fullResponse whether to clear missing values
      */
-    private void updateTimerState(TimerFull timer) {
+    private void updateTimerState(TimerFull timer, boolean fullResponse) {
         Integer id = timer.getId();
         if (id == null || id < 0) {
             return;
         }
         String prefix = "timer-" + id + "-";
-        if (timer.getEnabled() != null) {
-            handler.setState(prefix + "enabled", OnOffType.from(timer.getEnabled()));
-        }
-        updateTimerTime(prefix + "start", timer.getStart());
-        updateTimerTime(prefix + "end", timer.getEnd());
+        handler.setState(prefix + "enabled", read(timer, TimerFull::getEnabled).map(OnOffType::from).orElse(null),
+                fullResponse);
+        handler.setState(prefix + "start", timerTime(timer.getStart()), fullResponse);
+        handler.setState(prefix + "end", timerTime(timer.getEnd()), fullResponse);
         Weekdays days = timer.getWeekdays();
-        if (days == null) {
-            return;
-        }
-        updateTimerDay(prefix, "monday", days.getMo());
-        updateTimerDay(prefix, "tuesday", days.getTu());
-        updateTimerDay(prefix, "wednesday", days.getWe());
-        updateTimerDay(prefix, "thursday", days.getTh());
-        updateTimerDay(prefix, "friday", days.getFr());
-        updateTimerDay(prefix, "saturday", days.getSa());
-        updateTimerDay(prefix, "sunday", days.getSu());
+        handler.setState(prefix + "monday", read(days, Weekdays::getMo).map(OnOffType::from).orElse(null),
+                fullResponse);
+        handler.setState(prefix + "tuesday", read(days, Weekdays::getTu).map(OnOffType::from).orElse(null),
+                fullResponse);
+        handler.setState(prefix + "wednesday", read(days, Weekdays::getWe).map(OnOffType::from).orElse(null),
+                fullResponse);
+        handler.setState(prefix + "thursday", read(days, Weekdays::getTh).map(OnOffType::from).orElse(null),
+                fullResponse);
+        handler.setState(prefix + "friday", read(days, Weekdays::getFr).map(OnOffType::from).orElse(null),
+                fullResponse);
+        handler.setState(prefix + "saturday", read(days, Weekdays::getSa).map(OnOffType::from).orElse(null),
+                fullResponse);
+        handler.setState(prefix + "sunday", read(days, Weekdays::getSu).map(OnOffType::from).orElse(null),
+                fullResponse);
     }
 
     /**
-     * Publishes a valid timer time using the configured time zone.
+     * Interprets a mower timer time in the configured time zone.
      *
-     * @param channel the channel identifier
-     * @param time the timer time in {@code HH:mm} format, or {@code null} if absent
+     * @param time the reported time in {@code HH:mm} format, or {@code null} if absent
+     * @return the timer time as a channel state, or {@code null} if absent or invalid
      */
-    private void updateTimerTime(String channel, @Nullable String time) {
+    private @Nullable State timerTime(@Nullable String time) {
         if (time != null && time.matches("\\d{2}:\\d{2}")) {
             int hours = Integer.parseInt(time.substring(0, 2));
             int minutes = Integer.parseInt(time.substring(3, 5));
             if (hours < 24 && minutes < 60) {
-                handler.setState(channel, handler.toTimeOnlyDateTime(LocalTime.of(hours, minutes)));
+                return handler.toTimeOnlyDateTime(LocalTime.of(hours, minutes));
             }
         }
-    }
-
-    /**
-     * Publishes a reported weekday enablement value for a timer.
-     *
-     * @param prefix the channel identifier prefix
-     * @param day the weekday suffix of the channel identifier
-     * @param value whether the timer is enabled for that weekday, or {@code null} if absent
-     */
-    private void updateTimerDay(String prefix, String day, @Nullable Boolean value) {
-        if (value != null) {
-            handler.setState(prefix + day, OnOffType.from(value));
-        }
+        return null;
     }
 
     /**

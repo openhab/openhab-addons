@@ -461,7 +461,7 @@ public class RobonectHandlerTest {
         verify(callbackMock).stateUpdated(new ChannelUID(thing.getUID(), "wire-sensor-1-g2"), new DecimalType(0));
         verify(callbackMock).stateUpdated(new ChannelUID(thing.getUID(), "wire-sensor-2-g2"), new DecimalType(-25));
         verify(callbackMock).stateUpdated(new ChannelUID(thing.getUID(), "wire-sensor-5-g2"), new DecimalType(50));
-        verify(callbackMock, never()).stateUpdated(eq(new ChannelUID(thing.getUID(), "wire-sensor-3-g2")), any());
+        verify(callbackMock).stateUpdated(new ChannelUID(thing.getUID(), "wire-sensor-3-g2"), UnDefType.UNDEF);
 
         when(diagnosticsApiMock.getBatteryInfo()).thenReturn(ModelParser.parse("""
                 {"successful":true,"batteries":[{"id":0,"charge":70},{"id":1,"charge":80}]}
@@ -484,8 +484,17 @@ public class RobonectHandlerTest {
         verify(callbackMock, atLeastOnce()).thingUpdated(updated.capture());
         assertNull(updated.getValue().getChannel("wire-sensor-5-label"));
         assertNull(updated.getValue().getChannel("wire-sensor-5-g2"));
-        verify(callbackMock).stateUpdated(eq(new ChannelUID(thing.getUID(), "wire-sensor-1-g2")), any());
+        verify(callbackMock).stateUpdated(new ChannelUID(thing.getUID(), "wire-sensor-1-g2"), UnDefType.UNDEF);
         assertNotNull(updated.getValue().getChannel("battery-2-charge"));
+
+        when(diagnosticsApiMock.getBatteryInfo()).thenReturn(
+                ModelParser.parse("{\"successful\":true}", BatteryInfo.class),
+                ModelParser.parse("{\"successful\":false,\"batteries\":[]}", BatteryInfo.class));
+        ChannelUID batteryCharge = new ChannelUID(thing.getUID(), "battery-1-charge");
+        subject.handleCommand(batteryCharge, RefreshType.REFRESH);
+        subject.handleCommand(batteryCharge, RefreshType.REFRESH);
+        assertNotNull(subject.getThing().getChannel("battery-2-charge"));
+        verify(callbackMock, never()).stateUpdated(batteryCharge, UnDefType.UNDEF);
 
         when(diagnosticsApiMock.getBatteryInfo()).thenReturn(ModelParser.parse("""
                 {"successful":true,"batteries":[]}
@@ -723,13 +732,25 @@ public class RobonectHandlerTest {
     }
 
     @Test
-    public void shouldIgnoreIncompleteMowerStatus() {
-        MowerInfo incompleteInfo = new MowerInfo();
-        incompleteInfo.setSuccessful(true);
-        when(mowerApiMock.getMowerInfo()).thenReturn(incompleteInfo);
+    public void shouldClearMissingMowerFieldsAndPreserveReportedZeroAndFalse() {
+        when(mowerApiMock.getMowerInfo()).thenReturn(ModelParser.parse("""
+                {"successful":true,"status":{"battery":0,"home":false},"health":{},"wlan":{}}
+                """, MowerInfo.class), ModelParser.parse("{\"successful\":true}", MowerInfo.class));
+        ThingUID uid = new ThingUID("1:2:3");
+        ChannelUID status = new ChannelUID(uid, RobonectBindingConstants.CHANNEL_STATUS);
+        ChannelUID battery = new ChannelUID(uid, RobonectBindingConstants.CHANNEL_STATUS_BATTERY);
+        ChannelUID home = new ChannelUID(uid, RobonectBindingConstants.CHANNEL_STATUS_HOME);
+        subject.handleCommand(status, RefreshType.REFRESH);
+        verify(callbackMock).stateUpdated(battery, DecimalType.ZERO);
+        verify(callbackMock).stateUpdated(home, OnOffType.OFF);
+        verify(callbackMock).stateUpdated(new ChannelUID(uid, RobonectBindingConstants.CHANNEL_HEALTH_TEMP),
+                UnDefType.UNDEF);
+        verify(callbackMock).stateUpdated(new ChannelUID(uid, RobonectBindingConstants.CHANNEL_WLAN_SIGNAL_STRENGTH),
+                UnDefType.UNDEF);
 
-        assertDoesNotThrow(() -> subject.handleCommand(
-                new ChannelUID(new ThingUID("1:2:3"), RobonectBindingConstants.CHANNEL_STATUS), RefreshType.REFRESH));
+        subject.handleCommand(status, RefreshType.REFRESH);
+        verify(callbackMock).stateUpdated(battery, UnDefType.UNDEF);
+        verify(callbackMock).stateUpdated(home, UnDefType.UNDEF);
     }
 
     @Test
@@ -1043,7 +1064,7 @@ public class RobonectHandlerTest {
         ChannelUID channel = new ChannelUID(new ThingUID("1:2:3"), "weather-service-interval");
         subject.handleCommand(channel, RefreshType.REFRESH);
         subject.handleCommand(channel, RefreshType.REFRESH);
-        verify(callbackMock, never()).stateUpdated(eq(channel), any());
+        verify(callbackMock, times(2)).stateUpdated(channel, UnDefType.UNDEF);
         subject.handleCommand(channel, RefreshType.REFRESH);
         verify(callbackMock).stateUpdated(channel, new QuantityType<>(10, Units.MINUTE));
         verify(callbackMock, times(3)).stateUpdated(new ChannelUID(new ThingUID("1:2:3"), "weather-rain"),
@@ -1099,10 +1120,10 @@ public class RobonectHandlerTest {
             verify(callbackMock).stateUpdated(new ChannelUID(new ThingUID("1:2:3"), "weather-condition-" + condition),
                     OnOffType.ON);
         }
-        verify(callbackMock, never()).stateUpdated(eq(new ChannelUID(new ThingUID("1:2:3"), "weather-location-zip")),
-                any());
-        verify(callbackMock, never())
-                .stateUpdated(eq(new ChannelUID(new ThingUID("1:2:3"), "weather-location-country")), any());
+        verify(callbackMock).stateUpdated(new ChannelUID(new ThingUID("1:2:3"), "weather-location-zip"),
+                UnDefType.UNDEF);
+        verify(callbackMock).stateUpdated(new ChannelUID(new ThingUID("1:2:3"), "weather-location-country"),
+                UnDefType.UNDEF);
     }
 
     @Test
@@ -1170,13 +1191,16 @@ public class RobonectHandlerTest {
     }
 
     @Test
-    public void shouldIgnoreMissingWeatherFieldsAndDateTimeWithoutUnix() {
+    public void shouldClearMissingWeatherFieldsAndDateTimeWithoutUnix() {
         when(weatherApiMock.getWeatherInfo()).thenReturn(ModelParser.parse("""
                 {"successful":true,"service":{"location":{}},"weather":{"condition":{},
                 "timestamp":{"date":"2026-10-20","time":"22:44:42"}}}
                 """, WeatherInfo.class));
         subject.handleCommand(new ChannelUID(new ThingUID("1:2:3"), "weather-timestamp"), RefreshType.REFRESH);
-        verify(callbackMock, never()).stateUpdated(any(), any());
+        for (String channel : List.of("weather-timestamp", "weather-location-zip", "weather-condition-day",
+                "weather-config-max-rain")) {
+            verify(callbackMock).stateUpdated(new ChannelUID(new ThingUID("1:2:3"), channel), UnDefType.UNDEF);
+        }
     }
 
     @ParameterizedTest
@@ -1441,13 +1465,13 @@ public class RobonectHandlerTest {
     }
 
     @Test
-    public void shouldApplyMissingPushModeWriteResponseWithoutSchedulingRead() {
+    public void shouldIgnoreMissingPushModeWriteResponseWithoutSchedulingRead() {
         useRealThingForPushMode();
         subject.configureUnofficialChannels(true);
         when(pushApiMock.updatePushModeViaWebInterface(2)).thenReturn(null);
         ChannelUID uid = new ChannelUID(new ThingUID("1:2:3"), "push-mode");
         subject.handleCommand(uid, new DecimalType(2));
-        verify(callbackMock).stateUpdated(uid, UnDefType.UNDEF);
+        verify(callbackMock, never()).stateUpdated(eq(uid), any());
         verifyNoInteractions(commandScheduler);
         verify(pushApiMock, never()).getPushModeViaWebInterface();
     }
@@ -1507,6 +1531,7 @@ public class RobonectHandlerTest {
         DateTimeType state = (DateTimeType) value.getValue();
         assertEquals(LocalTime.parse(time), state.getZonedDateTime(TIME_ZONE).toLocalTime());
         verify(callbackMock).stateUpdated(new ChannelUID(uid, "timer-1-end"), state);
+        verify(callbackMock).stateUpdated(new ChannelUID(uid, "timer-1-monday"), UnDefType.UNDEF);
         when(timerApiMock.updateTimer(1, "start", time))
                 .thenReturn(ModelParser.parse("{\"successful\":true}", TimerInfo.class));
         subject.handleCommand(start, state);

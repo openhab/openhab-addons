@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.robonect.internal.model;
 
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * Object holding information from the status section of the mowers status response.
  *
@@ -19,22 +21,22 @@ package org.openhab.binding.robonect.internal.model;
  */
 public class Status {
 
-    private int battery;
-    private int duration;
-    private int hours;
+    private @Nullable Integer battery;
+    private @Nullable Integer duration;
+    private @Nullable Integer hours;
     private MowerStatus status;
     private MowerMode mode;
-    private boolean stopped;
-    private boolean home;
-    private int prevent;
-    private int distance;
+    private @Nullable Boolean stopped;
+    private @Nullable Boolean home;
+    private @Nullable Integer prevent;
+    private @Nullable Integer distance;
 
     /**
      * Returns the battery level in percent. (0-100).
      *
      * @return - the battery level in percent. (0-100)
      */
-    public int getBattery() {
+    public @Nullable Integer getBattery() {
         return battery;
     }
 
@@ -43,7 +45,7 @@ public class Status {
      *
      * @return - The duration in seconds the mower is already in the current {@link #status}.
      */
-    public int getDuration() {
+    public @Nullable Integer getDuration() {
         return duration;
     }
 
@@ -52,7 +54,7 @@ public class Status {
      *
      * @return - The distance from the charging station (in case it searches the remote starting point)
      */
-    public int getDistance() {
+    public @Nullable Integer getDistance() {
         return distance;
     }
 
@@ -61,7 +63,7 @@ public class Status {
      *
      * @return - The hours the mower was in use so far.
      */
-    public int getHours() {
+    public @Nullable Integer getHours() {
         return hours;
     }
 
@@ -79,7 +81,7 @@ public class Status {
      *
      * @return {@code true} if the mower is currently stopped, {@code false} otherwise
      */
-    public boolean isStopped() {
+    public @Nullable Boolean isStopped() {
         return stopped;
     }
 
@@ -88,7 +90,7 @@ public class Status {
      *
      * @return whether the mower reports being at home
      */
-    public boolean getHome() {
+    public @Nullable Boolean getHome() {
         return home;
     }
 
@@ -97,7 +99,7 @@ public class Status {
      *
      * @return the reported prevention code
      */
-    public int getPrevent() {
+    public @Nullable Integer getPrevent() {
         return prevent;
     }
 

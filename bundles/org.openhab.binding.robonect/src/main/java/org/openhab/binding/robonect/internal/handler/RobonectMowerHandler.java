@@ -13,6 +13,7 @@
 package org.openhab.binding.robonect.internal.handler;
 
 import static org.openhab.binding.robonect.internal.RobonectBindingConstants.*;
+import static org.openhab.binding.robonect.internal.handler.RobonectHandler.read;
 
 import java.time.LocalTime;
 import java.util.Set;
@@ -26,15 +27,22 @@ import org.openhab.binding.robonect.internal.RobonectCommunicationException;
 import org.openhab.binding.robonect.internal.RobonectMowerApi;
 import org.openhab.binding.robonect.internal.config.JobChannelConfig;
 import org.openhab.binding.robonect.internal.model.AjaxInfo;
+import org.openhab.binding.robonect.internal.model.Blades;
+import org.openhab.binding.robonect.internal.model.Clock;
 import org.openhab.binding.robonect.internal.model.Door;
 import org.openhab.binding.robonect.internal.model.DoorInfo;
 import org.openhab.binding.robonect.internal.model.DoorState;
 import org.openhab.binding.robonect.internal.model.ErrorEntry;
+import org.openhab.binding.robonect.internal.model.Health;
 import org.openhab.binding.robonect.internal.model.MowerInfo;
 import org.openhab.binding.robonect.internal.model.MowerMode;
+import org.openhab.binding.robonect.internal.model.MowerStatus;
 import org.openhab.binding.robonect.internal.model.Name;
+import org.openhab.binding.robonect.internal.model.NextTimer;
 import org.openhab.binding.robonect.internal.model.RobonectAnswer;
 import org.openhab.binding.robonect.internal.model.Status;
+import org.openhab.binding.robonect.internal.model.Timer;
+import org.openhab.binding.robonect.internal.model.Wlan;
 import org.openhab.binding.robonect.internal.model.cmd.DoorCommand.Direction;
 import org.openhab.binding.robonect.internal.model.cmd.ModeCommand;
 import org.openhab.binding.robonect.internal.model.cmd.ServiceCommand.Operation;
@@ -49,7 +57,6 @@ import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.types.Command;
-import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -88,27 +95,28 @@ final class RobonectMowerHandler {
 
     /** Updates door channels from the optional door-system response. */
     void refreshDoorInfo() {
-        applyDoorInfo(mowerApi.getDoorInfo());
+        applyDoorInfo(mowerApi.getDoorInfo(), true);
     }
 
     /**
      * Publishes door fields present in a successful door-system response.
      *
      * @param info the door response to apply
+     * @param fullResponse whether to clear missing values
      */
-    private void applyDoorInfo(DoorInfo info) {
+    private void applyDoorInfo(DoorInfo info, boolean fullResponse) {
         Door door = info.getDoor();
-        if (!info.isSuccessful() || door == null) {
+        if (!info.isSuccessful()) {
             return;
         }
-        if (door.getEnabled() != null) {
-            handler.setState(CHANNEL_DOOR_ENABLED, OnOffType.from(door.getEnabled()));
-        }
-        if (door.getArrested() != null) {
-            handler.setState(CHANNEL_DOOR_ARRESTED, OnOffType.from(door.getArrested()));
-        }
-        if (door.getState() != null || door.getPending() != null) {
-            updateDoorState(door.getState(), door.getPending());
+        handler.setState(CHANNEL_DOOR_ENABLED, read(door, Door::getEnabled).map(OnOffType::from).orElse(null),
+                fullResponse);
+        handler.setState(CHANNEL_DOOR_ARRESTED, read(door, Door::getArrested).map(OnOffType::from).orElse(null),
+                fullResponse);
+        DoorState state = read(door, Door::getState).orElse(null);
+        DoorState pending = read(door, Door::getPending).orElse(null);
+        if (fullResponse || state != null || pending != null) {
+            updateDoorState(state, pending, fullResponse);
         }
     }
 
@@ -117,19 +125,20 @@ final class RobonectMowerHandler {
      *
      * @param state the current door state, or {@code null} if absent
      * @param pending the pending door state, or {@code null} if absent
+     * @param fullResponse whether an absent state should be published as undefined
      */
-    private void updateDoorState(@Nullable DoorState state, @Nullable DoorState pending) {
+    private void updateDoorState(@Nullable DoorState state, @Nullable DoorState pending, boolean fullResponse) {
         if (pending != null && Boolean.TRUE.equals(pending.getOpen()) && !Boolean.TRUE.equals(pending.getClose())) {
-            handler.setState(CHANNEL_DOOR_STATE, new PercentType(75));
+            handler.setState(CHANNEL_DOOR_STATE, new PercentType(75), fullResponse);
         } else if (pending != null && !Boolean.TRUE.equals(pending.getOpen())
                 && Boolean.TRUE.equals(pending.getClose())) {
-            handler.setState(CHANNEL_DOOR_STATE, new PercentType(25));
+            handler.setState(CHANNEL_DOOR_STATE, new PercentType(25), fullResponse);
         } else if (state != null && Boolean.TRUE.equals(state.getOpen()) && !Boolean.TRUE.equals(state.getClose())) {
-            handler.setState(CHANNEL_DOOR_STATE, PercentType.ZERO);
+            handler.setState(CHANNEL_DOOR_STATE, PercentType.ZERO, fullResponse);
         } else if (state != null && !Boolean.TRUE.equals(state.getOpen()) && Boolean.TRUE.equals(state.getClose())) {
-            handler.setState(CHANNEL_DOOR_STATE, PercentType.HUNDRED);
+            handler.setState(CHANNEL_DOOR_STATE, PercentType.HUNDRED, fullResponse);
         } else {
-            handler.setState(CHANNEL_DOOR_STATE, UnDefType.UNDEF);
+            handler.setState(CHANNEL_DOOR_STATE, null, fullResponse);
         }
     }
 
@@ -284,7 +293,7 @@ final class RobonectMowerHandler {
             return;
         }
         if (answer.isSuccessful()) {
-            applyDoorInfo(answer);
+            applyDoorInfo(answer, false);
             handler.scheduleCommandRefresh("door", this::refreshDoorInfo);
         } else {
             logger.debug("Could not control the door. Robonect error message: {}", answer.getErrorMessage());
@@ -320,9 +329,7 @@ final class RobonectMowerHandler {
         handler.cancelCommandRefresh("status");
         Name name = mowerApi.setName(newName);
         if (name.isSuccessful()) {
-            if (name.getName() != null) {
-                handler.setState(CHANNEL_MOWER_NAME, new StringType(name.getName()));
-            }
+            handler.setState(CHANNEL_MOWER_NAME, read(name, Name::getName).map(StringType::new).orElse(null), false);
             handler.scheduleCommandRefresh("status", this::refreshMowerInfo);
         } else {
             logErrorFromResponse(name);
@@ -336,75 +343,58 @@ final class RobonectMowerHandler {
         if (!handler.canPublishState()) {
             return;
         }
-        Status status = info.getStatus();
-        if (info.isSuccessful() && status != null) {
-            if (info.getError() != null) {
-                updateErrorInfo(info.getError());
-                diagnostics.refreshLastErrorInfo();
-            } else {
-                clearErrorInfo();
-            }
-            handler.setState(CHANNEL_MOWER_NAME, new StringType(info.getName()));
-            if (info.getId() != null) {
-                handler.setState(CHANNEL_MOWER_ID, new StringType(info.getId()));
-            }
-            handler.setState(CHANNEL_STATUS_BATTERY, new DecimalType(status.getBattery()));
-            Integer prevent = status.getPrevent();
-            if (prevent != null) {
-                handler.setState(CHANNEL_STATUS_PREVENT, new DecimalType(prevent));
-            }
-            Boolean home = status.getHome();
-            if (home != null) {
-                handler.setState(CHANNEL_STATUS_HOME, OnOffType.from(home));
-            }
-            if (status.getStatus() != null) {
-                handler.setState(CHANNEL_STATUS, new DecimalType(status.getStatus().getStatusCode()));
-            }
-            handler.setState(CHANNEL_STATUS_DURATION, new QuantityType<>(status.getDuration(), Units.SECOND));
-            handler.setState(CHANNEL_STATUS_DISTANCE, new QuantityType<>(status.getDistance(), SIUnits.METRE));
-            handler.setState(CHANNEL_STATUS_HOURS, new QuantityType<>(status.getHours(), Units.HOUR));
-            updateMowerModeAndJob(status.getMode());
-            handler.setState(CHANNEL_MOWER_START, OnOffType.from(!status.isStopped()));
-            if (info.getHealth() != null) {
-                handler.setState(CHANNEL_HEALTH_TEMP,
-                        new QuantityType<>(info.getHealth().getTemperature(), SIUnits.CELSIUS));
-                handler.setState(CHANNEL_HEALTH_HUM, new QuantityType<>(info.getHealth().getHumidity(), Units.PERCENT));
-            }
-            if (info.getBlades() != null) {
-                handler.setState(CHANNEL_BLADES_QUALITY,
-                        new QuantityType<>(info.getBlades().getQuality(), Units.PERCENT));
-                handler.setState(CHANNEL_BLADES_REPL_DAYS, new QuantityType<>(info.getBlades().getDays(), Units.DAY));
-                handler.setState(CHANNEL_BLADES_USAGE_HOURS,
-                        new QuantityType<>(info.getBlades().getHours(), Units.HOUR));
-            }
-            if (info.getClock() != null && info.getClock().getUnix() != null) {
-                handler.setState(CHANNEL_TIMESTAMP, handler.convertUnixToDateTimeType(info.getClock().getUnix()));
-            }
-            if (info.getTimer() != null) {
-                if (info.getTimer().getNext() != null) {
-                    updateNextTimer(info);
-                }
-                if (info.getTimer().getStatus() != null) {
-                    handler.setState(CHANNEL_TIMER_STATUS, new StringType(info.getTimer().getStatus().name()));
-                }
-            }
-            if (info.getWlan() != null) {
-                Integer signal = info.getWlan().getSignal();
-                if (signal != null) {
-                    handler.setState(CHANNEL_WLAN_SIGNAL_STRENGTH,
-                            new QuantityType<>(signal, Units.DECIBEL_MILLIWATTS));
-                    handler.setState(CHANNEL_WLAN_SIGNAL, new DecimalType(convertSignalStrength(signal)));
-                } else {
-                    handler.setState(CHANNEL_WLAN_SIGNAL, UnDefType.UNDEF);
-                    handler.setState(CHANNEL_WLAN_SIGNAL_STRENGTH, UnDefType.UNDEF);
-                }
-            } else {
-                handler.setState(CHANNEL_WLAN_SIGNAL, UnDefType.UNDEF);
-                handler.setState(CHANNEL_WLAN_SIGNAL_STRENGTH, UnDefType.UNDEF);
-            }
-        } else {
-            logger.debug("Could not retrieve complete mower information: {}", info.getErrorMessage());
+        if (!info.isSuccessful()) {
+            logger.debug("Could not retrieve mower information: {}", info.getErrorMessage());
+            return;
         }
+        ErrorEntry error = info.getError();
+        updateErrorInfo(error);
+        if (error != null) {
+            diagnostics.refreshLastErrorInfo();
+        }
+        Status status = info.getStatus();
+        handler.setState(CHANNEL_MOWER_NAME, read(info, MowerInfo::getName).map(StringType::new).orElse(null), true);
+        handler.setState(CHANNEL_MOWER_ID, read(info, MowerInfo::getId).map(StringType::new).orElse(null), true);
+        handler.setState(CHANNEL_STATUS_BATTERY, read(status, Status::getBattery).map(DecimalType::new).orElse(null),
+                true);
+        handler.setState(CHANNEL_STATUS_PREVENT, read(status, Status::getPrevent).map(DecimalType::new).orElse(null),
+                true);
+        handler.updateSwitch(CHANNEL_STATUS_HOME, read(status, Status::getHome).orElse(null));
+        handler.setState(CHANNEL_STATUS,
+                read(status, Status::getStatus).map(MowerStatus::getStatusCode).map(DecimalType::new).orElse(null),
+                true);
+        handler.setState(CHANNEL_STATUS_DURATION,
+                read(status, Status::getDuration).map(value -> new QuantityType<>(value, Units.SECOND)).orElse(null),
+                true);
+        handler.setState(CHANNEL_STATUS_DISTANCE,
+                read(status, Status::getDistance).map(value -> new QuantityType<>(value, SIUnits.METRE)).orElse(null),
+                true);
+        handler.setState(CHANNEL_STATUS_HOURS,
+                read(status, Status::getHours).map(value -> new QuantityType<>(value, Units.HOUR)).orElse(null), true);
+        handler.setState(CHANNEL_MOWER_START,
+                read(status, Status::isStopped).map(stopped -> OnOffType.from(!stopped)).orElse(null), true);
+        updateMowerModeAndJob(read(status, Status::getMode).orElse(null));
+        handler.setState(CHANNEL_HEALTH_TEMP, read(info, MowerInfo::getHealth).map(Health::getTemperature)
+                .map(value -> new QuantityType<>(value, SIUnits.CELSIUS)).orElse(null), true);
+        handler.setState(CHANNEL_HEALTH_HUM, read(info, MowerInfo::getHealth).map(Health::getHumidity)
+                .map(value -> new QuantityType<>(value, Units.PERCENT)).orElse(null), true);
+        handler.setState(CHANNEL_BLADES_QUALITY, read(info, MowerInfo::getBlades).map(Blades::getQuality)
+                .map(value -> new QuantityType<>(value, Units.PERCENT)).orElse(null), true);
+        handler.setState(CHANNEL_BLADES_REPL_DAYS, read(info, MowerInfo::getBlades).map(Blades::getDays)
+                .map(value -> new QuantityType<>(value, Units.DAY)).orElse(null), true);
+        handler.setState(CHANNEL_BLADES_USAGE_HOURS, read(info, MowerInfo::getBlades).map(Blades::getHours)
+                .map(value -> new QuantityType<>(value, Units.HOUR)).orElse(null), true);
+        handler.setState(CHANNEL_TIMESTAMP, read(info, MowerInfo::getClock).map(Clock::getUnix)
+                .map(handler::convertUnixToDateTimeType).orElse(null), true);
+        handler.setState(CHANNEL_TIMER_NEXT_TIMER, read(info, MowerInfo::getTimer).map(Timer::getNext)
+                .map(NextTimer::getUnix).map(handler::convertUnixToDateTimeType).orElse(null), true);
+        handler.setState(CHANNEL_TIMER_STATUS,
+                read(info, MowerInfo::getTimer).map(Timer::getStatus).map(Enum::name).map(StringType::new).orElse(null),
+                true);
+        handler.setState(CHANNEL_WLAN_SIGNAL_STRENGTH, read(info, MowerInfo::getWlan).map(Wlan::getSignal)
+                .map(value -> new QuantityType<>(value, Units.DECIBEL_MILLIWATTS)).orElse(null), true);
+        handler.setState(CHANNEL_WLAN_SIGNAL, read(info, MowerInfo::getWlan).map(Wlan::getSignal)
+                .map(this::convertSignalStrength).map(DecimalType::new).orElse(null), true);
     }
 
     /**
@@ -417,12 +407,10 @@ final class RobonectMowerHandler {
      */
     private void updateMowerModeAndJob(@Nullable MowerMode mowerMode) {
         if (!handler.isAjaxUiScraping()) {
-            if (mowerMode != null) {
-                handler.setState(CHANNEL_STATUS_MODE, new StringType(mowerMode.name()));
-            }
-            handler.setState(CHANNEL_JOB, OnOffType.from(mowerApi.isJobRunning()));
-            handler.setState(CHANNEL_JOB_START, UnDefType.NULL);
-            handler.setState(CHANNEL_JOB_END, UnDefType.NULL);
+            handler.setState(CHANNEL_STATUS_MODE, mowerMode == null ? null : new StringType(mowerMode.name()), true);
+            handler.setState(CHANNEL_JOB, OnOffType.from(mowerApi.isJobRunning()), true);
+            handler.setState(CHANNEL_JOB_START, UnDefType.UNDEF, true);
+            handler.setState(CHANNEL_JOB_END, UnDefType.UNDEF, true);
             return;
         }
 
@@ -434,26 +422,24 @@ final class RobonectMowerHandler {
             String controlText = ajaxInfo.getControlMenuText();
             String timerText = ajaxInfo.getTimerMenuText();
             if (timerText != null && JOB_TIMER_LABELS.contains(timerText)) {
-                handler.setState(CHANNEL_JOB, OnOffType.ON);
+                handler.setState(CHANNEL_JOB, OnOffType.ON, true);
                 updateJobTimes(controlText);
             } else {
-                handler.setState(CHANNEL_JOB, OnOffType.OFF);
-                handler.setState(CHANNEL_JOB_START, UnDefType.NULL);
-                handler.setState(CHANNEL_JOB_END, UnDefType.NULL);
+                handler.setState(CHANNEL_JOB, timerText == null ? null : OnOffType.OFF, true);
+                handler.setState(CHANNEL_JOB_START, UnDefType.UNDEF, true);
+                handler.setState(CHANNEL_JOB_END, UnDefType.UNDEF, true);
             }
-            if (mowerMode != null) {
-                String mode = mowerMode == MowerMode.HOME && END_OF_DAY_LABELS.contains(controlText) ? "EOD"
-                        : mowerMode.name();
-                handler.setState(CHANNEL_STATUS_MODE, new StringType(mode));
-            }
+            handler.setState(CHANNEL_STATUS_MODE,
+                    mowerMode == null ? null
+                            : new StringType(mowerMode == MowerMode.HOME && controlText != null
+                                    && END_OF_DAY_LABELS.contains(controlText) ? "EOD" : mowerMode.name()),
+                    true);
         } catch (RobonectCommunicationException | JsonSyntaxException | IllegalArgumentException e) {
             logger.debug("Could not retrieve Robonect web-interface status. Falling back to the JSON API.", e);
-            if (mowerMode != null) {
-                handler.setState(CHANNEL_STATUS_MODE, new StringType(mowerMode.name()));
-            }
-            handler.setState(CHANNEL_JOB, OnOffType.from(mowerApi.isJobRunning()));
-            handler.setState(CHANNEL_JOB_START, UnDefType.NULL);
-            handler.setState(CHANNEL_JOB_END, UnDefType.NULL);
+            handler.setState(CHANNEL_STATUS_MODE, mowerMode == null ? null : new StringType(mowerMode.name()), true);
+            handler.setState(CHANNEL_JOB, OnOffType.from(mowerApi.isJobRunning()), true);
+            handler.setState(CHANNEL_JOB_START, UnDefType.UNDEF, true);
+            handler.setState(CHANNEL_JOB_END, UnDefType.UNDEF, true);
         }
     }
 
@@ -464,14 +450,14 @@ final class RobonectMowerHandler {
      */
     private void updateJobTimes(@Nullable String controlText) {
         if (controlText == null) {
-            handler.setState(CHANNEL_JOB_START, UnDefType.UNDEF);
-            handler.setState(CHANNEL_JOB_END, UnDefType.UNDEF);
+            handler.setState(CHANNEL_JOB_START, UnDefType.UNDEF, true);
+            handler.setState(CHANNEL_JOB_END, UnDefType.UNDEF, true);
             return;
         }
         Matcher matcher = JOB_TIME_PATTERN.matcher(controlText);
         if (!matcher.matches()) {
-            handler.setState(CHANNEL_JOB_START, UnDefType.UNDEF);
-            handler.setState(CHANNEL_JOB_END, UnDefType.UNDEF);
+            handler.setState(CHANNEL_JOB_START, UnDefType.UNDEF, true);
+            handler.setState(CHANNEL_JOB_END, UnDefType.UNDEF, true);
             return;
         }
         updateJobTime(CHANNEL_JOB_START, matcher.group(1));
@@ -486,28 +472,21 @@ final class RobonectMowerHandler {
      */
     private void updateJobTime(String channelId, @Nullable String value) {
         if (value == null) {
-            handler.setState(channelId, UnDefType.UNDEF);
+            handler.setState(channelId, UnDefType.UNDEF, true);
             return;
         }
         Matcher matcher = TIME_PATTERN.matcher(value);
         if (!matcher.matches()) {
-            handler.setState(channelId, UnDefType.UNDEF);
+            handler.setState(channelId, UnDefType.UNDEF, true);
             return;
         }
         int hours = Integer.parseInt(matcher.group(1));
         int minutes = Integer.parseInt(matcher.group(2));
         if (hours >= 24 || minutes >= 60) {
-            handler.setState(channelId, UnDefType.UNDEF);
+            handler.setState(channelId, UnDefType.UNDEF, true);
             return;
         }
-        handler.setState(channelId, handler.toTimeOnlyDateTime(LocalTime.of(hours, minutes)));
-    }
-
-    /** Clears the current-error channels when no error is reported. */
-    private void clearErrorInfo() {
-        handler.setState(CHANNEL_ERROR_DATE, UnDefType.UNDEF);
-        handler.setState(CHANNEL_ERROR_CODE, UnDefType.UNDEF);
-        handler.setState(CHANNEL_ERROR_MESSAGE, UnDefType.UNDEF);
+        handler.setState(channelId, handler.toTimeOnlyDateTime(LocalTime.of(hours, minutes)), true);
     }
 
     /**
@@ -534,26 +513,12 @@ final class RobonectMowerHandler {
      *
      * @param error the error information to publish
      */
-    private void updateErrorInfo(ErrorEntry error) {
-        if (error.getErrorMessage() != null) {
-            handler.setState(CHANNEL_ERROR_MESSAGE, new StringType(error.getErrorMessage()));
-        }
-        if (error.getErrorCode() != null) {
-            handler.setState(CHANNEL_ERROR_CODE, new DecimalType(error.getErrorCode().intValue()));
-        }
-        if (error.getDate() != null) {
-            State dateTime = handler.convertUnixToDateTimeType(error.getUnix());
-            handler.setState(CHANNEL_ERROR_DATE, dateTime);
-        }
-    }
-
-    /**
-     * Publishes the next scheduled timer using the configured time zone.
-     *
-     * @param info the mower response containing the next timer
-     */
-    private void updateNextTimer(MowerInfo info) {
-        State dateTime = handler.convertUnixToDateTimeType(info.getTimer().getNext().getUnix());
-        handler.setState(CHANNEL_TIMER_NEXT_TIMER, dateTime);
+    private void updateErrorInfo(@Nullable ErrorEntry error) {
+        handler.setState(CHANNEL_ERROR_MESSAGE,
+                read(error, ErrorEntry::getErrorMessage).map(StringType::new).orElse(null), true);
+        handler.setState(CHANNEL_ERROR_CODE, read(error, ErrorEntry::getErrorCode).map(DecimalType::new).orElse(null),
+                true);
+        handler.setState(CHANNEL_ERROR_DATE,
+                read(error, ErrorEntry::getUnix).map(handler::convertUnixToDateTimeType).orElse(null), true);
     }
 }

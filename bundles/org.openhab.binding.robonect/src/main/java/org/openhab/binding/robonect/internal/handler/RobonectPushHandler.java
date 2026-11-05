@@ -13,6 +13,7 @@
 package org.openhab.binding.robonect.internal.handler;
 
 import static org.openhab.binding.robonect.internal.RobonectBindingConstants.*;
+import static org.openhab.binding.robonect.internal.handler.RobonectHandler.read;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -73,13 +74,13 @@ final class RobonectPushHandler {
     void refreshExtensionInfo() {
         ExtInfo info = pushApi.getExtInfo();
         Extensions extensions = info.getExt();
-        if (!info.isSuccessful() || extensions == null) {
+        if (!info.isSuccessful()) {
             return;
         }
-        updateExtension("extension-gpio-1-", extensions.getGpio1());
-        updateExtension("extension-gpio-2-", extensions.getGpio2());
-        updateExtension("extension-output-1-", extensions.getOut1());
-        updateExtension("extension-output-2-", extensions.getOut2());
+        updateExtension("extension-gpio-1-", read(extensions, Extensions::getGpio1).orElse(null));
+        updateExtension("extension-gpio-2-", read(extensions, Extensions::getGpio2).orElse(null));
+        updateExtension("extension-output-1-", read(extensions, Extensions::getOut1).orElse(null));
+        updateExtension("extension-output-2-", read(extensions, Extensions::getOut2).orElse(null));
     }
 
     /** Updates non-sensitive push-service settings. */
@@ -93,7 +94,7 @@ final class RobonectPushHandler {
             return;
         }
         try {
-            applyPushMode(pushApi.getPushModeViaWebInterface());
+            applyPushMode(pushApi.getPushModeViaWebInterface(), true);
         } catch (RobonectCommunicationException e) {
             logger.debug("Could not retrieve push mode from the web interface: {}", e.getMessage());
         }
@@ -103,10 +104,11 @@ final class RobonectPushHandler {
      * Publishes the push mode, or an undefined state if unavailable, while the unofficial API is enabled.
      *
      * @param mode the push mode, or {@code null} if unavailable
+     * @param fullResponse whether an absent mode should be published as undefined
      */
-    private void applyPushMode(@Nullable Integer mode) {
+    private void applyPushMode(@Nullable Integer mode, boolean fullResponse) {
         if (handler.isUnofficialApiEnabled()) {
-            handler.setState(CHANNEL_PUSH_MODE, mode == null ? UnDefType.UNDEF : new DecimalType(mode));
+            handler.setState(CHANNEL_PUSH_MODE, mode == null ? null : new DecimalType(mode), fullResponse);
         }
     }
 
@@ -135,7 +137,7 @@ final class RobonectPushHandler {
             logger.debug("Ignoring invalid push mode {}", mode);
             return;
         }
-        applyPushMode(pushApi.updatePushModeViaWebInterface(mode));
+        applyPushMode(pushApi.updatePushModeViaWebInterface(mode), false);
     }
 
     /**
@@ -146,21 +148,17 @@ final class RobonectPushHandler {
      */
     private void applyPushInfo(PushInfo info, boolean fullResponse) {
         Push push = info.getPush();
-        if (!info.isSuccessful() || push == null) {
+        if (!info.isSuccessful()) {
             return;
         }
-        PushServer server = push.getServer();
-        if (server != null) {
-            handler.setState(CHANNEL_PUSH_URL,
-                    server.getUrl() != null ? new StringType(server.getUrl()) : UnDefType.NULL);
-            handler.setState(CHANNEL_PUSH_USERNAME,
-                    server.getName() != null ? new StringType(server.getName()) : UnDefType.NULL);
-        }
-        PushTriggers triggers = push.getTrigger();
+        handler.setState(CHANNEL_PUSH_URL,
+                read(push, Push::getServer).map(PushServer::getUrl).map(StringType::new).orElse(null), fullResponse);
+        handler.setState(CHANNEL_PUSH_USERNAME,
+                read(push, Push::getServer).map(PushServer::getName).map(StringType::new).orElse(null), fullResponse);
+        PushTriggers triggers = read(push, Push::getTrigger).orElse(null);
+        handler.setState(CHANNEL_PUSH_INTERVAL, read(triggers, PushTriggers::getInterval)
+                .map(value -> new QuantityType<>(value, Units.SECOND)).orElse(null), fullResponse);
         if (triggers != null) {
-            Integer interval = triggers.getInterval();
-            if (interval != null)
-                handler.setState(CHANNEL_PUSH_INTERVAL, new QuantityType<>(interval, Units.SECOND));
             List<Channel> channels = new ArrayList<>();
             Map<String, PushTriggers.Trigger> namedTriggers = getNamedPushTriggers(triggers);
             for (Map.Entry<String, PushTriggers.Trigger> entry : namedTriggers.entrySet().stream()
@@ -183,8 +181,10 @@ final class RobonectPushHandler {
             for (Map.Entry<String, PushTriggers.Trigger> entry : namedTriggers.entrySet()) {
                 String prefix = "push-trigger-" + entry.getKey() + "-";
                 PushTriggers.Trigger trigger = entry.getValue();
-                handler.updateSwitch(prefix + "enter", trigger.getEnter());
-                handler.updateSwitch(prefix + "leave", trigger.getLeave());
+                handler.setState(prefix + "enter",
+                        read(trigger, PushTriggers.Trigger::getEnter).map(OnOffType::from).orElse(null), fullResponse);
+                handler.setState(prefix + "leave",
+                        read(trigger, PushTriggers.Trigger::getLeave).map(OnOffType::from).orElse(null), fullResponse);
             }
         }
     }
@@ -254,7 +254,7 @@ final class RobonectPushHandler {
      */
     void handleCommand(String channelId, Command command) {
         if (channelId.equals(CHANNEL_PUSH_PASSWORD)) {
-            handler.setState(CHANNEL_PUSH_PASSWORD, UnDefType.UNDEF);
+            handler.setState(CHANNEL_PUSH_PASSWORD, UnDefType.UNDEF, false);
         }
         String parameter;
         String value;
@@ -313,11 +313,8 @@ final class RobonectPushHandler {
      * @param extension the extension information, or {@code null} if absent
      */
     private void updateExtension(String prefix, @Nullable Extension extension) {
-        if (extension == null) {
-            return;
-        }
-        handler.updateSwitch(prefix + "flash", extension.getFlashonerror());
-        handler.updateSwitch(prefix + "inverted", extension.getInverted());
-        handler.updateSwitch(prefix + "status", extension.getStatus());
+        handler.updateSwitch(prefix + "flash", read(extension, Extension::getFlashonerror).orElse(null));
+        handler.updateSwitch(prefix + "inverted", read(extension, Extension::getInverted).orElse(null));
+        handler.updateSwitch(prefix + "status", read(extension, Extension::getStatus).orElse(null));
     }
 }

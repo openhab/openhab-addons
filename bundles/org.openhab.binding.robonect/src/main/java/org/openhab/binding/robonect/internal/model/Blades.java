@@ -13,6 +13,7 @@
 package org.openhab.binding.robonect.internal.model;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * Blade information from the mower.
@@ -22,18 +23,18 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class Blades {
 
-    private int quality;
+    private @Nullable Integer quality;
 
-    private int hours;
+    private @Nullable Integer hours;
 
-    private int days;
+    private @Nullable Integer days;
 
     /**
      * Returns the quality of the blades in %.
      *
      * @return the quality of the blades in %.
      */
-    public int getQuality() {
+    public @Nullable Integer getQuality() {
         return quality;
     }
 
@@ -42,7 +43,7 @@ public class Blades {
      *
      * @return the number of hours the blades have been in use
      */
-    public int getHours() {
+    public @Nullable Integer getHours() {
         return hours;
     }
 
@@ -51,7 +52,7 @@ public class Blades {
      *
      * @return the number of days since the blades were last changed
      */
-    public int getDays() {
+    public @Nullable Integer getDays() {
         return days;
     }
 }
