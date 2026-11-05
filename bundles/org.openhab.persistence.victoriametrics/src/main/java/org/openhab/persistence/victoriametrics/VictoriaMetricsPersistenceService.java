@@ -17,7 +17,6 @@ import static org.openhab.persistence.victoriametrics.internal.VictoriaMetricsCo
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
-import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -50,7 +49,6 @@ import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.persistence.FilterCriteria;
 import org.openhab.core.persistence.HistoricItem;
-import org.openhab.core.persistence.ModifiablePersistenceService;
 import org.openhab.core.persistence.PersistenceItemInfo;
 import org.openhab.core.persistence.PersistenceService;
 import org.openhab.core.persistence.QueryablePersistenceService;
@@ -91,7 +89,7 @@ import org.slf4j.LoggerFactory;
         QueryablePersistenceService.class }, configurationPid = "org.openhab.victoriametrics", //
         property = Constants.SERVICE_PID + "=org.openhab.victoriametrics")
 @ConfigurableService(category = "persistence", label = "VictoriaMetrics Persistence Service", description_uri = VictoriaMetricsPersistenceService.CONFIG_URI)
-public class VictoriaMetricsPersistenceService implements ModifiablePersistenceService {
+public class VictoriaMetricsPersistenceService implements QueryablePersistenceService {
     public static final String SERVICE_NAME = "victoriametrics";
 
     private final Logger logger = LoggerFactory.getLogger(VictoriaMetricsPersistenceService.class);
@@ -196,21 +194,11 @@ public class VictoriaMetricsPersistenceService implements ModifiablePersistenceS
 
     @Override
     public void store(Item item, @Nullable String alias) {
-        store(item, ZonedDateTime.now(), item.getState(), alias);
-    }
-
-    @Override
-    public void store(Item item, ZonedDateTime date, State state) {
-        store(item, date, state, null);
-    }
-
-    @Override
-    public void store(Item item, ZonedDateTime date, State state, @Nullable String alias) {
         if (!serviceActivated) {
             logger.warn("VictoriaMetrics service not ready. Storing {} rejected.", item);
             return;
         }
-        convert(item, state, date.toInstant(), alias).thenAccept(point -> {
+        convert(item, item.getState(), Instant.now(), alias).thenAccept(point -> {
             if (point == null) {
                 logger.trace("Ignoring item {}, conversion to a VictoriaMetrics point failed.", item.getName());
                 return;
@@ -221,24 +209,6 @@ public class VictoriaMetricsPersistenceService implements ModifiablePersistenceS
                 logger.warn("Failed to queue {} for item {}", point, item);
             }
         });
-    }
-
-    @Override
-    public boolean remove(FilterCriteria filter) throws IllegalArgumentException {
-        if (serviceActivated && checkConnection()) {
-            if (filter.getItemName() == null) {
-                logger.warn("Item name is missing in filter {} when trying to remove data.", filter);
-                return false;
-            }
-            boolean removed = repository.remove(filter);
-            if (removed) {
-                stringStateLimiter.forget(Objects.requireNonNull(filter.getItemName()));
-            }
-            return removed;
-        } else {
-            logger.debug("Remove query {} ignored, VictoriaMetrics is not connected.", filter);
-            return false;
-        }
     }
 
     @Override

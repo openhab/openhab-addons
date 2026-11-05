@@ -111,16 +111,6 @@ public class VictoriaMetricsStringStateLimiter {
         }
     }
 
-    /**
-     * Forget the states of an item, e.g. after its data was removed
-     *
-     * @param itemName the item name or alias
-     */
-    public void forget(String itemName) {
-        knownStates.keySet().removeIf(key -> key.itemName().equals(itemName));
-        loggedLimitedSeries.removeIf(key -> key.itemName().equals(itemName));
-    }
-
     private record SeriesKey(String metricName, String itemName) {
     }
 }

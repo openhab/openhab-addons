@@ -132,7 +132,7 @@ public class VictoriaMetricsFilterCriteriaQueryCreator {
      * @param alias the item name or alias
      * @return the series selector
      */
-    public String createSeriesSelector(String alias) {
+    private String createSeriesSelector(String alias) {
         return "{" + LABEL_METRIC_NAME + "=\"" + metricNameResolver.getMetricName(alias) + "\"," + TAG_ITEM_NAME + "=\""
                 + VictoriaMetricsPoint.escapeLabelValue(alias) + "\"}";
     }

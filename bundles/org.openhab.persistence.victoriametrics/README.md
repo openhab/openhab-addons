@@ -48,8 +48,6 @@ Please check these VictoriaMetrics settings, as their defaults do not fit typica
 
 - `-retentionPeriod`: the default retention is 1 month, older data is deleted.
   Set it to the period you want to keep, e.g. `-retentionPeriod=10y`.
-- `-futureRetention`: samples with timestamps more than 2 days in the future are rejected.
-  Increase it if you persist forecasts (future states) further ahead.
 - `-dedup.minScrapeInterval`: if set, only one sample per interval is kept, so do not enable deduplication or keep the interval smaller than the time between state changes you need to keep.
 
 ## Configuration
@@ -269,9 +267,10 @@ If items are persisted only on change, use `last_over_time(MyItem[1d])` to draw 
 - String items are only persisted if enabled per item, with a limited number of distinct states, see [String States](#string-states).
   Image and Call items are not persisted.
 - Values are stored as 64-bit floating point numbers, so decimal values with more than 15 significant digits lose precision.
-- Removing persisted data (e.g. via the REST API) is only possible for all data of an item.
-  VictoriaMetrics can only delete complete series, so removing a time range or values filtered by state is rejected.
-  This also applies when openHAB replaces stored future states (forecasts): the old future states are not removed.
+- States are only stored with the current time.
+  Storing states with another timestamp (e.g. forecasts from time series, or `persist` with a timestamp in rules or the REST API) and removing persisted data are not supported.
+  VictoriaMetrics cannot replace a stored sample with a new value for the same timestamp, and can only delete complete series, so the replacement of stored states that openHAB expects is not possible.
+  To delete all data of an item, use the VictoriaMetrics API `/api/v1/admin/tsdb/delete_series`.
 - Queries load the matching raw samples of the requested time range from VictoriaMetrics and apply the state filter, ordering and paging in openHAB.
   Queries for the most recent states (e.g. restoring the state on startup) read increasing time windows backwards from the end of the time range until the requested states are found.
   Other queries over very large time ranges of frequently changing items require more memory than with other persistence services.

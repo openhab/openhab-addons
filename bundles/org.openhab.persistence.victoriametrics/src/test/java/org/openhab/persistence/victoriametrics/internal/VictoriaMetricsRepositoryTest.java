@@ -24,8 +24,6 @@ import java.math.BigDecimal;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -51,8 +49,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import org.openhab.core.items.MetadataRegistry;
-import org.openhab.core.library.types.DecimalType;
-import org.openhab.core.persistence.FilterCriteria;
 import org.openhab.persistence.victoriametrics.internal.VictoriaMetricsRepository.VictoriaMetricsRow;
 
 /**
@@ -211,33 +207,6 @@ public class VictoriaMetricsRepositoryTest {
     public void noAuthenticationByDefault() {
         createRepository().connect();
         verify(request, never()).header(eq(HttpHeader.AUTHORIZATION), any());
-    }
-
-    @Test
-    public void removeDeletesSeriesOfItem() {
-        VictoriaMetricsRepository repository = createRepository();
-        assertThat(repository.remove(new FilterCriteria().setItemName("MyItem")), is(true));
-
-        verify(httpClient).newRequest("http://localhost:8428/api/v1/admin/tsdb/delete_series");
-        verify(request).method(HttpMethod.POST);
-        verify(request).param("match[]", "{__name__=\"MyItem\",item=\"MyItem\"}");
-    }
-
-    @Test
-    public void removeWithTimeRangeOrStateIsRejected() {
-        VictoriaMetricsRepository repository = createRepository();
-
-        assertThat(
-                repository.remove(
-                        new FilterCriteria().setItemName("MyItem").setBeginDate(ZonedDateTime.now(ZoneOffset.UTC))),
-                is(false));
-        assertThat(
-                repository.remove(
-                        new FilterCriteria().setItemName("MyItem").setEndDate(ZonedDateTime.now(ZoneOffset.UTC))),
-                is(false));
-        assertThat(repository.remove(new FilterCriteria().setItemName("MyItem").setState(new DecimalType(1))),
-                is(false));
-        verifyNoInteractions(httpClient);
     }
 
     @Test

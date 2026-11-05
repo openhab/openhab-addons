@@ -62,8 +62,7 @@ import com.google.gson.JsonParser;
  *
  * @author Joan Pujol Espinar - Initial contribution
  * @author Franz - Initial VictoriaMetrics adaptation
- * @author Michael Weger - Use Jetty, query raw samples, restrict remove to whole series, join state components,
- *         read string states
+ * @author Michael Weger - Use Jetty, query raw samples, join state components, read string states
  */
 @NonNullByDefault
 public class VictoriaMetricsRepository {
@@ -155,42 +154,6 @@ public class VictoriaMetricsRepository {
             Thread.currentThread().interrupt();
         } catch (TimeoutException | ExecutionException e) {
             logger.debug("Writing to database failed: {}", e.getMessage());
-        }
-        return false;
-    }
-
-    /**
-     * Delete all samples of an item
-     * <p>
-     * The VictoriaMetrics delete API can only delete complete series, so filters with a time range or state are
-     * rejected instead of deleting more data than requested.
-     *
-     * @param filter the query filter
-     * @return <code>true</code> if query executed successfully, <code>false</code> otherwise
-     */
-    public boolean remove(FilterCriteria filter) {
-        String itemName = filter.getItemName();
-        if (itemName == null) {
-            return false;
-        }
-        if (filter.getBeginDate() != null || filter.getEndDate() != null || filter.getState() != null) {
-            logger.warn(
-                    "VictoriaMetrics can only delete all data of an item, removing by time range or state is not supported: {}",
-                    filter);
-            return false;
-        }
-        try {
-            ContentResponse response = newRequest(PATH_DELETE_SERIES).method(HttpMethod.POST)
-                    .param("match[]", queryCreator.createSeriesSelector(itemName)).send();
-            if (HttpStatus.isSuccess(response.getStatus())) {
-                return true;
-            }
-            logger.warn("Deleting from database failed with HTTP status {}: {}", response.getStatus(),
-                    response.getContentAsString());
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        } catch (TimeoutException | ExecutionException e) {
-            logger.debug("Deleting from database failed: {}", e.getMessage());
         }
         return false;
     }
