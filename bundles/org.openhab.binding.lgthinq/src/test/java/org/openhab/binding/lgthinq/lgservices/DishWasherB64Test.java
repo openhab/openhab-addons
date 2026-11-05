@@ -15,7 +15,9 @@ package org.openhab.binding.lgthinq.lgservices;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
+import java.util.Base64;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -40,7 +42,7 @@ import org.openhab.binding.lgthinq.lgservices.model.devices.dishwasher.DishWashe
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
- * Test class to validate DishWasher B64 monitoring data fix.
+ * Validates that Base64-encoded monitoring data is decoded according to the device's monitoring format.
  *
  * @author Nemer Daud - Initial contribution
  */
@@ -63,29 +65,56 @@ class DishWasherB64Test {
     }
 
     @Test
-    void testDishWasherB64InV2() throws LGThinqApiException, IOException,
+    void testB64EncodedBinaryPayloadUsesBinaryDecoder() throws LGThinqApiException, IOException,
             org.openhab.binding.lgthinq.lgservices.errors.LGThinqDeviceV1MonitorExpiredException,
             org.openhab.binding.lgthinq.lgservices.errors.LGThinqUnmarshallException {
-        DishWasherCapability cap = new DishWasherCapability();
-        cap.setDeviceType(DeviceTypes.DISH_WASHER);
-        cap.setDeviceVersion(LGAPIVerion.V2_0);
-        // Initially force JSON format as it was before the fix
-        cap.setMonitoringDataFormat(MonitoringResultFormat.JSON_FORMAT);
-
-        Map<String, Object> workList = new HashMap<>();
-        workList.put("deviceId", "test-dw");
-        workList.put("deviceState", "E");
-        workList.put("format", "B64");
-        workList.put("returnCode", "0000");
+        DishWasherCapability cap = createCapability(MonitoringResultFormat.BINARY_FORMAT);
         // "AAAAAwoAAAMKAABwAAMAAAAAAAAAAAAB" is the data from the issue
-        workList.put("returnData", "AAAAAwoAAAMKAABwAAMAAAAAAAAAAAAB");
+        Map<String, Object> workList = createWorkList("AAAAAwoAAAMKAABwAAMAAAAAAAAAAAAB");
 
         DishWasherSnapshot shot = Objects.requireNonNull(service).getMonitorData("test-dw", DeviceTypes.DISH_WASHER,
                 cap, workList);
 
         assertNotNull(shot);
         assertTrue(shot.isOnline());
-        // If it reached here without JsonParseException, the fix in LGThinQAbstractApiClientService worked.
+    }
+
+    @Test
+    void testB64EncodedJsonPayloadKeepsJsonMonitoringFormat() throws LGThinqApiException, IOException,
+            org.openhab.binding.lgthinq.lgservices.errors.LGThinqDeviceV1MonitorExpiredException,
+            org.openhab.binding.lgthinq.lgservices.errors.LGThinqUnmarshallException {
+        DishWasherCapability cap = createCapability(MonitoringResultFormat.JSON_FORMAT);
+        String json = "{\"dishwasher\":{\"state\":\"RUNNING\",\"process\":\"MAIN_WASH\",\"course\":\"AUTO\"}}";
+        Map<String, Object> workList = createWorkList(
+                Objects.requireNonNull(Base64.getEncoder().encodeToString(json.getBytes(StandardCharsets.UTF_8))));
+
+        DishWasherSnapshot shot = Objects.requireNonNull(service).getMonitorData("test-dw", DeviceTypes.DISH_WASHER,
+                cap, workList);
+
+        assertNotNull(shot);
+        assertTrue(shot.isOnline());
+        assertEquals("RUNNING", shot.getState());
+        assertEquals("MAIN_WASH", shot.getProcessState());
+        assertEquals("AUTO", shot.getCourse());
+    }
+
+    private static DishWasherCapability createCapability(MonitoringResultFormat format) {
+        DishWasherCapability cap = new DishWasherCapability();
+        cap.setDeviceType(DeviceTypes.DISH_WASHER);
+        cap.setDeviceVersion(LGAPIVerion.V2_0);
+        cap.setMonitoringDataFormat(format);
+        return cap;
+    }
+
+    private static Map<String, Object> createWorkList(String returnData) {
+        Map<String, Object> workList = new HashMap<>();
+        workList.put("deviceId", "test-dw");
+        workList.put("deviceState", "E");
+        // "B64" only describes the encoding of returnData, not the format of the decoded payload
+        workList.put("format", "B64");
+        workList.put("returnCode", "0000");
+        workList.put("returnData", returnData);
+        return workList;
     }
 
     private static class DishWasherTestService

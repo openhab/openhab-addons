@@ -33,7 +33,7 @@ public enum MonitoringResultFormat {
 
     public static MonitoringResultFormat getFormatOf(String formatValue) {
         return switch (formatValue.toUpperCase()) {
-            case "BINARY(BYTE)", "B64" -> BINARY_FORMAT;
+            case "BINARY(BYTE)" -> BINARY_FORMAT;
             case "JSON" -> JSON_FORMAT;
             default -> UNKNOWN_FORMAT;
         };

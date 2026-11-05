@@ -409,12 +409,9 @@ public abstract class LGThinQAbstractApiClientService<C extends CapabilityDefini
             }
 
             String monDataB64 = (String) workList.get("returnData");
-            String format = (String) workList.get("format");
-            String formatStr = format != null ? format : "";
-            MonitoringResultFormat resultFormat = MonitoringResultFormat.getFormatOf(formatStr);
-            if (resultFormat == MonitoringResultFormat.UNKNOWN_FORMAT) {
-                resultFormat = deviceCapability.getMonitoringDataFormat();
-            }
+            // The "format" field of the work list ("B64") only describes how returnData is encoded. Whether the
+            // decoded payload is JSON or packed bytes is defined by the device model's monitoring type.
+            MonitoringResultFormat resultFormat = deviceCapability.getMonitoringDataFormat();
 
             byte[] monData = Base64.getDecoder().decode(monDataB64);
             S shot;
