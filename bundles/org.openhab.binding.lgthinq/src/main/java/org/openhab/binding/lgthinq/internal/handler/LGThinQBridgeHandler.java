@@ -33,7 +33,6 @@ import org.openhab.binding.lgthinq.internal.LGThinQBridgeConfiguration;
 import org.openhab.binding.lgthinq.internal.discovery.LGThinqDiscoveryService;
 import org.openhab.binding.lgthinq.lgservices.LGThinQApiClientServiceFactory;
 import org.openhab.binding.lgthinq.lgservices.LGThinQApiClientServiceFactory.LGThinQGeneralApiClientService;
-import org.openhab.binding.lgthinq.lgservices.api.RestUtils;
 import org.openhab.binding.lgthinq.lgservices.api.TokenManager;
 import org.openhab.binding.lgthinq.lgservices.errors.LGThinqException;
 import org.openhab.binding.lgthinq.lgservices.errors.RefreshTokenException;
@@ -164,7 +163,6 @@ public class LGThinQBridgeHandler extends ConfigStatusBridgeHandler implements L
             devicePollingJob.cancel(true);
             this.devicePollingJob = null;
         }
-        RestUtils.stopTlsFallbackClient();
     }
 
     @Override

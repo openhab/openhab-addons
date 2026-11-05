@@ -71,8 +71,14 @@ public class RestUtils {
 
     private static final String[] TLS_FALLBACK_EXCLUDE_CIPHERS = new String[] { ".*_DHE_.*", ".*_DSS_.*" };
 
+    /**
+     * The fallback client is shared by all bridges and is owned by the binding's handler factory: it may only be
+     * created between {@link #enableTlsFallback()} and {@link #disableTlsFallback()}. Both fields are guarded by
+     * {@link #TLS_FALLBACK_LOCK}.
+     */
     private static final Object TLS_FALLBACK_LOCK = new Object();
-    private static volatile @Nullable HttpClient tlsFallbackClient;
+    private static @Nullable HttpClient tlsFallbackClient;
+    private static boolean tlsFallbackEnabled;
 
     // ---------------- Existing crypto helpers ----------------
 
@@ -296,17 +302,14 @@ public class RestUtils {
     }
 
     private static HttpClient getTlsFallbackHttpClient() throws Exception {
-        @Nullable
-        HttpClient existing = tlsFallbackClient;
-        if (existing != null) {
-            return existing;
-        }
-
         synchronized (TLS_FALLBACK_LOCK) {
+            if (!tlsFallbackEnabled) {
+                throw new IllegalStateException("TLS fallback HttpClient is not available while the binding is down");
+            }
             @Nullable
-            HttpClient again = tlsFallbackClient;
-            if (again != null) {
-                return again;
+            HttpClient existing = tlsFallbackClient;
+            if (existing != null) {
+                return existing;
             }
 
             SslContextFactory.Client ssl = new SslContextFactory.Client();
@@ -335,11 +338,25 @@ public class RestUtils {
     }
 
     /**
-     * Stops the TLS fallback client. Called when the bridge is disposed.
+     * Allows the TLS fallback client to be created on demand. Called when the handler factory is activated.
      */
-    public static void stopTlsFallbackClient() {
-        HttpClient c = tlsFallbackClient;
-        tlsFallbackClient = null;
+    public static void enableTlsFallback() {
+        synchronized (TLS_FALLBACK_LOCK) {
+            tlsFallbackEnabled = true;
+        }
+    }
+
+    /**
+     * Stops the TLS fallback client and prevents it from being created again until {@link #enableTlsFallback()} is
+     * called. Called when the handler factory is deactivated, after all bridges have been disposed.
+     */
+    public static void disableTlsFallback() {
+        HttpClient c;
+        synchronized (TLS_FALLBACK_LOCK) {
+            tlsFallbackEnabled = false;
+            c = tlsFallbackClient;
+            tlsFallbackClient = null;
+        }
         if (c != null) {
             try {
                 c.stop();
