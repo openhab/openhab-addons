@@ -5,15 +5,6 @@
 
 	<thing-type uid="robonect:mower">
 		<instruction-set targetVersion="1">
-			<add-channel id="door-enabled">
-				<type>robonect:doorSwitchType</type>
-			</add-channel>
-			<add-channel id="door-state">
-				<type>robonect:doorStateType</type>
-			</add-channel>
-			<add-channel id="door-arrested">
-				<type>robonect:doorSwitchType</type>
-			</add-channel>
 			<add-channel id="blades-quality">
 				<type>robonect:blades-quality</type>
 			</add-channel>
@@ -30,47 +21,47 @@
 				<label>Mower Name</label>
 				<description>Name displayed for the mower in Robonect. Accepts a new name as a command.</description>
 			</update-channel>
-			<update-channel id="id">
+			<add-channel id="id">
 				<type>robonect:readOnlyStringType</type>
 				<label>Mower ID</label>
 				<description>Identifier reported by the mower.</description>
-			</update-channel>
-			<update-channel id="timestamp">
+			</add-channel>
+			<add-channel id="timestamp">
 				<type>robonect:dateTimeType</type>
 				<label>Mower Time</label>
 				<description>Current date and time reported by the Robonect clock.</description>
-			</update-channel>
-			<update-channel id="service-reboot">
+			</add-channel>
+			<add-channel id="service-reboot">
 				<type>robonect:switchCommandType</type>
 				<label>Reboot Robonect</label>
 				<description>Send ON to restart the Robonect module. The WLAN connection is interrupted during the restart.</description>
-			</update-channel>
-			<update-channel id="service-shutdown">
+			</add-channel>
+			<add-channel id="service-shutdown">
 				<type>robonect:switchCommandType</type>
 				<label>Shut Down Robonect</label>
 				<description>Send ON to shut down the Robonect module.</description>
-			</update-channel>
-			<update-channel id="service-sleep">
+			</add-channel>
+			<add-channel id="service-sleep">
 				<type>robonect:switchCommandType</type>
 				<label>Put Robonect to Sleep</label>
 				<description>Send ON to put the Robonect module into standby.</description>
-			</update-channel>
-			<update-channel id="door-enabled">
+			</add-channel>
+			<add-channel id="door-enabled">
 				<type>robonect:doorSwitchType</type>
 				<label>Garage Door Enabled</label>
 				<description>Whether the optional garage-door system is enabled.</description>
-			</update-channel>
-			<update-channel id="door-state">
+			</add-channel>
+			<add-channel id="door-state">
 				<type>robonect:doorStateType</type>
 				<label>Garage Door Position</label>
 				<description>Position of the optional garage door: 0% open, 100% closed, 75% opening, and 25% closing. UP opens,
 					DOWN closes, and STOP releases the door.</description>
-			</update-channel>
-			<update-channel id="door-arrested">
+			</add-channel>
+			<add-channel id="door-arrested">
 				<type>robonect:doorSwitchType</type>
 				<label>Garage Door Arrested</label>
 				<description>Whether the optional garage-door system reports that the door is arrested.</description>
-			</update-channel>
+			</add-channel>
 			<update-channel id="battery">
 				<type>robonect:batteryLevelType</type>
 				<label>Mower Battery Level</label>
@@ -83,414 +74,382 @@
 			<update-channel id="wlan-signal">
 				<type>system:signal-strength</type>
 				<label>WLAN Signal Quality</label>
-				<description>Home-network signal quality, converted to a scale from 0 (weakest) to 4 (strongest).</description>
+				<description>WLAN signal quality, converted to a scale from 0 (weakest) to 4 (strongest).</description>
 				<tags>
 					<tag>Measurement</tag>
 					<tag>SignalStrength</tag>
 				</tags>
 			</update-channel>
-			<update-channel id="wlan-signal-strength">
+			<add-channel id="wlan-signal-strength">
 				<type>robonect:wlanStrengthType</type>
 				<label>WLAN Signal Strength</label>
-				<description>Received home-network signal strength in dBm.</description>
-			</update-channel>
-			<update-channel id="wlan-enabled">
+				<description>Received WLAN signal strength in dBm.</description>
+			</add-channel>
+			<add-channel id="wlan-enabled">
 				<type>robonect:readOnlySwitchType</type>
-				<label>Home WLAN Enabled</label>
-				<description>Whether Robonect is configured to connect to the home WLAN.</description>
-			</update-channel>
-			<update-channel id="wlan-ssid">
+				<label>WLAN Enabled</label>
+				<description>Whether Robonect is configured to connect to the WLAN.</description>
+			</add-channel>
+			<add-channel id="wlan-ssid">
 				<type>robonect:readOnlyStringType</type>
-				<label>Home WLAN SSID</label>
-				<description>Network name of the home WLAN configured in Robonect.</description>
-			</update-channel>
-			<update-channel id="wlan-ip">
+				<label>WLAN SSID</label>
+				<description>Network name of the WLAN configured in Robonect.</description>
+			</add-channel>
+			<add-channel id="wlan-ip">
 				<type>robonect:readOnlyStringType</type>
-				<label>Home WLAN IP Address</label>
-				<description>IP address of the Robonect home-network interface.</description>
-			</update-channel>
-			<update-channel id="wlan-mac">
+				<label>WLAN IP Address</label>
+				<description>IP address of the Robonect WLAN interface.</description>
+			</add-channel>
+			<add-channel id="wlan-mac">
 				<type>robonect:readOnlyStringType</type>
-				<label>Home WLAN MAC Address</label>
-				<description>MAC address of the Robonect home-network interface.</description>
-			</update-channel>
-			<update-channel id="wlan-dhcp">
+				<label>WLAN MAC Address</label>
+				<description>MAC address of the Robonect WLAN interface.</description>
+			</add-channel>
+			<add-channel id="wlan-dhcp">
 				<type>robonect:readOnlySwitchType</type>
-				<label>Home WLAN DHCP Client</label>
-				<description>Whether the home-network interface obtains its IP configuration through DHCP.</description>
-			</update-channel>
-			<update-channel id="wlan-ping">
+				<label>WLAN DHCP Client</label>
+				<description>Whether the WLAN interface obtains its IP configuration through DHCP.</description>
+			</add-channel>
+			<add-channel id="wlan-ping">
 				<type>robonect:readOnlySwitchType</type>
 				<label>Gateway Ping Monitoring</label>
 				<description>Whether gateway connection monitoring is enabled. Robonect pings the gateway every 30 seconds and
 					reconnects the WLAN after three consecutive missed replies.</description>
-			</update-channel>
-			<update-channel id="wlan-ping-time">
+			</add-channel>
+			<add-channel id="wlan-ping-time">
 				<type>robonect:readOnlyStringType</type>
 				<label>Gateway Ping Time</label>
 				<description>Gateway ping response time as text, including the unit supplied by Robonect.</description>
-			</update-channel>
-			<update-channel id="wlan-netmask">
+			</add-channel>
+			<add-channel id="wlan-netmask">
 				<type>robonect:readOnlyStringType</type>
-				<label>Home WLAN Netmask</label>
-				<description>Subnet mask of the Robonect home-network interface.</description>
-			</update-channel>
-			<update-channel id="wlan-gateway">
+				<label>WLAN Netmask</label>
+				<description>Subnet mask of the Robonect WLAN interface.</description>
+			</add-channel>
+			<add-channel id="wlan-gateway">
 				<type>robonect:readOnlyStringType</type>
-				<label>Home WLAN Gateway</label>
-				<description>Gateway address used by the Robonect home-network interface.</description>
-			</update-channel>
-			<update-channel id="wlan-ap-enabled">
+				<label>WLAN Gateway</label>
+				<description>Gateway address used by the Robonect WLAN interface.</description>
+			</add-channel>
+			<add-channel id="wlan-ap-enabled">
 				<type>robonect:readOnlySwitchType</type>
 				<label>Access Point Enabled</label>
 				<description>Whether the Robonect access point is enabled.</description>
-			</update-channel>
-			<update-channel id="wlan-ap-ssid">
+			</add-channel>
+			<add-channel id="wlan-ap-ssid">
 				<type>robonect:readOnlyStringType</type>
 				<label>Access Point SSID</label>
 				<description>Network name broadcast by the Robonect access point.</description>
-			</update-channel>
-			<update-channel id="wlan-ap-mac">
+			</add-channel>
+			<add-channel id="wlan-ap-mac">
 				<type>robonect:readOnlyStringType</type>
 				<label>Access Point MAC Address</label>
 				<description>MAC address of the Robonect access-point interface.</description>
-			</update-channel>
-			<update-channel id="wlan-ap-hidden">
+			</add-channel>
+			<add-channel id="wlan-ap-hidden">
 				<type>robonect:readOnlySwitchType</type>
 				<label>Access Point Hidden</label>
 				<description>Whether the access-point network name is hidden from WLAN scans.</description>
-			</update-channel>
-			<update-channel id="wlan-ap-channel">
+			</add-channel>
+			<add-channel id="wlan-ap-channel">
 				<type>robonect:readOnlyNumberType</type>
 				<label>Access Point Radio Channel</label>
 				<description>Radio channel configured for the access point. The setting applies only while Robonect is not connected
-					to a home WLAN.</description>
-			</update-channel>
-			<update-channel id="wlan-ap-encryption">
+					to a WLAN.</description>
+			</add-channel>
+			<add-channel id="wlan-ap-encryption">
 				<type>robonect:readOnlyStringType</type>
 				<label>Access Point Encryption</label>
 				<description>Authentication and encryption mode reported for the access point.</description>
-			</update-channel>
-			<update-channel id="wlan-ap-max-connections">
+			</add-channel>
+			<add-channel id="wlan-ap-max-connections">
 				<type>robonect:readOnlyNumberType</type>
 				<label>Access Point Client Limit</label>
 				<description>Maximum number of clients allowed to connect to the access point.</description>
-			</update-channel>
-			<update-channel id="wlan-ap-ip">
+			</add-channel>
+			<add-channel id="wlan-ap-ip">
 				<type>robonect:readOnlyStringType</type>
 				<label>Access Point IP Address</label>
 				<description>IP address of the Robonect access-point interface.</description>
-			</update-channel>
-			<update-channel id="wlan-ap-netmask">
+			</add-channel>
+			<add-channel id="wlan-ap-netmask">
 				<type>robonect:readOnlyStringType</type>
 				<label>Access Point Netmask</label>
 				<description>Subnet mask of the Robonect access-point interface.</description>
-			</update-channel>
-			<update-channel id="wlan-ap-gateway">
+			</add-channel>
+			<add-channel id="wlan-ap-gateway">
 				<type>robonect:readOnlyStringType</type>
 				<label>Access Point Gateway</label>
 				<description>Gateway address configured for the Robonect access-point interface.</description>
-			</update-channel>
-			<update-channel id="wlan-ap-dhcp">
+			</add-channel>
+			<add-channel id="wlan-ap-dhcp">
 				<type>robonect:readOnlySwitchType</type>
 				<label>Access Point DHCP Server</label>
 				<description>Whether the access point assigns IP addresses to connected clients through DHCP.</description>
-			</update-channel>
-			<update-channel id="wlan-ap-dhcp-start">
+			</add-channel>
+			<add-channel id="wlan-ap-dhcp-start">
 				<type>robonect:readOnlyStringType</type>
 				<label>Access Point DHCP Range Start</label>
 				<description>First IP address in the access-point DHCP address pool.</description>
-			</update-channel>
-			<update-channel id="wlan-ap-dhcp-end">
+			</add-channel>
+			<add-channel id="wlan-ap-dhcp-end">
 				<type>robonect:readOnlyStringType</type>
 				<label>Access Point DHCP Range End</label>
 				<description>Last IP address in the access-point DHCP address pool.</description>
-			</update-channel>
-			<update-channel id="battery-id">
-				<type>robonect:batteryIdType</type>
-				<label>First Battery ID</label>
-			</update-channel>
-			<update-channel id="battery-charge">
-				<type>robonect:batteryChargeType</type>
-				<label>First Battery Charge</label>
-				<tags>
-					<tag>Measurement</tag>
-					<tag>Energy</tag>
-				</tags>
-			</update-channel>
-			<update-channel id="battery-voltage">
-				<type>robonect:batteryVoltageType</type>
-				<label>First Battery Voltage</label>
-			</update-channel>
-			<update-channel id="battery-current">
-				<type>robonect:batteryCurrentType</type>
-				<label>First Battery Current</label>
-			</update-channel>
-			<update-channel id="battery-temperature">
-				<type>robonect:batteryTemperatureType</type>
-				<label>First Battery Temperature</label>
-			</update-channel>
-			<update-channel id="battery-capacity">
-				<type>robonect:batteryCapacityType</type>
-				<label>First Battery Full Capacity</label>
-			</update-channel>
-			<update-channel id="battery-remaining-capacity">
-				<type>robonect:batteryRemainingCapacityType</type>
-				<label>First Battery Remaining Capacity</label>
-			</update-channel>
-			<update-channel id="left-drive-power">
+			</add-channel>
+			<add-channel id="left-drive-power">
 				<type>robonect:driveMotorPowerType</type>
 				<label>Left Drive Power Level</label>
-			</update-channel>
-			<update-channel id="left-drive-speed">
+			</add-channel>
+			<add-channel id="left-drive-speed">
 				<type>robonect:driveMotorSpeedType</type>
 				<label>Left Drive Speed</label>
-			</update-channel>
-			<update-channel id="left-drive-current">
+			</add-channel>
+			<add-channel id="left-drive-current">
 				<type>robonect:driveMotorCurrentType</type>
 				<label>Left Drive Current</label>
-			</update-channel>
-			<update-channel id="right-drive-power">
+			</add-channel>
+			<add-channel id="right-drive-power">
 				<type>robonect:driveMotorPowerType</type>
 				<label>Right Drive Power Level</label>
-			</update-channel>
-			<update-channel id="right-drive-speed">
+			</add-channel>
+			<add-channel id="right-drive-speed">
 				<type>robonect:driveMotorSpeedType</type>
 				<label>Right Drive Speed</label>
-			</update-channel>
-			<update-channel id="right-drive-current">
+			</add-channel>
+			<add-channel id="right-drive-current">
 				<type>robonect:driveMotorCurrentType</type>
 				<label>Right Drive Current</label>
-			</update-channel>
-			<update-channel id="blade-motor-average">
+			</add-channel>
+			<add-channel id="blade-motor-average">
 				<type>robonect:readOnlyNumberAdvancedType</type>
 				<label>Blade Motor Average</label>
 				<description>Unscaled average diagnostic value reported for the blade motor.</description>
-			</update-channel>
-			<update-channel id="blade-motor-speed">
+			</add-channel>
+			<add-channel id="blade-motor-speed">
 				<type>robonect:bladeMotorSpeedType</type>
 				<label>Blade Motor Speed</label>
 				<description>Rotational speed of the blade motor.</description>
-			</update-channel>
-			<update-channel id="blade-motor-current">
+			</add-channel>
+			<add-channel id="blade-motor-current">
 				<type>robonect:driveMotorCurrentType</type>
 				<label>Blade Motor Current</label>
 				<description>Electric current drawn by the blade motor.</description>
-			</update-channel>
-			<update-channel id="statistics-running-hours">
+			</add-channel>
+			<add-channel id="statistics-running-hours">
 				<type>robonect:statisticsHoursAdvancedType</type>
 				<label>Total Running Time</label>
 				<description>Total mower running time.</description>
-			</update-channel>
-			<update-channel id="statistics-mowing-hours">
+			</add-channel>
+			<add-channel id="statistics-mowing-hours">
 				<type>robonect:statisticsHoursAdvancedType</type>
 				<label>Total Mowing Time</label>
 				<description>Total time spent mowing.</description>
-			</update-channel>
-			<update-channel id="statistics-searching-hours">
+			</add-channel>
+			<add-channel id="statistics-searching-hours">
 				<type>robonect:statisticsHoursAdvancedType</type>
 				<label>Total Charging-Station Search Time</label>
 				<description>Total time spent searching for the charging station.</description>
-			</update-channel>
-			<update-channel id="statistics-charging-hours">
+			</add-channel>
+			<add-channel id="statistics-charging-hours">
 				<type>robonect:statisticsHoursAdvancedType</type>
 				<label>Total Charging Time</label>
 				<description>Total time spent charging.</description>
-			</update-channel>
-			<update-channel id="statistics-charges">
+			</add-channel>
+			<add-channel id="statistics-charges">
 				<type>robonect:readOnlyNumberAdvancedType</type>
 				<label>Full Charge Count</label>
 				<description>Number of full battery charges.</description>
-			</update-channel>
-			<update-channel id="statistics-errors">
+			</add-channel>
+			<add-channel id="statistics-errors">
 				<type>robonect:readOnlyNumberAdvancedType</type>
 				<label>Recorded Error Count</label>
 				<description>Number of errors recorded by the mower.</description>
-			</update-channel>
-			<update-channel id="statistics-seek">
+			</add-channel>
+			<add-channel id="statistics-seek">
 				<type>robonect:statisticsDurationsType</type>
 				<label>Recent Charging-Station Search Durations</label>
-			</update-channel>
-			<update-channel id="statistics-seek-min">
+			</add-channel>
+			<add-channel id="statistics-seek-min">
 				<type>robonect:statisticsDurationAdvancedType</type>
 				<label>Minimum Charging-Station Search Duration</label>
-			</update-channel>
-			<update-channel id="statistics-seek-max">
+			</add-channel>
+			<add-channel id="statistics-seek-max">
 				<type>robonect:statisticsDurationAdvancedType</type>
 				<label>Maximum Charging-Station Search Duration</label>
-			</update-channel>
-			<update-channel id="statistics-seek-average">
+			</add-channel>
+			<add-channel id="statistics-seek-average">
 				<type>robonect:statisticsDurationAdvancedType</type>
 				<label>Average Charging-Station Search Duration</label>
-			</update-channel>
-			<update-channel id="statistics-mowing">
+			</add-channel>
+			<add-channel id="statistics-mowing">
 				<type>robonect:statisticsDurationsType</type>
 				<label>Recent Mowing Durations</label>
-			</update-channel>
-			<update-channel id="statistics-mowing-min">
+			</add-channel>
+			<add-channel id="statistics-mowing-min">
 				<type>robonect:statisticsDurationAdvancedType</type>
 				<label>Minimum Mowing Duration</label>
-			</update-channel>
-			<update-channel id="statistics-mowing-max">
+			</add-channel>
+			<add-channel id="statistics-mowing-max">
 				<type>robonect:statisticsDurationAdvancedType</type>
 				<label>Maximum Mowing Duration</label>
-			</update-channel>
-			<update-channel id="statistics-mowing-average">
+			</add-channel>
+			<add-channel id="statistics-mowing-average">
 				<type>robonect:statisticsDurationAdvancedType</type>
 				<label>Average Mowing Duration</label>
-			</update-channel>
-			<update-channel id="remote-1-name">
+			</add-channel>
+			<add-channel id="remote-1-name">
 				<type>robonect:remoteNameType</type>
 				<label>Remote Start 1 Name</label>
-			</update-channel>
-			<update-channel id="remote-1-visible">
+			</add-channel>
+			<add-channel id="remote-1-visible">
 				<type>robonect:remoteVisibleType</type>
 				<label>Remote Start 1 Visible</label>
-			</update-channel>
-			<update-channel id="remote-1-path">
+			</add-channel>
+			<add-channel id="remote-1-path">
 				<type>robonect:remotePathType</type>
 				<label>Remote Start 1 Route</label>
-			</update-channel>
-			<update-channel id="remote-1-proportion">
+			</add-channel>
+			<add-channel id="remote-1-proportion">
 				<type>robonect:remoteProportionType</type>
 				<label>Remote Start 1 Selection Frequency</label>
-			</update-channel>
-			<update-channel id="remote-1-distance">
+			</add-channel>
+			<add-channel id="remote-1-distance">
 				<type>robonect:remoteDistanceType</type>
 				<label>Remote Start 1 Distance</label>
-			</update-channel>
-			<update-channel id="remote-1-corridor-cut">
+			</add-channel>
+			<add-channel id="remote-1-corridor-cut">
 				<type>robonect:remoteCorridorCutType</type>
 				<label>Remote Start 1 CorridorCut</label>
-			</update-channel>
-			<update-channel id="remote-2-name">
+			</add-channel>
+			<add-channel id="remote-2-name">
 				<type>robonect:remoteNameType</type>
 				<label>Remote Start 2 Name</label>
-			</update-channel>
-			<update-channel id="remote-2-visible">
+			</add-channel>
+			<add-channel id="remote-2-visible">
 				<type>robonect:remoteVisibleType</type>
 				<label>Remote Start 2 Visible</label>
-			</update-channel>
-			<update-channel id="remote-2-path">
+			</add-channel>
+			<add-channel id="remote-2-path">
 				<type>robonect:remotePathType</type>
 				<label>Remote Start 2 Route</label>
-			</update-channel>
-			<update-channel id="remote-2-proportion">
+			</add-channel>
+			<add-channel id="remote-2-proportion">
 				<type>robonect:remoteProportionType</type>
 				<label>Remote Start 2 Selection Frequency</label>
-			</update-channel>
-			<update-channel id="remote-2-distance">
+			</add-channel>
+			<add-channel id="remote-2-distance">
 				<type>robonect:remoteDistanceType</type>
 				<label>Remote Start 2 Distance</label>
-			</update-channel>
-			<update-channel id="remote-2-corridor-cut">
+			</add-channel>
+			<add-channel id="remote-2-corridor-cut">
 				<type>robonect:remoteCorridorCutType</type>
 				<label>Remote Start 2 CorridorCut</label>
-			</update-channel>
-			<update-channel id="remote-3-name">
+			</add-channel>
+			<add-channel id="remote-3-name">
 				<type>robonect:remoteNameType</type>
 				<label>Remote Start 3 Name</label>
-			</update-channel>
-			<update-channel id="remote-3-visible">
+			</add-channel>
+			<add-channel id="remote-3-visible">
 				<type>robonect:remoteVisibleType</type>
 				<label>Remote Start 3 Visible</label>
-			</update-channel>
-			<update-channel id="remote-3-path">
+			</add-channel>
+			<add-channel id="remote-3-path">
 				<type>robonect:remotePathType</type>
 				<label>Remote Start 3 Route</label>
-			</update-channel>
-			<update-channel id="remote-3-proportion">
+			</add-channel>
+			<add-channel id="remote-3-proportion">
 				<type>robonect:remoteProportionType</type>
 				<label>Remote Start 3 Selection Frequency</label>
-			</update-channel>
-			<update-channel id="remote-3-distance">
+			</add-channel>
+			<add-channel id="remote-3-distance">
 				<type>robonect:remoteDistanceType</type>
 				<label>Remote Start 3 Distance</label>
-			</update-channel>
-			<update-channel id="remote-3-corridor-cut">
+			</add-channel>
+			<add-channel id="remote-3-corridor-cut">
 				<type>robonect:remoteCorridorCutType</type>
 				<label>Remote Start 3 CorridorCut</label>
-			</update-channel>
-			<update-channel id="remote-4-name">
+			</add-channel>
+			<add-channel id="remote-4-name">
 				<type>robonect:remoteNameType</type>
 				<label>Remote Start 4 Name</label>
-			</update-channel>
-			<update-channel id="remote-4-visible">
+			</add-channel>
+			<add-channel id="remote-4-visible">
 				<type>robonect:remoteVisibleType</type>
 				<label>Remote Start 4 Visible</label>
-			</update-channel>
-			<update-channel id="remote-4-path">
+			</add-channel>
+			<add-channel id="remote-4-path">
 				<type>robonect:remotePathType</type>
 				<label>Remote Start 4 Route</label>
-			</update-channel>
-			<update-channel id="remote-4-proportion">
+			</add-channel>
+			<add-channel id="remote-4-proportion">
 				<type>robonect:remoteProportionType</type>
 				<label>Remote Start 4 Selection Frequency</label>
-			</update-channel>
-			<update-channel id="remote-4-distance">
+			</add-channel>
+			<add-channel id="remote-4-distance">
 				<type>robonect:remoteDistanceType</type>
 				<label>Remote Start 4 Distance</label>
-			</update-channel>
-			<update-channel id="remote-4-corridor-cut">
+			</add-channel>
+			<add-channel id="remote-4-corridor-cut">
 				<type>robonect:remoteCorridorCutType</type>
 				<label>Remote Start 4 CorridorCut</label>
-			</update-channel>
-			<update-channel id="remote-5-name">
+			</add-channel>
+			<add-channel id="remote-5-name">
 				<type>robonect:remoteNameType</type>
 				<label>Remote Start 5 Name</label>
-			</update-channel>
-			<update-channel id="remote-5-visible">
+			</add-channel>
+			<add-channel id="remote-5-visible">
 				<type>robonect:remoteVisibleType</type>
 				<label>Remote Start 5 Visible</label>
-			</update-channel>
-			<update-channel id="remote-5-path">
+			</add-channel>
+			<add-channel id="remote-5-path">
 				<type>robonect:remotePathType</type>
 				<label>Remote Start 5 Route</label>
-			</update-channel>
-			<update-channel id="remote-5-proportion">
+			</add-channel>
+			<add-channel id="remote-5-proportion">
 				<type>robonect:remoteProportionType</type>
 				<label>Remote Start 5 Selection Frequency</label>
-			</update-channel>
-			<update-channel id="remote-5-distance">
+			</add-channel>
+			<add-channel id="remote-5-distance">
 				<type>robonect:remoteDistanceType</type>
 				<label>Remote Start 5 Distance</label>
-			</update-channel>
-			<update-channel id="remote-5-corridor-cut">
+			</add-channel>
+			<add-channel id="remote-5-corridor-cut">
 				<type>robonect:remoteCorridorCutType</type>
 				<label>Remote Start 5 CorridorCut</label>
-			</update-channel>
-			<update-channel id="portal-enabled">
+			</add-channel>
+			<add-channel id="portal-enabled">
 				<type>robonect:portalSwitchType</type>
 				<label>Remote Portal Enabled</label>
 				<description>Whether the mower.online remote-access service is enabled.</description>
-			</update-channel>
-			<update-channel id="portal-connected">
+			</add-channel>
+			<add-channel id="portal-connected">
 				<type>robonect:portalSwitchType</type>
 				<label>Remote Portal Connected</label>
 				<description>Whether Robonect is connected to the remote-access service.</description>
-			</update-channel>
-			<update-channel id="portal-url">
+			</add-channel>
+			<add-channel id="portal-url">
 				<type>robonect:readOnlyStringAdvancedType</type>
 				<label>Remote Portal URL</label>
 				<description>URL for remote access to the Robonect web interface; returned only while the remote service is
 					connected.</description>
-			</update-channel>
-			<update-channel id="portal-host">
+			</add-channel>
+			<add-channel id="portal-host">
 				<type>robonect:readOnlyStringAdvancedType</type>
 				<label>Remote Portal Host Name</label>
 				<description>Host name reported for access through the remote-access service.</description>
-			</update-channel>
-			<update-channel id="weather-break">
+			</add-channel>
+			<add-channel id="weather-break">
 				<type>robonect:weatherSwitchType</type>
 				<label>Weather Mowing Pause</label>
 				<description>Whether the weather service is currently preventing mowing.</description>
-			</update-channel>
-			<update-channel id="weather-rain">
+			</add-channel>
+			<add-channel id="weather-rain">
 				<type>robonect:driveMotorPowerType</type>
 				<label>Weather Rain Intensity</label>
 				<description>Current rain intensity reported by the weather service, as a percentage.</description>
-			</update-channel>
-			<update-channel id="weather-temperature">
+			</add-channel>
+			<add-channel id="weather-temperature">
 				<type>robonect:weatherTemperatureAdvancedType</type>
 				<label>Weather Temperature</label>
 				<description>Current outdoor temperature reported by the weather service.</description>
@@ -498,8 +457,8 @@
 					<tag>Measurement</tag>
 					<tag>Temperature</tag>
 				</tags>
-			</update-channel>
-			<update-channel id="weather-humidity">
+			</add-channel>
+			<add-channel id="weather-humidity">
 				<type>robonect:weatherHumidityAdvancedType</type>
 				<label>Weather Relative Humidity</label>
 				<description>Current relative air humidity reported by the weather service.</description>
@@ -507,206 +466,161 @@
 					<tag>Measurement</tag>
 					<tag>Humidity</tag>
 				</tags>
-			</update-channel>
-			<update-channel id="weather-day">
+			</add-channel>
+			<add-channel id="weather-day">
 				<type>robonect:weatherSwitchType</type>
 				<label>Weather Daylight</label>
 				<description>Whether the weather service currently reports daytime.</description>
-			</update-channel>
-			<update-channel id="weather-city">
+			</add-channel>
+			<add-channel id="weather-city">
 				<type>robonect:readOnlyStringAdvancedType</type>
 				<label>Weather City</label>
 				<description>City name resolved by the weather service.</description>
-			</update-channel>
-			<update-channel id="weather-location-cityid">
+			</add-channel>
+			<add-channel id="weather-location-cityid">
 				<type>robonect:remotePathType</type>
 				<label>Weather City ID</label>
 				<description>City identifier used to select the weather-service location. Accepts a non-negative integer.</description>
-			</update-channel>
-			<update-channel id="weather-location-zip">
+			</add-channel>
+			<add-channel id="weather-location-zip">
 				<type>robonect:textSettingAdvancedType</type>
 				<label>Weather Postal Code</label>
 				<description>Postal code used to select the weather-service location. Sent as text to preserve leading zeroes.</description>
-			</update-channel>
-			<update-channel id="weather-location-country">
+			</add-channel>
+			<add-channel id="weather-location-country">
 				<type>robonect:readOnlyStringAdvancedType</type>
 				<label>Weather Country</label>
 				<description>Country returned for the weather-service location.</description>
-			</update-channel>
-			<update-channel id="weather-sunrise">
+			</add-channel>
+			<add-channel id="weather-sunrise">
 				<type>robonect:dateTimeAdvancedType</type>
 				<label>Weather Sunrise</label>
 				<description>Sunrise time returned by the weather service.</description>
-			</update-channel>
-			<update-channel id="weather-sunset">
+			</add-channel>
+			<add-channel id="weather-sunset">
 				<type>robonect:dateTimeAdvancedType</type>
 				<label>Weather Sunset</label>
 				<description>Sunset time returned by the weather service.</description>
-			</update-channel>
-			<update-channel id="weather-icon">
+			</add-channel>
+			<add-channel id="weather-icon">
 				<type>robonect:readOnlyStringAdvancedType</type>
 				<label>Weather Icon URL</label>
 				<description>Weather icon URL or URL template returned by the service, including any %s placeholder.</description>
-			</update-channel>
-			<update-channel id="weather-timestamp">
+			</add-channel>
+			<add-channel id="weather-timestamp">
 				<type>robonect:dateTimeAdvancedType</type>
 				<label>Weather Observation Time</label>
 				<description>Time of the weather data.</description>
-			</update-channel>
-			<update-channel id="weather-condition-too-rainy">
+			</add-channel>
+			<add-channel id="weather-condition-too-rainy">
 				<type>robonect:weatherSwitchType</type>
 				<label>Rain Restriction Active</label>
 				<description>Whether the weather service reports that rain prevents mowing.</description>
-			</update-channel>
-			<update-channel id="weather-condition-too-cold">
+			</add-channel>
+			<add-channel id="weather-condition-too-cold">
 				<type>robonect:weatherSwitchType</type>
 				<label>Cold Restriction Active</label>
 				<description>Whether the weather service reports that low temperature prevents mowing.</description>
-			</update-channel>
-			<update-channel id="weather-condition-too-warm">
+			</add-channel>
+			<add-channel id="weather-condition-too-warm">
 				<type>robonect:weatherSwitchType</type>
 				<label>Heat Restriction Active</label>
 				<description>Whether the weather service reports that high temperature prevents mowing.</description>
-			</update-channel>
-			<update-channel id="weather-condition-too-dry">
+			</add-channel>
+			<add-channel id="weather-condition-too-dry">
 				<type>robonect:weatherSwitchType</type>
 				<label>Dry-Air Restriction Active</label>
 				<description>Whether the weather service reports that low air humidity prevents mowing.</description>
-			</update-channel>
-			<update-channel id="weather-condition-too-wet">
+			</add-channel>
+			<add-channel id="weather-condition-too-wet">
 				<type>robonect:weatherSwitchType</type>
 				<label>Humid-Air Restriction Active</label>
 				<description>Whether the weather service reports that high air humidity prevents mowing.</description>
-			</update-channel>
-			<update-channel id="weather-condition-day">
+			</add-channel>
+			<add-channel id="weather-condition-day">
 				<type>robonect:weatherSwitchType</type>
 				<label>Daytime Restriction Active</label>
 				<description>Whether the weather service reports an active daytime mowing restriction.</description>
-			</update-channel>
-			<update-channel id="weather-condition-night">
+			</add-channel>
+			<add-channel id="weather-condition-night">
 				<type>robonect:weatherSwitchType</type>
 				<label>Nighttime Restriction Active</label>
 				<description>Whether the weather service reports an active nighttime mowing restriction.</description>
-			</update-channel>
-			<update-channel id="weather-remaining">
+			</add-channel>
+			<add-channel id="weather-remaining">
 				<type>robonect:statisticsDurationAdvancedType</type>
 				<label>Weather Pause Remaining</label>
 				<description>Remaining waiting time before mowing may resume after a weather event.</description>
-			</update-channel>
-			<update-channel id="weather-enabled">
-				<type>robonect:switchCommandAdvancedType</type>
-				<label>Weather Service Enabled</label>
-				<description>Enable or disable the weather service used by Robonect.</description>
-			</update-channel>
-			<update-channel id="weather-interval">
-				<type>robonect:weatherIntervalType</type>
-				<label>Weather Update Interval</label>
-				<description>Interval at which Robonect requests new data from the weather service.</description>
-			</update-channel>
-			<update-channel id="weather-max-rain">
-				<type>robonect:weatherPercentageSettingType</type>
-				<label>Maximum Rain Intensity</label>
-				<description>Maximum rain intensity allowed before Robonect pauses mowing.</description>
-			</update-channel>
-			<update-channel id="weather-min-temperature">
-				<type>robonect:weatherTemperatureSettingType</type>
-				<label>Minimum Mowing Temperature</label>
-				<description>Minimum outdoor temperature allowed for mowing.</description>
-			</update-channel>
-			<update-channel id="weather-max-temperature">
-				<type>robonect:weatherTemperatureSettingType</type>
-				<label>Maximum Mowing Temperature</label>
-				<description>Maximum outdoor temperature allowed for mowing.</description>
-			</update-channel>
-			<update-channel id="weather-min-humidity">
-				<type>robonect:weatherPercentageSettingType</type>
-				<label>Minimum Mowing Humidity</label>
-				<description>Minimum relative air humidity allowed for mowing, where supported by the firmware.</description>
-			</update-channel>
-			<update-channel id="weather-max-humidity">
-				<type>robonect:weatherPercentageSettingType</type>
-				<label>Maximum Mowing Humidity</label>
-				<description>Maximum relative air humidity allowed for mowing.</description>
-			</update-channel>
-			<update-channel id="weather-skip-day">
-				<type>robonect:switchCommandAdvancedType</type>
-				<label>Prevent Daytime Mowing</label>
-				<description>Prevent mowing during daytime as determined by the weather service.</description>
-			</update-channel>
-			<update-channel id="weather-skip-night">
-				<type>robonect:switchCommandAdvancedType</type>
-				<label>Prevent Nighttime Mowing</label>
-				<description>Prevent mowing during nighttime as determined by the weather service.</description>
-			</update-channel>
-			<update-channel id="extension-gpio-1-flash">
+			</add-channel>
+			<add-channel id="extension-gpio-1-flash">
 				<type>robonect:extensionFlashType</type>
 				<label>GPIO 1 Flash on Error</label>
-			</update-channel>
-			<update-channel id="extension-gpio-1-inverted">
+			</add-channel>
+			<add-channel id="extension-gpio-1-inverted">
 				<type>robonect:extensionInvertedType</type>
 				<label>GPIO 1 Active-Low Signal</label>
-			</update-channel>
-			<update-channel id="extension-gpio-1-status">
+			</add-channel>
+			<add-channel id="extension-gpio-1-status">
 				<type>robonect:extensionStatusType</type>
 				<label>GPIO 1 State</label>
-			</update-channel>
-			<update-channel id="extension-gpio-2-flash">
+			</add-channel>
+			<add-channel id="extension-gpio-2-flash">
 				<type>robonect:extensionFlashType</type>
 				<label>GPIO 2 Flash on Error</label>
-			</update-channel>
-			<update-channel id="extension-gpio-2-inverted">
+			</add-channel>
+			<add-channel id="extension-gpio-2-inverted">
 				<type>robonect:extensionInvertedType</type>
 				<label>GPIO 2 Active-Low Signal</label>
-			</update-channel>
-			<update-channel id="extension-gpio-2-status">
+			</add-channel>
+			<add-channel id="extension-gpio-2-status">
 				<type>robonect:extensionStatusType</type>
 				<label>GPIO 2 State</label>
-			</update-channel>
-			<update-channel id="extension-output-1-flash">
+			</add-channel>
+			<add-channel id="extension-output-1-flash">
 				<type>robonect:extensionFlashType</type>
 				<label>Output 1 Flash on Error</label>
-			</update-channel>
-			<update-channel id="extension-output-1-inverted">
+			</add-channel>
+			<add-channel id="extension-output-1-inverted">
 				<type>robonect:extensionInvertedType</type>
 				<label>Output 1 Active-Low Signal</label>
-			</update-channel>
-			<update-channel id="extension-output-1-status">
+			</add-channel>
+			<add-channel id="extension-output-1-status">
 				<type>robonect:extensionStatusType</type>
 				<label>Output 1 State</label>
-			</update-channel>
-			<update-channel id="extension-output-2-flash">
+			</add-channel>
+			<add-channel id="extension-output-2-flash">
 				<type>robonect:extensionFlashType</type>
 				<label>Output 2 Flash on Error</label>
-			</update-channel>
-			<update-channel id="extension-output-2-inverted">
+			</add-channel>
+			<add-channel id="extension-output-2-inverted">
 				<type>robonect:extensionInvertedType</type>
 				<label>Output 2 Active-Low Signal</label>
-			</update-channel>
-			<update-channel id="extension-output-2-status">
+			</add-channel>
+			<add-channel id="extension-output-2-status">
 				<type>robonect:extensionStatusType</type>
 				<label>Output 2 State</label>
-			</update-channel>
-			<update-channel id="push-url">
+			</add-channel>
+			<add-channel id="push-url">
 				<type>robonect:textSettingAdvancedType</type>
 				<label>Push Service URL</label>
 				<description>Destination URL for Robonect push-service requests.</description>
-			</update-channel>
-			<update-channel id="push-username">
+			</add-channel>
+			<add-channel id="push-username">
 				<type>robonect:textSettingAdvancedType</type>
 				<label>Push Service Username</label>
 				<description>Username used to authenticate push-service requests.</description>
-			</update-channel>
-			<update-channel id="push-password">
+			</add-channel>
+			<add-channel id="push-password">
 				<type>robonect:pushPasswordType</type>
 				<label>Push Service Password</label>
 				<description>Write-only password for push-service authentication. Accepts a new password as a command; its state
 					remains undefined and automatic state prediction is disabled.</description>
-			</update-channel>
-			<update-channel id="push-interval">
+			</add-channel>
+			<add-channel id="push-interval">
 				<type>robonect:pushIntervalType</type>
 				<label>Push Service Interval</label>
 				<description>Interval for cyclic push-service requests.</description>
-			</update-channel>
+			</add-channel>
 			<update-channel id="mowing-hours">
 				<type>robonect:statisticsHoursType</type>
 				<label>Mower Operating Hours</label>
@@ -742,16 +656,16 @@
 					<tag>Info</tag>
 				</tags>
 			</update-channel>
-			<update-channel id="prevent">
+			<add-channel id="prevent">
 				<type>robonect:readOnlyNumberType</type>
 				<label>Mowing Prevention Code</label>
 				<description>Raw code identifying the condition preventing mowing.</description>
-			</update-channel>
-			<update-channel id="home">
+			</add-channel>
+			<add-channel id="home">
 				<type>robonect:readOnlySwitchType</type>
 				<label>Mower at Charging Station</label>
 				<description>Whether the mower reports that it is at home in the charging station.</description>
-			</update-channel>
+			</add-channel>
 			<update-channel id="status-duration">
 				<type>robonect:statisticsDurationType</type>
 				<label>Current Status Duration</label>
@@ -779,26 +693,18 @@
 					uses the localized Ajax web-interface response when ajaxUiScraping is enabled; otherwise it uses the binding's
 					tracked job state.</description>
 			</update-channel>
-			<update-channel id="job-start">
-				<type>robonect:jobTimeType</type>
-				<label>Mowing Job Start Time</label>
-			</update-channel>
-			<update-channel id="job-end">
-				<type>robonect:jobTimeType</type>
-				<label>Mowing Job End Time</label>
-			</update-channel>
 			<update-channel id="offlineTrigger">
 				<type>robonect:offlineTriggerType</type>
 				<label>Offline Timeout Event</label>
 				<description>Reports the configured offline timeout. The current handler publishes OFFLINE_TIMEOUT as a state
 					update; it does not emit a channel-trigger event.</description>
 			</update-channel>
-			<update-channel id="reset-error">
+			<add-channel id="reset-error">
 				<type>robonect:switchCommandType</type>
 				<label>Reset Mower Error</label>
 				<description>Send ON to reset the mower's current error state. This is an action and does not report whether an
 					error is present.</description>
-			</update-channel>
+			</add-channel>
 			<update-channel id="error-code">
 				<type>robonect:readOnlyNumberType</type>
 				<label>Current Error Code</label>
@@ -870,66 +776,46 @@
 				<label>Blade Operating Time</label>
 				<description>Accumulated blade operating time since the last replacement recorded in Robonect.</description>
 			</update-channel>
-		</instruction-set>
-		<instruction-set targetVersion="3">
-			<remove-channel id="battery-id"/>
-			<remove-channel id="battery-charge"/>
-			<remove-channel id="battery-voltage"/>
-			<remove-channel id="battery-current"/>
-			<remove-channel id="battery-temperature"/>
-			<remove-channel id="battery-capacity"/>
-			<remove-channel id="battery-remaining-capacity"/>
-		</instruction-set>
-		<instruction-set targetVersion="4">
-			<remove-channel id="weather-enabled"/>
 			<add-channel id="weather-service-enabled">
 				<type>robonect:switchCommandAdvancedType</type>
 				<label>Weather Service: Enabled</label>
 				<description>Enable or disable the weather service used by Robonect.</description>
 			</add-channel>
-			<remove-channel id="weather-interval"/>
 			<add-channel id="weather-service-interval">
 				<type>robonect:weatherIntervalType</type>
 				<label>Weather Service: Update Interval</label>
 				<description>Interval at which Robonect requests new data from the weather service.</description>
 			</add-channel>
-			<remove-channel id="weather-max-rain"/>
 			<add-channel id="weather-config-max-rain">
 				<type>robonect:weatherPercentageSettingType</type>
 				<label>Weather Config: Maximum Rain Intensity</label>
 				<description>Maximum rain intensity allowed before Robonect pauses mowing.</description>
 			</add-channel>
-			<remove-channel id="weather-min-temperature"/>
 			<add-channel id="weather-config-min-temperature">
 				<type>robonect:weatherTemperatureSettingType</type>
 				<label>Weather Config: Minimum Mowing Temperature</label>
 				<description>Minimum outdoor temperature allowed for mowing.</description>
 			</add-channel>
-			<remove-channel id="weather-max-temperature"/>
 			<add-channel id="weather-config-max-temperature">
 				<type>robonect:weatherTemperatureSettingType</type>
 				<label>Weather Config: Maximum Mowing Temperature</label>
 				<description>Maximum outdoor temperature allowed for mowing.</description>
 			</add-channel>
-			<remove-channel id="weather-min-humidity"/>
 			<add-channel id="weather-config-min-humidity">
 				<type>robonect:weatherPercentageSettingType</type>
 				<label>Weather Config: Minimum Mowing Humidity</label>
 				<description>Minimum relative air humidity allowed for mowing.</description>
 			</add-channel>
-			<remove-channel id="weather-max-humidity"/>
 			<add-channel id="weather-config-max-humidity">
 				<type>robonect:weatherPercentageSettingType</type>
 				<label>Weather Config: Maximum Mowing Humidity</label>
 				<description>Maximum relative air humidity allowed for mowing.</description>
 			</add-channel>
-			<remove-channel id="weather-skip-day"/>
 			<add-channel id="weather-config-skip-day">
 				<type>robonect:switchCommandAdvancedType</type>
 				<label>Weather Config: Prevent Daytime Mowing</label>
 				<description>Prevent mowing during daytime as determined by the weather service.</description>
 			</add-channel>
-			<remove-channel id="weather-skip-night"/>
 			<add-channel id="weather-config-skip-night">
 				<type>robonect:switchCommandAdvancedType</type>
 				<label>Weather Config: Prevent Nighttime Mowing</label>
