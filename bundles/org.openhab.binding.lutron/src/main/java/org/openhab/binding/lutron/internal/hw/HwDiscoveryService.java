@@ -34,13 +34,13 @@ import org.slf4j.LoggerFactory;
  *
  * @author Andrew Shilliday - Initial contribution
  */
-public class HwDiscoveryService extends AbstractThingHandlerDiscoveryService<@NonNull HwSerialBridgeHandler> {
+public class HwDiscoveryService extends AbstractThingHandlerDiscoveryService<@NonNull HwBridgeHandler> {
     private Logger logger = LoggerFactory.getLogger(HwDiscoveryService.class);
 
     private final AtomicBoolean isScanning = new AtomicBoolean(false);
 
     public HwDiscoveryService() {
-        super(HwSerialBridgeHandler.class, LutronHandlerFactory.HW_DISCOVERABLE_DEVICE_TYPES_UIDS, 10);
+        super(HwBridgeHandler.class, LutronHandlerFactory.HW_DISCOVERABLE_DEVICE_TYPES_UIDS, 10);
     }
 
     @Override

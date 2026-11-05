@@ -869,15 +869,17 @@ Switch Phantom_Movie "Movie Scene" { channel="lutronradiora:phantomButton:chrono
 
 ## Legacy HomeWorks RS232 (Serial) Processors
 
-The binding supports legacy HomeWorks processors that interface with a Serial RS232 connection.
-To connect to such a system, you would need to use a RS232 -> USB adapter (assuming you don't have a serial port).
+The binding supports legacy HomeWorks processors that interface with a Serial RS232 connection, and processors with an Ethernet port (such as the 8 Series) that can be reached over telnet.
+To connect over RS232, you would need to use a RS232 -> USB adapter (assuming you don't have a serial port).
+Using the telnet connection leaves the processor's RS232 ports free, for example for the programming software.
 
 Please see [HomeWorks RS232 Protocol Guide](https://www.lutron.com/TechnicalDocumentLibrary/HWI%20RS232%20Protocol.pdf) for information on the protocol.
 
 ### HomeWorks RS232 Supported Things
 
-- HomeWorks RS232-connected Processor Units
-- Dimmers
+- HomeWorks RS232-connected Processor Units (**hwserialbridge**)
+- HomeWorks Ethernet-connected Processor Units (**hwtelnetbridge**)
+- Dimmers (**hwdimmer**)
 
 Supported in future updates:
 
@@ -902,6 +904,81 @@ Dimmers have one required parameter ``address`` that specifies the device addres
 ```java
 lutron:hwdimmer:dimmer1 [address="[01:01:03:02:04]", fadeTime="1", defaultLevel="75"]
 ```
+
+### HomeWorks Telnet Bridge Thing Configuration
+
+The telnet bridge connects to the Ethernet port of the processor (Link 9 on an 8 Series processor), which presents the same command interface as the RS232 ports.
+After login, the only difference is the prompt, which is `LNET>` instead of `L232>`.
+
+Telnet access uses a login, which is defined in the HomeWorks Illumination software, on the Address Assignment page for Link 9 (Ethernet), in the Telnet Logins list.
+A processor accepts up to 4 logins.
+Using a login dedicated to openHAB is recommended, because the monitoring and suppress options of that page belong to the login.
+
+The login can limit the messages the processor sends, using its Monitor options (Dimmer Levels, Keypad Buttons, Keypad LEDs, GRAFIK Eye Scenes, Timed Events) and Suppress options (Prompt, Replies, Bad Commands).
+When the bridge connects, it sends `PROMPTOFF`, `KBMOFF`, `KLMOFF`, `GSMOFF` and `DLMON`, which are the same commands the RS232 bridge sends.
+The bridge currently uses only dimmer level messages.
+
+The telnet bridge has the following configuration parameters:
+
+| Parameter  | Required | Default | Description                                                                          |
+|------------|----------|---------|--------------------------------------------------------------------------------------|
+| ipAddress  | Yes      |         | The IP address or host name of the processor. The processor default is 192.168.250.1 |
+| port       | No       | 23      | The telnet port of the processor                                                     |
+| user       | No       |         | The telnet login name                                                                |
+| password   | No       |         | The password of the login                                                            |
+| reconnect  | No       | 5       | Minutes to wait between connection attempts                                          |
+
+If the processor asks for a login and `user` is not set, or it rejects the login, the bridge goes offline with a configuration error and does not retry.
+The processor ends a telnet session after three failed login attempts.
+Other connection problems are retried every `reconnect` minutes.
+The password is never written to the log.
+
+```java
+lutron:hwtelnetbridge:home [ ipAddress="192.168.1.169", user="openhab", password="secret" ]
+```
+
+Dimmers work the same way with both bridges.
+Dimmer addresses have five fields (for example `[01:01:03:02:04]`).
+
+### HomeWorks Console Commands
+
+The console commands help to see how a processor responds, for example when investigating problems or testing commands.
+They work with both HomeWorks bridges.
+
+| Command                                                  | Description                                                                              |
+|----------------------------------------------------------|------------------------------------------------------------------------------------------|
+| `lutron hw send <bridgeUID> <command>`                   | Sends a command and prints every message received for the next 2 seconds                 |
+| `lutron hw listen <bridgeUID> [seconds]`                 | Prints every message the processor sends, for 30 seconds by default (at most 600)        |
+
+The commands are sent to the processor as typed, so they can change the processor, in the same way as using a terminal.
+Messages are printed after `<`, and commands after `>`.
+For example, to watch keypad presses:
+
+```text
+openhab> lutron hw send lutron:hwtelnetbridge:home KBMON
+> KBMON
+< Keypad button monitoring enabled
+Done.
+openhab> lutron hw listen lutron:hwtelnetbridge:home 20
+Listening to lutron:hwtelnetbridge:home for 20 seconds...
+< KBP, [01:05:25],  1
+< KBR, [01:05:25],  1
+Done.
+```
+
+Monitoring that is turned on from the console stays on until the bridge reconnects.
+The bridge itself sends `KBMOFF` when it connects.
+
+### HomeWorks Logging
+
+To see what the bridge sends to and receives from the processor, set the log level of the HomeWorks classes to `DEBUG`:
+
+```text
+log:set DEBUG org.openhab.binding.lutron.internal.hw
+```
+
+At `DEBUG` the log shows connection and login events (not the password), each command sent and each message received.
+At `TRACE` the telnet bridge also logs the raw data received, which includes prompts.
 
 ### HomeWorks RS232 Channels
 

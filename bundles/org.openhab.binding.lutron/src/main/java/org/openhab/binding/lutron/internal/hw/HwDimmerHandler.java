@@ -83,14 +83,14 @@ public class HwDimmerHandler extends BaseThingHandler {
         }
     }
 
-    private HwSerialBridgeHandler getBridgeHandler() {
+    private HwBridgeHandler getBridgeHandler() {
         Bridge bridge = getBridge();
         if (bridge == null) {
             return null;
-        } else if (!(bridge.getHandler() instanceof HwSerialBridgeHandler)) {
+        } else if (!(bridge.getHandler() instanceof HwBridgeHandler)) {
             return null;
         } else {
-            return (HwSerialBridgeHandler) bridge.getHandler();
+            return (HwBridgeHandler) bridge.getHandler();
         }
     }
 
@@ -99,7 +99,7 @@ public class HwDimmerHandler extends BaseThingHandler {
             logger.debug("Bridge unavailable while querying Thing: {}", thing.getUID());
             return;
         }
-        HwSerialBridgeHandler bridgeHandler = getBridgeHandler();
+        HwBridgeHandler bridgeHandler = getBridgeHandler();
         if (bridgeHandler == null) {
             updateStatus(ThingStatusDetail.BRIDGE_OFFLINE, "No bridge associated");
             return;
@@ -114,7 +114,7 @@ public class HwDimmerHandler extends BaseThingHandler {
             logger.debug("Bridge unavailable while sending command for Thing: {}", thing.getUID());
             return;
         }
-        HwSerialBridgeHandler bridgeHandler = getBridgeHandler();
+        HwBridgeHandler bridgeHandler = getBridgeHandler();
         if (bridgeHandler == null) {
             updateStatus(ThingStatusDetail.BRIDGE_OFFLINE, "No bridge associated");
             return;
