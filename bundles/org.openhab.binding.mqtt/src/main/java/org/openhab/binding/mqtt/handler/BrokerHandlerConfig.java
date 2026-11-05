@@ -35,6 +35,11 @@ public class BrokerHandlerConfig extends MqttBrokerConnectionConfig {
     public String certificate = "";
     public String publickey = "";
 
+    // TLS client authentication (mutual TLS)
+    public String clientKeystore = "";
+    public String clientKeystorePassword = "";
+    public String clientKeystoreType = "PKCS12";
+
     public boolean enableDiscovery = true;
 
     // Birth message parameters
