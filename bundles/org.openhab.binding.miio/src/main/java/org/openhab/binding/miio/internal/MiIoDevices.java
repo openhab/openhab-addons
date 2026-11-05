@@ -517,6 +517,7 @@ public enum MiIoDevices {
     XIAOMI_VACUUM_PV32GL("xiaomi.vacuum.pv32gl", "Xiaomi Robot Vacuum 6", THING_TYPE_BASIC),
     XIAOMI_VACUUM_PV51GL("xiaomi.vacuum.pv51gl", "Xiaomi Robot Vacuum S60+", THING_TYPE_BASIC),
     XIAOMI_VACUUM_PV81GL("xiaomi.vacuum.pv81gl", "Xiaomi Robot Vacuum S60", THING_TYPE_BASIC),
+    XIAOMI_WATERPURI_CMN800("xiaomi.waterpuri.cmn800", "Mijia Smart Water Purifier N800G", THING_TYPE_BASIC),
     XIAOMI_WIFISPEAKER_V1("xiaomi.wifispeaker.v1", "Mi Network Speaker", THING_TYPE_UNSUPPORTED),
     XJX_TOILET_PRO("xjx.toilet.pro", "Uclean Smart Toilet Seat", THING_TYPE_BASIC),
     XJX_TOILET_PURE("xjx.toilet.pure", "Uclean Smart Toilet pure", THING_TYPE_BASIC),
