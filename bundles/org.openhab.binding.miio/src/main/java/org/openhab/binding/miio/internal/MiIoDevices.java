@@ -487,6 +487,7 @@ public enum MiIoDevices {
     XIAOMI_FAN_P76("xiaomi.fan.p76", "Xiaomi Smart Standing Air Circulation Fan", THING_TYPE_BASIC),
     XIAOMI_FAN_P85("xiaomi.fan.p85", "Mijia Smart Standing Fan Pro Slim", THING_TYPE_BASIC),
     XIAOMI_FAN_P90("xiaomi.fan.p90", "Mijia Smart Air Circulation Fan Pro", THING_TYPE_BASIC),
+    XIAOMI_KETTLE_MEK02("xiaomi.kettle.mek02", "Xiaomi Smart Electric Hot Water Dispenser 5L", THING_TYPE_BASIC),
     XIAOMI_KETTLE_V20("xiaomi.kettle.v20", "Xiaomi Smart Kettle 2 Pro", THING_TYPE_BASIC),
     XIAOMI_KETTLE_V21("xiaomi.kettle.v21", "Xiaomi Smart Kettle 2 Pro", THING_TYPE_BASIC),
     XIAOMI_REPEATER_V2("xiaomi.repeater.v2", "Mi Wi-Fi Repeater 2", THING_TYPE_UNSUPPORTED),
