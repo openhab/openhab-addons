@@ -26,6 +26,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -48,6 +49,7 @@ import org.openhab.binding.lgthinq.lgservices.model.FeatureDataType;
 import org.openhab.binding.lgthinq.lgservices.model.LGAPIVerion;
 import org.openhab.binding.lgthinq.lgservices.model.SnapshotDefinition;
 import org.openhab.binding.lgthinq.lgservices.model.devices.commons.washers.CourseDefinition;
+import org.openhab.core.common.ThreadPoolManager;
 import org.openhab.core.items.Item;
 import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.library.types.OnOffType;
@@ -88,15 +90,20 @@ public abstract class LGThinQAbstractDeviceHandler<@NonNull C extends Capability
     protected C thinQCapability;
     private volatile S lastShot;
     /**
-     * Commands are executed by a task on the shared scheduler that drains {@link #commandBlockQueue} and ends when
-     * the queue is empty, so idle devices don't hold a scheduler thread. At most one drain task runs per device,
-     * which keeps the commands of a device in order. The fields below are guarded by {@link #commandQueueLock}.
+     * Requests to LG block (a V1 monitor waits up to 5 seconds for data), so polling and commands run on a pool of the
+     * binding instead of the scheduler shared by all thing handlers.
+     */
+    private final ScheduledExecutorService deviceScheduler = ThreadPoolManager.getScheduledPool(BINDING_ID);
+    /**
+     * Commands are executed by a task that drains {@link #commandBlockQueue} and ends when the queue is empty, so idle
+     * devices don't hold a thread. At most one drain task exists per device, from its submission until it exits, which
+     * keeps the commands of a device in order and one at a time. The fields below are guarded by
+     * {@link #commandQueueLock}.
      */
     private final Object commandQueueLock = new Object();
     private @Nullable Future<?> commandDrainJob;
+    private boolean commandDrainRunning;
     private boolean commandQueueEnabled;
-    // incremented when the queue is disabled, so a drain task that is still running can't take new commands
-    private int commandQueueGeneration;
     private @Nullable ScheduledFuture<?> thingStatePollingJob;
     private @Nullable ScheduledFuture<?> extraInfoCollectorPollingJob;
     /**
@@ -224,44 +231,47 @@ public abstract class LGThinQAbstractDeviceHandler<@NonNull C extends Capability
     protected void disableCommandQueue() {
         synchronized (commandQueueLock) {
             commandQueueEnabled = false;
-            commandQueueGeneration++;
-            Future<?> commandDrainJob = this.commandDrainJob;
-            if (commandDrainJob != null) {
-                commandDrainJob.cancel(true);
-                this.commandDrainJob = null;
-            }
             commandBlockQueue.clear();
+            Future<?> commandDrainJob = this.commandDrainJob;
+            // A task that hasn't started isn't cancelled: it must run to release the queue, and it finds no command.
+            // A running task keeps the queue until it exits, so a command queued after the queue is enabled again
+            // can't run concurrently with the one being interrupted.
+            if (commandDrainJob != null && commandDrainRunning) {
+                commandDrainJob.cancel(true);
+            }
         }
     }
 
     private void scheduleCommandDrain() {
         synchronized (commandQueueLock) {
             if (commandQueueEnabled && commandDrainJob == null && !commandBlockQueue.isEmpty()) {
-                int generation = commandQueueGeneration;
-                commandDrainJob = scheduler.submit(() -> drainCommandQueue(generation));
+                commandDrainJob = deviceScheduler.submit(this::drainCommandQueue);
             }
         }
     }
 
-    private void drainCommandQueue(int generation) {
-        AsyncCommandParams params;
-        while (!Thread.currentThread().isInterrupted() && (params = nextQueuedCommand(generation)) != null) {
-            executeCommand(params);
-        }
-    }
-
-    private @Nullable AsyncCommandParams nextQueuedCommand(int generation) {
+    private void drainCommandQueue() {
         synchronized (commandQueueLock) {
-            if (generation != commandQueueGeneration) {
-                return null;
+            commandDrainRunning = true;
+        }
+        try {
+            AsyncCommandParams params;
+            while (!Thread.currentThread().isInterrupted() && (params = nextQueuedCommand()) != null) {
+                executeCommand(params);
             }
-            @Nullable
-            AsyncCommandParams params = commandBlockQueue.poll();
-            if (params == null) {
-                // the next queued command schedules a new drain task
+        } finally {
+            synchronized (commandQueueLock) {
+                commandDrainRunning = false;
                 commandDrainJob = null;
+                // commands left by an interrupted task or queued while it was finishing
+                scheduleCommandDrain();
             }
-            return params;
+        }
+    }
+
+    private @Nullable AsyncCommandParams nextQueuedCommand() {
+        synchronized (commandQueueLock) {
+            return commandQueueEnabled ? commandBlockQueue.poll() : null;
         }
     }
 
@@ -695,7 +705,7 @@ public abstract class LGThinQAbstractDeviceHandler<@NonNull C extends Capability
         ScheduledFuture<?> thingStatePollingJob = this.thingStatePollingJob;
         if (thingStatePollingJob == null || thingStatePollingJob.isDone()) {
             getLogger().debug("Starting LG thinq polling for device/alias: {}/{}", getDeviceId(), getDeviceAlias());
-            this.thingStatePollingJob = scheduler.scheduleWithFixedDelay(new UpdateThingStateFromLG(), 5,
+            this.thingStatePollingJob = deviceScheduler.scheduleWithFixedDelay(new UpdateThingStateFromLG(), 5,
                     currentPeriodSeconds, TimeUnit.SECONDS);
         }
     }
@@ -709,8 +719,8 @@ public abstract class LGThinQAbstractDeviceHandler<@NonNull C extends Capability
         ScheduledFuture<?> extraInfoCollectorPollingJob = this.extraInfoCollectorPollingJob;
         if (extraInfoCollectorPollingJob == null || extraInfoCollectorPollingJob.isDone()) {
             getLogger().debug("Starting Energy Collector for device/alias: {}/{}", getDeviceId(), getDeviceAlias());
-            this.extraInfoCollectorPollingJob = scheduler.scheduleWithFixedDelay(new UpdateExtraInfoCollector(), 10,
-                    pollingExtraInfoPeriodSeconds, TimeUnit.SECONDS);
+            this.extraInfoCollectorPollingJob = deviceScheduler.scheduleWithFixedDelay(new UpdateExtraInfoCollector(),
+                    10, pollingExtraInfoPeriodSeconds, TimeUnit.SECONDS);
         }
     }
 

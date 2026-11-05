@@ -45,15 +45,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Tests that the per-device command queue doesn't hold threads of the shared thing handler pool and keeps the order
- * of the commands of a device.
+ * Tests that the per-device command queue doesn't hold threads of the binding pool and runs the commands of a device
+ * in order and one at a time.
  *
  * @author Nemer Daud - Initial contribution
  */
 @NonNullByDefault
 class LGThinQCommandQueueTest {
-    // BaseThingHandler.scheduler comes from this pool, which has 5 threads by default
-    private static final String THING_HANDLER_POOL = "thingHandler";
+    private static final String BLOCKING_COMMAND = "BLOCKING";
     private static final int HANDLER_COUNT = 8;
     private static final long TIMEOUT_SECONDS = 30;
 
@@ -119,8 +118,29 @@ class LGThinQCommandQueueTest {
         assertEquals(List.of("EXECUTED"), handler.processedCommands);
     }
 
+    @Test
+    void reenabledQueueDoesNotRunCommandsConcurrently() throws Exception {
+        CountDownLatch processed = new CountDownLatch(1);
+        RecordingHandler handler = createHandler("reenabled", processed);
+        handler.enableCommandQueue();
+        handler.handleCommand(courseChannel(handler), new StringType(BLOCKING_COMMAND));
+        assertTrue(handler.blockingCommandStarted.await(TIMEOUT_SECONDS, TimeUnit.SECONDS));
+
+        handler.disableCommandQueue();
+        handler.enableCommandQueue();
+        handler.handleCommand(courseChannel(handler), new StringType("AFTER"));
+
+        // a second drain task would execute AFTER while the blocking command is still running
+        assertFalse(processed.await(1, TimeUnit.SECONDS));
+        handler.releaseBlockingCommand.countDown();
+        assertTrue(processed.await(TIMEOUT_SECONDS, TimeUnit.SECONDS));
+        assertEquals(List.of(BLOCKING_COMMAND, "AFTER"), handler.processedCommands);
+        assertEquals(1, handler.maxConcurrentCommands.get());
+    }
+
     private void assertSchedulerAvailable() throws Exception {
-        ScheduledExecutorService scheduler = ThreadPoolManager.getScheduledPool(THING_HANDLER_POOL);
+        // the pool has 5 threads by default, fewer than HANDLER_COUNT
+        ScheduledExecutorService scheduler = ThreadPoolManager.getScheduledPool(BINDING_ID);
         assertTrue(scheduler.submit(() -> true).get(TIMEOUT_SECONDS, TimeUnit.SECONDS));
     }
 
@@ -147,6 +167,8 @@ class LGThinQCommandQueueTest {
         private final List<String> processedCommands = new CopyOnWriteArrayList<>();
         private final AtomicInteger runningCommands = new AtomicInteger();
         private final AtomicInteger maxConcurrentCommands = new AtomicInteger();
+        private final CountDownLatch blockingCommandStarted = new CountDownLatch(1);
+        private final CountDownLatch releaseBlockingCommand = new CountDownLatch(1);
 
         RecordingHandler(Thing thing, CountDownLatch processed) {
             super(thing, mock(LGThinQStateDescriptionProvider.class), mock(ItemChannelLinkRegistry.class));
@@ -156,9 +178,36 @@ class LGThinQCommandQueueTest {
         @Override
         protected void processCommand(AsyncCommandParams params) {
             maxConcurrentCommands.accumulateAndGet(runningCommands.incrementAndGet(), Math::max);
-            processedCommands.add(params.command().toString());
+            String command = params.command().toString();
+            if (BLOCKING_COMMAND.equals(command)) {
+                blockingCommandStarted.countDown();
+                // like a request that doesn't react to the interruption sent when the queue is disabled
+                awaitIgnoringInterruption(releaseBlockingCommand);
+                processedCommands.add(command);
+                runningCommands.decrementAndGet();
+                return;
+            }
+            processedCommands.add(command);
             runningCommands.decrementAndGet();
             processed.countDown();
+        }
+
+        private static void awaitIgnoringInterruption(CountDownLatch latch) {
+            boolean interrupted = false;
+            try {
+                while (true) {
+                    try {
+                        latch.await(TIMEOUT_SECONDS, TimeUnit.SECONDS);
+                        return;
+                    } catch (InterruptedException e) {
+                        interrupted = true;
+                    }
+                }
+            } finally {
+                if (interrupted) {
+                    Thread.currentThread().interrupt();
+                }
+            }
         }
 
         @Override
