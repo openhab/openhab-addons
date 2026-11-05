@@ -21,22 +21,24 @@
   <dependencies>
 
     <!--Thymeleaf -->
+    <!-- Transitive dependencies are not embedded: keep ognl, attoparser and unbescape at the versions declared by
+      thymeleaf-parent. Thymeleaf 3.1 is not binary compatible with ognl 3.4. -->
     <dependency>
       <groupId>org.thymeleaf</groupId>
       <artifactId>thymeleaf</artifactId>
-      <version>3.1.4.RELEASE</version>
+      <version>3.1.5.RELEASE</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>ognl</groupId>
       <artifactId>ognl</artifactId>
-      <version>3.3.4</version>
+      <version>3.3.5</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.javassist</groupId>
       <artifactId>javassist</artifactId>
-      <version>3.29.0-GA</version>
+      <version>3.30.2-GA</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
