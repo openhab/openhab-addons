@@ -5,7 +5,11 @@ package org.openhab.binding.robonect.internal.model;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
-/** Optional extension state returned by the Robonect API. */
+/**
+ * Optional extension state returned by the Robonect API.
+ *
+ * @author Nico Brüttner - Initial contribution
+ */
 @NonNullByDefault
 public class Extensions {
     private @Nullable Extension gpio1;

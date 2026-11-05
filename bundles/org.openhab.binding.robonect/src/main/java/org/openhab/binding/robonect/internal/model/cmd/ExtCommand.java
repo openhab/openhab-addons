@@ -2,7 +2,11 @@
  * SPDX-License-Identifier: EPL-2.0 */
 package org.openhab.binding.robonect.internal.model.cmd;
 
-/** Queries optional GPIO and output extension state. */
+/**
+ * Queries optional GPIO and output extension state.
+ *
+ * @author Nico Brüttner - Initial contribution
+ */
 public class ExtCommand implements Command {
     /**
      * Builds the extension state URL for this {@link Command}.

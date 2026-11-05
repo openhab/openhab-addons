@@ -14,7 +14,11 @@ package org.openhab.binding.robonect.internal.model.cmd;
 
 import org.eclipse.jdt.annotation.Nullable;
 
-/** Queries or controls the optional Robonect door system. */
+/**
+ * Queries or controls the optional Robonect door system.
+ *
+ * @author Nico Brüttner - Initial contribution
+ */
 public class DoorCommand implements Command {
     public enum Direction {
         OPEN("open"),

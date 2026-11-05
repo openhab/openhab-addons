@@ -18,6 +18,8 @@ import com.google.gson.annotations.SerializedName;
 
 /**
  * WLAN module versions reported by version-1 Robonect firmware.
+ *
+ * @author Nico Brüttner - Initial contribution
  */
 public class VersionWlan {
 

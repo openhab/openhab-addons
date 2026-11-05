@@ -113,12 +113,7 @@ import com.google.gson.JsonSyntaxException;
  * The goal of this class is to test RobonectHandler in isolation.
  *
  * @author Marco Meyer - Initial contribution
- * @author Nico Brüttner - Dynamic channel and duration tests
- * @author Nico Brüttner - Command response and delayed refresh tests
- * @author Nico Brüttner - Weather location, condition and timestamp tests
- * @author Nico Brüttner - Indexed channel labels and quantity tests
- * @author Nico Brüttner - Independent polling and lifecycle tests
- * @author Nico Brüttner - Weather interval fallback tests
+ * @author Nico Brüttner - Channel, command, and polling coverage
  */
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)

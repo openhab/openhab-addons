@@ -4,7 +4,11 @@ package org.openhab.binding.robonect.internal.model;
 
 import org.eclipse.jdt.annotation.Nullable;
 
-/** WLAN station state returned by Robonect. Credentials are deliberately not modeled. */
+/**
+ * WLAN station state returned by Robonect. Credentials are deliberately not modeled.
+ *
+ * @author Nico Brüttner - Initial contribution
+ */
 public class WifiStation {
     private @Nullable Boolean enable;
     private @Nullable String mac;

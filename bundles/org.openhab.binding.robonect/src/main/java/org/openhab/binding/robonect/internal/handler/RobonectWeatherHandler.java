@@ -41,8 +41,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Handles the mower's weather API endpoint.
  *
- * @author Nico Brüttner - Initial contribution
- * @author Nico Brüttner - Direct weather API injection
+ * @author Nico Brüttner - Initial weather endpoint handling
  */
 @NonNullByDefault
 final class RobonectWeatherHandler {

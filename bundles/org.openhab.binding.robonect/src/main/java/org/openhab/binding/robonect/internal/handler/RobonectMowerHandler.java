@@ -59,8 +59,7 @@ import com.google.gson.JsonSyntaxException;
 /**
  * Handles mower, job, door, and service endpoints.
  *
- * @author Nico Brüttner - Initial contribution
- * @author Nico Brüttner - Direct mower API injection
+ * @author Nico Brüttner - Initial mower endpoint handling
  */
 @NonNullByDefault
 final class RobonectMowerHandler {

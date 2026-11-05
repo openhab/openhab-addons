@@ -26,10 +26,7 @@ import org.slf4j.LoggerFactory;
  *      http://robonect.de/viewtopic.php?f=10&amp;t=37</a>. The API of the module is documented here.
  *
  * @author Marco Meyer - Initial contribution
- * @author Nico Brüttner - Ajax UI compatibility
- * @author Nico Brüttner - Push mode web interface support
- * @author Nico Brüttner - Write-only push password commands
- * @author Nico Brüttner - Weather interval web interface fallback
+ * @author Nico Brüttner - API and web interface support
  */
 @NonNullByDefault
 public class RobonectClient {

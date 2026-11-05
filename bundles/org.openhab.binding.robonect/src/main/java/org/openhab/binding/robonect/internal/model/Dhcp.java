@@ -4,7 +4,11 @@ package org.openhab.binding.robonect.internal.model;
 
 import org.eclipse.jdt.annotation.Nullable;
 
-/** DHCP range returned for the optional access point. */
+/**
+ * DHCP range returned for the optional access point.
+ *
+ * @author Nico Brüttner - Initial contribution
+ */
 public class Dhcp {
     private @Nullable Boolean enable;
     private @Nullable String start;

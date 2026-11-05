@@ -5,7 +5,11 @@ package org.openhab.binding.robonect.internal.model;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
-/** State of one optional GPIO or output extension. */
+/**
+ * State of one optional GPIO or output extension.
+ *
+ * @author Nico Brüttner - Initial contribution
+ */
 @NonNullByDefault
 public class Extension {
     private @Nullable Boolean flashonerror;

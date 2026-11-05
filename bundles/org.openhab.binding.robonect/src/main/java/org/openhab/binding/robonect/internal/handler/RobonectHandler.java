@@ -72,15 +72,7 @@ import com.google.gson.JsonSyntaxException;
  * The channels are periodically updated by polling the mower via HTTP in a separate thread.
  *
  * @author Marco Meyer - Initial contribution
- * @author Nico Brüttner - Ajax UI compatibility
- * @author Nico Brüttner - Dynamic telemetry and push trigger channels
- * @author Nico Brüttner - Command responses and delayed state refresh
- * @author Nico Brüttner - Write-only push password channel
- * @author Nico Brüttner - Weather location and condition channels
- * @author Nico Brüttner - Indexed channel labels and quantity metadata
- * @author Nico Brüttner - Independent serialized detailed polling
- * @author Nico Brüttner - Weather interval web interface fallback
- * @author Nico Brüttner - Endpoint API injection
+ * @author Nico Brüttner - Channel, polling, and endpoint handling
  */
 public class RobonectHandler extends BaseThingHandler {
 
@@ -110,9 +102,6 @@ public class RobonectHandler extends BaseThingHandler {
     private final @Nullable RobonectPushServlet pushServlet;
     private boolean ajaxUiScraping;
     private volatile boolean useUnofficialApi;
-
-    private static final Pattern REMOTE_CHANNEL_PATTERN = Pattern
-            .compile("remote-([1-5])-(name|distance|proportion|visible|path|corridor-cut)");
 
     /**
      * Creates a mower Thing handler without a push servlet.
@@ -240,7 +229,7 @@ public class RobonectHandler extends BaseThingHandler {
                 pushHandler.handleModeCommand(command);
                 break;
             default:
-                if (REMOTE_CHANNEL_PATTERN.matcher(channelUID.getId()).matches()) {
+                if (channelUID.getId().startsWith("remote-")) {
                     remoteStartHandler.handleCommand(channelUID.getId(), command);
                 } else if (channelUID.getId().startsWith("timer-")) {
                     timerHandler.handleCommand(channelUID.getId(), command);

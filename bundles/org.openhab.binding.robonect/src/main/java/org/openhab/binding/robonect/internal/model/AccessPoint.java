@@ -4,7 +4,11 @@ package org.openhab.binding.robonect.internal.model;
 
 import org.eclipse.jdt.annotation.Nullable;
 
-/** Optional access-point state returned by Robonect. Credentials are deliberately not modeled. */
+/**
+ * Optional access-point state returned by Robonect. Credentials are deliberately not modeled.
+ *
+ * @author Nico Brüttner - Initial contribution
+ */
 public class AccessPoint {
     private @Nullable Boolean enable;
     private @Nullable String mac;

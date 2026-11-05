@@ -8,7 +8,11 @@ package org.openhab.binding.robonect.internal.model;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
-/** Weather-service configuration returned by the Robonect API. */
+/**
+ * Weather-service configuration returned by the Robonect API.
+ *
+ * @author Nico Brüttner - Initial contribution
+ */
 @NonNullByDefault
 public class WeatherService {
     private @Nullable Boolean enable;

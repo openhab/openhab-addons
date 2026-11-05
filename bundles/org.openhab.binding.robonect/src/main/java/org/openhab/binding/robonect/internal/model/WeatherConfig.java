@@ -8,7 +8,11 @@ package org.openhab.binding.robonect.internal.model;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
-/** Mowing restrictions configured for the Robonect weather service. */
+/**
+ * Mowing restrictions configured for the Robonect weather service.
+ *
+ * @author Nico Brüttner - Initial contribution
+ */
 @NonNullByDefault
 public class WeatherConfig {
     private @Nullable Integer maxrain;

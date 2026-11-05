@@ -2,7 +2,11 @@
  * SPDX-License-Identifier: EPL-2.0 */
 package org.openhab.binding.robonect.internal.model.cmd;
 
-/** Queries WLAN, access-point, and DHCP state. */
+/**
+ * Queries WLAN, access-point, and DHCP state.
+ *
+ * @author Nico Brüttner - Initial contribution
+ */
 public class WlanCommand implements Command {
     /**
      * Builds the WLAN configuration URL for this {@link Command}.

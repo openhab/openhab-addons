@@ -5,7 +5,11 @@ package org.openhab.binding.robonect.internal.model;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
-/** Response to an extension-state request. */
+/**
+ * Response to an extension-state request.
+ *
+ * @author Nico Brüttner - Initial contribution
+ */
 @NonNullByDefault
 public class ExtInfo extends RobonectAnswer {
     private @Nullable Extensions ext;

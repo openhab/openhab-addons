@@ -5,7 +5,11 @@ package org.openhab.binding.robonect.internal.model;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
-/** Response to a push-service request. */
+/**
+ * Response to a push-service request.
+ *
+ * @author Nico Brüttner - Initial contribution
+ */
 @NonNullByDefault
 public class PushInfo extends RobonectAnswer {
     private @Nullable Push push;

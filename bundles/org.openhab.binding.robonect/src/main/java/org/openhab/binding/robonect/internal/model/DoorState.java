@@ -15,7 +15,11 @@ package org.openhab.binding.robonect.internal.model;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
-/** Actual or pending door position returned by the Robonect API. */
+/**
+ * Actual or pending door position returned by the Robonect API.
+ *
+ * @author Nico Brüttner - Initial contribution
+ */
 @NonNullByDefault
 public class DoorState {
     private @Nullable Boolean open;

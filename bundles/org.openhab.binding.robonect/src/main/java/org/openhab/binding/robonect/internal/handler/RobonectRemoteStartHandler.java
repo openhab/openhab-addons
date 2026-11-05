@@ -35,8 +35,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Handles writes to the mower's remote-start API endpoints.
  *
- * @author Nico Brüttner - Initial contribution
- * @author Nico Brüttner - Direct remote-start API injection
+ * @author Nico Brüttner - Initial remote-start endpoint handling
  */
 @NonNullByDefault
 final class RobonectRemoteStartHandler {

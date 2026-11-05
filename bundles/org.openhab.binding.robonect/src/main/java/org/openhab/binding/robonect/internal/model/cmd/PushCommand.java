@@ -5,7 +5,11 @@ package org.openhab.binding.robonect.internal.model.cmd;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 
-/** Queries or updates the module push service. */
+/**
+ * Queries or updates the module push service.
+ *
+ * @author Nico Brüttner - Initial contribution
+ */
 public class PushCommand implements Command {
     private String parameter;
     private String value;

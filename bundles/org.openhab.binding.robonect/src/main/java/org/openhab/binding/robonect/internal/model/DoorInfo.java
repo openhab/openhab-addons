@@ -15,7 +15,11 @@ package org.openhab.binding.robonect.internal.model;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
-/** Response containing the Robonect door-system state. */
+/**
+ * Response containing the Robonect door-system state.
+ *
+ * @author Nico Brüttner - Initial contribution
+ */
 @NonNullByDefault
 public class DoorInfo extends RobonectAnswer {
     private @Nullable Door door;

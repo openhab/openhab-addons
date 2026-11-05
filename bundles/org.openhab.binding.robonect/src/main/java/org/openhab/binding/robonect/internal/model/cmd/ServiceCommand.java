@@ -14,6 +14,8 @@ package org.openhab.binding.robonect.internal.model.cmd;
 
 /**
  * Command for changing the Robonect module's operating state.
+ *
+ * @author Nico Brüttner - Initial contribution
  */
 public class ServiceCommand implements Command {
 

@@ -16,6 +16,8 @@ import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * Mower sub-version reported by version-1 Robonect firmware.
+ *
+ * @author Nico Brüttner - Initial contribution
  */
 public class VersionSub {
 

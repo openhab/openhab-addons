@@ -16,6 +16,8 @@ import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * Mower software and hardware versions reported by version-1 Robonect firmware.
+ *
+ * @author Nico Brüttner - Initial contribution
  */
 public class VersionMower {
 

@@ -47,8 +47,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Handles push and extension endpoints.
  *
- * @author Nico Brüttner - Initial contribution
- * @author Nico Brüttner - Direct push API injection
+ * @author Nico Brüttner - Initial push endpoint handling
  */
 @NonNullByDefault
 final class RobonectPushHandler {

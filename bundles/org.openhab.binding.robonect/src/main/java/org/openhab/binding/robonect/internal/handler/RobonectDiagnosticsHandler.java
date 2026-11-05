@@ -61,8 +61,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Handles telemetry and diagnostic API endpoints.
  *
- * @author Nico Brüttner - Initial contribution
- * @author Nico Brüttner - Direct diagnostics API injection
+ * @author Nico Brüttner - Initial diagnostics endpoint handling
  */
 @NonNullByDefault
 final class RobonectDiagnosticsHandler {

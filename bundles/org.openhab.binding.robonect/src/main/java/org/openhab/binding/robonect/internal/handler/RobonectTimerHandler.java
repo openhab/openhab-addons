@@ -38,8 +38,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Handles reads, updates, and dynamic channels for timer API responses.
  *
- * @author Nico Brüttner - Initial contribution
- * @author Nico Brüttner - Direct timer API injection
+ * @author Nico Brüttner - Initial timer endpoint handling
  */
 @NonNullByDefault
 final class RobonectTimerHandler {

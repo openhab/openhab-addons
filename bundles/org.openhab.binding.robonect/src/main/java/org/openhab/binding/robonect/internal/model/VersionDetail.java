@@ -16,6 +16,8 @@ import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * Version information for one Robonect software component.
+ *
+ * @author Nico Brüttner - Initial contribution
  */
 public class VersionDetail {
 

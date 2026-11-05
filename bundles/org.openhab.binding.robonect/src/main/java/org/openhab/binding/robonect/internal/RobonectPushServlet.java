@@ -22,7 +22,11 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.http.whiteboard.propertytypes.HttpWhiteboardServletName;
 import org.osgi.service.http.whiteboard.propertytypes.HttpWhiteboardServletPattern;
 
-/** Receives Robonect push notifications through the OSGi HTTP Whiteboard. */
+/**
+ * Receives Robonect push notifications through the OSGi HTTP Whiteboard.
+ *
+ * @author Nico Brüttner - Initial contribution
+ */
 @NonNullByDefault
 @Component(immediate = true, service = { Servlet.class, RobonectPushServlet.class })
 @HttpWhiteboardServletName("/robonect")

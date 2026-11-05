@@ -13,8 +13,7 @@ import com.google.gson.annotations.SerializedName;
 /**
  * Weather measurements returned by the Robonect API.
  *
- * @author Nico Brüttner - Initial contribution
- * @author Nico Brüttner - Weather conditions and timestamps
+ * @author Nico Brüttner - Weather telemetry model
  */
 @NonNullByDefault
 public class Weather {

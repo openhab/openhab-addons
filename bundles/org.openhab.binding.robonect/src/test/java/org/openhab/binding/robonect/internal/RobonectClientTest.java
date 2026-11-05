@@ -52,9 +52,7 @@ import ch.qos.logback.core.read.ListAppender;
  * by mocking the module responses.
  *
  * @author Marco Meyer - Initial contribution
- * @author Nico Brüttner - Push mode web interface tests
- * @author Nico Brüttner - Weather interval web interface tests
- * @author Nico Brüttner - Shared transport and endpoint state tests
+ * @author Nico Brüttner - API and web interface coverage
  */
 @ExtendWith(MockitoExtension.class)
 public class RobonectClientTest {

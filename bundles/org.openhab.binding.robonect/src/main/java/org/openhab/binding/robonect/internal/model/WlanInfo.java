@@ -4,7 +4,11 @@ package org.openhab.binding.robonect.internal.model;
 
 import org.eclipse.jdt.annotation.Nullable;
 
-/** WLAN configuration and connection state returned by Robonect. */
+/**
+ * WLAN configuration and connection state returned by Robonect.
+ *
+ * @author Nico Brüttner - Initial contribution
+ */
 public class WlanInfo extends RobonectAnswer {
     private @Nullable AccessPoint ap;
     private @Nullable WifiStation station;
