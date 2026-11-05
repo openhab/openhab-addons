@@ -72,25 +72,25 @@ public abstract class VeluxActiveModuleHandler extends BaseThingHandler {
             accountHandler = account;
             ModuleRequestContext requestContext = captureRequestContext();
             if (config.moduleId.isBlank()) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                updateStatus(ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
                         "@text/offline.conf-error.module.missing-id");
                 return;
             }
             if (bridge == null || account == null || requestContext == null) {
                 clearState();
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
+                updateStatus(ThingStatusDetail.UNINITIALIZED.BRIDGE_UNINITIALIZED);
                 return;
             }
             if (bridge.getStatus() != ThingStatus.ONLINE) {
                 clearState();
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+                updateStatus(ThingStatusDetail.OFFLINE.BRIDGE_OFFLINE);
                 return;
             }
             if (!isRequestContextCurrent(requestContext)) {
                 return;
             }
             if (getThing().getStatus() == ThingStatus.OFFLINE) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "@text/status.module.awaiting-status");
+                updateStatus(ThingStatus.OFFLINE, "@text/status.module.awaiting-status");
             }
         }
         // Never acquire the account monitor while holding the child monitor.
@@ -171,7 +171,7 @@ public abstract class VeluxActiveModuleHandler extends BaseThingHandler {
         if (parentRequestContext != null && reportedBridge != null
                 && !parentRequestContext.moduleId().equals(reportedBridge)) {
             clearState();
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+            updateStatus(ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
                     "@text/offline.conf-error.module.wrong-gateway");
             return false;
         }
@@ -183,7 +183,7 @@ public abstract class VeluxActiveModuleHandler extends BaseThingHandler {
     synchronized void failed(ModuleRequestContext requestContext, @Nullable String message) {
         if (isRequestContextCurrent(requestContext)) {
             clearState();
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message);
+            updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, message);
         }
     }
 
@@ -191,9 +191,9 @@ public abstract class VeluxActiveModuleHandler extends BaseThingHandler {
         clearState();
         // A partial response does not establish loss or restoration of connectivity.
         if (getThing().getStatus() == ThingStatus.ONLINE) {
-            updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, description);
+            updateStatus(ThingStatus.ONLINE, description);
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, description);
+            updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, description);
         }
     }
 

@@ -333,7 +333,7 @@ public class VeluxActiveGatewayHandler extends VeluxActiveModuleHandler implemen
         }
         if (requestContext.homeId().isBlank()) {
             clearState();
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+            updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                     "@text/offline.comm-error.gateway.home-unresolved");
         } else if (homeChanged) {
             finishPairing("CANCELLED");
@@ -350,7 +350,7 @@ public class VeluxActiveGatewayHandler extends VeluxActiveModuleHandler implemen
         if (error != null || module != null && Boolean.FALSE.equals(module.reachable)) {
             finishPairing("CANCELLED");
             clearState();
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+            updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                     error != null && !Integer.valueOf(6).equals(error.code)
                             ? "@text/offline.comm-error.gateway.status-error"
                             : "@text/offline.comm-error.gateway.unreachable");

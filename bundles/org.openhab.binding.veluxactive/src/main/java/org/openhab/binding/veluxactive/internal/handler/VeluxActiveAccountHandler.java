@@ -248,7 +248,11 @@ public class VeluxActiveAccountHandler extends BaseBridgeHandler {
             return;
         }
         cancelScheduledAuthentication();
-        updateStatus(status, detail, description);
+        if (detail == ThingStatusDetail.NONE) {
+            updateStatus(status, description);
+        } else {
+            updateStatus(detail, description);
+        }
         if (status == ThingStatus.ONLINE && !getThing().getThings().isEmpty()) {
             requestPoll();
         }
@@ -278,7 +282,7 @@ public class VeluxActiveAccountHandler extends BaseBridgeHandler {
                 logger.debug("Unexpected VELUX ACTIVE authentication failure", e);
                 synchronized (this) {
                     if (session == generation) {
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                                 "@text/offline.comm-error.account.unexpected-authentication-error");
                     }
                 }
