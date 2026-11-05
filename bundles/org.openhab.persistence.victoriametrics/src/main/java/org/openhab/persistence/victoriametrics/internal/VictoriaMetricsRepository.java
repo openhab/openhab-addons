@@ -68,6 +68,8 @@ import com.google.gson.JsonParser;
 public class VictoriaMetricsRepository {
     private static final long REQUEST_TIMEOUT_SECONDS = 30;
     private static final long ITEM_NAMES_RANGE_DAYS = 365;
+    // the label APIs treat a start of 0 like a missing start and only return the labels of the current day
+    private static final Instant EARLIEST_START = Instant.ofEpochMilli(1);
 
     private final Logger logger = LoggerFactory.getLogger(VictoriaMetricsRepository.class);
     private final VictoriaMetricsConfiguration configuration;
@@ -318,14 +320,15 @@ public class VictoriaMetricsRepository {
     public @Nullable Set<String> getStringStates(String metricName, String itemName) {
         String selector = "{" + LABEL_METRIC_NAME + "=\"" + metricName + "\"," + TAG_ITEM_NAME + "=\""
                 + VictoriaMetricsPoint.escapeLabelValue(itemName) + "\"}";
-        // without a start, only the labels of the current day are returned
-        return getLabelValues(TAG_STATE_NAME, selector, Instant.EPOCH);
+        return getLabelValues(TAG_STATE_NAME, selector, EARLIEST_START);
     }
 
     private @Nullable Set<String> getLabelValues(String labelName, String selector, Instant start) {
         try {
+            // the end defaults to the current time, which would exclude future states
             ContentResponse response = newRequest(PATH_LABEL_VALUES.formatted(labelName)).param("match[]", selector)
-                    .param("start", formatTimestamp(start)).send();
+                    .param("start", formatTimestamp(start))
+                    .param("end", formatTimestamp(VictoriaMetricsFilterCriteriaQueryCreator.OPEN_END)).send();
             if (response.getStatus() != HttpStatus.OK_200) {
                 logger.warn("Failed to query values of label '{}': HTTP status {}: {}", labelName, response.getStatus(),
                         response.getContentAsString());

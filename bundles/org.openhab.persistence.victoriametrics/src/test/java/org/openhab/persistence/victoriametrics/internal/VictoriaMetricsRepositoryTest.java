@@ -271,8 +271,9 @@ public class VictoriaMetricsRepositoryTest {
         assertThat(result, containsInAnyOrder("HEATING", "IDLE"));
         verify(httpClient).newRequest("http://localhost:8428/api/v1/label/state/values");
         verify(request).param("match[]", "{__name__=\"Mode\",item=\"Say \\\"hi\\\"\"}");
-        // the label values API only returns the current day without a start
-        verify(request).param("start", "0.000");
+        // a start of 0 is treated like no start, which only returns the labels of the current day
+        verify(request).param("start", "0.001");
+        verify(request).param("end", "7258118400.000");
     }
 
     @Test
@@ -296,6 +297,7 @@ public class VictoriaMetricsRepositoryTest {
         verify(httpClient).newRequest("http://localhost:8428/api/v1/label/item/values");
         verify(request).param("match[]", "{item!=\"\"}");
         verify(request).param(eq("start"), any(String.class));
+        verify(request).param("end", "7258118400.000");
     }
 
     @Test
