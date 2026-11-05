@@ -87,7 +87,16 @@ public abstract class LGThinQAbstractDeviceHandler<@NonNull C extends Capability
     @Nullable
     protected C thinQCapability;
     private volatile S lastShot;
-    private @Nullable Future<?> commandExecutorQueueJob;
+    /**
+     * Commands are executed by a task on the shared scheduler that drains {@link #commandBlockQueue} and ends when
+     * the queue is empty, so idle devices don't hold a scheduler thread. At most one drain task runs per device,
+     * which keeps the commands of a device in order. The fields below are guarded by {@link #commandQueueLock}.
+     */
+    private final Object commandQueueLock = new Object();
+    private @Nullable Future<?> commandDrainJob;
+    private boolean commandQueueEnabled;
+    // incremented when the queue is disabled, so a drain task that is still running can't take new commands
+    private int commandQueueGeneration;
     private @Nullable ScheduledFuture<?> thingStatePollingJob;
     private @Nullable ScheduledFuture<?> extraInfoCollectorPollingJob;
     /**
@@ -109,49 +118,6 @@ public abstract class LGThinQAbstractDeviceHandler<@NonNull C extends Capability
     private volatile String monitorWorkId = "";
     private String bridgeId = "";
     private ThingStatus lastThingStatus = ThingStatus.UNKNOWN;
-    private final Runnable queuedCommandExecutor = () -> {
-        while (!Thread.currentThread().isInterrupted()) {
-            AsyncCommandParams params;
-            try {
-                params = commandBlockQueue.take();
-            } catch (InterruptedException e) {
-                getLogger().debug("Interrupting async command queue executor.");
-                return;
-            }
-
-            try {
-                processCommand(params);
-                String channelUid = getSimpleChannelUID(params.channelUID());
-                if (CHANNEL_AC_POWER_ID.equals(channelUid)) {
-                    // if processed command come from POWER channel, then force updateDeviceChannels immediatly
-                    // this is important to analise if the polling needs to be changed in time.
-                    updateThingStateFromLG();
-                } else if (CHANNEL_EXTENDED_INFO_COLLECTOR_ID.equals(channelUid)) {
-                    if (OnOffType.ON.equals(params.command())) {
-                        getLogger().debug("Turning ON extended information collector");
-                        if (pollExtraInfoOnPowerOff
-                                || DevicePowerState.DV_POWER_ON.equals(getLastShot().getPowerStatus())) {
-                            startExtraInfoCollectorPolling();
-                        }
-                    } else if (OnOffType.OFF.equals(params.command())) {
-                        getLogger().debug("Turning OFF extended information collector");
-                        stopExtraInfoCollectorPolling();
-                    } else {
-                        getLogger().error("Command {} for {} channel is unexpected. It's most likely a bug",
-                                params.command(), CHANNEL_EXTENDED_INFO_COLLECTOR_ID);
-                    }
-                }
-            } catch (LGThinqException e) {
-                getLogger().error("Error executing Command {} to the channel {}. Thing goes offline until retry",
-                        params.command(), params.channelUID(), e);
-                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-            } catch (Exception e) {
-                getLogger().error("System error executing Command {} to the channel {}. Ignoring command",
-                        params.command(), params.channelUID(), e);
-            }
-        }
-        getLogger().debug("Finishing QueueCommandExecutor thread...");
-    };
 
     public LGThinQAbstractDeviceHandler(Thing thing, LGThinQStateDescriptionProvider stateDescriptionProvider,
             ItemChannelLinkRegistry itemChannelLinkRegistry) {
@@ -242,19 +208,94 @@ public abstract class LGThinQAbstractDeviceHandler<@NonNull C extends Capability
                 e -> emptyIfNull(e.getValue().getCourseName()));
     }
 
-    protected void startCommandExecutorQueueJob() {
-        Future<?> commandExecutorQueueJob = this.commandExecutorQueueJob;
-        if (commandExecutorQueueJob == null || commandExecutorQueueJob.isDone()) {
-            this.commandExecutorQueueJob = scheduler.submit(getQueuedCommandExecutor());
+    /**
+     * Starts executing queued commands, including the ones queued while the queue was disabled.
+     */
+    protected void enableCommandQueue() {
+        synchronized (commandQueueLock) {
+            commandQueueEnabled = true;
+            scheduleCommandDrain();
         }
     }
 
-    protected void stopCommandExecutorQueueJob() {
-        Future<?> commandExecutorQueueJob = this.commandExecutorQueueJob;
-        if (commandExecutorQueueJob != null) {
-            commandExecutorQueueJob.cancel(true);
+    /**
+     * Stops executing commands and discards the pending ones.
+     */
+    protected void disableCommandQueue() {
+        synchronized (commandQueueLock) {
+            commandQueueEnabled = false;
+            commandQueueGeneration++;
+            Future<?> commandDrainJob = this.commandDrainJob;
+            if (commandDrainJob != null) {
+                commandDrainJob.cancel(true);
+                this.commandDrainJob = null;
+            }
+            commandBlockQueue.clear();
         }
-        this.commandExecutorQueueJob = null;
+    }
+
+    private void scheduleCommandDrain() {
+        synchronized (commandQueueLock) {
+            if (commandQueueEnabled && commandDrainJob == null && !commandBlockQueue.isEmpty()) {
+                int generation = commandQueueGeneration;
+                commandDrainJob = scheduler.submit(() -> drainCommandQueue(generation));
+            }
+        }
+    }
+
+    private void drainCommandQueue(int generation) {
+        AsyncCommandParams params;
+        while (!Thread.currentThread().isInterrupted() && (params = nextQueuedCommand(generation)) != null) {
+            executeCommand(params);
+        }
+    }
+
+    private @Nullable AsyncCommandParams nextQueuedCommand(int generation) {
+        synchronized (commandQueueLock) {
+            if (generation != commandQueueGeneration) {
+                return null;
+            }
+            @Nullable
+            AsyncCommandParams params = commandBlockQueue.poll();
+            if (params == null) {
+                // the next queued command schedules a new drain task
+                commandDrainJob = null;
+            }
+            return params;
+        }
+    }
+
+    private void executeCommand(AsyncCommandParams params) {
+        try {
+            processCommand(params);
+            String channelUid = getSimpleChannelUID(params.channelUID());
+            if (CHANNEL_AC_POWER_ID.equals(channelUid)) {
+                // if processed command come from POWER channel, then force updateDeviceChannels immediatly
+                // this is important to analise if the polling needs to be changed in time.
+                updateThingStateFromLG();
+            } else if (CHANNEL_EXTENDED_INFO_COLLECTOR_ID.equals(channelUid)) {
+                if (OnOffType.ON.equals(params.command())) {
+                    getLogger().debug("Turning ON extended information collector");
+                    if (pollExtraInfoOnPowerOff
+                            || DevicePowerState.DV_POWER_ON.equals(getLastShot().getPowerStatus())) {
+                        startExtraInfoCollectorPolling();
+                    }
+                } else if (OnOffType.OFF.equals(params.command())) {
+                    getLogger().debug("Turning OFF extended information collector");
+                    stopExtraInfoCollectorPolling();
+                } else {
+                    getLogger().error("Command {} for {} channel is unexpected. It's most likely a bug",
+                            params.command(), CHANNEL_EXTENDED_INFO_COLLECTOR_ID);
+                }
+            }
+        } catch (LGThinqException e) {
+            getLogger().error("Error executing Command {} to the channel {}. Thing goes offline until retry",
+                    params.command(), params.channelUID(), e);
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+        } catch (Exception e) {
+            getLogger().error("System error executing Command {} to the channel {}. Ignoring command", params.command(),
+                    params.channelUID(), e);
+        }
     }
 
     protected void handleStatusChanged(ThingStatus newStatus, ThingStatusDetail statusDetail) {
@@ -302,13 +343,16 @@ public abstract class LGThinQAbstractDeviceHandler<@NonNull C extends Capability
             try {
                 // Ensure commands are send in a pipe per device.
                 commandBlockQueue.add(params);
+                scheduleCommandDrain();
             } catch (IllegalStateException ex) {
                 getLogger().warn(
                         "Device's command queue reached the size limit. Probably the device is busy or stuck. Ignoring command.");
                 if (getLogger().isDebugEnabled()) {
-                    Future<?> commandExecutorQueueJob = this.commandExecutorQueueJob;
-                    getLogger().debug("Status of the commandQueue: consumer: {}, size: {}",
-                            commandExecutorQueueJob == null || commandExecutorQueueJob.isDone() ? "OFF" : "ON",
+                    boolean draining;
+                    synchronized (commandQueueLock) {
+                        draining = commandDrainJob != null;
+                    }
+                    getLogger().debug("Status of the commandQueue: consumer: {}, size: {}", draining ? "ON" : "OFF",
                             commandBlockQueue.size());
                 }
                 if (getLogger().isTraceEnabled()) {
@@ -436,7 +480,7 @@ public abstract class LGThinQAbstractDeviceHandler<@NonNull C extends Capability
         }
         // finally, start command queue, regardless of the thing state, since we can still try to send commands without
         // property ONLINE (the successful result from command request can put the thing in ONLINE status).
-        startCommandExecutorQueueJob();
+        enableCommandQueue();
         if (getThing().getStatus() == ThingStatus.ONLINE) {
             try {
                 getLgThinQAPIClientService().initializeDevice(bridgeId, getDeviceId());
@@ -754,10 +798,6 @@ public abstract class LGThinQAbstractDeviceHandler<@NonNull C extends Capability
 
     protected abstract void processCommand(AsyncCommandParams params) throws LGThinqApiException;
 
-    protected Runnable getQueuedCommandExecutor() {
-        return queuedCommandExecutor;
-    }
-
     @Override
     public void dispose() {
         getLogger().debug("Disposing Thinq Thing {}", getDeviceId());
@@ -768,7 +808,7 @@ public abstract class LGThinQAbstractDeviceHandler<@NonNull C extends Capability
 
         stopThingStatePolling();
         stopExtraInfoCollectorPolling();
-        stopCommandExecutorQueueJob();
+        disableCommandQueue();
         try {
             if (LGAPIVerion.V1_0.equals(getCapabilities().getDeviceVersion())) {
                 stopDeviceV1Monitor(getDeviceId());
