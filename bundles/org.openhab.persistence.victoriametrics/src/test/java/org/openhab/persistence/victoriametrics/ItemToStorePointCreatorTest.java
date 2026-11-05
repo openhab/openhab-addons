@@ -41,11 +41,12 @@ import org.openhab.core.items.ItemRegistry;
 import org.openhab.core.items.Metadata;
 import org.openhab.core.items.MetadataKey;
 import org.openhab.core.items.MetadataRegistry;
-import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.library.items.ColorItem;
+import org.openhab.core.library.items.DimmerItem;
 import org.openhab.core.library.items.NumberItem;
 import org.openhab.core.library.items.StringItem;
 import org.openhab.core.library.types.HSBType;
+import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.SIUnits;
@@ -248,6 +249,20 @@ public class ItemToStorePointCreatorTest {
     }
 
     @Test
+    public void shouldStoreDimmerOnAsPercent() throws ExecutionException, InterruptedException {
+        DimmerItem dimmerItem = new DimmerItem("myDimmer");
+        dimmerItem.setState(OnOffType.ON);
+        VictoriaMetricsPoint point = instance.convert(dimmerItem, dimmerItem.getState(), Instant.now(), null).get();
+
+        if (point == null) {
+            Assertions.fail("'point' is null");
+            return;
+        }
+
+        assertThat(point.getValue(), is(new BigDecimal("100")));
+    }
+
+    @Test
     public void shouldStoreCategoryTagIfProvidedAndConfigured() throws ExecutionException, InterruptedException {
         NumberItem item = ItemTestHelper.createNumberItem("myitem", 5);
         item.setCategory("categoryValue");
@@ -425,7 +440,6 @@ public class ItemToStorePointCreatorTest {
                 return mock(VictoriaMetricsRepository.class);
             }
         };
-        instance.setItemFactory(new CoreItemFactory(unitProviderMock));
 
         return instance;
     }
