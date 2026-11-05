@@ -12,6 +12,7 @@
  */
 package org.openhab.persistence.victoriametrics;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -29,6 +30,7 @@ import org.mockito.quality.Strictness;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.items.ItemRegistry;
 import org.openhab.core.items.MetadataRegistry;
+import org.openhab.core.persistence.ModifiablePersistenceService;
 import org.openhab.persistence.victoriametrics.internal.ItemTestHelper;
 import org.openhab.persistence.victoriametrics.internal.UnexpectedConditionException;
 import org.openhab.persistence.victoriametrics.internal.VictoriaMetricsMetadataService;
@@ -129,6 +131,12 @@ public class VictoriaMetricsPersistenceServiceTest {
         when(repositoryMock.isConnected()).thenReturn(false);
         instance.store(ItemTestHelper.createNumberItem("number", 5));
         verify(repositoryMock, never()).write(any());
+    }
+
+    @Test
+    public void serviceIsNotModifiable() {
+        // VictoriaMetrics cannot replace samples with the same timestamp or delete time ranges
+        assertFalse(getService(VALID_CONFIGURATION_WITHOUT_AUTHENTICATION) instanceof ModifiablePersistenceService);
     }
 
     private VictoriaMetricsPersistenceService getService(Map<String, Object> config) {

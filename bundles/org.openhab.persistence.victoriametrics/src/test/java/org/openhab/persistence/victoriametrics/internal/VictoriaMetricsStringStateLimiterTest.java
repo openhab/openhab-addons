@@ -83,18 +83,6 @@ public class VictoriaMetricsStringStateLimiterTest {
                 contains("", "A", ""));
     }
 
-    @Test
-    public void forgetReadsStoredStatesAgain() {
-        VictoriaMetricsStringStateLimiter limiter = createLimiter(1);
-        limiter.filter(List.of(point("Mode", "A")));
-        assertThat(states(limiter.filter(List.of(point("Mode", "B")))), empty());
-
-        limiter.forget("Mode");
-
-        assertThat(states(limiter.filter(List.of(point("Mode", "B")))), contains("B"));
-        assertThat(loadedItems, contains("Mode", "Mode"));
-    }
-
     private VictoriaMetricsStringStateLimiter createLimiter(int maxStates) {
         return new VictoriaMetricsStringStateLimiter(maxStates, (metricName, itemName) -> {
             loadedItems.add(itemName);
