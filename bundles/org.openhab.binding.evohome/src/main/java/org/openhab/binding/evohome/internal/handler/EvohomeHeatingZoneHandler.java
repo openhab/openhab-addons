@@ -63,6 +63,7 @@ import org.slf4j.LoggerFactory;
  * @author Kovacs Istvan - Weekly program and next scheduled target
  * @author Kovacs Istvan - Serialized set point mode selection
  * @author Kovacs Istvan - Lifecycle-safe commands and accepted override context
+ * @author Kovacs Istvan - Lifecycle-safe state publication
  */
 @NonNullByDefault
 public class EvohomeHeatingZoneHandler extends BaseEvohomeHandler {
@@ -85,6 +86,9 @@ public class EvohomeHeatingZoneHandler extends BaseEvohomeHandler {
     }
 
     private record ZoneCommand(EvohomeAccountBridgeHandler bridge, String zoneId, long generation, int duration) {
+    }
+
+    record ZoneUpdate(String zoneId, long generation) {
     }
 
     public EvohomeHeatingZoneHandler(Thing thing) {
@@ -135,8 +139,23 @@ public class EvohomeHeatingZoneHandler extends BaseEvohomeHandler {
         }
     }
 
-    public synchronized void updateSchedule(@Nullable CachedSchedule cached, Instant now) {
-        if (disposed) {
+    synchronized @Nullable ZoneUpdate captureUpdate() {
+        return disposed ? null : new ZoneUpdate(getId(), commandGeneration);
+    }
+
+    private boolean isCurrent(ZoneUpdate update) {
+        return !disposed && update.generation() == commandGeneration && update.zoneId().equals(getId());
+    }
+
+    public void updateSchedule(@Nullable CachedSchedule cached, Instant now) {
+        ZoneUpdate update = captureUpdate();
+        if (update != null) {
+            updateSchedule(update, cached, now);
+        }
+    }
+
+    synchronized void updateSchedule(ZoneUpdate update, @Nullable CachedSchedule cached, Instant now) {
+        if (!isCurrent(update)) {
             return;
         }
         if (cached == null) {
@@ -174,6 +193,16 @@ public class EvohomeHeatingZoneHandler extends BaseEvohomeHandler {
     }
 
     public void update(@Nullable ThingStatus tcsStatus, @Nullable ZoneStatus zoneStatus) {
+        ZoneUpdate update = captureUpdate();
+        if (update != null) {
+            update(update, tcsStatus, zoneStatus);
+        }
+    }
+
+    synchronized void update(ZoneUpdate update, @Nullable ThingStatus tcsStatus, @Nullable ZoneStatus zoneStatus) {
+        if (!isCurrent(update) || zoneStatus != null && !update.zoneId().equals(zoneStatus.getZoneId())) {
+            return;
+        }
         if (logger.isTraceEnabled() && zoneStatus != null) {
             TemperatureStatus temperature = zoneStatus.getTemperature();
             HeatSetpointStatus setpoint = zoneStatus.getHeatSetpoint();

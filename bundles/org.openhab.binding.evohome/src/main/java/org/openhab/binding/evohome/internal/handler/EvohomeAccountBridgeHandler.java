@@ -74,6 +74,7 @@ import org.slf4j.LoggerFactory;
  * @author Kovacs Istvan - Cached weekly schedule polling
  * @author Kovacs Istvan - Discovery lifecycle and partial reset recovery
  * @author Kovacs Istvan - Fair schedule refresh and accepted command propagation
+ * @author Kovacs Istvan - Lifecycle-bound zone status delivery
  *
  */
 @NonNullByDefault
@@ -626,15 +627,19 @@ public class EvohomeAccountBridgeHandler extends BaseBridgeHandler {
         }
         for (Thing thing : getThing().getThings()) {
             if (thing.getHandler() instanceof EvohomeHeatingZoneHandler zoneHandler) {
+                var update = zoneHandler.captureUpdate();
+                if (update == null) {
+                    continue;
+                }
+                String zoneId = update.zoneId();
                 zoneThings++;
                 logger.trace("Account {}: mapping zone {} to Thing {}; statusFound={}, controllerId={}",
-                        getThing().getUID(), zoneHandler.getId(), thing.getUID(),
-                        idToZoneMap.containsKey(zoneHandler.getId()), zoneIdToTcsIdMap.get(zoneHandler.getId()));
-                zoneHandler.update(idToTcsThingsStatusMap.get(zoneIdToTcsIdMap.get(zoneHandler.getId())),
-                        idToZoneMap.get(zoneHandler.getId()));
-                zoneHandler.updateSchedule(
-                        localApiClient == null ? null : localApiClient.getCachedZoneSchedule(zoneHandler.getId()),
-                        scheduleNow);
+                        getThing().getUID(), zoneId, thing.getUID(), idToZoneMap.containsKey(zoneId),
+                        zoneIdToTcsIdMap.get(zoneId));
+                zoneHandler.update(update, idToTcsThingsStatusMap.get(zoneIdToTcsIdMap.get(zoneId)),
+                        idToZoneMap.get(zoneId));
+                zoneHandler.updateSchedule(update,
+                        localApiClient == null ? null : localApiClient.getCachedZoneSchedule(zoneId), scheduleNow);
             }
         }
         logger.trace(

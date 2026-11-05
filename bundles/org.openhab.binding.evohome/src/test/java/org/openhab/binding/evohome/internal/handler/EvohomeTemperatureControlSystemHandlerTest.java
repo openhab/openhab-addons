@@ -21,14 +21,22 @@ import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.locks.LockSupport;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.openhab.binding.evohome.internal.action.EvohomeSystemActions;
 import org.openhab.binding.evohome.internal.api.models.v2.dto.response.GatewayStatus;
@@ -71,6 +79,10 @@ class EvohomeTemperatureControlSystemHandlerTest {
         handler.initialize();
         when(bridge.setTcsMode(eq("controller"), anyString())).thenReturn(true);
         when(bridge.resetSystem("controller")).thenReturn(true);
+        doAnswer(invocation -> {
+            invocation.getArgument(0, Runnable.class).run();
+            return null;
+        }).when(bridge).executeZoneCommand(any(Runnable.class));
         clearInvocations(bridge, callback);
     }
 
@@ -78,6 +90,7 @@ class EvohomeTemperatureControlSystemHandlerTest {
     void autoChangesSystemModeWithoutResettingZoneOverrides() {
         command("SystemMode", new StringType("Auto"));
         verify(bridge).setTcsMode("controller", "Auto");
+        verify(bridge).executeZoneCommand(any(Runnable.class));
         verifyNoMoreInteractions(bridge);
         verify(callback, never()).stateUpdated(any(), any());
     }
@@ -86,6 +99,7 @@ class EvohomeTemperatureControlSystemHandlerTest {
     void resetOnExplicitlyResetsSystemAndZoneOverrides() {
         command("Reset", OnOffType.ON);
         verify(bridge).resetSystem("controller");
+        verify(bridge).executeZoneCommand(any(Runnable.class));
         verifyNoMoreInteractions(bridge);
         verify(callback, never()).stateUpdated(any(), any());
     }
@@ -230,6 +244,116 @@ class EvohomeTemperatureControlSystemHandlerTest {
     @Test
     void displayRegistersSystemActions() {
         assertTrue(handler.getServices().contains(EvohomeSystemActions.class));
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = { "reset", "permanent", "temporary", "autoReset", "resetChannel", "modeChannel",
+            "autoResetChannel" })
+    void disposedDisplayRejectsEveryModeWrite(String operation) {
+        handler.dispose();
+        clearInvocations(bridge);
+
+        invokeModeWrite(operation);
+
+        verify(bridge, never()).resetSystem(anyString());
+        verify(bridge, never()).setTcsMode(anyString(), anyString());
+        verify(bridge, never()).setTemporaryTcsMode(anyString(), anyString(), any());
+    }
+
+    @ParameterizedTest
+    @CsvSource({ "reset,dispose", "permanent,dispose", "temporary,dispose", "autoReset,dispose", "resetChannel,dispose",
+            "modeChannel,dispose", "autoResetChannel,dispose", "reset,reconfigure", "permanent,reconfigure",
+            "temporary,reconfigure", "reset,reinitialize" })
+    @Timeout(30)
+    void queuedModeWriteCannotSurviveDisplayLifecycleChange(String operation, String transition) throws Exception {
+        Object serialization = new Object();
+        List<String> writes = new ArrayList<>();
+        doAnswer(invocation -> {
+            synchronized (serialization) {
+                invocation.getArgument(0, Runnable.class).run();
+            }
+            return null;
+        }).when(bridge).executeZoneCommand(any(Runnable.class));
+        doAnswer(invocation -> {
+            synchronized (serialization) {
+                writes.add(invocation.getArgument(0, String.class));
+            }
+            return true;
+        }).when(bridge).resetSystem(anyString());
+        doAnswer(invocation -> {
+            synchronized (serialization) {
+                writes.add(invocation.getArgument(0, String.class));
+            }
+            return true;
+        }).when(bridge).setTcsMode(anyString(), anyString());
+        doAnswer(invocation -> {
+            synchronized (serialization) {
+                writes.add(invocation.getArgument(0, String.class));
+            }
+            return true;
+        }).when(bridge).setTemporaryTcsMode(anyString(), anyString(), any());
+
+        AtomicReference<@Nullable Thread> worker = new AtomicReference<>();
+        var executor = Executors.newSingleThreadExecutor(runnable -> {
+            Thread thread = new Thread(runnable, "evohome-display-command-test");
+            thread.setDaemon(true);
+            return thread;
+        });
+        try {
+            java.util.concurrent.Future<?> pending;
+            synchronized (serialization) {
+                pending = executor.submit(() -> {
+                    worker.set(Thread.currentThread());
+                    invokeModeWrite(operation);
+                });
+                assertTrue(awaitBlocked(worker), "The command must be waiting for API serialization");
+                handler.dispose();
+                if (!"dispose".equals(transition)) {
+                    if ("reconfigure".equals(transition)) {
+                        thing.getConfiguration().put("id", "new-controller");
+                        handler.thingUpdated(thing);
+                        assertEquals("new-controller", handler.getId());
+                    } else {
+                        handler.initialize();
+                    }
+                }
+            }
+            pending.get(10, TimeUnit.SECONDS);
+            assertTrue(writes.isEmpty(), "Old-lifecycle command reached controllers: " + writes);
+
+            if (!"dispose".equals(transition)) {
+                assertTrue(handler.setSystemMode("Auto"));
+                assertEquals(List.of("reconfigure".equals(transition) ? "new-controller" : "controller"), writes);
+            }
+        } finally {
+            executor.shutdownNow();
+            assertTrue(executor.awaitTermination(10, TimeUnit.SECONDS));
+        }
+    }
+
+    private void invokeModeWrite(String operation) {
+        switch (operation) {
+            case "reset" -> handler.resetSystem();
+            case "permanent" -> handler.setSystemMode("Auto");
+            case "temporary" -> handler.setTemporarySystemMode("Away", Instant.now().plusSeconds(3600));
+            case "autoReset" -> handler.setSystemMode("AutoWithReset");
+            case "resetChannel" -> command("Reset", OnOffType.ON);
+            case "modeChannel" -> command("SystemMode", new StringType("Auto"));
+            case "autoResetChannel" -> command("SystemMode", new StringType("AutoWithReset"));
+            default -> throw new IllegalArgumentException(operation);
+        }
+    }
+
+    private static boolean awaitBlocked(AtomicReference<@Nullable Thread> worker) {
+        long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(10);
+        while (System.nanoTime() < deadline) {
+            Thread thread = worker.get();
+            if (thread != null && thread.getState() == Thread.State.BLOCKED) {
+                return true;
+            }
+            LockSupport.parkNanos(TimeUnit.MILLISECONDS.toNanos(1));
+        }
+        return false;
     }
 
     @ParameterizedTest

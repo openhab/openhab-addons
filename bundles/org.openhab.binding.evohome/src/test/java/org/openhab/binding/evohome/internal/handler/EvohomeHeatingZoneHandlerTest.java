@@ -203,6 +203,8 @@ class EvohomeHeatingZoneHandlerTest {
             "{\"isAvailable\":true,\"temperature\":null}" })
     void unavailableTemperatureIsUndefinedWhileSetPointIsUpdated(String temperature) {
         handler.setCallback(callback);
+        thing.getConfiguration().put("id", "zone");
+        handler.initialize();
         handler.update(null, status(temperature));
         verify(callback).stateUpdated(new ChannelUID(thing.getUID(), ZONE_TEMPERATURE_CHANNEL), UnDefType.UNDEF);
         verify(callback).stateUpdated(eq(new ChannelUID(thing.getUID(), ZONE_SET_POINT_CHANNEL)),
@@ -214,6 +216,8 @@ class EvohomeHeatingZoneHandlerTest {
     @Test
     void genuineZeroTemperatureRemainsValid() {
         handler.setCallback(callback);
+        thing.getConfiguration().put("id", "zone");
+        handler.initialize();
         handler.update(null, status("{\"isAvailable\":true,\"temperature\":0}"));
         verify(callback).stateUpdated(new ChannelUID(thing.getUID(), ZONE_TEMPERATURE_CHANNEL),
                 new QuantityType<>(0, SIUnits.CELSIUS));
@@ -242,6 +246,78 @@ class EvohomeHeatingZoneHandlerTest {
         CommandFixture fixture = new CommandFixture(0);
         fixture.command("SetPoint", new DecimalType("21.5"));
         verify(fixture.bridge).setPermanentSetPoint("zone", 21.5);
+    }
+
+    @Test
+    void oldZoneStatusCannotSeedReconfiguredZoneCommandContext() {
+        CommandFixture fixture = new CommandFixture(30);
+        ZoneStatus previous = fixture.status("TemporaryOverride", fixture.nextSwitchpoint.toString());
+        fixture.thing.getConfiguration().put("id", "second-zone");
+        fixture.handler.thingUpdated(fixture.thing);
+        clearInvocations(fixture.callback, fixture.bridge);
+
+        fixture.handler.update(null, previous);
+        fixture.command("SetPoint", new DecimalType(23));
+
+        verify(fixture.bridge).setPermanentSetPoint(eq("second-zone"), eq(23.0), any());
+        verify(fixture.bridge, never()).setTemporarySetPoint(eq("second-zone"), anyDouble(), any(), any());
+        verifyNoInteractions(fixture.callback);
+    }
+
+    @Test
+    void disposedZoneDoesNotPublishLateStatus() {
+        CommandFixture fixture = new CommandFixture(30);
+        fixture.handler.dispose();
+        clearInvocations(fixture.callback, fixture.bridge);
+
+        fixture.handler.update(null, fixture.status("TemporaryOverride", fixture.nextSwitchpoint.toString()));
+
+        verifyNoInteractions(fixture.callback, fixture.bridge);
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = { "dispose", "reinitialize", "reconfigure" })
+    void selectedStatusAndScheduleCannotSurviveLifecycleChange(String transition) {
+        CommandFixture fixture = new CommandFixture(30);
+        var update = Objects.requireNonNull(fixture.handler.captureUpdate());
+        ZoneStatus previous = fixture.status("TemporaryOverride", fixture.nextSwitchpoint.toString());
+        fixture.handler.dispose();
+        if (!"dispose".equals(transition)) {
+            if ("reconfigure".equals(transition)) {
+                fixture.thing.getConfiguration().put("id", "second-zone");
+            }
+            fixture.handler.initialize();
+        }
+        clearInvocations(fixture.callback, fixture.bridge);
+
+        fixture.handler.update(update, null, previous);
+        fixture.handler.update(update, ThingStatus.OFFLINE, null);
+        fixture.handler.update(update, null, null);
+        fixture.handler.updateSchedule(update, schedule(ZoneId.of("Europe/Budapest")), Instant.now());
+        fixture.handler.updateSchedule(update, null, Instant.now());
+
+        verifyNoInteractions(fixture.callback, fixture.bridge);
+        if (!"dispose".equals(transition)) {
+            fixture.command("SetPoint", new DecimalType(23));
+            verify(fixture.bridge).setPermanentSetPoint(eq(fixture.handler.getId()), eq(23.0), any());
+        }
+    }
+
+    @Test
+    void currentGenerationPublishesStatusAndScheduleAfterReinitialization() {
+        CommandFixture fixture = new CommandFixture(30);
+        fixture.handler.dispose();
+        fixture.handler.initialize();
+        var update = Objects.requireNonNull(fixture.handler.captureUpdate());
+        clearInvocations(fixture.callback, fixture.bridge);
+
+        fixture.handler.update(update, null, fixture.status("TemporaryOverride", fixture.nextSwitchpoint.toString()));
+        fixture.handler.updateSchedule(update, schedule(ZoneId.of("Europe/Budapest")), Instant.now());
+
+        verify(fixture.callback).stateUpdated(fixture.channel("SetPoint"), new QuantityType<>(21, SIUnits.CELSIUS));
+        verify(fixture.callback).stateUpdated(eq(fixture.channel("WeeklySchedule")), any());
+        fixture.command("SetPoint", new DecimalType(23));
+        verify(fixture.bridge).setTemporarySetPoint("zone", 23, fixture.nextSwitchpoint);
     }
 
     @Test

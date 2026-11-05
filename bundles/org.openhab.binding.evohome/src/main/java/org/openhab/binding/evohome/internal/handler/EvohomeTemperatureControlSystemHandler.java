@@ -18,6 +18,8 @@ import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Function;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -47,19 +49,34 @@ import org.slf4j.LoggerFactory;
  * @author Jasper van Zuijlen - Initial contribution
  * @author Kovacs Istvan - Explicit system reset to schedule
  * @author Kovacs Istvan - Temporary system modes and expiry state
+ * @author Kovacs Istvan - Lifecycle-safe controller commands
  *
  */
 @NonNullByDefault
 public class EvohomeTemperatureControlSystemHandler extends BaseEvohomeHandler {
     private final Logger logger = LoggerFactory.getLogger(EvohomeTemperatureControlSystemHandler.class);
+    private boolean disposed = true;
+    private long commandGeneration;
+
+    private record DisplayCommand(EvohomeAccountBridgeHandler bridge, String controllerId, long generation) {
+    }
 
     public EvohomeTemperatureControlSystemHandler(Thing thing) {
         super(thing);
     }
 
     @Override
-    public void initialize() {
+    public synchronized void initialize() {
+        commandGeneration++;
         super.initialize();
+        disposed = false;
+    }
+
+    @Override
+    public synchronized void dispose() {
+        disposed = true;
+        commandGeneration++;
+        super.dispose();
     }
 
     @Override
@@ -104,21 +121,43 @@ public class EvohomeTemperatureControlSystemHandler extends BaseEvohomeHandler {
     }
 
     public boolean resetSystem() {
-        EvohomeAccountBridgeHandler bridge = getEvohomeBridge();
-        return bridge != null && bridge.resetSystem(getId());
+        return executeDisplayCommand(command -> command.bridge().resetSystem(command.controllerId()));
     }
 
     public boolean setSystemMode(String mode) {
         if ("AutoWithReset".equals(mode)) {
             return resetSystem();
         }
-        EvohomeAccountBridgeHandler bridge = getEvohomeBridge();
-        return bridge != null && bridge.setTcsMode(getId(), mode);
+        return executeDisplayCommand(command -> command.bridge().setTcsMode(command.controllerId(), mode));
     }
 
     public boolean setTemporarySystemMode(String mode, Instant until) {
+        return executeDisplayCommand(
+                command -> command.bridge().setTemporaryTcsMode(command.controllerId(), mode, until));
+    }
+
+    private synchronized @Nullable DisplayCommand captureDisplayCommand() {
         EvohomeAccountBridgeHandler bridge = getEvohomeBridge();
-        return bridge != null && bridge.setTemporaryTcsMode(getId(), mode, until);
+        return bridge == null || disposed ? null : new DisplayCommand(bridge, getId(), commandGeneration);
+    }
+
+    private synchronized boolean isCurrent(DisplayCommand command) {
+        return !disposed && command.generation() == commandGeneration && command.bridge().equals(getEvohomeBridge())
+                && command.controllerId().equals(getId());
+    }
+
+    private boolean executeDisplayCommand(Function<DisplayCommand, Boolean> operation) {
+        DisplayCommand command = captureDisplayCommand();
+        if (command == null) {
+            return false;
+        }
+        AtomicBoolean accepted = new AtomicBoolean();
+        command.bridge().executeZoneCommand(() -> {
+            if (isCurrent(command)) {
+                accepted.set(operation.apply(command));
+            }
+        });
+        return accepted.get();
     }
 
     private @Nullable Instant parseUntil(@Nullable String until) {

@@ -401,6 +401,7 @@ class EvohomeAccountBridgeHandlerTest {
         Thing zone = ThingBuilder.create(THING_TYPE_EVOHOME_HEATING_ZONE, zoneId).withBridge(bridge.getUID()).build();
         EvohomeHeatingZoneHandler zoneHandler = mock(EvohomeHeatingZoneHandler.class);
         when(zoneHandler.getId()).thenReturn(zoneId);
+        when(zoneHandler.captureUpdate()).thenReturn(new EvohomeHeatingZoneHandler.ZoneUpdate(zoneId, 0));
         when(zoneHandler.getThing()).thenReturn(zone);
         when(zoneHandler.resetCommandContextCallback()).thenReturn(resetId -> {
             if (zoneId.equals(resetId)) {
@@ -410,6 +411,47 @@ class EvohomeAccountBridgeHandlerTest {
         zone.setHandler(zoneHandler);
         ((BridgeImpl) bridge).addThing(zone);
         return zoneHandler;
+    }
+
+    @Test
+    void statusAndProgramSelectionUseTheCapturedZoneIdentity() throws Exception {
+        EvohomeHeatingZoneHandler zone = attachedZone("zone");
+        var update = new EvohomeHeatingZoneHandler.ZoneUpdate("zone", 7);
+        when(zone.captureUpdate()).thenReturn(update);
+        when(zone.getId()).thenReturn("other-zone");
+        String selectedStatus = """
+                {"locationId":"location","gateways":[{"gatewayId":"gateway","temperatureControlSystems":[
+                  {"systemId":"controller","zones":[{"zoneId":"zone","activeFaults":[]}]}]}]}
+                """;
+        when(request.send()).thenReturn(response(200, TOKEN), response(200, ACCOUNT),
+                response(200, CONTROLLER_INSTALLATION), response(200, selectedStatus));
+        try {
+            handler.initialize();
+            tasks.getFirst().run();
+
+            verify(zone).update(eq(update), isNull(),
+                    argThat(status -> status != null && "zone".equals(status.getZoneId())));
+            verify(zone).updateSchedule(eq(update), isNull(), any(Instant.class));
+        } finally {
+            handler.dispose();
+        }
+    }
+
+    @Test
+    void disposedZoneIsSkippedBeforeStatusSelection() throws Exception {
+        EvohomeHeatingZoneHandler zone = attachedZone("zone");
+        when(zone.captureUpdate()).thenReturn(null);
+        when(request.send()).thenReturn(response(200, TOKEN), response(200, ACCOUNT),
+                response(200, CONTROLLER_INSTALLATION), response(200, STATUS));
+        try {
+            handler.initialize();
+            tasks.getFirst().run();
+
+            verify(zone, never()).update(any(EvohomeHeatingZoneHandler.ZoneUpdate.class), any(), any());
+            verify(zone, never()).updateSchedule(any(EvohomeHeatingZoneHandler.ZoneUpdate.class), any(), any());
+        } finally {
+            handler.dispose();
+        }
     }
 
     @Test
@@ -481,7 +523,8 @@ class EvohomeAccountBridgeHandlerTest {
         verify(http, times(1)).newRequest(contains("temperatureZone/other-zone/schedule"));
         verify(request, times(8)).send();
         ArgumentCaptor<CachedSchedule> cache = ArgumentCaptor.forClass(CachedSchedule.class);
-        verify(firstZone, times(3)).updateSchedule(cache.capture(), any(Instant.class));
+        verify(firstZone, times(3)).updateSchedule(any(EvohomeHeatingZoneHandler.ZoneUpdate.class), cache.capture(),
+                any(Instant.class));
         assertSame(cache.getAllValues().get(1), cache.getAllValues().getLast());
         assertNotNull(cache.getValue());
         assertEquals(ThingStatus.ONLINE, bridge.getStatus());
@@ -524,7 +567,7 @@ class EvohomeAccountBridgeHandlerTest {
         tasks.getFirst().run();
 
         assertEquals(ThingStatus.ONLINE, bridge.getStatus());
-        verify(firstZone).updateSchedule(isNull(), any(Instant.class));
+        verify(firstZone).updateSchedule(any(EvohomeHeatingZoneHandler.ZoneUpdate.class), isNull(), any(Instant.class));
         tasks.getLast().run();
         tasks.getLast().run();
 
@@ -547,7 +590,7 @@ class EvohomeAccountBridgeHandlerTest {
         tasks.getFirst().run();
 
         assertEquals(ThingStatus.ONLINE, bridge.getStatus());
-        verify(zone).updateSchedule(isNull(), any(Instant.class));
+        verify(zone).updateSchedule(any(EvohomeHeatingZoneHandler.ZoneUpdate.class), isNull(), any(Instant.class));
         verify(callback).stateUpdated(eq(new ChannelUID(bridge.getUID(), ACCOUNT_LAST_SUCCESSFUL_UPDATE_CHANNEL)),
                 any());
         assertEquals(15L, delays.getLast());
@@ -567,7 +610,8 @@ class EvohomeAccountBridgeHandlerTest {
         tasks.getLast().run();
 
         ArgumentCaptor<CachedSchedule> cache = ArgumentCaptor.forClass(CachedSchedule.class);
-        verify(zone, times(2)).updateSchedule(cache.capture(), any(Instant.class));
+        verify(zone, times(2)).updateSchedule(any(EvohomeHeatingZoneHandler.ZoneUpdate.class), cache.capture(),
+                any(Instant.class));
         assertNotNull(cache.getAllValues().getFirst());
         assertSame(cache.getAllValues().getFirst(), cache.getAllValues().getLast());
         assertEquals(ThingStatus.ONLINE, bridge.getStatus());
@@ -698,7 +742,7 @@ class EvohomeAccountBridgeHandlerTest {
             work.get(10, TimeUnit.SECONDS);
 
             verifyNoInteractions(callback);
-            verify(zone, never()).updateSchedule(any(), any());
+            verify(zone, never()).updateSchedule(any(EvohomeHeatingZoneHandler.ZoneUpdate.class), any(), any());
             assertEquals(1, tasks.size());
         } finally {
             release.countDown();
