@@ -339,7 +339,14 @@
 	<channel-type id="washerdryer-process-state">
 		<item-type>String</item-type>
 		<label>Process State</label>
-		<description>Process State</description>
+		<description>Current phase of the running cycle</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="washerdryer-previous-state">
+		<item-type>String</item-type>
+		<label>Previous State</label>
+		<description>Previous operation state reported by LG ThinQ</description>
 		<state readOnly="true"/>
 	</channel-type>
 

@@ -40,7 +40,7 @@ public class FridgeSnapshotBuilder extends DefaultSnapshotBuilder<FridgeCanonica
     }
 
     @Override
-    public FridgeCanonicalSnapshot createFromBinary(String binaryData, List<MonitoringBinaryProtocol> prot,
+    public FridgeCanonicalSnapshot createFromBinary(byte[] binaryData, List<MonitoringBinaryProtocol> prot,
             CapabilityDefinition capDef) throws LGThinqUnmarshallException, LGThinqApiException {
         return super.createFromBinary(binaryData, prot, capDef);
     }
@@ -53,10 +53,14 @@ public class FridgeSnapshotBuilder extends DefaultSnapshotBuilder<FridgeCanonica
                 case V1_0:
                     throw new IllegalArgumentException("Version 1.0 for Fridge driver is not supported yet.");
                 case V2_0: {
-                    Map<String, Object> refMap = Objects.requireNonNull(
-                            MAPPER.convertValue(snapMap.get(RE_SNAPSHOT_NODE_V2), new TypeReference<>() {
-                            }), "washerDryer node must be present in the snapshot");
-                    snap = MAPPER.convertValue(refMap, snapClass);
+                    Object refNode = snapMap.get(RE_SNAPSHOT_NODE_V2);
+                    if (refNode == null) {
+                        throw new IllegalArgumentException("washerDryer node must be present in the snapshot");
+                    }
+                    Map<String, Object> refMap = Objects
+                            .requireNonNull(MAPPER.convertValue(refNode, new TypeReference<Map<String, Object>>() {
+                            }));
+                    snap = Objects.requireNonNull(MAPPER.convertValue(refMap, snapClass));
                     snap.setRawData(snapMap);
                     return snap;
                 }

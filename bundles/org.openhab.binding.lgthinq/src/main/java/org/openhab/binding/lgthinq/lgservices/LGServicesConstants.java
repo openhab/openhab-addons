@@ -183,8 +183,8 @@ public class LGServicesConstants {
             entry("@WM_STATE_ANTI_CREASE_W", "Anti Creasing"), entry("@WM_STATE_END_W", "End"),
             entry("@WM_STATE_POWER_OFF_W", "Power Off"), entry("@WM_STATE_INITIAL_W", "Initializing"),
             entry("@WM_STATE_PAUSE_W", "Paused"), entry("@WM_STATE_RESERVE_W", "Reserved"),
-            entry("@WM_STATE_RUNNING_W", "Running"), entry("@WM_STATE_RINSING_W", "Rising"),
-            entry("@WM_STATE_SPINNING_W", "@WM_STATE_DRYING_W"), entry("WM_STATE_COOLDOWN_W", "Cool Down"),
+            entry("@WM_STATE_RUNNING_W", "Running"), entry("@WM_STATE_RINSING_W", "Rinsing"),
+            entry("@WM_STATE_SPINNING_W", "Spinning"), entry("@WM_STATE_COOLDOWN_W", "Cool Down"),
             entry("@WM_STATE_RINSEHOLD_W", "Rinse Hold"), entry("@WM_STATE_WASH_REFRESHING_W", "Refreshing"),
             entry("@WM_STATE_STEAMSOFTENING_W", "Steam Softening"), entry("@WM_STATE_ERROR_W", "Error"));
     public static final Map<String, String> CAP_DR_DRY_LEVEL = Map.ofEntries(
@@ -229,6 +229,7 @@ public class LGServicesConstants {
      */
     public static final String DW_SNAPSHOT_WASHER_DRYER_NODE_V2 = "dishwasher";
     public static final String DW_POWER_OFF_VALUE = "POWEROFF";
+    public static final String DW_STATE_POWER_OFF_LABEL = "@DW_STATE_POWER_OFF_W";
     public static final String DW_STATE_COMPLETE = "END";
     public static final Map<String, String> CAP_DW_DOOR_STATE = Map.of("@CP_OFF_EN_W", "Close", "@CP_ON_EN_W",
             "Opened");

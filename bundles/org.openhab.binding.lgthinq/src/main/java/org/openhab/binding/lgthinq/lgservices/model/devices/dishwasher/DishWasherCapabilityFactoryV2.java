@@ -94,7 +94,13 @@ public class DishWasherCapabilityFactoryV2 extends AbstractDishWasherCapabilityF
 
     @Override
     protected MonitoringResultFormat getMonitorDataFormat(JsonNode rootNode) {
-        // All v2 are Json format
+        // v2 doesn't have node describing the protocol because they unified Value (features) and
+        // Monitoring nodes in the MonitoringValue node. However, some V2 devices like DishWasher
+        // still use Binary format for monitoring data.
+        JsonNode v2type = rootNode.path(getMonitoringNodeName()).path("type");
+        if (!v2type.isMissingNode() && v2type.isTextual()) {
+            return MonitoringResultFormat.getFormatOf(v2type.textValue());
+        }
         return MonitoringResultFormat.JSON_FORMAT;
     }
 

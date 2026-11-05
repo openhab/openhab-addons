@@ -14,6 +14,7 @@ package org.openhab.binding.lgthinq.lgservices.model.devices.dishwasher;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.lgthinq.lgservices.model.AbstractCapability;
@@ -62,5 +63,16 @@ public class DishWasherCapability extends AbstractCapability<DishWasherCapabilit
 
     public void setState(FeatureDefinition state) {
         this.state = state;
+    }
+
+    /**
+     * Dishwasher capabilities are handled as V2, but describe their features in the V1 "Value" node (see
+     * {@link DishWasherCapabilityFactoryV2}).
+     */
+    @Override
+    @SuppressWarnings("unchecked")
+    public Map<String, Map<String, Object>> getFeatureValuesRawData() {
+        return Objects.requireNonNullElseGet((Map<String, Map<String, Object>>) getRawData().get("Value"),
+                super::getFeatureValuesRawData);
     }
 }

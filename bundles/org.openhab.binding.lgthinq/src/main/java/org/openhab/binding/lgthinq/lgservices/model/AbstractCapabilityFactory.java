@@ -45,8 +45,8 @@ public abstract class AbstractCapabilityFactory<T extends CapabilityDefinition> 
         cap.setModelName(rootNode.path("Info").path("modelName").textValue());
         cap.setDeviceType(ModelUtils.getDeviceType(rootNode));
         cap.setDeviceVersion(ModelUtils.discoveryAPIVersion(rootNode));
-        cap.setRawData(mapper.convertValue(rootNode, new TypeReference<>() {
-        }));
+        cap.setRawData(Objects.requireNonNull(mapper.convertValue(rootNode, new TypeReference<Map<String, Object>>() {
+        }), "ObjectMapper.convertValue returned null"));
         switch (cap.getDeviceVersion()) {
             case V1_0:
                 // V1 has Monitoring node describing the protocol data format
@@ -58,7 +58,12 @@ public abstract class AbstractCapabilityFactory<T extends CapabilityDefinition> 
             case V2_0:
                 // V2 doesn't have node describing the protocol because it's they unified Value (features) and
                 // Monitoring nodes in the MonitoringValue node
-                cap.setMonitoringDataFormat(MonitoringResultFormat.JSON_FORMAT);
+                JsonNode v2type = rootNode.path(getMonitoringNodeName()).path("type");
+                if (!v2type.isMissingNode() && v2type.isTextual()) {
+                    cap.setMonitoringDataFormat(MonitoringResultFormat.getFormatOf(v2type.textValue()));
+                } else {
+                    cap.setMonitoringDataFormat(MonitoringResultFormat.JSON_FORMAT);
+                }
                 break;
             default:
                 cap.setMonitoringDataFormat(MonitoringResultFormat.UNKNOWN_FORMAT);
