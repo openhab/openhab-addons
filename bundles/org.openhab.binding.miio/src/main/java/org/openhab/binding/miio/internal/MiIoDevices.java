@@ -413,6 +413,8 @@ public enum MiIoDevices {
     VIOMI_VACUUM_V56("viomi.vacuum.v56", "Viomi V3 Absolut", THING_TYPE_BASIC),
     VIOMI_VACUUM_V60("viomi.vacuum.v60", "Viomi Master 10 Max", THING_TYPE_BASIC),
     VIOMI_WATERHEATER_E1("viomi.waterheater.e1", "VIOMI Internet Electric Water Heater 1A (60L)", THING_TYPE_BASIC),
+    VIOMI_WATERHEATER_E4("viomi.waterheater.e4", "VIOMI Internet electric water heater 50L(Premium Version)",
+            THING_TYPE_BASIC),
     XIAOMI_AIRCONDITION_MA1("xiaomi.aircondition.ma1", "Mi Inverter Air Conditioner (1.5HP)", THING_TYPE_BASIC),
     XIAOMI_AIRCONDITION_MA2("xiaomi.aircondition.ma2",
             "Mi Inverter Air Conditioner (1.5HP, China Energy Label Level 1)", THING_TYPE_BASIC),
