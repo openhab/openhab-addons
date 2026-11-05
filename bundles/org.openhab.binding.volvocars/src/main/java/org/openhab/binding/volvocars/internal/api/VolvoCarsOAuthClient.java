@@ -130,7 +130,7 @@ public class VolvoCarsOAuthClient {
         String state = randomUrlSafeString(24);
         pendingAuthorization = new PendingAuthorization(state, codeVerifier,
                 clock.instant().plus(PENDING_AUTHORIZATION_VALIDITY));
-        return AUTHORIZE_URL + "?response_type=code&client_id=" + encode(config.clientId) + "&redirect_uri="
+        return config.authorizeUrl() + "?response_type=code&client_id=" + encode(config.clientId) + "&redirect_uri="
                 + encode(config.redirectUri) + "&scope=" + encode(scopes) + "&state=" + encode(state)
                 + "&code_challenge=" + encode(computeCodeChallenge(codeVerifier)) + "&code_challenge_method=S256";
     }
@@ -246,7 +246,7 @@ public class VolvoCarsOAuthClient {
         String credentials = Base64.getEncoder()
                 .encodeToString((config.clientId + ":" + config.clientSecret).getBytes(StandardCharsets.UTF_8));
         try {
-            ContentResponse response = httpClient.newRequest(TOKEN_URL).method(HttpMethod.POST)
+            ContentResponse response = httpClient.newRequest(config.tokenUrl()).method(HttpMethod.POST)
                     .header(HttpHeader.AUTHORIZATION, "Basic " + credentials)
                     .header(HttpHeader.ACCEPT, "application/json").content(new FormContentProvider(fields))
                     .timeout(REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS).send();

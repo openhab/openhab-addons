@@ -14,13 +14,14 @@ package org.openhab.binding.volvocars.internal.api;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
-import static org.openhab.binding.volvocars.internal.VolvoCarsBindingConstants.TOKEN_URL;
+import static org.openhab.binding.volvocars.internal.VolvoCarsBindingConstants.*;
 
 import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -112,6 +113,29 @@ class VolvoCarsOAuthClientTest {
         assertNotNull(query.get("code_challenge"));
         assertTrue(query.getOrDefault("scope", "").contains("conve:doors_status"));
         assertTrue(query.getOrDefault("scope", "").contains("location:read"));
+    }
+
+    @Test
+    void volvoIdClientUsesVolvoIdEndpoints() throws VolvoCarsException {
+        config.clientId = "vid-dc-client";
+
+        VolvoCarsOAuthClient client = authorizedClient();
+
+        assertTrue(client.createAuthorizationUrl().startsWith(AUTHORIZE_URL + "?"));
+        assertEquals(List.of(TOKEN_URL), http.requestedUrls);
+    }
+
+    @Test
+    void legacyClientUsesLegacyEndpoints() throws VolvoCarsException {
+        config.clientId = "dc-client";
+        VolvoCarsOAuthClient client = createClient();
+        String authorizationUrl = client.createAuthorizationUrl();
+        http.respond(LEGACY_TOKEN_URL, 200, TOKEN_RESPONSE);
+
+        client.authorize("code", stateOf(authorizationUrl));
+
+        assertTrue(authorizationUrl.startsWith(LEGACY_AUTHORIZE_URL + "?"));
+        assertEquals(List.of(LEGACY_TOKEN_URL), http.requestedUrls);
     }
 
     @Test
