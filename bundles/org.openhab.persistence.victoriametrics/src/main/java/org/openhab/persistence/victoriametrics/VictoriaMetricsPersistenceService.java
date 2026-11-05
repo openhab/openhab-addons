@@ -18,7 +18,6 @@ import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
@@ -44,9 +43,7 @@ import org.openhab.core.common.ThreadPoolManager;
 import org.openhab.core.config.core.ConfigurableService;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.items.Item;
-import org.openhab.core.items.ItemFactory;
 import org.openhab.core.items.ItemRegistry;
-import org.openhab.core.items.ItemUtil;
 import org.openhab.core.items.Metadata;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
@@ -72,8 +69,6 @@ import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.component.annotations.ReferenceCardinality;
-import org.osgi.service.component.annotations.ReferencePolicy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -123,10 +118,6 @@ public class VictoriaMetricsPersistenceService implements QueryablePersistenceSe
     // serializes the scheduled commits and the final commit on deactivation, which may re-queue points
     private final ReentrantLock commitLock = new ReentrantLock();
     private final Set<String> loggedUnsupportedItems = ConcurrentHashMap.newKeySet();
-
-    // conversion
-    private final Set<ItemFactory> itemFactories = new HashSet<>();
-    private Map<String, Class<? extends State>> desiredClasses = new HashMap<>();
 
     @Activate
     public VictoriaMetricsPersistenceService(final @Reference ItemRegistry itemRegistry,
@@ -359,20 +350,18 @@ public class VictoriaMetricsPersistenceService implements QueryablePersistenceSe
         return CompletableFuture.supplyAsync(() -> {
             String alias = storeAlias != null && !storeAlias.isBlank() ? storeAlias : itemName;
 
-            State storeState = Objects
-                    .requireNonNullElse(state.as(desiredClasses.get(ItemUtil.getMainItemType(itemType))), state);
             VictoriaMetricsPoint.Builder pointBuilder = VictoriaMetricsPoint
                     .newBuilder(metricNameResolver.getMetricName(alias)).withTime(timeStamp)
                     .withTag(TAG_ITEM_NAME, alias);
 
-            Number value = VictoriaMetricsStateConvertUtils.stateToObject(storeState);
-            Map<String, BigDecimal> components = VictoriaMetricsStateConvertUtils.stateToComponents(storeState);
+            Number value = VictoriaMetricsStateConvertUtils.stateToObject(state);
+            Map<String, BigDecimal> components = VictoriaMetricsStateConvertUtils.stateToComponents(state);
             if (value != null) {
                 pointBuilder.withValue(value);
             } else if (components != null) {
                 pointBuilder.withComponents(components);
-            } else if (storeState instanceof StringType && isStringStatesEnabled(itemName)) {
-                String stringState = storeState.toFullString();
+            } else if (state instanceof StringType && isStringStatesEnabled(itemName)) {
+                String stringState = state.toFullString();
                 // VictoriaMetrics ignores series with longer label values
                 if (stringState.getBytes(StandardCharsets.UTF_8).length > MAX_STRING_STATE_BYTES) {
                     logger.debug("String state of item '{}' is not stored, it is longer than {} bytes", itemName,
@@ -382,13 +371,13 @@ public class VictoriaMetricsPersistenceService implements QueryablePersistenceSe
                 pointBuilder.withStringState(stringState);
             } else {
                 if (loggedUnsupportedItems.add(itemName)) {
-                    if (storeState instanceof StringType) {
+                    if (state instanceof StringType) {
                         logger.info(
                                 "Item '{}' is not stored, string states must be enabled with the item metadata '{}'",
                                 itemName, METADATA_STRING_STATES);
                     } else {
                         logger.info("Item '{}' is not stored, VictoriaMetrics only supports numeric states, not {}",
-                                itemName, storeState.getClass().getSimpleName());
+                                itemName, state.getClass().getSimpleName());
                     }
                 }
                 return null;
@@ -408,7 +397,7 @@ public class VictoriaMetricsPersistenceService implements QueryablePersistenceSe
                 pointBuilder.withTag(TAG_LABEL_NAME, labelName);
             }
 
-            if (configuration.isAddUnitTag() && storeState instanceof QuantityType<?> quantity) {
+            if (configuration.isAddUnitTag() && state instanceof QuantityType<?> quantity) {
                 String unit = quantity.getUnit().toString();
                 if (!unit.isBlank()) {
                     pointBuilder.withTag(TAG_UNIT_NAME, unit);
@@ -431,32 +420,5 @@ public class VictoriaMetricsPersistenceService implements QueryablePersistenceSe
         Optional<Metadata> metadata = metadataService.getMetaData(itemName);
         return metadata.isPresent()
                 && Boolean.parseBoolean(String.valueOf(metadata.get().getConfiguration().get(METADATA_STRING_STATES)));
-    }
-
-    @Reference(cardinality = ReferenceCardinality.AT_LEAST_ONE, policy = ReferencePolicy.DYNAMIC)
-    public void setItemFactory(ItemFactory itemFactory) {
-        itemFactories.add(itemFactory);
-        calculateItemTypeClasses();
-    }
-
-    public void unsetItemFactory(ItemFactory itemFactory) {
-        itemFactories.remove(itemFactory);
-        calculateItemTypeClasses();
-    }
-
-    private synchronized void calculateItemTypeClasses() {
-        Map<String, Class<? extends State>> desiredClasses = new HashMap<>();
-        itemFactories.forEach(factory -> {
-            for (String itemType : factory.getSupportedItemTypes()) {
-                Item item = factory.createItem(itemType, "victoriaMetricsItem");
-                if (item != null) {
-                    item.getAcceptedCommandTypes().stream()
-                            .filter(commandType -> commandType.isAssignableFrom(State.class)).findFirst()
-                            .map(commandType -> (Class<? extends State>) commandType.asSubclass(State.class))
-                            .ifPresent(desiredClass -> desiredClasses.put(itemType, desiredClass));
-                }
-            }
-        });
-        this.desiredClasses = desiredClasses;
     }
 }
