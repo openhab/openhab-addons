@@ -1014,13 +1014,15 @@ class RachioWebhookCoordinatorTest {
         Mockito.doAnswer(invocation -> {
             String callback = invocation.getArgument(1);
             RequestPurpose purpose = invocation.getArgument(6);
+            if (purpose == RequestPurpose.USER_COMMAND && oldUrl.equals(callback)) {
+                postChangeRegistrationReachedApi.complete(callback);
+                assertThat(allowOldRegistration.await(5, TimeUnit.SECONDS), is(true));
+            }
+            // Record the callback before signalling, so the test thread cannot assert before it is stored.
+            remoteCallback.set(callback);
             if (purpose == RequestPurpose.USER_COMMAND) {
                 postChangeRegistrationReachedApi.complete(callback);
-                if (oldUrl.equals(callback)) {
-                    assertThat(allowOldRegistration.await(5, TimeUnit.SECONDS), is(true));
-                }
             }
-            remoteCallback.set(callback);
             return null;
         }).when(api).registerWebHook(Mockito.eq("controller-id"), Mockito.anyString(), Mockito.eq(""), Mockito.eq(""),
                 Mockito.eq("review-instance"), Mockito.eq(false), Mockito.any(RequestPurpose.class));
