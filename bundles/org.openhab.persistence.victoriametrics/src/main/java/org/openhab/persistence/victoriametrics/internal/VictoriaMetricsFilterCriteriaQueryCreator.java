@@ -139,13 +139,16 @@ public class VictoriaMetricsFilterCriteriaQueryCreator {
 
     /**
      * Apply the time range, state filter, ordering and paging of the {@link FilterCriteria} to the exported samples
+     * <p>
+     * Identical samples are returned once. Without deduplication enabled, VictoriaMetrics keeps every copy of a sample,
+     * e.g. when a write succeeded but its response timed out and the write was retried.
      *
      * @param rows the exported samples of all series matching the query
      * @param criteria the criteria the query was created from
      * @return the matching samples
      */
     public List<VictoriaMetricsRow> applyCriteria(Stream<VictoriaMetricsRow> rows, FilterCriteria criteria) {
-        Stream<VictoriaMetricsRow> result = rows.filter(timeFilter(criteria));
+        Stream<VictoriaMetricsRow> result = rows.filter(timeFilter(criteria)).distinct();
 
         State filterState = criteria.getState();
         if (filterState != null) {

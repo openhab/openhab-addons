@@ -242,6 +242,27 @@ public class VictoriaMetricsFilterCriteriaQueryCreatorTest {
     }
 
     @Test
+    public void testIdenticalSamplesAreReturnedOnce() {
+        FilterCriteria criteria = createBaseCriteria();
+        criteria.setOrdering(FilterCriteria.Ordering.DESCENDING);
+        criteria.setPageSize(1);
+        criteria.setPageNumber(1);
+
+        // a retried write stores the latest sample twice
+        assertThat(times(instance.applyCriteria(rows(0, 1, 2, 2).stream(), criteria)), contains(1L));
+    }
+
+    @Test
+    public void testSamplesWithSameTimeAndDifferentValuesAreKept() {
+        FilterCriteria criteria = createBaseCriteria();
+        criteria.setOrdering(FilterCriteria.Ordering.ASCENDING);
+        List<VictoriaMetricsRow> rows = List.of(new VictoriaMetricsRow(T0, ITEM_NAME, BigDecimal.ONE),
+                new VictoriaMetricsRow(T0, ITEM_NAME, BigDecimal.TEN));
+
+        assertThat(instance.applyCriteria(rows.stream(), criteria), hasSize(2));
+    }
+
+    @Test
     public void testAliasUsedForItemTagFilter() {
         // Data is stored with TAG_ITEM_NAME = alias, so the label filter must use the alias,
         // not the item name, otherwise queries return no results when alias != itemName.
