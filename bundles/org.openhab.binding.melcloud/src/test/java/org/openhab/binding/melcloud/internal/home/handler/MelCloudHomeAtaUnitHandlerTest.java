@@ -497,11 +497,13 @@ class MelCloudHomeAtaUnitHandlerTest {
     @Test
     void whenControlCallFailedThenSameCommandIsSentAgain() throws Exception {
         // Arrange
+        // Stub before initialize(): initialize() starts the telemetry poll, which calls apiClient on another thread,
+        // and Mockito's doThrow()...when() stubbing is not safe against concurrent invocations on the same mock.
+        doThrow(new MelCloudCommException("boom")).doNothing().when(apiClient).controlAtaUnit(any(), any(), any());
         MelCloudHomeAtaUnitHandler handler = createHandler(UNIT_ID, true, ThingStatus.ONLINE);
         handler.initialize();
         handler.onAtaUnitUpdated(unitWithSettings("Power", "False"));
         ChannelUID channelUID = new ChannelUID(handler.getThing().getUID(), CHANNEL_POWER);
-        doThrow(new MelCloudCommException("boom")).doNothing().when(apiClient).controlAtaUnit(any(), any(), any());
 
         // Act
         handler.handleCommand(channelUID, OnOffType.ON);
