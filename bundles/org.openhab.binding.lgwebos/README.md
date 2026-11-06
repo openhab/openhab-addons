@@ -36,7 +36,7 @@ Please note, that if you are running openHAB in a Docker container you have seve
 
 ## Thing Configuration
 
-WebOS TV has five configuration parameters.
+WebOS TV has six configuration parameters.
 
 Parameters:
 
@@ -47,6 +47,7 @@ Parameters:
 | macAddress       | The MAC address of your TV to turn on via Wake On Lan (WOL). The binding will attempt to detect it.                                                                            |
 | broadcastAddress | The broadcast address of the network your TV is located on. Only needed when running in docker container, leave empty otherwise                                                |
 | useTLS           | Enable Transport Layer Security. This is required by latest firmware versions and should work with older versions as well. In case of compatibility issues it can be disabled. |
+| standbyOnline    | Keep the thing ONLINE while the TV is in standby but still reachable on the network (power channel is OFF then). Default: false. The thing goes OFFLINE only if the TV does not answer on the network at all. |
 
 ### Configuration for wake-on-lan in docker
 
