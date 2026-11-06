@@ -13,11 +13,15 @@
 package org.openhab.binding.mqtt.awtrixlight.internal;
 
 import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.SUPPORTED_THING_TYPES;
+import static org.openhab.binding.mqtt.awtrixlight.internal.ng.AwtrixNgBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mqtt.awtrixlight.internal.handler.AwtrixLightAppHandler;
 import org.openhab.binding.mqtt.awtrixlight.internal.handler.AwtrixLightBridgeHandler;
+import org.openhab.binding.mqtt.awtrixlight.internal.ng.AwtrixNgStateDescriptionProvider;
+import org.openhab.binding.mqtt.awtrixlight.internal.ng.handler.AwtrixNgAppHandler;
+import org.openhab.binding.mqtt.awtrixlight.internal.ng.handler.AwtrixNgBridgeHandler;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingRegistry;
@@ -39,13 +43,17 @@ import org.osgi.service.component.annotations.Reference;
 @NonNullByDefault
 public class AwtrixLightHandlerFactory extends BaseThingHandlerFactory {
 
+    private final AwtrixNgStateDescriptionProvider ngStateDescriptionProvider;
+
     @Activate
-    public AwtrixLightHandlerFactory(final @Reference ThingRegistry thingRegistry) {
+    public AwtrixLightHandlerFactory(final @Reference ThingRegistry thingRegistry,
+            final @Reference AwtrixNgStateDescriptionProvider ngStateDescriptionProvider) {
+        this.ngStateDescriptionProvider = ngStateDescriptionProvider;
     }
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
-        return SUPPORTED_THING_TYPES.contains(thingTypeUID);
+        return SUPPORTED_THING_TYPES.contains(thingTypeUID) || NG_SUPPORTED_THING_TYPES.contains(thingTypeUID);
     }
 
     @Override
@@ -55,6 +63,10 @@ public class AwtrixLightHandlerFactory extends BaseThingHandlerFactory {
             return new AwtrixLightBridgeHandler((Bridge) thing);
         } else if (AwtrixLightAppHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
             return new AwtrixLightAppHandler((Thing) thing);
+        } else if (THING_TYPE_NG_CLOCK.equals(thingTypeUID)) {
+            return new AwtrixNgBridgeHandler((Bridge) thing, ngStateDescriptionProvider);
+        } else if (THING_TYPE_NG_APP.equals(thingTypeUID)) {
+            return new AwtrixNgAppHandler(thing);
         }
 
         return null;
