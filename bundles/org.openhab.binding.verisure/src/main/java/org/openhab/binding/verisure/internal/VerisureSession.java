@@ -474,7 +474,7 @@ public class VerisureSession {
                 request.body(new BytesRequestContent("application/x-www-form-urlencoded; charset=UTF-8",
                         encodedData.getBytes(StandardCharsets.UTF_8)));
             } else if (isJSON) {
-                // For JSON requests, use BytesContentProvider without content-type to avoid duplicate header
+                // For JSON requests, use BytesRequestContent without content-type to avoid duplicate header
                 // Content-Type is already set above via request.headers(h -> h.add())
                 request.body(new BytesRequestContent(data.getBytes(StandardCharsets.UTF_8)));
             } else {
