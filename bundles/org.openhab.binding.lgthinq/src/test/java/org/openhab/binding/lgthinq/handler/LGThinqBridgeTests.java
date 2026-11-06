@@ -51,8 +51,6 @@ import org.slf4j.LoggerFactory;
 
 import com.github.tomakehurst.wiremock.junit5.WireMockTest;
 
-import jakarta.ws.rs.core.UriBuilder;
-
 /**
  * The {@link LGThinqBridgeTests}
  *
