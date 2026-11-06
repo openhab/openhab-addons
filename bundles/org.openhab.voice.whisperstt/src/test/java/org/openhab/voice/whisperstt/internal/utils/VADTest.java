@@ -25,6 +25,8 @@ import java.util.Random;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 
+import io.github.jvoiceproject.silerovad.SileroVAD;
+
 /**
  * Tests for {@link VAD}.
  *
@@ -64,6 +66,38 @@ public class VADTest {
         }
     }
 
+    @Test
+    public void voiceBoundariesIncludeCarriedAndPendingSamples() throws IOException {
+        short[] speech = speechSamples();
+        int frameSize = SileroVAD.FRAME_SIZE;
+        // reference speech flags of each frame over the whole clip
+        SileroVAD silero = new SileroVAD();
+        boolean[] voiced = new boolean[speech.length / frameSize];
+        for (int i = 0; i < voiced.length; i++) {
+            voiced[i] = silero.process(Arrays.copyOfRange(speech, i * frameSize, (i + 1) * frameSize)) >= 0.5f;
+        }
+        VAD vad = new VAD(0.3f, 0.5f);
+        for (int start = 0; start + SHORT_STEP <= speech.length; start += SHORT_STEP) {
+            int end = start + SHORT_STEP;
+            VAD.VADResult result = vad.analyze(Arrays.copyOfRange(speech, start, end));
+            // frames completed by this step, the first one may start in the previous step
+            int first = start / frameSize;
+            int last = end / frameSize - 1;
+            int headEnd = first;
+            while (headEnd <= last && voiced[headEnd]) {
+                headEnd++;
+            }
+            int expectedHead = headEnd > last ? SHORT_STEP : Math.max(0, headEnd * frameSize - start);
+            int tailStart = last;
+            while (tailStart >= first && voiced[tailStart]) {
+                tailStart--;
+            }
+            int expectedTail = tailStart == last ? 0 : Math.min(SHORT_STEP, end - (tailStart + 1) * frameSize);
+            assertEquals(expectedHead, result.voiceSamplesInHead(), "head at " + start);
+            assertEquals(expectedTail, result.voiceSamplesInTail(), "tail at " + start);
+        }
+    }
+
     private static short[] step(short[] samples, int offset) {
         short[] step = new short[STEP];
         System.arraycopy(samples, offset, step, 0, Math.min(samples.length - offset, STEP));
@@ -83,7 +117,7 @@ public class VADTest {
      * "Turn on the kitchen lights." synthesized by Piper TTS with the en_US-ljspeech-medium voice (MIT, trained on
      * the public domain LJ Speech dataset), resampled to 16 kHz.
      */
-    static short[] speechSamples() throws IOException {
+    public static short[] speechSamples() throws IOException {
         byte[] wav = bytes("/speech.wav");
         ByteBuffer buffer = ByteBuffer.wrap(wav).order(ByteOrder.LITTLE_ENDIAN);
         int offset = 12;

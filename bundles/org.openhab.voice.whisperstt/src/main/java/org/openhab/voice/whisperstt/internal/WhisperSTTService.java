@@ -26,6 +26,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Map;
@@ -406,6 +407,12 @@ public class WhisperSTTService implements STTService {
                                 break;
                             }
                             logger.debug("End of audio, transcribing what was captured");
+                            // keep the samples of the incomplete step
+                            int partialSamples = Math.min((captureBuffer.capacity() - remaining) / 2,
+                                    audioSamples.length - audioSamplesOffset);
+                            for (int i = 0; i < partialSamples; i++) {
+                                audioSamples[audioSamplesOffset++] = captureBuffer.getShort(i * 2);
+                            }
                             endOfAudio = true;
                         }
                         if (!endOfAudio) {
@@ -513,11 +520,13 @@ public class WhisperSTTService implements STTService {
                                 }
                             }
                         }
-                        // run whisper, either locally or by remote API
-                        String tempTranscription = (switch (config.mode) {
-                            case LOCAL -> recognizeLocal(audioSamplesOffset, audioSamples, locale.getLanguage());
-                            case API -> recognizeAPI(audioSamplesOffset, audioSamples, locale.getLanguage());
-                        });
+                        int minSamples = Math.min(nSamplesMin, audioSamples.length);
+                        if (audioSamplesOffset < minSamples) {
+                            logger.debug("padding audio with silence up to min audio seconds");
+                            Arrays.fill(audioSamples, audioSamplesOffset, minSamples, (short) 0);
+                            audioSamplesOffset = minSamples;
+                        }
+                        String tempTranscription = transcribe(audioSamplesOffset, audioSamples, locale.getLanguage());
 
                         if (tempTranscription != null && !tempTranscription.isBlank()) {
                             if (config.createWAVRecord) {
@@ -562,6 +571,17 @@ public class WhisperSTTService implements STTService {
                 emitSpeechRecognitionError(sttListener);
             }
         });
+    }
+
+    /**
+     * Runs whisper, either locally or by remote API.
+     */
+    @Nullable
+    String transcribe(int audioSamplesOffset, short[] audioSamples, String language) throws STTException {
+        return switch (config.mode) {
+            case LOCAL -> recognizeLocal(audioSamplesOffset, audioSamples, language);
+            case API -> recognizeAPI(audioSamplesOffset, audioSamples, language);
+        };
     }
 
     @Nullable

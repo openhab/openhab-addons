@@ -53,6 +53,8 @@ public class VAD {
         int partialVADCounter = 0;
         int totalPartialDetections = 0;
         int offset = 0;
+        // samples of the first frame that came with the previous call
+        int carriedSamples = stepSamplesFilled;
         // frames can span calls, as the Silero frame size does not divide the audio step
         while (offset < samples.length) {
             int length = Math.min(stepSamples.length - stepSamplesFilled, samples.length - offset);
@@ -78,10 +80,18 @@ public class VAD {
         // require at least one voiced partial, so short steps are not voice by default
         int detectionThreshold = Math.max(1, (int) ((((float) totalPartialDetections) / 100f) * (sensitivity * 100)));
         logger.debug("VAD: {}/{} - required: {}", partialVADCounter, totalPartialDetections, detectionThreshold);
+        // samples left for the next call are counted as part of a voiced head or tail
+        int pendingSamples = stepSamplesFilled;
+        int voiceSamplesInHead = 0;
+        if (voiceInHead > 0) {
+            voiceSamplesInHead = voiceInHead * stepSamples.length - carriedSamples
+                    + (silenceFound ? 0 : pendingSamples);
+        }
+        int voiceSamplesInTail = voiceInTail > 0 ? voiceInTail * stepSamples.length + pendingSamples : 0;
         return new VADResult( //
                 partialVADCounter >= detectionThreshold, //
-                voiceInHead * stepSamples.length, //
-                voiceInTail * stepSamples.length //
+                Math.max(0, Math.min(samples.length, voiceSamplesInHead)), //
+                Math.min(samples.length, voiceSamplesInTail) //
         );
     }
 

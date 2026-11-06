@@ -23,7 +23,7 @@
     <dependency>
       <groupId>io.github.jvoice-project</groupId>
       <artifactId>silero-vad4j</artifactId>
-      <version>6.2.3.0-SNAPSHOT</version>
+      <version>6.2.3.0</version>
     </dependency>
   </dependencies>
 </project>
