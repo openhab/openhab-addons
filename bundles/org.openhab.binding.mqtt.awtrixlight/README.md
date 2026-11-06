@@ -872,7 +872,8 @@ var awtrix = actions.thingActions("mqtt.awtrixlight", "mqtt:awtrix-ng-clock:myBr
 | `setMoodlight(color, brightness)`           | Fills the display with a color. The brightness (0 to 255) may be `null` for the current brightness. |
 | `clearMoodlight()`                          | Switches the mood light off.                                                                        |
 | `reboot()`                                  | Reboots the clock.                                                                                  |
-| `sleep(durationMs)`                         | Sends the clock to deep sleep for the time.                                                         |
+| `sleep(seconds)`                            | Sends the clock to deep sleep for a number of seconds.                                              |
+| `sleepMs(durationMs)`                       | Sends the clock to deep sleep for a number of milliseconds.                                         |
 | `playSound(name)`                           | Plays a sound that is stored on the clock.                                                          |
 | `playRtttl(rtttl)`                          | Plays a melody in RTTTL notation.                                                                   |
 | `playTrack(track)`                          | Plays a track of the DFPlayer of the clock.                                                         |
@@ -887,6 +888,17 @@ var awtrix = actions.thingActions("mqtt.awtrixlight", "mqtt:awtrix-ng-clock:myBr
 | `dismissNamedNotification(name)`            | Dismisses the notification that was shown with the `name`.                                          |
 
 Every argument has to be given, as the actions have no shorter forms. Pass `null` for those that may be `null`.
+
+#### Actions of AWTRIX 3 Rules
+
+Rules written for an AWTRIX 3 clock keep working after the clock was switched to AWTRIX NG, as the actions of the AWTRIX 3 clock have their counterparts:
+
+- `blinkIndicator`, `fadeIndicator` and `activateIndicator` also take the color as an `[r, g, b]` array.
+- `sleep(seconds)` takes seconds as on AWTRIX 3. AWTRIX NG counts in milliseconds, which `sleepMs(durationMs)` takes.
+- `upgrade()` does nothing but log a warning, AWTRIX NG is updated over HTTP only.
+- `showCustomNotification(appParams, hold, wakeUp, stack, rtttl, sound, loopSound)` takes the keys of an AWTRIX 3 notification and translates them to AWTRIX NG as described in its [migration guide](https://blueforcer.github.io/awtrix-ng/esp32/guides/migrating-from-awtrix3/): keys are renamed, colors given as arrays become `#RRGGBB`, `duration` and `lifetime` become milliseconds, and the sound arguments become the `sound` of the notification.
+  The keys `topText`, `pos`, `barBC`, `clients`, `save` and `draw` have no equivalent. They are left out, and a warning is logged.
+  A key that is neither an AWTRIX 3 nor an AWTRIX NG key rejects the notification, as with the other form of the action.
 
 #### Notifications
 

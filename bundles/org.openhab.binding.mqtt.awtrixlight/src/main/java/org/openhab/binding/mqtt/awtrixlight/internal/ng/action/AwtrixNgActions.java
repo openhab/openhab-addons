@@ -12,8 +12,11 @@
  */
 package org.openhab.binding.mqtt.awtrixlight.internal.ng.action;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -162,6 +165,16 @@ public class AwtrixNgActions implements ThingActions {
 
     @RuleAction(label = "Sleep", description = "Sends the clock to deep sleep")
     public void sleep(
+            @ActionInput(name = "seconds", label = "Seconds", description = "How long the clock sleeps, in seconds") int seconds) {
+        sleepMs((int) Math.min(seconds * 1000L, Integer.MAX_VALUE));
+    }
+
+    public static void sleep(@Nullable ThingActions actions, int seconds) {
+        of(actions).sleep(seconds);
+    }
+
+    @RuleAction(label = "Sleep (ms)", description = "Sends the clock to deep sleep for a time in milliseconds")
+    public void sleepMs(
             @ActionInput(name = "durationMs", label = "Duration (ms)", description = "How long the clock sleeps, in milliseconds") int durationMs) {
         AwtrixNgBridgeHandler localHandler = this.handler;
         if (localHandler != null) {
@@ -169,8 +182,8 @@ public class AwtrixNgActions implements ThingActions {
         }
     }
 
-    public static void sleep(@Nullable ThingActions actions, int durationMs) {
-        of(actions).sleep(durationMs);
+    public static void sleepMs(@Nullable ThingActions actions, int durationMs) {
+        of(actions).sleepMs(durationMs);
     }
 
     @RuleAction(label = "Play Sound", description = "Plays a sound that is stored on the clock")
@@ -361,5 +374,85 @@ public class AwtrixNgActions implements ThingActions {
 
     public static void showCustomNotification(@Nullable ThingActions actions, Map<String, ?> params) {
         of(actions).showCustomNotification(params);
+    }
+
+    // The actions below have the signatures of the actions of AWTRIX 3 clocks, so that rules keep working after a
+    // clock was flashed with AWTRIX NG. They are no @RuleAction, as a module type is named after the method.
+
+    public void blinkIndicator(int indicator, int[] rgb, int blinkMs) {
+        String color = hexOrWarn(rgb);
+        if (color != null) {
+            blinkIndicator(indicator, color, blinkMs);
+        }
+    }
+
+    public static void blinkIndicator(@Nullable ThingActions actions, int indicator, int[] rgb, int blinkMs) {
+        of(actions).blinkIndicator(indicator, rgb, blinkMs);
+    }
+
+    public void fadeIndicator(int indicator, int[] rgb, int fadeMs) {
+        String color = hexOrWarn(rgb);
+        if (color != null) {
+            fadeIndicator(indicator, color, fadeMs);
+        }
+    }
+
+    public static void fadeIndicator(@Nullable ThingActions actions, int indicator, int[] rgb, int fadeMs) {
+        of(actions).fadeIndicator(indicator, rgb, fadeMs);
+    }
+
+    public void activateIndicator(int indicator, int[] rgb) {
+        String color = hexOrWarn(rgb);
+        if (color != null) {
+            activateIndicator(indicator, color);
+        }
+    }
+
+    public static void activateIndicator(@Nullable ThingActions actions, int indicator, int[] rgb) {
+        of(actions).activateIndicator(indicator, rgb);
+    }
+
+    /** AWTRIX NG is updated over HTTP only, there is nothing to send. */
+    public void upgrade() {
+        logger.warn("Ignoring the upgrade, AWTRIX NG cannot be upgraded over MQTT");
+    }
+
+    public static void upgrade(@Nullable ThingActions actions) {
+        of(actions).upgrade();
+    }
+
+    public void showCustomNotification(Map<String, ?> appParams, boolean hold, boolean wakeUp, boolean stack,
+            @Nullable String rtttl, @Nullable String sound, boolean loopSound) {
+        Set<String> withoutEquivalent = new TreeSet<>();
+        Map<String, Object> notification = Awtrix3Compat.toNotification(appParams, withoutEquivalent);
+        if (!withoutEquivalent.isEmpty()) {
+            logger.warn("AWTRIX NG has no equivalent for the notification keys {}, leaving them out",
+                    withoutEquivalent);
+        }
+        notification.put("hold", hold);
+        notification.put("wakeup", wakeUp);
+        notification.put("stack", stack);
+        Map<String, Object> soundSpec = Awtrix3Compat.toSound(rtttl, sound, loopSound);
+        if (soundSpec != null) {
+            notification.put("sound", soundSpec);
+        }
+        showCustomNotification(notification);
+    }
+
+    public static void showCustomNotification(@Nullable ThingActions actions, @Nullable Map<String, ?> appParams,
+            @Nullable Boolean hold, @Nullable Boolean wakeUp, @Nullable Boolean stack, @Nullable String rtttl,
+            @Nullable String sound, @Nullable Boolean loopSound) {
+        if (appParams != null) {
+            of(actions).showCustomNotification(appParams, Boolean.TRUE.equals(hold), Boolean.TRUE.equals(wakeUp),
+                    Boolean.TRUE.equals(stack), rtttl, sound, Boolean.TRUE.equals(loopSound));
+        }
+    }
+
+    private @Nullable String hexOrWarn(int[] rgb) {
+        String color = Awtrix3Compat.toHex(rgb);
+        if (color == null) {
+            logger.warn("Ignoring the color {}, it needs three values from 0 to 255", Arrays.toString(rgb));
+        }
+        return color;
     }
 }
