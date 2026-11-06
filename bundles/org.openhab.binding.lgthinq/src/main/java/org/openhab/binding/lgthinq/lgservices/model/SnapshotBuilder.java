@@ -56,7 +56,7 @@ public interface SnapshotBuilder<S extends SnapshotDefinition> {
      * @throws LGThinqUnmarshallException if an error occurs during unmarshalling the binary data
      * @throws LGThinqApiException if a general API error occurs
      */
-    S createFromBinary(String binaryData, List<MonitoringBinaryProtocol> prot, CapabilityDefinition capDef)
+    S createFromBinary(byte[] binaryData, List<MonitoringBinaryProtocol> prot, CapabilityDefinition capDef)
             throws LGThinqUnmarshallException, LGThinqApiException;
 
     /**

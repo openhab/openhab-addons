@@ -157,7 +157,7 @@ public class WasherDryerCapabilityFactoryV2 extends AbstractWasherDryerCapabilit
 
     @Override
     protected String getProcessStateNodeName() {
-        return "preState";
+        return "processState";
     }
 
     @Override

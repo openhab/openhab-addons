@@ -260,12 +260,12 @@ public class LGThinQBridgeHandler extends ConfigStatusBridgeHandler implements L
                     try {
                         tokenManager.getValidRegisteredToken(bridgeName);
                     } catch (IOException e) {
-                        logger.error("Unexpected error reading LGThinq TokenFile", e);
+                        logger.debug("I/O error reading LGThinq TokenFile. Updating Bridge Status to OFFLINE.", e);
                         updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.toke-file-corrupted");
                         return;
                     } catch (RefreshTokenException e) {
                         updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/error.toke-refresh");
-                        logger.error("Error refreshing token", e);
+                        logger.debug("Error refreshing token. Updating Bridge Status to OFFLINE.", e);
                         return;
                     }
                 } else {
@@ -294,7 +294,7 @@ public class LGThinQBridgeHandler extends ConfigStatusBridgeHandler implements L
                 try {
                     doConnectedRun();
                 } catch (Exception e) {
-                    logger.error("Unexpected error getting device list from LG account", e);
+                    logger.debug("Unexpected error getting device list from LG account. Updating status.", e);
                     updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/error.lgapi-getting-devices");
                 }
             } finally {

@@ -102,7 +102,6 @@ public abstract class LGThinQAbstractDeviceHandler<@NonNull C extends Capability
     private int currentPeriodSeconds = 10;
     private int pollingExtraInfoPeriodSeconds = 60;
     private boolean pollExtraInfoOnPowerOff = false;
-    private Integer fetchMonitorRetries = 0;
     private boolean monitorV1Began = false;
     private boolean isThingReconfigured = false;
     private String monitorWorkId = "";
@@ -518,7 +517,6 @@ public abstract class LGThinQAbstractDeviceHandler<@NonNull C extends Capability
                 // no data to update. Maybe, the monitor stopped, then it's going to be restarted next try.
                 return;
             }
-            fetchMonitorRetries = 0;
             if (!shot.isOnline()) {
                 if (getThing().getStatus() != ThingStatus.OFFLINE) {
                     // only update channels if the device has just gone OFFLINE.
@@ -536,15 +534,10 @@ public abstract class LGThinQAbstractDeviceHandler<@NonNull C extends Capability
         } catch (LGThinqAccessException e) {
             updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         } catch (LGThinqApiExhaustionException e) {
-            fetchMonitorRetries++;
-            getLogger().warn("LG API returns null monitoring data for the thing {}/{}. No data available yet ?",
+            // ThinQ V1 monitors can return no data for several cycles (ex. while the device is idle) although the
+            // device is reachable, so the last known state is kept instead of taking the Thing offline.
+            getLogger().debug("LG API returned no monitoring data for the thing {}/{}. Keeping the last known state.",
                     getDeviceAlias(), getDeviceId());
-            if (fetchMonitorRetries > MAX_GET_MONITOR_RETRIES) {
-                getLogger().error(
-                        "The thing {}/{} reach maximum retries for monitor data. Thing goes OFFLINE until next retry.",
-                        getDeviceAlias(), getDeviceId(), e);
-                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-            }
         } catch (LGThinqException e) {
             getLogger().error("Error updating thing {}/{} from LG API. Thing goes OFFLINE until next retry: {}",
                     getDeviceAlias(), getDeviceId(), e.getMessage(), e);

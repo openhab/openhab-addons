@@ -140,6 +140,7 @@ public abstract class AbstractCapability<C extends CapabilityDefinition> impleme
     @Override
     public FeatureDefinition getFeatureDefinition(String featureName) {
         Function<C, FeatureDefinition> f = featureDefinitionMap.get(featureName);
-        return f != null ? f.apply(realClass.cast(this)) : NULL_DEFINITION;
+        FeatureDefinition computed = (f != null) ? Objects.requireNonNull(f.apply(realClass.cast(this))) : null;
+        return Objects.requireNonNullElse(computed, NULL_DEFINITION);
     }
 }

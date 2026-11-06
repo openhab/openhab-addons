@@ -87,6 +87,7 @@ public abstract class AbstractWasherDryerCapabilityFactory extends AbstractCapab
         FeatureDefinition fd = newFeatureDefinition(getStateFeatureNodeName(), monitorValueNode);
         fd.getValuesMapping().put(WM_LOST_WASHING_STATE_KEY, WM_LOST_WASHING_STATE_VALUE);
         wdCap.setState(fd);
+        wdCap.setPreviousState(newFeatureDefinition(getPreStateFeatureNodeName(), monitorValueNode));
         wdCap.setProcessState(newFeatureDefinition(getProcessStateNodeName(), monitorValueNode));
         // --- Selectable features -----
         wdCap.setRinseFeat(newFeatureDefinition(getRinseFeatureNodeName(), monitorValueNode,
