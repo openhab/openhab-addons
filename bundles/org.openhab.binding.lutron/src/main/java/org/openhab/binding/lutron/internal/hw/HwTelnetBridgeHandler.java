@@ -106,8 +106,11 @@ public class HwTelnetBridgeHandler extends HwBridgeHandler implements HwTelnetCo
             connection = newConnection;
         }
         logger.info("Connected to HomeWorks processor at {}:{}", config.ipAddress, config.port);
-        updateStatus(ThingStatus.ONLINE);
+        // Before going ONLINE, so that the dimmers' level queries sent when the bridge comes online follow them.
         sendStartupCommands();
+        if (newConnection.equals(connection)) {
+            updateStatus(ThingStatus.ONLINE);
+        }
     }
 
     private void scheduleReconnect() {

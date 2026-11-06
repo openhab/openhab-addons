@@ -106,6 +106,15 @@ public class HwBridgeHandlerTest {
     }
 
     @Test
+    public void deviceWithFourFieldAddressIsNotDiscoveredAsDimmer() {
+        // QED shades report their level with a DL message too, with an address that has four fields
+        handler.receive("DL, [01:04:02:12], 100.00");
+        handler.receive("DL, [01:04:2:12],   0.00");
+
+        verify(discoveryService, never()).declareUnknownDimmer(org.mockito.ArgumentMatchers.anyString());
+    }
+
+    @Test
     public void unknownDimmerWithoutDiscoveryServiceIsIgnored() {
         TestBridgeHandler noDiscovery = new TestBridgeHandler(bridge);
 

@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Consumer;
+import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -41,6 +42,10 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public abstract class HwBridgeHandler extends BaseBridgeHandler {
+    // Dimmers have five address fields [processor:link:router:module:output]. Other devices that report levels, such
+    // as QED shades, have fewer.
+    private static final Pattern DIMMER_ADDRESS = Pattern.compile("\\[\\d+(:\\d+){4}]");
+
     private final Logger logger = LoggerFactory.getLogger(HwBridgeHandler.class);
 
     private final List<Consumer<String>> lineListeners = new CopyOnWriteArrayList<>();
@@ -119,7 +124,9 @@ public abstract class HwBridgeHandler extends BaseBridgeHandler {
                 HwDimmerHandler handler = findHandler(address);
                 if (handler == null) {
                     HwDiscoveryService service = discoveryService;
-                    if (service != null) {
+                    if (!DIMMER_ADDRESS.matcher(address).matches()) {
+                        logger.debug("Not discovering {} as a dimmer, its address does not have five fields", address);
+                    } else if (service != null) {
                         service.declareUnknownDimmer(address);
                     }
                 } else {
