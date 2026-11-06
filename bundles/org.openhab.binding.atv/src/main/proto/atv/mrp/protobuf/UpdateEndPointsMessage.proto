@@ -1,0 +1,26 @@
+syntax = "proto2";
+option java_package = "org.openhab.binding.atv.internal.client.protocols.mrp.dto";
+
+import "atv/mrp/protobuf/ProtocolMessage.proto";
+
+extend ProtocolMessage {
+  optional UpdateEndPointsMessage updateEndPointsMessage = 83;
+}
+
+message AVEndpointDescriptor {
+  optional string name = 1;
+  optional string uniqueIdentifier = 2;
+  // repeated ... outputDevices = 3;
+  // optional ... designatedGroupLeader = 4;
+  optional bool isLocalEndpoint = 5;
+  optional string instanceIdentifier = 6;
+  optional bool isProxyGroupPlayer = 7;
+  optional int32 connectionType = 8;
+  optional bool canModifyGroupMembership = 9;
+  // repeated ... _personalOutputDevices = 10;
+}
+
+message UpdateEndPointsMessage {
+  optional AVEndpointDescriptor endpoints = 1;
+  optional int32 endpointFeatures = 2;
+}

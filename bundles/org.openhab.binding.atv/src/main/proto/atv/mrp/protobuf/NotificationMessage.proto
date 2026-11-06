@@ -1,0 +1,13 @@
+syntax = "proto2";
+option java_package = "org.openhab.binding.atv.internal.client.protocols.mrp.dto";
+
+import "atv/mrp/protobuf/ProtocolMessage.proto";
+
+extend ProtocolMessage {
+  optional NotificationMessage notificationMessage = 16;
+}
+
+message NotificationMessage {
+  repeated string notification = 1;
+  repeated bytes userInfo = 2;
+}

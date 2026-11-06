@@ -1,0 +1,16 @@
+syntax = "proto2";
+option java_package = "org.openhab.binding.atv.internal.client.protocols.mrp.dto";
+
+import "atv/mrp/protobuf/ProtocolMessage.proto";
+
+extend ProtocolMessage {
+  optional CryptoPairingMessage cryptoPairingMessage = 39;
+}
+
+message CryptoPairingMessage {
+  optional bytes pairingData = 1; // Example: <00010006 0101>
+  optional int32 status = 2; // Example: 0
+  optional bool isRetrying = 3;
+  optional bool isUsingSystemPairing = 4;
+  optional int32 state = 5;
+}

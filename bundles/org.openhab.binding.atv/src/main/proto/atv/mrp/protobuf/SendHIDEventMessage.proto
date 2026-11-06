@@ -1,0 +1,42 @@
+syntax = "proto2";
+option java_package = "org.openhab.binding.atv.internal.client.protocols.mrp.dto";
+
+import "atv/mrp/protobuf/ProtocolMessage.proto";
+
+extend ProtocolMessage {
+  optional SendHIDEventMessage sendHIDEventMessage = 13;
+}
+
+message SendHIDEventMessage {
+  // This data corresponds to a "keyboardEvent" in IOHIDEvent.h encoded as raw
+  // data. Here is one source:
+  //
+  //   https://opensource.apple.com/source/IOHIDFamily/IOHIDFamily-308/IOHIDFamily/IOHIDEvent.h.auto.html
+  //
+  // The interesting parts are:
+  //  - usagePage (UInt32)
+  //  - usage (Uint32)
+  //  - down (bool)
+  //
+  // The parameters usagePage and usage corresponds to the key being pressed.
+  // It is mapped to the USB HID values, which can be found here:
+  //
+  //  https://github.com/Daij-Djan/DDHidLib/blob/master/usb_hid_usages.txt
+  //
+  // Pressing left key would for instance map to usagePage=0x01, usage=0x8B. In
+  // the hid data, these values are stored as big endian uint16 values in the
+  // mentioned order. So the same example would be: 0x0001008B0001, assuming
+  // down = true (key being pressed). For each key press, the same usagePage
+  // and usage are sent with down=true and down=false (key down + key up).
+  //
+  // There is a bit of magic in the raw data that's just not decoded yet, but
+  // that doesn't matter. Just use this and it will work:
+  //
+  //  438922cf080200000000000000000000010000000000000002000000200000000300000001000000000000<data>0000000000000001000000
+  //
+  // <data> corresponds to the values above, e.g. 0001008B0001. The first 8
+  // bytes is a timestamp (mach AbsoluteTime). It's a bit tricky to derive but
+  // tvOS seems to accept old timestamps here. So it's probably fine to send
+  // anything.
+  optional bytes hidEventData = 1;
+}

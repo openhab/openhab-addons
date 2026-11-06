@@ -1,0 +1,17 @@
+syntax = "proto2";
+option java_package = "org.openhab.binding.atv.internal.client.protocols.mrp.dto";
+
+import "atv/mrp/protobuf/ProtocolMessage.proto";
+
+extend ProtocolMessage {
+  optional ClientUpdatesConfigMessage clientUpdatesConfigMessage = 21;
+}
+
+message ClientUpdatesConfigMessage {
+  optional bool artworkUpdates = 1;
+  optional bool nowPlayingUpdates = 2;
+  optional bool volumeUpdates = 3;
+  optional bool keyboardUpdates = 4;
+  optional bool outputDeviceUpdates = 5;
+}
+

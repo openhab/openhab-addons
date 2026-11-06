@@ -74,6 +74,7 @@
     <module>org.openhab.binding.atagone</module>
     <module>org.openhab.binding.atlona</module>
     <module>org.openhab.binding.atmofrance</module>
+    <module>org.openhab.binding.atv</module>
     <module>org.openhab.binding.autelis</module>
     <module>org.openhab.binding.automower</module>
     <module>org.openhab.binding.avmfritz</module>

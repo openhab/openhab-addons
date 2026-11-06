@@ -1,0 +1,25 @@
+syntax = "proto2";
+option java_package = "org.openhab.binding.atv.internal.client.protocols.mrp.dto";
+
+import "atv/mrp/protobuf/ProtocolMessage.proto";
+
+extend ProtocolMessage {
+  optional SendPackedVirtualTouchEventMessage sendPackedVirtualTouchEventMessage = 47;
+}
+
+message SendPackedVirtualTouchEventMessage {
+
+  // Corresponds to "phase" in data
+  enum Phase {
+    Began = 1;
+    Moved = 2;
+    Stationary = 3;
+    Ended = 4;
+    Cancelled = 5;
+  }
+
+  // The packed version of VirtualTouchEvent contains X, Y, phase, deviceID
+  // and finger stored as a byte array. Each value is written as 16bit little
+  // endian integers.
+  optional bytes data = 1;
+}

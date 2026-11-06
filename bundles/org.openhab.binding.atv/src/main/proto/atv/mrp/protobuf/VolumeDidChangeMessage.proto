@@ -1,0 +1,14 @@
+syntax = "proto2";
+option java_package = "org.openhab.binding.atv.internal.client.protocols.mrp.dto";
+
+import "atv/mrp/protobuf/ProtocolMessage.proto";
+
+extend ProtocolMessage {
+  optional VolumeDidChangeMessage volumeDidChangeMessage = 56;
+}
+
+message VolumeDidChangeMessage {
+  optional float volume = 1;
+  optional string endpointUID = 2;
+  optional string outputDeviceUID = 3;
+}

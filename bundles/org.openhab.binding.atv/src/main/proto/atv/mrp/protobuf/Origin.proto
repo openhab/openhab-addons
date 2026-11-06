@@ -1,0 +1,18 @@
+syntax = "proto2";
+option java_package = "org.openhab.binding.atv.internal.client.protocols.mrp.dto";
+
+import "atv/mrp/protobuf/DeviceInfoMessage.proto";
+
+message Origin {
+  enum Type {
+    Unknown = 0;
+    Local = 1;
+    Custom = 2;
+  }
+
+  optional Type type = 1;
+  optional string displayName = 2;
+  optional int32 identifier = 3;
+  optional DeviceInfoMessage deviceInfo = 4;
+  optional bool isLocallyHosted = 5;
+}
