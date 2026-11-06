@@ -934,3 +934,68 @@ then
     awtrix.showNotification("Doorbell", "bell-ring")
 end
 ```
+
+### Switching from AWTRIX 3 to AWTRIX NG
+
+A clock that is flashed with AWTRIX NG and keeps its MQTT prefix does not have to be set up again.
+The `awtrix-clock` thing notices the NG firmware and changes itself to an `awtrix-ng-clock`, and its `awtrix-app` things follow it to `awtrix-ng-app`.
+The thing keeps its UID, label, location and the configuration that both firmware types share (`basetopic`, `appLockTimeout`, `discoverDefaultApps`, and `appname` and `useButtons` of the apps).
+`lowBatteryThreshold` is gone, `low-battery` is reported by the clock.
+The change only goes this way.
+To use a clock with AWTRIX 3 again, delete the AWTRIX NG things and add the AWTRIX 3 things through discovery.
+
+The clock is taken as AWTRIX NG when it sends its device state on `<prefix>/state/device` with a changing `uptimeSeconds`.
+AWTRIX NG sends it every `statsInterval` (10 seconds by default), so the change takes up to that long after the clock runs AWTRIX NG.
+The broker keeps the last device state of a clock, which could be left over from a clock that was flashed back to AWTRIX 3 or is switched off.
+That is why the first device state after connecting to the broker is not enough, the uptime in a later one has to differ.
+A change is logged at INFO level.
+
+The channels of the thing are replaced by those of the new thing type.
+Links of channels with the same ID stay, but AWTRIX NG changed what some of them mean (see the tables below), so check the items of the changed channels.
+A link to a channel that the new thing type does not have stays on its item, but it has no effect any more.
+Link the item to the new channel and remove the old link.
+
+AWTRIX NG only accepts app names of 1 to 32 letters, digits, `-` and `_`.
+An app with another name shows a configuration error after the change.
+
+The AWTRIX 3 things keep the state of their apps as retained messages on `<prefix>/custom/<appname>`.
+AWTRIX NG ignores them, but they stay on the broker.
+They can be removed with an empty retained message, for example `mosquitto_pub -r -n -t awtrix/custom/washing`.
+
+Notes on the changes of the firmware are in the [migration guide of AWTRIX NG](https://blueforcer.github.io/awtrix-ng/esp32/guides/migrating-from-awtrix3/).
+Where the two differ, the AWTRIX NG things follow AWTRIX NG.
+
+#### Bridge Channels After the Change
+
+| Awtrix 3         | AWTRIX NG                                                                                                                             |
+| ---------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| `lux`            | `light-level`, a percentage and not lux.                                                                                              |
+| `indicator-1..3` | The same names, but a Color channel instead of a Switch.                                                                              |
+| `screen`         | The same name, an Image channel that follows the size of the panel.                                                                   |
+| -                | New: voltage, memory, frame rate, IP address, uptime, volumes, rotation, clock and date format, colors, mood light, overlay, `error`. |
+
+#### App Channels After the Change
+
+| Awtrix 3                    | AWTRIX NG                                                                                |
+| --------------------------- | ---------------------------------------------------------------------------------------- |
+| `active`                    | `enabled` switches the app in the rotation. `active` only reports that the app is shown. |
+| `autoscale`                 | `chart-autoscale`                                                                        |
+| `background`                | `background-color`                                                                       |
+| `bar`, `line`               | `bar-chart`, `line-chart`                                                                |
+| `blink-text`, `fade-text`   | `text-blink`, `text-fade`                                                                |
+| `center`                    | `text-align`                                                                             |
+| `color`                     | `text-color`, and `chart-color` for charts                                               |
+| `duration`, `lifetime`      | The same names, in milliseconds instead of seconds                                       |
+| `effect-blend`              | `palette-blend`                                                                          |
+| `effect-speed`              | The same name, from 0.1 to 10 instead of a percentage                                    |
+| `effect-palette`            | `palette`                                                                                |
+| `lifetime-mode`             | `lifetime-expiry`                                                                        |
+| `overlay`                   | The same name, an empty command clears the overlay instead of `Clear`                    |
+| `progress-background`       | `progress-track-color`                                                                   |
+| `push-icon`                 | `icon-mode`                                                                              |
+| `rainbow`, `gradient-color` | `palette` together with `text-palette`                                                   |
+| `text-case`                 | The same name, with the words `inherit`, `upper` and `asTyped`                           |
+| `text-offset`               | `text-offset-x`                                                                          |
+| `top-text`                  | Removed, AWTRIX NG has no equivalent                                                     |
+
+New channels are the scroll settings, the icon settings (`icons`, `icon-mode`, offsets), `font`, `repeat`, `palette-*`, `text-in-front`, `draw` and the button triggers.
