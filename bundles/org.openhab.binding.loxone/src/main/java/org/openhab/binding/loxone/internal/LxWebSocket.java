@@ -206,7 +206,14 @@ public class LxWebSocket {
     }
 
     @OnWebSocketMessage
-    public void onBinaryMessage(byte[] data, int msgOffset, int msgLength) {
+    public void onBinaryMessage(ByteBuffer payload, Callback callback) {
+        byte[] data = new byte[payload.remaining()];
+        payload.get(data);
+        callback.succeed();
+        onBinaryMessage(data, 0, data.length);
+    }
+
+    void onBinaryMessage(byte[] data, int msgOffset, int msgLength) {
         int offset = msgOffset;
         int length = msgLength;
         if (logger.isTraceEnabled()) {

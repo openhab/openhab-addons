@@ -188,8 +188,8 @@ public class RemoteControllerWebSocket extends RemoteController implements Liste
         webSocketV2 = new WebSocketV2(this);
     }
 
-    private static SslContextFactory legacyCipherSuiteFactory() {
-        SslContextFactory sslContextFactory = new SslContextFactory.Client( /* trustall= */ true);
+    private static SslContextFactory.Client legacyCipherSuiteFactory() {
+        SslContextFactory.Client sslContextFactory = new SslContextFactory.Client( /* trustall= */ true);
         sslContextFactory.setExcludeCipherSuites();
         return sslContextFactory;
     }

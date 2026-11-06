@@ -135,6 +135,7 @@ public class WebSocketAesClientService extends AbstractWebSocketClientService {
     @OnWebSocketMessage
     public void onBinaryMessage(Session session, InputStream inputStream)
             throws IOException, NoSuchAlgorithmException, InvalidKeyException {
+        updateLastMessageReceived();
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         byte[] buffer = new byte[8192];
         int bytesRead;

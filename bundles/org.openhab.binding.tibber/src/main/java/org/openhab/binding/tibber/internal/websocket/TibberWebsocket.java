@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.HashMap;
@@ -35,13 +36,12 @@ import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.websocket.api.Callback;
-import org.eclipse.jetty.websocket.api.Frame;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketError;
-import org.eclipse.jetty.websocket.api.annotations.OnWebSocketFrame;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketOpen;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketPong;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
@@ -185,29 +185,13 @@ public class TibberWebsocket {
         }
     }
 
-    @OnWebSocketFrame
-    public void onFrame(Frame frame, Callback callback) {
-        if (Frame.Type.PONG.equals(frame.getType())) {
-            ByteBuffer buffer = frame.getPayload();
-            byte[] bytes = new byte[frame.getPayloadLength()];
-            for (int i = 0; i < frame.getPayloadLength(); i++) {
-                bytes[i] = buffer.get(i);
-            }
-            String payloadString = new String(bytes);
-            Instant sent = pingPongMap.remove(payloadString);
-            if (sent == null) {
-                logger.debug("Websocket receiced pong without ping {}", payloadString);
-            }
-        } else if (Frame.Type.PING.equals(frame.getType())) {
-            Session session = this.session;
-            if (session != null) {
-                ByteBuffer buffer = frame.getPayload();
-                session.sendPong(buffer, Callback.NOOP);
-            } else {
-                logger.debug("Websocket onPing answer cannot be initiated");
-            }
+    @OnWebSocketPong
+    public void onPong(ByteBuffer payload) {
+        String payloadString = StandardCharsets.UTF_8.decode(payload).toString();
+        Instant sent = pingPongMap.remove(payloadString);
+        if (sent == null) {
+            logger.debug("Websocket receiced pong without ping {}", payloadString);
         }
-        callback.succeed();
     }
 
     public boolean isConnected() {

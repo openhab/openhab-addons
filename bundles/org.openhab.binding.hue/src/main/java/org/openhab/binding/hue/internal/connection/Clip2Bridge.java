@@ -808,7 +808,7 @@ public class Clip2Bridge implements Closeable {
             HueTlsTrustManagerProvider trustManagerProvider, String hostName, String applicationKey)
             throws ApiException {
         LOGGER.debug("Clip2Bridge()");
-        SslContextFactory sslContextFactory = new SslContextFactory.Client();
+        SslContextFactory.Client sslContextFactory = new SslContextFactory.Client();
         try {
             SSLContext sslContext = SSLContext.getInstance("TLS");
             sslContext.init(null, new TrustManager[] { trustManagerProvider.getTrustManager() }, null);

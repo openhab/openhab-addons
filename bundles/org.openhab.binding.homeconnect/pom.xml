@@ -20,18 +20,6 @@
 
   <dependencies>
 
-    <dependency>
-      <groupId>jakarta.ws.rs</groupId>
-      <artifactId>jakarta.ws.rs-api</artifactId>
-      <version>3.1.0</version>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.osgi</groupId>
-      <artifactId>org.osgi.service.jakartars</artifactId>
-      <version>2.0.0</version>
-      <scope>compile</scope>
-    </dependency>
     <!--Thymeleaf -->
     <!-- Transitive dependencies are not embedded: keep ognl, attoparser and unbescape at the versions declared by
       thymeleaf-parent. -->

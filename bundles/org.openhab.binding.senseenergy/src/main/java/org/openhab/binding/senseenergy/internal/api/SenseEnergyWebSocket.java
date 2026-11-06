@@ -17,11 +17,13 @@ import static org.openhab.binding.senseenergy.internal.SenseEnergyBindingConstan
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.ByteBuffer;
 import java.time.Duration;
 import java.util.concurrent.ExecutionException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.websocket.api.Callback;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketError;
@@ -149,8 +151,9 @@ public class SenseEnergyWebSocket {
     }
 
     @OnWebSocketMessage
-    public void onWebSocketBinary(byte @Nullable [] payload, int offset, int len) {
+    public void onWebSocketBinary(ByteBuffer payload, Callback callback) {
         logger.warn("Unexpected binary message received");
+        callback.succeed();
     }
 
     @OnWebSocketMessage

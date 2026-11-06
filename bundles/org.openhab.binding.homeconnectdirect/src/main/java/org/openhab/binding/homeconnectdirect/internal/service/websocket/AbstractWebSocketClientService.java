@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.homeconnectdirect.internal.service.websocket;
 
-import static org.eclipse.jetty.websocket.api.Frame.Type.PING;
-import static org.eclipse.jetty.websocket.api.Frame.Type.PONG;
 import static org.openhab.binding.homeconnectdirect.internal.HomeConnectDirectBindingConstants.*;
 
 import java.net.URI;
@@ -27,12 +25,12 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.websocket.api.Callback;
-import org.eclipse.jetty.websocket.api.Frame;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketError;
-import org.eclipse.jetty.websocket.api.annotations.OnWebSocketFrame;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketOpen;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketPing;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketPong;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.openhab.binding.homeconnectdirect.internal.service.websocket.exception.WebSocketClientServiceException;
@@ -111,15 +109,16 @@ public abstract class AbstractWebSocketClientService implements WebSocketClientS
         startConnectionChecks(session);
     }
 
-    @OnWebSocketFrame
-    public void onFrame(Session session, Frame frame) {
-        if (PONG.equals(frame.getType())) {
-            logger.trace("<< PONG ({})", thing.getUID());
-        } else if (PING.equals(frame.getType())) {
-            logger.trace("<< PING ({})", thing.getUID());
-            sendPong(session);
-        }
+    @OnWebSocketPing
+    public void onPing(Session session, ByteBuffer payload) {
+        logger.trace("<< PING ({})", thing.getUID());
+        sendPong(session);
+        updateLastMessageReceived();
+    }
 
+    @OnWebSocketPong
+    public void onPong(ByteBuffer payload) {
+        logger.trace("<< PONG ({})", thing.getUID());
         updateLastMessageReceived();
     }
 

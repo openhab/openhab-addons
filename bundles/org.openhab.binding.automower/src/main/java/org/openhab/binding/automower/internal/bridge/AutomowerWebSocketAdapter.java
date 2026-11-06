@@ -20,13 +20,12 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.websocket.api.Callback;
-import org.eclipse.jetty.websocket.api.Frame;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketError;
-import org.eclipse.jetty.websocket.api.annotations.OnWebSocketFrame;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketOpen;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketPong;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import org.openhab.binding.automower.internal.rest.exceptions.AutomowerCommunicationException;
 import org.openhab.binding.automower.internal.things.AutomowerHandler;
@@ -90,12 +89,9 @@ public class AutomowerWebSocketAdapter {
                 TimeUnit.MINUTES);
     }
 
-    @OnWebSocketFrame
-    public synchronized void onFrame(Frame frame, Callback callback) {
-        if (frame.getType() == Frame.Type.PONG) {
-            unansweredPings = 0;
-        }
-        callback.succeed();
+    @OnWebSocketPong
+    public synchronized void onPong(ByteBuffer payload) {
+        unansweredPings = 0;
     }
 
     @OnWebSocketMessage

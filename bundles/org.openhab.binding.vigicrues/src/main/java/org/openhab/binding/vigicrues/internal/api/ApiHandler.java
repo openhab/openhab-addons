@@ -86,7 +86,7 @@ public class ApiHandler {
     @Activate
     public ApiHandler(@Reference TimeZoneProvider timeZoneProvider,
             final @Reference HttpClientFactory httpClientFactory) {
-        SslContextFactory sslContextFactory = new SslContextFactory.Client();
+        SslContextFactory.Client sslContextFactory = new SslContextFactory.Client();
 
         try {
             httpClient = httpClientFactory.createHttpClient(BINDING_ID, sslContextFactory);

@@ -88,7 +88,7 @@ public class PlexServerHandler extends BaseBridgeHandler implements PlexUpdateLi
     public void initialize() {
         final String httpClientName = ThingWebClientUtil.buildWebClientConsumerName(thing.getUID(), null);
         try {
-            SslContextFactory.Server sslContextFactory = new SslContextFactory.Server();
+            SslContextFactory.Client sslContextFactory = new SslContextFactory.Client();
             sslContextFactory.setEndpointIdentificationAlgorithm(null);
             sslContextFactory.setTrustAll(true);
             HttpClient localHttpClient = httpClient = httpClientFactory.createHttpClient(httpClientName,

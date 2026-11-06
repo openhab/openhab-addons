@@ -16,7 +16,6 @@ import static org.openhab.binding.bosesoundtouch.internal.BoseSoundTouchBindingC
 
 import java.net.URI;
 import java.nio.ByteBuffer;
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
@@ -29,14 +28,13 @@ import java.util.stream.Collectors;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.websocket.api.Callback;
-import org.eclipse.jetty.websocket.api.Frame;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.StatusCode;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketError;
-import org.eclipse.jetty.websocket.api.annotations.OnWebSocketFrame;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketOpen;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketPong;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
@@ -419,9 +417,10 @@ public class BoseSoundTouchHandler extends BaseThingHandler {
     }
 
     @OnWebSocketMessage
-    public void onWebSocketBinary(byte @Nullable [] payload, int offset, int len) {
+    public void onWebSocketBinary(ByteBuffer payload, Callback callback) {
         // we don't expect binary data so just dump if we get some...
-        logger.debug("{}: onWebSocketBinary({}, {}, '{}')", getDeviceName(), offset, len, Arrays.toString(payload));
+        logger.debug("{}: onWebSocketBinary({} bytes)", getDeviceName(), payload.remaining());
+        callback.succeed();
     }
 
     @OnWebSocketClose
@@ -435,14 +434,9 @@ public class BoseSoundTouchHandler extends BaseThingHandler {
         }
     }
 
-    @OnWebSocketFrame
-    public void onWebSocketFrame(@Nullable Frame frame) {
-        Frame localFrame = frame;
-        if (localFrame != null) {
-            if (localFrame.getType() == Frame.Type.PONG) {
-                missedPongsCount = 0;
-            }
-        }
+    @OnWebSocketPong
+    public void onWebSocketPong(ByteBuffer payload) {
+        missedPongsCount = 0;
     }
 
     private synchronized void openConnection() {

@@ -31,14 +31,13 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.websocket.api.Callback;
-import org.eclipse.jetty.websocket.api.Frame;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.StatusCode;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketError;
-import org.eclipse.jetty.websocket.api.annotations.OnWebSocketFrame;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketOpen;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketPong;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import org.eclipse.jetty.websocket.api.exceptions.UpgradeException;
 import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
@@ -393,7 +392,7 @@ public class Websocket extends RestApi {
         }
     }
 
-    private void handlePong(Frame frame) {
+    private void handlePong() {
         if (pingSentAt.getAndSet(null) == null) {
             logger.trace("Websocket received pong without matching ping");
         }
@@ -409,16 +408,6 @@ public class Websocket extends RestApi {
         Instant sent = pingSentAt.get();
         // ">=" - Duration.toMillis() truncates, so the boundary itself must count as overdue
         return sent != null && Duration.between(sent, Instant.now()).toMillis() >= PONG_TIMEOUT_MS;
-    }
-
-    private void handlePing(Frame frame) {
-        Session localSession = session;
-        if (localSession != null) {
-            ByteBuffer buffer = frame.getPayload();
-            localSession.sendPong(buffer, Callback.NOOP);
-        } else {
-            logger.debug("Websocket onPing answer cannot be initiated");
-        }
     }
 
     private ClientUpgradeRequest getClientUpgradeRequest() {
@@ -443,7 +432,14 @@ public class Websocket extends RestApi {
      */
 
     @OnWebSocketMessage
-    public void onByteArray(byte[] blob, int offset, int length) {
+    public void onBinaryMessage(ByteBuffer payload, Callback callback) {
+        byte[] message = new byte[payload.remaining()];
+        payload.get(message);
+        callback.succeed();
+        onByteArray(message, 0, message.length);
+    }
+
+    void onByteArray(byte[] blob, int offset, int length) {
         try {
             byte[] message = blob;
             if (offset != 0) {
@@ -476,14 +472,9 @@ public class Websocket extends RestApi {
         }
     }
 
-    @OnWebSocketFrame
-    public void onFrame(Frame frame, Callback callback) {
-        if (Frame.Type.PONG.equals(frame.getType())) {
-            handlePong(frame);
-        } else if (Frame.Type.PING.equals(frame.getType())) {
-            handlePing(frame);
-        }
-        callback.succeed();
+    @OnWebSocketPong
+    public void onPong(ByteBuffer payload) {
+        handlePong();
     }
 
     @OnWebSocketOpen

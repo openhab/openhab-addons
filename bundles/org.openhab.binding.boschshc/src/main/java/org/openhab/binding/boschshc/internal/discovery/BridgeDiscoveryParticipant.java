@@ -79,7 +79,7 @@ public class BridgeDiscoveryParticipant implements MDNSDiscoveryParticipant {
     @Activate
     public BridgeDiscoveryParticipant(@Reference HttpClientFactory httpClientFactory) {
         // create http client upfront to later request public information from SHC
-        SslContextFactory sslContextFactory = new SslContextFactory.Client.Client(true); // Accept all certificates
+        SslContextFactory.Client sslContextFactory = new SslContextFactory.Client(true); // Accept all certificates
         sslContextFactory.setTrustAll(true);
         sslContextFactory.setValidateCerts(false);
         sslContextFactory.setValidatePeerCerts(false);
