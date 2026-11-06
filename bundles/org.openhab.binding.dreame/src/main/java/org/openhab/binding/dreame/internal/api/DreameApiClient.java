@@ -168,13 +168,13 @@ public class DreameApiClient implements DreameMowerApi, DreameVacuumApi {
     }
 
     @Override
-    public synchronized void setDnd(DreameDevice device, boolean enabled, @Nullable String taskConfiguration)
-            throws DreameCloudException {
+    public synchronized void setDnd(DreameDevice device, boolean enabled, @Nullable String taskConfiguration,
+            BooleanSupplier isCurrent) throws DreameCloudException {
         if ("mova.mower.g2584d".equals(device.model())) {
             throw new DreameCloudException("Do not disturb commands are not yet supported for this mower model");
         }
         if (taskConfiguration == null) {
-            setProperty(device, DreameProperty.DND, enabled);
+            setProperty(device, DreameProperty.DND, new JsonPrimitive(enabled), isCurrent);
             return;
         }
         JsonElement parsed;
@@ -187,10 +187,20 @@ public class DreameApiClient implements DreameMowerApi, DreameVacuumApi {
             throw new DreameCloudException("Unsupported do not disturb task configuration");
         }
         tasks.get(0).getAsJsonObject().addProperty("en", enabled);
-        setProperty(device, DreameProperty.DND_TASK, new JsonPrimitive(gson.toJson(tasks)));
+        setProperty(device, DreameProperty.DND_TASK, new JsonPrimitive(gson.toJson(tasks)), isCurrent);
+    }
+
+    public synchronized void setDnd(DreameDevice device, boolean enabled, @Nullable String taskConfiguration)
+            throws DreameCloudException {
+        setDnd(device, enabled, taskConfiguration, () -> true);
     }
 
     private void setProperty(DreameDevice device, DreameProperty property, JsonElement value)
+            throws DreameCloudException {
+        setProperty(device, property, value, () -> true);
+    }
+
+    private void setProperty(DreameDevice device, DreameProperty property, JsonElement value, BooleanSupplier isCurrent)
             throws DreameCloudException {
         JsonObject parameter = new JsonObject();
         parameter.addProperty("did", device.id());
@@ -199,16 +209,18 @@ public class DreameApiClient implements DreameMowerApi, DreameVacuumApi {
         parameter.add("value", value);
         JsonArray parameters = new JsonArray();
         parameters.add(parameter);
-        sendCommand(device, "set_properties", parameters);
+        sendCommand(device, "set_properties", parameters, isCurrent);
     }
 
-    public synchronized void callAction(DreameDevice device, DreameAction action) throws DreameCloudException {
+    @Override
+    public synchronized void callAction(DreameDevice device, DreameAction action, BooleanSupplier isCurrent)
+            throws DreameCloudException {
         JsonObject parameters = new JsonObject();
         parameters.addProperty("did", device.id());
         parameters.addProperty("siid", action.serviceId());
         parameters.addProperty("aiid", action.actionId());
         parameters.add("in", new JsonArray());
-        sendCommand(device, "action", parameters);
+        sendCommand(device, "action", parameters, isCurrent);
     }
 
     @Override
@@ -526,7 +538,9 @@ public class DreameApiClient implements DreameMowerApi, DreameVacuumApi {
         }
     }
 
-    public synchronized void startZoneMowing(DreameDevice device, List<Integer> zoneIds) throws DreameCloudException {
+    @Override
+    public synchronized void startZoneMowing(DreameDevice device, List<Integer> zoneIds, BooleanSupplier isCurrent)
+            throws DreameCloudException {
         JsonArray regions = new JsonArray();
         zoneIds.forEach(regions::add);
         JsonObject data = new JsonObject();
@@ -543,15 +557,16 @@ public class DreameApiClient implements DreameMowerApi, DreameVacuumApi {
         parameters.addProperty("siid", 2);
         parameters.addProperty("aiid", 50);
         parameters.add("in", input);
-        JsonElement result = sendCommand(device, "action", parameters);
+        JsonElement result = sendCommand(device, "action", parameters, isCurrent);
         if (result instanceof JsonObject object && object.has("code") && object.get("code").getAsInt() != 0) {
             throw new DreameCloudException("Cloud service rejected zone mowing");
         }
     }
 
     @Override
-    public synchronized void selectMap(DreameDevice device, int mapIndex) throws DreameCloudException {
-        JsonElement result = sendCommand(device, "action", createMapSelectionParameters(device, mapIndex));
+    public synchronized void selectMap(DreameDevice device, int mapIndex, BooleanSupplier isCurrent)
+            throws DreameCloudException {
+        JsonElement result = sendCommand(device, "action", createMapSelectionParameters(device, mapIndex), isCurrent);
         if (result instanceof JsonObject object && object.has("code") && object.get("code").getAsInt() != 0) {
             throw new DreameCloudException("Cloud service rejected map selection");
         }
@@ -586,16 +601,16 @@ public class DreameApiClient implements DreameMowerApi, DreameVacuumApi {
         return BigDecimal.valueOf(record.get(4).getAsInt(), 1);
     }
 
-    public synchronized void setCuttingHeight(DreameDevice device, int mapIndex, BigDecimal height)
-            throws DreameCloudException {
+    public synchronized void setCuttingHeight(DreameDevice device, int mapIndex, BigDecimal height,
+            BooleanSupplier isCurrent) throws DreameCloudException {
         JsonArray record = updatedCuttingHeightRecord(getMowingPreference(device, mapIndex), mapIndex, height);
-        int status = setMowingPreference(device, record);
+        int status = setMowingPreference(device, record, isCurrent);
         if (status == -3 && record.size() > LEGACY_PREFERENCE_LENGTH) {
             JsonArray legacyRecord = new JsonArray();
             for (int index = 0; index < LEGACY_PREFERENCE_LENGTH; index++) {
                 legacyRecord.add(record.get(index));
             }
-            status = setMowingPreference(device, legacyRecord);
+            status = setMowingPreference(device, legacyRecord, isCurrent);
         }
         if (status != 0) {
             throw new DreameCloudException("Cloud service rejected cutting height with status " + status);
@@ -659,7 +674,8 @@ public class DreameApiClient implements DreameMowerApi, DreameVacuumApi {
         return updated;
     }
 
-    private int setMowingPreference(DreameDevice device, JsonArray record) throws DreameCloudException {
+    private int setMowingPreference(DreameDevice device, JsonArray record, BooleanSupplier isCurrent)
+            throws DreameCloudException {
         JsonObject setter = new JsonObject();
         setter.addProperty("m", "s");
         setter.addProperty("t", "PRE");
@@ -671,7 +687,7 @@ public class DreameApiClient implements DreameMowerApi, DreameVacuumApi {
         parameters.addProperty("siid", 2);
         parameters.addProperty("aiid", 50);
         parameters.add("in", input);
-        JsonElement result = sendCommand(device, "action", parameters);
+        JsonElement result = sendCommand(device, "action", parameters, isCurrent);
         if (result instanceof JsonObject object && object.get("out") instanceof JsonArray output) {
             for (JsonElement element : output) {
                 if (element instanceof JsonObject entry && entry.has("r")) {

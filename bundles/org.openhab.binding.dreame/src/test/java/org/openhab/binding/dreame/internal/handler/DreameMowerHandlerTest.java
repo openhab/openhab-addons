@@ -28,6 +28,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.BooleanSupplier;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -41,6 +43,7 @@ import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
@@ -195,6 +198,47 @@ class DreameMowerHandlerTest {
         verifyNoInteractions(callback);
     }
 
+    @Test
+    void disposalPreventsQueuedStartFromReachingCloudDispatch() throws Exception {
+        Thing thing = Objects.requireNonNull(mock(Thing.class));
+        Configuration configuration = new Configuration();
+        configuration.put("deviceId", "device-id");
+        when(thing.getConfiguration()).thenReturn(configuration);
+        Bridge bridge = Objects.requireNonNull(mock(Bridge.class));
+        DreameAccountHandler account = Objects.requireNonNull(mock(DreameAccountHandler.class));
+        DreameMowerApi api = Objects.requireNonNull(mock(DreameMowerApi.class));
+        DreameDevice device = new DreameDevice("device-id", "Mower", "dreame.mower.g2540d", "", "", "", "");
+        when(bridge.getHandler()).thenReturn(account);
+        when(bridge.getStatus()).thenReturn(ThingStatus.ONLINE);
+        when(bridge.getStatusInfo()).thenReturn(new ThingStatusInfo(ThingStatus.ONLINE, ThingStatusDetail.NONE, null));
+        when(account.getDevice("device-id")).thenReturn(device);
+        when(account.getApiClient()).thenReturn(api);
+        CountDownLatch commandAccepted = new CountDownLatch(1);
+        CountDownLatch releaseDispatch = new CountDownLatch(1);
+        CountDownLatch commandFinished = new CountDownLatch(1);
+        AtomicBoolean dispatched = new AtomicBoolean();
+        doAnswer(invocation -> {
+            BooleanSupplier isCurrent = invocation.getArgument(2);
+            commandAccepted.countDown();
+            assertTrue(releaseDispatch.await(5, TimeUnit.SECONDS));
+            dispatched.set(isCurrent.getAsBoolean());
+            commandFinished.countDown();
+            return null;
+        }).when(api).callAction(eq(device), eq(org.openhab.binding.dreame.internal.model.DreameAction.START), any());
+        TestCommandLifecycleMowerHandler handler = new TestCommandLifecycleMowerHandler(thing, bridge);
+        handler.initialize();
+        ChannelUID channelUID = Objects.requireNonNull(mock(ChannelUID.class));
+        when(channelUID.getId()).thenReturn("command");
+
+        handler.handleCommand(channelUID, new StringType("START"));
+        assertTrue(commandAccepted.await(5, TimeUnit.SECONDS));
+        handler.dispose();
+        releaseDispatch.countDown();
+
+        assertTrue(commandFinished.await(5, TimeUnit.SECONDS));
+        assertFalse(dispatched.get());
+    }
+
     private static class TestMowerHandler extends DreameMowerHandler {
         private final Map<String, State> states = new HashMap<>();
 
@@ -219,6 +263,16 @@ class DreameMowerHandlerTest {
         @Override
         protected @Nullable Bridge getBridge() {
             return bridge;
+        }
+    }
+
+    private static class TestCommandLifecycleMowerHandler extends TestLifecycleMowerHandler {
+        TestCommandLifecycleMowerHandler(Thing thing, Bridge bridge) {
+            super(thing, bridge);
+        }
+
+        @Override
+        void poll() {
         }
     }
 }

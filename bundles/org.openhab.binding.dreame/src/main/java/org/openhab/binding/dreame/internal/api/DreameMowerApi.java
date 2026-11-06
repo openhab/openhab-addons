@@ -14,6 +14,7 @@ package org.openhab.binding.dreame.internal.api;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.function.BooleanSupplier;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -48,17 +49,20 @@ public interface DreameMowerApi {
 
     void setProperty(DreameDevice device, DreameProperty property, boolean value) throws DreameCloudException;
 
-    void setDnd(DreameDevice device, boolean enabled, @Nullable String taskConfiguration) throws DreameCloudException;
+    void setDnd(DreameDevice device, boolean enabled, @Nullable String taskConfiguration, BooleanSupplier isCurrent)
+            throws DreameCloudException;
 
-    void callAction(DreameDevice device, DreameAction action) throws DreameCloudException;
+    void callAction(DreameDevice device, DreameAction action, BooleanSupplier isCurrent) throws DreameCloudException;
 
-    void startZoneMowing(DreameDevice device, List<Integer> zoneIds) throws DreameCloudException;
+    void startZoneMowing(DreameDevice device, List<Integer> zoneIds, BooleanSupplier isCurrent)
+            throws DreameCloudException;
 
-    void selectMap(DreameDevice device, int mapIndex) throws DreameCloudException;
+    void selectMap(DreameDevice device, int mapIndex, BooleanSupplier isCurrent) throws DreameCloudException;
 
     BigDecimal getCuttingHeight(DreameDevice device, int mapIndex) throws DreameCloudException;
 
-    void setCuttingHeight(DreameDevice device, int mapIndex, BigDecimal height) throws DreameCloudException;
+    void setCuttingHeight(DreameDevice device, int mapIndex, BigDecimal height, BooleanSupplier isCurrent)
+            throws DreameCloudException;
 
     DreameMqttConfiguration mqttConfiguration(DreameDevice device) throws DreameCloudException;
 }

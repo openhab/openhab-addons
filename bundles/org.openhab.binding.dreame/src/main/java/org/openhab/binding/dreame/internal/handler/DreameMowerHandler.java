@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -108,6 +109,7 @@ public class DreameMowerHandler extends BaseThingHandler {
     private final AtomicBoolean pollPending = new AtomicBoolean();
     private final AtomicInteger consecutivePollingFailures = new AtomicInteger();
     private final AtomicInteger lifecycleGeneration = new AtomicInteger();
+    private final java.util.Set<Future<?>> commandJobs = ConcurrentHashMap.newKeySet();
     private final Map<DreameProperty, Long> mqttPropertyRevisions = new ConcurrentHashMap<>();
     private DreameMowerConfiguration config = new DreameMowerConfiguration();
     private volatile boolean active;
@@ -153,24 +155,37 @@ public class DreameMowerHandler extends BaseThingHandler {
         }
         DreameAccountHandler account = accountHandler();
         DreameDevice device = device(account);
-        if (account == null || device == null) {
+        Bridge bridge = getBridge();
+        if (!active || account == null || device == null || bridge == null
+                || bridge.getStatus() != ThingStatus.ONLINE) {
             return;
         }
-        scheduler.execute(() -> executeCommand(account, device, channelUID, command));
+        int currentGeneration = lifecycleGeneration.get();
+        commandJobs.removeIf(Future::isDone);
+        Future<?> job = scheduler
+                .submit(() -> executeCommand(account, device, bridge, channelUID, command, currentGeneration));
+        commandJobs.add(job);
+        if (!isCommandCurrent(currentGeneration, bridge)) {
+            job.cancel(false);
+        }
     }
 
-    private void executeCommand(DreameAccountHandler account, DreameDevice device, ChannelUID channelUID,
-            Command command) {
+    private void executeCommand(DreameAccountHandler account, DreameDevice device, Bridge bridge, ChannelUID channelUID,
+            Command command, int currentGeneration) {
+        if (!isCommandCurrent(currentGeneration, bridge)) {
+            return;
+        }
         try {
             logger.debug("Executing {} command {} for device {}", channelUID.getId(), command,
                     DreameDiagnostics.maskIdentifier(device.id()));
             if (CHANNEL_COMMAND.equals(channelUID.getId()) && command instanceof StringType stringCommand) {
                 DreameAction action = DreameAction.valueOf(stringCommand.toString().toUpperCase(Locale.ROOT));
-                account.getApiClient().callAction(device, action);
+                account.getApiClient().callAction(device, action, () -> isCommandCurrent(currentGeneration, bridge));
             } else if (CHANNEL_ZONE_MOWING.equals(channelUID.getId()) && command instanceof StringType stringCommand) {
                 List<Integer> zoneIds = parseZoneIds(stringCommand.toString());
                 validateZoneIds(zoneIds);
-                account.getApiClient().startZoneMowing(device, zoneIds);
+                account.getApiClient().startZoneMowing(device, zoneIds,
+                        () -> isCommandCurrent(currentGeneration, bridge));
             } else if (CHANNEL_DND.equals(channelUID.getId()) && command instanceof OnOffType onOff) {
                 if (!supportsDndWriting(device.model())) {
                     logger.warn("Do not disturb commands are not yet supported for {}", device.model());
@@ -180,23 +195,33 @@ public class DreameMowerHandler extends BaseThingHandler {
                     }
                     return;
                 }
-                account.getApiClient().setDnd(device, onOff == OnOffType.ON, dndTaskConfiguration);
+                account.getApiClient().setDnd(device, onOff == OnOffType.ON, dndTaskConfiguration,
+                        () -> isCommandCurrent(currentGeneration, bridge));
             } else if (CHANNEL_CURRENT_MAP_ID.equals(channelUID.getId()) && command instanceof DecimalType decimal) {
-                selectMap(account, device, decimal);
+                selectMap(account, device, decimal, () -> isCommandCurrent(currentGeneration, bridge));
             } else if (CHANNEL_CUTTING_HEIGHT.equals(channelUID.getId()) && command instanceof DecimalType decimal) {
                 if (!supportsElectronicCuttingHeight(device.model())) {
                     throw new IllegalArgumentException(
                             "Electronic cutting-height control is not supported by " + device.model());
                 }
-                setCuttingHeight(account, device, decimal.toBigDecimal());
+                setCuttingHeight(account, device, decimal.toBigDecimal(),
+                        () -> isCommandCurrent(currentGeneration, bridge));
             }
-            poll();
+            if (isCommandCurrent(currentGeneration, bridge)) {
+                poll();
+            }
         } catch (DreameCloudException | IllegalArgumentException e) {
             logger.debug("Cloud command failed for device {}: {}", DreameDiagnostics.maskIdentifier(device.id()),
                     e.getMessage(), e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/offline.communication-error.command");
+            if (isCommandCurrent(currentGeneration, bridge)) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "@text/offline.communication-error.command");
+            }
         }
+    }
+
+    private boolean isCommandCurrent(int currentGeneration, Bridge bridge) {
+        return isCurrentLifecycle(currentGeneration) && bridge.getStatus() == ThingStatus.ONLINE;
     }
 
     static List<Integer> parseZoneIds(String value) {
@@ -227,8 +252,8 @@ public class DreameMowerHandler extends BaseThingHandler {
         }
     }
 
-    private void selectMap(DreameAccountHandler account, DreameDevice device, DecimalType mapId)
-            throws DreameCloudException {
+    private void selectMap(DreameAccountHandler account, DreameDevice device, DecimalType mapId,
+            java.util.function.BooleanSupplier isCurrent) throws DreameCloudException {
         if (!device.model().startsWith("mova.mower.")) {
             throw new IllegalArgumentException("Map selection is currently supported only for MOVA mowers");
         }
@@ -244,7 +269,7 @@ public class DreameMowerHandler extends BaseThingHandler {
         }
         int mapIndex = currentMapData.maps().stream().filter(map -> map.id() == requestedMapId).findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("Unknown map ID: " + requestedMapId)).index();
-        account.getApiClient().selectMap(device, mapIndex);
+        account.getApiClient().selectMap(device, mapIndex, isCurrent);
         nextMapRefresh = Instant.EPOCH;
         refreshMapData(account, device);
     }
@@ -253,6 +278,7 @@ public class DreameMowerHandler extends BaseThingHandler {
     public synchronized void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
         lifecycleGeneration.incrementAndGet();
         stopPolling();
+        stopCommands();
         stopMqtt();
         if (active && bridgeStatusInfo.getStatus() == ThingStatus.ONLINE) {
             pollingJob = scheduler.scheduleWithFixedDelay(this::poll, 0, config.refreshInterval, TimeUnit.SECONDS);
@@ -386,15 +412,15 @@ public class DreameMowerHandler extends BaseThingHandler {
         return !"mova.mower.g2405c".equals(model);
     }
 
-    private void setCuttingHeight(DreameAccountHandler account, DreameDevice device, BigDecimal height)
-            throws DreameCloudException {
+    private void setCuttingHeight(DreameAccountHandler account, DreameDevice device, BigDecimal height,
+            java.util.function.BooleanSupplier isCurrent) throws DreameCloudException {
         DreameMapData currentMapData = mapData;
         if (currentMapData == null) {
             throw new DreameCloudException("Map data is not available yet");
         }
         int mapIndex = currentMapData.maps().stream().filter(map -> map.id() == currentMapData.currentMapId())
                 .findFirst().orElseThrow(() -> new DreameCloudException("Active map was not found")).index();
-        account.getApiClient().setCuttingHeight(device, mapIndex, height);
+        account.getApiClient().setCuttingHeight(device, mapIndex, height, isCurrent);
         refreshCuttingHeight(account, device, mapIndex);
     }
 
@@ -757,6 +783,11 @@ public class DreameMowerHandler extends BaseThingHandler {
         }
     }
 
+    private void stopCommands() {
+        commandJobs.forEach(job -> job.cancel(false));
+        commandJobs.clear();
+    }
+
     private synchronized void stopMqtt() {
         DreameMqttClient client = mqttClient;
         mqttClient = null;
@@ -781,6 +812,7 @@ public class DreameMowerHandler extends BaseThingHandler {
         movaDndStatusObserved = false;
         stopPolling();
         stopStatisticsRefresh();
+        stopCommands();
         stopMqtt();
         super.dispose();
     }
