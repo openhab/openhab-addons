@@ -12,26 +12,26 @@
  */
 package org.openhab.binding.evohome.internal.api.models.v2.dto.request;
 
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+
+import org.eclipse.jdt.annotation.Nullable;
+
 import com.google.gson.annotations.SerializedName;
 
 /**
  * Request model for the mode
  *
  * @author Jasper van Zuijlen - Initial contribution
+ * @author Kovacs Istvan - Exact system mode expiry
  *
  */
 public class Mode {
 
-    Mode(String mode) {
+    Mode(String mode, @Nullable Instant until) {
         systemMode = mode;
-        timeUntil = null;
-        permanent = true;
-    }
-
-    Mode(String mode, int day, int month, int year) {
-        systemMode = mode;
-        timeUntil = String.format("%s-%s-%sT00:00:00Z", year, month, day);
-        permanent = false;
+        timeUntil = until == null ? null : until.truncatedTo(ChronoUnit.SECONDS).toString();
+        permanent = until == null;
     }
 
     @SuppressWarnings("unused")

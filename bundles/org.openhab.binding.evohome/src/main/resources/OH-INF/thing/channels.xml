@@ -3,10 +3,20 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<channel-type id="lastSuccessfulUpdate" advanced="true">
+		<item-type>DateTime</item-type>
+		<label>Last Successful Update</label>
+		<description>Time of the last successful retrieval of the installation status from TCC, not the sensor measurement
+			time.</description>
+		<category>time</category>
+		<state readOnly="true" pattern="%1$tF %1$tT"/>
+	</channel-type>
 	<channel-type id="systemMode">
 		<item-type>String</item-type>
 		<label>System Mode</label>
-		<description>Current system mode</description>
+		<description>Gets the system mode. Commands set a permanent mode. Auto preserves individual zone overrides; Reset
+			also
+			cancels them.</description>
 		<category>heating</category>
 		<tags>
 			<tag>Status</tag>
@@ -22,6 +32,33 @@
 				<option value="Custom">Custom</option>
 			</options>
 		</state>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+	<channel-type id="systemModeUntil">
+		<item-type>DateTime</item-type>
+		<label>System Mode Until</label>
+		<description>Expiry reported by TCC for a temporary system mode. Undefined for a permanent mode or an unknown expiry.</description>
+		<category>time</category>
+		<state readOnly="true" pattern="%1$tF %1$tT"/>
+	</channel-type>
+	<channel-type id="systemModePermanent">
+		<item-type>Switch</item-type>
+		<label>Permanent Mode</label>
+		<description>ON when TCC reports a permanent system mode, OFF for a temporary mode, or undefined when unknown.</description>
+		<category>heating</category>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="reset">
+		<item-type>Switch</item-type>
+		<label>Reset to Schedule</label>
+		<description>Send ON to select Auto and cancel all heating zone and hot water overrides on this controller.</description>
+		<category>heating</category>
+		<command>
+			<options>
+				<option value="ON">Reset to schedule</option>
+			</options>
+		</command>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="temperature">
 		<item-type>Number:Temperature</item-type>
@@ -38,25 +75,88 @@
 	<channel-type id="setpoint">
 		<item-type>Number:Temperature</item-type>
 		<label>Set Point</label>
-		<description>Gets or sets the set point of this zone (0 cancels the override).</description>
+		<description>Gets or sets this zone's target temperature. An active temporary override keeps its expiry; other
+			commands create a permanent override. 0 cancels the override.</description>
 		<category>heating</category>
 		<tags>
 			<tag>Setpoint</tag>
 			<tag>Temperature</tag>
 		</tags>
 		<state min="0.0" max="35.0" step="0.5" pattern="%.1f %unit%"/>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+	<channel-type id="temporarysetpoint">
+		<item-type>Number:Temperature</item-type>
+		<label>Temporary Set Point</label>
+		<description>Shows the current target temperature. Commands set a temporary target using the configured duration,
+			two
+			hours by default. Read the resulting mode and expiry from SetPointStatus and SetPointUntil.</description>
+		<category>heating</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state min="5.0" max="35.0" step="0.5" pattern="%.1f %unit%"/>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+	<channel-type id="setpointuntil">
+		<item-type>DateTime</item-type>
+		<label>Set Point Until</label>
+		<description>Expiry time of the active temporary zone override. Undefined when no temporary override is active.</description>
+		<category>time</category>
+		<state readOnly="true" pattern="%1$tF %1$tT"/>
 	</channel-type>
 	<channel-type id="setpointstatus">
 		<item-type>String</item-type>
 		<label>Set Point Status</label>
-		<description>Current set point status</description>
+		<description>Gets or sets the zone override mode. FollowSchedule cancels the override; PermanentOverride or
+			TemporaryOverride applies the current target temperature in that mode.</description>
 		<category>heating</category>
-		<state pattern="%s" readOnly="true">
+		<state pattern="%s">
 			<options>
 				<option value="PermanentOverride">Permanent override</option>
 				<option value="FollowSchedule">Follow schedule</option>
 				<option value="TemporaryOverride">Temporary override</option>
 			</options>
 		</state>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+	<channel-type id="weeklySchedule" advanced="true">
+		<item-type>String</item-type>
+		<label>Weekly Schedule</label>
+		<description>Weekly heating program in canonical JSON. Days are ordered Monday to Sunday; switch points use sorted
+			local times and temperatures in Celsius.</description>
+		<state readOnly="true" pattern="%s"/>
+	</channel-type>
+	<channel-type id="nextSwitchpoint">
+		<item-type>DateTime</item-type>
+		<label>Next Switch Point</label>
+		<description>Next switch point in the normal weekly heating program, calculated in the location's time zone.
+			System
+			modes and zone overrides do not alter this value.</description>
+		<category>time</category>
+		<state readOnly="true" pattern="%1$tF %1$tT"/>
+	</channel-type>
+	<channel-type id="nextScheduledTemperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Next Scheduled Temp</label>
+		<description>Target temperature at the next normal weekly program switch point. System modes and zone overrides
+			are not
+			applied to this value.</description>
+		<category>heating</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="scheduleLastUpdated" advanced="true">
+		<item-type>DateTime</item-type>
+		<label>Schedule Updated</label>
+		<description>Time of the last successful retrieval of this zone's weekly heating program from TCC. Unchanged after
+			a
+			failed schedule request.</description>
+		<category>time</category>
+		<state readOnly="true" pattern="%1$tF %1$tT"/>
 	</channel-type>
 </thing:thing-descriptions>

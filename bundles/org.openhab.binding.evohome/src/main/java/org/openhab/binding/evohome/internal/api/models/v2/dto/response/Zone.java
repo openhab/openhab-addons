@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.evohome.internal.api.models.v2.dto.response;
 
+import org.eclipse.jdt.annotation.Nullable;
+
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -46,5 +48,9 @@ public class Zone {
 
     public String getName() {
         return name;
+    }
+
+    public @Nullable HeatSetpointCapabilities getHeatSetpointCapabilities() {
+        return heatSetpointCapabilities;
     }
 }

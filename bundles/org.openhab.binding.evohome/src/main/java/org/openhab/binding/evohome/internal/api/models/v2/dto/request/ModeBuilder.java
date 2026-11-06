@@ -12,16 +12,22 @@
  */
 package org.openhab.binding.evohome.internal.api.models.v2.dto.request;
 
+import java.time.Instant;
+
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * Builder for mode API requests
  *
  * @author Jasper van Zuijlen - Initial contribution
+ * @author Kovacs Istvan - Exact system mode expiry
  *
  */
-public class ModeBuilder extends TimedRequestBuilder<Mode> {
+public class ModeBuilder implements RequestBuilder<Mode> {
 
     private String mode;
     private boolean hasSetMode;
+    private @Nullable Instant until;
 
     /**
      * Creates a new mode command
@@ -32,11 +38,7 @@ public class ModeBuilder extends TimedRequestBuilder<Mode> {
     @Override
     public Mode build() {
         if (hasSetMode) {
-            if (useEndTime()) {
-                return new Mode(mode, getYear(), getMonth(), getDay());
-            } else {
-                return new Mode(mode);
-            }
+            return new Mode(mode, until);
         }
         return null;
     }
@@ -44,6 +46,13 @@ public class ModeBuilder extends TimedRequestBuilder<Mode> {
     public ModeBuilder setMode(String mode) {
         this.hasSetMode = true;
         this.mode = mode;
+        this.until = null;
+        return this;
+    }
+
+    public ModeBuilder setTemporaryMode(String mode, Instant until) {
+        setMode(mode);
+        this.until = until;
         return this;
     }
 }

@@ -38,10 +38,20 @@ public class EvohomeBindingConstants {
     public static final ThingTypeUID THING_TYPE_EVOHOME_HEATING_ZONE = new ThingTypeUID(BINDING_ID, "heatingzone");
 
     // List of all Channel IDs
+    public static final String ACCOUNT_LAST_SUCCESSFUL_UPDATE_CHANNEL = "lastSuccessfulUpdate";
     public static final String DISPLAY_SYSTEM_MODE_CHANNEL = "SystemMode";
+    public static final String DISPLAY_SYSTEM_MODE_UNTIL_CHANNEL = "SystemModeUntil";
+    public static final String DISPLAY_SYSTEM_MODE_PERMANENT_CHANNEL = "SystemModePermanent";
+    public static final String DISPLAY_RESET_CHANNEL = "Reset";
     public static final String ZONE_TEMPERATURE_CHANNEL = "Temperature";
     public static final String ZONE_SET_POINT_STATUS_CHANNEL = "SetPointStatus";
     public static final String ZONE_SET_POINT_CHANNEL = "SetPoint";
+    public static final String ZONE_TEMPORARY_SET_POINT_CHANNEL = "TemporarySetPoint";
+    public static final String ZONE_SET_POINT_UNTIL_CHANNEL = "SetPointUntil";
+    public static final String ZONE_WEEKLY_SCHEDULE_CHANNEL = "WeeklySchedule";
+    public static final String ZONE_NEXT_SWITCHPOINT_CHANNEL = "NextSwitchpoint";
+    public static final String ZONE_NEXT_SCHEDULED_TEMPERATURE_CHANNEL = "NextScheduledTemperature";
+    public static final String ZONE_SCHEDULE_LAST_UPDATED_CHANNEL = "ScheduleLastUpdated";
 
     // List of Discovery properties
     public static final String PROPERTY_ID = "id";

@@ -12,12 +12,15 @@
  */
 package org.openhab.binding.evohome.internal.api.models.v2.dto.response;
 
+import org.eclipse.jdt.annotation.Nullable;
+
 import com.google.gson.annotations.SerializedName;
 
 /**
  * Response model for the mode
  *
  * @author Jasper van Zuijlen - Initial contribution
+ * @author Kovacs Istvan - Expose optional mode capabilities
  *
  */
 public class Mode {
@@ -26,10 +29,10 @@ public class Mode {
     private String systemMode;
 
     @SerializedName("canBePermanent")
-    private boolean canBePermanent;
+    private Boolean canBePermanent;
 
     @SerializedName("canBeTemporary")
-    private boolean canBeTemporary;
+    private Boolean canBeTemporary;
 
     @SerializedName("timingMode")
     private String timingMode;
@@ -39,4 +42,20 @@ public class Mode {
 
     @SerializedName("timingResolution")
     private String timingResolution;
+
+    public String getSystemMode() {
+        return systemMode;
+    }
+
+    public @Nullable Boolean getCanBePermanent() {
+        return canBePermanent;
+    }
+
+    public @Nullable Boolean getCanBeTemporary() {
+        return canBeTemporary;
+    }
+
+    public @Nullable String getMaxDuration() {
+        return maxDuration;
+    }
 }

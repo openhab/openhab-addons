@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.evohome.internal.api.models.v2.dto.response;
 
+import org.eclipse.jdt.annotation.Nullable;
+
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -28,11 +30,18 @@ public class HeatSetpointStatus {
     @SerializedName("setpointMode")
     private String setpointMode;
 
+    @SerializedName("until")
+    private String until;
+
     public double getTargetTemperature() {
         return targetTemperature;
     }
 
     public String getSetpointMode() {
         return setpointMode;
+    }
+
+    public @Nullable String getUntil() {
+        return until;
     }
 }
