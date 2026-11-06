@@ -27,6 +27,9 @@ class DreameVacuumCapabilitiesTest {
     @Test
     void recognizesReferencedVacuumModels() {
         assertTrue(DreameVacuumCapabilities.isSupported("dreame.vacuum.r5039a"));
+        assertTrue(DreameVacuumCapabilities.isSupported("dreame.vacuum.r501h"));
+        assertTrue(DreameVacuumCapabilities.isSupported("dreame.vacuum.r5089b"));
+        assertTrue(DreameVacuumCapabilities.isSupported("dreame.vacuum.r6001a"));
         assertFalse(DreameVacuumCapabilities.isSupported("dreame.vacuum.unknown"));
     }
 
