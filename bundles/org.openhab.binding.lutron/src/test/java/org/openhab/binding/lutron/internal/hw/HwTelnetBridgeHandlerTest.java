@@ -128,8 +128,8 @@ public class HwTelnetBridgeHandlerTest {
 
     @Test
     public void silentConnectionIsReportedAsLost() throws Exception {
-        handler().idleTimeoutMs = 50;
-        Thread.sleep(200);
+        // Any time since the last data received exceeds a negative timeout
+        handler().idleTimeoutMs = -1;
 
         handler().heartbeat();
 

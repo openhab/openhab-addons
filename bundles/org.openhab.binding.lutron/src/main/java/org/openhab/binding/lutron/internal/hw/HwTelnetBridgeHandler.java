@@ -121,13 +121,17 @@ public class HwTelnetBridgeHandler extends HwBridgeHandler implements HwTelnetCo
         }
     }
 
-    private void startHeartbeat() {
+    // Under the lock, with the disposed check, so that dispose() cannot be followed by a newly scheduled task
+    private synchronized void startHeartbeat() {
+        if (disposed) {
+            return;
+        }
         cancelHeartbeat();
         heartbeatJob = scheduler.scheduleWithFixedDelay(this::heartbeat, HEARTBEAT_INTERVAL_SECONDS,
                 HEARTBEAT_INTERVAL_SECONDS, TimeUnit.SECONDS);
     }
 
-    private void cancelHeartbeat() {
+    private synchronized void cancelHeartbeat() {
         ScheduledFuture<?> job = heartbeatJob;
         if (job != null) {
             job.cancel(false);
@@ -154,7 +158,7 @@ public class HwTelnetBridgeHandler extends HwBridgeHandler implements HwTelnetCo
         sendCommand("DLMON");
     }
 
-    private void scheduleReconnect() {
+    private synchronized void scheduleReconnect() {
         if (disposed) {
             return;
         }
@@ -164,7 +168,7 @@ public class HwTelnetBridgeHandler extends HwBridgeHandler implements HwTelnetCo
         reconnectJob = scheduler.schedule(this::connect, minutes, TimeUnit.MINUTES);
     }
 
-    private void cancelReconnect() {
+    private synchronized void cancelReconnect() {
         ScheduledFuture<?> job = reconnectJob;
         if (job != null) {
             job.cancel(false);
