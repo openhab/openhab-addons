@@ -121,6 +121,8 @@ public class KNXnetDiscoveryService extends AbstractDiscoveryService {
                         // .withProperty("type", "ROUTER") was omitted to avoid reconfiguration
                         thingDiscovered(DiscoveryResultBuilder.create(new ThingUID(THING_TYPE_IP_BRIDGE, serial + "-r"))
                                 .withLabel(response.getDevice().getName() + " (router mode)")
+                                .withProperty("ipAddress",
+                                        "" + response.getControlEndpoint().endpoint().getAddress().getHostAddress())
                                 .withProperty("serialNumber", serial + "-r").withRepresentationProperty("serialNumber")
                                 .build());
                     }
