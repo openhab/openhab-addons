@@ -56,6 +56,10 @@ public abstract class RestManager {
         return executeUri(uriBuilder, HttpMethod.POST, clazz, payload, payload == null ? null : CONTENT_APP_JSON);
     }
 
+    protected <T extends ApiResponse<?>> T delete(UriBuilder uriBuilder, Class<T> clazz) throws NetatmoException {
+        return executeUri(uriBuilder, HttpMethod.DELETE, clazz, null, null);
+    }
+
     protected <T> T post(URI uri, Class<T> clazz, Map<String, String> entries) throws NetatmoException {
         return apiBridge.executeUri(uri, POST, clazz, toRequest(entries), CONTENT_APP_FORM, 3);
     }
@@ -90,7 +94,7 @@ public abstract class RestManager {
 
     protected static UriBuilder getApiBaseBuilder(String... paths) {
         UriBuilder builder = UriBuilder.fromUri(URL_API);
-        Stream.of(paths).forEach(path -> builder.path(path));
+        Stream.of(paths).forEach(builder::path);
         return builder;
     }
 

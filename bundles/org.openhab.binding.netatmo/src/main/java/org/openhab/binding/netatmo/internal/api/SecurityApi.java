@@ -42,6 +42,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class SecurityApi extends RestManager {
+    private static final UriBuilder WEBHOOKS_URI_BUILDER = getApiBaseBuilder(PATH_WEBHOOK);
     private final Logger logger = LoggerFactory.getLogger(SecurityApi.class);
 
     public SecurityApi(ApiBridgeHandler apiClient) {
@@ -54,8 +55,7 @@ public class SecurityApi extends RestManager {
      * @throws NetatmoException If fail to call the API, e.g. server error or deserializing
      */
     public void dropWebhook() throws NetatmoException {
-        UriBuilder uriBuilder = getApiUriBuilder(SUB_PATH_DROP_WEBHOOK);
-        post(uriBuilder, ApiResponse.Ok.class, null);
+        delete(WEBHOOKS_URI_BUILDER.clone(), ApiResponse.Ok.class);
     }
 
     /**
@@ -65,8 +65,8 @@ public class SecurityApi extends RestManager {
      * @throws NetatmoException If fail to call the API, e.g. server error or deserializing
      */
     public boolean addwebhook(URI uri) throws NetatmoException {
-        UriBuilder uriBuilder = getApiUriBuilder(SUB_PATH_ADD_WEBHOOK, PARAM_URL, uri.toString());
-        post(uriBuilder, ApiResponse.Ok.class, null);
+        String payload = PAYLOAD_FLOODLIGHT.formatted(uri.toString());
+        post(WEBHOOKS_URI_BUILDER.clone(), ApiResponse.Ok.class, payload);
         return true;
     }
 
