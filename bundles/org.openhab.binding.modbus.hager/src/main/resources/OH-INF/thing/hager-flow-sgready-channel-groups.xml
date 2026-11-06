@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="modbus"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<channel-group-type id="hager-flow-sgready-identity">
+		<label>SG-Ready Identity</label>
+		<description>Identification of the SG-Ready device, read as ASCII strings.</description>
+		<channels>
+			<channel id="sgready-index" typeId="hager-flow-sgready-index"/>
+			<channel id="sgready-name" typeId="hager-flow-sgready-name"/>
+		</channels>
+	</channel-group-type>
+	<channel-group-type id="hager-flow-sgready-status">
+		<label>SG-Ready Status</label>
+		<description>State of the SG-Ready device.</description>
+		<channels>
+			<channel id="sgready-active" typeId="hager-flow-sgready-active"/>
+			<channel id="sgready-working" typeId="hager-flow-sgready-working"/>
+			<channel id="sgready-status" typeId="hager-flow-sgready-status"/>
+		</channels>
+	</channel-group-type>
+</thing:thing-descriptions>

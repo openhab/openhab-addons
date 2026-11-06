@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="modbus"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<thing-type id="hager-flow-evse">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="hager-flow-ems"/>
+		</supported-bridge-type-refs>
+		<label>Hager Flow EVSE</label>
+		<description>Charging station of a Hager Flow system with status, session and instantaneous charging values.</description>
+		<channel-groups>
+			<channel-group id="identity" typeId="hager-flow-evse-identity"/>
+			<channel-group id="general-status-and-configuration"
+				typeId="hager-flow-evse-general-status-and-configuration"/>
+			<channel-group id="charging-session-information" typeId="hager-flow-evse-charging-session-information"/>
+			<channel-group id="instantaneous-measures" typeId="hager-flow-evse-instantaneous-measures"/>
+		</channel-groups>
+		<config-description>
+			<parameter name="slaveId" type="integer" min="1" max="8">
+				<label>Slave ID</label>
+				<description>Modbus unit id of this charging station.</description>
+				<default>1</default>
+			</parameter>
+			<parameter name="refresh" type="integer" min="1000" unit="ms">
+				<label>Refresh Interval</label>
+				<description>Interval the registers are polled in milliseconds.</description>
+				<default>5000</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+</thing:thing-descriptions>
