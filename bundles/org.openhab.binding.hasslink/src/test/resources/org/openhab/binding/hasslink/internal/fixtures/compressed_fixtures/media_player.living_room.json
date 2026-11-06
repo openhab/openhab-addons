@@ -1,0 +1,33 @@
+{
+  "id": 10,
+  "type": "event",
+  "event": {
+    "a": {
+      "media_player.living_room": {
+        "s": "playing",
+        "a": {
+          "sound_mode_list": [
+            "Music",
+            "Movie"
+          ],
+          "volume_level": 1.0,
+          "is_volume_muted": false,
+          "media_content_id": "eyU3bRy2x44",
+          "media_content_type": "movie",
+          "media_duration": 300,
+          "media_position": 45,
+          "media_position_updated_at": "2026-09-21T12:46:27.339912+00:00",
+          "media_title": "\u2665\u2665 The Best Fireplace Video (3 hours)",
+          "app_name": "YouTube",
+          "sound_mode": "Music",
+          "shuffle": false,
+          "entity_picture": "/api/media_player_proxy/media_player.living_room?token=d14298ea35f6503e41ca436a7c4aa780873cd8444cb306d1c4afb11f9b57de78&cache=bc2ffb49c4f67034",
+          "friendly_name": "Living Room",
+          "supported_features": 119695
+        },
+        "c": "01M3201RGC0XJ6M1ZA7Z6RBRKC",
+        "lc": 1789994787.3403046
+      }
+    }
+  }
+}

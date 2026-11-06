@@ -1,0 +1,40 @@
+{
+  "id": 18,
+  "type": "event",
+  "event": {
+    "event_type": "state_changed",
+    "data": {
+      "entity_id": "zone.home",
+      "old_state": null,
+      "new_state": {
+        "entity_id": "zone.home",
+        "state": "0",
+        "attributes": {
+          "latitude": 52.3731339,
+          "longitude": 4.8903147,
+          "radius": 100,
+          "passive": false,
+          "persons": [],
+          "editable": true,
+          "icon": "mdi:home",
+          "friendly_name": "Home"
+        },
+        "last_changed": "2026-09-21T12:46:26.950202+00:00",
+        "last_reported": "2026-09-21T12:47:06.616356+00:00",
+        "last_updated": "2026-09-21T12:47:06.616356+00:00",
+        "context": {
+          "id": "01M3202YVRBN0V7S5XR1QJ804E",
+          "parent_id": null,
+          "user_id": null
+        }
+      }
+    },
+    "origin": "LOCAL",
+    "time_fired": "2026-09-19T00:00:00.000000+00:00",
+    "context": {
+      "id": "01HXXXXXXX",
+      "parent_id": null,
+      "user_id": null
+    }
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "id": 10,
+  "type": "event",
+  "event": {
+    "a": {
+      "humidifier.hygrostat": {
+        "s": "on",
+        "a": {
+          "min_humidity": 0,
+          "max_humidity": 100,
+          "available_modes": [
+            "home",
+            "eco"
+          ],
+          "humidity": 50,
+          "mode": "home",
+          "friendly_name": "Hygrostat",
+          "supported_features": 1
+        },
+        "c": "01M3201RG8GJ0KP9CQ4N5YZP9R",
+        "lc": 1789994787.3368855
+      }
+    }
+  }
+}

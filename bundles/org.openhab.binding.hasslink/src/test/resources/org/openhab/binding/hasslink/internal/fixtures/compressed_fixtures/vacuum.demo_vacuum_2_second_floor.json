@@ -1,0 +1,18 @@
+{
+  "id": 10,
+  "type": "event",
+  "event": {
+    "a": {
+      "vacuum.demo_vacuum_2_second_floor": {
+        "s": "docked",
+        "a": {
+          "cleaned_area": 0,
+          "friendly_name": "Demo vacuum 2 second floor",
+          "supported_features": 12296
+        },
+        "c": "01M3201RGZKZGFTDTS1PQAVH3Z",
+        "lc": 1789994787.3596973
+      }
+    }
+  }
+}

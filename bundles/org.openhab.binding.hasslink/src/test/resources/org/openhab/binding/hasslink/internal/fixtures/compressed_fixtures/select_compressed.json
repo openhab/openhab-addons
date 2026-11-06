@@ -1,0 +1,21 @@
+{
+  "id": 10,
+  "type": "event",
+  "event": {
+    "a": {
+      "select.speed": {
+        "s": "ridiculous_speed",
+        "a": {
+          "options": [
+            "light_speed",
+            "ridiculous_speed",
+            "ludicrous_speed"
+          ],
+          "friendly_name": "Speed"
+        },
+        "c": "01M3201RGH5XWSRM47CFV25C87",
+        "lc": 1789994787.3452594
+      }
+    }
+  }
+}

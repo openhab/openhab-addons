@@ -1,0 +1,45 @@
+{
+  "id": 18,
+  "type": "event",
+  "event": {
+    "event_type": "state_changed",
+    "data": {
+      "entity_id": "fan.percentage_full_fan",
+      "old_state": null,
+      "new_state": {
+        "entity_id": "fan.percentage_full_fan",
+        "state": "off",
+        "attributes": {
+          "preset_modes": [
+            "auto",
+            "smart",
+            "sleep",
+            "on"
+          ],
+          "direction": "forward",
+          "oscillating": false,
+          "percentage": null,
+          "percentage_step": 33.333333333333336,
+          "preset_mode": null,
+          "friendly_name": "Percentage Full Fan",
+          "supported_features": 55
+        },
+        "last_changed": "2026-09-21T12:46:27.335889+00:00",
+        "last_reported": "2026-09-21T12:46:27.372916+00:00",
+        "last_updated": "2026-09-21T12:46:27.335889+00:00",
+        "context": {
+          "id": "01M3201RG70KJTY162ZVRNK43N",
+          "parent_id": null,
+          "user_id": null
+        }
+      }
+    },
+    "origin": "LOCAL",
+    "time_fired": "2026-09-19T00:00:00.000000+00:00",
+    "context": {
+      "id": "01HXXXXXXX",
+      "parent_id": null,
+      "user_id": null
+    }
+  }
+}

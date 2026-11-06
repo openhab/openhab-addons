@@ -1,0 +1,52 @@
+{
+  "id": 18,
+  "type": "event",
+  "event": {
+    "event_type": "state_changed",
+    "data": {
+      "entity_id": "media_player.kitchen",
+      "old_state": null,
+      "new_state": {
+        "entity_id": "media_player.kitchen",
+        "state": "playing",
+        "attributes": {
+          "sound_mode_list": [
+            "Music",
+            "Movie"
+          ],
+          "group_members": [],
+          "volume_level": 1.0,
+          "is_volume_muted": false,
+          "media_content_id": "bounzz-1",
+          "media_content_type": "music",
+          "media_duration": 213,
+          "media_title": "I Wanna Be A Hippy (Flamman & Abraxas Radio Mix)",
+          "media_artist": "Technohead",
+          "media_album_name": "Bounzz",
+          "media_track": 1,
+          "sound_mode": "Music",
+          "shuffle": false,
+          "repeat": "off",
+          "entity_picture": "/api/media_player_proxy/media_player.kitchen?token=81e1df306c8a291702a4e02189851530c5e4ecbf45c4202cf449576319cb90f6&cache=62c0c516acbc53a9",
+          "friendly_name": "Kitchen",
+          "supported_features": 914877
+        },
+        "last_changed": "2026-09-21T12:46:27.340826+00:00",
+        "last_reported": "2026-09-21T12:46:27.340826+00:00",
+        "last_updated": "2026-09-21T12:46:27.340826+00:00",
+        "context": {
+          "id": "01M3201RGC6DCW5JF7FNKW7QK9",
+          "parent_id": null,
+          "user_id": null
+        }
+      }
+    },
+    "origin": "LOCAL",
+    "time_fired": "2026-09-19T00:00:00.000000+00:00",
+    "context": {
+      "id": "01HXXXXXXX",
+      "parent_id": null,
+      "user_id": null
+    }
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "id": 18,
+  "type": "event",
+  "event": {
+    "event_type": "state_changed",
+    "data": {
+      "entity_id": "humidifier.dehumidifier",
+      "old_state": null,
+      "new_state": {
+        "entity_id": "humidifier.dehumidifier",
+        "state": "on",
+        "attributes": {
+          "min_humidity": 0,
+          "max_humidity": 100,
+          "action": "drying",
+          "current_humidity": 59.4,
+          "humidity": 54.2,
+          "device_class": "dehumidifier",
+          "friendly_name": "Dehumidifier",
+          "supported_features": 0
+        },
+        "last_changed": "2026-09-21T12:46:27.336799+00:00",
+        "last_reported": "2026-09-21T12:46:27.336799+00:00",
+        "last_updated": "2026-09-21T12:46:27.336799+00:00",
+        "context": {
+          "id": "01M3201RG8XRPCX54EXHGV188T",
+          "parent_id": null,
+          "user_id": null
+        }
+      }
+    },
+    "origin": "LOCAL",
+    "time_fired": "2026-09-19T00:00:00.000000+00:00",
+    "context": {
+      "id": "01HXXXXXXX",
+      "parent_id": null,
+      "user_id": null
+    }
+  }
+}

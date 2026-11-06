@@ -1,0 +1,18 @@
+{
+  "id": 10,
+  "type": "event",
+  "event": {
+    "a": {
+      "cover.kitchen_window": {
+        "s": "closed",
+        "a": {
+          "is_closed": true,
+          "friendly_name": "Kitchen Window",
+          "supported_features": 11
+        },
+        "c": "01M3201RG4AQBC532PCHM98R16",
+        "lc": 1789994787.3327868
+      }
+    }
+  }
+}

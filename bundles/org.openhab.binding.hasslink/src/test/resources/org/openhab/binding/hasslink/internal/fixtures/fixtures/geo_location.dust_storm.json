@@ -1,0 +1,38 @@
+{
+  "id": 18,
+  "type": "event",
+  "event": {
+    "event_type": "state_changed",
+    "data": {
+      "entity_id": "geo_location.dust_storm",
+      "old_state": null,
+      "new_state": {
+        "entity_id": "geo_location.dust_storm",
+        "state": "19.6",
+        "attributes": {
+          "source": "demo",
+          "latitude": 52.43998,
+          "longitude": 5.15727,
+          "unit_of_measurement": "km",
+          "icon": "mdi:weather-dust",
+          "friendly_name": "Dust Storm"
+        },
+        "last_changed": "2026-09-22T05:36:28.793545+00:00",
+        "last_reported": "2026-09-22T05:36:28.793545+00:00",
+        "last_updated": "2026-09-22T05:36:28.793545+00:00",
+        "context": {
+          "id": "01M33SV5KSQRMGTG8TFD5FS56D",
+          "parent_id": null,
+          "user_id": null
+        }
+      }
+    },
+    "origin": "LOCAL",
+    "time_fired": "2026-09-19T00:00:00.000000+00:00",
+    "context": {
+      "id": "01HXXXXXXX",
+      "parent_id": null,
+      "user_id": null
+    }
+  }
+}
