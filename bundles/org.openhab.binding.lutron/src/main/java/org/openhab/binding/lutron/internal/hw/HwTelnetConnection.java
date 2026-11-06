@@ -135,6 +135,8 @@ public class HwTelnetConnection implements Closeable {
         InputStream input = client.getInputStream();
         logger.debug("Connected to {}:{}, waiting for login prompt", host, port);
 
+        // A dedicated thread, because the reader blocks on the socket for the whole life of the connection and would
+        // otherwise occupy a thread of the shared scheduler pool. Everything else runs on the scheduler.
         Thread thread = new Thread(() -> readLoop(input), threadName);
         thread.setDaemon(true);
         readerThread = thread;

@@ -22,6 +22,8 @@ import java.util.TooManyListenersException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.io.transport.serial.PortInUseException;
 import org.openhab.core.io.transport.serial.SerialPort;
 import org.openhab.core.io.transport.serial.SerialPortEvent;
@@ -42,20 +44,21 @@ import org.slf4j.LoggerFactory;
  * @author Andrew Shilliday - Initial contribution
  *
  */
+@NonNullByDefault
 public class HwSerialBridgeHandler extends HwBridgeHandler implements SerialPortEventListener {
     private final Logger logger = LoggerFactory.getLogger(HwSerialBridgeHandler.class);
     private final DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("MM/dd/yyyy");
     private final DateTimeFormatter timeFormat = DateTimeFormatter.ofPattern("HH:mm:ss");
 
-    private String serialPortName;
-    private int baudRate;
-    private Boolean updateTime;
-    private ScheduledFuture<?> updateTimeJob;
+    private String serialPortName = "";
+    private int baudRate = HwSerialBridgeConfig.DEFAULT_BAUD;
+    private boolean updateTime;
+    private @Nullable ScheduledFuture<?> updateTimeJob;
 
     private final SerialPortManager serialPortManager;
-    private SerialPort serialPort;
-    private OutputStreamWriter serialOutput;
-    private BufferedReader serialInput;
+    private @Nullable SerialPort serialPort;
+    private @Nullable OutputStreamWriter serialOutput;
+    private @Nullable BufferedReader serialInput;
 
     public HwSerialBridgeHandler(Bridge bridge, SerialPortManager serialPortManager) {
         super(bridge);
@@ -66,18 +69,16 @@ public class HwSerialBridgeHandler extends HwBridgeHandler implements SerialPort
     public void initialize() {
         logger.debug("Initializing the Lutron HomeWorks RS232 bridge handler");
         HwSerialBridgeConfig configuration = getConfigAs(HwSerialBridgeConfig.class);
-        serialPortName = configuration.getSerialPort();
-        updateTime = configuration.getUpdateTime();
-        if (configuration.getBaudRate() == null) {
-            baudRate = HwSerialBridgeConfig.DEFAULT_BAUD;
-        } else {
-            baudRate = configuration.getBaudRate().intValue();
-        }
+        String configuredPort = configuration.getSerialPort();
+        updateTime = Boolean.TRUE.equals(configuration.getUpdateTime());
+        Integer configuredBaud = configuration.getBaudRate();
+        baudRate = configuredBaud == null ? HwSerialBridgeConfig.DEFAULT_BAUD : configuredBaud.intValue();
 
-        if (serialPortName == null) {
+        if (configuredPort == null) {
             updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Serial port not specified");
             return;
         }
+        serialPortName = configuredPort;
 
         logger.debug("Lutron HomeWorks RS232 Bridge Handler Initializing.");
         logger.debug("   Serial Port: {},", serialPortName);
@@ -95,19 +96,20 @@ public class HwSerialBridgeHandler extends HwBridgeHandler implements SerialPort
 
         try {
             logger.info("Connecting to Lutron HomeWorks Processor using {}.", serialPortName);
-            serialPort = portIdentifier.open(this.getClass().getName(), 2000);
+            SerialPort port = portIdentifier.open(this.getClass().getName(), 2000);
+            serialPort = port;
 
             logger.debug("Connection established using {}.  Configuring IO parameters. ", serialPortName);
 
             int db = SerialPort.DATABITS_8, sb = SerialPort.STOPBITS_1, p = SerialPort.PARITY_NONE;
-            serialPort.setSerialPortParams(baudRate, db, sb, p);
-            serialPort.enableReceiveThreshold(1);
-            serialPort.disableReceiveTimeout();
-            serialOutput = new OutputStreamWriter(serialPort.getOutputStream(), "US-ASCII");
-            serialInput = new BufferedReader(new InputStreamReader(serialPort.getInputStream(), "US-ASCII"));
+            port.setSerialPortParams(baudRate, db, sb, p);
+            port.enableReceiveThreshold(1);
+            port.disableReceiveTimeout();
+            serialOutput = new OutputStreamWriter(port.getOutputStream(), "US-ASCII");
+            serialInput = new BufferedReader(new InputStreamReader(port.getInputStream(), "US-ASCII"));
 
-            serialPort.addEventListener(this);
-            serialPort.notifyOnDataAvailable(true);
+            port.addEventListener(this);
+            port.notifyOnDataAvailable(true);
 
             sendStartupCommands();
 
@@ -126,9 +128,10 @@ public class HwSerialBridgeHandler extends HwBridgeHandler implements SerialPort
     }
 
     private void startUpdateProcessorTimeJob() {
-        if (updateTimeJob != null) {
+        ScheduledFuture<?> oldJob = updateTimeJob;
+        if (oldJob != null) {
             logger.debug("Canceling old scheduled job");
-            updateTimeJob.cancel(false);
+            oldJob.cancel(false);
             updateTimeJob = null;
         }
 
@@ -143,8 +146,9 @@ public class HwSerialBridgeHandler extends HwBridgeHandler implements SerialPort
 
         if (getThing().getStatus() != ThingStatus.ONLINE) {
             logger.warn("HomeWorks Bridge is offline and cannot update time on HomeWorks processor.");
-            if (updateTimeJob != null) {
-                updateTimeJob.cancel(false);
+            ScheduledFuture<?> job = updateTimeJob;
+            if (job != null) {
+                job.cancel(false);
                 updateTimeJob = null;
             }
             return;
@@ -162,9 +166,13 @@ public class HwSerialBridgeHandler extends HwBridgeHandler implements SerialPort
     @Override
     public void serialEvent(SerialPortEvent serialPortEvent) {
         if (serialPortEvent.getEventType() == SerialPortEvent.DATA_AVAILABLE) {
+            BufferedReader input = serialInput;
+            if (input == null) {
+                return;
+            }
             try {
                 while (true) {
-                    String messageLine = serialInput.readLine();
+                    String messageLine = input.readLine();
                     if (messageLine == null) {
                         break;
                     }
@@ -179,10 +187,15 @@ public class HwSerialBridgeHandler extends HwBridgeHandler implements SerialPort
 
     @Override
     public void sendCommand(String command) {
+        OutputStreamWriter output = serialOutput;
+        if (output == null) {
+            logger.debug("Serial port not open, dropping command: {}", command);
+            return;
+        }
         try {
             logger.debug("HomeWorks bridge sending command: {}", command);
-            serialOutput.write(command + "\r");
-            serialOutput.flush();
+            output.write(command + "\r");
+            output.flush();
         } catch (IOException e) {
             logger.debug("Error writing to serial port: {}", e.getMessage(), e);
             updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "Error writing to port.");
@@ -192,16 +205,18 @@ public class HwSerialBridgeHandler extends HwBridgeHandler implements SerialPort
     @Override
     public void dispose() {
         logger.info("HomeWorks bridge being disposed.");
-        if (serialPort != null) {
-            serialPort.close();
+        SerialPort port = serialPort;
+        if (port != null) {
+            port.close();
         }
 
         serialPort = null;
         serialInput = null;
         serialOutput = null;
 
-        if (updateTimeJob != null) {
-            updateTimeJob.cancel(false);
+        ScheduledFuture<?> job = updateTimeJob;
+        if (job != null) {
+            job.cancel(false);
         }
 
         logger.debug("Finished disposing bridge.");

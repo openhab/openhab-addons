@@ -16,7 +16,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.lutron.internal.LutronHandlerFactory;
 import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
@@ -34,7 +34,8 @@ import org.slf4j.LoggerFactory;
  *
  * @author Andrew Shilliday - Initial contribution
  */
-public class HwDiscoveryService extends AbstractThingHandlerDiscoveryService<@NonNull HwBridgeHandler> {
+@NonNullByDefault
+public class HwDiscoveryService extends AbstractThingHandlerDiscoveryService<HwBridgeHandler> {
     private Logger logger = LoggerFactory.getLogger(HwDiscoveryService.class);
 
     private final AtomicBoolean isScanning = new AtomicBoolean(false);
@@ -75,10 +76,6 @@ public class HwDiscoveryService extends AbstractThingHandlerDiscoveryService<@No
      * Called by the bridge when it receives a status update for a dimmer that is not registered.
      */
     public void declareUnknownDimmer(String address) {
-        if (address == null) {
-            logger.info("Discovered HomeWorks dimmer with no address or thing handler");
-            return;
-        }
         String addressUid = address.replaceAll("[\\[\\]]", "").replace(":", "-");
         ThingUID bridgeUID = thingHandler.getThing().getUID();
         ThingUID uid = new ThingUID(HwConstants.THING_TYPE_HWDIMMER, bridgeUID, addressUid);

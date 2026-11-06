@@ -14,6 +14,8 @@ package org.openhab.binding.lutron.internal.hw;
 
 import static org.openhab.binding.lutron.internal.LutronBindingConstants.CHANNEL_LIGHTLEVEL;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.thing.Bridge;
@@ -33,10 +35,11 @@ import org.slf4j.LoggerFactory;
  * @author Andrew Shilliday - Initial contribution
  *
  */
+@NonNullByDefault
 public class HwDimmerHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(HwDimmerHandler.class);
 
-    private String address;
+    private @Nullable String address;
     private Integer fadeTime = 1;
     private Integer defaultLevel = 100;
 
@@ -48,8 +51,9 @@ public class HwDimmerHandler extends BaseThingHandler {
     public void initialize() {
         HwDimmerConfig config = getConfigAs(HwDimmerConfig.class);
 
-        address = config.getAddress();
-        if (address == null || address.isEmpty()) {
+        String configuredAddress = config.getAddress();
+        address = configuredAddress;
+        if (configuredAddress == null || configuredAddress.isEmpty()) {
             updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Address not set");
             return;
         }
@@ -76,7 +80,7 @@ public class HwDimmerHandler extends BaseThingHandler {
         }
     }
 
-    public String getAddress() {
+    public @Nullable String getAddress() {
         return address;
     }
 
@@ -94,15 +98,12 @@ public class HwDimmerHandler extends BaseThingHandler {
         }
     }
 
-    private HwBridgeHandler getBridgeHandler() {
+    private @Nullable HwBridgeHandler getBridgeHandler() {
         Bridge bridge = getBridge();
-        if (bridge == null) {
-            return null;
-        } else if (!(bridge.getHandler() instanceof HwBridgeHandler)) {
-            return null;
-        } else {
-            return (HwBridgeHandler) bridge.getHandler();
+        if (bridge != null && bridge.getHandler() instanceof HwBridgeHandler bridgeHandler) {
+            return bridgeHandler;
         }
+        return null;
     }
 
     private void queryLevel() {
