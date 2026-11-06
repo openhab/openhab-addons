@@ -226,12 +226,19 @@ public class BMWCarDataVehicleHandler extends BaseThingHandler {
 
     /**
      * Publishes the values of the given descriptors.
+     *
+     * @param requestedVin the VIN the data was received for, as the handler may have been initialized again with
+     *            another VIN while it was requested
      */
-    public void updateTelematicData(Map<String, TelematicValue> data) {
+    public void updateTelematicData(String requestedVin, Map<String, TelematicValue> data) {
         if (disposed) {
             return;
         }
         synchronized (dataLock) {
+            // checked under the lock, so that the data of another vehicle is cleared after it has been published
+            if (!requestedVin.equals(vin)) {
+                return;
+            }
             publishTelematicData(data);
         }
         // data received from the stream proves the vehicle reachable again after a failed poll
@@ -486,8 +493,13 @@ public class BMWCarDataVehicleHandler extends BaseThingHandler {
 
     /**
      * Called by the account after the telematic data of this vehicle was refreshed via the REST API.
+     *
+     * @param requestedVin the VIN that was refreshed
      */
-    void refreshSucceeded() {
+    void refreshSucceeded(String requestedVin) {
+        if (!requestedVin.equals(vin)) {
+            return;
+        }
         refreshFailing = false;
         if (!disposed && getThing().getStatus() != ThingStatus.ONLINE && hasBasicData()) {
             goOnline();
@@ -496,9 +508,11 @@ public class BMWCarDataVehicleHandler extends BaseThingHandler {
 
     /**
      * Called by the account if the telematic data of this vehicle could not be refreshed via the REST API.
+     *
+     * @param requestedVin the VIN that was refreshed
      */
-    void refreshFailed(BMWCarDataException e) {
-        if (disposed) {
+    void refreshFailed(String requestedVin, BMWCarDataException e) {
+        if (disposed || !requestedVin.equals(vin)) {
             return;
         }
         refreshFailing = true;
@@ -576,23 +590,27 @@ public class BMWCarDataVehicleHandler extends BaseThingHandler {
 
     private void retrieveImage() {
         BMWCarDataAccountHandler account = getAccountHandler();
+        // the handler may be initialized again with another VIN while the image is retrieved
+        String requestedVin = vin;
         // a retry is not needed anymore once the item is unlinked
         if (account == null || states.containsKey(CHANNEL_IMAGE) || !isLinked(CHANNEL_IMAGE)) {
             return;
         }
         RawType image;
         try {
-            image = account.fetchVehicleImage(vin);
+            image = account.fetchVehicleImage(requestedVin);
         } catch (BMWCarDataAuthException e) {
             logger.debug("Failed to retrieve the vehicle image: {}", e.getMessage());
-            // the account renews the rejected token
-            scheduleImageRetry();
+            if (requestedVin.equals(vin)) {
+                // the account renews the rejected token
+                scheduleImageRetry();
+            }
             return;
         } catch (BMWCarDataException e) {
             logger.debug("Failed to retrieve the vehicle image: {}", e.getMessage());
             // only retry what may succeed later, as each retry costs a request: e.g. a VIN without permission
             // (CU-104) or without image (CU-126) would use up the budget
-            if (e.isTransient() || e.isRateLimited()) {
+            if ((e.isTransient() || e.isRateLimited()) && requestedVin.equals(vin)) {
                 scheduleImageRetry();
             }
             return;
@@ -601,7 +619,9 @@ public class BMWCarDataVehicleHandler extends BaseThingHandler {
             return;
         }
         synchronized (dataLock) {
-            publish(CHANNEL_IMAGE, image);
+            if (requestedVin.equals(vin)) {
+                publish(CHANNEL_IMAGE, image);
+            }
         }
     }
 
