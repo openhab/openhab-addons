@@ -63,6 +63,7 @@ import org.slf4j.LoggerFactory;
  * sent to one of the channels.
  *
  * @author Markus Eckhardt - Initial contribution
+ * @author Leo Siepel - File-defined Thing configuration
  */
 @NonNullByDefault
 public class KM200ThingHandler extends BaseThingHandler {
@@ -194,19 +195,21 @@ public class KM200ThingHandler extends BaseThingHandler {
             logger.debug("Gateway not existing: {}", bridge);
             return;
         }
-        String service = KM200Utils.translatesNameToPath(thing.getProperties().get("root"));
-        if (service == null) {
-            Object rootService = thing.getConfiguration().get("rootService");
-            service = rootService != null ? rootService.toString() : null;
-        }
-        if (service == null) {
-            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "root property missing");
+        Object rootService = thing.getConfiguration().get(CONFIG_ROOT_SERVICE);
+        String service = rootService != null ? rootService.toString()
+                : KM200Utils.translatesNameToPath(thing.getProperties().get("root"));
+        if (service == null || !service.startsWith("/") || service.length() < 2) {
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Root service missing or not an absolute service path");
             return;
         }
         synchronized (gateway.getDevice()) {
             if (!gateway.getDevice().getInited()) {
                 updateStatus(ThingStatus.UNKNOWN);
                 logger.debug("Bridge: not initialized: {}", bridge);
+                return;
+            }
+            if (rootService != null && !gateway.getDevice().containsService(service)) {
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Unknown rootService: " + service);
                 return;
             }
             updateStatus(ThingStatus.UNKNOWN);

@@ -13,5 +13,6 @@
 		<properties>
 			<property name="root">#system#appliance</property>
 		</properties>
+		<config-description-ref uri="thing-type:km200:service"/>
 	</thing-type>
 </thing:thing-descriptions>
