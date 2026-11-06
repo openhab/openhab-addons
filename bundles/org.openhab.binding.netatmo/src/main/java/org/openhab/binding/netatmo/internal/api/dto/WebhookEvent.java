@@ -33,9 +33,11 @@ import org.openhab.binding.netatmo.internal.deserialization.NAPushType;
 @NonNullByDefault
 public class WebhookEvent extends Event {
     private NAPushType pushType = NAPushType.UNKNOWN;
+    private String userId = "";
+    private String deviceId = "";
     private String homeId = "";
     private String roomId = "";
-    private String deviceId = "";
+    private @Nullable WebhookExtraParams extraParams;
     private @Nullable String snapshotUrl;
     private @Nullable String vignetteUrl;
     private TopologyChange change = TopologyChange.UNKNOWN;
@@ -73,6 +75,10 @@ public class WebhookEvent extends Event {
 
     public @Nullable String getVignetteUrl() {
         return vignetteUrl;
+    }
+
+    public String getUserId() {
+        return userId;
     }
 
     public Set<String> getNAObjectList() {
