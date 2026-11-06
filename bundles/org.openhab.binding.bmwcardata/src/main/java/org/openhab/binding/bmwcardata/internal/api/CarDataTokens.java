@@ -18,6 +18,8 @@ import java.time.Instant;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -41,9 +43,12 @@ public final class CarDataTokens {
     static final String ID_TOKEN = "id_token";
     static final String GCID = "gcid";
 
-    // OAuth errors after which the stored authorization cannot be used anymore
-    private static final Set<String> REAUTHORIZATION_ERRORS = Set.of("invalid_grant", "expired_token", "access_denied",
-            "unauthorized_client", "invalid_client");
+    // the status of an unexpected response in the message of core's OAuthConnector
+    private static final Pattern HTTP_STATUS_CODE = Pattern.compile("http code (\\d{3})");
+    // OAuth errors after which the stored authorization cannot be used anymore; BMW documents invalid_token for a 400
+    // of the token endpoint, e.g. for a refresh token that expired after two weeks without a refresh
+    private static final Set<String> REAUTHORIZATION_ERRORS = Set.of("invalid_grant", "invalid_token", "expired_token",
+            "access_denied", "unauthorized_client", "invalid_client");
 
     private CarDataTokens() {
         // utility class
@@ -105,11 +110,26 @@ public final class CarDataTokens {
     }
 
     /**
-     * @param e failure of the OAuth client service itself, e.g. no stored token or a token that cannot be decrypted
-     * @return an exception that requires a new authorization
+     * Maps a failure of the OAuth client service. Core's OAuthConnector reports a response other than 200, 400 and
+     * 401 only in the message of an {@link OAuthException}, e.g. {@code Bad http response, http code 503}. BMW
+     * documents only 403 for the token endpoint besides those, which is a denied access, but its token endpoint was
+     * seen returning server errors for a short time, which must not discard a valid authorization.
+     *
+     * @param e failure of the OAuth client service, e.g. no stored token, a token that cannot be decrypted or an
+     *            unexpected response of the token endpoint
+     * @return a {@link BMWCarDataException} with the status for a server error of the token endpoint, otherwise an
+     *         exception that requires a new authorization
      */
     public static BMWCarDataException toException(OAuthException e) {
-        return new BMWCarDataAuthException("Stored authorization not usable: " + e.getMessage(), 0);
+        String message = Objects.requireNonNullElse(e.getMessage(), "");
+        Matcher statusCode = HTTP_STATUS_CODE.matcher(message);
+        if (statusCode.find()) {
+            int status = Integer.parseInt(statusCode.group(1));
+            if (status >= 500) {
+                return new BMWCarDataException("Token refresh failed: HTTP " + status, status, e);
+            }
+        }
+        return new BMWCarDataAuthException("Stored authorization not usable: " + message, 0);
     }
 
     /**

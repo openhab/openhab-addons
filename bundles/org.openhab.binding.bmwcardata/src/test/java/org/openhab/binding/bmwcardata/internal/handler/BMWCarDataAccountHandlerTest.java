@@ -51,7 +51,9 @@ import org.openhab.binding.bmwcardata.internal.stream.StreamSource;
 import org.openhab.binding.bmwcardata.internal.stream.StreamState;
 import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
 import org.openhab.core.auth.client.oauth2.OAuthClientService;
+import org.openhab.core.auth.client.oauth2.OAuthException;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
+import org.openhab.core.auth.client.oauth2.OAuthResponseException;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.RawType;
@@ -121,6 +123,8 @@ class BMWCarDataAccountHandlerTest {
     private @NonNullByDefault({}) Thing vehicleThing;
     private @NonNullByDefault({}) BMWCarDataAccountHandler handler;
     private @NonNullByDefault({}) BMWCarDataVehicleHandler vehicle;
+    private @NonNullByDefault({}) OAuthClientService oAuthService;
+    private @NonNullByDefault({}) StreamSource streamSource;
 
     @BeforeEach
     void setUp() throws Exception {
@@ -523,6 +527,56 @@ class BMWCarDataAccountHandlerTest {
     }
 
     @Test
+    void serverErrorOfTheTokenEndpointKeepsTheAuthorizationAndIsRetried() throws Exception {
+        // expiring within the refresh margin, so the refresh runs after the minimum delay
+        AccessTokenResponse token = token(200);
+        startHandler(true, token);
+        handler.onStreamStateChanged(StreamState.CONNECTED, null);
+        // core's OAuthConnector reports statuses other than 200, 400 and 401 only in the message
+        when(oAuthService.refreshToken()).thenThrow(new OAuthException("Bad http response, http code 503"))
+                .thenReturn(token);
+        clearInvocations(streamSource);
+
+        runJobs(AUTH_RETRY_DELAY);
+        verify(oAuthService, never()).importAccessTokenResponse(any());
+        verify(streamSource, never()).stop();
+        assertEquals(0, requests("/device/code"));
+        assertEquals(1, pendingJobs(AUTH_RETRY_DELAY));
+
+        // the retry succeeds with the same authorization
+        runJobs(AUTH_RETRY_DELAY);
+        verify(oAuthService, atLeast(2)).refreshToken();
+        assertEquals(0, requests("/device/code"));
+        assertNull(handler.getPendingAuthorization());
+        verify(accountCallback, never()).statusUpdated(any(), argThat(offline(ThingStatusDetail.CONFIGURATION_ERROR)));
+    }
+
+    @Test
+    void deniedAccessOfTheTokenEndpointStartsANewAuthorization() throws Exception {
+        startHandler(false, token(200));
+        // BMW documents 403 for a denied access, which core reports in the message of an OAuthException
+        when(oAuthService.refreshToken()).thenThrow(new OAuthException("Bad http response, http code 403"));
+        respond(status(200, deviceCode("USER-1", 600)));
+
+        runJobs(AUTH_RETRY_DELAY);
+        assertEquals("USER-1", pendingUserCode());
+    }
+
+    @Test
+    void rejectedRefreshTokenStartsANewAuthorization() throws Exception {
+        startHandler(false, token(200));
+        // BMW answers a refresh token it no longer accepts, e.g. after two weeks without a refresh, with a 400
+        OAuthResponseException invalidToken = new OAuthResponseException();
+        invalidToken.setError("invalid_token");
+        when(oAuthService.refreshToken()).thenThrow(invalidToken);
+        respond(status(200, deviceCode("USER-1", 600)));
+
+        runJobs(AUTH_RETRY_DELAY);
+        assertEquals("USER-1", pendingUserCode());
+        verify(oAuthService).importAccessTokenResponse(any());
+    }
+
+    @Test
     void unauthorizedResponseWhilePollingKeepsPolling() throws Exception {
         // BMW answers an expired code, an invalid client and an account pending activation with 401 without
         // WWW-Authenticate header, so the HTTP client fails the request and the error code is lost
@@ -557,17 +611,21 @@ class BMWCarDataAccountHandlerTest {
     }
 
     private void authorize(boolean streaming) throws Exception {
-        AccessTokenResponse token = new AccessTokenResponse();
-        token.setAccessToken("access");
-        token.setRefreshToken("refresh");
-        token.setExpiresIn(3600);
-        token.setCreatedOn(Instant.now());
-        token.setExtraFields(Map.of("id_token", "id", "gcid", "gcid-1"));
-        startHandler(streaming, token);
+        startHandler(streaming, token(3600));
         if (streaming) {
             handler.onStreamStateChanged(StreamState.CONNECTED, null);
         }
         assertEquals(1, pendingJobs(PERIODIC_DELAY));
+    }
+
+    private static AccessTokenResponse token(long expiresInSeconds) {
+        AccessTokenResponse token = new AccessTokenResponse();
+        token.setAccessToken("access");
+        token.setRefreshToken("refresh");
+        token.setExpiresIn(expiresInSeconds);
+        token.setCreatedOn(Instant.now());
+        token.setExtraFields(Map.of("id_token", "id", "gcid", "gcid-1"));
+        return token;
     }
 
     /**
@@ -583,7 +641,7 @@ class BMWCarDataAccountHandlerTest {
                 Map.of("clientId", "client-1", "streaming", streaming, "refreshInterval", 6, "requestBudget", 40)));
         when(bridge.getThings()).thenReturn(List.of(vehicleThing));
 
-        OAuthClientService oAuthService = mock(OAuthClientService.class);
+        oAuthService = mock(OAuthClientService.class);
         when(oAuthService.getAccessTokenResponse()).thenReturn(storedToken);
         if (storedToken != null) {
             when(oAuthService.refreshToken()).thenReturn(storedToken);
@@ -592,7 +650,7 @@ class BMWCarDataAccountHandlerTest {
         when(oAuthFactory.createOAuthClientService(anyString(), anyString(), any(), anyString(), any(), any(), any()))
                 .thenReturn(oAuthService);
 
-        StreamSource streamSource = mock(StreamSource.class);
+        streamSource = mock(StreamSource.class);
         when(streamSource.stop()).thenReturn(CompletableFuture.completedFuture(true));
         handler = new BMWCarDataAccountHandler(bridge, httpClient, new Gson(), storage, budgetStorage, oAuthFactory,
                 scheduler()) {

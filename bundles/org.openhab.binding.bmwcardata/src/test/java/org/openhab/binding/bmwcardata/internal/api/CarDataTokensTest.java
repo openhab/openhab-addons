@@ -90,12 +90,40 @@ class CarDataTokensTest {
         invalidGrant.setError("invalid_grant");
         assertInstanceOf(BMWCarDataAuthException.class, CarDataTokens.toException(invalidGrant));
 
+        // documented by BMW for a 400 of the token endpoint, e.g. for an expired refresh token
+        OAuthResponseException invalidToken = new OAuthResponseException();
+        invalidToken.setError("invalid_token");
+        assertInstanceOf(BMWCarDataAuthException.class, CarDataTokens.toException(invalidToken));
+        // a malformed request is not fixed by a new authorization
+        OAuthResponseException invalidRequest = new OAuthResponseException();
+        invalidRequest.setError("invalid_request");
+        assertFalse(CarDataTokens.toException(invalidRequest) instanceof BMWCarDataAuthException);
+
         OAuthResponseException serverError = new OAuthResponseException();
         serverError.setError("temporarily_unavailable");
         assertFalse(CarDataTokens.toException(serverError) instanceof BMWCarDataAuthException);
         assertFalse(CarDataTokens.toException(new OAuthResponseException()) instanceof BMWCarDataAuthException);
 
         assertInstanceOf(BMWCarDataAuthException.class, CarDataTokens.toException(new OAuthException("no token")));
+    }
+
+    @Test
+    void serverErrorOfTheTokenEndpointKeepsTheAuthorization() {
+        // core's OAuthConnector reports statuses other than 200, 400 and 401 only in the message
+        BMWCarDataException unavailable = CarDataTokens
+                .toException(new OAuthException("Bad http response, http code 503"));
+        assertFalse(unavailable instanceof BMWCarDataAuthException);
+        assertEquals(503, unavailable.getHttpStatus());
+        assertTrue(unavailable.isTransient());
+        BMWCarDataException internalError = CarDataTokens
+                .toException(new OAuthException("Bad http response, http code 500"));
+        assertFalse(internalError instanceof BMWCarDataAuthException);
+
+        // BMW documents 403 for a denied access
+        assertInstanceOf(BMWCarDataAuthException.class,
+                CarDataTokens.toException(new OAuthException("Bad http response, http code 403")));
+        assertInstanceOf(BMWCarDataAuthException.class,
+                CarDataTokens.toException(new OAuthException("Cannot decrypt access token from store")));
     }
 
     @Test
