@@ -35,14 +35,13 @@ import java.util.concurrent.atomic.AtomicLong;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.websocket.api.Callback;
-import org.eclipse.jetty.websocket.api.Frame;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.StatusCode;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketError;
-import org.eclipse.jetty.websocket.api.annotations.OnWebSocketFrame;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketOpen;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketPong;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
@@ -613,9 +612,9 @@ public class Shelly2RpcSocket implements Callback {
             Shelly2RpcSocket.this.onError(session, cause, attemptId);
         }
 
-        @OnWebSocketFrame
-        public void onFrame(Frame frame, Callback callback) {
-            Shelly2RpcSocket.this.onFrame(frame, callback);
+        @OnWebSocketPong
+        public void onPong(ByteBuffer payload) {
+            Shelly2RpcSocket.this.onPong(payload);
         }
     }
 
@@ -642,31 +641,18 @@ public class Shelly2RpcSocket implements Callback {
         }
     }
 
-    @OnWebSocketFrame
-    public void onFrame(Frame frame, Callback callback) {
-        switch (frame.getType()) {
-            case PING:
-                // Jetty auto-responds with PONG by default
-                if (logger.isTraceEnabled()) {
-                    logger.trace("{}: WebSocket PING received", thingName);
-                }
-                break;
-            case PONG:
-                if (logger.isTraceEnabled()) {
-                    logger.trace("{}: WebSocket PONG received", thingName);
-                }
-                Shelly2RpctInterface websocketHandler;
-                synchronized (this) {
-                    websocketHandler = this.websocketHandler;
-                }
-                if (websocketHandler != null) {
-                    websocketHandler.onPong();
-                }
-                break;
-            default:
-                break;
+    @OnWebSocketPong
+    public void onPong(ByteBuffer payload) {
+        if (logger.isTraceEnabled()) {
+            logger.trace("{}: WebSocket PONG received", thingName);
         }
-        callback.succeed();
+        Shelly2RpctInterface websocketHandler;
+        synchronized (this) {
+            websocketHandler = this.websocketHandler;
+        }
+        if (websocketHandler != null) {
+            websocketHandler.onPong();
+        }
     }
 
     /**

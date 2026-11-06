@@ -16,6 +16,7 @@ import static org.openhab.binding.freeboxos.internal.FreeboxOsBindingConstants.*
 
 import java.io.IOException;
 import java.net.URI;
+import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -243,8 +244,8 @@ public class WebSocketManager extends RestManager {
     }
 
     @OnWebSocketMessage
-    public void onWebSocketBinary(byte @Nullable [] payload, int offset, int len) {
-        /* do nothing */
+    public void onWebSocketBinary(ByteBuffer payload, Callback callback) {
+        callback.succeed();
     }
 
     public boolean registerListener(MACAddress mac, ApiConsumerHandler hostHandler) {

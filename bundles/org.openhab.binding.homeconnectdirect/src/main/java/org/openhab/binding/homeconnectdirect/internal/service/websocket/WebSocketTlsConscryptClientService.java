@@ -98,6 +98,7 @@ public class WebSocketTlsConscryptClientService extends AbstractWebSocketClientS
 
     @OnWebSocketMessage
     public void onMessage(Session session, String message) {
+        updateLastMessageReceived();
         logger.debug("<< {} ({})", message, getThingUID());
         getWebSocketHandler().onWebSocketMessage(message, this);
     }

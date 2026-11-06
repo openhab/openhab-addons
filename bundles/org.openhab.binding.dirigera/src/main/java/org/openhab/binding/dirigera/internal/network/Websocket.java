@@ -28,13 +28,12 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.websocket.api.Callback;
-import org.eclipse.jetty.websocket.api.Frame;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketError;
-import org.eclipse.jetty.websocket.api.annotations.OnWebSocketFrame;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketOpen;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketPong;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
@@ -195,35 +194,16 @@ public class Websocket {
         gateway.websocketUpdate(message);
     }
 
-    @OnWebSocketFrame
-    public void onFrame(Frame frame) {
-        if (Frame.Type.PONG.equals(frame.getType())) {
-            ByteBuffer buffer = frame.getPayload();
-            byte[] bytes = new byte[frame.getPayloadLength()];
-            for (int i = 0; i < frame.getPayloadLength(); i++) {
-                bytes[i] = buffer.get(i);
-            }
-            String paylodString = new String(bytes, StandardCharsets.UTF_8);
-            Instant sent = pingPongMap.remove(paylodString);
-            if (sent != null) {
-                long durationMS = Duration.between(sent, Instant.now()).toMillis();
-                statistics.put(PING_LATENCY, durationMS);
-                statistics.put(PING_LAST, Instant.now());
-            } else {
-                logger.debug("DIRIGERA WS receiced pong without ping {}", paylodString);
-            }
-        } else if (Frame.Type.PING.equals(frame.getType())) {
-            session().ifPresentOrElse((session) -> {
-                logger.trace("DIRIGERA onPing ");
-                ByteBuffer buffer = frame.getPayload();
-                try {
-                    session.sendPong(buffer, Callback.NOOP);
-                } catch (Exception e) {
-                    logger.warn("DIRIGERA WS onPing answer exception {}", e.getMessage());
-                }
-            }, () -> {
-                logger.debug("DIRIGERA WS onPing answer cannot be initiated");
-            });
+    @OnWebSocketPong
+    public void onPong(ByteBuffer payload) {
+        String paylodString = StandardCharsets.UTF_8.decode(payload).toString();
+        Instant sent = pingPongMap.remove(paylodString);
+        if (sent != null) {
+            long durationMS = Duration.between(sent, Instant.now()).toMillis();
+            statistics.put(PING_LATENCY, durationMS);
+            statistics.put(PING_LAST, Instant.now());
+        } else {
+            logger.debug("DIRIGERA WS receiced pong without ping {}", paylodString);
         }
     }
 

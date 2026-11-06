@@ -103,7 +103,7 @@ public class RemoteopenhabHandlerFactory extends BaseThingHandlerFactory {
         this.i18nProvider = i18nProvider;
         this.localeProvider = localeProvider;
 
-        SslContextFactory sslContextFactory = new SslContextFactory.Client();
+        SslContextFactory.Client sslContextFactory = new SslContextFactory.Client();
         try {
             SSLContext sslContext = SSLContext.getInstance("SSL");
 

@@ -207,6 +207,13 @@ class WebSocketBase {
     }
 
     @OnWebSocketMessage
+    public void onWebSocketBinary(ByteBuffer payload, Callback callback) {
+        byte[] arr = new byte[payload.remaining()];
+        payload.get(arr);
+        callback.succeed();
+        onWebSocketBinary(arr, 0, arr.length);
+    }
+
     public void onWebSocketBinary(byte @Nullable [] arr, int pos, int len) {
         logger.trace("{}: {}: onWebSocketBinary: offset: {}, len: {}", host, className, pos, len);
     }

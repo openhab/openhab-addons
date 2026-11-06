@@ -100,6 +100,7 @@ public class DirigeraHandlerFactory extends BaseThingHandlerFactory {
         SslContextFactory.Client sslContextFactory = new SslContextFactory.Client(true);
         sslContextFactory.setEndpointIdentificationAlgorithm(null);
         this.insecureClient = new HttpClient();
+        insecureClient.setSslContextFactory(sslContextFactory);
         insecureClient.setUserAgentField(null);
         try {
             this.insecureClient.start();

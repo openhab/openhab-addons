@@ -47,14 +47,13 @@ import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.websocket.api.Callback;
-import org.eclipse.jetty.websocket.api.Frame;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.StatusCode;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketError;
-import org.eclipse.jetty.websocket.api.annotations.OnWebSocketFrame;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketOpen;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketPong;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
@@ -1078,18 +1077,15 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler {
      * Binary message received. It shall not happen with the free@home SysAp
      */
     @OnWebSocketMessage
-    @NonNullByDefault({})
-    public void onWebSocketBinary(byte[] payload, int offset, int len) {
+    public void onWebSocketBinary(ByteBuffer payload, Callback callback) {
         logger.warn("Binary message received via websocket - It shall not happen with the free@home SysAp");
+        callback.succeed();
     }
 
-    @OnWebSocketFrame
-    @NonNullByDefault({})
-    public void onFrame(Frame frame) {
-        if (frame.getType() == Frame.Type.PONG) {
-            lastReceivedTime = System.currentTimeMillis();
-            logger.debug("WebSocket pong received");
-        }
+    @OnWebSocketPong
+    public void onPong(ByteBuffer payload) {
+        lastReceivedTime = System.currentTimeMillis();
+        logger.debug("WebSocket pong received");
     }
 
     /**

@@ -76,7 +76,7 @@ public class BridgeSedifWebHandler extends BaseBridgeHandler {
     public BridgeSedifWebHandler(Bridge bridge, final @Reference HttpClientFactory httpClientFactory, Gson gson) {
         super(bridge);
 
-        SslContextFactory sslContextFactory = new SslContextFactory.Client();
+        SslContextFactory.Client sslContextFactory = new SslContextFactory.Client();
         try {
             SSLContext sslContext = SSLContext.getInstance("SSL");
             sslContext.init(null, new TrustManager[] { TrustAllTrustManager.getInstance() }, null);

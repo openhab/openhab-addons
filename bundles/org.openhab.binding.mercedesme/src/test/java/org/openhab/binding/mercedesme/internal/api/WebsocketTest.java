@@ -18,14 +18,12 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
+import java.nio.ByteBuffer;
 import java.time.Instant;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.websocket.api.Callback;
-import org.eclipse.jetty.websocket.api.Frame;
 import org.eclipse.jetty.websocket.api.Session;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.mercedesme.internal.config.AccountConfiguration;
@@ -70,10 +68,8 @@ public class WebsocketTest {
         ws.sendPing();
         assertNotNull(ws.pingSentAt.get());
 
-        Frame pongFrame = mock(Frame.class);
-        when(pongFrame.getType()).thenReturn(Frame.Type.PONG);
-        ws.onFrame(pongFrame, Callback.NOOP);
-        assertNull(ws.pingSentAt.get(), "handlePong() (via onFrame) must clear pingSentAt once a pong is received");
+        ws.onPong(ByteBuffer.allocate(0));
+        assertNull(ws.pingSentAt.get(), "handlePong() (via onPong) must clear pingSentAt once a pong is received");
 
         ws.sendPing();
         assertNotNull(ws.pingSentAt.get(),
