@@ -337,15 +337,20 @@ final class RobonectMowerHandler {
         }
     }
 
-    /** Reads mower status and publishes the available mower and job channels. */
-    void refreshMowerInfo() {
+    /**
+     * Reads mower status and publishes the available mower and job channels.
+     *
+     * @return the reported mower status, or {@code null} if unavailable
+     */
+    @Nullable
+    MowerStatus refreshMowerInfo() {
         MowerInfo info = mowerApi.getMowerInfo();
         if (!handler.canPublishState()) {
-            return;
+            return null;
         }
         if (!info.isSuccessful()) {
             logger.debug("Could not retrieve mower information: {}", info.getErrorMessage());
-            return;
+            return null;
         }
         ErrorEntry error = info.getError();
         updateErrorInfo(error);
@@ -353,6 +358,7 @@ final class RobonectMowerHandler {
             diagnostics.refreshLastErrorInfo();
         }
         Status status = info.getStatus();
+        var mowerStatus = read(status, Status::getStatus);
         handler.setState(CHANNEL_MOWER_NAME, read(info, MowerInfo::getName).map(StringType::new).orElse(null), true);
         handler.setState(CHANNEL_MOWER_ID, read(info, MowerInfo::getId).map(StringType::new).orElse(null), true);
         handler.setState(CHANNEL_STATUS_BATTERY, read(status, Status::getBattery).map(DecimalType::new).orElse(null),
@@ -360,8 +366,7 @@ final class RobonectMowerHandler {
         handler.setState(CHANNEL_STATUS_PREVENT, read(status, Status::getPrevent).map(DecimalType::new).orElse(null),
                 true);
         handler.updateSwitch(CHANNEL_STATUS_HOME, read(status, Status::getHome).orElse(null));
-        handler.setState(CHANNEL_STATUS,
-                read(status, Status::getStatus).map(MowerStatus::getStatusCode).map(DecimalType::new).orElse(null),
+        handler.setState(CHANNEL_STATUS, mowerStatus.map(MowerStatus::getStatusCode).map(DecimalType::new).orElse(null),
                 true);
         handler.setState(CHANNEL_STATUS_DURATION,
                 read(status, Status::getDuration).map(value -> new QuantityType<>(value, Units.SECOND)).orElse(null),
@@ -395,6 +400,7 @@ final class RobonectMowerHandler {
                 .map(value -> new QuantityType<>(value, Units.DECIBEL_MILLIWATTS)).orElse(null), true);
         handler.setState(CHANNEL_WLAN_SIGNAL, read(info, MowerInfo::getWlan).map(Wlan::getSignal)
                 .map(this::convertSignalStrength).map(DecimalType::new).orElse(null), true);
+        return mowerStatus.orElse(null);
     }
 
     /**

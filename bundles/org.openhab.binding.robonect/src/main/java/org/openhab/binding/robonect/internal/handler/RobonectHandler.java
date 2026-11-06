@@ -45,6 +45,7 @@ import org.openhab.binding.robonect.internal.RobonectCommunicationException;
 import org.openhab.binding.robonect.internal.RobonectEndpoint;
 import org.openhab.binding.robonect.internal.RobonectPushServlet;
 import org.openhab.binding.robonect.internal.config.RobonectConfig;
+import org.openhab.binding.robonect.internal.model.MowerStatus;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.library.types.DateTimeType;
@@ -888,6 +889,8 @@ public class RobonectHandler extends BaseThingHandler {
     @NonNullByDefault
     private static class PollingSession {
         private final long offlineTriggerDelay;
+        private final boolean detailedPollingEnabled;
+        private boolean pollDriveDiagnosticsNormally;
         private long offlineSince = -1;
         private boolean offlineTimeoutTriggered;
         private boolean loadVersionInfo = true;
@@ -899,6 +902,7 @@ public class RobonectHandler extends BaseThingHandler {
          */
         private PollingSession(RobonectConfig config) {
             offlineTriggerDelay = TimeUnit.SECONDS.toMillis(config.getOfflineTimeout());
+            detailedPollingEnabled = config.getDetailedPollInterval() > 0;
         }
     }
 
@@ -918,7 +922,19 @@ public class RobonectHandler extends BaseThingHandler {
                     diagnosticsHandler.refreshVersionInfo();
                     session.loadVersionInfo = false;
                 }
-            }, () -> mowerHandler.refreshMowerInfo(), () -> diagnosticsHandler.refreshWlanInfo()));
+            }, () -> {
+                session.pollDriveDiagnosticsNormally = false;
+                @Nullable
+                MowerStatus status = mowerHandler.refreshMowerInfo();
+                session.pollDriveDiagnosticsNormally = session.detailedPollingEnabled && switch (status) {
+                    case MOWING, SEARCH_CHARGING_STATION, SEARCHING -> true;
+                    case null, default -> false;
+                };
+            }, () -> diagnosticsHandler.refreshWlanInfo(), () -> {
+                if (session.pollDriveDiagnosticsNormally) {
+                    refreshDriveDiagnostics();
+                }
+            }));
         }
 
         /**
@@ -993,22 +1009,35 @@ public class RobonectHandler extends BaseThingHandler {
     /**
      * Builds the list of detailed endpoint refreshes enabled for this session.
      *
+     * @param session the polling session that determines the diagnostic schedule
      * @return the ordered endpoint refresh operations for detailed polling
      */
     @NonNullByDefault
-    private List<Runnable> createDetailedRefreshes() {
+    private List<Runnable> createDetailedRefreshes(PollingSession session) {
         List<Runnable> updates = new ArrayList<>();
         if (useUnofficialApi) {
             updates.add(() -> pushHandler.refreshPushMode());
         }
 
-        updates.addAll(List.<Runnable> of(() -> diagnosticsHandler.refreshBatteryInfo(),
-                () -> diagnosticsHandler.refreshMotorInfo(), () -> diagnosticsHandler.refreshHourInfo(),
-                () -> remoteStartHandler.refreshRemoteInfo(), () -> diagnosticsHandler.refreshWireInfo(),
+        updates.addAll(List.<Runnable> of(() -> {
+            if (!session.pollDriveDiagnosticsNormally) {
+                refreshDriveDiagnostics();
+            }
+        }, () -> diagnosticsHandler.refreshHourInfo(), () -> remoteStartHandler.refreshRemoteInfo(),
                 () -> diagnosticsHandler.refreshPortalInfo(), () -> timerHandler.refreshTimersInfo(),
                 () -> weatherHandler.refreshWeatherInfo(), () -> pushHandler.refreshExtensionInfo(),
                 () -> pushHandler.refreshPushInfo(), () -> mowerHandler.refreshDoorInfo()));
         return updates;
+    }
+
+    private void refreshDriveDiagnostics() {
+        diagnosticsHandler.refreshBatteryInfo();
+        if (canPublishState()) {
+            diagnosticsHandler.refreshMotorInfo();
+        }
+        if (canPublishState()) {
+            diagnosticsHandler.refreshWireInfo();
+        }
     }
 
     @NonNullByDefault
@@ -1019,7 +1048,7 @@ public class RobonectHandler extends BaseThingHandler {
          * @param session the polling session authorizing the work
          */
         private DetailedMowerChannelPoller(PollingSession session) {
-            super(session, RobonectHandler.this.createDetailedRefreshes());
+            super(session, RobonectHandler.this.createDetailedRefreshes(session));
         }
     }
 }

@@ -41,6 +41,7 @@ import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
@@ -318,6 +319,36 @@ public class RobonectHandlerTest {
                 eq(TimeUnit.SECONDS));
     }
 
+    @ParameterizedTest
+    @EnumSource(value = MowerStatus.class, names = { "MOWING", "SEARCH_CHARGING_STATION", "SEARCHING" })
+    public void shouldMoveDriveDiagnosticsToNormalPollingWhileMowerIsActive(MowerStatus activeStatus) {
+        List<Runnable> pollers = initializePolling(Map.of("detailedPollInterval", 61));
+        MowerInfo active = createSuccessfulMowerInfoResponse();
+        Objects.requireNonNull(active.getStatus()).setStatus(activeStatus);
+        when(mowerApiMock.getMowerInfo()).thenReturn(active, createSuccessfulMowerInfoResponse());
+
+        pollers.getFirst().run();
+        verify(diagnosticsApiMock).getBatteryInfo();
+        verify(diagnosticsApiMock).getMotorInfo();
+        verify(diagnosticsApiMock).getWireInfo();
+
+        clearInvocations(diagnosticsApiMock);
+        pollers.getLast().run();
+        verify(diagnosticsApiMock, never()).getBatteryInfo();
+        verify(diagnosticsApiMock, never()).getMotorInfo();
+        verify(diagnosticsApiMock, never()).getWireInfo();
+        verify(diagnosticsApiMock).getHourInfo();
+
+        pollers.getFirst().run();
+        verify(diagnosticsApiMock, never()).getBatteryInfo();
+        verify(diagnosticsApiMock, never()).getMotorInfo();
+        verify(diagnosticsApiMock, never()).getWireInfo();
+        pollers.getLast().run();
+        verify(diagnosticsApiMock).getBatteryInfo();
+        verify(diagnosticsApiMock).getMotorInfo();
+        verify(diagnosticsApiMock).getWireInfo();
+    }
+
     @Test
     public void shouldReadVersionOnlyOnFirstNormalPollUntilCommunicationFailure() {
         Runnable poller = initializePolling(Map.of()).getFirst();
@@ -344,6 +375,13 @@ public class RobonectHandlerTest {
                 eq(TimeUnit.SECONDS));
         verifyNoInteractions(mowerApiMock, diagnosticsApiMock, pushApiMock, remoteStartApiMock, timerApiMock,
                 weatherApiMock);
+        MowerInfo active = createSuccessfulMowerInfoResponse();
+        Objects.requireNonNull(active.getStatus()).setStatus(MowerStatus.MOWING);
+        when(mowerApiMock.getMowerInfo()).thenReturn(active);
+        pollers.getFirst().run();
+        verify(diagnosticsApiMock, never()).getBatteryInfo();
+        verify(diagnosticsApiMock, never()).getMotorInfo();
+        verify(diagnosticsApiMock, never()).getWireInfo();
     }
 
     @Test

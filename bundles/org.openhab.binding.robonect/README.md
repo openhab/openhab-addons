@@ -43,6 +43,8 @@ an overlapping poll waits until the other poll finishes. Both schedules poll imm
 wait their configured interval after each completed poll. Detailed polling is enabled when `detailedPollInterval`
 is greater than 0; the default value of 0 disables it.
 It includes the push-service mode when `useUnofficialApi` is also enabled.
+With detailed polling enabled, motor, battery, and wire diagnostics run on the normal polling schedule while the mower
+reports `MOWING`, `SEARCH_CHARGING_STATION`, or `SEARCHING`. They run on the detailed schedule at other times.
 
 `detailedPollInterval` replaces the former `detailedInfo` switch and `detailedInfoInterval` multiplier.
 Remove `detailedInfo` from existing configurations. To retain detailed polling, set `detailedPollInterval` to a positive
