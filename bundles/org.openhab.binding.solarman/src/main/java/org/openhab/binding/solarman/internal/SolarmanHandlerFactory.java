@@ -16,6 +16,7 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.solarman.internal.sunsynk.SunsynkHandler;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
@@ -28,6 +29,7 @@ import org.osgi.service.component.annotations.Component;
  * handlers.
  *
  * @author Catalin Sanda - Initial contribution
+ * @author Ricardo Costa - Advanced profiles and shared compatibility corrections
  */
 @NonNullByDefault
 @Component(configurationPid = "binding.solarman", service = ThingHandlerFactory.class)
@@ -37,7 +39,8 @@ public class SolarmanHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
-        return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
+        return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)
+                || SolarmanBindingConstants.SUNSYNK_PROFILES.containsKey(thingTypeUID);
     }
 
     @Override
@@ -46,6 +49,10 @@ public class SolarmanHandlerFactory extends BaseThingHandlerFactory {
 
         if (SolarmanBindingConstants.THING_TYPE_SOLARMAN_LOGGER.equals(thingTypeUID)) {
             return new SolarmanLoggerHandler(thing);
+        }
+
+        if (SolarmanBindingConstants.SUNSYNK_PROFILES.containsKey(thingTypeUID)) {
+            return new SunsynkHandler(thing);
         }
 
         return null;

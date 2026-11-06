@@ -28,13 +28,20 @@ import org.openhab.binding.solarman.internal.modbus.exception.SolarmanProtocolEx
 /**
  * @author Catalin Sanda - Initial contribution
  * @author Peter Kretz - Added RAW Modbus for LAN Stick
+ * @author Ricardo Costa - Advanced profiles and shared compatibility corrections
  */
 @NonNullByDefault
 public class SolarmanRawProtocol implements SolarmanProtocol {
-    private final SolarmanLoggerConfiguration solarmanLoggerConfiguration;
+    private final boolean strictValidation;
+    private final byte slaveId;
 
     public SolarmanRawProtocol(SolarmanLoggerConfiguration solarmanLoggerConfiguration) {
-        this.solarmanLoggerConfiguration = solarmanLoggerConfiguration;
+        this(solarmanLoggerConfiguration, false);
+    }
+
+    public SolarmanRawProtocol(SolarmanLoggerConfiguration solarmanLoggerConfiguration, boolean strictValidation) {
+        this.strictValidation = strictValidation;
+        this.slaveId = (byte) solarmanLoggerConfiguration.slaveId;
     }
 
     @Override
@@ -45,6 +52,10 @@ public class SolarmanRawProtocol implements SolarmanProtocol {
         byte[] respFrame = solarmanLoggerConnection.sendRequest(solarmanRawFrame);
         if (respFrame.length > 0) {
             byte[] modbusRespFrame = extractModbusRawResponseFrame(respFrame, solarmanRawFrame);
+            if (strictValidation) {
+                SolarmanResponseValidator.validateRead(modbusRespFrame, Byte.toUnsignedInt(mbFunctionCode), regCount,
+                        false, Byte.toUnsignedInt(slaveId));
+            }
             return parseRawModbusReadHoldingRegistersResponse(modbusRespFrame, firstReg, lastReg);
         } else {
             throw new SolarmanConnectionException("Response frame was empty");
@@ -54,6 +65,7 @@ public class SolarmanRawProtocol implements SolarmanProtocol {
     @Override
     public boolean writeRegisters(SolarmanLoggerConnection solarmanLoggerConnection, int firstReg, byte[] data)
             throws SolarmanException {
+        SolarmanResponseValidator.validateWriteRequest(firstReg, data);
         if (data.length % 2 != 0) {
             throw new SolarmanException("Data to be written should be packed as two bytes per register!");
         }
@@ -62,7 +74,8 @@ public class SolarmanRawProtocol implements SolarmanProtocol {
         byte[] respFrame = solarmanLoggerConnection.sendRequest(solarmanRawFrame);
         if (respFrame.length > 0) {
             byte[] modbusRespFrame = extractModbusRawResponseFrame(respFrame, solarmanRawFrame);
-            parseRawModbusWriteHoldingRegistersResponse(modbusRespFrame, data);
+            SolarmanResponseValidator.validateWrite(modbusRespFrame, firstReg, data.length / 2, false,
+                    Byte.toUnsignedInt(slaveId));
             return true;
         } else {
             throw new SolarmanConnectionException("Response frame was empty");
@@ -79,7 +92,7 @@ public class SolarmanRawProtocol implements SolarmanProtocol {
      * @return byte array containing the Solarman Raw frame
      */
     private byte[] buildSolarmanRawWriteFrame(int firstReg, byte[] data) throws SolarmanException {
-        byte[] requestPayload = buildSolarmanRawWriteFrameRequestPayload(DEFAULT_SLAVE_ID, firstReg, data);
+        byte[] requestPayload = buildSolarmanRawWriteFrameRequestPayload(slaveId, firstReg, data);
         byte[] header = buildSolarmanRawFrameHeader(requestPayload.length);
 
         return ByteBuffer.allocate(header.length + requestPayload.length).put(header).put(requestPayload).array();
@@ -122,6 +135,9 @@ public class SolarmanRawProtocol implements SolarmanProtocol {
             throws SolarmanException {
         if (responseFrame == null || responseFrame.length == 0) {
             throw new SolarmanProtocolException("No response frame");
+        } else if (strictValidation) {
+            SolarmanResponseValidator.validateEnvelope(responseFrame, requestFrame, false);
+            return Arrays.copyOfRange(responseFrame, 6, responseFrame.length);
         } else if (responseFrame.length < 11) {
             throw new SolarmanProtocolException("Response frame is too short");
         } else if (responseFrame[0] != (byte) 0x03) {
@@ -148,36 +164,6 @@ public class SolarmanRawProtocol implements SolarmanProtocol {
         }
 
         return registers;
-    }
-
-    private void parseRawModbusWriteHoldingRegistersResponse(byte[] frame, byte[] data)
-            throws SolarmanProtocolException {
-        int expectedRegistersCount = data.length / 2;
-
-        // slaveId (1 byte)
-        // modbusFunction (1 byte)
-        // firstRegister (2 bytes)
-        // registerCount (2 bytes)
-        int expectedFrameDataLen = 1 + 1 + 2 + 2;
-        if (frame == null || frame.length < expectedFrameDataLen + 2) {
-            throw new SolarmanProtocolException("Modbus frame is too short or empty");
-        }
-
-        int actualCrc = ByteBuffer.wrap(frame, expectedFrameDataLen, 2).order(ByteOrder.LITTLE_ENDIAN).getShort()
-                & 0xFFFF;
-        int expectedCrc = CRC16Modbus.calculate(Arrays.copyOfRange(frame, 0, expectedFrameDataLen));
-
-        if (actualCrc != expectedCrc) {
-            throw new SolarmanProtocolException(
-                    String.format("Modbus frame crc is not valid. Expected %04x, got %04x", expectedCrc, actualCrc));
-        }
-
-        short registersWrittenCount = ByteBuffer.wrap(frame, 4, 2).getShort();
-        if (registersWrittenCount != expectedRegistersCount) {
-            throw new SolarmanProtocolException(
-                    String.format("Modbus written registers count is not valid. Expected %04x, got %04x",
-                            expectedRegistersCount, registersWrittenCount));
-        }
     }
 
     /**
@@ -251,7 +237,7 @@ public class SolarmanRawProtocol implements SolarmanProtocol {
      * @return byte array containing the Solarman Raw frame payload
      */
     protected byte[] buildSolarmanRawReadFrameRequestPayload(byte mbFunctionCode, int firstReg, int regCount) {
-        byte[] req = ByteBuffer.allocate(6).put((byte) 0x01).put(mbFunctionCode).putShort((short) firstReg)
+        byte[] req = ByteBuffer.allocate(6).put(slaveId).put(mbFunctionCode).putShort((short) firstReg)
                 .putShort((short) regCount).array();
         byte[] crc = ByteBuffer.allocate(Short.BYTES).order(ByteOrder.LITTLE_ENDIAN)
                 .putShort((short) CRC16Modbus.calculate(req)).array();

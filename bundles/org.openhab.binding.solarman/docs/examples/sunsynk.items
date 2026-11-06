@@ -1,0 +1,15 @@
+Number:Power DeyeBatteryPower "Battery Power [%.0f W]" { channel="solarman:logger:deye:battery-power", unit="W" }
+Number:Dimensionless DeyeBatterySOC "Battery SOC [%.0f %%]" { channel="solarman:logger:deye:battery-soc", unit="%" }
+Number:Power DeyePVPower "PV Power [%.0f W]" { channel="solarman:logger:deye:pv-power", unit="W" }
+Number:ElectricCurrent DeyeChargeCurrent "Maximum Charge Current [%.0f A]" { channel="solarman:logger:deye:battery-max-charge-current", unit="A", autoupdate="false" }
+Switch DeyeGridCharge "Grid Charge" { channel="solarman:logger:deye:grid-charge-enabled", autoupdate="false" }
+Switch DeyeUseTimer "Use Timer" { channel="solarman:logger:deye:use-timer", autoupdate="false" }
+String DeyeProgramTime "Program 1 Start [%s]" { channel="solarman:logger:deye:prog1-time", autoupdate="false" }
+String DeyeProgramCharge "Program 1 Charge Source [%s]" { channel="solarman:logger:deye:prog1-charge", autoupdate="false" }
+DateTime DeyeClock "Inverter Clock [%1$tF %1$tT]" { channel="solarman:logger:deye:date-time", autoupdate="false" }
+Number:Dimensionless DeyeProgramSOC1 "Program 1 SOC [%.0f %%]" { channel="solarman:logger:deye:prog1-capacity", unit="%", autoupdate="false" }
+Number:Dimensionless DeyeProgramSOC2 "Program 2 SOC [%.0f %%]" { channel="solarman:logger:deye:prog2-capacity", unit="%", autoupdate="false" }
+Number:Dimensionless DeyeProgramSOC3 "Program 3 SOC [%.0f %%]" { channel="solarman:logger:deye:prog3-capacity", unit="%", autoupdate="false" }
+Number:Dimensionless DeyeProgramSOC4 "Program 4 SOC [%.0f %%]" { channel="solarman:logger:deye:prog4-capacity", unit="%", autoupdate="false" }
+Number:Dimensionless DeyeProgramSOC5 "Program 5 SOC [%.0f %%]" { channel="solarman:logger:deye:prog5-capacity", unit="%", autoupdate="false" }
+Number:Dimensionless DeyeProgramSOC6 "Program 6 SOC [%.0f %%]" { channel="solarman:logger:deye:prog6-capacity", unit="%", autoupdate="false" }
