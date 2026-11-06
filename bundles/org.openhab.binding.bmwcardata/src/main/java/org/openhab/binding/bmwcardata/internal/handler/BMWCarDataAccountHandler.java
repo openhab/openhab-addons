@@ -498,11 +498,13 @@ public class BMWCarDataAccountHandler extends BaseBridgeHandler implements Strea
                 if (isStale(generation)) {
                     return;
                 }
+                // read once, as the vehicle handler may be initialized again with another VIN while waiting for BMW
+                String vin = vehicle.getVin();
                 try {
-                    Map<String, TelematicValue> data = fetchTelematicData(api, vehicle.getVin());
-                    retryVins.remove(vehicle.getVin());
-                    vehicle.updateTelematicData(data);
-                    vehicle.refreshSucceeded();
+                    Map<String, TelematicValue> data = fetchTelematicData(api, vin);
+                    retryVins.remove(vin);
+                    vehicle.updateTelematicData(vin, data);
+                    vehicle.refreshSucceeded(vin);
                 } catch (BMWCarDataException e) {
                     // disposing interrupts the request, which must not set the vehicles OFFLINE
                     if (isStale(generation)) {
@@ -514,18 +516,18 @@ public class BMWCarDataAccountHandler extends BaseBridgeHandler implements Strea
                     }
                     if (!e.isTransient()) {
                         logger.debug("Refreshing telematic data failed: {}", e.getMessage());
-                        vehicle.refreshFailed(e);
+                        vehicle.refreshFailed(vin, e);
                         continue;
                     }
                     if (retry) {
-                        retryVins.add(vehicle.getVin());
+                        retryVins.add(vin);
                     }
                     if (isStreamConnected()) {
                         // the stream keeps the vehicle up to date, a failed poll does not make it unreachable
                         logger.debug("Refreshing telematic data failed, relying on the stream: {}", e.getMessage());
                     } else {
                         logger.debug("Refreshing telematic data failed: {}", e.getMessage());
-                        vehicle.refreshFailed(e);
+                        vehicle.refreshFailed(vin, e);
                     }
                 }
             }
@@ -632,7 +634,7 @@ public class BMWCarDataAccountHandler extends BaseBridgeHandler implements Strea
         for (Thing thing : getThing().getThings()) {
             if (thing.getHandler() instanceof BMWCarDataVehicleHandler vehicleHandler
                     && vin.equals(vehicleHandler.getVin())) {
-                vehicleHandler.updateTelematicData(data);
+                vehicleHandler.updateTelematicData(vin, data);
                 return;
             }
         }

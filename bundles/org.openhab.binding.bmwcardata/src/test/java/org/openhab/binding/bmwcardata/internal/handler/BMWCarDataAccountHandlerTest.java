@@ -79,6 +79,7 @@ class BMWCarDataAccountHandlerTest {
 
     private static final ThingUID ACCOUNT_UID = new ThingUID(THING_TYPE_ACCOUNT, "account");
     private static final String VIN = "WBA12345678901234";
+    private static final String OTHER_VIN = "WBA21EN050CJ00000";
     // the refresh interval of 6 hours, as the first refresh after the start is done per vehicle
     private static final long PERIODIC_DELAY = 6 * 3600;
     private static final long RETRY_DELAY = 900;
@@ -158,6 +159,39 @@ class BMWCarDataAccountHandlerTest {
         assertEquals(ThingStatus.ONLINE, vehicleThing.getStatus());
         assertEquals(2, telematicRequests());
         assertEquals(0, pendingJobs(RETRY_DELAY));
+    }
+
+    @Test
+    void dataRequestedBeforeTheVinChangedIsNotPublished() throws Exception {
+        authorize(false);
+        respond(changingVin(status(200, TELEMATIC_DATA)));
+
+        runJobs(PERIODIC_DELAY);
+        assertEquals(1, telematicRequests());
+        verify(vehicleCallback, never()).stateUpdated(eq(new ChannelUID(vehicleThing.getUID(), "range#mileage")),
+                any());
+    }
+
+    @Test
+    void refreshFailureOfThePreviousVinDoesNotChangeTheVehicleStatus() throws Exception {
+        authorize(false);
+        respond(changingVin(
+                status(403, "{\"exveErrorId\":\"CU-104\",\"exveErrorMsg\":\"No permission for specified VIN\"}")));
+
+        runJobs(PERIODIC_DELAY);
+        verify(vehicleCallback, never()).statusUpdated(any(), argThat(offline(ThingStatusDetail.CONFIGURATION_ERROR)));
+    }
+
+    @Test
+    void transientFailureOfThePreviousVinIsNotRetried() throws Exception {
+        authorize(false);
+        respond(changingVin(status(502, "<html>502 Bad Gateway</html>")));
+
+        runJobs(PERIODIC_DELAY);
+        verify(vehicleCallback, never()).statusUpdated(any(), argThat(offline(ThingStatusDetail.COMMUNICATION_ERROR)));
+        runJobs(RETRY_DELAY);
+        // the retry is for the previous VIN, which no vehicle has anymore
+        assertEquals(1, telematicRequests());
     }
 
     @Test
@@ -683,6 +717,20 @@ class BMWCarDataAccountHandlerTest {
             when(response.getContent()).thenReturn(content);
             when(response.getMediaType()).thenReturn("image/png");
             return response;
+        };
+    }
+
+    /**
+     * Answers like the given answer, after the vehicle was initialized again with another VIN, as for a configuration
+     * change while the request is waiting for BMW.
+     */
+    private Answer<ContentResponse> changingVin(Answer<ContentResponse> answer) {
+        return invocation -> {
+            vehicle.thingUpdated(ThingBuilder.create(THING_TYPE_VEHICLE, vehicleThing.getUID()).withBridge(ACCOUNT_UID)
+                    .withConfiguration(new Configuration(Map.of(CONFIG_VIN, OTHER_VIN)))
+                    // the basic data of the other vehicle is known, so that it is not retrieved
+                    .withProperties(Map.of(PROPERTY_MODEL, "iX xDrive40", PROPERTY_VIN, OTHER_VIN)).build());
+            return answer.answer(invocation);
         };
     }
 

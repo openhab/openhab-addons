@@ -101,9 +101,24 @@ class BMWCarDataVehicleHandlerTest {
         handler.setCallback(callback);
     }
 
+    /**
+     * Publishes the data for the VIN the handler currently has.
+     */
+    private void update(Map<String, TelematicValue> data) {
+        handler.updateTelematicData(handler.getVin(), data);
+    }
+
+    @Test
+    void dataOfAnotherVinIsNotPublished() {
+        handler.updateTelematicData(OTHER_VIN, Map.of(MILEAGE, value(200, "km", "2026-10-01T10:00:00Z")));
+        handler.refreshFailed(OTHER_VIN, new BMWCarDataException("No permission for specified VIN", 403, "CU-104"));
+
+        verifyNoInteractions(callback);
+    }
+
     @Test
     void publishesKnownDescriptorsAndLastUpdate() {
-        handler.updateTelematicData(Map.of(MILEAGE, value(12345, "km", "2026-10-01T10:00:00Z"),
+        update(Map.of(MILEAGE, value(12345, "km", "2026-10-01T10:00:00Z"),
                 "vehicle.powertrain.tractionBattery.charging.port.anyPosition.isPlugged",
                 value(true, null, "2026-10-01T10:05:00Z"), "vehicle.unknown.descriptor",
                 value(1, null, "2026-10-01T11:00:00Z")));
@@ -120,16 +135,15 @@ class BMWCarDataVehicleHandlerTest {
         TelematicValue empty = new TelematicValue();
         empty.value = JsonNull.INSTANCE;
         empty.timestamp = "2026-10-01T12:00:00Z";
-        handler.updateTelematicData(Map.of(MILEAGE, value(200, "km", "2026-10-01T10:00:00Z"),
-                "vehicle.cabin.door.lock.status", empty, "vehicle.unknown.descriptor", empty));
+        update(Map.of(MILEAGE, value(200, "km", "2026-10-01T10:00:00Z"), "vehicle.cabin.door.lock.status", empty,
+                "vehicle.unknown.descriptor", empty));
 
         verifyState(CHANNEL_LAST_UPDATE, new DateTimeType(Instant.parse("2026-10-01T10:00:00Z")));
         verify(callback, never()).stateUpdated(eq(channel("status#door-lock")), any());
         verify(callback, never()).thingUpdated(any());
 
         // the empty value must not block a later value with an older timestamp
-        handler.updateTelematicData(Map.of("vehicle.cabin.door.lock.status",
-                stringValue("SELECTIVE-LOCKED", null, "2026-10-01T11:00:00Z")));
+        update(Map.of("vehicle.cabin.door.lock.status", stringValue("SELECTIVE-LOCKED", null, "2026-10-01T11:00:00Z")));
         verifyState("status#door-lock", OnOffType.OFF);
         verifyState("status#door-lock-state", new StringType("SELECTIVELOCKED"));
     }
@@ -138,9 +152,9 @@ class BMWCarDataVehicleHandlerTest {
     void ignoresDataAndRefreshResultsAfterDispose() {
         handler.dispose();
 
-        handler.updateTelematicData(Map.of(MILEAGE, value(200, "km", "2026-10-01T10:00:00Z")));
-        handler.refreshSucceeded();
-        handler.refreshFailed(new BMWCarDataException("late failure", 503));
+        update(Map.of(MILEAGE, value(200, "km", "2026-10-01T10:00:00Z")));
+        handler.refreshSucceeded(handler.getVin());
+        handler.refreshFailed(handler.getVin(), new BMWCarDataException("late failure", 503));
 
         verifyNoInteractions(callback);
     }
@@ -148,26 +162,26 @@ class BMWCarDataVehicleHandlerTest {
     @Test
     void derivesPluggedFromChargingPortUntilVehicleReportsIt() {
         String port = "vehicle.body.chargingPort.status";
-        handler.updateTelematicData(Map.of(port, stringValue("Connected", null, "2026-10-01T10:00:00Z")));
+        update(Map.of(port, stringValue("Connected", null, "2026-10-01T10:00:00Z")));
         verifyState("charge#plugged", OnOffType.ON);
 
-        handler.updateTelematicData(Map.of(port, stringValue("DISCONNECTED", null, "2026-10-01T10:01:00Z")));
+        update(Map.of(port, stringValue("DISCONNECTED", null, "2026-10-01T10:01:00Z")));
         verifyState("charge#plugged", OnOffType.OFF);
 
         // other values leave the plug state as it is
-        handler.updateTelematicData(Map.of(port, stringValue("INVALID", null, "2026-10-01T10:02:00Z")));
+        update(Map.of(port, stringValue("INVALID", null, "2026-10-01T10:02:00Z")));
         verify(callback, never()).stateUpdated(channel("charge#plugged"), UnDefType.UNDEF);
 
-        handler.updateTelematicData(Map.of("vehicle.powertrain.tractionBattery.charging.port.anyPosition.isPlugged",
+        update(Map.of("vehicle.powertrain.tractionBattery.charging.port.anyPosition.isPlugged",
                 value(false, null, "2026-10-01T10:03:00Z")));
-        handler.updateTelematicData(Map.of(port, stringValue("CONNECTED", null, "2026-10-01T10:04:00Z")));
+        update(Map.of(port, stringValue("CONNECTED", null, "2026-10-01T10:04:00Z")));
         verify(callback, times(1)).stateUpdated(channel("charge#plugged"), OnOffType.ON);
     }
 
     @Test
     void ignoresValuesOlderThanPublishedOnes() {
-        handler.updateTelematicData(Map.of(MILEAGE, value(200, "km", "2026-10-01T10:00:00Z")));
-        handler.updateTelematicData(Map.of(MILEAGE, value(100, "km", "2026-10-01T09:00:00Z")));
+        update(Map.of(MILEAGE, value(200, "km", "2026-10-01T10:00:00Z")));
+        update(Map.of(MILEAGE, value(100, "km", "2026-10-01T09:00:00Z")));
 
         verifyState("range#mileage", QuantityType.valueOf("200 km"));
         verify(callback, never()).stateUpdated(channel("range#mileage"), QuantityType.valueOf("100 km"));
@@ -175,14 +189,14 @@ class BMWCarDataVehicleHandlerTest {
 
     @Test
     void publishesCopiesOnce() {
-        handler.updateTelematicData(Map.of(MILEAGE, value(200, "km", "2026-10-01T10:00:00Z")));
+        update(Map.of(MILEAGE, value(200, "km", "2026-10-01T10:00:00Z")));
         // the stream delivers many messages twice
-        handler.updateTelematicData(Map.of(MILEAGE, value(200, "km", "2026-10-01T10:00:00Z")));
+        update(Map.of(MILEAGE, value(200, "km", "2026-10-01T10:00:00Z")));
         verify(callback, times(1)).stateUpdated(channel("range#mileage"), QuantityType.valueOf("200 km"));
 
         // a new reading with the same value, and another value with the same timestamp, are published
-        handler.updateTelematicData(Map.of(MILEAGE, value(200, "km", "2026-10-01T10:05:00Z")));
-        handler.updateTelematicData(Map.of(MILEAGE, value(201, "km", "2026-10-01T10:05:00Z")));
+        update(Map.of(MILEAGE, value(200, "km", "2026-10-01T10:05:00Z")));
+        update(Map.of(MILEAGE, value(201, "km", "2026-10-01T10:05:00Z")));
         verify(callback, times(2)).stateUpdated(channel("range#mileage"), QuantityType.valueOf("200 km"));
         verifyState("range#mileage", QuantityType.valueOf("201 km"));
     }
@@ -190,18 +204,18 @@ class BMWCarDataVehicleHandlerTest {
     @Test
     void publishesCopiesFromStreamAndApiOnce() {
         // the stream sends numbers as JSON numbers, the REST API as strings
-        handler.updateTelematicData(Map.of(MILEAGE, value(200, "km", "2026-10-01T10:00:00Z")));
-        handler.updateTelematicData(Map.of(MILEAGE, stringValue("200", "km", "2026-10-01T10:00:00Z")));
-        handler.updateTelematicData(Map.of(MILEAGE, stringValue("200.0", "km", "2026-10-01T10:00:00Z")));
+        update(Map.of(MILEAGE, value(200, "km", "2026-10-01T10:00:00Z")));
+        update(Map.of(MILEAGE, stringValue("200", "km", "2026-10-01T10:00:00Z")));
+        update(Map.of(MILEAGE, stringValue("200.0", "km", "2026-10-01T10:00:00Z")));
         verify(callback, times(1)).stateUpdated(channel("range#mileage"), QuantityType.valueOf("200 km"));
 
         String plugged = "vehicle.powertrain.tractionBattery.charging.port.anyPosition.isPlugged";
-        handler.updateTelematicData(Map.of(plugged, value(true, null, "2026-10-01T10:00:00Z")));
-        handler.updateTelematicData(Map.of(plugged, stringValue("true", null, "2026-10-01T10:00:00Z")));
+        update(Map.of(plugged, value(true, null, "2026-10-01T10:00:00Z")));
+        update(Map.of(plugged, stringValue("true", null, "2026-10-01T10:00:00Z")));
         verify(callback, times(1)).stateUpdated(channel("charge#plugged"), OnOffType.ON);
 
         // another unit is another value
-        handler.updateTelematicData(Map.of(MILEAGE, stringValue("200", "mi", "2026-10-01T10:00:00Z")));
+        update(Map.of(MILEAGE, stringValue("200", "mi", "2026-10-01T10:00:00Z")));
         verifyState("range#mileage", QuantityType.valueOf("200 mi"));
     }
 
@@ -209,16 +223,16 @@ class BMWCarDataVehicleHandlerTest {
     void doorLockTakesTheNewestOfBothDescriptors() {
         String doorStatus = "vehicle.cabin.door.status";
         String lockStatus = "vehicle.cabin.door.lock.status";
-        handler.updateTelematicData(Map.of(doorStatus, stringValue("UNLOCKED", null, "2026-10-01T10:05:00Z")));
+        update(Map.of(doorStatus, stringValue("UNLOCKED", null, "2026-10-01T10:05:00Z")));
         verifyState("status#door-lock", OnOffType.OFF);
         verifyState("status#door-lock-state", new StringType("UNLOCKED"));
 
         // a refresh with an older value of the REST only descriptor does not replace the newer stream value
-        handler.updateTelematicData(Map.of(lockStatus, stringValue("SECURED", null, "2026-10-01T10:00:00Z")));
+        update(Map.of(lockStatus, stringValue("SECURED", null, "2026-10-01T10:00:00Z")));
         verify(callback, never()).stateUpdated(channel("status#door-lock"), OnOffType.ON);
         verify(callback, never()).stateUpdated(channel("status#door-lock-state"), new StringType("SECURED"));
 
-        handler.updateTelematicData(Map.of(lockStatus, stringValue("LOCKED", null, "2026-10-01T10:10:00Z")));
+        update(Map.of(lockStatus, stringValue("LOCKED", null, "2026-10-01T10:10:00Z")));
         verifyState("status#door-lock", OnOffType.ON);
         verifyState("status#door-lock-state", new StringType("LOCKED"));
     }
@@ -227,14 +241,14 @@ class BMWCarDataVehicleHandlerTest {
     void displayedStateOfChargeIsUsedUntilTheHeaderIsReported() {
         String header = "vehicle.drivetrain.batteryManagement.header";
         String displayed = "vehicle.powertrain.electric.battery.stateOfCharge.displayed";
-        handler.updateTelematicData(Map.of(displayed, value(70, "%", "2026-10-01T10:00:00Z")));
+        update(Map.of(displayed, value(70, "%", "2026-10-01T10:00:00Z")));
         verifyState("charge#soc", QuantityType.valueOf("70 %"));
 
-        handler.updateTelematicData(Map.of(header, value(71, "%", "2026-10-01T10:05:00Z")));
+        update(Map.of(header, value(71, "%", "2026-10-01T10:05:00Z")));
         verifyState("charge#soc", QuantityType.valueOf("71 %"));
 
         // once the vehicle reports the header, the displayed value no longer updates the channel
-        handler.updateTelematicData(Map.of(displayed, value(72, "%", "2026-10-01T10:10:00Z")));
+        update(Map.of(displayed, value(72, "%", "2026-10-01T10:10:00Z")));
         verify(callback, never()).stateUpdated(channel("charge#soc"), QuantityType.valueOf("72 %"));
     }
 
@@ -242,30 +256,29 @@ class BMWCarDataVehicleHandlerTest {
     void undefinedHeaderDoesNotStopTheDisplayedStateOfCharge() {
         String header = "vehicle.drivetrain.batteryManagement.header";
         String displayed = "vehicle.powertrain.electric.battery.stateOfCharge.displayed";
-        handler.updateTelematicData(Map.of(header, stringValue("INVALID", "%", "2026-10-01T10:00:00Z")));
+        update(Map.of(header, stringValue("INVALID", "%", "2026-10-01T10:00:00Z")));
         verifyState("charge#soc", UnDefType.UNDEF);
 
-        handler.updateTelematicData(Map.of(displayed, value(70, "%", "2026-10-01T10:05:00Z")));
+        update(Map.of(displayed, value(70, "%", "2026-10-01T10:05:00Z")));
         verifyState("charge#soc", QuantityType.valueOf("70 %"));
     }
 
     @Test
     void sunroofStatusUpdatesTheSunroofChannels() {
-        handler.updateTelematicData(
-                Map.of("vehicle.cabin.sunroof.status", stringValue("INTERMEDIATE", null, "2026-10-01T10:00:00Z")));
+        update(Map.of("vehicle.cabin.sunroof.status", stringValue("INTERMEDIATE", null, "2026-10-01T10:00:00Z")));
         verifyState("status#sunroof", OpenClosedType.OPEN);
         verifyState("status#sunroof-state", new StringType("INTERMEDIATE"));
     }
 
     @Test
     void combinesLatitudeAndLongitudeOfSeparateMessages() {
-        handler.updateTelematicData(Map.of(LATITUDE, value(48.17, null, "2026-10-01T10:00:00Z")));
+        update(Map.of(LATITUDE, value(48.17, null, "2026-10-01T10:00:00Z")));
         verify(callback, never()).stateUpdated(eq(channel(CHANNEL_GPS)), any());
 
-        handler.updateTelematicData(Map.of(LONGITUDE, value(11.56, null, "2026-10-01T10:00:00Z")));
+        update(Map.of(LONGITUDE, value(11.56, null, "2026-10-01T10:00:00Z")));
         verifyState(CHANNEL_GPS, PointType.valueOf("48.17,11.56"));
 
-        handler.updateTelematicData(Map.of(LATITUDE, value(48.18, null, "2026-10-01T10:05:00Z"),
+        update(Map.of(LATITUDE, value(48.18, null, "2026-10-01T10:05:00Z"),
                 "vehicle.cabin.infotainment.navigation.currentLocation.altitude",
                 value(520, "m", "2026-10-01T10:05:00Z")));
         verifyState("navigation#altitude", QuantityType.valueOf("520 m"));
@@ -286,9 +299,9 @@ class BMWCarDataVehicleHandlerTest {
         refresh.put(LATITUDE, value(48.17, null, "2026-10-01T10:00:00Z"));
         refresh.put(LONGITUDE, value(11.56, null, "2026-10-01T10:00:00Z"));
         refresh.put(MILEAGE, value(100, "km", "2026-10-01T10:00:00Z"));
-        Thread refreshThread = new Thread(() -> handler.updateTelematicData(refresh));
-        Thread streamThread = new Thread(() -> handler.updateTelematicData(Map.of(LATITUDE,
-                value(48.18, null, "2026-10-01T10:05:00Z"), LONGITUDE, value(11.57, null, "2026-10-01T10:05:00Z"))));
+        Thread refreshThread = new Thread(() -> update(refresh));
+        Thread streamThread = new Thread(() -> update(Map.of(LATITUDE, value(48.18, null, "2026-10-01T10:05:00Z"),
+                LONGITUDE, value(11.57, null, "2026-10-01T10:05:00Z"))));
         refreshThread.setDaemon(true);
         streamThread.setDaemon(true);
         try {
@@ -323,7 +336,7 @@ class BMWCarDataVehicleHandlerTest {
 
     @Test
     void publishesStateOfOpenings() {
-        handler.updateTelematicData(Map.of("vehicle.cabin.window.row1.driver.status",
+        update(Map.of("vehicle.cabin.window.row1.driver.status",
                 stringValue("INTERMEDIATE", null, "2026-10-01T10:00:00Z")));
 
         verifyState("status#window-front-driver", OpenClosedType.OPEN);
@@ -332,7 +345,7 @@ class BMWCarDataVehicleHandlerTest {
 
     @Test
     void refreshRepublishesCachedState() {
-        handler.updateTelematicData(Map.of(MILEAGE, value(200, "km", "2026-10-01T10:00:00Z")));
+        update(Map.of(MILEAGE, value(200, "km", "2026-10-01T10:00:00Z")));
 
         handler.handleCommand(channel("range#mileage"), RefreshType.REFRESH);
         handler.handleCommand(channel("range#electric"), RefreshType.REFRESH);
@@ -343,11 +356,10 @@ class BMWCarDataVehicleHandlerTest {
 
     @Test
     void createsDynamicChannelsOnce() {
-        handler.updateTelematicData(Map.of("vehicle.vehicle.avgAuxPower",
-                stringValue("250", "W", "2026-10-01T10:00:00Z"), "vehicle.cabin.sunroof.tiltStatus",
-                stringValue("CLOSED", null, "2026-10-01T10:00:00Z"), "vehicle.body.lights.isRunningOn",
-                stringValue("true", null, "2026-10-01T10:00:00Z"), "vehicle.cabin.door.row1.driver.position",
-                stringValue("INVALID", null, "2026-10-01T10:00:00Z")));
+        update(Map.of("vehicle.vehicle.avgAuxPower", stringValue("250", "W", "2026-10-01T10:00:00Z"),
+                "vehicle.cabin.sunroof.tiltStatus", stringValue("CLOSED", null, "2026-10-01T10:00:00Z"),
+                "vehicle.body.lights.isRunningOn", stringValue("true", null, "2026-10-01T10:00:00Z"),
+                "vehicle.cabin.door.row1.driver.position", stringValue("INVALID", null, "2026-10-01T10:00:00Z")));
 
         ArgumentCaptor<Thing> captor = ArgumentCaptor.forClass(Thing.class);
         verify(callback).thingUpdated(captor.capture());
@@ -360,8 +372,7 @@ class BMWCarDataVehicleHandlerTest {
         verifyState("other#cabin-sunroof-tilt-status", new StringType("CLOSED"));
         verifyState("other#body-lights-is-running-on", OnOffType.ON);
 
-        handler.updateTelematicData(
-                Map.of("vehicle.cabin.sunroof.tiltStatus", stringValue("INVALID", null, "2026-10-01T11:00:00Z")));
+        update(Map.of("vehicle.cabin.sunroof.tiltStatus", stringValue("INVALID", null, "2026-10-01T11:00:00Z")));
 
         verify(callback, times(1)).thingUpdated(any());
         verifyState("other#cabin-sunroof-tilt-status", UnDefType.UNDEF);
@@ -369,8 +380,7 @@ class BMWCarDataVehicleHandlerTest {
 
     @Test
     void dynamicChannelWithUnitGetsQuantityItemType() {
-        handler.updateTelematicData(
-                Map.of("vehicle.drivetrain.avgSpeed", stringValue("42", "km", "2026-10-01T10:00:00Z")));
+        update(Map.of("vehicle.drivetrain.avgSpeed", stringValue("42", "km", "2026-10-01T10:00:00Z")));
 
         ArgumentCaptor<Thing> captor = ArgumentCaptor.forClass(Thing.class);
         verify(callback).thingUpdated(captor.capture());
@@ -493,13 +503,13 @@ class BMWCarDataVehicleHandlerTest {
         jobs.tasks.get(0).run();
 
         // a refresh fails before the basic data is read again
-        vehicle.refreshFailed(new BMWCarDataException("Request to BMW CarData failed", 502));
+        vehicle.refreshFailed(VIN, new BMWCarDataException("Request to BMW CarData failed", 502));
         jobs.tasks.get(1).run();
         assertEquals(ThingStatus.OFFLINE, vehicle.getThing().getStatus());
         assertEquals("@text/offline.comm-error.refresh-failed [\"HTTP 502\"]",
                 vehicle.getThing().getStatusInfo().getDescription());
 
-        vehicle.refreshSucceeded();
+        vehicle.refreshSucceeded(VIN);
         assertEquals(ThingStatus.ONLINE, vehicle.getThing().getStatus());
         vehicle.dispose();
     }
@@ -584,7 +594,7 @@ class BMWCarDataVehicleHandlerTest {
         jobs.tasks.get(0).run();
         assertNull(vehicle.getThing().getChannel(GROUP_CHARGE + "#soc"));
         assertNotNull(vehicle.getThing().getChannel(GROUP_RANGE + "#fuel-level"));
-        vehicle.updateTelematicData(Map.of("vehicle.unknown.descriptor", value(1, null, "2026-10-01T10:00:00Z")));
+        vehicle.updateTelematicData(VIN, Map.of("vehicle.unknown.descriptor", value(1, null, "2026-10-01T10:00:00Z")));
 
         // the Thing is reconfigured to an electric vehicle
         Thing thing = vehicle.getThing();
@@ -677,8 +687,8 @@ class BMWCarDataVehicleHandlerTest {
         assertEquals(ThingStatus.OFFLINE, thing.getStatus());
         assertEquals(List.of(0L, 15 * 60L), jobs.delays);
         // neither stream data nor a successful refresh make the vehicle online without its basic data
-        vehicle.updateTelematicData(Map.of(MILEAGE, value(100, "km", "2026-10-01T10:00:00Z")));
-        vehicle.refreshSucceeded();
+        vehicle.updateTelematicData(VIN, Map.of(MILEAGE, value(100, "km", "2026-10-01T10:00:00Z")));
+        vehicle.refreshSucceeded(VIN);
         assertEquals(ThingStatus.OFFLINE, thing.getStatus());
         verify(account, never()).vehicleOnline(any());
 
@@ -765,6 +775,61 @@ class BMWCarDataVehicleHandlerTest {
         verify(vehicleCallback, times(2)).stateUpdated(imageChannel(), IMAGE);
         verify(account, times(1)).fetchVehicleImage(VIN);
         vehicle.dispose();
+    }
+
+    @Test
+    void imageRequestedBeforeTheVinChangedIsNotPublished() throws Exception {
+        BMWCarDataAccountHandler account = mock(BMWCarDataAccountHandler.class);
+        ThingHandlerCallback vehicleCallback = callbackWithBridge(account);
+        when(vehicleCallback.isChannelLinked(imageChannel())).thenReturn(true);
+        Jobs jobs = new Jobs();
+        BMWCarDataVehicleHandler vehicle = imageVehicle(vehicleCallback, jobs);
+        when(account.fetchVehicleImage(VIN)).thenAnswer(invocation -> {
+            changeVin(vehicle);
+            return IMAGE;
+        });
+
+        jobs.tasks.get(0).run();
+        verify(vehicleCallback, never()).stateUpdated(imageChannel(), IMAGE);
+        vehicle.dispose();
+    }
+
+    @Test
+    void imageFailureOfThePreviousVinIsNotRetried() throws Exception {
+        BMWCarDataAccountHandler account = mock(BMWCarDataAccountHandler.class);
+        ThingHandlerCallback vehicleCallback = callbackWithBridge(account);
+        when(vehicleCallback.isChannelLinked(imageChannel())).thenReturn(true);
+        Jobs jobs = new Jobs();
+        BMWCarDataVehicleHandler vehicle = imageVehicle(vehicleCallback, jobs);
+        when(account.fetchVehicleImage(VIN)).thenAnswer(invocation -> {
+            changeVin(vehicle);
+            throw new BMWCarDataException("Service unavailable", 503);
+        });
+
+        jobs.tasks.get(0).run();
+        assertFalse(jobs.delays.contains(15 * 60L));
+        vehicle.dispose();
+    }
+
+    /**
+     * @return an initialized vehicle handler, whose image retrieval is the first job if the image channel is linked
+     */
+    private static BMWCarDataVehicleHandler imageVehicle(ThingHandlerCallback vehicleCallback, Jobs jobs) {
+        BMWCarDataVehicleHandler vehicle = new BMWCarDataVehicleHandler(vehicleThing(RETRIEVED_PROPERTIES),
+                jobs.scheduler);
+        vehicle.setCallback(vehicleCallback);
+        vehicle.initialize();
+        return vehicle;
+    }
+
+    /**
+     * Initializes the handler again with another VIN, as core does for a configuration change.
+     */
+    private static void changeVin(BMWCarDataVehicleHandler vehicle) {
+        Thing thing = vehicle.getThing();
+        vehicle.thingUpdated(ThingBuilder.create(THING_TYPE_VEHICLE, thing.getUID()).withBridge(BRIDGE_UID)
+                .withConfiguration(new Configuration(Map.of(CONFIG_VIN, OTHER_VIN))).withChannels(thing.getChannels())
+                .withProperties(thing.getProperties()).build());
     }
 
     @Test
