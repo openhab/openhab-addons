@@ -13,71 +13,47 @@
 package org.openhab.voice.whisperstt.internal.utils;
 
 import java.io.IOException;
-import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.github.jvoiceproject.libfvadjni.VoiceActivityDetector;
 import io.github.jvoiceproject.silerovad.SileroVAD;
 
 /**
- * The {@link VAD} class is a voice activity detector implementation over libfvad-jni or {@link SileroVAD}.
+ * The {@link VAD} class is a voice activity detector implementation over {@link SileroVAD}.
  *
  * @author Miguel Álvarez - Initial contribution
- * @author Dan Cunningham - Add Silero detection
+ * @author Dan Cunningham - Replace libfvad with Silero
  */
 @NonNullByDefault
-public class VAD implements AutoCloseable {
-    public static final String SILERO_MODE = "SILERO";
-
+public class VAD {
     private final Logger logger = LoggerFactory.getLogger(VAD.class);
-    private final @Nullable VoiceActivityDetector libfvad;
-    private final @Nullable SileroVAD silero;
-    private final short[] stepSamples;
+    private final SileroVAD silero;
+    private final short[] stepSamples = new short[SileroVAD.FRAME_SIZE];
     private final float sensitivity;
-    private final float sileroThreshold;
+    private final float threshold;
     private int stepSamplesFilled;
 
     /**
-     *
-     * @param mode desired vad mode, a libfvad mode or {@link #SILERO_MODE}.
-     * @param sampleRate audio sample rate.
-     * @param stepMs libfvad partial step ms, Silero always uses 32 ms.
-     * @param sensitivity detector sensitivity percent in range 0 - 1.
-     * @param sileroThreshold Silero speech probability in range 0 - 1 to consider a frame as voice.
-     * @throws IOException
+     * @param sensitivity percent in range 0 - 1 of voiced frames in each analyzed step to consider it as voice.
+     * @param threshold Silero speech probability in range 0 - 1 to consider a frame as voice.
+     * @throws IOException if the Silero model can't be loaded
      */
-    public VAD(String mode, int sampleRate, int stepMs, float sensitivity, float sileroThreshold) throws IOException {
-        if (SILERO_MODE.equals(mode)) {
-            if (sampleRate != 16000) {
-                throw new IOException("Silero VAD requires 16 kHz audio");
-            }
-            this.libfvad = null;
-            this.silero = new SileroVAD();
-            this.stepSamples = new short[SileroVAD.FRAME_SIZE];
-        } else {
-            VoiceActivityDetector libfvad = VoiceActivityDetector.newInstance();
-            libfvad.setMode(VoiceActivityDetector.Mode.valueOf(mode));
-            libfvad.setSampleRate(VoiceActivityDetector.SampleRate.fromValue(sampleRate));
-            this.libfvad = libfvad;
-            this.silero = null;
-            this.stepSamples = new short[sampleRate / 1000 * stepMs];
-        }
+    public VAD(float sensitivity, float threshold) throws IOException {
+        this.silero = new SileroVAD();
         this.sensitivity = sensitivity;
-        this.sileroThreshold = sileroThreshold;
+        this.threshold = threshold;
     }
 
-    public VADResult analyze(short[] samples) throws IOException {
+    public VADResult analyze(short[] samples) {
         int voiceInHead = 0;
         int voiceInTail = 0;
         boolean silenceFound = false;
         int partialVADCounter = 0;
         int totalPartialDetections = 0;
         int offset = 0;
-        // partial steps can span calls, as the Silero frame size does not divide the audio step
+        // frames can span calls, as the Silero frame size does not divide the audio step
         while (offset < samples.length) {
             int length = Math.min(stepSamples.length - stepSamplesFilled, samples.length - offset);
             System.arraycopy(samples, offset, stepSamples, stepSamplesFilled, length);
@@ -109,20 +85,8 @@ public class VAD implements AutoCloseable {
         );
     }
 
-    private boolean isVoice() throws IOException {
-        SileroVAD silero = this.silero;
-        if (silero != null) {
-            return silero.process(stepSamples) >= sileroThreshold;
-        }
-        return Objects.requireNonNull(libfvad).process(stepSamples, stepSamples.length);
-    }
-
-    @Override
-    public void close() {
-        VoiceActivityDetector libfvad = this.libfvad;
-        if (libfvad != null) {
-            libfvad.close();
-        }
+    private boolean isVoice() {
+        return silero.process(stepSamples) >= threshold;
     }
 
     /**

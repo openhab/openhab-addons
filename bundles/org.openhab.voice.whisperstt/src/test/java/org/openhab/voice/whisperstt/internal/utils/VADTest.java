@@ -25,10 +25,8 @@ import java.util.Random;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 
-import io.github.jvoiceproject.libfvadjni.VoiceActivityDetector;
-
 /**
- * Tests for {@link VAD} in Silero mode.
+ * Tests for {@link VAD}.
  *
  * @author Dan Cunningham - Initial contribution
  */
@@ -38,55 +36,32 @@ public class VADTest {
     private static final int SHORT_STEP = 1600;
 
     @Test
-    public void sileroDetectsSpeechButNotNoise() throws IOException {
+    public void detectsSpeechButNotNoise() throws IOException {
         short[] speech = speechSamples();
-        try (VAD vad = new VAD(VAD.SILERO_MODE, 16000, 20, 0.3f, 0.5f)) {
-            VAD.VADResult speechResult = vad.analyze(step(speech, 0));
-            // let the clip end before the noise, as the model holds voice for a few frames after speech is cut off
-            vad.analyze(step(speech, STEP));
-            VAD.VADResult noiseResult = vad.analyze(noise());
+        VAD vad = new VAD(0.3f, 0.5f);
+        VAD.VADResult speechResult = vad.analyze(step(speech, 0));
+        // let the clip end before the noise, as the model holds voice for a few frames after speech is cut off
+        vad.analyze(step(speech, STEP));
+        VAD.VADResult noiseResult = vad.analyze(noise());
 
-            assertTrue(speechResult.isVoice());
-            assertTrue(speechResult.voiceSamplesInTail() > 0);
-            assertFalse(noiseResult.isVoice());
-            assertEquals(0, noiseResult.voiceSamplesInTail());
-        }
+        assertTrue(speechResult.isVoice());
+        assertTrue(speechResult.voiceSamplesInTail() > 0);
+        assertFalse(noiseResult.isVoice());
+        assertEquals(0, noiseResult.voiceSamplesInTail());
     }
 
     @Test
-    public void sileroShortStepsDetectSpeechButNotSilence() throws IOException {
+    public void shortStepsDetectSpeechButNotSilence() throws IOException {
         short[] speech = speechSamples();
-        try (VAD vad = new VAD(VAD.SILERO_MODE, 16000, 20, 0.3f, 0.5f)) {
-            boolean voiceFound = false;
-            for (int offset = 0; offset + SHORT_STEP <= speech.length; offset += SHORT_STEP) {
-                voiceFound |= vad.analyze(Arrays.copyOfRange(speech, offset, offset + SHORT_STEP)).isVoice();
-            }
-            assertTrue(voiceFound);
-            for (int i = 0; i < 20; i++) {
-                assertFalse(vad.analyze(new short[SHORT_STEP]).isVoice(), "step " + i);
-            }
+        VAD vad = new VAD(0.3f, 0.5f);
+        boolean voiceFound = false;
+        for (int offset = 0; offset + SHORT_STEP <= speech.length; offset += SHORT_STEP) {
+            voiceFound |= vad.analyze(Arrays.copyOfRange(speech, offset, offset + SHORT_STEP)).isVoice();
         }
-    }
-
-    @Test
-    public void libfvadDetectsSpeechButNotSilence() throws IOException {
-        VoiceActivityDetector.loadLibrary();
-        short[] speech = speechSamples();
-        try (VAD vad = new VAD(VoiceActivityDetector.Mode.VERY_AGGRESSIVE.name(), 16000, 20, 0.3f, 0.5f)) {
-            VAD.VADResult speechResult = vad.analyze(step(speech, 0));
-            vad.analyze(step(speech, STEP));
-            VAD.VADResult silenceResult = vad.analyze(new short[STEP]);
-
-            assertTrue(speechResult.isVoice());
-            assertTrue(speechResult.voiceSamplesInTail() > 0);
-            assertFalse(silenceResult.isVoice());
-            assertEquals(0, silenceResult.voiceSamplesInTail());
+        assertTrue(voiceFound);
+        for (int i = 0; i < 20; i++) {
+            assertFalse(vad.analyze(new short[SHORT_STEP]).isVoice(), "step " + i);
         }
-    }
-
-    @Test
-    public void sileroRequires16kHz() {
-        assertThrows(IOException.class, () -> new VAD(VAD.SILERO_MODE, 8000, 20, 0.3f, 0.5f));
     }
 
     private static short[] step(short[] samples, int offset) {

@@ -15,7 +15,6 @@ package org.openhab.voice.whisperstt.internal;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.voice.whisperstt.internal.utils.VAD;
 
 /**
  * The {@link WhisperSTTConfiguration} class contains fields mapping thing configuration parameters.
@@ -46,21 +45,13 @@ public class WhisperSTTConfiguration {
      */
     public int maxSeconds = 10;
     /**
-     * Voice activity detection mode, a libfvad mode or SILERO.
-     */
-    public String vadMode = VAD.SILERO_MODE;
-    /**
      * Voice activity detection sensitivity.
      */
     public float vadSensitivity = 0.3f;
     /**
-     * Voice activity detection step in ms (vad dependency only allows 10, 20 or 30 ms steps).
+     * Speech probability to consider a frame as voice.
      */
-    public int vadStep = 20;
-    /**
-     * Silero speech probability to consider a frame as voice.
-     */
-    public float sileroThreshold = 0.5f;
+    public float vadThreshold = 0.5f;
     /**
      * Initial silence seconds for discard transcription.
      */

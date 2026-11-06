@@ -83,7 +83,6 @@ import io.github.givimad.whisperjni.WhisperGrammar;
 import io.github.givimad.whisperjni.WhisperJNI;
 import io.github.givimad.whisperjni.WhisperSamplingStrategy;
 import io.github.givimad.whisperjni.WhisperState;
-import io.github.jvoiceproject.libfvadjni.VoiceActivityDetector;
 
 /**
  * The {@link WhisperSTTService} class is a service implementation to use whisper.cpp for Speech-to-Text.
@@ -122,7 +121,6 @@ public class WhisperSTTService implements STTService {
             }
             this.config = new Configuration(config).as(WhisperSTTConfiguration.class);
             loadWhisperLibraryIfNeeded();
-            VoiceActivityDetector.loadLibrary();
             whisper = new WhisperJNI();
         } catch (IOException | RuntimeException e) {
             logger.warn("Unable to register native library: {}", e.getMessage());
@@ -290,8 +288,7 @@ public class WhisperSTTService implements STTService {
         try {
             logger.debug("Creating VAD instance...");
             final int nSamplesStep = (int) (config.stepSeconds * WHISPER_SAMPLE_RATE);
-            VAD vad = new VAD(config.vadMode, WHISPER_SAMPLE_RATE, config.vadStep, config.vadSensitivity,
-                    config.sileroThreshold);
+            VAD vad = new VAD(config.vadSensitivity, config.vadThreshold);
             logger.debug("VAD instance created");
             sttListener.sttEventReceived(new RecognitionStartEvent());
             backgroundRecognize(nSamplesStep, locale, sttListener, audioStream, vad, aborted);
@@ -376,7 +373,7 @@ public class WhisperSTTService implements STTService {
         logger.debug("Max transcription samples {}", nSamplesMax);
         logger.debug("Max init silence samples {}", nInitSilenceSamples);
         logger.debug("Max silence samples {}", nMaxSilenceSamples);
-        // used to store the step samples in libfvad wanted format 16-bit int
+        // used to store the step samples as 16-bit int
         final short[] stepAudioSamples = new short[nSamplesStep];
         // used to store the full retained samples for whisper
         final short[] audioSamples = new short[nSamplesMax];
@@ -389,8 +386,7 @@ public class WhisperSTTService implements STTService {
             String transcription = "";
             VAD.@Nullable VADResult firstConsecutiveSilenceVADResult = null;
             try {
-                try (audioStream; //
-                        vad) {
+                try (audioStream) {
                     if (AudioFormat.CONTAINER_WAVE.equals(audioStream.getFormat().getContainer())) {
                         AudioWaveUtils.removeFMT(audioStream);
                     }
