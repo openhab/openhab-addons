@@ -43,7 +43,13 @@ public class StateHelper {
     }
 
     public static State getLastUpdate(@Nullable StationStatus currentStatus) {
-        return currentStatus == null ? UnDefType.UNDEF : new DateTimeType(currentStatus.getLastUpdate());
+        if (currentStatus == null) {
+            return UnDefType.UNDEF;
+        }
+        if (currentStatus.getLastUpdate() == null) {
+            return UnDefType.NULL;
+        }
+        return new DateTimeType(currentStatus.getLastUpdate());
     }
 
     public static State getCurrentOutput(@Nullable StationStatus status) {

@@ -372,7 +372,7 @@
 /bundles/org.openhab.binding.satel/ @druciak
 /bundles/org.openhab.binding.sbus/ @cipianpascu
 /bundles/org.openhab.binding.sedif/ @lo92fr
-/bundles/org.openhab.binding.semsportal/ @itb3
+/bundles/org.openhab.binding.semsportal/ @itb3 @jgesser
 /bundles/org.openhab.binding.senechome/ @vctender @KorbinianP @eguib
 /bundles/org.openhab.binding.seneye/ @nikotanghe
 /bundles/org.openhab.binding.sensebox/ @hakan42
