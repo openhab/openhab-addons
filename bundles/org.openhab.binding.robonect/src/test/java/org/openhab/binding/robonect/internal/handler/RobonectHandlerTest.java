@@ -54,6 +54,7 @@ import org.openhab.binding.robonect.internal.RobonectCommunicationException;
 import org.openhab.binding.robonect.internal.RobonectDiagnosticsApi;
 import org.openhab.binding.robonect.internal.RobonectMowerApi;
 import org.openhab.binding.robonect.internal.RobonectPushApi;
+import org.openhab.binding.robonect.internal.RobonectPushServlet;
 import org.openhab.binding.robonect.internal.RobonectRemoteStartApi;
 import org.openhab.binding.robonect.internal.RobonectTimerApi;
 import org.openhab.binding.robonect.internal.RobonectWeatherApi;
@@ -114,6 +115,7 @@ import com.google.gson.JsonSyntaxException;
  *
  * @author Marco Meyer - Initial contribution
  * @author Nico Brüttner - Channel, command, and polling coverage
+ * @author Nico Brüttner - Push refresh scheduling and lifecycle coverage
  */
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -162,6 +164,116 @@ public class RobonectHandlerTest {
     @AfterEach
     public void tearDown() {
         subject.dispose();
+    }
+
+    @Test
+    public void shouldCoalesceQueuedPushesAndScheduleOneFollowUpForPushesDuringRead() {
+        RobonectPushServlet servlet = mock(RobonectPushServlet.class);
+        try (var clients = mockConstruction(RobonectClient.class,
+                (client, context) -> when(client.mower()).thenReturn(mowerApiMock))) {
+            initializePushHandler(servlet);
+            var registrations = ArgumentCaptor.forClass(Runnable.class);
+            verify(servlet).registerHandler(eq(subject.getThing().getUID()), registrations.capture(), eq("callback"),
+                    eq("test-secret"));
+            Runnable notify = registrations.getValue();
+            var tasks = ArgumentCaptor.forClass(Runnable.class);
+            when(mowerApiMock.getMowerInfo()).thenAnswer(invocation -> {
+                notify.run();
+                notify.run();
+                return createSuccessfulMowerInfoResponse();
+            }).thenReturn(createSuccessfulMowerInfoResponse());
+
+            notify.run();
+            notify.run();
+            verify(commandScheduler).schedule(tasks.capture(), eq(0L), eq(TimeUnit.SECONDS));
+            tasks.getValue().run();
+
+            verify(commandScheduler, times(2)).schedule(tasks.capture(), eq(0L), eq(TimeUnit.SECONDS));
+            verify(mowerApiMock).getMowerInfo();
+            tasks.getValue().run();
+            verify(mowerApiMock, times(2)).getMowerInfo();
+            verify(commandScheduler, times(2)).schedule(any(Runnable.class), eq(0L), eq(TimeUnit.SECONDS));
+            assertEquals(1, clients.constructed().size());
+        }
+    }
+
+    @Test
+    public void shouldCancelQueuedPushAndRejectOldRegistrationAfterReinitialization() {
+        RobonectPushServlet servlet = mock(RobonectPushServlet.class);
+        try (var clients = mockConstruction(RobonectClient.class,
+                (client, context) -> when(client.mower()).thenReturn(mowerApiMock))) {
+            initializePushHandler(servlet);
+            var registrations = ArgumentCaptor.forClass(Runnable.class);
+            verify(servlet).registerHandler(eq(subject.getThing().getUID()), registrations.capture(), eq("callback"),
+                    eq("test-secret"));
+            Runnable oldRegistration = registrations.getValue();
+            oldRegistration.run();
+            var tasks = ArgumentCaptor.forClass(Runnable.class);
+            verify(commandScheduler).schedule(tasks.capture(), eq(0L), eq(TimeUnit.SECONDS));
+
+            subject.dispose();
+            verify(commandRefreshJob).cancel(true);
+            subject.initialize();
+            oldRegistration.run();
+            tasks.getValue().run();
+
+            verifyNoInteractions(mowerApiMock);
+            verify(commandScheduler).schedule(any(Runnable.class), eq(0L), eq(TimeUnit.SECONDS));
+            assertEquals(2, clients.constructed().size());
+        }
+    }
+
+    @Test
+    public void shouldDiscardPushResponseWhenTheSessionChangesDuringTheRead() {
+        RobonectPushServlet servlet = mock(RobonectPushServlet.class);
+        try (var clients = mockConstruction(RobonectClient.class,
+                (client, context) -> when(client.mower()).thenReturn(mowerApiMock))) {
+            initializePushHandler(servlet);
+            var registrations = ArgumentCaptor.forClass(Runnable.class);
+            verify(servlet).registerHandler(eq(subject.getThing().getUID()), registrations.capture(), eq("callback"),
+                    eq("test-secret"));
+            Runnable notify = registrations.getValue();
+            when(mowerApiMock.getMowerInfo()).thenAnswer(invocation -> {
+                notify.run();
+                subject.dispose();
+                subject.initialize();
+                clearInvocations(callbackMock);
+                return createSuccessfulMowerInfoResponse();
+            });
+
+            notify.run();
+            var tasks = ArgumentCaptor.forClass(Runnable.class);
+            verify(commandScheduler).schedule(tasks.capture(), eq(0L), eq(TimeUnit.SECONDS));
+            tasks.getValue().run();
+
+            verifyNoInteractions(callbackMock);
+            verify(commandScheduler).schedule(any(Runnable.class), eq(0L), eq(TimeUnit.SECONDS));
+            assertEquals(2, clients.constructed().size());
+        }
+    }
+
+    @Test
+    public void shouldNotRegisterPushWithoutBothCredentials() {
+        RobonectPushServlet servlet = mock(RobonectPushServlet.class);
+        initializePushHandler(servlet, Map.of("pushUser", "callback"));
+        verifyNoInteractions(servlet);
+    }
+
+    private void initializePushHandler(RobonectPushServlet servlet) {
+        initializePushHandler(servlet, Map.of("pushUser", "callback", "pushPass", "test-secret"));
+    }
+
+    private void initializePushHandler(RobonectPushServlet servlet, Map<String, Object> credentials) {
+        var parameters = new HashMap<>(credentials);
+        parameters.put("host", "localhost");
+        parameters.put("timezone", TIME_ZONE.getId());
+        var config = new Configuration(parameters);
+        Thing thing = ThingBuilder.create(RobonectBindingConstants.THING_TYPE_AUTOMOWER, new ThingUID("1:2:3"))
+                .withConfiguration(config).build();
+        subject = new RobonectHandler(thing, httpClientFactoryMock, timeZoneProvider, servlet, commandScheduler);
+        subject.setCallback(callbackMock);
+        doReturn(commandRefreshJob).when(commandScheduler).schedule(any(Runnable.class), eq(0L), eq(TimeUnit.SECONDS));
+        subject.initialize();
     }
 
     @ParameterizedTest

@@ -27,6 +27,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -85,7 +86,8 @@ public class RobonectHandler extends BaseThingHandler {
     private final ScheduledExecutorService requestScheduler;
     private final ReentrantLock pollingLock = new ReentrantLock(true);
     private volatile @Nullable PollingSession pollingSession;
-    private final ThreadLocal<BooleanSupplier> pollingActive = new ThreadLocal<>();
+    private final ThreadLocal<BooleanSupplier> sessionActive = new ThreadLocal<>();
+    private volatile @Nullable PushRefresh pushRefresh;
     private final Map<String, CommandRefresh> commandRefreshJobs = new ConcurrentHashMap<>();
     private final ThreadLocal<BooleanSupplier> commandRefreshActive = new ThreadLocal<>();
     private volatile boolean disposed;
@@ -377,15 +379,15 @@ public class RobonectHandler extends BaseThingHandler {
     }
 
     /**
-     * Checks whether the current poll or command refresh is still authorized to publish.
+     * Checks whether the current poll or refresh is still authorized to publish.
      *
      * @return {@code true} if the current work may publish state, status, or Thing updates
      */
     boolean canPublishState() {
         // Responses may finish after disposal, reinitialization, or a newer command superseding a delayed read.
         BooleanSupplier active = commandRefreshActive.get();
-        BooleanSupplier poll = pollingActive.get();
-        return !disposed && (active == null || active.getAsBoolean()) && (poll == null || poll.getAsBoolean());
+        BooleanSupplier session = sessionActive.get();
+        return !disposed && (active == null || active.getAsBoolean()) && (session == null || session.getAsBoolean());
     }
 
     /**
@@ -690,6 +692,7 @@ public class RobonectHandler extends BaseThingHandler {
     /** Configures the mower connection and starts polling for the current Thing configuration. */
     @Override
     public void initialize() {
+        cancelPushRefresh();
         cancelPolling();
         disposed = false;
         updateState(CHANNEL_PUSH_PASSWORD, UnDefType.UNDEF);
@@ -721,9 +724,6 @@ public class RobonectHandler extends BaseThingHandler {
         }
 
         createEndpointHandlers(new RobonectClient(httpClient, endpoint));
-        if (pushServlet != null) {
-            pushServlet.registerHandler(getThing().getUID(), this);
-        }
         PollingSession session = new PollingSession(robonectConfig);
         pollingSession = session;
         pollingJob = requestScheduler.scheduleWithFixedDelay(new MowerChannelPoller(session), 0,
@@ -733,18 +733,24 @@ public class RobonectHandler extends BaseThingHandler {
             detailedPollingJob = requestScheduler.scheduleWithFixedDelay(new DetailedMowerChannelPoller(session), 0,
                     detailedPollInterval, TimeUnit.SECONDS);
         }
+        String pushUser = robonectConfig.getPushUser();
+        String pushPass = robonectConfig.getPushPass();
+        if (pushServlet != null && pushUser != null && !pushUser.isBlank() && !pushUser.contains(":")
+                && pushPass != null && !pushPass.isBlank()) {
+            PushRefresh refresh = new PushRefresh(mowerHandler);
+            pushRefresh = refresh;
+            pushServlet.registerHandler(getThing().getUID(), refresh, pushUser, pushPass);
+        }
     }
 
     /** Cancels scheduled work and releases the handler connection and push registration. */
     @Override
     public void dispose() {
         disposed = true;
+        cancelPushRefresh();
         cancelPolling();
         commandRefreshJobs.values().forEach(CommandRefresh::cancel);
         commandRefreshJobs.clear();
-        if (pushServlet != null) {
-            pushServlet.unregisterHandler(getThing().getUID());
-        }
         try {
             httpClient.stop();
         } catch (Exception e) {
@@ -767,15 +773,83 @@ public class RobonectHandler extends BaseThingHandler {
         }
     }
 
-    /** Schedules a status refresh after a Robonect push notification. */
-    public void handlePushNotification() {
-        scheduler.execute(() -> {
+    private void cancelPushRefresh() {
+        PushRefresh refresh = pushRefresh;
+        pushRefresh = null;
+        if (refresh != null && pushServlet != null) {
+            pushServlet.unregisterHandler(getThing().getUID(), refresh);
+            refresh.cancel();
+        }
+    }
+
+    @NonNullByDefault
+    private class PushRefresh implements Runnable {
+        private final RobonectMowerHandler mower;
+        private @Nullable ScheduledFuture<?> job;
+        private boolean reading;
+        private boolean followUp;
+
+        private PushRefresh(RobonectMowerHandler mower) {
+            this.mower = mower;
+        }
+
+        @Override
+        public synchronized void run() {
+            if (!isActive()) {
+                return;
+            }
+            if (reading) {
+                followUp = true;
+            } else if (job == null) {
+                schedule();
+            }
+        }
+
+        private boolean isActive() {
+            return !disposed && equals(pushRefresh);
+        }
+
+        private void schedule() {
             try {
-                mowerHandler.refreshMowerInfo();
+                job = requestScheduler.schedule(this::refresh, 0, TimeUnit.SECONDS);
+            } catch (RejectedExecutionException e) {
+                logger.debug("Could not schedule mower refresh after push notification", e);
+            }
+        }
+
+        private void refresh() {
+            synchronized (this) {
+                if (!isActive()) {
+                    return;
+                }
+                reading = true;
+            }
+            sessionActive.set(this::isActive);
+            try {
+                if (canPublishState()) {
+                    mower.refreshMowerInfo();
+                }
             } catch (RobonectCommunicationException e) {
                 logger.debug("Could not refresh mower state after push notification: {}", e.getMessage());
+            } finally {
+                sessionActive.remove();
+                synchronized (this) {
+                    reading = false;
+                    job = null;
+                    if (followUp && isActive()) {
+                        followUp = false;
+                        schedule();
+                    }
+                }
             }
-        });
+        }
+
+        private synchronized void cancel() {
+            ScheduledFuture<?> current = job;
+            if (current != null) {
+                current.cancel(true);
+            }
+        }
     }
 
     /**
@@ -867,7 +941,7 @@ public class RobonectHandler extends BaseThingHandler {
                 Thread.currentThread().interrupt();
                 return;
             }
-            pollingActive.set(() -> session.equals(pollingSession) && !Thread.currentThread().isInterrupted());
+            sessionActive.set(() -> session.equals(pollingSession) && !Thread.currentThread().isInterrupted());
             try {
                 if (!pollChannels()) {
                     return;
@@ -895,7 +969,7 @@ public class RobonectHandler extends BaseThingHandler {
                 // next poll interval, we just log it to debug here.
                 logger.debug("Failed to parse response.", jse);
             } finally {
-                pollingActive.remove();
+                sessionActive.remove();
                 pollingLock.unlock();
             }
         }

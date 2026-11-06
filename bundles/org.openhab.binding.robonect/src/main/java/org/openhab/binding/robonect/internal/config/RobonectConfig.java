@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.robonect.internal.config;
 
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * Holds the mower Thing configuration.
  *
@@ -24,6 +26,9 @@ public class RobonectConfig {
     private String user;
 
     private String password;
+
+    private @Nullable String pushUser;
+    private @Nullable String pushPass;
 
     private int pollInterval;
 
@@ -62,6 +67,14 @@ public class RobonectConfig {
      */
     public String getPassword() {
         return password;
+    }
+
+    public @Nullable String getPushUser() {
+        return pushUser;
+    }
+
+    public @Nullable String getPushPass() {
+        return pushPass;
     }
 
     /**

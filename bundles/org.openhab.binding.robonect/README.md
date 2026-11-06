@@ -187,8 +187,13 @@ URLs and responses are excluded from binding logs, but openHAB Item commands can
 sitemap includes a plain text password input for testing; it does not mask the password.
 
 To receive a push notification, configure the Robonect push URL as
-`http://<openhab-host>:8080/robonect/robonect:mower:<thing-id>`. A received notification triggers an immediate status
-refresh; it does not expose the notification payload to openHAB.
+`http://<openhab-host>:8080/robonect/<thing-id>` and select GET or POST mode.
+For the Thing UID `robonect:mower:automower`, the callback path is `/robonect/automower`.
+Set `pushUser` and `pushPass` on the Thing and enter the same credentials in the mower's push settings,
+either in its web interface or through the `push-username` and `push-password` channels.
+The callback requires HTTP Basic authentication and is enabled only when both Thing settings are filled in.
+Use dedicated callback credentials, since plain HTTP sends them without encryption.
+A received notification triggers a status refresh; the binding does not expose the notification payload to openHAB.
 
 ## Full Example
 
