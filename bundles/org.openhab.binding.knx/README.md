@@ -484,12 +484,13 @@ Data Secure does _not_ necessarily require a KNX Secure Router or a Secure IP In
 
 **openHAB ignores messages with secure group addresses, unless data secure is configured.**
 
-> NOTE: openHAB currently does fully support passive (listening) access to secure group addresses.
-Write access to secure group addresses is currently disabled in openHAB.
-Initial/periodic read will fail; avoid automatic read (`<` in Thing definition).
-
 All necessary information to decode secure group addresses is included in ETS keyring export (ETS, project settings, export keyring).
 The keyring file is configured using `keyringFile` (put it in `config\misc` folder of the openHAB installation) and also requires `keyringPassword`.
+
+openHAB reads and writes secure group addresses and answers read requests on them.
+KNX devices only accept secure telegrams from senders they know.
+Before exporting the keyring, link every secure group address openHAB uses to the tunnel openHAB connects through in ETS, or in router mode to a dummy device with the address set in `localSourceAddr`.
+Outgoing secure telegrams are numbered from the system clock, so the openHAB host needs the correct time.
 
 ## Examples
 
