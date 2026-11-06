@@ -286,6 +286,44 @@ class BMWCarDataVehicleHandlerTest {
     }
 
     @Test
+    void unavailableCoordinateMakesTheLocationUndefinedUntilBothAreReportedAgain() {
+        update(Map.of(LATITUDE, value(48.17, null, "2026-10-01T10:00:00Z"), LONGITUDE,
+                value(11.56, null, "2026-10-01T10:00:00Z")));
+        verifyState(CHANNEL_GPS, PointType.valueOf("48.17,11.56"));
+
+        update(Map.of(LATITUDE, stringValue("INVALID", null, "2026-10-01T10:05:00Z")));
+        verifyState(CHANNEL_GPS, UnDefType.UNDEF);
+        // a REFRESH does not bring the outdated location back
+        handler.handleCommand(channel(CHANNEL_GPS), RefreshType.REFRESH);
+        verify(callback, times(2)).stateUpdated(channel(CHANNEL_GPS), UnDefType.UNDEF);
+
+        // the new longitude is not combined with the latitude reported before it became unavailable
+        update(Map.of(LONGITUDE, value(11.60, null, "2026-10-01T10:10:00Z")));
+        verify(callback, never()).stateUpdated(channel(CHANNEL_GPS), PointType.valueOf("48.17,11.6"));
+
+        update(Map.of(LATITUDE, value(48.20, null, "2026-10-01T10:15:00Z")));
+        verifyState(CHANNEL_GPS, PointType.valueOf("48.2,11.6"));
+        // an update without coordinates keeps the location
+        update(Map.of(MILEAGE, value(200, "km", "2026-10-01T10:20:00Z")));
+        handler.handleCommand(channel(CHANNEL_GPS), RefreshType.REFRESH);
+        verify(callback, times(2)).stateUpdated(channel(CHANNEL_GPS), PointType.valueOf("48.2,11.6"));
+    }
+
+    @Test
+    void unavailableAltitudeIsDroppedFromTheLocation() {
+        update(Map.of(LATITUDE, value(48.17, null, "2026-10-01T10:00:00Z"), LONGITUDE,
+                value(11.56, null, "2026-10-01T10:00:00Z"),
+                "vehicle.cabin.infotainment.navigation.currentLocation.altitude",
+                value(520, "m", "2026-10-01T10:00:00Z")));
+        verifyState(CHANNEL_GPS, PointType.valueOf("48.17,11.56,520"));
+
+        update(Map.of("vehicle.cabin.infotainment.navigation.currentLocation.altitude",
+                stringValue("INVALID", null, "2026-10-01T10:05:00Z")));
+        verifyState("navigation#altitude", UnDefType.UNDEF);
+        verifyState(CHANNEL_GPS, PointType.valueOf("48.17,11.56"));
+    }
+
+    @Test
     void olderRefreshDoesNotOverwriteNewerStreamDataPublishedMeanwhile() throws Exception {
         // the refresh is held while publishing its mileage: it has accepted its position, but not published it yet
         CountDownLatch refreshPublishing = new CountDownLatch(1);

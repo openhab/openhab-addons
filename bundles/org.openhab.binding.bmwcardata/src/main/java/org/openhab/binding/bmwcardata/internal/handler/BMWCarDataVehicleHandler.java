@@ -254,6 +254,10 @@ public class BMWCarDataVehicleHandler extends BaseThingHandler {
         BigDecimal newLatitude = null;
         BigDecimal newLongitude = null;
         BigDecimal newAltitude = null;
+        // a coordinate reported as unavailable, e.g. INVALID, unlike one the update does not contain
+        boolean latitudeUndefined = false;
+        boolean longitudeUndefined = false;
+        boolean altitudeUndefined = false;
         Instant newest = null;
         Map<String, TelematicValue> dynamicValues = new LinkedHashMap<>();
         for (Map.Entry<String, TelematicValue> entry : data.entrySet()) {
@@ -304,11 +308,15 @@ public class BMWCarDataVehicleHandler extends BaseThingHandler {
                 case LATITUDE -> {
                     if (state instanceof DecimalType decimal) {
                         newLatitude = decimal.toBigDecimal();
+                    } else {
+                        latitudeUndefined = true;
                     }
                 }
                 case LONGITUDE -> {
                     if (state instanceof DecimalType decimal) {
                         newLongitude = decimal.toBigDecimal();
+                    } else {
+                        longitudeUndefined = true;
                     }
                 }
                 default -> {
@@ -330,10 +338,14 @@ public class BMWCarDataVehicleHandler extends BaseThingHandler {
                             publish(pluggedChannelUid, pluggedState);
                         }
                     }
-                    if (channel == VehicleChannel.ALTITUDE && state instanceof QuantityType<?> altitudeState) {
-                        QuantityType<?> metres = altitudeState.toUnit(SIUnits.METRE);
+                    if (channel == VehicleChannel.ALTITUDE) {
+                        QuantityType<?> metres = state instanceof QuantityType<?> altitudeState
+                                ? altitudeState.toUnit(SIUnits.METRE)
+                                : null;
                         if (metres != null) {
                             newAltitude = metres.toBigDecimal();
+                        } else {
+                            altitudeUndefined = true;
                         }
                     }
                 }
@@ -342,12 +354,17 @@ public class BMWCarDataVehicleHandler extends BaseThingHandler {
 
         if (newAltitude != null) {
             altitude = newAltitude;
+        } else if (altitudeUndefined) {
+            altitude = null;
         }
-        if (newLatitude != null || newLongitude != null) {
-            if (newLatitude != null) {
+        // an unavailable coordinate is forgotten, so that the location is undefined until both coordinates are
+        // reported again, instead of combining the other one with an outdated value
+        if (newLatitude != null || newLongitude != null || latitudeUndefined || longitudeUndefined
+                || altitudeUndefined) {
+            if (newLatitude != null || latitudeUndefined) {
                 latitude = newLatitude;
             }
-            if (newLongitude != null) {
+            if (newLongitude != null || longitudeUndefined) {
                 longitude = newLongitude;
             }
             BigDecimal lat = latitude;
@@ -357,6 +374,8 @@ public class BMWCarDataVehicleHandler extends BaseThingHandler {
                 publish(CHANNEL_GPS,
                         alt != null ? new PointType(new DecimalType(lat), new DecimalType(lon), new DecimalType(alt))
                                 : new PointType(new DecimalType(lat), new DecimalType(lon)));
+            } else if (latitudeUndefined || longitudeUndefined) {
+                publish(CHANNEL_GPS, UnDefType.UNDEF);
             }
         }
         Instant previous = lastUpdate;
