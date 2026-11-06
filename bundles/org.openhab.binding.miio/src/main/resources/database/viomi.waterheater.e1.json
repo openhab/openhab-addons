@@ -1,36 +1,47 @@
 {
 	"deviceMapping": {
 		"id": [
-			"viomi.waterheater.e1"
+			"viomi.waterheater.e1",
+			"viomi.waterheater.e4"
 		],
 		"propertyMethod": "get_prop",
 		"maxProperties": 1,
 		"channels": [
 			{
 				"property": "washStatus",
-				"friendlyName": "Wash Status",
+				"friendlyName": "Power",
 				"channel": "washStatus",
-				"type": "Number",
+				"type": "Switch",
 				"refresh": true,
 				"actions": [
 					{
-						"command": "set_washStatus",
-						"parameterType": "NUMBER"
+						"command": "set_power",
+						"parameterType": "ONOFFNUMBER"
 					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch",
+					"Power"
 				]
 			},
 			{
 				"property": "velocity",
-				"friendlyName": "Velocity",
+				"friendlyName": "Water Flow",
 				"channel": "velocity",
 				"type": "Number",
+				"stateDescription": {
+					"pattern": "%d",
+					"readOnly": true
+				},
 				"refresh": true,
-				"actions": [
-					{
-						"command": "set_velocity",
-						"parameterType": "NUMBER"
-					}
-				]
+				"actions": [],
+				"category": "water",
+				"tags": [
+					"Measurement",
+					"Water"
+				],
+				"readmeComment": "Above 0 while hot water is used"
 			},
 			{
 				"property": "waterTemp",
@@ -38,13 +49,12 @@
 				"channel": "waterTemp",
 				"type": "Number:Temperature",
 				"unit": "CELSIUS",
+				"stateDescription": {
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
 				"refresh": true,
-				"actions": [
-					{
-						"command": "set_temp",
-						"parameterType": "NUMBER"
-					}
-				],
+				"actions": [],
 				"category": "temperature",
 				"tags": [
 					"Measurement",
@@ -57,6 +67,12 @@
 				"channel": "targetTemp",
 				"type": "Number:Temperature",
 				"unit": "CELSIUS",
+				"stateDescription": {
+					"minimum": 30,
+					"maximum": 75,
+					"step": 1,
+					"pattern": "%.0f %unit%"
+				},
 				"refresh": true,
 				"actions": [
 					{
@@ -72,71 +88,216 @@
 			},
 			{
 				"property": "errStatus",
-				"friendlyName": "Error Status",
+				"friendlyName": "Error Code",
 				"channel": "errStatus",
 				"type": "Number",
+				"stateDescription": {
+					"pattern": "%d",
+					"readOnly": true
+				},
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"category": "alarm",
+				"tags": [
+					"Status"
+				],
+				"readmeComment": "Bit field: 2 sensor open or short circuit, 3 inner tank over-temperature, 4 inner tank dry heating, 5 and 6 sensor fault, 7 dry heating fault, 9 over-temperature fault"
 			},
 			{
 				"property": "hotWater",
 				"friendlyName": "Hot Water",
 				"channel": "hotWater",
-				"type": "Number",
+				"type": "Number:Dimensionless",
+				"unit": "PERCENT",
+				"stateDescription": {
+					"pattern": "%.0f %%",
+					"readOnly": true
+				},
 				"refresh": true,
-				"actions": [
-					{
-						"command": "set_hotWater",
-						"parameterType": "NUMBER"
-					}
-				]
+				"actions": [],
+				"category": "water",
+				"tags": [
+					"Measurement",
+					"Level"
+				],
+				"readmeComment": "Remaining hot water"
 			},
 			{
 				"property": "needClean",
-				"friendlyName": "Need Clean",
+				"friendlyName": "Cleaning Needed",
 				"channel": "needClean",
 				"type": "Switch",
+				"stateDescription": {
+					"readOnly": true
+				},
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"category": "status",
+				"tags": [
+					"Status"
+				],
+				"readmeComment": "On after 180 days of use"
+			},
+			{
+				"property": "",
+				"friendlyName": "Reset Cleaning Reminder",
+				"channel": "cleanReset",
+				"type": "String",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "reset",
+							"label": "Cleaned"
+						}
+					]
+				},
+				"refresh": false,
+				"actions": [
+					{
+						"command": "reset_use_time",
+						"parameterType": "STRING",
+						"parameters": [
+							"$value$"
+						],
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "reset",
+									"returnValue": 0
+								}
+							]
+						}
+					}
+				],
+				"category": "status",
+				"tags": [
+					"Control"
+				],
+				"readmeComment": "Send after cleaning the inner tank"
 			},
 			{
 				"property": "modeType",
 				"friendlyName": "Mode",
 				"channel": "modeType",
 				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "Thermostatic"
+						},
+						{
+							"value": "1",
+							"label": "Heating"
+						},
+						{
+							"value": "2",
+							"label": "Booking"
+						}
+					]
+				},
 				"refresh": true,
 				"actions": [
 					{
 						"command": "set_mode",
-						"parameterType": "NUMBER"
+						"parameterType": "NUMBER",
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "0",
+									"returnValue": 0
+								},
+								{
+									"matchValue": "1",
+									"returnValue": 1
+								}
+							]
+						}
+					},
+					{
+						"command": "set_appoint",
+						"parameterType": "NONE",
+						"parameters": [
+							1,
+							"$appointStart$",
+							"$appointEnd$"
+						],
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "2"
+								}
+							]
+						}
 					}
-				]
+				],
+				"category": "settings",
+				"tags": [
+					"Control",
+					"Mode"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Thermostatic\",\"1\"\u003d\"Heating\",\"2\"\u003d\"Booking\"]`"
 			},
 			{
 				"property": "appointStart",
-				"friendlyName": "Appoint Start",
+				"friendlyName": "Booking Start Hour",
 				"channel": "appointStart",
 				"type": "Number",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 23,
+					"step": 1,
+					"pattern": "%d"
+				},
 				"refresh": true,
 				"actions": [
 					{
-						"command": "set_appointStart",
-						"parameterType": "NUMBER"
+						"command": "set_appoint",
+						"parameterType": "NUMBER",
+						"parameters": [
+							1,
+							"$value$",
+							"$appointEnd$"
+						]
 					}
-				]
+				],
+				"category": "time",
+				"tags": [
+					"Setpoint"
+				],
+				"readmeComment": "Booking mode heats between the start and end hour; setting it switches to booking mode"
 			},
 			{
 				"property": "appointEnd",
-				"friendlyName": "Appoint End",
+				"friendlyName": "Booking End Hour",
 				"channel": "appointEnd",
 				"type": "Number",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 23,
+					"step": 1,
+					"pattern": "%d"
+				},
 				"refresh": true,
 				"actions": [
 					{
-						"command": "set_appointEnd",
-						"parameterType": "NUMBER"
+						"command": "set_appoint",
+						"parameterType": "NUMBER",
+						"parameters": [
+							1,
+							"$appointStart$",
+							"$value$"
+						]
 					}
-				]
+				],
+				"category": "time",
+				"tags": [
+					"Setpoint"
+				],
+				"readmeComment": "Booking mode heats between the start and end hour; setting it switches to booking mode"
 			}
 		],
 		"experimental": true

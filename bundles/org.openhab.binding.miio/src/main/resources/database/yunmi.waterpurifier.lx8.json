@@ -6,191 +6,354 @@
 		"channels": [
 			{
 				"property": "run_status",
-				"friendlyName": "Run Status",
+				"friendlyName": "Error Code",
 				"channel": "run_status",
 				"type": "Number",
+				"stateDescription": {
+					"pattern": "%d",
+					"readOnly": true
+				},
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"category": "alarm",
+				"tags": [
+					"Status"
+				],
+				"readmeComment": "Bit field: 0 temperature anomaly, 1 meter damaged, 2 flow sensor anomaly, 3 filter life expired, 4 network connection error, 5 EEPROM communication error, 6 RFID communication error, 7 faucet communication error, 8 purified water flow error, 9 water leak, 10 floater error, 11 TDS error, 12 water temperature too high, 13 recovery rate error, 14 water quality anomaly, 15 pump thermal protection"
 			},
 			{
 				"property": "rinse",
-				"friendlyName": "Rinse",
+				"friendlyName": "Rinsing",
 				"channel": "rinse",
-				"type": "Number",
+				"type": "Switch",
+				"stateDescription": {
+					"readOnly": true
+				},
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"category": "water",
+				"tags": [
+					"Status",
+					"Water"
+				]
 			},
 			{
 				"property": "tds_in",
-				"friendlyName": "TDS in",
+				"friendlyName": "TDS In",
 				"channel": "tds_in",
-				"type": "Number",
+				"type": "Number:Dimensionless",
+				"unit": "PPM",
+				"stateDescription": {
+					"pattern": "%.0f ppm",
+					"readOnly": true
+				},
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"category": "water",
+				"tags": [
+					"Measurement",
+					"Water"
+				],
+				"readmeComment": "Shown in the app as mg/L, which equals ppm for water"
 			},
 			{
 				"property": "tds_out",
-				"friendlyName": "TDS out",
+				"friendlyName": "TDS Out",
 				"channel": "tds_out",
-				"type": "Number",
+				"type": "Number:Dimensionless",
+				"unit": "PPM",
+				"stateDescription": {
+					"pattern": "%.0f ppm",
+					"readOnly": true
+				},
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"category": "water",
+				"tags": [
+					"Measurement",
+					"Water"
+				],
+				"readmeComment": "Shown in the app as mg/L, which equals ppm for water"
 			},
 			{
 				"property": "f1_totalflow",
 				"friendlyName": "Filter 1 Total Flow",
 				"channel": "f1_totalflow",
 				"type": "Number",
+				"stateDescription": {
+					"pattern": "%.0f",
+					"readOnly": true
+				},
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"category": "water",
+				"tags": [
+					"Measurement",
+					"Water"
+				]
 			},
 			{
 				"property": "f1_totaltime",
 				"friendlyName": "Filter 1 Total Time",
 				"channel": "f1_totaltime",
-				"type": "Number",
+				"type": "Number:Time",
+				"unit": "HOUR",
+				"stateDescription": {
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"category": "time",
+				"tags": [
+					"Measurement",
+					"Duration"
+				]
 			},
 			{
 				"property": "f1_usedflow",
 				"friendlyName": "Filter 1 Used Flow",
 				"channel": "f1_usedflow",
 				"type": "Number",
+				"stateDescription": {
+					"pattern": "%.0f",
+					"readOnly": true
+				},
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"category": "water",
+				"tags": [
+					"Measurement",
+					"Water"
+				]
 			},
 			{
 				"property": "f1_usedtime",
 				"friendlyName": "Filter 1 Used Time",
 				"channel": "f1_usedtime",
-				"type": "Number",
+				"type": "Number:Time",
+				"unit": "HOUR",
+				"stateDescription": {
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"category": "time",
+				"tags": [
+					"Measurement",
+					"Duration"
+				],
+				"readmeComment": "Remaining filter life is (total time - used time) / total time"
 			},
 			{
 				"property": "f2_totalflow",
 				"friendlyName": "Filter 2 Total Flow",
 				"channel": "f2_totalflow",
 				"type": "Number",
+				"stateDescription": {
+					"pattern": "%.0f",
+					"readOnly": true
+				},
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"category": "water",
+				"tags": [
+					"Measurement",
+					"Water"
+				]
 			},
 			{
 				"property": "f2_totaltime",
 				"friendlyName": "Filter 2 Total Time",
 				"channel": "f2_totaltime",
-				"type": "Number",
+				"type": "Number:Time",
+				"unit": "HOUR",
+				"stateDescription": {
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"category": "time",
+				"tags": [
+					"Measurement",
+					"Duration"
+				]
 			},
 			{
 				"property": "f2_usedflow",
 				"friendlyName": "Filter 2 Used Flow",
 				"channel": "f2_usedflow",
 				"type": "Number",
+				"stateDescription": {
+					"pattern": "%.0f",
+					"readOnly": true
+				},
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"category": "water",
+				"tags": [
+					"Measurement",
+					"Water"
+				]
 			},
 			{
 				"property": "f2_usedtime",
 				"friendlyName": "Filter 2 Used Time",
 				"channel": "f2_usedtime",
-				"type": "Number",
+				"type": "Number:Time",
+				"unit": "HOUR",
+				"stateDescription": {
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"category": "time",
+				"tags": [
+					"Measurement",
+					"Duration"
+				]
 			},
 			{
 				"property": "f3_totalflow",
 				"friendlyName": "Filter 3 Total Flow",
 				"channel": "f3_totalflow",
 				"type": "Number",
+				"stateDescription": {
+					"pattern": "%.0f",
+					"readOnly": true
+				},
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"category": "water",
+				"tags": [
+					"Measurement",
+					"Water"
+				]
 			},
 			{
 				"property": "f3_totaltime",
 				"friendlyName": "Filter 3 Total Time",
 				"channel": "f3_totaltime",
-				"type": "Number",
+				"type": "Number:Time",
+				"unit": "HOUR",
+				"stateDescription": {
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"category": "time",
+				"tags": [
+					"Measurement",
+					"Duration"
+				]
 			},
 			{
 				"property": "f3_usedflow",
 				"friendlyName": "Filter 3 Used Flow",
 				"channel": "f3_usedflow",
 				"type": "Number",
+				"stateDescription": {
+					"pattern": "%.0f",
+					"readOnly": true
+				},
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"category": "water",
+				"tags": [
+					"Measurement",
+					"Water"
+				]
 			},
 			{
 				"property": "f3_usedtime",
 				"friendlyName": "Filter 3 Used Time",
 				"channel": "f3_usedtime",
-				"type": "Number",
+				"type": "Number:Time",
+				"unit": "HOUR",
+				"stateDescription": {
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"category": "time",
+				"tags": [
+					"Measurement",
+					"Duration"
+				]
 			},
 			{
 				"property": "f4_totalflow",
 				"friendlyName": "Filter 4 Total Flow",
 				"channel": "f4_totalflow",
 				"type": "Number",
+				"stateDescription": {
+					"pattern": "%.0f",
+					"readOnly": true
+				},
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"category": "water",
+				"tags": [
+					"Measurement",
+					"Water"
+				]
 			},
 			{
 				"property": "f4_totaltime",
 				"friendlyName": "Filter 4 Total Time",
 				"channel": "f4_totaltime",
-				"type": "Number",
+				"type": "Number:Time",
+				"unit": "HOUR",
+				"stateDescription": {
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"category": "time",
+				"tags": [
+					"Measurement",
+					"Duration"
+				]
 			},
 			{
 				"property": "f4_usedflow",
 				"friendlyName": "Filter 4 Used Flow",
 				"channel": "f4_usedflow",
 				"type": "Number",
+				"stateDescription": {
+					"pattern": "%.0f",
+					"readOnly": true
+				},
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"category": "water",
+				"tags": [
+					"Measurement",
+					"Water"
+				]
 			},
 			{
 				"property": "f4_usedtime",
 				"friendlyName": "Filter 4 Used Time",
 				"channel": "f4_usedtime",
-				"type": "Number",
+				"type": "Number:Time",
+				"unit": "HOUR",
+				"stateDescription": {
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
 				"refresh": true,
-				"actions": []
-			},
-			{
-				"property": "maintenance_state",
-				"friendlyName": "Maintenance State",
-				"channel": "maintenance_state",
-				"type": "Number",
-				"refresh": true,
-				"actions": []
-			},
-			{
-				"property": "maintenance_interval",
-				"friendlyName": "Maintenance Interval",
-				"channel": "maintenance_interval",
-				"type": "Number",
-				"refresh": true,
-				"actions": []
-			},
-			{
-				"property": "tds_warn_thd",
-				"friendlyName": "TDS Warn Threshold",
-				"channel": "tds_warn_thd",
-				"type": "Number",
-				"refresh": true,
-				"actions": [
-					{
-						"command": "set_tds_warn_thd",
-						"parameterType": "NUMBER"
-					}
+				"actions": [],
+				"category": "time",
+				"tags": [
+					"Measurement",
+					"Duration"
 				]
 			},
 			{
@@ -214,10 +377,117 @@
 				"actions": [
 					{
 						"command": "set_lightMode",
-						"parameterType": "STRING"
+						"parameterType": "NUMBER"
 					}
 				],
+				"category": "settings",
+				"tags": [
+					"Control",
+					"Mode"
+				],
 				"readmeComment": "Value mapping `[\"0\"\u003d\"Simple Mode\",\"1\"\u003d\"Special Mode\"]`"
+			},
+			{
+				"property": "",
+				"friendlyName": "Reset Filter",
+				"channel": "filter_reset",
+				"type": "String",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "1",
+							"label": "Filter 1"
+						},
+						{
+							"value": "2",
+							"label": "Filter 2"
+						},
+						{
+							"value": "3",
+							"label": "Filter 3"
+						},
+						{
+							"value": "4",
+							"label": "Filter 4"
+						}
+					]
+				},
+				"refresh": false,
+				"actions": [
+					{
+						"command": "set_f1_used",
+						"parameterType": "STRING",
+						"parameters": [
+							"$value$",
+							0
+						],
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "1",
+									"returnValue": 0
+								}
+							]
+						}
+					},
+					{
+						"command": "set_f2_used",
+						"parameterType": "STRING",
+						"parameters": [
+							"$value$",
+							0
+						],
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "2",
+									"returnValue": 0
+								}
+							]
+						}
+					},
+					{
+						"command": "set_f3_used",
+						"parameterType": "STRING",
+						"parameters": [
+							"$value$",
+							0
+						],
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "3",
+									"returnValue": 0
+								}
+							]
+						}
+					},
+					{
+						"command": "set_f4_used",
+						"parameterType": "STRING",
+						"parameters": [
+							"$value$",
+							0
+						],
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "4",
+									"returnValue": 0
+								}
+							]
+						}
+					}
+				],
+				"category": "water",
+				"tags": [
+					"Control"
+				],
+				"readmeComment": "Resets the remaining life of the selected filter, only after replacing it"
 			}
 		],
 		"experimental": false
