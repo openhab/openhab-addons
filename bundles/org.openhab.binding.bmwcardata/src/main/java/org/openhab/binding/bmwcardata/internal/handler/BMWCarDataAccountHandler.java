@@ -519,7 +519,8 @@ public class BMWCarDataAccountHandler extends BaseBridgeHandler implements Strea
                         vehicle.refreshFailed(vin, e);
                         continue;
                     }
-                    if (retry) {
+                    // not for a VIN the vehicle no longer has
+                    if (retry && vin.equals(vehicle.getVin())) {
                         retryVins.add(vin);
                     }
                     if (isStreamConnected()) {

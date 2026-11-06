@@ -118,6 +118,13 @@ class CarDataTokensTest {
         BMWCarDataException internalError = CarDataTokens
                 .toException(new OAuthException("Bad http response, http code 500"));
         assertFalse(internalError instanceof BMWCarDataAuthException);
+        // not documented by BMW for the token endpoint, but a rate limit and a timeout pass by themselves
+        BMWCarDataException rateLimited = CarDataTokens
+                .toException(new OAuthException("Bad http response, http code 429"));
+        assertFalse(rateLimited instanceof BMWCarDataAuthException);
+        assertTrue(rateLimited.isRateLimited());
+        assertFalse(CarDataTokens.toException(
+                new OAuthException("Bad http response, http code 408")) instanceof BMWCarDataAuthException);
 
         // BMW documents 403 for a denied access
         assertInstanceOf(BMWCarDataAuthException.class,

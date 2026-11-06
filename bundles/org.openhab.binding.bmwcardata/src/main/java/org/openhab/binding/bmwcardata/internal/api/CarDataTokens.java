@@ -113,19 +113,20 @@ public final class CarDataTokens {
      * Maps a failure of the OAuth client service. Core's OAuthConnector reports a response other than 200, 400 and
      * 401 only in the message of an {@link OAuthException}, e.g. {@code Bad http response, http code 503}. BMW
      * documents only 403 for the token endpoint besides those, which is a denied access, but its token endpoint was
-     * seen returning server errors for a short time, which must not discard a valid authorization.
+     * seen returning server errors for a short time, which must not discard a valid authorization; neither must a rate
+     * limit or a timeout, which pass by themselves as well.
      *
      * @param e failure of the OAuth client service, e.g. no stored token, a token that cannot be decrypted or an
      *            unexpected response of the token endpoint
-     * @return a {@link BMWCarDataException} with the status for a server error of the token endpoint, otherwise an
-     *         exception that requires a new authorization
+     * @return a {@link BMWCarDataException} with the status for a server error, a rate limit or a timeout of the token
+     *         endpoint, otherwise an exception that requires a new authorization
      */
     public static BMWCarDataException toException(OAuthException e) {
         String message = Objects.requireNonNullElse(e.getMessage(), "");
         Matcher statusCode = HTTP_STATUS_CODE.matcher(message);
         if (statusCode.find()) {
             int status = Integer.parseInt(statusCode.group(1));
-            if (status >= 500) {
+            if (status >= 500 || status == 429 || status == 408) {
                 return new BMWCarDataException("Token refresh failed: HTTP " + status, status, e);
             }
         }

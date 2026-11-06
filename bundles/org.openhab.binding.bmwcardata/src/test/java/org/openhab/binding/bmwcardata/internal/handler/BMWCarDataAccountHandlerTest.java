@@ -193,8 +193,9 @@ class BMWCarDataAccountHandlerTest {
 
         runJobs(PERIODIC_DELAY);
         verify(vehicleCallback, never()).statusUpdated(any(), argThat(offline(ThingStatusDetail.COMMUNICATION_ERROR)));
+        // no retry for the previous VIN, which no vehicle has anymore
+        assertEquals(0, pendingJobs(RETRY_DELAY));
         runJobs(RETRY_DELAY);
-        // the retry is for the previous VIN, which no vehicle has anymore
         assertEquals(1, telematicRequests());
     }
 
