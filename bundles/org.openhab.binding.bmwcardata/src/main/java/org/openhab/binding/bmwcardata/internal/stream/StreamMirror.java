@@ -58,8 +58,7 @@ public class StreamMirror implements MqttConnectionObserver {
     private static final int RECONNECT_INTERVAL_MILLIS = 60_000;
     private static final int FIRST_RECONNECT_MILLIS = 10_000;
     private static final long STOP_TIMEOUT_SECONDS = 5;
-    // like STATUS_STABLE_DELAY of the bridge: a disconnect is only published once it lasts, so that short drops of the
-    // connection do not let the state of the consumers flap
+    // like STATUS_STABLE_DELAY of the bridge, so that short drops do not let the state of the consumers flap
     static final long DISCONNECT_DELAY_SECONDS = 5;
 
     private final Logger logger = LoggerFactory.getLogger(StreamMirror.class);
@@ -68,14 +67,11 @@ public class StreamMirror implements MqttConnectionObserver {
     private final Clock clock;
     private final Consumer<Boolean> brokerStateListener;
     private final ScheduledExecutorService scheduler;
-    // a retained message is replayed to every new subscriber, however old it is
     private final boolean retainMessages;
-    // serializes the decisions on the stream state with their publication, so that a delayed disconnect cannot be
-    // published after a newer connect; publishing is asynchronous and does not block
+    // so that a delayed disconnect cannot be published after a newer connect; publishing does not block
     private final Object stateLock = new Object();
 
-    // guarded by stateLock: the published state of the BMW connection, null until known, published again after each
-    // reconnect to the local broker
+    // guarded by stateLock; null until known
     private @Nullable Boolean streamConnected;
     private @Nullable ScheduledFuture<?> pendingDisconnect;
     private boolean stopped;
@@ -220,8 +216,7 @@ public class StreamMirror implements MqttConnectionObserver {
             case CONNECTED -> {
                 logger.debug("Connected to the local broker for mirroring the CarData stream");
                 synchronized (stateLock) {
-                    // replaces the last will of a previous connection; until the state of the stream is known, the
-                    // retained disconnected state of the last will or of the last stop stays
+                    // replaces the retained last will of a previous connection, once the state is known
                     Boolean known = streamConnected;
                     if (known != null) {
                         publishStatus(known);

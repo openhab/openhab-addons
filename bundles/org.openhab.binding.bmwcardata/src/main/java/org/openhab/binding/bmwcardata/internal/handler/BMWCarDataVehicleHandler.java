@@ -82,13 +82,11 @@ import com.google.gson.JsonPrimitive;
 @NonNullByDefault
 public class BMWCarDataVehicleHandler extends BaseThingHandler {
 
-    // retry of the basic data and the image, like a failed refresh of the account, e.g. while the budget is used up
     private static final long RETRY_SECONDS = 15 * 60;
-    // the groups of the predefined channels, whose group types are named <group>-group; not the dynamic channels
+    // their group types are named <group>-group
     private static final List<String> PREDEFINED_GROUPS = List.of(GROUP_STATUS, GROUP_RANGE, GROUP_CHARGE,
             GROUP_BATTERY, GROUP_CLIMATE, GROUP_NAVIGATION, GROUP_TRIP, GROUP_TYRES, GROUP_SECURITY, GROUP_SERVICE,
             GROUP_STATISTICS);
-    // the properties set from the basic data, which those of another vehicle replace
     private static final List<String> BASIC_DATA_PROPERTIES = List.of(PROPERTY_VIN, PROPERTY_BRAND, PROPERTY_MODEL,
             PROPERTY_SERIES, PROPERTY_DRIVE_TRAIN, PROPERTY_PROPULSION_TYPE, PROPERTY_COLOR, PROPERTY_CONSTRUCTION_DATE,
             PROPERTY_HAS_SUNROOF, PROPERTY_HAS_NAVIGATION, PROPERTY_TELEMATICS_CAPABLE, PROPERTY_MODEL_KEY,
@@ -98,26 +96,24 @@ public class BMWCarDataVehicleHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(BMWCarDataVehicleHandler.class);
 
-    // set on initialization, read by the jobs, which compare it to detect a change of the VIN while they run
+    // compared by the jobs to detect a change of the VIN while they run
     private volatile String vin = "";
     private boolean dynamicChannels = true;
-    // serializes accepting and publishing values: the REST refresh and the stream deliver data concurrently, and a
-    // value accepted as newer must not be published after a value that was accepted later; held while publishing, as
-    // the order of the state updates is what counts
+    // held while publishing, so that a value accepted as newer by the REST refresh or the stream is not published
+    // after a value accepted later
     private final Object dataLock = new Object();
     private final ScheduledExecutorService jobScheduler;
     private @Nullable ScheduledFuture<?> propertiesJob;
     private @Nullable ScheduledFuture<?> imageJob;
-    // states by channel id, to answer REFRESH commands without spending API requests
+    // answers REFRESH commands without spending API requests
     private final Map<String, State> states = new ConcurrentHashMap<>();
-    // the latest readings by descriptor, to drop values older than already published ones or copies: the stream
-    // delivers many messages twice, and a refresh after the stream delivers the same values again; guarded by dataLock
+    // the stream delivers many messages twice, and a refresh after the stream delivers the same values again; guarded
+    // by dataLock
     private final Map<String, Reading> readings = new HashMap<>();
     // once the vehicle reports isPlugged, the plug state is no longer derived from the charging port status
     private volatile boolean pluggedReported;
-    // a refresh or stream message of the account may still deliver data while the handler is disposed
     private volatile boolean disposed;
-    // whether the last REST refresh failed, whose status the basic data arriving later must not replace
+    // the basic data arriving later must not replace the status of a failed refresh
     private volatile boolean refreshFailing;
     // guarded by dataLock
     private @Nullable BigDecimal latitude;
@@ -125,8 +121,7 @@ public class BMWCarDataVehicleHandler extends BaseThingHandler {
     private @Nullable BigDecimal altitude;
     private @Nullable Instant lastUpdate;
     private @Nullable Instant doorLockTimestamp;
-    // the data points with a reported value, whose fallback data points no longer update their channel; guarded by
-    // dataLock
+    // their fallback data points no longer update the channel; guarded by dataLock
     private final Set<VehicleChannel> reportedChannels = EnumSet.noneOf(VehicleChannel.class);
 
     public BMWCarDataVehicleHandler(Thing thing) {
@@ -157,8 +152,7 @@ public class BMWCarDataVehicleHandler extends BaseThingHandler {
         String previousVin = vin;
         vin = config.vin.trim().toUpperCase(Locale.ROOT);
         if (!vin.equals(previousVin)) {
-            // a configuration change initializes the same handler again, which must not keep the data of another
-            // vehicle
+            // a configuration change initializes the same handler again
             clearVehicleData();
         }
         dynamicChannels = config.dynamicChannels;
@@ -177,8 +171,6 @@ public class BMWCarDataVehicleHandler extends BaseThingHandler {
         cancelImage();
         BMWCarDataAccountHandler account = getAccountHandler();
         if (account != null) {
-            // a configuration change initializes the same handler again without telling the account, which reads the
-            // vehicle again once it goes online, e.g. with another VIN
             account.vehicleDisposed(this);
         }
         super.dispose();
@@ -357,8 +349,7 @@ public class BMWCarDataVehicleHandler extends BaseThingHandler {
         } else if (altitudeUndefined) {
             altitude = null;
         }
-        // an unavailable coordinate is forgotten, so that the location is undefined until both coordinates are
-        // reported again, instead of combining the other one with an outdated value
+        // an unavailable coordinate is forgotten, so that the other one is not combined with an outdated value
         if (newLatitude != null || newLongitude != null || latitudeUndefined || longitudeUndefined
                 || altitudeUndefined) {
             if (newLatitude != null || latitudeUndefined) {
@@ -439,13 +430,10 @@ public class BMWCarDataVehicleHandler extends BaseThingHandler {
     }
 
     /**
-     * Records the reading when it is newer than the last one of the descriptor. A reading with the same timestamp,
-     * value and unit as the last one is a copy, which the stream delivers for many messages and a refresh delivers
-     * after the stream, and is not published again.
+     * Records the reading unless it is older than the last one of the descriptor or a copy of it.
      */
     private boolean isNewer(String descriptor, Reading reading) {
         Reading previous = readings.get(descriptor);
-        // an older reading or a copy keeps the previous one, so it is not published
         if (previous != null && (reading.timestamp().isBefore(previous.timestamp()) || reading.equals(previous))) {
             return false;
         }
@@ -477,7 +465,7 @@ public class BMWCarDataVehicleHandler extends BaseThingHandler {
     }
 
     /**
-     * Sets the vehicle ONLINE. Its channels are final then, so the account reads its current values the first time.
+     * Sets the vehicle ONLINE, once its channels are final, so that the account reads its current values.
      */
     private void goOnline() {
         updateStatus(ThingStatus.ONLINE);
@@ -490,7 +478,7 @@ public class BMWCarDataVehicleHandler extends BaseThingHandler {
     private void updateBridgeStatus(ThingStatus bridgeStatus) {
         if (bridgeStatus == ThingStatus.ONLINE) {
             if (hasBasicData()) {
-                // e.g. after a restart, or an update of the binding with other channels; costs no request
+                // e.g. after an update of the binding with other channels
                 BMWCarDataAccountHandler account = getAccountHandler();
                 BasicData basicData = account != null ? account.getCachedBasicData(vin) : null;
                 if (basicData != null) {
@@ -498,7 +486,6 @@ public class BMWCarDataVehicleHandler extends BaseThingHandler {
                 }
                 goOnline();
             } else {
-                // the vehicle goes online once its basic data is known, which usually comes from the account's cache
                 updateStatus(ThingStatus.UNKNOWN);
                 scheduleProperties(0);
             }
@@ -580,8 +567,7 @@ public class BMWCarDataVehicleHandler extends BaseThingHandler {
     }
 
     /**
-     * Retrieves the image of the vehicle, if an item is linked to its channel: the request counts towards the daily
-     * quota the first time, the account keeps the image afterwards.
+     * Retrieves the image of the vehicle, only if an item is linked to its channel, as it costs a request.
      */
     private synchronized void scheduleImage() {
         ScheduledFuture<?> job = imageJob;
@@ -611,7 +597,6 @@ public class BMWCarDataVehicleHandler extends BaseThingHandler {
         BMWCarDataAccountHandler account = getAccountHandler();
         // the handler may be initialized again with another VIN while the image is retrieved
         String requestedVin = vin;
-        // a retry is not needed anymore once the item is unlinked
         if (account == null || states.containsKey(CHANNEL_IMAGE) || !isLinked(CHANNEL_IMAGE)) {
             return;
         }
@@ -627,8 +612,7 @@ public class BMWCarDataVehicleHandler extends BaseThingHandler {
             return;
         } catch (BMWCarDataException e) {
             logger.debug("Failed to retrieve the vehicle image: {}", e.getMessage());
-            // only retry what may succeed later, as each retry costs a request: e.g. a VIN without permission
-            // (CU-104) or without image (CU-126) would use up the budget
+            // each retry costs a request, e.g. a VIN without permission (CU-104) or image (CU-126) never succeeds
             if ((e.isTransient() || e.isRateLimited()) && requestedVin.equals(vin)) {
                 scheduleImageRetry();
             }
@@ -713,10 +697,8 @@ public class BMWCarDataVehicleHandler extends BaseThingHandler {
     }
 
     /**
-     * Aligns the predefined channels with the vehicle: removes those that do not apply to it, i.e. those of a drive it
-     * does not have and of the sunroof, and adds those that apply but are missing, e.g. after the VIN was changed to
-     * another vehicle. Equipment is only treated as missing when BMW explicitly reports so. Existing channels are kept
-     * as they are and the dynamic channels are left alone; the Thing is only updated if its channels change.
+     * Removes the predefined channels that do not apply to the vehicle and adds those that apply but are missing,
+     * e.g. after the VIN was changed to another vehicle. The dynamic channels are left alone.
      */
     private void reconcileChannels(BasicData basicData) {
         // BMW does not document the values, so that users can report the ones of their vehicles
@@ -783,9 +765,8 @@ public class BMWCarDataVehicleHandler extends BaseThingHandler {
 
     /**
      * Derives the drives of the vehicle from its basic data. BMW does not document the values, so only those seen on
-     * real vehicles are recognized: the drive trains {@code BEV}, {@code PHEV} and {@code CONV}, and the propulsion
-     * type {@code EL} when the drive train is missing. Any other value keeps all channels; the propulsion type of a
-     * combustion vehicle is its fuel, e.g. {@code BE}.
+     * real vehicles are recognized; any other value keeps all channels. The propulsion type of a combustion vehicle is
+     * its fuel, e.g. {@code BE}.
      */
     static Set<Drive> drives(BasicData basicData) {
         return switch (normalize(basicData.driveTrain)) {

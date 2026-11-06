@@ -120,14 +120,12 @@ final class AuthorizationPage {
         for (Account account : accounts) {
             html.append("<section class=\"account\"><h2>").append(escape(account.label())).append("</h2>")
                     .append("<p class=\"uid\">").append(escape(account.uid())).append("</p>");
-            @Nullable
             DeviceAuthorization authorization = account.authorization();
             if (account.authorized()) {
                 html.append("<p class=\"ok\">").append(escape(texts.get(AUTHORIZED))).append("</p>");
             } else if (authorization != null) {
                 String link = escape(authorization.userLink());
-                // same window, which the Main UI opened for the status link: after confirming, the user can close it;
-                // BMW does not return to openHAB, and a page cannot close a tab of another site
+                // same window, as BMW does not return to openHAB and a page cannot close a tab of another site
                 html.append("<p>").append(escape(texts.get(INSTRUCTIONS))).append("</p>")
                         .append("<p><a class=\"button\" href=\"").append(link).append("\" rel=\"noreferrer\">")
                         .append(escape(texts.get(OPEN_PORTAL))).append("</a></p>").append("<p class=\"code\">")

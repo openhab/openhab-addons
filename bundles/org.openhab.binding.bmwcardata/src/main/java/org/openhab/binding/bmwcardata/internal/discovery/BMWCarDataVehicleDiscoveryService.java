@@ -104,7 +104,6 @@ public class BMWCarDataVehicleDiscoveryService extends AbstractThingHandlerDisco
                     || !VehicleMapping.MAPPING_TYPE_PRIMARY.equals(mapping.mappingType)) {
                 continue;
             }
-            @Nullable
             BasicData basicData = fetchBasicData(vin);
             thingDiscovered(DiscoveryResultBuilder.create(new ThingUID(THING_TYPE_VEHICLE, bridgeUID, vin))
                     .withBridge(bridgeUID).withProperty(CONFIG_VIN, vin).withRepresentationProperty(CONFIG_VIN)

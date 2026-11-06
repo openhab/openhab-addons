@@ -172,8 +172,7 @@ public class BridgeStreamSource implements StreamSource, MqttMessageSubscriber, 
             return;
         }
         if (upstreamConnected == null) {
-            // data is flowing, so the bridge is connected even if it publishes no status; an explicit disconnected
-            // status is kept, as a raw message may be an old retained one that the broker replays on subscribing
+            // an explicit disconnected status is kept, as the message may be an old retained one
             upstreamConnected = true;
             publishState(null);
         }

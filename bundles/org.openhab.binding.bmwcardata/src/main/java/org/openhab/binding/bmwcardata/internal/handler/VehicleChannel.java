@@ -300,8 +300,8 @@ public enum VehicleChannel {
             PREDICTED_SOC, MIN_TARGET_SOC, TIME_TO_FULL, CHARGING_MODE, CHARGING_END_REASON, LAST_CHARGING_RESULT,
             CABLE_LOCK, CHARGING_FLAP, CHARGING_FLAP_LOCKED, TRIP_END_SOC, TRIP_RECUPERATION, TRIP_COMFORT_ENERGY);
 
-    // lastRemainingRange is meant for vehicles with a combustion engine, according to BMW's catalogue; an electric
-    // vehicle was seen not to report the engine state while driving
+    // per BMW's catalogue, lastRemainingRange is for combustion engines; an electric vehicle did not report the engine
+    // state while driving
     private static final Set<VehicleChannel> COMBUSTION_ONLY = EnumSet.of(FUEL_CONSUMED, FUEL_LEVEL, REMAINING_FUEL,
             TOTAL_RANGE, ENGINE);
 
@@ -312,7 +312,7 @@ public enum VehicleChannel {
     private static final Set<VehicleChannel> ZERO_UNDEFINED = EnumSet.of(BATTERY_CAPACITY);
 
     private static final Logger LOGGER = LoggerFactory.getLogger(VehicleChannel.class);
-    // the default unit is assumed for every value of a data point, so each assumption is logged once, not per value
+    // each assumed default unit is logged once, not per value
     private static final Set<String> LOGGED_DEFAULT_UNITS = ConcurrentHashMap.newKeySet();
 
     enum Kind {
@@ -321,11 +321,9 @@ public enum VehicleChannel {
         STRING,
         SWITCH,
         CONTACT,
-        // an opening that can be partly open: a contact that is open when partly open, plus a detail channel with
-        // the reported state
+        // a contact that is open when partly open, plus a detail channel with the reported state
         OPENING,
-        // a lock state word: a switch that is on when all doors are locked, plus a detail channel with the reported
-        // word, normalized so that e.g. SELECTIVE-LOCKED and SELECTIVELOCKED compare equal
+        // a switch that is on when all doors are locked, plus a detail channel with the reported word
         LOCK_STATE,
         DATETIME
     }

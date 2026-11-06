@@ -28,7 +28,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.bmwcardata.internal.handler.BMWCarDataAccountHandler;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TimeZoneProvider;
@@ -100,7 +99,6 @@ public class AuthorizationServlet extends HttpServlet {
     }
 
     private String translate(String key, Locale locale, Object... arguments) {
-        @Nullable
         String text = i18nProvider.getText(bundle, key, null, locale, arguments);
         return text != null ? text : key;
     }
@@ -123,7 +121,6 @@ public class AuthorizationServlet extends HttpServlet {
     private static AuthorizationPage.Account toAccount(BMWCarDataAccountHandler handler) {
         Thing thing = handler.getThing();
         String uid = thing.getUID().getAsString();
-        @Nullable
         String label = thing.getLabel();
         ThingStatusInfo status = thing.getStatusInfo();
         String statusText = status.getStatusDetail() == ThingStatusDetail.NONE ? status.getStatus().toString()

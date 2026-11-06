@@ -92,8 +92,7 @@ public class BMWCarDataAccountHandler extends BaseBridgeHandler implements Strea
 
     private static final String CONTAINER_NAME = "openHAB";
     private static final String CONTAINER_PURPOSE_PREFIX = "openHAB BMW CarData binding";
-    // identifies the container by its descriptors, so that it is replaced whenever they change; containers of earlier
-    // versions carry a revision number instead and are replaced as well
+    // contains a hash of the descriptors, so that the container is replaced when they change
     static final String CONTAINER_PURPOSE = containerPurpose(VehicleChannel.descriptors());
     private static final Duration REFRESH_MARGIN = Duration.ofMinutes(5);
     private static final long RETRY_DELAY_SECONDS = 60;
@@ -102,33 +101,28 @@ public class BMWCarDataAccountHandler extends BaseBridgeHandler implements Strea
     // the stream does not replay values sent while it was down
     private static final Duration CATCH_UP_AFTER_OUTAGE = Duration.ofMinutes(5);
     private static final Duration CATCH_UP_MIN_SPACING = Duration.ofMinutes(30);
-    // a single retry after a failure on BMW's side, e.g. a 502 of its gateway, which is usually over by then
+    // a failure on BMW's side, e.g. a 502 of its gateway, is usually over by then
     private static final Duration RETRY_AFTER_TRANSIENT_FAILURE = Duration.ofMinutes(15);
-    // not secret: the client id the stored authorization belongs to, and the stream user name
     private static final String STORAGE_KEY_CLIENT_ID = "clientId";
     private static final String STORAGE_KEY_GCID = "gcid";
-    // the per-thing request budget of earlier versions, removed at start
+    // the per-thing request budget of earlier versions
     private static final String STORAGE_KEY_BUDGET = "budget";
     private static final String STORAGE_KEY_CONTAINER = "container";
-    // basic data by VIN; it does not change, so discovery and the vehicle Thing share one request
+    // versioned, as only the fields mapped by the binding are cached
     private static final String STORAGE_KEY_BASIC_DATA = "basicData.v2.";
-    // the cached basic data holds only the fields the binding maps, so the version above changes with them; removing
-    // the account also removes entries of earlier versions
     private static final String STORAGE_KEY_BASIC_DATA_ANY_VERSION = "basicData.";
-    // vehicle image by VIN as data URI; like the basic data it does not change
     private static final String STORAGE_KEY_IMAGE = "image.";
 
     private final Logger logger = LoggerFactory.getLogger(BMWCarDataAccountHandler.class);
     private final HttpClient httpClient;
     private final Gson gson;
     private final Storage<String> storage;
-    // request budgets by client ID, so they survive recreating the account thing
+    // by client ID, as BMW counts the requests per client, also when the account thing is recreated
     private final Storage<String> budgetStorage;
     private final OAuthFactory oAuthFactory;
     private final ScheduledExecutorService jobScheduler;
     private final AccessTokenRefreshListener refreshListener = this::onAccessTokenResponse;
     private final Object containerLock = new Object();
-    // serializes telematic refreshes, so that concurrent triggers do not spend the request budget twice
     private final Object refreshLock = new Object();
 
     private AccountConfiguration config = new AccountConfiguration();
@@ -138,26 +132,21 @@ public class BMWCarDataAccountHandler extends BaseBridgeHandler implements Strea
     private @Nullable ScheduledFuture<?> refreshJob;
     // guarded by this
     private @Nullable ScheduledFuture<?> retryJob;
-    // VINs of the vehicles to refresh again, dropped once a later refresh of the vehicle succeeds
     private final Set<String> retryVins = ConcurrentHashMap.newKeySet();
-    // the vehicle handlers read since they or the account started, so that each is read once when it goes ONLINE; by
-    // instance, so that a late call of a disposed handler cannot keep its successor from being read
+    // by instance, so that a late call of a disposed handler cannot keep its successor from being read
     private final Set<BMWCarDataVehicleHandler> startedVehicles = ConcurrentHashMap.newKeySet();
     private volatile @Nullable Instant streamDownSince;
     private volatile @Nullable Instant lastCatchUp;
-    // status description while the request budget is used up
     private volatile @Nullable String budgetExhausted;
     private volatile @Nullable StreamState streamState;
     private final Object statusLock = new Object();
     private volatile @Nullable OAuthClientService oAuthService;
-    // latest tokens, updated whenever the OAuth client service imports or refreshes them
     private volatile @Nullable Tokens tokens;
     private volatile boolean authorized;
-    // the device authorization the user has to confirm, shown on the authorization page
     private volatile @Nullable DeviceAuthorization pendingAuthorization;
     private volatile @Nullable StreamSource streamSource;
     private volatile @Nullable StreamMirror mirror;
-    // whether the local broker of the mirror is connected, null if not known yet
+    // null if not known yet
     private volatile @Nullable Boolean mirrorConnected;
     private volatile @Nullable BMWCarDataVehicleDiscoveryService discoveryService;
     private @Nullable ScheduledFuture<?> authJob;
@@ -208,13 +197,11 @@ public class BMWCarDataAccountHandler extends BaseBridgeHandler implements Strea
             logger.debug("The client ID changed, the stored authorization is discarded");
             deleteAuthorization();
         }
-        // the device authorization is done by the binding, core's OAuth client service stores and refreshes the tokens
         OAuthClientService oAuthService = oAuthFactory.createOAuthClientService(oAuthHandle(),
                 BMWCarDataAuthClient.TOKEN_URL, null, clientId, null, null, false);
         oAuthService.addAccessTokenRefreshListener(refreshListener);
         this.oAuthService = oAuthService;
 
-        // BMW counts the requests per client, also when the account thing is recreated with a new UID
         storage.remove(STORAGE_KEY_BUDGET);
         RequestBudget budget = new RequestBudget(budgetStorage, clientId, config.requestBudget, Clock.systemUTC());
         this.budget = budget;
@@ -255,7 +242,6 @@ public class BMWCarDataAccountHandler extends BaseBridgeHandler implements Strea
                 storage.remove(key);
             }
         }
-        // the request budget is kept in the shared budget storage, as BMW keeps counting the requests of the client
         super.handleRemoval();
     }
 
@@ -335,11 +321,9 @@ public class BMWCarDataAccountHandler extends BaseBridgeHandler implements Strea
     }
 
     /**
-     * Retrieves the static data of a vehicle. Costs one request of the daily quota the first time; the data is kept,
-     * as it does not change, so discovery and the vehicle Thing share that request.
+     * Retrieves the static data of a vehicle, which is kept after the first request, as it does not change.
      */
     public BasicData fetchBasicData(String vin) throws BMWCarDataException {
-        @Nullable
         BasicData cached = getCachedBasicData(vin);
         if (cached != null) {
             return cached;
@@ -355,7 +339,6 @@ public class BMWCarDataAccountHandler extends BaseBridgeHandler implements Strea
      */
     @Nullable
     BasicData getCachedBasicData(String vin) {
-        @Nullable
         String cached = storage.get(STORAGE_KEY_BASIC_DATA + vin);
         if (cached == null) {
             return null;
@@ -369,11 +352,9 @@ public class BMWCarDataAccountHandler extends BaseBridgeHandler implements Strea
     }
 
     /**
-     * Retrieves the picture of a vehicle. Costs one request of the daily quota the first time; the picture is kept, as
-     * it does not change.
+     * Retrieves the picture of a vehicle, which is kept after the first request, as it does not change.
      */
     public RawType fetchVehicleImage(String vin) throws BMWCarDataException {
-        @Nullable
         RawType cached = getCachedImage(vin);
         if (cached != null) {
             return cached;
@@ -385,7 +366,6 @@ public class BMWCarDataAccountHandler extends BaseBridgeHandler implements Strea
     }
 
     private @Nullable RawType getCachedImage(String vin) {
-        @Nullable
         String cached = storage.get(STORAGE_KEY_IMAGE + vin);
         if (cached == null) {
             return null;
@@ -408,7 +388,7 @@ public class BMWCarDataAccountHandler extends BaseBridgeHandler implements Strea
             return call(() -> api.getTelematicData(vin, containerId));
         } catch (BMWCarDataException e) {
             if (e.isContainerUnusable()) {
-                // the container may have been deleted, e.g. by another tool; the next refresh sets up a new one
+                // e.g. deleted by another tool; the next refresh sets up a new one
                 synchronized (containerLock) {
                     if (containerId.equals(this.containerId)) {
                         this.containerId = null;
@@ -420,18 +400,13 @@ public class BMWCarDataAccountHandler extends BaseBridgeHandler implements Strea
         }
     }
 
-    /**
-     * Reads the current values of all vehicles, one request per vehicle. The refresh is skipped as a whole if the
-     * request budget cannot cover all vehicles.
-     */
     private void refreshTelematicData(String reason) {
         refreshTelematicData(reason, getVehicles(), true, generation);
     }
 
     /**
-     * Called by a vehicle when it goes ONLINE. Its current values are read once after the start of the vehicle and once
-     * after the start or a new authorization of the account, as the periodic refresh may be hours away; later calls,
-     * e.g. after the account was offline for a moment, do nothing.
+     * Called by a vehicle when it goes ONLINE. Its current values are read once per start of the vehicle or start or
+     * authorization of the account, as the periodic refresh may be hours away.
      */
     void vehicleOnline(BMWCarDataVehicleHandler vehicle) {
         int generation = this.generation;
@@ -449,8 +424,7 @@ public class BMWCarDataAccountHandler extends BaseBridgeHandler implements Strea
     }
 
     /**
-     * Called when a vehicle handler is disposed, also when it is initialized again on a configuration change, so that
-     * it is read again when it goes online.
+     * Called when a vehicle handler is disposed, also on a configuration change, so that it is read again.
      */
     void vehicleDisposed(BMWCarDataVehicleHandler vehicle) {
         startedVehicles.remove(vehicle);
@@ -467,7 +441,7 @@ public class BMWCarDataAccountHandler extends BaseBridgeHandler implements Strea
     private List<BMWCarDataVehicleHandler> getVehicles() {
         return getThing().getThings().stream().map(Thing::getHandler).filter(BMWCarDataVehicleHandler.class::isInstance)
                 .map(BMWCarDataVehicleHandler.class::cast).filter(vehicle -> BMWCarDataApi.isValidVin(vehicle.getVin()))
-                // e.g. a VIN the client has no permission for, which retrying does not change until re-enabled
+                // e.g. a VIN the client has no permission for
                 .filter(vehicle -> vehicle.getThing().getStatusInfo()
                         .getStatusDetail() != ThingStatusDetail.CONFIGURATION_ERROR)
                 .toList();
@@ -498,7 +472,7 @@ public class BMWCarDataAccountHandler extends BaseBridgeHandler implements Strea
                 if (isStale(generation)) {
                     return;
                 }
-                // read once, as the vehicle handler may be initialized again with another VIN while waiting for BMW
+                // the handler may be initialized again with another VIN while waiting for BMW
                 String vin = vehicle.getVin();
                 try {
                     Map<String, TelematicValue> data = fetchTelematicData(api, vin);
@@ -561,8 +535,7 @@ public class BMWCarDataAccountHandler extends BaseBridgeHandler implements Strea
     }
 
     /**
-     * Refreshes the vehicles still waiting for a retry, resolved by VIN, as vehicle Things may have been removed in
-     * the meantime. A failure of the retry does not schedule another one.
+     * Refreshes the vehicles still waiting for a retry. A failure of the retry does not schedule another one.
      */
     private void retryRefresh(int generation) {
         synchronized (this) {
@@ -709,7 +682,6 @@ public class BMWCarDataAccountHandler extends BaseBridgeHandler implements Strea
         try {
             return call.execute();
         } catch (BMWCarDataAuthException e) {
-            // the access token was rejected before its expiry, try to obtain a new one
             if (tokens != null) {
                 scheduleAuthJob(this::refreshTokens, 0);
             }
@@ -738,8 +710,7 @@ public class BMWCarDataAccountHandler extends BaseBridgeHandler implements Strea
             if (id != null) {
                 return id;
             }
-            // the stored id saves listing the containers after each restart; it is bound to the descriptors by the
-            // purpose
+            // saves listing the containers after each restart
             String stored = storage.get(STORAGE_KEY_CONTAINER);
             String suffix = "|" + CONTAINER_PURPOSE;
             if (stored != null && stored.endsWith(suffix)) {
@@ -829,15 +800,12 @@ public class BMWCarDataAccountHandler extends BaseBridgeHandler implements Strea
         try {
             DeviceAuthorization authorization = authClient.requestDeviceCode();
             pendingAuthorization = authorization;
-            // the Main UI links to the authorization page, which shows the link to BMW, a QR code of it and the code
             updateOfflineIfActive(ThingStatusDetail.AUTHORIZATION_PENDING, "@text/offline.authorization-pending");
             scheduleAuthJob(() -> pollDeviceAuthorization(authorization, authorization.interval()),
                     authorization.interval());
         } catch (BMWCarDataException e) {
             if (e.getHttpStatus() == 400 || e.getHttpStatus() == 401) {
-                // the request is always the same, so BMW rejects the client ID, e.g. with invalid_request; the device
-                // flow spec uses 401 for an invalid client at the token endpoint, which is treated the same here;
-                // retrying does not help until the configuration or the subscriptions of the client are fixed
+                // the request is always the same, so BMW rejects the client ID (RFC 8628 uses 401 for that)
                 logger.debug("Device authorization rejected: {}", e.getMessage());
                 updateOfflineIfActive(ThingStatusDetail.CONFIGURATION_ERROR,
                         "@text/offline.conf-error.client-rejected");
@@ -1100,8 +1068,7 @@ public class BMWCarDataAccountHandler extends BaseBridgeHandler implements Strea
     }
 
     /**
-     * Starts mirroring the direct stream to the local broker if configured. The mirror keeps its own connection, so it
-     * is independent of reconnects of the BMW stream.
+     * Starts mirroring the direct stream to the local broker if configured.
      *
      * @return the running mirror, or {@code null} if mirroring is not active
      */
