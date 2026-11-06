@@ -15,6 +15,7 @@ package org.openhab.binding.hasslink.internal.api;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -33,11 +34,9 @@ import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.websocket.api.RemoteEndpoint;
+import org.eclipse.jetty.websocket.api.Callback;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.StatusCode;
-import org.eclipse.jetty.websocket.api.WebSocketListener;
-import org.eclipse.jetty.websocket.api.WebSocketPolicy;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.openhab.binding.hasslink.internal.api.dto.EntityState;
 import org.openhab.binding.hasslink.internal.api.dto.EntityStateCompressedEvent;
@@ -76,7 +75,7 @@ import com.google.gson.reflect.TypeToken;
  * @author Jimmy Tanagra - Initial contribution
  */
 @NonNullByDefault
-public class HomeAssistantWebSocketClient implements WebSocketListener {
+public class HomeAssistantWebSocketClient implements Session.Listener.AutoDemanding {
 
     private static final int MAX_TEXT_MESSAGE_SIZE = 2 * 1024 * 1024;
     private static final int INITIAL_RECONNECT_DELAY_SECONDS = 5;
@@ -195,7 +194,7 @@ public class HomeAssistantWebSocketClient implements WebSocketListener {
             }
             Session localSession = session;
             if (localSession != null) {
-                localSession.close(StatusCode.NORMAL, SHUTDOWN_REASON);
+                localSession.close(StatusCode.NORMAL, SHUTDOWN_REASON, Callback.NOOP);
             }
             session = null;
             sessionFuture = null;
@@ -271,15 +270,11 @@ public class HomeAssistantWebSocketClient implements WebSocketListener {
             return;
         }
         String json = gson.toJson(command);
-        try {
-            RemoteEndpoint remote = localSession.getRemote();
-            if (logger.isTraceEnabled()) {
-                logger.trace("SEND | {}", redactToken(json));
-            }
-            remote.sendString(json);
-        } catch (IOException e) {
-            logger.warn("Failed to send '{}' command: {}", command.type, e.getMessage());
+        if (logger.isTraceEnabled()) {
+            logger.trace("SEND | {}", redactToken(json));
         }
+        localSession.sendText(json, Callback.from(() -> {
+        }, e -> logger.warn("Failed to send '{}' command: {}", command.type, e.getMessage())));
     }
 
     /**
@@ -357,18 +352,15 @@ public class HomeAssistantWebSocketClient implements WebSocketListener {
     }
 
     @Override
-    public void onWebSocketConnect(@NonNullByDefault({}) Session session) {
+    public void onWebSocketOpen(@NonNullByDefault({}) Session session) {
         logger.debug("Connected to Home Assistant WebSocket");
         synchronized (lifecycleLock) {
             if (shuttingDown) {
-                session.close(StatusCode.SHUTDOWN, SHUTDOWN_REASON);
+                session.close(StatusCode.SHUTDOWN, SHUTDOWN_REASON, Callback.NOOP);
                 return;
             }
             this.session = session;
-            WebSocketPolicy policy = session.getPolicy();
-            if (policy != null) {
-                policy.setMaxTextMessageSize(MAX_TEXT_MESSAGE_SIZE);
-            }
+            session.setMaxTextMessageSize(MAX_TEXT_MESSAGE_SIZE);
         }
     }
 
@@ -395,7 +387,7 @@ public class HomeAssistantWebSocketClient implements WebSocketListener {
         synchronized (lifecycleLock) {
             Session localSession = session;
             if (localSession != null) {
-                localSession.close(StatusCode.SERVER_ERROR, "Communication error");
+                localSession.close(StatusCode.SERVER_ERROR, "Communication error", Callback.NOOP);
             }
             session = null;
             sessionFuture = null;
@@ -405,8 +397,9 @@ public class HomeAssistantWebSocketClient implements WebSocketListener {
     }
 
     @Override
-    public void onWebSocketBinary(@NonNullByDefault({}) byte[] payload, int offset, int len) {
-        logger.debug("Ignoring unsupported binary WebSocket frame (offset={}, len={})", offset, len);
+    public void onWebSocketBinary(@NonNullByDefault({}) ByteBuffer payload, @NonNullByDefault({}) Callback callback) {
+        logger.debug("Ignoring unsupported binary WebSocket frame (len={})", payload.remaining());
+        callback.succeed();
     }
 
     @Override

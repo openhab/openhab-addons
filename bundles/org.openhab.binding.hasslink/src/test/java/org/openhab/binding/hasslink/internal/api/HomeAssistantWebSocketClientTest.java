@@ -17,6 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -36,7 +37,6 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.eclipse.jetty.websocket.api.RemoteEndpoint;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.junit.jupiter.api.Test;
@@ -63,10 +63,8 @@ class HomeAssistantWebSocketClientTest {
         ScheduledExecutorService scheduler = mock(ScheduledExecutorService.class);
         HomeAssistantWebSocketClient client = new HomeAssistantWebSocketClient(wsClient, "token", listener, scheduler);
         Session session = mock(Session.class);
-        RemoteEndpoint remote = mock(RemoteEndpoint.class);
-        when(session.getRemote()).thenReturn(remote);
         when(session.isOpen()).thenReturn(true);
-        client.onWebSocketConnect(session);
+        client.onWebSocketOpen(session);
 
         CountDownLatch firstSerializationStarted = new CountDownLatch(1);
         CountDownLatch releaseFirstSerialization = new CountDownLatch(1);
@@ -98,7 +96,7 @@ class HomeAssistantWebSocketClientTest {
         doAnswer(invocation -> {
             sentMessages.add(invocation.getArgument(0));
             return null;
-        }).when(remote).sendString(anyString());
+        }).when(session).sendText(anyString(), any());
 
         // 2. TRAP THREAD 1: Fire the first command which will freeze inside
         // Gson serialization due to our custom blockingData map.
@@ -173,15 +171,13 @@ class HomeAssistantWebSocketClientTest {
         HomeAssistantWebSocketClient client = new HomeAssistantWebSocketClient(wsClient, "token", listener,
                 mock(ScheduledExecutorService.class));
         Session session = mock(Session.class);
-        RemoteEndpoint remote = mock(RemoteEndpoint.class);
-        when(session.getRemote()).thenReturn(remote);
         when(session.isOpen()).thenReturn(true);
-        client.onWebSocketConnect(session);
+        client.onWebSocketOpen(session);
         List<String> sentMessages = new CopyOnWriteArrayList<>();
         doAnswer(invocation -> {
             sentMessages.add(invocation.getArgument(0));
             return null;
-        }).when(remote).sendString(anyString());
+        }).when(session).sendText(anyString(), any());
 
         client.updateWeatherForecastSubscriptions(Map.of("weather.demo", Set.of("daily")));
 
