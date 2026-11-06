@@ -34,6 +34,21 @@ An unpublished application only provides the VCC API key and short-lived test to
    The confirmation page shows the client ID and the client secret.
    Note them together with the VCC API key.
 
+The client ID of a new application starts with `vid-dc-`.
+
+### Migrating from a `dc-` Client
+
+Volvo is migrating Volvo ID to a new service, see the [announcement](https://developer.volvocars.com/news/volvoid-migration/).
+Applications with a client ID starting with `dc-` were registered with the old service and stop working on **31 January 2027**.
+The binding still supports them until then and logs a warning on startup.
+To migrate:
+
+1. Create and publish a new application as described above, with the same scopes and redirect URI.
+1. Replace `clientId`, `clientSecret` and `apiKey` of the bridge with the values of the new application.
+1. Authorize the bridge again, see [Authorization](#authorization).
+   The tokens of the old application cannot be used with the new one.
+1. Once the bridge is online, delete the old application on the developer portal.
+
 ### Redirect URI
 
 After you have signed in, Volvo ID sends your browser to the redirect URI together with the authorization code.
@@ -111,9 +126,9 @@ After the bridge has been created, it stays offline until openHAB has been autho
 
 The tokens are stored encrypted and renewed automatically by openHAB's OAuth client service.
 This does not need the redirect URI, so it also works if the redirect URI is not reachable.
-Volvo ID issues a new refresh token on every renewal and invalidates a refresh token that is not used within 7 days.
+Volvo ID may issue a new refresh token on every renewal and invalidates a refresh token that is not used for some time.
 The binding therefore renews the tokens at least once a day, even if no vehicle is polled.
-You have to authorize again if openHAB was not running for more than 7 days, or after the maximum validity of an authorization (6 months according to Volvo).
+You have to authorize again if openHAB was not running for several days, or after the maximum validity of an authorization.
 In that case, or if Volvo revokes the authorization, the bridge goes offline with a link to the authorization page in its status.
 Changing the client ID also requires a new authorization.
 

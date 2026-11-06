@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.volvocars.internal.handler;
 
-import static org.openhab.binding.volvocars.internal.VolvoCarsBindingConstants.TOKEN_URL;
-
 import java.util.Collection;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
@@ -82,9 +80,15 @@ public class AccountHandler extends BaseBridgeHandler {
             updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.conf-error.incomplete");
             return;
         }
+        if (config.isLegacyClient()) {
+            logger.warn(
+                    "The application of {} uses a legacy Volvo ID client, which stops working on 31 January 2027. "
+                            + "Create a new application on the Volvo Cars developer portal and update the bridge.",
+                    getThing().getUID());
+        }
         // the binding obtains the tokens, core's OAuth client service stores and refreshes them
-        OAuthClientService localOAuthService = oAuthFactory.createOAuthClientService(oAuthHandle(), TOKEN_URL, null,
-                config.clientId, config.clientSecret, null, true);
+        OAuthClientService localOAuthService = oAuthFactory.createOAuthClientService(oAuthHandle(), config.tokenUrl(),
+                null, config.clientId, config.clientSecret, null, true);
         oAuthService = localOAuthService;
         VolvoCarsOAuthClient localOAuthClient = new VolvoCarsOAuthClient(httpClient, localOAuthService, storage,
                 oAuthHandle(), config);

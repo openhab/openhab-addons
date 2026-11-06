@@ -35,8 +35,13 @@ public class VolvoCarsBindingConstants {
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_ACCOUNT, THING_TYPE_VEHICLE);
 
-    public static final String AUTHORIZE_URL = "https://volvoid.eu.volvocars.com/as/authorization.oauth2";
-    public static final String TOKEN_URL = "https://volvoid.eu.volvocars.com/as/token.oauth2";
+    // Volvo ID, for applications with a client id starting with "vid-dc-"
+    public static final String AUTHORIZE_URL = "https://auth.volvocars.com/realms/volvocars/protocol/openid-connect/auth";
+    public static final String TOKEN_URL = "https://auth.volvocars.com/realms/volvocars/protocol/openid-connect/token";
+    // legacy Volvo ID, for applications with a client id starting with "dc-", shut down on 31 January 2027
+    public static final String LEGACY_CLIENT_ID_PREFIX = "dc-";
+    public static final String LEGACY_AUTHORIZE_URL = "https://volvoid.eu.volvocars.com/as/authorization.oauth2";
+    public static final String LEGACY_TOKEN_URL = "https://volvoid.eu.volvocars.com/as/token.oauth2";
     public static final String API_URL = "https://api.volvocars.com";
     public static final String CONNECTED_VEHICLE_ENDPOINT = API_URL + "/connected-vehicle/v2/vehicles";
     public static final String ENERGY_ENDPOINT = API_URL + "/energy/v2/vehicles";
