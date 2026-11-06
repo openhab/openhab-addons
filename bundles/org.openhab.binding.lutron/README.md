@@ -890,6 +890,8 @@ Supported in future updates:
 
 This binding supports active and passive discovery.
 It will detect dimmers as they are manually raised or lowered, or can be made to scan for configured dimmer modules.
+Only devices with a five-field address (for example `[01:01:03:02:04]`) are discovered as dimmers.
+Other devices that report levels, such as QED shades, which have four-field addresses (for example `[01:04:2:12]`), are not discovered and are not supported yet.
 
 ### HomeWorks RS232 Thing Configuration
 
@@ -940,6 +942,7 @@ lutron:hwtelnetbridge:home [ ipAddress="192.168.1.169", user="openhab", password
 
 Dimmers work the same way with both bridges.
 Dimmer addresses have five fields (for example `[01:01:03:02:04]`).
+Each dimmer asks the processor for its level whenever the bridge goes online, including after a reconnect.
 
 ### HomeWorks Console Commands
 
