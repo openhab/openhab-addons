@@ -107,6 +107,11 @@
                   <classifier>rrd4j</classifier>
                 </artifact>
                 <artifact>
+                  <file>src/main/resources/conf/victoriametrics.cfg</file>
+                  <type>cfg</type>
+                  <classifier>victoriametrics</classifier>
+                </artifact>
+                <artifact>
                   <file>src/main/resources/conf/voicerss.cfg</file>
                   <type>cfg</type>
                   <classifier>voicerss</classifier>
