@@ -1,0 +1,396 @@
+{
+	"deviceMapping": {
+		"id": [
+			"zhimi.humidifier.ca6"
+		],
+		"propertyMethod": "get_properties",
+		"maxProperties": 1,
+		"channels": [
+			{
+				"property": "on",
+				"siid": 2,
+				"piid": 1,
+				"friendlyName": "Power",
+				"channel": "power",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch",
+					"Power"
+				]
+			},
+			{
+				"property": "fault",
+				"siid": 2,
+				"piid": 2,
+				"friendlyName": "Device Fault",
+				"channel": "fault",
+				"type": "Number",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 15,
+					"step": 1,
+					"pattern": "%.0f",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "error",
+				"tags": [
+					"Status"
+				]
+			},
+			{
+				"property": "fan-level",
+				"siid": 2,
+				"piid": 5,
+				"friendlyName": "Mode",
+				"channel": "mode",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "Max"
+						},
+						{
+							"value": "1",
+							"label": "Auto"
+						},
+						{
+							"value": "2",
+							"label": "Night"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "fan",
+				"tags": [
+					"Control",
+					"Mode"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Max\",\"1\"\u003d\"Auto\",\"2\"\u003d\"Night\"]`"
+			},
+			{
+				"property": "target-humidity",
+				"siid": 2,
+				"piid": 6,
+				"friendlyName": "Target Humidity",
+				"channel": "target_humidity",
+				"type": "Number:Dimensionless",
+				"unit": "percentage",
+				"stateDescription": {
+					"minimum": 30,
+					"maximum": 60,
+					"step": 5,
+					"pattern": "%.0f %%"
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "humidity",
+				"tags": [
+					"Setpoint",
+					"Humidity"
+				],
+				"readmeComment": "Used in Auto mode"
+			},
+			{
+				"property": "water-level",
+				"siid": 2,
+				"piid": 7,
+				"friendlyName": "Water Level",
+				"channel": "water_level",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "Low"
+						},
+						{
+							"value": "1",
+							"label": "Normal"
+						},
+						{
+							"value": "2",
+							"label": "Full"
+						}
+					],
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "water",
+				"tags": [
+					"Status",
+					"Water"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Low\",\"1\"\u003d\"Normal\",\"2\"\u003d\"Full\"]`"
+			},
+			{
+				"property": "automatic-air-drying",
+				"siid": 2,
+				"piid": 8,
+				"friendlyName": "Air Drying Mode",
+				"channel": "dry",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch",
+					"Enabled"
+				],
+				"readmeComment": "Keeps running for about 3 hours when the water level is low"
+			},
+			{
+				"property": "status",
+				"siid": 2,
+				"piid": 9,
+				"friendlyName": "Status",
+				"channel": "status",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "1",
+							"label": "Off"
+						},
+						{
+							"value": "2",
+							"label": "Humidifying"
+						},
+						{
+							"value": "3",
+							"label": "Drying"
+						},
+						{
+							"value": "4",
+							"label": "Cleaning"
+						}
+					],
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "status",
+				"tags": [
+					"Status"
+				],
+				"readmeComment": "Value mapping `[\"1\"\u003d\"Off\",\"2\"\u003d\"Humidifying\",\"3\"\u003d\"Drying\",\"4\"\u003d\"Cleaning\"]`"
+			},
+			{
+				"property": "temperature",
+				"siid": 3,
+				"piid": 7,
+				"friendlyName": "Temperature",
+				"channel": "temperature",
+				"type": "Number:Temperature",
+				"unit": "celsius",
+				"stateDescription": {
+					"minimum": -40,
+					"maximum": 125,
+					"pattern": "%.1f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "temperature",
+				"tags": [
+					"Measurement",
+					"Temperature"
+				]
+			},
+			{
+				"property": "relative-humidity",
+				"siid": 3,
+				"piid": 9,
+				"friendlyName": "Humidity",
+				"channel": "humidity",
+				"type": "Number:Dimensionless",
+				"unit": "percentage",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 100,
+					"step": 1,
+					"pattern": "%.0f %%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "humidity",
+				"tags": [
+					"Measurement",
+					"Humidity"
+				]
+			},
+			{
+				"property": "alarm",
+				"siid": 4,
+				"piid": 1,
+				"friendlyName": "Notification Sound",
+				"channel": "buzzer",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "soundvolume",
+				"tags": [
+					"Switch",
+					"Enabled"
+				]
+			},
+			{
+				"property": "brightness",
+				"siid": 5,
+				"piid": 2,
+				"friendlyName": "Screen Brightness",
+				"channel": "led_brightness",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "Off"
+						},
+						{
+							"value": "1",
+							"label": "Dim"
+						},
+						{
+							"value": "2",
+							"label": "Bright"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "light",
+				"tags": [
+					"Control",
+					"Light"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Off\",\"1\"\u003d\"Dim\",\"2\"\u003d\"Bright\"]`"
+			},
+			{
+				"property": "physical-controls-locked",
+				"siid": 6,
+				"piid": 1,
+				"friendlyName": "Child Lock",
+				"channel": "child_lock",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "lock",
+				"tags": [
+					"Switch",
+					"Enabled"
+				]
+			},
+			{
+				"property": "actual-speed",
+				"siid": 7,
+				"piid": 1,
+				"friendlyName": "Motor Speed",
+				"channel": "speed",
+				"type": "Number",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 2000,
+					"step": 1,
+					"pattern": "%.0f RPM",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "fan",
+				"tags": [
+					"Measurement",
+					"Speed"
+				]
+			},
+			{
+				"property": "clean",
+				"siid": 7,
+				"piid": 5,
+				"friendlyName": "Clean Mode",
+				"channel": "clean",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch",
+					"Enabled"
+				],
+				"readmeComment": "Self-cleaning for about 30 minutes; fill the water tank first"
+			},
+			{
+				"property": "self-clean-percent",
+				"siid": 7,
+				"piid": 6,
+				"friendlyName": "Self-Cleaning Time Left",
+				"channel": "clean_time_left",
+				"type": "Number:Time",
+				"unit": "minutes",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 30,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "time",
+				"tags": [
+					"Measurement",
+					"Duration"
+				]
+			}
+		],
+		"experimental": true
+	}
+}

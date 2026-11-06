@@ -4,7 +4,7 @@
 			"zhimi.humidifier.ca4"
 		],
 		"propertyMethod": "get_properties",
-		"maxProperties": 2,
+		"maxProperties": 1,
 		"channels": [
 			{
 				"property": "power",
@@ -22,14 +22,15 @@
 				],
 				"category": "switch",
 				"tags": [
-					"Switch"
+					"Switch",
+					"Power"
 				]
 			},
 			{
 				"property": "mode",
 				"siid": 2,
 				"piid": 5,
-				"friendlyName": "Mode - Fan Level",
+				"friendlyName": "Mode",
 				"channel": "mode",
 				"type": "Number",
 				"stateDescription": {
@@ -40,37 +41,38 @@
 						},
 						{
 							"value": "1",
-							"label": "Silent"
+							"label": "Level 1"
 						},
 						{
 							"value": "2",
-							"label": "Normal"
+							"label": "Level 2"
 						},
 						{
 							"value": "3",
-							"label": "Maximum"
+							"label": "Level 3"
 						}
 					]
 				},
 				"refresh": true,
-				"ChannelGroup": "actions",
 				"actions": [
 					{
 						"command": "set_properties",
 						"parameterType": "NUMBER"
 					}
 				],
+				"category": "fan",
 				"tags": [
-					"Control"
+					"Control",
+					"Mode"
 				],
-				"readmeComment": "Value mapping `[\"0\"\u003d\"Auto\",\"1\"\u003d\"Silent\",\"2\"\u003d\"Normal\",\"3\"\u003d\"Maximum\"]`"
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Auto\",\"1\"\u003d\"Level 1\",\"2\"\u003d\"Level 2\",\"3\"\u003d\"Level 3\"]`"
 			},
 			{
 				"property": "fault",
 				"siid": 2,
 				"piid": 2,
-				"friendlyName": "Humidifier Device Fault",
-				"channel": "Fault",
+				"friendlyName": "Device Fault",
+				"channel": "fault",
 				"type": "Number",
 				"stateDescription": {
 					"minimum": 0,
@@ -80,7 +82,11 @@
 					"readOnly": true
 				},
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"category": "error",
+				"tags": [
+					"Status"
+				]
 			},
 			{
 				"property": "humidity",
@@ -89,9 +95,15 @@
 				"friendlyName": "Humidity",
 				"channel": "humidity",
 				"type": "Number:Dimensionless",
-				"unit": "PERCENT",
+				"unit": "percentage",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 100,
+					"step": 1,
+					"pattern": "%.0f %%",
+					"readOnly": true
+				},
 				"refresh": true,
-				"ChannelGroup": "Status",
 				"actions": [],
 				"category": "humidity",
 				"tags": [
@@ -104,22 +116,26 @@
 				"siid": 2,
 				"piid": 6,
 				"friendlyName": "Target Humidity",
-				"channel": "targetHumidity",
+				"channel": "target_humidity",
 				"type": "Number:Dimensionless",
 				"unit": "percentage",
 				"stateDescription": {
 					"minimum": 30,
 					"maximum": 80,
 					"step": 1,
-					"pattern": "%.0f %unit%"
+					"pattern": "%.0f %%"
 				},
 				"refresh": true,
-				"ChannelGroup": "Status",
 				"actions": [
 					{
 						"command": "set_properties",
 						"parameterType": "NUMBER"
 					}
+				],
+				"category": "humidity",
+				"tags": [
+					"Setpoint",
+					"Humidity"
 				]
 			},
 			{
@@ -127,46 +143,47 @@
 				"siid": 2,
 				"piid": 7,
 				"friendlyName": "Water Level",
-				"channel": "waterlevel",
-				"type": "Number",
+				"channel": "water_level",
+				"type": "Number:Dimensionless",
+				"unit": "percentage",
 				"stateDescription": {
-					"minimum": 0,
-					"maximum": 100,
-					"step": 1,
 					"pattern": "%.0f %%",
 					"readOnly": true
 				},
 				"refresh": true,
 				"transformation": "tankLevel",
-				"ChannelGroup": "Status",
 				"actions": [],
-				"category": "water"
+				"category": "water",
+				"tags": [
+					"Measurement",
+					"Level"
+				],
+				"readmeComment": "-1 when the water tank is removed"
 			},
 			{
 				"property": "led_brightness",
 				"siid": 5,
 				"piid": 2,
-				"friendlyName": "LED Brightness",
-				"channel": "bright",
+				"friendlyName": "Indicator Light",
+				"channel": "led_brightness",
 				"type": "Number",
 				"stateDescription": {
 					"options": [
 						{
 							"value": "0",
-							"label": "Dark"
+							"label": "Off"
 						},
 						{
 							"value": "1",
-							"label": "Dimmed"
+							"label": "Dim"
 						},
 						{
 							"value": "2",
-							"label": "Brightest"
+							"label": "Bright"
 						}
 					]
 				},
 				"refresh": true,
-				"ChannelGroup": "actions",
 				"actions": [
 					{
 						"command": "set_properties",
@@ -178,102 +195,134 @@
 					"Control",
 					"Light"
 				],
-				"readmeComment": "Value mapping `[\"0\"\u003d\"Dark\",\"1\"\u003d\"Dimmed\",\"2\"\u003d\"Brightest\"]`"
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Off\",\"1\"\u003d\"Dim\",\"2\"\u003d\"Bright\"]`"
 			},
 			{
 				"property": "buzzer",
 				"siid": 4,
 				"piid": 1,
-				"friendlyName": "Buzzer Status",
+				"friendlyName": "Notification Sound",
 				"channel": "buzzer",
 				"type": "Switch",
 				"refresh": true,
-				"ChannelGroup": "actions",
 				"actions": [
 					{
 						"command": "set_properties",
 						"parameterType": "ONOFFBOOL"
 					}
+				],
+				"category": "soundvolume",
+				"tags": [
+					"Switch",
+					"Enabled"
 				]
 			},
 			{
 				"property": "dry",
 				"siid": 2,
 				"piid": 8,
-				"friendlyName": "Dry",
+				"friendlyName": "Air Drying Mode",
 				"channel": "dry",
 				"type": "Switch",
 				"refresh": true,
-				"ChannelGroup": "Status",
 				"actions": [
 					{
 						"command": "set_properties",
 						"parameterType": "ONOFFBOOL"
 					}
-				]
+				],
+				"category": "switch",
+				"tags": [
+					"Switch",
+					"Enabled"
+				],
+				"readmeComment": "Keeps running for about 8 hours when the water runs out, to dry the wick"
 			},
 			{
 				"property": "use_time",
 				"siid": 2,
 				"piid": 9,
 				"friendlyName": "Run Time",
-				"channel": "usedhours",
+				"channel": "use_time",
 				"type": "Number:Time",
 				"unit": "hours",
+				"stateDescription": {
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
 				"refresh": true,
 				"transformation": "SecondsToHours",
-				"ChannelGroup": "Status",
 				"actions": [],
-				"category": "time"
+				"category": "time",
+				"tags": [
+					"Measurement",
+					"Duration"
+				]
 			},
 			{
 				"property": "power_time",
 				"siid": 7,
 				"piid": 3,
-				"friendlyName": "Power Time",
-				"channel": "powerhours",
+				"friendlyName": "Power-On Time",
+				"channel": "power_time",
 				"type": "Number:Time",
 				"unit": "hours",
+				"stateDescription": {
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
 				"refresh": true,
 				"transformation": "SecondsToHours",
-				"ChannelGroup": "Status",
 				"actions": [],
-				"category": "time"
+				"category": "time",
+				"tags": [
+					"Measurement",
+					"Duration"
+				]
 			},
 			{
 				"property": "speed_level",
 				"siid": 2,
 				"piid": 11,
 				"friendlyName": "Target Motor Speed",
-				"channel": "targetmotorspeed",
+				"channel": "target_speed",
 				"type": "Number",
 				"stateDescription": {
 					"minimum": 200,
 					"maximum": 2000,
 					"step": 10,
-					"pattern": "%.0f"
+					"pattern": "%.0f RPM",
+					"readOnly": true
 				},
 				"refresh": true,
-				"ChannelGroup": "Status",
-				"actions": []
+				"actions": [],
+				"category": "fan",
+				"tags": [
+					"Status",
+					"Speed"
+				]
 			},
 			{
 				"property": "actual_speed",
 				"siid": 7,
 				"piid": 1,
-				"friendlyName": "Actual Motor Speed",
-				"channel": "actualmotorspeed",
+				"friendlyName": "Motor Speed",
+				"channel": "speed",
 				"type": "Number",
 				"stateDescription": {
 					"minimum": 0,
 					"maximum": 2000,
 					"step": 1,
-					"pattern": "%.0f",
+					"pattern": "%.0f RPM",
 					"readOnly": true
 				},
 				"refresh": true,
-				"ChannelGroup": "Status",
-				"actions": []
+				"actions": [],
+				"category": "fan",
+				"tags": [
+					"Measurement",
+					"Speed"
+				]
 			},
 			{
 				"property": "temp_dec",
@@ -290,7 +339,6 @@
 					"readOnly": true
 				},
 				"refresh": true,
-				"ChannelGroup": "Status",
 				"actions": [],
 				"category": "temperature",
 				"tags": [
@@ -303,44 +351,20 @@
 				"siid": 6,
 				"piid": 1,
 				"friendlyName": "Child Lock",
-				"channel": "childlock",
+				"channel": "child_lock",
 				"type": "Switch",
 				"refresh": true,
-				"ChannelGroup": "Status",
 				"actions": [
 					{
 						"command": "set_properties",
 						"parameterType": "ONOFFBOOL"
 					}
+				],
+				"category": "lock",
+				"tags": [
+					"Switch",
+					"Enabled"
 				]
-			},
-			{
-				"property": "button_pressed",
-				"siid": 2,
-				"piid": 10,
-				"friendlyName": "Button Pressed",
-				"channel": "ButtonPressed",
-				"type": "Number",
-				"stateDescription": {
-					"readOnly": true,
-					"options": [
-						{
-							"value": "0",
-							"label": "none"
-						},
-						{
-							"value": "1",
-							"label": "led"
-						},
-						{
-							"value": "2",
-							"label": "power"
-						}
-					]
-				},
-				"refresh": true,
-				"actions": [],
-				"readmeComment": "Value mapping `[\"0\"\u003d\"none\",\"1\"\u003d\"led\",\"2\"\u003d\"power\"]`"
 			},
 			{
 				"property": "clean",
@@ -355,8 +379,15 @@
 						"command": "set_properties",
 						"parameterType": "ONOFFBOOL"
 					}
-				]
+				],
+				"category": "switch",
+				"tags": [
+					"Switch",
+					"Enabled"
+				],
+				"readmeComment": "Starts the cleaning cycle; the app recommends cleaning at least once a week"
 			}
-		]
+		],
+		"experimental": false
 	}
 }
