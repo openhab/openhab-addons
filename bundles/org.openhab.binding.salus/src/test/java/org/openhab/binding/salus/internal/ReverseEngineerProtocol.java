@@ -67,7 +67,7 @@ public class ReverseEngineerProtocol implements AutoCloseable {
 
         @Override
         public org.eclipse.jetty.client.HttpClient createHttpClient(String consumerName,
-                @Nullable SslContextFactory sslContextFactory) {
+                SslContextFactory.@Nullable Client sslContextFactory) {
             throw new UnsupportedOperationException(
                     "ReverseEngineerProtocol.createHttpClient(consumerName, sslContextFactory)");
         }
@@ -83,7 +83,8 @@ public class ReverseEngineerProtocol implements AutoCloseable {
         }
 
         @Override
-        public HTTP2Client createHttp2Client(String consumerName, @Nullable SslContextFactory sslContextFactory) {
+        public HTTP2Client createHttp2Client(String consumerName,
+                SslContextFactory.@Nullable Client sslContextFactory) {
             throw new UnsupportedOperationException(
                     "ReverseEngineerProtocol.createHttp2Client(consumerName, sslContextFactory)");
         }
