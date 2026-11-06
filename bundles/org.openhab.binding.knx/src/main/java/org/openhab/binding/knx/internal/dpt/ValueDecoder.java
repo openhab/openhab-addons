@@ -506,7 +506,9 @@ public class ValueDecoder {
         double value = translator.getNumericValue();
         if (allowedTypes.contains(PercentType.class)
                 && (HSBType.class.equals(preferredType) || PercentType.class.equals(preferredType))) {
-            return new PercentType(BigDecimal.valueOf(Math.round(value)));
+            // raw 1 is 0.39 %; rounding it to 0 would turn a lit lamp OFF
+            long percent = value > 0 ? Math.max(1, Math.round(value)) : 0;
+            return new PercentType(BigDecimal.valueOf(percent));
         }
 
         if (allowedTypes.contains(QuantityType.class) && !disableUoM) {
