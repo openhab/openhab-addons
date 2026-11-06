@@ -106,6 +106,7 @@ public class HwTelnetConnection implements Closeable {
 
     private volatile State state = State.AWAITING_LOGIN_PROMPT;
     private volatile boolean closing;
+    private volatile long lastReceivedNanos = System.nanoTime();
     private volatile @Nullable OutputStream output;
     private @Nullable Thread readerThread;
 
@@ -198,6 +199,14 @@ public class HwTelnetConnection implements Closeable {
         out.flush();
     }
 
+    /**
+     * Returns how long ago data of any kind was last received from the processor. Used to detect a connection that
+     * was lost without the operating system noticing.
+     */
+    public long millisSinceLastReceived() {
+        return TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - lastReceivedNanos);
+    }
+
     public boolean isReady() {
         return state == State.READY;
     }
@@ -228,6 +237,7 @@ public class HwTelnetConnection implements Closeable {
         try {
             int count;
             while ((count = input.read(buffer)) != -1) {
+                lastReceivedNanos = System.nanoTime();
                 String chunk = new String(buffer, 0, count, StandardCharsets.US_ASCII);
                 if (logger.isTraceEnabled()) {
                     logger.trace("Raw data from {}:{}: {}", host, port, escape(chunk));

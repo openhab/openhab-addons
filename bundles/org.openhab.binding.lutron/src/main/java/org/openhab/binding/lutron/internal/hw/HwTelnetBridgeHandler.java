@@ -32,6 +32,9 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class HwTelnetBridgeHandler extends HwBridgeHandler implements HwTelnetConnection.Listener {
+    private static final int HEARTBEAT_INTERVAL_SECONDS = 60;
+    private static final long DEFAULT_IDLE_TIMEOUT_MS = TimeUnit.SECONDS.toMillis(150);
+
     private final Logger logger = LoggerFactory.getLogger(HwTelnetBridgeHandler.class);
 
     private HwTelnetBridgeConfig config = new HwTelnetBridgeConfig();
@@ -39,7 +42,11 @@ public class HwTelnetBridgeHandler extends HwBridgeHandler implements HwTelnetCo
     private volatile @Nullable HwTelnetConnection connection;
     private volatile @Nullable HwTelnetConnection connecting;
     private @Nullable ScheduledFuture<?> reconnectJob;
+    private @Nullable ScheduledFuture<?> heartbeatJob;
     private volatile boolean disposed;
+
+    // Not final so that tests can shorten it
+    volatile long idleTimeoutMs = DEFAULT_IDLE_TIMEOUT_MS;
 
     public HwTelnetBridgeHandler(Bridge bridge) {
         super(bridge);
@@ -110,7 +117,41 @@ public class HwTelnetBridgeHandler extends HwBridgeHandler implements HwTelnetCo
         sendStartupCommands();
         if (newConnection.equals(connection)) {
             updateStatus(ThingStatus.ONLINE);
+            startHeartbeat();
         }
+    }
+
+    private void startHeartbeat() {
+        cancelHeartbeat();
+        heartbeatJob = scheduler.scheduleWithFixedDelay(this::heartbeat, HEARTBEAT_INTERVAL_SECONDS,
+                HEARTBEAT_INTERVAL_SECONDS, TimeUnit.SECONDS);
+    }
+
+    private void cancelHeartbeat() {
+        ScheduledFuture<?> job = heartbeatJob;
+        if (job != null) {
+            job.cancel(false);
+            heartbeatJob = null;
+        }
+    }
+
+    /**
+     * A connection that is lost without being closed, for example when the network drops, produces no error until
+     * the operating system gives up on it, which can take hours. So the processor is asked for a reply regularly and
+     * the connection is treated as lost when nothing at all has been received for too long.
+     */
+    void heartbeat() {
+        HwTelnetConnection current = connection;
+        if (current == null || disposed) {
+            return;
+        }
+        long idle = current.millisSinceLastReceived();
+        if (idle > idleTimeoutMs) {
+            connectionFailed(current, "No response from processor for " + TimeUnit.MILLISECONDS.toSeconds(idle) + " s");
+            return;
+        }
+        // DLMON is answered with a confirmation message, and is already part of the startup commands.
+        sendCommand("DLMON");
     }
 
     private void scheduleReconnect() {
@@ -183,6 +224,7 @@ public class HwTelnetBridgeHandler extends HwBridgeHandler implements HwTelnetCo
             connection = null;
         }
         logger.debug("Lost connection to HomeWorks processor at {}:{}: {}", config.ipAddress, config.port, reason);
+        cancelHeartbeat();
         source.close();
         updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, reason);
         scheduleReconnect();
@@ -193,6 +235,7 @@ public class HwTelnetBridgeHandler extends HwBridgeHandler implements HwTelnetCo
         logger.debug("Disposing HomeWorks telnet bridge {}", getThing().getUID());
         disposed = true;
         cancelReconnect();
+        cancelHeartbeat();
         HwTelnetConnection pending = connecting;
         if (pending != null) {
             pending.close();

@@ -931,6 +931,7 @@ The telnet bridge has the following configuration parameters:
 If the processor asks for a login and `user` is not set, or it rejects the login, the bridge goes offline with a configuration error and does not retry.
 The processor ends a telnet session after three failed login attempts.
 Other connection problems are retried every `reconnect` minutes.
+The bridge asks the processor for a reply every minute, and reconnects if nothing at all has been received for 150 seconds, which detects a connection lost without notice, such as a network outage.
 The password is never written to the log.
 
 ```java
