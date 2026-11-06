@@ -15,6 +15,10 @@ package org.openhab.voice.whisperstt.internal.utils;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Random;
 
@@ -35,7 +39,7 @@ public class VADTest {
 
     @Test
     public void sileroDetectsSpeechButNotNoise() throws IOException {
-        short[] speech = SileroVADTest.speechSamples();
+        short[] speech = speechSamples();
         try (VAD vad = new VAD(VAD.SILERO_MODE, 16000, 20, 0.3f, 0.5f)) {
             VAD.VADResult speechResult = vad.analyze(step(speech, 0));
             // let the clip end before the noise, as the model holds voice for a few frames after speech is cut off
@@ -51,7 +55,7 @@ public class VADTest {
 
     @Test
     public void sileroShortStepsDetectSpeechButNotSilence() throws IOException {
-        short[] speech = SileroVADTest.speechSamples();
+        short[] speech = speechSamples();
         try (VAD vad = new VAD(VAD.SILERO_MODE, 16000, 20, 0.3f, 0.5f)) {
             boolean voiceFound = false;
             for (int offset = 0; offset + SHORT_STEP <= speech.length; offset += SHORT_STEP) {
@@ -67,7 +71,7 @@ public class VADTest {
     @Test
     public void libfvadDetectsSpeechButNotSilence() throws IOException {
         VoiceActivityDetector.loadLibrary();
-        short[] speech = SileroVADTest.speechSamples();
+        short[] speech = speechSamples();
         try (VAD vad = new VAD(VoiceActivityDetector.Mode.VERY_AGGRESSIVE.name(), 16000, 20, 0.3f, 0.5f)) {
             VAD.VADResult speechResult = vad.analyze(step(speech, 0));
             vad.analyze(step(speech, STEP));
@@ -98,5 +102,29 @@ public class VADTest {
             step[i] = (short) (random.nextGaussian() * 1500);
         }
         return step;
+    }
+
+    /**
+     * "Turn on the kitchen lights." synthesized by Piper TTS with the en_US-ljspeech-medium voice (MIT, trained on
+     * the public domain LJ Speech dataset), resampled to 16 kHz.
+     */
+    static short[] speechSamples() throws IOException {
+        byte[] wav = bytes("/speech.wav");
+        ByteBuffer buffer = ByteBuffer.wrap(wav).order(ByteOrder.LITTLE_ENDIAN);
+        int offset = 12;
+        while (!"data".equals(new String(wav, offset, 4, StandardCharsets.US_ASCII))) {
+            offset += 8 + buffer.getInt(offset + 4);
+        }
+        short[] samples = new short[buffer.getInt(offset + 4) / 2];
+        buffer.position(offset + 8);
+        buffer.asShortBuffer().get(samples);
+        return samples;
+    }
+
+    private static byte[] bytes(String name) throws IOException {
+        try (InputStream in = VADTest.class.getResourceAsStream(name)) {
+            assertNotNull(in, name);
+            return in.readAllBytes();
+        }
     }
 }

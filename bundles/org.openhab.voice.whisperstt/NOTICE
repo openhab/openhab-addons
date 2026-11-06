@@ -34,8 +34,12 @@ native dependency: libfvad
 * Project: https://github.com/dpirch/libfvad
 * Source: https://github.com/dpirch/libfvad
 
-Silero VAD model weights (src/main/resources/silero_vad_16k.bin), exported from silero_vad.onnx v6.2.3
-(sha256 1a153a22f4509e292a94e67d6f9b85e8deb25b4988682b7e174c65279d8788e3)
-* License: MIT License https://github.com/snakers4/silero-vad/blob/v6.2.3/LICENSE
+io.github.jvoice-project: silero-vad4j
+* License: Apache 2.0 License https://github.com/jvoice-project/silero-vad4j/blob/main/LICENSE
+* Project: https://github.com/jvoice-project/silero-vad4j
+* Source: https://github.com/jvoice-project/silero-vad4j/tree/main/src/
+
+model weights: Silero VAD
+* License: MIT License https://github.com/snakers4/silero-vad/blob/master/LICENSE
 * Project: https://github.com/snakers4/silero-vad
-* Source: https://github.com/snakers4/silero-vad/tree/v6.2.3/src/silero_vad/data
+* Source: https://github.com/snakers4/silero-vad/tree/master/src/silero_vad/data

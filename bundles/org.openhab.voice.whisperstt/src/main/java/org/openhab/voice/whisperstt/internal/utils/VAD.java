@@ -21,6 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.github.jvoiceproject.libfvadjni.VoiceActivityDetector;
+import io.github.jvoiceproject.silerovad.SileroVAD;
 
 /**
  * The {@link VAD} class is a voice activity detector implementation over libfvad-jni or {@link SileroVAD}.
