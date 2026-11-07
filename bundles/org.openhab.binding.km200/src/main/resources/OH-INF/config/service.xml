@@ -7,7 +7,8 @@
 	<config-description uri="thing-type:km200:service">
 		<parameter name="rootService" type="text" required="false">
 			<label>Root Service</label>
-			<description>Absolute service path on the device. Overrides the discovered or Thing-type root property when set.</description>
+			<description>Absolute path of a service group on the device. Overrides the discovered or Thing-type root property
+				when set.</description>
 		</parameter>
 	</config-description>
 </config-description:config-descriptions>

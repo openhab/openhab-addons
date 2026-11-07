@@ -49,14 +49,14 @@ The _kmdevice_ bridge requires the following configuration parameters:
 ### Service Things
 
 All Thing types except `switchProgram` accept the optional `rootService` configuration parameter.
-Set it to the absolute path of the service on your device, for example `/heatingCircuits/hc1`, `/dhwCircuits/dhw1` or `/system/sensors`.
+Set it to the absolute path of a service group on your device, for example `/heatingCircuits/hc1`, `/dhwCircuits/dhw1` or `/system/sensors`.
 The configured path takes precedence over the discovered or Thing-type `root` property.
 Without `rootService`, the binding continues to use that property.
-The Thing reports a configuration error if the path is empty, relative, or unknown after the gateway has initialized.
+The Thing reports a configuration error if the path is empty, relative, unknown, or selects a service without child services.
 
-| Parameter   | Description                                   | Required | Default                       |
-| ----------- | --------------------------------------------- | -------- | ----------------------------- |
-| rootService | Absolute path of the service on the KM device | false    | Discovered or Thing-type root |
+| Parameter   | Description                                       | Required | Default                       |
+| ----------- | ------------------------------------------------- | -------- | ----------------------------- |
+| rootService | Absolute path of a service group on the KM device | false    | Discovered or Thing-type root |
 
 For file-defined circuit Things, use the path of the individual circuit, such as `/heatingCircuits/hc1`.
 The available paths depend on your heating system; discovered Things expose their path in the `root` property with `/` represented as `#`.

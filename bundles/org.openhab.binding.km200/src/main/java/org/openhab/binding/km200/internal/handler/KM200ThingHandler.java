@@ -195,7 +195,7 @@ public class KM200ThingHandler extends BaseThingHandler {
             logger.debug("Gateway not existing: {}", bridge);
             return;
         }
-        Object rootService = thing.getConfiguration().get(CONFIG_ROOT_SERVICE);
+        Object rootService = getConfig().get(CONFIG_ROOT_SERVICE);
         String service = rootService != null ? rootService.toString()
                 : KM200Utils.translatesNameToPath(thing.getProperties().get("root"));
         if (service == null || !service.startsWith("/") || service.length() < 2) {
@@ -217,6 +217,11 @@ public class KM200ThingHandler extends BaseThingHandler {
             if (gateway.getDevice().containsService(service)) {
                 KM200ServiceObject serObj = gateway.getDevice().getServiceObject(service);
                 if (null != serObj) {
+                    if (rootService != null && serObj.serviceTreeMap.isEmpty()) {
+                        updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
+                                "Root service has no child services: " + service);
+                        return;
+                    }
                     addChannels(serObj, thing, subChannels, "");
                 }
             } else if (service.contains(SWITCH_PROGRAM_PATH_NAME)) {

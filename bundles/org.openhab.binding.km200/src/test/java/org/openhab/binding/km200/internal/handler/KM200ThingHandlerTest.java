@@ -25,12 +25,17 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ExecutionMode;
+import org.junit.jupiter.api.parallel.ResourceAccessMode;
+import org.junit.jupiter.api.parallel.ResourceLock;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.ArgumentCaptor;
 import org.openhab.binding.km200.internal.KM200ChannelTypeProvider;
 import org.openhab.binding.km200.internal.KM200Device;
 import org.openhab.binding.km200.internal.KM200ServiceObject;
+import org.openhab.core.config.core.ConfigUtil;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
@@ -49,6 +54,8 @@ import org.openhab.core.thing.binding.builder.ThingBuilder;
  *
  * @author Leo Siepel - Initial contribution
  */
+@Execution(ExecutionMode.SAME_THREAD)
+@ResourceLock(value = "org.openhab.core.config.core.ConfigUtil", mode = ResourceAccessMode.READ_WRITE)
 @NonNullByDefault
 class KM200ThingHandlerTest {
     private static final ThingUID BRIDGE_UID = new ThingUID(THING_TYPE_KMDEVICE, "gateway");
@@ -84,6 +91,20 @@ class KM200ThingHandlerTest {
     }
 
     @Test
+    void resolvesConfiguredRootEnvironmentVariable() {
+        ConfigUtilAccessor.setEnvironment(Map.of("KM200_ROOT_SERVICE", "/heatingCircuits/hc1"));
+        try {
+            Thing thing = createThing("${ENV:KM200_ROOT_SERVICE}", "#heatingCircuits");
+            createHandler(thing).initialize();
+            assertCircuitChannels();
+            assertStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
+            assertEquals("${ENV:KM200_ROOT_SERVICE}", thing.getConfiguration().get(CONFIG_ROOT_SERVICE));
+        } finally {
+            ConfigUtilAccessor.resetEnvironment();
+        }
+    }
+
+    @Test
     void configurationWorksWithoutRootProperty() {
         Thing thing = createThing("/heatingCircuits/hc1", null);
         createHandler(thing).initialize();
@@ -107,7 +128,7 @@ class KM200ThingHandlerTest {
 
     @ParameterizedTest
     @ValueSource(strings = { "", " ", "/", "////", "heatingCircuits", "heatingCircuits/hc1", "/unknown",
-            "/heatingCircuits/hc2", "/heatingCircuits/hc1/switchPrograms/unknown" })
+            "/heatingCircuits/hc2", "/heatingCircuits/hc1/mode", "/heatingCircuits/hc1/switchPrograms/unknown" })
     void invalidConfigurationPreservesChannelsAndReportsConfigurationError(String rootService) {
         Channel existing = ChannelBuilder.create(new ChannelUID(THING_UID, "existing"), "String").build();
         Thing thing = ThingBuilder.create(createThing(rootService, "#heatingCircuits#hc1")).withChannel(existing)
@@ -148,8 +169,7 @@ class KM200ThingHandlerTest {
         handler.initialize();
         assertStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
 
-        thing.getConfiguration().put(CONFIG_ROOT_SERVICE, "/heatingCircuits/hc1");
-        handler.initialize();
+        handler.thingUpdated(createThing("/heatingCircuits/hc1", "#heatingCircuits"));
         assertCircuitChannels();
         assertStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
     }
@@ -199,6 +219,16 @@ class KM200ThingHandlerTest {
         Channel mode = updated.getValue().getChannel("mode");
         assertNotNull(mode);
         assertEquals("#heatingCircuits#hc1#mode", mode.getProperties().get("root"));
+    }
+
+    private static class ConfigUtilAccessor extends ConfigUtil {
+        static void setEnvironment(Map<String, String> values) {
+            setEnvProvider(values::get);
+        }
+
+        static void resetEnvironment() {
+            setEnvProvider(System::getenv);
+        }
     }
 
     private void assertStatus(ThingStatus status, ThingStatusDetail detail) {
