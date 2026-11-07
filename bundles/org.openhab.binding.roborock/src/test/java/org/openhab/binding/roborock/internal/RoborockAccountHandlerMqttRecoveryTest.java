@@ -34,6 +34,8 @@ import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttSecurityException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.MockedConstruction;
 import org.mockito.MockedStatic;
@@ -43,6 +45,7 @@ import org.openhab.core.storage.Storage;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
 
@@ -62,6 +65,7 @@ class RoborockAccountHandlerMqttRecoveryTest {
     private final MockedStatic<ThreadPoolManager> threadPools;
     private final MockedConstruction<RoborockWebTargets> webTargets;
     private @Nullable MockedConstruction<MqttClient> clients;
+    private final MqttInboundLivenessWatchdog watchdog = mock(MqttInboundLivenessWatchdog.class);
     private final RoborockAccountHandler handler;
 
     RoborockAccountHandlerMqttRecoveryTest() {
@@ -80,7 +84,7 @@ class RoborockAccountHandlerMqttRecoveryTest {
                 {"u":"test-user","s":"test-secret","k":"test-key",
                  "r":{"a":"https://api.example.invalid","m":"ssl://mqtt.example.invalid:8883"}}
                 """);
-        handler = new RoborockAccountHandler(bridge, storage, mock(HttpClient.class));
+        handler = new RoborockAccountHandler(bridge, storage, mock(HttpClient.class), watchdog);
         handler.setCallback(callback);
     }
 
@@ -106,7 +110,7 @@ class RoborockAccountHandlerMqttRecoveryTest {
         this.clients = clients;
         initializeAndConnect();
         verifyStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
-        verify(clients.constructed().getFirst()).close();
+        verify(clients.constructed().getFirst(), atLeastOnce()).close();
 
         var retry = ArgumentCaptor.forClass(Runnable.class);
         verify(scheduler).schedule(retry.capture(), eq(60L), eq(TimeUnit.SECONDS));
@@ -158,7 +162,7 @@ class RoborockAccountHandlerMqttRecoveryTest {
         this.clients = clients;
         initializeAndConnect();
 
-        verify(clients.constructed().getFirst()).close();
+        verify(clients.constructed().getFirst(), atLeastOnce()).close();
         verifyStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
         verify(scheduler, never()).schedule(any(Runnable.class), anyLong(), any(TimeUnit.class));
     }
@@ -188,7 +192,7 @@ class RoborockAccountHandlerMqttRecoveryTest {
         this.clients = clients;
         initializeAndConnect();
 
-        verify(clients.constructed().getFirst()).close();
+        verify(clients.constructed().getFirst(), atLeastOnce()).close();
         verifyStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
         verify(scheduler, never()).schedule(any(Runnable.class), anyLong(), any(TimeUnit.class));
     }
@@ -205,6 +209,136 @@ class RoborockAccountHandlerMqttRecoveryTest {
         verify(scheduler, never()).schedule(any(Runnable.class), anyLong(), any(TimeUnit.class));
     }
 
+    @ParameterizedTest
+    @ValueSource(booleans = { false, true })
+    void obsoleteFailureDoesNotCloseReplacementOrOverwriteItsStatus(boolean authenticationFailure) throws Exception {
+        var clients = mockConstruction(MqttClient.class, (client, context) -> {
+            if (context.getCount() == 1) {
+                doAnswer(invocation -> {
+                    handler.dispose();
+                    initializeAndConnect();
+                    if (authenticationFailure) {
+                        throw new MqttSecurityException(MqttException.REASON_CODE_FAILED_AUTHENTICATION);
+                    }
+                    throw new MqttException(MqttException.REASON_CODE_SERVER_CONNECT_ERROR);
+                }).when(client).connect(any(MqttConnectOptions.class));
+            }
+        });
+        this.clients = clients;
+        initializeAndConnect();
+
+        assertEquals(2, clients.constructed().size());
+        verify(clients.constructed().get(1)).connect(any(MqttConnectOptions.class));
+        verify(clients.constructed().get(1), never()).close();
+        verifyStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
+        handler.connectComplete(true, "ssl://mqtt.example.invalid:8883");
+        verify(clients.constructed().get(1)).subscribe(anyString(), eq(0));
+        verifyStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
+        verify(scheduler, never()).schedule(any(Runnable.class), anyLong(), any(TimeUnit.class));
+    }
+
+    @Test
+    void obsoleteSuccessDoesNotOverwriteReplacementFailure() throws Exception {
+        var clients = mockConstruction(MqttClient.class, (client, context) -> {
+            if (context.getCount() == 1) {
+                doAnswer(invocation -> {
+                    handler.dispose();
+                    initializeAndConnect();
+                    return null;
+                }).when(client).connect(any(MqttConnectOptions.class));
+            } else {
+                doThrow(new MqttException(MqttException.REASON_CODE_SERVER_CONNECT_ERROR)).when(client)
+                        .connect(any(MqttConnectOptions.class));
+            }
+        });
+        this.clients = clients;
+        initializeAndConnect();
+
+        assertEquals(2, clients.constructed().size());
+        verify(clients.constructed().getFirst(), atLeastOnce()).close();
+        verifyStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+        verify(scheduler).schedule(any(Runnable.class), eq(60L), eq(TimeUnit.SECONDS));
+    }
+
+    @Test
+    void reinitializationBeforeCredentialsReloadDoesNotReviveOldAttempt() throws Exception {
+        var clients = mockConstruction(MqttClient.class, (client, context) -> doAnswer(invocation -> {
+            handler.dispose();
+            handler.initialize();
+            throw new MqttException(MqttException.REASON_CODE_SERVER_CONNECT_ERROR);
+        }).when(client).connect(any(MqttConnectOptions.class)));
+        this.clients = clients;
+        initializeAndConnect();
+
+        verifyStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE);
+        verify(scheduler, never()).schedule(any(Runnable.class), anyLong(), any(TimeUnit.class));
+    }
+
+    @Test
+    void replacementInstalledDuringCleanupRemainsUsable() throws Exception {
+        var clients = mockConstruction(MqttClient.class, (client, context) -> {
+            if (context.getCount() == 1) {
+                doThrow(new MqttException(MqttException.REASON_CODE_SERVER_CONNECT_ERROR)).when(client)
+                        .connect(any(MqttConnectOptions.class));
+                doAnswer(invocation -> {
+                    handler.dispose();
+                    initializeAndConnect();
+                    return null;
+                }).when(client).close();
+            }
+        });
+        this.clients = clients;
+        initializeAndConnect();
+
+        assertEquals(2, clients.constructed().size());
+        verify(clients.constructed().get(1), never()).close();
+        verifyStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
+        handler.connectComplete(true, "ssl://mqtt.example.invalid:8883");
+        verify(clients.constructed().get(1)).subscribe(anyString(), eq(0));
+        verify(scheduler, never()).schedule(any(Runnable.class), anyLong(), any(TimeUnit.class));
+    }
+
+    @Test
+    void watchdogFromPreviousSessionDoesNotDisconnectReplacement() throws Exception {
+        var clients = mockConstruction(MqttClient.class);
+        this.clients = clients;
+        initializeAndConnect();
+        when(watchdog.evaluate(any(), anyBoolean())).thenAnswer(invocation -> {
+            handler.dispose();
+            initializeAndConnect();
+            return MqttInboundLivenessWatchdog.Decision.STALE;
+        });
+
+        handler.checkMqttInboundLiveness();
+
+        assertEquals(2, clients.constructed().size());
+        verify(clients.constructed().get(1), never()).close();
+        verifyStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
+    }
+
+    @Test
+    void failedWatchdogReplacementIsRetried() throws Exception {
+        var clients = mockConstruction(MqttClient.class, (client, context) -> {
+            if (context.getCount() == 2) {
+                doThrow(new MqttException(MqttException.REASON_CODE_SERVER_CONNECT_ERROR)).when(client)
+                        .connect(any(MqttConnectOptions.class));
+            }
+        });
+        this.clients = clients;
+        initializeAndConnect();
+        when(watchdog.evaluate(any(), anyBoolean())).thenReturn(MqttInboundLivenessWatchdog.Decision.STALE);
+
+        handler.checkMqttInboundLiveness();
+
+        verify(clients.constructed().get(1)).close();
+        verifyStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+        var retry = ArgumentCaptor.forClass(Runnable.class);
+        verify(scheduler).schedule(retry.capture(), eq(60L), eq(TimeUnit.SECONDS));
+        retry.getValue().run();
+        assertEquals(3, clients.constructed().size());
+        verifyStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
+    }
+
     private void initializeAndConnect() {
         handler.initialize();
         submitted.remove().run();
@@ -212,7 +346,10 @@ class RoborockAccountHandlerMqttRecoveryTest {
     }
 
     private void verifyStatus(ThingStatus status, ThingStatusDetail detail) {
-        verify(callback, atLeastOnce()).statusUpdated(eq(bridge),
-                argThat(info -> info.getStatus() == status && info.getStatusDetail() == detail));
+        var updates = ArgumentCaptor.forClass(ThingStatusInfo.class);
+        verify(callback, atLeastOnce()).statusUpdated(eq(bridge), updates.capture());
+        var last = updates.getAllValues().getLast();
+        assertEquals(status, last.getStatus());
+        assertEquals(detail, last.getStatusDetail());
     }
 }
