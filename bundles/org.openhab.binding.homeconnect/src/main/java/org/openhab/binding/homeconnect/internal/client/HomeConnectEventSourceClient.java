@@ -22,10 +22,6 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.sse.SseEventSource;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.homeconnect.internal.client.exception.AuthorizationException;
@@ -33,9 +29,13 @@ import org.openhab.binding.homeconnect.internal.client.exception.CommunicationEx
 import org.openhab.binding.homeconnect.internal.client.listener.HomeConnectEventListener;
 import org.openhab.binding.homeconnect.internal.client.model.Event;
 import org.openhab.core.auth.client.oauth2.OAuthClientService;
-import org.osgi.service.jaxrs.client.SseEventSourceFactory;
+import org.osgi.service.jakartars.client.SseEventSourceFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.sse.SseEventSource;
 
 /**
  * Server-Sent-Events client for Home Connect API.

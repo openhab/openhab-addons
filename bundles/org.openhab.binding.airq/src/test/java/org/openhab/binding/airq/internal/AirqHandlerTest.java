@@ -42,11 +42,10 @@ import javax.xml.xpath.XPathFactory;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentProvider;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.http.HttpHeader;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.io.Content;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -788,12 +787,11 @@ class AirqHandlerTest {
 
         new AirqHandler(thing, mockedClient(request)).getData("http://device/config", "POST", "request=ab+/cd==");
 
-        ArgumentCaptor<ContentProvider> content = ArgumentCaptor.forClass(ContentProvider.class);
-        requireNonNull(verify(request)).header(HttpHeader.CONTENT_TYPE, "application/x-www-form-urlencoded");
-        requireNonNull(verify(request)).content(content.capture());
+        ArgumentCaptor<Request.Content> content = ArgumentCaptor.forClass(Request.Content.class);
+        requireNonNull(verify(request)).body(content.capture());
+        assertThat(content.getValue().getContentType(), is("application/x-www-form-urlencoded"));
         // konfigschreiben.md posts the base64 request without URL-encoding it
-        assertThat(StandardCharsets.UTF_8.decode(content.getValue().iterator().next()).toString(),
-                is("request=ab+/cd=="));
+        assertThat(Content.Source.asString(content.getValue(), StandardCharsets.UTF_8), is("request=ab+/cd=="));
     }
 
     @ParameterizedTest
@@ -840,8 +838,7 @@ class AirqHandlerTest {
         new AirqHandler(thing, mockedClient(request)).getData("http://device/data", "GET", null);
 
         requireNonNull(verify(request)).method("GET");
-        verify(request, never()).header(eq(HttpHeader.CONTENT_TYPE), anyString());
-        verify(request, never()).content(any());
+        verify(request, never()).body(any());
     }
 
     private static Request mockedRequest() throws Exception {

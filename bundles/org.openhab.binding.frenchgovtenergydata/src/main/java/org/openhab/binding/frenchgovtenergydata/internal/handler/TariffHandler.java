@@ -27,10 +27,9 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import javax.ws.rs.HttpMethod;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.frenchgovtenergydata.internal.dto.Tariff;
 import org.openhab.core.io.net.http.HttpUtil;
 import org.openhab.core.library.types.DateTimeType;
@@ -91,7 +90,7 @@ public abstract class TariffHandler<T extends Tariff> extends BaseThingHandler {
         @Nullable
         String result = null;
         try {
-            result = HttpUtil.executeUrl(HttpMethod.GET, url, 10000);
+            result = HttpUtil.executeUrl(HttpMethod.GET.asString(), url, 10000);
             fileCache = result;
         } catch (IOException e) {
             // Use the cache if we had an error accessing the cloud resource

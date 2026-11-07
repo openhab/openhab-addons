@@ -15,6 +15,7 @@ package org.openhab.binding.ntfy.internal;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
@@ -180,7 +181,7 @@ public class NtfyConnectionHandler extends BaseBridgeHandler {
                 return false;
             }
 
-            client.setMaxIdleTimeout(config.connectionTimeout);
+            client.setIdleTimeout(Duration.ofMillis(config.connectionTimeout));
             String webSocketScheme = "http".equals(this.scheme) ? "ws" : "wss";
 
             try {

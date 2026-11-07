@@ -28,10 +28,10 @@ import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
@@ -165,11 +165,13 @@ public class VolvoCarsApi {
 
     private JsonObject request(HttpMethod method, String url, @Nullable JsonObject body) throws VolvoCarsException {
         String accessToken = oAuthClient.getAccessToken();
-        Request request = httpClient.newRequest(url).method(method)
-                .header(HttpHeader.AUTHORIZATION, "Bearer " + accessToken).header(API_KEY_HEADER, apiKey)
-                .header(HttpHeader.ACCEPT, "application/json").timeout(REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS);
+        Request request = httpClient.newRequest(url).method(method).headers(headers -> {
+            headers.put(HttpHeader.AUTHORIZATION, "Bearer " + accessToken);
+            headers.put(API_KEY_HEADER, apiKey);
+            headers.put(HttpHeader.ACCEPT, "application/json");
+        }).timeout(REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS);
         if (body != null) {
-            request.content(new StringContentProvider("application/json", gson.toJson(body), StandardCharsets.UTF_8));
+            request.body(new StringRequestContent("application/json", gson.toJson(body), StandardCharsets.UTF_8));
         }
         try {
             ContentResponse response = request.send();

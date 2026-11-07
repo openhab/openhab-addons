@@ -178,10 +178,10 @@ public class WebSocketTaskTest {
     @Test
     public void testOnWebSocketBinaryMessage() {
         WebSocketTask task = new WebSocketTask(apiClient, apiToken, messageHandler);
-        byte[] payload = new byte[] { 0x01, 0x02, 0x03 };
+        java.nio.ByteBuffer payload = java.nio.ByteBuffer.wrap(new byte[] { 0x01, 0x02, 0x03 });
 
         // Should not throw exception (Jellyfin uses text, but we handle binary gracefully)
-        task.onWebSocketBinary(payload, 0, payload.length);
+        task.onWebSocketBinary(payload, null);
     }
 
     /**

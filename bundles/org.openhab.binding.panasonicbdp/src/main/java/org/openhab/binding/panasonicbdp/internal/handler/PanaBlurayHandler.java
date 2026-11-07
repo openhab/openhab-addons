@@ -26,9 +26,9 @@ import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
+import org.eclipse.jetty.client.FormRequestContent;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.util.FormContentProvider;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.util.Fields;
 import org.openhab.binding.panasonicbdp.internal.PanaBlurayConfiguration;
@@ -322,7 +322,7 @@ public class PanaBlurayHandler extends BaseThingHandler {
         try {
             logger.trace("POST url: {}, data: {}", url, fields);
             ContentResponse response = httpClient.POST(url).agent(USER_AGENT).method(HttpMethod.POST)
-                    .content(new FormContentProvider(fields)).timeout(REQUEST_TIMEOUT, TimeUnit.MILLISECONDS).send();
+                    .body(new FormRequestContent(fields)).timeout(REQUEST_TIMEOUT, TimeUnit.MILLISECONDS).send();
 
             final String output = response.getContentAsString();
             logger.trace("Response status: {}, response: {}", response.getStatus(), output);

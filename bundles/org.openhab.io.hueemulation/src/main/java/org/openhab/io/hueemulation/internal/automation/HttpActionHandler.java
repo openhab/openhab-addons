@@ -22,8 +22,8 @@ import java.util.concurrent.TimeoutException;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.core.automation.Action;
 import org.openhab.core.automation.handler.ActionHandler;
@@ -88,7 +88,7 @@ public class HttpActionHandler extends BaseModuleHandler<Action> implements Acti
             Request request = httpClient.newRequest(URI.create(config.url)).method(config.method)
                     .timeout(config.timeout, TimeUnit.SECONDS);
             if (config.method == HttpMethod.POST || config.method == HttpMethod.PUT) {
-                request.content(new StringContentProvider(config.body), config.mimetype);
+                request.body(new StringRequestContent(config.mimetype, config.body));
             }
             request.send();
         } catch (InterruptedException | TimeoutException | ExecutionException e) {

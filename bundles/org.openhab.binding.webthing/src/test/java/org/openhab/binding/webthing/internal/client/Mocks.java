@@ -15,15 +15,12 @@ package org.openhab.binding.webthing.internal.client;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
-import java.nio.ByteBuffer;
-import java.nio.charset.StandardCharsets;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.api.ContentProvider;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.ContentResponse;
+import org.eclipse.jetty.client.Request;
 
 /**
  * Mock helper
@@ -50,12 +47,11 @@ public class Mocks {
         when(getRequest.accept("application/json")).thenReturn(getRequest);
         when(request.timeout(30, TimeUnit.SECONDS)).thenReturn(getRequest);
 
-        // POST request -> request.method("PUT").content(new StringContentProvider(json)).timeout(30,
+        // POST request -> request.method("PUT").body(new StringRequestContent(contentType, json)).timeout(30,
         // TimeUnit.SECONDS).send();
         if (requestContent != null) {
             var postRequest = mock(Request.class);
-            when(postRequest.content(argThat((ContentProvider content) -> bufToString(content).equals(requestContent)),
-                    eq("application/json"))).thenReturn(postRequest);
+            when(postRequest.body(any())).thenReturn(postRequest);
             when(postRequest.timeout(30, TimeUnit.SECONDS)).thenReturn(postRequest);
 
             var postContentResponse = mock(ContentResponse.class);
@@ -64,13 +60,5 @@ public class Mocks {
             when(request.method("PUT")).thenReturn(postRequest);
         }
         return request;
-    }
-
-    private static String bufToString(Iterable<ByteBuffer> data) {
-        var result = "";
-        for (var byteBuffer : data) {
-            result += StandardCharsets.UTF_8.decode(byteBuffer).toString();
-        }
-        return result;
     }
 }

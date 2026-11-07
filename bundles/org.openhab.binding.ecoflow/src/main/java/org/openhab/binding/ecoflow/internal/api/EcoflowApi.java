@@ -31,10 +31,10 @@ import javax.crypto.spec.SecretKeySpec;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
@@ -106,8 +106,8 @@ public class EcoflowApi {
         final String url = "https://api.ecoflow.com/iot-open/sign/device/quota";
         payload.addProperty("sn", serialNumber);
         Request request = createHttpRequest(HttpMethod.PUT, url, payload)
-                .header(HttpHeader.CONTENT_TYPE, "application/json") //
-                .content(new StringContentProvider(gson.toJson(payload)));
+                .headers(h -> h.add(HttpHeader.CONTENT_TYPE, "application/json")) //
+                .body(new StringRequestContent(gson.toJson(payload)));
         executeRequest(request);
     }
 
@@ -137,11 +137,14 @@ public class EcoflowApi {
         } else {
             signingData = concatenateParams(headerParams);
         }
+        String sign = hmacSha256(signingData, secretKey);
         return httpClient.newRequest(url).method(method) //
-                .header("accessKey", accessKey) //
-                .header("timestamp", String.valueOf(timestamp)) //
-                .header("nonce", String.valueOf(nonce)) //
-                .header("sign", hmacSha256(signingData, secretKey));
+                .headers(h -> {
+                    h.add("accessKey", accessKey);
+                    h.add("timestamp", String.valueOf(timestamp));
+                    h.add("nonce", String.valueOf(nonce));
+                    h.add("sign", sign);
+                });
     }
 
     private void appendToMapRecursive(JsonElement json, Map<String, String> map, Stack<String> keyStack) {

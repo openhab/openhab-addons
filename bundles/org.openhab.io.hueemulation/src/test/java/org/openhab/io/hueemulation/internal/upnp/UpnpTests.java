@@ -14,6 +14,7 @@ package org.openhab.io.hueemulation.internal.upnp;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 
 import java.io.IOException;
@@ -24,10 +25,11 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import javax.ws.rs.client.ClientBuilder;
-
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.glassfish.grizzly.osgi.httpservice.HttpServiceImpl;
+import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
+import org.glassfish.grizzly.http.server.HttpHandler;
+import org.glassfish.grizzly.http.server.Request;
+import org.glassfish.grizzly.http.server.Response;
 import org.glassfish.grizzly.osgi.httpservice.OSGiMainHandler;
 import org.glassfish.grizzly.osgi.httpservice.util.Logger;
 import org.glassfish.jersey.server.ResourceConfig;
@@ -37,12 +39,14 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import org.openhab.io.hueemulation.internal.rest.CommonSetup;
 import org.openhab.io.hueemulation.internal.rest.LightsAndGroups;
+import org.ops4j.pax.web.service.http.HttpService;
 import org.osgi.framework.Bundle;
 import org.osgi.util.tracker.ServiceTracker;
+
+import jakarta.ws.rs.client.ClientBuilder;
 
 /**
  * Tests the upnp server part if the description.xml is available and if the udp thread comes online
@@ -53,8 +57,12 @@ public class UpnpTests {
     protected static CommonSetup commonSetup = null;
     protected UpnpServer subject;
     protected static OSGiMainHandler mainHttpHandler;
-    private static HttpServiceImpl httpServiceImpl;
+    private static HttpService httpServiceMock;
     private static String descriptionPath;
+
+    // grizzly-httpservice 2.4.4 uses javax.servlet; UpnpServer uses jakarta.servlet.
+    // Register one shared handler, updated per test via this static reference.
+    private static volatile @Nullable UpnpServer activeSubject = null;
 
     LightsAndGroups lightsAndGroups = new LightsAndGroups();
 
@@ -70,7 +78,24 @@ public class UpnpTests {
         mainHttpHandler = new OSGiMainHandler(logger, mock(Bundle.class));
         commonSetup.server.getServerConfiguration().addHttpHandler(mainHttpHandler, "/");
 
-        httpServiceImpl = new HttpServiceImpl(mock(Bundle.class), logger);
+        // Register a single Grizzly handler that delegates to the current test's subject.
+        // httpService.registerServlet() is mocked as no-op because grizzly-httpservice 2.4.4
+        // uses javax.servlet which is incompatible with UpnpServer's jakarta.servlet.
+        commonSetup.server.getServerConfiguration().addHttpHandler(new HttpHandler() {
+            @Override
+            public void service(Request request, Response response) throws Exception {
+                UpnpServer s = activeSubject;
+                String xml = s != null ? s.xmlDocWithAddress : null;
+                if (xml == null || xml.isEmpty()) {
+                    response.setStatus(404, "Not Found");
+                } else {
+                    response.setContentType("application/xml");
+                    response.getWriter().write(xml);
+                }
+            }
+        }, UpnpServer.DISCOVERY_FILE);
+
+        httpServiceMock = mock(HttpService.class);
     }
 
     @BeforeEach
@@ -79,11 +104,12 @@ public class UpnpTests {
         Mockito.doAnswer(a -> {
             ((Runnable) a.getArgument(0)).run();
             return null;
-        }).when(executor).execute(ArgumentMatchers.any());
+        }).when(executor).execute(any());
         subject = new UpnpServer(executor);
         subject.clientBuilder = ClientBuilder.newBuilder();
-        subject.httpService = httpServiceImpl;
+        subject.httpService = httpServiceMock;
         subject.cs = commonSetup.cs;
+        activeSubject = subject;
         subject.overwriteReadyToFalse = true;
         subject.activate(); // don't execute handleEvent()
         subject.overwriteReadyToFalse = false;
@@ -92,6 +118,7 @@ public class UpnpTests {
     @AfterEach
     public void tearDown() {
         subject.deactivate();
+        activeSubject = null;
     }
 
     @AfterAll

@@ -12,14 +12,15 @@
  */
 package org.openhab.binding.melcloud.internal.home.websocket;
 
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.websocket.api.Callback;
 import org.eclipse.jetty.websocket.api.Session;
-import org.eclipse.jetty.websocket.api.WebSocketListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,7 +43,7 @@ import com.google.gson.JsonSyntaxException;
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
-public class MelCloudHomeWebSocketListener implements WebSocketListener {
+public class MelCloudHomeWebSocketListener implements Session.Listener.AutoDemanding {
 
     private static final String MESSAGE_TYPE_UNIT_STATE_CHANGED = "unitStateChanged";
 
@@ -64,7 +65,7 @@ public class MelCloudHomeWebSocketListener implements WebSocketListener {
     }
 
     @Override
-    public void onWebSocketConnect(@Nullable Session session) {
+    public void onWebSocketOpen(@Nullable Session session) {
         logger.debug("MELCloud Home WebSocket connected");
         onOpen.run();
     }
@@ -80,9 +81,13 @@ public class MelCloudHomeWebSocketListener implements WebSocketListener {
     }
 
     @Override
-    public void onWebSocketBinary(byte @Nullable [] payload, int offset, int len) {
+    public void onWebSocketBinary(@Nullable ByteBuffer payload, @Nullable Callback callback) {
         // The MELCloud Home push channel only ever sends text frames; nothing to do with a binary frame.
-        logger.debug("Ignoring unexpected binary MELCloud Home WebSocket frame ({} bytes)", len);
+        logger.debug("Ignoring unexpected binary MELCloud Home WebSocket frame ({} bytes)",
+                payload == null ? 0 : payload.remaining());
+        if (callback != null) {
+            callback.succeed();
+        }
     }
 
     @Override

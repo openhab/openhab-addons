@@ -16,25 +16,27 @@ package org.openhab.binding.tedee.internal.api;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.RETURNS_SELF;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.io.EOFException;
-import java.nio.ByteBuffer;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.function.Consumer;
 
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentProvider;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.http.HttpFields;
 import org.eclipse.jetty.http.HttpMethod;
+import org.eclipse.jetty.io.Content;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.openhab.binding.tedee.internal.TedeeBindingConstants;
@@ -71,7 +73,7 @@ class TedeeApiTest {
         assertEquals("Front door", lock.name);
         verify(client).newRequest("http://192.0.2.10:80/v1.0/lock/12345");
         verify(request).timeout(REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS);
-        verify(request).header("Accept", "application/json");
+        assertEquals("application/json", sentHeaders().get("Accept"));
     }
 
     @Test
@@ -99,13 +101,13 @@ class TedeeApiTest {
 
         verify(client).newRequest("http://192.0.2.10:80/v1.0/lock/12345/lock");
         verify(request).timeout(REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS);
-        verify(request).header(eq("Content-Length"), eq("0"));
+        assertEquals("0", sentHeaders().get("Content-Length"));
     }
 
     @Test
     @SuppressWarnings("null")
     void addCallbackIncludesWebhookSecretHeader()
-            throws TedeeApiException, InterruptedException, ExecutionException, TimeoutException {
+            throws TedeeApiException, InterruptedException, ExecutionException, TimeoutException, IOException {
         when(client.newRequest(anyString())).thenReturn(request);
         when(request.send()).thenReturn(response);
         when(response.getStatus()).thenReturn(200);
@@ -113,10 +115,10 @@ class TedeeApiTest {
 
         api.addCallback("http://192.0.2.20:8080/tedee/webhook", "secret");
 
-        ArgumentCaptor<ContentProvider> contentCaptor = ArgumentCaptor.forClass(ContentProvider.class);
-        verify(request).content(contentCaptor.capture());
-        ByteBuffer content = contentCaptor.getValue().iterator().next();
-        JsonObject callback = JsonParser.parseString(StandardCharsets.UTF_8.decode(content).toString())
+        ArgumentCaptor<Request.Content> contentCaptor = ArgumentCaptor.forClass(Request.Content.class);
+        verify(request).body(contentCaptor.capture());
+        Request.Content content = contentCaptor.getValue();
+        JsonObject callback = JsonParser.parseString(Content.Source.asString(content, StandardCharsets.UTF_8))
                 .getAsJsonObject();
         JsonObject header = callback.getAsJsonArray("headers").get(0).getAsJsonObject();
 
@@ -124,7 +126,7 @@ class TedeeApiTest {
         assertEquals("secret", header.get("header_value").getAsString());
         assertTrue(callback.get("headers").isJsonArray());
         verify(request).timeout(REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS);
-        verify(request).header("Content-Type", "application/json");
+        assertTrue(String.valueOf(content.getContentType()).startsWith("application/json"));
     }
 
     @Test
@@ -139,5 +141,14 @@ class TedeeApiTest {
         verify(client).newRequest("http://192.0.2.10:80/v1.0/callback/1");
         verify(request).method(HttpMethod.PUT);
         verify(request).timeout(REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS);
+    }
+
+    @SuppressWarnings("unchecked")
+    private HttpFields sentHeaders() {
+        ArgumentCaptor<Consumer<HttpFields.Mutable>> captor = ArgumentCaptor.forClass(Consumer.class);
+        verify(request, atLeastOnce()).headers(captor.capture());
+        HttpFields.Mutable fields = HttpFields.build();
+        captor.getAllValues().forEach(consumer -> consumer.accept(fields));
+        return fields;
     }
 }

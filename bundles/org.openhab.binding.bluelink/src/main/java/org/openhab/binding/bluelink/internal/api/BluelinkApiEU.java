@@ -36,10 +36,10 @@ import javax.measure.quantity.Temperature;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
@@ -184,7 +184,7 @@ public class BluelinkApiEU extends AbstractBluelinkApi<Vehicle> {
 
         final Request request = httpClient.newRequest(url).method(HttpMethod.POST)
                 .timeout(HTTP_TIMEOUT_SECONDS, TimeUnit.SECONDS)
-                .content(new StringContentProvider(gson.toJson(payload)), APPLICATION_JSON);
+                .body(new StringRequestContent(APPLICATION_JSON, gson.toJson(payload)));
         addStandardHeaders(request);
         addAuthHeaders(request);
 
@@ -381,8 +381,8 @@ public class BluelinkApiEU extends AbstractBluelinkApi<Vehicle> {
         final String payloadJson = gson.toJson(payload);
         logger.debug("send control action request: {}", payloadJson);
         final Request request = httpClient.newRequest(url).method(HttpMethod.POST)
-                .header(HttpHeader.USER_AGENT, HTTP_USER_AGENT)
-                .content(new StringContentProvider(payloadJson), APPLICATION_JSON);
+                .body(new StringRequestContent(APPLICATION_JSON, payloadJson));
+        withHeader(request, HttpHeader.USER_AGENT, HTTP_USER_AGENT);
         addStandardHeaders(request);
         addAuthHeaders(request);
 
@@ -480,8 +480,8 @@ public class BluelinkApiEU extends AbstractBluelinkApi<Vehicle> {
         final String payloadJson = gson.toJson(payload);
         logger.debug("send charge limit request: {}", payloadJson);
         final Request request = httpClient.newRequest(url).method(HttpMethod.POST)
-                .header(HttpHeader.USER_AGENT, HTTP_USER_AGENT)
-                .content(new StringContentProvider(payloadJson), APPLICATION_JSON);
+                .body(new StringRequestContent(APPLICATION_JSON, payloadJson));
+        withHeader(request, HttpHeader.USER_AGENT, HTTP_USER_AGENT);
         addStandardHeaders(request);
         addAuthHeaders(request);
         if (ccuCcs2ProtocolSupport) {
@@ -508,22 +508,24 @@ public class BluelinkApiEU extends AbstractBluelinkApi<Vehicle> {
 
     @Override
     public void addStandardHeaders(final Request request) {
-        request.header("ccsp-service-id", brandConfig.ccspServiceId).header("ccsp-application-id", brandConfig.appId)
-                .header("Stamp", generateStamp()).header(HttpHeader.USER_AGENT, HTTP_USER_AGENT);
+        withHeader(request, "ccsp-service-id", brandConfig.ccspServiceId);
+        withHeader(request, "ccsp-application-id", brandConfig.appId);
+        withHeader(request, "Stamp", generateStamp());
+        withHeader(request, HttpHeader.USER_AGENT, HTTP_USER_AGENT);
     }
 
     private void addCcs2Headers(final Request request) {
-        request.header("Ccuccs2protocolsupport", "1");
+        withHeader(request, "Ccuccs2protocolsupport", "1");
     }
 
     private void addAuthHeaders(final Request request) {
         final String token = accessToken;
         if (token != null) {
-            request.header(HttpHeader.AUTHORIZATION, "Bearer " + token);
+            withHeader(request, HttpHeader.AUTHORIZATION, "Bearer " + token);
         }
         final UUID id = this.deviceId;
         if (id != null) {
-            request.header("ccsp-device-id", id.toString());
+            withHeader(request, "ccsp-device-id", id.toString());
         }
     }
 

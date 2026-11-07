@@ -28,10 +28,9 @@ import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.http.HttpHeader;
+import org.eclipse.jetty.client.Request;
 import org.json.JSONObject;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -117,7 +116,7 @@ class OSMProviderTest {
         Request request = mock(Request.class);
         ContentResponse contentResponse = mock(ContentResponse.class);
         when(httpClient.newRequest(anyString())).thenReturn(request);
-        when(request.header(any(HttpHeader.class), anyString())).thenReturn(request);
+        when(request.headers(any())).thenReturn(request);
         when(request.timeout(anyLong(), any(TimeUnit.class))).thenReturn(request);
         try {
             when(request.send()).thenReturn(contentResponse);

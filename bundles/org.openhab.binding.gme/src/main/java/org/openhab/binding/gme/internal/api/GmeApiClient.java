@@ -28,11 +28,11 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.HttpResponseException;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Response;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.Response;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
@@ -70,7 +70,7 @@ public class GmeApiClient {
         ContentResponse response;
         try {
             response = httpClient.newRequest(BASE_URL + "/Auth").method(HttpMethod.POST)
-                    .content(new StringContentProvider(body), "application/json")
+                    .body(new StringRequestContent("application/json", body))
                     .timeout(REQUEST_TIMEOUT, TimeUnit.MILLISECONDS).send();
         } catch (ExecutionException e) {
             throw translateHttpResponseException(e, "GME authentication");
@@ -126,8 +126,8 @@ public class GmeApiClient {
         ContentResponse response;
         try {
             response = httpClient.newRequest(BASE_URL + "/RequestData").method(HttpMethod.POST)
-                    .header(HttpHeader.AUTHORIZATION, "Bearer " + token)
-                    .content(new StringContentProvider(body), "application/json")
+                    .headers(headers -> headers.put(HttpHeader.AUTHORIZATION, "Bearer " + token))
+                    .body(new StringRequestContent("application/json", body))
                     .timeout(REQUEST_TIMEOUT, TimeUnit.MILLISECONDS).send();
         } catch (ExecutionException e) {
             throw translateHttpResponseException(e, "GME RequestData");

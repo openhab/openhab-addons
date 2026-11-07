@@ -15,6 +15,7 @@ package org.openhab.binding.amazonechocontrol.internal.push;
 import static org.eclipse.jetty.http.HttpHeader.CONTENT_TYPE;
 
 import java.io.ByteArrayOutputStream;
+import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Objects;
@@ -24,7 +25,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.http.HttpFields;
 import org.eclipse.jetty.http2.api.Session;
 import org.eclipse.jetty.http2.api.Stream;
-import org.eclipse.jetty.http2.frames.DataFrame;
 import org.eclipse.jetty.http2.frames.HeadersFrame;
 import org.eclipse.jetty.http2.frames.PingFrame;
 import org.eclipse.jetty.util.Callback;
@@ -43,7 +43,7 @@ import com.google.gson.Gson;
  * @author Martin Littkovsky - Buffer stream data until a message is complete
  */
 @NonNullByDefault
-public class PushStreamAdapter extends Stream.Listener.Adapter {
+public class PushStreamAdapter implements Stream.Listener {
     // real messages are a few KiB, the limit is only reached if the boundary never arrives
     static final int MAX_BUFFER_SIZE = 512 * 1024;
 
@@ -66,7 +66,7 @@ public class PushStreamAdapter extends Stream.Listener.Adapter {
 
     @Override
     public void onHeaders(@NonNullByDefault({}) Stream stream, @NonNullByDefault({}) HeadersFrame frame) {
-        HttpFields headers = frame.getMetaData().getFields();
+        HttpFields headers = frame.getMetaData().getHttpFields();
         if (logger.isTraceEnabled()) {
             logger.trace("Received headers: {}", HttpUtil.logToString(headers));
         }
@@ -89,18 +89,23 @@ public class PushStreamAdapter extends Stream.Listener.Adapter {
         for (String parameter : contentType.split(";")) {
             String trimmed = parameter.trim();
             if (trimmed.regionMatches(true, 0, "boundary=", 0, 9)) {
-                return QuotedStringTokenizer.unquote(trimmed.substring(9).trim());
+                return QuotedStringTokenizer.CSV.unquote(trimmed.substring(9).trim());
             }
         }
         return "";
     }
 
     @Override
-    public void onData(@NonNullByDefault({}) Stream stream, @NonNullByDefault({}) DataFrame frame,
-            @NonNullByDefault({}) Callback callback) {
+    public void onDataAvailable(@NonNullByDefault({}) Stream stream) {
+        Stream.Data data = stream.readData();
+        if (data == null) {
+            stream.demand();
+            return;
+        }
         try {
-            byte[] contentBuffer = new byte[frame.remaining()];
-            frame.getData().get(contentBuffer);
+            ByteBuffer dataBuffer = data.frame().getByteBuffer();
+            byte[] contentBuffer = new byte[dataBuffer.remaining()];
+            dataBuffer.get(contentBuffer);
             if (logger.isTraceEnabled()) {
                 logger.trace("Received raw data {}", new String(contentBuffer, StandardCharsets.UTF_8));
             }
@@ -116,9 +121,10 @@ public class PushStreamAdapter extends Stream.Listener.Adapter {
         } catch (RuntimeException e) {
             logger.warn("Exception while processing message", e);
         } finally {
-            // completing the callback replenishes the HTTP/2 flow control window,
+            // releasing the data and demanding the next replenishes the HTTP/2 flow control window,
             // without that the server can't send further data on this long-lived stream
-            callback.succeeded();
+            data.release();
+            stream.demand();
         }
     }
 

@@ -19,11 +19,11 @@ import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.BufferingResponseListener;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.api.Result;
-import org.eclipse.jetty.client.util.BufferingResponseListener;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.Result;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpHeader;
 import org.openhab.binding.ojelectronics.internal.ThermostatHandler;
 import org.openhab.binding.ojelectronics.internal.common.OJGSonBuilder;
@@ -85,7 +85,8 @@ public final class UpdateService {
         String jsonPayload = gson.toJson(new UpdateThermostatRequestModel(thermostat).withApiKey(configuration.apiKey));
         Request request = httpClient.POST(configuration.getRestApiUrl() + "/Thermostat/UpdateThermostat")
                 .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS).param("sessionid", sessionId)
-                .header(HttpHeader.CONTENT_TYPE, "application/json").content(new StringContentProvider(jsonPayload));
+                .headers(h -> h.add(HttpHeader.CONTENT_TYPE, "application/json"))
+                .body(new StringRequestContent("application/json", jsonPayload));
         logger.trace("updateThermostat payload for themostat with serial {} is {}", thermostat.serialNumber,
                 jsonPayload);
 

@@ -29,8 +29,8 @@ import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
 import org.openhab.binding.windcentrale.internal.dto.Project;
 import org.openhab.binding.windcentrale.internal.dto.Windmill;
 import org.openhab.binding.windcentrale.internal.dto.WindmillStatus;
@@ -88,10 +88,11 @@ public class WindcentraleAPI {
     private String getJson(String url) throws FailedGettingDataException, InvalidAccessTokenException {
         try {
             logger.debug("Getting JSON from: {}", url);
+            String authorizationHeader = getAuthorizationHeader();
             ContentResponse contentResponse = httpClient.newRequest(url) //
                     .method(GET) //
-                    .header(ACCEPT, APPLICATION_JSON) //
-                    .header(AUTHORIZATION, getAuthorizationHeader()) //
+                    .headers(h -> h.add(ACCEPT, APPLICATION_JSON)) //
+                    .headers(h -> h.add(AUTHORIZATION, authorizationHeader)) //
                     .timeout(REQUEST_TIMEOUT.toNanos(), TimeUnit.NANOSECONDS) //
                     .send();
 

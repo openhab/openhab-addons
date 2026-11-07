@@ -20,9 +20,9 @@ import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.draytonwiser.internal.handler.HeatHubConfiguration;
@@ -187,11 +187,11 @@ public class DraytonWiserApi {
         // we only actually report a failure if we hit an error state 3 or more times
         try {
             logger.debug("Sending message to heathub: {}", path);
-            final StringContentProvider contentProvider = new StringContentProvider(content);
+            final StringRequestContent contentProvider = new StringRequestContent(content);
             final ContentResponse response = httpClient
                     .newRequest("http://" + configuration.networkAddress + "/" + path).method(method)
-                    .header("SECRET", configuration.secret).content(contentProvider).timeout(10, TimeUnit.SECONDS)
-                    .send();
+                    .headers(h -> h.add("SECRET", configuration.secret)).body(contentProvider)
+                    .timeout(10, TimeUnit.SECONDS).send();
 
             if (logger.isTraceEnabled()) {
                 logger.trace("Reponse (Status:{}): {}", response.getStatus(), response.getContentAsString());

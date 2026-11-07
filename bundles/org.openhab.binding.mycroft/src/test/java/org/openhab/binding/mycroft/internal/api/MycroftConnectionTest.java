@@ -49,7 +49,7 @@ public class MycroftConnectionTest {
     @Test
     public void testConnectionOK() throws IOException {
         MycroftConnection mycroftConnection = new MycroftConnection(mycroftConnectionListener, new WebSocketClient());
-        Mockito.when(sessionMock.getRemoteAddress()).thenReturn(new InetSocketAddress(1234));
+        Mockito.when(sessionMock.getRemoteSocketAddress()).thenReturn(new InetSocketAddress(1234));
         mycroftConnection.onConnect(sessionMock);
 
         Mockito.verify(mycroftConnectionListener, Mockito.times(1)).connectionEstablished();
@@ -59,7 +59,7 @@ public class MycroftConnectionTest {
     public void testAnyListener() throws UnsupportedEncodingException, IOException {
         MycroftConnection mycroftConnection = new MycroftConnection(mycroftConnectionListener, new WebSocketClient());
 
-        Mockito.when(sessionMock.getRemoteAddress()).thenReturn(new InetSocketAddress(1234));
+        Mockito.when(sessionMock.getRemoteSocketAddress()).thenReturn(new InetSocketAddress(1234));
         mycroftConnection.onConnect(sessionMock);
 
         @SuppressWarnings("unchecked")
@@ -86,7 +86,7 @@ public class MycroftConnectionTest {
     public void testSpeakListener() throws IOException {
         MycroftConnection mycroftConnection = new MycroftConnection(mycroftConnectionListener, new WebSocketClient());
 
-        Mockito.when(sessionMock.getRemoteAddress()).thenReturn(new InetSocketAddress(1234));
+        Mockito.when(sessionMock.getRemoteSocketAddress()).thenReturn(new InetSocketAddress(1234));
         mycroftConnection.onConnect(sessionMock);
 
         @SuppressWarnings("unchecked")

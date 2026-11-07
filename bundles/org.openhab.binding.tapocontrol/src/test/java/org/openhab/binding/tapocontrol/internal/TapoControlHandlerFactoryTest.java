@@ -49,20 +49,22 @@ class TapoControlHandlerFactoryTest {
         HttpClientFactory httpClientFactory = mock(HttpClientFactory.class);
         HttpClient httpClient = mock(HttpClient.class);
         Bridge bridge = BridgeBuilder.create(TapoThingConstants.BRIDGE_THING_TYPE, "testbridge").build();
-        when(httpClientFactory.createHttpClient(anyString(), any(SslContextFactory.class))).thenReturn(httpClient);
+        when(httpClientFactory.createHttpClient(anyString(), any(SslContextFactory.Client.class)))
+                .thenReturn(httpClient);
 
         TapoControlHandlerFactory factory = new TapoControlHandlerFactory(httpClientFactory,
                 mock(TapoStateDescriptionProvider.class));
         factory.createHandler(bridge);
 
-        verify(httpClientFactory).createHttpClient(eq("tapocontrol"), any(SslContextFactory.class));
+        verify(httpClientFactory).createHttpClient(eq("tapocontrol"), any(SslContextFactory.Client.class));
     }
 
     @Test
     void cameraHandlerRemovedOnRemoveHandler() {
         HttpClientFactory httpClientFactory = mock(HttpClientFactory.class);
         HttpClient httpClient = mock(HttpClient.class);
-        when(httpClientFactory.createHttpClient(anyString(), any(SslContextFactory.class))).thenReturn(httpClient);
+        when(httpClientFactory.createHttpClient(anyString(), any(SslContextFactory.Client.class)))
+                .thenReturn(httpClient);
         Thing camera = ThingBuilder.create(TapoThingConstants.CAMERA_THING_TYPE, "camera1").build();
 
         TapoControlHandlerFactory factory = new TapoControlHandlerFactory(httpClientFactory,

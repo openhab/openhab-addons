@@ -18,11 +18,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-import javax.ws.rs.core.Response;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.api.ContentResponse;
+import org.eclipse.jetty.client.ContentResponse;
 
 /**
  * This class represents an {@link HttpRequest} response
@@ -45,12 +43,11 @@ public class HttpResponse {
     private final byte @Nullable [] contents;
 
     /**
-     * Instantiates a new http response from the {@link Response}.
+     * Instantiates a new http response from a content response.
      *
      * @param response the non-null response
-     * @throws IOException Signals that an I/O exception has occurred.
      */
-    HttpResponse(ContentResponse response) throws IOException {
+    HttpResponse(ContentResponse response) {
         Objects.requireNonNull(response, "response cannot be null");
 
         httpStatus = response.getStatus();

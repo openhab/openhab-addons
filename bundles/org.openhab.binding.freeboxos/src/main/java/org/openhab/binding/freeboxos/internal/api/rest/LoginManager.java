@@ -12,10 +12,9 @@
  */
 package org.openhab.binding.freeboxos.internal.api.rest;
 
-import static javax.xml.bind.DatatypeConverter.printHexBinary;
-
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.util.HexFormat;
 import java.util.Map;
 
 import javax.crypto.Mac;
@@ -126,7 +125,7 @@ public class LoginManager extends RestManager {
             // Compute the hmac on input data bytes
             byte[] rawHmac = mac.doFinal(authorization.challenge().getBytes());
             // Convert raw bytes to Hex
-            String password = printHexBinary(rawHmac).toLowerCase();
+            String password = HexFormat.of().formatHex(rawHmac);
             return post(new OpenSessionData(APP_ID, password), SessionResponse.class, SESSION);
         } catch (InvalidKeyException e) {
             throw new IllegalArgumentException(e);
