@@ -31,6 +31,7 @@ import org.openhab.core.util.HexUtils;
  * The {@link LoginData} holds the login data and provides the methods for serialization and deserialization
  *
  * @author Jan N. Klug - Initial contribution
+ * @author Jens Erat - Derive deviceId from the serial so the register payload is consistent
  */
 @NonNullByDefault
 public class LoginData {
@@ -66,18 +67,18 @@ public class LoginData {
         // FRC
         byte[] frcBinary = new byte[313];
         rand.nextBytes(frcBinary);
-        this.frc = Base64.getEncoder().encodeToString(frcBinary);
+        this.frc = Base64.getEncoder().withoutPadding().encodeToString(frcBinary);
 
         // Serial number
         byte[] serialBinary = new byte[16];
         rand.nextBytes(serialBinary);
         this.serial = HexUtils.bytesToHex(serialBinary);
 
-        // Device id 16 random bytes in upper-case hex format, a # as separator and a fixed DEVICE_TYPE
-        byte[] bytes = new byte[16];
-        rand.nextBytes(bytes);
-        String hexStr = HexUtils.bytesToHex(bytes).toUpperCase() + "#" + DEVICE_TYPE;
-        this.deviceId = HexUtils.bytesToHex(hexStr.getBytes());
+        // Device id: the same serial as above, a # as separator and the fixed DEVICE_TYPE, hex-encoded in lower
+        // case like the Alexa app. Amazon's register endpoint rejects the request (InvalidValue) when device_serial
+        // does not match the serial embedded in client_id, so both must be derived from the same serial.
+        String hexStr = serial + "#" + DEVICE_TYPE;
+        this.deviceId = HexUtils.bytesToHex(hexStr.getBytes()).toLowerCase();
     }
 
     public String getFrc() {

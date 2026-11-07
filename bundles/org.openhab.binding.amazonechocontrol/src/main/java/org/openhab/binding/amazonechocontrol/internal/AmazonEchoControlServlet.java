@@ -77,6 +77,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Michael Geramb - Initial Contribution
  * @author Jan N. Klug - Refactored to whiteboard, merged both servlets, use Velocity templates
+ * @author Jens Erat - Authorization code + PKCE login flow
  */
 @Component(service = Servlet.class, immediate = true)
 @HttpWhiteboardServletName(SERVLET_PATH)
@@ -420,11 +421,15 @@ public class AmazonEchoControlServlet extends HttpServlet {
                 if (target != null && target.pathAndQuery().startsWith(MAP_LANDING_PATH)) {
                     try {
                         URI oAuthRedirectUri = new URI(location);
-                        String accessToken = getQueryMap(oAuthRedirectUri.getQuery()).get("openid.oa2.access_token");
-                        if (accessToken == null) {
+                        Map<String, String> query = getQueryMap(oAuthRedirectUri.getQuery());
+                        String authorizationCode = query.get("openid.oa2.authorization_code");
+                        String accessToken = query.get("openid.oa2.access_token");
+                        logger.debug("Login redirect to '{}' carried authorization_code={}, access_token={}", host,
+                                authorizationCode != null, accessToken != null);
+                        if (authorizationCode == null && accessToken == null) {
                             returnError(resp, uriParts,
-                                    "Login to '" + host + "' failed: Could not extract accessToken.");
-                        } else if (connection.registerConnectionAsApp(accessToken)) {
+                                    "Login to '" + host + "' failed: neither authorization code nor access token.");
+                        } else if (connection.registerConnectionAsApp(authorizationCode, accessToken)) {
                             accountHandler.setConnection(connection);
                             resp.sendRedirect(SERVLET_PATH + "/" + uriParts.account());
                             // createAccountPage(resp, uriParts, accountHandler, connection);

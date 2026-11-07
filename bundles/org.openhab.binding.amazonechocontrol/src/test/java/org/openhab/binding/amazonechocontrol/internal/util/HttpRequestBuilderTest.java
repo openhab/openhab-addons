@@ -28,6 +28,7 @@ import static org.mockito.Mockito.when;
 import static org.openhab.binding.amazonechocontrol.internal.util.HttpRequestBuilder.abortedMessage;
 import static org.openhab.binding.amazonechocontrol.internal.util.HttpRequestBuilder.buildFailureReason;
 import static org.openhab.binding.amazonechocontrol.internal.util.HttpRequestBuilder.isThrottled;
+import static org.openhab.binding.amazonechocontrol.internal.util.HttpRequestBuilder.responseBodySuffix;
 
 import java.net.CookieManager;
 import java.net.URI;
@@ -119,6 +120,23 @@ public class HttpRequestBuilderTest {
     @Test
     public void testAnAbortedRequestWithoutAFailureStillNamesTheUri() {
         assertThat(abortedMessage(REQUEST_URI, null), is("Request to " + REQUEST_URI + " aborted"));
+    }
+
+    @Test
+    public void testBlankResponseBodyIsNotAppendedToTheFailureMessage() {
+        assertThat(responseBodySuffix(""), is(""));
+        assertThat(responseBodySuffix("  \n "), is(""));
+    }
+
+    @Test
+    public void testResponseBodyIsAppendedToTheFailureMessage() {
+        assertThat(responseBodySuffix("{\"response\":{\"error\":{}}}"), is(" body: {\"response\":{\"error\":{}}}"));
+    }
+
+    @Test
+    public void testLongResponseBodyIsTruncated() {
+        String body = "x".repeat(1500);
+        assertThat(responseBodySuffix(body), is(" body: " + "x".repeat(1000) + "..."));
     }
 
     @Test
