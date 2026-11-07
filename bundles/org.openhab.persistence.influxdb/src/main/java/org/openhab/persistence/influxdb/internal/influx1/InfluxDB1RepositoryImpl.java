@@ -119,10 +119,10 @@ public class InfluxDB1RepositoryImpl implements InfluxDBRepository {
     }
 
     @Override
-    public boolean write(List<InfluxPoint> influxPoints) {
+    public WriteResult write(List<InfluxPoint> influxPoints) {
         final InfluxDB currentClient = this.client;
         if (currentClient == null) {
-            return false;
+            return WriteResult.retry("database is not connected");
         }
         try {
             List<Point> points = influxPoints.stream().map(this::convertPointToClientFormat).filter(Optional::isPresent)
@@ -130,11 +130,27 @@ public class InfluxDB1RepositoryImpl implements InfluxDBRepository {
             BatchPoints batchPoints = BatchPoints.database(configuration.getDatabaseName())
                     .retentionPolicy(configuration.getRetentionPolicy()).points(points).build();
             currentClient.write(batchPoints);
-        } catch (InfluxException | InfluxDBException e) {
+        } catch (InfluxDBException e) {
             logger.debug("Writing to database failed", e);
-            return false;
+            return isRejectedPoints(e) ? WriteResult.rejected(String.valueOf(e.getMessage()))
+                    : WriteResult.retry(String.valueOf(e.getMessage()));
+        } catch (InfluxException e) {
+            logger.debug("Writing to database failed", e);
+            return WriteResult.retry(String.valueOf(e.getMessage()));
         }
-        return true;
+        return WriteResult.SUCCESS;
+    }
+
+    /**
+     * influxdb-java does not expose the HTTP status of a failed write, it maps the server's error message to an
+     * exception type instead. {@link InfluxDBException#isRetryWorth()} is not used on its own because it is also
+     * <code>false</code> for errors that a configuration or server change can fix (database not found,
+     * authorization failed, hinted handoff queue not empty), where the points must be kept.
+     */
+    private boolean isRejectedPoints(InfluxDBException e) {
+        return e instanceof InfluxDBException.FieldTypeConflictException
+                || e instanceof InfluxDBException.UnableToParseException
+                || e instanceof InfluxDBException.PointsBeyondRetentionPolicyException;
     }
 
     @Override

@@ -140,20 +140,26 @@ public class InfluxDB2RepositoryImpl implements InfluxDBRepository {
     }
 
     @Override
-    public boolean write(List<InfluxPoint> influxPoints) {
+    public WriteResult write(List<InfluxPoint> influxPoints) {
         final WriteApi currentWriteAPI = writeAPI;
         if (currentWriteAPI == null) {
-            return false;
+            return WriteResult.retry("database is not connected");
         }
+        // The non-blocking WriteApi only queues the points: the client sends them in the background, retries HTTP
+        // 429/503 and connection errors itself and reports other failures as WriteErrorEvent. Exceptions here are
+        // rare, they are classified anyway so that a rejected batch is not re-queued forever.
         try {
             List<Point> clientPoints = influxPoints.stream().map(this::convertPointToClientFormat)
                     .filter(Optional::isPresent).map(Optional::get).toList();
             currentWriteAPI.writePoints(clientPoints);
-        } catch (InfluxException | InfluxDBIOException e) {
+        } catch (InfluxException e) {
             logger.debug("Writing to database failed", e);
-            return false;
+            return WriteResult.forHttpError(e.status(), String.valueOf(e.getMessage()));
+        } catch (InfluxDBIOException e) {
+            logger.debug("Writing to database failed", e);
+            return WriteResult.retry(String.valueOf(e.getMessage()));
         }
-        return true;
+        return WriteResult.SUCCESS;
     }
 
     @Override
