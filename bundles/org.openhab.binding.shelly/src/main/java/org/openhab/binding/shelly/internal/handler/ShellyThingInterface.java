@@ -70,6 +70,8 @@ public interface ShellyThingInterface {
 
     boolean requestUpdates(int requestCount, boolean refreshSettings);
 
+    void onDeviceWakeup();
+
     void triggerUpdateFromCoap();
 
     void reinitializeThing();
