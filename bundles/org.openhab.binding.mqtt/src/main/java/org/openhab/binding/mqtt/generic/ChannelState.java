@@ -31,6 +31,7 @@ import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StopMoveType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.types.UpDownType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.binding.generic.ChannelTransformation;
 import org.openhab.core.types.Command;
@@ -212,7 +213,15 @@ public class ChannelState implements MqttMessageSubscriber {
         } else if (parsedType instanceof State parsedState) {
             cachedValue.update(parsedState);
         } else {
-            // things that are only Commands _must_ be posted as a command (like STOP)
+            // things that are only Commands _must_ be posted as a command (like STOP),
+            // except when this is just the echo of our own command on a shared topic:
+            // posting it would make the item send it again, which loops forever
+            if (topic.equals(config.commandTopic) || topic.equals(config.stopCommandTopic)) {
+                logger.debug("Ignoring echo of command '{}' received on command topic '{}' of channel {}", parsedType,
+                        topic, channelUID);
+                receivedOrTimeout();
+                return;
+            }
             channelStateUpdateListener.postChannelCommand(channelUID, (Command) parsedType);
             receivedOrTimeout();
             return;
@@ -372,6 +381,9 @@ public class ChannelState implements MqttMessageSubscriber {
         }
 
         Command mqttCommandValue = cachedValue.parseCommand(command);
+        // UP/DOWN stay UpDownType only if an up/down command string is configured, otherwise they were
+        // converted to a percentage (0/100) and belong on the regular command topic.
+        final boolean upDownCommand = mqttCommandValue instanceof UpDownType;
         Value mqttFormatter = cachedValue;
 
         // Outgoing transformations
@@ -418,6 +430,8 @@ public class ChannelState implements MqttMessageSubscriber {
         String commandTopic;
         if (command.equals(StopMoveType.STOP) && !config.stopCommandTopic.isEmpty()) {
             commandTopic = config.stopCommandTopic;
+        } else if (upDownCommand && !config.upDownCommandTopic.isEmpty()) {
+            commandTopic = config.upDownCommandTopic;
         } else {
             commandTopic = config.commandTopic;
         }
