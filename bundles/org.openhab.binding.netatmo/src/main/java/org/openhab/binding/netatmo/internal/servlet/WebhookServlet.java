@@ -30,7 +30,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.netatmo.internal.api.NetatmoException;
 import org.openhab.binding.netatmo.internal.api.WebhookApi;
 import org.openhab.binding.netatmo.internal.api.dto.WebhookEvent;
-import org.openhab.binding.netatmo.internal.api.dto.Webhooks;
+import org.openhab.binding.netatmo.internal.api.dto.Webhook;
 import org.openhab.binding.netatmo.internal.deserialization.NADeserializer;
 import org.openhab.binding.netatmo.internal.handler.ApiBridgeHandler;
 import org.openhab.binding.netatmo.internal.handler.capability.Capability;
@@ -72,7 +72,7 @@ public class WebhookServlet extends NetatmoServlet {
         try {
             String stringUri = uri.toString();
             logger.debug("Getting list of active webhooks");
-            List<Webhooks> currentHooks = api.getWebhooks();
+            List<Webhook> currentHooks = api.getWebhooks();
             boolean present = currentHooks.stream().anyMatch(url -> url.getUrl().equals(stringUri));
             if (!present) {
                 logger.info("Setting up Webhook at Netatmo to {}", stringUri);

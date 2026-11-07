@@ -21,8 +21,8 @@ import javax.ws.rs.core.UriBuilder;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.FeatureArea;
-import org.openhab.binding.netatmo.internal.api.dto.Webhooks;
-import org.openhab.binding.netatmo.internal.api.dto.Webhooks.WebhooksResponse;
+import org.openhab.binding.netatmo.internal.api.dto.Webhook;
+import org.openhab.binding.netatmo.internal.api.dto.Webhook.WebhooksResponse;
 import org.openhab.binding.netatmo.internal.handler.ApiBridgeHandler;
 
 /**
@@ -60,8 +60,8 @@ public class WebhookApi extends RestManager {
         return true;
     }
 
-    public List<Webhooks> getWebhooks() throws NetatmoException {
-        List<Webhooks> result = get(WEBHOOKS_URI_BUILDER.clone(), WebhooksResponse.class).getBody();
+    public List<Webhook> getWebhooks() throws NetatmoException {
+        List<Webhook> result = get(WEBHOOKS_URI_BUILDER.clone(), WebhooksResponse.class).getBody();
         return result != null ? result : List.of();
     }
 }
