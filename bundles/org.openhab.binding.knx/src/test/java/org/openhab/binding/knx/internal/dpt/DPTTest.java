@@ -30,6 +30,7 @@ import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.IncreaseDecreaseType;
+import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.SIUnits;
@@ -81,6 +82,15 @@ class DPTTest {
         assertNull(ValueDecoder.decode("3.042", new byte[] { 0 }, IncreaseDecreaseType.class));
         assertNotNull(ValueEncoder.encode(new HSBType(), "5.003"));
         assertNotNull(ValueEncoder.encode(new HSBType(), "5.001"));
+    }
+
+    @Test
+    void dpt5LowestStepIsNotOff() {
+        assertEquals(PercentType.ZERO, ValueDecoder.decode("5.001", new byte[] { 0 }, PercentType.class));
+        assertEquals(new PercentType(1), ValueDecoder.decode("5.001", new byte[] { 1 }, PercentType.class));
+        assertEquals(new PercentType(1), ValueDecoder.decode("5.001", new byte[] { 2 }, PercentType.class));
+        assertEquals(PercentType.HUNDRED, ValueDecoder.decode("5.001", new byte[] { (byte) 255 }, PercentType.class));
+        assertEquals(new PercentType(1), ValueDecoder.decode("5.001", new byte[] { 1 }, HSBType.class));
     }
 
     @Test
