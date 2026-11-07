@@ -75,8 +75,8 @@
 		<label>Water Reading</label>
 		<description>The latest total volume consumption reading reported by the meter</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Water</tag>
+			<point>Measurement</point>
+			<property>Water</property>
 		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
@@ -86,8 +86,8 @@
 		<label>Leak Flow Rate</label>
 		<description>The rate of active water leak, if any, detected by the meter</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Water</tag>
+			<point>Measurement</point>
+			<property>Water</property>
 		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
@@ -98,8 +98,8 @@
 		<description>Indicates whether an active leak alert has been raised by the meter</description>
 		<category>Alarm</category>
 		<tags>
-			<tag>Alarm</tag>
-			<tag>Water</tag>
+			<point>Alarm</point>
+			<property>Water</property>
 		</tags>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
@@ -110,8 +110,8 @@
 		<description>Indicates whether the meter battery is low</description>
 		<category>Battery</category>
 		<tags>
-			<tag>Alarm</tag>
-			<tag>LowBattery</tag>
+			<point>Alarm</point>
+			<property>LowBattery</property>
 		</tags>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
@@ -122,8 +122,8 @@
 		<description>Indicates whether reverse water flow is detected</description>
 		<category>Alarm</category>
 		<tags>
-			<tag>Alarm</tag>
-			<tag>Water</tag>
+			<point>Alarm</point>
+			<property>Water</property>
 		</tags>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
@@ -133,8 +133,8 @@
 		<label>Last Read Time</label>
 		<description>The exact timestamp of the latest water meter reading</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
+			<point>Status</point>
+			<property>Timestamp</property>
 		</tags>
 		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS"/>
 	</channel-type>

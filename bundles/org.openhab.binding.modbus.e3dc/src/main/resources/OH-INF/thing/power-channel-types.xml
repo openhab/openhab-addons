@@ -8,8 +8,8 @@
 		<label>PV Output</label>
 		<description>Photovoltaic Power Production</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point>Measurement</point>
+			<property>Power</property>
 		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
@@ -18,8 +18,8 @@
 		<label>Battery Discharge</label>
 		<description>Battery discharges and provides Power</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point>Measurement</point>
+			<property>Power</property>
 		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
@@ -28,8 +28,8 @@
 		<label>Battery Charge</label>
 		<description>Battery charges and consumes Power</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point>Measurement</point>
+			<property>Power</property>
 		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
@@ -38,8 +38,8 @@
 		<label>Household Consumption</label>
 		<description>Household consuming Power</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point>Measurement</point>
+			<property>Power</property>
 		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
@@ -48,8 +48,8 @@
 		<label>Grid Power Consumption</label>
 		<description>More Photovoltaic Power is produced than needed. Additional Power is consumed by Grid</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point>Measurement</point>
+			<property>Power</property>
 		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
@@ -58,8 +58,8 @@
 		<label>Grid Power Supply</label>
 		<description>Grid Power is needed in order to satisfy your overall Power consumption</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point>Measurement</point>
+			<property>Power</property>
 		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
@@ -68,8 +68,8 @@
 		<label>External Power Supply</label>
 		<description>Power produced by an external device which is attached to your E3DC device</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point>Measurement</point>
+			<property>Power</property>
 		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
@@ -78,8 +78,8 @@
 		<label>Wallbox Power Consumption</label>
 		<description>Power consumption of attached Wallboxes</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point>Measurement</point>
+			<property>Power</property>
 		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
@@ -88,8 +88,8 @@
 		<label>Wallbox PV Power Consumption</label>
 		<description>Photovoltaic Power consumption (PV plus Battery) of attached Wallboxes</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point>Measurement</point>
+			<property>Power</property>
 		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
@@ -110,8 +110,8 @@
 		<label>Battery State Of Charge</label>
 		<description>Charge Level of your attached Battery in Percent</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Energy</tag>
+			<point>Status</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%.0f %%" readOnly="true"/>
 	</channel-type>
@@ -120,8 +120,8 @@
 		<label>Battery Charge</label>
 		<description>Charged energy of battery</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%.3f %unit%" readOnly="true"/>
 	</channel-type>
@@ -130,8 +130,8 @@
 		<label>Battery Open Capacity</label>
 		<description>Open energy capacity of battery</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%.3f %unit%" readOnly="true"/>
 	</channel-type>
@@ -139,7 +139,7 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Performance Ratio</label>
 		<tags>
-			<tag>Measurement</tag>
+			<point>Measurement</point>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>

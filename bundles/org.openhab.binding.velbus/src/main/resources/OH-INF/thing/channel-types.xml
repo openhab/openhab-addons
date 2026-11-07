@@ -9,8 +9,8 @@
 		<label>Operating Mode</label>
 		<description>Operating mode (heating/cooling) for the thermostat in Velbus</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Mode</tag>
+			<point>Control</point>
+			<property>Mode</property>
 		</tags>
 		<state>
 			<options>
@@ -25,8 +25,8 @@
 		<label>Mode</label>
 		<description>Mode (comfort/day/night/safe) for the thermostat in Velbus</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Mode</tag>
+			<point>Control</point>
+			<property>Mode</property>
 		</tags>
 		<state>
 			<options>
@@ -95,8 +95,8 @@
 		<description>Brightness control for dimmer action in Velbus</description>
 		<category>Light</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>Brightness</tag>
+			<point>Control</point>
+			<property>Brightness</property>
 		</tags>
 	</channel-type>
 
@@ -106,8 +106,8 @@
 		<description>Rollershutter control for rollershutter action in Velbus</description>
 		<category>Blinds</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>OpenLevel</tag>
+			<point>Control</point>
+			<property>OpenLevel</property>
 		</tags>
 	</channel-type>
 
@@ -117,8 +117,8 @@
 		<description>Current temperature</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%">
 		</state>
@@ -150,8 +150,8 @@
 		<label>Temperature Setpoint</label>
 		<category>Temperature</category>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="false" min="-55" max="63.5" step="0.5" pattern="%.1f %unit%">
 		</state>
@@ -163,8 +163,8 @@
 		<description>Currently measured voltage</description>
 		<category>Voltage</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Voltage</tag>
+			<point>Measurement</point>
+			<property>Voltage</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%">
 		</state>
@@ -176,8 +176,8 @@
 		<description>Currently measured current</description>
 		<category>Current</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Current</tag>
+			<point>Measurement</point>
+			<property>Current</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%">
 		</state>
@@ -205,8 +205,8 @@
 		<description>Currently measured quantity of rain</description>
 		<category>Rainfall</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Rain</tag>
+			<point>Measurement</point>
+			<property>Rain</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%">
 		</state>
@@ -218,8 +218,8 @@
 		<description>Currently measured illuminance</description>
 		<category>Illuminance</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Illuminance</tag>
+			<point>Measurement</point>
+			<property>Illuminance</property>
 		</tags>
 		<state readOnly="true" pattern="%d %unit%">
 		</state>
@@ -231,8 +231,8 @@
 		<description>Currently measured wind speed</description>
 		<category>Wind</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Wind</tag>
+			<point>Measurement</point>
+			<property>Wind</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%">
 		</state>

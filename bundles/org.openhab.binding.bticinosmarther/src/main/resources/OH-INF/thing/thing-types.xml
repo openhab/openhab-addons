@@ -85,8 +85,8 @@
 		<description>Indoor temperature as measured by the sensor</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%" step="0.1"/>
 	</channel-type>
@@ -97,8 +97,8 @@
 		<description>Indoor humidity as measured by the sensor</description>
 		<category>Humidity</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Humidity</tag>
+			<point>Measurement</point>
+			<property>Humidity</property>
 		</tags>
 		<state readOnly="true" min="0" max="100" pattern="%.1f %unit%" step="0.1"/>
 	</channel-type>
@@ -130,8 +130,8 @@
 		<description>Current operational target temperature set on the module</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%" step="0.1"/>
 	</channel-type>
@@ -178,8 +178,8 @@
 		<description>New operational set-point temperature to be set on the module (valid only for Mode = "Manual")</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f %unit%" min="7.1" max="104" step="0.1"/>
 	</channel-type>
@@ -228,8 +228,8 @@
 		<label>Power</label>
 		<description>Power on, send new operational settings to the module</description>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Power</tag>
+			<point>Switch</point>
+			<property>Power</property>
 		</tags>
 	</channel-type>
 

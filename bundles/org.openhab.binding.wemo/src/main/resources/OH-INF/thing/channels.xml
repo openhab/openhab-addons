@@ -10,8 +10,8 @@
 		<description>Turns the power on or off</description>
 		<category>Switch</category>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Power</tag>
+			<point>Switch</point>
+			<property>Power</property>
 		</tags>
 	</channel-type>
 
@@ -21,8 +21,8 @@
 		<description>Indicates whether motion is detected or not</description>
 		<category>Motion</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Motion</tag>
+			<point>Status</point>
+			<property>Motion</property>
 		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
@@ -86,8 +86,8 @@
 		<description>The current power consumption</description>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point>Measurement</point>
+			<property>Power</property>
 		</tags>
 		<state pattern="%.0f %unit%"/>
 	</channel-type>
@@ -142,8 +142,8 @@
 		</description>
 		<category>Light</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>Brightness</tag>
+			<point>Control</point>
+			<property>Brightness</property>
 		</tags>
 	</channel-type>
 
@@ -153,8 +153,8 @@
 		<description>Switches the integrated relay contact close/open</description>
 		<category>Switch</category>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Opening</tag>
+			<point>Switch</point>
+			<property>Opening</property>
 		</tags>
 	</channel-type>
 
@@ -170,8 +170,8 @@
 		<label>Mode</label>
 		<description>Shows the operation mode of a WeMo Coffee Maker</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
+			<point>Status</point>
+			<property>Mode</property>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -290,8 +290,8 @@
 		<label>Cooking Mode</label>
 		<description>Shows the operation mode of a WeMo CrockPot</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
+			<point>Status</point>
+			<property>Mode</property>
 		</tags>
 		<state readOnly="false">
 			<options>
@@ -332,8 +332,8 @@
 		<label>Operation Mode</label>
 		<description>Shows the operation mode of a WeMo enabled Holmes Air Purifier</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
+			<point>Status</point>
+			<property>Mode</property>
 		</tags>
 		<state readOnly="false">
 			<options>
@@ -351,8 +351,8 @@
 		<label>Air Quality</label>
 		<description>Shows the air quality measured by a WeMo enabled Holmes Air Purifier</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>AirQuality</tag>
+			<point>Measurement</point>
+			<property>AirQuality</property>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -368,8 +368,8 @@
 		<label>Ionizer</label>
 		<description>Switches ionization ON or OFF</description>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Power</tag>
+			<point>Switch</point>
+			<property>Power</property>
 		</tags>
 	</channel-type>
 
@@ -398,8 +398,8 @@
 		<label>Operation Mode</label>
 		<description>Shows the operation mode of a WeMo enabled Holmes Humidifier</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
+			<point>Status</point>
+			<property>Mode</property>
 		</tags>
 		<state readOnly="false">
 			<options>
@@ -419,8 +419,8 @@
 		<description>Shows the current humidity of a WeMo enabled Holmes Humidifier</description>
 		<category>Humidity</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Humidity</tag>
+			<point>Measurement</point>
+			<property>Humidity</property>
 		</tags>
 	</channel-type>
 
@@ -430,8 +430,8 @@
 		<description>Shows the target humidity of a WeMo enabled Holmes Humidifier</description>
 		<category>Humidity</category>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Humidity</tag>
+			<point>Setpoint</point>
+			<property>Humidity</property>
 		</tags>
 		<state readOnly="false">
 			<options>
@@ -449,8 +449,8 @@
 		<label>Water Level</label>
 		<description>Shows the water level of a WeMo enabled Holmes Humidifier</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Level</tag>
+			<point>Status</point>
+			<property>Level</property>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -466,8 +466,8 @@
 		<label>Operation Mode</label>
 		<description>Shows the operation mode of a WeMo enabled Heater</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
+			<point>Status</point>
+			<property>Mode</property>
 		</tags>
 		<state readOnly="false">
 			<options>
@@ -486,8 +486,8 @@
 		<description>Shows the current temperature measured by a WeMo enabled Heater</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 	</channel-type>
 
@@ -497,8 +497,8 @@
 		<description>Shows the target temperature for a WeMo enabled Heater</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 	</channel-type>
 
@@ -508,8 +508,8 @@
 		<description>Time when a WeMo enabled Heater should switch off</description>
 		<category>Time</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>Timestamp</tag>
+			<point>Control</point>
+			<property>Timestamp</property>
 		</tags>
 		<state pattern="%1$tR" readOnly="false"/>
 	</channel-type>

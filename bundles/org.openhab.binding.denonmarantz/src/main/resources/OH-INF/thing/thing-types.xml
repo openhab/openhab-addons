@@ -137,8 +137,8 @@
 		<description>Set the volume level (dB). Same as [mainVolume - 80].</description>
 		<category>SoundVolume</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>SoundVolume</tag>
+			<point>Control</point>
+			<property>SoundVolume</property>
 		</tags>
 		<state min="-80" max="18" step="0.5" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -211,8 +211,8 @@
 		<label>Now Playing (artist)</label>
 		<description>Displays the artist of the now playing song.</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -222,8 +222,8 @@
 		<label>Now Playing (album)</label>
 		<description>Displays the album of the now playing song.</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -233,8 +233,8 @@
 		<label>Now Playing (track)</label>
 		<description>Displays the title of the now playing track.</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>

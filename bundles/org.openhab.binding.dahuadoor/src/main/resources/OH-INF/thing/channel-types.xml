@@ -9,7 +9,7 @@
 		<label>Doorbell Button</label>
 		<description>Triggered when doorbell button is pressed.</description>
 		<tags>
-			<tag>Alarm</tag>
+			<point>Alarm</point>
 		</tags>
 		<event>
 			<options>
@@ -30,7 +30,7 @@
 		<label>Open Door</label>
 		<description>Controls the door lock relay.</description>
 		<tags>
-			<tag>Switch</tag>
+			<point>Switch</point>
 		</tags>
 	</channel-type>
 
@@ -46,8 +46,8 @@
 		<label>SIP Registered</label>
 		<description>ON when the device has successfully registered with the SIP server.</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -57,8 +57,8 @@
 		<label>SIP Call State</label>
 		<description>Current SIP call state (IDLE, RINGING, ANSWERING, ACTIVE, TERMINATING, HUNGUP).</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>

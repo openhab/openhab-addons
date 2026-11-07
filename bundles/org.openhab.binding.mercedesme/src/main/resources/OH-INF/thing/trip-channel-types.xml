@@ -17,8 +17,8 @@
 		<item-type>Number:Speed</item-type>
 		<label>Trip Average Speed</label>
 		<tags>
-			<tag>Calculation</tag>
-			<tag>Speed</tag>
+			<point>Calculation</point>
+			<property>Speed</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -51,8 +51,8 @@
 		<label>Rst Average Speed</label>
 		<description>Average speed since last Reset</description>
 		<tags>
-			<tag>Calculation</tag>
-			<tag>Speed</tag>
+			<point>Calculation</point>
+			<property>Speed</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>

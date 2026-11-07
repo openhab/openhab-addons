@@ -154,8 +154,8 @@
 		<label>Freeze Image</label>
 		<description>Turn the Freeze Image Mode On or Off</description>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
+			<point>Switch</point>
+			<property>Mode</property>
 		</tags>
 	</channel-type>
 	<channel-type id="blank">
@@ -163,8 +163,8 @@
 		<label>Screen Blank</label>
 		<description>Turn the Screen Blank On or Off</description>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
+			<point>Switch</point>
+			<property>Mode</property>
 		</tags>
 	</channel-type>
 	<channel-type id="directcmd" advanced="true">
@@ -196,8 +196,8 @@
 		<label>Lamp Time</label>
 		<description>Retrieves the number of hours the lamp has been used</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Duration</tag>
+			<point>Status</point>
+			<property>Duration</property>
 		</tags>
 		<state readOnly="true" pattern="%d h"/>
 	</channel-type>

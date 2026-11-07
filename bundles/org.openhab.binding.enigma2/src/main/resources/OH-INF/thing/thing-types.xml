@@ -50,8 +50,8 @@
 		<label>Power</label>
 		<description>Setting the power to on/off.</description>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Power</tag>
+			<point>Switch</point>
+			<property>Power</property>
 		</tags>
 	</channel-type>
 	<channel-type id="muteType">
@@ -60,8 +60,8 @@
 		<description>Current Mute Setting</description>
 		<category>SoundVolume</category>
 		<tags>
-			<tag>Switch</tag>
-			<tag>SoundVolume</tag>
+			<point>Switch</point>
+			<property>SoundVolume</property>
 		</tags>
 	</channel-type>
 	<channel-type id="volumeType">
@@ -70,8 +70,8 @@
 		<description>Current Volume Setting</description>
 		<category>SoundVolume</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>SoundVolume</tag>
+			<point>Control</point>
+			<property>SoundVolume</property>
 		</tags>
 		<state min="0" max="100" step="5"></state>
 	</channel-type>
@@ -98,8 +98,8 @@
 		<description>Control media (e.g. audio or video) playback</description>
 		<category>MediaControl</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>MediaControl</tag>
+			<point>Control</point>
+			<property>MediaControl</property>
 		</tags>
 	</channel-type>
 	<channel-type id="mediaStopType">
@@ -107,8 +107,8 @@
 		<label>Stop</label>
 		<description>Stop Playback</description>
 		<tags>
-			<tag>Switch</tag>
-			<tag>MediaControl</tag>
+			<point>Switch</point>
+			<property>MediaControl</property>
 		</tags>
 	</channel-type>
 	<channel-type id="answerType">

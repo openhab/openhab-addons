@@ -8,8 +8,8 @@
 		<label>Charge Flap</label>
 		<description>Charge Flap Status</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>OpenState</tag>
+			<point>Status</point>
+			<property>OpenState</property>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -23,8 +23,8 @@
 		<label>Charge Coupler AC</label>
 		<description>Coupler AC Status</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Power</tag>
+			<point>Status</point>
+			<property>Power</property>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -38,8 +38,8 @@
 		<label>Charge Coupler DC</label>
 		<description>Coupler DC Status</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Power</tag>
+			<point>Status</point>
+			<property>Power</property>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -53,8 +53,8 @@
 		<label>Charge Coupler Lock</label>
 		<description>Coupler Lock Status</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
+			<point>Status</point>
+			<property>Mode</property>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -67,8 +67,8 @@
 		<item-type>Switch</item-type>
 		<label>Charge Active</label>
 		<tags>
-			<tag>Status</tag>
-			<tag>Power</tag>
+			<point>Status</point>
+			<property>Power</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -77,8 +77,8 @@
 		<label>Charge Status</label>
 		<description>Actual charging status</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Power</tag>
+			<point>Status</point>
+			<property>Power</property>
 		</tags>
 		<state readOnly="true">
 			<!-- see https://github.com/mercedes-benz/MBSDK-CarKit-iOS/blob/master/MBCarKit/MBCarKit/Common/Enums/Status/ZEVTypes.swift#L92 -->
@@ -109,8 +109,8 @@
 		<label>Charge Error</label>
 		<description>Actual charging error if available</description>
 		<tags>
-			<tag>Alarm</tag>
-			<tag>Power</tag>
+			<point>Alarm</point>
+			<property>Power</property>
 		</tags>
 		<state readOnly="true">
 			<!-- see https://github.com/mercedes-benz/MBSDK-CarKit-iOS/blob/master/MBCarKit/MBCarKit/Common/Enums/Status/ZEVTypes.swift#L19 -->
@@ -127,8 +127,8 @@
 		<item-type>Number:Power</item-type>
 		<label>Charge Power</label>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point>Measurement</point>
+			<property>Power</property>
 		</tags>
 		<state pattern="%.1f kW" readOnly="true"/>
 	</channel-type>
@@ -141,8 +141,8 @@
 		<item-type>DateTime</item-type>
 		<label>Charge End Estimation</label>
 		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
+			<point>Status</point>
+			<property>Timestamp</property>
 		</tags>
 		<state pattern="%1$td.%1$tm. %1$tH:%1$tM" readOnly="true"/>
 	</channel-type>
@@ -166,8 +166,8 @@
 		<label>Coupler Auto Unlock</label>
 		<description>Auto unlock coupler after charging </description>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
+			<point>Switch</point>
+			<property>Mode</property>
 		</tags>
 	</channel-type>
 </thing:thing-descriptions>

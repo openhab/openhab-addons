@@ -239,8 +239,8 @@
 		<label>Switch</label>
 
 		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
+			<point>Switch</point>
+			<property>Mode</property>
 		</tags>
 		<config-description>
 			<parameter name="oid" type="text" required="true">

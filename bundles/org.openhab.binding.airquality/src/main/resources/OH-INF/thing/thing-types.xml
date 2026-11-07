@@ -136,8 +136,8 @@
 		<description>@text/alertLevelChannelDescription</description>
 		<category>error</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>AirQuality</tag>
+			<point>Status</point>
+			<property>AirQuality</property>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -180,8 +180,8 @@
 		<description>@text/dewPointDescription</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>

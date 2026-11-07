@@ -52,8 +52,8 @@
 		<label>Zone State</label>
 		<description>State of zone</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>OpenState</tag>
+			<point>Status</point>
+			<property>OpenState</property>
 		</tags>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
@@ -62,8 +62,8 @@
 		<label>Tampered</label>
 		<description>State of zone</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Current</tag>
+			<point>Status</point>
+			<property>Current</property>
 		</tags>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
@@ -82,7 +82,7 @@
 		<item-type>Switch</item-type>
 		<label>Supervision Trouble</label>
 		<tags>
-			<tag>Alarm</tag>
+			<point>Alarm</point>
 		</tags>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
@@ -115,7 +115,7 @@
 		<item-type>Switch</item-type>
 		<label>Currently in Alarm</label>
 		<tags>
-			<tag>Alarm</tag>
+			<point>Alarm</point>
 		</tags>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
@@ -123,7 +123,7 @@
 		<item-type>Switch</item-type>
 		<label>Generated an Alarm</label>
 		<tags>
-			<tag>Alarm</tag>
+			<point>Alarm</point>
 		</tags>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>

@@ -221,8 +221,8 @@
 		<label>URL to recorded video</label>
 		<description>The URL to a recorded video (only when subscribed)</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 	</channel-type>
 	<channel-type id="doorbotId">
@@ -230,8 +230,8 @@
 		<label>Event Device ID</label>
 		<description>The ID of the Ring device (doorbell, chime, etc.) that generated the currently selected event</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 	</channel-type>
 	<channel-type id="doorbotDescription">
@@ -239,8 +239,8 @@
 		<label>Event Device Name</label>
 		<description>The description of the Ring device (doorbell, chime, etc) that generated the currently selected event</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 	</channel-type>
 	<channel-type id="createdAt">
@@ -248,8 +248,8 @@
 		<label>Event DateTime</label>
 		<description>The date and time the event was created</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
+			<point>Status</point>
+			<property>Timestamp</property>
 		</tags>
 		<state pattern="%1$tF %1$tR" readOnly="true"/>
 	</channel-type>
@@ -258,8 +258,8 @@
 		<label>Event Type</label>
 		<description>The kind of event, usually 'motion' or 'ding'</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 	</channel-type>
 	<channel-type id="extendedDescription">
@@ -267,8 +267,8 @@
 		<label>Extended Description</label>
 		<description>Extended description, similar to notifications from the Ring app</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 	</channel-type>
 	<channel-type id="enabled">
@@ -276,8 +276,8 @@
 		<label>Enable Polling</label>
 		<description>Account Polling Enabled (on=yes, off=no)</description>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Info</tag>
+			<point>Switch</point>
+			<property>Info</property>
 		</tags>
 	</channel-type>
 	<channel-type id="opendoor">
@@ -285,8 +285,8 @@
 		<label>Open Door</label>
 		<description>Open Door linked to Intercom</description>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Opening</tag>
+			<point>Switch</point>
+			<property>Opening</property>
 		</tags>
 	</channel-type>
 	<channel-type id="light">
@@ -294,8 +294,8 @@
 		<label>Light Status</label>
 		<description>Current status of the light</description>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Light</tag>
+			<point>Switch</point>
+			<property>Light</property>
 		</tags>
 	</channel-type>
 	<channel-type id="motionDetection">
@@ -303,8 +303,8 @@
 		<label>Motion Detection Status</label>
 		<description>Current status of Motion Detection (ON=Enabled, OFF=Disabled)</description>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Info</tag>
+			<point>Switch</point>
+			<property>Info</property>
 		</tags>
 	</channel-type>
 	<channel-type id="siren">
@@ -312,8 +312,8 @@
 		<label>Siren Status</label>
 		<description>Current status of the siren</description>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Noise</tag>
+			<point>Switch</point>
+			<property>Noise</property>
 		</tags>
 	</channel-type>
 	<channel-type id="battery">
@@ -321,8 +321,8 @@
 		<label>Battery Level</label>
 		<description>Battery level in %</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Level</tag>
+			<point>Status</point>
+			<property>Level</property>
 		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
@@ -331,8 +331,8 @@
 		<label>Snapshot</label>
 		<description>Snapshot image from camera</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
@@ -341,8 +341,8 @@
 		<label>Snapshot DateTime</label>
 		<description>The date and time the snapshot was created</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
+			<point>Status</point>
+			<property>Timestamp</property>
 		</tags>
 		<state pattern="%1$tF %1$tR" readOnly="true"/>
 	</channel-type>

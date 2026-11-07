@@ -26,8 +26,8 @@
 		<label>Plan SoC</label>
 		<description>Scheduled SoC</description>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Energy</tag>
+			<point>Setpoint</point>
+			<property>Energy</property>
 		</tags>
 	</channel-type>
 	<channel-type id="plan-precondition">
@@ -35,8 +35,8 @@
 		<label>Precondition Time</label>
 		<description>Scheduled preconditioning time (time in seconds to start charging before departure)</description>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Duration</tag>
+			<point>Setpoint</point>
+			<property>Duration</property>
 		</tags>
 	</channel-type>
 	<channel-type id="plan-time">
@@ -44,8 +44,8 @@
 		<label>Plan Time</label>
 		<description>Scheduled departure time</description>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Timestamp</tag>
+			<point>Setpoint</point>
+			<property>Timestamp</property>
 		</tags>
 	</channel-type>
 	<channel-type id="plan-weekdays">
@@ -53,8 +53,8 @@
 		<label>Plan Weekdays</label>
 		<description>Planned days on which the vehicle will be charged (only in repeating plans)</description>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Channel</tag>
+			<point>Setpoint</point>
+			<property>Channel</property>
 		</tags>
 	</channel-type>
 	<channel-type id="plan-active">
@@ -62,8 +62,8 @@
 		<label>Active</label>
 		<description>Indicates whether the repeating plan is active</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Enabled</tag>
+			<point>Control</point>
+			<property>Enabled</property>
 		</tags>
 		<state>
 			<options>

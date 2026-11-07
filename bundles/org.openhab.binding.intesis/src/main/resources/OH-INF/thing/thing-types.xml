@@ -78,7 +78,7 @@
 		<label>Error Status</label>
 		<description>Indicates if the Air Conditioner has encountered an error.</description>
 		<tags>
-			<tag>Status</tag>
+			<point>Status</point>
 		</tags>
 		<state readOnly="true"></state>
 	</channel-type>

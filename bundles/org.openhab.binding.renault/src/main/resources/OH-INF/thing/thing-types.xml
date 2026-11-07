@@ -126,8 +126,8 @@
 		<label>Battery Energy Available</label>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"></state>
 	</channel-type>
@@ -143,8 +143,8 @@
 		<label>Plug Status</label>
 		<description>Status of the charging plug.</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Power</tag>
+			<point>Status</point>
+			<property>Power</property>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -160,8 +160,8 @@
 		<item-type>String</item-type>
 		<label>Charging Status</label>
 		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
+			<point>Status</point>
+			<property>Mode</property>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -181,8 +181,8 @@
 		<item-type>String</item-type>
 		<label>Charging Mode</label>
 		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
+			<point>Status</point>
+			<property>Mode</property>
 		</tags>
 		<state readOnly="false">
 			<options>
@@ -196,8 +196,8 @@
 		<label>Pause Charge</label>
 		<description>Pause or resume the charge.</description>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
+			<point>Switch</point>
+			<property>Mode</property>
 		</tags>
 		<state readOnly="false"></state>
 	</channel-type>
@@ -223,8 +223,8 @@
 		<item-type>String</item-type>
 		<label>HVAC Status (ON | OFF | PENDING)</label>
 		<tags>
-			<tag>Status</tag>
-			<tag>Airconditioning</tag>
+			<point>Status</point>
+			<property>Airconditioning</property>
 		</tags>
 		<state readOnly="false">
 			<options>
@@ -240,8 +240,8 @@
 		<description>HVAC target temperature (19 to 21)</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f %unit%"></state>
 	</channel-type>
@@ -251,8 +251,8 @@
 		<description>Temperature outside of the car.</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"></state>
 	</channel-type>
@@ -275,8 +275,8 @@
 		<description>Locked status of the car</description>
 		<category>Lock</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>LockState</tag>
+			<point>Status</point>
+			<property>LockState</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -287,8 +287,8 @@
 		<description>The State of Charge level</description>
 		<category></category>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>StateOfCharge</tag>
+			<point>Setpoint</point>
+			<property>StateOfCharge</property>
 		</tags>
 		<state min="0" max="100" step="1"/>
 	</channel-type>
@@ -299,8 +299,8 @@
 		<description>Timestamp of the last State of Charge update</description>
 		<category>Time</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
+			<point>Status</point>
+			<property>Timestamp</property>
 		</tags>
 		<state pattern="%1$tH:%1$tM %1$td.%1$tm.%1$tY" readOnly="true"></state>
 	</channel-type>

@@ -175,8 +175,8 @@
 		<description>The measured temperature.</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%">
 		</state>
@@ -188,8 +188,8 @@
 		<description>The measured humidity.</description>
 		<category>Humidity</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Humidity</tag>
+			<point>Measurement</point>
+			<property>Humidity</property>
 		</tags>
 		<state readOnly="true" min="0" max="100" pattern="%d %unit%"/>
 	</channel-type>
@@ -199,8 +199,8 @@
 		<label>TVOC</label>
 		<description>The total Volatile Organic Compounds.</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>VOC</tag>
+			<point>Measurement</point>
+			<property>VOC</property>
 		</tags>
 		<state readOnly="true" pattern="%d ppb"/>
 	</channel-type>
@@ -211,8 +211,8 @@
 		<label>PM1</label>
 		<description>The Particulate Matter 1 (0.001mm).</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>ParticulateMatter</tag>
+			<point>Measurement</point>
+			<property>ParticulateMatter</property>
 		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
@@ -222,8 +222,8 @@
 		<label>PM2.5</label>
 		<description>The Particulate Matter 2.5 (0.0025mm).</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>ParticulateMatter</tag>
+			<point>Measurement</point>
+			<property>ParticulateMatter</property>
 		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
@@ -233,8 +233,8 @@
 		<label>PM10</label>
 		<description>The Particulate Matter 10 (0.01mm).</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>ParticulateMatter</tag>
+			<point>Measurement</point>
+			<property>ParticulateMatter</property>
 		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
@@ -244,8 +244,8 @@
 		<label>CO2</label>
 		<description>The measured CarbonDioxide.</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>CO2</tag>
+			<point>Measurement</point>
+			<property>CO2</property>
 		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
@@ -262,8 +262,8 @@
 		<label>Fan Speed Setting</label>
 		<description>The fan speed setting.</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Speed</tag>
+			<point>Control</point>
+			<property>Speed</property>
 		</tags>
 		<state>
 			<options>
@@ -285,8 +285,8 @@
 		<label>Work Mode Setting</label>
 		<description>The work mode setting.</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
+			<point>Status</point>
+			<property>Mode</property>
 		</tags>
 		<state>
 			<options>
@@ -302,8 +302,8 @@
 		<label>Ionizer Status</label>
 		<description>The ionizer status On/Off.</description>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Power</tag>
+			<point>Switch</point>
+			<property>Power</property>
 		</tags>
 	</channel-type>
 
@@ -318,8 +318,8 @@
 		<label>Safety Lock</label>
 		<description>The safety lock status.</description>
 		<tags>
-			<tag>Switch</tag>
-			<tag>LockState</tag>
+			<point>Switch</point>
+			<property>LockState</property>
 		</tags>
 	</channel-type>
 
@@ -328,8 +328,8 @@
 		<label>Door Lock</label>
 		<description>The door lock status Open/Closed.</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>LockState</tag>
+			<point>Status</point>
+			<property>LockState</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -339,8 +339,8 @@
 		<label>Door State</label>
 		<description>The door status Open/Closed.</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>OpenState</tag>
+			<point>Status</point>
+			<property>OpenState</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -350,8 +350,8 @@
 		<label>Time To Delayed Start</label>
 		<description>The time remaining until the delayed start.</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Progress</tag>
+			<point>Measurement</point>
+			<property>Progress</property>
 		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
@@ -361,8 +361,8 @@
 		<label>Time To End</label>
 		<description>The time remaining until the program will end.</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Progress</tag>
+			<point>Measurement</point>
+			<property>Progress</property>
 		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
@@ -379,8 +379,8 @@
 		<label>Appliance Total Working Time</label>
 		<description>The appliance total working time.</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Duration</tag>
+			<point>Measurement</point>
+			<property>Duration</property>
 		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
@@ -411,8 +411,8 @@
 		<label>Water Usage</label>
 		<description>The water usage in litres.</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Water</tag>
+			<point>Measurement</point>
+			<property>Water</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -429,8 +429,8 @@
 		<label>Cycle Phase</label>
 		<description>The washing cycle phase.</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -452,8 +452,8 @@
 		<label>Appliance State</label>
 		<description>The appliance state.</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -474,8 +474,8 @@
 		<label>Appliance Mode</label>
 		<description>The appliance mode.</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
+			<point>Status</point>
+			<property>Mode</property>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -492,8 +492,8 @@
 		<label>Washing Temperature </label>
 		<description>The user configured washing temperature.</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Temperature</tag>
+			<point>Status</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -514,8 +514,8 @@
 		<label>Spin Speed</label>
 		<description>The spin speed.</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Speed</tag>
+			<point>Status</point>
+			<property>Speed</property>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -537,8 +537,8 @@
 		<label>Steam Value</label>
 		<description>The user configured steam value.</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -555,8 +555,8 @@
 		<label>Programs Order</label>
 		<description>The user configured washing program.</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
+			<point>Status</point>
+			<property>Mode</property>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -595,8 +595,8 @@
 		<description>The device's state running state.</description>
 		<category>Switch</category>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
+			<point>Switch</point>
+			<property>Mode</property>
 		</tags>
 	</channel-type>
 
@@ -606,8 +606,8 @@
 		<description>The measured ambient temperature.</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%">
 		</state>
@@ -619,8 +619,8 @@
 		<description>The target set-point temperature.</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state min="16" max="32" step="1" pattern="%.0f %unit%"/>
 	</channel-type>
@@ -631,8 +631,8 @@
 		<description>Whether sleep mode is active.</description>
 		<category>Switch</category>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
+			<point>Switch</point>
+			<property>Mode</property>
 		</tags>
 	</channel-type>
 
@@ -642,8 +642,8 @@
 		<description>Whether fan swing is active.</description>
 		<category>Flow</category>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
+			<point>Switch</point>
+			<property>Mode</property>
 		</tags>
 	</channel-type>
 
@@ -653,8 +653,8 @@
 		<description>Whether child lock is active.</description>
 		<category>Lock</category>
 		<tags>
-			<tag>Switch</tag>
-			<tag>LockState</tag>
+			<point>Switch</point>
+			<property>LockState</property>
 		</tags>
 	</channel-type>
 
@@ -664,8 +664,8 @@
 		<description>The fan speed mode.</description>
 		<category>Flow</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>Airflow</tag>
+			<point>Control</point>
+			<property>Airflow</property>
 		</tags>
 		<state>
 			<options>
@@ -683,8 +683,8 @@
 		<description>The operating mode.</description>
 		<category>Settings</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>Mode</tag>
+			<point>Control</point>
+			<property>Mode</property>
 		</tags>
 		<state>
 			<options>
@@ -702,8 +702,8 @@
 		<description>Indicator for the network quality.</description>
 		<category>Network</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>SignalStrength</tag>
+			<point>Status</point>
+			<property>SignalStrength</property>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -723,8 +723,8 @@
 		<description>WiFi Received Signal Strength Indicator.</description>
 		<category>QualityOfService</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>RSSI</tag>
+			<point>Status</point>
+			<property>RSSI</property>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"></state>
 	</channel-type>
@@ -735,8 +735,8 @@
 		<description>Is the compressor running.</description>
 		<category>Switch</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Power</tag>
+			<point>Status</point>
+			<property>Power</property>
 		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
@@ -747,8 +747,8 @@
 		<description>The state of the four way valve.</description>
 		<category>Switch</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
+			<point>Status</point>
+			<property>Mode</property>
 		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
@@ -759,8 +759,8 @@
 		<description>The state of the evap defrost.</description>
 		<category>Switch</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
+			<point>Status</point>
+			<property>Mode</property>
 		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
@@ -771,8 +771,8 @@
 		<description>Whether a timer is active to turn off the appliance.</description>
 		<category>Switch</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
+			<point>Status</point>
+			<property>Mode</property>
 		</tags>
 	</channel-type>
 
@@ -790,8 +790,8 @@
 		<description>The time when the auto off timer will be reached.</description>
 		<category>Time</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
+			<point>Status</point>
+			<property>Timestamp</property>
 		</tags>
 		<state readOnly="true" pattern="%1$tF %1$tR"/>
 	</channel-type>
@@ -802,8 +802,8 @@
 		<description>Whether a timer is active to turn on the appliance.</description>
 		<category>Switch</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
+			<point>Status</point>
+			<property>Mode</property>
 		</tags>
 	</channel-type>
 
@@ -821,8 +821,8 @@
 		<description>The time when the auto on timer will be reached.</description>
 		<category>Time</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
+			<point>Status</point>
+			<property>Timestamp</property>
 		</tags>
 		<state readOnly="true" pattern="%1$tF %1$tR"/>
 	</channel-type>
@@ -833,8 +833,8 @@
 		<description>The air filters state.</description>
 		<category>text</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true">
 			<options>

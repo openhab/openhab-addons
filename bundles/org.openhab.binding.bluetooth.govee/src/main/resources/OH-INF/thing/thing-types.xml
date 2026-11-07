@@ -166,8 +166,8 @@
 		<label>Current Measured Temperature</label>
 		<category>Temperature</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -181,8 +181,8 @@
 		</description>
 		<category>Alarm</category>
 		<tags>
-			<tag>Alarm</tag>
-			<tag>Temperature</tag>
+			<point>Alarm</point>
+			<property>Temperature</property>
 		</tags>
 	</channel-type>
 
@@ -194,8 +194,8 @@
 		</description>
 		<category>Alarm</category>
 		<tags>
-			<tag>Alarm</tag>
-			<tag>Humidity</tag>
+			<point>Alarm</point>
+			<property>Humidity</property>
 		</tags>
 	</channel-type>
 

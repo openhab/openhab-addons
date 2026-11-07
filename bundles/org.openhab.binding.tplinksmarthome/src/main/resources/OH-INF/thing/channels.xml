@@ -11,8 +11,8 @@
 		<description>Shows the switch state of the Smart Home device.</description>
 		<category>Switch</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Power</tag>
+			<point>Status</point>
+			<property>Power</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -22,8 +22,8 @@
 		<description>Switch the Smart Home device led on or off.</description>
 		<category>Switch</category>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Light</tag>
+			<point>Switch</point>
+			<property>Light</property>
 		</tags>
 	</channel-type>
 
@@ -34,8 +34,8 @@
 		<description>Actual power usage.</description>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point>Measurement</point>
+			<property>Power</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"></state>
 	</channel-type>
@@ -45,8 +45,8 @@
 		<description>Actual energy usage.</description>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"></state>
 	</channel-type>
@@ -56,8 +56,8 @@
 		<description>Actual current usage.</description>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Current</tag>
+			<point>Measurement</point>
+			<property>Current</property>
 		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"></state>
 	</channel-type>
@@ -67,8 +67,8 @@
 		<description>Actual voltage usage.</description>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Voltage</tag>
+			<point>Measurement</point>
+			<property>Voltage</property>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"></state>
 	</channel-type>
@@ -80,8 +80,8 @@
 		<description>Wi-Fi signal strength indicator.</description>
 		<category>QualityOfService</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>RSSI</tag>
+			<point>Measurement</point>
+			<property>RSSI</property>
 		</tags>
 		<state readOnly="true" pattern="%d %unit%"></state>
 	</channel-type>

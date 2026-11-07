@@ -115,8 +115,8 @@
 		<label>Remote Button</label>
 		<description>A Remote Button Press to Send to the Roku TV</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>MediaControl</tag>
+			<point>Control</point>
+			<property>MediaControl</property>
 		</tags>
 		<state>
 			<options>
@@ -160,8 +160,8 @@
 		<description>Control playback e.g. Play/Pause/Next/Previous</description>
 		<category>Player</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>MediaControl</tag>
+			<point>Control</point>
+			<property>MediaControl</property>
 		</tags>
 	</channel-type>
 
@@ -170,8 +170,8 @@
 		<label>Active App</label>
 		<description>The Currently Running App on the Roku</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>App</tag>
+			<point>Control</point>
+			<property>App</property>
 		</tags>
 	</channel-type>
 
@@ -187,8 +187,8 @@
 		<label>Play Mode</label>
 		<description>The Current Playback Mode</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
+			<point>Status</point>
+			<property>Mode</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -198,8 +198,8 @@
 		<label>Playback Time</label>
 		<description>The Current Playback Time Elapsed</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Duration</tag>
+			<point>Status</point>
+			<property>Duration</property>
 		</tags>
 		<state readOnly="true" pattern="%1$tT"/>
 	</channel-type>
@@ -209,8 +209,8 @@
 		<label>Total Time</label>
 		<description>The Total Length of the Current Title</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Duration</tag>
+			<point>Measurement</point>
+			<property>Duration</property>
 		</tags>
 		<state readOnly="true" pattern="%1$tT"/>
 	</channel-type>
@@ -221,8 +221,8 @@
 		<description>The date/time when the currently playing media will end</description>
 		<category>Time</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
+			<point>Status</point>
+			<property>Timestamp</property>
 		</tags>
 		<state readOnly="true" pattern="%1$tl:%1$tM %1$tp"/>
 	</channel-type>
@@ -232,8 +232,8 @@
 		<label>Media Progress</label>
 		<description>The current progress of playing media</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Progress</tag>
+			<point>Status</point>
+			<property>Progress</property>
 		</tags>
 	</channel-type>
 
@@ -242,8 +242,8 @@
 		<label>Active Channel</label>
 		<description>The TV Channel Currently Selected on the Roku TV</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Channel</tag>
+			<point>Control</point>
+			<property>Channel</property>
 		</tags>
 	</channel-type>
 
@@ -252,8 +252,8 @@
 		<label>Signal Mode</label>
 		<description>The Signal Type of the Current TV Channel, ie: 1080i</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
+			<point>Status</point>
+			<property>Mode</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -263,8 +263,8 @@
 		<label>Signal Quality</label>
 		<description>The Signal Quality of the Current TV Channel</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>MediaControl</tag>
+			<point>Measurement</point>
+			<property>MediaControl</property>
 		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
@@ -281,8 +281,8 @@
 		<label>Program Title</label>
 		<description>The Name of the Current TV Program</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>MediaControl</tag>
+			<point>Status</point>
+			<property>MediaControl</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -292,8 +292,8 @@
 		<label>Program Description</label>
 		<description>The Description of the Current TV Program</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>MediaControl</tag>
+			<point>Status</point>
+			<property>MediaControl</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -303,8 +303,8 @@
 		<label>Program Rating</label>
 		<description>The TV Parental Guideline Rating of the Current TV Program</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>MediaControl</tag>
+			<point>Status</point>
+			<property>MediaControl</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>

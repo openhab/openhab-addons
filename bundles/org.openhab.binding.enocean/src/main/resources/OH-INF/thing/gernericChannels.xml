@@ -11,8 +11,8 @@
 		<description>The switch channel allows to switch something on and off.</description>
 		<category>Switch</category>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Power</tag>
+			<point>Switch</point>
+			<property>Power</property>
 		</tags>
 		<config-description-ref uri="channel-type:enocean:genericChannel"/>
 	</channel-type>
@@ -24,8 +24,8 @@
 		<description>Rollershutter</description>
 		<category>Blinds</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>OpenLevel</tag>
+			<point>Control</point>
+			<property>OpenLevel</property>
 		</tags>
 		<config-description-ref uri="channel-type:enocean:genericChannel"/>
 	</channel-type>
@@ -37,8 +37,8 @@
 		<description>Dimmer</description>
 		<category>Light</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>Brightness</tag>
+			<point>Control</point>
+			<property>Brightness</property>
 		</tags>
 		<config-description-ref uri="channel-type:enocean:genericChannel"/>
 	</channel-type>
@@ -60,8 +60,8 @@
 		<item-type>Color</item-type>
 		<label>Color</label>
 		<tags>
-			<tag>Control</tag>
-			<tag>Color</tag>
+			<point>Control</point>
+			<property>Color</property>
 		</tags>
 		<config-description-ref uri="channel-type:enocean:genericChannel"/>
 	</channel-type>

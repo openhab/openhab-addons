@@ -27,8 +27,8 @@
 		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Battery Charge Level</label>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
@@ -36,8 +36,8 @@
 		<item-type unitHint="kWh">Number:Energy</item-type>
 		<label>Charged Battery Energy</label>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
@@ -45,8 +45,8 @@
 		<item-type unitHint="kWh">Number:Energy</item-type>
 		<label>Uncharged Battery Energy</label>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
@@ -55,8 +55,8 @@
 		<label>Energy to Maximum SoC</label>
 		<description>Energy needed to reach maximum state of charge</description>
 		<tags>
-			<tag>Calculation</tag>
-			<tag>Energy</tag>
+			<point>Calculation</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
@@ -74,8 +74,8 @@
 		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Fuel Level</label>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Level</tag>
+			<point>Measurement</point>
+			<property>Level</property>
 		</tags>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
@@ -84,8 +84,8 @@
 		<label>AdBlue Level</label>
 		<description>AdBlue tank level in percent </description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Level</tag>
+			<point>Measurement</point>
+			<property>Level</property>
 		</tags>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
@@ -93,8 +93,8 @@
 		<item-type unitHint="l,gal">Number:Volume</item-type>
 		<label>Remaining Fuel</label>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Level</tag>
+			<point>Measurement</point>
+			<property>Level</property>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>

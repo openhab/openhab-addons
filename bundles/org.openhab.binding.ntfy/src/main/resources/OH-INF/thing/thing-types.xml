@@ -79,7 +79,8 @@
 		<item-type>DateTime</item-type>
 		<label>Time of the last message</label>
 		<tags>
-			<tag>Timestamp</tag>
+			<point>Status</point>
+			<property>Timestamp</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>

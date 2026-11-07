@@ -1182,8 +1182,8 @@
 		<item-type>String</item-type>
 		<label>Air Conditioner Mode</label>
 		<tags>
-			<tag>Control</tag>
-			<tag>Mode</tag>
+			<point>Control</point>
+			<property>Mode</property>
 		</tags>
 		<state>
 			<options>
@@ -1206,7 +1206,7 @@
 		<label>Alarm</label>
 		<category>Alarm</category>
 		<tags>
-			<tag>Alarm</tag>
+			<point>Alarm</point>
 		</tags>
 		<state>
 			<options>
@@ -1223,8 +1223,8 @@
 		<label>Battery</label>
 		<category>Battery</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Energy</tag>
+			<point>Status</point>
+			<property>Energy</property>
 		</tags>
 	</channel-type>
 
@@ -1233,8 +1233,8 @@
 		<label>Contact</label>
 		<category>contact</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>OpenState</tag>
+			<point>Status</point>
+			<property>OpenState</property>
 		</tags>
 	</channel-type>
 
@@ -1254,8 +1254,8 @@
 		<label>Carbon Dioxide</label>
 		<category>CarbonDioxide</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>CO2</tag>
+			<point>Measurement</point>
+			<property>CO2</property>
 		</tags>
 	</channel-type>
 
@@ -1263,8 +1263,8 @@
 		<item-type>String</item-type>
 		<label>Carbon Monoxide</label>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>CO</tag>
+			<point>Measurement</point>
+			<property>CO</property>
 		</tags>
 		<state readOnly="true" pattern="%s">
 			<options>
@@ -1280,8 +1280,8 @@
 		<label>Hue</label>
 		<category>Color</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>Color</tag>
+			<point>Control</point>
+			<property>Color</property>
 		</tags>
 	</channel-type>
 
@@ -1290,8 +1290,8 @@
 		<label>Saturation</label>
 		<category>Color</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>Color</tag>
+			<point>Control</point>
+			<property>Color</property>
 		</tags>
 	</channel-type>
 
@@ -1300,8 +1300,8 @@
 		<label>Color</label>
 		<category>Color</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>Color</tag>
+			<point>Control</point>
+			<property>Color</property>
 		</tags>
 	</channel-type>
 
@@ -1310,8 +1310,8 @@
 		<label>Color Value</label>
 		<category>Color</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>Color</tag>
+			<point>Control</point>
+			<property>Color</property>
 		</tags>
 	</channel-type>
 
@@ -1320,8 +1320,8 @@
 		<label>Color Temperature</label>
 		<category>ColorLight</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>ColorTemperature</tag>
+			<point>Control</point>
+			<property>ColorTemperature</property>
 		</tags>
 	</channel-type>
 
@@ -1345,8 +1345,8 @@
 		<label>Door Status</label>
 		<category>Door</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>OpenState</tag>
+			<point>Status</point>
+			<property>OpenState</property>
 		</tags>
 		<state readOnly="true" pattern="%s">
 			<options>
@@ -1393,8 +1393,8 @@
 		<label>Energy</label>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 	</channel-type>
 
@@ -1403,8 +1403,8 @@
 		<label>Power</label>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point>Measurement</point>
+			<property>Power</property>
 		</tags>
 	</channel-type>
 
@@ -1422,8 +1422,8 @@
 		<item-type>Number</item-type>
 		<label>Illuminance</label>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Illuminance</tag>
+			<point>Measurement</point>
+			<property>Illuminance</property>
 		</tags>
 	</channel-type>
 
@@ -1450,8 +1450,8 @@
 		<label>Lock State</label>
 		<category></category>
 		<tags>
-			<tag>Status</tag>
-			<tag>LockState</tag>
+			<point>Status</point>
+			<property>LockState</property>
 		</tags>
 		<state>
 			<options>
@@ -1479,8 +1479,8 @@
 		<label>Media Activity</label>
 		<category>Player</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>MediaControl</tag>
+			<point>Status</point>
+			<property>MediaControl</property>
 		</tags>
 	</channel-type>
 
@@ -1489,8 +1489,8 @@
 		<label>Current Media Activity</label>
 		<category>Player</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>MediaControl</tag>
+			<point>Status</point>
+			<property>MediaControl</property>
 		</tags>
 	</channel-type>
 
@@ -1499,8 +1499,8 @@
 		<label>Motion Sensor</label>
 		<category></category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Motion</tag>
+			<point>Status</point>
+			<property>Motion</property>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -1515,8 +1515,8 @@
 		<label>Current Status</label>
 		<category>Player</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>MediaControl</tag>
+			<point>Status</point>
+			<property>MediaControl</property>
 		</tags>
 	</channel-type>
 
@@ -1525,8 +1525,8 @@
 		<label>Light Level</label>
 		<category>Light</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>Brightness</tag>
+			<point>Control</point>
+			<property>Brightness</property>
 		</tags>
 	</channel-type>
 
@@ -1535,8 +1535,8 @@
 		<label>Volume Level</label>
 		<category>SoundVolume</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>SoundVolume</tag>
+			<point>Control</point>
+			<property>SoundVolume</property>
 		</tags>
 	</channel-type>
 
@@ -1545,8 +1545,8 @@
 		<label>Description of Current Track</label>
 		<category>Player</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 	</channel-type>
 
@@ -1555,8 +1555,8 @@
 		<label>Track Data</label>
 		<category>Player</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 	</channel-type>
 
@@ -1565,8 +1565,8 @@
 		<label>Mute</label>
 		<category>Player</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>SoundVolume</tag>
+			<point>Status</point>
+			<property>SoundVolume</property>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -1587,8 +1587,8 @@
 		<label>Power Source</label>
 		<category></category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Power</tag>
+			<point>Status</point>
+			<property>Power</property>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -1605,8 +1605,8 @@
 		<label>Presence</label>
 		<category></category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Presence</tag>
+			<point>Status</point>
+			<property>Presence</property>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -1621,8 +1621,8 @@
 		<label>Relative Humidity</label>
 		<category></category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Humidity</tag>
+			<point>Measurement</point>
+			<property>Humidity</property>
 		</tags>
 	</channel-type>
 
@@ -1631,8 +1631,8 @@
 		<label>Shock</label>
 		<category></category>
 		<tags>
-			<tag>Alarm</tag>
-			<tag>Vibration</tag>
+			<point>Alarm</point>
+			<property>Vibration</property>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -1653,8 +1653,8 @@
 		<label>Received Signal Strength Indication</label>
 		<category></category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>RSSI</tag>
+			<point>Measurement</point>
+			<property>RSSI</property>
 		</tags>
 	</channel-type>
 
@@ -1674,8 +1674,8 @@
 		<item-type>String</item-type>
 		<label>Smoke</label>
 		<tags>
-			<tag>Alarm</tag>
-			<tag>Smoke</tag>
+			<point>Alarm</point>
+			<property>Smoke</property>
 		</tags>
 		<state readOnly="true" pattern="%s">
 			<options>
@@ -1727,8 +1727,8 @@
 		<description>This is a switch</description>
 		<category>switch</category>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Power</tag>
+			<point>Switch</point>
+			<property>Power</property>
 		</tags>
 	</channel-type>
 
@@ -1737,8 +1737,8 @@
 		<label>Tamper Alert Sensor</label>
 		<category></category>
 		<tags>
-			<tag>Alarm</tag>
-			<tag>Tampered</tag>
+			<point>Alarm</point>
+			<property>Tampered</property>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -1753,8 +1753,8 @@
 		<label>Current Temperature</label>
 		<category>Temperature</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 	</channel-type>
 
@@ -1763,8 +1763,8 @@
 		<label>Heating Setpoint</label>
 		<category>Temperature</category>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 	</channel-type>
 
@@ -1773,8 +1773,8 @@
 		<label>Cooling Setpoint</label>
 		<category>Temperature</category>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 	</channel-type>
 
@@ -1783,8 +1783,8 @@
 		<label>Current Setpoint</label>
 		<category>Temperature</category>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 	</channel-type>
 
@@ -1793,8 +1793,8 @@
 		<label>Thermostat Mode</label>
 		<category>Temperature</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>Mode</tag>
+			<point>Control</point>
+			<property>Mode</property>
 		</tags>
 		<state>
 			<options>
@@ -1814,8 +1814,8 @@
 		<label>Fan Mode</label>
 		<category>Temperature</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
+			<point>Status</point>
+			<property>Mode</property>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -1831,8 +1831,8 @@
 		<label>Operating State</label>
 		<category>Temperature</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
+			<point>Status</point>
+			<property>Mode</property>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -1897,8 +1897,8 @@
 		<label>Ultraviolet Index</label>
 		<category></category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Ultraviolet</tag>
+			<point>Measurement</point>
+			<property>Ultraviolet</property>
 		</tags>
 	</channel-type>
 
@@ -1919,8 +1919,8 @@
 		<label>Voltage Measurement</label>
 		<category></category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Voltage</tag>
+			<point>Measurement</point>
+			<property>Voltage</property>
 		</tags>
 	</channel-type>
 
@@ -1928,8 +1928,8 @@
 		<item-type>String</item-type>
 		<label>Washer Mode</label>
 		<tags>
-			<tag>Control</tag>
-			<tag>Mode</tag>
+			<point>Control</point>
+			<property>Mode</property>
 		</tags>
 		<state>
 			<options>
@@ -1951,8 +1951,8 @@
 		<label>Water Sensor</label>
 		<category></category>
 		<tags>
-			<tag>Alarm</tag>
-			<tag>Water</tag>
+			<point>Alarm</point>
+			<property>Water</property>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -1967,8 +1967,8 @@
 		<label>Window Shade</label>
 		<category></category>
 		<tags>
-			<tag>Status</tag>
-			<tag>OpenState</tag>
+			<point>Status</point>
+			<property>OpenState</property>
 		</tags>
 		<state>
 			<options>

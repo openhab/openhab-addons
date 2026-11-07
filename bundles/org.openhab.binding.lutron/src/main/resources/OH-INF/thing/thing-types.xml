@@ -1236,8 +1236,8 @@
 		<description>Increase/decrease the light level</description>
 		<category>Light</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>Brightness</tag>
+			<point>Control</point>
+			<property>Brightness</property>
 		</tags>
 		<state min="0" max="100" pattern="%d %%"/>
 	</channel-type>
@@ -1248,8 +1248,8 @@
 		<description>Raise/lower the shade level</description>
 		<category>Rollershutter</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>OpenLevel</tag>
+			<point>Control</point>
+			<property>OpenLevel</property>
 		</tags>
 		<state min="0" max="100" pattern="%d %%"/>
 	</channel-type>
@@ -1260,8 +1260,8 @@
 		<description>Raise/lower the blind level</description>
 		<category>Rollershutter</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>OpenLevel</tag>
+			<point>Control</point>
+			<property>OpenLevel</property>
 		</tags>
 		<state min="0" max="100" pattern="%d %%"/>
 	</channel-type>
@@ -1272,8 +1272,8 @@
 		<description>Tilt the blinds up/down</description>
 		<category>Rollershutter</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>Tilt</tag>
+			<point>Control</point>
+			<property>Tilt</property>
 		</tags>
 		<state min="0" max="50" pattern="%d %%"/>
 	</channel-type>
@@ -1284,8 +1284,8 @@
 		<description>On/off status of the switch</description>
 		<category>Switch</category>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Power</tag>
+			<point>Switch</point>
+			<property>Power</property>
 		</tags>
 	</channel-type>
 
@@ -1295,8 +1295,8 @@
 		<description>Occupancy status</description>
 		<category>Motion</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Presence</tag>
+			<point>Status</point>
+			<property>Presence</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -1305,8 +1305,8 @@
 		<item-type>String</item-type>
 		<label>Fan Speed</label>
 		<tags>
-			<tag>Control</tag>
-			<tag>Speed</tag>
+			<point>Control</point>
+			<property>Speed</property>
 		</tags>
 		<state readOnly="false">
 			<options>
@@ -1324,8 +1324,8 @@
 		<label>Occupancy State</label>
 		<category>Motion</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Presence</tag>
+			<point>Status</point>
+			<property>Presence</property>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -1426,8 +1426,8 @@
 		<description>Today's sunrise/sunset time</description>
 		<category>Schedule</category>
 		<tags>
-			<tag>Calculation</tag>
-			<tag>Timestamp</tag>
+			<point>Calculation</point>
+			<property>Timestamp</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -1553,8 +1553,8 @@
 		<description>Specifies the intensity of the zone</description>
 		<category>Zone</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>Brightness</tag>
+			<point>Control</point>
+			<property>Brightness</property>
 		</tags>
 		<state min="0" max="100"/>
 	</channel-type>

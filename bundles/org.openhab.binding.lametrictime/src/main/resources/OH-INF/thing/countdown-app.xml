@@ -30,8 +30,8 @@
 		<label>Duration</label>
 		<description>Set the duration of the timer in seconds</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Duration</tag>
+			<point>Control</point>
+			<property>Duration</property>
 		</tags>
 	</channel-type>
 	<channel-type id="countdownCommandType">

@@ -38,8 +38,8 @@
 		<label>Light Effect Theme</label>
 		<description>Name of lightning effect</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Mode</tag>
+			<point>Control</point>
+			<property>Mode</property>
 		</tags>
 		<state readOnly="false">
 			<options>

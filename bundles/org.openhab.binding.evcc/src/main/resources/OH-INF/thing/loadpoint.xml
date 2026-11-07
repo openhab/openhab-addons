@@ -24,8 +24,8 @@
 		<description>Controls and indicates whether battery boost is active or not</description>
 		<category>Switch</category>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Enabled</tag>
+			<point>Switch</point>
+			<property>Enabled</property>
 		</tags>
 		<state>
 			<options>
@@ -40,8 +40,8 @@
 		<description>Time passed since start of the charging</description>
 		<category>Time</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Duration</tag>
+			<point>Status</point>
+			<property>Duration</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -51,8 +51,8 @@
 		<description>Current power of charging</description>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point>Measurement</point>
+			<property>Power</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -62,8 +62,8 @@
 		<description>Total imported energy</description>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -73,8 +73,8 @@
 		<description>Remaining duration until limit SoC is reached</description>
 		<category>Time</category>
 		<tags>
-			<tag>Forecast</tag>
-			<tag>Duration</tag>
+			<point>Forecast</point>
+			<property>Duration</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -84,8 +84,8 @@
 		<description>Remaining energy until limit SoC is reached</description>
 		<category>Energy</category>
 		<tags>
-			<tag>Calculation</tag>
-			<tag>Energy</tag>
+			<point>Calculation</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -95,8 +95,8 @@
 		<description>Energy charged since plugged-in</description>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -112,8 +112,8 @@
 		<description>Indicates whether the loadpoint is configured for a heating device</description>
 		<category>Switch</category>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Enabled</tag>
+			<point>Switch</point>
+			<property>Enabled</property>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -128,8 +128,8 @@
 		<description>Loadpoint has an integrated device and runs without a vehicle (e.g. heatpump, e-bike)</description>
 		<category>Switch</category>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Enabled</tag>
+			<point>Switch</point>
+			<property>Enabled</property>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -144,8 +144,8 @@
 		<description>Indicates that the loadpoint can switch between 1 and 3 phases</description>
 		<category>Switch</category>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Enabled</tag>
+			<point>Switch</point>
+			<property>Enabled</property>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -160,8 +160,8 @@
 		<description>Indicates that the charger can only charge with 1 phase</description>
 		<category>Switch</category>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Enabled</tag>
+			<point>Switch</point>
+			<property>Enabled</property>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -175,8 +175,8 @@
 		<label>Charger Status Reason</label>
 		<description>Hint why the charging has not started yet</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -192,8 +192,8 @@
 		<description>Indicates whether the loadpoint is charging or not</description>
 		<category>Energy</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
+			<point>Status</point>
+			<property>Mode</property>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -208,8 +208,8 @@
 		<description>Indicates whether a vehicle is connected or not</description>
 		<category>Switch</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Enabled</tag>
+			<point>Status</point>
+			<property>Enabled</property>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -224,8 +224,8 @@
 		<description>Duration the vehicle is connected to the loadpoint</description>
 		<category>Time</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Duration</tag>
+			<point>Status</point>
+			<property>Duration</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -235,8 +235,8 @@
 		<description>Delay in PV mode before stopping the charging if not enough power is available</description>
 		<category>Time</category>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Duration</tag>
+			<point>Setpoint</point>
+			<property>Duration</property>
 		</tags>
 		<state pattern="%.0f %unit%"/>
 	</channel-type>
@@ -286,8 +286,8 @@
 		<label>Active Plan Time</label>
 		<description>Indicating when the next charge slot starts</description>
 		<tags>
-			<tag>Calculation</tag>
-			<tag>Timestamp</tag>
+			<point>Calculation</point>
+			<property>Timestamp</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -296,8 +296,8 @@
 		<label>Plan Projected End</label>
 		<description>Projected end of charging</description>
 		<tags>
-			<tag>Calculation</tag>
-			<tag>Timestamp</tag>
+			<point>Calculation</point>
+			<property>Timestamp</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -306,8 +306,8 @@
 		<label>Plan Projected Start</label>
 		<description>Projected start of charging</description>
 		<tags>
-			<tag>Calculation</tag>
-			<tag>Timestamp</tag>
+			<point>Calculation</point>
+			<property>Timestamp</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -348,8 +348,8 @@
 		<description>Energy limit when charging the vehicle</description>
 		<category>BatteryLevel</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>Energy</tag>
+			<point>Control</point>
+			<property>Energy</property>
 		</tags>
 		<state min="0" pattern="%.0f %unit%"/>
 	</channel-type>
@@ -359,8 +359,8 @@
 		<description>State of charge limit when charging the vehicle</description>
 		<category>BatteryLevel</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>Energy</tag>
+			<point>Control</point>
+			<property>Energy</property>
 		</tags>
 		<state min="0" step="1" max="100" pattern="%.0f %unit%"/>
 	</channel-type>
@@ -370,8 +370,8 @@
 		<description>Maximum amperage per connected phase that can be provided to the vehicle</description>
 		<category>Energy</category>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Current</tag>
+			<point>Setpoint</point>
+			<property>Current</property>
 		</tags>
 		<state min="0" step="1" pattern="%.0f %unit%"/>
 	</channel-type>
@@ -381,8 +381,8 @@
 		<description>Minimum amperage per connected phase that will be provided to the vehicle</description>
 		<category>Energy</category>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Current</tag>
+			<point>Setpoint</point>
+			<property>Current</property>
 		</tags>
 		<state min="0" step="1" pattern="%.0f %unit%"/>
 	</channel-type>
@@ -392,8 +392,8 @@
 		<description>Charging Mode</description>
 		<category>Settings</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>Mode</tag>
+			<point>Control</point>
+			<property>Mode</property>
 		</tags>
 		<state>
 			<options>
@@ -411,8 +411,8 @@
 		<description>Controls whether Smart mode always charges at minimum current</description>
 		<category>Settings</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>Mode</tag>
+			<point>Control</point>
+			<property>Mode</property>
 		</tags>
 		<state>
 			<options>
@@ -428,8 +428,8 @@
 		<description>Current amperage per connected phase offered to the vehicle</description>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Current</tag>
+			<point>Measurement</point>
+			<property>Current</property>
 		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
@@ -449,8 +449,8 @@
 		<label>Phase Remaining Timer</label>
 		<description>Time until phase switching will occure</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Duration</tag>
+			<point>Status</point>
+			<property>Duration</property>
 		</tags>
 		<state pattern="%d" readOnly="true"/>
 	</channel-type>
@@ -460,8 +460,8 @@
 		<description>Actual charge current of charger phase L1</description>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Current</tag>
+			<point>Measurement</point>
+			<property>Current</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -471,8 +471,8 @@
 		<description>Actual charge current of charger phase L2</description>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Current</tag>
+			<point>Measurement</point>
+			<property>Current</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -482,8 +482,8 @@
 		<description>Actual charge current of charger phase L3</description>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Current</tag>
+			<point>Measurement</point>
+			<property>Current</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -493,8 +493,8 @@
 		<description>Actual charge voltage of charger phase L1</description>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Voltage</tag>
+			<point>Measurement</point>
+			<property>Voltage</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -504,8 +504,8 @@
 		<description>Actual charge voltage of charger phase L2</description>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Voltage</tag>
+			<point>Measurement</point>
+			<property>Voltage</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -515,8 +515,8 @@
 		<description>Actual charge voltage of charger phase L3</description>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Voltage</tag>
+			<point>Measurement</point>
+			<property>Voltage</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -525,8 +525,8 @@
 		<label>Active Phases</label>
 		<description>Current number of active phases</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state pattern="%d" readOnly="true"/>
 	</channel-type>
@@ -535,8 +535,8 @@
 		<label>Configured Phases</label>
 		<description>Number of configured phases</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state pattern="%d" readOnly="true"/>
 	</channel-type>
@@ -545,8 +545,8 @@
 		<label>Plan Activated</label>
 		<description>Indicates whether a plan is active or not</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Enabled</tag>
+			<point>Status</point>
+			<property>Enabled</property>
 		</tags>
 		<state>
 			<options>
@@ -561,8 +561,8 @@
 		<description>Charge plan energy goal</description>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
@@ -571,8 +571,8 @@
 		<label>Plan Overrun</label>
 		<description>Indicates that the charge plan goal is not reachable in time</description>
 		<tags>
-			<tag>Forecast</tag>
-			<tag>Duration</tag>
+			<point>Forecast</point>
+			<property>Duration</property>
 		</tags>
 		<state pattern="%d %unit%"/>
 	</channel-type>
@@ -582,8 +582,8 @@
 		<description>Duration for preconditioning the battery</description>
 		<category>Time</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Duration</tag>
+			<point>Measurement</point>
+			<property>Duration</property>
 		</tags>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
@@ -592,7 +592,8 @@
 		<label>Priority</label>
 		<description>Priority of this loadpoint</description>
 		<tags>
-			<tag>Info</tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state pattern="%d" readOnly="true"/>
 	</channel-type>
@@ -601,8 +602,8 @@
 		<label>PV Action</label>
 		<description>Indicates whether pv charging gets enabled or disabled</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -623,8 +624,8 @@
 		<label>Session CO2 Per kWh</label>
 		<description>Current session emitted carbon dioxide per kWh</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Info</tag>
+			<point>Measurement</point>
+			<property>Info</property>
 		</tags>
 		<state pattern="%.3f %unit%" readOnly="true"/>
 	</channel-type>
@@ -633,8 +634,8 @@
 		<label>Session Energy</label>
 		<description>Charged energy in the current charging session</description>
 		<tags>
-			<tag>Forecast</tag>
-			<tag>Energy</tag>
+			<point>Forecast</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
@@ -643,8 +644,8 @@
 		<label>Session Solar Percentage</label>
 		<description>Percentage of solar energy for the current charging session</description>
 		<tags>
-			<tag>Forecast</tag>
-			<tag>Info</tag>
+			<point>Forecast</point>
+			<property>Info</property>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
@@ -653,8 +654,8 @@
 		<label>Session Price</label>
 		<description>Costs of the current charging session</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Info</tag>
+			<point>Measurement</point>
+			<property>Info</property>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
@@ -664,8 +665,8 @@
 		<description>Current session charging price per kWh</description>
 		<category>Price</category>
 		<tags>
-			<tag>Calculation</tag>
-			<tag>Price</tag>
+			<point>Calculation</point>
+			<property>Price</property>
 		</tags>
 		<state pattern="%.3f %unit%" readOnly="true"/>
 	</channel-type>
@@ -674,8 +675,8 @@
 		<label>Smart Cost Active</label>
 		<description>Indicates whether smart charging is active or not</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Enabled</tag>
+			<point>Status</point>
+			<property>Enabled</property>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -701,8 +702,8 @@
 		<label>Smart Cost Next Start</label>
 		<description>Startpoint for the next smart charging</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Timestamp</tag>
+			<point>Measurement</point>
+			<property>Timestamp</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -711,8 +712,8 @@
 		<label>Smart Feed In Priority Active</label>
 		<description>Indicates that smart feed in has priority</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Enabled</tag>
+			<point>Status</point>
+			<property>Enabled</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -728,8 +729,8 @@
 		<label>Vehicle Climate Active</label>
 		<description>Indicates whether the climate control is active or not for the connected vehicle</description>
 		<tags>
-			<tag>Airconditioning</tag>
-			<tag>Status</tag>
+			<point>Status</point>
+			<property>Airconditioning</property>
 		</tags>
 		<state>
 			<options>
@@ -743,8 +744,8 @@
 		<label>Vehicle Detection Active</label>
 		<description>Indicates whether the vehicle detection is active or not</description>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Enabled</tag>
+			<point>Switch</point>
+			<property>Enabled</property>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -765,8 +766,8 @@
 		<description>Current vehicle API state of charge limit</description>
 		<category>BatteryLevel</category>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Energy</tag>
+			<point>Setpoint</point>
+			<property>Energy</property>
 		</tags>
 		<state min="0" step="1" max="100" pattern="%.0f %unit%"/>
 	</channel-type>
@@ -778,8 +779,8 @@
 			characters)</description>
 		<category>Settings</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -789,8 +790,8 @@
 		<description>Total distance travelled by the vehicle</description>
 		<category>MoveControl</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
@@ -799,8 +800,8 @@
 		<label>Vehicle Range</label>
 		<description>Current range of the vehicle</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Energy</tag>
+			<point>Status</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
@@ -810,8 +811,8 @@
 		<description>Current state of charge of the vehicle</description>
 		<category>BatteryLevel</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Energy</tag>
+			<point>Status</point>
+			<property>Energy</property>
 		</tags>
 		<state min="0" step="1" max="100" pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
@@ -827,8 +828,8 @@
 		<label>Vehicle Welcome Active</label>
 		<description>Indicates whether the charger performs an initial charge or not when the vehicle gets connected</description>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Enabled</tag>
+			<point>Switch</point>
+			<property>Enabled</property>
 		</tags>
 		<state>
 			<options>

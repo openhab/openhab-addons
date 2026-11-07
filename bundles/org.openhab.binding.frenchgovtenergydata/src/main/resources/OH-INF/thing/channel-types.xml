@@ -34,8 +34,8 @@
 		<label>Variable Price HT</label>
 		<category>Price</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Price</tag>
+			<point>Status</point>
+			<property>Price</property>
 		</tags>
 		<state readOnly="true" pattern="%.4f %unit%"></state>
 	</channel-type>
@@ -45,8 +45,8 @@
 		<label>Variable Price TTC</label>
 		<category>Price</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Price</tag>
+			<point>Status</point>
+			<property>Price</property>
 		</tags>
 		<state readOnly="true" pattern="%.4f %unit%"></state>
 	</channel-type>

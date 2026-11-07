@@ -67,8 +67,8 @@
 		<description>Energy produced this year</description>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
@@ -83,8 +83,8 @@
 		<label>Wind Shares Power</label>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point>Measurement</point>
+			<property>Power</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -93,8 +93,8 @@
 		<label>Total Power</label>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point>Measurement</point>
+			<property>Power</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -120,8 +120,8 @@
 		<item-type>String</item-type>
 		<label>Wind Direction</label>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Wind</tag>
+			<point>Measurement</point>
+			<property>Wind</property>
 		</tags>
 		<state pattern="%s" readOnly="true"/>
 	</channel-type>
@@ -130,8 +130,8 @@
 		<label>Wind Speed</label>
 		<category>Wind</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Speed</tag>
+			<point>Measurement</point>
+			<property>Speed</property>
 		</tags>
 		<state pattern="%d Bft" readOnly="true"/>
 	</channel-type>

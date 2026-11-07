@@ -44,8 +44,8 @@
 		<item-type unitHint="g/kWh">Number:EmissionIntensity</item-type>
 		<label>Average CO2</label>
 		<tags>
-			<tag>Calculation</tag>
-			<tag>Info</tag>
+			<point>Calculation</point>
+			<property>Info</property>
 		</tags>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
@@ -53,8 +53,8 @@
 		<item-type>Number:EnergyPrice</item-type>
 		<label>Average Price</label>
 		<tags>
-			<tag>Calculation</tag>
-			<tag>Info</tag>
+			<point>Calculation</point>
+			<property>Info</property>
 		</tags>
 		<state pattern="%.2f %unit%"/>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
@@ -63,8 +63,8 @@
 		<item-type unitHint="kWh">Number:Energy</item-type>
 		<label>Charged Energy</label>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
@@ -72,8 +72,8 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Solar Percentage</label>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%.2f %unit%"/>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>

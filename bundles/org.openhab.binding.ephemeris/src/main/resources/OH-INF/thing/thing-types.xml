@@ -121,8 +121,8 @@
 		<label>Next Event Start</label>
 		<description>Start date of the next coming event</description>
 		<tags>
-			<tag>Calculation</tag>
-			<tag>Timestamp</tag>
+			<point>Calculation</point>
+			<property>Timestamp</property>
 		</tags>
 		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td"/>
 	</channel-type>
@@ -132,8 +132,8 @@
 		<label>Remaining Days</label>
 		<description>Remaining days until next event</description>
 		<tags>
-			<tag>Calculation</tag>
-			<tag>Duration</tag>
+			<point>Calculation</point>
+			<property>Duration</property>
 		</tags>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>

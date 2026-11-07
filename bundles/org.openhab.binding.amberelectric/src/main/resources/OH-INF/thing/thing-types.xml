@@ -57,8 +57,8 @@
 		<description>Current price to import power from the grid</description>
 		<category>Price</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Price</tag>
+			<point>Status</point>
+			<property>Price</property>
 		</tags>
 		<state readOnly="true" pattern="%.3f %unit%"/>
 	</channel-type>
@@ -67,8 +67,8 @@
 		<label>Current Electricity Status</label>
 		<description>Current price status of grid import</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Energy</tag>
+			<point>Status</point>
+			<property>Energy</property>
 		</tags>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
@@ -83,8 +83,8 @@
 		<label>Current Renewables</label>
 		<description>Current level of renewables in the grid</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Level</tag>
+			<point>Measurement</point>
+			<property>Level</property>
 		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
@@ -93,8 +93,8 @@
 		<label>Energy Price Spike</label>
 		<description>Report if the grid has a current price spike</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Energy</tag>
+			<point>Status</point>
+			<property>Energy</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>

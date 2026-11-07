@@ -111,8 +111,8 @@
 		<description>Time of data observation.</description>
 		<category>Time</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
+			<point>Status</point>
+			<property>Timestamp</property>
 		</tags>
 		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS"/>
 	</channel-type>
@@ -123,8 +123,8 @@
 		<description>Time of data forecasted.</description>
 		<category>Time</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
+			<point>Status</point>
+			<property>Timestamp</property>
 		</tags>
 		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS"/>
 	</channel-type>
@@ -135,8 +135,8 @@
 		<description>Date of data forecasted.</description>
 		<category>Time</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
+			<point>Status</point>
+			<property>Timestamp</property>
 		</tags>
 		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td"/>
 	</channel-type>
@@ -147,7 +147,7 @@
 		<description>Current weather condition.</description>
 		<category>Sun_Clouds</category>
 		<tags>
-			<tag>Forecast</tag>
+			<point>Forecast</point>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -158,7 +158,7 @@
 		<description>Forecasted weather condition.</description>
 		<category>Sun_Clouds</category>
 		<tags>
-			<tag>Forecast</tag>
+			<point>Forecast</point>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -176,8 +176,8 @@
 		<description>Forecasted outdoor temperature.</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Forecast</tag>
-			<tag>Temperature</tag>
+			<point>Forecast</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -188,8 +188,8 @@
 		<description>Minimum forecasted outdoor temperature.</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Forecast</tag>
-			<tag>Temperature</tag>
+			<point>Forecast</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -200,8 +200,8 @@
 		<description>Maximum forecasted outdoor temperature.</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Forecast</tag>
-			<tag>Temperature</tag>
+			<point>Forecast</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -212,8 +212,8 @@
 		<description>Current apparent temperature.</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -224,8 +224,8 @@
 		<description>Forecasted apparent temperature.</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Forecast</tag>
-			<tag>Temperature</tag>
+			<point>Forecast</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -236,8 +236,8 @@
 		<description>Minimum forecasted apparent temperature.</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Forecast</tag>
-			<tag>Temperature</tag>
+			<point>Forecast</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -248,8 +248,8 @@
 		<description>Maximum forecasted apparent temperature.</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Forecast</tag>
-			<tag>Temperature</tag>
+			<point>Forecast</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -260,8 +260,8 @@
 		<description>Forecasted barometric pressure.</description>
 		<category>Pressure</category>
 		<tags>
-			<tag>Forecast</tag>
-			<tag>Pressure</tag>
+			<point>Forecast</point>
+			<property>Pressure</property>
 		</tags>
 		<state readOnly="true" pattern="%.3f %unit%"/>
 	</channel-type>
@@ -272,8 +272,8 @@
 		<description>Forecasted atmospheric relative humidity.</description>
 		<category>Humidity</category>
 		<tags>
-			<tag>Forecast</tag>
-			<tag>Humidity</tag>
+			<point>Forecast</point>
+			<property>Humidity</property>
 		</tags>
 		<state readOnly="true" pattern="%.0f %%"/>
 	</channel-type>
@@ -284,8 +284,8 @@
 		<description>Forecasted wind speed.</description>
 		<category>Wind</category>
 		<tags>
-			<tag>Forecast</tag>
-			<tag>Wind</tag>
+			<point>Forecast</point>
+			<property>Wind</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -296,8 +296,8 @@
 		<description>Forecasted wind direction expressed as an angle.</description>
 		<category>Wind</category>
 		<tags>
-			<tag>Forecast</tag>
-			<tag>Wind</tag>
+			<point>Forecast</point>
+			<property>Wind</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -308,8 +308,8 @@
 		<description>Current gust speed.</description>
 		<category>Wind</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Wind</tag>
+			<point>Measurement</point>
+			<property>Wind</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -320,8 +320,8 @@
 		<description>Forecasted gust speed.</description>
 		<category>Wind</category>
 		<tags>
-			<tag>Forecast</tag>
-			<tag>Wind</tag>
+			<point>Forecast</point>
+			<property>Wind</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -332,7 +332,7 @@
 		<description>Current cloudiness.</description>
 		<category>Clouds</category>
 		<tags>
-			<tag>Measurement</tag>
+			<point>Measurement</point>
 		</tags>
 		<state readOnly="true" min="0" max="100" pattern="%d %unit%"/>
 	</channel-type>
@@ -343,7 +343,7 @@
 		<description>Forecasted cloudiness.</description>
 		<category>Clouds</category>
 		<tags>
-			<tag>Forecast</tag>
+			<point>Forecast</point>
 		</tags>
 		<state readOnly="true" min="0" max="100" pattern="%d %unit%"/>
 	</channel-type>
@@ -353,7 +353,7 @@
 		<label>Visibility</label>
 		<description>Current visibility.</description>
 		<tags>
-			<tag>Measurement</tag>
+			<point>Measurement</point>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -363,7 +363,7 @@
 		<label>Forecasted Visibility</label>
 		<description>Forecasted visibility.</description>
 		<tags>
-			<tag>Forecast</tag>
+			<point>Forecast</point>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -374,8 +374,8 @@
 		<description>Current rain intensity.</description>
 		<category>Rain</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Rain</tag>
+			<point>Measurement</point>
+			<property>Rain</property>
 		</tags>
 		<state readOnly="true" pattern="%.2f mm/h"/>
 	</channel-type>
@@ -386,8 +386,8 @@
 		<description>Forecasted rain intensity.</description>
 		<category>Rain</category>
 		<tags>
-			<tag>Forecast</tag>
-			<tag>Rain</tag>
+			<point>Forecast</point>
+			<property>Rain</property>
 		</tags>
 		<state readOnly="true" pattern="%.2f mm/h"/>
 	</channel-type>
@@ -398,8 +398,8 @@
 		<description>Current snow intensity.</description>
 		<category>Snow</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Precipitation</tag>
+			<point>Measurement</point>
+			<property>Precipitation</property>
 		</tags>
 		<state readOnly="true" pattern="%.2f mm/h"/>
 	</channel-type>
@@ -410,8 +410,8 @@
 		<description>Forecasted snow intensity.</description>
 		<category>Snow</category>
 		<tags>
-			<tag>Forecast</tag>
-			<tag>Precipitation</tag>
+			<point>Forecast</point>
+			<property>Precipitation</property>
 		</tags>
 		<state readOnly="true" pattern="%.2f mm/h"/>
 	</channel-type>
@@ -421,8 +421,8 @@
 		<label>Precipitation Intensity</label>
 		<description>Current precipitation intensity.</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Precipitation</tag>
+			<point>Measurement</point>
+			<property>Precipitation</property>
 		</tags>
 		<state readOnly="true" pattern="%.2f mm/h"/>
 	</channel-type>
@@ -432,8 +432,8 @@
 		<label>Forecasted Precipitation Intensity</label>
 		<description>Forecasted precipitation intensity.</description>
 		<tags>
-			<tag>Forecast</tag>
-			<tag>Precipitation</tag>
+			<point>Forecast</point>
+			<property>Precipitation</property>
 		</tags>
 		<state readOnly="true" pattern="%.2f mm/h"/>
 	</channel-type>
@@ -443,8 +443,8 @@
 		<label>Precipitation Probability</label>
 		<description>Current precipitation probability.</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Precipitation</tag>
+			<point>Measurement</point>
+			<property>Precipitation</property>
 		</tags>
 		<state readOnly="true" min="0" max="100" pattern="%d %unit%"/>
 	</channel-type>
@@ -454,8 +454,8 @@
 		<label>Forecasted Precipitation Probability</label>
 		<description>Forecasted precipitation probability.</description>
 		<tags>
-			<tag>Forecast</tag>
-			<tag>Precipitation</tag>
+			<point>Forecast</point>
+			<property>Precipitation</property>
 		</tags>
 		<state readOnly="true" min="0" max="100" pattern="%d %unit%"/>
 	</channel-type>
@@ -465,8 +465,8 @@
 		<label>Precipitation Type</label>
 		<description>Current precipitation type.</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Precipitation</tag>
+			<point>Status</point>
+			<property>Precipitation</property>
 		</tags>
 		<state readOnly="true" pattern="%s">
 			<options>
@@ -482,8 +482,8 @@
 		<label>Forecasted Precipitation Type</label>
 		<description>Forecasted precipitation type.</description>
 		<tags>
-			<tag>Forecast</tag>
-			<tag>Precipitation</tag>
+			<point>Forecast</point>
+			<property>Precipitation</property>
 		</tags>
 		<state readOnly="true" pattern="%s">
 			<options>
@@ -499,8 +499,8 @@
 		<label>UV Index</label>
 		<description>Current UV index.</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Ultraviolet</tag>
+			<point>Measurement</point>
+			<property>Ultraviolet</property>
 		</tags>
 		<state readOnly="true" pattern="%d"/>
 	</channel-type>
@@ -510,8 +510,8 @@
 		<label>Forecasted UV Index</label>
 		<description>Forecasted UV index.</description>
 		<tags>
-			<tag>Forecast</tag>
-			<tag>Ultraviolet</tag>
+			<point>Forecast</point>
+			<property>Ultraviolet</property>
 		</tags>
 		<state readOnly="true" pattern="%d"/>
 	</channel-type>
@@ -521,8 +521,8 @@
 		<label>Ozone</label>
 		<description>Current ozone.</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Ozone</tag>
+			<point>Measurement</point>
+			<property>Ozone</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -532,8 +532,8 @@
 		<label>Forecasted Ozone</label>
 		<description>Forecasted ozone.</description>
 		<tags>
-			<tag>Forecast</tag>
-			<tag>Ozone</tag>
+			<point>Forecast</point>
+			<property>Ozone</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -544,8 +544,8 @@
 		<description>Sunrise of the current day.</description>
 		<category>Sun</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
+			<point>Status</point>
+			<property>Timestamp</property>
 		</tags>
 		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS"/>
 	</channel-type>
@@ -556,8 +556,8 @@
 		<description>Forecasted sunrise of the day.</description>
 		<category>Sun</category>
 		<tags>
-			<tag>Forecast</tag>
-			<tag>Timestamp</tag>
+			<point>Forecast</point>
+			<property>Timestamp</property>
 		</tags>
 		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS"/>
 	</channel-type>
@@ -581,8 +581,8 @@
 		<description>Sunset of the current day.</description>
 		<category>Sun</category>
 		<tags>
-			<tag>Forecast</tag>
-			<tag>Timestamp</tag>
+			<point>Forecast</point>
+			<property>Timestamp</property>
 		</tags>
 		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS"/>
 	</channel-type>
@@ -593,8 +593,8 @@
 		<description>Forecasted sunset of the day.</description>
 		<category>Sun</category>
 		<tags>
-			<tag>Forecast</tag>
-			<tag>Timestamp</tag>
+			<point>Forecast</point>
+			<property>Timestamp</property>
 		</tags>
 		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS"/>
 	</channel-type>
@@ -638,8 +638,8 @@
 		<label>Issued</label>
 		<description>The time at which the alert was issued.</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
+			<point>Status</point>
+			<property>Timestamp</property>
 		</tags>
 		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS"/>
 	</channel-type>
@@ -649,8 +649,8 @@
 		<label>Expires</label>
 		<description>The time at which the alert will expire.</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
+			<point>Status</point>
+			<property>Timestamp</property>
 		</tags>
 		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS"/>
 	</channel-type>

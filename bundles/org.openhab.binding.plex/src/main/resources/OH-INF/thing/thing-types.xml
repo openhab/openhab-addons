@@ -48,8 +48,8 @@
 		<label>Current Players</label>
 		<description>The number of players currently configured to watch on PLEX</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -58,8 +58,8 @@
 		<label>Current Players Active</label>
 		<description>The number of players currently being used on PLEX</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -68,8 +68,8 @@
 		<label>Player State</label>
 		<description>The current state of the Player</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>MediaControl</tag>
+			<point>Status</point>
+			<property>MediaControl</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -78,8 +78,8 @@
 		<label>Player Power State</label>
 		<description>The power status of the player</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Power</tag>
+			<point>Status</point>
+			<property>Power</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -88,8 +88,8 @@
 		<label>Player Title</label>
 		<description>The title of media that is playing</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -117,8 +117,8 @@
 		<label>Media Type</label>
 		<description>The current type of playing media</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -127,8 +127,8 @@
 		<label>End Time</label>
 		<description>Time at which the media that is playing will end</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
+			<point>Status</point>
+			<property>Timestamp</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -137,8 +137,8 @@
 		<label>Media Progress</label>
 		<description>The current progress of playing media</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Progress</tag>
+			<point>Control</point>
+			<property>Progress</property>
 		</tags>
 	</channel-type>
 	<channel-type id="art">
@@ -146,8 +146,8 @@
 		<label>Background Art</label>
 		<description>The URL of the background art for currently playing media</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -156,8 +156,8 @@
 		<label>Cover Art</label>
 		<description>The URL of the cover art for currently playing media</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -166,8 +166,8 @@
 		<label>Player Control</label>
 		<description>The control channel for the player `PLAY/PAUSE/NEXT/PREVIOUS`</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>MediaControl</tag>
+			<point>Control</point>
+			<property>MediaControl</property>
 		</tags>
 	</channel-type>
 	<channel-type id="user">
@@ -175,8 +175,8 @@
 		<label>Player User</label>
 		<description>The title of the user controlling the player</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>

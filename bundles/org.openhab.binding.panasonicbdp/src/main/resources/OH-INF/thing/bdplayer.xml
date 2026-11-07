@@ -96,8 +96,8 @@
 		<label>Remote Button</label>
 		<description>A remote button press to send to the player</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>MediaControl</tag>
+			<point>Control</point>
+			<property>MediaControl</property>
 		</tags>
 		<state>
 			<options>
@@ -160,8 +160,8 @@
 		<label>Remote Button</label>
 		<description>A remote button press to send to the player</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>MediaControl</tag>
+			<point>Control</point>
+			<property>MediaControl</property>
 		</tags>
 		<state>
 			<options>
@@ -232,8 +232,8 @@
 		<description>Transport Controls e.g. Play/Pause/Next/Previous/FForward/Rewind</description>
 		<category>Player</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>MediaControl</tag>
+			<point>Control</point>
+			<property>MediaControl</property>
 		</tags>
 	</channel-type>
 
@@ -242,8 +242,8 @@
 		<label>Player Status</label>
 		<description>The current player status</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
+			<point>Status</point>
+			<property>Mode</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -254,8 +254,8 @@
 		<description>The current playback time elapsed</description>
 		<category>Time</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Progress</tag>
+			<point>Status</point>
+			<property>Progress</property>
 		</tags>
 		<state readOnly="true" pattern="%1$tT"/>
 	</channel-type>
@@ -266,8 +266,8 @@
 		<description>The total length of the current title</description>
 		<category>Time</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Duration</tag>
+			<point>Status</point>
+			<property>Duration</property>
 		</tags>
 		<state readOnly="true" pattern="%1$tT"/>
 	</channel-type>
