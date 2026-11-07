@@ -18,15 +18,15 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.netatmo.internal.api.ApiResponse;
 
 /**
- * The {@link Webhooks} is the answer to API getWebhooks
+ * The {@link Webhook} is the answer to API getWebhooks
  *
  * @author Gaël L'hopital - Initial contribution
  *
  */
 
 @NonNullByDefault
-public class Webhooks {
-    public class WebhooksResponse extends ApiResponse<List<Webhooks>> {
+public class Webhook {
+    public class WebhooksResponse extends ApiResponse<List<Webhook>> {
     }
 
     private String url = "";
