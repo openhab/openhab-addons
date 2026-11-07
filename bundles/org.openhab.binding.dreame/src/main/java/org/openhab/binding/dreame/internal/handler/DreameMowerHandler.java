@@ -180,12 +180,11 @@ public class DreameMowerHandler extends BaseThingHandler {
                     DreameDiagnostics.maskIdentifier(device.id()));
             if (CHANNEL_COMMAND.equals(channelUID.getId()) && command instanceof StringType stringCommand) {
                 DreameAction action = DreameAction.valueOf(stringCommand.toString().toUpperCase(Locale.ROOT));
-                account.getApiClient().callAction(device, action, () -> isCommandCurrent(currentGeneration, bridge));
+                account.executeMowerAction(device, action, () -> isCommandCurrent(currentGeneration, bridge));
             } else if (CHANNEL_ZONE_MOWING.equals(channelUID.getId()) && command instanceof StringType stringCommand) {
                 List<Integer> zoneIds = parseZoneIds(stringCommand.toString());
                 validateZoneIds(zoneIds);
-                account.getApiClient().startZoneMowing(device, zoneIds,
-                        () -> isCommandCurrent(currentGeneration, bridge));
+                account.startMowerZones(device, zoneIds, () -> isCommandCurrent(currentGeneration, bridge));
             } else if (CHANNEL_DND.equals(channelUID.getId()) && command instanceof OnOffType onOff) {
                 if (!supportsDndWriting(device.model())) {
                     logger.warn("Do not disturb commands are not yet supported for {}", device.model());
@@ -195,7 +194,7 @@ public class DreameMowerHandler extends BaseThingHandler {
                     }
                     return;
                 }
-                account.getApiClient().setDnd(device, onOff == OnOffType.ON, dndTaskConfiguration,
+                account.setMowerDnd(device, onOff == OnOffType.ON, dndTaskConfiguration,
                         () -> isCommandCurrent(currentGeneration, bridge));
             } else if (CHANNEL_CURRENT_MAP_ID.equals(channelUID.getId()) && command instanceof DecimalType decimal) {
                 selectMap(account, device, decimal, () -> isCommandCurrent(currentGeneration, bridge));
@@ -269,7 +268,7 @@ public class DreameMowerHandler extends BaseThingHandler {
         }
         int mapIndex = currentMapData.maps().stream().filter(map -> map.id() == requestedMapId).findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("Unknown map ID: " + requestedMapId)).index();
-        account.getApiClient().selectMap(device, mapIndex, isCurrent);
+        account.selectMowerMap(device, mapIndex, isCurrent);
         nextMapRefresh = Instant.EPOCH;
         refreshMapData(account, device);
     }
@@ -318,7 +317,7 @@ public class DreameMowerHandler extends BaseThingHandler {
         }
         try {
             long pollRevision = updateSequence.get();
-            DreameStatus status = account.getApiClient().getProperties(device, POLLED_PROPERTIES);
+            DreameStatus status = account.getMowerProperties(device, POLLED_PROPERTIES);
             if (!isCurrentLifecycle(currentGeneration)) {
                 return;
             }
@@ -371,7 +370,7 @@ public class DreameMowerHandler extends BaseThingHandler {
         }
         nextMapRefresh = now.plus(MAP_REFRESH_INTERVAL);
         try {
-            DreameMapData mapData = account.getApiClient().getMapData(device);
+            DreameMapData mapData = account.getMowerMapData(device);
             this.mapData = mapData;
             logger.debug("Received {} maps and {} mowing zones for device {}", mapData.maps().size(),
                     mapData.zones().size(), DreameDiagnostics.maskIdentifier(device.id()));
@@ -397,7 +396,7 @@ public class DreameMowerHandler extends BaseThingHandler {
             return;
         }
         try {
-            BigDecimal cuttingHeight = account.getApiClient().getCuttingHeight(device, mapIndex);
+            BigDecimal cuttingHeight = account.getMowerCuttingHeight(device, mapIndex);
             logger.debug("Received cutting height {} cm for map index {} of device {}", cuttingHeight, mapIndex,
                     DreameDiagnostics.maskIdentifier(device.id()));
             updateState(CHANNEL_CUTTING_HEIGHT, new DecimalType(cuttingHeight));
@@ -420,7 +419,7 @@ public class DreameMowerHandler extends BaseThingHandler {
         }
         int mapIndex = currentMapData.maps().stream().filter(map -> map.id() == currentMapData.currentMapId())
                 .findFirst().orElseThrow(() -> new DreameCloudException("Active map was not found")).index();
-        account.getApiClient().setCuttingHeight(device, mapIndex, height, isCurrent);
+        account.setMowerCuttingHeight(device, mapIndex, height, isCurrent);
         refreshCuttingHeight(account, device, mapIndex);
     }
 
@@ -431,7 +430,7 @@ public class DreameMowerHandler extends BaseThingHandler {
         }
         nextStatisticsRefresh = now.plus(STATISTICS_REFRESH_INTERVAL);
         try {
-            DreameMowingStatistics statistics = account.getApiClient().getMowingStatistics(device);
+            DreameMowingStatistics statistics = account.getMowingStatistics(device);
             logger.trace("Received {} historical mowing sessions for device {}", statistics.sessions(),
                     DreameDiagnostics.maskIdentifier(device.id()));
             updateState(CHANNEL_MOWING_SESSIONS, new DecimalType(statistics.sessions()));
@@ -466,7 +465,7 @@ public class DreameMowerHandler extends BaseThingHandler {
         DreameMqttClient replacement = null;
         boolean accepted = false;
         try {
-            DreameMqttConfiguration nextConfiguration = account.getApiClient().mqttConfiguration(device);
+            DreameMqttConfiguration nextConfiguration = account.getMqttConfiguration(device);
             if (!isCurrentLifecycle(currentGeneration)) {
                 return;
             }

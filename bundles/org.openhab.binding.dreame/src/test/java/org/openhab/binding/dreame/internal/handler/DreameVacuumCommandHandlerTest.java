@@ -26,7 +26,6 @@ import java.util.function.BooleanSupplier;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.dreame.internal.api.DreameCloudException;
-import org.openhab.binding.dreame.internal.api.DreameVacuumApi;
 import org.openhab.binding.dreame.internal.model.DreameDevice;
 import org.openhab.binding.dreame.internal.model.DreameVacuumAction;
 import org.openhab.binding.dreame.internal.model.DreameVacuumSetting;
@@ -54,13 +53,13 @@ class DreameVacuumCommandHandlerTest {
         f.command("start");
         f.command("PAUSE");
         f.command("DOCK");
-        verifyNoInteractions(f.api);
+        verify(f.account, never()).executeVacuumAction(any(), any(), any());
         assertEquals(1, f.work.size());
         f.work.removeFirst().run();
-        var order = inOrder(f.api);
-        order.verify(f.api).callVacuumAction(eq(f.device), eq(DreameVacuumAction.START), any());
-        order.verify(f.api).callVacuumAction(eq(f.device), eq(DreameVacuumAction.PAUSE), any());
-        order.verify(f.api).callVacuumAction(eq(f.device), eq(DreameVacuumAction.DOCK), any());
+        var order = inOrder(f.account);
+        order.verify(f.account).executeVacuumAction(eq(f.device), eq(DreameVacuumAction.START), any());
+        order.verify(f.account).executeVacuumAction(eq(f.device), eq(DreameVacuumAction.PAUSE), any());
+        order.verify(f.account).executeVacuumAction(eq(f.device), eq(DreameVacuumAction.DOCK), any());
         var stateOrder = inOrder(f.callback);
         stateOrder.verify(f.callback).stateUpdated(f.channel, new StringType("START"));
         stateOrder.verify(f.callback).stateUpdated(f.channel, new StringType("PAUSE"));
@@ -71,21 +70,20 @@ class DreameVacuumCommandHandlerTest {
     @Test
     void failureDoesNotRetryOrBlockFollowingCommand() throws Exception {
         Fixture f = new Fixture();
-        doThrow(new DreameCloudException("failed")).when(f.api).callVacuumAction(any(), eq(DreameVacuumAction.START),
-                any());
+        doThrow(new DreameCloudException("failed")).when(f.account).executeVacuumAction(any(),
+                eq(DreameVacuumAction.START), any());
         f.command("START");
         f.command("PAUSE");
         f.work.removeFirst().run();
-        verify(f.api).callVacuumAction(any(), eq(DreameVacuumAction.START), any());
-        verify(f.api).callVacuumAction(any(), eq(DreameVacuumAction.PAUSE), any());
-        verifyNoMoreInteractions(f.api);
+        verify(f.account).executeVacuumAction(any(), eq(DreameVacuumAction.START), any());
+        verify(f.account).executeVacuumAction(any(), eq(DreameVacuumAction.PAUSE), any());
         verify(f.callback).stateUpdated(f.channel, new StringType("PAUSE"));
         verify(f.callback, never()).stateUpdated(f.channel, new StringType("START"));
         f.handler.dispose();
     }
 
     @Test
-    void ignoresUnsupportedInputsAndDropsCommandsOnDispose() {
+    void ignoresUnsupportedInputsAndDropsCommandsOnDispose() throws Exception {
         Fixture f = new Fixture();
         f.command("UNSUPPORTED");
         f.handler.handleCommand(f.channel, RefreshType.REFRESH);
@@ -95,12 +93,12 @@ class DreameVacuumCommandHandlerTest {
         f.handler.dispose();
         f.work.removeFirst().run();
         f.command("DOCK");
-        verifyNoInteractions(f.api);
+        verify(f.account, never()).executeVacuumAction(any(), any(), any());
         assertTrue(f.work.isEmpty());
     }
 
     @Test
-    void rechecksBridgeAndModelBeforeDispatch() {
+    void rechecksBridgeAndModelBeforeDispatch() throws Exception {
         Fixture f = new Fixture();
         f.command("START");
         when(f.bridge.getStatus()).thenReturn(ThingStatus.OFFLINE);
@@ -110,7 +108,7 @@ class DreameVacuumCommandHandlerTest {
                 .thenReturn(List.of(new DreameDevice("test", "", "dreame.vacuum.other", "", "", "", "")));
         f.command("START");
         f.work.removeFirst().run();
-        verifyNoInteractions(f.api);
+        verify(f.account, never()).executeVacuumAction(any(), any(), any());
         f.handler.dispose();
     }
 
@@ -123,12 +121,11 @@ class DreameVacuumCommandHandlerTest {
             f.handler.dispose();
             assertFalse(guard.getAsBoolean());
             return null;
-        }).when(f.api).callVacuumAction(any(), any(), any());
+        }).when(f.account).executeVacuumAction(any(), any(), any());
         f.command("START");
         f.command("DOCK");
         f.work.removeFirst().run();
-        verify(f.api).callVacuumAction(any(), eq(DreameVacuumAction.START), any());
-        verifyNoMoreInteractions(f.api);
+        verify(f.account).executeVacuumAction(any(), eq(DreameVacuumAction.START), any());
     }
 
     @Test
@@ -138,7 +135,7 @@ class DreameVacuumCommandHandlerTest {
         f.handler.handleCommand(rooms, new StringType("3, 7,3"));
         f.work.removeFirst().run();
 
-        verify(f.api).cleanVacuumRooms(eq(f.device), eq(List.of(3, 7)), eq(1), eq(2), any());
+        verify(f.account).cleanVacuumRooms(eq(f.device), eq(List.of(3, 7)), eq(1), eq(2), any());
         verify(f.callback).stateUpdated(rooms, new StringType("3,7"));
         f.handler.dispose();
     }
@@ -157,9 +154,9 @@ class DreameVacuumCommandHandlerTest {
             f.work.removeFirst().run();
         }
 
-        verify(f.api).setVacuumSetting(eq(f.device), eq(DreameVacuumSetting.CLEAN_GENIUS), eq(2), any());
-        verify(f.api).setVacuumSetting(eq(f.device), eq(DreameVacuumSetting.CLEANING_ROUTE), eq(4), any());
-        verify(f.api).setVacuumSetting(eq(f.device), eq(DreameVacuumSetting.DRYING_TIME), eq(3), any());
+        verify(f.account).setVacuumSetting(eq(f.device), eq(DreameVacuumSetting.CLEAN_GENIUS), eq(2), any());
+        verify(f.account).setVacuumSetting(eq(f.device), eq(DreameVacuumSetting.CLEANING_ROUTE), eq(4), any());
+        verify(f.account).setVacuumSetting(eq(f.device), eq(DreameVacuumSetting.DRYING_TIME), eq(3), any());
         verify(f.callback).stateUpdated(genius, new StringType("DEEP"));
         verify(f.callback).stateUpdated(route, new StringType("QUICK"));
         verify(f.callback).stateUpdated(drying, new StringType("3H"));
@@ -171,7 +168,6 @@ class DreameVacuumCommandHandlerTest {
         final ChannelUID channel = new ChannelUID(uid, "command");
         final Bridge bridge = Objects.requireNonNull(mock(Bridge.class));
         final DreameAccountHandler account = Objects.requireNonNull(mock(DreameAccountHandler.class));
-        final DreameVacuumApi api = Objects.requireNonNull(mock(DreameVacuumApi.class));
         final ThingHandlerCallback callback = Objects.requireNonNull(mock(ThingHandlerCallback.class));
         final DreameDevice device = new DreameDevice("test", "", "dreame.vacuum.r9445d", "", "", "", "");
         final Deque<Runnable> work = new ArrayDeque<>();
@@ -189,7 +185,6 @@ class DreameVacuumCommandHandlerTest {
             when(callback.getBridge(bridgeUid)).thenReturn(bridge);
             when(bridge.getHandler()).thenReturn(account);
             when(bridge.getStatus()).thenReturn(ThingStatus.OFFLINE);
-            when(account.getVacuumApi()).thenReturn(api);
             when(account.getVacuumDevices()).thenReturn(List.of(device));
             handler = new DreameVacuumHandler(thing, work::addLast);
             handler.setCallback(callback);

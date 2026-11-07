@@ -12,11 +12,13 @@
  */
 package org.openhab.binding.dreame.internal.handler;
 
+import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.BooleanSupplier;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -27,7 +29,17 @@ import org.openhab.binding.dreame.internal.api.DreameVacuumApi;
 import org.openhab.binding.dreame.internal.config.DreameAccountConfiguration;
 import org.openhab.binding.dreame.internal.discovery.DreameMowerDiscoveryService;
 import org.openhab.binding.dreame.internal.discovery.DreameVacuumDiscoveryService;
+import org.openhab.binding.dreame.internal.model.DreameAction;
 import org.openhab.binding.dreame.internal.model.DreameDevice;
+import org.openhab.binding.dreame.internal.model.DreameMapData;
+import org.openhab.binding.dreame.internal.model.DreameMowingStatistics;
+import org.openhab.binding.dreame.internal.model.DreameMqttConfiguration;
+import org.openhab.binding.dreame.internal.model.DreameProperty;
+import org.openhab.binding.dreame.internal.model.DreameStatus;
+import org.openhab.binding.dreame.internal.model.DreameVacuumAction;
+import org.openhab.binding.dreame.internal.model.DreameVacuumProperties;
+import org.openhab.binding.dreame.internal.model.DreameVacuumSetting;
+import org.openhab.binding.dreame.internal.util.DreameVacuumMapImage.MapListRevision;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingStatus;
@@ -160,12 +172,91 @@ public class DreameAccountHandler extends BaseBridgeHandler {
         return getVacuumDevices().stream().filter(device -> device.id().equals(deviceId)).findFirst().orElse(null);
     }
 
-    public DreameMowerApi getApiClient() {
-        return apiClient;
+    public DreameStatus getMowerProperties(DreameDevice device, List<DreameProperty> properties)
+            throws DreameCloudException {
+        return apiClient.getProperties(device, properties);
     }
 
-    public @Nullable DreameVacuumApi getVacuumApi() {
-        return apiClient instanceof DreameVacuumApi vacuumApi ? vacuumApi : null;
+    public DreameMowingStatistics getMowingStatistics(DreameDevice device) throws DreameCloudException {
+        return apiClient.getMowingStatistics(device);
+    }
+
+    public DreameMapData getMowerMapData(DreameDevice device) throws DreameCloudException {
+        return apiClient.getMapData(device);
+    }
+
+    public void setMowerDnd(DreameDevice device, boolean enabled, @Nullable String taskConfiguration,
+            BooleanSupplier isCurrent) throws DreameCloudException {
+        apiClient.setDnd(device, enabled, taskConfiguration, isCurrent);
+    }
+
+    public void executeMowerAction(DreameDevice device, DreameAction action, BooleanSupplier isCurrent)
+            throws DreameCloudException {
+        apiClient.callAction(device, action, isCurrent);
+    }
+
+    public void startMowerZones(DreameDevice device, List<Integer> zoneIds, BooleanSupplier isCurrent)
+            throws DreameCloudException {
+        apiClient.startZoneMowing(device, zoneIds, isCurrent);
+    }
+
+    public void selectMowerMap(DreameDevice device, int mapIndex, BooleanSupplier isCurrent)
+            throws DreameCloudException {
+        apiClient.selectMap(device, mapIndex, isCurrent);
+    }
+
+    public BigDecimal getMowerCuttingHeight(DreameDevice device, int mapIndex) throws DreameCloudException {
+        return apiClient.getCuttingHeight(device, mapIndex);
+    }
+
+    public void setMowerCuttingHeight(DreameDevice device, int mapIndex, BigDecimal height, BooleanSupplier isCurrent)
+            throws DreameCloudException {
+        apiClient.setCuttingHeight(device, mapIndex, height, isCurrent);
+    }
+
+    public DreameMqttConfiguration getMqttConfiguration(DreameDevice device) throws DreameCloudException {
+        return apiClient.mqttConfiguration(device);
+    }
+
+    public DreameVacuumProperties getVacuumProperties(DreameDevice device, BooleanSupplier isCurrent)
+            throws DreameCloudException {
+        return vacuumApi().getVacuumProperties(device, isCurrent);
+    }
+
+    public @Nullable MapListRevision getVacuumMapListRevision(DreameDevice device, BooleanSupplier isCurrent)
+            throws DreameCloudException {
+        return vacuumApi().getVacuumMapListRevision(device, isCurrent);
+    }
+
+    public @Nullable String getVacuumMap(DreameDevice device, BooleanSupplier isCurrent) throws DreameCloudException {
+        return vacuumApi().getVacuumMap(device, isCurrent);
+    }
+
+    public String getVacuumMapList(DreameDevice device, String objectName, BooleanSupplier isCurrent)
+            throws DreameCloudException {
+        return vacuumApi().getVacuumMapList(device, objectName, isCurrent);
+    }
+
+    public void executeVacuumAction(DreameDevice device, DreameVacuumAction action, BooleanSupplier isCurrent)
+            throws DreameCloudException {
+        vacuumApi().callVacuumAction(device, action, isCurrent);
+    }
+
+    public void setVacuumSetting(DreameDevice device, DreameVacuumSetting setting, int value, BooleanSupplier isCurrent)
+            throws DreameCloudException {
+        vacuumApi().setVacuumSetting(device, setting, value, isCurrent);
+    }
+
+    public void cleanVacuumRooms(DreameDevice device, List<Integer> roomIds, int suctionLevel, int waterVolume,
+            BooleanSupplier isCurrent) throws DreameCloudException {
+        vacuumApi().cleanVacuumRooms(device, roomIds, suctionLevel, waterVolume, isCurrent);
+    }
+
+    private DreameVacuumApi vacuumApi() throws DreameCloudException {
+        if (apiClient instanceof DreameVacuumApi vacuumApi) {
+            return vacuumApi;
+        }
+        throw new DreameCloudException("Vacuum operations are unavailable");
     }
 
     public List<DreameDevice> getDevices() {

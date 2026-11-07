@@ -28,7 +28,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.dreame.internal.api.DreameCloudException;
-import org.openhab.binding.dreame.internal.api.DreameVacuumApi;
 import org.openhab.binding.dreame.internal.api.DreameVacuumMqttClient;
 import org.openhab.binding.dreame.internal.config.DreameVacuumConfiguration;
 import org.openhab.binding.dreame.internal.model.DreameDevice;
@@ -88,7 +87,7 @@ public class DreameVacuumHandler extends BaseThingHandler {
     private @Nullable ScheduledFuture<?> pollingJob;
     private @Nullable DreameVacuumMqttClient mqttClient;
     private @Nullable DreameMqttConfiguration mqttConfiguration;
-    private @Nullable DreameVacuumApi mapApi;
+    private @Nullable DreameAccountHandler mapAccount;
     private @Nullable DreameDevice mapDevice;
     private boolean mapQueryRunning;
     private boolean mapListQueryRunning;
@@ -144,7 +143,7 @@ public class DreameVacuumHandler extends BaseThingHandler {
                 }
                 updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "@text/unknown.awaiting-device-status");
                 int currentGeneration = generation.get();
-                mapApi = account.getVacuumApi();
+                mapAccount = account;
                 mapDevice = device;
                 updateDeviceMetadata(device);
                 mqttJob = scheduler.scheduleWithFixedDelay(() -> maintainMqtt(account, device.id(), currentGeneration),
@@ -175,14 +174,11 @@ public class DreameVacuumHandler extends BaseThingHandler {
             mapDevice = device;
             updateDeviceMetadata(device);
         }
-        DreameVacuumApi api = account.getVacuumApi();
-        if (api != null) {
-            refreshProperties(api, device, currentGeneration);
-            refreshMap(api, device, currentGeneration);
-        }
+        refreshProperties(account, device, currentGeneration);
+        refreshMap(account, device, currentGeneration);
     }
 
-    void refreshMap(DreameVacuumApi api, DreameDevice device, int currentGeneration) {
+    void refreshMap(DreameAccountHandler account, DreameDevice device, int currentGeneration) {
         int currentConnection;
         long revision;
         synchronized (this) {
@@ -194,7 +190,7 @@ public class DreameVacuumHandler extends BaseThingHandler {
             revision = mapRevision;
         }
         try {
-            String encoded = api.getVacuumMap(device, () -> generation.get() == currentGeneration);
+            String encoded = account.getVacuumMap(device, () -> generation.get() == currentGeneration);
             if (encoded == null) {
                 return;
             }
@@ -215,7 +211,7 @@ public class DreameVacuumHandler extends BaseThingHandler {
         }
     }
 
-    void refreshProperties(DreameVacuumApi api, DreameDevice device, int currentGeneration) {
+    void refreshProperties(DreameAccountHandler account, DreameDevice device, int currentGeneration) {
         int currentConnection;
         long revision;
         synchronized (this) {
@@ -226,7 +222,7 @@ public class DreameVacuumHandler extends BaseThingHandler {
             revision = statusRevision;
         }
         try {
-            DreameVacuumProperties properties = api.getVacuumProperties(device,
+            DreameVacuumProperties properties = account.getVacuumProperties(device,
                     () -> generation.get() == currentGeneration);
             Map<String, State> updates = DreameVacuumStatus.channelUpdates(properties,
                     DreameVacuumCapabilities.usesNewStateSchema(device),
@@ -265,7 +261,7 @@ public class DreameVacuumHandler extends BaseThingHandler {
             }
         }
         try {
-            MapListRevision mapRevision = api.getVacuumMapListRevision(device,
+            MapListRevision mapRevision = account.getVacuumMapListRevision(device,
                     () -> generation.get() == currentGeneration);
             if (mapRevision != null) {
                 receiveMapList(currentGeneration, currentConnection, mapRevision);
@@ -284,7 +280,7 @@ public class DreameVacuumHandler extends BaseThingHandler {
             return;
         }
         try {
-            DreameMqttConfiguration configuration = account.getApiClient().mqttConfiguration(device);
+            DreameMqttConfiguration configuration = account.getMqttConfiguration(device);
             DreameVacuumMqttClient previous;
             int currentConnection;
             synchronized (this) {
@@ -362,7 +358,7 @@ public class DreameVacuumHandler extends BaseThingHandler {
         DreameVacuumMqttClient client = mqttClient;
         mqttClient = null;
         mqttConfiguration = null;
-        mapApi = null;
+        mapAccount = null;
         mapDevice = null;
         mapQueryRunning = false;
         mapListQueryRunning = false;
@@ -464,10 +460,6 @@ public class DreameVacuumHandler extends BaseThingHandler {
                 || !(bridge.getHandler() instanceof DreameAccountHandler account)) {
             return;
         }
-        DreameVacuumApi api = account.getVacuumApi();
-        if (api == null) {
-            return;
-        }
         Object configuredId = getConfig().get("deviceId");
         for (DreameDevice device : account.getVacuumDevices()) {
             if (device.id().equals(configuredId) && supportsMqttDiagnostics(device)) {
@@ -476,7 +468,7 @@ public class DreameVacuumHandler extends BaseThingHandler {
                     return;
                 }
                 try {
-                    api.callVacuumAction(device, pending.action(),
+                    account.executeVacuumAction(device, pending.action(),
                             () -> generation.get() == pending.generation() && bridge.getStatus() == ThingStatus.ONLINE);
                     if (generation.get() == pending.generation()) {
                         publishCommandState("command", pending.action().name(), pending.generation());
@@ -501,11 +493,7 @@ public class DreameVacuumHandler extends BaseThingHandler {
                 || !(bridge.getHandler() instanceof DreameAccountHandler account)) {
             return;
         }
-        DreameVacuumApi api = account.getVacuumApi();
         Object configuredId = getConfig().get("deviceId");
-        if (api == null) {
-            return;
-        }
         for (DreameDevice device : account.getVacuumDevices()) {
             if (device.id().equals(configuredId) && supportsMqttDiagnostics(device)) {
                 synchronized (this) {
@@ -515,7 +503,7 @@ public class DreameVacuumHandler extends BaseThingHandler {
                     }
                 }
                 try {
-                    api.setVacuumSetting(device, setting, value,
+                    account.setVacuumSetting(device, setting, value,
                             () -> generation.get() == currentGeneration && bridge.getStatus() == ThingStatus.ONLINE);
                     String state = setting.state(value);
                     if (state != null) {
@@ -555,15 +543,11 @@ public class DreameVacuumHandler extends BaseThingHandler {
                 || !(bridge.getHandler() instanceof DreameAccountHandler account)) {
             return;
         }
-        DreameVacuumApi api = account.getVacuumApi();
         Object configuredId = getConfig().get("deviceId");
-        if (api == null) {
-            return;
-        }
         for (DreameDevice device : account.getVacuumDevices()) {
             if (device.id().equals(configuredId) && supportsMqttDiagnostics(device)) {
                 try {
-                    api.cleanVacuumRooms(device, roomIds, suction, water,
+                    account.cleanVacuumRooms(device, roomIds, suction, water,
                             () -> generation.get() == currentGeneration && bridge.getStatus() == ThingStatus.ONLINE);
                     if (generation.get() == currentGeneration) {
                         String roomCommand = roomIds.stream().map(String::valueOf)
@@ -626,23 +610,23 @@ public class DreameVacuumHandler extends BaseThingHandler {
                 || !isNewMapListRevision(mapListRevision, revision) || mapListQueryRunning) {
             return;
         }
-        DreameVacuumApi api = mapApi;
+        DreameAccountHandler account = mapAccount;
         DreameDevice device = mapDevice;
-        if (api == null || device == null) {
+        if (account == null || device == null) {
             return;
         }
         mapListQueryRunning = true;
-        commandExecutor.execute(() -> refreshMapList(api, device, currentGeneration, currentConnection, revision));
+        commandExecutor.execute(() -> refreshMapList(account, device, currentGeneration, currentConnection, revision));
     }
 
     static boolean isNewMapListRevision(@Nullable MapListRevision current, MapListRevision incoming) {
         return !incoming.equals(current);
     }
 
-    private void refreshMapList(DreameVacuumApi api, DreameDevice device, int currentGeneration, int currentConnection,
-            MapListRevision revision) {
+    private void refreshMapList(DreameAccountHandler account, DreameDevice device, int currentGeneration,
+            int currentConnection, MapListRevision revision) {
         try {
-            String raw = api.getVacuumMapList(device, revision.objectName(),
+            String raw = account.getVacuumMapList(device, revision.objectName(),
                     () -> generation.get() == currentGeneration);
             synchronized (this) {
                 if (active && generation.get() == currentGeneration && connectionGeneration == currentConnection) {
@@ -675,13 +659,13 @@ public class DreameVacuumHandler extends BaseThingHandler {
     }
 
     private void requestMissingBase(int currentGeneration) {
-        DreameVacuumApi api = mapApi;
+        DreameAccountHandler account = mapAccount;
         DreameDevice device = mapDevice;
-        if (!mapState.needsBase() || immediateBaseRequestTriggered || api == null || device == null) {
+        if (!mapState.needsBase() || immediateBaseRequestTriggered || account == null || device == null) {
             return;
         }
         immediateBaseRequestTriggered = true;
-        commandExecutor.execute(() -> refreshMap(api, device, currentGeneration));
+        commandExecutor.execute(() -> refreshMap(account, device, currentGeneration));
     }
 
     private void publishState(String channel, State state) {

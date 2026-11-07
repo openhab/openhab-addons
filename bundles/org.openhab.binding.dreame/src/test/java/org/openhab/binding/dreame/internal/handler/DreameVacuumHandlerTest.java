@@ -25,7 +25,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.openhab.binding.dreame.internal.api.DreameCloudException;
-import org.openhab.binding.dreame.internal.api.DreameVacuumApi;
 import org.openhab.binding.dreame.internal.model.DreameDevice;
 import org.openhab.binding.dreame.internal.model.DreameVacuumProperties;
 import org.openhab.binding.dreame.internal.util.DreameVacuumMapImage.MapListRevision;
@@ -118,8 +117,8 @@ class DreameVacuumHandlerTest {
         doAnswer(invocation -> {
             f.handler.receiveProperties(1, 1, Map.of("3/1", 98));
             return new DreameVacuumProperties(Map.of("3/1", 99, "2/2", 0), Map.of());
-        }).when(f.api).getVacuumProperties(any(), any());
-        f.handler.refreshProperties(f.api, device("dreame.vacuum.r9445d"), 1);
+        }).when(f.account).getVacuumProperties(any(), any());
+        f.handler.refreshProperties(f.account, device("dreame.vacuum.r9445d"), 1);
         verify(f.callback).stateUpdated(new ChannelUID(f.uid, "battery-level"), new DecimalType(98));
         verify(f.callback, never()).stateUpdated(new ChannelUID(f.uid, "battery-level"), new DecimalType(99));
         verify(f.callback).stateUpdated(new ChannelUID(f.uid, "error-code"), DecimalType.ZERO);
@@ -131,15 +130,15 @@ class DreameVacuumHandlerTest {
     @Test
     void repeatedFailedQueriesGoOfflineAndSuccessfulQueriesRecover() throws Exception {
         SnapshotFixture f = new SnapshotFixture();
-        when(f.api.getVacuumProperties(any(), any())).thenThrow(new DreameCloudException("test"))
+        when(f.account.getVacuumProperties(any(), any())).thenThrow(new DreameCloudException("test"))
                 .thenThrow(new DreameCloudException("test"))
                 .thenReturn(new DreameVacuumProperties(Map.of("2/1", 13), Map.of()));
-        f.handler.refreshProperties(f.api, device("dreame.vacuum.r9445d"), 1);
+        f.handler.refreshProperties(f.account, device("dreame.vacuum.r9445d"), 1);
         verify(f.callback, never()).statusUpdated(any(), argThat(status -> status.getStatus() == ThingStatus.OFFLINE));
-        f.handler.refreshProperties(f.api, device("dreame.vacuum.r9445d"), 1);
+        f.handler.refreshProperties(f.account, device("dreame.vacuum.r9445d"), 1);
         verify(f.callback).statusUpdated(eq(f.handler.getThing()),
                 argThat(status -> status.getStatus() == ThingStatus.OFFLINE));
-        f.handler.refreshProperties(f.api, device("dreame.vacuum.r9445d"), 1);
+        f.handler.refreshProperties(f.account, device("dreame.vacuum.r9445d"), 1);
         verify(f.callback).statusUpdated(eq(f.handler.getThing()),
                 argThat(status -> status.getStatus() == ThingStatus.ONLINE));
         verify(f.callback).stateUpdated(new ChannelUID(f.uid, "state"), new StringType("CHARGING_COMPLETED"));
@@ -152,8 +151,8 @@ class DreameVacuumHandlerTest {
         doAnswer(invocation -> {
             f.handler.receiveProperties(1, 1, Map.of("2/1", 22));
             throw new DreameCloudException("test");
-        }).when(f.api).getVacuumProperties(any(), any());
-        f.handler.refreshProperties(f.api, device("dreame.vacuum.r9445d"), 1);
+        }).when(f.account).getVacuumProperties(any(), any());
+        f.handler.refreshProperties(f.account, device("dreame.vacuum.r9445d"), 1);
         verify(f.callback, never()).statusUpdated(any(), argThat(status -> status.getStatus() == ThingStatus.OFFLINE));
         doAnswer(invocation -> {
             BooleanSupplier guard = invocation.getArgument(1);
@@ -162,8 +161,8 @@ class DreameVacuumHandlerTest {
             assertFalse(guard.getAsBoolean());
             clearInvocations(f.callback);
             return new DreameVacuumProperties(Map.of("3/1", 99), Map.of());
-        }).when(f.api).getVacuumProperties(any(), any());
-        f.handler.refreshProperties(f.api, device("dreame.vacuum.r9445d"), 1);
+        }).when(f.account).getVacuumProperties(any(), any());
+        f.handler.refreshProperties(f.account, device("dreame.vacuum.r9445d"), 1);
         verifyNoInteractions(f.callback);
     }
 
@@ -172,12 +171,12 @@ class DreameVacuumHandlerTest {
         SnapshotFixture f = new SnapshotFixture();
         CountDownLatch started = new CountDownLatch(1);
         CountDownLatch release = new CountDownLatch(1);
-        when(f.api.getVacuumMap(any(), any())).thenAnswer(invocation -> {
+        when(f.account.getVacuumMap(any(), any())).thenAnswer(invocation -> {
             started.countDown();
             assertTrue(release.await(5, TimeUnit.SECONDS));
             return null;
         }).thenReturn(null);
-        Thread query = new Thread(() -> f.handler.refreshMap(f.api, device("dreame.vacuum.r9445d"), 1));
+        Thread query = new Thread(() -> f.handler.refreshMap(f.account, device("dreame.vacuum.r9445d"), 1));
         query.start();
         assertTrue(started.await(5, TimeUnit.SECONDS));
 
@@ -187,8 +186,8 @@ class DreameVacuumHandlerTest {
         query.join(5000);
         assertFalse(query.isAlive());
 
-        f.handler.refreshMap(f.api, device("dreame.vacuum.r9445d"), 2);
-        verify(f.api, times(2)).getVacuumMap(any(), any());
+        f.handler.refreshMap(f.account, device("dreame.vacuum.r9445d"), 2);
+        verify(f.account, times(2)).getVacuumMap(any(), any());
         f.handler.dispose();
     }
 
@@ -205,7 +204,7 @@ class DreameVacuumHandlerTest {
     private static class SnapshotFixture {
         final ThingUID uid = new ThingUID("dreame:vacuum:test");
         final ThingHandlerCallback callback = Objects.requireNonNull(mock(ThingHandlerCallback.class));
-        final DreameVacuumApi api = Objects.requireNonNull(mock(DreameVacuumApi.class));
+        final DreameAccountHandler account = Objects.requireNonNull(mock(DreameAccountHandler.class));
         final DreameVacuumHandler handler;
 
         SnapshotFixture() {
