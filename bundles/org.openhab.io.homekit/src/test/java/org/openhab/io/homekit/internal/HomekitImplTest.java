@@ -34,6 +34,7 @@ import org.openhab.core.io.transport.mdns.MDNSClient;
 import org.openhab.core.items.ItemRegistry;
 import org.openhab.core.items.MetadataRegistry;
 import org.openhab.core.net.CidrAddress;
+import org.openhab.core.net.NetUtil;
 import org.openhab.core.net.NetworkAddressService;
 import org.openhab.core.service.ReadyMarker;
 import org.openhab.core.service.ReadyService;
@@ -64,8 +65,10 @@ class HomekitImplTest {
     private final HomekitRoot bridge = mock(HomekitRoot.class);
     private final Map<String, Object> config = new HashMap<>();
     private final List<@Nullable Object> serverAddresses = new ArrayList<>();
+    private final List<CidrAddress> interfaceAddresses = new ArrayList<>();
 
     private @Nullable MockedStatic<FrameworkUtil> frameworkUtil;
+    private @Nullable MockedStatic<NetUtil> netUtil;
     private @Nullable HomekitImpl homekit;
     private boolean failCreateBridge;
 
@@ -78,6 +81,10 @@ class HomekitImplTest {
         MockedStatic<FrameworkUtil> frameworkUtil = mockStatic(FrameworkUtil.class);
         frameworkUtil.when(() -> FrameworkUtil.getBundle(any(Class.class))).thenReturn(bundle);
         this.frameworkUtil = frameworkUtil;
+
+        MockedStatic<NetUtil> netUtil = mockStatic(NetUtil.class);
+        netUtil.when(NetUtil::getAllInterfaceAddresses).thenAnswer(invocation -> List.copyOf(interfaceAddresses));
+        this.netUtil = netUtil;
     }
 
     @AfterEach
@@ -89,6 +96,10 @@ class HomekitImplTest {
         MockedStatic<FrameworkUtil> frameworkUtil = this.frameworkUtil;
         if (frameworkUtil != null) {
             frameworkUtil.close();
+        }
+        MockedStatic<NetUtil> netUtil = this.netUtil;
+        if (netUtil != null) {
+            netUtil.close();
         }
     }
 
@@ -123,6 +134,35 @@ class HomekitImplTest {
 
             assertEquals(1, homekit.getInstanceCount());
             assertEquals(List.of(InetAddress.getByName(ADDRESS)), serverAddresses);
+        }
+    }
+
+    @Test
+    void startsOnCurrentAddressWithoutPrimaryAddress() throws Exception {
+        interfaceAddresses.add(cidr(ADDRESS));
+        try (MockedConstruction<HomekitServer> servers = mockServers()) {
+            HomekitImpl homekit = startHomekit();
+
+            assertEquals(1, homekit.getInstanceCount());
+            assertEquals(List.of(InetAddress.getByName(ADDRESS)), serverAddresses);
+        }
+    }
+
+    @Test
+    void restartsAfterSettingsChangeWithoutPrimaryAddress() throws Exception {
+        try (MockedConstruction<HomekitServer> servers = mockServers()) {
+            HomekitImpl homekit = startHomekit();
+            interfaceAddresses.add(cidr(ADDRESS));
+            homekit.onChanged(List.of(cidr(ADDRESS)), List.of());
+            assertEquals(1, homekit.getInstanceCount());
+
+            Map<String, Object> changedConfig = new HashMap<>(config);
+            changedConfig.put("name", "openHAB 2");
+            homekit.modified(changedConfig);
+
+            assertEquals(1, homekit.getInstanceCount());
+            assertEquals(List.of(InetAddress.getByName(ADDRESS), InetAddress.getByName(ADDRESS)), serverAddresses);
+            verify(servers.constructed().get(0)).stop();
         }
     }
 

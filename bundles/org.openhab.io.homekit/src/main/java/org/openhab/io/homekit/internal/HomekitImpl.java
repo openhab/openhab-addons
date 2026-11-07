@@ -37,6 +37,7 @@ import org.openhab.core.io.transport.mdns.MDNSClient;
 import org.openhab.core.items.ItemRegistry;
 import org.openhab.core.items.MetadataRegistry;
 import org.openhab.core.net.CidrAddress;
+import org.openhab.core.net.NetUtil;
 import org.openhab.core.net.NetworkAddressChangeListener;
 import org.openhab.core.net.NetworkAddressService;
 import org.openhab.core.service.ReadyMarker;
@@ -323,11 +324,10 @@ public class HomekitImpl implements Homekit, NetworkAddressChangeListener, Ready
                 : networkAddressService.getPrimaryIpv4HostAddress();
         if (interfaceName == null) {
             // openHAB core determines its primary address only once, so it stays empty if the network was down
-            // at startup. Use an address that just came up instead.
-            return (networkInterface = addedAddresses.stream().map(CidrAddress::getAddress)
-                    .filter(address -> address instanceof Inet4Address && !address.isLoopbackAddress()
-                            && !address.isLinkLocalAddress())
-                    .findFirst().orElse(null));
+            // at startup. Use an address that just came up, or else any address the host currently has.
+            InetAddress address = firstUsableAddress(addedAddresses);
+            return (networkInterface = address != null ? address
+                    : firstUsableAddress(NetUtil.getAllInterfaceAddresses()));
         }
         try {
             return (networkInterface = Objects.requireNonNull(InetAddress.getByName(interfaceName)));
@@ -335,6 +335,11 @@ public class HomekitImpl implements Homekit, NetworkAddressChangeListener, Ready
             logger.warn("cannot resolve the IPv4 address / hostname {}.", interfaceName);
             throw e;
         }
+    }
+
+    private static @Nullable InetAddress firstUsableAddress(Collection<CidrAddress> addresses) {
+        return addresses.stream().map(CidrAddress::getAddress).filter(address -> address instanceof Inet4Address
+                && !address.isLoopbackAddress() && !address.isLinkLocalAddress()).findFirst().orElse(null);
     }
 
     private void stopHomekitServer() {
