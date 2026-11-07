@@ -287,7 +287,7 @@
 			<tag>Status</tag>
 			<tag>Duration</tag>
 		</tags>
-		<state readOnly="true" pattern="%d %unit%"/>
+		<state readOnly="true" pattern="%1$tT"/>
 	</channel-type>
 	<channel-type id="trackposition">
 		<item-type>Number:Time</item-type>
@@ -297,7 +297,7 @@
 			<tag>Control</tag>
 			<tag>Progress</tag>
 		</tags>
-		<state pattern="%d %unit%"/>
+		<state pattern="%1$tT"/>
 	</channel-type>
 	<channel-type id="reltrackposition">
 		<item-type>Dimmer</item-type>

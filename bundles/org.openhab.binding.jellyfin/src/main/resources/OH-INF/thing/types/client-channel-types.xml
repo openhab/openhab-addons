@@ -121,7 +121,7 @@
 			<tag>Control</tag>
 			<tag>Progress</tag>
 		</tags>
-		<state pattern="%.0f %unit%"/>
+		<state pattern="%1$tT"/>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="playing-item-total-seconds-channel">
@@ -132,7 +132,7 @@
 			<tag>Status</tag>
 			<tag>Duration</tag>
 		</tags>
-		<state readOnly="true" pattern="%.0f %unit%"/>
+		<state readOnly="true" pattern="%1$tT"/>
 	</channel-type>
 	<channel-type id="play-by-terms-channel">
 		<item-type>String</item-type>

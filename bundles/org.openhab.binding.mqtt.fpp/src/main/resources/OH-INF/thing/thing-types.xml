@@ -93,7 +93,7 @@
 			<tag>Status</tag>
 			<tag>Progress</tag>
 		</tags>
-		<state readOnly="true" pattern="%.1f sec"/>
+		<state readOnly="true" pattern="%1$tT"/>
 	</channel-type>
 	<channel-type id="seconds-remaining" advanced="true">
 		<item-type>Number:Time</item-type>
@@ -103,7 +103,7 @@
 			<tag>Status</tag>
 			<tag>Progress</tag>
 		</tags>
-		<state readOnly="true" pattern="%.1f sec"/>
+		<state readOnly="true" pattern="%1$tT"/>
 	</channel-type>
 	<channel-type id="uptime" advanced="true">
 		<item-type>Number:Time</item-type>
