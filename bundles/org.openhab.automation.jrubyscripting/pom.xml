@@ -14,7 +14,7 @@
   <name>openHAB Add-ons :: Bundles :: Automation :: JRuby Scripting</name>
 
   <properties>
-    <jruby.version>10.1.1.0</jruby.version>
+    <jruby.version>10.1.3.0</jruby.version>
 
     <bnd.importpackage><![CDATA[org.crac;resolution:=optional,\
   com.dylibso.chicory.annotations;resolution:=optional,\
@@ -22,16 +22,35 @@
   com.sun.nio.*;resolution:=optional,\
   com.sun.security.*;resolution:=optional,\
   org.apache.tools.ant.*;resolution:=optional,\
-  org.bouncycastle.*;resolution:=optional,\
+  org.bouncycastle.jsse,\
   sun.management.*;resolution:=optional,\
   sun.nio.*;resolution:=optional,\
   android.os;resolution:=optional,\
   jakarta.annotation;resolution:=optional,\
+  run.endive.annotations;resolution:=optional,\
   jdk.crac.management;resolution:=optional]]></bnd.importpackage>
 
   </properties>
 
   <dependencies>
+    <dependency>
+      <groupId>org.bouncycastle</groupId>
+      <artifactId>bcprov-jdk18on</artifactId>
+      <version>${bouncycastle.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.bouncycastle</groupId>
+      <artifactId>bctls-jdk18on</artifactId>
+      <version>${bouncycastle.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.bouncycastle</groupId>
+      <artifactId>bcutil-jdk18on</artifactId>
+      <version>${bouncycastle.version}</version>
+      <scope>provided</scope>
+    </dependency>
     <dependency>
       <groupId>org.jruby</groupId>
       <artifactId>jruby</artifactId>
