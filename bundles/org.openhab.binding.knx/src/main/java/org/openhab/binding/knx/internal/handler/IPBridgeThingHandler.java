@@ -15,6 +15,7 @@ package org.openhab.binding.knx.internal.handler;
 import java.net.InetSocketAddress;
 import java.text.MessageFormat;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -51,6 +52,8 @@ public class IPBridgeThingHandler extends KNXBridgeBaseThingHandler {
     private @Nullable Future<?> initJob = null;
 
     private final Logger logger = LoggerFactory.getLogger(IPBridgeThingHandler.class);
+
+    static final int NO_LOCAL_IP_RETRY_SECONDS = 30;
 
     private @Nullable IPClient client = null;
     private @Nullable final NetworkAddressService networkAddressService;
@@ -184,9 +187,16 @@ public class IPBridgeThingHandler extends KNXBridgeBaseThingHandler {
                 logger.debug("NetworkAddressService not available, cannot create bridge {}", thing.getUID());
                 updateStatus(ThingStatus.OFFLINE);
                 return;
-            } else {
-                localEndPoint = new InetSocketAddress(localNetworkAddressService.getPrimaryIpv4HostAddress(), 0);
             }
+            String localIp = localNetworkAddressService.getPrimaryIpv4HostAddress();
+            if (localIp == null) {
+                logger.debug("Bridge {} has no local IPv4 address", thing.getUID());
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/error.knx-no-local-ipv4");
+                // not a bus problem, so retry even when autoReconnectPeriod is 0
+                initJob = scheduler.schedule(this::initializeLater, NO_LOCAL_IP_RETRY_SECONDS, TimeUnit.SECONDS);
+                return;
+            }
+            localEndPoint = new InetSocketAddress(localIp, 0);
         }
 
         updateStatus(ThingStatus.UNKNOWN);
