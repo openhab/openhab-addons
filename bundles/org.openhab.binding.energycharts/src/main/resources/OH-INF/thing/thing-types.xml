@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="energycharts"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="prices">
+		<label>Energy-Charts Prices</label>
+		<description>Day-ahead electricity prices of one bidding zone from Energy-Charts</description>
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
+
+		<channels>
+			<channel id="spot-price" typeId="price">
+				<label>Spot Price</label>
+				<description>Day-ahead market price without VAT</description>
+			</channel>
+		</channels>
+
+		<config-description>
+			<parameter name="biddingZone" type="text" required="true">
+				<label>Bidding Zone</label>
+				<description>The bidding zone to get prices for.</description>
+				<options>
+					<option value="AT">Austria</option>
+					<option value="BE">Belgium</option>
+					<option value="CH">Switzerland</option>
+					<option value="CZ">Czech Republic</option>
+					<option value="DE-LU">Germany, Luxembourg</option>
+					<option value="DK1">Denmark 1 (West)</option>
+					<option value="DK2">Denmark 2 (East)</option>
+					<option value="FR">France</option>
+					<option value="HU">Hungary</option>
+					<option value="IT-North">Italy North</option>
+					<option value="NL">Netherlands</option>
+					<option value="NO2">Norway 2 (South)</option>
+					<option value="PL">Poland</option>
+					<option value="SE4">Sweden 4 (South)</option>
+					<option value="SI">Slovenia</option>
+				</options>
+				<limitToOptions>true</limitToOptions>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-type id="price">
+		<item-type>Number:EnergyPrice</item-type>
+		<label>Price</label>
+		<category>Price</category>
+		<tags>
+			<tag>Forecast</tag>
+			<tag>Price</tag>
+		</tags>
+		<state readOnly="true" pattern="%.3f %unit%"/>
+	</channel-type>
+</thing:thing-descriptions>
