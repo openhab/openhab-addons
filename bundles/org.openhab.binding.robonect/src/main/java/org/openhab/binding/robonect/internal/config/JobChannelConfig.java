@@ -23,7 +23,7 @@ public class JobChannelConfig {
 
     private String afterMode;
 
-    private int duration;
+    private Integer duration;
 
     private Integer start;
 
@@ -68,9 +68,9 @@ public class JobChannelConfig {
     /**
      * Returns the job duration.
      *
-     * @return the duration in minutes
+     * @return the duration in minutes, or {@code null} if unset
      */
-    public int getDuration() {
+    public Integer getDuration() {
         return duration;
     }
 
@@ -79,7 +79,7 @@ public class JobChannelConfig {
      *
      * @param duration the duration in minutes
      */
-    public void setDuration(int duration) {
+    public void setDuration(Integer duration) {
         this.duration = duration;
     }
 

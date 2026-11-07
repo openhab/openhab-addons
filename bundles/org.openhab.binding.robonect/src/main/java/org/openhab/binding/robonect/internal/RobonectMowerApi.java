@@ -14,12 +14,16 @@ package org.openhab.binding.robonect.internal;
 
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
-import java.util.Objects;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.robonect.internal.RobonectClient.JobSettings;
 import org.openhab.binding.robonect.internal.model.AjaxInfo;
 import org.openhab.binding.robonect.internal.model.DoorInfo;
+import org.openhab.binding.robonect.internal.model.Job;
 import org.openhab.binding.robonect.internal.model.ModelParser;
 import org.openhab.binding.robonect.internal.model.MowerInfo;
 import org.openhab.binding.robonect.internal.model.MowerMode;
@@ -38,6 +42,10 @@ import org.openhab.binding.robonect.internal.model.cmd.ServiceCommand.Operation;
 import org.openhab.binding.robonect.internal.model.cmd.StartCommand;
 import org.openhab.binding.robonect.internal.model.cmd.StatusCommand;
 import org.openhab.binding.robonect.internal.model.cmd.StopCommand;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.google.gson.JsonSyntaxException;
 
 /**
  * API operations for mower, job, door, and service endpoints.
@@ -46,8 +54,18 @@ import org.openhab.binding.robonect.internal.model.cmd.StopCommand;
  */
 @NonNullByDefault
 public final class RobonectMowerApi {
+
+    private static final Set<String> JOB_TIMER_LABELS = Set.of("Auftrag", "Job", "Travail", "Ordine", "Jobb");
+    private static final Set<String> END_OF_DAY_LABELS = Set.of("Feierabend", "End of day", "Fin de journée de travail",
+            "Fine lavoro giornata", "Slutet av dagen");
+    private static final Pattern JOB_TIME_PATTERN = Pattern.compile("^(?:(\\d{1,2}:\\d{2})\\D+)?(\\d{1,2}:\\d{2})$");
+
+    private final Logger logger = LoggerFactory.getLogger(RobonectMowerApi.class);
+
     private final RobonectTransport transport;
     private boolean jobRunning;
+    private @Nullable MowerMode lastKnownMode;
+    private @Nullable MowerMode lastModeBeforeJob;
 
     /**
      * Creates an endpoint API using the shared transport.
@@ -63,18 +81,70 @@ public final class RobonectMowerApi {
      *
      * @return - the general mower information including a general success status.
      */
-    public MowerInfo getMowerInfo() {
+    public MowerInfo getMowerInfo(boolean isAjaxScrapingEnabled) {
         String responseString = transport.sendCommand(new StatusCommand());
         MowerInfo mowerInfo = ModelParser.parse(responseString, MowerInfo.class);
         Status status = mowerInfo.getStatus();
-        if (jobRunning && status != null) {
-            // mode might have been changed on the mower. Also Mode JOB does not really exist on the mower, thus cannot
-            // be checked here
-            if (status.getMode() == MowerMode.AUTO || status.getMode() == MowerMode.HOME) {
-                jobRunning = false;
-            } else if (mowerInfo.getError() != null) {
-                jobRunning = false;
+        if (isAjaxScrapingEnabled && status != null) {
+            mowerInfo = getAdditionalMowerInfo(mowerInfo);
+        }
+
+        lastKnownMode = status == null ? null : status.getMode();
+
+        if (mowerInfo.getJob() != null && mowerInfo.getJob().isJobActiv() != null) {
+            jobRunning = mowerInfo.getJob().isJobActiv();
+        } else {
+
+            if (jobRunning && status != null) {
+                // mode might have been changed on the mower. Also Mode JOB does not really exist on the mower, thus
+                // cannot
+                // be checked here
+                if (status.getMode() != MowerMode.AUTO) {
+                    jobRunning = false;
+                } else if (mowerInfo.getError() != null) {
+                    jobRunning = false;
+                }
             }
+            Job job = new Job();
+            job.setJobActiv(jobRunning);
+            mowerInfo.setJob(job);
+        }
+        return mowerInfo;
+    }
+
+    private MowerInfo getAdditionalMowerInfo(MowerInfo mowerInfo) {
+        try {
+            AjaxInfo ajaxInfo = getAjaxInfo();
+            if (ajaxInfo == null) {
+                throw new JsonSyntaxException("Robonect web-interface response is empty");
+            }
+            String controlText = ajaxInfo.getControlMenuText();
+            String timerText = ajaxInfo.getTimerMenuText();
+
+            MowerMode apiMowerMode = mowerInfo.getStatus().getMode();
+            Job job = new Job();
+            if (apiMowerMode == MowerMode.HOME && controlText != null && END_OF_DAY_LABELS.contains(controlText)) {
+                mowerInfo.getStatus().setMode(MowerMode.EOD);
+            } else if (apiMowerMode == MowerMode.AUTO && timerText != null) {
+                if (JOB_TIMER_LABELS.contains(timerText)) {
+                    job.setJobActiv(true);
+
+                    if (controlText != null) {
+                        Matcher matcher = JOB_TIME_PATTERN.matcher(controlText);
+                        if (matcher.matches()) {
+                            job.setJobStart(matcher.group(1));
+                            job.setJobEnd(matcher.group(2));
+                        }
+                    }
+
+                } else {
+                    job.setJobActiv(false);
+                }
+            }
+
+            mowerInfo.setJob(job);
+        } catch (RobonectCommunicationException | JsonSyntaxException | IllegalArgumentException e) {
+            logger.debug("Could not retrieve Robonect web-interface status. Falling back to the JSON API.", e);
         }
         return mowerInfo;
     }
@@ -165,10 +235,12 @@ public final class RobonectMowerApi {
      */
     public RobonectAnswer setMode(ModeCommand.Mode mode) {
         String responseString = transport.sendCommand(createCommand(mode));
-        if (jobRunning) {
-            jobRunning = false;
+        RobonectAnswer answer = ModelParser.parse(responseString, RobonectAnswer.class);
+
+        if (answer.isSuccessful()) {
+            jobRunning = mode == ModeCommand.Mode.JOB;
         }
-        return ModelParser.parse(responseString, RobonectAnswer.class);
+        return answer;
     }
 
     /**
@@ -203,29 +275,25 @@ public final class RobonectMowerApi {
     }
 
     /**
-     * Reports the binding's locally tracked job state.
-     *
-     * @return {@code true} when a job is tracked as running
-     */
-    public boolean isJobRunning() {
-        return jobRunning;
-    }
-
-    /**
      * Starts a job and updates the locally tracked job state.
      *
      * @param settings the requested job settings
      * @return the command response and its success status
      */
     public RobonectAnswer startJob(JobSettings settings) {
+
         Command jobCommand = new ModeCommand(ModeCommand.Mode.JOB).withRemoteStart(settings.getRemoteStart())
                 .withAfter(settings.getAfterMode()).withDuration(settings.getDuration()).withStart(settings.getStart())
                 .withEnd(settings.getEnd());
         String responseString = transport.sendCommand(jobCommand);
         RobonectAnswer answer = ModelParser.parse(responseString, RobonectAnswer.class);
         if (answer.isSuccessful()) {
+            if (!jobRunning) {
+                lastModeBeforeJob = lastKnownMode;
+            }
             jobRunning = true;
         } else {
+            lastModeBeforeJob = null;
             jobRunning = false;
         }
         return answer;
@@ -234,14 +302,22 @@ public final class RobonectMowerApi {
     /**
      * Applies the after-mode if a job is tracked as running.
      *
-     * @param settings the settings containing the after-mode
+     * @param afterMode the after-mode to apply, or {@code null} to restore the pre-job mode
      * @return the command response, or a successful response when no job is tracked
-     * @throws NullPointerException if a job is tracked and the after-mode is unset
      */
-    public RobonectAnswer stopJob(JobSettings settings) {
+    public RobonectAnswer stopJob(ModeCommand.@Nullable Mode afterMode) {
         RobonectAnswer answer = null;
         if (jobRunning) {
-            answer = setMode(Objects.requireNonNull(settings.getAfterMode()));
+            if (afterMode == null) {
+                afterMode = switch (lastModeBeforeJob) {
+                    case AUTO -> ModeCommand.Mode.AUTO;
+                    case HOME -> ModeCommand.Mode.HOME;
+                    case EOD -> ModeCommand.Mode.EOD;
+                    case MANUAL -> ModeCommand.Mode.MANUAL;
+                    case null, default -> ModeCommand.Mode.HOME;
+                };
+            }
+            answer = setMode(afterMode);
             if (answer.isSuccessful()) {
                 jobRunning = false;
             }

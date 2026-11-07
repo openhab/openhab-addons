@@ -59,13 +59,13 @@ import org.openhab.binding.robonect.internal.RobonectPushServlet;
 import org.openhab.binding.robonect.internal.RobonectRemoteStartApi;
 import org.openhab.binding.robonect.internal.RobonectTimerApi;
 import org.openhab.binding.robonect.internal.RobonectWeatherApi;
-import org.openhab.binding.robonect.internal.model.AjaxInfo;
 import org.openhab.binding.robonect.internal.model.BatteryInfo;
 import org.openhab.binding.robonect.internal.model.DoorInfo;
 import org.openhab.binding.robonect.internal.model.ErrorEntry;
 import org.openhab.binding.robonect.internal.model.ErrorList;
 import org.openhab.binding.robonect.internal.model.ExtInfo;
 import org.openhab.binding.robonect.internal.model.HourInfo;
+import org.openhab.binding.robonect.internal.model.Job;
 import org.openhab.binding.robonect.internal.model.ModelParser;
 import org.openhab.binding.robonect.internal.model.MotorInfo;
 import org.openhab.binding.robonect.internal.model.MowerInfo;
@@ -178,7 +178,7 @@ public class RobonectHandlerTest {
                     eq("test-secret"));
             Runnable notify = registrations.getValue();
             var tasks = ArgumentCaptor.forClass(Runnable.class);
-            when(mowerApiMock.getMowerInfo()).thenAnswer(invocation -> {
+            when(mowerApiMock.getMowerInfo(anyBoolean())).thenAnswer(invocation -> {
                 notify.run();
                 notify.run();
                 return createSuccessfulMowerInfoResponse();
@@ -190,9 +190,9 @@ public class RobonectHandlerTest {
             tasks.getValue().run();
 
             verify(commandScheduler, times(2)).schedule(tasks.capture(), eq(0L), eq(TimeUnit.SECONDS));
-            verify(mowerApiMock).getMowerInfo();
+            verify(mowerApiMock).getMowerInfo(anyBoolean());
             tasks.getValue().run();
-            verify(mowerApiMock, times(2)).getMowerInfo();
+            verify(mowerApiMock, times(2)).getMowerInfo(anyBoolean());
             verify(commandScheduler, times(2)).schedule(any(Runnable.class), eq(0L), eq(TimeUnit.SECONDS));
             assertEquals(1, clients.constructed().size());
         }
@@ -234,7 +234,7 @@ public class RobonectHandlerTest {
             verify(servlet).registerHandler(eq(subject.getThing().getUID()), registrations.capture(), eq("callback"),
                     eq("test-secret"));
             Runnable notify = registrations.getValue();
-            when(mowerApiMock.getMowerInfo()).thenAnswer(invocation -> {
+            when(mowerApiMock.getMowerInfo(anyBoolean())).thenAnswer(invocation -> {
                 notify.run();
                 subject.dispose();
                 subject.initialize();
@@ -288,7 +288,7 @@ public class RobonectHandlerTest {
 
         pollers.getFirst().run();
         verify(diagnosticsApiMock).getVersionInfo();
-        verify(mowerApiMock).getMowerInfo();
+        verify(mowerApiMock).getMowerInfo(anyBoolean());
         verify(diagnosticsApiMock).getWlanInfo();
         verify(diagnosticsApiMock, never()).getBatteryInfo();
         clearInvocations(mowerApiMock, diagnosticsApiMock, pushApiMock, remoteStartApiMock, timerApiMock,
@@ -325,7 +325,7 @@ public class RobonectHandlerTest {
         List<Runnable> pollers = initializePolling(Map.of("detailedPollInterval", 61));
         MowerInfo active = createSuccessfulMowerInfoResponse();
         Objects.requireNonNull(active.getStatus()).setStatus(activeStatus);
-        when(mowerApiMock.getMowerInfo()).thenReturn(active, createSuccessfulMowerInfoResponse());
+        when(mowerApiMock.getMowerInfo(anyBoolean())).thenReturn(active, createSuccessfulMowerInfoResponse());
 
         pollers.getFirst().run();
         verify(diagnosticsApiMock).getBatteryInfo();
@@ -355,15 +355,15 @@ public class RobonectHandlerTest {
         poller.run();
         poller.run();
         verify(diagnosticsApiMock).getVersionInfo();
-        verify(mowerApiMock, times(2)).getMowerInfo();
+        verify(mowerApiMock, times(2)).getMowerInfo(anyBoolean());
         verify(diagnosticsApiMock, times(2)).getWlanInfo();
 
-        when(mowerApiMock.getMowerInfo()).thenThrow(new RobonectCommunicationException("Unavailable"))
+        when(mowerApiMock.getMowerInfo(anyBoolean())).thenThrow(new RobonectCommunicationException("Unavailable"))
                 .thenReturn(createSuccessfulMowerInfoResponse());
         poller.run();
         poller.run();
         verify(diagnosticsApiMock, times(2)).getVersionInfo();
-        verify(mowerApiMock, times(4)).getMowerInfo();
+        verify(mowerApiMock, times(4)).getMowerInfo(anyBoolean());
         verify(diagnosticsApiMock, times(3)).getWlanInfo();
     }
 
@@ -377,7 +377,7 @@ public class RobonectHandlerTest {
                 weatherApiMock);
         MowerInfo active = createSuccessfulMowerInfoResponse();
         Objects.requireNonNull(active.getStatus()).setStatus(MowerStatus.MOWING);
-        when(mowerApiMock.getMowerInfo()).thenReturn(active);
+        when(mowerApiMock.getMowerInfo(anyBoolean())).thenReturn(active);
         pollers.getFirst().run();
         verify(diagnosticsApiMock, never()).getBatteryInfo();
         verify(diagnosticsApiMock, never()).getMotorInfo();
@@ -447,11 +447,12 @@ public class RobonectHandlerTest {
         List<Runnable> pollers = initializePolling(Map.of("detailedPollInterval", 61));
         RuntimeException failure = malformedJson ? new JsonSyntaxException("Malformed response")
                 : new RobonectCommunicationException("Unavailable");
-        when(mowerApiMock.getMowerInfo()).thenThrow(failure).thenReturn(createSuccessfulMowerInfoResponse());
+        when(mowerApiMock.getMowerInfo(anyBoolean())).thenThrow(failure)
+                .thenReturn(createSuccessfulMowerInfoResponse());
         pollers.getFirst().run();
         pollers.getLast().run();
         pollers.getFirst().run();
-        verify(mowerApiMock, times(2)).getMowerInfo();
+        verify(mowerApiMock, times(2)).getMowerInfo(anyBoolean());
         verify(diagnosticsApiMock).getBatteryInfo();
         verify(callbackMock, atLeastOnce()).statusUpdated(eq(subject.getThing()),
                 argThat(status -> status.getStatus() == ThingStatus.ONLINE));
@@ -491,7 +492,7 @@ public class RobonectHandlerTest {
         CountDownLatch statusEntered = new CountDownLatch(1);
         CountDownLatch releaseStatus = new CountDownLatch(1);
         AtomicReference<Thread> detailedThread = new AtomicReference<>();
-        when(mowerApiMock.getMowerInfo()).thenAnswer(invocation -> {
+        when(mowerApiMock.getMowerInfo(anyBoolean())).thenAnswer(invocation -> {
             statusEntered.countDown();
             assertTrue(releaseStatus.await(10, TimeUnit.SECONDS));
             return createSuccessfulMowerInfoResponse();
@@ -537,7 +538,7 @@ public class RobonectHandlerTest {
                 verify(diagnosticsApiMock, never()).getBatteryInfo();
             } else {
                 var order = inOrder(mowerApiMock, diagnosticsApiMock);
-                order.verify(mowerApiMock).getMowerInfo();
+                order.verify(mowerApiMock).getMowerInfo(anyBoolean());
                 order.verify(diagnosticsApiMock).getWlanInfo();
                 order.verify(diagnosticsApiMock).getBatteryInfo();
             }
@@ -563,7 +564,7 @@ public class RobonectHandlerTest {
         subject.initialize();
         subject.setRobonectClient(robonectClientMock);
         when(diagnosticsApiMock.getVersionInfo()).thenReturn(new VersionInfo());
-        when(mowerApiMock.getMowerInfo()).thenReturn(createSuccessfulMowerInfoResponse());
+        when(mowerApiMock.getMowerInfo(anyBoolean())).thenReturn(createSuccessfulMowerInfoResponse());
 
         when(diagnosticsApiMock.getWlanInfo()).thenReturn(ModelParser.parse("{\"successful\":true}", WlanInfo.class));
         when(diagnosticsApiMock.getBatteryInfo())
@@ -835,7 +836,7 @@ public class RobonectHandlerTest {
                 "stopped":false,"battery":50,"hours":1,"duration":2,"distance":0,
                 "home":true,"prevent":3}}
                 """, MowerInfo.class);
-        when(mowerApiMock.getMowerInfo()).thenReturn(info);
+        when(mowerApiMock.getMowerInfo(anyBoolean())).thenReturn(info);
         ThingUID uid = new ThingUID("1:2:3");
         subject.handleCommand(new ChannelUID(uid, RobonectBindingConstants.CHANNEL_STATUS_HOME), RefreshType.REFRESH);
         verify(callbackMock).stateUpdated(new ChannelUID(uid, RobonectBindingConstants.CHANNEL_STATUS_HOME),
@@ -859,7 +860,7 @@ public class RobonectHandlerTest {
         timer.setNext(nextTimer);
 
         // when
-        when(mowerApiMock.getMowerInfo()).thenReturn(mowerInfo);
+        when(mowerApiMock.getMowerInfo(anyBoolean())).thenReturn(mowerInfo);
 
         subject.handleCommand(new ChannelUID(new ThingUID("1:2:3"), RobonectBindingConstants.CHANNEL_TIMER_NEXT_TIMER),
                 RefreshType.REFRESH);
@@ -883,7 +884,7 @@ public class RobonectHandlerTest {
 
     @Test
     public void shouldClearMissingMowerFieldsAndPreserveReportedZeroAndFalse() {
-        when(mowerApiMock.getMowerInfo()).thenReturn(ModelParser.parse("""
+        when(mowerApiMock.getMowerInfo(anyBoolean())).thenReturn(ModelParser.parse("""
                 {"successful":true,"status":{"battery":0,"home":false},"health":{},"wlan":{}}
                 """, MowerInfo.class), ModelParser.parse("{\"successful\":true}", MowerInfo.class));
         ThingUID uid = new ThingUID("1:2:3");
@@ -923,7 +924,7 @@ public class RobonectHandlerTest {
         errorList.setSuccessful(true);
 
         // when
-        when(mowerApiMock.getMowerInfo()).thenReturn(mowerInfo);
+        when(mowerApiMock.getMowerInfo(anyBoolean())).thenReturn(mowerInfo);
         when(diagnosticsApiMock.errorList()).thenReturn(errorList);
 
         subject.handleCommand(new ChannelUID(new ThingUID("1:2:3"), RobonectBindingConstants.CHANNEL_STATUS),
@@ -974,7 +975,7 @@ public class RobonectHandlerTest {
         mowerInfo.setError(null);
 
         // when
-        when(mowerApiMock.getMowerInfo()).thenReturn(mowerInfo);
+        when(mowerApiMock.getMowerInfo(anyBoolean())).thenReturn(mowerInfo);
 
         subject.handleCommand(new ChannelUID(new ThingUID("1:2:3"), RobonectBindingConstants.CHANNEL_STATUS),
                 RefreshType.REFRESH);
@@ -1004,7 +1005,7 @@ public class RobonectHandlerTest {
         mowerInfo.getStatus().setStatus(MowerStatus.MOWING);
 
         // when
-        when(mowerApiMock.getMowerInfo()).thenReturn(mowerInfo);
+        when(mowerApiMock.getMowerInfo(anyBoolean())).thenReturn(mowerInfo);
 
         subject.handleCommand(new ChannelUID(new ThingUID("1:2:3"), RobonectBindingConstants.CHANNEL_STATUS),
                 RefreshType.REFRESH);
@@ -1026,13 +1027,14 @@ public class RobonectHandlerTest {
         ArgumentCaptor<State> jobStartCaptor = ArgumentCaptor.forClass(State.class);
         ArgumentCaptor<State> jobEndCaptor = ArgumentCaptor.forClass(State.class);
         MowerInfo mowerInfo = createSuccessfulMowerInfoResponse();
-        AjaxInfo ajaxInfo = new AjaxInfo();
-        ajaxInfo.setTimerMenuText("Job");
-        ajaxInfo.setControlMenuText("10:00 - 12:00");
+        Job job = new Job();
+        job.setJobActiv(true);
+        job.setJobStart("10:00");
+        job.setJobEnd("12:00");
+        mowerInfo.setJob(job);
 
         subject.setAjaxUiScraping(true);
-        when(mowerApiMock.getMowerInfo()).thenReturn(mowerInfo);
-        when(mowerApiMock.getAjaxInfo()).thenReturn(ajaxInfo);
+        when(mowerApiMock.getMowerInfo(true)).thenReturn(mowerInfo);
 
         subject.handleCommand(new ChannelUID(new ThingUID("1:2:3"), RobonectBindingConstants.CHANNEL_STATUS),
                 RefreshType.REFRESH);
@@ -1063,13 +1065,10 @@ public class RobonectHandlerTest {
     @Test
     public void shouldUseAjaxUiInfoForEndOfDay() {
         MowerInfo mowerInfo = createSuccessfulMowerInfoResponse();
-        mowerInfo.getStatus().setMode(MowerMode.HOME);
-        AjaxInfo ajaxInfo = new AjaxInfo();
-        ajaxInfo.setControlMenuText("End of day");
+        Objects.requireNonNull(mowerInfo.getStatus()).setMode(MowerMode.EOD);
 
         subject.setAjaxUiScraping(true);
-        when(mowerApiMock.getMowerInfo()).thenReturn(mowerInfo);
-        when(mowerApiMock.getAjaxInfo()).thenReturn(ajaxInfo);
+        when(mowerApiMock.getMowerInfo(true)).thenReturn(mowerInfo);
 
         subject.handleCommand(new ChannelUID(new ThingUID("1:2:3"), RobonectBindingConstants.CHANNEL_STATUS),
                 RefreshType.REFRESH);
@@ -1079,21 +1078,60 @@ public class RobonectHandlerTest {
                 eq(new StringType("EOD")));
     }
 
+    @ParameterizedTest
+    @CsvSource({ ",", "invalid,", "JOB,", "AUTO, AUTO", "EOD, EOD", "MANUAL, MANUAL" })
+    public void shouldPassOnlySupportedAfterModesWhenStoppingJob(String afterMode, ModeCommand.Mode expectedMode) {
+        ThingUID uid = new ThingUID("robonect:mower:test");
+        ChannelUID jobChannel = new ChannelUID(uid, RobonectBindingConstants.CHANNEL_JOB);
+        Configuration jobConfig = new Configuration(afterMode == null ? Map.of() : Map.of("afterMode", afterMode));
+        Thing thing = ThingBuilder.create(RobonectBindingConstants.THING_TYPE_AUTOMOWER, uid)
+                .withChannel(ChannelBuilder.create(jobChannel, "Switch").withConfiguration(jobConfig).build()).build();
+        subject = new RobonectHandler(thing, httpClientFactoryMock, timeZoneProvider, null, commandScheduler);
+        subject.setCallback(callbackMock);
+        subject.setRobonectClient(robonectClientMock);
+        when(mowerApiMock.getMowerInfo(false)).thenReturn(createSuccessfulMowerInfoResponse());
+
+        subject.handleCommand(jobChannel, OnOffType.OFF);
+
+        verify(mowerApiMock).stopJob(expectedMode);
+    }
+
+    @Test
+    public void shouldStartJobWithOmittedOptions() {
+        ThingUID uid = new ThingUID("robonect:mower:test");
+        ChannelUID jobChannel = new ChannelUID(uid, RobonectBindingConstants.CHANNEL_JOB);
+        Thing thing = ThingBuilder.create(RobonectBindingConstants.THING_TYPE_AUTOMOWER, uid).withChannel(ChannelBuilder
+                .create(jobChannel, "Switch").withConfiguration(new Configuration(Map.of("duration", 60))).build())
+                .build();
+        subject = new RobonectHandler(thing, httpClientFactoryMock, timeZoneProvider, null, commandScheduler);
+        subject.setCallback(callbackMock);
+        subject.setRobonectClient(robonectClientMock);
+        when(mowerApiMock.getMowerInfo(false)).thenReturn(createSuccessfulMowerInfoResponse());
+
+        subject.handleCommand(jobChannel, OnOffType.ON);
+
+        var settings = ArgumentCaptor.forClass(RobonectClient.JobSettings.class);
+        verify(mowerApiMock).startJob(settings.capture());
+        assertEquals(60, settings.getValue().getDuration());
+        assertEquals(ModeCommand.RemoteStart.STANDARD, settings.getValue().getRemoteStart());
+        assertNull(settings.getValue().getAfterMode());
+    }
+
     @Test
     public void shouldResetErrorsOnOnCommand() {
         RobonectAnswer response = ModelParser.parse("{\"successful\":true}", RobonectAnswer.class);
 
         when(mowerApiMock.resetErrors()).thenReturn(response);
-        when(mowerApiMock.getMowerInfo()).thenReturn(createSuccessfulMowerInfoResponse());
+        when(mowerApiMock.getMowerInfo(anyBoolean())).thenReturn(createSuccessfulMowerInfoResponse());
 
         subject.handleCommand(new ChannelUID(new ThingUID("1:2:3"), RobonectBindingConstants.CHANNEL_RESET_ERROR),
                 OnOffType.ON);
 
         verify(mowerApiMock).resetErrors();
         verify(callbackMock, never()).stateUpdated(any(), any());
-        verify(mowerApiMock, never()).getMowerInfo();
+        verify(mowerApiMock, never()).getMowerInfo(anyBoolean());
         runScheduledRefresh();
-        verify(mowerApiMock).getMowerInfo();
+        verify(mowerApiMock).getMowerInfo(anyBoolean());
     }
 
     @Test
@@ -1101,7 +1139,7 @@ public class RobonectHandlerTest {
         RobonectAnswer response = new RobonectAnswer();
         response.setSuccessful(true);
         when(mowerApiMock.start()).thenReturn(response);
-        when(mowerApiMock.getMowerInfo()).thenReturn(createSuccessfulMowerInfoResponse());
+        when(mowerApiMock.getMowerInfo(anyBoolean())).thenReturn(createSuccessfulMowerInfoResponse());
 
         subject.handleCommand(new ChannelUID(new ThingUID("1:2:3"), RobonectBindingConstants.CHANNEL_MOWER_START),
                 OnOffType.ON);
@@ -1109,7 +1147,7 @@ public class RobonectHandlerTest {
         verify(mowerApiMock).start();
         var order = inOrder(mowerApiMock);
         order.verify(mowerApiMock).start();
-        order.verify(mowerApiMock).getMowerInfo();
+        order.verify(mowerApiMock).getMowerInfo(anyBoolean());
         verifyNoInteractions(commandScheduler);
     }
 
@@ -1131,7 +1169,7 @@ public class RobonectHandlerTest {
         errorList.setSuccessful(true);
 
         // when
-        when(mowerApiMock.getMowerInfo()).thenReturn(mowerInfo);
+        when(mowerApiMock.getMowerInfo(anyBoolean())).thenReturn(mowerInfo);
         when(diagnosticsApiMock.errorList()).thenReturn(errorList);
 
         subject.handleCommand(new ChannelUID(new ThingUID("1:2:3"), RobonectBindingConstants.CHANNEL_STATUS),
@@ -1440,13 +1478,13 @@ public class RobonectHandlerTest {
     public void shouldApplyNameResponseBeforeDelayedStatusRead() {
         when(mowerApiMock.setName("Garden mower"))
                 .thenReturn(ModelParser.parse("{\"successful\":true,\"name\":\"Garden mower\"}", Name.class));
-        when(mowerApiMock.getMowerInfo()).thenReturn(createSuccessfulMowerInfoResponse());
+        when(mowerApiMock.getMowerInfo(anyBoolean())).thenReturn(createSuccessfulMowerInfoResponse());
         subject.handleCommand(new ChannelUID(new ThingUID("1:2:3"), "name"), new StringType("Garden mower"));
         verify(callbackMock).stateUpdated(new ChannelUID(new ThingUID("1:2:3"), "name"),
                 new StringType("Garden mower"));
-        verify(mowerApiMock, never()).getMowerInfo();
+        verify(mowerApiMock, never()).getMowerInfo(anyBoolean());
         runScheduledRefresh();
-        verify(mowerApiMock).getMowerInfo();
+        verify(mowerApiMock).getMowerInfo(anyBoolean());
     }
 
     @Test
@@ -1482,14 +1520,14 @@ public class RobonectHandlerTest {
     public void shouldReadStatusImmediatelyAfterModeAndStopWrites() {
         when(mowerApiMock.setMode(ModeCommand.Mode.HOME)).thenReturn(new RobonectAnswer());
         when(mowerApiMock.stop()).thenReturn(new RobonectAnswer());
-        when(mowerApiMock.getMowerInfo()).thenReturn(createSuccessfulMowerInfoResponse());
+        when(mowerApiMock.getMowerInfo(anyBoolean())).thenReturn(createSuccessfulMowerInfoResponse());
         subject.handleCommand(new ChannelUID(new ThingUID("1:2:3"), "mode"), new StringType("HOME"));
         subject.handleCommand(new ChannelUID(new ThingUID("1:2:3"), "start"), OnOffType.OFF);
         var order = inOrder(mowerApiMock);
         order.verify(mowerApiMock).setMode(ModeCommand.Mode.HOME);
-        order.verify(mowerApiMock).getMowerInfo();
+        order.verify(mowerApiMock).getMowerInfo(anyBoolean());
         order.verify(mowerApiMock).stop();
-        order.verify(mowerApiMock).getMowerInfo();
+        order.verify(mowerApiMock).getMowerInfo(anyBoolean());
         verifyNoInteractions(commandScheduler);
     }
 

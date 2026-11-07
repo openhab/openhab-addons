@@ -102,7 +102,7 @@ public class RobonectClientTest {
         when(responseMock.getEncoding()).thenReturn("utf8");
         when(responseMock.getContentAsString()).thenReturn(
                 "{\"successful\": true, \"name\": \"Mein Automower\", \"status\": {\"status\": 17, \"stopped\": false, \"duration\": 4359, \"mode\": 0, \"battery\": 100, \"hours\": 29}, \"timer\": {\"status\": 2, \"next\": {\"date\": \"01.05.2017\", \"time\": \"19:00:00\", \"unix\": 1493665200}}, \"wlan\": {\"signal\": -76}}");
-        subject.mower().getMowerInfo();
+        subject.mower().getMowerInfo(false);
         verify(httpClientMock, times(1)).newRequest("http://123.456.789.123/json?cmd=status");
     }
 
@@ -221,7 +221,7 @@ public class RobonectClientTest {
 
     @Test
     public void shouldStartJobFromRemoteFive() throws InterruptedException, ExecutionException, TimeoutException {
-        when(httpClientMock.newRequest("http://123.456.789.123/json?cmd=mode&mode=job&remotestart=6&duration=0"))
+        when(httpClientMock.newRequest("http://123.456.789.123/json?cmd=mode&mode=job&remotestart=6"))
                 .thenReturn(requestMock);
         when(requestMock.method(HttpMethod.GET)).thenReturn(requestMock);
         when(requestMock.timeout(30000L, TimeUnit.MILLISECONDS)).thenReturn(requestMock);
@@ -231,7 +231,7 @@ public class RobonectClientTest {
 
         subject.mower().startJob(new RobonectClient.JobSettings().withRemoteStart(ModeCommand.RemoteStart.REMOTE_5));
 
-        verify(httpClientMock).newRequest("http://123.456.789.123/json?cmd=mode&mode=job&remotestart=6&duration=0");
+        verify(httpClientMock).newRequest("http://123.456.789.123/json?cmd=mode&mode=job&remotestart=6");
     }
 
     @Test
@@ -243,27 +243,31 @@ public class RobonectClientTest {
     }
 
     @Test
-    public void shouldKeepJobStateAcrossMowerApiAccesses()
+    public void shouldTrackJobsPerClientAndRestorePreJobEndOfDayMode()
             throws InterruptedException, ExecutionException, TimeoutException {
-        String startUrl = "http://123.456.789.123/json?cmd=mode&mode=job&remotestart=0&after=4&duration=0";
-        String stopUrl = "http://123.456.789.123/json?cmd=mode&mode=auto";
+        String startUrl = "http://123.456.789.123/json?cmd=mode&mode=job&remotestart=0&after=4";
+        String stopUrl = "http://123.456.789.123/json?cmd=mode&mode=eod";
+        when(httpClientMock.newRequest("http://123.456.789.123/json?cmd=status")).thenReturn(requestMock);
+        when(httpClientMock.newRequest("http://123.456.789.123/ajax?type=1&group=2")).thenReturn(requestMock);
         when(httpClientMock.newRequest(startUrl)).thenReturn(requestMock);
         when(httpClientMock.newRequest(stopUrl)).thenReturn(requestMock);
         when(requestMock.method(HttpMethod.GET)).thenReturn(requestMock);
         when(requestMock.timeout(30000L, TimeUnit.MILLISECONDS)).thenReturn(requestMock);
         when(requestMock.send()).thenReturn(responseMock);
         when(responseMock.getEncoding()).thenReturn("utf8");
-        when(responseMock.getContentAsString()).thenReturn("{\"successful\": true}");
+        when(responseMock.getContentAsString()).thenReturn("{\"successful\": true, \"status\": {\"mode\": 2}}",
+                "%7B%22tmnucontrol%22%3A%22End+of+day%22%7D", "{\"successful\": true, \"status\": {\"mode\": 0}}");
 
         RobonectClient.JobSettings settings = new RobonectClient.JobSettings().withAfterMode(ModeCommand.Mode.AUTO);
-        assertFalse(subject.mower().isJobRunning());
+        assertEquals(Boolean.FALSE, Objects.requireNonNull(subject.mower().getMowerInfo(true).getJob()).isJobActiv());
         assertTrue(subject.mower().startJob(settings).isSuccessful());
-        assertTrue(subject.mower().isJobRunning());
+        assertEquals(Boolean.TRUE, Objects.requireNonNull(subject.mower().getMowerInfo(false).getJob()).isJobActiv());
         RobonectClient replacement = new RobonectClient(httpClientMock,
                 new RobonectEndpoint("123.456.789.123", null, null));
-        assertFalse(replacement.mower().isJobRunning());
-        assertTrue(subject.mower().stopJob(settings).isSuccessful());
-        assertFalse(subject.mower().isJobRunning());
+        assertEquals(Boolean.FALSE,
+                Objects.requireNonNull(replacement.mower().getMowerInfo(false).getJob()).isJobActiv());
+        assertTrue(subject.mower().stopJob(null).isSuccessful());
+        assertEquals(Boolean.FALSE, Objects.requireNonNull(subject.mower().getMowerInfo(false).getJob()).isJobActiv());
         verify(httpClientMock).newRequest(startUrl);
         verify(httpClientMock).newRequest(stopUrl);
     }
@@ -372,7 +376,7 @@ public class RobonectClientTest {
         when(requestMock.send()).thenReturn(responseMock);
         when(responseMock.getEncoding()).thenReturn(null);
         when(responseMock.getContent()).thenReturn(responseBytesISO88591);
-        MowerInfo info = subject.mower().getMowerInfo();
+        MowerInfo info = subject.mower().getMowerInfo(false);
         assertEquals("Utanför arbetsområdet", info.getError().getErrorMessage());
         verify(httpClientMock, times(1)).newRequest("http://123.456.789.123/json?cmd=status");
     }
@@ -463,7 +467,7 @@ public class RobonectClientTest {
         when(requestMock.timeout(30000L, TimeUnit.MILLISECONDS)).thenReturn(requestMock);
         when(requestMock.send()).thenThrow(new InterruptedException("Mock Interrupted Exception"));
         try {
-            assertThrows(RobonectCommunicationException.class, () -> subject.mower().getMowerInfo());
+            assertThrows(RobonectCommunicationException.class, () -> subject.mower().getMowerInfo(false));
             assertTrue(Thread.currentThread().isInterrupted());
         } finally {
             Thread.interrupted();
@@ -477,7 +481,7 @@ public class RobonectClientTest {
         when(requestMock.method(HttpMethod.GET)).thenReturn(requestMock);
         when(requestMock.timeout(30000L, TimeUnit.MILLISECONDS)).thenReturn(requestMock);
         when(requestMock.send()).thenThrow(new ExecutionException(new Exception("Mock Exception")));
-        assertThrows(RobonectCommunicationException.class, () -> subject.mower().getMowerInfo());
+        assertThrows(RobonectCommunicationException.class, () -> subject.mower().getMowerInfo(false));
     }
 
     @Test
@@ -556,6 +560,6 @@ public class RobonectClientTest {
         when(requestMock.method(HttpMethod.GET)).thenReturn(requestMock);
         when(requestMock.timeout(30000L, TimeUnit.MILLISECONDS)).thenReturn(requestMock);
         when(requestMock.send()).thenThrow(new TimeoutException("Mock Timeout Exception"));
-        assertThrows(RobonectCommunicationException.class, () -> subject.mower().getMowerInfo());
+        assertThrows(RobonectCommunicationException.class, () -> subject.mower().getMowerInfo(false));
     }
 }

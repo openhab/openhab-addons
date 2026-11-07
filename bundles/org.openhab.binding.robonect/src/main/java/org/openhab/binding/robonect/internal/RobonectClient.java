@@ -47,7 +47,7 @@ public class RobonectClient {
 
         private ModeCommand.@Nullable RemoteStart remoteStart;
         private ModeCommand.@Nullable Mode after;
-        private int duration;
+        private @Nullable Integer duration;
         private @Nullable Integer start;
         private @Nullable Integer end;
 
@@ -102,7 +102,7 @@ public class RobonectClient {
          *
          * @return the duration in minutes
          */
-        public int getDuration() {
+        public @Nullable Integer getDuration() {
             return duration;
         }
 
@@ -112,7 +112,7 @@ public class RobonectClient {
          * @param duration the duration in minutes
          * @return this job settings instance
          */
-        public JobSettings withDuration(int duration) {
+        public JobSettings withDuration(@Nullable Integer duration) {
             this.duration = duration;
             return this;
         }

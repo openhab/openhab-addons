@@ -16,17 +16,14 @@ import static org.openhab.binding.robonect.internal.RobonectBindingConstants.*;
 import static org.openhab.binding.robonect.internal.handler.RobonectHandler.read;
 
 import java.time.LocalTime;
-import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.robonect.internal.RobonectClient;
-import org.openhab.binding.robonect.internal.RobonectCommunicationException;
 import org.openhab.binding.robonect.internal.RobonectMowerApi;
 import org.openhab.binding.robonect.internal.config.JobChannelConfig;
-import org.openhab.binding.robonect.internal.model.AjaxInfo;
 import org.openhab.binding.robonect.internal.model.Blades;
 import org.openhab.binding.robonect.internal.model.Clock;
 import org.openhab.binding.robonect.internal.model.Door;
@@ -34,6 +31,7 @@ import org.openhab.binding.robonect.internal.model.DoorInfo;
 import org.openhab.binding.robonect.internal.model.DoorState;
 import org.openhab.binding.robonect.internal.model.ErrorEntry;
 import org.openhab.binding.robonect.internal.model.Health;
+import org.openhab.binding.robonect.internal.model.Job;
 import org.openhab.binding.robonect.internal.model.MowerInfo;
 import org.openhab.binding.robonect.internal.model.MowerMode;
 import org.openhab.binding.robonect.internal.model.MowerStatus;
@@ -46,6 +44,7 @@ import org.openhab.binding.robonect.internal.model.Wlan;
 import org.openhab.binding.robonect.internal.model.cmd.DoorCommand.Direction;
 import org.openhab.binding.robonect.internal.model.cmd.ModeCommand;
 import org.openhab.binding.robonect.internal.model.cmd.ServiceCommand.Operation;
+import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
@@ -57,28 +56,23 @@ import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.types.Command;
-import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.gson.JsonSyntaxException;
 
 /**
  * Handles mower, job, door, and service endpoints.
  *
  * @author Nico Brüttner - Initial mower endpoint handling
+ * @author Nico Brüttner - Reported mode fallback when stopping a mowing job
  */
 @NonNullByDefault
 final class RobonectMowerHandler {
-    private static final Set<String> JOB_TIMER_LABELS = Set.of("Auftrag", "Job", "Travail", "Ordine", "Jobb");
-    private static final Set<String> END_OF_DAY_LABELS = Set.of("Feierabend", "End of day", "Fin de journée de travail",
-            "Fine lavoro giornata", "Slutet av dagen");
-    private static final Pattern JOB_TIME_PATTERN = Pattern.compile("^(?:(\\d{1,2}:\\d{2})\\D+)?(\\d{1,2}:\\d{2})$");
     private static final Pattern TIME_PATTERN = Pattern.compile("^(\\d{1,2}):(\\d{2})$");
     private final Logger logger = LoggerFactory.getLogger(RobonectMowerHandler.class);
     private final RobonectHandler handler;
     private final RobonectMowerApi mowerApi;
     private final RobonectDiagnosticsHandler diagnostics;
+    private volatile @Nullable MowerMode latestMowerMode;
 
     /**
      * Creates a mower endpoint component with access to Thing state and diagnostics.
@@ -170,13 +164,35 @@ final class RobonectMowerHandler {
         JobChannelConfig jobConfig = handler.getThing().getChannel(channelUID.getId()).getConfiguration()
                 .as(JobChannelConfig.class);
         if (onOffCommand == OnOffType.ON) {
-            mowerApi.startJob(new RobonectClient.JobSettings()
-                    .withAfterMode(ModeCommand.Mode.valueOf(jobConfig.getAfterMode()))
-                    .withRemoteStart(ModeCommand.RemoteStart.valueOf(jobConfig.getRemoteStart()))
+            String configuredAfterMode = jobConfig.getAfterMode();
+            String configuredRemoteStart = jobConfig.getRemoteStart();
+            ModeCommand.@Nullable Mode afterMode;
+            ModeCommand.@Nullable RemoteStart remoteStart;
+            try {
+                afterMode = configuredAfterMode == null ? null : ModeCommand.Mode.valueOf(configuredAfterMode);
+            } catch (IllegalArgumentException e) {
+                logger.debug("Invalid after mode: {}", configuredAfterMode);
+                return;
+            }
+            try {
+                remoteStart = configuredRemoteStart == null ? null
+                        : ModeCommand.RemoteStart.valueOf(configuredRemoteStart);
+            } catch (IllegalArgumentException e) {
+                logger.debug("Invalid remote start: {}", configuredRemoteStart);
+                return;
+            }
+
+            mowerApi.startJob(new RobonectClient.JobSettings().withAfterMode(afterMode).withRemoteStart(remoteStart)
                     .withDuration(jobConfig.getDuration()).withStart(jobConfig.getStart()).withEnd(jobConfig.getEnd()));
         } else if (onOffCommand == OnOffType.OFF) {
-            mowerApi.stopJob(
-                    new RobonectClient.JobSettings().withAfterMode(ModeCommand.Mode.valueOf(jobConfig.getAfterMode())));
+            ModeCommand.@Nullable Mode afterMode = switch (jobConfig.getAfterMode()) {
+                case "AUTO" -> ModeCommand.Mode.AUTO;
+                case "HOME" -> ModeCommand.Mode.HOME;
+                case "EOD" -> ModeCommand.Mode.EOD;
+                case "MANUAL" -> ModeCommand.Mode.MANUAL;
+                case null, default -> null;
+            };
+            mowerApi.stopJob(afterMode);
         } else {
             return;
         }
@@ -344,7 +360,7 @@ final class RobonectMowerHandler {
      */
     @Nullable
     MowerStatus refreshMowerInfo() {
-        MowerInfo info = mowerApi.getMowerInfo();
+        MowerInfo info = mowerApi.getMowerInfo(handler.isAjaxUiScraping());
         if (!handler.canPublishState()) {
             return null;
         }
@@ -352,6 +368,11 @@ final class RobonectMowerHandler {
             logger.debug("Could not retrieve mower information: {}", info.getErrorMessage());
             return null;
         }
+
+        handler.updateSwitch(CHANNEL_JOB, read(info, MowerInfo::getJob).map(Job::isJobActiv).orElse(null), true);
+        updateJobTime(CHANNEL_JOB_START, read(info, MowerInfo::getJob).map(Job::getJobStart).orElse(null));
+        updateJobTime(CHANNEL_JOB_END, read(info, MowerInfo::getJob).map(Job::getJobEnd).orElse(null));
+
         ErrorEntry error = info.getError();
         updateErrorInfo(error);
         if (error != null) {
@@ -359,13 +380,15 @@ final class RobonectMowerHandler {
         }
         Status status = info.getStatus();
         var mowerStatus = read(status, Status::getStatus);
+        handler.setState(CHANNEL_STATUS_MODE,
+                read(status, Status::getMode).map(Enum::name).map(StringType::new).orElse(null), true);
         handler.setState(CHANNEL_MOWER_NAME, read(info, MowerInfo::getName).map(StringType::new).orElse(null), true);
         handler.setState(CHANNEL_MOWER_ID, read(info, MowerInfo::getId).map(StringType::new).orElse(null), true);
         handler.setState(CHANNEL_STATUS_BATTERY, read(status, Status::getBattery).map(DecimalType::new).orElse(null),
                 true);
         handler.setState(CHANNEL_STATUS_PREVENT, read(status, Status::getPrevent).map(DecimalType::new).orElse(null),
                 true);
-        handler.updateSwitch(CHANNEL_STATUS_HOME, read(status, Status::getHome).orElse(null));
+        handler.updateSwitch(CHANNEL_STATUS_HOME, read(status, Status::getHome).orElse(null), true);
         handler.setState(CHANNEL_STATUS, mowerStatus.map(MowerStatus::getStatusCode).map(DecimalType::new).orElse(null),
                 true);
         handler.setState(CHANNEL_STATUS_DURATION,
@@ -378,7 +401,6 @@ final class RobonectMowerHandler {
                 read(status, Status::getHours).map(value -> new QuantityType<>(value, Units.HOUR)).orElse(null), true);
         handler.setState(CHANNEL_MOWER_START,
                 read(status, Status::isStopped).map(stopped -> OnOffType.from(!stopped)).orElse(null), true);
-        updateMowerModeAndJob(read(status, Status::getMode).orElse(null));
         handler.setState(CHANNEL_HEALTH_TEMP, read(info, MowerInfo::getHealth).map(Health::getTemperature)
                 .map(value -> new QuantityType<>(value, SIUnits.CELSIUS)).orElse(null), true);
         handler.setState(CHANNEL_HEALTH_HUM, read(info, MowerInfo::getHealth).map(Health::getHumidity)
@@ -404,95 +426,25 @@ final class RobonectMowerHandler {
     }
 
     /**
-     * Updates the job and mode channels using the optional localized web-interface response.
-     *
-     * The public JSON API does not expose end-of-day mode or the active job time window. UI scraping is therefore
-     * opt-in and falls back to the JSON API when the UI response changes or cannot be read.
-     *
-     * @param mowerMode mode reported by the JSON status endpoint
-     */
-    private void updateMowerModeAndJob(@Nullable MowerMode mowerMode) {
-        if (!handler.isAjaxUiScraping()) {
-            handler.setState(CHANNEL_STATUS_MODE, mowerMode == null ? null : new StringType(mowerMode.name()), true);
-            handler.setState(CHANNEL_JOB, OnOffType.from(mowerApi.isJobRunning()), true);
-            handler.setState(CHANNEL_JOB_START, UnDefType.UNDEF, true);
-            handler.setState(CHANNEL_JOB_END, UnDefType.UNDEF, true);
-            return;
-        }
-
-        try {
-            AjaxInfo ajaxInfo = mowerApi.getAjaxInfo();
-            if (ajaxInfo == null) {
-                throw new JsonSyntaxException("Robonect web-interface response is empty");
-            }
-            String controlText = ajaxInfo.getControlMenuText();
-            String timerText = ajaxInfo.getTimerMenuText();
-            if (timerText != null && JOB_TIMER_LABELS.contains(timerText)) {
-                handler.setState(CHANNEL_JOB, OnOffType.ON, true);
-                updateJobTimes(controlText);
-            } else {
-                handler.setState(CHANNEL_JOB, timerText == null ? null : OnOffType.OFF, true);
-                handler.setState(CHANNEL_JOB_START, UnDefType.UNDEF, true);
-                handler.setState(CHANNEL_JOB_END, UnDefType.UNDEF, true);
-            }
-            handler.setState(CHANNEL_STATUS_MODE,
-                    mowerMode == null ? null
-                            : new StringType(mowerMode == MowerMode.HOME && controlText != null
-                                    && END_OF_DAY_LABELS.contains(controlText) ? "EOD" : mowerMode.name()),
-                    true);
-        } catch (RobonectCommunicationException | JsonSyntaxException | IllegalArgumentException e) {
-            logger.debug("Could not retrieve Robonect web-interface status. Falling back to the JSON API.", e);
-            handler.setState(CHANNEL_STATUS_MODE, mowerMode == null ? null : new StringType(mowerMode.name()), true);
-            handler.setState(CHANNEL_JOB, OnOffType.from(mowerApi.isJobRunning()), true);
-            handler.setState(CHANNEL_JOB_START, UnDefType.UNDEF, true);
-            handler.setState(CHANNEL_JOB_END, UnDefType.UNDEF, true);
-        }
-    }
-
-    /**
-     * Updates the active job start and end channels from the localized menu text.
-     *
-     * @param controlText localized menu text that contains the job time window
-     */
-    private void updateJobTimes(@Nullable String controlText) {
-        if (controlText == null) {
-            handler.setState(CHANNEL_JOB_START, UnDefType.UNDEF, true);
-            handler.setState(CHANNEL_JOB_END, UnDefType.UNDEF, true);
-            return;
-        }
-        Matcher matcher = JOB_TIME_PATTERN.matcher(controlText);
-        if (!matcher.matches()) {
-            handler.setState(CHANNEL_JOB_START, UnDefType.UNDEF, true);
-            handler.setState(CHANNEL_JOB_END, UnDefType.UNDEF, true);
-            return;
-        }
-        updateJobTime(CHANNEL_JOB_START, matcher.group(1));
-        updateJobTime(CHANNEL_JOB_END, matcher.group(2));
-    }
-
-    /**
      * Updates one job time channel using the Unix epoch date in the configured time zone.
      *
      * @param channelId job time channel identifier
      * @param value UI value in {@code HH:mm} format, or {@code null}
      */
     private void updateJobTime(String channelId, @Nullable String value) {
-        if (value == null) {
-            handler.setState(channelId, UnDefType.UNDEF, true);
-            return;
+        DateTimeType dateTime = null;
+        if (value != null) {
+            Matcher matcher = TIME_PATTERN.matcher(value);
+            if (matcher.matches()) {
+                int hours = Integer.parseInt(matcher.group(1));
+                int minutes = Integer.parseInt(matcher.group(2));
+                if (hours >= 0 && hours < 24 && minutes >= 0 && minutes < 60) {
+                    dateTime = handler.toTimeOnlyDateTime(LocalTime.of(hours, minutes));
+                }
+            }
         }
-        Matcher matcher = TIME_PATTERN.matcher(value);
-        if (!matcher.matches()) {
-            handler.setState(channelId, UnDefType.UNDEF, true);
-            return;
-        }
-        int hours = Integer.parseInt(matcher.group(1));
-        int minutes = Integer.parseInt(matcher.group(2));
-        if (hours >= 24 || minutes >= 60) {
-            handler.setState(channelId, UnDefType.UNDEF, true);
-            return;
-        }
-        handler.setState(channelId, handler.toTimeOnlyDateTime(LocalTime.of(hours, minutes)), true);
+
+        handler.setState(channelId, dateTime, true);
     }
 
     /**

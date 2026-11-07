@@ -177,6 +177,9 @@ Each also has `-min`, `-max`, and `-average` `Number:Time` channels with a minut
 The optional `ajaxUiScraping` configuration reads the localized, undocumented web-interface endpoint. It enables job
 start and end times and recognizes end-of-day mode where the JSON API reports only `HOME`.
 The `job-start` and `job-end` channels are created only when `ajaxUiScraping` is enabled and removed when it is disabled.
+When starting a job, an omitted `remoteStart` uses `STANDARD`, and an omitted `afterMode` is left out of the mower command.
+When stopping a job with no valid `afterMode` configured, the binding uses the mode recorded before the job started,
+including `EOD` when Ajax scraping identified it. If no usable pre-job mode is available, the binding uses `HOME`.
 Because this interface can
 change with a Robonect firmware update and varies by language, it is disabled by default; failures fall back to normal
 JSON polling.

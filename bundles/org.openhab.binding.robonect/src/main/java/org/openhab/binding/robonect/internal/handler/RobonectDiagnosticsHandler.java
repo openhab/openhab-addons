@@ -90,22 +90,22 @@ final class RobonectDiagnosticsHandler {
         }
         WifiStation station = info.getStation();
         AccessPoint ap = info.getAp();
-        handler.updateSwitch(CHANNEL_WLAN_ENABLED, read(station, WifiStation::getEnable).orElse(null));
+        handler.updateSwitch(CHANNEL_WLAN_ENABLED, read(station, WifiStation::getEnable).orElse(null), true);
         handler.setState(CHANNEL_WLAN_MAC, read(station, WifiStation::getMac).map(StringType::new).orElse(null), true);
         handler.setState(CHANNEL_WLAN_SSID, read(station, WifiStation::getSsid).map(StringType::new).orElse(null),
                 true);
         handler.setState(CHANNEL_WLAN_IP, read(station, WifiStation::getIp).map(StringType::new).orElse(null), true);
-        handler.updateSwitch(CHANNEL_WLAN_DHCP, read(station, WifiStation::getDhcp).orElse(null));
-        handler.updateSwitch(CHANNEL_WLAN_PING, read(station, WifiStation::getPing).orElse(null));
+        handler.updateSwitch(CHANNEL_WLAN_DHCP, read(station, WifiStation::getDhcp).orElse(null), true);
+        handler.updateSwitch(CHANNEL_WLAN_PING, read(station, WifiStation::getPing).orElse(null), true);
         handler.setState(CHANNEL_WLAN_PING_TIME,
                 read(station, WifiStation::getPingtime).map(StringType::new).orElse(null), true);
         handler.setState(CHANNEL_WLAN_NETMASK, read(station, WifiStation::getNetmask).map(StringType::new).orElse(null),
                 true);
         handler.setState(CHANNEL_WLAN_GATEWAY, read(station, WifiStation::getGateway).map(StringType::new).orElse(null),
                 true);
-        handler.updateSwitch(CHANNEL_WLAN_AP_ENABLED, read(ap, AccessPoint::getEnable).orElse(null));
+        handler.updateSwitch(CHANNEL_WLAN_AP_ENABLED, read(ap, AccessPoint::getEnable).orElse(null), true);
         handler.setState(CHANNEL_WLAN_AP_MAC, read(ap, AccessPoint::getMac).map(StringType::new).orElse(null), true);
-        handler.updateSwitch(CHANNEL_WLAN_AP_HIDDEN, read(ap, AccessPoint::getHidden).orElse(null));
+        handler.updateSwitch(CHANNEL_WLAN_AP_HIDDEN, read(ap, AccessPoint::getHidden).orElse(null), true);
         handler.setState(CHANNEL_WLAN_AP_SSID, read(ap, AccessPoint::getSsid).map(StringType::new).orElse(null), true);
         handler.setState(CHANNEL_WLAN_AP_CHANNEL, read(ap, AccessPoint::getChannel).map(DecimalType::new).orElse(null),
                 true);
@@ -118,7 +118,8 @@ final class RobonectDiagnosticsHandler {
                 true);
         handler.setState(CHANNEL_WLAN_AP_GATEWAY, read(ap, AccessPoint::getGateway).map(StringType::new).orElse(null),
                 true);
-        handler.updateSwitch(CHANNEL_WLAN_AP_DHCP, read(ap, AccessPoint::getDhcp).map(Dhcp::getEnable).orElse(null));
+        handler.updateSwitch(CHANNEL_WLAN_AP_DHCP, read(ap, AccessPoint::getDhcp).map(Dhcp::getEnable).orElse(null),
+                true);
         handler.setState(CHANNEL_WLAN_AP_DHCP_START,
                 read(ap, AccessPoint::getDhcp).map(Dhcp::getStart).map(StringType::new).orElse(null), true);
         handler.setState(CHANNEL_WLAN_AP_DHCP_END,
@@ -300,8 +301,8 @@ final class RobonectDiagnosticsHandler {
             logger.debug("Could not retrieve portal information: {}", info.getErrorMessage());
             return;
         }
-        handler.updateSwitch(CHANNEL_PORTAL_ENABLED, read(info, PortalInfo::getEnabled).orElse(null));
-        handler.updateSwitch(CHANNEL_PORTAL_CONNECTED, read(info, PortalInfo::getConnected).orElse(null));
+        handler.updateSwitch(CHANNEL_PORTAL_ENABLED, read(info, PortalInfo::getEnabled).orElse(null), true);
+        handler.updateSwitch(CHANNEL_PORTAL_CONNECTED, read(info, PortalInfo::getConnected).orElse(null), true);
         handler.setState(CHANNEL_PORTAL_URL,
                 read(info, PortalInfo::getAddress).map(Address::getUrl).map(StringType::new).orElse(null), true);
         handler.setState(CHANNEL_PORTAL_HOST, read(info, PortalInfo::getAddress).map(Address::getHost)

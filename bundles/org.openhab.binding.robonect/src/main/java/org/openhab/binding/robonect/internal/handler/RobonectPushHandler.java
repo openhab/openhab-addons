@@ -77,10 +77,10 @@ final class RobonectPushHandler {
         if (!info.isSuccessful()) {
             return;
         }
-        updateExtension("extension-gpio-1-", read(extensions, Extensions::getGpio1).orElse(null));
-        updateExtension("extension-gpio-2-", read(extensions, Extensions::getGpio2).orElse(null));
-        updateExtension("extension-output-1-", read(extensions, Extensions::getOut1).orElse(null));
-        updateExtension("extension-output-2-", read(extensions, Extensions::getOut2).orElse(null));
+        updateExtension("extension-gpio-1-", read(extensions, Extensions::getGpio1).orElse(null), true);
+        updateExtension("extension-gpio-2-", read(extensions, Extensions::getGpio2).orElse(null), true);
+        updateExtension("extension-output-1-", read(extensions, Extensions::getOut1).orElse(null), true);
+        updateExtension("extension-output-2-", read(extensions, Extensions::getOut2).orElse(null), true);
     }
 
     /** Updates non-sensitive push-service settings. */
@@ -311,10 +311,11 @@ final class RobonectPushHandler {
      *
      * @param prefix the channel identifier prefix
      * @param extension the extension information, or {@code null} if absent
+     * @param fullResponse whether an absent state should be published as undefined
      */
-    private void updateExtension(String prefix, @Nullable Extension extension) {
-        handler.updateSwitch(prefix + "flash", read(extension, Extension::getFlashonerror).orElse(null));
-        handler.updateSwitch(prefix + "inverted", read(extension, Extension::getInverted).orElse(null));
-        handler.updateSwitch(prefix + "status", read(extension, Extension::getStatus).orElse(null));
+    private void updateExtension(String prefix, @Nullable Extension extension, boolean fullResponse) {
+        handler.updateSwitch(prefix + "flash", read(extension, Extension::getFlashonerror).orElse(null), fullResponse);
+        handler.updateSwitch(prefix + "inverted", read(extension, Extension::getInverted).orElse(null), fullResponse);
+        handler.updateSwitch(prefix + "status", read(extension, Extension::getStatus).orElse(null), fullResponse);
     }
 }

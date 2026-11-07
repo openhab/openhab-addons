@@ -30,6 +30,9 @@ public class MowerInfo extends RobonectAnswer {
     private Clock clock;
     private ErrorEntry error;
 
+    // not returned by the mower status API. Only used when Ajax scraping is enabled
+    private Job job;
+
     /**
      * Returns the name of the mower.
      *
@@ -82,6 +85,15 @@ public class MowerInfo extends RobonectAnswer {
      */
     public ErrorEntry getError() {
         return error;
+    }
+
+    /**
+     * Returns the job information reported by the mower. Only available when Ajax scraping is enabled.
+     *
+     * @return the job information reported by the mower, or {@code null} if absent
+     */
+    public Job getJob() {
+        return job;
     }
 
     /**
@@ -190,5 +202,14 @@ public class MowerInfo extends RobonectAnswer {
      */
     public void setError(ErrorEntry error) {
         this.error = error;
+    }
+
+    /**
+     * Sets the job information.
+     *
+     * @param job the job information
+     */
+    public void setJob(Job job) {
+        this.job = job;
     }
 }

@@ -42,6 +42,11 @@ public enum MowerMode {
     DEMO(3),
 
     /**
+     * The "End of day" mode. This mode is not officially supported by the mower status API but is used internally.
+     */
+    EOD(98),
+
+    /**
      * An unknown mode. Actually this mode should never be set but is there if for some reason an unexpected value
      * is returned from the module response.
      */

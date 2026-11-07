@@ -547,9 +547,10 @@ public class RobonectHandler extends BaseThingHandler {
      *
      * @param channel the channel identifier
      * @param value the reported switch value, or {@code null} if absent
+     * @param fullResponse whether an absent state should be published as undefined
      */
-    void updateSwitch(String channel, @Nullable Boolean value) {
-        setState(channel, value == null ? null : OnOffType.from(value), true);
+    void updateSwitch(String channel, @Nullable Boolean value, boolean fullResponse) {
+        setState(channel, value == null ? null : OnOffType.from(value), fullResponse);
     }
 
     /**
