@@ -12,30 +12,41 @@
  */
 package org.openhab.persistence.influxdb.internal.influx3;
 
+import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.List;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.DefaultLocation;
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.openhab.core.items.MetadataRegistry;
+import org.openhab.persistence.influxdb.internal.FakeInfluxDBServer;
 import org.openhab.persistence.influxdb.internal.InfluxDBConfiguration;
 import org.openhab.persistence.influxdb.internal.InfluxDBMetadataService;
+import org.openhab.persistence.influxdb.internal.InfluxDBRepository.WriteResult;
 import org.openhab.persistence.influxdb.internal.InfluxPoint;
 
 /**
- * Tests for the line-protocol serialization done by {@link InfluxDB3RepositoryImpl}.
+ * Tests for the line-protocol serialization and the write error handling of {@link InfluxDB3RepositoryImpl}.
  *
  * @author Cedric Boon - Initial contribution
+ * @author Eugen Freiter - Write error classification tests
  */
 @ExtendWith(MockitoExtension.class)
 @NonNullByDefault({ DefaultLocation.RETURN_TYPE, DefaultLocation.PARAMETER })
@@ -44,12 +55,94 @@ public class InfluxDB3RepositoryImplTest {
 
     private @Mock InfluxDBConfiguration configuration;
 
+    private static final List<InfluxPoint> POINTS = List
+            .of(InfluxPoint.newBuilder("sampleItem").withTime(TIME).withValue("120,50,80").build());
+
     private InfluxDB3RepositoryImpl repository;
+    private @Nullable FakeInfluxDBServer server;
 
     @BeforeEach
     public void before() {
         InfluxDBMetadataService metadataService = new InfluxDBMetadataService(mock(MetadataRegistry.class));
         repository = new InfluxDB3RepositoryImpl(configuration, metadataService);
+    }
+
+    @AfterEach
+    public void after() {
+        repository.disconnect();
+        FakeInfluxDBServer currentServer = server;
+        if (currentServer != null) {
+            currentServer.close();
+        }
+    }
+
+    private FakeInfluxDBServer connectToFakeServer() throws IOException {
+        FakeInfluxDBServer currentServer = new FakeInfluxDBServer("/api/v3/write_lp");
+        server = currentServer;
+        when(configuration.getUrl()).thenReturn(currentServer.getUrl());
+        when(configuration.getToken()).thenReturn("token");
+        when(configuration.getDatabaseName()).thenReturn("openhab");
+        assertThat(repository.connect(), is(true));
+        return currentServer;
+    }
+
+    @Test
+    public void successfulWrite() throws IOException {
+        FakeInfluxDBServer currentServer = connectToFakeServer();
+        assertThat(repository.write(POINTS), is(WriteResult.SUCCESS));
+        assertThat(currentServer.getWriteBodies(), is(List.of("sampleItem value=\"120,50,80\" 1700000000000")));
+    }
+
+    @Test
+    public void partialWriteIsRejectedWithServerMessage() throws IOException {
+        FakeInfluxDBServer currentServer = connectToFakeServer();
+        String body = "{\"error\":\"partial write of line protocol occurred\",\"data\":[{\"original_line\":"
+                + "\"sampleItem value=\\\"120,50,80\\\" 1700000000000\",\"line_number\":1,\"error_message\":"
+                + "\"invalid column type for column 'value', expected iox::column_type::field::float, got "
+                + "iox::column_type::field::string\"}]}";
+        currentServer.setWriteResponse(400, body);
+
+        WriteResult result = repository.write(POINTS);
+
+        assertThat(result.outcome(), is(WriteResult.Outcome.REJECTED));
+        assertThat(result.message(), containsString("invalid column type for column 'value'"));
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = { 400, 422 })
+    public void clientErrorCausedByThePointsIsRejected(int status) throws IOException {
+        connectToFakeServer().setWriteResponse(status, "{\"error\":\"bad request\"}");
+        assertThat(repository.write(POINTS).outcome(), is(WriteResult.Outcome.REJECTED));
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = { 401, 403, 404, 408, 413, 429, 500, 503 })
+    public void otherErrorsAreRetried(int status) throws IOException {
+        connectToFakeServer().setWriteResponse(status, "{\"error\":\"try again\"}");
+        WriteResult result = repository.write(POINTS);
+        assertThat(result.outcome(), is(WriteResult.Outcome.RETRY));
+        assertThat(result.message(), containsString("HTTP status " + status));
+    }
+
+    @Test
+    public void unreachableServerIsRetried() throws IOException {
+        connectToFakeServer().close();
+        assertThat(repository.write(POINTS).outcome(), is(WriteResult.Outcome.RETRY));
+    }
+
+    @Test
+    public void disconnectedRepositoryIsRetried() {
+        assertThat(repository.write(POINTS).outcome(), is(WriteResult.Outcome.RETRY));
+    }
+
+    @Test
+    public void writeRequestAcceptsPartialWrites() throws IOException {
+        // Without accept_partial InfluxDB 3 rejects the whole batch for one bad line, and dropping a rejected batch
+        // would then also drop its valid points.
+        FakeInfluxDBServer currentServer = connectToFakeServer();
+        currentServer.setWriteResponse(204, "");
+        repository.write(POINTS);
+        assertThat(currentServer.getWriteQueries(), is(List.of("db=openhab&precision=ms&accept_partial=true")));
     }
 
     @Test

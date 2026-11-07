@@ -54,6 +54,7 @@ import org.openhab.persistence.influxdb.internal.InfluxDBHistoricItem;
 import org.openhab.persistence.influxdb.internal.InfluxDBMetadataService;
 import org.openhab.persistence.influxdb.internal.InfluxDBPersistentItemInfo;
 import org.openhab.persistence.influxdb.internal.InfluxDBRepository;
+import org.openhab.persistence.influxdb.internal.InfluxDBRepository.WriteResult;
 import org.openhab.persistence.influxdb.internal.InfluxDBStateConvertUtils;
 import org.openhab.persistence.influxdb.internal.InfluxPoint;
 import org.openhab.persistence.influxdb.internal.influx1.InfluxDB1RepositoryImpl;
@@ -288,12 +289,16 @@ public class InfluxDBPersistenceService implements ModifiablePersistenceService 
         if (!pointsQueue.isEmpty() && checkConnection()) {
             List<InfluxPoint> points = new ArrayList<>();
             pointsQueue.drainTo(points);
-            if (!influxDBRepository.write(points)) {
-                logger.warn("Re-queuing {} elements, failed to write batch.", points.size());
-                pointsQueue.addAll(points);
-                influxDBRepository.disconnect();
-            } else {
-                logger.trace("Wrote {} elements to database", points.size());
+            WriteResult result = influxDBRepository.write(points);
+            switch (result.outcome()) {
+                case SUCCESS -> logger.trace("Wrote {} elements to database", points.size());
+                case RETRY -> {
+                    logger.warn("Re-queuing {} elements, failed to write batch: {}", points.size(), result.message());
+                    pointsQueue.addAll(points);
+                    influxDBRepository.disconnect();
+                }
+                case REJECTED -> logger.warn("InfluxDB rejected a batch of {} elements, not retrying it: {}",
+                        points.size(), result.message());
             }
         }
     }
