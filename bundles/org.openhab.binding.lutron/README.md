@@ -890,8 +890,10 @@ Supported in future updates:
 
 This binding supports active and passive discovery.
 It will detect dimmers as they are manually raised or lowered, or can be made to scan for configured dimmer modules.
-Only devices with a five-field address (for example `[01:01:03:02:04]`) are discovered as dimmers.
-Other devices that report levels, such as QED shades, which have four-field addresses (for example `[01:04:2:12]`), are not discovered and are not supported yet.
+Discovery uses the processor's `DL` level messages.
+RPM, D48 and H48 dimmers have five-field addresses (for example `[01:01:03:02:04]`), while RF dimmers, GRAFIK Eye zones and Wallbox Power Module (WPM) zones have four-field addresses (for example `[01:08:01:54]` for an RF dimmer).
+QED shades can also report `DL` messages with four-field addresses, so address length alone cannot distinguish them from lighting zones.
+Shades are not supported yet; ignore Inbox entries that correspond to shades in your installation.
 
 ### HomeWorks RS232 Thing Configuration
 
@@ -917,22 +919,31 @@ A processor accepts up to 4 logins.
 Using a login dedicated to openHAB is recommended, because the monitoring and suppress options of that page belong to the login.
 
 The login can limit the messages the processor sends, using its Monitor options (Dimmer Levels, Keypad Buttons, Keypad LEDs, GRAFIK Eye Scenes, Timed Events) and Suppress options (Prompt, Replies, Bad Commands).
+**Leave Suppress Replies unchecked for the openHAB login.**
+The bridge relies on the reply to its heartbeat command to detect a lost connection.
+If replies are suppressed and no dimmer levels change, a healthy connection will be treated as lost and repeatedly reconnected.
+Suppress Prompt may be enabled.
 When the bridge connects, it sends `PROMPTOFF`, `KBMOFF`, `KLMOFF`, `GSMOFF` and `DLMON`, which are the same commands the RS232 bridge sends.
 The bridge currently uses only dimmer level messages.
 
+The bundled help in HomeWorks Illumination 1.65 documents these settings under Address Assignment and Link 9, and the address formats under the RS232 command reference's Device Address Formatting topic.
+See [Lutron's Illumination software information](https://support.lutron.com/us/en/product/homeworks/article/legacy-upgrades/HomeWorks-Illumination-software) for software and help access.
+
 The telnet bridge has the following configuration parameters:
 
-| Parameter  | Required | Default | Description                                                                          |
-|------------|----------|---------|--------------------------------------------------------------------------------------|
-| ipAddress  | Yes      |         | The IP address or host name of the processor. The processor default is 192.168.250.1 |
-| port       | No       | 23      | The telnet port of the processor                                                     |
-| user       | No       |         | The telnet login name                                                                |
-| password   | No       |         | The password of the login                                                            |
-| reconnect  | No       | 5       | Minutes to wait between connection attempts                                          |
+| Parameter    | Required   | Default   | Description                                                                            |
+| ------------ | ---------- | --------- | -------------------------------------------------------------------------------------- |
+| ipAddress    | Yes        |           | The IP address or host name of the processor. The processor default is 192.168.250.1   |
+| port         | No         | 23        | The telnet port of the processor                                                       |
+| user         | No         |           | The telnet login name                                                                  |
+| password     | No         |           | The password of the login                                                              |
+| reconnect    | No         | 5         | Minutes to wait between connection attempts                                            |
 
 If the processor asks for a login and `user` is not set, or it rejects the login, the bridge goes offline with a configuration error and does not retry.
 The processor ends a telnet session after three failed login attempts.
 Other connection problems are retried every `reconnect` minutes.
+The bridge waits up to 10 seconds for a successful login or an explicit command prompt before sending startup commands.
+A silent processor causes a communication error and a retry; silence is never treated as a successful login.
 The bridge asks the processor for a reply every minute, and reconnects if nothing at all has been received for 150 seconds, which detects a connection lost without notice, such as a network outage.
 The password is never written to the log.
 
@@ -941,7 +952,7 @@ lutron:hwtelnetbridge:home [ ipAddress="192.168.1.169", user="openhab", password
 ```
 
 Dimmers work the same way with both bridges.
-Dimmer addresses have five fields (for example `[01:01:03:02:04]`).
+Dimmer addresses depend on the device type, as described in the discovery section above.
 Each dimmer asks the processor for its level whenever the bridge goes online, including after a reconnect.
 
 ### HomeWorks Console Commands
@@ -949,10 +960,10 @@ Each dimmer asks the processor for its level whenever the bridge goes online, in
 The console commands help to see how a processor responds, for example when investigating problems or testing commands.
 They work with both HomeWorks bridges.
 
-| Command                                                  | Description                                                                              |
-|----------------------------------------------------------|------------------------------------------------------------------------------------------|
-| `lutron hw send <bridgeUID> <command>`                   | Sends a command and prints every message received for the next 2 seconds                 |
-| `lutron hw listen <bridgeUID> [seconds]`                 | Prints every message the processor sends, for 30 seconds by default (at most 600)        |
+| Command                                                    | Description                                                                                |
+| ---------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
+| `lutron hw send <bridgeUID> <command>`                     | Sends a command and prints every message received for the next 2 seconds                   |
+| `lutron hw listen <bridgeUID> [seconds]`                   | Prints every message the processor sends, for 30 seconds by default (at most 600)          |
 
 The commands are sent to the processor as typed, so they can change the processor, in the same way as using a terminal.
 Messages are printed after `<`, and commands after `>`.

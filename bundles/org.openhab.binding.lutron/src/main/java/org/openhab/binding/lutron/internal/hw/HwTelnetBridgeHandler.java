@@ -154,7 +154,7 @@ public class HwTelnetBridgeHandler extends HwBridgeHandler implements HwTelnetCo
             connectionFailed(current, "No response from processor for " + TimeUnit.MILLISECONDS.toSeconds(idle) + " s");
             return;
         }
-        // DLMON is answered with a confirmation message, and is already part of the startup commands.
+        // DLMON is answered with a confirmation message when the login's Suppress Replies option is disabled.
         sendCommand("DLMON");
     }
 

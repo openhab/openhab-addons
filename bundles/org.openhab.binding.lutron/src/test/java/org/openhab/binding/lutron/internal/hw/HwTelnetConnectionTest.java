@@ -270,6 +270,42 @@ public class HwTelnetConnectionTest {
     }
 
     @Test
+    public void delayedLoginPromptStillAuthenticatesBeforeSendingCommands() throws Exception {
+        RecordingListener listener = new RecordingListener();
+        HwTelnetConnection conn = connect("lutron", "secret", listener);
+        BlockingQueue<Object> outcome = new LinkedBlockingQueue<>();
+        openInBackground(conn, outcome);
+        // Synchronize on the connection, then keep the processor silent beyond the old three-second fallback.
+        BufferedReader in = reader();
+        assertNull(outcome.poll(5, TimeUnit.SECONDS), "silence must not complete the login");
+        assertFalse(conn.isReady());
+        assertThrows(IOException.class, () -> conn.send("DLMON"));
+
+        fake().send("LOGIN: ");
+        assertEquals("lutron, secret", in.readLine());
+        fake().send("login successful\r\n");
+
+        assertEquals("open", outcome.poll(WAIT_SECONDS, TimeUnit.SECONDS));
+        assertTrue(conn.isReady());
+    }
+
+    @Test
+    public void silentProcessorTimesOutWithoutSendingCommands() throws Exception {
+        RecordingListener listener = new RecordingListener();
+        HwTelnetConnection conn = connect("lutron", "secret", listener);
+        BlockingQueue<Object> outcome = new LinkedBlockingQueue<>();
+        openInBackground(conn, outcome);
+        BufferedReader in = reader();
+
+        Object result = outcome.poll(WAIT_SECONDS, TimeUnit.SECONDS);
+
+        assertTrue(result instanceof IOException && !(result instanceof HwLoginException),
+                "expected a retryable communication failure but got " + result);
+        assertFalse(conn.isReady());
+        assertNull(in.readLine(), "no credentials or startup commands may be sent without a prompt");
+    }
+
+    @Test
     public void sendWritesCommandWithLineEnding() throws Exception {
         RecordingListener listener = new RecordingListener();
         HwTelnetConnection conn = connect("lutron", "secret", listener);

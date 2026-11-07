@@ -106,12 +106,13 @@ public class HwBridgeHandlerTest {
     }
 
     @Test
-    public void deviceWithFourFieldAddressIsNotDiscoveredAsDimmer() {
-        // QED shades report their level with a DL message too, with an address that has four fields
-        handler.receive("DL, [01:04:02:12], 100.00");
-        handler.receive("DL, [01:04:2:12],   0.00");
+    public void fourFieldLightingAddressesAreDiscovered() {
+        // RF dimmers, GRAFIK Eye zones and WPM zones all have four address fields.
+        for (String address : List.of("[01:08:01:54]", "[01:05:02:03]", "[01:06:02:03]")) {
+            handler.receive("DL, " + address + ", 50");
 
-        verify(discoveryService, never()).declareUnknownDimmer(org.mockito.ArgumentMatchers.anyString());
+            verify(discoveryService).declareUnknownDimmer(address);
+        }
     }
 
     @Test

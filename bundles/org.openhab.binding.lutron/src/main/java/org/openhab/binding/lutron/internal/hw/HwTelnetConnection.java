@@ -72,7 +72,6 @@ public class HwTelnetConnection implements Closeable {
     static final int DEFAULT_PORT = 23;
 
     private static final int CONNECT_TIMEOUT_MS = 10_000;
-    private static final int NO_PROMPT_WAIT_MS = 3_000;
     private static final int LOGIN_TIMEOUT_MS = 10_000;
     private static final int BUFFER_SIZE = 1024;
     private static final int MAX_PENDING_CHARS = 4096;
@@ -152,26 +151,9 @@ public class HwTelnetConnection implements Closeable {
 
     private void waitForLogin() throws IOException {
         try {
-            loginResult.get(NO_PROMPT_WAIT_MS, TimeUnit.MILLISECONDS);
+            loginResult.get(LOGIN_TIMEOUT_MS, TimeUnit.MILLISECONDS);
         } catch (TimeoutException e) {
-            synchronized (this) {
-                if (state == State.AWAITING_LOGIN_PROMPT) {
-                    // Nothing arrived, so assume this processor has no Ethernet logins defined.
-                    logger.info("No login prompt from {}:{}, continuing without logging in", host, port);
-                    state = State.READY;
-                    return;
-                }
-            }
-            try {
-                loginResult.get(LOGIN_TIMEOUT_MS, TimeUnit.MILLISECONDS);
-            } catch (TimeoutException e2) {
-                throw new IOException("Timed out waiting for login result", e2);
-            } catch (InterruptedException e2) {
-                Thread.currentThread().interrupt();
-                throw new IOException("Interrupted while waiting for login result", e2);
-            } catch (ExecutionException e2) {
-                throw loginFailure(e2);
-            }
+            throw new IOException("Timed out waiting for login prompt or result", e);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new IOException("Interrupted while waiting for login", e);
