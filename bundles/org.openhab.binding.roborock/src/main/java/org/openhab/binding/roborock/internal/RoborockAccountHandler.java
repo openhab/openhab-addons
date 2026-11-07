@@ -38,6 +38,7 @@ import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
+import org.eclipse.paho.client.mqttv3.MqttSecurityException;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 import org.openhab.binding.roborock.internal.api.GetUrlByEmail;
 import org.openhab.binding.roborock.internal.api.Home;
@@ -469,8 +470,23 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
             connectMqttClient(localRriot);
             logger.debug("Bridge connected to MQTT");
             updateStatus(ThingStatus.ONLINE);
+        } catch (MqttSecurityException e) {
+            disconnectMqttClient();
         } catch (MqttException e) {
+            disconnectMqttClient();
+            if (disposed || !localRriot.equals(rriot) || !token.equals(localToken)) {
+                return;
+            }
+            if (e.getCause() instanceof URISyntaxException) {
+                return;
+            }
             updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/offline.comm-error.no-mqtt");
+            // Paho only starts automatic reconnection after an established connection is lost.
+            synchronized (this) {
+                if (!disposed && localRriot.equals(rriot) && token.equals(localToken)) {
+                    mqttConnectTask.schedule(60);
+                }
+            }
         }
     }
 
@@ -542,7 +558,8 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
             return;
         }
         String causeMessage = cause != null ? cause.getMessage() : "unknown";
-        logger.warn("MQTT connection lost: {}. Attempting automatic reconnection...", causeMessage);
+        logger.debug("MQTT connection lost: {}. Attempting automatic reconnection...", causeMessage);
+        updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/offline.comm-error.no-mqtt");
     }
 
     @Override
