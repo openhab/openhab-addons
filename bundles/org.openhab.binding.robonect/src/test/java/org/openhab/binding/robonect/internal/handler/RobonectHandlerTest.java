@@ -105,6 +105,7 @@ import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
+import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
@@ -1085,7 +1086,9 @@ public class RobonectHandlerTest {
         ChannelUID jobChannel = new ChannelUID(uid, RobonectBindingConstants.CHANNEL_JOB);
         Configuration jobConfig = new Configuration(afterMode == null ? Map.of() : Map.of("afterMode", afterMode));
         Thing thing = ThingBuilder.create(RobonectBindingConstants.THING_TYPE_AUTOMOWER, uid)
-                .withChannel(ChannelBuilder.create(jobChannel, "Switch").withConfiguration(jobConfig).build()).build();
+                .withChannel(ChannelBuilder.create(jobChannel, "Switch")
+                        .withType(new ChannelTypeUID("robonect", "jobType")).withConfiguration(jobConfig).build())
+                .build();
         subject = new RobonectHandler(thing, httpClientFactoryMock, timeZoneProvider, null, commandScheduler);
         subject.setCallback(callbackMock);
         subject.setRobonectClient(robonectClientMock);
@@ -1096,12 +1099,16 @@ public class RobonectHandlerTest {
         verify(mowerApiMock).stopJob(expectedMode);
     }
 
-    @Test
-    public void shouldStartJobWithOmittedOptions() {
+    @ParameterizedTest
+    @CsvSource({ ", true", "09:00, true", "540, false" })
+    public void shouldStartJobWithOptionalTextTime(String start, boolean valid) {
         ThingUID uid = new ThingUID("robonect:mower:test");
         ChannelUID jobChannel = new ChannelUID(uid, RobonectBindingConstants.CHANNEL_JOB);
-        Thing thing = ThingBuilder.create(RobonectBindingConstants.THING_TYPE_AUTOMOWER, uid).withChannel(ChannelBuilder
-                .create(jobChannel, "Switch").withConfiguration(new Configuration(Map.of("duration", 60))).build())
+        var config = new Configuration(
+                start == null ? Map.of("duration", 60) : Map.of("duration", 60, "start", start, "end", "10:00"));
+        Thing thing = ThingBuilder.create(RobonectBindingConstants.THING_TYPE_AUTOMOWER, uid)
+                .withChannel(ChannelBuilder.create(jobChannel, "Switch")
+                        .withType(new ChannelTypeUID("robonect", "jobType")).withConfiguration(config).build())
                 .build();
         subject = new RobonectHandler(thing, httpClientFactoryMock, timeZoneProvider, null, commandScheduler);
         subject.setCallback(callbackMock);
@@ -1110,11 +1117,52 @@ public class RobonectHandlerTest {
 
         subject.handleCommand(jobChannel, OnOffType.ON);
 
+        if (!valid) {
+            verifyNoInteractions(mowerApiMock);
+            return;
+        }
         var settings = ArgumentCaptor.forClass(RobonectClient.JobSettings.class);
         verify(mowerApiMock).startJob(settings.capture());
         assertEquals(60, settings.getValue().getDuration());
         assertEquals(ModeCommand.RemoteStart.STANDARD, settings.getValue().getRemoteStart());
         assertNull(settings.getValue().getAfterMode());
+    }
+
+    @Test
+    public void shouldStartJobsFromTheThingActionWithOptionalInputs() {
+        initializePolling(Map.of());
+        assertTrue(subject.getServices().contains(RobonectActions.class));
+        when(mowerApiMock.startJob(any())).thenReturn(ModelParser.parse("{\"successful\":true}", RobonectAnswer.class));
+        RobonectActions actions = new RobonectActions();
+        actions.setThingHandler(subject);
+
+        actions.startJob(null, null, null, null, null);
+        actions.startJob(60, "09:00", "10:00", "REMOTE_1", "EOD");
+
+        var settings = ArgumentCaptor.forClass(RobonectClient.JobSettings.class);
+        verify(mowerApiMock, times(2)).startJob(settings.capture());
+        RobonectClient.JobSettings defaults = settings.getAllValues().getFirst();
+        assertNull(defaults.getDuration());
+        assertEquals(ModeCommand.RemoteStart.STANDARD, defaults.getRemoteStart());
+        assertNull(defaults.getAfterMode());
+        RobonectClient.JobSettings supplied = settings.getValue();
+        assertEquals(60, supplied.getDuration());
+        assertEquals(ModeCommand.RemoteStart.REMOTE_1, supplied.getRemoteStart());
+        assertEquals(ModeCommand.Mode.EOD, supplied.getAfterMode());
+    }
+
+    @Test
+    public void shouldRejectInvalidThingActionInputsBeforeStartingJob() {
+        initializePolling(Map.of());
+        RobonectActions actions = new RobonectActions();
+        actions.setThingHandler(subject);
+
+        assertThrows(IllegalArgumentException.class, () -> actions.startJob(1440, null, null, null, null));
+        assertThrows(IllegalArgumentException.class, () -> actions.startJob(null, "24:00", null, null, null));
+        assertThrows(IllegalArgumentException.class, () -> actions.startJob(null, null, "12:60", null, null));
+        assertThrows(IllegalArgumentException.class, () -> actions.startJob(null, null, null, "REMOTE_6", null));
+        assertThrows(IllegalArgumentException.class, () -> actions.startJob(null, null, null, null, "JOB"));
+        verifyNoInteractions(mowerApiMock);
     }
 
     @Test

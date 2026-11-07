@@ -21,6 +21,7 @@ import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -44,6 +45,7 @@ import org.openhab.binding.robonect.internal.RobonectClient;
 import org.openhab.binding.robonect.internal.RobonectCommunicationException;
 import org.openhab.binding.robonect.internal.RobonectEndpoint;
 import org.openhab.binding.robonect.internal.RobonectPushServlet;
+import org.openhab.binding.robonect.internal.config.JobChannelConfig;
 import org.openhab.binding.robonect.internal.config.RobonectConfig;
 import org.openhab.binding.robonect.internal.model.MowerStatus;
 import org.openhab.core.i18n.TimeZoneProvider;
@@ -57,6 +59,7 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
+import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.thing.util.ThingWebClientUtil;
@@ -77,8 +80,11 @@ import com.google.gson.JsonSyntaxException;
  *
  * @author Marco Meyer - Initial contribution
  * @author Nico Brüttner - Channel, polling, and endpoint handling
+ * @author Nico Brüttner - Mowing job action
  */
 public class RobonectHandler extends BaseThingHandler {
+
+    private static final ChannelTypeUID JOB_CHANNEL_TYPE = new ChannelTypeUID(BINDING_ID, "jobType");
 
     private final Logger logger = LoggerFactory.getLogger(RobonectHandler.class);
 
@@ -152,6 +158,32 @@ public class RobonectHandler extends BaseThingHandler {
         this.pushServlet = pushServlet;
     }
 
+    @Override
+    public Collection<Class<? extends ThingHandlerService>> getServices() {
+        return Set.of(RobonectActions.class);
+    }
+
+    void startJob(RobonectClient.JobSettings settings) {
+        PollingSession session = pollingSession;
+        RobonectMowerHandler mower = mowerHandler;
+        if (session == null || disposed || !session.equals(pollingSession)) {
+            throw new IllegalStateException("Robonect Thing is not initialized");
+        }
+        sessionActive.set(() -> session.equals(pollingSession));
+        try {
+            if (!canPublishState()) {
+                throw new IllegalStateException("Robonect Thing session has ended");
+            }
+            cancelCommandRefresh("status");
+            if (!mower.startJob(settings).isSuccessful()) {
+                throw new IllegalStateException("Robonect rejected the mowing job");
+            }
+            updateJobChannels(null, true, settings);
+        } finally {
+            sessionActive.remove();
+        }
+    }
+
     /**
      * Routes refreshes and commands to endpoint handlers and reports communication failures.
      *
@@ -187,19 +219,12 @@ public class RobonectHandler extends BaseThingHandler {
             case CHANNEL_MOWER_NAME:
                 mowerHandler.handleNameCommand(command);
                 break;
-
             case CHANNEL_STATUS_MODE:
                 mowerHandler.handleModeCommand(command);
                 break;
-
             case CHANNEL_MOWER_START:
                 mowerHandler.handleStartCommand(command);
                 break;
-
-            case CHANNEL_JOB:
-                mowerHandler.handleJobCommand(channelUID, command);
-                break;
-
             case CHANNEL_RESET_ERROR:
                 mowerHandler.handleResetErrorCommand(command);
                 break;
@@ -240,6 +265,12 @@ public class RobonectHandler extends BaseThingHandler {
                     timerHandler.handleCommand(channelUID.getId(), command);
                 } else if (channelUID.getId().startsWith("push-trigger-")) {
                     pushHandler.handleTriggerCommand(channelUID.getId(), command);
+                } else {
+                    Channel ch = getThing().getChannel(channelUID.getId());
+                    if (ch != null && JOB_CHANNEL_TYPE.equals(ch.getChannelTypeUID())) {
+                        JobChannelConfig jobConfig = ch.getConfiguration().as(JobChannelConfig.class);
+                        mowerHandler.handleJobCommand(channelUID.getId(), jobConfig, command);
+                    }
                 }
                 break;
         }
@@ -417,11 +448,60 @@ public class RobonectHandler extends BaseThingHandler {
         }
     }
 
-    /**
-     * Returns the currently configured mower client.
-     *
-     * @return the currently configured {@link RobonectClient}
-     */
+    void updateJobChannels(String channelId, boolean isJobRunning, RobonectClient.JobSettings settings) {
+        List<Channel> jobChannels = getThing().getChannels().stream()
+                .filter(channel -> JOB_CHANNEL_TYPE.equals(channel.getChannelTypeUID())).toList();
+
+        // Only set channel to 'ON', if it is the default 'CHANNEL_JOB' channel or matches the provided channelId
+        for (Channel channel : jobChannels) {
+            if (ajaxUiScraping && CHANNEL_JOB.equals(channel.getUID().getId())) {
+                // If Ajax scraping is enabled, the default 'CHANNEL_JOB' channel should not be updated here, but only
+                // during polling.
+                continue;
+            }
+            if (isJobRunning
+                    && (CHANNEL_JOB.equals(channel.getUID().getId()) || channel.getUID().getId().equals(channelId))) {
+                setState(channel.getUID().getId(), OnOffType.ON, true);
+            } else {
+                setState(channel.getUID().getId(), OnOffType.OFF, true);
+            }
+        }
+
+        if (!ajaxUiScraping) {
+            // Skip updating job start and end times if Ajax scraping is enabled,
+            // because start and end times are obtained from the Ajax polling
+
+            boolean hasStartTime = settings != null && settings.getStart() != null;
+            boolean hasEndTime = settings != null && settings.getEnd() != null;
+            boolean hasDuration = settings != null && settings.getDuration() != null;
+
+            int duration = hasDuration ? settings.getDuration() : 60;
+
+            LocalTime startTime = null;
+            LocalTime endTime = null;
+
+            if (hasStartTime) {
+                startTime = settings.getStartLocalTime();
+            }
+            if (hasEndTime) {
+                endTime = settings.getEndLocalTime();
+            }
+
+            if (startTime == null && endTime == null) {
+                startTime = LocalTime.now();
+            }
+
+            if (startTime != null && endTime == null) {
+                endTime = startTime.plusMinutes(duration);
+            } else if (startTime == null && endTime != null) {
+                startTime = endTime.minusMinutes(duration);
+            }
+
+            setState(CHANNEL_JOB_START, toTimeOnlyDateTime(startTime), true);
+            setState(CHANNEL_JOB_END, toTimeOnlyDateTime(endTime), true);
+        }
+    }
+
     /**
      * Returns editable Thing properties for an endpoint component.
      *

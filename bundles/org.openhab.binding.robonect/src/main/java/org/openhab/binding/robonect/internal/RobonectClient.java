@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.robonect.internal;
 
+import java.time.LocalTime;
+import java.time.format.DateTimeParseException;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -27,6 +30,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Marco Meyer - Initial contribution
  * @author Nico Brüttner - API and web interface support
+ * @author Nico Brüttner - Job time input handling
  */
 @NonNullByDefault
 public class RobonectClient {
@@ -48,8 +52,10 @@ public class RobonectClient {
         private ModeCommand.@Nullable RemoteStart remoteStart;
         private ModeCommand.@Nullable Mode after;
         private @Nullable Integer duration;
-        private @Nullable Integer start;
-        private @Nullable Integer end;
+        private @Nullable String start;
+        private @Nullable String end;
+        private @Nullable LocalTime startLocalTime;
+        private @Nullable LocalTime endLocalTime;
 
         /**
          * Returns the remote-start setting, defaulting to {@link ModeCommand.RemoteStart#STANDARD}.
@@ -118,62 +124,81 @@ public class RobonectClient {
         }
 
         /**
-         * Sets the job start time as minutes after midnight.
+         * Sets the job start time in {@code HH:mm} format.
          *
          * @param start the start time, or {@code null} to omit it from the command
          * @return this job settings instance
          */
-        public JobSettings withStart(@Nullable Integer start) {
+        public JobSettings withStart(@Nullable String start) {
+            this.startLocalTime = validateTime(start, "startTime");
             this.start = start;
             return this;
         }
 
         /**
-         * Sets the job end time as minutes after midnight.
+         * Sets the job end time in {@code HH:mm} format.
          *
          * @param end the end time, or {@code null} to omit it from the command
          * @return this job settings instance
          */
-        public JobSettings withEnd(@Nullable Integer end) {
+        public JobSettings withEnd(@Nullable String end) {
+            this.endLocalTime = validateTime(end, "endTime");
             this.end = end;
             return this;
         }
 
         /**
-         * Formats the optional job start time.
+         * Returns the optional job start time.
          *
          * @return the time in {@code HH:mm} format, or {@code null} if unset
          */
         @Nullable
-        String getStart() {
-            return formatTime(start);
+        public String getStart() {
+            return start;
         }
 
         /**
-         * Formats the optional job end time.
+         * Returns the optional job end time.
          *
          * @return the time in {@code HH:mm} format, or {@code null} if unset
          */
         @Nullable
-        String getEnd() {
-            return formatTime(end);
+        public String getEnd() {
+            return end;
         }
 
         /**
-         * Formats minutes after midnight as a time of day.
+         * Returns the optional job start time.
          *
-         * @param minutesAfterMidnight the minute of the day, or {@code null} to omit the time
-         * @return the time in {@code HH:mm} format, or {@code null} if unset
-         * @throws IllegalArgumentException if the minute is outside the day
+         * @return the time as a {@link LocalTime}, or {@code null} if unset
          */
-        private @Nullable String formatTime(@Nullable Integer minutesAfterMidnight) {
-            if (minutesAfterMidnight == null) {
+        @Nullable
+        public LocalTime getStartLocalTime() {
+            return startLocalTime;
+        }
+
+        /**
+         * Returns the optional job end time.
+         *
+         * @return the time as a {@link LocalTime}, or {@code null} if unset
+         */
+        @Nullable
+        public LocalTime getEndLocalTime() {
+            return endLocalTime;
+        }
+
+        private static @Nullable LocalTime validateTime(@Nullable String value, String parameter) {
+            if (value == null) {
                 return null;
             }
-            if (minutesAfterMidnight < 0 || minutesAfterMidnight >= 24 * 60) {
-                throw new IllegalArgumentException("Time must be between 0 and 1439 minutes after midnight");
+            if (value.length() != 5) {
+                throw new IllegalArgumentException(parameter + " must use HH:mm");
             }
-            return "%02d:%02d".formatted(minutesAfterMidnight / 60, minutesAfterMidnight % 60);
+            try {
+                return LocalTime.parse(value);
+            } catch (DateTimeParseException e) {
+                throw new IllegalArgumentException(parameter + " must use HH:mm", e);
+            }
         }
     }
 

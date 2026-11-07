@@ -213,7 +213,7 @@ public class RobonectClientTest {
         when(responseMock.getContentAsString()).thenReturn("{\"successful\": true}");
 
         subject.mower().startJob(new RobonectClient.JobSettings().withRemoteStart(ModeCommand.RemoteStart.STANDARD)
-                .withAfterMode(ModeCommand.Mode.AUTO).withStart(0).withEnd(1439).withDuration(60));
+                .withAfterMode(ModeCommand.Mode.AUTO).withStart("00:00").withEnd("23:59").withDuration(60));
 
         verify(httpClientMock).newRequest(
                 "http://123.456.789.123/json?cmd=mode&mode=job&remotestart=0&after=4&start=00:00&end=23:59&duration=60");
@@ -240,6 +240,19 @@ public class RobonectClientTest {
                 .withStart(null).withEnd(null);
         assertEquals(ModeCommand.RemoteStart.STANDARD, settings.getRemoteStart());
         assertNull(settings.getAfterMode());
+    }
+
+    @Test
+    public void shouldStoreJobTimesInHoursAndMinutes() {
+        RobonectClient.JobSettings settings = new RobonectClient.JobSettings().withStart("09:05").withEnd("10:30");
+        assertEquals("09:05", settings.getStart());
+        assertEquals("10:30", settings.getEnd());
+
+        assertThrows(IllegalArgumentException.class, () -> settings.withStart("24:00"));
+        assertThrows(IllegalArgumentException.class, () -> settings.withEnd("1440"));
+        settings.withStart(null).withEnd(null);
+        assertNull(settings.getStart());
+        assertNull(settings.getEnd());
     }
 
     @Test

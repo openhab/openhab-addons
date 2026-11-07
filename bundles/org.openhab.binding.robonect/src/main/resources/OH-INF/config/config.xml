@@ -19,7 +19,7 @@
 				<option value="REMOTE_5">Remote 5</option>
 			</options>
 		</parameter>
-		<parameter name="duration" type="integer" min="0" max="720" unit="m">
+		<parameter name="duration" type="integer" min="0" max="1439" unit="m">
 			<context>time</context>
 			<label>Job Duration</label>
 			<description>The duration of the job.</description>
@@ -34,15 +34,13 @@
 				<option value="MANUAL">Manual</option>
 			</options>
 		</parameter>
-		<parameter name="start" type="integer" min="0" max="1439" unit="m">
-			<context>time</context>
+		<parameter name="start" type="text">
 			<label>Job Start Time</label>
-			<description>The time at which the job starts, expressed as minutes after midnight.</description>
+			<description>The time at which the job starts, in HH:mm format.</description>
 		</parameter>
-		<parameter name="end" type="integer" min="0" max="1439" unit="m">
-			<context>time</context>
+		<parameter name="end" type="text">
 			<label>Job End Time</label>
-			<description>The time at which the job ends, expressed as minutes after midnight.</description>
+			<description>The time at which the job ends, in HH:mm format.</description>
 		</parameter>
 	</config-description>
 </config-description:config-descriptions>

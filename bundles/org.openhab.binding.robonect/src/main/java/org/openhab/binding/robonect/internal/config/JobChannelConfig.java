@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.robonect.internal.config;
 
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * The {@link JobChannelConfig} class holds the channel configuration for the Job channel.
  *
@@ -25,9 +27,9 @@ public class JobChannelConfig {
 
     private Integer duration;
 
-    private Integer start;
+    private @Nullable String start;
 
-    private Integer end;
+    private @Nullable String end;
 
     /**
      * Returns the job remote-start mode.
@@ -86,36 +88,36 @@ public class JobChannelConfig {
     /**
      * Returns the optional job start time.
      *
-     * @return the start time in minutes after midnight, or {@code null} if unset
+     * @return the start time in {@code HH:mm} format, or {@code null} if unset
      */
-    public Integer getStart() {
+    public @Nullable String getStart() {
         return start;
     }
 
     /**
      * Sets the optional job start time.
      *
-     * @param start the start time in minutes after midnight, or {@code null} if unset
+     * @param start the start time in {@code HH:mm} format, or {@code null} if unset
      */
-    public void setStart(Integer start) {
+    public void setStart(@Nullable String start) {
         this.start = start;
     }
 
     /**
      * Returns the optional job end time.
      *
-     * @return the end time in minutes after midnight, or {@code null} if unset
+     * @return the end time in {@code HH:mm} format, or {@code null} if unset
      */
-    public Integer getEnd() {
+    public @Nullable String getEnd() {
         return end;
     }
 
     /**
      * Sets the optional job end time.
      *
-     * @param end the end time in minutes after midnight, or {@code null} if unset
+     * @param end the end time in {@code HH:mm} format, or {@code null} if unset
      */
-    public void setEnd(Integer end) {
+    public void setEnd(@Nullable String end) {
         this.end = end;
     }
 }

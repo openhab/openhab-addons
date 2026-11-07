@@ -152,17 +152,16 @@ final class RobonectMowerHandler {
     /**
      * Starts or stops a job using the channel configuration, then refreshes mower state.
      *
-     * @param channelUID the channel identifier
+     * @param channelId the channel identifier
+     * @param jobConfig the job channel configuration
      * @param command the command received for the channel
      */
-    void handleJobCommand(ChannelUID channelUID, Command command) {
+    void handleJobCommand(String channelId, JobChannelConfig jobConfig, Command command) {
         if (!(command instanceof OnOffType onOffCommand)) {
             logger.debug("Got job update of type {} but OnOffType is expected.", command.getClass().getName());
             return;
         }
         handler.cancelCommandRefresh("status");
-        JobChannelConfig jobConfig = handler.getThing().getChannel(channelUID.getId()).getConfiguration()
-                .as(JobChannelConfig.class);
         if (onOffCommand == OnOffType.ON) {
             String configuredAfterMode = jobConfig.getAfterMode();
             String configuredRemoteStart = jobConfig.getRemoteStart();
@@ -182,8 +181,20 @@ final class RobonectMowerHandler {
                 return;
             }
 
-            mowerApi.startJob(new RobonectClient.JobSettings().withAfterMode(afterMode).withRemoteStart(remoteStart)
-                    .withDuration(jobConfig.getDuration()).withStart(jobConfig.getStart()).withEnd(jobConfig.getEnd()));
+            RobonectClient.JobSettings settings = new RobonectClient.JobSettings().withAfterMode(afterMode)
+                    .withRemoteStart(remoteStart).withDuration(jobConfig.getDuration());
+            try {
+                settings.withStart(jobConfig.getStart()).withEnd(jobConfig.getEnd());
+            } catch (IllegalArgumentException e) {
+                logger.debug("Invalid mowing job time: {}", e.getMessage());
+                return;
+            }
+            if (startJob(settings).isSuccessful()) {
+                handler.updateJobChannels(channelId, true, settings);
+            } else {
+                handler.updateJobChannels(channelId, false, settings);
+            }
+            return;
         } else if (onOffCommand == OnOffType.OFF) {
             ModeCommand.@Nullable Mode afterMode = switch (jobConfig.getAfterMode()) {
                 case "AUTO" -> ModeCommand.Mode.AUTO;
@@ -193,10 +204,19 @@ final class RobonectMowerHandler {
                 case null, default -> null;
             };
             mowerApi.stopJob(afterMode);
+            handler.updateJobChannels(channelId, false, null);
         } else {
             return;
         }
         refreshMowerInfo();
+    }
+
+    RobonectAnswer startJob(RobonectClient.JobSettings settings) {
+        RobonectAnswer answer = mowerApi.startJob(settings);
+        if (handler.canPublishState()) {
+            refreshMowerInfo();
+        }
+        return answer;
     }
 
     /**
@@ -214,6 +234,11 @@ final class RobonectMowerHandler {
         ModeCommand.Mode newMode = ModeCommand.Mode.valueOf(modeStr.toUpperCase());
         handler.cancelCommandRefresh("status");
         mowerApi.setMode(newMode);
+
+        if (mowerApi.isJobRunning()) {
+            handler.updateJobChannels(null, true, null);
+        }
+
         refreshMowerInfo();
     }
 

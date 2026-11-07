@@ -70,8 +70,8 @@ Thing robonect:mower:automower "Mower" @ "Garden" [ host="192.168.2.1", pollInte
 | `status`                  | Number               | Retrieves the current mower status which can be <ul><li>0 : DETECTING_STATUS</li><li>1 : PARKING</li><li>2 : MOWING</li><li>3 : SEARCH_CHARGING_STATION</li><li>4 : CHARGING</li><li>5 : SEARCHING</li><li>6 : UNKNOWN_6</li><li>7 : ERROR_STATUS</li><li>16 : OFF</li><li>17 : SLEEPING</li><li>98 : OFFLINE (Binding cannot connect to mower)</li><li>99 : UNKNOWN</li></ul>                                                                                                                                                           |
 | `start`                   | Switch               | Starts the mower. ON is started (analog to pressing the start button on mower) or OFF (analog to the stop button on mower).                                                                                                                                                                                                                                                                                                                                                                                                              |
 | `job`                     | Switch               | Starts a job. The channels can be configured with the parameters `remoteStart`, `afterMode`, `duration`, `start` and `end`. `remoteStart` supports `STANDARD` (0), `DOCKING_STATION` (1), and `REMOTE_1` through `REMOTE_5` (2 through 6). `afterMode` is the mode the mower will be set after the job is done. Allowed values are `AUTO`, `HOME` or `EOD`. `duration` is the job duration in minutes. Please note, if the mower is charging it will wait to start the job until it is fully charged, but the jobs duration is already started. |
-| `job-start`               | Number:Time          | Start time of the active job in minutes after midnight; requires `ajaxUiScraping`.                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| `job-end`                 | Number:Time          | End time of the active job in minutes after midnight; requires `ajaxUiScraping`.                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| `job-start`               | DateTime             | Start time of the active job; requires `ajaxUiScraping`.                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| `job-end`                 | DateTime             | End time of the active job; requires `ajaxUiScraping`.                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
 | `timer-status`            | String               | Retrieves the status of the timer which can be <ul><li>INACTIVE : no timer set</li><li>ACTIVE - timer set and currently running</li><li>STANDBY - timer set but not triggered/running yet</li></ul>                                                                                                                                                                                                                                                                                                                                      |
 | `timer-next`              | DateTime             | Retrieves the Date and Time of the next timer set. This is just valid if there is an ACTIVE timer status (see `timer-status`).                                                                                                                                                                                                                                                                                                                                                                                                           |
 | `wlan-signal`             | Number               | Retrieves the current WLAN Signal strength in dB                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
@@ -177,6 +177,8 @@ Each also has `-min`, `-max`, and `-average` `Number:Time` channels with a minut
 The optional `ajaxUiScraping` configuration reads the localized, undocumented web-interface endpoint. It enables job
 start and end times and recognizes end-of-day mode where the JSON API reports only `HOME`.
 The `job-start` and `job-end` channels are created only when `ajaxUiScraping` is enabled and removed when it is disabled.
+Configure the `job` channel's optional `start` and `end` as quoted `HH:mm` strings in the mower's local time.
+Convert existing minute values to strings, for example `start="09:00"` for 540 minutes after midnight.
 When starting a job, an omitted `remoteStart` uses `STANDARD`, and an omitted `afterMode` is left out of the mower command.
 When stopping a job with no valid `afterMode` configured, the binding uses the mode recorded before the job started,
 including `EOD` when Ajax scraping identified it. If no usable pre-job mode is available, the binding uses `HOME`.
@@ -199,6 +201,27 @@ either in its web interface or through the `push-username` and `push-password` c
 The callback requires HTTP Basic authentication and is enabled only when both Thing settings are filled in.
 Use dedicated callback credentials, since plain HTTP sends them without encryption.
 A received notification triggers a status refresh; the binding does not expose the notification payload to openHAB.
+
+## Thing Actions
+
+Use the **Start Mowing Job** action in a rule to supply job settings at runtime. All five inputs are optional.
+
+| Input | Meaning |
+| ----- | ------- |
+| `durationMinutes` | Job duration in minutes, from 0 to 720. |
+| `startTime` | Start time in `HH:mm`, in the mower's local time. |
+| `endTime` | End time in `HH:mm`, in the mower's local time. |
+| `remoteStart` | `STANDARD`, `DOCKING_STATION`, or `REMOTE_1` through `REMOTE_5`. Defaults to `STANDARD`. |
+| `afterMode` | `AUTO`, `HOME`, `EOD`, or `MANUAL`. |
+
+Omitted duration, times, and after-mode are left out of the mower command. In Rules DSL, pass `null` for each omitted
+input. This example starts a 60-minute job from the first remote start point and returns the mower to automatic mode
+afterward.
+
+```java
+val mowerActions = getActions("robonect", "robonect:mower:automower")
+mowerActions.startJob(60, null, null, "REMOTE_1", "AUTO")
+```
 
 ## Full Example
 

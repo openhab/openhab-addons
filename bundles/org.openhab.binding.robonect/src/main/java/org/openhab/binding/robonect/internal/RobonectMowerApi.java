@@ -76,6 +76,10 @@ public final class RobonectMowerApi {
         this.transport = transport;
     }
 
+    public boolean isJobRunning() {
+        return jobRunning;
+    }
+
     /**
      * Returns general mower information. See {@link MowerInfo} for the detailed information.
      *
@@ -94,17 +98,6 @@ public final class RobonectMowerApi {
         if (mowerInfo.getJob() != null && mowerInfo.getJob().isJobActiv() != null) {
             jobRunning = mowerInfo.getJob().isJobActiv();
         } else {
-
-            if (jobRunning && status != null) {
-                // mode might have been changed on the mower. Also Mode JOB does not really exist on the mower, thus
-                // cannot
-                // be checked here
-                if (status.getMode() != MowerMode.AUTO) {
-                    jobRunning = false;
-                } else if (mowerInfo.getError() != null) {
-                    jobRunning = false;
-                }
-            }
             Job job = new Job();
             job.setJobActiv(jobRunning);
             mowerInfo.setJob(job);
