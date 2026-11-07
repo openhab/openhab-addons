@@ -451,8 +451,10 @@ public class WolfSmartsetApi {
         var requestUrl = WOLF_API_URL + url;
         Request request = httpClient.newRequest(requestUrl).timeout(REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS);
 
-        request.headers(h -> h.add(HttpHeader.ACCEPT, "application/json"));
-        request.headers(h -> h.add(HttpHeader.CONTENT_TYPE, "application/json"));
+        request.headers(h -> {
+            h.add(HttpHeader.ACCEPT, "application/json");
+            h.add(HttpHeader.CONTENT_TYPE, "application/json");
+        });
         request.method(HttpMethod.POST);
 
         request.body(new StringRequestContent("application/json", json.toString()));

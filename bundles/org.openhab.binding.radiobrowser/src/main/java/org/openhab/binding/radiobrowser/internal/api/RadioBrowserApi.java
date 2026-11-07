@@ -77,8 +77,10 @@ public class RadioBrowserApi {
         Request request;
         String errorReason = "";
         request = httpClient.newRequest("https://" + server + url).scheme("https");
-        request.headers(h -> h.add("Host", server));
-        request.headers(h -> h.add("User-Agent", "openHAB4/RadioBrowserBinding")); // api requirement
+        request.headers(h -> {
+            h.add("Host", server);
+            h.add("User-Agent", "openHAB4/RadioBrowserBinding"); // api requirement
+        });
         request.headers(h -> h.add("Connection", "Keep-Alive"));
         request.timeout(HTTP_TIMEOUT_SECONDS, TimeUnit.SECONDS);
         request.method(HttpMethod.GET);

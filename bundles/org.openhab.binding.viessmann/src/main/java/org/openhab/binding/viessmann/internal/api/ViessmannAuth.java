@@ -295,8 +295,11 @@ public class ViessmannAuth {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
         Request request = httpClient.newRequest(url).timeout(API_TIMEOUT_MS, TimeUnit.MILLISECONDS)
-                .method(HttpMethod.GET).headers(h -> h.add("Authorization", "Basic " + authorization))
-                .headers(h -> h.add("Host", IAM_HOST)).headers(h -> h.add("Accept", "application/json"));
+                .method(HttpMethod.GET).headers(h -> {
+                    h.add("Authorization", "Basic " + authorization);
+                    h.add("Host", IAM_HOST);
+                    h.add("Accept", "application/json");
+                });
         try {
             ContentResponse contentResponse = request.onResponseContent((resp, buffer) -> {
                 byte[] bytes = new byte[buffer.remaining()];
@@ -347,8 +350,10 @@ public class ViessmannAuth {
 
     private @Nullable String executeUrlToken(String url) {
         Request request = httpClient.newRequest(url).timeout(API_TIMEOUT_MS, TimeUnit.MILLISECONDS)
-                .method(HttpMethod.POST).headers(h -> h.add("Content-Type", "application/x-www-form-urlencoded"))
-                .headers(h -> h.add("Host", IAM_HOST));
+                .method(HttpMethod.POST).headers(h -> {
+                    h.add("Content-Type", "application/x-www-form-urlencoded");
+                    h.add("Host", IAM_HOST);
+                });
         try {
             ContentResponse contentResponse = request.send();
             switch (contentResponse.getStatus()) {

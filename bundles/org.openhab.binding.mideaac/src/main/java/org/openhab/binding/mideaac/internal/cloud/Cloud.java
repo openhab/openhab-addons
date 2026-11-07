@@ -149,9 +149,10 @@ public class Cloud {
             request.headers(h -> h.add("Content-Type", "application/x-www-form-urlencoded"));
         }
 
-        request.headers(h -> h.add("secretVersion", "1"));
-
-        request.headers(h -> h.add("random", random));
+        request.headers(h -> {
+            h.add("secretVersion", "1");
+            h.add("random", random);
+        });
 
         // Add the sign to the header, different for proxied
         if (!cloudProvider.proxied().isBlank()) {

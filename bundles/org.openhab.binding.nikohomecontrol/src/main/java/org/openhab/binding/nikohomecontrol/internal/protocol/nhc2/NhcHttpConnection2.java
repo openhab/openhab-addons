@@ -81,10 +81,11 @@ public class NhcHttpConnection2 {
         try {
             final String tokenHeader = "Bearer " + token;
             final String hostnameVal = hostname;
-            response = request.method(HttpMethod.GET).headers(h -> h.add(HttpHeader.AUTHORIZATION, tokenHeader))
-                    .headers(h -> h.add(HttpHeader.HOST, hostnameVal))
-                    .headers(h -> h.add(HttpHeader.ACCEPT, "application/json"))
-                    .timeout(TIMEOUT_MS, TimeUnit.MILLISECONDS).send();
+            response = request.method(HttpMethod.GET).headers(h -> {
+                h.add(HttpHeader.AUTHORIZATION, tokenHeader);
+                h.add(HttpHeader.HOST, hostnameVal);
+                h.add(HttpHeader.ACCEPT, "application/json");
+            }).timeout(TIMEOUT_MS, TimeUnit.MILLISECONDS).send();
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
             logger.debug("Error with query {}", url, e);
             return null;

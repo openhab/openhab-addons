@@ -59,8 +59,10 @@ public class RequestFactoryImpl implements RequestFactory {
     private Request createRequestWithDefaultHeaders(String url, String accessToken) {
         final String bearer = "Bearer " + accessToken;
         Request request = httpClient.newRequest(url);
-        request.headers(h -> h.add("Content-type", "application/json"));
-        request.headers(h -> h.add("Authorization", bearer));
+        request.headers(h -> {
+            h.add("Content-type", "application/json");
+            h.add("Authorization", bearer);
+        });
         return request;
     }
 

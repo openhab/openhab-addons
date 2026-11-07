@@ -69,8 +69,9 @@ public class BoschHttpClient extends HttpClient {
     private final String ipAddress;
     private final String systemPassword;
 
-    public BoschHttpClient(String ipAddress, String systemPassword, SslContextFactory sslContextFactory) {
+    public BoschHttpClient(String ipAddress, String systemPassword, SslContextFactory.Client sslContextFactory) {
         super();
+        setSslContextFactory(sslContextFactory);
         this.ipAddress = ipAddress;
         this.systemPassword = systemPassword;
     }
@@ -336,9 +337,10 @@ public class BoschHttpClient extends HttpClient {
         Request request = this.newRequest(url).method(method).timeout(DEFAULT_TIMEOUT_SECONDS, DEFAULT_TIMEOUT_UNIT); // Set
                                                                                                                       // default
                                                                                                                       // timeout
-        request.headers(headers -> headers.put("Content-Type", "application/json"));
-        request.headers(headers -> headers.put("api-version", "3.2")); // see
-                                                                       // https://github.com/BoschSmartHome/bosch-shc-api-docs/issues/80
+        request.headers(headers -> {
+            headers.put("Content-Type", "application/json");
+            headers.put("api-version", "3.2"); // see https://github.com/BoschSmartHome/bosch-shc-api-docs/issues/80
+        });
 
         if (content != null) {
             final String body;

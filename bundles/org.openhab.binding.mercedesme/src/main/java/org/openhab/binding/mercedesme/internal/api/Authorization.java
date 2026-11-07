@@ -157,8 +157,10 @@ public class Authorization {
         try {
             String url = Utils.getTokenUrl(config.region);
             Request req = httpClient.POST(url);
-            req.headers(h -> h.add("X-Device-Id", UUID.randomUUID().toString()));
-            req.headers(h -> h.add("X-Request-Id", UUID.randomUUID().toString()));
+            req.headers(h -> {
+                h.add("X-Device-Id", UUID.randomUUID().toString());
+                h.add("X-Request-Id", UUID.randomUUID().toString());
+            });
 
             String grantAttribute = "grant_type=refresh_token";
             String refreshTokenAttribute = "refresh_token="
@@ -374,9 +376,10 @@ public class Authorization {
         ContentResponse resumeResponse = loginRequest(() -> {
             Request resumeRequest = loginHttpClient.newRequest(url).followRedirects(true);
             resumeRequest.agent(Constants.AUTH_USER_AGENT);
-            resumeRequest.headers(h -> h.add(HttpHeader.ACCEPT_LANGUAGE, Constants.AUTH_LANGUAGE));
-            resumeRequest.headers(
-                    h -> h.add(HttpHeader.ACCEPT, "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"));
+            resumeRequest.headers(h -> {
+                h.add(HttpHeader.ACCEPT_LANGUAGE, Constants.AUTH_LANGUAGE);
+                h.add(HttpHeader.ACCEPT, "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
+            });
             return resumeRequest;
         }, "Step 1: Get resume code");
         logger.trace("Step 1: Get resume code {} - {}", resumeResponse.getStatus(),
@@ -399,9 +402,11 @@ public class Authorization {
     private void sendUserAgent(HttpClient loginHttpClient) {
         Request agentRequest = loginHttpClient.POST(baseUrl + "/ciam/auth/ua");
         agentRequest.agent(Constants.AUTH_USER_AGENT);
-        agentRequest.headers(h -> h.add(HttpHeader.ACCEPT_LANGUAGE, Constants.AUTH_LANGUAGE));
-        agentRequest.headers(h -> h.add(HttpHeader.ACCEPT, "*/*"));
-        agentRequest.headers(h -> h.add(HttpHeader.ORIGIN, baseUrl));
+        agentRequest.headers(h -> {
+            h.add(HttpHeader.ACCEPT_LANGUAGE, Constants.AUTH_LANGUAGE);
+            h.add(HttpHeader.ACCEPT, "*/*");
+            h.add(HttpHeader.ORIGIN, baseUrl);
+        });
 
         JSONObject agentContent = new JSONObject();
         agentContent.put("browserName", "Mobile Safari");
@@ -436,10 +441,12 @@ public class Authorization {
         ContentResponse userResponse = loginRequest(() -> {
             Request userRequest = loginHttpClient.POST(url);
             userRequest.agent(Constants.AUTH_USER_AGENT);
-            userRequest.headers(h -> h.add(HttpHeader.ACCEPT_LANGUAGE, Constants.AUTH_LANGUAGE));
-            userRequest.headers(h -> h.add(HttpHeader.ACCEPT, CONTENT_TYPE_JSON + ", text/plain, */*"));
-            userRequest.headers(h -> h.add(HttpHeader.ORIGIN, baseUrl));
-            userRequest.headers(h -> h.add(HttpHeader.REFERER, baseUrl + "/ciam/auth/login"));
+            userRequest.headers(h -> {
+                h.add(HttpHeader.ACCEPT_LANGUAGE, Constants.AUTH_LANGUAGE);
+                h.add(HttpHeader.ACCEPT, CONTENT_TYPE_JSON + ", text/plain, */*");
+                h.add(HttpHeader.ORIGIN, baseUrl);
+                h.add(HttpHeader.REFERER, baseUrl + "/ciam/auth/login");
+            });
             userRequest.body(new StringRequestContent(CONTENT_TYPE_JSON, userContent.toString()));
             return userRequest;
         }, "Step 3: Post username");
@@ -477,10 +484,12 @@ public class Authorization {
         ContentResponse loginResponse = loginRequest(() -> {
             Request loginRequest = loginHttpClient.POST(url);
             loginRequest.agent(Constants.AUTH_USER_AGENT);
-            loginRequest.headers(h -> h.add(HttpHeader.ACCEPT_LANGUAGE, Constants.AUTH_LANGUAGE));
-            loginRequest.headers(h -> h.add(HttpHeader.ACCEPT, CONTENT_TYPE_JSON + ", text/plain, */*"));
-            loginRequest.headers(h -> h.add(HttpHeader.ORIGIN, baseUrl));
-            loginRequest.headers(h -> h.add(HttpHeader.REFERER, baseUrl + "/ciam/auth/login"));
+            loginRequest.headers(h -> {
+                h.add(HttpHeader.ACCEPT_LANGUAGE, Constants.AUTH_LANGUAGE);
+                h.add(HttpHeader.ACCEPT, CONTENT_TYPE_JSON + ", text/plain, */*");
+                h.add(HttpHeader.ORIGIN, baseUrl);
+                h.add(HttpHeader.REFERER, baseUrl + "/ciam/auth/login");
+            });
             loginRequest.body(new StringRequestContent(CONTENT_TYPE_JSON, loginContent.toString()));
             return loginRequest;
         }, "Step 4: Login");
@@ -514,10 +523,12 @@ public class Authorization {
         ContentResponse response = loginRequest(() -> {
             Request request = loginHttpClient.POST(url);
             request.agent(Constants.AUTH_USER_AGENT);
-            request.headers(h -> h.add(HttpHeader.ACCEPT_LANGUAGE, Constants.AUTH_LANGUAGE));
-            request.headers(h -> h.add(HttpHeader.ACCEPT, CONTENT_TYPE_JSON + ", text/plain, */*"));
-            request.headers(h -> h.add(HttpHeader.ORIGIN, baseUrl));
-            request.headers(h -> h.add(HttpHeader.REFERER, baseUrl + "/ciam/auth/login"));
+            request.headers(h -> {
+                h.add(HttpHeader.ACCEPT_LANGUAGE, Constants.AUTH_LANGUAGE);
+                h.add(HttpHeader.ACCEPT, CONTENT_TYPE_JSON + ", text/plain, */*");
+                h.add(HttpHeader.ORIGIN, baseUrl);
+                h.add(HttpHeader.REFERER, baseUrl + "/ciam/auth/login");
+            });
             request.body(new StringRequestContent(CONTENT_TYPE_JSON, content.toString()));
             return request;
         }, "Step 4b: Decline passkey prompt");
@@ -547,10 +558,12 @@ public class Authorization {
 
         Request request = loginHttpClient.POST(baseUrl + "/ciam/auth/toas/saveLoginConsent");
         request.agent(Constants.AUTH_USER_AGENT);
-        request.headers(h -> h.add(HttpHeader.ACCEPT_LANGUAGE, Constants.AUTH_LANGUAGE));
-        request.headers(h -> h.add(HttpHeader.ACCEPT, CONTENT_TYPE_JSON + ", text/plain, */*"));
-        request.headers(h -> h.add(HttpHeader.ORIGIN, baseUrl));
-        request.headers(h -> h.add(HttpHeader.REFERER, baseUrl + "/ciam/auth/login"));
+        request.headers(h -> {
+            h.add(HttpHeader.ACCEPT_LANGUAGE, Constants.AUTH_LANGUAGE);
+            h.add(HttpHeader.ACCEPT, CONTENT_TYPE_JSON + ", text/plain, */*");
+            h.add(HttpHeader.ORIGIN, baseUrl);
+            h.add(HttpHeader.REFERER, baseUrl + "/ciam/auth/login");
+        });
         request.body(new StringRequestContent(CONTENT_TYPE_JSON, content.toString()));
 
         ContentResponse response = send(request);
@@ -606,11 +619,12 @@ public class Authorization {
 
         Request authRequest = loginHttpClient.POST(baseUrl + resumeUrl).followRedirects(false);
         authRequest.agent(Constants.AUTH_USER_AGENT);
-        authRequest.headers(h -> h.add(HttpHeader.ACCEPT_LANGUAGE, Constants.AUTH_LANGUAGE));
-        authRequest.headers(
-                h -> h.add(HttpHeader.ACCEPT, "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"));
-        authRequest.headers(h -> h.add(HttpHeader.ORIGIN, baseUrl));
-        authRequest.headers(h -> h.add(HttpHeader.REFERER, baseUrl + "/ciam/auth/login"));
+        authRequest.headers(h -> {
+            h.add(HttpHeader.ACCEPT_LANGUAGE, Constants.AUTH_LANGUAGE);
+            h.add(HttpHeader.ACCEPT, "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
+            h.add(HttpHeader.ORIGIN, baseUrl);
+            h.add(HttpHeader.REFERER, baseUrl + "/ciam/auth/login");
+        });
         authRequest.body(new StringRequestContent(CONTENT_TYPE_URL_ENCODED,
                 UrlEncoded.encode(authParams, StandardCharsets.UTF_8, false), StandardCharsets.UTF_8));
 
@@ -683,18 +697,22 @@ public class Authorization {
     public void addBasicHeaders(Request req) {
         // User-Agent carries the full app/OS identifier, X-Applicationname the short app id
         req.agent(Utils.getUserAgent(config.region));
-        req.headers(h -> h.add("Ris-Os-Name", Constants.RIS_OS_NAME));
-        req.headers(h -> h.add("Ris-Os-Version", Constants.RIS_OS_VERSION));
-        req.headers(h -> h.add("Ris-Sdk-Version", Utils.getRisSDKVersion(config.region)));
-        req.headers(h -> h.add("X-Locale",
-                localeProvider.getLocale().getLanguage() + "-" + localeProvider.getLocale().getCountry())); // de-DE
-        req.headers(h -> h.add("X-Applicationname", Utils.getApplication(config.region)));
-        req.headers(h -> h.add("Ris-Application-Version", Utils.getRisApplicationVersion(config.region)));
+        req.headers(h -> {
+            h.add("Ris-Os-Name", Constants.RIS_OS_NAME);
+            h.add("Ris-Os-Version", Constants.RIS_OS_VERSION);
+            h.add("Ris-Sdk-Version", Utils.getRisSDKVersion(config.region));
+            // de-DE
+            h.add("X-Locale", localeProvider.getLocale().getLanguage() + "-" + localeProvider.getLocale().getCountry());
+            h.add("X-Applicationname", Utils.getApplication(config.region));
+            h.add("Ris-Application-Version", Utils.getRisApplicationVersion(config.region));
+        });
     }
 
     protected void addAuthHeaders(Request request) {
-        request.headers(h -> h.add("X-SessionId", UUID.randomUUID().toString()));
-        request.headers(h -> h.add("X-TrackingId", UUID.randomUUID().toString()));
+        request.headers(h -> {
+            h.add("X-SessionId", UUID.randomUUID().toString());
+            h.add("X-TrackingId", UUID.randomUUID().toString());
+        });
         final String token = getToken();
         request.headers(h -> h.add("Authorization", token));
     }

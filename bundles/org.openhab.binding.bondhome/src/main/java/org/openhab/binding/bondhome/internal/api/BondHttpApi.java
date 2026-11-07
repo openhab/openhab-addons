@@ -182,8 +182,10 @@ public class BondHttpApi {
         final HttpClient httpClient = httpClientFactory.getCommonHttpClient();
         final Request request = httpClient.newRequest(url).method(HttpMethod.PUT).timeout(BOND_API_TIMEOUT_MS,
                 TimeUnit.MILLISECONDS);
-        request.headers(headers -> headers.put("BOND-Token", bridgeHandler.getBridgeToken()));
-        request.headers(headers -> headers.put("Content-Type", "application/json"));
+        request.headers(headers -> {
+            headers.put("BOND-Token", bridgeHandler.getBridgeToken());
+            headers.put("Content-Type", "application/json");
+        });
         request.body(new StringRequestContent(payload));
         ContentResponse response;
         try {

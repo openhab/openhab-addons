@@ -110,8 +110,10 @@ public class EnedisHttpApi {
             request = request.agent("Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:47.0) Gecko/20100101 Firefox/47.0");
             request = request.method(HttpMethod.GET);
             if (!token.isEmpty()) {
-                request.headers(h -> h.add("Authorization", "" + token));
-                request.headers(h -> h.add("Accept", "application/json"));
+                request.headers(h -> {
+                    h.add("Authorization", "" + token);
+                    h.add("Accept", "application/json");
+                });
             }
 
             ContentResponse result = request.send();

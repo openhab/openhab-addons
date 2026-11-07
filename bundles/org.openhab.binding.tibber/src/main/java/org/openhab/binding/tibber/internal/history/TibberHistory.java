@@ -14,6 +14,7 @@ package org.openhab.binding.tibber.internal.history;
 
 import static org.openhab.binding.tibber.internal.TibberBindingConstants.*;
 
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ScheduledExecutorService;
@@ -371,7 +372,7 @@ public class TibberHistory {
         Request request = handler.getRequest();
         String content = String.format(QUERY_CONTAINER, body);
         logger.debug("History query: {}", content);
-        request.body(new StringRequestContent(content, "utf-8"));
+        request.body(new StringRequestContent(content, StandardCharsets.UTF_8));
         try {
             ContentResponse cr = request.timeout(10, TimeUnit.SECONDS).send();
             int status = cr.getStatus();

@@ -100,8 +100,10 @@ public class FanRestApi {
             this.logger.debug("Performing Post: 'URL: {}, Payload: '{}'", this.url, payloadJson);
             Request postRequest = this.client.POST(this.url);
             postRequest.timeout(10, TimeUnit.SECONDS);
-            postRequest.headers(h -> h.add(HttpHeader.ACCEPT, MediaType.APPLICATION_JSON));
-            postRequest.headers(h -> h.add(HttpHeader.CONTENT_TYPE, MediaType.APPLICATION_JSON));
+            postRequest.headers(h -> {
+                h.add(HttpHeader.ACCEPT, MediaType.APPLICATION_JSON);
+                h.add(HttpHeader.CONTENT_TYPE, MediaType.APPLICATION_JSON);
+            });
             postRequest.body(new StringRequestContent(payloadJson, StandardCharsets.UTF_8));
             ContentResponse postResponse = postRequest.send();
             this.logger.debug("Response status: {}", postResponse.getStatus());

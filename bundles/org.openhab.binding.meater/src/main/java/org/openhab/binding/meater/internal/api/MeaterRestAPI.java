@@ -139,11 +139,11 @@ public class MeaterRestAPI {
                 try {
                     Request request = httpClient.newRequest(API_ENDPOINT + uri) //
                             .method(HttpMethod.GET) //
-                            .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS)
-                            .headers(h -> h.add(HttpHeader.AUTHORIZATION, "Bearer " + authToken))
-                            .headers(h -> h.add(HttpHeader.ACCEPT, JSON_CONTENT_TYPE))
-                            .headers(h -> h.add(HttpHeader.ACCEPT_LANGUAGE, localeProvider.getLocale().getLanguage()))
-                            .agent(userAgent);
+                            .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS).headers(h -> {
+                                h.add(HttpHeader.AUTHORIZATION, "Bearer " + authToken);
+                                h.add(HttpHeader.ACCEPT, JSON_CONTENT_TYPE);
+                                h.add(HttpHeader.ACCEPT_LANGUAGE, localeProvider.getLocale().getLanguage());
+                            }).agent(userAgent);
 
                     ContentResponse response = request.send();
                     String content = response.getContentAsString();

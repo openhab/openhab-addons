@@ -190,8 +190,10 @@ public class MyWarmupApi {
                 h.remove(HttpHeader.USER_AGENT);
                 h.add(HttpHeader.USER_AGENT, WarmupBindingConstants.USER_AGENT);
             });
-            request.headers(h -> h.add(HttpHeader.CONTENT_TYPE, "application/json"));
-            request.headers(h -> h.add("App-Token", WarmupBindingConstants.APP_TOKEN));
+            request.headers(h -> {
+                h.add(HttpHeader.CONTENT_TYPE, "application/json");
+                h.add("App-Token", WarmupBindingConstants.APP_TOKEN);
+            });
             if (authenticated) {
                 request.headers(h -> h.add("Warmup-Authorization", authToken));
             }

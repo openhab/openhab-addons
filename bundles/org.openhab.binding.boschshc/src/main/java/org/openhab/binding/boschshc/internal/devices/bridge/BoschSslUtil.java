@@ -104,9 +104,9 @@ public class BoschSslUtil {
         return Paths.get(OpenHAB.getUserDataFolder(), "etc", getBoschShcServerId() + ".jks").toString();
     }
 
-    public SslContextFactory getSslContextFactory() throws PairingFailedException {
+    public SslContextFactory.Client getSslContextFactory() throws PairingFailedException {
         // Instantiate and configure the SslContextFactory
-        SslContextFactory sslContextFactory = new SslContextFactory.Client.Client(true); // Accept all certificates
+        SslContextFactory.Client sslContextFactory = new SslContextFactory.Client(true); // Accept all certificates
 
         // during pairing the cert from this keystore is accessed by HTTP client via name
         sslContextFactory.setKeyStore(getKeyStoreAndCreateIfNecessary());

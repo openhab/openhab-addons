@@ -166,7 +166,7 @@ public class BridgeHandler extends BaseBridgeHandler {
             return;
         }
 
-        SslContextFactory factory;
+        SslContextFactory.Client factory;
         try {
             // prepare SSL key and certificates
             factory = new BoschSslUtil(ipAddress).getSslContextFactory();

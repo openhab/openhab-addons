@@ -260,10 +260,12 @@ public class BridgeRemoteEnedisWebHandler extends BridgeRemoteBaseHandler {
             // ======================================================
             uri = URL_MON_COMPTE + "/auth/json/authenticate?realm=/enedis&goto=" + gotoUri;
 
-            result = httpClient.POST(uri).headers(h -> h.add("X-NoSession", "true"))
-                    .headers(h -> h.add("X-Password", "anonymous"))
-                    .headers(h -> h.add("X-Requested-With", "XMLHttpRequest"))
-                    .headers(h -> h.add("X-Username", "anonymous")).send();
+            result = httpClient.POST(uri).headers(h -> {
+                h.add("X-NoSession", "true");
+                h.add("X-Password", "anonymous");
+                h.add("X-Requested-With", "XMLHttpRequest");
+                h.add("X-Username", "anonymous");
+            }).send();
             if (result.getStatus() != HttpStatus.OK_200) {
                 throw new LinkyException("Connection failed step 3 - auth1: %s", result.getContentAsString());
             }
@@ -283,11 +285,13 @@ public class BridgeRemoteEnedisWebHandler extends BridgeRemoteBaseHandler {
             // ======================================================
             logger.debug("Step 3: auth2 - send the auth data");
             // ======================================================
-            result = httpClient.POST(uri).headers(h -> h.add(HttpHeader.CONTENT_TYPE, MediaType.APPLICATION_JSON))
-                    .headers(h -> h.add("X-NoSession", "true")).headers(h -> h.add("X-Password", "anonymous"))
-                    .headers(h -> h.add("X-Requested-With", "XMLHttpRequest"))
-                    .headers(h -> h.add("X-Username", "anonymous"))
-                    .body(new StringRequestContent(gson.toJson(authData))).send();
+            result = httpClient.POST(uri).headers(h -> {
+                h.add(HttpHeader.CONTENT_TYPE, MediaType.APPLICATION_JSON);
+                h.add("X-NoSession", "true");
+                h.add("X-Password", "anonymous");
+                h.add("X-Requested-With", "XMLHttpRequest");
+                h.add("X-Username", "anonymous");
+            }).body(new StringRequestContent(gson.toJson(authData))).send();
             if (result.getStatus() != HttpStatus.OK_200) {
                 throw new LinkyException("Connection failed step 3 - auth2 : %s", result.getContentAsString());
             }

@@ -237,11 +237,11 @@ public class SensorThingHandler extends BaseThingHandler {
         McdBridgeHandler localMcdBridgeHandler = mcdBridgeHandler;
         if (localMcdBridgeHandler != null) {
             String accessToken = localMcdBridgeHandler.getAccessToken();
-            Request request = httpClient.newRequest(urlString).method(HttpMethod.GET)
-                    .headers(h -> h.add(HttpHeader.HOST, "cunds-syncapi.azurewebsites.net"))
-                    .headers(h -> h.add(HttpHeader.ACCEPT, "application/json"))
-                    .headers(h -> h.add(HttpHeader.AUTHORIZATION, "Bearer " + accessToken))
-                    .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+            Request request = httpClient.newRequest(urlString).method(HttpMethod.GET).headers(h -> {
+                h.add(HttpHeader.HOST, "cunds-syncapi.azurewebsites.net");
+                h.add(HttpHeader.ACCEPT, "application/json");
+                h.add(HttpHeader.AUTHORIZATION, "Bearer " + accessToken);
+            }).timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS);
 
             request.send(new BufferingResponseListener() {
                 @NonNullByDefault({})
@@ -270,10 +270,11 @@ public class SensorThingHandler extends BaseThingHandler {
             String accessToken = localMcdBridgeHandler.getAccessToken();
             Request request = httpClient
                     .newRequest("https://cunds-syncapi.azurewebsites.net/api/Device?serialNumber=" + serialNumber)
-                    .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS).method(HttpMethod.GET)
-                    .headers(h -> h.add(HttpHeader.HOST, "cunds-syncapi.azurewebsites.net"))
-                    .headers(h -> h.add(HttpHeader.ACCEPT, "application/json"))
-                    .headers(h -> h.add(HttpHeader.AUTHORIZATION, "Bearer " + accessToken));
+                    .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS).method(HttpMethod.GET).headers(h -> {
+                        h.add(HttpHeader.HOST, "cunds-syncapi.azurewebsites.net");
+                        h.add(HttpHeader.ACCEPT, "application/json");
+                        h.add(HttpHeader.AUTHORIZATION, "Bearer " + accessToken);
+                    });
             request.send(new BufferingResponseListener() {
                 @NonNullByDefault({})
                 @Override
@@ -303,10 +304,11 @@ public class SensorThingHandler extends BaseThingHandler {
         if (localMcdBridgeHandler != null) {
             String accessToken = localMcdBridgeHandler.getAccessToken();
             Request request = httpClient.newRequest("https://cunds-syncapi.azurewebsites.net/api/ApiSensor/GetEventDef")
-                    .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS).method(HttpMethod.GET)
-                    .headers(h -> h.add(HttpHeader.HOST, "cunds-syncapi.azurewebsites.net"))
-                    .headers(h -> h.add(HttpHeader.ACCEPT, "application/json"))
-                    .headers(h -> h.add(HttpHeader.AUTHORIZATION, "Bearer " + accessToken));
+                    .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS).method(HttpMethod.GET).headers(h -> {
+                        h.add(HttpHeader.HOST, "cunds-syncapi.azurewebsites.net");
+                        h.add(HttpHeader.ACCEPT, "application/json");
+                        h.add(HttpHeader.AUTHORIZATION, "Bearer " + accessToken);
+                    });
             request.send(new BufferingResponseListener() {
                 @NonNullByDefault({})
                 @Override
@@ -408,10 +410,11 @@ public class SensorThingHandler extends BaseThingHandler {
                 Date date = new Date();
                 String dateString = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ").format(date);
                 Request request = httpClient.newRequest("https://cunds-syncapi.azurewebsites.net/api/ApiSensor")
-                        .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS).method(HttpMethod.POST)
-                        .headers(h -> h.add(HttpHeader.CONTENT_TYPE, "application/json"))
-                        .headers(h -> h.add(HttpHeader.ACCEPT, "application/json"))
-                        .headers(h -> h.add(HttpHeader.AUTHORIZATION, "Bearer " + accessToken));
+                        .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS).method(HttpMethod.POST).headers(h -> {
+                            h.add(HttpHeader.CONTENT_TYPE, "application/json");
+                            h.add(HttpHeader.ACCEPT, "application/json");
+                            h.add(HttpHeader.AUTHORIZATION, "Bearer " + accessToken);
+                        });
                 JsonObject jsonObject = new JsonObject();
                 jsonObject.addProperty("SerialNumber", serialNumber);
                 jsonObject.addProperty("IdApiSensorEventDef", sensorEventDef);
