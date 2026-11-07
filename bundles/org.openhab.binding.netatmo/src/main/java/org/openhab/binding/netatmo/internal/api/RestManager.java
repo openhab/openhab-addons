@@ -56,6 +56,11 @@ public abstract class RestManager {
         return executeUri(uriBuilder, HttpMethod.POST, clazz, payload, payload == null ? null : CONTENT_APP_JSON);
     }
 
+    protected <T extends ApiResponse<?>> T put(UriBuilder uriBuilder, Class<T> clazz, @Nullable String payload)
+            throws NetatmoException {
+        return executeUri(uriBuilder, HttpMethod.PUT, clazz, payload, payload == null ? null : CONTENT_APP_JSON);
+    }
+
     protected <T extends ApiResponse<?>> T delete(UriBuilder uriBuilder, Class<T> clazz) throws NetatmoException {
         return executeUri(uriBuilder, HttpMethod.DELETE, clazz, null, null);
     }
