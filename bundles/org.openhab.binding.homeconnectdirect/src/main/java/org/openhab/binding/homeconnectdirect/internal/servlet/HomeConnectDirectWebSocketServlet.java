@@ -21,6 +21,8 @@ import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.ee10.servlet.ServletContextHandler;
+import org.eclipse.jetty.ee10.websocket.server.JettyWebSocketServerContainer;
 import org.eclipse.jetty.ee10.websocket.server.JettyWebSocketServlet;
 import org.eclipse.jetty.ee10.websocket.server.JettyWebSocketServletFactory;
 import org.eclipse.jetty.http.HttpStatus;
@@ -31,6 +33,7 @@ import org.eclipse.jetty.websocket.api.annotations.OnWebSocketError;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketOpen;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
+import org.eclipse.jetty.websocket.core.server.WebSocketServerComponents;
 import org.openhab.binding.homeconnectdirect.internal.common.utils.ConfigurationUtils;
 import org.openhab.binding.homeconnectdirect.internal.common.utils.StringUtils;
 import org.openhab.binding.homeconnectdirect.internal.handler.BaseHomeConnectDirectHandler;
@@ -48,6 +51,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 
+import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -80,6 +84,16 @@ public class HomeConnectDirectWebSocketServlet extends JettyWebSocketServlet {
         this.configurationAdmin = configurationAdmin;
         this.securityContext = ServletSecurityContext.get();
         this.gson = ConfigurationUtils.createGson();
+    }
+
+    @Override
+    public void init() throws ServletException {
+        // The OSGi Servlet Whiteboard does not run Jetty's JettyWebSocketServletContainerInitializer, so the
+        // WebSocket components and container JettyWebSocketServlet.init() relies on must be created here
+        ServletContextHandler context = ServletContextHandler.getServletContextHandler(getServletContext());
+        WebSocketServerComponents.ensureWebSocketComponents(context.getServer(), context);
+        JettyWebSocketServerContainer.ensureContainer(getServletContext());
+        super.init();
     }
 
     @Override

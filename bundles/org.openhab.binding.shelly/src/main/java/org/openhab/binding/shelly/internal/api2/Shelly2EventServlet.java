@@ -21,12 +21,15 @@ import java.util.concurrent.ScheduledExecutorService;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.ee10.servlet.ServletContextHandler;
 import org.eclipse.jetty.ee10.websocket.server.JettyServerUpgradeRequest;
 import org.eclipse.jetty.ee10.websocket.server.JettyServerUpgradeResponse;
 import org.eclipse.jetty.ee10.websocket.server.JettyWebSocketCreator;
+import org.eclipse.jetty.ee10.websocket.server.JettyWebSocketServerContainer;
 import org.eclipse.jetty.ee10.websocket.server.JettyWebSocketServlet;
 import org.eclipse.jetty.ee10.websocket.server.JettyWebSocketServletFactory;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
+import org.eclipse.jetty.websocket.core.server.WebSocketServerComponents;
 import org.openhab.binding.shelly.internal.handler.ShellyThingTable;
 import org.openhab.core.common.ThreadPoolManager;
 import org.openhab.core.io.net.http.WebSocketFactory;
@@ -82,6 +85,16 @@ public class Shelly2EventServlet extends JettyWebSocketServlet {
         } catch (Exception e) {
             logger.warn("Failed to stop servlet WebSocket client: {}", e.getMessage(), e);
         }
+    }
+
+    @Override
+    public void init() throws ServletException {
+        // The OSGi Servlet Whiteboard does not run Jetty's JettyWebSocketServletContainerInitializer, so the
+        // WebSocket components and container JettyWebSocketServlet.init() relies on must be created here
+        ServletContextHandler context = ServletContextHandler.getServletContextHandler(getServletContext());
+        WebSocketServerComponents.ensureWebSocketComponents(context.getServer(), context);
+        JettyWebSocketServerContainer.ensureContainer(getServletContext());
+        super.init();
     }
 
     /**
