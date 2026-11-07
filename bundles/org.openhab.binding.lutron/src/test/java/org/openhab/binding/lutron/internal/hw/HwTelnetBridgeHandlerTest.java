@@ -81,7 +81,10 @@ public class HwTelnetBridgeHandlerTest {
         created.initialize();
 
         // A processor without Ethernet logins just shows its prompt
+        // Bounded, so that a regression fails the test instead of hanging the build
+        listening.setSoTimeout(WAIT_MS);
         Socket socket = listening.accept();
+        socket.setSoTimeout(WAIT_MS);
         processorSocket = socket;
         socket.getOutputStream().write("LNET> ".getBytes(StandardCharsets.US_ASCII));
         socket.getOutputStream().flush();

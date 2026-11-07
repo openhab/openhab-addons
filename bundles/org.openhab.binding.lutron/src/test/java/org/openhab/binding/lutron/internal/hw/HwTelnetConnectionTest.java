@@ -60,9 +60,13 @@ public class HwTelnetConnectionTest {
 
         FakeProcessor() throws IOException {
             server = new ServerSocket(0, 1, InetAddress.getLoopbackAddress());
+            // Bounded, so that a regression fails the test instead of hanging the build
+            server.setSoTimeout((int) TimeUnit.SECONDS.toMillis(WAIT_SECONDS));
             Thread acceptor = new Thread(() -> {
                 try {
-                    accepted.add(server.accept());
+                    Socket socket = server.accept();
+                    socket.setSoTimeout((int) TimeUnit.SECONDS.toMillis(WAIT_SECONDS));
+                    accepted.add(socket);
                 } catch (IOException e) {
                     // closed by the test
                 }
