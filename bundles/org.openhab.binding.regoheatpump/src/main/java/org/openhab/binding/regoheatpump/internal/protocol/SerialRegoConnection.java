@@ -15,6 +15,8 @@ package org.openhab.binding.regoheatpump.internal.protocol;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -22,6 +24,8 @@ import org.openhab.core.io.transport.serial.PortInUseException;
 import org.openhab.core.io.transport.serial.SerialPort;
 import org.openhab.core.io.transport.serial.SerialPortIdentifier;
 import org.openhab.core.io.transport.serial.UnsupportedCommOperationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link SerialRegoConnection} is responsible for creating serial connections to clients.
@@ -34,6 +38,8 @@ public class SerialRegoConnection implements RegoConnection {
     private final String portName;
     private @Nullable SerialPort serialPort;
     private final SerialPortIdentifier serialPortIdentifier;
+    private static final Map<String, Object> PORT_LOCKS = new ConcurrentHashMap<>();
+    private static final Logger logger = LoggerFactory.getLogger(SerialRegoConnection.class);
 
     public SerialRegoConnection(SerialPortIdentifier serialPortIdentifier, int baudRate) {
         this.serialPortIdentifier = serialPortIdentifier;
@@ -43,16 +49,21 @@ public class SerialRegoConnection implements RegoConnection {
 
     @Override
     public void connect() throws IOException {
-        try {
-            SerialPort serialPort = serialPortIdentifier.open(SerialRegoConnection.class.getCanonicalName(), 2000);
-            serialPort.enableReceiveTimeout(100);
-            serialPort.setSerialPortParams(baudRate, SerialPort.DATABITS_8, SerialPort.STOPBITS_1,
-                    SerialPort.PARITY_NONE);
-            this.serialPort = serialPort;
-        } catch (PortInUseException e) {
-            throw new IOException("Serial port already used: " + portName, e);
-        } catch (UnsupportedCommOperationException e) {
-            throw new IOException("Unsupported operation on '" + portName + "': " + e.getMessage(), e);
+        Object lock = PORT_LOCKS.computeIfAbsent(portName, k -> new Object());
+
+        synchronized (lock) {
+            try {
+                SerialPort serialPort = serialPortIdentifier.open(SerialRegoConnection.class.getCanonicalName(), 2000);
+                serialPort.enableReceiveTimeout(100);
+                serialPort.setSerialPortParams(baudRate, SerialPort.DATABITS_8, SerialPort.STOPBITS_1,
+                        SerialPort.PARITY_NONE);
+                this.serialPort = serialPort;
+            } catch (PortInUseException e) {
+                logger.debug("Port '{}' is in use (owner: {}).", portName, e.getMessage());
+                throw new IOException("Serial port already used: " + portName, e);
+            } catch (UnsupportedCommOperationException e) {
+                throw new IOException("Unsupported operation on '" + portName + "': " + e.getMessage(), e);
+            }
         }
     }
 
@@ -64,9 +75,43 @@ public class SerialRegoConnection implements RegoConnection {
     @Override
     public void close() {
         SerialPort serialPort = this.serialPort;
-        this.serialPort = null;
+        this.serialPort = null; // Nullify first to prevent concurrent access
+
         if (serialPort != null) {
-            serialPort.close();
+            try {
+                // Close input/output streams first to ensure clean shutdown
+                try {
+                    InputStream inputStream = serialPort.getInputStream();
+                    if (inputStream != null) {
+                        inputStream.close();
+                    }
+                } catch (Exception e) {
+                    // Log but continue with port closure
+                }
+
+                try {
+                    OutputStream outputStream = serialPort.getOutputStream();
+                    if (outputStream != null) {
+                        outputStream.close();
+                    }
+                } catch (Exception e) {
+                    // Log but continue with port closure
+                }
+
+                // Remove any event listeners to prevent callbacks after closure
+                try {
+                    serialPort.removeEventListener();
+                } catch (Exception e) {
+                    // Some implementations may not support this
+                }
+
+                // Finally close the serial port
+                serialPort.close();
+
+            } catch (Exception e) {
+                // Log the error but don't rethrow - we want to ensure the port reference is nullified
+                logger.warn("Error closing serial port {}: {}", portName, e.getMessage(), e);
+            }
         }
     }
 

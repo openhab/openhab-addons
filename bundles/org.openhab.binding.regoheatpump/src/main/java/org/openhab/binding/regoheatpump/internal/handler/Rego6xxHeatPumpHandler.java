@@ -12,7 +12,15 @@
  */
 package org.openhab.binding.regoheatpump.internal.handler;
 
-import static org.openhab.binding.regoheatpump.internal.RegoHeatPumpBindingConstants.*;
+import static org.openhab.binding.regoheatpump.internal.RegoHeatPumpBindingConstants.CHANNEL_FRONT_PANEL_ADDITIONAL_HEAT_LAMP;
+import static org.openhab.binding.regoheatpump.internal.RegoHeatPumpBindingConstants.CHANNEL_FRONT_PANEL_ALARM_LAMP;
+import static org.openhab.binding.regoheatpump.internal.RegoHeatPumpBindingConstants.CHANNEL_FRONT_PANEL_POWER_LAMP;
+import static org.openhab.binding.regoheatpump.internal.RegoHeatPumpBindingConstants.CHANNEL_FRONT_PANEL_PUMP_LAMP;
+import static org.openhab.binding.regoheatpump.internal.RegoHeatPumpBindingConstants.CHANNEL_FRONT_PANEL_WATER_HEATER_LAMP;
+import static org.openhab.binding.regoheatpump.internal.RegoHeatPumpBindingConstants.CHANNEL_LAST_ERROR;
+import static org.openhab.binding.regoheatpump.internal.RegoHeatPumpBindingConstants.CHANNEL_LAST_ERROR_TIMESTAMP;
+import static org.openhab.binding.regoheatpump.internal.RegoHeatPumpBindingConstants.CHANNEL_LAST_ERROR_TYPE;
+import static org.openhab.binding.regoheatpump.internal.RegoHeatPumpBindingConstants.REFRESH_INTERVAL;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -22,6 +30,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -64,6 +73,9 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 abstract class Rego6xxHeatPumpHandler extends BaseThingHandler {
+    private static final int DEFAULT_RETRY = 5;
+    private static final int CONNECT_RETRY_BASE_MILLIS = 500;
+    private static final int CONNECT_RETRY_MAX_MILLIS = 5000;
 
     private static final class ChannelDescriptor {
         private @Nullable Date lastUpdate;
@@ -117,11 +129,7 @@ abstract class Rego6xxHeatPumpHandler extends BaseThingHandler {
     public void dispose() {
         super.dispose();
 
-        RegoConnection connection = this.connection;
-        this.connection = null;
-        if (connection != null) {
-            connection.close();
-        }
+        closeAndNullifyConnection("Handler disposal");
 
         ScheduledFuture<?> scheduledRefreshFuture = this.scheduledRefreshFuture;
         this.scheduledRefreshFuture = null;
@@ -291,8 +299,25 @@ abstract class Rego6xxHeatPumpHandler extends BaseThingHandler {
             return executeCommand(channelIID, command, parser);
         } catch (IOException | Rego6xxProtocolException e) {
             if (retry > 0) {
-                logger.debug("Executing command for channel '{}' failed, retry {}.", channelIID, retry, e);
-                Thread.sleep(200);
+                // Calculate attempt number based on DEFAULT_RETRY (so first attempt = 1)
+                int attempt = DEFAULT_RETRY - retry + 1;
+                long sleepTime = CONNECT_RETRY_BASE_MILLIS * (1L << (Math.max(0, attempt - 1)));
+                if (sleepTime > CONNECT_RETRY_MAX_MILLIS) {
+                    sleepTime = CONNECT_RETRY_MAX_MILLIS;
+                }
+                // add a small random jitter to avoid thundering herd
+                sleepTime += ThreadLocalRandom.current().nextLong(0, 200);
+
+                logger.debug("Executing command for channel '{}' failed (attempt {}). Retrying in {} ms.", channelIID,
+                        attempt, sleepTime, e);
+
+                // Ensure connection is fully cleaned up before retry. This prevents "port in use" errors on retry
+                // attempts
+                closeAndNullifyConnection("Retry attempt after failure");
+
+                // Give more time for port to be released by OS
+                Thread.sleep(sleepTime);
+
                 return executeCommandWithRetry(channelIID, command, parser, retry - 1);
             }
 
@@ -326,16 +351,40 @@ abstract class Rego6xxHeatPumpHandler extends BaseThingHandler {
         }
     }
 
+    /**
+     * Safely closes and nullifies the connection with proper error handling and logging.
+     * This ensures the serial port is properly released and prevents "port in use" errors.
+     * 
+     * @param reason the reason for closing the connection (for logging)
+     */
+    private void closeAndNullifyConnection(String reason) {
+        RegoConnection connection = this.connection;
+        this.connection = null; // Nullify first to prevent concurrent access
+
+        if (connection != null) {
+            try {
+                logger.debug("Closing connection due to: {}", reason);
+                connection.close();
+                logger.debug("Connection closed successfully");
+            } catch (Exception e) {
+                // Log but don't rethrow - we want to ensure connection is nullified
+                logger.warn("Error while closing connection: {}", e.getMessage(), e);
+            }
+        }
+
+        // Force thing status to UNKNOWN to trigger reconnection on next access
+        if (thing.getStatus() == ThingStatus.ONLINE) {
+            updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.COMMUNICATION_ERROR, "Connection lost: " + reason);
+        }
+    }
+
     private <T> T executeCommand(@Nullable String channelIID, byte[] command, ResponseParser<T> parser)
             throws Rego6xxProtocolException, IOException, InterruptedException {
         try {
             return executeCommandInternal(channelIID, command, parser);
-        } catch (IOException e) {
-            RegoConnection connection = this.connection;
-            if (connection != null) {
-                connection.close();
-            }
-
+        } catch (IOException | Rego6xxProtocolException | InterruptedException | RuntimeException e) {
+            // Close and nullify connection on any failure to ensure clean state for retries
+            closeAndNullifyConnection("executeCommand failed: " + e.getMessage());
             throw e;
         }
     }
@@ -365,9 +414,11 @@ abstract class Rego6xxHeatPumpHandler extends BaseThingHandler {
         // Send command to device and wait for response.
         RegoConnection connection = this.connection;
         if (connection == null) {
-            throw new IOException("Unable to execute command - no connection available");
-
+            // Lazily create a connection if it was not present (e.g. after previous failure)
+            connection = createConnection();
+            this.connection = connection;
         }
+
         if (!connection.isConnected()) {
             connection.connect();
         }
