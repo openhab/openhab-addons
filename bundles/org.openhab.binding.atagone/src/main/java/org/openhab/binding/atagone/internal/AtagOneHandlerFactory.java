@@ -53,7 +53,8 @@ public class AtagOneHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
         if (THING_TYPE_THERMOSTAT.equals(thing.getThingTypeUID())) {
-            return new AtagOneHandler(thing, httpClientFactory.getCommonHttpClient(), stateDescriptionProvider);
+            return new AtagOneHandler(thing, httpClientFactory.getCommonHttpClient(), httpClientFactory,
+                    stateDescriptionProvider);
         }
         return null;
     }

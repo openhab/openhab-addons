@@ -94,8 +94,8 @@ public class AtagOneActions implements ThingActions {
             logger.warn("activateFireplace called with no handler bound");
             return;
         }
-        if (hours <= 0) {
-            logger.warn("activateFireplace: hours must be positive, got {}", hours);
+        if (hours < 1 || hours > 24) {
+            logger.warn("activateFireplace: hours must be 1 to 24 (hours, not seconds), got {}", hours);
             return;
         }
         theHandler.enqueueFireplaceActivation(hours * AtagOneHandler.SECONDS_PER_HOUR);
