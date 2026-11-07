@@ -68,7 +68,10 @@ public class EnergyChartsHandler extends BaseThingHandler {
     private final TimeZoneProvider timeZoneProvider;
     private final Clock clock;
     private final Unit<?> priceUnit;
+    private final Object lock = new Object();
 
+    // counted up on initialize and dispose, so results of an earlier session are dropped
+    private long session;
     private @Nullable EnergyChartsApi api;
     private @Nullable ScheduledFuture<?> refreshJob;
     private @Nullable ScheduledFuture<?> stateJob;
@@ -96,10 +99,13 @@ public class EnergyChartsHandler extends BaseThingHandler {
             return;
         }
 
-        api = new EnergyChartsApi(httpClient, config);
-        prices = null;
-        currentPrice = null;
-        lastRequest = Instant.EPOCH;
+        synchronized (lock) {
+            session++;
+            api = new EnergyChartsApi(httpClient, config);
+            prices = null;
+            currentPrice = null;
+            lastRequest = Instant.EPOCH;
+        }
         updateStatus(ThingStatus.UNKNOWN);
 
         refreshJob = scheduler.scheduleWithFixedDelay(this::refreshIfNeeded, 0, REFRESH_CHECK_INTERVAL.toSeconds(),
@@ -126,42 +132,59 @@ public class EnergyChartsHandler extends BaseThingHandler {
         }
         stateJob = null;
 
-        api = null;
-        prices = null;
+        synchronized (lock) {
+            session++;
+            api = null;
+            prices = null;
+        }
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType && CHANNEL_SPOT_PRICE.equals(channelUID.getId())) {
-            SortedSet<MarketPrice> localPrices = prices;
-            if (localPrices != null) {
-                sendTimeSeries(localPrices);
-                updateState(CHANNEL_SPOT_PRICE, toState(findCurrentPrice(localPrices)));
+            synchronized (lock) {
+                SortedSet<MarketPrice> localPrices = prices;
+                if (localPrices != null) {
+                    sendTimeSeries(localPrices);
+                    updateState(CHANNEL_SPOT_PRICE, toState(findCurrentPrice(localPrices)));
+                }
             }
         }
     }
 
-    private synchronized void refreshIfNeeded() {
+    private void refreshIfNeeded() {
         ZonedDateTime now = ZonedDateTime.now(clock).withZoneSameInstant(timeZoneProvider.getTimeZone());
-        if (thing.getStatus() == ThingStatus.ONLINE && !needsRefresh(prices, now, lastRequest)) {
-            return;
+        EnergyChartsApi localApi;
+        long localSession;
+        synchronized (lock) {
+            localApi = api;
+            localSession = session;
+            if (localApi == null
+                    || (thing.getStatus() == ThingStatus.ONLINE && !needsRefresh(prices, now, lastRequest))) {
+                return;
+            }
+            lastRequest = now.toInstant();
         }
 
-        EnergyChartsApi localApi = api;
-        if (localApi == null) {
-            return;
-        }
-
-        lastRequest = now.toInstant();
+        // the request runs without the lock, so dispose() does not wait for it
         try {
             SortedSet<MarketPrice> refreshedPrices = localApi.getData(now.toLocalDate());
-            prices = refreshedPrices;
-            sendTimeSeries(refreshedPrices);
-            currentPrice = null;
-            updateCurrentStates();
-            updateStatus(ThingStatus.ONLINE);
+            synchronized (lock) {
+                if (session != localSession) {
+                    return;
+                }
+                prices = refreshedPrices;
+                sendTimeSeries(refreshedPrices);
+                currentPrice = null;
+                updateCurrentStates();
+                updateStatus(ThingStatus.ONLINE);
+            }
         } catch (EnergyChartsApiException e) {
-            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            synchronized (lock) {
+                if (session == localSession) {
+                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                }
+            }
         }
     }
 
@@ -194,17 +217,19 @@ public class EnergyChartsHandler extends BaseThingHandler {
     }
 
     private void updateCurrentStates() {
-        SortedSet<MarketPrice> localPrices = prices;
-        if (localPrices == null) {
-            return;
-        }
+        synchronized (lock) {
+            SortedSet<MarketPrice> localPrices = prices;
+            if (localPrices == null) {
+                return;
+            }
 
-        MarketPrice price = findCurrentPrice(localPrices);
-        if (price != null && price.equals(currentPrice)) {
-            return;
+            MarketPrice price = findCurrentPrice(localPrices);
+            if (price != null && price.equals(currentPrice)) {
+                return;
+            }
+            currentPrice = price;
+            updateState(CHANNEL_SPOT_PRICE, toState(price));
         }
-        currentPrice = price;
-        updateState(CHANNEL_SPOT_PRICE, toState(price));
     }
 
     private @Nullable MarketPrice findCurrentPrice(SortedSet<MarketPrice> localPrices) {
