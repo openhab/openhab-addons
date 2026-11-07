@@ -41,6 +41,7 @@ import org.eclipse.jetty.client.util.FormContentProvider;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.util.Fields;
+import org.openhab.binding.atagone.internal.dto.ControlDTO;
 import org.openhab.binding.atagone.internal.dto.ControlUpdateDTO;
 import org.openhab.binding.atagone.internal.dto.DeviceConfigDTO;
 import org.openhab.binding.atagone.internal.dto.DeviceConfigUpdateDTO;
@@ -69,7 +70,8 @@ import com.google.gson.JsonParser;
  * the owner's name and address. The reply is a JSON string that contains the JSON, so it is parsed twice, and its
  * report has no {@code details} block.</li>
  * <li>Writes post the forms of the web pages (modes, settings form, schedules). Display brightness, language and the
- * two sensor offsets are not on those pages; the portal takes them on its {@code update} route.</li>
+ * two sensor offsets are not on those pages, and neither is a mode's stored duration; the portal takes them on its
+ * {@code update} route.</li>
  * <li>Every write is checked against the portal's reply or by reading the value back.</li>
  * </ul>
  * Requests are spaced one second apart.
@@ -105,6 +107,8 @@ public class AtagOnePortalClient implements AtagOneConnection {
     private static final Gson GSON = new Gson();
 
     // The portal's report has no details block; the handler publishes these as UNDEF.
+    private static final Set<String> DURATION_FIELDS = Set.of("extend_duration", "fireplace_duration",
+            "vacation_duration");
     private static final Set<String> UNSUPPORTED_CHANNELS = Set.of(CHANNEL_MODULATION_LEVEL, CHANNEL_BOILER_TEMPERATURE,
             CHANNEL_BOILER_RETURN_TEMPERATURE);
 
@@ -193,6 +197,8 @@ public class AtagOnePortalClient implements AtagOneConnection {
                 && control.equals(Set.of("ch_mode", "ch_mode_duration", "vacation_duration"))
                 && config.equals(Set.of("start_vacation")) && duration != null) {
             runInSession(() -> setVacation(duration));
+        } else if (noConfig && control.size() == 1 && DURATION_FIELDS.containsAll(control)) {
+            runInSession(() -> writeDuration(control.iterator().next(), controlUpdate));
         } else if (configUpdate != null && !config.isEmpty() && !config.contains("start_vacation")
                 && (control.isEmpty() || control.equals(Set.of("ch_control_mode")))) {
             Integer controlMode = controlUpdate.ch_control_mode;
@@ -208,7 +214,30 @@ public class AtagOnePortalClient implements AtagOneConnection {
         return GSON.toJsonTree(update).getAsJsonObject().keySet();
     }
 
-    private String sendConfigurationUpdate(Map<String, String> configuration) throws AtagOneCommunicationException {
+    // Stores a mode's duration without starting the mode, like the local API does; the web pages have no call for it.
+    private void writeDuration(String field, ControlUpdateDTO update) throws AtagOneCommunicationException {
+        Long value = switch (field) {
+            case "extend_duration" -> update.extend_duration;
+            case "fireplace_duration" -> update.fireplace_duration;
+            default -> update.vacation_duration;
+        };
+        if (value == null) {
+            throw new AtagOneCommunicationException("No value to store for " + field);
+        }
+        long seconds = value;
+        sendUpdate("control", Map.of(field, Long.toString(seconds)));
+        ControlDTO stored = fetchState().control;
+        long confirmed = switch (field) {
+            case "extend_duration" -> stored.extend_duration;
+            case "fireplace_duration" -> stored.fireplace_duration;
+            default -> stored.vacation_duration;
+        };
+        if (confirmed != seconds) {
+            throw new AtagOneCommunicationException("Portal did not store " + field);
+        }
+    }
+
+    private String sendUpdate(String block, Map<String, String> fieldValues) throws AtagOneCommunicationException {
         String token = bearerToken;
         if (token == null) {
             throw new SessionExpiredException();
@@ -216,7 +245,7 @@ public class AtagOnePortalClient implements AtagOneConnection {
         Fields fields = new Fields();
         fields.put("update_message[seqnr]", "0");
         fields.put("update_message[device_id]", requireDeviceId());
-        configuration.forEach((name, value) -> fields.put("update_message[configuration][" + name + "]", value));
+        fieldValues.forEach((name, value) -> fields.put("update_message[" + block + "][" + name + "]", value));
         Request request = newRequest(HttpMethod.POST, "/api/app/update")
                 .header(HttpHeader.AUTHORIZATION, "Bearer " + token).content(new FormContentProvider(fields));
         return checkSession(send(request)).getContentAsString();
@@ -261,7 +290,7 @@ public class AtagOnePortalClient implements AtagOneConnection {
         DeviceConfigDTO current = lastConfiguration;
         Map<String, String> direct = directSettings(update, current);
         if (!direct.isEmpty()) {
-            sendConfigurationUpdate(direct);
+            sendUpdate("configuration", direct);
             if (!applied(direct, fetchState().configuration)) {
                 throw new AtagOneCommunicationException("Portal did not store " + direct.keySet());
             }

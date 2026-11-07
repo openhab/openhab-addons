@@ -44,6 +44,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.openhab.binding.atagone.internal.dto.ControlUpdateDTO;
 import org.openhab.binding.atagone.internal.dto.DeviceConfigUpdateDTO;
@@ -229,6 +230,11 @@ class AtagOnePortalClientTest {
                     .matcher(body);
             while (setting.find()) {
                 configuration.addProperty(setting.group(1), Double.valueOf(setting.group(2)));
+            }
+            com.google.gson.JsonObject control = root.getAsJsonObject("retrieve_reply").getAsJsonObject("control");
+            Matcher duration = Pattern.compile("update_message\\[control\\]\\[(\\w+)\\]=([0-9]+)").matcher(body);
+            while (duration.find()) {
+                control.addProperty(duration.group(1), Long.valueOf(duration.group(2)));
             }
             retrieveReply = new com.google.gson.Gson().toJson(root.toString());
         } catch (IOException e) {
@@ -578,6 +584,54 @@ class AtagOnePortalClientTest {
         assertTrue(lastUpdateRequest.contains("update_message[configuration][language]=0"), lastUpdateRequest);
         assertTrue(lastUpdateRequest.contains("update_message[device_id]=" + DEVICE_ID), lastUpdateRequest);
         assertEquals("", lastSetpointRequest, "the settings form is not posted for these settings");
+    }
+
+    @ParameterizedTest
+    @CsvSource({ "extend_duration, 900", "fireplace_duration, 7200", "vacation_duration, 86400" })
+    void storesAStandaloneDurationThroughTheUpdateRoute(String field, long seconds) throws Exception {
+        AtagOnePortalClient portal = client(PASSWORD);
+        portal.retrieve();
+        ControlUpdateDTO update = new ControlUpdateDTO();
+        switch (field) {
+            case "extend_duration" -> update.extend_duration = seconds;
+            case "fireplace_duration" -> update.fireplace_duration = seconds;
+            default -> update.vacation_duration = seconds;
+        }
+
+        portal.updateControl(update, null);
+
+        assertTrue(lastUpdateRequest.contains("update_message[control][" + field + "]=" + seconds), lastUpdateRequest);
+        assertFalse(lastUpdateRequest.contains("ch_mode"), "a stored duration must not start a mode");
+        assertEquals("", lastSetpointRequest, "no web route is called");
+        RetrieveReplyDTO stored = portal.retrieve();
+        long value = switch (field) {
+            case "extend_duration" -> stored.control.extend_duration;
+            case "fireplace_duration" -> stored.control.fireplace_duration;
+            default -> stored.control.vacation_duration;
+        };
+        assertEquals(seconds, value);
+    }
+
+    @Test
+    void failsWhenThePortalDoesNotStoreTheDuration() throws Exception {
+        AtagOnePortalClient portal = client(PASSWORD);
+        portal.retrieve();
+        ignoreUpdates = true;
+        ControlUpdateDTO update = new ControlUpdateDTO();
+        update.extend_duration = 900L;
+
+        assertThrows(AtagOneCommunicationException.class, () -> portal.updateControl(update, null));
+    }
+
+    @Test
+    void rejectsTwoDurationsWrittenTogether() {
+        AtagOnePortalClient portal = client(PASSWORD);
+        ControlUpdateDTO update = new ControlUpdateDTO();
+        update.extend_duration = 900L;
+        update.fireplace_duration = 3600L;
+
+        assertThrows(AtagOneCommunicationException.class, () -> portal.updateControl(update, null));
+        assertEquals("", lastUpdateRequest);
     }
 
     @Test
