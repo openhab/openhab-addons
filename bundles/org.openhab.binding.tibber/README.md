@@ -132,8 +132,12 @@ All values are read-only.
 
 The Tibber API only returns **completed** periods — for example, an annual query run in May 2026 returns data up to end of 2025.
 The binding automatically fills the gap for the current incomplete period by aggregating data bottom-up:
-daily entries are summed into the current week, weekly entries into the current month, and monthly entries into the current year.
+daily entries are summed into the current week and the current month, and monthly entries into the current year.
+The current month is aggregated from daily entries because weekly entries are dated at the start of a completed ISO week and therefore rarely cover the running month.
 These synthetic entries are transient and will be replaced by real API data once the period closes.
+
+The state of an item linked to a history channel is the newest entry which is not in the future, i.e. the current (or most recently completed) period.
+The binding updates this state explicitly after every history fetch, independently of the state restored by a persistence service.
 
 | Channel ID          | Type            | Description                          | Time Series |
 |---------------------|-----------------|--------------------------------------|-------------|
@@ -155,13 +159,15 @@ These synthetic entries are transient and will be replaced by real API data once
 History channels deliver data as time series, which is not supported by the default [rrd4j](https://www.openhab.org/addons/persistence/rrd4j/) persistence.
 Items linked to history channels **must** be configured with a persistence service that supports time series, such as [InfluxDB](https://www.openhab.org/addons/persistence/influxdb/) or [InMemory](https://www.openhab.org/addons/persistence/inmemory/).
 Without a compatible persistence service, history data will not be stored correctly.
+The current value of the channel is published by the binding itself, so the item state is updated even if a persistence service restores an older state on startup.
 
-#### Initial Fetch on Item Link
+#### Initial Fetch
 
-When a new item is linked to a history channel, the binding performs an **initial fetch for one time window only** — for example, the last year for yearly channels or the last month for monthly channels.
-This keeps the startup load low and avoids requesting the entire available history from the Tibber API at once.
+When an item is linked to a history channel and when the Thing is initialized, the binding fetches all four time windows.
+A window is loaded completely with a paginated fetch if no data is stored for it yet, otherwise only its most recent page is fetched.
+This keeps the startup load low once the history store is populated.
 
-To populate the full available history (all years, months, weeks, or days), trigger the [`fetchHistory`](#fetchhistory) Thing Action manually after linking the item.
+To replace the stored history of a time window with a complete fetch, trigger the [`fetchHistory`](#fetchhistory) Thing Action.
 
 #### Automatic Refresh
 

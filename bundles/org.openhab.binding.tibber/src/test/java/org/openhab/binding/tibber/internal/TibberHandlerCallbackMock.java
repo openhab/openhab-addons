@@ -17,8 +17,11 @@ import static org.mockito.Mockito.mock;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -46,14 +49,20 @@ import org.openhab.core.types.TimeSeries;
  * The {@link TibberHandlerCallbackMock} sets the callback for handler
  *
  * @author Bernd Weymann - Initial contribution
+ * @author Bernd Weymann - Capture history state updates and time series
  */
 @NonNullByDefault
 public class TibberHandlerCallbackMock implements ThingHandlerCallback {
     private static final int STATUS_WAIT_TIME = 10;
     ThingStatusInfo thingStatusInfo = new ThingStatusInfo(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, null);
 
+    private final Map<ChannelUID, State> stateUpdates = new HashMap<>();
+    private final Map<ChannelUID, TimeSeries> timeSeriesSends = new HashMap<>();
+    private final Set<ChannelUID> linkedChannels = new HashSet<>();
+
     @Override
     public void stateUpdated(ChannelUID channelUID, State state) {
+        stateUpdates.put(channelUID, state);
     }
 
     @Override
@@ -62,6 +71,32 @@ public class TibberHandlerCallbackMock implements ThingHandlerCallback {
 
     @Override
     public void sendTimeSeries(ChannelUID channelUID, TimeSeries timeSeries) {
+        timeSeriesSends.put(channelUID, timeSeries);
+    }
+
+    /**
+     * Returns the last state which was sent for the given channel, or null if no state was sent.
+     */
+    public @Nullable State getStateUpdate(ChannelUID channelUID) {
+        return stateUpdates.get(channelUID);
+    }
+
+    /**
+     * Returns the last time series which was sent for the given channel, or null if none was sent.
+     */
+    public @Nullable TimeSeries getTimeSeriesSend(ChannelUID channelUID) {
+        return timeSeriesSends.get(channelUID);
+    }
+
+    /**
+     * Defines whether {@link ThingHandlerCallback#isChannelLinked(ChannelUID)} reports the channel as linked.
+     */
+    public void setChannelLinked(ChannelUID channelUID, boolean linked) {
+        if (linked) {
+            linkedChannels.add(channelUID);
+        } else {
+            linkedChannels.remove(channelUID);
+        }
     }
 
     @Override
@@ -140,7 +175,7 @@ public class TibberHandlerCallbackMock implements ThingHandlerCallback {
 
     @Override
     public boolean isChannelLinked(ChannelUID channelUID) {
-        return false;
+        return linkedChannels.contains(channelUID);
     }
 
     @Override
