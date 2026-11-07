@@ -14,6 +14,9 @@ package org.openhab.binding.tibber.internal.history;
 
 import static org.openhab.binding.tibber.internal.TibberBindingConstants.*;
 
+import java.time.Instant;
+import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ScheduledExecutorService;
@@ -162,6 +165,30 @@ public class TibberHistory {
 
         public int daysInWindow() {
             return 0;
+        }
+
+        /**
+         * Returns the start of the newest period which the Tibber API can have completed at {@code now}.
+         * The API only returns completed periods, so a stored series is up to date when its last entry
+         * is at or after this instant.
+         * <ul>
+         * <li>ANNUAL → start of the previous year</li>
+         * <li>MONTHLY → start of the previous month</li>
+         * <li>WEEKLY → Monday of the previous ISO week</li>
+         * <li>DAILY → start of yesterday</li>
+         * </ul>
+         *
+         * @param now reference time in the binding's time zone
+         * @return start of the newest completed period
+         */
+        public Instant lastCompletedPeriodStart(ZonedDateTime now) {
+            return switch (this) {
+                case ANNUAL -> now.withDayOfYear(1).truncatedTo(ChronoUnit.DAYS).minusYears(1).toInstant();
+                case MONTHLY -> now.withDayOfMonth(1).truncatedTo(ChronoUnit.DAYS).minusMonths(1).toInstant();
+                case WEEKLY -> now.minusDays(now.getDayOfWeek().getValue() - 1).truncatedTo(ChronoUnit.DAYS)
+                        .minusWeeks(1).toInstant();
+                case DAILY -> now.truncatedTo(ChronoUnit.DAYS).minusDays(1).toInstant();
+            };
         }
 
         @Override

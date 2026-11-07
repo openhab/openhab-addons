@@ -54,6 +54,7 @@ import org.openhab.binding.tibber.internal.history.TibberHistorySeries;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.CoreItemFactory;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.scheduler.CronScheduler;
 import org.openhab.core.storage.StorageService;
@@ -181,6 +182,173 @@ public class TibberHandlerHistoryTest {
         await(() -> QuantityType.valueOf("2.5 kWh")
                 .equals(context.callback().getStateUpdate(historyChannelUID(CHANNEL_MONTHLY_CONSUMPTION))));
         assertNull(context.callback().getStateUpdate(historyChannelUID(CHANNEL_MONTHLY_COST)));
+    }
+
+    @Test
+    void whenLastCompletedDayIsMissingThenDailyHistoryIsFetched() {
+        HandlerContext context = startHandler(true);
+        await(() -> windowCount(context.history()) >= TimeWindow.values().length);
+        context.history().clearRequests();
+        ZonedDateTime now = ZonedDateTime.now(ZONE);
+        putFreshWindowsExcept(context, TimeWindow.DAILY, now);
+        context.history().put(TimeWindow.DAILY, dailySeriesUpToDaysAgo(2));
+
+        context.handler().checkStaleHistory();
+
+        assertEquals(List.of(new HistoryRequest(TimeWindow.DAILY, false)), context.history().getRequests());
+    }
+
+    @Test
+    void whenHistoryIsUpToDateThenNoFetchHappens() {
+        HandlerContext context = startHandler(true);
+        await(() -> windowCount(context.history()) >= TimeWindow.values().length);
+        context.history().clearRequests();
+        ZonedDateTime now = ZonedDateTime.now(ZONE);
+        for (TimeWindow window : TimeWindow.values()) {
+            context.history().put(window, freshSeries(window, now));
+        }
+
+        context.handler().checkStaleHistory();
+
+        assertTrue(context.history().getRequests().isEmpty());
+    }
+
+    @Test
+    void whenStoreIsEmptyThenInitialFullFetchIsRetriedOncePerDay() {
+        HandlerContext context = startHandler(true);
+        await(() -> windowCount(context.history()) >= TimeWindow.values().length);
+        context.history().clearRequests();
+
+        context.handler().checkStaleHistory();
+        List<HistoryRequest> firstRetry = context.history().getRequests();
+        context.handler().checkStaleHistory();
+
+        assertEquals(TimeWindow.values().length, firstRetry.size());
+        assertTrue(firstRetry.stream().allMatch(HistoryRequest::fullUpdate));
+        assertEquals(TimeWindow.values().length, context.history().getRequests().size());
+    }
+
+    @Test
+    void whenStaleRetryLimitIsReachedThenNoFurtherFetchHappens() {
+        HandlerContext context = startHandler(true);
+        await(() -> windowCount(context.history()) >= TimeWindow.values().length);
+        context.history().clearRequests();
+        putFreshWindowsExcept(context, TimeWindow.DAILY, ZonedDateTime.now(ZONE));
+        context.history().put(TimeWindow.DAILY, dailySeriesUpToDaysAgo(2));
+
+        for (int i = 0; i < 8; i++) {
+            context.handler().checkStaleHistory();
+        }
+
+        assertEquals(6, context.history().getRequests().size());
+    }
+
+    @Test
+    void whenLiveValuesArriveThenCurrentPeriodStatesIncludeToday() {
+        HandlerContext context = prepareCurrentPeriodContext();
+
+        context.handler().newMessage(liveMeasurementJson("1.5", "0.75", "null"));
+
+        await(() -> QuantityType.valueOf("4.5 kWh")
+                .equals(context.callback().getStateUpdate(historyChannelUID(CHANNEL_MONTHLY_CONSUMPTION))));
+        assertEquals(DecimalType.valueOf("2.25"),
+                context.callback().getStateUpdate(historyChannelUID(CHANNEL_MONTHLY_COST)));
+        assertEquals(QuantityType.valueOf("4.5 kWh"),
+                context.callback().getStateUpdate(historyChannelUID(CHANNEL_YEARLY_CONSUMPTION)));
+        ZonedDateTime todayStart = LocalDate.now(ZONE).atStartOfDay(ZONE);
+        double completedWeek = (isInCurrentWeek(todayStart.minusDays(2).toInstant(), todayStart) ? 1.0 : 0.0)
+                + (isInCurrentWeek(todayStart.minusDays(1).toInstant(), todayStart) ? 2.0 : 0.0);
+        await(() -> QuantityType.valueOf((completedWeek + 1.5) + " kWh")
+                .equals(context.callback().getStateUpdate(historyChannelUID(CHANNEL_WEEKLY_CONSUMPTION))));
+    }
+
+    @Test
+    void whenSecondLiveMessageArrivesWithinIntervalThenStateIsNotUpdatedAgain() {
+        HandlerContext context = prepareCurrentPeriodContext();
+        context.handler().newMessage(liveMeasurementJson("1.5", "0.75", "null"));
+        await(() -> QuantityType.valueOf("4.5 kWh")
+                .equals(context.callback().getStateUpdate(historyChannelUID(CHANNEL_MONTHLY_CONSUMPTION))));
+
+        context.handler().newMessage(liveMeasurementJson("9.0", "0.75", "null"));
+        awaitUntil(300, () -> !QuantityType.valueOf("4.5 kWh")
+                .equals(context.callback().getStateUpdate(historyChannelUID(CHANNEL_MONTHLY_CONSUMPTION))));
+
+        assertEquals(QuantityType.valueOf("4.5 kWh"),
+                context.callback().getStateUpdate(historyChannelUID(CHANNEL_MONTHLY_CONSUMPTION)));
+    }
+
+    @Test
+    void whenStoredHistoryDoesNotContainYesterdayThenLiveValuesAreNotApplied() {
+        HandlerContext context = startHandler(true);
+        ZonedDateTime todayStart = LocalDate.now(ZONE).atStartOfDay(ZONE);
+        assumeTrue(LocalDate.now(ZONE).getDayOfMonth() >= 4, "needs three completed days in the current month");
+        TibberHistorySeries daily = new TibberHistorySeries(null);
+        daily.put(todayStart.minusDays(3).toInstant(), historyEntry("0.5 kWh", "0.25", null));
+        daily.put(todayStart.minusDays(2).toInstant(), historyEntry("1.0 kWh", "0.5", null));
+        context.history().put(TimeWindow.DAILY, daily);
+        TibberHistorySeries monthly = new TibberHistorySeries(null);
+        context.history().put(TimeWindow.MONTHLY, monthly);
+
+        context.handler().historyUpdated(new HistoryRequest(TimeWindow.MONTHLY, false), monthly);
+        await(() -> QuantityType.valueOf("1.5 kWh")
+                .equals(context.callback().getStateUpdate(historyChannelUID(CHANNEL_MONTHLY_CONSUMPTION))));
+
+        context.handler().newMessage(liveMeasurementJson("1.0", "0.5", "null"));
+        awaitUntil(300, () -> !QuantityType.valueOf("1.5 kWh")
+                .equals(context.callback().getStateUpdate(historyChannelUID(CHANNEL_MONTHLY_CONSUMPTION))));
+
+        assertEquals(QuantityType.valueOf("1.5 kWh"),
+                context.callback().getStateUpdate(historyChannelUID(CHANNEL_MONTHLY_CONSUMPTION)));
+    }
+
+    private HandlerContext prepareCurrentPeriodContext() {
+        HandlerContext context = startHandler(true);
+        ZonedDateTime todayStart = LocalDate.now(ZONE).atStartOfDay(ZONE);
+        assumeTrue(LocalDate.now(ZONE).getDayOfMonth() >= 3, "needs two completed days in the current month");
+        TibberHistorySeries daily = new TibberHistorySeries(null);
+        daily.put(todayStart.minusDays(2).toInstant(), historyEntry("1.0 kWh", "0.5", null));
+        daily.put(todayStart.minusDays(1).toInstant(), historyEntry("2.0 kWh", "1.0", null));
+        context.history().put(TimeWindow.DAILY, daily);
+        TibberHistorySeries monthly = new TibberHistorySeries(null);
+        context.history().put(TimeWindow.MONTHLY, monthly);
+
+        context.handler().historyUpdated(new HistoryRequest(TimeWindow.MONTHLY, false), monthly);
+        await(() -> QuantityType.valueOf("3.0 kWh")
+                .equals(context.callback().getStateUpdate(historyChannelUID(CHANNEL_MONTHLY_CONSUMPTION))));
+        return context;
+    }
+
+    private static boolean isInCurrentWeek(Instant timestamp, ZonedDateTime todayStart) {
+        ZonedDateTime weekStart = todayStart.minusDays(todayStart.getDayOfWeek().getValue() - 1);
+        return !timestamp.isBefore(weekStart.toInstant());
+    }
+
+    private static TibberHistorySeries dailySeriesUpToDaysAgo(int daysAgo) {
+        TibberHistorySeries series = new TibberHistorySeries(null);
+        series.put(LocalDate.now(ZONE).minusDays(daysAgo).atStartOfDay(ZONE).toInstant(),
+                historyEntry("1.0 kWh", null, null));
+        return series;
+    }
+
+    private static TibberHistorySeries freshSeries(TimeWindow window, ZonedDateTime now) {
+        TibberHistorySeries series = new TibberHistorySeries(null);
+        series.put(window.lastCompletedPeriodStart(now), historyEntry("1.0 kWh", null, null));
+        return series;
+    }
+
+    private static void putFreshWindowsExcept(HandlerContext context, TimeWindow except, ZonedDateTime now) {
+        for (TimeWindow window : TimeWindow.values()) {
+            if (window != except) {
+                context.history().put(window, freshSeries(window, now));
+            }
+        }
+    }
+
+    private static String liveMeasurementJson(String consumption, String cost, String production) {
+        return String.format(
+                "{\"payload\":{\"data\":{\"liveMeasurement\":{\"accumulatedConsumption\":%s,\"accumulatedCost\":%s,"
+                        + "\"accumulatedProduction\":%s}}}}",
+                consumption, cost, production);
     }
 
     private HandlerContext startHandler(boolean linkHistoryChannels) {
@@ -331,6 +499,10 @@ public class TibberHandlerHistoryTest {
 
         List<HistoryRequest> getRequests() {
             return List.copyOf(requests);
+        }
+
+        void clearRequests() {
+            requests.clear();
         }
     }
 }

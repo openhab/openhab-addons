@@ -178,7 +178,7 @@ public class TibberHistoryAggregator {
      * <li>DAILY → first instant of the current day (00:00)</li>
      * </ul>
      */
-    private Instant currentPeriodStart(TibberHistory.TimeWindow coarser, ZonedDateTime now) {
+    static Instant currentPeriodStart(TibberHistory.TimeWindow coarser, ZonedDateTime now) {
         return switch (coarser) {
             case ANNUAL -> now.withDayOfYear(1).truncatedTo(ChronoUnit.DAYS).toInstant();
             case MONTHLY -> now.withDayOfMonth(1).truncatedTo(ChronoUnit.DAYS).toInstant();

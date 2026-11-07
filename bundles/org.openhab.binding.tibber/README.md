@@ -138,6 +138,9 @@ These synthetic entries are transient and will be replaced by real API data once
 
 The state of an item linked to a history channel is the newest entry which is not in the future, i.e. the current (or most recently completed) period.
 The binding updates this state explicitly after every history fetch, independently of the state restored by a persistence service.
+The `weekly`, `monthly` and `yearly` states additionally include the running day: the binding adds the live consumption, cost and production of the current day received from the Tibber websocket.
+The `daily` channels show the last completed day.
+The live part is updated at most once per minute and only while the live connection (Tibber "Real Time Consumption") is enabled and at least one `live`, `statistics` or `history` channel is linked.
 
 | Channel ID          | Type            | Description                          | Time Series |
 |---------------------|-----------------|--------------------------------------|-------------|
@@ -159,6 +162,8 @@ The binding updates this state explicitly after every history fetch, independent
 History channels deliver data as time series, which is not supported by the default [rrd4j](https://www.openhab.org/addons/persistence/rrd4j/) persistence.
 Items linked to history channels **must** be configured with a persistence service that supports time series, such as [InfluxDB](https://www.openhab.org/addons/persistence/influxdb/) or [InMemory](https://www.openhab.org/addons/persistence/inmemory/).
 Without a compatible persistence service, history data will not be stored correctly.
+Use the `forecast` strategy for these items; the time series is stored there.
+Do not additionally configure `everyUpdate` or `everyChange` for them: the current value of the channel is updated continuously and every update would be stored as an additional value, while the time series already contains the current period.
 The current value of the channel is published by the binding itself, so the item state is updated even if a persistence service restores an older state on startup.
 
 #### Initial Fetch
@@ -171,7 +176,11 @@ To replace the stored history of a time window with a complete fetch, trigger th
 
 #### Automatic Refresh
 
-Once an item is linked, history data is refreshed automatically once per day at 01:00.
+Once an item is linked, the stored history is checked automatically once per hour.
+A time window is only fetched from the Tibber API if its newest completed period is still missing in the store — for example the previous day shortly after midnight.
+On a normal day no request is issued at all, and a missed or too early fetch (API lag, restart, communication error) is retried automatically.
+A window whose store is still empty (for example after a failed initial load) is retried once per day with a full fetch.
+The completed values of the running week, month and year are additionally kept up to date by the live values of the current day, as described above.
 A full re-fetch for any time window can also be triggered at any time via the [`fetchHistory`](#fetchhistory) Thing Action.
 
 ## Thing Actions

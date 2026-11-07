@@ -65,6 +65,13 @@ public class TibberHandlerMock extends TibberHandler {
         return historyOverride != null ? historyOverride : super.createHistory();
     }
 
+    /**
+     * Triggers the hourly stale history check for unit tests.
+     */
+    public void checkStaleHistory() {
+        super.refreshStaleHistory();
+    }
+
     @Override
     public void managePriceChannels(boolean add) {
         super.managePriceChannels(add);
