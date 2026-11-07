@@ -49,4 +49,6 @@ public class GrundfosAlphaBindingConstants {
     public static final String CHANNEL_MOTOR_CURRENT = "motor-current";
     public static final String CHANNEL_OPERATING_TIME = "operating-time";
     public static final String CHANNEL_START_COUNT = "start-count";
+    public static final String CHANNEL_OPERATING_MODE = "operating-mode";
+    public static final String CHANNEL_CONTROL_MODE = "control-mode";
 }

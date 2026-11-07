@@ -94,6 +94,46 @@
 		<state readOnly="true" pattern="%.0f"/>
 	</channel-type>
 
+	<channel-type id="grundfos-operating-mode">
+		<item-type>String</item-type>
+		<label>Operating Mode</label>
+		<description>Pump operating mode</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
+		<state>
+			<options>
+				<option value="NORMAL">Normal</option>
+				<option value="STOP">Stop</option>
+				<option value="MIN">Min</option>
+				<option value="MAX">Max</option>
+			</options>
+		</state>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+
+	<channel-type id="grundfos-control-mode">
+		<item-type>String</item-type>
+		<label>Control Mode</label>
+		<description>Pump control mode</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
+		<state>
+			<options>
+				<option value="CONSTANT_PRESSURE">Constant pressure</option>
+				<option value="PROPORTIONAL_PRESSURE">Proportional pressure</option>
+				<option value="CONSTANT_CURVE">Constant curve</option>
+				<option value="RADIATOR">Radiator (AUTOADAPT)</option>
+				<option value="UNDERFLOOR">Underfloor (AUTOADAPT)</option>
+				<option value="RADIATOR_AND_UNDERFLOOR">Combined radiator and underfloor (AUTOADAPT)</option>
+			</options>
+		</state>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+
 	<thing-type id="mi401">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="roaming"/>
@@ -157,11 +197,13 @@
 			<channel id="energy" typeId="grundfos-energy"/>
 			<channel id="operating-time" typeId="grundfos-operating-time"/>
 			<channel id="start-count" typeId="grundfos-start-count"/>
+			<channel id="control-mode" typeId="grundfos-control-mode"/>
+			<channel id="operating-mode" typeId="grundfos-operating-mode"/>
 		</channels>
 
 		<properties>
 			<property name="vendor">Grundfos</property>
-			<property name="thingTypeVersion">1</property>
+			<property name="thingTypeVersion">2</property>
 		</properties>
 
 		<representation-property>address</representation-property>

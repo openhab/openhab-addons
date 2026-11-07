@@ -32,7 +32,9 @@ public enum GeniReadRequest {
     Motor(0x57, 0x0045, new ObjectLayout(0x0100, 1, 37)),
     Energy(0x57, 0x0001, new ObjectLayout(0x00e8, 1, 26)),
     // Version 2 adds eight bytes; starts and operating seconds retain their version-1 offsets.
-    Counters(0x5d, 0x0001, new ObjectLayout(0x00f8, 1, 20), new ObjectLayout(0x00f8, 2, 28));
+    Counters(0x5d, 0x0001, new ObjectLayout(0x00f8, 1, 20), new ObjectLayout(0x00f8, 2, 28)),
+    OperatingMode(0x56, 0x0006, new ObjectLayout(0x012f, 1, 7)),
+    ControlMode(0x56, 0x000a, new ObjectLayout(0x012f, 1, 7));
 
     static final int DATA_CLASS = 10;
     private static final int READ_PAYLOAD_LENGTH = 3;
