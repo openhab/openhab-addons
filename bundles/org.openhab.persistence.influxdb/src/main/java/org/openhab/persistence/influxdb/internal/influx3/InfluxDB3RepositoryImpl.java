@@ -159,7 +159,10 @@ public class InfluxDB3RepositoryImpl implements InfluxDBRepository {
                     ResponseBody body = response.body();
                     String message = "HTTP status " + response.code() + ": " + (body != null ? body.string() : "");
                     logger.debug("Writing to database failed, {}", message);
-                    return WriteResult.forHttpError(response.code(), message);
+                    // InfluxDB 3 answers rejected lines, e.g. field type conflicts, with 400. A 422 means a database,
+                    // table or schema limit was hit, which raising the server limits fixes, so like other statuses
+                    // (authentication, missing database) the points are kept.
+                    return response.code() == 400 ? WriteResult.rejected(message) : WriteResult.retry(message);
                 }
                 return WriteResult.SUCCESS;
             }

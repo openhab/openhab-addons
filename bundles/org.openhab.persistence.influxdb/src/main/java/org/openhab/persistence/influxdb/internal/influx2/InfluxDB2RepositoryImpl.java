@@ -154,7 +154,11 @@ public class InfluxDB2RepositoryImpl implements InfluxDBRepository {
             currentWriteAPI.writePoints(clientPoints);
         } catch (InfluxException e) {
             logger.debug("Writing to database failed", e);
-            return WriteResult.forHttpError(e.status(), String.valueOf(e.getMessage()));
+            String message = String.valueOf(e.getMessage());
+            // InfluxDB 2 answers malformed line protocol with 400, and field type conflicts and points outside the
+            // retention period with 422. Other statuses (authentication, missing bucket, limits) can be fixed on
+            // the server, so the points are kept.
+            return e.status() == 400 || e.status() == 422 ? WriteResult.rejected(message) : WriteResult.retry(message);
         } catch (InfluxDBIOException e) {
             logger.debug("Writing to database failed", e);
             return WriteResult.retry(String.valueOf(e.getMessage()));

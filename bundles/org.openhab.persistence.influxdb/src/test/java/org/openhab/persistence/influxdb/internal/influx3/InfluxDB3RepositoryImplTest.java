@@ -108,11 +108,14 @@ public class InfluxDB3RepositoryImplTest {
         assertThat(result.message(), containsString("invalid column type for column 'value'"));
     }
 
-    @ParameterizedTest
-    @ValueSource(ints = { 400, 422 })
-    public void clientErrorCausedByThePointsIsRejected(int status) throws IOException {
-        connectToFakeServer().setWriteResponse(status, "{\"error\":\"bad request\"}");
-        assertThat(repository.write(POINTS).outcome(), is(WriteResult.Outcome.REJECTED));
+    @Test
+    public void schemaLimitIsRetried() throws IOException {
+        // InfluxDB 3 answers 422 when a database, table or schema limit is hit; raising the limit lets the points
+        // through, so they must not be dropped.
+        connectToFakeServer().setWriteResponse(422, "{\"error\":\"write would exceed the column limit\"}");
+        WriteResult result = repository.write(POINTS);
+        assertThat(result.outcome(), is(WriteResult.Outcome.RETRY));
+        assertThat(result.message(), containsString("column limit"));
     }
 
     @ParameterizedTest

@@ -121,19 +121,5 @@ public interface InfluxDBRepository {
         public static WriteResult rejected(String message) {
             return new WriteResult(Outcome.REJECTED, message);
         }
-
-        /**
-         * Classifies a failed HTTP write request. Only 400 (bad request, field type conflict, partial write) and 422
-         * (unprocessable entity) depend on the points themselves. Other statuses, including authentication errors,
-         * 404 (database not found) and 413 (request too large), depend on the server or the configuration and may
-         * succeed later, so the points are kept.
-         *
-         * @param status the HTTP status code of the response
-         * @param message the error reported by the server
-         * @return {@link Outcome#REJECTED} for 400 and 422, {@link Outcome#RETRY} otherwise
-         */
-        public static WriteResult forHttpError(int status, String message) {
-            return status == 400 || status == 422 ? rejected(message) : retry(message);
-        }
     }
 }
