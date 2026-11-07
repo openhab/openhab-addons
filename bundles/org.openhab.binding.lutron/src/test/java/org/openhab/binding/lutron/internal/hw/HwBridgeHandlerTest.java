@@ -116,6 +116,34 @@ public class HwBridgeHandlerTest {
     }
 
     @Test
+    public void shadeAddressesAreNotDiscoveredAsDimmers() {
+        // QED shades are the only devices on links 4 to 6 with a four-field address ending above 8
+        handler.receive("DL, [01:04:02:12], 100.00");
+        handler.receive("DL, [01:04:2:15],   0.00");
+        handler.receive("DL, [01:06:01:96],  50");
+
+        verify(discoveryService, never()).declareUnknownDimmer(org.mockito.ArgumentMatchers.anyString());
+    }
+
+    @Test
+    public void ambiguousAndLightingAddressesAreStillDiscovered() {
+        for (String address : List.of("[01:04:02:08]", "[01:05:01:01]", "[01:08:01:54]", "[01:01:04:01:01]")) {
+            handler.receive("DL, " + address + ", 50");
+
+            verify(discoveryService).declareUnknownDimmer(address);
+        }
+    }
+
+    @Test
+    public void dimmerConfiguredInAnotherAddressFormatReceivesUpdates() {
+        when(dimmerHandler.getAddress()).thenReturn("1.1.3.6.1");
+
+        handler.receive("DL, [01:01:03:06:01],  30");
+
+        verify(dimmerHandler).handleLevelChange(30);
+    }
+
+    @Test
     public void unknownDimmerWithoutDiscoveryServiceIsIgnored() {
         TestBridgeHandler noDiscovery = new TestBridgeHandler(bridge);
 

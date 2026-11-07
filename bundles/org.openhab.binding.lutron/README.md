@@ -892,8 +892,10 @@ This binding supports active and passive discovery.
 It will detect dimmers as they are manually raised or lowered, or can be made to scan for configured dimmer modules.
 Discovery uses the processor's `DL` level messages.
 RPM, D48 and H48 dimmers have five-field addresses (for example `[01:01:03:02:04]`), while RF dimmers, GRAFIK Eye zones and Wallbox Power Module (WPM) zones have four-field addresses (for example `[01:08:01:54]` for an RF dimmer).
-QED shades can also report `DL` messages with four-field addresses, so address length alone cannot distinguish them from lighting zones.
-Shades are not supported yet; ignore Inbox entries that correspond to shades in your installation.
+On a Series 8 processor, QED shades have been seen to report `DL` messages with four-field addresses too (for example `[01:04:2:12]`), so address length alone cannot distinguish them from lighting zones.
+Shades are not supported yet.
+Addresses on links 4 to 6 with four fields and a last field above 8 can only be QED shades, because GRAFIK Eye and WPM zones have outputs 1 to 8 and 1 to 6, so these are not discovered.
+Shades with a last field of 8 or less cannot be told apart from lighting zones, so ignore any Inbox entries that correspond to shades in your installation.
 
 ### HomeWorks RS232 Thing Configuration
 
@@ -954,6 +956,7 @@ lutron:hwtelnetbridge:home [ ipAddress="192.168.1.169", user="openhab", password
 
 Dimmers work the same way with both bridges.
 Dimmer addresses depend on the device type, as described in the discovery section above.
+An address can be written in any format the processor accepts, such as `1:1:3:2:4` or `1.1.3.2.4`; the binding converts it to the form the processor reports.
 Each dimmer asks the processor for its level whenever the bridge goes online, including after a reconnect.
 
 ### HomeWorks Console Commands

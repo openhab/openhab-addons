@@ -112,14 +112,16 @@ public abstract class HwBridgeHandler extends BaseBridgeHandler {
         String[] data = line.replaceAll("\\s", "").toUpperCase().split(",");
         if ("DL".equals(data[0])) {
             try {
-                String address = data[1];
+                String address = HwAddress.normalize(data[1]);
                 // Levels are usually whole numbers, but some devices report decimals, such as 100.00
                 BigDecimal reported = new BigDecimal(data[2]);
                 Integer level = Math.max(0, Math.min(100, reported.setScale(0, RoundingMode.HALF_UP).intValue()));
                 HwDimmerHandler handler = findHandler(address);
                 if (handler == null) {
                     HwDiscoveryService service = discoveryService;
-                    if (service != null) {
+                    if (HwAddress.isQedShade(address)) {
+                        logger.debug("Not discovering {} as a dimmer, it can only be a QED shade", address);
+                    } else if (service != null) {
                         service.declareUnknownDimmer(address);
                     }
                 } else {
@@ -134,7 +136,8 @@ public abstract class HwBridgeHandler extends BaseBridgeHandler {
     private @Nullable HwDimmerHandler findHandler(String address) {
         for (Thing thing : getThing().getThings()) {
             if (thing.getHandler() instanceof HwDimmerHandler handler) {
-                if (address.equals(handler.getAddress())) {
+                String handlerAddress = handler.getAddress();
+                if (handlerAddress != null && address.equals(HwAddress.normalize(handlerAddress))) {
                     return handler;
                 }
             }

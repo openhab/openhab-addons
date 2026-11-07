@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.lutron.internal.hw;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -77,6 +78,18 @@ public class HwDimmerHandlerTest {
         handler.bridgeStatusChanged(bridgeStatus(ThingStatus.ONLINE));
 
         verify(bridgeHandler, times(2)).sendCommand(LEVEL_QUERY);
+    }
+
+    @Test
+    public void addressWrittenInAnotherFormatIsNormalized() {
+        when(thing.getConfiguration()).thenReturn(new Configuration(Map.of("address", "1.1.3.6.1")));
+        handler = new HwDimmerHandler(thing);
+        handler.setCallback(callback);
+
+        handler.initialize();
+
+        verify(bridgeHandler).sendCommand(LEVEL_QUERY);
+        assertEquals(ADDRESS, handler.getAddress());
     }
 
     @Test

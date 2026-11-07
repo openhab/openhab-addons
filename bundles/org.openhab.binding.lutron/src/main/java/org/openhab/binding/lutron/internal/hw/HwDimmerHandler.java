@@ -52,7 +52,7 @@ public class HwDimmerHandler extends BaseThingHandler {
         HwDimmerConfig config = getConfigAs(HwDimmerConfig.class);
 
         String configuredAddress = config.getAddress();
-        address = configuredAddress;
+        address = configuredAddress == null ? null : HwAddress.normalize(configuredAddress);
         if (configuredAddress == null || configuredAddress.isEmpty()) {
             updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Address not set");
             return;
