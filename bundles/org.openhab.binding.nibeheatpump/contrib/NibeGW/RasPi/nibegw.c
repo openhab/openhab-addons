@@ -57,6 +57,8 @@
  *	7.2.2021    v1.23   Fixed compile error in RasPi.
  *	19.11.2022  v1.30   Support 16-bit addressing.
  *	26.12.2022  v1.31   Fixed serial settings (for RPi Zero 2 W + Waveshare RS485 CAN hat)
+ *	16.4.2026   v1.32   Added TCP serial port support (e.g. for ser2net / RFC2217 devices).
+ *	5.7.2026    v1.33   TCP device strings use tcp://<authority> with bracketed IPv6 support.
  */
 
 #include <signal.h>
@@ -74,22 +76,229 @@
 #include <sys/socket.h>
 #include <sys/time.h>
 #include <time.h>
+#include <netdb.h>
 
-#define VERSION	"1.31"
+#define VERSION	"1.33"
 
 #define FALSE	0
 #define TRUE	1
+
+#define TCP_SERIAL_DEFAULT_PORT 4196
+#define TCP_HOST_MAX            256
 
 #define MIN(a,b) (((a)<(b))?(a):(b))
 #define MAX(a,b) (((a)>(b))?(a):(b))
 
 int verbose = 0;
 int testmode = FALSE;
+int tcp_serial_fd = -1;  /* fd for TCP-based serial connection */
 
 void signalCallbackHandler(int signum)
 {
 	if (verbose) printf("\nExit...caught by signal %d\n", signum);
 	exit(1);
+}
+
+/*
+ * Parse a decimal TCP port (1-65535); suffix must be digits only.
+ */
+static int parseTcpPort(const char *s, int *port)
+{
+	char *end;
+	long v;
+
+	if (s == NULL || *s == '\0')
+		return -1;
+
+	v = strtol(s, &end, 10);
+	if (*end != '\0' || v <= 0 || v > 65535)
+		return -1;
+
+	*port = (int)v;
+	return 0;
+}
+
+static int copyTcpHost(const char *src, size_t len, char *host, size_t hostlen)
+{
+	if (len == 0 || len >= hostlen)
+		return -1;
+
+	memcpy(host, src, len);
+	host[len] = '\0';
+	return 0;
+}
+
+/*
+ * Parse tcp://<authority>.
+ *
+ * Authority forms:
+ *   [ipv6][:port]              bracketed IPv6 (recommended for IPv6)
+ *   host[:port]                hostname or IPv4
+ *   unbracketed-ipv6:port      convenience (e.g. 2001:db8::1:4196)
+ *   unbracketed-ipv6           default port when trailing segment is not a port
+ *
+ * Returns 0 on success, -1 on error (optional errbuf message).
+ */
+static int parseTcpSerialTarget(const char *devicestr, char *host, size_t hostlen,
+                                int *port, char *errbuf, size_t errbuflen)
+{
+	const char *auth;
+	const char *p;
+
+	*port = TCP_SERIAL_DEFAULT_PORT;
+	host[0] = '\0';
+
+	if (strncmp(devicestr, "tcp://", 6) != 0)
+	{
+		snprintf(errbuf, errbuflen, "device must start with tcp://");
+		return -1;
+	}
+
+	auth = devicestr + 6;
+	if (*auth == '\0')
+	{
+		snprintf(errbuf, errbuflen, "missing host in TCP device string");
+		return -1;
+	}
+
+	p = auth;
+
+	if (*p == '[')
+	{
+		const char *end = strchr(p, ']');
+
+		if (end == NULL || end == p + 1)
+		{
+			snprintf(errbuf, errbuflen, "invalid bracketed IPv6 address");
+			return -1;
+		}
+		if (copyTcpHost(p + 1, (size_t)(end - (p + 1)), host, hostlen) != 0)
+		{
+			snprintf(errbuf, errbuflen, "host name too long");
+			return -1;
+		}
+		p = end + 1;
+		if (*p == ':')
+		{
+			const char *portstr = p + 1;
+
+			if (parseTcpPort(portstr, port) != 0)
+			{
+				snprintf(errbuf, errbuflen, "invalid TCP port after ']'");
+				return -1;
+			}
+			p = portstr + strspn(portstr, "0123456789");
+		}
+		if (*p != '\0')
+		{
+			snprintf(errbuf, errbuflen, "trailing garbage after TCP authority");
+			return -1;
+		}
+		return 0;
+	}
+
+	{
+		const char *colon = strrchr(p, ':');
+
+		if (colon != NULL && colon != p)
+		{
+			const char *portstr = colon + 1;
+			int maybe_port;
+
+			if (parseTcpPort(portstr, &maybe_port) == 0)
+			{
+				/* hostname/IPv4:port — single colon in authority */
+				if (strchr(p, ':') == colon)
+				{
+					if (copyTcpHost(p, (size_t)(colon - p), host, hostlen) != 0)
+					{
+						snprintf(errbuf, errbuflen, "host name too long");
+						return -1;
+					}
+					*port = maybe_port;
+					return 0;
+				}
+
+				/*
+				 * Unbracketed IPv6:port — only split when the port suffix is
+				 * at least two digits, so "::1" is not mistaken for port 1.
+				 */
+				if (strlen(portstr) >= 2)
+				{
+					if (copyTcpHost(p, (size_t)(colon - p), host, hostlen) != 0)
+					{
+						snprintf(errbuf, errbuflen, "host name too long");
+						return -1;
+					}
+					*port = maybe_port;
+					return 0;
+				}
+			}
+		}
+	}
+
+	if (strlen(p) >= hostlen)
+	{
+		snprintf(errbuf, errbuflen, "host name too long");
+		return -1;
+	}
+	strcpy(host, p);
+	return 0;
+}
+
+/*
+ * Open a TCP connection to a remote serial server (e.g. ser2net).
+ * devicestr format: "tcp://<authority>" (default port TCP_SERIAL_DEFAULT_PORT).
+ * Returns a connected socket fd, or -1 on error.
+ */
+int openTcpSerialPort(const char *devicestr)
+{
+	char host[TCP_HOST_MAX];
+	char errbuf[128];
+	int  port;
+
+	if (parseTcpSerialTarget(devicestr, host, sizeof(host), &port, errbuf, sizeof(errbuf)) != 0)
+	{
+		fprintf(stderr, "TCP serial: %s (%s)\n", errbuf, devicestr);
+		return -1;
+	}
+
+	if (verbose) printf("Connecting to TCP serial server %s:%d\n", host, port);
+
+	struct addrinfo hints, *res, *rp;
+	memset(&hints, 0, sizeof(hints));
+	hints.ai_family   = AF_UNSPEC;
+	hints.ai_socktype = SOCK_STREAM;
+
+	char portstr[16];
+	snprintf(portstr, sizeof(portstr), "%d", port);
+
+	int rc = getaddrinfo(host, portstr, &hints, &res);
+	if (rc != 0)
+	{
+		fprintf(stderr, "TCP serial: getaddrinfo(%s): %s\n", host, gai_strerror(rc));
+		return -1;
+	}
+
+	int sockfd = -1;
+	for (rp = res; rp != NULL; rp = rp->ai_next)
+	{
+		sockfd = socket(rp->ai_family, rp->ai_socktype, rp->ai_protocol);
+		if (sockfd < 0) continue;
+		if (connect(sockfd, rp->ai_addr, rp->ai_addrlen) == 0) break;
+		close(sockfd);
+		sockfd = -1;
+	}
+	freeaddrinfo(res);
+
+	if (sockfd < 0)
+	{
+		fprintf(stderr, "TCP serial: connect to %s:%d failed: %s\n", host, port, strerror(errno));
+		return -1;
+	}
+
+	if (verbose) printf("TCP serial connection established (fd=%d)\n", sockfd);
+	return sockfd;
 }
 
 int initSerialPort(int fd, int hwflowctrl)
@@ -145,20 +354,44 @@ void printMessage(const unsigned char* const message, int msglen)
 	printf("\n");
 }
 
+int isTcpDevice(const char *device)
+{
+	return (device != NULL && strncmp(device, "tcp://", 6) == 0);
+}
+
 int writeDataToSerialPort(int fd, const unsigned char* const message, int msglen)
 {
-	int retval = -1;
-	
+	int is_tcp = (tcp_serial_fd >= 0 && fd == tcp_serial_fd);
+	ssize_t total = 0;
+
 	if (verbose > 2) printf("Write data to serial port\n");
 	if (verbose > 2) printMessage(message, msglen);
-	
-	if( write( fd, message, msglen) == msglen)
+
+	while (total < msglen)
 	{
-		tcdrain (fd);
-		retval = 0;
+		ssize_t written;
+
+		if (is_tcp)
+			written = send(fd, message + total, (size_t)(msglen - total), MSG_NOSIGNAL);
+		else
+			written = write(fd, message + total, (size_t)(msglen - total));
+
+		if (written < 0)
+		{
+			if (errno == EINTR)
+				continue;
+			return -1;
+		}
+		if (written == 0)
+			return -1;
+
+		total += written;
 	}
-	
-	return retval;
+
+	if (!is_tcp)
+		tcdrain(fd);
+
+	return 0;
 }
 
 int forwardUdpMsgToSerial(int udpfd, int serialfd)
@@ -321,6 +554,8 @@ void printUsage(char* appname)
 	"\t-h                 Print help\n" \
 	"\t-v                 Print debug information\n" \
 	"\t-d <device name>   Serial port device (default: /dev/ttyS0)\n" \
+	"\t                   Use 'tcp://<host>[:<port>]' for TCP serial (default port: 4196)\n" \
+	"\t                   IPv6: tcp://[addr][:port]  e.g. tcp://[::1]:4196\n" \
 	"\t-a <address>       Remote host address (default: 127.0.0.1)\n" \
 	"\t-p <port>          Remote UDP port (default: 9999)\n" \
 	"\t-f                 Disable flow control (default: HW)\n" \
@@ -433,8 +668,9 @@ int main(int argc, char **argv)
 		printf("NibeGW version:                    %s\n", VERSION);
 		printf("Verbose level:                     %i\n", verbose);
 		printf("Test mode:                         %s\n", testmode ? "TRUE" : "FALSE");
-		printf("Serial port:                       %s\n", device);
-		printf("Flow control:                      %s\n", hwflowctrl ? "HW" : "None");
+		printf("Serial port:                       %s%s\n", device,
+		       isTcpDevice(device) ? " [TCP mode]" : "");
+		printf("Flow control:                      %s\n", isTcpDevice(device) ? "N/A (TCP)" : (hwflowctrl ? "HW" : "None"));
 		printf("remote UDP address:                %s:%u\n", remoteHost, remotePort);
 		printf("server UDP address for read cmds:  %u\n", localPort4readCmds);
 		printf("server UDP address for write cmds: %u\n", localPort4writeCmds);
@@ -491,6 +727,15 @@ int main(int argc, char **argv)
 			{
 				if (verbose) printf("Use stdin as virtual serial port\n");
 				serialport_fd = STDIN_FILENO;
+			}
+			else if (isTcpDevice(device))
+			{
+				/* TCP serial mode: connect to remote ser2net / TCP-serial-server */
+				serialport_fd = openTcpSerialPort(device);
+				if (serialport_fd >= 0)
+					tcp_serial_fd = serialport_fd;
+				else
+					fprintf(stderr, "Failed to connect to TCP serial port %s\n", device);
 			}
 			else
 			{
@@ -676,11 +921,28 @@ int main(int argc, char **argv)
 				else
 				{
 					fprintf(stderr, "Read failed: %s\n", strerror(errno));
+					if (tcp_serial_fd >= 0 && serialport_fd == tcp_serial_fd)
+					{
+						if (verbose) printf("TCP serial connection lost, will reconnect...\n");
+						close(serialport_fd);
+						serialport_fd = -1;
+						tcp_serial_fd = -1;
+					}
 					sleep(1);
 				}
 			}
 			
 			if (log) fflush(stdout);
+
+			/* For TCP: read returning 0 means the remote end closed the connection */
+			if (len == 0 && tcp_serial_fd >= 0 && serialport_fd == tcp_serial_fd)
+			{
+				fprintf(stderr, "TCP serial connection closed by remote, will reconnect...\n");
+				close(serialport_fd);
+				serialport_fd = -1;
+				tcp_serial_fd = -1;
+				sleep(1);
+			}
 
 		}
 		else
@@ -689,9 +951,21 @@ int main(int argc, char **argv)
 		}
 	}
 	
-	close(serialport_fd);
-	close(udp_fd);
-	close(udp4writeCmds_fd);
+	if (tcp_serial_fd >= 0)
+	{
+		close(tcp_serial_fd);
+		if (serialport_fd == tcp_serial_fd)
+			serialport_fd = -1;
+		tcp_serial_fd = -1;
+	}
+	else if (serialport_fd >= 0)
+		close(serialport_fd);
+
+	if (udp_fd >= 0)
+		close(udp_fd);
+
+	if (udp4writeCmds_fd >= 0)
+		close(udp4writeCmds_fd);
 	
 	return 0;
 }
