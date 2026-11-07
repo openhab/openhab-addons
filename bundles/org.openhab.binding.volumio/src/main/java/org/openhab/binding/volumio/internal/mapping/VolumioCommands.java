@@ -77,6 +77,20 @@ public class VolumioCommands {
 
     public static final String CLEAR_QUEUE = "clearQueue";
 
+    public static final String GET_QUEUE = "getQueue";
+
+    public static final String ADD_TO_QUEUE = "addToQueue";
+
+    public static final String REMOVE_FROM_QUEUE = "removeFromQueue";
+
+    /* Playlists and favourites */
+
+    public static final String ENQUEUE = "enqueue";
+
+    public static final String ADD_TO_FAVOURITES = "addToFavourites";
+
+    public static final String REMOVE_FROM_FAVOURITES = "removeFromFavourites";
+
     /* ... */
     public static final String SHUTDOWN = "shutdown";
 
