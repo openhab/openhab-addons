@@ -14,6 +14,8 @@ package org.openhab.binding.lutron.internal.hw;
 
 import static org.openhab.binding.lutron.internal.LutronBindingConstants.CHANNEL_LIGHTLEVEL;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.thing.Bridge;
@@ -21,6 +23,7 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.slf4j.Logger;
@@ -32,10 +35,11 @@ import org.slf4j.LoggerFactory;
  * @author Andrew Shilliday - Initial contribution
  *
  */
+@NonNullByDefault
 public class HwDimmerHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(HwDimmerHandler.class);
 
-    private String address;
+    private @Nullable String address;
     private Integer fadeTime = 1;
     private Integer defaultLevel = 100;
 
@@ -47,8 +51,9 @@ public class HwDimmerHandler extends BaseThingHandler {
     public void initialize() {
         HwDimmerConfig config = getConfigAs(HwDimmerConfig.class);
 
-        address = config.getAddress();
-        if (address == null || address.isEmpty()) {
+        String configuredAddress = config.getAddress();
+        address = configuredAddress;
+        if (configuredAddress == null || configuredAddress.isEmpty()) {
             updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Address not set");
             return;
         }
@@ -65,7 +70,17 @@ public class HwDimmerHandler extends BaseThingHandler {
         queryLevel();
     }
 
-    public String getAddress() {
+    @Override
+    public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
+        super.bridgeStatusChanged(bridgeStatusInfo);
+        if (bridgeStatusInfo.getStatus() == ThingStatus.ONLINE && address != null) {
+            // The query sent during initialization is lost if the bridge was not connected yet, and the level can
+            // have changed while the connection was down.
+            queryLevel();
+        }
+    }
+
+    public @Nullable String getAddress() {
         return address;
     }
 
@@ -83,15 +98,12 @@ public class HwDimmerHandler extends BaseThingHandler {
         }
     }
 
-    private HwSerialBridgeHandler getBridgeHandler() {
+    private @Nullable HwBridgeHandler getBridgeHandler() {
         Bridge bridge = getBridge();
-        if (bridge == null) {
-            return null;
-        } else if (!(bridge.getHandler() instanceof HwSerialBridgeHandler)) {
-            return null;
-        } else {
-            return (HwSerialBridgeHandler) bridge.getHandler();
+        if (bridge != null && bridge.getHandler() instanceof HwBridgeHandler bridgeHandler) {
+            return bridgeHandler;
         }
+        return null;
     }
 
     private void queryLevel() {
@@ -99,7 +111,7 @@ public class HwDimmerHandler extends BaseThingHandler {
             logger.debug("Bridge unavailable while querying Thing: {}", thing.getUID());
             return;
         }
-        HwSerialBridgeHandler bridgeHandler = getBridgeHandler();
+        HwBridgeHandler bridgeHandler = getBridgeHandler();
         if (bridgeHandler == null) {
             updateStatus(ThingStatusDetail.BRIDGE_OFFLINE, "No bridge associated");
             return;
@@ -114,7 +126,7 @@ public class HwDimmerHandler extends BaseThingHandler {
             logger.debug("Bridge unavailable while sending command for Thing: {}", thing.getUID());
             return;
         }
-        HwSerialBridgeHandler bridgeHandler = getBridgeHandler();
+        HwBridgeHandler bridgeHandler = getBridgeHandler();
         if (bridgeHandler == null) {
             updateStatus(ThingStatusDetail.BRIDGE_OFFLINE, "No bridge associated");
             return;

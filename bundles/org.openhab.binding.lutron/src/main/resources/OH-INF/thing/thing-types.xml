@@ -1099,9 +1099,49 @@
 		</config-description>
 	</bridge-type>
 
+	<bridge-type id="hwtelnetbridge">
+		<label>Lutron HomeWorks Telnet Bridge</label>
+		<description>Ethernet (telnet) access point to Legacy Lutron HomeWorks lighting control system</description>
+
+		<config-description>
+			<parameter name="ipAddress" type="text" required="true">
+				<context>network-address</context>
+				<label>IP or Host Name</label>
+				<description>The IP or host name of the HomeWorks processor (Link 9 Ethernet port)</description>
+			</parameter>
+
+			<parameter name="port" type="integer" min="1" max="65535">
+				<label>Telnet Port</label>
+				<description>The telnet port of the HomeWorks processor</description>
+				<default>23</default>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="user" type="text">
+				<label>User Name</label>
+				<description>The telnet login name, as defined in the HomeWorks Illumination software (Link 9 Telnet Logins)</description>
+			</parameter>
+
+			<parameter name="password" type="text">
+				<context>password</context>
+				<label>Password</label>
+				<description>The password for the telnet login</description>
+			</parameter>
+
+			<parameter name="reconnect" type="integer" min="1" max="60" unit="min">
+				<label>Reconnect Interval</label>
+				<description>The period in minutes that the handler will wait between connection attempts</description>
+				<unitLabel>minutes</unitLabel>
+				<default>5</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
 	<thing-type id="hwdimmer">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="hwserialbridge"/>
+			<bridge-type-ref id="hwtelnetbridge"/>
 		</supported-bridge-type-refs>
 
 		<label>Lutron Dimmer (Legacy HomeWorks)</label>
