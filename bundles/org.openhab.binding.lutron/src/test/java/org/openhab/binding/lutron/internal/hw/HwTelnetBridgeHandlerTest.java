@@ -14,9 +14,11 @@ package org.openhab.binding.lutron.internal.hw;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -114,6 +116,25 @@ public class HwTelnetBridgeHandlerTest {
         }
     }
 
+    private Socket processorSocket() {
+        Socket socket = processorSocket;
+        assertNotNull(socket);
+        return socket;
+    }
+
+    @Test
+    public void processorThatNeverRepliedIsNotReportedAsLost() throws Exception {
+        // Nothing but a prompt was received since connecting, as when the login suppresses replies
+        handler().idleTimeoutMs = -1;
+
+        handler().heartbeat();
+
+        verify(callback, never()).statusUpdated(any(), argThat(info -> info.getStatus() == ThingStatus.OFFLINE));
+        BufferedReader reader = fromBinding;
+        assertNotNull(reader);
+        assertEquals("DLMON", reader.readLine());
+    }
+
     private HwTelnetBridgeHandler handler() {
         HwTelnetBridgeHandler current = handler;
         assertNotNull(current);
@@ -131,6 +152,14 @@ public class HwTelnetBridgeHandlerTest {
 
     @Test
     public void silentConnectionIsReportedAsLost() throws Exception {
+        processorSocket().getOutputStream()
+                .write("Dimmer level monitoring enabled\r\n".getBytes(StandardCharsets.US_ASCII));
+        processorSocket().getOutputStream().flush();
+        long deadline = System.nanoTime() + TimeUnit.MILLISECONDS.toNanos(WAIT_MS);
+        while (!handler().hasReceivedLine() && System.nanoTime() < deadline) {
+            Thread.sleep(10);
+        }
+        assertTrue(handler().hasReceivedLine(), "line was not received");
         // Any time since the last data received exceeds a negative timeout
         handler().idleTimeoutMs = -1;
 

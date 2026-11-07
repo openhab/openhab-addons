@@ -105,6 +105,8 @@ public class HwTelnetConnection implements Closeable {
 
     private volatile State state = State.AWAITING_LOGIN_PROMPT;
     private volatile boolean closing;
+    // Not final so that tests can shorten it
+    volatile long loginTimeoutMs = LOGIN_TIMEOUT_MS;
     private volatile long lastReceivedNanos = System.nanoTime();
     private volatile @Nullable OutputStream output;
     private @Nullable Thread readerThread;
@@ -151,7 +153,7 @@ public class HwTelnetConnection implements Closeable {
 
     private void waitForLogin() throws IOException {
         try {
-            loginResult.get(LOGIN_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+            loginResult.get(loginTimeoutMs, TimeUnit.MILLISECONDS);
         } catch (TimeoutException e) {
             throw new IOException("Timed out waiting for login prompt or result", e);
         } catch (InterruptedException e) {

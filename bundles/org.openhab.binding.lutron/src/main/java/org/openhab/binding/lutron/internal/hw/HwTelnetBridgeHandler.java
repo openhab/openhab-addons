@@ -44,6 +44,8 @@ public class HwTelnetBridgeHandler extends HwBridgeHandler implements HwTelnetCo
     private @Nullable ScheduledFuture<?> reconnectJob;
     private @Nullable ScheduledFuture<?> heartbeatJob;
     private volatile boolean disposed;
+    private volatile boolean receivedLine;
+    private volatile boolean warnedNoReplies;
 
     // Not final so that tests can shorten it
     volatile long idleTimeoutMs = DEFAULT_IDLE_TIMEOUT_MS;
@@ -79,6 +81,8 @@ public class HwTelnetBridgeHandler extends HwBridgeHandler implements HwTelnetCo
         }
         closeConnection(false);
 
+        receivedLine = false;
+        warnedNoReplies = false;
         HwTelnetConnection newConnection = new HwTelnetConnection(config.ipAddress, config.port, config.user,
                 config.password, this, "OH-binding-" + getThing().getUID() + "-HwTelnetReader");
         // Not under a lock: open() waits for the login, and dispose() must not wait for it.
@@ -144,6 +148,10 @@ public class HwTelnetBridgeHandler extends HwBridgeHandler implements HwTelnetCo
      * the operating system gives up on it, which can take hours. So the processor is asked for a reply regularly and
      * the connection is treated as lost when nothing at all has been received for too long.
      */
+    boolean hasReceivedLine() {
+        return receivedLine;
+    }
+
     void heartbeat() {
         HwTelnetConnection current = connection;
         if (current == null || disposed) {
@@ -151,6 +159,18 @@ public class HwTelnetBridgeHandler extends HwBridgeHandler implements HwTelnetCo
         }
         long idle = current.millisSinceLastReceived();
         if (idle > idleTimeoutMs) {
+            if (!receivedLine) {
+                // Not even the startup commands were answered, so the login most likely suppresses replies, and
+                // silence says nothing about the connection. Reconnecting would only repeat this.
+                if (!warnedNoReplies) {
+                    warnedNoReplies = true;
+                    logger.warn(
+                            "The HomeWorks processor at {}:{} has sent nothing since connecting. Check that Suppress Replies is not selected for the login. A lost connection cannot be detected until it is.",
+                            config.ipAddress, config.port);
+                }
+                sendCommand("DLMON");
+                return;
+            }
             connectionFailed(current, "No response from processor for " + TimeUnit.MILLISECONDS.toSeconds(idle) + " s");
             return;
         }
@@ -211,6 +231,7 @@ public class HwTelnetBridgeHandler extends HwBridgeHandler implements HwTelnetCo
 
     @Override
     public void lineReceived(HwTelnetConnection source, String line) {
+        receivedLine = true;
         handleIncomingMessage(line);
     }
 

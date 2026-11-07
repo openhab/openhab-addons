@@ -273,6 +273,8 @@ public class HwTelnetConnectionTest {
     public void delayedLoginPromptStillAuthenticatesBeforeSendingCommands() throws Exception {
         RecordingListener listener = new RecordingListener();
         HwTelnetConnection conn = connect("lutron", "secret", listener);
+        // Plenty of margin over the deliberate silence below, for slow runners
+        conn.loginTimeoutMs = 30_000;
         BlockingQueue<Object> outcome = new LinkedBlockingQueue<>();
         openInBackground(conn, outcome);
         // Synchronize on the connection, then keep the processor silent beyond the old three-second fallback.
@@ -293,6 +295,7 @@ public class HwTelnetConnectionTest {
     public void silentProcessorTimesOutWithoutSendingCommands() throws Exception {
         RecordingListener listener = new RecordingListener();
         HwTelnetConnection conn = connect("lutron", "secret", listener);
+        conn.loginTimeoutMs = 500;
         BlockingQueue<Object> outcome = new LinkedBlockingQueue<>();
         openInBackground(conn, outcome);
         BufferedReader in = reader();

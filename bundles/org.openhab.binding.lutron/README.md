@@ -913,6 +913,8 @@ lutron:hwdimmer:dimmer1 [address="[01:01:03:02:04]", fadeTime="1", defaultLevel=
 
 The telnet bridge connects to the Ethernet port of the processor (Link 9 on an 8 Series processor), which presents the same command interface as the RS232 ports.
 After login, the only difference is the prompt, which is `LNET>` instead of `L232>`.
+This bridge is for that Ethernet port, which always asks for a login.
+It does not support a serial-to-Ethernet adapter connected to an RS232 port, because such a connection shows no login prompt for the bridge to wait for.
 
 Telnet access uses a login, which is defined in the HomeWorks Illumination software, on the Address Assignment page for Link 9 (Ethernet), in the Telnet Logins list.
 A processor accepts up to 4 logins.
@@ -920,14 +922,13 @@ Using a login dedicated to openHAB is recommended, because the monitoring and su
 
 The login can limit the messages the processor sends, using its Monitor options (Dimmer Levels, Keypad Buttons, Keypad LEDs, GRAFIK Eye Scenes, Timed Events) and Suppress options (Prompt, Replies, Bad Commands).
 **Leave Suppress Replies unchecked for the openHAB login.**
-The bridge relies on the reply to its heartbeat command to detect a lost connection.
-If replies are suppressed and no dimmer levels change, a healthy connection will be treated as lost and repeatedly reconnected.
-Suppress Prompt may be enabled.
+The bridge relies on the processor's reply to its heartbeat command to detect a lost connection.
+If the processor sends nothing at all after connecting, as when replies are suppressed, the bridge logs a warning and cannot detect a lost connection.
 When the bridge connects, it sends `PROMPTOFF`, `KBMOFF`, `KLMOFF`, `GSMOFF` and `DLMON`, which are the same commands the RS232 bridge sends.
 The bridge currently uses only dimmer level messages.
 
-The bundled help in HomeWorks Illumination 1.65 documents these settings under Address Assignment and Link 9, and the address formats under the RS232 command reference's Device Address Formatting topic.
-See [Lutron's Illumination software information](https://support.lutron.com/us/en/product/homeworks/article/legacy-upgrades/HomeWorks-Illumination-software) for software and help access.
+These settings are described in the HomeWorks Illumination help, in the Address Assignment topic (Link 9, Login/Driver).
+The device address formats are described in its RS232 command reference, in the Device Address Formatting topic.
 
 The telnet bridge has the following configuration parameters:
 
