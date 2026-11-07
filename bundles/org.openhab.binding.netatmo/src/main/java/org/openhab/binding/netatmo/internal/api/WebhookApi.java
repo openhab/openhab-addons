@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.netatmo.internal.api;
 
-import static org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.*;
+import static org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.PATH_WEBHOOK;
 
 import java.net.URI;
 import java.util.List;
@@ -34,6 +34,7 @@ import org.openhab.binding.netatmo.internal.handler.ApiBridgeHandler;
 @NonNullByDefault
 public class WebhookApi extends RestManager {
     private static final UriBuilder WEBHOOKS_URI_BUILDER = getApiBaseBuilder(PATH_WEBHOOK);
+    private static final String PAYLOAD_POST_WEBHOOK = "{\"url\":\"%s\"}";
 
     public WebhookApi(ApiBridgeHandler apiClient) {
         super(apiClient, FeatureArea.NONE);
@@ -55,7 +56,7 @@ public class WebhookApi extends RestManager {
      * @throws NetatmoException If fail to call the API, e.g. server or deserializing error
      */
     public boolean appendWebhook(URI uri) throws NetatmoException {
-        String payload = PAYLOAD_ADD_WEBHOOK.formatted(uri.toString());
+        String payload = PAYLOAD_POST_WEBHOOK.formatted(uri.toString());
         post(WEBHOOKS_URI_BUILDER.clone(), ApiResponse.Ok.class, payload);
         return true;
     }
