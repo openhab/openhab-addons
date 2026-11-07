@@ -13,8 +13,10 @@
 package org.openhab.binding.matter.internal.controller.devices.converter;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -44,6 +46,8 @@ import org.openhab.core.thing.ChannelGroupUID;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.types.StateDescription;
 
+import com.google.gson.JsonNull;
+
 /**
  * Test class for ColorControlConverter
  * 
@@ -62,6 +66,10 @@ class ColorControlConverterTest extends BaseMatterConverterTest {
     @Mock
     @NonNullByDefault({})
     private ColorControlConverter converter;
+
+    private static final ChannelUID COLOR_CHANNEL = new ChannelUID("matter:node:test:12345:1#colorcontrol-color");
+    private static final ChannelUID TEMPERATURE_CHANNEL = new ChannelUID(
+            "matter:node:test:12345:1#colorcontrol-temperature-abs");
 
     @Override
     @BeforeEach
@@ -267,6 +275,84 @@ class ColorControlConverterTest extends BaseMatterConverterTest {
         converter.handleCommand(new ChannelUID("matter:node:test:12345:1#colorcontrol-color"),
                 new HSBType("180,100,1"));
         assertEquals(4, capturedCommand(LevelControlCluster.CLUSTER_NAME).args.get("level"));
+    }
+
+    @Test
+    void testColorCommandUsesTheDeviceDefaultTransition() {
+        mockLevelCluster.onOffTransitionTime = 8;
+        converter.initState(true, mockLevelCluster);
+        converter.handleCommand(COLOR_CHANNEL, new HSBType("120,100,100"));
+        assertEquals(8, capturedCommand(ColorControlCluster.CLUSTER_NAME).args.get("transitionTime"));
+        assertEquals(JsonNull.INSTANCE, capturedCommand(LevelControlCluster.CLUSTER_NAME).args.get("transitionTime"));
+    }
+
+    @Test
+    void testColorCommandIsInstantWithoutADeviceDefault() {
+        converter.initState(true, mockLevelCluster);
+        converter.handleCommand(COLOR_CHANNEL, new HSBType("120,100,100"));
+        assertEquals(0, capturedCommand(ColorControlCluster.CLUSTER_NAME).args.get("transitionTime"));
+    }
+
+    @Test
+    void testChannelTransitionTimeIsSentWithLevelAndColor() {
+        mockLevelCluster.onOffTransitionTime = 8;
+        converter.initState(true, mockLevelCluster);
+        setChannelTransitionTime(COLOR_CHANNEL, "1.5");
+        converter.handleCommand(COLOR_CHANNEL, new HSBType("120,100,100"));
+        assertEquals(15, capturedCommand(ColorControlCluster.CLUSTER_NAME).args.get("transitionTime"));
+        assertEquals(15, capturedCommand(LevelControlCluster.CLUSTER_NAME).args.get("transitionTime"));
+    }
+
+    @Test
+    void testColorTemperatureUsesItsOwnChannelTransitionTime() {
+        converter.initState(true, mockLevelCluster);
+        setChannelTransitionTime(TEMPERATURE_CHANNEL, "3");
+        converter.handleCommand(TEMPERATURE_CHANNEL, new DecimalType(300));
+        assertEquals(30, capturedCommand(ColorControlCluster.CLUSTER_NAME).args.get("transitionTime"));
+        converter.handleCommand(COLOR_CHANNEL, new HSBType("120,100,100"));
+        assertEquals(0, capturedCommand(ColorControlCluster.CLUSTER_NAME).args.get("transitionTime"));
+    }
+
+    @Test
+    void testDeviceDefaultAboveTheColorLimitIsCapped() {
+        mockLevelCluster.onOffTransitionTime = 65535;
+        converter.initState(true, mockLevelCluster);
+        converter.handleCommand(COLOR_CHANNEL, new HSBType("120,100,100"));
+        assertEquals(65534, capturedCommand(ColorControlCluster.CLUSTER_NAME).args.get("transitionTime"));
+    }
+
+    @Test
+    void testSharedTransitionIsLeftToTheLevelControlConverter() {
+        mockLevelCluster.featureMap = new LevelControlCluster.FeatureMap(true, true, false);
+        mockLevelCluster.onOffTransitionTime = 8;
+        LevelControlConverter levelConverter = new LevelControlConverter(mockLevelCluster, mockHandler, 1, "TestLabel");
+        converter.shareTransition(levelConverter);
+        converter.initState();
+        verify(mockConfigDescriptionProvider, never()).addConfigDescription(any());
+
+        levelConverter.initState(true);
+        converter.handleCommand(COLOR_CHANNEL, new HSBType("120,100,100"));
+        assertEquals(8, capturedCommand(ColorControlCluster.CLUSTER_NAME).args.get("transitionTime"));
+    }
+
+    @Test
+    void testColorTemperatureCommandUsesTheDeviceDefaultTransition() {
+        mockLevelCluster.onOffTransitionTime = 8;
+        converter.initState(true, mockLevelCluster);
+        converter.handleCommand(TEMPERATURE_CHANNEL, new DecimalType(300));
+        assertEquals(8, capturedCommand(ColorControlCluster.CLUSTER_NAME).args.get("transitionTime"));
+    }
+
+    @Test
+    void testDeviceDefaultChangedElsewhereIsUsedForColor() {
+        converter.initState(true, mockLevelCluster);
+        AttributeChangedMessage message = new AttributeChangedMessage();
+        message.path = new Path();
+        message.path.attributeName = LevelControlCluster.ATTRIBUTE_ON_OFF_TRANSITION_TIME;
+        message.value = 12;
+        converter.onEvent(message);
+        converter.handleCommand(COLOR_CHANNEL, new HSBType("120,100,100"));
+        assertEquals(12, capturedCommand(ColorControlCluster.CLUSTER_NAME).args.get("transitionTime"));
     }
 
     private ClusterCommand capturedCommand(String clusterName) {
