@@ -161,7 +161,7 @@ public class NetatmoConstants {
     public static final String PAYLOAD_SIREN_PRESENCE = "{\"home\": {\"id\":\"%s\",\"modules\": [ {\"id\":\"%s\",\"siren_status\":\"%s\"} ]}}";
     public static final String PAYLOAD_PERSON_AWAY = "{\"home_id\":\"%s\",\"person_id\":\"%s\"}";
     public static final String PAYLOAD_PERSON_HOME = "{\"home_id\":\"%s\",\"person_ids\":[\"%s\"]}";
-    public static final String PAYLOAD_ADD_WEBHOOK = "{\"url\":\"%s\"}";
+    public static final String PAYLOAD_ADD_WEBHOOK = "{[\"url\":\"%s\"]}";
 
     // Autentication process params
     public static final String PARAM_ERROR = "error";
