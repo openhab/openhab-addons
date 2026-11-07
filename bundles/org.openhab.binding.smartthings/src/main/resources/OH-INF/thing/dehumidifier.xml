@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="smartthings"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="dehumidifier">
+		<label>Samsung Dehumidifier</label>
+		<description>Samsung dehumidifier.</description>
+		<semantic-equipment-tag>Dehumidifier</semantic-equipment-tag>
+		<channels>
+			<channel id="power" typeId="system.power">
+				<label>Power</label>
+				<description>Switch the dehumidifier on or off when supported by the dehumidifier.</description>
+			</channel>
+			<channel id="remote-control" typeId="switch-readonly-advanced">
+				<label>Remote Control</label>
+				<description>Whether the dehumidifier currently permits remote control.</description>
+			</channel>
+			<channel id="current-temperature" typeId="system.indoor-temperature">
+				<label>Current Temperature</label>
+				<description>Measured temperature reported by the dehumidifier.</description>
+			</channel>
+			<channel id="target-temperature" typeId="temperature">
+				<label>Target Temperature</label>
+				<description>Desired temperature, writable within the dehumidifier-reported range and increment.</description>
+			</channel>
+			<channel id="mode" typeId="string">
+				<label>Operating Mode</label>
+				<description>Dehumidifier operating mode.</description>
+			</channel>
+			<channel id="power-consumption" typeId="system.electric-power">
+				<label>Power Consumption</label>
+				<description>Instantaneous electrical power reported by the dehumidifier.</description>
+			</channel>
+			<channel id="cumulative-energy" typeId="energy-readonly">
+				<label>Cumulative Energy</label>
+				<description>Cumulative energy reported by the dehumidifier.</description>
+			</channel>
+			<channel id="water-consumption" typeId="number-readonly-advanced">
+				<label>Water Consumption</label>
+				<description>Raw water-consumption reading reported by the dehumidifier.</description>
+			</channel>
+			<channel id="kidslock" typeId="string-readonly-advanced">
+				<label>Child Lock</label>
+				<description>Child-lock state reported by the dehumidifier.</description>
+			</channel>
+		</channels>
+		<representation-property>deviceId</representation-property>
+		<config-description-ref uri="thing-type:smartthings:device"/>
+	</thing-type>
+</thing:thing-descriptions>

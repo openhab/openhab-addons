@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="smartthings"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="washer">
+		<label>Samsung Washer</label>
+		<semantic-equipment-tag>WashingMachine</semantic-equipment-tag>
+		<channels>
+			<channel id="power" typeId="system.power">
+				<label>Power</label>
+				<description>Switch the washer on or off when supported by the washer.</description>
+			</channel>
+			<channel id="remote-control" typeId="switch-readonly-advanced">
+				<label>Remote Control</label>
+				<description>Whether the washer currently permits remote control.</description>
+			</channel>
+			<channel id="power-consumption" typeId="system.electric-power">
+				<label>Power Consumption</label>
+				<description>Instantaneous electrical power reported by the washer.</description>
+			</channel>
+			<channel id="cumulative-energy" typeId="energy-readonly">
+				<label>Cumulative Energy</label>
+				<description>Cumulative energy reported by the washer.</description>
+			</channel>
+			<channel id="machine-state" typeId="string-readonly">
+				<label>Machine State</label>
+				<description>Current washer machine state.</description>
+			</channel>
+			<channel id="job-state" typeId="string-readonly">
+				<label>Job State</label>
+				<description>Current washer job state.</description>
+			</channel>
+			<channel id="remaining-time" typeId="time-readonly">
+				<label>Remaining Time</label>
+				<description>Remaining washer cycle duration in seconds.</description>
+			</channel>
+			<channel id="progress" typeId="percentage-readonly">
+				<label>Cycle Progress</label>
+				<description>Washer cycle progress from 0 to 100 percent.</description>
+			</channel>
+			<channel id="water-consumption" typeId="number-readonly-advanced">
+				<label>Water Consumption</label>
+				<description>Raw water-consumption reading reported by the washer.</description>
+			</channel>
+			<channel id="kidslock" typeId="string-readonly-advanced">
+				<label>Child Lock</label>
+				<description>Child-lock state reported by the washer.</description>
+			</channel>
+		</channels>
+		<representation-property>deviceId</representation-property>
+		<config-description-ref uri="thing-type:smartthings:device"/>
+	</thing-type>
+</thing:thing-descriptions>
