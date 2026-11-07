@@ -79,6 +79,24 @@ public class PushStreamAdapterTest {
     }
 
     @Test
+    public void headersDemandTheFirstDataFrame() {
+        Stream newStream = mock(Stream.class);
+        new PushStreamAdapter(gson, session, receivedUpdates::add).onHeaders(newStream,
+                headersFrame("multipart/related; boundary=------abcde"));
+
+        verify(newStream).demand();
+    }
+
+    @Test
+    public void headersWithoutBoundaryStillDemandData() {
+        Stream newStream = mock(Stream.class);
+        new PushStreamAdapter(gson, session, receivedUpdates::add).onHeaders(newStream,
+                headersFrame("application/json"));
+
+        verify(newStream).demand();
+    }
+
+    @Test
     public void completeMessageInSingleFrameIsProcessed() {
         sendData(MESSAGE_PART);
 

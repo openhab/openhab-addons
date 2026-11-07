@@ -15,6 +15,7 @@ package org.openhab.binding.argoclima.internal.device.passthrough;
 import static org.openhab.binding.argoclima.internal.ArgoClimaBindingConstants.BINDING_ID;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -27,12 +28,13 @@ import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpCookieStore;
-import org.eclipse.jetty.server.Request;
+import org.eclipse.jetty.http.HttpVersion;
 import org.openhab.binding.argoclima.internal.ArgoClimaBindingConstants;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 /**
@@ -121,22 +123,24 @@ public class PassthroughHttpClient {
      * @throws TimeoutException if send times out
      * @throws ExecutionException if execution fails
      */
-    public ContentResponse passthroughRequest(Request downstreamHttpRequest, String downstreamHttpRequestBody)
-            throws InterruptedException, TimeoutException, ExecutionException {
-        String pathQuery = Objects.requireNonNullElse(downstreamHttpRequest.getHttpURI().getPathQuery(),
-                downstreamHttpRequest.getHttpURI().getPath());
+    public ContentResponse passthroughRequest(HttpServletRequest downstreamHttpRequest,
+            String downstreamHttpRequestBody) throws InterruptedException, TimeoutException, ExecutionException {
         var request = this.rawHttpClient.newRequest(this.upstreamTargetHost, this.upstreamTargetPort)
-                .method(downstreamHttpRequest.getMethod()).path(pathQuery)
-                .version(downstreamHttpRequest.getConnectionMetaData().getHttpVersion())
+                .method(downstreamHttpRequest.getMethod())
+                .path(RemoteArgoApiServerStub.getRequestPathQuery(downstreamHttpRequest))
                 .body(new StringRequestContent(downstreamHttpRequestBody))
                 .timeout(ArgoClimaBindingConstants.UPSTREAM_PROXY_HTTP_REQUEST_TIMEOUT.toMillis(),
                         TimeUnit.MILLISECONDS);
+        HttpVersion version = HttpVersion.fromString(downstreamHttpRequest.getProtocol());
+        if (version != null) {
+            request.version(version);
+        }
 
         // re-add headers from downstream request to this one (except explicitly-ignored list)
-        for (var header : downstreamHttpRequest.getHeaders()) {
-            String headerName = header.getName();
+        for (var headerName : Collections.list(downstreamHttpRequest.getHeaderNames())) {
             if (HEADERS_TO_IGNORE.stream().noneMatch(x -> x.equalsIgnoreCase(headerName))) {
-                request.headers(fields -> fields.put(headerName, header.getValue()));
+                String headerValue = downstreamHttpRequest.getHeader(headerName);
+                request.headers(fields -> fields.put(headerName, headerValue));
             }
         }
 

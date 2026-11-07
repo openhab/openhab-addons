@@ -495,6 +495,106 @@ public class UniFiProtectPublicClient implements Closeable {
         }
     }
 
+    /**
+     * WebSocket listener. A member class and public, as Jetty 12 looks up the callbacks via
+     * {@code MethodHandles.publicLookup()}, which cannot access local classes.
+     */
+    public class WsAdapter implements Session.Listener.AutoDemanding {
+        private final CompletableFuture<Session> future;
+        private final URI wsUri;
+        private final Consumer<String> onText;
+        private final Runnable onOpen;
+        private final BiConsumer<Integer, String> onClosed;
+        private final Consumer<Throwable> onError;
+        private @Nullable Session wsSession;
+        private @Nullable ScheduledFuture<?> heartbeatTask;
+        private volatile long lastActivityMs;
+
+        WsAdapter(CompletableFuture<Session> future, URI wsUri, Consumer<String> onText, Runnable onOpen,
+                BiConsumer<Integer, String> onClosed, Consumer<Throwable> onError) {
+            this.future = future;
+            this.wsUri = wsUri;
+            this.onText = onText;
+            this.onOpen = onOpen;
+            this.onClosed = onClosed;
+            this.onError = onError;
+        }
+
+        @Override
+        public void onWebSocketOpen(@Nullable Session session) {
+            if (session == null) {
+                future.completeExceptionally(new IOException("WebSocket connection failed"));
+                return;
+            }
+            this.wsSession = session;
+            lastActivityMs = System.currentTimeMillis();
+            // A write-only ping does not fail on a half-open socket, so liveness is
+            // judged on frames *received*.
+            heartbeatTask = executorService.scheduleWithFixedDelay(() -> {
+                Session s = this.wsSession;
+                if (s == null || !s.isOpen()) {
+                    return;
+                }
+                long silentMs = System.currentTimeMillis() - lastActivityMs;
+                if (silentMs > UnifiProtectBindingConstants.WEBSOCKET_IDLE_TIMEOUT_MS) {
+                    logger.debug("No WebSocket frames received in {} ms; closing to reconnect", silentMs);
+                    s.close(1001, "No data received", Callback.NOOP);
+                    return;
+                }
+                s.sendPing(ByteBuffer.allocate(0), Callback.from(() -> {
+                }, cause -> {
+                    logger.debug("WebSocket heartbeat ping failed", cause);
+                    s.close(1000, "WebSocket heartbeat ping failed", Callback.NOOP);
+                }));
+            }, 30, 30, TimeUnit.SECONDS);
+            logger.debug("WebSocket connected: {}", wsUri);
+            future.complete(session);
+            onOpen.run();
+        }
+
+        @Override
+        public void onWebSocketText(@Nullable String message) {
+            lastActivityMs = System.currentTimeMillis();
+            if (message != null) {
+                onText.accept(message);
+            }
+        }
+
+        @Override
+        public void onWebSocketError(@Nullable Throwable cause) {
+            Throwable t = cause != null ? cause : new IOException("WebSocket connection failed");
+            if (!future.isDone()) {
+                future.completeExceptionally(t);
+            }
+            onError.accept(t);
+        }
+
+        @Override
+        public void onWebSocketClose(int statusCode, @Nullable String reason) {
+            ScheduledFuture<?> hb = heartbeatTask;
+            if (hb != null) {
+                hb.cancel(true);
+                heartbeatTask = null;
+            }
+            onClosed.accept(statusCode, reason != null ? reason : "");
+        }
+
+        @Override
+        public void onWebSocketPong(@Nullable ByteBuffer payload) {
+            lastActivityMs = System.currentTimeMillis();
+        }
+
+        @Override
+        public void onWebSocketPing(@Nullable ByteBuffer payload) {
+            lastActivityMs = System.currentTimeMillis();
+            // Overriding this method disables Jetty's automatic pong reply, so answer explicitly.
+            Session s = this.wsSession;
+            if (s != null) {
+                s.sendPong(payload != null ? payload : ByteBuffer.allocate(0), Callback.NOOP);
+            }
+        }
+    }
+
     private CompletableFuture<Session> connectWebSocket(String path, Consumer<String> onText, Runnable onOpen,
             BiConsumer<Integer, String> onClosed, Consumer<Throwable> onError) {
         CompletableFuture<Session> future = new CompletableFuture<>();
@@ -511,86 +611,8 @@ public class UniFiProtectPublicClient implements Closeable {
                 upgrade.setHeader(h.getKey(), h.getValue());
             }
 
-            class WsAdapter implements Session.Listener.AutoDemanding {
-                private @Nullable Session wsSession;
-                private @Nullable ScheduledFuture<?> heartbeatTask;
-                private volatile long lastActivityMs;
-
-                @Override
-                public void onWebSocketOpen(@Nullable Session session) {
-                    if (session == null) {
-                        future.completeExceptionally(new IOException("WebSocket connection failed"));
-                        return;
-                    }
-                    this.wsSession = session;
-                    lastActivityMs = System.currentTimeMillis();
-                    // A write-only ping does not fail on a half-open socket, so liveness is
-                    // judged on frames *received*.
-                    heartbeatTask = executorService.scheduleWithFixedDelay(() -> {
-                        Session s = this.wsSession;
-                        if (s == null || !s.isOpen()) {
-                            return;
-                        }
-                        long silentMs = System.currentTimeMillis() - lastActivityMs;
-                        if (silentMs > UnifiProtectBindingConstants.WEBSOCKET_IDLE_TIMEOUT_MS) {
-                            logger.debug("No WebSocket frames received in {} ms; closing to reconnect", silentMs);
-                            s.close(1001, "No data received", Callback.NOOP);
-                            return;
-                        }
-                        s.sendPing(ByteBuffer.allocate(0), Callback.from(() -> {
-                        }, cause -> {
-                            logger.debug("WebSocket heartbeat ping failed", cause);
-                            s.close(1000, "WebSocket heartbeat ping failed", Callback.NOOP);
-                        }));
-                    }, 30, 30, TimeUnit.SECONDS);
-                    logger.debug("WebSocket connected: {}", wsUri);
-                    future.complete(session);
-                    onOpen.run();
-                }
-
-                @Override
-                public void onWebSocketText(@Nullable String message) {
-                    lastActivityMs = System.currentTimeMillis();
-                    if (message != null) {
-                        onText.accept(message);
-                    }
-                }
-
-                @Override
-                public void onWebSocketError(@Nullable Throwable cause) {
-                    Throwable t = cause != null ? cause : new IOException("WebSocket connection failed");
-                    if (!future.isDone()) {
-                        future.completeExceptionally(t);
-                    }
-                    onError.accept(t);
-                }
-
-                @Override
-                public void onWebSocketClose(int statusCode, @Nullable String reason) {
-                    ScheduledFuture<?> hb = heartbeatTask;
-                    if (hb != null) {
-                        hb.cancel(true);
-                        heartbeatTask = null;
-                    }
-                    onClosed.accept(statusCode, reason != null ? reason : "");
-                }
-
-                @Override
-                public void onWebSocketPong(@Nullable ByteBuffer payload) {
-                    lastActivityMs = System.currentTimeMillis();
-                }
-
-                @Override
-                public void onWebSocketPing(@Nullable ByteBuffer payload) {
-                    lastActivityMs = System.currentTimeMillis();
-                    // Overriding this method disables Jetty's automatic pong reply, so answer explicitly.
-                    Session s = this.wsSession;
-                    if (s != null) {
-                        s.sendPong(payload != null ? payload : ByteBuffer.allocate(0), Callback.NOOP);
-                    }
-                }
-            }
-            future.complete(wsClient.connect(new WsAdapter(), wsUri, upgrade).get());
+            future.complete(wsClient
+                    .connect(new WsAdapter(future, wsUri, onText, onOpen, onClosed, onError), wsUri, upgrade).get());
         } catch (Exception e) {
             future.completeExceptionally(e);
         }

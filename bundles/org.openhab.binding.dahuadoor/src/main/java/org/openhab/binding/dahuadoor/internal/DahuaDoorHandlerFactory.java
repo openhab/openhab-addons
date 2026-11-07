@@ -28,6 +28,7 @@ import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
+import org.osgi.framework.BundleContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
@@ -48,9 +49,9 @@ public class DahuaDoorHandlerFactory extends BaseThingHandlerFactory {
     private final Map<ThingUID, DahuaDoorBaseHandler> handlersByThingUid = new ConcurrentHashMap<>();
 
     @Activate
-    public DahuaDoorHandlerFactory() {
-        this.playStreamServlet = new PlayStreamServlet(this);
-        this.sipCallControlServlet = new SipCallControlServlet(this);
+    public DahuaDoorHandlerFactory(BundleContext bundleContext) {
+        this.playStreamServlet = new PlayStreamServlet(bundleContext, this);
+        this.sipCallControlServlet = new SipCallControlServlet(bundleContext, this);
         this.sipCallControlServlet.activate();
     }
 

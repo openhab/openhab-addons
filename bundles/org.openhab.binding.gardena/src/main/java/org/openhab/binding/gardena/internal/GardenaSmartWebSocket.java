@@ -28,6 +28,7 @@ import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketError;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketOpen;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketPong;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.openhab.binding.gardena.internal.model.dto.api.PostOAuth2Response;
@@ -148,6 +149,12 @@ public class GardenaSmartWebSocket {
             // let listener handle restart of socket
             socketEventListener.onWebSocketError(locationID);
         }
+    }
+
+    @OnWebSocketPong
+    public synchronized void onPong(ByteBuffer payload) {
+        unansweredPings = 0;
+        logger.trace("Pong received ({})", socketId);
     }
 
     @OnWebSocketMessage

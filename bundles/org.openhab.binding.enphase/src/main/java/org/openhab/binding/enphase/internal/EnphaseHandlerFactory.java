@@ -22,6 +22,7 @@ import java.util.Set;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.openhab.binding.enphase.internal.handler.EnphaseBatteryHandler;
 import org.openhab.binding.enphase.internal.handler.EnphaseInverterHandler;
 import org.openhab.binding.enphase.internal.handler.EnphaseRelayHandler;
@@ -65,7 +66,7 @@ public class EnphaseHandlerFactory extends BaseThingHandlerFactory {
         // the Envoy server went to a self-signed SSL connection and this
         // was the only way to set the client to ignore SSL errors
         this.httpClient = new HttpClient();
-        this.httpClient.getSslContextFactory().setTrustAll(true);
+        this.httpClient.setSslContextFactory(new SslContextFactory.Client(true));
         startHttpClient();
     }
 

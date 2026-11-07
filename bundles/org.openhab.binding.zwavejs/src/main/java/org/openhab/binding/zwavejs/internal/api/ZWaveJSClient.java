@@ -247,6 +247,9 @@ public class ZWaveJSClient implements Session.Listener.AutoDemanding {
             }
             logger.debug("onWebSocketOpen('{}')", session);
             this.session = session;
+            session.setInputBufferSize(bufferSize);
+            session.setMaxTextMessageSize(bufferSize);
+            session.setMaxBinaryMessageSize(bufferSize);
 
             keepAliveFuture = scheduler.scheduleWithFixedDelay(() -> {
                 String data = "Ping";

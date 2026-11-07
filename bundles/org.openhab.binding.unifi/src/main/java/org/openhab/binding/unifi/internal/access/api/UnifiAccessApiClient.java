@@ -921,66 +921,7 @@ public final class UnifiAccessApiClient implements Closeable {
             req.setHeader("Upgrade", "websocket");
             req.setHeader("Connection", "Upgrade");
 
-            Session.Listener.AutoDemanding socket = new Session.Listener.AutoDemanding() {
-                @Override
-                @NonNullByDefault({})
-                public void onWebSocketOpen(Session sess) {
-                    logger.debug("Notifications WebSocket connected: {}", wsUri);
-                    wsSession = sess;
-                    try {
-                        onOpen.run();
-                    } catch (Exception ignored) {
-                    }
-                    lastHeartbeatEpochMs = System.currentTimeMillis();
-                }
-
-                @Override
-                @NonNullByDefault({})
-                public void onWebSocketText(String message) {
-                    try {
-                        if (message != null && !message.isEmpty()) {
-                            if (message.charAt(0) == '"') {
-                                lastHeartbeatEpochMs = System.currentTimeMillis();
-                                logger.trace("Notifications heartbeat received: {}", message.trim());
-                                return;
-                            } else {
-                                Notification note = gson.fromJson(message, Notification.class);
-                                if (note != null) {
-                                    onMessage.accept(note);
-                                }
-                            }
-                        }
-                    } catch (Exception e) {
-                        logger.debug("Notifications handler failed: {}", e.getMessage());
-                        try {
-                            if (!closed) {
-                                onError.accept(e);
-                            }
-                        } catch (Exception callbackEx) {
-                            logger.debug("Error in onError callback: {}", callbackEx.getMessage());
-                        }
-                    }
-                }
-
-                @Override
-                @NonNullByDefault({})
-                public void onWebSocketError(Throwable cause) {
-                    logger.debug("Notifications WebSocket error: {}", cause.getMessage(), cause);
-                    try {
-                        onError.accept(cause);
-                    } catch (Exception callbackEx) {
-                        logger.debug("Error in onError callback: {}", callbackEx.getMessage());
-                    }
-                }
-
-                @Override
-                @NonNullByDefault({})
-                public void onWebSocketClose(int statusCode, String reason) {
-                    logger.debug("Notifications WebSocket closed: {} - {}", statusCode, reason);
-                    stopWsMonitor();
-                    notifyClosedOnce(statusCode, reason != null ? reason : "");
-                }
-            };
+            Session.Listener.AutoDemanding socket = new NotificationsListener(wsUri, onOpen, onMessage, onError);
 
             // In Jetty 12 UpgradeListener was removed; a failed upgrade (e.g. HTTP 401) surfaces as an
             // exceptional completion of the Future returned by connect().
@@ -994,6 +935,84 @@ public final class UnifiAccessApiClient implements Closeable {
             });
         } catch (IOException e) {
             throw new UnifiAccessApiException("WebSocket connect failed: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Listener for the notifications WebSocket. A named public class, as Jetty 12 looks up the callbacks via
+     * {@code MethodHandles.publicLookup()}, which cannot access anonymous classes.
+     */
+    public class NotificationsListener implements Session.Listener.AutoDemanding {
+        private final URI wsUri;
+        private final Runnable onOpen;
+        private final Consumer<Notification> onMessage;
+        private final Consumer<Throwable> onError;
+
+        NotificationsListener(URI wsUri, Runnable onOpen, Consumer<Notification> onMessage,
+                Consumer<Throwable> onError) {
+            this.wsUri = wsUri;
+            this.onOpen = onOpen;
+            this.onMessage = onMessage;
+            this.onError = onError;
+        }
+
+        @Override
+        @NonNullByDefault({})
+        public void onWebSocketOpen(Session sess) {
+            logger.debug("Notifications WebSocket connected: {}", wsUri);
+            wsSession = sess;
+            try {
+                onOpen.run();
+            } catch (Exception ignored) {
+            }
+            lastHeartbeatEpochMs = System.currentTimeMillis();
+        }
+
+        @Override
+        @NonNullByDefault({})
+        public void onWebSocketText(String message) {
+            try {
+                if (message != null && !message.isEmpty()) {
+                    if (message.charAt(0) == '"') {
+                        lastHeartbeatEpochMs = System.currentTimeMillis();
+                        logger.trace("Notifications heartbeat received: {}", message.trim());
+                        return;
+                    } else {
+                        Notification note = gson.fromJson(message, Notification.class);
+                        if (note != null) {
+                            onMessage.accept(note);
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                logger.debug("Notifications handler failed: {}", e.getMessage());
+                try {
+                    if (!closed) {
+                        onError.accept(e);
+                    }
+                } catch (Exception callbackEx) {
+                    logger.debug("Error in onError callback: {}", callbackEx.getMessage());
+                }
+            }
+        }
+
+        @Override
+        @NonNullByDefault({})
+        public void onWebSocketError(Throwable cause) {
+            logger.debug("Notifications WebSocket error: {}", cause.getMessage(), cause);
+            try {
+                onError.accept(cause);
+            } catch (Exception callbackEx) {
+                logger.debug("Error in onError callback: {}", callbackEx.getMessage());
+            }
+        }
+
+        @Override
+        @NonNullByDefault({})
+        public void onWebSocketClose(int statusCode, String reason) {
+            logger.debug("Notifications WebSocket closed: {} - {}", statusCode, reason);
+            stopWsMonitor();
+            notifyClosedOnce(statusCode, reason != null ? reason : "");
         }
     }
 

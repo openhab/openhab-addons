@@ -41,7 +41,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 @WebSocket
-class WebSocketBase {
+public class WebSocketBase {
     private final Logger logger = LoggerFactory.getLogger(WebSocketBase.class);
     private static final Pattern TOKEN = Pattern.compile("(\"token\"\\s*:\\s*\")[^\"]*");
     final RemoteControllerWebSocket remoteControllerWebSocket;
@@ -143,6 +143,9 @@ class WebSocketBase {
         logger.debug("{}: {} connection established: {}", host, className,
                 session != null ? session.getRemoteSocketAddress().toString() : "");
         if (session != null) {
+            session.setInputBufferSize(bufferSize);
+            session.setMaxTextMessageSize(bufferSize);
+            session.setMaxBinaryMessageSize(bufferSize);
             logger.trace("{}: {} Buffer Size set to {} Mb", host, className,
                     Math.round((bufferSize / 1048576.0) * 100.0) / 100.0);
             // avoid 5 minute idle timeout

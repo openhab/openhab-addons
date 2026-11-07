@@ -29,7 +29,7 @@ import com.google.gson.JsonSyntaxException;
  * @author Nick Waterton - Updated to handle >2020 TV's
  */
 @NonNullByDefault
-class WebSocketV2 extends WebSocketBase {
+public class WebSocketV2 extends WebSocketBase {
     private final Logger logger = LoggerFactory.getLogger(WebSocketV2.class);
 
     private String host = "";

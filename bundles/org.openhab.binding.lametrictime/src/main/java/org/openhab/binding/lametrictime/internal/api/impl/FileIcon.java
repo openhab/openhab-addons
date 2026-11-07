@@ -14,14 +14,14 @@ package org.openhab.binding.lametrictime.internal.api.impl;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URLConnection;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Locale;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import jakarta.activation.MimetypesFileTypeMap;
 
 /**
  * Implementation class for file icons.
@@ -32,8 +32,6 @@ import jakarta.activation.MimetypesFileTypeMap;
 public class FileIcon extends AbstractDataIcon {
     private final Logger logger = LoggerFactory.getLogger(FileIcon.class);
 
-    private final MimetypesFileTypeMap mimeTypeMap = new MimetypesFileTypeMap();
-
     private final Path path;
 
     public FileIcon(File file) {
@@ -42,12 +40,13 @@ public class FileIcon extends AbstractDataIcon {
 
     public FileIcon(Path path) {
         this.path = path;
-        mimeTypeMap.addMimeTypes("image/png png PNG");
     }
 
     @Override
     protected void populateFields() {
-        setType(mimeTypeMap.getContentType(path.toFile()));
+        // the JDK file name map, as Jakarta Activation 2 needs a separate provider for MIME type lookups
+        String type = URLConnection.guessContentTypeFromName(path.getFileName().toString().toLowerCase(Locale.ROOT));
+        setType(type != null ? type : "application/octet-stream");
         try {
             setData(Files.readAllBytes(path));
         } catch (IOException e) {

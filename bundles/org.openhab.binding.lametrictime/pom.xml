@@ -14,17 +14,7 @@
 
   <name>openHAB Add-ons :: Bundles :: LaMetric Time Binding</name>
 
-  <properties>
-    <bnd.importpackage>!jakarta.activation</bnd.importpackage>
-  </properties>
-
   <dependencies>
-    <dependency>
-      <groupId>jakarta.activation</groupId>
-      <artifactId>jakarta.activation-api</artifactId>
-      <version>2.1.4</version>
-      <scope>compile</scope>
-    </dependency>
     <dependency>
       <groupId>com.googlecode.junit-toolbox</groupId>
       <artifactId>junit-toolbox</artifactId>

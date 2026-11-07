@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.dahuadoor.internal.media;
 
+import static org.openhab.binding.dahuadoor.internal.DahuaDoorBindingConstants.WEBRTC_SERVLET_PATH;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -22,6 +24,8 @@ import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
+import java.util.Dictionary;
+import java.util.Hashtable;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
@@ -31,9 +35,13 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.dahuadoor.internal.DahuaDoorBaseHandler;
 import org.openhab.binding.dahuadoor.internal.DahuaDoorHandlerFactory;
 import org.openhab.binding.dahuadoor.internal.sip.SipClient;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceRegistration;
+import org.osgi.service.servlet.whiteboard.HttpWhiteboardConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import jakarta.servlet.Servlet;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -41,8 +49,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 /**
- * The {@link PlayStreamServlet} is an HTTP servlet registered at
- * at {@value DahuaDoorBindingConstants#WEBRTC_SERVLET_PATH}.
+ * The {@link PlayStreamServlet} is an HTTP servlet registered with the OSGi Servlet Whiteboard
+ * at {@value org.openhab.binding.dahuadoor.internal.DahuaDoorBindingConstants#WEBRTC_SERVLET_PATH}.
  *
  * <p>
  * It proxies WebRTC SDP offer/answer exchange between the browser and the local go2rtc instance,
@@ -86,7 +94,9 @@ public class PlayStreamServlet extends HttpServlet {
     /** Fallback timeout for ACTIVE locks if SIP state callbacks are not observed. */
     private static final long ACTIVE_STALE_MS = 30 * 60_000L;
 
+    private final BundleContext bundleContext;
     private final DahuaDoorHandlerFactory handlerFactory;
+    private @Nullable ServiceRegistration<Servlet> registration;
 
     /**
      * Map from go2rtc stream name (e.g. {@code dahua_vto2202_living}) to API port.
@@ -111,7 +121,8 @@ public class PlayStreamServlet extends HttpServlet {
     /** Number of currently registered streams; used to decide when to unregister the servlet. */
     private volatile int registrationCount = 0;
 
-    public PlayStreamServlet(DahuaDoorHandlerFactory handlerFactory) {
+    public PlayStreamServlet(BundleContext bundleContext, DahuaDoorHandlerFactory handlerFactory) {
+        this.bundleContext = bundleContext;
         this.handlerFactory = handlerFactory;
     }
 
@@ -397,12 +408,31 @@ public class PlayStreamServlet extends HttpServlet {
     // -------------------------------------------------------------------------
 
     private boolean activate() {
-        LOGGER.debug("PlayStreamServlet activation requested");
-        return true;
+        Dictionary<String, Object> props = new Hashtable<>();
+        props.put(HttpWhiteboardConstants.HTTP_WHITEBOARD_SERVLET_NAME, WEBRTC_SERVLET_PATH);
+        props.put(HttpWhiteboardConstants.HTTP_WHITEBOARD_SERVLET_PATTERN,
+                new String[] { WEBRTC_SERVLET_PATH, WEBRTC_SERVLET_PATH + "/*" });
+        try {
+            registration = bundleContext.registerService(Servlet.class, this, props);
+            LOGGER.debug("PlayStreamServlet registered at {}", WEBRTC_SERVLET_PATH);
+            return true;
+        } catch (IllegalStateException e) {
+            LOGGER.error("Failed to register PlayStreamServlet: {}", e.getMessage(), e);
+            return false;
+        }
     }
 
     private void deactivate() {
-        LOGGER.debug("PlayStreamServlet deactivated");
+        ServiceRegistration<Servlet> localRegistration = registration;
+        registration = null;
+        if (localRegistration != null) {
+            try {
+                localRegistration.unregister();
+                LOGGER.debug("PlayStreamServlet unregistered");
+            } catch (IllegalStateException e) {
+                LOGGER.trace("PlayStreamServlet was not registered: {}", e.getMessage());
+            }
+        }
     }
 
     // -------------------------------------------------------------------------

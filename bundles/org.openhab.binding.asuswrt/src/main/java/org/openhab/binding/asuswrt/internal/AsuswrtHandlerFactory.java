@@ -54,7 +54,8 @@ public class AsuswrtHandlerFactory extends BaseThingHandlerFactory {
     public AsuswrtHandlerFactory() {
         // Set SslContextfactory
         httpClient = new HttpClient();
-        SslContextFactory.Client sslContextFactory = httpClient.getSslContextFactory();
+        SslContextFactory.Client sslContextFactory = new SslContextFactory.Client();
+        httpClient.setSslContextFactory(sslContextFactory);
         if (HTTP_SSL_TRUST_ALL) {
             sslContextFactory.setTrustAll(true);
             sslContextFactory.setEndpointIdentificationAlgorithm(null);

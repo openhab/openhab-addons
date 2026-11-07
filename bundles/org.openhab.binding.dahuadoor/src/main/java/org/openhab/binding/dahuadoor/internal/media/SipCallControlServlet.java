@@ -16,14 +16,20 @@ import static org.openhab.binding.dahuadoor.internal.DahuaDoorBindingConstants.S
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.Dictionary;
+import java.util.Hashtable;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.dahuadoor.internal.DahuaDoorBaseHandler;
 import org.openhab.binding.dahuadoor.internal.DahuaDoorHandlerFactory;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceRegistration;
+import org.osgi.service.servlet.whiteboard.HttpWhiteboardConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import jakarta.servlet.Servlet;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -46,18 +52,39 @@ public class SipCallControlServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
     private static final Logger LOGGER = LoggerFactory.getLogger(SipCallControlServlet.class);
 
+    private final BundleContext bundleContext;
     private final DahuaDoorHandlerFactory handlerFactory;
+    private @Nullable ServiceRegistration<Servlet> registration;
 
-    public SipCallControlServlet(DahuaDoorHandlerFactory handlerFactory) {
+    public SipCallControlServlet(BundleContext bundleContext, DahuaDoorHandlerFactory handlerFactory) {
+        this.bundleContext = bundleContext;
         this.handlerFactory = handlerFactory;
     }
 
     public void activate() {
-        LOGGER.debug("SipCallControlServlet activation requested at {}", SIP_CONTROL_SERVLET_PATH);
+        Dictionary<String, Object> props = new Hashtable<>();
+        props.put(HttpWhiteboardConstants.HTTP_WHITEBOARD_SERVLET_NAME, SIP_CONTROL_SERVLET_PATH);
+        props.put(HttpWhiteboardConstants.HTTP_WHITEBOARD_SERVLET_PATTERN,
+                new String[] { SIP_CONTROL_SERVLET_PATH, SIP_CONTROL_SERVLET_PATH + "/*" });
+        try {
+            registration = bundleContext.registerService(Servlet.class, this, props);
+            LOGGER.debug("SipCallControlServlet registered at {}", SIP_CONTROL_SERVLET_PATH);
+        } catch (IllegalStateException e) {
+            LOGGER.error("Failed to register SipCallControlServlet: {}", e.getMessage(), e);
+        }
     }
 
     public void deactivate() {
-        LOGGER.debug("SipCallControlServlet deactivated");
+        ServiceRegistration<Servlet> localRegistration = registration;
+        registration = null;
+        if (localRegistration != null) {
+            try {
+                localRegistration.unregister();
+                LOGGER.debug("SipCallControlServlet unregistered");
+            } catch (IllegalStateException e) {
+                LOGGER.trace("SipCallControlServlet was not registered: {}", e.getMessage());
+            }
+        }
     }
 
     @Override

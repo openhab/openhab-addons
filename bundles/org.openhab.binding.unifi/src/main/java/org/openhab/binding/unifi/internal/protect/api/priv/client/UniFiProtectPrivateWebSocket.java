@@ -263,7 +263,7 @@ public class UniFiProtectPrivateWebSocket {
     /**
      * WebSocket adapter to handle messages
      */
-    private class UniFiWebSocketAdapter implements Session.Listener.AutoDemanding {
+    public class UniFiWebSocketAdapter implements Session.Listener.AutoDemanding {
 
         @Override
         public void onWebSocketOpen(Session session) {

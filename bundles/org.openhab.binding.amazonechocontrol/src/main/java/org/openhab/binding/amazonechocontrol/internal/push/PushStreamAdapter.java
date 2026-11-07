@@ -66,6 +66,17 @@ public class PushStreamAdapter implements Stream.Listener {
 
     @Override
     public void onHeaders(@NonNullByDefault({}) Stream stream, @NonNullByDefault({}) HeadersFrame frame) {
+        try {
+            processHeaders(frame);
+        } finally {
+            // overriding onHeaders() skips the default initial demand, without it no DATA frame is delivered
+            if (!frame.isEndStream()) {
+                stream.demand();
+            }
+        }
+    }
+
+    private void processHeaders(HeadersFrame frame) {
         HttpFields headers = frame.getMetaData().getHttpFields();
         if (logger.isTraceEnabled()) {
             logger.trace("Received headers: {}", HttpUtil.logToString(headers));

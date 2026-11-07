@@ -141,6 +141,8 @@ public class LxWebSocket {
         try {
             offlineCode = null;
             offlineReason = null;
+            session.setMaxBinaryMessageSize(maxBinMsgSize * 1024L);
+            session.setMaxTextMessageSize(maxTextMsgSize * 1024L);
 
             logger.debug("[{}] Websocket connected (maxBinMsgSize={}, maxTextMsgSize={})", debugId, maxBinMsgSize,
                     maxTextMsgSize);
