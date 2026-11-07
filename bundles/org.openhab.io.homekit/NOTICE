@@ -48,3 +48,8 @@ curve25519-java
 * License: Apache 2.0 license
 * Project: https://code.google.com/archive/p/curve25519-java
 * Source:  https://github.com/trevorbernard/curve25519-java
+
+jna
+* License: Apache 2.0 License
+* Project: https://github.com/java-native-access/jna
+* Source:  https://github.com/java-native-access/jna
