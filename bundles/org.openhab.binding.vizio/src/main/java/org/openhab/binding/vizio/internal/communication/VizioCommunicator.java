@@ -233,8 +233,10 @@ public class VizioCommunicator {
         try {
             final Request request = httpClient.newRequest(url).method(HttpMethod.GET);
             request.timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS);
-            request.headers(h -> h.add(AUTH_HEADER, authToken));
-            request.headers(h -> h.add(HttpHeader.CONTENT_TYPE, JSON_CONTENT_TYPE));
+            request.headers(h -> {
+                h.add(AUTH_HEADER, authToken);
+                h.add(HttpHeader.CONTENT_TYPE, JSON_CONTENT_TYPE);
+            });
 
             final ContentResponse response = request.send();
 

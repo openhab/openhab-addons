@@ -271,9 +271,11 @@ public class IndegoController {
             throws IndegoAuthenticationException, IndegoException {
         try {
             final String authHeader = authorizationProvider.getAuthorizationHeader();
-            Request request = httpClient.newRequest(BASE_URL + path).method(method).agent(userAgent);
-            request.headers(headers -> headers.put(HttpHeader.AUTHORIZATION, authHeader));
-            request.headers(headers -> headers.put(HttpHeader.CONTENT_TYPE, CONTENT_TYPE_HEADER));
+            Request request = httpClient.newRequest(BASE_URL + path).method(method).agent(userAgent)
+                    .headers(headers -> {
+                        headers.put(HttpHeader.AUTHORIZATION, authHeader);
+                        headers.put(HttpHeader.CONTENT_TYPE, CONTENT_TYPE_HEADER);
+                    });
             if (requestDto != null) {
                 String payload = gson.toJson(requestDto);
                 request.body(new StringRequestContent(payload));

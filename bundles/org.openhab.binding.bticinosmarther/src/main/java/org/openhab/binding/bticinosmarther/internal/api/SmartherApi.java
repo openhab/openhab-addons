@@ -446,8 +446,10 @@ public class SmartherApi {
         Function<HttpClient, Request> call = httpClient -> {
             final Request request = httpClient.newRequest(url).method(method)
                     .body(new StringRequestContent(StringUtil.defaultString(requestData)));
-            request.headers(headers -> headers.put(HEADER_ACCEPT, CONTENT_TYPE));
-            request.headers(headers -> headers.put("Content-Type", CONTENT_TYPE));
+            request.headers(headers -> {
+                headers.put(HEADER_ACCEPT, CONTENT_TYPE);
+                headers.put("Content-Type", CONTENT_TYPE);
+            });
             return request;
         };
 

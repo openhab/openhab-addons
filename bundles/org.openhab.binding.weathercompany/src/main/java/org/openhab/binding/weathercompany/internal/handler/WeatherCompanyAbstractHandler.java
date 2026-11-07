@@ -206,8 +206,10 @@ public abstract class WeatherCompanyAbstractHandler extends BaseThingHandler {
         Request request = httpClient.newRequest(url);
         request.timeout(WEATHER_COMPANY_API_TIMEOUT_SECONDS, TimeUnit.SECONDS);
         request.method(HttpMethod.GET);
-        request.headers(h -> h.add(HttpHeader.ACCEPT, "application/json"));
-        request.headers(h -> h.add(HttpHeader.ACCEPT_ENCODING, "gzip"));
+        request.headers(h -> {
+            h.add(HttpHeader.ACCEPT, "application/json");
+            h.add(HttpHeader.ACCEPT_ENCODING, "gzip");
+        });
 
         String errorMsg;
         try {

@@ -259,11 +259,12 @@ public class TibberHandler extends BaseThingHandler implements TibberHistoryList
 
     public Request getRequest() {
         Request req = httpClient.POST(BASE_URL).timeout(REQUEST_TIMEOUT_SEC, TimeUnit.SECONDS);
-        req.headers(h -> h.add(HttpHeader.AUTHORIZATION, "Bearer " + tibberConfig.token));
-        req.headers(h -> h.add(HttpHeader.USER_AGENT, Utils.getUserAgent(this)));
-
-        req.headers(h -> h.add(HttpHeader.CONTENT_TYPE, JSON_CONTENT_TYPE));
-        req.headers(h -> h.add("cache-control", "no-cache"));
+        req.headers(h -> {
+            h.add(HttpHeader.AUTHORIZATION, "Bearer " + tibberConfig.token);
+            h.add(HttpHeader.USER_AGENT, Utils.getUserAgent(this));
+            h.add(HttpHeader.CONTENT_TYPE, JSON_CONTENT_TYPE);
+            h.add("cache-control", "no-cache");
+        });
         return req;
     }
 

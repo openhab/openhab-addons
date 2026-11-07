@@ -96,7 +96,7 @@ class BoschSslUtilTest {
         assertNotNull(keyStore2);
 
         // basic test if a SSL factory instance can be created
-        SslContextFactory factory = sslUtil2.getSslContextFactory();
+        SslContextFactory.Client factory = sslUtil2.getSslContextFactory();
         assertNotNull(factory);
     }
 }

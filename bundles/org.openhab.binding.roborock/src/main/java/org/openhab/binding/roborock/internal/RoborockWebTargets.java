@@ -336,11 +336,13 @@ public class RoborockWebTargets {
                     request.headers(h -> h.add(headerKey, headerValue));
                 }
                 if (headerKey2 != null && headerValue2 != null) {
-                    request.headers(h -> h.add(headerKey2, headerValue2));
-                    request.headers(h -> h.add("header_clientlang", "en"));
-                    request.headers(h -> h.add("header_appversion", "4.54.02"));
-                    request.headers(h -> h.add("header_phonesystem", "iOS"));
-                    request.headers(h -> h.add("header_phonemodel", "iPhone16,1"));
+                    request.headers(h -> {
+                        h.add(headerKey2, headerValue2);
+                        h.add("header_clientlang", "en");
+                        h.add("header_appversion", "4.54.02");
+                        h.add("header_phonesystem", "iOS");
+                        h.add("header_phonemodel", "iPhone16,1");
+                    });
                 }
                 if (logger.isTraceEnabled()) {
                     logger.trace("{} request for {}", method, uri);

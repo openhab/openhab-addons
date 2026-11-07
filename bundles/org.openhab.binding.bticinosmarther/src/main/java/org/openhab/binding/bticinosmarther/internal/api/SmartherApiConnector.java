@@ -181,8 +181,10 @@ public class SmartherApiConnector {
             try {
                 final Request request = requester.apply(httpClient).timeout(HTTP_CLIENT_TIMEOUT_SECONDS,
                         TimeUnit.SECONDS);
-                request.headers(headers -> headers.put(SUBSCRIPTION_HEADER, subscription));
-                request.headers(headers -> headers.put(AUTHORIZATION_HEADER, authorization));
+                request.headers(headers -> {
+                    headers.put(SUBSCRIPTION_HEADER, subscription);
+                    headers.put(AUTHORIZATION_HEADER, authorization);
+                });
                 final boolean success = processResponse(request.send());
 
                 if (!success) {

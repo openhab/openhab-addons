@@ -82,13 +82,16 @@ public class VocHttpApi {
 
     private @Nullable String getResponse(HttpMethod method, String url, @Nullable String body) {
         try {
-            Request request = httpClient.newRequest(url).headers(h -> h.add(HttpHeader.CACHE_CONTROL, "no-cache"))
-                    .headers(h -> h.add(HttpHeader.CONTENT_TYPE, JSON_CONTENT_TYPE))
-                    .headers(h -> h.add(HttpHeader.ACCEPT, "*/*"))
-                    .headers(h -> h.add(HttpHeader.AUTHORIZATION, configuration.getAuthorization()))
-                    .headers(h -> h.add("x-device-id", "Device")).headers(h -> h.add("x-originator-type", "App"))
-                    .headers(h -> h.add("x-os-type", "Android")).headers(h -> h.add("x-os-version", "22"))
-                    .timeout(TIMEOUT_MS, TimeUnit.MILLISECONDS);
+            Request request = httpClient.newRequest(url).headers(h -> {
+                h.add(HttpHeader.CACHE_CONTROL, "no-cache");
+                h.add(HttpHeader.CONTENT_TYPE, JSON_CONTENT_TYPE);
+                h.add(HttpHeader.ACCEPT, "*/*");
+                h.add(HttpHeader.AUTHORIZATION, configuration.getAuthorization());
+                h.add("x-device-id", "Device");
+                h.add("x-originator-type", "App");
+                h.add("x-os-type", "Android");
+                h.add("x-os-version", "22");
+            }).timeout(TIMEOUT_MS, TimeUnit.MILLISECONDS);
             if (body != null) {
                 request = request.body(new StringRequestContent(JSON_CONTENT_TYPE, body, StandardCharsets.UTF_8));
             }

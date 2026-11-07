@@ -101,10 +101,10 @@ public class ApiController {
 
     public String executeCall(String wemoURL, String soapHeader, String soapBody)
             throws InterruptedException, WemoException {
-        Request request = httpClient.newRequest(wemoURL).timeout(HTTP_TIMEOUT_MS, TimeUnit.MILLISECONDS)
-                .headers(h -> h.add(HttpHeader.CONTENT_TYPE, HTTP_CALL_CONTENT_HEADER))
-                .headers(h -> h.add("SOAPACTION", soapHeader)).method(HttpMethod.POST)
-                .body(new StringRequestContent(soapBody));
+        Request request = httpClient.newRequest(wemoURL).timeout(HTTP_TIMEOUT_MS, TimeUnit.MILLISECONDS).headers(h -> {
+            h.add(HttpHeader.CONTENT_TYPE, HTTP_CALL_CONTENT_HEADER);
+            h.add("SOAPACTION", soapHeader);
+        }).method(HttpMethod.POST).body(new StringRequestContent(soapBody));
 
         logger.trace("POST request for URL: '{}', header: '{}', request body: '{}'", wemoURL, soapHeader, soapBody);
 

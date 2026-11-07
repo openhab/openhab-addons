@@ -65,8 +65,10 @@ public class WorxApiHandler {
 
     private Request buildRequest(String url, String accessToken, HttpMethod method) {
         Request request = httpClient.newRequest(url).method(method);
-        request.headers(h -> h.add(HttpHeader.AUTHORIZATION, "Bearer %s".formatted(accessToken)));
-        request.headers(h -> h.add(HttpHeader.CONTENT_TYPE, "application/json; utf-8"));
+        request.headers(h -> {
+            h.add(HttpHeader.AUTHORIZATION, "Bearer %s".formatted(accessToken));
+            h.add(HttpHeader.CONTENT_TYPE, "application/json; utf-8");
+        });
         request.timeout(TIMEOUT_S, TimeUnit.SECONDS);
         return request;
     }

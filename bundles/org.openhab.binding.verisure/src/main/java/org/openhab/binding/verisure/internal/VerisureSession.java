@@ -432,17 +432,22 @@ public class VerisureSession {
         }
 
         // Mimic Browser - add Accept-Language and Accept-Encoding
-        request.headers(h -> h.add(HttpHeader.ACCEPT, "application/json"))
-                .headers(h -> h.add(HttpHeader.ORIGIN, "https://mypages.verisure.com"))
-                .headers(h -> h.add(HttpHeader.ACCEPT_LANGUAGE, "sv-SE,sv;q=0.9,en-US;q=0.8,en;q=0.7"))
-                .headers(h -> h.add(HttpHeader.ACCEPT_ENCODING, "gzip, deflate, br, zstd"));
+        request.headers(h -> {
+            h.add(HttpHeader.ACCEPT, "application/json");
+            h.add(HttpHeader.ORIGIN, "https://mypages.verisure.com");
+            h.add(HttpHeader.ACCEPT_LANGUAGE, "sv-SE,sv;q=0.9,en-US;q=0.8,en;q=0.7");
+            h.add(HttpHeader.ACCEPT_ENCODING, "gzip, deflate, br, zstd");
+        });
 
         // 2. Authentication Logic
         if (url.contains(AUTH_LOGIN) || url.contains(AUTH_TOKEN)) {
             request.headers(h -> h.add("APPLICATION_ID", "MyPages_Login"));
             // Add Sec-Fetch headers for auth endpoints (same-site)
-            request.headers(h -> h.add("Sec-Fetch-Dest", "empty")).headers(h -> h.add("Sec-Fetch-Mode", "cors"))
-                    .headers(h -> h.add("Sec-Fetch-Site", "same-site"));
+            request.headers(h -> {
+                h.add("Sec-Fetch-Dest", "empty");
+                h.add("Sec-Fetch-Mode", "cors");
+                h.add("Sec-Fetch-Site", "same-site");
+            });
             if (url.contains(AUTH_LOGIN)) {
                 String basicAuthentication = Base64.getEncoder().encodeToString((userName + ":" + password).getBytes());
                 request.headers(h -> h.add("authorization", "Basic " + basicAuthentication));
@@ -456,12 +461,17 @@ public class VerisureSession {
             // Handle Legacy Login Headers for j_spring_security_check
             if (url.contains(LOGON_SUF)) {
                 // Note: Content-Type is set via request.content() below, don't set it here to avoid duplicates
-                request.headers(h -> h.add(HttpHeader.REFERER, "https://mypages.verisure.com/login"))
-                        .headers(h -> h.add("X-Vs-Refresh", vsRefresh))
-                        .headers(h -> h.add("X-Vs-Single-Sign-On", "false"));
+                request.headers(h -> {
+                    h.add(HttpHeader.REFERER, "https://mypages.verisure.com/login");
+                    h.add("X-Vs-Refresh", vsRefresh);
+                    h.add("X-Vs-Single-Sign-On", "false");
+                });
                 // Add Sec-Fetch headers for same-origin request
-                request.headers(h -> h.add("Sec-Fetch-Dest", "empty")).headers(h -> h.add("Sec-Fetch-Mode", "cors"))
-                        .headers(h -> h.add("Sec-Fetch-Site", "same-origin"));
+                request.headers(h -> {
+                    h.add("Sec-Fetch-Dest", "empty");
+                    h.add("Sec-Fetch-Mode", "cors");
+                    h.add("Sec-Fetch-Site", "same-origin");
+                });
             }
         }
 
@@ -656,14 +666,16 @@ public class VerisureSession {
 
                 // Step 1: GET the login page first to acquire WAF/Imperva cookies
                 logger.debug("Fetching login page to acquire WAF cookies");
-                Request loginPageRequest = httpClient.newRequest(LOGIN).method(HttpMethod.GET).headers(h -> h.add(
-                        HttpHeader.ACCEPT,
-                        "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8"))
-                        .headers(h -> h.add(HttpHeader.ACCEPT_LANGUAGE, "sv-SE,sv;q=0.9,en-US;q=0.8,en;q=0.7"))
-                        .headers(h -> h.add(HttpHeader.ACCEPT_ENCODING, "gzip, deflate, br, zstd"))
-                        .headers(h -> h.add("Sec-Fetch-Dest", "document"))
-                        .headers(h -> h.add("Sec-Fetch-Mode", "navigate")).headers(h -> h.add("Sec-Fetch-Site", "none"))
-                        .headers(h -> h.add("Sec-Fetch-User", "?1"));
+                Request loginPageRequest = httpClient.newRequest(LOGIN).method(HttpMethod.GET).headers(h -> {
+                    h.add(HttpHeader.ACCEPT,
+                            "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8");
+                    h.add(HttpHeader.ACCEPT_LANGUAGE, "sv-SE,sv;q=0.9,en-US;q=0.8,en;q=0.7");
+                    h.add(HttpHeader.ACCEPT_ENCODING, "gzip, deflate, br, zstd");
+                    h.add("Sec-Fetch-Dest", "document");
+                    h.add("Sec-Fetch-Mode", "navigate");
+                    h.add("Sec-Fetch-Site", "none");
+                    h.add("Sec-Fetch-User", "?1");
+                });
                 loginPageRequest.timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS);
                 ContentResponse loginPageResponse = loginPageRequest.send();
                 logger.debug("Login page response status: {}", loginPageResponse.getStatus());
@@ -706,12 +718,12 @@ public class VerisureSession {
 
                 // Step 5: Verify login by accessing status page
                 url = STATUS;
-                Request request = httpClient.newRequest(url).method(HttpMethod.GET).headers(h -> h.add(
-                        HttpHeader.ACCEPT,
-                        "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7"))
-                        .headers(h -> h.add(HttpHeader.ACCEPT_LANGUAGE, "sv-SE,sv;q=0.9,en-US;q=0.8,en;q=0.7"))
-                        .headers(h -> h.add(HttpHeader.REFERER, "https://mypages.verisure.com/login"))
-                        .followRedirects(false);
+                Request request = httpClient.newRequest(url).method(HttpMethod.GET).headers(h -> {
+                    h.add(HttpHeader.ACCEPT,
+                            "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7");
+                    h.add(HttpHeader.ACCEPT_LANGUAGE, "sv-SE,sv;q=0.9,en-US;q=0.8,en;q=0.7");
+                    h.add(HttpHeader.REFERER, "https://mypages.verisure.com/login");
+                }).followRedirects(false);
 
                 ContentResponse response = request.send();
                 String content = response.getContentAsString();

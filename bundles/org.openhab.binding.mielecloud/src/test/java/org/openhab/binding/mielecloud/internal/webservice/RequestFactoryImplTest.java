@@ -117,7 +117,7 @@ public class RequestFactoryImplTest {
 
         // then:
         assertEquals(requestMock, request);
-        assertDefaultHeaders(capturedHeaders(request, 3), "*/*");
+        assertDefaultHeaders(capturedHeaders(request, 2), "*/*");
         verify(request).timeout(REQUEST_TIMEOUT, REQUEST_TIMEOUT_UNIT);
         verify(request).method(HttpMethod.GET);
         verify(request).param("language", LANGUAGE);
@@ -134,7 +134,7 @@ public class RequestFactoryImplTest {
 
         // then:
         assertEquals(requestMock, request);
-        assertDefaultHeaders(capturedHeaders(request, 3), "*/*");
+        assertDefaultHeaders(capturedHeaders(request, 2), "*/*");
         verify(request).timeout(EXTENDED_REQUEST_TIMEOUT, REQUEST_TIMEOUT_UNIT);
         verify(request).method(HttpMethod.PUT);
         ArgumentCaptor<Request.Content> bodyCaptor = ArgumentCaptor.forClass(Request.Content.class);
@@ -155,7 +155,7 @@ public class RequestFactoryImplTest {
 
         // then:
         assertEquals(requestMock, request);
-        assertDefaultHeaders(capturedHeaders(request, 3), "*/*");
+        assertDefaultHeaders(capturedHeaders(request, 2), "*/*");
         verify(request).timeout(REQUEST_TIMEOUT, REQUEST_TIMEOUT_UNIT);
         verify(request).method(HttpMethod.POST);
         verify(request).param("language", LANGUAGE);
@@ -178,7 +178,7 @@ public class RequestFactoryImplTest {
 
         // then:
         assertEquals(requestMock, request);
-        assertDefaultHeaders(capturedHeaders(request, 3), "*/*");
+        assertDefaultHeaders(capturedHeaders(request, 2), "*/*");
         verify(request).timeout(REQUEST_TIMEOUT, REQUEST_TIMEOUT_UNIT);
         verify(request).method(HttpMethod.GET);
         verifyNoMoreInteractions(request);
@@ -195,7 +195,7 @@ public class RequestFactoryImplTest {
 
         // then:
         assertEquals(requestMock, request);
-        assertDefaultHeaders(capturedHeaders(request, 3), "*/*");
+        assertDefaultHeaders(capturedHeaders(request, 2), "*/*");
         verify(request).timeout(REQUEST_TIMEOUT, REQUEST_TIMEOUT_UNIT);
         verify(request).method(HttpMethod.GET);
         verifyNoMoreInteractions(request);
@@ -211,7 +211,7 @@ public class RequestFactoryImplTest {
 
         // then:
         assertEquals(requestMock, request);
-        assertDefaultHeaders(capturedHeaders(request, 3), "text/event-stream");
+        assertDefaultHeaders(capturedHeaders(request, 2), "text/event-stream");
         verifyNoMoreInteractions(request);
     }
 
@@ -225,7 +225,7 @@ public class RequestFactoryImplTest {
 
         // then:
         assertEquals(requestMock, request);
-        HttpFields headers = capturedHeaders(request, 4);
+        HttpFields headers = capturedHeaders(request, 3);
         assertDefaultHeaders(headers, "text/event-stream");
         assertEquals(LANGUAGE, headers.get("Accept-Language"));
         verifyNoMoreInteractions(request);

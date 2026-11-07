@@ -106,11 +106,11 @@ public class McdBridgeHandler extends BaseBridgeHandler {
         if (localConfig != null) {
             try {
                 Request request = httpClient.newRequest("https://cunds-syncapi.azurewebsites.net/token")
-                        .method(HttpMethod.POST)
-                        .headers(h -> h.add(HttpHeader.CONTENT_TYPE, "application/x-www-form-urlencoded"))
-                        .headers(h -> h.add(HttpHeader.HOST, "cunds-syncapi.azurewebsites.net"))
-                        .headers(h -> h.add(HttpHeader.ACCEPT, "application/json"))
-                        .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+                        .method(HttpMethod.POST).headers(h -> {
+                            h.add(HttpHeader.CONTENT_TYPE, "application/x-www-form-urlencoded");
+                            h.add(HttpHeader.HOST, "cunds-syncapi.azurewebsites.net");
+                            h.add(HttpHeader.ACCEPT, "application/json");
+                        }).timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS);
 
                 String content = "grant_type=password&username=" + localConfig.getUserEmail() + "&password="
                         + localConfig.getUserPassword();

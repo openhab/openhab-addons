@@ -129,8 +129,10 @@ public class RestClient {
             request.body(new StringRequestContent(content));
             request.timeout(CONNECTION_TIMEOUT, TimeUnit.MILLISECONDS);
             request.agent(ApiConstants.API_USER_AGENT);
-            request.headers(h -> h.add("X-API-LANG", "en"));
-            request.headers(h -> h.add(HttpHeader.CONTENT_TYPE, "application/x-www-form-urlencoded"));
+            request.headers(h -> {
+                h.add("X-API-LANG", "en");
+                h.add(HttpHeader.CONTENT_TYPE, "application/x-www-form-urlencoded");
+            });
             if (tokens != null) {
                 request.headers(h -> h.add(HttpHeader.AUTHORIZATION.asString(), "Bearer " + tokens.accessToken()));
             }
@@ -161,9 +163,11 @@ public class RestClient {
             request.method(HttpMethod.GET);
             request.timeout(CONNECTION_TIMEOUT, TimeUnit.MILLISECONDS);
             request.agent(ApiConstants.API_USER_AGENT);
-            request.headers(h -> h.add("X-API-LANG", "en"));
-            request.headers(h -> h.add(HttpHeader.CONTENT_TYPE, "application/x-www-form-urlencoded"));
-            request.headers(h -> h.add(HttpHeader.AUTHORIZATION.asString(), "Bearer " + tokens.accessToken()));
+            request.headers(h -> {
+                h.add("X-API-LANG", "en");
+                h.add(HttpHeader.CONTENT_TYPE, "application/x-www-form-urlencoded");
+                h.add(HttpHeader.AUTHORIZATION.asString(), "Bearer " + tokens.accessToken());
+            });
             additionalHeaders.forEach((k, v) -> request.headers(h -> h.add(k, v)));
 
             ContentResponse response = request.send();

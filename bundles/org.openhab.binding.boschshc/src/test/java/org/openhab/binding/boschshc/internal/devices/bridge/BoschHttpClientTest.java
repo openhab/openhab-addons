@@ -61,9 +61,17 @@ class BoschHttpClientTest {
 
     @BeforeEach
     void beforeEach() throws PairingFailedException {
-        SslContextFactory sslFactory = new BoschSslUtil("127.0.0.1").getSslContextFactory();
+        SslContextFactory.Client sslFactory = new BoschSslUtil("127.0.0.1").getSslContextFactory();
         httpClient = new BoschHttpClient("127.0.0.1", "dummy", sslFactory);
         assertNotNull(httpClient);
+    }
+
+    @Test
+    void usesGivenSslContextFactory() throws PairingFailedException {
+        SslContextFactory.Client sslFactory = new BoschSslUtil("127.0.0.1").getSslContextFactory();
+        BoschHttpClient client = new BoschHttpClient("127.0.0.1", "dummy", sslFactory);
+
+        assertSame(sslFactory, client.getSslContextFactory());
     }
 
     @Test
