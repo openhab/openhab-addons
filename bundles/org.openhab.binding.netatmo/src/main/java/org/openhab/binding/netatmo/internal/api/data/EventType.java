@@ -218,10 +218,7 @@ public enum EventType {
     SET_POINT(ModuleType.THERMOSTAT),
 
     @SerializedName("cancel_set_point") // manual setpoint ended
-    CANCEL_SET_POINT(ModuleType.THERMOSTAT),
-
-    @SerializedName("device_event") // new webhooks
-    DEVICE_EVENT(ModuleType.WEATHER_STATION, ModuleType.PLUG);
+    CANCEL_SET_POINT(ModuleType.THERMOSTAT);
 
     public static final EnumSet<EventType> AS_SET = EnumSet.allOf(EventType.class);
 

@@ -69,6 +69,7 @@ public class WebhookServlet extends NetatmoServlet {
         super.startListening();
         try {
             logger.debug("Getting list of active webhooks");
+            String stringUri = uri.toString();
             List<Webhook> currentHooks = api.getWebhooks();
             if (currentHooks.stream().anyMatch(url -> url.getUri().equals(uri))) {
                 logger.info("The webhook {} is already present", uri);
