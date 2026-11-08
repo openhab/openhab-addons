@@ -393,10 +393,10 @@ public class RuleAnnotationParserTest {
         List<org.openhab.core.automation.Rule> rules = parse(new ScriptWithTriggerOnMethod());
 
         assertEquals(1, rules.size(), "Exactly one rule must be created");
-        org.openhab.core.automation.Rule rule = rules.get(0);
+        org.openhab.core.automation.Rule rule = rules.getFirst();
 
         assertEquals(1, rule.getTriggers().size(), "Exactly one trigger must be created");
-        Trigger trigger = rule.getTriggers().get(0);
+        Trigger trigger = rule.getTriggers().getFirst();
         assertEquals("core.ItemStateChangeTrigger", trigger.getTypeUID(), "The type UID must be the expected one");
         assertEquals("Light", trigger.getConfiguration().get("itemName"), "The itemName must be taken from the annotation");
     }
