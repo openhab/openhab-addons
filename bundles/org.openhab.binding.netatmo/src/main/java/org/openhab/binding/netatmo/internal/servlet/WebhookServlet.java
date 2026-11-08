@@ -24,7 +24,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.HttpMethod;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriBuilder;
-import javax.ws.rs.core.UriBuilderException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.netatmo.internal.api.NetatmoException;
@@ -70,18 +69,16 @@ public class WebhookServlet extends NetatmoServlet {
         super.startListening();
         URI uri = UriBuilder.fromUri(webHookUrl).path(getPath() + webHookPostfix).build();
         try {
-            String stringUri = uri.toString();
             logger.debug("Getting list of active webhooks");
+            String stringUri = uri.toString();
             List<Webhook> currentHooks = api.getWebhooks();
-            boolean present = currentHooks.stream().anyMatch(url -> url.getUrl().equals(stringUri));
-            if (!present) {
-                logger.info("Setting up Webhook at Netatmo to {}", stringUri);
-                hookSet = api.appendWebhook(uri);
+            if (currentHooks.stream().anyMatch(url -> url.getUrl().equals(stringUri))) {
+                logger.info("The webhook {} is already present", stringUri);
+                hookSet = true;
             } else {
-                logger.info("Webhook {} already present", stringUri);
+                logger.info("Setting up the webhook {}", stringUri);
+                hookSet = api.appendWebhook(uri);
             }
-        } catch (UriBuilderException e) {
-            logger.info("webhookUrl is not a valid URI '{}': {}", uri, e.getMessage());
         } catch (NetatmoException e) {
             logger.info("Error setting webhook: {}", e.getMessage());
         }
@@ -90,7 +87,7 @@ public class WebhookServlet extends NetatmoServlet {
     @Override
     public void dispose() {
         if (hookSet) {
-            logger.info("Releasing Webhook at Netatmo ");
+            logger.info("Releasing webhook");
             try {
                 api.dropWebhook();
                 hookSet = false;

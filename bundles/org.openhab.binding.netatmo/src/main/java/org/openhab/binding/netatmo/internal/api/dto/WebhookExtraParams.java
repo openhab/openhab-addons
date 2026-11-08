@@ -13,6 +13,8 @@
 package org.openhab.binding.netatmo.internal.api.dto;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.netatmo.internal.api.data.EventType;
+import org.openhab.binding.netatmo.internal.api.data.ModuleType;
 
 /**
  * The {@link WebhookExtraParams} holds
@@ -26,5 +28,7 @@ public class WebhookExtraParams {
     int correlationId;
     int sequenceId;
     String source = "";
+    ModuleType deviceType = ModuleType.UNKNOWN;
+    EventType eventType = EventType.UNKNOWN;
     // To bo continued
 }

@@ -18,10 +18,9 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.netatmo.internal.api.data.EventType;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.TopologyChange;
+import org.openhab.binding.netatmo.internal.api.data.PushType;
 import org.openhab.binding.netatmo.internal.deserialization.NAObjectMap;
-import org.openhab.binding.netatmo.internal.deserialization.NAPushType;
 
 /**
  * The {@link WebhookEvent} is responsible to hold
@@ -32,7 +31,7 @@ import org.openhab.binding.netatmo.internal.deserialization.NAPushType;
  */
 @NonNullByDefault
 public class WebhookEvent extends Event {
-    private NAPushType pushType = NAPushType.UNKNOWN;
+    private PushType pushType = PushType.UNKNOWN;
     private String userId = "";
     private String deviceId = "";
     private String homeId = "";
@@ -51,11 +50,6 @@ public class WebhookEvent extends Event {
 
     public NAObjectMap<Person> getPersons() {
         return persons;
-    }
-
-    @Override
-    public EventType getEventType() {
-        return pushType.event();
     }
 
     @Override
