@@ -443,7 +443,8 @@ public class MiCloudConnector {
     }
 
     private void addCookie(HttpCookieStore cookieStore, String name, String value, String domain) {
-        HttpCookie cookie = HttpCookie.build(name, value).domain("." + domain).path("/").build();
+        // Jetty's HttpCookieStore never matches a domain with a leading dot
+        HttpCookie cookie = HttpCookie.build(name, value).domain(domain).path("/").build();
         cookieStore.add(URI.create("https://" + domain), cookie);
     }
 

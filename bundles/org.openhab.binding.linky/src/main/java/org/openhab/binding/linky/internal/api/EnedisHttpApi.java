@@ -81,8 +81,9 @@ public class EnedisHttpApi {
     }
 
     public void addCookie(String key, String value) {
-        HttpCookie cookie = HttpCookie.build(key, value).domain(BridgeRemoteEnedisWebHandler.ENEDIS_DOMAIN).path("/")
-                .build();
+        // Jetty's HttpCookieStore never matches a domain with a leading dot
+        HttpCookie cookie = HttpCookie.build(key, value).domain(BridgeRemoteEnedisWebHandler.ENEDIS_DOMAIN.substring(1))
+                .path("/").build();
         httpClient.getHttpCookieStore().add(BridgeRemoteEnedisWebHandler.COOKIE_URI, cookie);
     }
 
