@@ -167,7 +167,7 @@ public class SourceGenerator {
      * @param writeGuardTime Delay before writing the file. Each call may delay it further.
      */
     private synchronized void delayWhenStable(InternalGenerator generator, int writeGuardTime) {
-        ScheduledFuture<?> scheduledFuture = futureGeneration.remove(generator);
+        ScheduledFuture<?> scheduledFuture = futureGeneration.get(generator);
         if (scheduledFuture != null && !scheduledFuture.isDone()) {
             if (scheduledFuture.getDelay(TimeUnit.MILLISECONDS) < writeGuardTime) {
                 scheduledFuture.cancel(false);
