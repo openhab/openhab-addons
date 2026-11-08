@@ -37,6 +37,7 @@ import org.openhab.binding.robonect.internal.model.ErrorList;
 import org.openhab.binding.robonect.internal.model.MowerInfo;
 import org.openhab.binding.robonect.internal.model.Name;
 import org.openhab.binding.robonect.internal.model.VersionInfo;
+import org.openhab.binding.robonect.internal.model.cmd.DirectCommand;
 import org.openhab.binding.robonect.internal.model.cmd.DoorCommand.Direction;
 import org.openhab.binding.robonect.internal.model.cmd.ModeCommand;
 import org.openhab.binding.robonect.internal.model.cmd.ServiceCommand.Operation;
@@ -151,6 +152,21 @@ public class RobonectClientTest {
         when(responseMock.getContentAsString()).thenReturn("{\"successful\": true}");
         subject.mower().stop();
         verify(httpClientMock, times(1)).newRequest("http://123.456.789.123/json?cmd=stop");
+    }
+
+    /** Checks that a direct wheel request includes both signed values and the millisecond timeout. */
+    @Test
+    public void shouldSendDirectWheelCommand() throws InterruptedException, ExecutionException, TimeoutException {
+        String url = "http://123.456.789.123/json?cmd=direct&left=-1000&right=1000&timeout=5000";
+        when(httpClientMock.newRequest(url)).thenReturn(requestMock);
+        when(requestMock.method(HttpMethod.GET)).thenReturn(requestMock);
+        when(requestMock.timeout(30000L, TimeUnit.MILLISECONDS)).thenReturn(requestMock);
+        when(requestMock.send()).thenReturn(responseMock);
+        when(responseMock.getEncoding()).thenReturn("utf8");
+        when(responseMock.getContentAsString()).thenReturn("{\"successful\":true}");
+
+        assertTrue(subject.mower().drive(new DirectCommand(-1000, 1000, 5000)).isSuccessful());
+        verify(httpClientMock).newRequest(url);
     }
 
     /** Checks that the WLAN request parses the returned network data. */

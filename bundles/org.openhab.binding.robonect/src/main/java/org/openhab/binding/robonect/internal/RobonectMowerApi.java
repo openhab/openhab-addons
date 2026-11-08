@@ -32,6 +32,7 @@ import org.openhab.binding.robonect.internal.model.RobonectAnswer;
 import org.openhab.binding.robonect.internal.model.Status;
 import org.openhab.binding.robonect.internal.model.cmd.AjaxCommand;
 import org.openhab.binding.robonect.internal.model.cmd.Command;
+import org.openhab.binding.robonect.internal.model.cmd.DirectCommand;
 import org.openhab.binding.robonect.internal.model.cmd.DoorCommand;
 import org.openhab.binding.robonect.internal.model.cmd.DoorCommand.Direction;
 import org.openhab.binding.robonect.internal.model.cmd.ErrorCommand;
@@ -184,6 +185,16 @@ public final class RobonectMowerApi {
     public RobonectAnswer stop() {
         String responseString = transport.sendCommand(new StopCommand());
         return ModelParser.parse(responseString, RobonectAnswer.class);
+    }
+
+    /**
+     * Sends a timed direct wheel command to the mower.
+     *
+     * @param command the requested wheel values and timeout
+     * @return the mower's response to the command
+     */
+    public RobonectAnswer drive(DirectCommand command) {
+        return ModelParser.parse(transport.sendCommand(command), RobonectAnswer.class);
     }
 
     /**

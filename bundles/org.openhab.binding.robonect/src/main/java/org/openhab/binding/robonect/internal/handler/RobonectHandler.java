@@ -48,6 +48,7 @@ import org.openhab.binding.robonect.internal.RobonectPushServlet;
 import org.openhab.binding.robonect.internal.config.JobChannelConfig;
 import org.openhab.binding.robonect.internal.config.RobonectConfig;
 import org.openhab.binding.robonect.internal.model.MowerStatus;
+import org.openhab.binding.robonect.internal.model.cmd.DirectCommand;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.library.types.DateTimeType;
@@ -84,6 +85,7 @@ import com.google.gson.JsonSyntaxException;
 public class RobonectHandler extends BaseThingHandler {
 
     private static final ChannelTypeUID JOB_CHANNEL_TYPE = new ChannelTypeUID(BINDING_ID, "jobType");
+    private static final ChannelTypeUID DIRECT_CHANNEL_TYPE = new ChannelTypeUID(BINDING_ID, "directType");
 
     private final Logger logger = LoggerFactory.getLogger(RobonectHandler.class);
 
@@ -194,6 +196,23 @@ public class RobonectHandler extends BaseThingHandler {
     }
 
     /**
+     * Sends a direct wheel command from the Thing Action.
+     *
+     * @param command the requested wheel values and timeout
+     * @throws IllegalStateException if the Thing is unavailable or the mower rejects the command
+     */
+    void drive(DirectCommand command) {
+        PollingSession session = pollingSession;
+        RobonectMowerHandler mower = mowerHandler;
+        if (session == null || disposed || session != pollingSession) {
+            throw new IllegalStateException("Robonect Thing is not initialized");
+        }
+        if (!mower.drive(command).isSuccessful()) {
+            throw new IllegalStateException("Robonect rejected the direct wheel command");
+        }
+    }
+
+    /**
      * Routes refreshes and commands to endpoint handlers and reports communication failures.
      *
      * @param channelUID the channel identifier
@@ -277,6 +296,8 @@ public class RobonectHandler extends BaseThingHandler {
                 if (channel != null && JOB_CHANNEL_TYPE.equals(channel.getChannelTypeUID())) {
                     JobChannelConfig jobConfig = channel.getConfiguration().as(JobChannelConfig.class);
                     mowerHandler.handleJobCommand(id, jobConfig, command);
+                } else if (channel != null && DIRECT_CHANNEL_TYPE.equals(channel.getChannelTypeUID())) {
+                    mowerHandler.handleDirectCommand(channel.getConfiguration(), command);
                 } else if (id.startsWith("remote-")) {
                     remoteStartHandler.handleCommand(id, command);
                 } else if (id.startsWith("timer-")) {
@@ -617,11 +638,14 @@ public class RobonectHandler extends BaseThingHandler {
      */
     private void refreshChannels(ChannelUID channelUID) {
         String channelId = channelUID.getId();
+        Channel channel = getThing().getChannel(channelId);
+        if (channel != null && DIRECT_CHANNEL_TYPE.equals(channel.getChannelTypeUID())) {
+            return;
+        }
         if (channelId.startsWith("weather-")) {
             weatherHandler.refreshWeatherInfo();
             return;
         }
-        Channel channel = getThing().getChannel(channelId);
         if (channel != null && JOB_CHANNEL_TYPE.equals(channel.getChannelTypeUID())) {
             mowerHandler.refreshMowerInfo();
             return;

@@ -5,6 +5,21 @@
 	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0
 	https://openhab.org/schemas/config-description-1.0.0.xsd">
 
+	<config-description uri="channel-type:robonect:directType">
+		<parameter name="left" type="integer" required="true" min="-1000" max="1000">
+			<label>Left Wheel Value</label>
+			<description>Signed value from -1000 to 1000 for the left wheel.</description>
+		</parameter>
+		<parameter name="right" type="integer" required="true" min="-1000" max="1000">
+			<label>Right Wheel Value</label>
+			<description>Signed value from -1000 to 1000 for the right wheel.</description>
+		</parameter>
+		<parameter name="timeout" type="integer" required="true" min="1" max="5000" unit="ms">
+			<label>Drive Timeout</label>
+			<description>Duration of the wheel command in milliseconds, from 1 to 5000.</description>
+		</parameter>
+	</config-description>
+
 	<config-description uri="channel-type:robonect:jobType">
 		<parameter name="remoteStart" type="text">
 			<label>Remote Start</label>

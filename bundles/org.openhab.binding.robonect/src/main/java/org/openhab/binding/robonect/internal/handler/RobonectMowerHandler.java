@@ -15,6 +15,7 @@ package org.openhab.binding.robonect.internal.handler;
 import static org.openhab.binding.robonect.internal.RobonectBindingConstants.*;
 import static org.openhab.binding.robonect.internal.handler.RobonectHandler.read;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -44,9 +45,11 @@ import org.openhab.binding.robonect.internal.model.RobonectAnswer;
 import org.openhab.binding.robonect.internal.model.Status;
 import org.openhab.binding.robonect.internal.model.Timer;
 import org.openhab.binding.robonect.internal.model.Wlan;
+import org.openhab.binding.robonect.internal.model.cmd.DirectCommand;
 import org.openhab.binding.robonect.internal.model.cmd.DoorCommand.Direction;
 import org.openhab.binding.robonect.internal.model.cmd.ModeCommand;
 import org.openhab.binding.robonect.internal.model.cmd.ServiceCommand.Operation;
+import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -153,6 +156,58 @@ final class RobonectMowerHandler {
         } else {
             logger.debug("Got name update of type {} but StringType is expected.", command.getClass().getName());
         }
+    }
+
+    /**
+     * Sends the configured timed wheel command when the custom switch receives ON.
+     *
+     * @param configuration the required left, right, and timeout channel settings
+     * @param command the command received on the switch
+     */
+    void handleDirectCommand(Configuration configuration, Command command) {
+        if (command != OnOffType.ON || !handler.canPublishState()) {
+            return;
+        }
+        DirectCommand direct;
+        try {
+            direct = new DirectCommand(readDirectSetting(configuration, "left"),
+                    readDirectSetting(configuration, "right"), readDirectSetting(configuration, "timeout"));
+        } catch (IllegalArgumentException e) {
+            logger.debug("Invalid direct wheel channel configuration: {}", e.getMessage());
+            return;
+        }
+        if (!drive(direct).isSuccessful()) {
+            logger.debug("Robonect rejected the direct wheel command");
+        }
+    }
+
+    /**
+     * Reads a required integer setting without rounding a fractional value.
+     *
+     * @param configuration the channel settings
+     * @param key the required setting name
+     * @return the exact integer value of the setting
+     * @throws IllegalArgumentException if the setting is missing or is not a valid integer
+     */
+    private int readDirectSetting(Configuration configuration, String key) {
+        if (configuration.get(key) instanceof Number number) {
+            try {
+                return new BigDecimal(number.toString()).intValueExact();
+            } catch (ArithmeticException | NumberFormatException e) {
+                throw new IllegalArgumentException(key + " must be an integer", e);
+            }
+        }
+        throw new IllegalArgumentException(key + " must be an integer");
+    }
+
+    /**
+     * Sends a timed direct wheel command through the mower API.
+     *
+     * @param command the requested wheel values and timeout
+     * @return the mower's response to the command
+     */
+    RobonectAnswer drive(DirectCommand command) {
+        return mowerApi.drive(command);
     }
 
     /**

@@ -15,6 +15,7 @@ package org.openhab.binding.robonect.internal.handler;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.robonect.internal.RobonectClient.JobSettings;
+import org.openhab.binding.robonect.internal.model.cmd.DirectCommand;
 import org.openhab.binding.robonect.internal.model.cmd.ModeCommand.Mode;
 import org.openhab.binding.robonect.internal.model.cmd.ModeCommand.RemoteStart;
 import org.openhab.core.automation.annotation.ActionInput;
@@ -90,6 +91,32 @@ public class RobonectActions implements ThingActions {
             throw new IllegalStateException("Robonect Thing is unavailable");
         }
         mower.startJob(settings);
+        return true;
+    }
+
+    /**
+     * Sends a timed direct wheel command to the associated mower.
+     *
+     * @param left the left wheel value from -1000 to 1000
+     * @param right the right wheel value from -1000 to 1000
+     * @param timeout the duration from 1 to 5000 milliseconds
+     * @return {@code true} after the mower accepts the command
+     * @throws IllegalArgumentException if a required input is missing or out of range
+     * @throws IllegalStateException if the mower is unavailable or rejects the command
+     */
+    @RuleAction(label = "@text/action-direct-label", description = "@text/action-direct-description")
+    public @ActionOutput(name = "success", label = "@text/action-output-direct-success-label", type = "java.lang.Boolean") boolean drive(
+            @ActionInput(name = "left", label = "@text/action-input-direct-left-label", description = "@text/action-input-direct-left-description", required = true) @Nullable Integer left,
+            @ActionInput(name = "right", label = "@text/action-input-direct-right-label", description = "@text/action-input-direct-right-description", required = true) @Nullable Integer right,
+            @ActionInput(name = "timeout", label = "@text/action-input-direct-timeout-label", description = "@text/action-input-direct-timeout-description", required = true) @Nullable Integer timeout) {
+        if (left == null || right == null || timeout == null) {
+            throw new IllegalArgumentException("Left, right, and timeout are required");
+        }
+        RobonectHandler mower = handler;
+        if (mower == null) {
+            throw new IllegalStateException("Robonect Thing is unavailable");
+        }
+        mower.drive(new DirectCommand(left, right, timeout));
         return true;
     }
 }

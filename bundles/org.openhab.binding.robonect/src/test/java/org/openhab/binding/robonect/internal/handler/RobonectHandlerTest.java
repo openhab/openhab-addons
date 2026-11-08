@@ -16,6 +16,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
+import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -87,6 +88,7 @@ import org.openhab.binding.robonect.internal.model.WeatherInfo;
 import org.openhab.binding.robonect.internal.model.WireInfo;
 import org.openhab.binding.robonect.internal.model.Wlan;
 import org.openhab.binding.robonect.internal.model.WlanInfo;
+import org.openhab.binding.robonect.internal.model.cmd.DirectCommand;
 import org.openhab.binding.robonect.internal.model.cmd.DoorCommand.Direction;
 import org.openhab.binding.robonect.internal.model.cmd.ModeCommand;
 import org.openhab.core.config.core.Configuration;
@@ -1469,6 +1471,80 @@ public class RobonectHandlerTest {
         assertThrows(IllegalArgumentException.class, () -> actions.startJob(null, null, "12:60", null, null));
         assertThrows(IllegalArgumentException.class, () -> actions.startJob(null, null, null, "REMOTE_6", null));
         assertThrows(IllegalArgumentException.class, () -> actions.startJob(null, null, null, null, "JOB"));
+        verifyNoInteractions(mowerApiMock);
+    }
+
+    /** Checks that only ON sends a custom channel's configured wheel command. */
+    @Test
+    public void shouldDriveWheelsFromCustomChannel() {
+        ChannelUID uid = new ChannelUID(subject.getThing().getUID(), "direct#test");
+        Configuration config = new Configuration(Map.of("left", new BigDecimal("-20"), "right", 20, "timeout", 500));
+        Channel channel = ChannelBuilder.create(uid, "Switch").withType(new ChannelTypeUID("robonect", "directType"))
+                .withConfiguration(config).build();
+        when(robonectThingMock.getChannel(uid.getId())).thenReturn(channel);
+        DirectCommand direct = new DirectCommand(-20, 20, 500);
+        when(mowerApiMock.drive(direct)).thenReturn(ModelParser.parse("{\"successful\":true}", RobonectAnswer.class));
+
+        subject.handleCommand(uid, OnOffType.OFF);
+        subject.handleCommand(uid, RefreshType.REFRESH);
+        verifyNoInteractions(mowerApiMock);
+        subject.handleCommand(uid, OnOffType.ON);
+        verify(mowerApiMock).drive(direct);
+    }
+
+    /**
+     * Checks that a missing, fractional, or out-of-range channel setting prevents a drive command.
+     *
+     * @param key the setting to replace or remove
+     * @param value the invalid setting, or {@code null} to omit it
+     */
+    @ParameterizedTest
+    @CsvSource({ "left,", "right,", "timeout,", "left,1.5", "right,1001", "timeout,5001" })
+    public void shouldRejectInvalidDirectChannelSettings(String key, BigDecimal value) {
+        ChannelUID uid = new ChannelUID(subject.getThing().getUID(), "direct#test");
+        Map<String, Object> settings = new HashMap<>(Map.of("left", -20, "right", 20, "timeout", 500));
+        if (value == null) {
+            settings.remove(key);
+        } else {
+            settings.put(key, value);
+        }
+        Channel channel = ChannelBuilder.create(uid, "Switch").withType(new ChannelTypeUID("robonect", "directType"))
+                .withConfiguration(new Configuration(settings)).build();
+        when(robonectThingMock.getChannel(uid.getId())).thenReturn(channel);
+
+        subject.handleCommand(uid, OnOffType.ON);
+        verifyNoInteractions(mowerApiMock);
+    }
+
+    /** Checks acceptance and rejection of wheel commands issued through the Thing Action. */
+    @Test
+    public void shouldReportDirectThingActionResult() {
+        initializePolling(Map.of());
+        RobonectActions actions = new RobonectActions();
+        actions.setThingHandler(subject);
+        DirectCommand direct = new DirectCommand(-1000, 1000, 1);
+        when(mowerApiMock.drive(direct)).thenReturn(ModelParser.parse("{\"successful\":true}", RobonectAnswer.class),
+                ModelParser.parse("{\"successful\":false}", RobonectAnswer.class));
+
+        assertTrue(actions.drive(-1000, 1000, 1));
+        assertThrows(IllegalStateException.class, () -> actions.drive(-1000, 1000, 1));
+        verify(mowerApiMock, times(2)).drive(direct);
+    }
+
+    /**
+     * Checks that invalid Thing Action inputs are rejected before a request is sent.
+     *
+     * @param left the left wheel value
+     * @param right the right wheel value
+     * @param timeout the duration in milliseconds
+     */
+    @ParameterizedTest
+    @CsvSource({ ",20,500", "20,,500", "20,20,", "-1001,20,500", "20,1001,500", "20,20,0", "20,20,5001" })
+    public void shouldRejectInvalidDirectThingActionInputs(Integer left, Integer right, Integer timeout) {
+        RobonectActions actions = new RobonectActions();
+        actions.setThingHandler(subject);
+
+        assertThrows(IllegalArgumentException.class, () -> actions.drive(left, right, timeout));
         verifyNoInteractions(mowerApiMock);
     }
 

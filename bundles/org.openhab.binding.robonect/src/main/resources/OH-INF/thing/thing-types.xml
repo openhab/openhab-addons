@@ -1021,6 +1021,15 @@
 		</state>
 	</channel-type>
 
+	<channel-type id="directType">
+		<item-type>Switch</item-type>
+		<label>Direct Wheel Control</label>
+		<description>Send ON to drive the wheels using the configured values and timeout.</description>
+		<state readOnly="false"/>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+		<config-description-ref uri="channel-type:robonect:directType"/>
+	</channel-type>
+
 	<channel-type id="jobType">
 		<item-type>Switch</item-type>
 		<label>Mowing Job</label>

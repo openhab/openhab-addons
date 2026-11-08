@@ -229,6 +229,14 @@ val startJob = mowerActions.getClass().getMethod("startJob", Integer, String, St
 startJob.invoke(mowerActions, 60, null, null, "REMOTE_1", "AUTO")
 ```
 
+Use the **Drive Wheels** Thing Action to send a timed direct wheel command with three required integers.
+`left` and `right` each accept signed values from -1000 to 1000. `timeout` accepts 1 to 5000 milliseconds.
+The action reports success when the mower accepts the command and raises an error if the mower rejects it.
+
+For a preset drive command, add a custom `directType` Switch channel to the mower Thing with the same three
+configuration parameters. An `ON` command sends the preset once. The demo configuration includes forward and
+reverse presets and a separate Rules DSL button that invokes the Thing Action.
+
 ## Full Example
 
 Things file `.things`
