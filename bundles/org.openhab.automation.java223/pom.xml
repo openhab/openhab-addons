@@ -119,6 +119,20 @@
               </sources>
             </configuration>
           </execution>
+          <execution>
+            <!-- The helper library is compiled separately from the bundle, so it gets its own test source root.
+                 This keeps the unit tests of the helper library next to the helper sources. -->
+            <id>add-helper-test-source</id>
+            <goals>
+              <goal>add-test-source</goal>
+            </goals>
+            <phase>generate-test-sources</phase>
+            <configuration>
+              <sources>
+                <source>src/helper/test/java</source>
+              </sources>
+            </configuration>
+          </execution>
         </executions>
       </plugin>
     </plugins>
