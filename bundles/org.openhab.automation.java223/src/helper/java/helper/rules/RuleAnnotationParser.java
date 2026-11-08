@@ -58,6 +58,7 @@ import helper.rules.annotations.GenericAutomationTrigger;
 import helper.rules.annotations.GenericCompareCondition;
 import helper.rules.annotations.GenericEventCondition;
 import helper.rules.annotations.GenericEventTrigger;
+import helper.rules.annotations.GroupCommandTrigger;
 import helper.rules.annotations.GroupStateChangeTrigger;
 import helper.rules.annotations.GroupStateUpdateTrigger;
 import helper.rules.annotations.ItemCommandTrigger;
@@ -85,6 +86,7 @@ public class RuleAnnotationParser {
             Map.entry(ItemCommandTrigger.class, "core.ItemCommandTrigger"),
             Map.entry(ItemStateChangeTrigger.class, "core.ItemStateChangeTrigger"),
             Map.entry(ItemStateUpdateTrigger.class, "core.ItemStateUpdateTrigger"),
+            Map.entry(GroupCommandTrigger.class, "core.GroupCommandTrigger"),
             Map.entry(GroupStateChangeTrigger.class, "core.GroupStateChangeTrigger"),
             Map.entry(GroupStateUpdateTrigger.class, "core.GroupStateUpdateTrigger"),
             Map.entry(ChannelEventTrigger.class, "core.ChannelEventTrigger"),
