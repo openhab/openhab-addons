@@ -219,6 +219,8 @@ public class STMStateMachine<A extends Enum<A>, S extends Enum<S>> {
         if (callback != null) {
             callback.accept(watchedState);
         }
+        // the abandoned movement must not leave a request that a later calibration would execute
+        clearStoredCommand();
         apply(localWatchdog.timeoutAction());
     }
 

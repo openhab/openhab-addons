@@ -134,6 +134,22 @@ public class A5_3F_7F_EltakoFSBTest {
         assertThat(stm.getState(), is(BlindState.MOVEMENT_SLATS));
     }
 
+    @Test
+    void stopDuringCalibrationDiscardsStoredCommand() {
+        STMStateMachine<BlindAction, BlindState> stm = STMStateMachine
+                .build(STMTransitionConfiguration.BlindTransitions.FSB14_BLINDS, BlindState.INVALID, scheduler, null);
+        Configuration config = new Configuration(BLINDS_CONFIG);
+
+        eep.processCmdAsPercentType(thing, new PercentType(50), config, id -> UnDefType.UNDEF, stm);
+        assertThat(stm.getState(), is(BlindState.MOVEMENT_CALIBRATION_UP));
+        assertThat(stm.getStoredCommand(), is(new PercentType(50)));
+
+        eep.processCmdAsStopMoveType(thing, StopMoveType.STOP, config, id -> UnDefType.UNDEF, stm);
+
+        assertThat(stm.getState(), is(BlindState.INVALID));
+        assertThat(stm.getStoredCommand(), is(nullValue()));
+    }
+
     private State dimmerValue(String channelId, int value) {
         return CHANNEL_DIMMER.equals(channelId) ? new PercentType(value) : UnDefType.UNDEF;
     }

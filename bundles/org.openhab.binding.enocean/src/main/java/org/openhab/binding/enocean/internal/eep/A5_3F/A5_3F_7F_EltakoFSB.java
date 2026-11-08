@@ -239,6 +239,8 @@ public class A5_3F_7F_EltakoFSB extends _4BSMessage implements StateMachineProvi
         if (stm != null) {
             if (stopMoveCommand == StopMoveType.STOP) {
                 setData(ZERO, (byte) 0xFF, STOP, TEACHIN_BIT);
+                // a request that waited for the calibration must not run after a later calibration
+                stm.clearStoredCommand();
                 stm.apply(BlindAction.INVALID_REQUEST);
             } else if (stopMoveCommand == StopMoveType.MOVE) {
                 if (stm.getState() == BlindState.POSITION_REACHED) {

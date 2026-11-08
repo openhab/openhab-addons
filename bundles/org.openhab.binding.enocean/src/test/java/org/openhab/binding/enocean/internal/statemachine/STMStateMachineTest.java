@@ -17,6 +17,7 @@ import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
@@ -35,6 +36,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
+import org.openhab.core.library.types.PercentType;
 
 /**
  * Tests for the watchdog of {@link STMStateMachine}.
@@ -81,6 +83,21 @@ public class STMStateMachineTest {
 
         assertThat(stm.getState(), is(BlindState.INVALID));
         assertThat(timedOutStates, contains(BlindState.MOVEMENT_POSITION_UP));
+    }
+
+    @Test
+    void timeoutDiscardsCommandStoredForAbandonedMovement() {
+        STMStateMachine<BlindAction, BlindState> stm = build(STMTransitionConfiguration.BlindTransitions.FSB14_BLINDS,
+                BlindState.IDLE);
+
+        stm.apply(BlindAction.POSITION_REQUEST_UP);
+        stm.storeCommand("rollershutter", PercentType.valueOf("50"));
+
+        scheduledTasks.get(0).run();
+
+        assertThat(stm.getState(), is(BlindState.INVALID));
+        assertThat(stm.getStoredCommand(), is(nullValue()));
+        assertThat(stm.getStoredChannel(), is(nullValue()));
     }
 
     @Test
