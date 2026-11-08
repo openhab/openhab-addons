@@ -348,6 +348,7 @@ final class RobonectDiagnosticsHandler {
                 .map(value -> new QuantityType<>(value / 1000.0, Units.AMPERE)).orElse(null), true);
     }
 
+    /** Refreshes the Thing properties that identify the mower and its firmware. */
     void refreshVersionInfo() {
         VersionInfo info = diagnosticsApi.getVersionInfo();
         if (!handler.canPublishState()) {

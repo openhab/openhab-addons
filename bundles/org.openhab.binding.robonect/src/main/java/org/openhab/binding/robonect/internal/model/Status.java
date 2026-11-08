@@ -18,6 +18,7 @@ import org.eclipse.jdt.annotation.Nullable;
  * Object holding information from the status section of the mowers status response.
  *
  * @author Marco Meyer - Initial contribution
+ * @author Nico Brüttner - Optional status values, home detection, and prevention codes
  */
 public class Status {
 

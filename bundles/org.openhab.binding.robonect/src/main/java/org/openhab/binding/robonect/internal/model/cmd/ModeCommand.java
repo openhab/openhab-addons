@@ -27,6 +27,7 @@ package org.openhab.binding.robonect.internal.model.cmd;
  * * duration: mowing time in minutes (in combination with start or end time)
  * 
  * @author Marco Meyer - Initial contribution
+ * @author Nico Brüttner - Docking station and expanded remote start options
  */
 public class ModeCommand implements Command {
 

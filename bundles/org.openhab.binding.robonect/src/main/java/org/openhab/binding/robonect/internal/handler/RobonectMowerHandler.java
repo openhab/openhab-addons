@@ -15,7 +15,10 @@ package org.openhab.binding.robonect.internal.handler;
 import static org.openhab.binding.robonect.internal.RobonectBindingConstants.*;
 import static org.openhab.binding.robonect.internal.handler.RobonectHandler.read;
 
+import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.ZonedDateTime;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -62,8 +65,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Handles mower, job, door, and service endpoints.
  *
- * @author Nico Brüttner - Initial mower endpoint handling
- * @author Nico Brüttner - Reported mode fallback when stopping a mowing job
+ * @author Nico Brüttner - Initial contribution
  */
 @NonNullByDefault
 final class RobonectMowerHandler {
@@ -73,6 +75,10 @@ final class RobonectMowerHandler {
     private final RobonectMowerApi mowerApi;
     private final RobonectDiagnosticsHandler diagnostics;
     private volatile @Nullable MowerMode latestMowerMode;
+    private @Nullable LocalJob localJob;
+
+    record LocalJob(@Nullable String channelId, ZonedDateTime start, ZonedDateTime end) {
+    }
 
     /**
      * Creates a mower endpoint component with access to Thing state and diagnostics.
@@ -156,7 +162,7 @@ final class RobonectMowerHandler {
      * @param jobConfig the job channel configuration
      * @param command the command received for the channel
      */
-    void handleJobCommand(String channelId, JobChannelConfig jobConfig, Command command) {
+    synchronized void handleJobCommand(String channelId, JobChannelConfig jobConfig, Command command) {
         if (!(command instanceof OnOffType onOffCommand)) {
             logger.debug("Got job update of type {} but OnOffType is expected.", command.getClass().getName());
             return;
@@ -189,11 +195,7 @@ final class RobonectMowerHandler {
                 logger.debug("Invalid mowing job time: {}", e.getMessage());
                 return;
             }
-            if (startJob(settings).isSuccessful()) {
-                handler.updateJobChannels(channelId, true, settings);
-            } else {
-                handler.updateJobChannels(channelId, false, settings);
-            }
+            startJob(channelId, settings);
             return;
         } else if (onOffCommand == OnOffType.OFF) {
             ModeCommand.@Nullable Mode afterMode = switch (jobConfig.getAfterMode()) {
@@ -203,20 +205,111 @@ final class RobonectMowerHandler {
                 case "MANUAL" -> ModeCommand.Mode.MANUAL;
                 case null, default -> null;
             };
-            mowerApi.stopJob(afterMode);
-            handler.updateJobChannels(channelId, false, null);
+            expireLocalJob();
+            if (mowerApi.stopJob(afterMode).isSuccessful() && !handler.isAjaxUiScraping()) {
+                // Only when ajax scraping is not active,
+                // clear the local job tracking since the job was successfully stopped
+                localJob = null;
+            }
+
+            // delay refresh by 5 seconds to allow the mower to update its status
+            handler.scheduleCommandRefresh("status", this::refreshMowerInfo, 5);
+
+            return;
         } else {
             return;
         }
-        refreshMowerInfo();
     }
 
-    RobonectAnswer startJob(RobonectClient.JobSettings settings) {
+    /**
+     * Submits a job and, while the session is active, records an accepted start and refreshes mower status.
+     *
+     * @param channelId the originating job channel, or {@code null} for a Thing Action
+     * @param settings the requested job settings
+     * @return the mower's response to the start command
+     */
+    synchronized RobonectAnswer startJob(@Nullable String channelId, RobonectClient.JobSettings settings) {
+        expireLocalJob();
         RobonectAnswer answer = mowerApi.startJob(settings);
         if (handler.canPublishState()) {
-            refreshMowerInfo();
+            if (answer.isSuccessful()) {
+                localJob = estimateJob(channelId, settings, ZonedDateTime.now(handler.getTimeZone()));
+            }
+            // delay refresh by 5 seconds to allow the mower to update its status
+            handler.scheduleCommandRefresh("status", this::refreshMowerInfo, 5);
         }
         return answer;
+    }
+
+    /**
+     * Estimates the accepted mowing job window using Robonect's scheduling rules.
+     *
+     * @param channelId the originating job channel, or {@code null} if none was used
+     * @param settings the settings sent to the mower
+     * @param now the current time in the mower's configured time zone
+     * @return the locally tracked job with its channel and dated start and end times
+     */
+    static LocalJob estimateJob(@Nullable String channelId, RobonectClient.JobSettings settings, ZonedDateTime now) {
+        LocalTime configuredStart = settings.getStartLocalTime();
+        LocalTime configuredEnd = settings.getEndLocalTime();
+        Integer configuredDuration = settings.getDuration();
+        int duration = configuredDuration == null ? 60 : configuredDuration;
+        LocalDate today = now.toLocalDate();
+
+        if (configuredStart == null) {
+            if (configuredEnd == null) {
+                return new LocalJob(channelId, now, now.plusMinutes(duration));
+            }
+            // An end time on its own always refers to today, even if the job has already expired.
+            ZonedDateTime end = today.atTime(configuredEnd).atZone(now.getZone());
+            ZonedDateTime start = configuredDuration == null ? now : end.minusMinutes(duration);
+            return new LocalJob(channelId, start, end);
+        }
+
+        LocalDate startDate = today;
+        if (configuredEnd == null) {
+            // A start time on its own schedules the next occurrence of that time.
+            if (configuredStart.isBefore(now.toLocalTime())) {
+                startDate = today.plusDays(1);
+            }
+            ZonedDateTime start = startDate.atTime(configuredStart).atZone(now.getZone());
+            return new LocalJob(channelId, start, start.plusMinutes(duration));
+        }
+
+        // Two explicit times define the whole window. A same-day window that has passed moves to tomorrow.
+        if (!configuredEnd.isBefore(configuredStart) && configuredEnd.isBefore(now.toLocalTime())) {
+            startDate = today.plusDays(1);
+        }
+        // Earlier end times wrap across midnight. Equal times define a full local day.
+        LocalDate endDate = configuredEnd.isAfter(configuredStart) ? startDate : startDate.plusDays(1);
+        ZonedDateTime start = startDate.atTime(configuredStart).atZone(now.getZone());
+        ZonedDateTime end = endDate.atTime(configuredEnd).atZone(now.getZone());
+        return new LocalJob(channelId, start, end);
+    }
+
+    /** Clears local job tracking once the estimated end is reached. */
+    private void expireLocalJob() {
+        LocalJob job = localJob;
+        if (!handler.isAjaxUiScraping() && job != null && !Instant.now().isBefore(job.end().toInstant())) {
+            clearLocalJob();
+        }
+    }
+
+    /** Clears the local job tracking and notifies the mower API. */
+    private void clearLocalJob() {
+        localJob = null;
+        mowerApi.clearTrackedJob();
+    }
+
+    /** Publishes the estimated job window or resets the main and custom channels if no local job is tracked. */
+    private void updateLocalJobChannels() {
+        LocalJob job = localJob;
+        handler.updateSwitch(CHANNEL_JOB, job != null, true);
+        handler.setState(CHANNEL_JOB_START, job == null ? null : handler.toTimeOnlyDateTime(job.start().toLocalTime()),
+                true);
+        handler.setState(CHANNEL_JOB_END, job == null ? null : handler.toTimeOnlyDateTime(job.end().toLocalTime()),
+                true);
+        handler.updateCustomJobChannels(job == null ? null : job.channelId());
     }
 
     /**
@@ -224,7 +317,7 @@ final class RobonectMowerHandler {
      *
      * @param command the command received for the channel
      */
-    void handleModeCommand(Command command) {
+    synchronized void handleModeCommand(Command command) {
         if (!(command instanceof StringType)) {
             logger.debug("Got job remote start update of type {} but StringType is expected.",
                     command.getClass().getName());
@@ -233,13 +326,15 @@ final class RobonectMowerHandler {
         String modeStr = command.toFullString();
         ModeCommand.Mode newMode = ModeCommand.Mode.valueOf(modeStr.toUpperCase());
         handler.cancelCommandRefresh("status");
-        mowerApi.setMode(newMode);
-
-        if (mowerApi.isJobRunning()) {
-            handler.updateJobChannels(null, true, null);
+        expireLocalJob();
+        if (mowerApi.setMode(newMode).isSuccessful() && !handler.isAjaxUiScraping()) {
+            localJob = newMode == ModeCommand.Mode.JOB
+                    ? estimateJob(null, new RobonectClient.JobSettings(), ZonedDateTime.now(handler.getTimeZone()))
+                    : null;
         }
 
-        refreshMowerInfo();
+        // delay refresh by 5 seconds to allow the mower to update its status
+        handler.scheduleCommandRefresh("status", this::refreshMowerInfo, 5);
     }
 
     /**
@@ -258,7 +353,7 @@ final class RobonectMowerHandler {
         handler.cancelCommandRefresh("status");
         RobonectAnswer answer = mowerApi.resetErrors();
         if (answer.isSuccessful()) {
-            handler.scheduleCommandRefresh("status", this::refreshMowerInfo);
+            handler.scheduleCommandRefresh("status", this::refreshMowerInfo, 5);
         } else {
             logger.debug("Could not reset mower errors. Robonect error message: {}", answer.getErrorMessage());
         }
@@ -335,7 +430,7 @@ final class RobonectMowerHandler {
         }
         if (answer.isSuccessful()) {
             applyDoorInfo(answer, false);
-            handler.scheduleCommandRefresh("door", this::refreshDoorInfo);
+            handler.scheduleCommandRefresh("door", this::refreshDoorInfo, 5);
         } else {
             logger.debug("Could not control the door. Robonect error message: {}", answer.getErrorMessage());
         }
@@ -371,7 +466,7 @@ final class RobonectMowerHandler {
         Name name = mowerApi.setName(newName);
         if (name.isSuccessful()) {
             handler.setState(CHANNEL_MOWER_NAME, read(name, Name::getName).map(StringType::new).orElse(null), false);
-            handler.scheduleCommandRefresh("status", this::refreshMowerInfo);
+            handler.scheduleCommandRefresh("status", this::refreshMowerInfo, 5);
         } else {
             logErrorFromResponse(name);
             refreshMowerInfo();
@@ -385,18 +480,43 @@ final class RobonectMowerHandler {
      */
     @Nullable
     MowerStatus refreshMowerInfo() {
-        MowerInfo info = mowerApi.getMowerInfo(handler.isAjaxUiScraping());
+        MowerInfo info;
+        // Keep the status read and job update ordered with job commands.
+        synchronized (this) {
+            if (!handler.canPublishState()) {
+                return null;
+            }
+            boolean ajax = handler.isAjaxUiScraping();
+            info = mowerApi.getMowerInfo(ajax);
+            if (!handler.canPublishState()) {
+                return null;
+            }
+            if (!info.isSuccessful()) {
+                logger.debug("Could not retrieve mower information: {}", info.getErrorMessage());
+                return null;
+            }
+
+            if (ajax) {
+                Job job = info.getJob();
+                Job activeJob = job != null && Boolean.TRUE.equals(job.isJobActiv()) ? job : null;
+
+                handler.updateSwitch(CHANNEL_JOB, activeJob != null, true);
+                updateJobTime(CHANNEL_JOB_START, activeJob == null ? null : activeJob.getJobStart());
+                updateJobTime(CHANNEL_JOB_END, activeJob == null ? null : activeJob.getJobEnd());
+                if (activeJob == null) {
+                    clearLocalJob();
+                }
+                LocalJob trackedJob = localJob;
+                handler.updateCustomJobChannels(trackedJob == null ? null : trackedJob.channelId());
+            } else {
+                expireLocalJob();
+                updateLocalJobChannels();
+            }
+        }
+
         if (!handler.canPublishState()) {
             return null;
         }
-        if (!info.isSuccessful()) {
-            logger.debug("Could not retrieve mower information: {}", info.getErrorMessage());
-            return null;
-        }
-
-        handler.updateSwitch(CHANNEL_JOB, read(info, MowerInfo::getJob).map(Job::isJobActiv).orElse(null), true);
-        updateJobTime(CHANNEL_JOB_START, read(info, MowerInfo::getJob).map(Job::getJobStart).orElse(null));
-        updateJobTime(CHANNEL_JOB_END, read(info, MowerInfo::getJob).map(Job::getJobEnd).orElse(null));
 
         ErrorEntry error = info.getError();
         updateErrorInfo(error);

@@ -19,6 +19,7 @@ import com.google.gson.GsonBuilder;
  * Parses JSON responses from the Robonect module using Gson.
  * 
  * @author Marco Meyer - Initial contribution
+ * @author Nico Brüttner - Shared JSON parser for endpoint responses
  */
 public final class ModelParser {
 

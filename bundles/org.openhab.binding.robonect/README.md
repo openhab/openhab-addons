@@ -70,8 +70,8 @@ Thing robonect:mower:automower "Mower" @ "Garden" [ host="192.168.2.1", pollInte
 | `status`                  | Number               | Retrieves the current mower status which can be <ul><li>0 : DETECTING_STATUS</li><li>1 : PARKING</li><li>2 : MOWING</li><li>3 : SEARCH_CHARGING_STATION</li><li>4 : CHARGING</li><li>5 : SEARCHING</li><li>6 : UNKNOWN_6</li><li>7 : ERROR_STATUS</li><li>16 : OFF</li><li>17 : SLEEPING</li><li>98 : OFFLINE (Binding cannot connect to mower)</li><li>99 : UNKNOWN</li></ul>                                                                                                                                                           |
 | `start`                   | Switch               | Starts the mower. ON is started (analog to pressing the start button on mower) or OFF (analog to the stop button on mower).                                                                                                                                                                                                                                                                                                                                                                                                              |
 | `job`                     | Switch               | Starts a job. The channels can be configured with the parameters `remoteStart`, `afterMode`, `duration`, `start` and `end`. `remoteStart` supports `STANDARD` (0), `DOCKING_STATION` (1), and `REMOTE_1` through `REMOTE_5` (2 through 6). `afterMode` is the mode the mower will be set after the job is done. Allowed values are `AUTO`, `HOME` or `EOD`. `duration` is the job duration in minutes. Please note, if the mower is charging it will wait to start the job until it is fully charged, but the jobs duration is already started. |
-| `job-start`               | DateTime             | Start time of the active job; requires `ajaxUiScraping`.                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| `job-end`                 | DateTime             | End time of the active job; requires `ajaxUiScraping`.                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| `job-start`               | DateTime             | Start time of the active job.                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| `job-end`                 | DateTime             | End time of the active job.                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
 | `timer-status`            | String               | Retrieves the status of the timer which can be <ul><li>INACTIVE : no timer set</li><li>ACTIVE - timer set and currently running</li><li>STANDBY - timer set but not triggered/running yet</li></ul>                                                                                                                                                                                                                                                                                                                                      |
 | `timer-next`              | DateTime             | Retrieves the Date and Time of the next timer set. This is just valid if there is an ACTIVE timer status (see `timer-status`).                                                                                                                                                                                                                                                                                                                                                                                                           |
 | `wlan-signal`             | Number               | Retrieves the current WLAN Signal strength in dB                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
@@ -140,8 +140,8 @@ channel reports the raw mowing prevention code, and the `home` Switch reports wh
 Successful configuration commands (except `push-mode`) and door commands apply the returned channel values
 immediately and request a follow-up read after five seconds to fill in data omitted from the response.
 A newer command to the same endpoint replaces
-its pending follow-up read. Mode changes (including HOME), job commands, and start/stop commands request mower
-status immediately after the write returns instead of waiting five seconds.
+its pending follow-up read. Mode changes (including HOME) and mowing job commands schedule a status read after five
+seconds. The mower's start/stop switch requests status immediately after the write returns.
 
 Timer and job start/end times use the binding's configured `timezone` (default: `Europe/Berlin`). Timer DateTime
 commands are converted back to the mower's local time in the same zone.
@@ -174,9 +174,14 @@ including any `%s` placeholder.
 The `statistics-seek` and `statistics-mowing` String channels contain comma-separated recent durations in minutes.
 Each also has `-min`, `-max`, and `-average` `Number:Time` channels with a minute unit hint.
 
-The optional `ajaxUiScraping` configuration reads the localized, undocumented web-interface endpoint. It enables job
-start and end times and recognizes end-of-day mode where the JSON API reports only `HOME`.
-The `job-start` and `job-end` channels are created only when `ajaxUiScraping` is enabled and removed when it is disabled.
+The `job` channel reports whether a mowing job is active, regardless of which channel started it.
+Without Ajax scraping, the binding estimates `job-start` and `job-end` from the accepted command and clears the job
+channels on the first status poll at or after the estimated end. A successful stop or mode change can clear them sooner.
+
+With `ajaxUiScraping` enabled, the binding reads the three job channels from the localized web interface. It also
+recognizes end-of-day mode where the JSON API reports only `HOME`. Custom `jobType` channels identify the switch used
+to start the job. At most one custom switch is on. In Ajax mode, a poll confirming an active job applies the latest
+successful custom ON command, and a poll reporting no active job turns every custom switch off.
 Configure the `job` channel's optional `start` and `end` as quoted `HH:mm` strings in the mower's local time.
 Convert existing minute values to strings, for example `start="09:00"` for 540 minutes after midnight.
 When starting a job, an omitted `remoteStart` uses `STANDARD`, and an omitted `afterMode` is left out of the mower command.
@@ -220,7 +225,8 @@ afterward.
 
 ```java
 val mowerActions = getActions("robonect", "robonect:mower:automower")
-mowerActions.startJob(60, null, null, "REMOTE_1", "AUTO")
+val startJob = mowerActions.getClass().getMethod("startJob", Integer, String, String, String, String)
+startJob.invoke(mowerActions, 60, null, null, "REMOTE_1", "AUTO")
 ```
 
 ## Full Example

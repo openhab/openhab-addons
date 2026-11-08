@@ -18,6 +18,7 @@ import org.eclipse.jdt.annotation.Nullable;
  * Holds the mower Thing configuration.
  *
  * @author Marco Meyer - Initial contribution
+ * @author Nico Brüttner - Detailed polling, push credentials, and web interface settings
  */
 public class RobonectConfig {
 
@@ -69,10 +70,20 @@ public class RobonectConfig {
         return password;
     }
 
+    /**
+     * Returns the username expected on incoming push notifications.
+     *
+     * @return the configured push username, or {@code null} if unset
+     */
     public @Nullable String getPushUser() {
         return pushUser;
     }
 
+    /**
+     * Returns the password expected on incoming push notifications.
+     *
+     * @return the configured push password, or {@code null} if unset
+     */
     public @Nullable String getPushPass() {
         return pushPass;
     }

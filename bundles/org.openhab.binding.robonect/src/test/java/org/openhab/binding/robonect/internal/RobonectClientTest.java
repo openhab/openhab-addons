@@ -63,12 +63,14 @@ public class RobonectClientTest {
     private @Mock ContentResponse responseMock;
     private @Mock Request requestMock;
 
+    /** Creates the client under test with a shared mocked HTTP client. */
     @BeforeEach
     public void init() {
         RobonectEndpoint dummyEndPoint = new RobonectEndpoint("123.456.789.123", null, null);
         subject = new RobonectClient(httpClientMock, dummyEndPoint);
     }
 
+    /** Uses different endpoint APIs to check reuse of the same transport and authentication setup. */
     @Test
     public void shouldShareAuthenticatedTransportAcrossEndpointApis()
             throws InterruptedException, ExecutionException, TimeoutException {
@@ -93,6 +95,7 @@ public class RobonectClientTest {
         verify(httpClientMock).newRequest(weatherUrl);
     }
 
+    /** Checks the URL used for a normal mower status request. */
     @Test
     public void shouldCallStatusCommand() throws InterruptedException, ExecutionException, TimeoutException {
         when(httpClientMock.newRequest("http://123.456.789.123/json?cmd=status")).thenReturn(requestMock);
@@ -106,6 +109,7 @@ public class RobonectClientTest {
         verify(httpClientMock, times(1)).newRequest("http://123.456.789.123/json?cmd=status");
     }
 
+    /** Checks decoding and parsing of the web interface's encoded JSON response. */
     @Test
     public void shouldDecodeAjaxUiResponse() throws InterruptedException, ExecutionException, TimeoutException {
         when(httpClientMock.newRequest("http://123.456.789.123/ajax?type=1&group=2")).thenReturn(requestMock);
@@ -123,6 +127,7 @@ public class RobonectClientTest {
         verify(httpClientMock).newRequest("http://123.456.789.123/ajax?type=1&group=2");
     }
 
+    /** Checks the request sent to start the mower. */
     @Test
     public void shouldCallStartCommand() throws InterruptedException, ExecutionException, TimeoutException {
         when(httpClientMock.newRequest("http://123.456.789.123/json?cmd=start")).thenReturn(requestMock);
@@ -135,6 +140,7 @@ public class RobonectClientTest {
         verify(httpClientMock, times(1)).newRequest("http://123.456.789.123/json?cmd=start");
     }
 
+    /** Checks the request sent to stop the mower. */
     @Test
     public void shouldCallStopCommand() throws InterruptedException, ExecutionException, TimeoutException {
         when(httpClientMock.newRequest("http://123.456.789.123/json?cmd=stop")).thenReturn(requestMock);
@@ -147,6 +153,7 @@ public class RobonectClientTest {
         verify(httpClientMock, times(1)).newRequest("http://123.456.789.123/json?cmd=stop");
     }
 
+    /** Checks that the WLAN request parses the returned network data. */
     @Test
     public void shouldRetrieveWlanInfo() throws InterruptedException, ExecutionException, TimeoutException {
         when(httpClientMock.newRequest("http://123.456.789.123/json?cmd=wlan")).thenReturn(requestMock);
@@ -161,6 +168,7 @@ public class RobonectClientTest {
         verify(httpClientMock).newRequest("http://123.456.789.123/json?cmd=wlan");
     }
 
+    /** Checks the request sent to clear mower errors. */
     @Test
     public void shouldResetErrors() throws InterruptedException, ExecutionException, TimeoutException {
         when(httpClientMock.newRequest("http://123.456.789.123/json?cmd=error&reset")).thenReturn(requestMock);
@@ -173,6 +181,7 @@ public class RobonectClientTest {
         verify(httpClientMock, times(1)).newRequest("http://123.456.789.123/json?cmd=error&reset");
     }
 
+    /** Checks the command parameters used for a service operation. */
     @Test
     public void shouldCallServiceOperation() throws InterruptedException, ExecutionException, TimeoutException {
         when(httpClientMock.newRequest("http://123.456.789.123/json?cmd=service&sleep")).thenReturn(requestMock);
@@ -187,6 +196,7 @@ public class RobonectClientTest {
         verify(httpClientMock).newRequest("http://123.456.789.123/json?cmd=service&sleep");
     }
 
+    /** Checks the direction sent when commanding the optional door. */
     @Test
     public void shouldOpenDoor() throws InterruptedException, ExecutionException, TimeoutException {
         when(httpClientMock.newRequest("http://123.456.789.123/json?cmd=door&open=1")).thenReturn(requestMock);
@@ -201,6 +211,7 @@ public class RobonectClientTest {
         verify(httpClientMock).newRequest("http://123.456.789.123/json?cmd=door&open=1");
     }
 
+    /** Checks that explicit job times are serialized into the mower request. */
     @Test
     public void shouldStartJobWithStartAndEndTimes() throws InterruptedException, ExecutionException, TimeoutException {
         when(httpClientMock.newRequest(
@@ -219,6 +230,7 @@ public class RobonectClientTest {
                 "http://123.456.789.123/json?cmd=mode&mode=job&remotestart=0&after=4&start=00:00&end=23:59&duration=60");
     }
 
+    /** Checks the protocol value sent for the fifth remote start point. */
     @Test
     public void shouldStartJobFromRemoteFive() throws InterruptedException, ExecutionException, TimeoutException {
         when(httpClientMock.newRequest("http://123.456.789.123/json?cmd=mode&mode=job&remotestart=6"))
@@ -234,6 +246,7 @@ public class RobonectClientTest {
         verify(httpClientMock).newRequest("http://123.456.789.123/json?cmd=mode&mode=job&remotestart=6");
     }
 
+    /** Checks the default remote start and absence of unspecified settings. */
     @Test
     public void shouldRetainOptionalJobSettings() {
         RobonectClient.JobSettings settings = new RobonectClient.JobSettings().withRemoteStart(null).withAfterMode(null)
@@ -242,6 +255,7 @@ public class RobonectClientTest {
         assertNull(settings.getAfterMode());
     }
 
+    /** Checks valid local times and rejects malformed or out-of-range values. */
     @Test
     public void shouldStoreJobTimesInHoursAndMinutes() {
         RobonectClient.JobSettings settings = new RobonectClient.JobSettings().withStart("09:05").withEnd("10:30");
@@ -255,6 +269,7 @@ public class RobonectClientTest {
         assertNull(settings.getEnd());
     }
 
+    /** Checks that job tracking is isolated per client and that stop can restore the scraped pre-job mode. */
     @Test
     public void shouldTrackJobsPerClientAndRestorePreJobEndOfDayMode()
             throws InterruptedException, ExecutionException, TimeoutException {
@@ -285,6 +300,7 @@ public class RobonectClientTest {
         verify(httpClientMock).newRequest(stopUrl);
     }
 
+    /** Checks that related remote start settings are sent in the same request. */
     @Test
     public void shouldUpdateRemoteStartValuesTogether()
             throws InterruptedException, ExecutionException, TimeoutException {
@@ -303,6 +319,7 @@ public class RobonectClientTest {
                 .newRequest("http://123.456.789.123/json?cmd=remote&name2=Test+name&distance2=10&proportion2=46");
     }
 
+    /** Checks the name read request and the response it produces. */
     @Test
     public void shouldRetrieveName() throws InterruptedException, ExecutionException, TimeoutException {
         when(httpClientMock.newRequest("http://123.456.789.123/json?cmd=name")).thenReturn(requestMock);
@@ -316,6 +333,7 @@ public class RobonectClientTest {
         verify(httpClientMock, times(1)).newRequest("http://123.456.789.123/json?cmd=name");
     }
 
+    /** Checks that the requested name is sent to the mower. */
     @Test
     public void shouldSetNewName() throws InterruptedException, ExecutionException, TimeoutException {
         when(httpClientMock.newRequest("http://123.456.789.123/json?cmd=name&name=MyRobo")).thenReturn(requestMock);
@@ -329,6 +347,7 @@ public class RobonectClientTest {
         verify(httpClientMock, times(1)).newRequest("http://123.456.789.123/json?cmd=name&name=MyRobo");
     }
 
+    /** Checks the endpoint used to read error history. */
     @Test
     public void shouldListErrors() throws InterruptedException, ExecutionException, TimeoutException {
         when(httpClientMock.newRequest("http://123.456.789.123/json?cmd=error")).thenReturn(requestMock);
@@ -343,6 +362,7 @@ public class RobonectClientTest {
         verify(httpClientMock, times(1)).newRequest("http://123.456.789.123/json?cmd=error");
     }
 
+    /** Checks the firmware version request and its response. */
     @Test
     public void shouldRetrieveVersionInfo() throws InterruptedException, ExecutionException, TimeoutException {
         when(httpClientMock.newRequest("http://123.456.789.123/json?cmd=version")).thenReturn(requestMock);
@@ -357,6 +377,7 @@ public class RobonectClientTest {
         verify(httpClientMock, times(1)).newRequest("http://123.456.789.123/json?cmd=version");
     }
 
+    /** Checks parsing of the version fields supplied by the older firmware. */
     @Test
     public void shouldRetrieveVersionOneInformation()
             throws InterruptedException, ExecutionException, TimeoutException {
@@ -379,6 +400,7 @@ public class RobonectClientTest {
         assertEquals("1.6", info.getApplication().getVersion());
     }
 
+    /** Checks that the HTTP response encoding is used when parsing non-ASCII status text. */
     @Test
     public void shouldHandleProperEncoding() throws InterruptedException, ExecutionException, TimeoutException {
         byte[] responseBytesISO88591 = "{\"successful\": true, \"name\": \"Mein Automower\", \"status\": {\"status\": 7, \"stopped\": true, \"duration\": 192, \"mode\": 1, \"battery\": 95, \"hours\": 41}, \"timer\": {\"status\": 2}, \"error\" : {\"error_code\": 15, \"error_message\": \"Utanför arbetsområdet\", \"date\": \"02.05.2017\", \"time\": \"20:36:43\", \"unix\": 1493757403}, \"wlan\": {\"signal\": -75}}"
@@ -394,6 +416,11 @@ public class RobonectClientTest {
         verify(httpClientMock, times(1)).newRequest("http://123.456.789.123/json?cmd=status");
     }
 
+    /**
+     * Checks that the parser reads the selected push mode from the web interface.
+     *
+     * @param mode the selected mode in the HTML fixture
+     */
     @ParameterizedTest
     @ValueSource(ints = { 0, 1, 2 })
     public void shouldReadSelectedPushModeFromHtml(int mode)
@@ -410,6 +437,11 @@ public class RobonectClientTest {
         verify(httpClientMock).newRequest("http://123.456.789.123/push");
     }
 
+    /**
+     * Checks that absent or unsupported push mode values yield no selection.
+     *
+     * @param html the web-interface response containing a missing or invalid selection
+     */
     @ParameterizedTest
     @ValueSource(strings = { "<html>Login required</html>", "<input type='radio' name='mode' value='1'>",
             "<input type='checkbox' name='mode' checked='checked' value='1'>",
@@ -424,6 +456,11 @@ public class RobonectClientTest {
         assertNull(subject.push().getPushModeViaWebInterface());
     }
 
+    /**
+     * Checks the web request used to write a push mode and parse the returned selection.
+     *
+     * @param mode the push mode to send and expect in the response
+     */
     @ParameterizedTest
     @ValueSource(ints = { 0, 1, 2 })
     public void shouldSetPushModeAndParseReturnedSelection(int mode)
@@ -434,6 +471,7 @@ public class RobonectClientTest {
         verify(httpClientMock).newRequest(url);
     }
 
+    /** Checks that a mode outside the supported range produces no HTTP request. */
     @Test
     public void shouldRejectInvalidPushModeBeforeSendingRequest() {
         assertThrows(IllegalArgumentException.class, () -> subject.push().updatePushModeViaWebInterface(-1));
@@ -441,6 +479,11 @@ public class RobonectClientTest {
         verifyNoInteractions(httpClientMock);
     }
 
+    /**
+     * Checks that the web-interface fallback parses the configured weather interval.
+     *
+     * @param interval the polling interval in minutes in the HTML fixture
+     */
     @ParameterizedTest
     @ValueSource(ints = { 1, 10, 240 })
     public void shouldReadWeatherIntervalFromWebInterface(int interval)
@@ -451,6 +494,11 @@ public class RobonectClientTest {
         verify(httpClientMock).newRequest("http://123.456.789.123/weather");
     }
 
+    /**
+     * Checks that a malformed weather interval is treated as absent.
+     *
+     * @param html the web-interface response containing a missing or invalid interval
+     */
     @ParameterizedTest
     @ValueSource(strings = { "", "<input id='other' value='10'>", "<output id='interval' value='10'>",
             "<input id='interval'>", "<input id='interval' value='bad'>", "<input id='interval' value='1.5'>",
@@ -462,6 +510,12 @@ public class RobonectClientTest {
         assertNull(subject.weather().getWeatherIntervalViaWebInterface());
     }
 
+    /**
+     * Stubs a successful HTTP response for a localized web-interface request.
+     *
+     * @param url the requested endpoint URL
+     * @param html the response body to return
+     */
     private void mockWebResponse(String url, String html)
             throws InterruptedException, ExecutionException, TimeoutException {
         when(httpClientMock.newRequest(url)).thenReturn(requestMock);
@@ -472,6 +526,7 @@ public class RobonectClientTest {
         when(responseMock.getContentAsString()).thenReturn(html);
     }
 
+    /** Checks how an interrupted HTTP request propagates through the transport. */
     @Test
     public void shouldReceiveErrorAnswerOnInterruptedException()
             throws InterruptedException, ExecutionException, TimeoutException {
@@ -487,6 +542,7 @@ public class RobonectClientTest {
         }
     }
 
+    /** Checks how a failed HTTP request propagates through the transport. */
     @Test
     public void shouldReceiveErrorAnswerOnExecutionException()
             throws InterruptedException, ExecutionException, TimeoutException {
@@ -497,6 +553,7 @@ public class RobonectClientTest {
         assertThrows(RobonectCommunicationException.class, () -> subject.mower().getMowerInfo(false));
     }
 
+    /** Checks URL encoding of the password write and parsing of the returned push settings. */
     @Test
     public void shouldEncodePushPasswordAndParseOtherSettings()
             throws InterruptedException, ExecutionException, TimeoutException {
@@ -508,6 +565,7 @@ public class RobonectClientTest {
         verify(httpClientMock).newRequest(url);
     }
 
+    /** Checks that an HTTP transport failure omits the password from the exception. */
     @Test
     public void shouldNotExposePushPasswordInTransportException()
             throws InterruptedException, ExecutionException, TimeoutException {
@@ -524,6 +582,7 @@ public class RobonectClientTest {
         assertNull(error.getCause());
     }
 
+    /** Captures debug logs to check that neither the password-bearing URL nor response body is exposed. */
     @Test
     public void shouldNotLogPushPasswordUrlOrResponseAtDebugLevel()
             throws InterruptedException, ExecutionException, TimeoutException {
@@ -546,6 +605,7 @@ public class RobonectClientTest {
         }
     }
 
+    /** Checks redaction when constructing a password write request fails. */
     @Test
     public void shouldNotExposePushPasswordInRequestConstructionException() {
         String url = "http://123.456.789.123/json?cmd=push&pass=test-secret";
@@ -556,6 +616,7 @@ public class RobonectClientTest {
         assertNull(error.getCause());
     }
 
+    /** Checks redaction when the response to a password write cannot be parsed. */
     @Test
     public void shouldNotExposePasswordInMalformedResponseException()
             throws InterruptedException, ExecutionException, TimeoutException {
@@ -566,6 +627,7 @@ public class RobonectClientTest {
         assertNull(error.getCause());
     }
 
+    /** Checks how an HTTP request timeout propagates through the transport. */
     @Test
     public void shouldReceiveErrorAnswerOnTimeoutException()
             throws InterruptedException, ExecutionException, TimeoutException {

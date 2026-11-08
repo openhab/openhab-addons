@@ -242,7 +242,7 @@ final class RobonectPushHandler {
         PushInfo result = pushApi.updatePush("trigger" + matcher.group(1), Integer.toString(value));
         if (result.isSuccessful()) {
             applyPushInfo(result, false);
-            handler.scheduleCommandRefresh("push", this::refreshPushInfo);
+            handler.scheduleCommandRefresh("push", this::refreshPushInfo, 5);
         }
     }
 
@@ -280,7 +280,7 @@ final class RobonectPushHandler {
             PushInfo result = pushApi.updatePush(parameter, value);
             if (result.isSuccessful()) {
                 applyPushInfo(result, false);
-                handler.scheduleCommandRefresh("push", this::refreshPushInfo);
+                handler.scheduleCommandRefresh("push", this::refreshPushInfo, 5);
             }
         } else {
             logUnsupportedCommandType(channelId, command);

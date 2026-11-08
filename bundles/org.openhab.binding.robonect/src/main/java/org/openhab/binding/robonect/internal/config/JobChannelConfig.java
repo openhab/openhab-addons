@@ -18,6 +18,7 @@ import org.eclipse.jdt.annotation.Nullable;
  * The {@link JobChannelConfig} class holds the channel configuration for the Job channel.
  *
  * @author Marco Meyer - Initial contribution
+ * @author Nico Brüttner - Optional job timing configuration
  */
 public class JobChannelConfig {
 

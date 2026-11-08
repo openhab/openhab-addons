@@ -122,7 +122,7 @@ final class RobonectRemoteStartHandler {
         RemoteInfo result = remoteStartApi.updateRemoteStart(remoteStart, name, distance, proportion);
         if (result.isSuccessful()) {
             applyRemoteInfo(result, false);
-            handler.scheduleCommandRefresh("remote", this::refreshRemoteInfo);
+            handler.scheduleCommandRefresh("remote", this::refreshRemoteInfo, 5);
         }
     }
 
@@ -197,7 +197,7 @@ final class RobonectRemoteStartHandler {
         handler.cancelCommandRefresh("remote");
         remoteStartApi.updateRemoteStartViaWebInterface(remoteStart, name, proportion, distance, path, visible,
                 corridorCut);
-        handler.scheduleCommandRefresh("remote", this::refreshRemoteInfo);
+        handler.scheduleCommandRefresh("remote", this::refreshRemoteInfo, 5);
     }
 
     /** Reads and applies the mower remote-start configurations. */

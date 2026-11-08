@@ -161,7 +161,7 @@ final class RobonectWeatherHandler {
         WeatherInfo result = weatherApi.updateWeather(parameter, value);
         if (result.isSuccessful()) {
             applyWeatherInfo(result, false);
-            handler.scheduleCommandRefresh("weather", this::refreshWeatherInfo);
+            handler.scheduleCommandRefresh("weather", this::refreshWeatherInfo, 5);
         }
     }
 

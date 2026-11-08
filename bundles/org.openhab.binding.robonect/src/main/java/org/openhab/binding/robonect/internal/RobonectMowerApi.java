@@ -76,36 +76,46 @@ public final class RobonectMowerApi {
         this.transport = transport;
     }
 
-    public boolean isJobRunning() {
-        return jobRunning;
+    /** Clears the local job used by the stop command. */
+    public void clearTrackedJob() {
+        jobRunning = false;
+        lastModeBeforeJob = null;
     }
 
     /**
-     * Returns general mower information. See {@link MowerInfo} for the detailed information.
+     * Reads general mower status and attaches job information from the selected source.
      *
-     * @return - the general mower information including a general success status.
+     * @param isAjaxScrapingEnabled whether to obtain job information and end-of-day mode from the web interface
+     * @return the status response, including its success flag and any job information
      */
     public MowerInfo getMowerInfo(boolean isAjaxScrapingEnabled) {
         String responseString = transport.sendCommand(new StatusCommand());
         MowerInfo mowerInfo = ModelParser.parse(responseString, MowerInfo.class);
         Status status = mowerInfo.getStatus();
-        if (isAjaxScrapingEnabled && status != null) {
-            mowerInfo = getAdditionalMowerInfo(mowerInfo);
-        }
-
-        lastKnownMode = status == null ? null : status.getMode();
-
-        if (mowerInfo.getJob() != null && mowerInfo.getJob().isJobActiv() != null) {
-            jobRunning = mowerInfo.getJob().isJobActiv();
+        if (isAjaxScrapingEnabled) {
+            mowerInfo.setJob(null);
+            if (mowerInfo.isSuccessful() && status != null) {
+                getAdditionalMowerInfo(mowerInfo);
+            }
+            Job job = mowerInfo.getJob();
+            if (job != null && job.isJobActiv() != null) {
+                jobRunning = Boolean.TRUE.equals(job.isJobActiv());
+            }
         } else {
             Job job = new Job();
             job.setJobActiv(jobRunning);
             mowerInfo.setJob(job);
         }
+        lastKnownMode = status == null ? null : status.getMode();
         return mowerInfo;
     }
 
-    private MowerInfo getAdditionalMowerInfo(MowerInfo mowerInfo) {
+    /**
+     * Enriches a successful status response with job information and end-of-day mode from the web interface.
+     *
+     * @param mowerInfo the response to update, with a non-null status
+     */
+    private void getAdditionalMowerInfo(MowerInfo mowerInfo) {
         try {
             AjaxInfo ajaxInfo = getAjaxInfo();
             if (ajaxInfo == null) {
@@ -118,7 +128,9 @@ public final class RobonectMowerApi {
             Job job = new Job();
             if (apiMowerMode == MowerMode.HOME && controlText != null && END_OF_DAY_LABELS.contains(controlText)) {
                 mowerInfo.getStatus().setMode(MowerMode.EOD);
-            } else if (apiMowerMode == MowerMode.AUTO && timerText != null) {
+            }
+            if ((apiMowerMode == MowerMode.AUTO || apiMowerMode == MowerMode.HOME) && timerText != null
+                    && !timerText.isBlank()) {
                 if (JOB_TIMER_LABELS.contains(timerText)) {
                     job.setJobActiv(true);
 
@@ -133,13 +145,15 @@ public final class RobonectMowerApi {
                 } else {
                     job.setJobActiv(false);
                 }
+            } else if ((apiMowerMode == MowerMode.HOME || apiMowerMode == MowerMode.MANUAL
+                    || apiMowerMode == MowerMode.DEMO) && (controlText != null || timerText != null)) {
+                job.setJobActiv(false);
             }
 
             mowerInfo.setJob(job);
         } catch (RobonectCommunicationException | JsonSyntaxException | IllegalArgumentException e) {
             logger.debug("Could not retrieve Robonect web-interface status. Falling back to the JSON API.", e);
         }
-        return mowerInfo;
     }
 
     /**
@@ -221,10 +235,11 @@ public final class RobonectMowerApi {
     }
 
     /**
-     * Sends a mower mode command and clears the locally tracked job state.
+     * Sends a mower mode command and updates job tracking on success. Selecting any mode other than
+     * {@link ModeCommand.Mode#JOB} clears the running flag.
      *
-     * @param mode - the desired mower mode.
-     * @return - a general answer with success status.
+     * @param mode the desired mower mode
+     * @return the mower's response to the mode command
      */
     public RobonectAnswer setMode(ModeCommand.Mode mode) {
         String responseString = transport.sendCommand(createCommand(mode));
@@ -285,9 +300,6 @@ public final class RobonectMowerApi {
                 lastModeBeforeJob = lastKnownMode;
             }
             jobRunning = true;
-        } else {
-            lastModeBeforeJob = null;
-            jobRunning = false;
         }
         return answer;
     }
@@ -295,7 +307,8 @@ public final class RobonectMowerApi {
     /**
      * Applies the after-mode if a job is tracked as running.
      *
-     * @param afterMode the after-mode to apply, or {@code null} to restore the pre-job mode
+     * @param afterMode the after-mode to apply, or {@code null} to restore the pre-job mode and fall back to
+     *            {@link ModeCommand.Mode#HOME} if that mode is unavailable or unsupported
      * @return the command response, or a successful response when no job is tracked
      */
     public RobonectAnswer stopJob(ModeCommand.@Nullable Mode afterMode) {

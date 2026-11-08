@@ -35,6 +35,11 @@ import org.openhab.core.thing.ThingUID;
  */
 @NonNullByDefault
 class RobonectPushServletTest {
+    /**
+     * Replaces the registration and checks request routing for each supported HTTP method.
+     *
+     * @param method the HTTP method to dispatch
+     */
     @ParameterizedTest
     @ValueSource(strings = { "GET", "POST", "HEAD" })
     void shouldRoutePushRequestsToTheCurrentRegistration(String method) throws ServletException, IOException {
@@ -65,6 +70,12 @@ class RobonectPushServletTest {
         verify(response).sendError(HttpServletResponse.SC_NOT_FOUND);
     }
 
+    /**
+     * Checks that push requests with missing or invalid credentials cannot trigger the callback.
+     *
+     * @param method the HTTP method to dispatch
+     * @param authorization the Authorization header, or {@code null} if absent
+     */
     @ParameterizedTest
     @CsvSource({ "GET,", "GET, Basic bW93ZXI6d3Jvbmc=", "POST,", "POST, Basic invalid!", "HEAD, Bearer token" })
     void shouldRejectUnauthenticatedRequests(String method, String authorization) throws ServletException, IOException {

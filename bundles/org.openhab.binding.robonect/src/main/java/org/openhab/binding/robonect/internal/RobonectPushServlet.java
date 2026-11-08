@@ -81,22 +81,50 @@ public class RobonectPushServlet extends HttpServlet {
         }
     }
 
+    /**
+     * Dispatches a GET push notification to the registered callback.
+     *
+     * @param request the incoming push request
+     * @param response the response to populate
+     * @throws IOException if the error response cannot be written
+     */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         dispatch(request, response, true);
     }
 
+    /**
+     * Dispatches a POST push notification to the registered callback.
+     *
+     * @param request the incoming push request
+     * @param response the response to populate
+     * @throws IOException if the error response cannot be written
+     */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         dispatch(request, response, true);
     }
 
+    /**
+     * Validates a HEAD request without triggering a refresh. The default servlet implementation invokes GET.
+     *
+     * @param request the incoming probe
+     * @param response the response to populate
+     * @throws IOException if the error response cannot be written
+     */
     @Override
     protected void doHead(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        // HttpServlet's default HEAD handling invokes doGet, which would schedule a refresh.
         dispatch(request, response, false);
     }
 
+    /**
+     * Resolves and authenticates the push registration before optionally notifying its handler.
+     *
+     * @param request the incoming HTTP request
+     * @param response the response for the result of routing and authentication
+     * @param notify whether a valid request should invoke the registered handler
+     * @throws IOException if the error response cannot be written
+     */
     private void dispatch(HttpServletRequest request, HttpServletResponse response, boolean notify) throws IOException {
         @Nullable
         String fullpath = getFullURL(request);
@@ -123,6 +151,12 @@ public class RobonectPushServlet extends HttpServlet {
         response.setStatus(HttpServletResponse.SC_NO_CONTENT);
     }
 
+    /**
+     * Reconstructs the request URL with any supplied query string for the debug log.
+     *
+     * @param request the incoming request
+     * @return the complete URL, including the query string when present
+     */
     private String getFullURL(HttpServletRequest request) {
         StringBuilder requestURL = new StringBuilder(request.getRequestURL().toString());
         String queryString = request.getQueryString();
@@ -136,6 +170,12 @@ public class RobonectPushServlet extends HttpServlet {
 
     @NonNullByDefault
     private record Registration(Runnable handler, byte[] utf8, byte[] legacy) {
+        /**
+         * Compares the supplied Basic credentials with the registered UTF-8 and legacy encodings.
+         *
+         * @param authorization the Authorization header, or {@code null} if absent
+         * @return {@code true} if the header contains matching credentials
+         */
         private boolean authenticates(@Nullable String authorization) {
             if (authorization == null || !authorization.regionMatches(true, 0, "Basic ", 0, 6)) {
                 return false;

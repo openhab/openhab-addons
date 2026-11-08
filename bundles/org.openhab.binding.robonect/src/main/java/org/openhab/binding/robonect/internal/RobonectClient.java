@@ -29,8 +29,7 @@ import org.slf4j.LoggerFactory;
  *      http://robonect.de/viewtopic.php?f=10&amp;t=37</a>. The API of the module is documented here.
  *
  * @author Marco Meyer - Initial contribution
- * @author Nico Brüttner - API and web interface support
- * @author Nico Brüttner - Job time input handling
+ * @author Nico Brüttner - Endpoint API refactor, web interface support, and job settings
  */
 @NonNullByDefault
 public class RobonectClient {
@@ -187,6 +186,14 @@ public class RobonectClient {
             return endLocalTime;
         }
 
+        /**
+         * Parses an optional command time in {@code HH:mm} format.
+         *
+         * @param value the configured time, or {@code null} if omitted
+         * @param parameter the input name to report when validation fails
+         * @return the parsed local time, or {@code null} if omitted
+         * @throws IllegalArgumentException if the supplied time is invalid
+         */
         private static @Nullable LocalTime validateTime(@Nullable String value, String parameter) {
             if (value == null) {
                 return null;

@@ -18,6 +18,7 @@ import org.eclipse.jdt.annotation.Nullable;
  * Answer object for holding version information.
  * 
  * @author Marco Meyer - Initial contribution
+ * @author Nico Brüttner - Version 1 firmware and hardware metadata
  */
 public class VersionInfo extends RobonectAnswer {
 

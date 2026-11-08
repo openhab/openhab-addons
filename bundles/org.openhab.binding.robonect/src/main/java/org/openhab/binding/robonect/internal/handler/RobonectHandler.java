@@ -79,8 +79,7 @@ import com.google.gson.JsonSyntaxException;
  * The channels are periodically updated by polling the mower via HTTP in a separate thread.
  *
  * @author Marco Meyer - Initial contribution
- * @author Nico Brüttner - Channel, polling, and endpoint handling
- * @author Nico Brüttner - Mowing job action
+ * @author Nico Brüttner - Endpoint dispatch, polling, push refresh, and mowing jobs
  */
 public class RobonectHandler extends BaseThingHandler {
 
@@ -158,11 +157,22 @@ public class RobonectHandler extends BaseThingHandler {
         this.pushServlet = pushServlet;
     }
 
+    /**
+     * Lists the services the framework should associate with this Thing handler.
+     *
+     * @return the Robonect Thing Action service class
+     */
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
         return Set.of(RobonectActions.class);
     }
 
+    /**
+     * Submits a job from the Thing Action under the current polling session.
+     *
+     * @param settings the requested job settings
+     * @throws IllegalStateException if the polling session is unavailable or the mower rejects the job
+     */
     void startJob(RobonectClient.JobSettings settings) {
         PollingSession session = pollingSession;
         RobonectMowerHandler mower = mowerHandler;
@@ -175,10 +185,9 @@ public class RobonectHandler extends BaseThingHandler {
                 throw new IllegalStateException("Robonect Thing session has ended");
             }
             cancelCommandRefresh("status");
-            if (!mower.startJob(settings).isSuccessful()) {
+            if (!mower.startJob(null, settings).isSuccessful()) {
                 throw new IllegalStateException("Robonect rejected the mowing job");
             }
-            updateJobChannels(null, true, settings);
         } finally {
             sessionActive.remove();
         }
@@ -195,6 +204,8 @@ public class RobonectHandler extends BaseThingHandler {
         if (disposed) {
             return;
         }
+        PollingSession session = pollingSession;
+        sessionActive.set(() -> session == pollingSession);
         try {
             if (command instanceof RefreshType) {
                 refreshChannels(channelUID);
@@ -205,6 +216,8 @@ public class RobonectHandler extends BaseThingHandler {
         } catch (RobonectCommunicationException rce) {
             logger.debug("Failed to communicate with the mower. Taking it offline.", rce);
             updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, rce.getMessage());
+        } finally {
+            sessionActive.remove();
         }
     }
 
@@ -259,18 +272,17 @@ public class RobonectHandler extends BaseThingHandler {
                 pushHandler.handleModeCommand(command);
                 break;
             default:
-                if (channelUID.getId().startsWith("remote-")) {
-                    remoteStartHandler.handleCommand(channelUID.getId(), command);
-                } else if (channelUID.getId().startsWith("timer-")) {
-                    timerHandler.handleCommand(channelUID.getId(), command);
-                } else if (channelUID.getId().startsWith("push-trigger-")) {
-                    pushHandler.handleTriggerCommand(channelUID.getId(), command);
-                } else {
-                    Channel ch = getThing().getChannel(channelUID.getId());
-                    if (ch != null && JOB_CHANNEL_TYPE.equals(ch.getChannelTypeUID())) {
-                        JobChannelConfig jobConfig = ch.getConfiguration().as(JobChannelConfig.class);
-                        mowerHandler.handleJobCommand(channelUID.getId(), jobConfig, command);
-                    }
+                String id = channelUID.getId();
+                Channel channel = getThing().getChannel(id);
+                if (channel != null && JOB_CHANNEL_TYPE.equals(channel.getChannelTypeUID())) {
+                    JobChannelConfig jobConfig = channel.getConfiguration().as(JobChannelConfig.class);
+                    mowerHandler.handleJobCommand(id, jobConfig, command);
+                } else if (id.startsWith("remote-")) {
+                    remoteStartHandler.handleCommand(id, command);
+                } else if (id.startsWith("timer-")) {
+                    timerHandler.handleCommand(id, command);
+                } else if (id.startsWith("push-trigger-")) {
+                    pushHandler.handleTriggerCommand(id, command);
                 }
                 break;
         }
@@ -355,13 +367,15 @@ public class RobonectHandler extends BaseThingHandler {
     }
 
     /**
-     * Schedules a coalesced endpoint refresh after a successful command.
+     * Schedules a coalesced endpoint refresh after a specified delay.
      *
      * @param endpoint the endpoint key used to coalesce refreshes
      * @param refresh the endpoint refresh to schedule
+     * @param delaySeconds the number of seconds to wait before executing the refresh
      */
-    void scheduleCommandRefresh(String endpoint, Runnable refresh) {
-        if (disposed) {
+    void scheduleCommandRefresh(String endpoint, Runnable refresh, int delaySeconds) {
+        PollingSession session = pollingSession;
+        if (!canPublishState()) {
             return;
         }
         // Coalesce commands per endpoint by restarting the five-second delay after each command.
@@ -372,7 +386,8 @@ public class RobonectHandler extends BaseThingHandler {
         }
         // Cancellation may not stop an in-flight HTTP request. canPublishState() uses this predicate via
         // commandRefreshActive to discard responses after replacement or disposal.
-        BooleanSupplier active = () -> !disposed && pending.equals(commandRefreshJobs.get(endpoint));
+        BooleanSupplier active = () -> !disposed && session == pollingSession
+                && pending.equals(commandRefreshJobs.get(endpoint));
         ScheduledFuture<?> job = requestScheduler.schedule(() -> {
             commandRefreshActive.set(active);
             try {
@@ -387,7 +402,7 @@ public class RobonectHandler extends BaseThingHandler {
                 // A newer command may already have replaced this task; leave its map entry intact.
                 commandRefreshJobs.remove(endpoint, pending);
             }
-        }, 5, TimeUnit.SECONDS);
+        }, delaySeconds, TimeUnit.SECONDS);
         pending.job = job;
         // Replacement or disposal may have cancelled pending before its future was assigned, when cancel()
         // could not yet cancel the scheduled task. Close that race now that the future is available.
@@ -448,57 +463,21 @@ public class RobonectHandler extends BaseThingHandler {
         }
     }
 
-    void updateJobChannels(String channelId, boolean isJobRunning, RobonectClient.JobSettings settings) {
-        List<Channel> jobChannels = getThing().getChannels().stream()
-                .filter(channel -> JOB_CHANNEL_TYPE.equals(channel.getChannelTypeUID())).toList();
-
-        // Only set channel to 'ON', if it is the default 'CHANNEL_JOB' channel or matches the provided channelId
-        for (Channel channel : jobChannels) {
-            if (ajaxUiScraping && CHANNEL_JOB.equals(channel.getUID().getId())) {
-                // If Ajax scraping is enabled, the default 'CHANNEL_JOB' channel should not be updated here, but only
-                // during polling.
-                continue;
-            }
-            if (isJobRunning
-                    && (CHANNEL_JOB.equals(channel.getUID().getId()) || channel.getUID().getId().equals(channelId))) {
-                setState(channel.getUID().getId(), OnOffType.ON, true);
-            } else {
-                setState(channel.getUID().getId(), OnOffType.OFF, true);
+    /**
+     * Turns off the other custom job switches before turning on the selected switch.
+     *
+     * @param activeChannelId the selected custom channel, or {@code null} to turn off all custom switches
+     */
+    void updateCustomJobChannels(@Nullable String activeChannelId) {
+        for (Channel channel : getThing().getChannels()) {
+            String id = channel.getUID().getId();
+            if (JOB_CHANNEL_TYPE.equals(channel.getChannelTypeUID()) && !CHANNEL_JOB.equals(id)
+                    && !id.equals(activeChannelId)) {
+                setState(id, OnOffType.OFF, true);
             }
         }
-
-        if (!ajaxUiScraping) {
-            // Skip updating job start and end times if Ajax scraping is enabled,
-            // because start and end times are obtained from the Ajax polling
-
-            boolean hasStartTime = settings != null && settings.getStart() != null;
-            boolean hasEndTime = settings != null && settings.getEnd() != null;
-            boolean hasDuration = settings != null && settings.getDuration() != null;
-
-            int duration = hasDuration ? settings.getDuration() : 60;
-
-            LocalTime startTime = null;
-            LocalTime endTime = null;
-
-            if (hasStartTime) {
-                startTime = settings.getStartLocalTime();
-            }
-            if (hasEndTime) {
-                endTime = settings.getEndLocalTime();
-            }
-
-            if (startTime == null && endTime == null) {
-                startTime = LocalTime.now();
-            }
-
-            if (startTime != null && endTime == null) {
-                endTime = startTime.plusMinutes(duration);
-            } else if (startTime == null && endTime != null) {
-                startTime = endTime.minusMinutes(duration);
-            }
-
-            setState(CHANNEL_JOB_START, toTimeOnlyDateTime(startTime), true);
-            setState(CHANNEL_JOB_END, toTimeOnlyDateTime(endTime), true);
+        if (activeChannelId != null && !CHANNEL_JOB.equals(activeChannelId)) {
+            setState(activeChannelId, OnOffType.ON, true);
         }
     }
 
@@ -584,17 +563,15 @@ public class RobonectHandler extends BaseThingHandler {
     }
 
     /**
-     * Applies Ajax scraping configuration and reconciles the job-time channels.
+     * Applies Ajax scraping configuration and ensures the job-time channels exist.
      *
-     * @param enabled whether the feature is enabled
+     * @param enabled whether to use Ajax for job status and times instead of the locally tracked job
      */
     void configureAjaxChannels(boolean enabled) {
         ajaxUiScraping = enabled;
-        updateDynamicChannels(
-                Pattern.compile(CHANNEL_JOB_START + "|" + CHANNEL_JOB_END), enabled
-                        ? List.of(createChannel(CHANNEL_JOB_START, "DateTime", "jobTimeType", "Mowing Job Start Time"),
-                                createChannel(CHANNEL_JOB_END, "DateTime", "jobTimeType", "Mowing Job End Time"))
-                        : List.of());
+        updateDynamicChannels(Pattern.compile(CHANNEL_JOB_START + "|" + CHANNEL_JOB_END),
+                List.of(createChannel(CHANNEL_JOB_START, "DateTime", "jobTimeType", "Mowing Job Start Time"),
+                        createChannel(CHANNEL_JOB_END, "DateTime", "jobTimeType", "Mowing Job End Time")));
     }
 
     /**
@@ -642,6 +619,11 @@ public class RobonectHandler extends BaseThingHandler {
         String channelId = channelUID.getId();
         if (channelId.startsWith("weather-")) {
             weatherHandler.refreshWeatherInfo();
+            return;
+        }
+        Channel channel = getThing().getChannel(channelId);
+        if (channel != null && JOB_CHANNEL_TYPE.equals(channel.getChannelTypeUID())) {
+            mowerHandler.refreshMowerInfo();
             return;
         }
         if (channelId.startsWith("remote-")) {
@@ -855,6 +837,7 @@ public class RobonectHandler extends BaseThingHandler {
         }
     }
 
+    /** Invalidates the push registration before unregistering it and cancelling queued work. */
     private void cancelPushRefresh() {
         PushRefresh refresh = pushRefresh;
         pushRefresh = null;
@@ -871,10 +854,16 @@ public class RobonectHandler extends BaseThingHandler {
         private boolean reading;
         private boolean followUp;
 
+        /**
+         * Creates a refresh callback bound to one mower handler.
+         *
+         * @param mower the endpoint handler for the current configuration
+         */
         private PushRefresh(RobonectMowerHandler mower) {
             this.mower = mower;
         }
 
+        /** Coalesces a push notification with a queued read or requests a follow-up to an in-progress read. */
         @Override
         public synchronized void run() {
             if (!isActive()) {
@@ -887,10 +876,16 @@ public class RobonectHandler extends BaseThingHandler {
             }
         }
 
+        /**
+         * Checks whether this callback is still registered for the Thing.
+         *
+         * @return {@code true} if the registration remains current and the handler is active
+         */
         private boolean isActive() {
             return !disposed && equals(pushRefresh);
         }
 
+        /** Queues the status read on the request scheduler so the push callback can return promptly. */
         private void schedule() {
             try {
                 job = requestScheduler.schedule(this::refresh, 0, TimeUnit.SECONDS);
@@ -899,6 +894,9 @@ public class RobonectHandler extends BaseThingHandler {
             }
         }
 
+        /**
+         * Reads status for the current registration and schedules a follow-up if another push arrived during the read.
+         */
         private void refresh() {
             synchronized (this) {
                 if (!isActive()) {
@@ -926,6 +924,7 @@ public class RobonectHandler extends BaseThingHandler {
             }
         }
 
+        /** Cancels the scheduled read after its registration has been invalidated. */
         private synchronized void cancel() {
             ScheduledFuture<?> current = job;
             if (current != null) {
@@ -1111,6 +1110,7 @@ public class RobonectHandler extends BaseThingHandler {
         return updates;
     }
 
+    /** Refreshes battery, motor, and wire information while the polling session remains active. */
     private void refreshDriveDiagnostics() {
         diagnosticsHandler.refreshBatteryInfo();
         if (canPublishState()) {

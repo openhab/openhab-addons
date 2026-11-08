@@ -1025,15 +1025,15 @@
 		<item-type>Switch</item-type>
 		<label>Mowing Job</label>
 		<state readOnly="false"/>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 		<config-description-ref uri="channel-type:robonect:jobType"/>
 	</channel-type>
 
 	<channel-type id="jobTimeType">
 		<item-type>DateTime</item-type>
 		<label>Job Time</label>
-		<description>Start or end time of the active mowing job, read from the localized Ajax web-interface response only when
-			ajaxUiScraping is enabled. Only the time of day is meaningful. Cleared when no job is active or the response cannot
-			be read.</description>
+		<description>Start or end time of the active mowing job, estimated from the accepted command or read from the web
+			interface when Ajax scraping is enabled. Only the time of day is meaningful. Cleared when the job ends.</description>
 		<state readOnly="true"/>
 	</channel-type>
 

@@ -17,6 +17,7 @@ package org.openhab.binding.robonect.internal.model;
  * to deserialize the JSON response from the module.
  *
  * @author Marco Meyer - Initial contribution
+ * @author Nico Brüttner - Mower identification, clock, and job status fields
  */
 public class MowerInfo extends RobonectAnswer {
 

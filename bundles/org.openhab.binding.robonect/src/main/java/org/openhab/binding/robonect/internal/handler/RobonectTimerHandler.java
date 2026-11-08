@@ -115,7 +115,7 @@ final class RobonectTimerHandler {
                 if (updatedTimer != null) {
                     updateTimerState(updatedTimer, false);
                 }
-                handler.scheduleCommandRefresh("timer", this::refreshTimersInfo);
+                handler.scheduleCommandRefresh("timer", this::refreshTimersInfo, 5);
             }
         } catch (NumberFormatException e) {
             logger.debug("Ignoring malformed timer channel {}", channelId);

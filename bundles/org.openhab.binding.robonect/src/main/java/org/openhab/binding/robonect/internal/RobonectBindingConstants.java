@@ -19,6 +19,7 @@ import org.openhab.core.thing.ThingTypeUID;
  * used across the whole binding.
  *
  * @author Marco Meyer - Initial contribution
+ * @author Nico Brüttner - Channel identifiers for diagnostics, controls, and mower jobs
  */
 public class RobonectBindingConstants {
 
