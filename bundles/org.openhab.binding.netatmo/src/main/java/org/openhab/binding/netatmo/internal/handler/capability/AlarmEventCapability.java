@@ -55,9 +55,9 @@ public class AlarmEventCapability extends HomeSecurityThingCapability {
 
     @Override
     public List<NAObject> updateReadings() {
-        return pullMode() ? Objects.requireNonNull(
+        return Objects.requireNonNull(
                 getSecurityCapability().map(cap -> cap.getDeviceLastEvent(handler.getId(), moduleType.apiName))
                         .map(event -> List.of((NAObject) event)).orElse(List.of()))
-                : List.of();
+               ;
     }
 }
