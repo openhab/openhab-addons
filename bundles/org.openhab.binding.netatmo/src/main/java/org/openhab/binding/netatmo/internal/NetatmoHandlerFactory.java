@@ -42,6 +42,7 @@ import org.openhab.binding.netatmo.internal.handler.capability.RefreshAutoCapabi
 import org.openhab.binding.netatmo.internal.handler.capability.RefreshCapability;
 import org.openhab.binding.netatmo.internal.handler.capability.RoomCapability;
 import org.openhab.binding.netatmo.internal.handler.capability.WeatherCapability;
+import org.openhab.binding.netatmo.internal.handler.capability.WebhookListenerCapability;
 import org.openhab.binding.netatmo.internal.handler.channelhelper.ChannelHelper;
 import org.openhab.binding.netatmo.internal.providers.NetatmoDescriptionProvider;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
@@ -121,6 +122,7 @@ public class NetatmoHandlerFactory extends BaseThingHandlerFactory {
 
         List<ChannelHelper> helpers = moduleType.channelGroups.stream().map(ChannelGroup::getHelperInstance).toList();
 
+        handler.getCapabilities().put(new WebhookListenerCapability(handler));
         moduleType.capabilities.forEach(capability -> {
             Capability newCap = null;
 

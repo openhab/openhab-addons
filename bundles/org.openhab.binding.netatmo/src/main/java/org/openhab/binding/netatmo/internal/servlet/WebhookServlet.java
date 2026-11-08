@@ -106,7 +106,7 @@ public class WebhookServlet extends NetatmoServlet {
 
     private void processEvent(String data) {
         if (!data.isEmpty()) {
-            logger.debug("Event transmitted from restService: {}", data);
+            logger.debug("Event transmitted on webhook: {}", data);
             try {
                 WebhookEvent event = deserializer.deserialize(WebhookEvent.class, data);
                 notifyListeners(event);

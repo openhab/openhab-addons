@@ -17,12 +17,10 @@ import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.netatmo.internal.handler.ApiBridgeHandler;
 import org.openhab.binding.netatmo.internal.handler.CommonInterface;
 import org.openhab.binding.netatmo.internal.handler.channelhelper.ChannelHelper;
 import org.openhab.binding.netatmo.internal.handler.channelhelper.EventChannelHelper;
 import org.openhab.binding.netatmo.internal.providers.NetatmoDescriptionProvider;
-import org.openhab.binding.netatmo.internal.servlet.WebhookServlet;
 
 /**
  * {@link HomeSecurityThingCapability} is the ancestor of capabilities hosted by a security home
@@ -36,7 +34,6 @@ public abstract class HomeSecurityThingCapability extends Capability {
     protected final NetatmoDescriptionProvider descriptionProvider;
     protected final EventChannelHelper eventHelper;
 
-    private @Nullable WebhookServlet webhookServlet;
     private @Nullable SecurityCapability securityCapability;
     private @Nullable HomeCapability homeCapability;
 
@@ -53,13 +50,6 @@ public abstract class HomeSecurityThingCapability extends Capability {
     protected Optional<SecurityCapability> getSecurityCapability() {
         if (securityCapability == null) {
             handler.getHomeCapability(SecurityCapability.class).ifPresent(cap -> securityCapability = cap);
-            if (handler.getAccountHandler() instanceof ApiBridgeHandler accountHandler) {
-                webhookServlet = null;
-                accountHandler.getWebHookServlet().ifPresent(servlet -> {
-                    webhookServlet = servlet;
-                    servlet.registerDataListener(handler.getId(), this);
-                });
-            }
         }
         return Optional.ofNullable(securityCapability);
     }
@@ -73,14 +63,6 @@ public abstract class HomeSecurityThingCapability extends Capability {
 
     @Override
     public void dispose() {
-        if (webhookServlet instanceof WebhookServlet webhook) {
-            webhook.unregisterDataListener(handler.getId());
-            webhookServlet = null;
-        }
         super.dispose();
-    }
-
-    protected boolean pullMode() {
-        return webhookServlet == null;
     }
 }

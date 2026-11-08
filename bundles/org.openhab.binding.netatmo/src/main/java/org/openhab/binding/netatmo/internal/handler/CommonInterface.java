@@ -36,6 +36,7 @@ import org.openhab.binding.netatmo.internal.handler.capability.HomeCapability;
 import org.openhab.binding.netatmo.internal.handler.capability.ParentUpdateCapability;
 import org.openhab.binding.netatmo.internal.handler.capability.RefreshCapability;
 import org.openhab.binding.netatmo.internal.handler.capability.RestCapability;
+import org.openhab.binding.netatmo.internal.handler.capability.WebhookListenerCapability;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -229,7 +230,11 @@ public interface CommonInterface {
 
     default List<NAObject> updateReadings() {
         List<NAObject> result = new ArrayList<>();
-        getCapabilities().values().forEach(cap -> result.addAll(cap.updateReadings()));
+        boolean pullMode = getCapabilities().get(WebhookListenerCapability.class)
+                .map(WebhookListenerCapability::pullMode).orElse(false);
+        if (pullMode) {
+            getCapabilities().values().forEach(cap -> result.addAll(cap.updateReadings()));
+        }
         getActiveChildren().forEach(child -> result.addAll(child.updateReadings()));
         return result;
     }
