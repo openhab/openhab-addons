@@ -19,8 +19,8 @@ import java.util.Set;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.auth.Role;
+import org.openhab.core.config.core.ConfigParser;
 import org.openhab.core.config.core.ConfigurableService;
-import org.openhab.core.config.core.Configuration;
 import org.openhab.core.io.monitor.MeterRegistryProvider;
 import org.openhab.core.io.rest.RESTConstants;
 import org.openhab.io.metrics.exporters.InfluxMetricsExporter;
@@ -96,7 +96,7 @@ public class MetricsRestController {
     }
 
     @Activate
-    protected void activate(Map<@Nullable String, @Nullable Object> configuration) {
+    protected void activate(Map<String, @Nullable Object> configuration) {
         logger.info("Metrics service activated, serving the following URL(s): /rest/metrics/prometheus");
         metricsExporters.add(new InfluxMetricsExporter());
         metricsExporters.add(new JmxMetricsExporter());
@@ -105,12 +105,12 @@ public class MetricsRestController {
     }
 
     @Modified
-    protected synchronized void modified(Map<@Nullable String, @Nullable Object> configuration) {
+    protected synchronized void modified(Map<String, @Nullable Object> configuration) {
         updateConfig(configuration);
     }
 
-    private void updateConfig(@Nullable Map<@Nullable String, @Nullable Object> configuration) {
-        this.config = new Configuration(configuration).as(MetricsConfiguration.class);
+    private void updateConfig(Map<String, @Nullable Object> configuration) {
+        this.config = ConfigParser.configurationAs(configuration, MetricsConfiguration.class);
         logger.debug("Configuration: {}", this.config);
         this.metricsExporters.forEach(e -> e.updateExporterState(config));
     }
