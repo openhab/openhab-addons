@@ -134,8 +134,8 @@ General options.
 Configure VAD options.
 
 - **Audio Step** - Audio processing step in seconds for the voice activity detection.
-- **Voice Activity Detection Sensitivity** - Percentage in range 0-1 of voice activity in one second to consider it as voice.
-- **Voice Activity Detection Threshold** - Speech probability in range 0-1 above which audio is considered voice. Raise it in noisy rooms, lower it for quiet speakers.
+- **Voice Activity Detection Sensitivity** - Share of frames in range 0-1 in each audio step that must be voice for the step to count as voice. Higher values need more speech in a step.
+- **Voice Activity Detection Threshold** - Speech probability in range 0-1 at which a frame counts as voice. Increase it if background noise is detected as voice, decrease it if speech is missed.
 
 ### Whisper Configuration
 
@@ -227,6 +227,7 @@ org.openhab.voice.whisperstt:stepSeconds=0.3
 org.openhab.voice.whisperstt:singleUtteranceMode=true
 org.openhab.voice.whisperstt:preloadModel=false
 org.openhab.voice.whisperstt:vadSensitivity=0.1
+org.openhab.voice.whisperstt:vadThreshold=0.5
 org.openhab.voice.whisperstt:maxSilenceSeconds=2
 org.openhab.voice.whisperstt:minSeconds=2
 org.openhab.voice.whisperstt:maxSeconds=10

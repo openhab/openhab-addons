@@ -72,9 +72,9 @@ public class VADTest {
         int frameSize = SileroVAD.FRAME_SIZE;
         // reference speech flags of each frame over the whole clip
         SileroVAD silero = new SileroVAD();
-        boolean[] voiced = new boolean[speech.length / frameSize];
-        for (int i = 0; i < voiced.length; i++) {
-            voiced[i] = silero.process(Arrays.copyOfRange(speech, i * frameSize, (i + 1) * frameSize)) >= 0.5f;
+        boolean[] isVoice = new boolean[speech.length / frameSize];
+        for (int i = 0; i < isVoice.length; i++) {
+            isVoice[i] = silero.process(Arrays.copyOfRange(speech, i * frameSize, (i + 1) * frameSize)) >= 0.5f;
         }
         VAD vad = new VAD(0.3f, 0.5f);
         for (int start = 0; start + SHORT_STEP <= speech.length; start += SHORT_STEP) {
@@ -84,12 +84,12 @@ public class VADTest {
             int first = start / frameSize;
             int last = end / frameSize - 1;
             int headEnd = first;
-            while (headEnd <= last && voiced[headEnd]) {
+            while (headEnd <= last && isVoice[headEnd]) {
                 headEnd++;
             }
             int expectedHead = headEnd > last ? SHORT_STEP : Math.max(0, headEnd * frameSize - start);
             int tailStart = last;
-            while (tailStart >= first && voiced[tailStart]) {
+            while (tailStart >= first && isVoice[tailStart]) {
                 tailStart--;
             }
             int expectedTail = tailStart == last ? 0 : Math.min(SHORT_STEP, end - (tailStart + 1) * frameSize);

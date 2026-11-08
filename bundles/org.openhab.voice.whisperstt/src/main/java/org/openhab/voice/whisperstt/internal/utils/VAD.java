@@ -29,19 +29,18 @@ import io.github.jvoiceproject.silerovad.SileroVAD;
 @NonNullByDefault
 public class VAD {
     private final Logger logger = LoggerFactory.getLogger(VAD.class);
-    private final SileroVAD silero;
+    private final SileroVAD silero = new SileroVAD();
     private final short[] stepSamples = new short[SileroVAD.FRAME_SIZE];
     private final float sensitivity;
     private final float threshold;
     private int stepSamplesFilled;
 
     /**
-     * @param sensitivity percent in range 0 - 1 of voiced frames in each analyzed step to consider it as voice.
+     * @param sensitivity percent in range 0 - 1 of voice frames in each analyzed step to consider it as voice.
      * @param threshold Silero speech probability in range 0 - 1 to consider a frame as voice.
      * @throws IOException if the Silero model can't be loaded
      */
     public VAD(float sensitivity, float threshold) throws IOException {
-        this.silero = new SileroVAD();
         this.sensitivity = sensitivity;
         this.threshold = threshold;
     }
@@ -77,10 +76,10 @@ public class VAD {
                 voiceInTail = 0;
             }
         }
-        // require at least one voiced partial, so short steps are not voice by default
+        // require at least one voice frame, so short steps are not voice by default
         int detectionThreshold = Math.max(1, (int) ((((float) totalPartialDetections) / 100f) * (sensitivity * 100)));
         logger.debug("VAD: {}/{} - required: {}", partialVADCounter, totalPartialDetections, detectionThreshold);
-        // samples left for the next call are counted as part of a voiced head or tail
+        // samples left for the next call are added to a head or tail of voice
         int pendingSamples = stepSamplesFilled;
         int voiceSamplesInHead = 0;
         if (voiceInHead > 0) {
