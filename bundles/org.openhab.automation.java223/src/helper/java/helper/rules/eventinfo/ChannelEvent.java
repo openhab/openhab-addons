@@ -23,14 +23,12 @@ import org.openhab.core.thing.events.ChannelTriggeredEvent;
 @NonNullByDefault
 public class ChannelEvent extends EventInfo {
 
-    @InjectBinding
-    protected @NonNullByDefault({}) String channelUUID;
 
     @InjectBinding
     protected @NonNullByDefault({}) ChannelTriggeredEvent event;
 
     public String getChannelUUID() {
-        return channelUUID;
+        return event.getChannel().toString();
     }
 
     public ChannelTriggeredEvent getEvent() {
