@@ -269,6 +269,11 @@ public class Authorization {
     public void login() throws MercedesMeAuthException, MercedesMeApiException, MercedesMeBindingException {
         logger.trace("Start login");
         HttpClient loginHttpClient = new HttpClient(new SslContextFactory.Client());
+        // Jetty's default request buffer of 4096 bytes holds the request line plus all headers. The CIAM login flow
+        // collects cookies (CIAM.IS ~2.6 kB, _abck ~1 kB, bm_sz ~0.5 kB) which Jetty sends as Cookie header on every
+        // following request, so without a larger buffer the login fails with BadMessageException
+        // "500: Request header too large" before the request is sent.
+        loginHttpClient.setRequestBufferSize(16384);
         /**
          * I need to start an extra client
          * Using common HttpClient causes problems with
