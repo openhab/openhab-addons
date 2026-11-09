@@ -39,6 +39,7 @@ import org.openhab.binding.homeconnectdirect.internal.common.utils.StringUtils;
 import org.openhab.binding.homeconnectdirect.internal.handler.BaseHomeConnectDirectHandler;
 import org.openhab.binding.homeconnectdirect.internal.handler.model.ApplianceMessage;
 import org.openhab.binding.homeconnectdirect.internal.servlet.model.MessageFilter;
+import org.openhab.core.io.net.http.WebSocketFactory;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingRegistry;
 import org.osgi.service.cm.ConfigurationAdmin;
@@ -99,6 +100,7 @@ public class HomeConnectDirectWebSocketServlet extends JettyWebSocketServlet {
     @Override
     public void configure(@Nullable JettyWebSocketServletFactory factory) {
         if (factory != null) {
+            factory.setIdleTimeout(WebSocketFactory.DEFAULT_IDLE_TIMEOUT);
             factory.setCreator((servletUpgradeRequest, servletUpgradeResponse) -> {
 
                 if (!securityContext.isValidAuthorization(servletUpgradeRequest.getHttpServletRequest(),

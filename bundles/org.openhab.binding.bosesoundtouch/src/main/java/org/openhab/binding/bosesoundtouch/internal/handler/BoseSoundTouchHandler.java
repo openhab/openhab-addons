@@ -16,6 +16,7 @@ import static org.openhab.binding.bosesoundtouch.internal.BoseSoundTouchBindingC
 
 import java.net.URI;
 import java.nio.ByteBuffer;
+import java.time.Duration;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
@@ -449,6 +450,7 @@ public class BoseSoundTouchHandler extends BaseThingHandler {
             ClientUpgradeRequest request = new ClientUpgradeRequest();
             request.setSubProtocols("gabbo");
             localClient.setStopTimeout(1000);
+            localClient.setIdleTimeout(Duration.ofSeconds(360));
             localClient.start();
             sessionFuture = localClient.connect(this, new URI(wsUrl), request);
             client = localClient;

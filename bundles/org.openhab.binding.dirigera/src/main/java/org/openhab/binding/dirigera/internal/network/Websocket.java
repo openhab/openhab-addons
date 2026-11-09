@@ -122,6 +122,7 @@ public class Websocket {
         try {
             pingPongMap.clear();
             WebSocketClient client = new WebSocketClient(httpClient);
+            client.setIdleTimeout(Duration.ZERO);
 
             ClientUpgradeRequest request = new ClientUpgradeRequest();
             request.setHeader("Authorization", "Bearer " + gateway.getToken());
@@ -211,6 +212,7 @@ public class Websocket {
     public void onConnect(Session session) {
         logger.debug("DIRIGERA WS onConnect");
         setSession(session);
+        session.setIdleTimeout(Duration.ZERO);
         gateway.websocketConnected(true, "connected");
     }
 

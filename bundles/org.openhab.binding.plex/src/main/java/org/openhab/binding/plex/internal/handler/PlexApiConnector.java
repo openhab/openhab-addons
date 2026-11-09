@@ -46,6 +46,7 @@ import org.openhab.binding.plex.internal.dto.NotificationContainer;
 import org.openhab.binding.plex.internal.dto.User;
 import org.openhab.core.i18n.ConfigurationException;
 import org.openhab.core.io.net.http.HttpUtil;
+import org.openhab.core.io.net.http.WebSocketFactory;
 import org.openhab.core.library.types.NextPreviousType;
 import org.openhab.core.library.types.PlayPauseType;
 import org.openhab.core.types.Command;
@@ -325,6 +326,7 @@ public class PlexApiConnector {
             return;
         }
         wsClient.setConnectTimeout(2000);
+        wsClient.setIdleTimeout(WebSocketFactory.DEFAULT_IDLE_TIMEOUT);
         ClientUpgradeRequest request = new ClientUpgradeRequest();
         try {
             isShutDown = false;

@@ -34,6 +34,7 @@ import org.eclipse.jetty.websocket.api.annotations.OnWebSocketPong;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.openhab.binding.homeconnectdirect.internal.service.websocket.exception.WebSocketClientServiceException;
+import org.openhab.core.io.net.http.WebSocketFactory;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingUID;
 import org.slf4j.Logger;
@@ -75,6 +76,7 @@ public abstract class AbstractWebSocketClientService implements WebSocketClientS
         try {
             var webSocketClient = getWebSocketClient();
             if (webSocketClient != null) {
+                webSocketClient.setIdleTimeout(WebSocketFactory.DEFAULT_IDLE_TIMEOUT);
                 webSocketClient.start();
                 webSocketClient.connect(this, applianceUri).get();
             }

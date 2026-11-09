@@ -45,6 +45,7 @@ import org.openhab.binding.freeboxos.internal.handler.ApiConsumerHandler;
 import org.openhab.binding.freeboxos.internal.handler.HostHandler;
 import org.openhab.binding.freeboxos.internal.handler.VmHandler;
 import org.openhab.core.common.ThreadPoolManager;
+import org.openhab.core.io.net.http.WebSocketFactory;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
@@ -111,6 +112,7 @@ public class WebSocketManager extends RestManager {
 
         activeRegistration = apiHandler.serialize(vmSupported ? REGISTRATION : REGISTRATION_WITHOUT_VM);
         WebSocketClient webSocketClient = new WebSocketClient(apiHandler.getHttpClient());
+        webSocketClient.setIdleTimeout(WebSocketFactory.DEFAULT_IDLE_TIMEOUT);
         reconnectEnabled = true;
         URI uri = getUriBuilder().scheme(getUriBuilder().build().getScheme().contains("s") ? "wss" : "ws").build();
         ClientUpgradeRequest request = new ClientUpgradeRequest();
