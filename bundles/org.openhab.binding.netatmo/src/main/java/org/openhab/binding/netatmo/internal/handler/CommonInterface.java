@@ -230,7 +230,7 @@ public interface CommonInterface {
 
     default List<NAObject> updateReadings() {
         boolean pullMode = getCapabilities().getOrDescendant(WebhookListenerCapability.class)
-                .map(WebhookListenerCapability::pullMode).orElseGet(() -> false);
+                .map(WebhookListenerCapability::pullMode).orElseGet(() -> true);
 
         if (pullMode) {
             List<NAObject> result = new ArrayList<>();
