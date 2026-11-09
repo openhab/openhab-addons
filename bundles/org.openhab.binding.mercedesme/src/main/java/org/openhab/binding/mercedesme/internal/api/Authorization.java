@@ -73,6 +73,8 @@ public class Authorization {
      * Number of attempts for login-flow steps that may fail transiently with a gateway error (502/503/504).
      */
     private static final int LOGIN_MAX_ATTEMPTS = 3;
+    /** Mercedes login cookies can exceed Jetty's default 4 kB request buffer ('Request header too large'). */
+    private static final int LOGIN_REQUEST_BUFFER_SIZE = 16 * 1024;
     /**
      * Backoff base in seconds between login retries, multiplied by the attempt number.
      */
@@ -269,6 +271,7 @@ public class Authorization {
     public void login() throws MercedesMeAuthException, MercedesMeApiException, MercedesMeBindingException {
         logger.trace("Start login");
         HttpClient loginHttpClient = new HttpClient(new SslContextFactory.Client());
+        loginHttpClient.setRequestBufferSize(LOGIN_REQUEST_BUFFER_SIZE);
         /**
          * I need to start an extra client
          * Using common HttpClient causes problems with
