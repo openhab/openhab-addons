@@ -91,4 +91,23 @@ public class HwDiscoveryService extends AbstractThingHandlerDiscoveryService<HwB
 
         logger.debug("Discovered {}", uid);
     }
+
+    /**
+     * Called by the bridge when it receives a button or LED message for a keypad that is not registered. The model
+     * cannot be read from the processor, so the keypad is discovered with the generic model.
+     */
+    public void declareUnknownKeypad(String address) {
+        String addressUid = address.replaceAll("[\\[\\]]", "").replace(":", "-");
+        ThingUID bridgeUID = thingHandler.getThing().getUID();
+        ThingUID uid = new ThingUID(HwConstants.THING_TYPE_HWKEYPAD, bridgeUID, addressUid);
+
+        Map<String, Object> props = new HashMap<>();
+        props.put("address", address);
+        DiscoveryResult result = DiscoveryResultBuilder.create(uid).withBridge(bridgeUID).withProperties(props)
+                .withRepresentationProperty("address").build();
+
+        thingDiscovered(result);
+
+        logger.debug("Discovered {}", uid);
+    }
 }

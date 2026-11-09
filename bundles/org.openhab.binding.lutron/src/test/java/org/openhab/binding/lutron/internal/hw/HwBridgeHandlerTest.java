@@ -35,6 +35,7 @@ import org.openhab.core.thing.Thing;
 @NonNullByDefault
 public class HwBridgeHandlerTest {
     private static final String DIMMER_ADDRESS = "[01:01:03:06:01]";
+    private static final String KEYPAD_ADDRESS = "[01:04:02]";
 
     private static class TestBridgeHandler extends HwBridgeHandler {
         final List<String> sent = new ArrayList<>();
@@ -63,6 +64,7 @@ public class HwBridgeHandlerTest {
 
     private final Bridge bridge = mock(Bridge.class);
     private final HwDimmerHandler dimmerHandler = mock(HwDimmerHandler.class);
+    private final HwKeypadHandler keypadHandler = mock(HwKeypadHandler.class);
     private final HwDiscoveryService discoveryService = mock(HwDiscoveryService.class);
 
     private TestBridgeHandler handler = new TestBridgeHandler(bridge);
@@ -72,7 +74,10 @@ public class HwBridgeHandlerTest {
         Thing dimmer = mock(Thing.class);
         when(dimmer.getHandler()).thenReturn(dimmerHandler);
         when(dimmerHandler.getAddress()).thenReturn(DIMMER_ADDRESS);
-        when(bridge.getThings()).thenReturn(List.of(dimmer));
+        Thing keypad = mock(Thing.class);
+        when(keypad.getHandler()).thenReturn(keypadHandler);
+        when(keypadHandler.getAddress()).thenReturn(KEYPAD_ADDRESS);
+        when(bridge.getThings()).thenReturn(List.of(dimmer, keypad));
         handler = new TestBridgeHandler(bridge);
         handler.setDiscoveryService(discoveryService);
     }
@@ -180,6 +185,67 @@ public class HwBridgeHandlerTest {
     public void startupCommandsDisablePromptsAndEnableDimmerMonitoring() {
         handler.startup();
 
-        assertEquals(List.of("PROMPTOFF", "KBMOFF", "KLMOFF", "GSMOFF", "DLMON"), handler.sent);
+        assertEquals(List.of("PROMPTOFF", "KBMON", "KLMON", "GSMOFF", "DLMON"), handler.sent);
+    }
+
+    @Test
+    public void keypadButtonMessagesReachTheKeypad() {
+        handler.receive("KBP, [01:04:02],  3");
+        handler.receive("KBH, [01:04:2],  3");
+        handler.receive("KBDT, [01:04:02], 24");
+        handler.receive("KBR, [01:04:02],  3");
+
+        verify(keypadHandler).handleButton("KBP", 3);
+        verify(keypadHandler).handleButton("KBH", 3);
+        verify(keypadHandler).handleButton("KBDT", 24);
+        verify(keypadHandler).handleButton("KBR", 3);
+        verify(discoveryService, never()).declareUnknownKeypad(org.mockito.ArgumentMatchers.anyString());
+    }
+
+    @Test
+    public void keypadLedStatesReachTheKeypad() {
+        handler.receive("KLS, [01:04:02], 010200000000000000000000");
+
+        verify(keypadHandler).handleLedStates("010200000000000000000000");
+    }
+
+    @Test
+    public void messagesForUnknownKeypadsAreDeclaredToDiscovery() {
+        handler.receive("KBP, [01:04:05],  1");
+        handler.receive("KLS, [01:08:02:07], 000000000000000000000000");
+
+        verify(discoveryService).declareUnknownKeypad("[01:04:05]");
+        verify(discoveryService).declareUnknownKeypad("[01:08:02:07]");
+        verify(keypadHandler, never()).handleButton(org.mockito.ArgumentMatchers.anyString(),
+                org.mockito.ArgumentMatchers.anyInt());
+    }
+
+    @Test
+    public void dimmerTapMessagesReachTheDimmer() {
+        handler.receive("DBP, [01:01:03:06:01], 1");
+        handler.receive("DBDT, [01:01:03:06:01], 1");
+
+        verify(dimmerHandler).handleTap("KBP");
+        verify(dimmerHandler).handleTap("KBDT");
+        verify(discoveryService, never()).declareUnknownKeypad(org.mockito.ArgumentMatchers.anyString());
+    }
+
+    @Test
+    public void sivoiaMessagesAreIgnored() {
+        handler.receive("SVS, [01:04:03], 1, 0");
+        handler.receive("SVBP, [01:04:03], 2");
+
+        verify(discoveryService, never()).declareUnknownKeypad(org.mockito.ArgumentMatchers.anyString());
+        verify(discoveryService, never()).declareUnknownDimmer(org.mockito.ArgumentMatchers.anyString());
+    }
+
+    @Test
+    public void malformedKeypadMessagesAreIgnored() {
+        handler.receive("KBP, [01:04:02]");
+        handler.receive("KBP, [01:04:02], x");
+        handler.receive("KLS");
+
+        verify(keypadHandler, never()).handleButton(org.mockito.ArgumentMatchers.anyString(),
+                org.mockito.ArgumentMatchers.anyInt());
     }
 }

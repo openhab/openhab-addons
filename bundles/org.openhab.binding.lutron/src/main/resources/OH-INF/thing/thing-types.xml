@@ -1150,7 +1150,12 @@
 		<semantic-equipment-tag>LightSource</semantic-equipment-tag>
 		<channels>
 			<channel id="lightlevel" typeId="lightDimmer"/>
+			<channel id="tap" typeId="buttonTrigger"/>
 		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 
 		<config-description>
 			<parameter name="address" type="text" required="true">
@@ -1166,6 +1171,34 @@
 				<label>Default Level</label>
 				<description>The default dimmer level to use when turning the light on</description>
 				<default>100</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="hwkeypad">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="hwserialbridge"/>
+			<bridge-type-ref id="hwtelnetbridge"/>
+		</supported-bridge-type-refs>
+
+		<label>Lutron Keypad (Legacy HomeWorks)</label>
+		<description>Keypad of a legacy HomeWorks system, with a trigger channel and an LED channel for each button</description>
+		<semantic-equipment-tag>Keypad</semantic-equipment-tag>
+		<representation-property>address</representation-property>
+
+		<config-description>
+			<parameter name="address" type="text" required="true">
+				<label>Address</label>
+				<description>Address of the keypad in the Lutron lighting system, for example [01:04:02]</description>
+			</parameter>
+			<parameter name="model" type="text">
+				<label>Model</label>
+				<description>Keypad model, which determines the buttons and LEDs that the keypad has</description>
+				<default>GENERIC</default>
+				<options>
+					<option value="GENERIC">Generic (24 buttons and LEDs)</option>
+				</options>
+				<limitToOptions>true</limitToOptions>
 			</parameter>
 		</config-description>
 	</thing-type>
@@ -1388,6 +1421,26 @@
 		<label>Keypad Button</label>
 		<description>Button to trigger a scene or rule</description>
 		<category>Switch</category>
+	</channel-type>
+
+	<channel-type id="hwLedState">
+		<item-type>String</item-type>
+		<label>Keypad LED State</label>
+		<description>State of the LED of a button. LEDs that are programmed to follow a scene or a load ignore commands.</description>
+		<state>
+			<options>
+				<option value="OFF">Off</option>
+				<option value="ON">On</option>
+				<option value="FLASH1">Flash 1</option>
+				<option value="FLASH2">Flash 2</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="hwKeypadPress">
+		<item-type>String</item-type>
+		<label>Press Button</label>
+		<description>Send a button number to simulate a press and release of that button</description>
 	</channel-type>
 
 	<channel-type id="buttonTrigger">
