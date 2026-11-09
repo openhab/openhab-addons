@@ -229,14 +229,17 @@ public interface CommonInterface {
     }
 
     default List<NAObject> updateReadings() {
-        List<NAObject> result = new ArrayList<>();
-        boolean pullMode = getCapabilities().get(WebhookListenerCapability.class)
-                .map(WebhookListenerCapability::pullMode).orElse(false);
+        boolean pullMode = getCapabilities().getOrDescendant(WebhookListenerCapability.class)
+                .map(WebhookListenerCapability::pullMode).orElseGet(() -> false);
+
         if (pullMode) {
+            List<NAObject> result = new ArrayList<>();
             getCapabilities().values().forEach(cap -> result.addAll(cap.updateReadings()));
+            getActiveChildren().forEach(child -> result.addAll(child.updateReadings()));
+            return result;
         }
-        getActiveChildren().forEach(child -> result.addAll(child.updateReadings()));
-        return result;
+
+        return List.of();
     }
 
     default void commonInitialize() {

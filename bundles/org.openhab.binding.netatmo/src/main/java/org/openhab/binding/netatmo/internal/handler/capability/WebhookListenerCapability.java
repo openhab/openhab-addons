@@ -14,12 +14,13 @@ package org.openhab.binding.netatmo.internal.handler.capability;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.netatmo.internal.api.dto.NAObject;
 import org.openhab.binding.netatmo.internal.handler.ApiBridgeHandler;
 import org.openhab.binding.netatmo.internal.handler.CommonInterface;
 import org.openhab.binding.netatmo.internal.servlet.WebhookServlet;
 
 /**
- * {@link WebhookListenerCapability} is the class used to listen upon webhook device_event(s)
+ * {@link WebhookListenerCapability} is the class used to register for webhook device_event(s)
  *
  * @author Gaël L'hopital - Initial contribution
  *
@@ -27,32 +28,31 @@ import org.openhab.binding.netatmo.internal.servlet.WebhookServlet;
 @NonNullByDefault
 public class WebhookListenerCapability extends Capability {
 
-    private @Nullable WebhookServlet webhookServlet;
+    private @Nullable WebhookServlet servlet;
 
     public WebhookListenerCapability(CommonInterface handler) {
         super(handler);
     }
 
     @Override
-    public void initialize() {
-        if (handler.getAccountHandler() instanceof ApiBridgeHandler accountHandler) {
-            webhookServlet = null;
-            accountHandler.getWebHookServlet().ifPresent(servlet -> {
-                webhookServlet = servlet;
-                servlet.registerDataListener(handler.getId(), this);
-            });
+    // We'll switch to push mode if possible and only after a first reading with pull mode
+    protected void afterNewData(@Nullable NAObject newData) {
+        if (handler.getAccountHandler() instanceof ApiBridgeHandler accountHandler
+                && accountHandler.getWebhookServlet() instanceof WebhookServlet whs && !whs.equals(servlet)) {
+            whs.registerDataListener(handler.getId(), this);
+            servlet = whs;
         }
     }
 
     public boolean pullMode() {
-        return webhookServlet == null;
+        return servlet == null;
     }
 
     @Override
     public void dispose() {
-        if (webhookServlet instanceof WebhookServlet webhook) {
-            webhook.unregisterDataListener(handler.getId());
-            webhookServlet = null;
+        if (servlet instanceof WebhookServlet whs) {
+            whs.unregisterDataListener(handler.getId());
+            servlet = null;
         }
         super.dispose();
     }
