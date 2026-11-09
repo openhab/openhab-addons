@@ -119,7 +119,7 @@ public class HwKeypadHandler extends BaseThingHandler {
 
         Bridge bridge = getBridge();
         if (bridge == null || bridge.getStatus() != ThingStatus.ONLINE) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
             return;
         }
         updateStatus(ThingStatus.ONLINE);
