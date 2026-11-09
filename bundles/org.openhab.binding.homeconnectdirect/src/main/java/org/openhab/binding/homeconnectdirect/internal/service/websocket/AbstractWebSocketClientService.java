@@ -114,7 +114,7 @@ public abstract class AbstractWebSocketClientService implements WebSocketClientS
     @OnWebSocketPing
     public void onPing(Session session, ByteBuffer payload) {
         logger.trace("<< PING ({})", thing.getUID());
-        sendPong(session);
+        sendPong(session, payload);
         updateLastMessageReceived();
     }
 
@@ -174,9 +174,10 @@ public abstract class AbstractWebSocketClientService implements WebSocketClientS
         this.webSocketClient = webSocketClient;
     }
 
-    protected void sendPong(@Nullable Session session) {
+    protected void sendPong(@Nullable Session session, ByteBuffer pingPayload) {
         if (session != null && session.isOpen()) {
-            session.sendPong(ByteBuffer.allocate(0),
+            // RFC 6455 5.5.3: the PONG must echo the PING payload (Jetty already hands us a copy)
+            session.sendPong(pingPayload,
                     Callback.from(() -> logger.trace(">> PONG ({})", thing.getUID()), failure -> logger
                             .warn("Could not send PONG! error={} thingUID={}", failure.getMessage(), thing.getUID())));
         }

@@ -207,6 +207,8 @@ public class TeslaEventEndpoint implements Session.Listener.AutoDemanding {
     public void onWebSocketPing(@Nullable ByteBuffer payload) {
         Session session = this.session;
         if (session != null) {
+            // overriding this method disables Jetty's automatic pong reply
+            session.sendPong(payload != null ? payload : ByteBuffer.allocate(0), Callback.NOOP);
             ByteBuffer buffer = ByteBuffer.allocate(8).putLong(System.nanoTime()).flip();
             session.sendPing(buffer, Callback.NOOP);
         }

@@ -96,10 +96,6 @@ public class WebSocketConnectionImpl implements WebSocketConnection, Session.Lis
     }
 
     @Override
-    public void onWebSocketPing(@Nullable ByteBuffer payload) {
-    }
-
-    @Override
     public void onWebSocketPong(@Nullable ByteBuffer payload) {
         lastTimeReceived.set(Instant.now());
     }
