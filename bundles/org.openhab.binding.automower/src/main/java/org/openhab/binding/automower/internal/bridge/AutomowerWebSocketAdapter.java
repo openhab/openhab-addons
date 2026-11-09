@@ -74,8 +74,9 @@ public class AutomowerWebSocketAdapter {
 
         // Subscribe to all messages after connecting
         String subscribeAllMessage = "{\"type\":\"subscribe\",\"topics\":[\"*\"]}";
-        session.sendText(subscribeAllMessage, Callback.NOOP);
-        logger.debug("Sent subscription message to subscribe to all topics");
+        session.sendText(subscribeAllMessage,
+                Callback.from(() -> logger.debug("Sent subscription message to subscribe to all topics"),
+                        e -> logger.error("Failed to send subscription message: {}", e.getMessage())));
 
         // Cancel previous ping task if it exists
         ScheduledFuture<?> connectionTracker = this.connectionTracker;
@@ -98,7 +99,6 @@ public class AutomowerWebSocketAdapter {
     public void onMessage(String message) {
         try {
             if (!message.isBlank()) {
-                unansweredPings = 0;
                 JsonObject event = JsonParser.parseString(message).getAsJsonObject();
                 if (event.has("id")) {
                     String id = event.get("id").getAsString();
@@ -156,7 +156,8 @@ public class AutomowerWebSocketAdapter {
                     if (webSocketSession.isOpen()) {
                         try {
                             // logger.trace("Sending ping ...");
-                            webSocketSession.sendPing(pingPayload, Callback.NOOP);
+                            webSocketSession.sendPing(pingPayload, Callback.from(() -> {
+                            }, e -> logger.warn("Error while sending ping: {}", e.getMessage())));
                             ++unansweredPings;
                         } catch (Exception ex) {
                             logger.warn("Error while sending ping: {}", ex.getMessage());
