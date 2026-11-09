@@ -98,7 +98,6 @@ import com.google.gson.JsonSyntaxException;
  */
 @NonNullByDefault
 public class MiIoBasicHandler extends MiIoAbstractHandler {
-    /** Maximum wait for the answer to a sent value, as the answer is lost when the queue is dropped */
     private static final Duration SENT_VALUE_MAX_AGE = Duration.ofMinutes(1);
     private static final Set<CommandParameterType> LEGACY_PROPERTY_VALUE_TYPES = Set.of(CommandParameterType.NUMBER,
             CommandParameterType.STRING, CommandParameterType.ONOFF, CommandParameterType.ONOFFBOOL,
