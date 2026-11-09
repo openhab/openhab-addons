@@ -333,12 +333,15 @@ For each action:
 `$name$` is replaced in every command text before sending (command, parameters, custom refresh commands).
 Quotes directly around it are removed; a variable without value stays as is.
 
-| Variable                                                                                       | Value                                                                                                                                 |
-|------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------|
-| `deviceId`                                                                                     | Device id of the thing, as quoted string.                                                                                             |
-| `modelId`, `firmwareVersion`, `hardwareVersion`, `wifiFirmware`, `mcuFirmware`, `serialNumber` | Thing properties as quoted string. Any other set thing property works as well.                                                        |
-| `timestamp`                                                                                    | Time of the last update or command in seconds since 1970, as number.                                                                  |
-| property name                                                                                  | Last value read (before transformation), unquoted, so only for numbers and booleans. For a custom refresh channel use the channel id. |
+| Variable                                                                                       | Value                                                                                                                                                    |
+|------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `deviceId`                                                                                     | Device id of the thing, as quoted string.                                                                                                                |
+| `modelId`, `firmwareVersion`, `hardwareVersion`, `wifiFirmware`, `mcuFirmware`, `serialNumber` | Thing properties as quoted string. Any other set thing property works as well.                                                                           |
+| `timestamp`                                                                                    | Time of the last update or command in seconds since 1970, as number.                                                                                     |
+| property name                                                                                  | Last value read (before transformation) or sent, see below. Unquoted, so only for numbers and booleans. For a custom refresh channel use the channel id. |
+
+A command that sets a property of its own channel also stores the sent value: a MIoT `set_properties`, or a legacy `NUMBER` action without condition, in both cases with `$value$` not nested in a parameter.
+Until the device answers that command, values read do not replace it; when the device answers with an error, the value from before the command is restored.
 
 ### Conditions
 
