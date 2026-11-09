@@ -523,6 +523,7 @@
 /bundles/org.openhab.voice.googletts/ @gbicskei
 /bundles/org.openhab.voice.mactts/ @kaikreuzer
 /bundles/org.openhab.voice.marytts/ @kaikreuzer
+/bundles/org.openhab.voice.microwakewordks/ @digitaldan
 /bundles/org.openhab.voice.mimictts/ @dalgwen
 /bundles/org.openhab.voice.openaitts/ @Artur-Fedjukevits
 /bundles/org.openhab.voice.picotts/ @FlorianSW
