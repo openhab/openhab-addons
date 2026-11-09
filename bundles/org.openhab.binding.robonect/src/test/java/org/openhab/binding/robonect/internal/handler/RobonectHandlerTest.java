@@ -1522,12 +1522,12 @@ public class RobonectHandlerTest {
         initializePolling(Map.of());
         RobonectActions actions = new RobonectActions();
         actions.setThingHandler(subject);
-        DirectCommand direct = new DirectCommand(-1000, 1000, 1);
+        DirectCommand direct = new DirectCommand(-100, 100, 1);
         when(mowerApiMock.drive(direct)).thenReturn(ModelParser.parse("{\"successful\":true}", RobonectAnswer.class),
                 ModelParser.parse("{\"successful\":false}", RobonectAnswer.class));
 
-        assertTrue(actions.drive(-1000, 1000, 1));
-        assertThrows(IllegalStateException.class, () -> actions.drive(-1000, 1000, 1));
+        assertTrue(actions.drive(-100, 100, 1));
+        assertThrows(IllegalStateException.class, () -> actions.drive(-100, 100, 1));
         verify(mowerApiMock, times(2)).drive(direct);
     }
 
@@ -1539,7 +1539,7 @@ public class RobonectHandlerTest {
      * @param timeout the duration in milliseconds
      */
     @ParameterizedTest
-    @CsvSource({ ",20,500", "20,,500", "20,20,", "-1001,20,500", "20,1001,500", "20,20,0", "20,20,5001" })
+    @CsvSource({ ",20,500", "20,,500", "20,20,", "-101,20,500", "20,101,500", "20,20,0", "20,20,5001" })
     public void shouldRejectInvalidDirectThingActionInputs(Integer left, Integer right, Integer timeout) {
         RobonectActions actions = new RobonectActions();
         actions.setThingHandler(subject);

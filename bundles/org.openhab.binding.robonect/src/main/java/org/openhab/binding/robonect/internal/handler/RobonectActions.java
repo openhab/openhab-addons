@@ -71,7 +71,7 @@ public class RobonectActions implements ThingActions {
      * @throws IllegalStateException if the mower handler is unavailable or the mower rejects the request
      */
     @RuleAction(label = "@text/action-start-job-label", description = "@text/action-start-job-description")
-    public @ActionOutput(name = "success", label = "@text/action-output-start-job-success-label", type = "java.lang.Boolean") boolean startJob(
+    public @ActionOutput(name = "result", label = "@text/action-output-start-job-success-label", type = "java.lang.Boolean") boolean startJob(
             @ActionInput(name = "durationMinutes", label = "@text/action-input-duration-minutes-label", description = "@text/action-input-duration-minutes-description", required = false) @Nullable Integer durationMinutes,
             @ActionInput(name = "startTime", label = "@text/action-input-start-time-label", description = "@text/action-input-start-time-description", required = false) @Nullable String startTime,
             @ActionInput(name = "endTime", label = "@text/action-input-end-time-label", description = "@text/action-input-end-time-description", required = false) @Nullable String endTime,
@@ -97,15 +97,15 @@ public class RobonectActions implements ThingActions {
     /**
      * Sends a timed direct wheel command to the associated mower.
      *
-     * @param left the left wheel value from -1000 to 1000
-     * @param right the right wheel value from -1000 to 1000
+     * @param left the left wheel speed in percent from -100 to 100
+     * @param right the right wheel speed in percent from -100 to 100
      * @param timeout the duration from 1 to 5000 milliseconds
      * @return {@code true} after the mower accepts the command
      * @throws IllegalArgumentException if a required input is missing or out of range
      * @throws IllegalStateException if the mower is unavailable or rejects the command
      */
     @RuleAction(label = "@text/action-direct-label", description = "@text/action-direct-description")
-    public @ActionOutput(name = "success", label = "@text/action-output-direct-success-label", type = "java.lang.Boolean") boolean drive(
+    public @ActionOutput(name = "result", label = "@text/action-output-direct-success-label", type = "java.lang.Boolean") boolean drive(
             @ActionInput(name = "left", label = "@text/action-input-direct-left-label", description = "@text/action-input-direct-left-description", required = true) @Nullable Integer left,
             @ActionInput(name = "right", label = "@text/action-input-direct-right-label", description = "@text/action-input-direct-right-description", required = true) @Nullable Integer right,
             @ActionInput(name = "timeout", label = "@text/action-input-direct-timeout-label", description = "@text/action-input-direct-timeout-description", required = true) @Nullable Integer timeout) {
@@ -115,6 +115,9 @@ public class RobonectActions implements ThingActions {
         RobonectHandler mower = handler;
         if (mower == null) {
             throw new IllegalStateException("Robonect Thing is unavailable");
+        }
+        if (left < -100 || left > 100 || right < -100 || right > 100) {
+            throw new IllegalArgumentException("Wheel speeds must be between -100 and 100 percent");
         }
         mower.drive(new DirectCommand(left, right, timeout));
         return true;

@@ -26,14 +26,14 @@ public record DirectCommand(int left, int right, int timeout) implements Command
     /**
      * Creates a direct wheel command with the binding's supported limits.
      *
-     * @param left the left wheel value from -1000 to 1000
-     * @param right the right wheel value from -1000 to 1000
+     * @param left the left wheel speed in percent from -100 to 100
+     * @param right the right wheel speed in percent from -100 to 100
      * @param timeout the duration from 1 to 5000 milliseconds
      * @throws IllegalArgumentException if any value is outside its supported range
      */
     public DirectCommand {
-        if (left < -1000 || left > 1000 || right < -1000 || right > 1000) {
-            throw new IllegalArgumentException("Wheel values must be between -1000 and 1000");
+        if (left < -100 || left > 100 || right < -100 || right > 100) {
+            throw new IllegalArgumentException("Wheel speeds must be between -100 and 100 percent");
         }
         if (timeout < 1 || timeout > 5000) {
             throw new IllegalArgumentException("Timeout must be between 1 and 5000 milliseconds");

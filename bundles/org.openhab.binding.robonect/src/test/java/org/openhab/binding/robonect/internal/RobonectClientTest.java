@@ -157,7 +157,7 @@ public class RobonectClientTest {
     /** Checks that a direct wheel request includes both signed values and the millisecond timeout. */
     @Test
     public void shouldSendDirectWheelCommand() throws InterruptedException, ExecutionException, TimeoutException {
-        String url = "http://123.456.789.123/json?cmd=direct&left=-1000&right=1000&timeout=5000";
+        String url = "http://123.456.789.123/json?cmd=direct&left=-100&right=100&timeout=5000";
         when(httpClientMock.newRequest(url)).thenReturn(requestMock);
         when(requestMock.method(HttpMethod.GET)).thenReturn(requestMock);
         when(requestMock.timeout(30000L, TimeUnit.MILLISECONDS)).thenReturn(requestMock);
@@ -165,7 +165,7 @@ public class RobonectClientTest {
         when(responseMock.getEncoding()).thenReturn("utf8");
         when(responseMock.getContentAsString()).thenReturn("{\"successful\":true}");
 
-        assertTrue(subject.mower().drive(new DirectCommand(-1000, 1000, 5000)).isSuccessful());
+        assertTrue(subject.mower().drive(new DirectCommand(-100, 100, 5000)).isSuccessful());
         verify(httpClientMock).newRequest(url);
     }
 

@@ -170,8 +170,12 @@ final class RobonectMowerHandler {
         }
         DirectCommand direct;
         try {
-            direct = new DirectCommand(readDirectSetting(configuration, "left"),
-                    readDirectSetting(configuration, "right"), readDirectSetting(configuration, "timeout"));
+            int left = readDirectSetting(configuration, "left");
+            int right = readDirectSetting(configuration, "right");
+            if (left < -100 || left > 100 || right < -100 || right > 100) {
+                throw new IllegalArgumentException("Wheel speeds must be between -100 and 100 percent");
+            }
+            direct = new DirectCommand(left, right, readDirectSetting(configuration, "timeout"));
         } catch (IllegalArgumentException e) {
             logger.debug("Invalid direct wheel channel configuration: {}", e.getMessage());
             return;
