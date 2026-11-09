@@ -1,0 +1,52 @@
+{
+  "code": "00000",
+  "description": "Success",
+  "traceId": "0000000000000000",
+  "data": {
+    "total": 2,
+    "deviceDetailList": [
+      {
+        "deviceType": "INVERTER",
+        "total": 2,
+        "statusDetailList": [
+          {
+            "status": 5,
+            "total": 1,
+            "snList": [
+              "99999MSU99XX0001"
+            ],
+            "detailMap": {
+              "99999MSU99XX0001": {
+                "sn": "99999MSU99XX0001",
+                "name": "Inverter 1",
+                "model": "GW8500",
+                "deviceType": "INVERTER",
+                "status": 5
+              }
+            }
+          },
+          {
+            "status": -1,
+            "total": 1,
+            "snList": [
+              "99999MSU99XX0002"
+            ]
+          }
+        ]
+      },
+      {
+        "deviceType": "SMART_METER",
+        "total": 1,
+        "statusDetailList": [
+          {
+            "status": 1,
+            "total": 1,
+            "snList": [
+              "99999SMT99XX0003"
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

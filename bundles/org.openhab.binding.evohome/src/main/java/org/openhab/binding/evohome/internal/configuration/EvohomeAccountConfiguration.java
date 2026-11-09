@@ -26,4 +26,5 @@ public class EvohomeAccountConfiguration {
     public String password = "";
     public String applicationId = "";
     public int refreshInterval;
+    public int scheduleRefreshInterval = 60;
 }

@@ -15,6 +15,7 @@ package org.openhab.binding.evohome.internal;
 import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.evohome.internal.api.EvohomeApiClientException;
 
 /**
  * Provides an interface for a delegate that can throw a timeout
@@ -25,5 +26,5 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public interface RunnableWithTimeout {
 
-    void run() throws TimeoutException;
+    void run() throws TimeoutException, EvohomeApiClientException;
 }

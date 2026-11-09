@@ -20,13 +20,14 @@
 				],
 				"category": "switch",
 				"tags": [
-					"Switch"
+					"Switch",
+					"Power"
 				]
 			},
 			{
 				"property": "Humidifier_Gear",
-				"friendlyName": "Mode",
-				"channel": "mode",
+				"friendlyName": "Fan Level",
+				"channel": "fan_level",
 				"type": "Number",
 				"stateDescription": {
 					"options": [
@@ -44,7 +45,7 @@
 						},
 						{
 							"value": "4",
-							"label": "Humidity "
+							"label": "Constant Humidity"
 						}
 					]
 				},
@@ -55,7 +56,12 @@
 						"parameterType": "NUMBER"
 					}
 				],
-				"readmeComment": "Value mapping `[\"1\"\u003d\"Low\",\"2\"\u003d\"Medium\",\"3\"\u003d\"High\",\"4\"\u003d\"Humidity \"]`"
+				"category": "fan",
+				"tags": [
+					"Control",
+					"Mode"
+				],
+				"readmeComment": "Value mapping `[\"1\"\u003d\"Low\",\"2\"\u003d\"Medium\",\"3\"\u003d\"High\",\"4\"\u003d\"Constant Humidity\"]`"
 			},
 			{
 				"property": "Humidity_Value",
@@ -67,7 +73,7 @@
 					"minimum": 0,
 					"maximum": 100,
 					"step": 1,
-					"pattern": "%.0f %unit%",
+					"pattern": "%.0f %%",
 					"readOnly": true
 				},
 				"refresh": true,
@@ -80,16 +86,15 @@
 			},
 			{
 				"property": "HumiSet_Value",
-				"friendlyName": "Humidity Setting",
-				"channel": "humidity_set",
+				"friendlyName": "Target Humidity",
+				"channel": "target_humidity",
 				"type": "Number:Dimensionless",
 				"unit": "PERCENT",
 				"stateDescription": {
-					"minimum": 0,
-					"maximum": 100,
+					"minimum": 40,
+					"maximum": 70,
 					"step": 1,
-					"pattern": "%.0f %unit%",
-					"readOnly": false
+					"pattern": "%.0f %%"
 				},
 				"refresh": true,
 				"actions": [
@@ -105,8 +110,26 @@
 				]
 			},
 			{
+				"property": "TemperatureValue",
+				"friendlyName": "Temperature",
+				"channel": "temperature",
+				"type": "Number:Temperature",
+				"unit": "CELSIUS",
+				"stateDescription": {
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "temperature",
+				"tags": [
+					"Measurement",
+					"Temperature"
+				]
+			},
+			{
 				"property": "Led_State",
-				"friendlyName": "LED indicator Light",
+				"friendlyName": "Indicator Light",
 				"channel": "led",
 				"type": "Switch",
 				"refresh": true,
@@ -115,12 +138,17 @@
 						"command": "SetLedState",
 						"parameterType": "ONOFFNUMBER"
 					}
+				],
+				"category": "light",
+				"tags": [
+					"Switch",
+					"Light"
 				]
 			},
 			{
 				"property": "TipSound_State",
-				"friendlyName": "Notification Sounds",
-				"channel": "sound",
+				"friendlyName": "Notification Sound",
+				"channel": "buzzer",
 				"type": "Switch",
 				"refresh": true,
 				"actions": [
@@ -128,20 +156,68 @@
 						"command": "SetTipSound_Status",
 						"parameterType": "ONOFFNUMBER"
 					}
+				],
+				"category": "soundvolume",
+				"tags": [
+					"Switch",
+					"Enabled"
 				]
 			},
 			{
-				"property": "watertankstatus",
-				"friendlyName": "Watertank Status",
-				"channel": "watertankstatus",
+				"property": "waterstatus",
+				"friendlyName": "Water",
+				"channel": "water_status",
 				"type": "Number",
 				"stateDescription": {
-					"pattern": "%.0f",
-					"readOnly": true
+					"readOnly": true,
+					"options": [
+						{
+							"value": "0",
+							"label": "No Water"
+						},
+						{
+							"value": "1",
+							"label": "Normal"
+						}
+					]
 				},
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"category": "water",
+				"tags": [
+					"Status",
+					"Water"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"No Water\",\"1\"\u003d\"Normal\"]`"
+			},
+			{
+				"property": "watertankstatus",
+				"friendlyName": "Water Tank",
+				"channel": "water_tank",
+				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "0",
+							"label": "Removed"
+						},
+						{
+							"value": "1",
+							"label": "Installed"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "water",
+				"tags": [
+					"Status",
+					"Water"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Removed\",\"1\"\u003d\"Installed\"]`"
 			}
-		]
+		],
+		"experimental": false
 	}
 }

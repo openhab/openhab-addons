@@ -1,0 +1,34 @@
+{
+  "id": 18,
+  "type": "event",
+  "event": {
+    "event_type": "state_changed",
+    "data": {
+      "entity_id": "binary_sensor.outside_temperature_battery_charging",
+      "old_state": null,
+      "new_state": {
+        "entity_id": "binary_sensor.outside_temperature_battery_charging",
+        "state": "off",
+        "attributes": {
+          "device_class": "battery_charging",
+          "friendly_name": "Outside Temperature Battery Charging"
+        },
+        "last_changed": "2026-09-21T12:46:27.328519+00:00",
+        "last_reported": "2026-09-21T12:46:27.372272+00:00",
+        "last_updated": "2026-09-21T12:46:27.328519+00:00",
+        "context": {
+          "id": "01M3201RG0WF9EE44GR0J6NCEX",
+          "parent_id": null,
+          "user_id": null
+        }
+      }
+    },
+    "origin": "LOCAL",
+    "time_fired": "2026-09-19T00:00:00.000000+00:00",
+    "context": {
+      "id": "01HXXXXXXX",
+      "parent_id": null,
+      "user_id": null
+    }
+  }
+}

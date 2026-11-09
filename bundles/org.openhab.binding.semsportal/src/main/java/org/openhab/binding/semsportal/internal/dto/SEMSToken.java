@@ -12,70 +12,53 @@
  */
 package org.openhab.binding.semsportal.internal.dto;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
- * A token is returned in a successful {@link LoginRequest} and is needed to authorize any subsequent requests.
+ * The session token of the portal. It is sent as a header with every request. Before logging in it is an empty token
+ * that only names the client type. The token received at login also tells the gateway to send the other requests to.
+ * <p>
+ * The portal gives the token as JSON and expects it back as it was received, like its web application does. Gson reads
+ * and writes all fields, which is why most of them have no getter. As far as tested, the portal only requires uid,
+ * token and client; the other fields are returned for compatibility.
  *
  * @author Iwan Bron - Initial contribution
+ * @author Julio Vilmar Gesser - Migrated to the SEMS+ API
  */
+@SuppressWarnings("unused") // the fields are used by Gson
+@NonNullByDefault
 public class SEMSToken {
-    private String uid;
+    private String uid = "";
     private long timestamp;
-    private String token;
+    private String token = "";
     private String client;
-    private String version;
-    private String language;
+    private String version = "";
+    private String language = "en";
+    private @Nullable String api;
+    private @Nullable String region;
 
-    public SEMSToken(String version, String client, String language) {
-        this.version = version;
+    public SEMSToken(String client) {
         this.client = client;
-        this.language = language;
     }
 
     public String getUid() {
         return uid;
     }
 
-    public void setUid(String uid) {
-        this.uid = uid;
-    }
-
-    public long getTimestamp() {
-        return timestamp;
-    }
-
-    public void setTimestamp(long timestamp) {
-        this.timestamp = timestamp;
-    }
-
     public String getToken() {
         return token;
-    }
-
-    public void setToken(String token) {
-        this.token = token;
     }
 
     public String getClient() {
         return client;
     }
 
-    public void setClient(String client) {
-        this.client = client;
-    }
-
-    public String getVersion() {
-        return version;
-    }
-
-    public void setVersion(String version) {
-        this.version = version;
-    }
-
-    public String getLanguage() {
-        return language;
-    }
-
-    public void setLanguage(String language) {
-        this.language = language;
+    /**
+     * @return the base url of the regional gateway that the other requests have to be sent to. Only available in the
+     *         token received at login.
+     */
+    public @Nullable String getApi() {
+        return api;
     }
 }

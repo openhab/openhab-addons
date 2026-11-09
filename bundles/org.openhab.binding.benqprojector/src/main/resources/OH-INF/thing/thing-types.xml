@@ -10,7 +10,10 @@
 		<semantic-equipment-tag>Projector</semantic-equipment-tag>
 
 		<channels>
-			<channel id="power" typeId="system.power"/>
+			<channel id="power" typeId="system.power">
+				<label>Power</label>
+				<description>Powers the projector on or off</description>
+			</channel>
 			<channel id="source" typeId="source"/>
 			<channel id="picturemode" typeId="picturemode"/>
 			<channel id="aspectratio" typeId="aspectratio"/>
@@ -21,7 +24,7 @@
 		</channels>
 
 		<properties>
-			<property name="thingTypeVersion">1</property>
+			<property name="thingTypeVersion">2</property>
 		</properties>
 
 		<config-description>
@@ -47,7 +50,10 @@
 		<semantic-equipment-tag>Projector</semantic-equipment-tag>
 
 		<channels>
-			<channel id="power" typeId="system.power"/>
+			<channel id="power" typeId="system.power">
+				<label>Power</label>
+				<description>Powers the projector on or off</description>
+			</channel>
 			<channel id="source" typeId="source"/>
 			<channel id="picturemode" typeId="picturemode"/>
 			<channel id="aspectratio" typeId="aspectratio"/>
@@ -58,7 +64,7 @@
 		</channels>
 
 		<properties>
-			<property name="thingTypeVersion">1</property>
+			<property name="thingTypeVersion">2</property>
 		</properties>
 
 		<config-description>

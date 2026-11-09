@@ -1,0 +1,20 @@
+{
+  "id": 10,
+  "type": "event",
+  "event": {
+    "a": {
+      "camera.demo_camera_without_stream": {
+        "s": "streaming",
+        "a": {
+          "access_token": "26c9f60b5b047a5d6f5b9b1975b19423f8e06806e28bb3390471c57ac39a2655",
+          "entity_picture": "/api/camera_proxy/camera.demo_camera_without_stream?token=26c9f60b5b047a5d6f5b9b1975b19423f8e06806e28bb3390471c57ac39a2655",
+          "friendly_name": "Demo camera without stream",
+          "supported_features": 1
+        },
+        "c": "01M320AX2ZM4FW9KGJQM28SGRQ",
+        "lc": 1789994787.329433,
+        "lu": 1789995086.9437122
+      }
+    }
+  }
+}

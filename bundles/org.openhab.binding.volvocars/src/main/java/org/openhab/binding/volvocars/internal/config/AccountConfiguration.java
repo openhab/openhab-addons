@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.volvocars.internal.config;
 
+import static org.openhab.binding.volvocars.internal.VolvoCarsBindingConstants.*;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
@@ -29,5 +31,20 @@ public class AccountConfiguration {
 
     public boolean isComplete() {
         return !clientId.isBlank() && !clientSecret.isBlank() && !apiKey.isBlank() && !redirectUri.isBlank();
+    }
+
+    /**
+     * @return true if the application was registered with the legacy Volvo ID service
+     */
+    public boolean isLegacyClient() {
+        return clientId.startsWith(LEGACY_CLIENT_ID_PREFIX);
+    }
+
+    public String authorizeUrl() {
+        return isLegacyClient() ? LEGACY_AUTHORIZE_URL : AUTHORIZE_URL;
+    }
+
+    public String tokenUrl() {
+        return isLegacyClient() ? LEGACY_TOKEN_URL : TOKEN_URL;
     }
 }

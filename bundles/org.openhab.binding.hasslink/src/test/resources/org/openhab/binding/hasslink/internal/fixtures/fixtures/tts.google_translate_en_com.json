@@ -1,0 +1,33 @@
+{
+  "id": 18,
+  "type": "event",
+  "event": {
+    "event_type": "state_changed",
+    "data": {
+      "entity_id": "tts.google_translate_en_com",
+      "old_state": null,
+      "new_state": {
+        "entity_id": "tts.google_translate_en_com",
+        "state": "unknown",
+        "attributes": {
+          "friendly_name": "Google Translate en com"
+        },
+        "last_changed": "2026-09-21T12:47:06.781274+00:00",
+        "last_reported": "2026-09-21T12:47:06.781436+00:00",
+        "last_updated": "2026-09-21T12:47:06.781274+00:00",
+        "context": {
+          "id": "01M3202Z0XZKTNT330RAX9SWSN",
+          "parent_id": null,
+          "user_id": null
+        }
+      }
+    },
+    "origin": "LOCAL",
+    "time_fired": "2026-09-19T00:00:00.000000+00:00",
+    "context": {
+      "id": "01HXXXXXXX",
+      "parent_id": null,
+      "user_id": null
+    }
+  }
+}

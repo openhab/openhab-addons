@@ -1,0 +1,23 @@
+{
+  "id": 10,
+  "type": "event",
+  "event": {
+    "a": {
+      "humidifier.dehumidifier": {
+        "s": "on",
+        "a": {
+          "min_humidity": 0,
+          "max_humidity": 100,
+          "action": "drying",
+          "current_humidity": 59.4,
+          "humidity": 54.2,
+          "device_class": "dehumidifier",
+          "friendly_name": "Dehumidifier",
+          "supported_features": 0
+        },
+        "c": "01M3201RG8XRPCX54EXHGV188T",
+        "lc": 1789994787.3367991
+      }
+    }
+  }
+}

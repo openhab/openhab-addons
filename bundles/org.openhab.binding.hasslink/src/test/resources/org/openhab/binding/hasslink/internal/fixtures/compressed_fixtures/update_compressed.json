@@ -1,0 +1,28 @@
+{
+  "id": 10,
+  "type": "event",
+  "event": {
+    "a": {
+      "update.demo_update_no_install": {
+        "s": "on",
+        "a": {
+          "auto_update": false,
+          "display_precision": 0,
+          "installed_version": "1.0.0",
+          "in_progress": false,
+          "latest_version": "1.0.1",
+          "release_summary": "Awesome update, fixing everything!",
+          "release_url": "https://www.example.com/release/1.0.1",
+          "skipped_version": null,
+          "title": "Awesomesoft Inc.",
+          "update_percentage": null,
+          "entity_picture": "/api/brands/integration/demo/icon.png",
+          "friendly_name": "Demo Update No Install",
+          "supported_features": 0
+        },
+        "c": "01M3201RGXK5FAWCNFNRVBA7ZQ",
+        "lc": 1789994787.3573263
+      }
+    }
+  }
+}

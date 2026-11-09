@@ -1,0 +1,34 @@
+{
+  "id": 18,
+  "type": "event",
+  "event": {
+    "event_type": "state_changed",
+    "data": {
+      "entity_id": "binary_sensor.basement_floor_wet",
+      "old_state": null,
+      "new_state": {
+        "entity_id": "binary_sensor.basement_floor_wet",
+        "state": "off",
+        "attributes": {
+          "device_class": "moisture",
+          "friendly_name": "Basement Floor Wet"
+        },
+        "last_changed": "2026-09-21T12:46:27.327986+00:00",
+        "last_reported": "2026-09-21T12:46:27.372215+00:00",
+        "last_updated": "2026-09-21T12:46:27.327986+00:00",
+        "context": {
+          "id": "01M3201RFZYJ40THSY4RQ03YHJ",
+          "parent_id": null,
+          "user_id": null
+        }
+      }
+    },
+    "origin": "LOCAL",
+    "time_fired": "2026-09-19T00:00:00.000000+00:00",
+    "context": {
+      "id": "01HXXXXXXX",
+      "parent_id": null,
+      "user_id": null
+    }
+  }
+}

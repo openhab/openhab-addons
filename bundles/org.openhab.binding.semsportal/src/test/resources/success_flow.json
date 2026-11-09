@@ -1,0 +1,21 @@
+{
+  "code": "00000",
+  "description": "Success",
+  "traceId": "0000000000000000",
+  "data": {
+    "id": "00000000-0000-0000-0000-0000000000a1",
+    "name": "Example station",
+    "status": "1",
+    "isGoodweInverter": true,
+    "flows": {
+      "pSystem": [
+        "pGrid",
+        "pConsum"
+      ]
+    },
+    "pSystem": 2.044,
+    "pAc": 2.044,
+    "consumFlag": false,
+    "refreshTime": "2026-11-01T10:44:00"
+  }
+}

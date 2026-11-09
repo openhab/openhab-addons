@@ -12,12 +12,15 @@
  */
 package org.openhab.binding.evohome.internal.api.models.v2.dto.response;
 
+import org.eclipse.jdt.annotation.Nullable;
+
 import com.google.gson.annotations.SerializedName;
 
 /**
  * Response model for the time zone
  *
  * @author Jasper van Zuijlen - Initial contribution
+ * @author Kovacs Istvan - Schedule timezone metadata
  *
  */
 public class TimeZone {
@@ -29,11 +32,19 @@ public class TimeZone {
     private String displayName;
 
     @SerializedName("offsetMinutes")
-    private int offsetMinutes;
+    private Integer offsetMinutes;
 
     @SerializedName("currentOffsetMinutes")
     private int currentOffsetMinutes;
 
     @SerializedName("supportsDaylightSaving")
     private boolean supportsDaylightSaving;
+
+    public @Nullable String getTimeZoneId() {
+        return timeZoneId;
+    }
+
+    public @Nullable Integer getOffsetMinutes() {
+        return offsetMinutes;
+    }
 }

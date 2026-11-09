@@ -1,0 +1,18 @@
+{
+  "id": 10,
+  "type": "event",
+  "event": {
+    "a": {
+      "vacuum.demo_vacuum_4_fourth_floor": {
+        "s": "docked",
+        "a": {
+          "cleaned_area": 0,
+          "friendly_name": "Demo vacuum 4 fourth floor",
+          "supported_features": 0
+        },
+        "c": "01M3201RH0R1B9X1QH1KKE9NH5",
+        "lc": 1789994787.360227
+      }
+    }
+  }
+}

@@ -10,7 +10,6 @@
 				"channel": "power",
 				"type": "Switch",
 				"refresh": true,
-				"ChannelGroup": "Power",
 				"actions": [
 					{
 						"command": "set_power",
@@ -19,7 +18,8 @@
 				],
 				"category": "switch",
 				"tags": [
-					"Switch"
+					"Switch",
+					"Power"
 				]
 			},
 			{
@@ -27,8 +27,23 @@
 				"friendlyName": "Mode",
 				"channel": "mode",
 				"type": "String",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "auto",
+							"label": "Target Humidity"
+						},
+						{
+							"value": "on",
+							"label": "Continuous"
+						},
+						{
+							"value": "dry_cloth",
+							"label": "Dry Clothes"
+						}
+					]
+				},
 				"refresh": true,
-				"ChannelGroup": "actions",
 				"actions": [
 					{
 						"command": "set_mode",
@@ -38,83 +53,154 @@
 						}
 					}
 				],
+				"category": "fan",
 				"tags": [
-					"Control"
-				]
+					"Control",
+					"Mode"
+				],
+				"readmeComment": "Value mapping `[\"auto\"\u003d\"Target Humidity\",\"on\"\u003d\"Continuous\",\"dry_cloth\"\u003d\"Dry Clothes\"]`"
 			},
 			{
 				"property": "auto",
-				"friendlyName": "Auto humidity",
-				"channel": "autohumidity",
+				"friendlyName": "Target Humidity",
+				"channel": "target_humidity",
 				"type": "Number:Dimensionless",
 				"unit": "PERCENT",
+				"stateDescription": {
+					"pattern": "%.0f %%",
+					"options": [
+						{
+							"value": "40",
+							"label": "40%"
+						},
+						{
+							"value": "50",
+							"label": "50%"
+						},
+						{
+							"value": "60",
+							"label": "60%"
+						}
+					]
+				},
 				"refresh": true,
-				"ChannelGroup": "actions",
 				"actions": [
 					{
 						"command": "set_auto",
 						"parameterType": "NUMBER"
 					}
-				]
+				],
+				"category": "humidity",
+				"tags": [
+					"Setpoint",
+					"Humidity"
+				],
+				"readmeComment": "Value mapping `[\"40\"\u003d\"40%\",\"50\"\u003d\"50%\",\"60\"\u003d\"60%\"]`"
 			},
 			{
-				"property": "fan_speed",
-				"friendlyName": "Fan Speed",
-				"channel": "fanspeed",
+				"property": "fan_st",
+				"friendlyName": "Fan Level",
+				"channel": "fan_level",
 				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "1",
+							"label": "Level 1"
+						},
+						{
+							"value": "2",
+							"label": "Level 2"
+						},
+						{
+							"value": "3",
+							"label": "Level 3"
+						}
+					]
+				},
 				"refresh": true,
-				"ChannelGroup": "actions",
 				"actions": [
 					{
 						"command": "set_fan_level",
 						"parameterType": "NUMBER"
 					}
 				],
-				"category": "fan_box",
+				"category": "fan",
 				"tags": [
-					"Setpoint"
+					"Control",
+					"Speed"
+				],
+				"readmeComment": "Only in the modes target humidity and continuous; Value mapping `[\"1\"\u003d\"Level 1\",\"2\"\u003d\"Level 2\",\"3\"\u003d\"Level 3\"]`"
+			},
+			{
+				"property": "fan_speed",
+				"friendlyName": "Fan Speed",
+				"channel": "fan_speed",
+				"type": "Number",
+				"stateDescription": {
+					"pattern": "%.0f",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "fan",
+				"tags": [
+					"Measurement",
+					"Speed"
 				]
 			},
 			{
 				"property": "buzzer",
-				"friendlyName": "Buzzer",
+				"friendlyName": "Notification Sound",
 				"channel": "buzzer",
 				"type": "Switch",
 				"refresh": true,
-				"ChannelGroup": "actions",
 				"actions": [
 					{
 						"command": "set_buzzer",
 						"parameterType": "ONOFF"
 					}
+				],
+				"category": "soundvolume",
+				"tags": [
+					"Switch",
+					"Enabled"
 				]
 			},
 			{
 				"property": "led",
-				"friendlyName": "LED",
+				"friendlyName": "Indicator Light",
 				"channel": "led",
 				"type": "Switch",
 				"refresh": true,
-				"ChannelGroup": "actions",
 				"actions": [
 					{
 						"command": "set_led",
 						"parameterType": "ONOFF"
 					}
+				],
+				"category": "light",
+				"tags": [
+					"Switch",
+					"Light"
 				]
 			},
 			{
 				"property": "child_lock",
 				"friendlyName": "Child Lock",
-				"channel": "childlock",
+				"channel": "child_lock",
 				"type": "Switch",
 				"refresh": true,
-				"ChannelGroup": "actions",
 				"actions": [
 					{
 						"command": "set_child_lock",
 						"parameterType": "ONOFF"
 					}
+				],
+				"category": "lock",
+				"tags": [
+					"Switch",
+					"Enabled"
 				]
 			},
 			{
@@ -123,8 +209,11 @@
 				"channel": "humidity",
 				"type": "Number:Dimensionless",
 				"unit": "PERCENT",
+				"stateDescription": {
+					"pattern": "%.0f %%",
+					"readOnly": true
+				},
 				"refresh": true,
-				"ChannelGroup": "Status",
 				"actions": [],
 				"category": "humidity",
 				"tags": [
@@ -138,8 +227,11 @@
 				"channel": "temperature",
 				"type": "Number:Temperature",
 				"unit": "CELSIUS",
+				"stateDescription": {
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
 				"refresh": true,
-				"ChannelGroup": "Status",
 				"actions": [],
 				"category": "temperature",
 				"tags": [
@@ -149,52 +241,67 @@
 			},
 			{
 				"property": "tank_full",
-				"friendlyName": "Tank Full",
-				"channel": "tankfull",
+				"friendlyName": "Water Tank Full",
+				"channel": "water_tank_full",
 				"type": "Switch",
+				"stateDescription": {
+					"readOnly": true
+				},
 				"refresh": true,
-				"ChannelGroup": "Status",
-				"actions": []
+				"actions": [],
+				"category": "water",
+				"tags": [
+					"Alarm",
+					"Water"
+				]
 			},
 			{
 				"property": "compressor_status",
-				"friendlyName": "Compressor Status",
-				"channel": "compressorstatus",
+				"friendlyName": "Compressor",
+				"channel": "compressor",
 				"type": "Switch",
+				"stateDescription": {
+					"readOnly": true
+				},
 				"refresh": true,
-				"ChannelGroup": "Status",
-				"actions": []
+				"actions": [],
+				"category": "status",
+				"tags": [
+					"Status",
+					"Power"
+				]
 			},
 			{
 				"property": "defrost_status",
-				"friendlyName": "Defrost Status",
-				"channel": "defroststatus",
+				"friendlyName": "Defrosting",
+				"channel": "defrost",
 				"type": "Switch",
+				"stateDescription": {
+					"readOnly": true
+				},
 				"refresh": true,
-				"ChannelGroup": "Status",
-				"actions": []
-			},
-			{
-				"property": "fan_st",
-				"friendlyName": "Fan St",
-				"channel": "fanst",
-				"type": "Number",
-				"refresh": true,
-				"ChannelGroup": "Status",
-				"actions": []
+				"actions": [],
+				"category": "status",
+				"tags": [
+					"Status"
+				]
 			},
 			{
 				"property": "alarm",
 				"friendlyName": "Alarm",
 				"channel": "alarm",
 				"type": "String",
+				"stateDescription": {
+					"readOnly": true
+				},
 				"refresh": true,
-				"ChannelGroup": "Status",
 				"actions": [],
+				"category": "alarm",
 				"tags": [
 					"Alarm"
 				]
 			}
-		]
+		],
+		"experimental": false
 	}
 }

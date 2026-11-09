@@ -71,6 +71,7 @@
 /bundles/org.openhab.binding.buienradar/ @gedejong
 /bundles/org.openhab.binding.caddx/ @jossuar
 /bundles/org.openhab.binding.caldav/ @AndreasVilippus
+/bundles/org.openhab.binding.candy/ @magx2
 /bundles/org.openhab.binding.casokitchen/ @weymann
 /bundles/org.openhab.binding.cbus/ @jpharvey
 /bundles/org.openhab.binding.chatgpt/ @kaikreuzer
@@ -165,6 +166,7 @@
 /bundles/org.openhab.binding.guntamatic/ @MikeTheTux
 /bundles/org.openhab.binding.haassohnpelletstove/ @chingon007
 /bundles/org.openhab.binding.harmonyhub/ @digitaldan
+/bundles/org.openhab.binding.hasslink/ @jimtng
 /bundles/org.openhab.binding.haywardomnilogic/ @matchews
 /bundles/org.openhab.binding.hccrubbishcollection/ @cossey
 /bundles/org.openhab.binding.hdanywhere/ @kgoderis
@@ -271,6 +273,7 @@
 /bundles/org.openhab.binding.modbus.sungrow/ @soenkekueper
 /bundles/org.openhab.binding.modbus.sunspec/ @mrbig
 /bundles/org.openhab.binding.monopriceaudio/ @mlobstein
+/bundles/org.openhab.binding.motionblinds/ @san4esmc
 /bundles/org.openhab.binding.mpd/ @stefanroellin
 /bundles/org.openhab.binding.mqtt/ @ccutrer
 /bundles/org.openhab.binding.mqtt.awtrixlight/ @DrRSatzteil
@@ -372,7 +375,7 @@
 /bundles/org.openhab.binding.satel/ @druciak
 /bundles/org.openhab.binding.sbus/ @cipianpascu
 /bundles/org.openhab.binding.sedif/ @lo92fr
-/bundles/org.openhab.binding.semsportal/ @itb3
+/bundles/org.openhab.binding.semsportal/ @itb3 @jgesser
 /bundles/org.openhab.binding.senechome/ @vctender @KorbinianP @eguib
 /bundles/org.openhab.binding.seneye/ @nikotanghe
 /bundles/org.openhab.binding.sensebox/ @hakan42

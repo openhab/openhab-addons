@@ -1,0 +1,36 @@
+{
+  "id": 10,
+  "type": "event",
+  "event": {
+    "a": {
+      "light.entrance_color_white_lights": {
+        "s": "on",
+        "a": {
+          "supported_color_modes": [
+            "hs",
+            "white"
+          ],
+          "color_mode": "hs",
+          "brightness": 180,
+          "hs_color": [
+            345,
+            75
+          ],
+          "rgb_color": [
+            255,
+            64,
+            112
+          ],
+          "xy_color": [
+            0.588,
+            0.274
+          ],
+          "friendly_name": "Entrance Color + White Lights",
+          "supported_features": 0
+        },
+        "c": "01M3201RGB3BW3K9AMS4A9ZTC3",
+        "lc": 1789994787.3390374
+      }
+    }
+  }
+}

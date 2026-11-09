@@ -1,0 +1,34 @@
+{
+  "id": 18,
+  "type": "event",
+  "event": {
+    "event_type": "state_changed",
+    "data": {
+      "entity_id": "lock.poorly_installed_door",
+      "old_state": null,
+      "new_state": {
+        "entity_id": "lock.poorly_installed_door",
+        "state": "unlocked",
+        "attributes": {
+          "friendly_name": "Poorly Installed Door",
+          "supported_features": 0
+        },
+        "last_changed": "2026-09-21T12:46:27.339524+00:00",
+        "last_reported": "2026-09-21T12:46:27.339524+00:00",
+        "last_updated": "2026-09-21T12:46:27.339524+00:00",
+        "context": {
+          "id": "01M3201RGBFRKVV5465ND7QFS2",
+          "parent_id": null,
+          "user_id": null
+        }
+      }
+    },
+    "origin": "LOCAL",
+    "time_fired": "2026-09-19T00:00:00.000000+00:00",
+    "context": {
+      "id": "01HXXXXXXX",
+      "parent_id": null,
+      "user_id": null
+    }
+  }
+}

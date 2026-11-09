@@ -1,0 +1,24 @@
+{
+  "id": 10,
+  "type": "event",
+  "event": {
+    "a": {
+      "zone.home": {
+        "s": "0",
+        "a": {
+          "latitude": 52.3731339,
+          "longitude": 4.8903147,
+          "radius": 100,
+          "passive": false,
+          "persons": [],
+          "editable": true,
+          "icon": "mdi:home",
+          "friendly_name": "Home"
+        },
+        "c": "01M3202YVRBN0V7S5XR1QJ804E",
+        "lc": 1789994786.950202,
+        "lu": 1789994826.6163561
+      }
+    }
+  }
+}

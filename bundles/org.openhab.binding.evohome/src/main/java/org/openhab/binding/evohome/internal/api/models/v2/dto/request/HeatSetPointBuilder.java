@@ -12,10 +12,13 @@
  */
 package org.openhab.binding.evohome.internal.api.models.v2.dto.request;
 
+import java.time.Instant;
+
 /**
  * Builder for heat set point API requests
  *
  * @author Jasper van Zuijlen - Initial contribution
+ * @author Kovacs Istvan - Temporary override requests
  *
  */
 public class HeatSetPointBuilder implements RequestBuilder<HeatSetPoint> {
@@ -23,6 +26,7 @@ public class HeatSetPointBuilder implements RequestBuilder<HeatSetPoint> {
     private double setPoint;
     private boolean hasSetPoint;
     private boolean cancelSetPoint;
+    private Instant until;
 
     /**
      * Creates a new heat set point command
@@ -36,7 +40,7 @@ public class HeatSetPointBuilder implements RequestBuilder<HeatSetPoint> {
             return new HeatSetPoint();
         }
         if (hasSetPoint) {
-            return new HeatSetPoint(setPoint);
+            return until == null ? new HeatSetPoint(setPoint) : new HeatSetPoint(setPoint, until);
         }
         return null;
     }
@@ -44,6 +48,14 @@ public class HeatSetPointBuilder implements RequestBuilder<HeatSetPoint> {
     public HeatSetPointBuilder setSetPoint(double setPoint) {
         this.hasSetPoint = true;
         this.setPoint = setPoint;
+        this.until = null;
+        this.cancelSetPoint = false;
+        return this;
+    }
+
+    public HeatSetPointBuilder setTemporarySetPoint(double setPoint, Instant until) {
+        setSetPoint(setPoint);
+        this.until = until;
         return this;
     }
 

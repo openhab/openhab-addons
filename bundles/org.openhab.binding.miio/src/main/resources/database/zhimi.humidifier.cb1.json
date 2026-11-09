@@ -19,16 +19,36 @@
 				],
 				"category": "switch",
 				"tags": [
-					"Switch"
+					"Switch",
+					"Power"
 				]
 			},
 			{
 				"property": "mode",
-				"friendlyName": "Humidifier Mode",
-				"channel": "humidifierMode",
+				"friendlyName": "Mode",
+				"channel": "mode",
 				"type": "String",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "silent",
+							"label": "Silent"
+						},
+						{
+							"value": "medium",
+							"label": "Medium"
+						},
+						{
+							"value": "high",
+							"label": "High"
+						},
+						{
+							"value": "auto",
+							"label": "Auto"
+						}
+					]
+				},
 				"refresh": true,
-				"ChannelGroup": "actions",
 				"actions": [
 					{
 						"command": "set_mode",
@@ -38,10 +58,12 @@
 						}
 					}
 				],
+				"category": "fan",
 				"tags": [
-					"Measurement",
-					"Humidity"
-				]
+					"Control",
+					"Mode"
+				],
+				"readmeComment": "Value mapping `[\"silent\"\u003d\"Silent\",\"medium\"\u003d\"Medium\",\"high\"\u003d\"High\",\"auto\"\u003d\"Auto\"]`"
 			},
 			{
 				"property": "humidity",
@@ -49,8 +71,11 @@
 				"channel": "humidity",
 				"type": "Number:Dimensionless",
 				"unit": "PERCENT",
+				"stateDescription": {
+					"pattern": "%.0f %%",
+					"readOnly": true
+				},
 				"refresh": true,
-				"ChannelGroup": "Status",
 				"actions": [],
 				"category": "humidity",
 				"tags": [
@@ -60,109 +85,191 @@
 			},
 			{
 				"property": "limit_hum",
-				"friendlyName": "Humidity Set",
-				"channel": "setHumidity",
+				"friendlyName": "Target Humidity",
+				"channel": "target_humidity",
 				"type": "Number:Dimensionless",
 				"unit": "PERCENT",
 				"stateDescription": {
 					"minimum": 10,
 					"maximum": 100,
 					"step": 1,
-					"pattern": "%.1f %unit%",
-					"readOnly": false
+					"pattern": "%.0f %%"
 				},
 				"refresh": true,
-				"ChannelGroup": "Status",
 				"actions": [
 					{
 						"command": "set_limit_hum",
 						"parameterType": "NUMBER"
 					}
+				],
+				"category": "humidity",
+				"tags": [
+					"Setpoint",
+					"Humidity"
 				]
 			},
 			{
 				"property": "led_b",
-				"friendlyName": "LED Brightness",
-				"channel": "bright",
-				"type": "Dimmer",
+				"friendlyName": "Indicator Light",
+				"channel": "led_brightness",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "Bright"
+						},
+						{
+							"value": "1",
+							"label": "Dim"
+						},
+						{
+							"value": "2",
+							"label": "Off"
+						}
+					]
+				},
 				"refresh": true,
-				"ChannelGroup": "actions",
 				"actions": [
 					{
 						"command": "set_led_b",
-						"parameterType": "NUMBER"
+						"parameterType": "NUMBER",
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "0",
+									"returnValue": "0"
+								}
+							]
+						}
+					},
+					{
+						"command": "set_led_b",
+						"parameterType": "NUMBER",
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "1",
+									"returnValue": "1"
+								}
+							]
+						}
+					},
+					{
+						"command": "set_led_b",
+						"parameterType": "NUMBER",
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "2",
+									"returnValue": "2"
+								}
+							]
+						}
 					}
-				]
+				],
+				"category": "light",
+				"tags": [
+					"Control",
+					"Light"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Bright\",\"1\"\u003d\"Dim\",\"2\"\u003d\"Off\"]`"
 			},
 			{
 				"property": "buzzer",
-				"friendlyName": "Buzzer Status",
+				"friendlyName": "Notification Sound",
 				"channel": "buzzer",
 				"type": "Switch",
 				"refresh": true,
-				"ChannelGroup": "actions",
 				"actions": [
 					{
 						"command": "set_buzzer",
 						"parameterType": "ONOFF"
 					}
+				],
+				"category": "soundvolume",
+				"tags": [
+					"Switch",
+					"Enabled"
 				]
 			},
 			{
 				"property": "depth",
-				"friendlyName": "Depth",
-				"channel": "depth",
-				"type": "Number",
+				"friendlyName": "Water Level",
+				"channel": "water_level",
+				"type": "Number:Dimensionless",
+				"unit": "PERCENT",
 				"stateDescription": {
-					"pattern": "%.1f %unit%",
+					"pattern": "%.0f %%",
 					"readOnly": true
 				},
 				"refresh": true,
-				"ChannelGroup": "Status",
-				"actions": []
+				"transformation": "tankLevel",
+				"actions": [],
+				"category": "water",
+				"tags": [
+					"Measurement",
+					"Level"
+				],
+				"readmeComment": "-1 when the water tank is removed"
 			},
 			{
 				"property": "dry",
-				"friendlyName": "Dry",
+				"friendlyName": "Air Drying Mode",
 				"channel": "dry",
 				"type": "Switch",
 				"refresh": true,
-				"ChannelGroup": "Status",
 				"actions": [
 					{
 						"command": "set_dry",
 						"parameterType": "ONOFF"
 					}
-				]
+				],
+				"category": "switch",
+				"tags": [
+					"Switch",
+					"Enabled"
+				],
+				"readmeComment": "Keeps running for about 8 hours when the water runs out, to dry the wick"
 			},
 			{
 				"property": "use_time",
 				"friendlyName": "Run Time",
-				"channel": "usedhours",
+				"channel": "use_time",
 				"type": "Number:Time",
 				"unit": "hours",
 				"stateDescription": {
-					"pattern": "%.1f %unit%",
+					"pattern": "%.0f %unit%",
 					"readOnly": true
 				},
 				"refresh": true,
 				"transformation": "SecondsToHours",
-				"ChannelGroup": "Status",
 				"actions": [],
-				"category": "time"
+				"category": "time",
+				"tags": [
+					"Measurement",
+					"Duration"
+				]
 			},
 			{
 				"property": "speed",
 				"friendlyName": "Motor Speed",
-				"channel": "motorspeed",
+				"channel": "speed",
 				"type": "Number",
 				"stateDescription": {
-					"pattern": "%.0f rpm",
+					"pattern": "%.0f RPM",
 					"readOnly": true
 				},
 				"refresh": true,
-				"ChannelGroup": "Status",
-				"actions": []
+				"actions": [],
+				"category": "fan",
+				"tags": [
+					"Measurement",
+					"Speed"
+				]
 			},
 			{
 				"property": "temperature",
@@ -175,7 +282,6 @@
 					"readOnly": true
 				},
 				"refresh": true,
-				"ChannelGroup": "Status",
 				"actions": [],
 				"category": "temperature",
 				"tags": [
@@ -186,21 +292,22 @@
 			{
 				"property": "child_lock",
 				"friendlyName": "Child Lock",
-				"channel": "childlock",
+				"channel": "child_lock",
 				"type": "Switch",
 				"refresh": true,
-				"ChannelGroup": "Status",
 				"actions": [
 					{
 						"command": "set_child_lock",
 						"parameterType": "ONOFF"
 					}
 				],
-				"category": "switch",
+				"category": "lock",
 				"tags": [
-					"Switch"
+					"Switch",
+					"Enabled"
 				]
 			}
-		]
+		],
+		"experimental": false
 	}
 }

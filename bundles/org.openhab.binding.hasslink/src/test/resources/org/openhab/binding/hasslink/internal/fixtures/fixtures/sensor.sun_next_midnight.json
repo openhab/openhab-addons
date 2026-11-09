@@ -1,0 +1,34 @@
+{
+  "id": 18,
+  "type": "event",
+  "event": {
+    "event_type": "state_changed",
+    "data": {
+      "entity_id": "sensor.sun_next_midnight",
+      "old_state": null,
+      "new_state": {
+        "entity_id": "sensor.sun_next_midnight",
+        "state": "2026-09-22T23:32:50+00:00",
+        "attributes": {
+          "device_class": "timestamp",
+          "friendly_name": "Sun Next midnight"
+        },
+        "last_changed": "2026-09-21T23:33:11.002580+00:00",
+        "last_reported": "2026-09-22T05:26:32.173373+00:00",
+        "last_updated": "2026-09-21T23:33:11.002580+00:00",
+        "context": {
+          "id": "01M3351YPTSYC8TC41BKK6Y8J2",
+          "parent_id": null,
+          "user_id": null
+        }
+      }
+    },
+    "origin": "LOCAL",
+    "time_fired": "2026-09-19T00:00:00.000000+00:00",
+    "context": {
+      "id": "01HXXXXXXX",
+      "parent_id": null,
+      "user_id": null
+    }
+  }
+}

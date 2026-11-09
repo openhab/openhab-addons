@@ -1,0 +1,17 @@
+{
+  "id": 10,
+  "type": "event",
+  "event": {
+    "a": {
+      "siren.siren": {
+        "s": "on",
+        "a": {
+          "friendly_name": "Siren",
+          "supported_features": 3
+        },
+        "c": "01M3201RGSVZ3ZX2P0NQFE1PR9",
+        "lc": 1789994787.3538089
+      }
+    }
+  }
+}

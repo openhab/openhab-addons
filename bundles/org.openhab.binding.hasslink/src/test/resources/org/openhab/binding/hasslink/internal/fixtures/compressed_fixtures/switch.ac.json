@@ -1,0 +1,17 @@
+{
+  "id": 10,
+  "type": "event",
+  "event": {
+    "a": {
+      "switch.ac": {
+        "s": "off",
+        "a": {
+          "device_class": "outlet",
+          "friendly_name": "AC"
+        },
+        "c": "01M3201RGTEB5J7BBDPVSWFX12",
+        "lc": 1789994787.3547645
+      }
+    }
+  }
+}
