@@ -21,6 +21,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.util.Locale;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -216,6 +217,25 @@ public class HwKeypadHandlerTest {
         verify(bridgeHandler).sendCommand("SETLED, " + ADDRESS + ", 6, 0");
         verify(bridgeHandler, never()).sendCommand("SETLED, " + ADDRESS + ", 7, 4");
         verify(bridgeHandler, times(1 + 2)).sendCommand(any());
+    }
+
+    @Test
+    @SuppressWarnings("PMD.SetDefaultLocale") // The regression only shows under a default locale with non-ASCII digits
+    public void commandsUseAsciiDigitsInEveryLocale() {
+        handler.initialize();
+        Locale defaultLocale = Locale.getDefault();
+        try {
+            // Arabic (Egypt) formats numbers with Arabic-Indic digits by default
+            Locale.setDefault(Locale.forLanguageTag("ar-EG"));
+            handler.handleCommand(channel("led5"), new StringType("ON"));
+            handler.handleCommand(channel("press"), new StringType("12"));
+        } finally {
+            Locale.setDefault(defaultLocale);
+        }
+
+        verify(bridgeHandler).sendCommand("SETLED, " + ADDRESS + ", 5, 1");
+        verify(bridgeHandler).sendCommand("KBP, " + ADDRESS + ", 12");
+        verify(bridgeHandler).sendCommand("KBR, " + ADDRESS + ", 12");
     }
 
     @Test

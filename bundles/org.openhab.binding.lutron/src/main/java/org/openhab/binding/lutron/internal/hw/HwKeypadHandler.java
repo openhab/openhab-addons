@@ -162,7 +162,7 @@ public class HwKeypadHandler extends BaseThingHandler {
             logger.debug("Unsupported LED state '{}' for {}", command, channelUID);
             return;
         }
-        send(String.format("SETLED, %s, %d, %d", address, id - KeypadConfigHw.ledId(0), state));
+        send(String.format(Locale.ROOT, "SETLED, %s, %d, %d", address, id - KeypadConfigHw.ledId(0), state));
     }
 
     private void handlePress(String value) {
@@ -177,8 +177,8 @@ public class HwKeypadHandler extends BaseThingHandler {
                     KeypadConfigHw.MAX_BUTTONS);
             return;
         }
-        send(String.format("KBP, %s, %d", address, button));
-        send(String.format("KBR, %s, %d", address, button));
+        send(String.format(Locale.ROOT, "KBP, %s, %d", address, button));
+        send(String.format(Locale.ROOT, "KBR, %s, %d", address, button));
     }
 
     private void queryLeds() {
