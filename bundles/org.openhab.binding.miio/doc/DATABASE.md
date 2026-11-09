@@ -341,7 +341,7 @@ Quotes directly around it are removed; a variable without value stays as is.
 | property name                                                                                  | Last value read (before transformation) or sent, see below. Unquoted, so only for numbers and booleans. For a custom refresh channel use the channel id. |
 
 A command that sets a property of its own channel also stores the sent value: a MIoT `set_properties`, or a legacy `NUMBER` action without condition, in both cases with `$value$` not nested in a parameter.
-Until the device answers that command, values read do not replace it; when the device answers with an error, the value from before the command is restored.
+Until the device answers that command (at most a minute), values read do not replace it; when the device answers with an error, the value from before the command is restored.
 
 ### Conditions
 

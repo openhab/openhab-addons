@@ -17,6 +17,7 @@ import static org.openhab.binding.miio.internal.MiIoBindingConstants.*;
 import java.awt.Color;
 import java.io.IOException;
 import java.net.URL;
+import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -96,6 +97,8 @@ import com.google.gson.JsonSyntaxException;
  */
 @NonNullByDefault
 public class MiIoBasicHandler extends MiIoAbstractHandler {
+    /** Longer than any answer takes; an answer can be lost when the queue is dropped, e.g. of a removed gateway */
+    private static final Duration SENT_VALUE_MAX_AGE = Duration.ofMinutes(1);
     private static final Pattern VALUE_TOKEN = Pattern.compile("$value$", Pattern.LITERAL | Pattern.CASE_INSENSITIVE);
 
     protected final Logger logger = LoggerFactory.getLogger(MiIoBasicHandler.class);
@@ -122,7 +125,7 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
      */
     private final Map<String, SentValue> sentValues = new HashMap<>();
 
-    private record SentValue(int commandId, @Nullable Object previousValue) {
+    private record SentValue(int commandId, @Nullable Object previousValue, Instant sentAt) {
     }
 
     public MiIoBasicHandler(Thing thing, MiIoDatabaseWatchService miIoDatabaseWatchService,
@@ -352,7 +355,7 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
         synchronized (sentValues) {
             int commandId = sendCommand(cmd);
             if (commandId != 0) {
-                sentValues.put(property, new SentValue(commandId, deviceVariables.get(property)));
+                sentValues.put(property, new SentValue(commandId, deviceVariables.get(property), now()));
                 deviceVariables.put(property, value);
             }
         }
@@ -382,6 +385,10 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
                 }
             }
         }
+    }
+
+    Instant now() {
+        return Instant.now();
     }
 
     private static boolean isRejected(MiIoSendCommand response) {
@@ -879,7 +886,12 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
     protected boolean updateChannel(@Nullable MiIoBasicChannel basicChannel, String param, JsonElement value) {
         JsonElement val = value;
         synchronized (sentValues) {
-            if (!sentValues.containsKey(param)) {
+            SentValue sentValue = sentValues.get(param);
+            if (sentValue != null && now().isAfter(sentValue.sentAt().plus(SENT_VALUE_MAX_AGE))) {
+                sentValues.remove(param);
+                sentValue = null;
+            }
+            if (sentValue == null) {
                 deviceVariables.put(param, val);
             }
         }

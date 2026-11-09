@@ -19,6 +19,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -92,6 +94,7 @@ public class MiIoBasicHandlerValueInParametersTest {
         private final List<String> sentCommands = new ArrayList<>();
         private int lastCommandId;
         private boolean connected = true;
+        private Instant now = Instant.parse("2026-01-01T00:00:00Z");
 
         CapturingHandler(Thing thing, MiIoDatabaseWatchService miIoDatabaseWatchService, CloudConnector cloudConnector,
                 ChannelTypeRegistry channelTypeRegistry, BasicChannelTypeProvider basicChannelTypeProvider,
@@ -143,6 +146,11 @@ public class MiIoBasicHandlerValueInParametersTest {
 
         List<String> send(Command command) {
             return send(CHANNEL, command);
+        }
+
+        @Override
+        Instant now() {
+            return now;
         }
 
         @Override
@@ -480,6 +488,20 @@ public class MiIoBasicHandlerValueInParametersTest {
 
         handler.answer(settingId, "{\"result\": [{\"did\": \"target\", \"siid\": 2, \"piid\": 4, \"code\": 0}]}");
         assertEquals(startWith(80), handler.send("start", new StringType("start")));
+        handler.poll("target-temperature", new JsonPrimitive(85));
+        assertEquals(startWith(85), handler.send("start", new StringType("start")));
+    }
+
+    @Test
+    public void settingThatIsNeverAnsweredNoLongerBlocksPollsAfterAMinute() {
+        loadTargetAndStartChannels();
+
+        handler.send("target", new DecimalType(80));
+        handler.now = handler.now.plus(Duration.ofSeconds(59));
+        handler.poll("target-temperature", new JsonPrimitive(90));
+        assertEquals(startWith(80), handler.send("start", new StringType("start")));
+
+        handler.now = handler.now.plus(Duration.ofSeconds(2));
         handler.poll("target-temperature", new JsonPrimitive(85));
         assertEquals(startWith(85), handler.send("start", new StringType("start")));
     }
