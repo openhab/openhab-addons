@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="io:inboxrules">
+		<parameter name="enabled" type="boolean">
+			<label>Enable Inbox Rules</label>
+			<description>Enable or disable all inbox auto-approval rules and customizations.</description>
+			<default>true</default>
+		</parameter>
+		<parameter name="rules" type="text" multiple="true">
+			<label>Auto-approve rules</label>
+			<description><![CDATA[
+				Rules are evaluated sequentially until a match is found. Prefix with <code>#</code> or <code>//</code> to disable a rule.<br>
+				Syntax: <code>criteriaKey=value; actionKey=value</code> (supports <code>*</code> and <code>?</code> wildcards)<br>
+				<b>Filters:</b> <code>thingUid</code>, <code>bridgeUid</code>, <code>label</code>, <code>representationProperty</code>, <code>propertyMatch</code>, <code>configMatch</code><br>
+				<b>Actions:</b> <code>setLabel</code>, <code>setLocation</code>, <code>setProperties</code>, <code>setConfig</code> (optional post-approval customizations)<br>
+				<b>Advanced:</b> Actions support interpolation (<code>${label}</code>, <code>${thingUID}</code>, <code>${bridgeUID}</code>, <code>${properties.name}</code>) and comma-separated values (e.g., <code>setProperties=room=Kitchen,source=${properties.id}</code>).<br>
+				<b>Example:</b> <code>thingUid=hue:*; label=*Motion*; setLocation=Living Room; setLabel=${label} Sensor</code>
+			]]></description>
+		</parameter>
+	</config-description>
+
+</config-description:config-descriptions>
