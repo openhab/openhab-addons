@@ -33,6 +33,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import org.openhab.binding.miio.internal.MiIoBindingConstants;
+import org.openhab.binding.miio.internal.MiIoCommand;
+import org.openhab.binding.miio.internal.MiIoSendCommand;
 import org.openhab.binding.miio.internal.basic.BasicChannelTypeProvider;
 import org.openhab.binding.miio.internal.basic.MiIoBasicChannel;
 import org.openhab.binding.miio.internal.basic.MiIoBasicDevice;
@@ -56,6 +58,7 @@ import org.openhab.core.thing.type.ChannelTypeRegistry;
 import org.openhab.core.types.Command;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
 
@@ -87,6 +90,8 @@ public class MiIoBasicHandlerValueInParametersTest {
 
     private class CapturingHandler extends MiIoBasicHandler {
         private final List<String> sentCommands = new ArrayList<>();
+        private int lastCommandId;
+        private boolean connected = true;
 
         CapturingHandler(Thing thing, MiIoDatabaseWatchService miIoDatabaseWatchService, CloudConnector cloudConnector,
                 ChannelTypeRegistry channelTypeRegistry, BasicChannelTypeProvider basicChannelTypeProvider,
@@ -124,6 +129,12 @@ public class MiIoBasicHandlerValueInParametersTest {
             updateChannel(null, property, value);
         }
 
+        void answer(int commandId, String response) {
+            MiIoSendCommand command = new MiIoSendCommand(commandId, MiIoCommand.SET_PROPERTIES, new JsonObject(), "");
+            command.setResponse(JsonParser.parseString(response).getAsJsonObject());
+            onMessageReceived(command);
+        }
+
         List<String> send(String channel, Command command) {
             sentCommands.clear();
             handleCommand(new ChannelUID(thingUID, channel), command);
@@ -137,7 +148,7 @@ public class MiIoBasicHandlerValueInParametersTest {
         @Override
         protected int sendCommand(String command, String params, String cloudServer, String sender) {
             sentCommands.add(command + params);
-            return 1;
+            return connected ? ++lastCommandId : 0;
         }
     }
 
@@ -437,6 +448,60 @@ public class MiIoBasicHandlerValueInParametersTest {
                 handler.send("target", new DecimalType(80)));
         assertEquals(List.of("set_properties[{\"did\":\"target-temperature\",\"siid\":2,\"piid\":4,\"value\":80}]"),
                 handler.send("start", new StringType("start")));
+    }
+
+    private void loadTargetAndStartChannels() {
+        handler.loadChannel(channel("""
+                {"property": "target-temperature", "siid": 2, "piid": 4, "channel": "target", "type": "Number",
+                 "actions": [{"command": "set_properties", "parameterType": "NUMBER"}]}
+                """));
+        handler.loadChannel(channel("""
+                {"property": "", "channel": "start", "type": "String", "actions": [{"command": "set_properties",
+                 "parameterType": "NONE", "parameters": [{"did": "target-temperature", "siid": 2, "piid": 4,
+                 "value": "$target-temperature$"}], "condition": {"name": "matchValue", "parameters":
+                 [{"matchValue": "start", "returnValue": 1}]}}]}
+                """));
+        handler.poll("target-temperature", new JsonPrimitive(90));
+    }
+
+    private List<String> startWith(int targetTemperature) {
+        return List.of("set_properties[{\"did\":\"target-temperature\",\"siid\":2,\"piid\":4,\"value\":"
+                + targetTemperature + "}]");
+    }
+
+    @Test
+    public void pollAnsweredBeforeTheSettingIsAnsweredDoesNotReplaceIt() {
+        loadTargetAndStartChannels();
+
+        handler.send("target", new DecimalType(80));
+        int settingId = handler.lastCommandId;
+        handler.poll("target-temperature", new JsonPrimitive(90));
+        assertEquals(startWith(80), handler.send("start", new StringType("start")));
+
+        handler.answer(settingId, "{\"result\": [{\"did\": \"target\", \"siid\": 2, \"piid\": 4, \"code\": 0}]}");
+        assertEquals(startWith(80), handler.send("start", new StringType("start")));
+        handler.poll("target-temperature", new JsonPrimitive(85));
+        assertEquals(startWith(85), handler.send("start", new StringType("start")));
+    }
+
+    @Test
+    public void settingThatIsNotQueuedIsNotKept() {
+        loadTargetAndStartChannels();
+        handler.connected = false;
+
+        handler.send("target", new DecimalType(80));
+        assertEquals(startWith(90), handler.send("start", new StringType("start")));
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = { "{\"error\": \"No Response from device\"}",
+            "{\"result\": [{\"did\": \"target\", \"siid\": 2, \"piid\": 4, \"code\": -4005}]}" })
+    public void settingRejectedByTheDeviceIsReverted(String response) {
+        loadTargetAndStartChannels();
+
+        handler.send("target", new DecimalType(80));
+        handler.answer(handler.lastCommandId, response);
+        assertEquals(startWith(90), handler.send("start", new StringType("start")));
     }
 
     @Test

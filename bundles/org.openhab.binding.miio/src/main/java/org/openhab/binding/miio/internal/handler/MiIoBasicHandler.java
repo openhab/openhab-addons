@@ -20,6 +20,7 @@ import java.net.URL;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -115,6 +116,14 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
     private Map<String, Integer> customRefreshInterval = new HashMap<>();
     private final Set<String> refreshedOnce = ConcurrentHashMap.newKeySet();
     private final AtomicBoolean readOnceRefreshPending = new AtomicBoolean();
+    /**
+     * Property values sent to the device, by property, until the device has answered the command. Also the lock for
+     * changing these properties in {@link #deviceVariables}.
+     */
+    private final Map<String, SentValue> sentValues = new HashMap<>();
+
+    private record SentValue(int commandId, @Nullable Object previousValue) {
+    }
 
     public MiIoBasicHandler(Thing thing, MiIoDatabaseWatchService miIoDatabaseWatchService,
             CloudConnector cloudConnector, ChannelTypeRegistry channelTypeRegistry,
@@ -134,6 +143,9 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
         refreshListCustomCommands = new HashMap<>();
         refreshedOnce.clear();
         readOnceRefreshPending.set(false);
+        synchronized (sentValues) {
+            sentValues.clear();
+        }
     }
 
     @Override
@@ -302,10 +314,10 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
                     }
                     if (value != null) {
                         logger.debug("Sending command {}", cmd);
-                        sendCommand(cmd);
                         if (propertyValue != null) {
-                            // the next poll is seconds away; commands that send $property$ must use this value
-                            deviceVariables.put(miIoBasicChannel.getProperty(), propertyValue);
+                            sendPropertyValue(cmd, miIoBasicChannel.getProperty(), propertyValue);
+                        } else {
+                            sendCommand(cmd);
                         }
                     } else {
                         if (miIoDeviceActionCondition != null) {
@@ -328,6 +340,65 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
         } else {
             logger.debug("Actions not loaded yet, or none available");
         }
+    }
+
+    /**
+     * Sends a command that writes the value of a polled property. The sent value is used for the property in later
+     * commands right away, as the next poll is seconds away. Until the device answers the command, poll responses do
+     * not replace it, as those can be answers to polls queued before the command.
+     */
+    private void sendPropertyValue(String cmd, String property, JsonElement value) {
+        // the lock is held while queueing, so the answer cannot be processed before the value is registered
+        synchronized (sentValues) {
+            int commandId = sendCommand(cmd);
+            if (commandId != 0) {
+                sentValues.put(property, new SentValue(commandId, deviceVariables.get(property)));
+                deviceVariables.put(property, value);
+            }
+        }
+    }
+
+    /**
+     * Ends the wait for the device answer to a sent property value, and restores the previous value if the device
+     * did not accept it
+     */
+    private void settleSentValue(MiIoSendCommand response) {
+        synchronized (sentValues) {
+            Iterator<Entry<String, SentValue>> iterator = sentValues.entrySet().iterator();
+            while (iterator.hasNext()) {
+                Entry<String, SentValue> entry = iterator.next();
+                SentValue sentValue = entry.getValue();
+                if (sentValue.commandId() != response.getId()) {
+                    continue;
+                }
+                iterator.remove();
+                if (isRejected(response)) {
+                    Object previousValue = sentValue.previousValue();
+                    if (previousValue != null) {
+                        deviceVariables.put(entry.getKey(), previousValue);
+                    } else {
+                        deviceVariables.remove(entry.getKey());
+                    }
+                }
+            }
+        }
+    }
+
+    private static boolean isRejected(MiIoSendCommand response) {
+        if (response.isError()) {
+            return true;
+        }
+        // MIoT reports the result per property, e.g. [{"did": "x", "siid": 2, "piid": 1, "code": -4005}]
+        JsonElement result = response.getResult();
+        if (result.isJsonArray()) {
+            for (JsonElement element : result.getAsJsonArray()) {
+                if (element.isJsonObject() && element.getAsJsonObject().get("code") instanceof JsonPrimitive code
+                        && code.isNumber() && code.getAsInt() < 0) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     /**
@@ -807,7 +878,11 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
      */
     protected boolean updateChannel(@Nullable MiIoBasicChannel basicChannel, String param, JsonElement value) {
         JsonElement val = value;
-        deviceVariables.put(param, val);
+        synchronized (sentValues) {
+            if (!sentValues.containsKey(param)) {
+                deviceVariables.put(param, val);
+            }
+        }
         if (basicChannel == null) {
             logger.debug("Channel not found for {}", param);
             return false;
@@ -924,6 +999,7 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
     @Override
     public void onMessageReceived(MiIoSendCommand response) {
         super.onMessageReceived(response);
+        settleSentValue(response);
         if (response.isError()) {
             String errorChannel = cmds.get(response.getId());
             if (errorChannel != null && getCustomRefreshChannel(errorChannel) != null) {
