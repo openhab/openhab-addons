@@ -57,6 +57,7 @@ import org.openhab.core.types.Command;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonParser;
+import com.google.gson.JsonPrimitive;
 
 /**
  * Tests the commands sent for actions that have the channel value inside a parameter, such as the input of MIoT
@@ -117,6 +118,10 @@ public class MiIoBasicHandlerValueInParametersTest {
                     actions.put(new ChannelUID(thingUID, channel.getChannel()), channel);
                 }
             }
+        }
+
+        void poll(String property, JsonPrimitive value) {
+            updateChannel(null, property, value);
         }
 
         List<String> send(String channel, Command command) {
@@ -406,5 +411,65 @@ public class MiIoBasicHandlerValueInParametersTest {
         assertEquals(List.of("set_power[\"on\",\"smooth\",500,5]"), handler.send("nightlightBrightness", OnOffType.ON));
         assertEquals(List.of("set_scene[\"nightlight\",50]"),
                 handler.send("nightlightBrightness", new PercentType(50)));
+    }
+
+    private static MiIoBasicChannel channel(String json) {
+        MiIoBasicChannel channel = new Gson().fromJson(json, MiIoBasicChannel.class);
+        assertNotNull(channel);
+        return channel;
+    }
+
+    @Test
+    public void miotSettingSentBeforeAnotherCommandIsUsedByIt() {
+        handler.loadChannel(channel("""
+                {"property": "target-temperature", "siid": 2, "piid": 4, "channel": "target", "type": "Number",
+                 "actions": [{"command": "set_properties", "parameterType": "NUMBER"}]}
+                """));
+        handler.loadChannel(channel("""
+                {"property": "", "channel": "start", "type": "String", "actions": [{"command": "set_properties",
+                 "parameterType": "NONE", "parameters": [{"did": "target-temperature", "siid": 2, "piid": 4,
+                 "value": "$target-temperature$"}], "condition": {"name": "matchValue", "parameters":
+                 [{"matchValue": "start", "returnValue": 1}]}}]}
+                """));
+        handler.poll("target-temperature", new JsonPrimitive(90));
+
+        assertEquals(List.of("set_properties[{\"did\":\"target\",\"siid\":2,\"piid\":4,\"value\":80}]"),
+                handler.send("target", new DecimalType(80)));
+        assertEquals(List.of("set_properties[{\"did\":\"target-temperature\",\"siid\":2,\"piid\":4,\"value\":80}]"),
+                handler.send("start", new StringType("start")));
+    }
+
+    @Test
+    public void legacyNumberSentBeforeAnotherCommandIsUsedByIt() {
+        handler.loadChannel(channel("""
+                {"property": "appointStart", "channel": "appointStart", "type": "Number", "actions": [{"command":
+                 "set_appoint", "parameterType": "NUMBER", "parameters": [1, "$value$", "$appointEnd$"]}]}
+                """));
+        handler.loadChannel(channel("""
+                {"property": "appointEnd", "channel": "appointEnd", "type": "Number", "actions": [{"command":
+                 "set_appoint", "parameterType": "NUMBER", "parameters": [1, "$appointStart$", "$value$"]}]}
+                """));
+        handler.poll("appointStart", new JsonPrimitive(6));
+        handler.poll("appointEnd", new JsonPrimitive(8));
+
+        assertEquals(List.of("set_appoint[1,5,8]"), handler.send("appointStart", new DecimalType(5)));
+        assertEquals(List.of("set_appoint[1,5,9]"), handler.send("appointEnd", new DecimalType(9)));
+    }
+
+    @Test
+    public void valueOfConditionalOrMiotActionIsNotKept() {
+        handler.loadChannel(channel("""
+                {"property": "mode", "channel": "mode", "type": "Number", "actions": [{"command": "set_mode",
+                 "parameterType": "NUMBER", "condition": {"name": "matchValue", "parameters": [{"matchValue": "2",
+                 "returnValue": 7}]}}]}
+                """));
+        handler.loadChannel(channel("""
+                {"property": "", "channel": "show", "type": "String", "actions": [{"command": "show",
+                 "parameterType": "STRING", "parameters": ["$value$", "$mode$"]}]}
+                """));
+        handler.poll("mode", new JsonPrimitive(1));
+
+        assertEquals(List.of("set_mode[7]"), handler.send("mode", new DecimalType(2)));
+        assertEquals(List.of("show[\"x\",1]"), handler.send("show", new StringType("x")));
     }
 }

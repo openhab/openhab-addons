@@ -269,6 +269,8 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
                             valueInParameters = true;
                         }
                     }
+                    final JsonElement propertyValue = value != null && value.isJsonPrimitive()
+                            && writesOwnProperty(miIoBasicChannel, action, valueInParameters) ? value : null;
                     // Check for miot channel
                     if (value != null && !valueInParameters) {
                         if (action.isMiOtAction()) {
@@ -301,6 +303,10 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
                     if (value != null) {
                         logger.debug("Sending command {}", cmd);
                         sendCommand(cmd);
+                        if (propertyValue != null) {
+                            // the next poll is seconds away; commands that send $property$ must use this value
+                            deviceVariables.put(miIoBasicChannel.getProperty(), propertyValue);
+                        }
                     } else {
                         if (miIoDeviceActionCondition != null) {
                             logger.debug("Conditional command {} not send, condition '{}' not met", cmd,
@@ -322,6 +328,23 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
         } else {
             logger.debug("Actions not loaded yet, or none available");
         }
+    }
+
+    /**
+     * Whether the action writes the command value as the value of the channel's own polled property, in the format
+     * the device reports it: a MIoT set_properties of the channel, or a legacy number without a condition
+     */
+    private static boolean writesOwnProperty(MiIoBasicChannel channel, MiIoDeviceAction action,
+            boolean valueInParameters) {
+        if (channel.getProperty().isBlank() || valueInParameters || action.isMiOtAction()) {
+            return false;
+        }
+        CommandParameterType paramType = action.getparameterType();
+        if (channel.isMiOt()) {
+            return "set_properties".equals(action.getCommand()) && paramType != CommandParameterType.NONE
+                    && paramType != CommandParameterType.EMPTY;
+        }
+        return paramType == CommandParameterType.NUMBER && action.getCondition() == null;
     }
 
     private static boolean hasNestedValueToken(JsonArray parameters) {
