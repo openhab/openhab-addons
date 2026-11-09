@@ -41,7 +41,7 @@ public class TuyaContentListener extends BufferingResponseListener {
     }
 
     @Override
-    @org.eclipse.jdt.annotation.NonNullByDefault({})
+    @NonNullByDefault({})
     public void onComplete(Result result) {
         Response response = result.getResponse();
         if (logger.isTraceEnabled()) {

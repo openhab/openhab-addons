@@ -76,7 +76,7 @@ public class TadoAuthenticationServlet extends HttpServlet {
      * </ul>
      */
     @Override
-    @org.eclipse.jdt.annotation.NonNullByDefault({})
+    @NonNullByDefault({})
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         // if the query string contains "oauth=start" then serve the user authentication page
