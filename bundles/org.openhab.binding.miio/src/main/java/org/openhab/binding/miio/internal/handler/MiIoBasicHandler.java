@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -99,6 +100,9 @@ import com.google.gson.JsonSyntaxException;
 public class MiIoBasicHandler extends MiIoAbstractHandler {
     /** Longer than any answer takes; an answer can be lost when the queue is dropped, e.g. of a removed gateway */
     private static final Duration SENT_VALUE_MAX_AGE = Duration.ofMinutes(1);
+    private static final Set<CommandParameterType> LEGACY_PROPERTY_VALUE_TYPES = Set.of(CommandParameterType.NUMBER,
+            CommandParameterType.STRING, CommandParameterType.ONOFF, CommandParameterType.ONOFFBOOL,
+            CommandParameterType.ONOFFBOOLSTRING, CommandParameterType.ONOFFNUMBER);
     private static final Pattern VALUE_TOKEN = Pattern.compile("$value$", Pattern.LITERAL | Pattern.CASE_INSENSITIVE);
 
     protected final Logger logger = LoggerFactory.getLogger(MiIoBasicHandler.class);
@@ -285,7 +289,7 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
                         }
                     }
                     final JsonElement propertyValue = value != null && value.isJsonPrimitive()
-                            && writesOwnProperty(miIoBasicChannel, action, valueInParameters) ? value : null;
+                            && writesOwnProperty(miIoBasicChannel, action, command, valueInParameters) ? value : null;
                     // Check for miot channel
                     if (value != null && !valueInParameters) {
                         if (action.isMiOtAction()) {
@@ -410,19 +414,63 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
 
     /**
      * Whether the action writes the command value as the value of the channel's own polled property, in the format
-     * the device reports it: a MIoT set_properties of the channel, or a legacy number without a condition
+     * the device reports it. A MIoT set_properties writes the channel's own property, with any condition. For a legacy
+     * command the written property is not known, so only a value that is sent as is qualifies: not a color, nor a
+     * value changed by a condition, as for the companion actions of lights (e.g. set_power with BrightnessOnOff).
      */
-    private static boolean writesOwnProperty(MiIoBasicChannel channel, MiIoDeviceAction action,
+    private static boolean writesOwnProperty(MiIoBasicChannel channel, MiIoDeviceAction action, Command command,
             boolean valueInParameters) {
-        if (channel.getProperty().isBlank() || valueInParameters || action.isMiOtAction()) {
+        String property = channel.getProperty();
+        if (property.isBlank() || action.isMiOtAction()) {
             return false;
         }
         CommandParameterType paramType = action.getparameterType();
         if (channel.isMiOt()) {
-            return "set_properties".equals(action.getCommand()) && paramType != CommandParameterType.NONE
-                    && paramType != CommandParameterType.EMPTY;
+            // a nested value is sent to the property named in its parameter, e.g. "on" next to a brightness
+            return MiIoCommand.SET_PROPERTIES.getCommand().equals(action.getCommand()) && !valueInParameters
+                    && paramType != CommandParameterType.NONE && paramType != CommandParameterType.EMPTY;
         }
-        return paramType == CommandParameterType.NUMBER && action.getCondition() == null;
+        // an HSB command also runs the NUMBER action of a color channel, with only its brightness
+        if (!LEGACY_PROPERTY_VALUE_TYPES.contains(paramType) || command instanceof HSBType) {
+            return false;
+        }
+        MiIoDeviceActionCondition condition = action.getCondition();
+        if (condition != null && !keepsValue(condition)) {
+            return false;
+        }
+        return !valueInParameters || isValueOfProperty(action.getParameters(), property);
+    }
+
+    private static boolean keepsValue(MiIoDeviceActionCondition condition) {
+        return switch (condition.getName().toUpperCase(Locale.ROOT)) {
+            case "FIRMWARE", "BRIGHTNESSEXISTING", "LOWERCASE" -> true;
+            case "MATCHVALUE" -> !containsMember(condition.getParameters(), "returnValue");
+            default -> false;
+        };
+    }
+
+    private static boolean containsMember(JsonElement element, String name) {
+        if (element.isJsonArray()) {
+            for (JsonElement entry : element.getAsJsonArray()) {
+                if (entry.isJsonObject() && entry.getAsJsonObject().has(name)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Whether a nested value is sent under the name of the property, e.g. [{"lp_threshold": "$value$", ...}]
+     */
+    private static boolean isValueOfProperty(JsonArray parameters, String property) {
+        for (JsonElement parameter : parameters) {
+            if (parameter.isJsonObject() && parameter.getAsJsonObject().get(property) instanceof JsonPrimitive value
+                    && value.isString() && "$value$".equalsIgnoreCase(value.getAsString())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private static boolean hasNestedValueToken(JsonArray parameters) {

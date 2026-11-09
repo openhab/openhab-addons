@@ -340,7 +340,13 @@ Quotes directly around it are removed; a variable without value stays as is.
 | `timestamp`                                                                                    | Time of the last update or command in seconds since 1970, as number.                                                                                     |
 | property name                                                                                  | Last value read (before transformation) or sent, see below. Unquoted, so only for numbers and booleans. For a custom refresh channel use the channel id. |
 
-A command that sets a property of its own channel also stores the sent value: a MIoT `set_properties`, or a legacy `NUMBER` action without condition, in both cases with `$value$` not nested in a parameter.
+A command that sets the property of its own channel also stores the sent value:
+
+- MIoT: `set_properties` with the value not nested in a parameter, with any condition (the device reports the value that was written).
+- Legacy: parameter type `NUMBER`, `STRING`, `ONOFF`, `ONOFFBOOL`, `ONOFFBOOLSTRING` or `ONOFFNUMBER`, with no condition or one that does not change the value (`LowerCase`, `BrightnessExisting`, `FIRMWARE`, `matchValue` without `returnValue`).
+  The value is at the top level, or nested under the property name (`{"<property>": "$value$"}`).
+  An HSB command on a `NUMBER` action of a color channel only sends its brightness, so it is not stored.
+
 Until the device answers that command (at most a minute), values read do not replace it; when the device answers with an error, the value from before the command is restored.
 
 ### Conditions

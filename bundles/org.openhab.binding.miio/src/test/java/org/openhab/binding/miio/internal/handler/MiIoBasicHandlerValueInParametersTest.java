@@ -543,20 +543,124 @@ public class MiIoBasicHandlerValueInParametersTest {
         assertEquals(List.of("set_appoint[1,5,9]"), handler.send("appointEnd", new DecimalType(9)));
     }
 
+    /**
+     * Loads a channel whose command shows the current values of the given properties
+     */
+    private void loadShowChannel(String... properties) {
+        StringBuilder parameters = new StringBuilder("\"$value$\"");
+        for (String property : properties) {
+            parameters.append(", \"$").append(property).append("$\"");
+        }
+        handler.loadChannel(channel("""
+                {"property": "", "channel": "show", "type": "String", "actions": [{"command": "show",
+                 "parameterType": "STRING", "parameters": [%s]}]}
+                """.formatted(parameters)));
+    }
+
+    private List<String> show() {
+        return handler.send("show", new StringType("x"));
+    }
+
     @Test
-    public void valueOfConditionalOrMiotActionIsNotKept() {
+    public void legacySwitchAndTextAreKept() {
+        handler.loadChannel(channel("""
+                {"property": "power", "channel": "power", "type": "Switch", "actions": [{"command": "set_power",
+                 "parameterType": "ONOFF"}]}
+                """));
+        handler.loadChannel(channel("""
+                {"property": "mode", "channel": "mode", "type": "String", "actions": [{"command": "set_mode",
+                 "parameterType": "STRING", "condition": {"name": "LowerCase"}}]}
+                """));
+        loadShowChannel("power", "mode");
+        handler.poll("power", new JsonPrimitive("off"));
+        handler.poll("mode", new JsonPrimitive("auto"));
+
+        handler.send("power", OnOffType.ON);
+        handler.send("mode", new StringType("Silent"));
+        assertEquals(List.of("show[\"x\",on,silent]"), show());
+    }
+
+    @Test
+    public void legacyValueNestedUnderThePropertyNameIsKept() {
+        handler.loadChannel(channel("""
+                {"property": "lp_threshold", "channel": "lp_threshold", "type": "Number", "actions": [{"command":
+                 "set_lowpower_autooff", "parameterType": "NUMBER", "parameters": [{"lp_autooff": 1,
+                 "lp_threshold": "$value$"}]}]}
+                """));
+        handler.loadChannel(channel("""
+                {"property": "lp_other", "channel": "lp_other", "type": "Number", "actions": [{"command":
+                 "set_other", "parameterType": "NUMBER", "parameters": [{"level": "$value$"}]}]}
+                """));
+        loadShowChannel("lp_threshold", "lp_other");
+        handler.poll("lp_threshold", new JsonPrimitive(10));
+        handler.poll("lp_other", new JsonPrimitive(1));
+
+        handler.send("lp_threshold", new DecimalType(20));
+        handler.send("lp_other", new DecimalType(2));
+        assertEquals(List.of("show[\"x\",20,1]"), show());
+    }
+
+    @Test
+    public void legacyLightCompanionActionsDoNotChangeTheProperty() throws IOException {
+        handler.loadDatabase("yeelink.light.bslamp2.json");
+        loadShowChannel("bright", "rgb", "nl_br");
+        handler.poll("bright", new JsonPrimitive(30));
+        handler.poll("rgb", new JsonPrimitive(255));
+        handler.poll("nl_br", new JsonPrimitive(5));
+
+        handler.send("brightness", new PercentType(60));
+        handler.send("rgbColor", new HSBType("120,100,40"));
+        handler.send("nightlightBrightness", OnOffType.ON);
+        // only set_bright of the brightness channel is kept: the actions of the color channel do not write rgb,
+        // and set_power with BrightnessOnOff or a returnValue does not send the brightness
+        assertEquals(List.of("show[\"x\",60,255,5]"), show());
+    }
+
+    @Test
+    public void valueChangedByAConditionIsNotKept() {
         handler.loadChannel(channel("""
                 {"property": "mode", "channel": "mode", "type": "Number", "actions": [{"command": "set_mode",
                  "parameterType": "NUMBER", "condition": {"name": "matchValue", "parameters": [{"matchValue": "2",
                  "returnValue": 7}]}}]}
                 """));
-        handler.loadChannel(channel("""
-                {"property": "", "channel": "show", "type": "String", "actions": [{"command": "show",
-                 "parameterType": "STRING", "parameters": ["$value$", "$mode$"]}]}
-                """));
+        loadShowChannel("mode");
         handler.poll("mode", new JsonPrimitive(1));
 
         assertEquals(List.of("set_mode[7]"), handler.send("mode", new DecimalType(2)));
-        assertEquals(List.of("show[\"x\",1]"), handler.send("show", new StringType("x")));
+        assertEquals(List.of("show[\"x\",1]"), show());
+    }
+
+    @Test
+    public void miotValueChangedByAConditionIsKept() {
+        handler.loadChannel(channel("""
+                {"property": "mode", "siid": 2, "piid": 3, "channel": "mode", "type": "String", "actions":
+                 [{"command": "set_properties", "parameterType": "STRING", "condition": {"name": "matchValue",
+                 "parameters": [{"matchValue": "left", "returnValue": 2}]}}]}
+                """));
+        loadShowChannel("mode");
+        handler.poll("mode", new JsonPrimitive(1));
+
+        handler.send("mode", new StringType("left"));
+        assertEquals(List.of("show[\"x\",2]"), show());
+    }
+
+    @Test
+    public void miotNestedPropertyAndActionInputAreNotKept() {
+        handler.loadChannel(channel("""
+                {"property": "brightness", "siid": 2, "piid": 2, "channel": "brightness", "type": "Dimmer",
+                 "actions": [{"command": "set_properties", "parameterType": "ONOFFBOOL", "parameters": [{"did": "on",
+                 "siid": 2, "piid": 1, "value": "$value$"}]}]}
+                """));
+        handler.loadChannel(channel("""
+                {"property": "start-time", "channel": "start", "type": "Number", "actions":
+                 [{"command": "action", "parameterType": "NUMBER", "siid": 3, "aiid": 1}]}
+                """));
+        loadShowChannel("brightness", "start-time");
+        handler.poll("brightness", new JsonPrimitive(30));
+        handler.poll("start-time", new JsonPrimitive(5));
+
+        handler.send("brightness", OnOffType.ON);
+        handler.send("start", new DecimalType(9));
+        assertEquals(List.of("show[\"x\",30,5]"), show());
     }
 }
