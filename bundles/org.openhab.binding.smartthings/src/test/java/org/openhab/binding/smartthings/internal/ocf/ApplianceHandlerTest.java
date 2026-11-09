@@ -857,6 +857,82 @@ class ApplianceHandlerTest {
     }
 
     @Test
+    void staleReadbackAfterCommandDoesNotRevertTheChannel() throws Exception {
+        transport.observe = true;
+        transport.power = false;
+        transport.batch = json("[{\"href\":\"/power/0\",\"rep\":{\"value\":false}},"
+                + "{\"href\":\"/remotectrl/0\",\"rep\":{\"value\":true}}]");
+        ApplianceHandler handler = initialize();
+        awaitStatus(ThingStatus.ONLINE);
+        ChannelUID power = channel(handler, "Power").getUID();
+        assertEquals(OnOffType.OFF, states.get(power.getId()));
+        clearInvocations(callback);
+        transport.staleWrites = true;
+
+        handler.handleCommand(power, OnOffType.ON);
+        awaitStatus(ThingStatus.ONLINE);
+        executor.awaitWorkers();
+        assertEquals(List.of("/power/0:{\"value\":true}"), transport.posts);
+        verify(callback, never()).stateUpdated(eq(power), eq(OnOffType.OFF));
+
+        transport.power = true;
+        transport.listener("/power/0").onUpdate(json("{\"value\":true}"));
+        awaitStatus(ThingStatus.ONLINE);
+        assertEquals(OnOffType.ON, states.get(power.getId()));
+    }
+
+    @Test
+    void staleObservationAfterCommandDoesNotRevertTheChannel() throws Exception {
+        transport.observe = true;
+        transport.power = false;
+        transport.batch = json("[{\"href\":\"/power/0\",\"rep\":{\"value\":false}},"
+                + "{\"href\":\"/remotectrl/0\",\"rep\":{\"value\":true}}]");
+        ApplianceHandler handler = initialize();
+        awaitStatus(ThingStatus.ONLINE);
+        ChannelUID power = channel(handler, "Power").getUID();
+        assertEquals(OnOffType.OFF, states.get(power.getId()));
+        clearInvocations(callback);
+        transport.staleWrites = true;
+
+        handler.handleCommand(power, OnOffType.ON);
+        awaitStatus(ThingStatus.ONLINE);
+        executor.awaitWorkers();
+        transport.listener("/power/0").onUpdate(json("{\"value\":false}"));
+        awaitStatus(ThingStatus.ONLINE);
+        verify(callback, never()).stateUpdated(eq(power), eq(OnOffType.OFF));
+
+        transport.power = true;
+        transport.listener("/power/0").onUpdate(json("{\"value\":true}"));
+        awaitStatus(ThingStatus.ONLINE);
+        assertEquals(OnOffType.ON, states.get(power.getId()));
+    }
+
+    @Test
+    void unconfirmedCommandStopsSuppressingAfterTheConfirmationWindow() throws Exception {
+        transport.observe = true;
+        transport.power = false;
+        transport.batch = json("[{\"href\":\"/power/0\",\"rep\":{\"value\":false}},"
+                + "{\"href\":\"/remotectrl/0\",\"rep\":{\"value\":true}}]");
+        ApplianceHandler handler = initialize();
+        awaitStatus(ThingStatus.ONLINE);
+        ChannelUID power = channel(handler, "Power").getUID();
+        assertEquals(OnOffType.OFF, states.get(power.getId()));
+        clearInvocations(callback);
+        transport.staleWrites = true;
+
+        handler.handleCommand(power, OnOffType.ON);
+        awaitStatus(ThingStatus.ONLINE);
+        executor.awaitWorkers();
+        verify(callback, never()).stateUpdated(eq(power), eq(OnOffType.OFF));
+
+        // The appliance never applied the write, so its reported state becomes authoritative once the window elapsed.
+        executor.advance(6000);
+        transport.listener("/power/0").onUpdate(json("{\"value\":false}"));
+        awaitStatus(ThingStatus.ONLINE);
+        assertEquals(OnOffType.OFF, states.get(power.getId()));
+    }
+
+    @Test
     void synchronousDisposalFromThingUpdatePreventsSubsequentPublication() throws Exception {
         afterThingUpdate = () -> handlers.getFirst().dispose();
         initialize();
@@ -1099,6 +1175,10 @@ class ApplianceHandlerTest {
         volatile boolean block;
         volatile boolean blockReadback;
         volatile boolean power = true;
+        /**
+         * Keeps reporting the pre-command value, simulating a non-confirmable write the appliance has not applied yet.
+         */
+        volatile boolean staleWrites;
         volatile boolean remote = true;
         volatile String unavailable = "";
         volatile JsonElement identity = json("{\"di\":\"" + DEVICE_ID + "\",\"rt\":[\"oic.d.airconditioner\"]}");
@@ -1183,7 +1263,9 @@ class ApplianceHandlerTest {
                 if (failPost) {
                     throw new IOException("Test write acknowledgement lost");
                 }
-                power = fields.get("value").getAsBoolean();
+                if (!staleWrites) {
+                    power = fields.get("value").getAsBoolean();
+                }
             } finally {
                 active.decrementAndGet();
             }
@@ -1262,6 +1344,10 @@ class ApplianceHandlerTest {
 
         boolean hasActivePoll() {
             return polls.stream().anyMatch(poll -> !poll.future().isCancelled());
+        }
+
+        void advance(long millis) {
+            nanoTime.addAndGet(TimeUnit.MILLISECONDS.toNanos(millis));
         }
 
         void awaitWorkers() throws Exception {

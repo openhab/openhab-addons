@@ -34,6 +34,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.smartthings.internal.ApplianceFamily;
 import org.openhab.binding.smartthings.internal.ocf.Resources.Point;
+import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -44,6 +46,7 @@ import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
+import org.openhab.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -64,6 +67,13 @@ public class ApplianceHandler extends BaseThingHandler {
     private static final int MAX_PENDING_COMMANDS = 16;
     private static final int MAX_PENDING_NOTIFICATIONS = 128;
     private static final int MAX_OBSERVATION_RETRY_SECONDS = 300;
+    /**
+     * Commands are written with a non-confirmable CoAP POST, so the appliance may apply them asynchronously and
+     * still report the previous value for a short while. Until this confirmation window has elapsed, a channel
+     * whose reported state still matches the pre-command state is not published, which prevents the item from
+     * visibly jumping back to the state it was commanded away from.
+     */
+    private static final long COMMAND_CONFIRMATION_MILLIS = 5000;
     private final Logger logger = LoggerFactory.getLogger(ApplianceHandler.class);
     private final Object lifecycle = new Object();
     private final ReentrantLock io = new ReentrantLock();
@@ -85,6 +95,9 @@ public class ApplianceHandler extends BaseThingHandler {
     }
 
     private record Notification(Observation observation, JsonElement payload) {
+    }
+
+    private record CommandExpectation(@Nullable State previous, @Nullable State expected, long expires) {
     }
 
     private final class Observation implements Transport.Listener {
@@ -145,6 +158,7 @@ public class ApplianceHandler extends BaseThingHandler {
         final ArrayDeque<PendingCommand> commands = new ArrayDeque<>();
         final ArrayDeque<Notification> notifications = new ArrayDeque<>();
         final Map<String, Observation> observations = new HashMap<>();
+        final Map<String, CommandExpectation> expectations = new HashMap<>();
         @Nullable
         UUID identity;
         @Nullable
@@ -322,6 +336,10 @@ public class ApplianceHandler extends BaseThingHandler {
                 refresh = current.refresh || current.fallback;
                 current.refresh = false;
                 current.fallback = false;
+                if (refresh) {
+                    // A reported state read during a full refresh is authoritative, so it ends any confirmation wait.
+                    current.expectations.clear();
+                }
                 pending = refresh || current.commands.isEmpty() ? null : current.commands.removeFirst();
                 notification = refresh || pending != null || current.notifications.isEmpty() ? null
                         : current.notifications.removeFirst();
@@ -714,8 +732,67 @@ public class ApplianceHandler extends BaseThingHandler {
         if (isActive(current)) {
             logger.debug("Appliance {} command acknowledged for channel {}; reading back resource {}",
                     getThing().getUID(), pending.channel(), point.href());
-            mergeReadResponse(current, current.resources, point.href(), transport.get(point.href()));
+            // A non-confirmable write may not be applied yet, so the readback can still report the previous value.
+            // Record what has to change before the channel state is authoritative again.
+            JsonElement readback = transport.get(point.href());
+            rememberCommandExpectation(current, point, pending.command(), readback);
+            mergeReadResponse(current, current.resources, point.href(), readback);
         }
+    }
+
+    private void rememberCommandExpectation(Session current, Point point, Command command, JsonElement readback) {
+        synchronized (lifecycle) {
+            if (!isActive(current)) {
+                return;
+            }
+            State expected = expectedState(point, command);
+            if (expected == null) {
+                current.expectations.remove(point.id());
+                return;
+            }
+            Resources reported = new Resources();
+            try {
+                reported.update(point.href(), readback);
+            } catch (IOException | IllegalArgumentException e) {
+                current.expectations.remove(point.id());
+                return;
+            }
+            State previous = reported.state(point);
+            if (previous.equals(expected)) {
+                current.expectations.remove(point.id());
+                return;
+            }
+            current.expectations.put(point.id(), new CommandExpectation(previous, expected,
+                    nanoTime.getAsLong() + TimeUnit.MILLISECONDS.toNanos(COMMAND_CONFIRMATION_MILLIS)));
+        }
+    }
+
+    /**
+     * Returns true while the cached state only reflects a previous value the appliance has not caught up with yet.
+     * Such a state must not be published, otherwise the channel would visibly revert right after the command.
+     */
+    private boolean awaitingConfirmation(Session current, Point point, State state) {
+        CommandExpectation expectation = current.expectations.get(point.id());
+        if (expectation == null) {
+            return false;
+        }
+        if (state.equals(expectation.expected()) || nanoTime.getAsLong() - expectation.expires() >= 0) {
+            current.expectations.remove(point.id());
+            return false;
+        }
+        return state.equals(expectation.previous());
+    }
+
+    private static @Nullable State expectedState(Point point, Command command) {
+        if ("Switch".equals(point.itemType()) && command instanceof OnOffType onOff) {
+            return onOff;
+        }
+        if (point.itemType().startsWith("Number") && command instanceof QuantityType<?> quantity) {
+            return quantity;
+        }
+        // Plain numbers, text and colour commands are reported back with appliance-specific rounding or scaling, so
+        // the commanded value cannot be compared with the reported one.
+        return null;
     }
 
     private static Set<String> defaultTags(Point point) {
@@ -833,7 +910,10 @@ public class ApplianceHandler extends BaseThingHandler {
                 if (!isActive(current)) {
                     return;
                 }
-                updateState(point.id(), current.resources.state(point));
+                State state = current.resources.state(point);
+                if (!awaitingConfirmation(current, point, state)) {
+                    updateState(point.id(), state);
+                }
             }
             if (isActive(current)) {
                 descriptionProvider.retainDescriptions(getThing().getUID(), channelUIDs);
@@ -856,6 +936,7 @@ public class ApplianceHandler extends BaseThingHandler {
             current.transport = null;
             current.observations.clear();
             current.notifications.clear();
+            current.expectations.clear();
             schedulePoll(current);
             logger.debug("Appliance {} going OFFLINE ({}): {}", getThing().getUID(), detail, message);
             updateStatus(ThingStatus.OFFLINE, detail, message);
