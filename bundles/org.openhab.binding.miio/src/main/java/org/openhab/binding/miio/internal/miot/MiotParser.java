@@ -207,23 +207,7 @@ public class MiotParser {
                             List<MiIoDeviceAction> miIoDeviceActions = new ArrayList<>();
                             MiIoDeviceAction action = new MiIoDeviceAction();
                             action.setCommand("set_properties");
-                            switch (property.format != null ? property.format : "") {
-                                case "bool":
-                                    action.setparameterType(CommandParameterType.ONOFFBOOL);
-                                    break;
-                                case "uint8":
-                                case "int32":
-                                case "float":
-                                    action.setparameterType(CommandParameterType.NUMBER);
-                                    break;
-                                case "string":
-                                    action.setparameterType(CommandParameterType.STRING);
-
-                                    break;
-                                default:
-                                    action.setparameterType(CommandParameterType.STRING);
-                                    break;
-                            }
+                            action.setparameterType(parameterType(miIoBasicChannel.getType()));
                             miIoDeviceActions.add(action);
                             miIoBasicChannel.setActions(miIoDeviceActions);
                         } else {
@@ -388,6 +372,18 @@ public class MiotParser {
     }
 
     /**
+     * Returns the parameter type that sends the command of a channel as the value of its MIoT property or action input.
+     */
+    private static CommandParameterType parameterType(String channelType) {
+        if (channelType.startsWith("Number")) {
+            return CommandParameterType.NUMBER;
+        } else if ("Switch".equals(channelType)) {
+            return CommandParameterType.ONOFFBOOL;
+        }
+        return CommandParameterType.STRING;
+    }
+
+    /**
      * Creates a channel for an action with exactly one input. The command value of the channel is sent as that input,
      * with the {@code $value$} token in the parameters of the action. An action with several inputs can not be filled
      * from one channel value, so it is not handled here and stays on the actions channel.
@@ -430,14 +426,7 @@ public class MiotParser {
         miIoDeviceAction.setCommand("action");
         miIoDeviceAction.setSiid(service.siid);
         miIoDeviceAction.setAiid(action.iid);
-        String channelType = miIoBasicChannel.getType();
-        if (channelType.startsWith("Number")) {
-            miIoDeviceAction.setparameterType(CommandParameterType.NUMBER);
-        } else if ("Switch".equals(channelType)) {
-            miIoDeviceAction.setparameterType(CommandParameterType.ONOFFBOOL);
-        } else {
-            miIoDeviceAction.setparameterType(CommandParameterType.STRING);
-        }
+        miIoDeviceAction.setparameterType(parameterType(miIoBasicChannel.getType()));
         JsonObject inputParameter = new JsonObject();
         inputParameter.addProperty("piid", piid);
         inputParameter.addProperty("value", VALUE_TOKEN);
