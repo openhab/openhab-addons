@@ -1,4 +1,4 @@
-# Tedee Binding for openHAB
+# Tedee Binding
 
 The Tedee binding integrates Tedee Smart Locks with openHAB through either:
 
