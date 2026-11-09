@@ -925,7 +925,9 @@ Using a login dedicated to openHAB is recommended, because the monitoring and su
 The login can limit the messages the processor sends, using its Monitor options (Dimmer Levels, Keypad Buttons, Keypad LEDs, GRAFIK Eye Scenes, Timed Events) and Suppress options (Prompt, Replies, Bad Commands).
 **Leave Suppress Replies unchecked for the openHAB login.**
 The bridge relies on the processor's reply to its heartbeat command to detect a lost connection.
-If the processor sends nothing at all after connecting, as when replies are suppressed, the bridge logs a warning and cannot detect a lost connection.
+At the next heartbeat after 150 seconds without receiving data, including immediately after login, the bridge reports a communication error and schedules a reconnect.
+The error asks you to check both the network connection and the Suppress Replies setting, because silence alone cannot distinguish them.
+Monitoring messages do not establish that command replies are enabled; with replies suppressed, a quiet system can repeatedly disconnect and reconnect.
 When the bridge connects, it sends `PROMPTOFF`, `KBMOFF`, `KLMOFF`, `GSMOFF` and `DLMON`, which are the same commands the RS232 bridge sends.
 The bridge currently uses only dimmer level messages.
 

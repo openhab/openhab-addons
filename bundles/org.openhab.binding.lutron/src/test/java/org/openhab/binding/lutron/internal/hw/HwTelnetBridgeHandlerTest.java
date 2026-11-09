@@ -18,7 +18,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -31,6 +30,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -123,16 +123,16 @@ public class HwTelnetBridgeHandlerTest {
     }
 
     @Test
-    public void processorThatNeverRepliedIsNotReportedAsLost() throws Exception {
-        // Nothing but a prompt was received since connecting, as when the login suppresses replies
+    public void processorThatNeverRepliedIsReportedAsLost() {
+        // A network failure immediately after login must not disable connection supervision.
         handler().idleTimeoutMs = -1;
 
         handler().heartbeat();
 
-        verify(callback, never()).statusUpdated(any(), argThat(info -> info.getStatus() == ThingStatus.OFFLINE));
-        BufferedReader reader = fromBinding;
-        assertNotNull(reader);
-        assertEquals("DLMON", reader.readLine());
+        verify(callback).statusUpdated(any(),
+                argThat(info -> info.getStatus() == ThingStatus.OFFLINE
+                        && info.getStatusDetail() == ThingStatusDetail.COMMUNICATION_ERROR
+                        && String.valueOf(info.getDescription()).contains("Suppress Replies")));
     }
 
     private HwTelnetBridgeHandler handler() {
@@ -152,14 +152,20 @@ public class HwTelnetBridgeHandlerTest {
 
     @Test
     public void silentConnectionIsReportedAsLost() throws Exception {
-        processorSocket().getOutputStream()
-                .write("Dimmer level monitoring enabled\r\n".getBytes(StandardCharsets.US_ASCII));
+        assertSilenceIsReportedAsLostAfter("Dimmer level monitoring enabled");
+    }
+
+    @Test
+    public void monitoringWithoutCommandRepliesDoesNotDisableTimeout() throws Exception {
+        assertSilenceIsReportedAsLostAfter("DL, [01:08:01:54], 50");
+    }
+
+    private void assertSilenceIsReportedAsLostAfter(String line) throws Exception {
+        CountDownLatch received = new CountDownLatch(1);
+        handler().addLineListener(message -> received.countDown());
+        processorSocket().getOutputStream().write((line + "\r\n").getBytes(StandardCharsets.US_ASCII));
         processorSocket().getOutputStream().flush();
-        long deadline = System.nanoTime() + TimeUnit.MILLISECONDS.toNanos(WAIT_MS);
-        while (!handler().hasReceivedLine() && System.nanoTime() < deadline) {
-            Thread.sleep(10);
-        }
-        assertTrue(handler().hasReceivedLine(), "line was not received");
+        assertTrue(received.await(WAIT_MS, TimeUnit.MILLISECONDS), "line was not received");
         // Any time since the last data received exceeds a negative timeout
         handler().idleTimeoutMs = -1;
 
