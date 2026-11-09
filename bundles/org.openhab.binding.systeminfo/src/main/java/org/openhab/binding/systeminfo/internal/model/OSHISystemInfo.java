@@ -12,11 +12,16 @@
  */
 package org.openhab.binding.systeminfo.internal.model;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 import javax.measure.quantity.ElectricPotential;
 import javax.measure.quantity.Frequency;
@@ -25,6 +30,7 @@ import javax.measure.quantity.Time;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.core.OpenHAB;
 import org.openhab.core.library.dimension.DataAmount;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.PercentType;
@@ -50,6 +56,7 @@ import oshi.software.os.OSFileStore;
 import oshi.software.os.OSProcess;
 import oshi.software.os.OperatingSystem;
 import oshi.util.EdidUtil;
+import oshi.util.GlobalConfig;
 
 /**
  * This implementation of {@link SystemInfoInterface} is using the open source library OSHI to provide system
@@ -64,12 +71,16 @@ import oshi.util.EdidUtil;
  * @author Mark Herwege - Add dynamic creation of extra channels
  * @author Mark Herwege - Use units of measure
  * @author Mark Herwege - Processor frequency channels
+ * @author Michael - Load user editable OSHI configuration from conf/misc/oshi.properties
  *
  * @see <a href="https://github.com/oshi/oshi">OSHI GitHub repository</a>
  */
 @NonNullByDefault
 @Component(service = SystemInfoInterface.class)
 public class OSHISystemInfo implements SystemInfoInterface {
+
+    private static final String OSHI_PROPERTIES = "oshi.properties";
+    private static final String OSHI_TEMPLATE = "oshi-template.properties";
 
     private final Logger logger = LoggerFactory.getLogger(OSHISystemInfo.class);
 
@@ -109,6 +120,8 @@ public class OSHISystemInfo implements SystemInfoInterface {
     public void initializeSystemInfo() {
         logger.debug("OSHISystemInfo service starts initializing");
 
+        loadOshiProperties();
+
         SystemInfo systemInfo = new SystemInfo();
         hal = systemInfo.getHardware();
 
@@ -124,6 +137,38 @@ public class OSHISystemInfo implements SystemInfoInterface {
         fileStores = operatingSystem.getFileSystem().getFileStores();
         powerSources = hal.getPowerSources();
         drives = hal.getDiskStores();
+    }
+
+    /**
+     * Loads the user editable OSHI configuration from {@code <conf>/misc/oshi.properties}. If the file does not exist,
+     * a template shipped with the binding is copied there first. The entries override the OSHI defaults and are applied
+     * before OSHI is first used.
+     */
+    private void loadOshiProperties() {
+        Path file = Path.of(OpenHAB.getConfigFolder(), "misc", OSHI_PROPERTIES);
+        try {
+            if (Files.notExists(file)) {
+                try (InputStream in = OSHISystemInfo.class.getResourceAsStream("/" + OSHI_TEMPLATE)) {
+                    if (in != null) {
+                        Files.createDirectories(file.getParent());
+                        Files.copy(in, file);
+                        logger.info("Created default OSHI configuration {}", file);
+                    }
+                }
+            }
+            if (Files.exists(file)) {
+                Properties properties = new Properties();
+                try (InputStream in = Files.newInputStream(file)) {
+                    properties.load(in);
+                }
+                properties.forEach((key, value) -> {
+                    logger.debug("Setting OSHI property {}={}", key, value);
+                    GlobalConfig.set(key.toString().trim(), value.toString().trim());
+                });
+            }
+        } catch (IOException | RuntimeException e) {
+            logger.warn("Could not load OSHI configuration {}: {}", file, e.getMessage());
+        }
     }
 
     private <T> T getDevice(List<@Nullable T> devices, int index) throws DeviceNotFoundException {
