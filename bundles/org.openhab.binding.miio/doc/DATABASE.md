@@ -165,6 +165,7 @@ The state description is part of the generated channel type, so it is ignored wh
 - The properties are requested with the `propertyMethod`, at most `maxProperties` per command, for example `get_prop["power","bright"]` or `get_properties[{"did":"on","siid":2,"piid":1}]`.
 - The answer values are matched to the channels in request order through the `property`.
   A `null` value is ignored; if the number of values differs from the request, the whole answer is ignored.
+  Properties are always requested by name; a device that only answers `get_prop` with an empty list and returns its values by position is not supported.
 - The polling interval is the thing `refreshInterval` (default 30 seconds, 0 disables polling).
   A `REFRESH` command updates all channels (at most once every 5 seconds), and all channels are updated 3 seconds after a command.
 - A channel `refreshInterval` of 2 reads the channel every second cycle.
