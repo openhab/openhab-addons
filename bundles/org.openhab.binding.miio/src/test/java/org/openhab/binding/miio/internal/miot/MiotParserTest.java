@@ -528,7 +528,7 @@ public class MiotParserTest {
     }
 
     @Test
-    public void writablePropertyGetsParameterTypeOfItsChannelType() throws MiotParseException {
+    public void writablePropertyGetsParameterTypeOfItsFormat() throws MiotParseException {
         List<MiIoBasicChannel> channels = new MiotParser("test.vacuum.model")
                 .getDevice(JsonParser.parseString(WRITABLE_FORMATS_SPEC)).getDevice().getChannels();
 

@@ -207,7 +207,7 @@ public class MiotParser {
                             List<MiIoDeviceAction> miIoDeviceActions = new ArrayList<>();
                             MiIoDeviceAction action = new MiIoDeviceAction();
                             action.setCommand("set_properties");
-                            action.setparameterType(parameterType(miIoBasicChannel.getType()));
+                            action.setparameterType(parameterType(property.format));
                             miIoDeviceActions.add(action);
                             miIoBasicChannel.setActions(miIoDeviceActions);
                         } else {
@@ -372,15 +372,14 @@ public class MiotParser {
     }
 
     /**
-     * Returns the parameter type that sends the command of a channel as the value of its MIoT property or action input.
+     * Returns the parameter type that sends a command as the value of a MIoT property or action input of this format.
      */
-    private static CommandParameterType parameterType(String channelType) {
-        if (channelType.startsWith("Number")) {
-            return CommandParameterType.NUMBER;
-        } else if ("Switch".equals(channelType)) {
-            return CommandParameterType.ONOFFBOOL;
-        }
-        return CommandParameterType.STRING;
+    private static CommandParameterType parameterType(@Nullable String format) {
+        return switch (format != null ? format : "") {
+            case "bool" -> CommandParameterType.ONOFFBOOL;
+            case "uint8", "uint16", "uint32", "int8", "int16", "int32", "int64", "float" -> CommandParameterType.NUMBER;
+            default -> CommandParameterType.STRING;
+        };
     }
 
     /**
@@ -426,7 +425,7 @@ public class MiotParser {
         miIoDeviceAction.setCommand("action");
         miIoDeviceAction.setSiid(service.siid);
         miIoDeviceAction.setAiid(action.iid);
-        miIoDeviceAction.setparameterType(parameterType(miIoBasicChannel.getType()));
+        miIoDeviceAction.setparameterType(parameterType(input.format));
         JsonObject inputParameter = new JsonObject();
         inputParameter.addProperty("piid", piid);
         inputParameter.addProperty("value", VALUE_TOKEN);
