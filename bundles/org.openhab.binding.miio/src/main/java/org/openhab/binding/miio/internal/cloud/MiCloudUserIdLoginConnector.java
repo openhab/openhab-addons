@@ -284,29 +284,32 @@ public class MiCloudUserIdLoginConnector extends MiCloudConnector {
     }
 
     private void get2factory(String url) {
-        HttpCookieStore cookieStore = httpClient.getHttpCookieStore();
+        // Jetty 12 cannot change the cookie store of a started client, so these requests use a separate client
+        HttpClient faClient = new HttpClient();
+        faClient.setHttpCookieStore(new HttpCookieStore.Empty());
+        faClient.setFollowRedirects(httpClient.isFollowRedirects());
         try {
-            httpClient.setHttpCookieStore(new HttpCookieStore.Empty());
+            faClient.start();
             logger.debug("Trying to request code from {}", url);
 
-            Request request = httpClient.newRequest(url).timeout(REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS);
+            Request request = faClient.newRequest(url).timeout(REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS);
             request.agent(BROWSER_USERAGENT);
             request.method(HttpMethod.GET);
             debugRequest(request);
 
             String newurl = url.replace("authStart", "list");
-            request = httpClient.newRequest(newurl).timeout(REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS);
+            request = faClient.newRequest(newurl).timeout(REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS);
             request.agent(BROWSER_USERAGENT);
             debugRequest(request);
 
-            request = httpClient.newRequest("https://account.xiaomi.com/identity/auth/verifyEmail?_flag=8&_json=true")
+            request = faClient.newRequest("https://account.xiaomi.com/identity/auth/verifyEmail?_flag=8&_json=true")
                     .timeout(REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS);
             request.agent(BROWSER_USERAGENT);
             debugRequest(request);
 
             long ms = java.time.Instant.now().toEpochMilli();
             String mailticket = "https://account.xiaomi.com/identity/auth/sendEmailTicket?_dc=" + ms;
-            request = httpClient.newRequest(mailticket).timeout(REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS);
+            request = faClient.newRequest(mailticket).timeout(REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS);
             request.agent(BROWSER_USERAGENT);
             request.method(HttpMethod.POST);
 
@@ -324,10 +327,14 @@ public class MiCloudUserIdLoginConnector extends MiCloudConnector {
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             logger.warn("2FA setup interrupted: {}", e.getMessage());
-        } catch (TimeoutException | ExecutionException e) {
+        } catch (Exception e) {
             logger.warn("Error requesting 2FA code: {}", e.getMessage(), e);
         } finally {
-            httpClient.setHttpCookieStore(cookieStore);
+            try {
+                faClient.stop();
+            } catch (Exception e) {
+                logger.debug("Error stopping 2FA http client: {}", e.getMessage());
+            }
         }
     }
 
