@@ -21,6 +21,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -99,6 +100,18 @@ public class HwKeypadHandlerTest {
         org.junit.jupiter.api.Assertions.assertNotNull(handler.getThing().getChannel("button24"));
         org.junit.jupiter.api.Assertions.assertNotNull(handler.getThing().getChannel("led24"));
         org.junit.jupiter.api.Assertions.assertNotNull(handler.getThing().getChannel("press"));
+    }
+
+    @Test
+    public void modelCreatesOnlyItsChannels() {
+        createHandler(Map.of("address", ADDRESS, "model", "hwi-kp5"));
+
+        handler.initialize();
+
+        org.junit.jupiter.api.Assertions.assertEquals(
+                List.of("button1", "button2", "button3", "button4", "button5", "button23", "button24", "led1", "led2",
+                        "led3", "led4", "led5", "press"),
+                handler.getThing().getChannels().stream().map(c -> c.getUID().getId()).toList());
     }
 
     @Test

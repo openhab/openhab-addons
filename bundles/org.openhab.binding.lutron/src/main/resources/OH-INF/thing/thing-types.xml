@@ -1197,6 +1197,22 @@
 				<default>GENERIC</default>
 				<options>
 					<option value="GENERIC">Generic (24 buttons and LEDs)</option>
+					<option value="HWI-KP5">HWI-KP5</option>
+					<option value="HWI-KP10">HWI-KP10</option>
+					<option value="HWI-KP15">HWI-KP15</option>
+					<option value="HWI-KP5-DN">HWI-KP5-DN</option>
+					<option value="HWI-KP5-DW">HWI-KP5-DW</option>
+					<option value="HWI-KP-LB6">HWI-KP-LB6</option>
+					<option value="HWI-KP-LB9">HWI-KP-LB9</option>
+					<option value="HWI-2B">HWI-2B</option>
+					<option value="HWI-2SE">HWI-2SE</option>
+					<option value="HWI-4SE-M">HWI-4SE-M</option>
+					<option value="HWI-4SE-IR">HWI-4SE-IR</option>
+					<option value="HWI-8SE-M">HWI-8SE-M</option>
+					<option value="HWI-8SE-IR">HWI-8SE-IR</option>
+					<option value="HWI-5S-M">HWI-5S-M</option>
+					<option value="HWI-5S-IR">HWI-5S-IR</option>
+					<option value="HWI-5S-NM">HWI-5S-NM</option>
 				</options>
 				<limitToOptions>true</limitToOptions>
 			</parameter>

@@ -963,12 +963,28 @@ Each dimmer asks the processor for its level whenever the bridge goes online, in
 
 A keypad has one required parameter ``address``, and one optional parameter ``model``.
 Keypads (and other devices that share their address space, such as CCIs and TEL-9 interfaces) have three-field addresses on links 4 to 6 (for example `[01:04:02]`), and RF keypads have four fields (for example `[01:08:02:01]`).
-The processor reports every button of every keypad with the numbers 1 to 24, so the ``model`` is `GENERIC`, which gives the Thing 24 buttons and 24 LEDs.
-The processor does not tell the binding which model a keypad is, so discovered keypads also use `GENERIC`.
-Channels for buttons or LEDs that the keypad does not have never receive events.
+The processor numbers the buttons of every keypad 1 to 24, and the ``model`` decides which of them get channels.
+The default, `GENERIC`, gives the Thing all 24 buttons and LEDs; channels for buttons or LEDs that the keypad does not have never receive events.
+The processor does not tell the binding which model a keypad is, so discovered keypads use `GENERIC`.
+Set ``model`` to the keypad's model number to get only the channels it has:
+
+| Model                                                                        | Buttons                       | LEDs                |
+|------------------------------------------------------------------------------|-------------------------------|---------------------|
+| `HWI-KP5`, `HWI-KP5-DN`, `HWI-KP5-DW`, `HWI-4SE-M`, `HWI-4SE-IR`, `HWI-5S-M` | 1-5, 23, 24                   | 1-5                 |
+| `HWI-KP10`                                                                   | 1-10, 23, 24                  | 1-10                |
+| `HWI-KP15`                                                                   | 1-15, 23, 24                  | 1-15                |
+| `HWI-8SE-M`, `HWI-8SE-IR`                                                    | 1-9, 23, 24                   | 1-9                 |
+| `HWI-KP-LB6`                                                                 | 1, 3, 5, 6, 8, 10             | same as the buttons |
+| `HWI-KP-LB9`                                                                 | 1, 3, 5, 6, 8, 10, 11, 13, 15 | same as the buttons |
+| `HWI-2B`                                                                     | 23, 24                        | 23, 24              |
+| `HWI-2SE`                                                                    | 3, 4                          | 3, 4                |
+| `HWI-5S-IR`, `HWI-5S-NM`                                                     | 1-5                           | 1-5                 |
+
+The button numbers are those of the Keypad Button Numbering topic in the HomeWorks Illumination help.
+That topic does not cover seeTouch keypads (models starting with `ST-`), so use `GENERIC` for those.
 
 ```java
-lutron:hwkeypad:keypad1 (lutron:hwtelnetbridge:home) [ address="[01:04:02]" ]
+lutron:hwkeypad:keypad1 (lutron:hwtelnetbridge:home) [ address="[01:04:02]", model="HWI-KP10" ]
 ```
 
 | Channel    | Type    | Description                                                                            |
@@ -976,6 +992,8 @@ lutron:hwkeypad:keypad1 (lutron:hwtelnetbridge:home) [ address="[01:04:02]" ]
 | button1-24 | Trigger | Fires `PRESSED`, `RELEASED`, `LONG_PRESSED` and `DOUBLE_PRESSED` events for the button |
 | led1-24    | String  | State of the LED of the button: `OFF`, `ON`, `FLASH1` or `FLASH2`                      |
 | press      | String  | Send a button number (1-24) to simulate a press and release of that button             |
+
+Only the buttons and LEDs of the configured model have channels.
 
 The processor reports what the keypad does, and the binding passes it on unchanged.
 A button that is held sends `PRESSED`, `LONG_PRESSED` and `RELEASED`, and a double tap sends `PRESSED`, `RELEASED`, `DOUBLE_PRESSED` and `RELEASED`.
