@@ -61,8 +61,10 @@ public class HwDimmerHandler extends BaseThingHandler {
         fadeTime = config.getFadeTime();
         defaultLevel = config.getDefaultLevel();
 
-        if (getBridge() == null) {
-            logger.debug("Bridge unavailable while initializing Thing: {}", thing.getUID());
+        Bridge bridge = getBridge();
+        if (bridge == null || bridge.getStatus() != ThingStatus.ONLINE) {
+            // bridgeStatusChanged() brings the Thing online and queries the level when the bridge comes online
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
             return;
         }
 

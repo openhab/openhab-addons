@@ -61,6 +61,7 @@ public class HwDimmerHandlerTest {
         when(thing.getConfiguration()).thenReturn(new Configuration(Map.of("address", ADDRESS)));
         when(callback.getBridge(BRIDGE_UID)).thenReturn(bridge);
         when(bridge.getHandler()).thenReturn(bridgeHandler);
+        when(bridge.getStatus()).thenReturn(ThingStatus.ONLINE);
 
         handler = new HwDimmerHandler(thing);
         handler.setCallback(callback);
@@ -78,6 +79,33 @@ public class HwDimmerHandlerTest {
         handler.bridgeStatusChanged(bridgeStatus(ThingStatus.ONLINE));
 
         verify(bridgeHandler, times(2)).sendCommand(LEVEL_QUERY);
+    }
+
+    @Test
+    public void offlineBridgeKeepsDimmerOfflineUntilItComesOnline() {
+        when(bridge.getStatus()).thenReturn(ThingStatus.OFFLINE);
+
+        handler.initialize();
+
+        verify(callback).statusUpdated(thing,
+                new ThingStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, null));
+        verify(bridgeHandler, never()).sendCommand(org.mockito.ArgumentMatchers.anyString());
+
+        when(bridge.getStatus()).thenReturn(ThingStatus.ONLINE);
+        handler.bridgeStatusChanged(bridgeStatus(ThingStatus.ONLINE));
+
+        verify(bridgeHandler).sendCommand(LEVEL_QUERY);
+    }
+
+    @Test
+    public void missingBridgeKeepsDimmerOffline() {
+        when(callback.getBridge(BRIDGE_UID)).thenReturn(null);
+
+        handler.initialize();
+
+        verify(callback).statusUpdated(thing,
+                new ThingStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, null));
+        verify(bridgeHandler, never()).sendCommand(org.mockito.ArgumentMatchers.anyString());
     }
 
     @Test
