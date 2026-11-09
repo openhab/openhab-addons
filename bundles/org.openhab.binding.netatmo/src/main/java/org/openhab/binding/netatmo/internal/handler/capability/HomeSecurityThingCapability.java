@@ -30,7 +30,7 @@ import org.openhab.binding.netatmo.internal.providers.NetatmoDescriptionProvider
  *
  */
 @NonNullByDefault
-public abstract class HomeSecurityThingCapability extends Capability {
+public abstract class HomeSecurityThingCapability extends WebhookListenerCapability {
     protected final NetatmoDescriptionProvider descriptionProvider;
     protected final EventChannelHelper eventHelper;
 
@@ -49,20 +49,15 @@ public abstract class HomeSecurityThingCapability extends Capability {
 
     protected Optional<SecurityCapability> getSecurityCapability() {
         if (securityCapability == null) {
-            handler.getHomeCapability(SecurityCapability.class).ifPresent(cap -> securityCapability = cap);
+            securityCapability = handler.getHomeCapability(SecurityCapability.class).orElse(null);
         }
         return Optional.ofNullable(securityCapability);
     }
 
     protected Optional<HomeCapability> getHomeCapability() {
         if (homeCapability == null) {
-            handler.getHomeCapability(HomeCapability.class).ifPresent(cap -> homeCapability = cap);
+            homeCapability = handler.getHomeCapability(HomeCapability.class).orElse(null);
         }
         return Optional.ofNullable(homeCapability);
-    }
-
-    @Override
-    public void dispose() {
-        super.dispose();
     }
 }

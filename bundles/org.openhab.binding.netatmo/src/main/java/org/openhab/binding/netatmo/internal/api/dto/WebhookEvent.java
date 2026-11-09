@@ -18,9 +18,10 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.netatmo.internal.api.data.EventType;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.TopologyChange;
-import org.openhab.binding.netatmo.internal.api.data.PushType;
 import org.openhab.binding.netatmo.internal.deserialization.NAObjectMap;
+import org.openhab.binding.netatmo.internal.deserialization.NAPushType;
 
 /**
  * The {@link WebhookEvent} is responsible to hold
@@ -31,8 +32,7 @@ import org.openhab.binding.netatmo.internal.deserialization.NAObjectMap;
  */
 @NonNullByDefault
 public class WebhookEvent extends Event {
-    private PushType pushType = PushType.UNKNOWN;
-    private String userId = "";
+    private NAPushType pushType = NAPushType.UNKNOWN;
     private String deviceId = "";
     private String homeId = "";
     private String roomId = "";
@@ -50,6 +50,11 @@ public class WebhookEvent extends Event {
 
     public NAObjectMap<Person> getPersons() {
         return persons;
+    }
+
+    @Override
+    public EventType getEventType() {
+        return pushType.event();
     }
 
     @Override
@@ -71,13 +76,8 @@ public class WebhookEvent extends Event {
         return vignetteUrl;
     }
 
-    public String getUserId() {
-        return userId;
-    }
-
     public Set<String> getNAObjectList() {
         Set<String> result = new LinkedHashSet<>();
-        result.add(getCameraId());
         addNotBlank(result, homeId);
         addNotBlank(result, deviceId);
         addNotBlank(result, roomId);

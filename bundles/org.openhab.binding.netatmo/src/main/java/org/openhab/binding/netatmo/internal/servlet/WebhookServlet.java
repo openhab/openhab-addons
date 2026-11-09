@@ -136,6 +136,7 @@ public class WebhookServlet extends NetatmoServlet {
     }
 
     public void registerDataListener(String id, Capability capability) {
+        logger.debug("Registering webhook listener '{}' for capability {}'", id, capability.getClass().getSimpleName());
         dataListeners.put(id, capability);
     }
 

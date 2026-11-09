@@ -560,8 +560,8 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
         return Set.of(NetatmoDiscoveryService.class);
     }
 
-    public Optional<WebhookServlet> getWebHookServlet() {
-        return Optional.ofNullable(webhookServlet);
+    public @Nullable WebhookServlet getWebhookServlet() {
+        return webhookServlet;
     }
 
     public @Nullable Duration getIdleTime() {
