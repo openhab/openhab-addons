@@ -14,6 +14,7 @@ package org.openhab.binding.lutron.internal.hw;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -54,7 +55,9 @@ final class HwAddress {
         if (fields.isEmpty()) {
             return address;
         }
-        return fields.stream().map(field -> String.format("%02d", field)).collect(Collectors.joining(":", "[", "]"));
+        // The processor needs ASCII digits, which the default locale does not always produce
+        return fields.stream().map(field -> String.format(Locale.ROOT, "%02d", field))
+                .collect(Collectors.joining(":", "[", "]"));
     }
 
     /**

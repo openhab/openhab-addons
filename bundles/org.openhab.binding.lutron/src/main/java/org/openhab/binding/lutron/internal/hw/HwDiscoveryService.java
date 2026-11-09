@@ -13,6 +13,7 @@
 package org.openhab.binding.lutron.internal.hw;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -58,7 +59,7 @@ public class HwDiscoveryService extends AbstractThingHandlerDiscoveryService<HwB
                     logger.debug("Starting scan for HW Dimmers");
                     for (int m = 1; m <= 8; m++) { // Modules
                         for (int o = 1; o <= 4; o++) { // Outputs
-                            String address = String.format("[01:01:00:%02d:%02d]", m, o);
+                            String address = String.format(Locale.ROOT, "[01:01:00:%02d:%02d]", m, o);
                             thingHandler.sendCommand("RDL, " + address);
                             Thread.sleep(5);
                         }

@@ -17,6 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
+import java.util.Locale;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
@@ -40,6 +41,19 @@ public class HwAddressTest {
     public void fewerFieldsAreNormalizedToo() {
         assertEquals("[01:08:01:54]", HwAddress.normalize("1:8:1:54"));
         assertEquals("[01:05:25]", HwAddress.normalize("[1:5:25]"));
+    }
+
+    @Test
+    @SuppressWarnings("PMD.SetDefaultLocale") // The regression only shows under a default locale with non-ASCII digits
+    public void normalizedAddressUsesAsciiDigitsInEveryLocale() {
+        Locale defaultLocale = Locale.getDefault();
+        try {
+            // Arabic (Egypt) formats numbers with Arabic-Indic digits by default
+            Locale.setDefault(Locale.forLanguageTag("ar-EG"));
+            assertEquals("[01:01:03:02:04]", HwAddress.normalize("1:1:3:2:4"));
+        } finally {
+            Locale.setDefault(defaultLocale);
+        }
     }
 
     @Test
