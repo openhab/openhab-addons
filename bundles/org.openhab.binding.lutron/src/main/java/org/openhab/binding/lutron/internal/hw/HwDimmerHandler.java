@@ -64,7 +64,7 @@ public class HwDimmerHandler extends BaseThingHandler {
         Bridge bridge = getBridge();
         if (bridge == null || bridge.getStatus() != ThingStatus.ONLINE) {
             // bridgeStatusChanged() brings the Thing online and queries the level when the bridge comes online
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
             return;
         }
 
