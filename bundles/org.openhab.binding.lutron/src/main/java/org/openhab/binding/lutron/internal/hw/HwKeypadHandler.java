@@ -117,8 +117,9 @@ public class HwKeypadHandler extends BaseThingHandler {
                 .withType(PRESS_CHANNEL_TYPE).build();
         support.configure(components, List.of(press));
 
-        if (getBridge() == null) {
-            logger.debug("Bridge unavailable while initializing Thing: {}", thing.getUID());
+        Bridge bridge = getBridge();
+        if (bridge == null || bridge.getStatus() != ThingStatus.ONLINE) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
             return;
         }
         updateStatus(ThingStatus.ONLINE);

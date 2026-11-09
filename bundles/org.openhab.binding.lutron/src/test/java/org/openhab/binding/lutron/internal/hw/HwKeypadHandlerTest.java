@@ -14,6 +14,7 @@ package org.openhab.binding.lutron.internal.hw;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -73,6 +74,12 @@ public class HwKeypadHandlerTest {
     public void setUp() {
         when(callback.getBridge(BRIDGE_UID)).thenReturn(bridge);
         when(bridge.getHandler()).thenReturn(bridgeHandler);
+        when(bridge.getStatus()).thenReturn(ThingStatus.ONLINE);
+        doAnswer(invocation -> {
+            Thing updated = invocation.getArgument(0);
+            updated.setStatusInfo(invocation.getArgument(1));
+            return null;
+        }).when(callback).statusUpdated(any(), any());
         createHandler(Map.of("address", ADDRESS));
     }
 
@@ -110,6 +117,36 @@ public class HwKeypadHandlerTest {
         handler.bridgeStatusChanged(new ThingStatusInfo(ThingStatus.ONLINE, ThingStatusDetail.NONE, null));
 
         verify(bridgeHandler, times(2)).sendCommand("RKLS, " + ADDRESS);
+    }
+
+    @Test
+    public void offlineBridgeKeepsKeypadOfflineUntilItComesOnline() {
+        when(bridge.getStatus()).thenReturn(ThingStatus.OFFLINE);
+
+        handler.initialize();
+
+        org.junit.jupiter.api.Assertions.assertEquals(ThingStatus.OFFLINE, handler.getThing().getStatus());
+        org.junit.jupiter.api.Assertions.assertEquals(ThingStatusDetail.BRIDGE_OFFLINE,
+                handler.getThing().getStatusInfo().getStatusDetail());
+        verify(bridgeHandler, never()).sendCommand(any());
+
+        when(bridge.getStatus()).thenReturn(ThingStatus.ONLINE);
+        handler.bridgeStatusChanged(new ThingStatusInfo(ThingStatus.ONLINE, ThingStatusDetail.NONE, null));
+
+        org.junit.jupiter.api.Assertions.assertEquals(ThingStatus.ONLINE, handler.getThing().getStatus());
+        verify(bridgeHandler).sendCommand("RKLS, " + ADDRESS);
+    }
+
+    @Test
+    public void missingBridgeKeepsKeypadOffline() {
+        when(callback.getBridge(BRIDGE_UID)).thenReturn(null);
+
+        handler.initialize();
+
+        org.junit.jupiter.api.Assertions.assertEquals(ThingStatus.OFFLINE, handler.getThing().getStatus());
+        org.junit.jupiter.api.Assertions.assertEquals(ThingStatusDetail.BRIDGE_OFFLINE,
+                handler.getThing().getStatusInfo().getStatusDetail());
+        verify(bridgeHandler, never()).sendCommand(any());
     }
 
     @Test
