@@ -98,7 +98,7 @@ import com.google.gson.JsonSyntaxException;
  */
 @NonNullByDefault
 public class MiIoBasicHandler extends MiIoAbstractHandler {
-    /** Longer than any answer takes; an answer can be lost when the queue is dropped, e.g. of a removed gateway */
+    /** Maximum wait for the answer to a sent value, as the answer is lost when the queue is dropped */
     private static final Duration SENT_VALUE_MAX_AGE = Duration.ofMinutes(1);
     private static final Set<CommandParameterType> LEGACY_PROPERTY_VALUE_TYPES = Set.of(CommandParameterType.NUMBER,
             CommandParameterType.STRING, CommandParameterType.ONOFF, CommandParameterType.ONOFFBOOL,
@@ -123,10 +123,7 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
     private Map<String, Integer> customRefreshInterval = new HashMap<>();
     private final Set<String> refreshedOnce = ConcurrentHashMap.newKeySet();
     private final AtomicBoolean readOnceRefreshPending = new AtomicBoolean();
-    /**
-     * Property values sent to the device, by property, until the device has answered the command. Also the lock for
-     * changing these properties in {@link #deviceVariables}.
-     */
+    /** Sent property values awaiting the device answer; also guards writing them to {@link #deviceVariables} */
     private final Map<String, SentValue> sentValues = new HashMap<>();
 
     private record SentValue(int commandId, @Nullable Object previousValue, Instant sentAt) {
@@ -350,12 +347,14 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
     }
 
     /**
-     * Sends a command that writes the value of a polled property. The sent value is used for the property in later
-     * commands right away, as the next poll is seconds away. Until the device answers the command, poll responses do
-     * not replace it, as those can be answers to polls queued before the command.
+     * Sends a command that writes a polled property, and keeps the sent value until the device answers.
+     *
+     * @param cmd command to send
+     * @param property property written by the command
+     * @param value value sent for the property
      */
     private void sendPropertyValue(String cmd, String property, JsonElement value) {
-        // the lock is held while queueing, so the answer cannot be processed before the value is registered
+        // registered under the lock, so the answer cannot be processed first
         synchronized (sentValues) {
             int commandId = sendCommand(cmd);
             if (commandId != 0) {
@@ -366,8 +365,9 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
     }
 
     /**
-     * Ends the wait for the device answer to a sent property value, and restores the previous value if the device
-     * did not accept it
+     * Releases the sent value answered by the response, and restores the previous value when the device rejected it.
+     *
+     * @param response answer from the device
      */
     private void settleSentValue(MiIoSendCommand response) {
         synchronized (sentValues) {
@@ -399,7 +399,7 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
         if (response.isError()) {
             return true;
         }
-        // MIoT reports the result per property, e.g. [{"did": "x", "siid": 2, "piid": 1, "code": -4005}]
+        // MIoT reports a failure per property as a negative code
         JsonElement result = response.getResult();
         if (result.isJsonArray()) {
             for (JsonElement element : result.getAsJsonArray()) {
@@ -413,10 +413,9 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
     }
 
     /**
-     * Whether the action writes the command value as the value of the channel's own polled property, in the format
-     * the device reports it. A MIoT set_properties writes the channel's own property, with any condition. For a legacy
-     * command the written property is not known, so only a value that is sent as is qualifies: not a color, nor a
-     * value changed by a condition, as for the companion actions of lights (e.g. set_power with BrightnessOnOff).
+     * Checks whether the action sends the command value as the value of the channel's own property.
+     *
+     * @return true for a MIoT set_properties of the channel, or a legacy action that sends the value unchanged
      */
     private static boolean writesOwnProperty(MiIoBasicChannel channel, MiIoDeviceAction action, Command command,
             boolean valueInParameters) {
@@ -426,11 +425,11 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
         }
         CommandParameterType paramType = action.getparameterType();
         if (channel.isMiOt()) {
-            // a nested value is sent to the property named in its parameter, e.g. "on" next to a brightness
+            // a nested value is written to the property named in the parameter
             return MiIoCommand.SET_PROPERTIES.getCommand().equals(action.getCommand()) && !valueInParameters
                     && paramType != CommandParameterType.NONE && paramType != CommandParameterType.EMPTY;
         }
-        // an HSB command also runs the NUMBER action of a color channel, with only its brightness
+        // an HSB command sends only its brightness to a NUMBER action
         if (!LEGACY_PROPERTY_VALUE_TYPES.contains(paramType) || command instanceof HSBType) {
             return false;
         }
@@ -461,7 +460,7 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
     }
 
     /**
-     * Whether a nested value is sent under the name of the property, e.g. [{"lp_threshold": "$value$", ...}]
+     * Checks whether a parameter object holds the value under the property name, e.g. {"lp_threshold": "$value$"}.
      */
     private static boolean isValueOfProperty(JsonArray parameters, String property) {
         for (JsonElement parameter : parameters) {

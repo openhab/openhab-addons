@@ -544,7 +544,7 @@ public class MiIoBasicHandlerValueInParametersTest {
     }
 
     /**
-     * Loads a channel whose command shows the current values of the given properties
+     * Loads a channel whose command sends the current values of the given properties.
      */
     private void loadShowChannel(String... properties) {
         StringBuilder parameters = new StringBuilder("\"$value$\"");
@@ -611,8 +611,6 @@ public class MiIoBasicHandlerValueInParametersTest {
         handler.send("brightness", new PercentType(60));
         handler.send("rgbColor", new HSBType("120,100,40"));
         handler.send("nightlightBrightness", OnOffType.ON);
-        // only set_bright of the brightness channel is kept: the actions of the color channel do not write rgb,
-        // and set_power with BrightnessOnOff or a returnValue does not send the brightness
         assertEquals(List.of("show[\"x\",60,255,5]"), show());
     }
 
