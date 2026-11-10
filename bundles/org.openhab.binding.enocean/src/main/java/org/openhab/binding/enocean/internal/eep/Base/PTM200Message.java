@@ -67,9 +67,10 @@ public class PTM200Message extends _RPSMessage {
     }
 
     private void updateEndAngle(STMStateMachine<BlindAction, BlindState> stm, Configuration config, PercentType angle) {
-        // a request that waited for a calibration moves the blind again and sets the slats afterwards
+        // a position request that waited for a calibration moves the blind again and sets the slats afterwards
         if (config.as(EnOceanChannelRollershutterConfig.class).getConfigMode() == ConfigMode.BLINDS
-                && !(stm.getStoredCommand() instanceof PercentType)) {
+                && !(CHANNEL_ROLLERSHUTTER.equals(stm.getStoredChannel())
+                        && stm.getStoredCommand() instanceof PercentType)) {
             stm.updateChannel(CHANNEL_DIMMER, angle);
         }
     }

@@ -165,6 +165,17 @@ public class A5_3F_7F_EltakoFSB extends _4BSMessage implements StateMachineProvi
                     setData(ZERO, shutTimeByte, MOVE_UP, TEACHIN_BIT); // => move completely up
                     stm.apply(BlindAction.CALIBRATION_REQUEST_UP);
                     break;
+                case MOVEMENT_CALIBRATION_UP, MOVEMENT_CALIBRATION_DOWN:
+                    // the position is set first, the slats follow: the waiting slat request becomes the target angle
+                    if (isDimmerRequestWaiting(stm) && stm.getStoredCommand() instanceof PercentType angle) {
+                        setDimmerState(thing, angle);
+                    }
+                    stm.storeCommand(CHANNEL_ROLLERSHUTTER, percentCommand);
+                    break;
+                case MOVEMENT_SLATS, POSITION_REACHED:
+                    // the slat adjustment finishes first, the position follows and the dimmer value is the target
+                    stm.storeCommand(CHANNEL_ROLLERSHUTTER, percentCommand);
+                    break;
                 case IDLE:
                     if (percentCommand.intValue() == PercentType.ZERO.intValue()) {
                         setData(ZERO, shutTimeByte, MOVE_UP, TEACHIN_BIT); // => move completely up
@@ -296,13 +307,43 @@ public class A5_3F_7F_EltakoFSB extends _4BSMessage implements StateMachineProvi
         }
     }
 
+    private static boolean isDimmerRequestWaiting(STMStateMachine<BlindAction, BlindState> stm) {
+        return CHANNEL_DIMMER.equals(stm.getStoredChannel()) && stm.getStoredCommand() instanceof PercentType;
+    }
+
+    private static boolean isPositionRequestWaiting(STMStateMachine<BlindAction, BlindState> stm) {
+        return CHANNEL_ROLLERSHUTTER.equals(stm.getStoredChannel()) && stm.getStoredCommand() instanceof PercentType;
+    }
+
+    private void setDimmerState(Thing thing, PercentType angle) {
+        Channel channel = thing.getChannel(CHANNEL_DIMMER);
+        if (channel != null && thing.getHandler() instanceof EnOceanBaseActuatorHandler myHandler) {
+            myHandler.setState(channel.getUID(), angle);
+        }
+    }
+
     void processChannelDimmer(Thing thing, Command command, Configuration config,
             Function<String, State> getCurrentStateFunc, @Nullable STMStateMachine<BlindAction, BlindState> stm) {
 
         Channel channel = null;
         if (command instanceof PercentType decimalCommand) {
             if (stm != null) {
-                switch (stm.getState()) {
+                BlindState state = stm.getState();
+                if (state == BlindState.INVALID) {
+                    // the slats are unknown: calibrate first, the stored request sets the angle afterwards
+                    byte shutTimeByte = (byte) Math.min(255,
+                            Math.max(0, config.as(EnOceanChannelRollershutterConfig.class).shutTime));
+                    stm.storeCommand(CHANNEL_DIMMER, decimalCommand);
+                    setData(ZERO, shutTimeByte, MOVE_UP, TEACHIN_BIT); // => move completely up
+                    stm.apply(BlindAction.CALIBRATION_REQUEST_UP);
+                    return;
+                }
+                if ((state == BlindState.MOVEMENT_CALIBRATION_UP || state == BlindState.MOVEMENT_CALIBRATION_DOWN)
+                        && isDimmerRequestWaiting(stm)) {
+                    stm.storeCommand(CHANNEL_DIMMER, decimalCommand);
+                    return;
+                }
+                switch (state) {
                     case IDLE:
                         convertDimmer(decimalCommand, config, getCurrentStateFunc, stm);
                         if (thing.getHandler() instanceof EnOceanBaseActuatorHandler myHandler) {
@@ -314,7 +355,7 @@ public class A5_3F_7F_EltakoFSB extends _4BSMessage implements StateMachineProvi
                         }
                         break;
                     case MOVEMENT_POSITION_UP, MOVEMENT_POSITION_DOWN, MOVEMENT_MANUAL_UP, MOVEMENT_MANUAL_DOWN,
-                            MOVEMENT_CALIBRATION_UP, MOVEMENT_CALIBRATION_DOWN, POSITION_REACHED, INVALID:
+                            MOVEMENT_CALIBRATION_UP, MOVEMENT_CALIBRATION_DOWN, POSITION_REACHED:
                         // we avoid update during MOVEMENT_SLATS, all other cases are allowed.
                         if (thing.getHandler() instanceof EnOceanBaseActuatorHandler myHandler) {
                             channel = thing.getChannel(CHANNEL_DIMMER);
@@ -377,8 +418,7 @@ public class A5_3F_7F_EltakoFSB extends _4BSMessage implements StateMachineProvi
                                 break;
                             case MOVEMENT_CALIBRATION_UP, MOVEMENT_CALIBRATION_DOWN:
                                 // a request that waited for the calibration moves the blind again and sets the slats
-                                if (c.getConfigMode() == ConfigMode.BLINDS
-                                        && !(blindStm.getStoredCommand() instanceof PercentType)) {
+                                if (c.getConfigMode() == ConfigMode.BLINDS && !isPositionRequestWaiting(blindStm)) {
                                     blindStm.updateChannel(CHANNEL_DIMMER,
                                             move_up ? PercentType.ZERO : PercentType.HUNDRED);
                                 }
@@ -572,7 +612,7 @@ public class A5_3F_7F_EltakoFSB extends _4BSMessage implements StateMachineProvi
         return switch (mode) {
             case LEGACY -> Set.of();
             case ROLLERSHUTTER -> Set.of(BlindAction.CALIBRATION_DONE);
-            case BLINDS -> Set.of(BlindAction.CALIBRATION_DONE, BlindAction.POSITION_DONE);
+            case BLINDS -> Set.of(BlindAction.CALIBRATION_DONE, BlindAction.POSITION_DONE, BlindAction.SLATS_POS_DONE);
         };
     }
 
