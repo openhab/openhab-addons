@@ -102,7 +102,8 @@ public class JRubyConsoleCommandExtension extends AbstractConsoleCommandExtensio
     public List<String> getUsages() {
         return List.of( //
                 buildCommandUsage(INFO, "displays information about JRuby Scripting add-on"), //
-                buildCommandUsage(CONSOLE + " [--list|-l|--help|-h] | [--no-bundle] [script] [options]",
+                buildCommandUsage(CONSOLE
+                        + " [--list|-l|--help|-h] | [--no-bundle] [script] [options] | [--no-bundle] -- <ruby code>",
                         "starts an interactive JRuby console"), //
                 buildCommandUsage(BUNDLE + " [arguments]", "runs Ruby bundler against your Gemfile"), //
                 buildCommandUsage(GEM + " [arguments]", "manages JRuby Scripting add-on's RubyGems"), //
@@ -249,16 +250,27 @@ public class JRubyConsoleCommandExtension extends AbstractConsoleCommandExtensio
             args = Arrays.copyOfRange(args, 1, args.length);
         }
 
+        if (args.length > 0 && "--".equals(args[0])) {
+            String code = String.join(" ", Arrays.copyOfRange(args, 1, args.length));
+            executeWithFullJRuby(console, withoutBundle, engine -> {
+                engine.put("$console", console);
+                engine.put(ScriptEngine.ARGV, new String[0]);
+                return engine.eval(code);
+            });
+            return;
+        }
+
         if (args.length > 0) {
             switch (args[0]) {
                 case "--help":
                 case "-h":
                     console.printUsage(
-                            "jrubyscripting console [--list|-l|--help|-h] | [--no-bundle] [script] [options]");
+                            "jrubyscripting console [--list|-l|--help|-h] | [--no-bundle] [script] [options] | [--no-bundle] -- <ruby code>");
                     console.println("");
                     console.println("  --list, -l: list available console scripts");
                     console.println("  --help, -h: show this help");
                     console.println("  --no-bundle: skip Bundler setup and configured requires for this console");
+                    console.println("  --: execute the remaining arguments as Ruby code instead of a console script");
                     console.println("  script: name of the console script to run");
                     console.println("  options: arguments to pass to the console script");
                     console.println("");

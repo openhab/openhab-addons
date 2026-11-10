@@ -39,14 +39,15 @@ import org.openhab.core.io.console.Console;
 @NonNullByDefault
 class JRubyConsoleCommandExtensionTest {
     @ParameterizedTest
-    @CsvSource({ "true, false", "true, true", "false, false", "false, true" })
-    void startsConsole(boolean withoutBundle, boolean explicitScript) throws Exception {
+    @CsvSource({ "true, default", "true, script", "false, default", "false, script", "true, code", "false, code",
+            "true, empty-code", "false, empty-code", "true, code-no-default", "false, code-no-default" })
+    void startsConsole(boolean withoutBundle, String mode) throws Exception {
         ScriptEngineManager manager = mock(ScriptEngineManager.class);
         JRubyScriptEngineFactory factory = mock(JRubyScriptEngineFactory.class);
         JRubyScriptEngineConfiguration configuration = mock(JRubyScriptEngineConfiguration.class);
         when(factory.getScriptTypes()).thenReturn(List.of("rb"));
         when(factory.getConfiguration()).thenReturn(configuration);
-        when(configuration.getConsole()).thenReturn("irb");
+        when(configuration.getConsole()).thenReturn("code-no-default".equals(mode) ? "" : "irb");
         when(factory.withoutBundle(any())).thenAnswer(call -> ((Supplier<?>) call.getArgument(0)).get());
         ScriptEngine engine = mock(ScriptEngine.class);
         when(engine.getContext()).thenReturn(new SimpleScriptContext());
@@ -59,14 +60,26 @@ class JRubyConsoleCommandExtensionTest {
         if (withoutBundle) {
             args.add("--no-bundle");
         }
-        if (explicitScript) {
-            args.add("pry");
+        boolean inlineCode = mode.contains("code");
+        if (inlineCode) {
+            args.add("--");
+            if (!"empty-code".equals(mode)) {
+                args.add("puts");
+                args.add("'hello';");
+                args.add("puts '--help --no-bundle'");
+            }
+        } else {
+            if ("script".equals(mode)) {
+                args.add("pry");
+            }
+            args.add("--verbose");
         }
-        args.add("--verbose");
         command.execute(args.toArray(String[]::new), mock(Console.class));
         verify(factory, times(withoutBundle ? 1 : 0)).withoutBundle(any());
-        verify(engine).put(eq(ScriptEngine.ARGV), aryEq(new String[] { "--verbose" }));
-        verify(engine).eval("require 'openhab/console/" + (explicitScript ? "pry" : "irb") + "'");
+        verify(engine).put(eq(ScriptEngine.ARGV), aryEq(inlineCode ? new String[0] : new String[] { "--verbose" }));
+        String expectedCode = inlineCode ? ("empty-code".equals(mode) ? "" : "puts 'hello'; puts '--help --no-bundle'")
+                : "require 'openhab/console/" + ("script".equals(mode) ? "pry" : "irb") + "'";
+        verify(engine).eval(expectedCode);
         verify(manager).removeEngine(anyString());
     }
 }
