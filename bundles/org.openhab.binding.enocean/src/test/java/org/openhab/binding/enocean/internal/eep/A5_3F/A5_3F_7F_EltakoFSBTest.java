@@ -33,6 +33,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
+import org.openhab.binding.enocean.internal.handler.EnOceanBaseActuatorHandler;
 import org.openhab.binding.enocean.internal.messages.ERP1Message;
 import org.openhab.binding.enocean.internal.statemachine.BlindAction;
 import org.openhab.binding.enocean.internal.statemachine.BlindState;
@@ -44,6 +45,7 @@ import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.StopMoveType;
 import org.openhab.core.library.types.UpDownType;
 import org.openhab.core.thing.Channel;
+import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.types.State;
@@ -379,6 +381,78 @@ public class A5_3F_7F_EltakoFSBTest {
                 id -> dimmerValue(id, 50), stm);
 
         assertThat(stm.getState(), is(BlindState.MOVEMENT_SLATS));
+    }
+
+    @Test
+    void slatRequestWhileUncalibratedCalibratesFirst() {
+        STMStateMachine<BlindAction, BlindState> stm = build(BlindState.INVALID);
+
+        eep.processChannelDimmer(thing, new PercentType(60), new Configuration(BLINDS_CONFIG), id -> UnDefType.UNDEF,
+                stm);
+
+        assertThat(stm.getState(), is(BlindState.MOVEMENT_CALIBRATION_UP));
+        assertThat(stm.getStoredChannel(), is(CHANNEL_DIMMER));
+        assertThat(stm.getStoredCommand(), is(new PercentType(60)));
+    }
+
+    @Test
+    void lastSlatRequestDuringCalibrationWins() {
+        STMStateMachine<BlindAction, BlindState> stm = build(BlindState.INVALID);
+        Configuration config = new Configuration(BLINDS_CONFIG);
+        eep.processChannelDimmer(thing, new PercentType(60), config, id -> UnDefType.UNDEF, stm);
+
+        eep.processChannelDimmer(thing, new PercentType(30), config, id -> UnDefType.UNDEF, stm);
+
+        assertThat(stm.getStoredCommand(), is(new PercentType(30)));
+    }
+
+    @Test
+    void positionRequestDuringCalibrationIsExecutedBeforeWaitingSlatRequest() {
+        EnOceanBaseActuatorHandler handler = mock(EnOceanBaseActuatorHandler.class);
+        Channel dimmerChannel = mock(Channel.class);
+        ChannelUID dimmerUid = new ChannelUID("enocean:rollershutter:gateway:fsb14:dimmer");
+        when(thing.getHandler()).thenReturn(handler);
+        when(thing.getChannel(CHANNEL_DIMMER)).thenReturn(dimmerChannel);
+        when(dimmerChannel.getUID()).thenReturn(dimmerUid);
+        STMStateMachine<BlindAction, BlindState> stm = build(BlindState.INVALID);
+        Configuration config = new Configuration(BLINDS_CONFIG);
+        eep.processChannelDimmer(thing, new PercentType(60), config, id -> UnDefType.UNDEF, stm);
+
+        eep.processCmdAsPercentType(thing, new PercentType(30), config, id -> UnDefType.UNDEF, stm);
+
+        verify(handler).setState(dimmerUid, new PercentType(60));
+        assertThat(stm.getStoredChannel(), is(CHANNEL_ROLLERSHUTTER));
+        assertThat(stm.getStoredCommand(), is(new PercentType(30)));
+    }
+
+    @Test
+    void calibrationRunSetsEndAngleBeforeWaitingSlatRequest() {
+        STMStateMachine<BlindAction, BlindState> stm = build(BlindState.MOVEMENT_CALIBRATION_UP);
+        stm.storeCommand(CHANNEL_DIMMER, new PercentType(60));
+
+        feedback("A5010E010A000000DE20").convertToStateImpl(CHANNEL_ROLLERSHUTTER, "", id -> state(id, 100, 45),
+                new Configuration(BLINDS_CONFIG), stm);
+
+        assertThat(channelUpdates.get(CHANNEL_DIMMER), is(PercentType.ZERO));
+    }
+
+    @Test
+    void positionRequestDuringSlatAdjustmentIsStoredForLater() {
+        STMStateMachine<BlindAction, BlindState> stm = build(BlindState.IDLE);
+        Configuration config = new Configuration(BLINDS_CONFIG);
+        eep.processChannelDimmer(thing, new PercentType(60), config, id -> state(id, 0, 0), stm);
+        assertThat(stm.getState(), is(BlindState.MOVEMENT_SLATS));
+
+        eep.processCmdAsPercentType(thing, new PercentType(30), config, id -> state(id, 0, 0), stm);
+
+        assertThat(stm.getState(), is(BlindState.MOVEMENT_SLATS));
+        assertThat(stm.getStoredChannel(), is(CHANNEL_ROLLERSHUTTER));
+        assertThat(stm.getStoredCommand(), is(new PercentType(30)));
+    }
+
+    @Test
+    void finishedSlatAdjustmentTriggersStoredCommandInBlindsMode() {
+        assertThat(eep.getRequiredCallbackActions(thing), hasItem(BlindAction.SLATS_POS_DONE));
     }
 
     @Test
