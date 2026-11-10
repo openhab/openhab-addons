@@ -663405,6 +663405,34 @@
 		}
 	},
 	"zk1jkjhxqkfaaalp": {
+		"fault_code": {
+			"id": 10,
+			"type": "bitmap",
+			"label": "Fault Code",
+			"readOnly": true
+		},
+		"energy_session_fine": {
+			"id": 25,
+			"type": "value",
+			"min": 0,
+			"max": 99999999,
+			"scale": 2,
+			"unit": "kWh",
+			"label": "Session Energy (0.01 kWh)",
+			"readOnly": true
+		},
+		"phase_mode": {
+			"id": 108,
+			"type": "enum",
+			"range": [
+				"Single_phase",
+				"Three_phase",
+				"No_phase",
+				"Phase_err"
+			],
+			"label": "Phase Mode",
+			"readOnly": true
+		},
 		"charger_status": {
 			"id": 101,
 			"type": "enum",
