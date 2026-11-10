@@ -178,12 +178,12 @@ public class WasherDryerSnapshot extends AbstractSnapshotDefinition {
 
     @JsonIgnore
     public String getRemainingTime() {
-        return String.format("%02.0f:%02.0f", getRemainingHour(), getRemainingMinute());
+        return formatHourMinute(getRemainingHour(), getRemainingMinute());
     }
 
     @JsonIgnore
     public String getReserveTime() {
-        return String.format("%02.0f:%02.0f", getReserveHour(), getReserveMinute());
+        return formatHourMinute(getReserveHour(), getReserveMinute());
     }
 
     @JsonProperty("remainTimeHour")

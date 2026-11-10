@@ -16,12 +16,14 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
- * Tests the mapping of washer/dryer operation states.
+ * Tests the mapping of washer/dryer operation states and times.
  *
  * @author Nemer Daud - Initial contribution
  */
@@ -74,6 +76,48 @@ class WasherDryerSnapshotTest {
         assertEquals("RUNNING", snapshot.getState());
         assertEquals("DETECTING", snapshot.getPreviousState());
         assertTrue(snapshot.getProcessState().isEmpty());
+    }
+
+    /**
+     * Some washers (e.g. F4X9009TWCE) report the whole duration in the minute field instead of keeping it in 0-59.
+     */
+    @ParameterizedTest
+    @CsvSource({ //
+            "0, 65, 01:05", //
+            "1, 5, 01:05", //
+            "0, 59, 00:59", //
+            "0, 0, 00:00", //
+            "2, 130, 04:10" })
+    void remainingAndReserveTimesAreNormalized(int hour, int minute, String expected) throws JsonProcessingException {
+        WasherDryerSnapshot v2 = mapper.readValue(String.format("""
+                {
+                  "remainTimeHour": %d,
+                  "remainTimeMinute": %d,
+                  "reserveTimeHour": %d,
+                  "reserveTimeMinute": %d
+                }
+                """, hour, minute, hour, minute), WasherDryerSnapshot.class);
+        assertEquals(expected, v2.getRemainingTime());
+        assertEquals(expected, v2.getReserveTime());
+
+        WasherDryerSnapshot v1 = mapper.readValue(String.format("""
+                {
+                  "Remain_Time_H": %d,
+                  "Remain_Time_M": %d
+                }
+                """, hour, minute), WasherDryerSnapshot.class);
+        assertEquals(expected, v1.getRemainingTime());
+    }
+
+    @Test
+    void missingHourFieldUsesTotalMinutes() throws JsonProcessingException {
+        WasherDryerSnapshot snapshot = mapper.readValue("""
+                {
+                  "remainTimeMinute": 65
+                }
+                """, WasherDryerSnapshot.class);
+
+        assertEquals("01:05", snapshot.getRemainingTime());
     }
 
     private void assertStates(String json) throws JsonProcessingException {
