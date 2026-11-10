@@ -252,22 +252,33 @@ public class JRubyScriptEngineConfiguration {
      * so that gems are available when user scripts are run.
      *
      * @param engine
-     * @param update when true, run Bundler update, otherwise run Bundler install
+     * @param update when true, update all gems; otherwise install, updating the locked openhab gem conservatively
      */
     public void bundlerInit(ScriptEngine engine, boolean update) {
         String operation = update ? "update --all" : "install";
-        String code = """
-                require "jruby"
-                JRuby.runtime.instance_config.update_native_env_enabled = false
-
-                require "bundler"
-                require "bundler/cli"
-
-                args = "%s".split
-                Bundler::CLI.start(args)
-                """.formatted(operation);
-
         try {
+            if (!update && Boolean.TRUE.equals(engine
+                    .eval("""
+                            require "jruby"
+                            JRuby.runtime.instance_config.update_native_env_enabled = false
+                            require "bundler"
+
+                            lockfile = Bundler.default_lockfile
+                            lockfile.file? && Bundler::LockfileParser.new(Bundler.read_file(lockfile)).specs.any? { |spec| spec.name == "openhab" }
+                            """))) {
+                operation = "update --conservative openhab";
+            }
+            String code = """
+                    require "jruby"
+                    JRuby.runtime.instance_config.update_native_env_enabled = false
+
+                    require "bundler"
+                    require "bundler/cli"
+
+                    args = "%s".split
+                    Bundler::CLI.start(args)
+                    """.formatted(operation);
+
             LOGGER.info("Running 'bundle {}' with Gemfile '{}'", operation, bundleGemfile);
             LOGGER.trace("Bundler code:\n{}", code);
             engine.eval(code);
