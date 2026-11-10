@@ -101,7 +101,18 @@ public class AmazonEchoControlServlet extends HttpServlet {
 
         velocityEngine.setProperty("introspector.uberspect.class",
                 UberspectImpl.class.getName() + ", " + UberspectPublicFields.class.getName());
-        velocityEngine.init();
+
+        // Velocity loads its implementation classes via Class.forName() with the thread context class loader. The
+        // activating thread may be a long-lived framework thread whose context class loader already resolved these
+        // classes from a previous, uninstalled Velocity bundle, so use Velocity's own class loader during init.
+        Thread currentThread = Thread.currentThread();
+        ClassLoader contextClassLoader = currentThread.getContextClassLoader();
+        try {
+            currentThread.setContextClassLoader(VelocityEngine.class.getClassLoader());
+            velocityEngine.init();
+        } finally {
+            currentThread.setContextClassLoader(contextClassLoader);
+        }
     }
 
     private @Nullable AccountHandler getAccountHandler(String accountUid) {
