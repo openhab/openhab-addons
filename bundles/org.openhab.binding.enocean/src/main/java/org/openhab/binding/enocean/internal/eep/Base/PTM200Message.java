@@ -67,7 +67,9 @@ public class PTM200Message extends _RPSMessage {
     }
 
     private void updateEndAngle(STMStateMachine<BlindAction, BlindState> stm, Configuration config, PercentType angle) {
-        if (config.as(EnOceanChannelRollershutterConfig.class).getConfigMode() == ConfigMode.BLINDS) {
+        // a request that waited for a calibration moves the blind again and sets the slats afterwards
+        if (config.as(EnOceanChannelRollershutterConfig.class).getConfigMode() == ConfigMode.BLINDS
+                && !(stm.getStoredCommand() instanceof PercentType)) {
             stm.updateChannel(CHANNEL_DIMMER, angle);
         }
     }
@@ -95,6 +97,10 @@ public class PTM200Message extends _RPSMessage {
                                     // can be used for pushing stm into calibrated state
                                     blindStm.storeCommand(CHANNEL_ROLLERSHUTTER, StopMoveType.MOVE);
                                     blindStm.apply(BlindAction.CALIBRATION_REQUEST_UP);
+                                    updateEndAngle(blindStm, config, PercentType.ZERO);
+                                    break;
+                                case MOVEMENT_CALIBRATION_UP:
+                                    updateEndAngle(blindStm, config, PercentType.ZERO);
                                     break;
                                 case MOVEMENT_POSITION_UP:
                                     // StopMoveType.MOVE is used as command for adjustment of slats
@@ -122,6 +128,10 @@ public class PTM200Message extends _RPSMessage {
                                     // can be used for pushing stm into calibrated state
                                     blindStm.storeCommand(CHANNEL_ROLLERSHUTTER, StopMoveType.MOVE);
                                     blindStm.apply(BlindAction.CALIBRATION_REQUEST_DOWN);
+                                    updateEndAngle(blindStm, config, PercentType.HUNDRED);
+                                    break;
+                                case MOVEMENT_CALIBRATION_DOWN:
+                                    updateEndAngle(blindStm, config, PercentType.HUNDRED);
                                     break;
                                 case MOVEMENT_POSITION_DOWN:
                                     // StopMoveType.MOVE is used as command for adjustment of slats

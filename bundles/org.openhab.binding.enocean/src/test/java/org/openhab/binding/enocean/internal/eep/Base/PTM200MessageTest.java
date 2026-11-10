@@ -145,6 +145,28 @@ public class PTM200MessageTest {
     }
 
     @Test
+    void endPositionCalibratingBlindsSetsEndAngle() {
+        Configuration blinds = new Configuration(Map.of("shutTime", 27, "swapTime", 14, "configMode", "blinds"));
+
+        receive(END_POSITION_DOWN, build(BlindState.INVALID), blinds);
+        assertThat(channelUpdates.get(CHANNEL_DIMMER), is(PercentType.HUNDRED));
+
+        receive(END_POSITION_UP, build(BlindState.MOVEMENT_CALIBRATION_UP), blinds);
+        assertThat(channelUpdates.get(CHANNEL_DIMMER), is(PercentType.ZERO));
+    }
+
+    @Test
+    void endPositionKeepsAngleWhenRequestIsWaitingForCalibration() {
+        Configuration blinds = new Configuration(Map.of("shutTime", 27, "swapTime", 14, "configMode", "blinds"));
+        STMStateMachine<BlindAction, BlindState> stm = build(BlindState.MOVEMENT_CALIBRATION_DOWN);
+        stm.storeCommand(CHANNEL_ROLLERSHUTTER, new PercentType(50));
+
+        receive(END_POSITION_DOWN, stm, blinds);
+
+        assertThat(channelUpdates.isEmpty(), is(true));
+    }
+
+    @Test
     void endPositionCalibratesUncalibratedStateMachine() {
         STMStateMachine<BlindAction, BlindState> stm = build(BlindState.INVALID);
 
