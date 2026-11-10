@@ -61,7 +61,7 @@
 				<type>Number:Dimensionless</type>
 			</add-channel>
 			<add-channel id="outputControlSignalCooling">
-				<type>Switch</type>
+				<type>luxtronikheatpump:outputControlSignalCooling</type>
 			</add-channel>
 			<add-channel id="timeCoolingRelease">
 				<type>Number:Time</type>
@@ -72,7 +72,7 @@
 				<type>Number:Power</type>
 			</add-channel>
 			<add-channel id="inputUtilityLock2">
-				<type>Switch</type>
+				<type>luxtronikheatpump:inputUtilityLock2</type>
 			</add-channel>
 		</instruction-set>
 	</thing-type>
