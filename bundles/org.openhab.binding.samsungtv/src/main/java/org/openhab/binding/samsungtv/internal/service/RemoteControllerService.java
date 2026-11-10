@@ -693,8 +693,8 @@ public class RemoteControllerService implements SamsungTvService {
         return handler.fetchPowerState();
     }
 
-    public void setOffline() {
-        handler.setOffline();
+    public void setStandby() {
+        handler.setStandby();
     }
 
     public void putConfig(String key, String value) {
