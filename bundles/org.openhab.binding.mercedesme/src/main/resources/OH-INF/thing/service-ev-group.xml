@@ -12,6 +12,7 @@
 			<channel id="wash-water" typeId="wash-water"/>
 			<channel id="tires-rdk" typeId="tires-rdk"/>
 			<channel id="service-days" typeId="service-days"/>
+			<channel id="service-distance" typeId="service-distance"/>
 		</channels>
 	</channel-group-type>
 </thing:thing-descriptions>

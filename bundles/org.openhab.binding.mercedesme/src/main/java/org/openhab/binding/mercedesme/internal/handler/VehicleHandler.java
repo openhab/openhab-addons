@@ -687,7 +687,7 @@ public class VehicleHandler extends BaseThingHandler {
          * handle "simple" values
          */
         atts.forEach((key, value) -> {
-            ChannelStateMap csm = Mapper.getChannelStateMap(key, value);
+            ChannelStateMap csm = Mapper.getChannelStateMap(key, value, fullUpdate);
             if (csm.isValid()) {
                 /**
                  * Store some values and UOM Observer

@@ -16,6 +16,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.openhab.binding.mercedesme.internal.Constants.*;
 
 import java.util.Map;
+import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
@@ -33,6 +34,8 @@ import com.daimler.mbcarkit.proto.VehicleEvents.ChargeProgram;
 import com.daimler.mbcarkit.proto.VehicleEvents.ChargeProgramsValue;
 import com.daimler.mbcarkit.proto.VehicleEvents.Ignitionstate;
 import com.daimler.mbcarkit.proto.VehicleEvents.IgnitionstateEnumAttribute;
+import com.daimler.mbcarkit.proto.VehicleEvents.Int64Attribute;
+import com.daimler.mbcarkit.proto.VehicleEvents.Int64DistanceAttribute;
 import com.daimler.mbcarkit.proto.VehicleEvents.PrecondNow;
 import com.daimler.mbcarkit.proto.VehicleEvents.PrecondNowEnumAttribute;
 import com.daimler.mbcarkit.proto.VehicleEvents.TemperaturePointsValue;
@@ -79,6 +82,87 @@ class MapperTest {
         // Assert
         assertNotNull(serviceIntervalDays);
         assertEquals(-14, serviceIntervalDays.getIntValue());
+    }
+
+    @Test
+    void whenServiceIntervalDistanceConvertedThenLengthChannelIsUpdated() {
+        // Arrange - a BEV reports the service interval in kilometres instead of days
+        VSUMetadata metadata = VSUMetadata.newBuilder().setStatus(AttributeStatus.VALUE_VALID).build();
+        Int64DistanceAttribute serviceDistance = Int64DistanceAttribute.newBuilder().setValue(22117)
+                .setUnit(VehicleAttributeStatus.DistanceUnit.KILOMETERS).setDisplayValue("22117").setMetadata(metadata)
+                .build();
+        VehicleStatusUpdate update = VehicleStatusUpdate.newBuilder().setFinOrVin("UNIT_TEST_VIN").setFullUpdate(true)
+                .setServiceintervaldistance(serviceDistance).build();
+
+        // Act
+        Map<String, VehicleAttributeStatus> attributes = Mapper.fromVehicleStatusUpdate(update);
+        VehicleAttributeStatus distance = attributes.get(MB_KEY_SERVICEINTERVALDISTANCE);
+
+        // Assert
+        assertNotNull(distance);
+        assertEquals(22117, distance.getIntValue());
+        ChannelStateMap csm = Mapper.getChannelStateMap(MB_KEY_SERVICEINTERVALDISTANCE, distance);
+        assertTrue(csm.isValid());
+        assertEquals(OH_CHANNEL_SERVICE_DISTANCE, csm.getChannel());
+        assertEquals(GROUP_SERVICE, csm.getGroup());
+        assertEquals(QuantityType.valueOf(22117, KILOMETRE_UNIT), csm.getState());
+        // no unit observer: the channel type keeps its %unit% pattern, so items in miles/kilometres are formatted
+        // with their own unit instead of the vehicle's literal unit
+        assertFalse(csm.hasUomObserver());
+    }
+
+    @Test
+    void whenUnusedServiceIntervalAttributeIsInvalidInPartialUpdateThenNoChannelUpdateHappens() {
+        // Arrange - the car uses the other unit for its service interval and flags this attribute as not available
+        VSUMetadata invalid = VSUMetadata.newBuilder().setStatus(AttributeStatus.VALUE_INVALID).build();
+        Int64Attribute serviceDays = Int64Attribute.newBuilder().setMetadata(invalid).build();
+        Int64DistanceAttribute serviceDistance = Int64DistanceAttribute.newBuilder()
+                .setUnit(VehicleAttributeStatus.DistanceUnit.KILOMETERS).setMetadata(invalid).build();
+        VehicleStatusUpdate update = VehicleStatusUpdate.newBuilder().setFinOrVin("UNIT_TEST_VIN").setFullUpdate(false)
+                .setServiceintervaldays(serviceDays).setServiceintervaldistance(serviceDistance).build();
+
+        // Act
+        Map<String, VehicleAttributeStatus> attributes = Mapper.fromVehicleStatusUpdate(update);
+        VehicleAttributeStatus serviceDaysAttribute = Objects
+                .requireNonNull(attributes.get(MB_KEY_SERVICEINTERVALDAYS));
+        VehicleAttributeStatus serviceDistanceAttribute = Objects
+                .requireNonNull(attributes.get(MB_KEY_SERVICEINTERVALDISTANCE));
+        ChannelStateMap daysCsm = Mapper.getChannelStateMap(MB_KEY_SERVICEINTERVALDAYS, serviceDaysAttribute, false);
+        ChannelStateMap distanceCsm = Mapper.getChannelStateMap(MB_KEY_SERVICEINTERVALDISTANCE,
+                serviceDistanceAttribute, false);
+
+        // Assert - partial update: no UNDEF is written, the last known value stays in the item
+        assertFalse(daysCsm.isValid());
+        assertFalse(distanceCsm.isValid());
+    }
+
+    @Test
+    void whenServiceIntervalAttributeIsInvalidInFullUpdateThenChannelIsCleared() {
+        // Arrange - the vehicle no longer reports its service interval in this unit
+        VSUMetadata invalid = VSUMetadata.newBuilder().setStatus(AttributeStatus.VALUE_INVALID).build();
+        Int64Attribute serviceDays = Int64Attribute.newBuilder().setMetadata(invalid).build();
+        Int64DistanceAttribute serviceDistance = Int64DistanceAttribute.newBuilder()
+                .setUnit(VehicleAttributeStatus.DistanceUnit.KILOMETERS).setMetadata(invalid).build();
+        VehicleStatusUpdate update = VehicleStatusUpdate.newBuilder().setFinOrVin("UNIT_TEST_VIN").setFullUpdate(true)
+                .setServiceintervaldays(serviceDays).setServiceintervaldistance(serviceDistance).build();
+
+        // Act
+        Map<String, VehicleAttributeStatus> attributes = Mapper.fromVehicleStatusUpdate(update);
+        VehicleAttributeStatus serviceDaysAttribute = Objects
+                .requireNonNull(attributes.get(MB_KEY_SERVICEINTERVALDAYS));
+        VehicleAttributeStatus serviceDistanceAttribute = Objects
+                .requireNonNull(attributes.get(MB_KEY_SERVICEINTERVALDISTANCE));
+        ChannelStateMap daysCsm = Mapper.getChannelStateMap(MB_KEY_SERVICEINTERVALDAYS, serviceDaysAttribute, true);
+        ChannelStateMap distanceCsm = Mapper.getChannelStateMap(MB_KEY_SERVICEINTERVALDISTANCE,
+                serviceDistanceAttribute, true);
+
+        // Assert - the full update is the authoritative snapshot, so the stale service interval is cleared
+        assertTrue(daysCsm.isValid());
+        assertEquals(OH_CHANNEL_SERVICE_DAYS, daysCsm.getChannel());
+        assertEquals(UnDefType.UNDEF, daysCsm.getState());
+        assertTrue(distanceCsm.isValid());
+        assertEquals(OH_CHANNEL_SERVICE_DISTANCE, distanceCsm.getChannel());
+        assertEquals(UnDefType.UNDEF, distanceCsm.getState());
     }
 
     @Test
@@ -417,12 +501,12 @@ class MapperTest {
 
     @Test
     void whenFullUpdateConvertedThenOnlyMappedFieldsAppearInMap() {
-        // Arrange - the capture sets every currently mapped attribute (95) plus roughly 68 further raw fields
+        // Arrange - the capture sets every currently mapped attribute (96) plus roughly 68 further raw fields
         // with no MB_KEY_*/channel mapping, so the exact map size is the regression guard
         Map<String, VehicleAttributeStatus> attributes = loadFixture();
 
         // Act / Assert
-        assertEquals(95, attributes.size(),
+        assertEquals(96, attributes.size(),
                 "map must contain exactly the currently-mapped fields, neither more (unmapped raw fields "
                         + "leaking in) nor fewer (a mapped field silently dropped)");
     }
