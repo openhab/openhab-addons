@@ -17,7 +17,10 @@ import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -32,9 +35,11 @@ import org.openhab.binding.netatmo.internal.api.data.EventType;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.ServiceError;
 import org.openhab.binding.netatmo.internal.api.dto.Webhook;
 import org.openhab.binding.netatmo.internal.api.dto.WebhookEvent;
+import org.openhab.binding.netatmo.internal.api.dto.WebhookExtraParams;
 import org.openhab.binding.netatmo.internal.deserialization.NADeserializer;
 import org.openhab.binding.netatmo.internal.handler.ApiBridgeHandler;
-import org.openhab.binding.netatmo.internal.handler.capability.Capability;
+import org.openhab.binding.netatmo.internal.handler.capability.WebhookListenerCapability;
+import org.openhab.core.common.ThreadPoolManager;
 import org.osgi.service.http.HttpService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,15 +51,22 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class WebhookServlet extends NetatmoServlet {
+    private class ListenerMap extends ConcurrentHashMap<String, WebhookListenerCapability> {
+        private static final long serialVersionUID = 1L;
+
+    }
+
     private static final long serialVersionUID = -354583910860541214L;
 
-    private final Map<String, Capability> dataListeners = new ConcurrentHashMap<>();
+    private final ListenerMap dataListeners = new ListenerMap();
+    private final Map<EventType, ListenerMap> eventListeners = new ConcurrentHashMap<>();
     private final Logger logger = LoggerFactory.getLogger(WebhookServlet.class);
     private final WebhookApi api;
     private final NADeserializer deserializer;
     private final URI uri;
 
     private boolean hooked;
+    private final ScheduledExecutorService scheduler = ThreadPoolManager.getScheduledPool("blbalalal");
 
     public WebhookServlet(ApiBridgeHandler handler, HttpService httpService, NADeserializer deserializer,
             WebhookApi api, String webHookUrl, String webHookPostfix) {
@@ -78,6 +90,7 @@ public class WebhookServlet extends NetatmoServlet {
                 logger.info("Setting up the webhook {}", uri);
                 setHooked(api.appendWebhook(uri));
             }
+            scheduler.schedule(this::testPush, 15, TimeUnit.SECONDS);
         } catch (NetatmoException e) {
             if (ServiceError.WEBHOOK_LIMIT_REACHED.equals(e.getStatusCode())) {
                 logger.debug("Another uri is already present, force the new one");
@@ -90,6 +103,13 @@ public class WebhookServlet extends NetatmoServlet {
                 logger.warn("Error setting webhook: {}", e.getMessage());
             }
         }
+    }
+
+    private void testPush() {
+        processEvent(
+                "{\"extra_params\":{\"device_type\":\"NAPlug\",\"event_type\":\"temperature_variation_event\",\"mode\":\"home\",\"room_id\":\"1222145740\",\"setpoint\":21,\"temperature\":20.5,\"ts\":1794124100},\"push_type\":\"device_event\",\"user_id\":\"51c55d041877596321000035\",\"device_id\":\"70:ee:50:09:cc:98\",\"home_id\":\"59959297b4809d1aff8b4726\",\"home_name\":\"Orgeval Chauffage\"}");
+        processEvent(
+                "{\"extra_params\":{\"boiler_status\":\"boiler_off\",\"device_type\":\"NAPlug\",\"event_type\":\"boiler_event\",\"ts\":1794125778},\"push_type\":\"device_event\",\"user_id\":\"51c55d041877596321000035\",\"device_id\":\"70:ee:50:09:cc:98\",\"home_id\":\"59959297b4809d1aff8b4726\",\"home_name\":\"Orgeval Chauffage\"}");
     }
 
     @Override
@@ -110,6 +130,7 @@ public class WebhookServlet extends NetatmoServlet {
             setHooked(false);
         }
         dataListeners.clear();
+        eventListeners.clear();
         super.dispose();
     }
 
@@ -152,20 +173,36 @@ public class WebhookServlet extends NetatmoServlet {
 
     private void notifyListeners(WebhookEvent event) {
         event.getNAObjectList().forEach(id -> {
-            if (dataListeners.get(id) instanceof Capability module) {
+            if (dataListeners.get(id) instanceof WebhookListenerCapability module) {
                 logger.trace("Dispatching webhook event to {}", id);
                 module.setNewData(event);
             }
         });
+        EventType eventType = event.getEventType();
+        if (EventType.DEVICE_EVENT.equals(eventType) && event.getExtraParams() instanceof WebhookExtraParams whep) {
+            ListenerMap listeners = eventListeners.computeIfAbsent(whep.eventType, k -> new ListenerMap());
+            listeners.values().forEach(listener -> listener.pushData(whep));
+        }
     }
 
-    public void registerDataListener(String id, Capability listener) {
-        logger.debug("Registering webhook listener '{}' with capability {}'", id, listener.getClass().getSimpleName());
+    public void registerDataListener(String id, WebhookListenerCapability listener) {
+        logger.debug("*** Registering webhook listener '{}' with capability {}'", id,
+                listener.getClass().getSimpleName());
         dataListeners.put(id, listener);
+    }
+
+    public void monitorEvents(String id, WebhookListenerCapability listener, Set<EventType> monitoredEvents) {
+        monitoredEvents.forEach(eventType -> {
+            logger.debug("*** Registering webhook listener '{}' on event '{}' with capability '{}'", id, eventType,
+                    listener.getClass().getSimpleName());
+            ListenerMap listeners = eventListeners.computeIfAbsent(eventType, k -> new ListenerMap());
+            listeners.put(id, listener);
+        });
     }
 
     public void unregisterDataListener(String id) {
         dataListeners.remove(id);
+        eventListeners.values().forEach(eventListeners -> eventListeners.remove(id));
     }
 
     private void setHooked(boolean hookSet) {

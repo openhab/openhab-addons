@@ -30,7 +30,6 @@ import org.openhab.binding.netatmo.internal.api.dto.NAHomeStatus.HomeStatus;
 import org.openhab.binding.netatmo.internal.api.dto.NAMain;
 import org.openhab.binding.netatmo.internal.api.dto.NAObject;
 import org.openhab.binding.netatmo.internal.api.dto.NAThing;
-import org.openhab.binding.netatmo.internal.api.dto.WebhookEvent;
 import org.openhab.binding.netatmo.internal.handler.CommonInterface;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingUID;
@@ -76,12 +75,6 @@ public class Capability {
 
             if (newData instanceof HomeEvent homeEvent) {
                 updateHomeEvent(homeEvent);
-            } else if (newData instanceof WebhookEvent webhookEvent) {
-                if (webhookEvent.getEventType().validFor(moduleType)) {
-                    updateWebhookEvent(webhookEvent);
-                } else {
-                    // dropped
-                }
             } else if (newData instanceof Event event) {
                 updateEvent(event);
             }
@@ -133,10 +126,6 @@ public class Capability {
     }
 
     protected void updateEvent(Event newData) {
-        // do nothing by default, can be overridden by subclasses
-    }
-
-    protected void updateWebhookEvent(WebhookEvent newData) {
         // do nothing by default, can be overridden by subclasses
     }
 
