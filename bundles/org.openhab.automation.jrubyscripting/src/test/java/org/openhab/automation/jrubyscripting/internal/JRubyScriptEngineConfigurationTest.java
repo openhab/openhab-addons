@@ -13,6 +13,8 @@
 package org.openhab.automation.jrubyscripting.internal;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.CALLS_REAL_METHODS;
+import static org.mockito.Mockito.mockStatic;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -23,6 +25,8 @@ import org.jruby.embed.jsr223.JRubyEngineFactory;
 import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.mockito.MockedStatic;
+import org.openhab.core.OpenHAB;
 
 /**
  * Tests Bundler command selection against real lockfiles.
@@ -33,10 +37,13 @@ import org.junit.jupiter.params.provider.CsvSource;
 class JRubyScriptEngineConfigurationTest {
 
     @ParameterizedTest
-    @CsvSource({ "false, missing, install", "false, rake, install", "false, openhab-scripting, install",
-            "false, my-openhab, install", "false, openhab, update --conservative openhab",
-            "true, missing, update --all", "true, openhab, update --all" })
-    void selectsBundlerCommand(boolean update, String gem, String expected, @TempDir Path directory) throws Exception {
+    @CsvSource({ "false, missing, 1.0.0, install", "false, rake, 1.0.0, install",
+            "false, openhab-scripting, 1.0.0, install", "false, my-openhab, 1.0.0, install",
+            "false, openhab, 1.0.0, update --conservative openhab", "false, openhab, 5.3.0, install",
+            "false, openhab, 5.3.0.0, update --conservative openhab", "true, missing, 1.0.0, update --all",
+            "true, openhab, 1.0.0, update --all", "true, openhab, 5.3.0, update --all" })
+    void selectsBundlerCommand(boolean update, String gem, String version, String expected, @TempDir Path directory)
+            throws Exception {
         Path gemfile = directory.resolve("Gemfile");
         Files.writeString(gemfile, "source 'https://rubygems.org'\n");
         if (!"missing".equals(gem)) {
@@ -44,16 +51,18 @@ class JRubyScriptEngineConfigurationTest {
                     GEM
                       remote: https://rubygems.org/
                       specs:
-                        %s (1.0.0)
+                        %s (%s)
 
                     PLATFORMS
                       java
 
                     DEPENDENCIES
                       %s
-                    """.formatted(gem, gem));
+                    """.formatted(gem, version, gem));
         }
-        try (JRubyEngine engine = (JRubyEngine) new JRubyEngineFactory().getScriptEngine()) {
+        try (MockedStatic<OpenHAB> openhab = mockStatic(OpenHAB.class, CALLS_REAL_METHODS);
+                JRubyEngine engine = (JRubyEngine) new JRubyEngineFactory().getScriptEngine()) {
+            openhab.when(OpenHAB::getVersion).thenReturn("5.3.0");
             engine.put("gemfile_path", gemfile.toString());
             engine.eval("""
                     require "jruby"
