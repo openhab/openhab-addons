@@ -544,6 +544,7 @@
     <module>org.openhab.voice.googletts</module>
     <module>org.openhab.voice.mactts</module>
     <module>org.openhab.voice.marytts</module>
+    <module>org.openhab.voice.microwakewordks</module>
     <module>org.openhab.voice.mimictts</module>
     <module>org.openhab.voice.openaitts</module>
     <module>org.openhab.voice.picotts</module>
