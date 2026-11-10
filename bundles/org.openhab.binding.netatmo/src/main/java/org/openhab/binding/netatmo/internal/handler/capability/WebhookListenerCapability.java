@@ -80,5 +80,4 @@ public abstract class WebhookListenerCapability extends Capability {
     protected void updateWebhookEvent(WebhookEvent newData) {
         // do nothing by default, can be overridden by subclasses
     }
-
 }

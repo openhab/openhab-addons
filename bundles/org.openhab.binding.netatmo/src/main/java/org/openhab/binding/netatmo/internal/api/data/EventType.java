@@ -220,15 +220,6 @@ public enum EventType {
     @SerializedName("cancel_set_point") // manual setpoint ended
     CANCEL_SET_POINT(ModuleType.THERMOSTAT),
 
-    @SerializedName("webhook_activation") // A user linked the webhook to their account
-    WEBHOOK_ACTIVATION(ModuleType.ACCOUNT),
-
-    @SerializedName("webhook_deletion") // A user deleted their link to the webhook
-    WEBHOOK_DELETION(ModuleType.ACCOUNT),
-
-    @SerializedName("topology_changed") // A relation has changed (e.g. change: "home_owner_added")
-    TOPOLOGY_CHANGED(ModuleType.ACCOUNT),
-
     @SerializedName("home_event_changed") // A home configuration has changed (e.g. event_type: "schedule")
     HOME_EVENT_CHANGED(ModuleType.HOME),
 

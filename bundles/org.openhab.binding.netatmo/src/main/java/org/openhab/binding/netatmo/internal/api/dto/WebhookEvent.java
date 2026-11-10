@@ -99,5 +99,4 @@ public class WebhookEvent extends Event {
     public @Nullable WebhookExtraParams getExtraParams() {
         return extraParams;
     }
-
 }
