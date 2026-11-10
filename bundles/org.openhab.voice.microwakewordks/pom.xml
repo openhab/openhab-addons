@@ -18,7 +18,7 @@
     <dependency>
       <groupId>io.github.jvoice-project</groupId>
       <artifactId>micro-wakeword4j</artifactId>
-      <version>1.0.0-SNAPSHOT</version>
+      <version>1.0.0</version>
     </dependency>
   </dependencies>
 </project>

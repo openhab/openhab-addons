@@ -286,7 +286,7 @@ public class MicroWakeWordKSServiceTest {
      * Writes a model named {@code id} to the model folder, using the network of a bundled model.
      */
     private void writeModel(String id, String wakeWord) throws IOException {
-        try (InputStream model = WakeWordModel.class.getResourceAsStream("hey_mycroft.tflite")) {
+        try (InputStream model = WakeWordModel.class.getResourceAsStream("models/hey_mycroft.tflite")) {
             assertNotNull(model);
             Files.write(modelFolder.resolve(id + ".tflite"), model.readAllBytes());
         }

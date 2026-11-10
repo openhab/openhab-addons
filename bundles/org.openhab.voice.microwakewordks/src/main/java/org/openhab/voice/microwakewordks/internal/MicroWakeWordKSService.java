@@ -81,7 +81,7 @@ public class MicroWakeWordKSService implements KSService {
             .collect(Collectors.joining(", "));
 
     private final Logger logger = LoggerFactory.getLogger(MicroWakeWordKSService.class);
-    // each spotter needs its own thread to detect a keyword 
+    // each spotter needs its own thread to detect a keyword
     private final ExecutorService executor = Executors
             .newThreadPerTaskExecutor(new NamedThreadFactory("voice-microwakewordks"));
     private final Path modelFolder;
