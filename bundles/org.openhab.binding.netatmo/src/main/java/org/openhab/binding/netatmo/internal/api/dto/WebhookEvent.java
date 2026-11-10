@@ -95,4 +95,9 @@ public class WebhookEvent extends Event {
     public TopologyChange getChange() {
         return change;
     }
+
+    public @Nullable WebhookExtraParams getExtraParams() {
+        return extraParams;
+    }
+
 }

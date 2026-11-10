@@ -177,7 +177,13 @@ public enum EventType {
     HOME_EVENT_CHANGED(ModuleType.HOME),
 
     @SerializedName("device_event") // A device state has changed
-    DEVICE_EVENT(ModuleType.HOME);
+    DEVICE_EVENT(ModuleType.HOME),
+
+    @SerializedName("boiler_event") // A device state has changed
+    BOILER_EVENT(ModuleType.PLUG),
+
+    @SerializedName("temperature_variation_event") // A device state has changed
+    TEMPERATURE_VARIATION_EVENT(ModuleType.PLUG);
 
     public static final EnumSet<EventType> AS_SET = EnumSet.allOf(EventType.class);
 
