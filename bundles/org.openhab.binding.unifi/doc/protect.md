@@ -167,7 +167,11 @@ The NVR bridge provides comprehensive monitoring channels for system health, sto
 | osd-date           | Switch    | RW  | Show date on OSD                                       | true     |
 | osd-logo           | Switch    | RW  | Show logo on OSD                                       | true     |
 | led-enabled        | Switch    | RW  | Enable/disable camera status LED                       | true     |
+| privacy-mode       | Switch    | RW  | Enable/disable an openHAB-managed full-frame privacy mask | true  |
 | active-patrol-slot | Number    | RW  | Active PTZ patrol slot (set 0 to stop)                 | false    |
+
+When `privacy-mode` is enabled, the binding adds a dedicated full-frame privacy zone named `openHAB Privacy Mode`.
+Disabling it removes only that zone; privacy zones configured separately in Protect are preserved.
 
 #### Streaming URLs
 

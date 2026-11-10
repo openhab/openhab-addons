@@ -50,8 +50,13 @@ import org.openhab.binding.unifi.internal.protect.api.priv.exception.Authenticat
 import org.openhab.binding.unifi.internal.protect.api.priv.exception.BadRequestException;
 import org.openhab.binding.unifi.internal.protect.api.priv.exception.NvrException;
 import org.openhab.binding.unifi.internal.protect.api.priv.exception.ThrottledException;
+import org.openhab.binding.unifi.internal.protect.util.PrivacyZoneHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 
 /**
  * Main client for UniFi Protect Private API
@@ -444,6 +449,35 @@ public class UniFiProtectPrivateClient {
      */
     public CompletableFuture<Camera> updateCamera(String cameraId, Object updates) {
         return updateDevice("camera", cameraId, updates, Camera.class);
+    }
+
+    /**
+     * Enable or disable openHAB privacy mode while preserving all existing Protect privacy zones.
+     *
+     * The camera is fetched as raw JSON immediately before the update so fields that are not modeled by the
+     * binding are copied back unchanged.
+     *
+     * @param cameraId The camera ID
+     * @param enabled True to add the openHAB full-frame privacy zone, false to remove it
+     * @return CompletableFuture with updated Camera
+     */
+    public CompletableFuture<Camera> setCameraPrivacyMode(String cameraId, boolean enabled) {
+        return apiRequest(HttpMethod.GET, "cameras/" + cameraId, null, JsonObject.class).thenCompose(cameraJson -> {
+            JsonElement privacyZonesElement = cameraJson.get("privacyZones");
+            if (privacyZonesElement == null || !privacyZonesElement.isJsonArray()) {
+                return CompletableFuture.failedFuture(
+                        new IllegalStateException("Camera response did not contain a privacyZones array"));
+            }
+            JsonArray privacyZones = privacyZonesElement.getAsJsonArray();
+            JsonArray updatedPrivacyZones = PrivacyZoneHelper.updatePrivacyZones(privacyZones, enabled);
+
+            if (updatedPrivacyZones.equals(privacyZones)) {
+                return CompletableFuture.completedFuture(JsonUtil.getGson().fromJson(cameraJson, Camera.class));
+            }
+
+            return updateCamera(cameraId, Map.of("privacyZones", updatedPrivacyZones))
+                    .thenCompose(ignored -> apiRequest(HttpMethod.GET, "cameras/" + cameraId, null, Camera.class));
+        });
     }
 
     /**

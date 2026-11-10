@@ -50,6 +50,7 @@ import org.openhab.binding.unifi.internal.protect.config.UnifiProtectCameraConfi
 import org.openhab.binding.unifi.internal.protect.config.UnifiProtectSnapshotConfig;
 import org.openhab.binding.unifi.internal.protect.config.UnifiProtectSnapshotConfig.Sequence;
 import org.openhab.binding.unifi.internal.protect.media.UnifiMediaService;
+import org.openhab.binding.unifi.internal.protect.util.PrivacyZoneHelper;
 import org.openhab.binding.unifi.internal.protect.util.TranslationService;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -260,6 +261,16 @@ public class UnifiProtectCameraHandler extends UnifiProtectAbstractDeviceHandler
                             "set recording mode");
                 }
                 break;
+            case CHANNEL_PRIVACY_MODE:
+                if (command instanceof OnOffType enabled) {
+                    logOnFailure(
+                            api.getPrivateClient().setCameraPrivacyMode(deviceId, enabled == OnOffType.ON)
+                                    .thenAccept(updatedCamera -> updateState(CHANNEL_PRIVACY_MODE,
+                                            OnOffType.from(PrivacyZoneHelper
+                                                    .isPrivacyModeEnabled(updatedCamera.privacyZones)))),
+                            "set privacy mode");
+                }
+                break;
             case CHANNEL_SMART_DETECT_PERSON_ENABLED:
                 if (command instanceof OnOffType enabled) {
                     logOnFailure(api.getPrivateClient().setPersonDetection(deviceId, enabled == OnOffType.ON),
@@ -411,6 +422,9 @@ public class UnifiProtectCameraHandler extends UnifiProtectAbstractDeviceHandler
         }
         if (privCamera.videoMode != null) {
             updateStringChannel(CHANNEL_VIDEO_MODE, privCamera.videoMode.toString());
+        }
+        if (privCamera.privacyZones != null && hasChannel(CHANNEL_PRIVACY_MODE)) {
+            updateBooleanChannel(CHANNEL_PRIVACY_MODE, PrivacyZoneHelper.isPrivacyModeEnabled(privCamera.privacyZones));
         }
         if (privCamera.activePatrolSlot != null) {
             updateIntegerChannel(CHANNEL_ACTIVE_PATROL_SLOT, privCamera.activePatrolSlot);
@@ -907,6 +921,10 @@ public class UnifiProtectCameraHandler extends UnifiProtectAbstractDeviceHandler
 
         // Recording Mode
         addChannel(CHANNEL_RECORDING_MODE, STRING, CHANNEL_RECORDING_MODE, channelAdd, activeChannelIds);
+
+        if (Boolean.TRUE.equals(flags.hasPrivacyMask)) {
+            addChannel(CHANNEL_PRIVACY_MODE, SWITCH, CHANNEL_PRIVACY_MODE, channelAdd, activeChannelIds);
+        }
 
         if (flags.smartDetectTypes != null && !flags.smartDetectTypes.isEmpty()) {
             addTriggerChannel(CHANNEL_SMART_DETECT_ZONE_START, CHANNEL_SMART_DETECT_ZONE, channelAdd, activeChannelIds,
