@@ -27,6 +27,7 @@ import org.openhab.binding.lutron.internal.discovery.project.ComponentType;
  * numbers of the models come from the Keypad Button Numbering diagrams in the HomeWorks Illumination 1.65 help. A
  * model has an LED for each button that its diagram shows with one. The European-style diagrams show no LEDs,
  * although these keypads have status LEDs, so those models have an LED for each button except the raise/lower pair.
+ * seeTouch keypads are not in those diagrams; their models use the numbering reported by a processor.
  *
  * @author Christopher Smith - Initial contribution
  */
@@ -97,6 +98,11 @@ public final class KeypadConfigHw extends KeypadConfig {
         for (String model : List.of("HWI-5S-IR", "HWI-5S-NM")) {
             modelData.put(model, components(range(1, 5), range(1, 5)));
         }
+
+        // seeTouch keypads report buttons by position, with 23 for lower and 24 for raise. The 4-scene keypad has
+        // scene buttons 1 to 4 and button 6, each with an LED, and the lower/raise pair.
+        List<Integer> seeTouch4Scene = List.of(1, 2, 3, 4, 6);
+        modelData.put("ST-4S", components(plus(seeTouch4Scene, BUTTONS_23_24), seeTouch4Scene));
     }
 
     private static List<Integer> range(int first, int last) {

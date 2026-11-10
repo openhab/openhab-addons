@@ -979,9 +979,12 @@ Set ``model`` to the keypad's model number to get only the channels it has:
 | `HWI-2B`                                                                     | 23, 24                        | 23, 24              |
 | `HWI-2SE`                                                                    | 3, 4                          | 3, 4                |
 | `HWI-5S-IR`, `HWI-5S-NM`                                                     | 1-5                           | 1-5                 |
+| `ST-4S`                                                                      | 1-4, 6, 23, 24                | 1-4, 6              |
 
 The button numbers are those of the Keypad Button Numbering topic in the HomeWorks Illumination help.
-That topic does not cover seeTouch keypads (models starting with `ST-`), so use `GENERIC` for those.
+That topic does not cover seeTouch keypads (models starting with `ST-`).
+seeTouch keypads report their buttons by position, with 23 for the lower and 24 for the raise button; the buttons of `ST-4S` were confirmed on a processor, and other seeTouch models use `GENERIC` for now.
+The insert style and color in a full seeTouch model number, such as `-NI-WH` in `ST-4S-NI-WH`, do not change the buttons.
 
 ```java
 lutron:hwkeypad:keypad1 (lutron:hwtelnetbridge:home) [ address="[01:04:02]", model="HWI-KP10" ]

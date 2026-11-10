@@ -1213,6 +1213,7 @@
 					<option value="HWI-5S-M">HWI-5S-M</option>
 					<option value="HWI-5S-IR">HWI-5S-IR</option>
 					<option value="HWI-5S-NM">HWI-5S-NM</option>
+					<option value="ST-4S">ST-4S</option>
 				</options>
 				<limitToOptions>true</limitToOptions>
 			</parameter>

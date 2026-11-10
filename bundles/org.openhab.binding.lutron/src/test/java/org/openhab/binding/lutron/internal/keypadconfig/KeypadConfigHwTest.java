@@ -66,6 +66,7 @@ public class KeypadConfigHwTest {
         for (String model : List.of("HWI-5S-IR", "HWI-5S-NM")) {
             assertModel(model, five, five);
         }
+        assertModel("ST-4S", List.of(1, 2, 3, 4, 6, 23, 24), List.of(1, 2, 3, 4, 6));
     }
 
     private void assertModel(String model, List<Integer> buttons, List<Integer> leds) {
