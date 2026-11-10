@@ -54,6 +54,7 @@ import org.slf4j.LoggerFactory;
  * The {@link JRubyConsoleCommandExtension} class
  *
  * @author Jimmy Tanagra - Initial contribution
+ * @author Cody Cutrer - Support consoles with a clean environment
  */
 @NonNullByDefault
 @Component(service = ConsoleCommandExtension.class)
@@ -101,7 +102,7 @@ public class JRubyConsoleCommandExtension extends AbstractConsoleCommandExtensio
     public List<String> getUsages() {
         return List.of( //
                 buildCommandUsage(INFO, "displays information about JRuby Scripting add-on"), //
-                buildCommandUsage(CONSOLE + " [--list|-l|--help|-h] | [script] [options]",
+                buildCommandUsage(CONSOLE + " [--list|-l|--help|-h] | [--no-bundle] [script] [options]",
                         "starts an interactive JRuby console"), //
                 buildCommandUsage(BUNDLE + " [arguments]", "runs Ruby bundler against your Gemfile"), //
                 buildCommandUsage(GEM + " [arguments]", "manages JRuby Scripting add-on's RubyGems"), //
@@ -243,15 +244,21 @@ public class JRubyConsoleCommandExtension extends AbstractConsoleCommandExtensio
     private void startConsole(Console console, String[] args) {
         final String defaultConsole = jRubyScriptEngineFactory.getConfiguration().getConsole();
         String script = defaultConsole;
+        boolean withoutBundle = args.length > 0 && "--no-bundle".equals(args[0]);
+        if (withoutBundle) {
+            args = Arrays.copyOfRange(args, 1, args.length);
+        }
 
         if (args.length > 0) {
             switch (args[0]) {
                 case "--help":
                 case "-h":
-                    console.printUsage("jrubyscripting console [--list|-l|--help|-h] | [script] [options]");
+                    console.printUsage(
+                            "jrubyscripting console [--list|-l|--help|-h] | [--no-bundle] [script] [options]");
                     console.println("");
                     console.println("  --list, -l: list available console scripts");
                     console.println("  --help, -h: show this help");
+                    console.println("  --no-bundle: skip Bundler setup and configured requires for this console");
                     console.println("  script: name of the console script to run");
                     console.println("  options: arguments to pass to the console script");
                     console.println("");
@@ -303,7 +310,7 @@ public class JRubyConsoleCommandExtension extends AbstractConsoleCommandExtensio
 
         logger.debug("Starting JRuby console with script: {}", consoleScript);
 
-        executeWithFullJRuby(console, engine -> {
+        executeWithFullJRuby(console, withoutBundle, engine -> {
             // Resolve console.getSession().getTerminal() in Ruby to avoid having to add
             // org.apache.karaf.shell.core as a dependency in pom.xml
             engine.put("$console", console);
@@ -548,10 +555,17 @@ public class JRubyConsoleCommandExtension extends AbstractConsoleCommandExtensio
      * This will run the script with the helper library if configured.
      */
     private @Nullable Object executeWithFullJRuby(Console console, EngineEvalFunction process) {
+        return executeWithFullJRuby(console, false, process);
+    }
+
+    private @Nullable Object executeWithFullJRuby(Console console, boolean withoutBundle, EngineEvalFunction process) {
         final String scriptIdentifier = "jruby-console-" + UUID.randomUUID().toString();
 
         printLoadingMessage(console, true);
-        ScriptEngineContainer container = scriptEngineManager.createScriptEngine(scriptType, scriptIdentifier);
+        ScriptEngineContainer container = withoutBundle
+                ? jRubyScriptEngineFactory
+                        .withoutBundle(() -> scriptEngineManager.createScriptEngine(scriptType, scriptIdentifier))
+                : scriptEngineManager.createScriptEngine(scriptType, scriptIdentifier);
         if (container == null) {
             console.println("Error: Unable to create JRuby script engine.");
             return null;

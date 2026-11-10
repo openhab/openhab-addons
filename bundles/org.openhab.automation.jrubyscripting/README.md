@@ -1945,6 +1945,11 @@ The commands are prefixed with `openhab:jrubyscripting` or just `jrubyscripting`
 | `gem`     | Runs Ruby gem command to install, upgrade, or uninstall gems that are located in your [gem_home](#gem_home)      |
 | `prune`   | Removes gem files and directories from older openhab installations.                                              |
 
+Use `jrubyscripting console --no-bundle [script] [options]` to start a console without setting `BUNDLE_GEMFILE`, running Bundler setup, or loading configured requires.
+Place the flag before the script name; options after the script name are passed to that script.
+The console still receives openHAB variables and uses the configured gem home and Ruby library paths.
+This flag applies only to the console session; dependency installation at add-on startup or configuration changes is unaffected.
+
 ## Calling Java From JRuby
 
 JRuby can [access almost any Java object](https://github.com/jruby/jruby/wiki/CallingJavaFromJRuby) that's available in the current JVM.

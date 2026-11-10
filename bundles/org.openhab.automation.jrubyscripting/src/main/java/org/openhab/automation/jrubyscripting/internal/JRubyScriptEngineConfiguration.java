@@ -420,10 +420,14 @@ public class JRubyScriptEngineConfiguration {
      * @param scriptEngine Engine in which to configure environment
      */
     public void configureRubyEnvironment(ScriptEngine scriptEngine) {
+        configureRubyEnvironment(scriptEngine, true);
+    }
+
+    void configureRubyEnvironment(ScriptEngine scriptEngine, boolean withBundler) {
         setEnvironmentVariable(scriptEngine, "GEM_HOME", getSpecificGemHome());
         setEnvironmentVariable(scriptEngine, "RUBYLIB", configuration.rubylib);
         setEnvironmentVariable(scriptEngine, "BUNDLE_USER_HOME", BUNDLE_USER_HOME.toString());
-        if (bundleGemfile.exists()) {
+        if (withBundler && bundleGemfile.exists()) {
             Path bundleUserConfigDir = bundleGemfile.toPath().resolveSibling(".bundle");
             ensureDirectoryExists(bundleUserConfigDir.toString(), "Ruby Bundler user config path");
             setEnvironmentVariable(scriptEngine, "BUNDLE_USER_CONFIG",
@@ -433,7 +437,9 @@ public class JRubyScriptEngineConfiguration {
 
         configureRubyLib(scriptEngine);
         disallowExec(scriptEngine);
-        patchBundlerEnvironment(scriptEngine);
+        if (withBundler) {
+            patchBundlerEnvironment(scriptEngine);
+        }
         configureOpenHABGem(scriptEngine);
     }
 
