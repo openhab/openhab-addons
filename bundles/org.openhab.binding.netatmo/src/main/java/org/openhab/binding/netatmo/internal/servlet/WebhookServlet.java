@@ -19,8 +19,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -38,7 +36,6 @@ import org.openhab.binding.netatmo.internal.api.dto.WebhookExtraParams;
 import org.openhab.binding.netatmo.internal.deserialization.NADeserializer;
 import org.openhab.binding.netatmo.internal.handler.ApiBridgeHandler;
 import org.openhab.binding.netatmo.internal.handler.capability.WebhookListenerCapability;
-import org.openhab.core.common.ThreadPoolManager;
 import org.osgi.service.http.HttpService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,7 +49,6 @@ import org.slf4j.LoggerFactory;
 public class WebhookServlet extends NetatmoServlet {
     private class ListenerMap extends ConcurrentHashMap<String, WebhookListenerCapability> {
         private static final long serialVersionUID = 1L;
-
     }
 
     private static final long serialVersionUID = -354583910860541214L;
@@ -66,7 +62,6 @@ public class WebhookServlet extends NetatmoServlet {
     private final String webHookPostfix;
 
     private boolean hookSet = false;
-    private final ScheduledExecutorService scheduler = ThreadPoolManager.getScheduledPool("blbalalal");
 
     public WebhookServlet(ApiBridgeHandler handler, HttpService httpService, NADeserializer deserializer,
             WebhookApi api, String webHookUrl, String webHookPostfix) {
@@ -92,17 +87,9 @@ public class WebhookServlet extends NetatmoServlet {
                 logger.info("Setting up the webhook {}", stringUri);
                 hookSet = api.appendWebhook(uri);
             }
-            scheduler.schedule(this::testPush, 15, TimeUnit.SECONDS);
         } catch (NetatmoException e) {
             logger.info("Error setting webhook: {}", e.getMessage());
         }
-    }
-
-    private void testPush() {
-        processEvent(
-                "{\"extra_params\":{\"device_type\":\"NAPlug\",\"event_type\":\"temperature_variation_event\",\"mode\":\"home\",\"room_id\":\"1222145740\",\"setpoint\":21,\"temperature\":20.5,\"ts\":1794124100},\"push_type\":\"device_event\",\"user_id\":\"51c55d041877596321000035\",\"device_id\":\"70:ee:50:09:cc:98\",\"home_id\":\"59959297b4809d1aff8b4726\",\"home_name\":\"Orgeval Chauffage\"}");
-        processEvent(
-                "{\"extra_params\":{\"boiler_status\":\"boiler_off\",\"device_type\":\"NAPlug\",\"event_type\":\"boiler_event\",\"ts\":1794125778},\"push_type\":\"device_event\",\"user_id\":\"51c55d041877596321000035\",\"device_id\":\"70:ee:50:09:cc:98\",\"home_id\":\"59959297b4809d1aff8b4726\",\"home_name\":\"Orgeval Chauffage\"}");
     }
 
     @Override

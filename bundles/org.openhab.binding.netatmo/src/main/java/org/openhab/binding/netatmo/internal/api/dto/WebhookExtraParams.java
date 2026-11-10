@@ -13,8 +13,6 @@
 package org.openhab.binding.netatmo.internal.api.dto;
 
 import java.time.ZonedDateTime;
-import java.util.LinkedHashSet;
-import java.util.Set;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.data.EventType;
