@@ -257,6 +257,28 @@ public class A5_3F_7F_EltakoFSBTest {
     }
 
     @Test
+    void calibrationRunSetsEndAngle() {
+        feedback("A5010E020A000000DE20").convertToStateImpl(CHANNEL_ROLLERSHUTTER, "", id -> state(id, 0, 45),
+                new Configuration(BLINDS_CONFIG), build(BlindState.MOVEMENT_CALIBRATION_DOWN));
+        assertThat(channelUpdates.get(CHANNEL_DIMMER), is(PercentType.HUNDRED));
+
+        feedback("A5010E010A000000DE20").convertToStateImpl(CHANNEL_ROLLERSHUTTER, "", id -> state(id, 100, 45),
+                new Configuration(BLINDS_CONFIG), build(BlindState.MOVEMENT_CALIBRATION_UP));
+        assertThat(channelUpdates.get(CHANNEL_DIMMER), is(PercentType.ZERO));
+    }
+
+    @Test
+    void calibrationRunKeepsAngleWhenRequestIsWaiting() {
+        STMStateMachine<BlindAction, BlindState> stm = build(BlindState.MOVEMENT_CALIBRATION_DOWN);
+        stm.storeCommand(CHANNEL_ROLLERSHUTTER, new PercentType(50));
+
+        feedback("A5010E020A000000DE20").convertToStateImpl(CHANNEL_ROLLERSHUTTER, "", id -> state(id, 0, 45),
+                new Configuration(BLINDS_CONFIG), stm);
+
+        assertThat(channelUpdates.isEmpty(), is(true));
+    }
+
+    @Test
     void manualMovementEndsWithFullRuntimeFeedback() {
         STMStateMachine<BlindAction, BlindState> stm = build(BlindState.MOVEMENT_MANUAL_UP);
 

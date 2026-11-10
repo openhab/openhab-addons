@@ -375,6 +375,14 @@ public class A5_3F_7F_EltakoFSB extends _4BSMessage implements StateMachineProvi
                                 // StopMoveType.MOVE is used as command for adjustment of slats
                                 blindStm.storeCommand(CHANNEL_ROLLERSHUTTER, StopMoveType.MOVE);
                                 break;
+                            case MOVEMENT_CALIBRATION_UP, MOVEMENT_CALIBRATION_DOWN:
+                                // a request that waited for the calibration moves the blind again and sets the slats
+                                if (c.getConfigMode() == ConfigMode.BLINDS
+                                        && !(blindStm.getStoredCommand() instanceof PercentType)) {
+                                    blindStm.updateChannel(CHANNEL_DIMMER,
+                                            move_up ? PercentType.ZERO : PercentType.HUNDRED);
+                                }
+                                break;
                             case MOVEMENT_MANUAL_UP, MOVEMENT_MANUAL_DOWN:
                                 if (c.getConfigMode() == ConfigMode.BLINDS) {
                                     blindStm.updateChannel(CHANNEL_DIMMER,
