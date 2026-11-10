@@ -76,6 +76,9 @@ import jakarta.servlet.ServletException;
 @ConfigurableService(category = "io", label = "NEEO Integration", description_uri = "io:neeo")
 public class NeeoService implements EventSubscriber, NetworkAddressChangeListener {
 
+    /** The alias of the dashboard servlet */
+    private static final String DASHBOARD_URL = NeeoConstants.WEBAPP_PREFIX + NeeoConstants.WEBAPP_DASHBOARD_PREFIX;
+
     /** The logger */
     private final Logger logger = LoggerFactory.getLogger(NeeoService.class);
 
@@ -172,10 +175,9 @@ public class NeeoService implements EventSubscriber, NetworkAddressChangeListene
         discovery.addListener(discoveryListener);
 
         try {
-            final String servletUrl = NeeoConstants.WEBAPP_PREFIX + NeeoConstants.WEBAPP_DASHBOARD_PREFIX;
-            dashboardServlet = new NeeoDashboardServlet(this, servletUrl, localContext);
+            dashboardServlet = new NeeoDashboardServlet(this, DASHBOARD_URL, localContext);
 
-            localContext.getHttpService().registerServlet(servletUrl, dashboardServlet, new Hashtable<>(),
+            localContext.getHttpService().registerServlet(DASHBOARD_URL, dashboardServlet, new Hashtable<>(),
                     localContext.getHttpService().createDefaultHttpContext());
 
             localContext.getHttpService().registerResources(NeeoConstants.WEBAPP_PREFIX, "web",
@@ -253,6 +255,12 @@ public class NeeoService implements EventSubscriber, NetworkAddressChangeListene
                 NeeoUtil.close(servlet);
             }
             servlets.clear();
+
+            // Unregister explicitly instead of relying on the cleanup when the HttpService is released: Pax Web then
+            // leaves all but one of the servlets of this bundle mapped in Jetty, so the next activation fails with
+            // "Multiple servlets map to path" and the shared "/" context can no longer be started.
+            unregisterAlias(service, DASHBOARD_URL);
+            unregisterAlias(service, NeeoConstants.WEBAPP_PREFIX);
         }
 
         if (dashboardServlet != null) {
@@ -261,6 +269,15 @@ public class NeeoService implements EventSubscriber, NetworkAddressChangeListene
         }
 
         logger.debug("Stopped NEEO Listener");
+    }
+
+    private void unregisterAlias(HttpService service, String alias) {
+        try {
+            service.unregister(alias);
+        } catch (IllegalArgumentException e) {
+            // not registered, e.g. because the registration failed during activation
+            logger.debug("Alias {} was not registered: {}", alias, e.getMessage());
+        }
     }
 
     /**
