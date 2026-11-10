@@ -5,6 +5,25 @@
 
 	<type>binding</type>
 	<name>TailWind Binding</name>
-	<description>This is the binding for TailWind.</description>
+	<description>Controls garage doors through the local API of TailWind smart garage controllers.</description>
+	<connection>local</connection>
+
+	<discovery-methods>
+		<discovery-method>
+			<service-type>mdns</service-type>
+			<discovery-parameters>
+				<discovery-parameter>
+					<name>mdnsServiceType</name>
+					<value>_http._tcp.local.</value>
+				</discovery-parameter>
+			</discovery-parameters>
+			<match-properties>
+				<match-property>
+					<name>vendor</name>
+					<regex>tailwind</regex>
+				</match-property>
+			</match-properties>
+		</discovery-method>
+	</discovery-methods>
 
 </addon:addon>

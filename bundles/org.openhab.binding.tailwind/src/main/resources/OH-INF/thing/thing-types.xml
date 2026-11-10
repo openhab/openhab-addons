@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="tailwind"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="iq3">
+		<label>TailWind iQ3</label>
+		<description>TailWind iQ3 smart garage controller, for up to three garage doors</description>
+		<semantic-equipment-tag>GarageDoor</semantic-equipment-tag>
+
+		<channel-groups>
+			<channel-group id="controller" typeId="controller"/>
+			<channel-group id="door1" typeId="door">
+				<label>Door 1</label>
+			</channel-group>
+			<channel-group id="door2" typeId="door">
+				<label>Door 2</label>
+			</channel-group>
+			<channel-group id="door3" typeId="door">
+				<label>Door 3</label>
+			</channel-group>
+		</channel-groups>
+
+		<representation-property>macAddress</representation-property>
+
+		<config-description>
+			<parameter name="hostname" type="text" required="true">
+				<context>network-address</context>
+				<label>Hostname</label>
+				<description>IP address or host name of the controller, for example 192.168.1.50 or tailwind-30aea4801880.local</description>
+			</parameter>
+			<parameter name="token" type="text" required="true">
+				<context>password</context>
+				<label>Local Control Key</label>
+				<description>The 6-digit Local Control Key of the controller, from the TailWind web dashboard</description>
+			</parameter>
+			<parameter name="door1PartialOpenTime" type="decimal" min="0.5" max="15" step="0.5" unit="s">
+				<label>Door 1 Partial Open Time</label>
+				<description>Time the door runs when it is opened partially</description>
+				<default>2.5</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="door2PartialOpenTime" type="decimal" min="0.5" max="15" step="0.5" unit="s">
+				<label>Door 2 Partial Open Time</label>
+				<description>Time the door runs when it is opened partially</description>
+				<default>2.5</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="door3PartialOpenTime" type="decimal" min="0.5" max="15" step="0.5" unit="s">
+				<label>Door 3 Partial Open Time</label>
+				<description>Time the door runs when it is opened partially</description>
+				<default>2.5</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-group-type id="controller">
+		<label>Controller</label>
+		<channels>
+			<channel id="night-mode" typeId="night-mode"/>
+			<channel id="led-brightness" typeId="led-brightness"/>
+			<channel id="rssi" typeId="rssi"/>
+			<channel id="server-monitor" typeId="server-monitor"/>
+			<channel id="command" typeId="command"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="door">
+		<label>Door</label>
+		<channels>
+			<channel id="status" typeId="door-status"/>
+			<channel id="control" typeId="door-control"/>
+			<channel id="locked" typeId="door-locked"/>
+			<channel id="disabled" typeId="door-disabled"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-type id="night-mode">
+		<item-type>Switch</item-type>
+		<label>Night Mode</label>
+		<description>ON when night mode is enabled in the TailWind app. In night mode the controller closes the doors
+			automatically during the hours set in the app.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="led-brightness">
+		<item-type>Dimmer</item-type>
+		<label>LED Brightness</label>
+		<description>Brightness of the status LED of the controller</description>
+		<category>Light</category>
+		<state min="0" max="100" pattern="%d %%"/>
+	</channel-type>
+
+	<channel-type id="rssi" advanced="true">
+		<item-type unitHint="dBm">Number:Power</item-type>
+		<label>Wi-Fi Signal Strength</label>
+		<description>Strength of the Wi-Fi signal the controller receives</description>
+		<category>QualityOfService</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>RSSI</tag>
+		</tags>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="server-monitor" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Server Connection Monitoring</label>
+		<description>When ON, the controller reboots itself if it loses its connection to the TailWind cloud server. Turn OFF
+			to use the controller on a network without internet access. Requires firmware 10.61 or later.</description>
+	</channel-type>
+
+	<channel-type id="command" advanced="true">
+		<item-type>String</item-type>
+		<label>Command</label>
+		<description>Sends a support command to the controller</description>
+		<state>
+			<options>
+				<option value="identify">Identify (blink the LED)</option>
+				<option value="reboot">Reboot</option>
+			</options>
+		</state>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+
+	<channel-type id="door-status">
+		<item-type>String</item-type>
+		<label>Status</label>
+		<description>Whether the door is open or closed</description>
+		<category>GarageDoor</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
+		<state readOnly="true">
+			<options>
+				<option value="open">Open</option>
+				<option value="close">Closed</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="door-control">
+		<item-type>String</item-type>
+		<label>Control</label>
+		<description>Opens, partially opens or closes the door. The state is the current status of the door.</description>
+		<category>GarageDoor</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>OpenState</tag>
+		</tags>
+		<state>
+			<options>
+				<option value="open">Open</option>
+				<option value="partial">Open Partially</option>
+				<option value="close">Close</option>
+			</options>
+		</state>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+
+	<channel-type id="door-locked" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Locked</label>
+		<description>ON when the controller has locked the door, so that it does not accept commands</description>
+		<category>Lock</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="door-disabled" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Disabled</label>
+		<description>ON when the door is disabled in the TailWind app</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+</thing:thing-descriptions>
