@@ -663403,5 +663403,188 @@
 			"type": "bool",
 			"readOnly": false
 		}
+	},
+	"zk1jkjhxqkfaaalp": {
+		"charger_status": {
+			"id": 101,
+			"type": "enum",
+			"range": [
+				"no_connet",
+				"connect",
+				"charing",
+				"wait_rfid",
+				"finish",
+				"wait_charing",
+				"error"
+			],
+			"label": "Charger Status",
+			"readOnly": true
+		},
+		"voltage_a": {
+			"id": 102,
+			"type": "value",
+			"min": 0,
+			"max": 5000,
+			"scale": 1,
+			"unit": "V",
+			"label": "Voltage A",
+			"readOnly": true
+		},
+		"voltage_b": {
+			"id": 103,
+			"type": "value",
+			"min": 0,
+			"max": 5000,
+			"scale": 1,
+			"unit": "V",
+			"label": "Voltage B",
+			"readOnly": true
+		},
+		"voltage_c": {
+			"id": 104,
+			"type": "value",
+			"min": 0,
+			"max": 5000,
+			"scale": 1,
+			"unit": "V",
+			"label": "Voltage C",
+			"readOnly": true
+		},
+		"current_a": {
+			"id": 105,
+			"type": "value",
+			"min": 0,
+			"max": 1000,
+			"scale": 1,
+			"unit": "A",
+			"label": "Current A",
+			"readOnly": true
+		},
+		"current_b": {
+			"id": 106,
+			"type": "value",
+			"min": 0,
+			"max": 1000,
+			"scale": 1,
+			"unit": "A",
+			"label": "Current B",
+			"readOnly": true
+		},
+		"current_c": {
+			"id": 107,
+			"type": "value",
+			"min": 0,
+			"max": 1000,
+			"scale": 1,
+			"unit": "A",
+			"label": "Current C",
+			"readOnly": true
+		},
+		"power_total": {
+			"id": 109,
+			"type": "value",
+			"min": 0,
+			"max": 2500,
+			"scale": 1,
+			"unit": "kW",
+			"label": "Charging Power",
+			"readOnly": true
+		},
+		"temp_current": {
+			"id": 110,
+			"type": "value",
+			"min": -400,
+			"max": 1500,
+			"scale": 1,
+			"unit": "°C",
+			"label": "Temperature",
+			"readOnly": true
+		},
+		"log_month": {
+			"id": 111,
+			"type": "value",
+			"min": 1,
+			"max": 12,
+			"label": "Log Month",
+			"readOnly": true
+		},
+		"energy_session": {
+			"id": 112,
+			"type": "value",
+			"min": 0,
+			"max": 99999999,
+			"scale": 1,
+			"unit": "kWh",
+			"label": "Session Energy",
+			"readOnly": true
+		},
+		"max_current_rating": {
+			"id": 113,
+			"type": "string",
+			"label": "Max Current Rating",
+			"readOnly": true
+		},
+		"charge_current": {
+			"id": 115,
+			"type": "value",
+			"min": 6,
+			"max": 32,
+			"unit": "A",
+			"label": "Charge Current",
+			"readOnly": false
+		},
+		"charge_delay": {
+			"id": 118,
+			"type": "value",
+			"min": 0,
+			"max": 15,
+			"unit": "h",
+			"label": "Charge Delay",
+			"readOnly": false
+		},
+		"charge_duration_limit": {
+			"id": 119,
+			"type": "value",
+			"min": 0,
+			"max": 15,
+			"unit": "h",
+			"label": "Charge Duration Limit",
+			"readOnly": false
+		},
+		"charge_time": {
+			"id": 120,
+			"type": "string",
+			"label": "Charge Time",
+			"readOnly": true
+		},
+		"rfid_active": {
+			"id": 123,
+			"type": "bool",
+			"label": "RFID Active",
+			"readOnly": true
+		},
+		"charge_operation": {
+			"id": 124,
+			"type": "enum",
+			"range": [
+				"OpenCharging",
+				"CloseCharging",
+				"WaitOperation"
+			],
+			"label": "Charge Operation",
+			"readOnly": false
+		},
+		"model": {
+			"id": 125,
+			"type": "string",
+			"label": "Model",
+			"readOnly": true
+		},
+		"firmware_version": {
+			"id": 126,
+			"type": "string",
+			"label": "Firmware Version",
+			"readOnly": true
+		}
 	}
 }
