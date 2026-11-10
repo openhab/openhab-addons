@@ -21,138 +21,26 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class TailwindConfiguration {
+    private static final double DEFAULT_PARTIAL_OPEN_TIME = 2.5;
+
+    public String hostname = "";
+    public String token = "";
+    public double door1PartialOpenTime = DEFAULT_PARTIAL_OPEN_TIME;
+    public double door2PartialOpenTime = DEFAULT_PARTIAL_OPEN_TIME;
+    public double door3PartialOpenTime = DEFAULT_PARTIAL_OPEN_TIME;
 
     /**
-     * The number of garage doors connected to the controller
+     * Returns the time in milliseconds that a door runs when it is opened partially.
+     *
+     * @param doorIndex index of the door, starting at 0
      */
-    public int doorCount = 1; // 1=default (can be 1-3)
-
-    /**
-     * Holds either the IP address or HTTP URL of the TailWind controller web server (API)
-     * Format for URL is tailwind-MAC address.local (i.e. tailwind-aa0b0cd0e0f0.local)
-     */
-    public String webServerAddress = ""; // Controller API IP Address or HTTP URL
-
-    /**
-     * Authorization token for the local API server on the controller
-     */
-    public String authToken = ""; // token from TailWind mobile application
-
-    /**
-     * OpenHab Host primary IP address
-     */
-    public String openHabHostAddress = ""; // primary IP address for OH server used for UDP connection listener
-
-    /**
-     * Door one partial open time in seconds
-     */
-    public float doorOnePartialOpen = 2.5f; // 2.5 is default (can be 0.5-15)
-
-    /**
-     * Door one name - allows user to provide a more meaningful name
-     */
-    public String doorOneName = "Door 1"; // Door 1 is default (must not be blank or duplicate)
-
-    /**
-     * Door one partial open time in seconds
-     */
-    public float doorTwoPartialOpen = 2.5f; // 2.5 is default (can be 0.5-15)
-
-    /**
-     * Door one name - allows user to provide a more meaningful name
-     */
-    public String doorTwoName = "Door 2"; // Door 1 is default (must not be blank or duplicate)
-
-    /**
-     * Door one partial open time in seconds
-     */
-    public float doorThreePartialOpen = 2.5f; // 2.5 is default (can be 0.5-15)
-
-    /**
-     * Door one name - allows user to provide a more meaningful name
-     */
-    public String doorThreeName = "Door 3"; // Door 1 is default (must not be blank or duplicate)
-
-    /**
-     * @return doorCount to be used to dynamically configure the door channels
-     */
-    public int getDoorCount() {
-        return doorCount;
-    }
-
-    /**
-     * @return the webServerAddress
-     */
-    public String getWebServerAddress() {
-        return webServerAddress;
-    }
-
-    /**
-     * @param webServerAddress the webServerAddress to set
-     */
-    public void setWebServerAddress(String webServerAddress) {
-        this.webServerAddress = webServerAddress;
-    }
-
-    /**
-     * @return authToken to be used with the requests to the API server on the controller
-     */
-    public String getAuthToken() {
-        return authToken;
-    }
-
-    public String getOpenHabHostAddress() {
-        return openHabHostAddress;
-    }
-
-    public void setOpenHabHostAddress(String openHabHostAddress) {
-        this.openHabHostAddress = openHabHostAddress;
-    }
-
-    /**
-     * @return the doorOnePartialOpen
-     */
-    public float getDoorOnePartialOpen() {
-        return doorOnePartialOpen;
-    }
-
-    /**
-     * @return the doorOneName
-     */
-    public String getDoorOneName() {
-        return doorOneName;
-    }
-
-    /**
-     * @return the doorTwoPartialOpen
-     */
-    public float getDoorTwoPartialOpen() {
-        return doorTwoPartialOpen;
-    }
-
-    /**
-     * @return the doorTwoName
-     */
-    public String getDoorTwoName() {
-        return doorTwoName;
-    }
-
-    /**
-     * @return the doorThreePartialOpen
-     */
-    public float getDoorThreePartialOpen() {
-        return doorThreePartialOpen;
-    }
-
-    /**
-     * @return the doorThreeName
-     */
-    public String getDoorThreeName() {
-        return doorThreeName;
-    }
-
-    @Override
-    public String toString() {
-        return "TailwindConfiguration [doorCount=" + doorCount + ", authToken=" + authToken + "]";
+    public long partialOpenTimeMillis(int doorIndex) {
+        double seconds = switch (doorIndex) {
+            case 0 -> door1PartialOpenTime;
+            case 1 -> door2PartialOpenTime;
+            case 2 -> door3PartialOpenTime;
+            default -> throw new IllegalArgumentException("No door with index " + doorIndex);
+        };
+        return Math.round(seconds * 1000);
     }
 }
