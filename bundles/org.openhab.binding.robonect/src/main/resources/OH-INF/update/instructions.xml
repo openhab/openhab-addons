@@ -31,20 +31,13 @@
 				<label>Mower Time</label>
 				<description>Current date and time reported by the Robonect clock.</description>
 			</add-channel>
-			<add-channel id="service-reboot">
-				<type>robonect:switchCommandType</type>
-				<label>Reboot Robonect</label>
-				<description>Send ON to restart the Robonect module. The WLAN connection is interrupted during the restart.</description>
-			</add-channel>
-			<add-channel id="service-shutdown">
-				<type>robonect:switchCommandType</type>
-				<label>Shut Down Robonect</label>
-				<description>Send ON to shut down the Robonect module.</description>
-			</add-channel>
-			<add-channel id="service-sleep">
-				<type>robonect:switchCommandType</type>
-				<label>Put Robonect to Sleep</label>
-				<description>Send ON to put the Robonect module into standby.</description>
+			<remove-channel id="service-reboot"/>
+			<remove-channel id="service-shutdown"/>
+			<remove-channel id="service-sleep"/>
+			<add-channel id="service-operation">
+				<type>robonect:serviceOperationType</type>
+				<label>Service Operation</label>
+				<description>Send SLEEP, SHUTDOWN, or REBOOT to control the Robonect module.</description>
 			</add-channel>
 			<add-channel id="door-enabled">
 				<type>robonect:doorSwitchType</type>

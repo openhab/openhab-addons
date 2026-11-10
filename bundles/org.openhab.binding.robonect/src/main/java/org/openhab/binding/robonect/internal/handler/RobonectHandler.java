@@ -260,9 +260,7 @@ public class RobonectHandler extends BaseThingHandler {
             case CHANNEL_RESET_ERROR:
                 mowerHandler.handleResetErrorCommand(command);
                 break;
-            case CHANNEL_SERVICE_REBOOT:
-            case CHANNEL_SERVICE_SHUTDOWN:
-            case CHANNEL_SERVICE_SLEEP:
+            case CHANNEL_SERVICE_OPERATION:
                 mowerHandler.handleServiceCommand(channelUID, command);
                 break;
             case CHANNEL_DOOR_STATE:

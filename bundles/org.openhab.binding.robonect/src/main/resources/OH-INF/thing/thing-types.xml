@@ -21,17 +21,9 @@
 				<label>Mower Time</label>
 				<description>Current date and time reported by the Robonect clock.</description>
 			</channel>
-			<channel id="service-reboot" typeId="switchCommandType">
-				<label>Reboot Robonect</label>
-				<description>Send ON to restart the Robonect module. The WLAN connection is interrupted during the restart.</description>
-			</channel>
-			<channel id="service-shutdown" typeId="switchCommandType">
-				<label>Shut Down Robonect</label>
-				<description>Send ON to shut down the Robonect module.</description>
-			</channel>
-			<channel id="service-sleep" typeId="switchCommandType">
-				<label>Put Robonect to Sleep</label>
-				<description>Send ON to put the Robonect module into standby.</description>
+			<channel id="service-operation" typeId="serviceOperationType">
+				<label>Service Operation</label>
+				<description>Send SLEEP, SHUTDOWN, or REBOOT to control the Robonect module.</description>
 			</channel>
 			<channel id="door-enabled" typeId="doorSwitchType">
 				<label>Garage Door Enabled</label>
@@ -885,6 +877,19 @@
 		<item-type unitHint="min">Number:Time</item-type>
 		<label>Weather Service: Update Interval</label>
 		<state readOnly="false" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="serviceOperationType">
+		<item-type>String</item-type>
+		<label>Service Operation</label>
+		<description>Choose a Robonect service operation.</description>
+		<state>
+			<options>
+				<option value="SLEEP">Sleep</option>
+				<option value="SHUTDOWN">Shut down</option>
+				<option value="REBOOT">Reboot</option>
+			</options>
+		</state>
 	</channel-type>
 
 	<channel-type id="textSettingType">

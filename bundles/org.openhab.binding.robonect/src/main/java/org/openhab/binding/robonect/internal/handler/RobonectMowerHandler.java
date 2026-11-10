@@ -451,17 +451,21 @@ final class RobonectMowerHandler {
      * @param command the command received for the channel
      */
     void handleServiceCommand(ChannelUID channelUID, Command command) {
-        if (command != OnOffType.ON) {
-            logger.debug("Got service operation command {} but On is expected.", command);
+        if (!(command instanceof StringType stringCommand)) {
+            logger.debug("Got service operation command of type {} but StringType is expected.",
+                    command.getClass().getName());
+            return;
+        }
+        if (!CHANNEL_SERVICE_OPERATION.equals(channelUID.getId())) {
             return;
         }
         Operation operation;
-        switch (channelUID.getId()) {
-            case CHANNEL_SERVICE_REBOOT -> operation = Operation.REBOOT;
-            case CHANNEL_SERVICE_SHUTDOWN -> operation = Operation.SHUTDOWN;
-            case CHANNEL_SERVICE_SLEEP -> operation = Operation.SLEEP;
+        switch (stringCommand.toString()) {
+            case "SLEEP" -> operation = Operation.SLEEP;
+            case "SHUTDOWN" -> operation = Operation.SHUTDOWN;
+            case "REBOOT" -> operation = Operation.REBOOT;
             default -> {
-                logger.debug("Ignoring unsupported service channel {}.", channelUID.getId());
+                logger.debug("Ignoring unsupported service operation {}.", stringCommand);
                 return;
             }
         }
