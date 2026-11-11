@@ -17,6 +17,9 @@ import static org.openhab.binding.remehaheating.internal.RemehaHeatingBindingCon
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import javax.measure.Quantity;
+import javax.measure.Unit;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -34,11 +37,14 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
+import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 
 /**
  * The {@link RemehaHeatingHandler} handles communication with Remeha Home heating systems.
@@ -200,7 +206,8 @@ public class RemehaHeatingHandler extends BaseThingHandler {
 
             updateStatus(ThingStatus.ONLINE);
             updateChannelsFromDashboard(dashboard);
-        } catch (IllegalStateException | NullPointerException e) {
+        } catch (RuntimeException e) {
+            // An uncaught exception would silently cancel the scheduled refresh job
             logger.debug("Error updating data", e);
             updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/offline.comm-error-data-update-failed");
         }
@@ -211,7 +218,7 @@ public class RemehaHeatingHandler extends BaseThingHandler {
      *
      * @param dashboard the dashboard JSON response
      */
-    private void updateChannelsFromDashboard(JsonObject dashboard) {
+    void updateChannelsFromDashboard(JsonObject dashboard) {
         JsonArray appliances = dashboard.getAsJsonArray("appliances");
         if (appliances == null || appliances.isEmpty()) {
             return;
@@ -219,29 +226,27 @@ public class RemehaHeatingHandler extends BaseThingHandler {
 
         JsonObject appliance = appliances.get(0).getAsJsonObject();
 
-        double pressure = appliance.get("waterPressure").getAsDouble();
-        updateState(CHANNEL_WATER_PRESSURE, new QuantityType<>(pressure, Units.BAR));
-        updateState(CHANNEL_STATUS, new StringType(appliance.get("errorStatus").getAsString()));
-        updateState(CHANNEL_WATER_PRESSURE_OK, OnOffType.from(appliance.get("waterPressureOK").getAsBoolean()));
+        updateQuantity(appliance, "waterPressure", CHANNEL_WATER_PRESSURE, Units.BAR);
+        updateString(appliance, "errorStatus", CHANNEL_STATUS);
+        updateBoolean(appliance, "waterPressureOK", CHANNEL_WATER_PRESSURE_OK);
 
-        JsonObject outdoorInfo = appliance.getAsJsonObject("outdoorTemperatureInformation");
-        if (outdoorInfo != null && outdoorInfo.has("internetOutdoorTemperature")) {
-            double temp = outdoorInfo.get("internetOutdoorTemperature").getAsDouble();
-            updateState(CHANNEL_OUTDOOR_TEMPERATURE, new QuantityType<>(temp, SIUnits.CELSIUS));
+        JsonElement outdoorInfo = appliance.get("outdoorTemperatureInformation");
+        if (outdoorInfo != null && outdoorInfo.isJsonObject()) {
+            updateQuantity(outdoorInfo.getAsJsonObject(), "internetOutdoorTemperature", CHANNEL_OUTDOOR_TEMPERATURE,
+                    SIUnits.CELSIUS);
         }
 
         // Climate zones
         JsonArray climateZones = appliance.getAsJsonArray("climateZones");
         if (climateZones != null && !climateZones.isEmpty()) {
             JsonObject zone = climateZones.get(0).getAsJsonObject();
-            double roomTemp = zone.get("roomTemperature").getAsDouble();
-            double targetTemp = zone.get("setPoint").getAsDouble();
-            updateState(CHANNEL_ROOM_TEMPERATURE, new QuantityType<>(roomTemp, SIUnits.CELSIUS));
-            updateState(CHANNEL_TARGET_TEMPERATURE, new QuantityType<>(targetTemp, SIUnits.CELSIUS));
+            updateQuantity(zone, "roomTemperature", CHANNEL_ROOM_TEMPERATURE, SIUnits.CELSIUS);
+            updateQuantity(zone, "setPoint", CHANNEL_TARGET_TEMPERATURE, SIUnits.CELSIUS);
 
             // Cache climate zone ID
-            if (zone.has("climateZoneId")) {
-                cachedClimateZoneId = zone.get("climateZoneId").getAsString();
+            JsonPrimitive climateZoneId = getPrimitive(zone, "climateZoneId");
+            if (climateZoneId != null) {
+                cachedClimateZoneId = climateZoneId.getAsString();
             }
         }
 
@@ -249,20 +254,43 @@ public class RemehaHeatingHandler extends BaseThingHandler {
         JsonArray hotWaterZones = appliance.getAsJsonArray("hotWaterZones");
         if (hotWaterZones != null && !hotWaterZones.isEmpty()) {
             JsonObject zone = hotWaterZones.get(0).getAsJsonObject();
-            double dhwTemp = zone.get("dhwTemperature").getAsDouble();
-            double dhwTarget = zone.get("targetSetpoint").getAsDouble();
-            String dhwMode = zone.get("dhwZoneMode").getAsString();
-            String dhwStatus = zone.get("dhwStatus").getAsString();
-            updateState(CHANNEL_DHW_TEMPERATURE, new QuantityType<>(dhwTemp, SIUnits.CELSIUS));
-            updateState(CHANNEL_DHW_TARGET, new QuantityType<>(dhwTarget, SIUnits.CELSIUS));
-            updateState(CHANNEL_DHW_MODE, new StringType(dhwMode));
-            updateState(CHANNEL_DHW_STATUS, new StringType(dhwStatus));
+            updateQuantity(zone, "dhwTemperature", CHANNEL_DHW_TEMPERATURE, SIUnits.CELSIUS);
+            updateQuantity(zone, "targetSetpoint", CHANNEL_DHW_TARGET, SIUnits.CELSIUS);
+            updateString(zone, "dhwZoneMode", CHANNEL_DHW_MODE);
+            updateString(zone, "dhwStatus", CHANNEL_DHW_STATUS);
 
             // Cache hot water zone ID
-            if (zone.has("hotWaterZoneId")) {
-                cachedHotWaterZoneId = zone.get("hotWaterZoneId").getAsString();
+            JsonPrimitive hotWaterZoneId = getPrimitive(zone, "hotWaterZoneId");
+            if (hotWaterZoneId != null) {
+                cachedHotWaterZoneId = hotWaterZoneId.getAsString();
             }
         }
+    }
+
+    /**
+     * Returns the value of the given key if it is a JSON primitive. Missing keys and JSON {@code null} values, which
+     * the Remeha API uses for unavailable values (e.g. no hot water temperature on some appliances), return null.
+     */
+    private @Nullable JsonPrimitive getPrimitive(JsonObject object, String key) {
+        JsonElement element = object.get(key);
+        return element != null && element.isJsonPrimitive() ? element.getAsJsonPrimitive() : null;
+    }
+
+    private void updateString(JsonObject object, String key, String channelId) {
+        JsonPrimitive primitive = getPrimitive(object, key);
+        updateState(channelId, primitive == null ? UnDefType.UNDEF : new StringType(primitive.getAsString()));
+    }
+
+    private void updateBoolean(JsonObject object, String key, String channelId) {
+        JsonPrimitive primitive = getPrimitive(object, key);
+        updateState(channelId, primitive == null || !primitive.isBoolean() ? UnDefType.UNDEF
+                : OnOffType.from(primitive.getAsBoolean()));
+    }
+
+    private <Q extends Quantity<Q>> void updateQuantity(JsonObject object, String key, String channelId, Unit<Q> unit) {
+        JsonPrimitive primitive = getPrimitive(object, key);
+        updateState(channelId, primitive == null || !primitive.isNumber() ? UnDefType.UNDEF
+                : new QuantityType<>(primitive.getAsDouble(), unit));
     }
 
     /**
