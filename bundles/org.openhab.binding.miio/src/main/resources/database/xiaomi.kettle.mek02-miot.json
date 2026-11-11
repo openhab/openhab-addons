@@ -1,0 +1,601 @@
+{
+	"deviceMapping": {
+		"id": [
+			"xiaomi.kettle.mek02"
+		],
+		"propertyMethod": "get_properties",
+		"maxProperties": 1,
+		"channels": [
+			{
+				"property": "status",
+				"siid": 2,
+				"piid": 1,
+				"friendlyName": "Status",
+				"channel": "status",
+				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "0",
+							"label": "Power Off"
+						},
+						{
+							"value": "1",
+							"label": "Standby"
+						},
+						{
+							"value": "2",
+							"label": "Heating"
+						},
+						{
+							"value": "3",
+							"label": "Heating Finished"
+						},
+						{
+							"value": "4",
+							"label": "Dechlorination"
+						},
+						{
+							"value": "5",
+							"label": "Keep Warm"
+						},
+						{
+							"value": "6",
+							"label": "Keep Warm Finished"
+						},
+						{
+							"value": "7",
+							"label": "Cooling Down"
+						},
+						{
+							"value": "8",
+							"label": "Delayed Start"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "status",
+				"tags": [
+					"Status"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Power Off\",\"1\"\u003d\"Standby\",\"2\"\u003d\"Heating\",\"3\"\u003d\"Heating Finished\",\"4\"\u003d\"Dechlorination\",\"5\"\u003d\"Keep Warm\",\"6\"\u003d\"Keep Warm Finished\",\"7\"\u003d\"Cooling Down\",\"8\"\u003d\"Delayed Start\"]`"
+			},
+			{
+				"property": "fault",
+				"siid": 2,
+				"piid": 4,
+				"friendlyName": "Fault",
+				"channel": "fault",
+				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "0",
+							"label": "No Fault"
+						},
+						{
+							"value": "1",
+							"label": "Temperature Sensor Open Circuit"
+						},
+						{
+							"value": "2",
+							"label": "Temperature Sensor Short Circuit"
+						},
+						{
+							"value": "3",
+							"label": "Heating Without Water"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "alarm",
+				"tags": [
+					"Status"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"No Fault\",\"1\"\u003d\"Temperature Sensor Open Circuit\",\"2\"\u003d\"Temperature Sensor Short Circuit\",\"3\"\u003d\"Heating Without Water\"]`"
+			},
+			{
+				"property": "temperature",
+				"siid": 2,
+				"piid": 6,
+				"friendlyName": "Water Temperature",
+				"channel": "temperature",
+				"type": "Number:Temperature",
+				"unit": "celsius",
+				"stateDescription": {
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "temperature",
+				"tags": [
+					"Measurement",
+					"Temperature"
+				]
+			},
+			{
+				"property": "",
+				"friendlyName": "Heating",
+				"channel": "heating",
+				"type": "String",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "heat",
+							"label": "Heat Water"
+						},
+						{
+							"value": "keepwarm",
+							"label": "Keep Warm"
+						},
+						{
+							"value": "stop",
+							"label": "Stop"
+						}
+					]
+				},
+				"refresh": false,
+				"actions": [
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"parameters": [
+							{
+								"piid": 15,
+								"value": "M0"
+							},
+							{
+								"piid": 5,
+								"value": "$boiling-point$"
+							},
+							{
+								"piid": 7,
+								"value": "$auto-keep-warm$"
+							},
+							{
+								"piid": 8,
+								"value": "$keep-warm-temperature$"
+							},
+							{
+								"piid": 9,
+								"value": "$dechlorination$"
+							},
+							{
+								"piid": 18,
+								"value": "$keep-warm-temperature$"
+							},
+							{
+								"piid": 16,
+								"value": 0
+							},
+							{
+								"piid": 14,
+								"value": "$pure-water-keep-warm$"
+							}
+						],
+						"siid": 2,
+						"aiid": 1,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "heat"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"parameters": [
+							{
+								"piid": 15,
+								"value": "M1"
+							},
+							{
+								"piid": 5,
+								"value": "$keep-warm-temperature$"
+							},
+							{
+								"piid": 7,
+								"value": "$auto-keep-warm$"
+							},
+							{
+								"piid": 8,
+								"value": "$keep-warm-temperature$"
+							},
+							{
+								"piid": 9,
+								"value": "$dechlorination$"
+							},
+							{
+								"piid": 18,
+								"value": "$keep-warm-temperature$"
+							},
+							{
+								"piid": 16,
+								"value": 0
+							},
+							{
+								"piid": 14,
+								"value": true
+							}
+						],
+						"siid": 2,
+						"aiid": 1,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "keepwarm"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 2,
+						"aiid": 2,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "stop"
+								}
+							]
+						}
+					}
+				],
+				"category": "heating",
+				"tags": [
+					"Control"
+				],
+				"readmeComment": "Heat Water heats to the boiling point, Keep Warm to the keep warm temperature, with the settings below; link those channels"
+			},
+			{
+				"property": "target-temperature",
+				"siid": 2,
+				"piid": 5,
+				"friendlyName": "Target Temperature",
+				"channel": "target_temperature",
+				"type": "Number:Temperature",
+				"unit": "celsius",
+				"stateDescription": {
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "temperature",
+				"tags": [
+					"Status",
+					"Temperature"
+				]
+			},
+			{
+				"property": "boiling-point",
+				"siid": 2,
+				"piid": 11,
+				"friendlyName": "Boiling Point",
+				"channel": "boiling_point",
+				"type": "Number:Temperature",
+				"unit": "celsius",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 110,
+					"step": 1,
+					"pattern": "%.0f %unit%"
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "temperature",
+				"tags": [
+					"Setpoint",
+					"Temperature"
+				]
+			},
+			{
+				"property": "auto-keep-warm",
+				"siid": 2,
+				"piid": 7,
+				"friendlyName": "Keep Warm After Heating",
+				"channel": "auto_keep_warm",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch"
+				]
+			},
+			{
+				"property": "keep-warm-temperature",
+				"siid": 2,
+				"piid": 8,
+				"friendlyName": "Keep Warm Temperature",
+				"channel": "keep_warm_temperature",
+				"type": "Number:Temperature",
+				"unit": "celsius",
+				"stateDescription": {
+					"minimum": 40,
+					"maximum": 95,
+					"step": 1,
+					"pattern": "%.0f %unit%"
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "temperature",
+				"tags": [
+					"Setpoint",
+					"Temperature"
+				]
+			},
+			{
+				"property": "dechlorination",
+				"siid": 2,
+				"piid": 9,
+				"friendlyName": "Dechlorination",
+				"channel": "dechlorination",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch"
+				]
+			},
+			{
+				"property": "pure-water-keep-warm",
+				"siid": 2,
+				"piid": 14,
+				"friendlyName": "Pure Water Keep Warm",
+				"channel": "pure_water_keep_warm",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch"
+				]
+			},
+			{
+				"property": "keep-warm-temperature1",
+				"siid": 2,
+				"piid": 18,
+				"friendlyName": "Pure Water Keep Warm Temperature",
+				"channel": "pure_water_keep_warm_temperature",
+				"type": "Number:Temperature",
+				"unit": "celsius",
+				"stateDescription": {
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "temperature",
+				"tags": [
+					"Status",
+					"Temperature"
+				]
+			},
+			{
+				"property": "dechlorination-progress",
+				"siid": 2,
+				"piid": 12,
+				"friendlyName": "Dechlorination Progress",
+				"channel": "dechlorination_progress",
+				"type": "Number:Dimensionless",
+				"unit": "percentage",
+				"stateDescription": {
+					"pattern": "%.0f %%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "status",
+				"tags": [
+					"Measurement",
+					"Progress"
+				]
+			},
+			{
+				"property": "out-water-time",
+				"siid": 2,
+				"piid": 13,
+				"friendlyName": "Dispense Amount",
+				"channel": "out_water_time",
+				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "1",
+							"label": "Capacity 1"
+						},
+						{
+							"value": "2",
+							"label": "Capacity 2"
+						},
+						{
+							"value": "3",
+							"label": "Capacity 3"
+						},
+						{
+							"value": "4",
+							"label": "Unlimited"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "water",
+				"tags": [
+					"Status",
+					"Water"
+				],
+				"readmeComment": "Value mapping `[\"1\"\u003d\"Capacity 1\",\"2\"\u003d\"Capacity 2\",\"3\"\u003d\"Capacity 3\",\"4\"\u003d\"Unlimited\"]`"
+			},
+			{
+				"property": "mode-id",
+				"siid": 2,
+				"piid": 15,
+				"friendlyName": "Recipe",
+				"channel": "mode_id",
+				"type": "String",
+				"stateDescription": {
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "status",
+				"tags": [
+					"Status"
+				],
+				"readmeComment": "M0 heat water, M1 keep warm, A\u003cn\u003e / C\u003cn\u003e custom recipes"
+			},
+			{
+				"property": "reservation-left-time",
+				"siid": 2,
+				"piid": 16,
+				"friendlyName": "Delayed Start Time Left",
+				"channel": "reservation_left_time",
+				"type": "Number:Time",
+				"unit": "minutes",
+				"stateDescription": {
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "time",
+				"tags": [
+					"Measurement",
+					"Duration"
+				]
+			},
+			{
+				"property": "mode",
+				"siid": 4,
+				"piid": 3,
+				"friendlyName": "Child Lock",
+				"channel": "child_lock",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch"
+				]
+			},
+			{
+				"property": "current-physical-control-lock",
+				"siid": 4,
+				"piid": 2,
+				"friendlyName": "Child Lock Active",
+				"channel": "current_physical_control_lock",
+				"type": "Switch",
+				"stateDescription": {
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "status",
+				"tags": [
+					"Status"
+				]
+			},
+			{
+				"property": "alarm",
+				"siid": 5,
+				"piid": 1,
+				"friendlyName": "Sound",
+				"channel": "alarm",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch"
+				]
+			},
+			{
+				"property": "auto-screen-off",
+				"siid": 6,
+				"piid": 4,
+				"friendlyName": "Screen Off After",
+				"channel": "auto_screen_off",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "1 Minute"
+						},
+						{
+							"value": "1",
+							"label": "3 Minutes"
+						},
+						{
+							"value": "2",
+							"label": "5 Minutes"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "settings",
+				"tags": [
+					"Control"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"1 Minute\",\"1\"\u003d\"3 Minutes\",\"2\"\u003d\"5 Minutes\"]`"
+			}
+		],
+		"experimental": true
+	}
+}
