@@ -11,8 +11,8 @@
 		<description>Switch the power ON and OFF</description>
 		<category>Light</category>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Light</tag>
+			<point>Switch</point>
+			<property>Light</property>
 		</tags>
 	</channel-type>
 
@@ -46,8 +46,8 @@
 		<description>Control the brightness and switch the light ON and OFF (read/write)</description>
 		<category>Light</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>Light</tag>
+			<point>Control</point>
+			<property>Light</property>
 		</tags>
 	</channel-type>
 
@@ -58,8 +58,8 @@
 		<description>Control the roller shutter position (read/write)</description>
 		<category>Blinds</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>OpenLevel</tag>
+			<point>Control</point>
+			<property>OpenLevel</property>
 		</tags>
 	</channel-type>
 
@@ -70,8 +70,8 @@
 		<description>Current temperature (read only)</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -107,8 +107,8 @@
 		<description>Setpoint temperature (read/write)</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f %unit%" step="0.5"/>
 	</channel-type>
@@ -125,8 +125,8 @@
 		<label>Mode</label>
 		<description>The zone operation mode (read/write)</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
+			<point>Status</point>
+			<property>Mode</property>
 		</tags>
 		<state>
 			<options>
@@ -143,8 +143,8 @@
 		<label>Set Fan Speed</label>
 		<description>Set speed of the Fan Coil (read/write)</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Speed</tag>
+			<point>Control</point>
+			<property>Speed</property>
 		</tags>
 		<state>
 			<options>
@@ -261,8 +261,8 @@
 		<label>Central Unit Mode</label>
 		<description>The Central Unit operation mode (read/write)</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
+			<point>Status</point>
+			<property>Mode</property>
 		</tags>
 		<state>
 			<options>
@@ -384,8 +384,8 @@
 		<description>Current active power</description>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point>Measurement</point>
+			<property>Power</property>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"></state>
 	</channel-type>
@@ -396,8 +396,8 @@
 		<description>Total energy measured for this month</description>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"></state>
 	</channel-type>
@@ -408,8 +408,8 @@
 		<description>Total energy measured for today</description>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"></state>
 	</channel-type>
@@ -488,7 +488,7 @@
 		<label>System State</label>
 		<description>Alarm system is active (ON) or inactive (OFF) (read only).</description>
 		<tags>
-			<tag>Alarm</tag>
+			<point>Alarm</point>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -498,7 +498,7 @@
 		<label>Armed State</label>
 		<description>Alarm is armed (ON) or disarmed (OFF) (read only).</description>
 		<tags>
-			<tag>Alarm</tag>
+			<point>Alarm</point>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -508,8 +508,8 @@
 		<label>Network State</label>
 		<description>Alarm system network state (ON = network OK, OFF = no network) (read only).</description>
 		<tags>
-			<tag>Alarm</tag>
-			<tag>Power</tag>
+			<point>Alarm</point>
+			<property>Power</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -519,8 +519,8 @@
 		<label>Battery State</label>
 		<description>Alarm system battery state (read only).</description>
 		<tags>
-			<tag>Alarm</tag>
-			<tag>LowBattery</tag>
+			<point>Alarm</point>
+			<property>LowBattery</property>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -536,7 +536,7 @@
 		<label>Zone Alarm</label>
 		<description>Current alarm for the zone (read only).</description>
 		<tags>
-			<tag>Alarm</tag>
+			<point>Alarm</point>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -557,8 +557,8 @@
 		<description>Current alarm's timestamp for the zone (read only).</description>
 		<category>Time</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
+			<point>Status</point>
+			<property>Timestamp</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -569,7 +569,7 @@
 		<label>Alarm Zone State</label>
 		<description>Alarm zone is active (ON) or inactive (OFF) (read only).</description>
 		<tags>
-			<tag>Alarm</tag>
+			<point>Alarm</point>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>

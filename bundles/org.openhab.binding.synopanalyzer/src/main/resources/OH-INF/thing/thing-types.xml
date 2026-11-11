@@ -44,8 +44,8 @@
 		<description>Wind speed in Beaufort Scale</description>
 		<category>oh:synopanalyzer:beaufort</category>
 		<tags>
-			<tag>Calculation</tag>
-			<tag>Speed</tag>
+			<point>Calculation</point>
+			<property>Speed</property>
 		</tags>
 		<state readOnly="true" pattern="%d" min="0" max="12"/>
 	</channel-type>
@@ -56,8 +56,8 @@
 		<description>Wind direction</description>
 		<category>Wind</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Wind</tag>
+			<point>Measurement</point>
+			<property>Wind</property>
 		</tags>
 		<state readOnly="true" pattern="%s">
 			<options>
@@ -95,7 +95,7 @@
 		<description>Cloud layer attenuation factor</description>
 		<category>sun_clouds</category>
 		<tags>
-			<tag>Calculation</tag>
+			<point>Calculation</point>
 		</tags>
 		<state readOnly="true" pattern="%.1f" max="1" min="0"/>
 	</channel-type>
@@ -134,8 +134,8 @@
 		<description>Timestamp when data was observed</description>
 		<category>time</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
+			<point>Status</point>
+			<property>Timestamp</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>

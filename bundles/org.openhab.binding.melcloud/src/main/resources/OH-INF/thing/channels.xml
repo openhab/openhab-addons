@@ -10,8 +10,8 @@
 		<label>Power</label>
 		<description>Power status of device</description>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Power</tag>
+			<point>Switch</point>
+			<property>Power</property>
 		</tags>
 	</channel-type>
 
@@ -20,8 +20,8 @@
 		<label>Pending Command</label>
 		<description>Device has a pending command(s)</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -31,8 +31,8 @@
 		<label>Is Offline</label>
 		<description>Is device in offline state.</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -42,8 +42,8 @@
 		<label>Last Communication</label>
 		<description>Last communication time between device and MELCloud</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
+			<point>Status</point>
+			<property>Timestamp</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -53,8 +53,8 @@
 		<label>Next Communication</label>
 		<description>Next communication time between device and MELCloud</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
+			<point>Status</point>
+			<property>Timestamp</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -65,8 +65,8 @@
 		<label>Operation Mode</label>
 		<description>Operation mode</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
+			<point>Status</point>
+			<property>Mode</property>
 		</tags>
 		<state>
 			<options>
@@ -84,8 +84,8 @@
 		<label>Set Temperature</label>
 		<description>Set temperature</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Temperature</tag>
+			<point>Control</point>
+			<property>Temperature</property>
 		</tags>
 		<state min="10" max="40" step="0.5" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -95,8 +95,8 @@
 		<label>Fan Speed</label>
 		<description>Fan speed</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Speed</tag>
+			<point>Status</point>
+			<property>Speed</property>
 		</tags>
 		<state>
 			<options>
@@ -115,8 +115,8 @@
 		<label>Vane Horizontal</label>
 		<description>Vane horizontal</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Tilt</tag>
+			<point>Status</point>
+			<property>Tilt</property>
 		</tags>
 		<state>
 			<options>
@@ -136,8 +136,8 @@
 		<label>Vane Vertical</label>
 		<description>Vane vertical</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Tilt</tag>
+			<point>Status</point>
+			<property>Tilt</property>
 		</tags>
 		<state>
 			<options>
@@ -157,8 +157,8 @@
 		<label>Room Temperature</label>
 		<description>Room temperature</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -169,8 +169,8 @@
 		<label>Tank Temperature</label>
 		<description>Temperature of water</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -180,8 +180,8 @@
 		<label>Tank target temperature</label>
 		<description>Setpoint temperature of water</description>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state min="20" max="65" step="1" pattern="%.0f %unit%"/>
 	</channel-type>
@@ -191,8 +191,8 @@
 		<label>Forced Hot Water Mode</label>
 		<description>If water mode is Heat Now (true) or Auto (false)</description>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
+			<point>Switch</point>
+			<property>Mode</property>
 		</tags>
 	</channel-type>
 
@@ -201,8 +201,8 @@
 		<label>Room Temperature Zone1</label>
 		<description>Room temperature for zone 1</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -212,8 +212,8 @@
 		<label>Set Temperature Zone1</label>
 		<description>Set temperature for zone 1</description>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state min="10" max="30" step="0.5" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -223,8 +223,8 @@
 		<label>Room Temperature Zone2</label>
 		<description>Room temperature for zone 2</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -234,8 +234,8 @@
 		<label>Set Temperature Zone2</label>
 		<description>Set temperature for zone 2</description>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state min="10" max="30" step="0.5" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -245,8 +245,8 @@
 		<label>Heat Flow Temp Zone1</label>
 		<description>Set temperature for water flow for zone 1</description>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state min="20" max="65" step="1" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -256,8 +256,8 @@
 		<label>Heat Flow Temp Zone2</label>
 		<description>Set temperature for water flow for zone 2</description>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state min="20" max="65" step="1" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -267,8 +267,8 @@
 		<label>Flow Mode Zone1</label>
 		<description>Set flow mode for zone 1</description>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Mode</tag>
+			<point>Setpoint</point>
+			<property>Mode</property>
 		</tags>
 		<state>
 			<options>
@@ -286,8 +286,8 @@
 		<label>Flow Mode Zone2</label>
 		<description>Set flow mode for zone 2</description>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Mode</tag>
+			<point>Setpoint</point>
+			<property>Mode</property>
 		</tags>
 		<state>
 			<options>
@@ -305,8 +305,8 @@
 		<label>Operation Mode</label>
 		<description>Operation mode</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
+			<point>Status</point>
+			<property>Mode</property>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -327,8 +327,8 @@
 		<label>Operation Mode</label>
 		<description>Operation mode</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
+			<point>Status</point>
+			<property>Mode</property>
 		</tags>
 		<state>
 			<options>
@@ -346,8 +346,8 @@
 		<label>Fan Speed</label>
 		<description>Fan speed</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Speed</tag>
+			<point>Status</point>
+			<property>Speed</property>
 		</tags>
 		<state>
 			<options>
@@ -366,8 +366,8 @@
 		<label>Vane Horizontal</label>
 		<description>Vane horizontal position</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Tilt</tag>
+			<point>Status</point>
+			<property>Tilt</property>
 		</tags>
 		<state>
 			<options>
@@ -387,8 +387,8 @@
 		<label>Vane Vertical</label>
 		<description>Vane vertical position</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Tilt</tag>
+			<point>Status</point>
+			<property>Tilt</property>
 		</tags>
 		<state>
 			<options>
@@ -408,8 +408,8 @@
 		<label>Zone Operation Mode</label>
 		<description>Configured heating/cooling strategy for a zone</description>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Mode</tag>
+			<point>Setpoint</point>
+			<property>Mode</property>
 		</tags>
 		<state>
 			<options>
@@ -428,8 +428,8 @@
 		<label>Operation Status</label>
 		<description>What the unit is doing right now</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
+			<point>Status</point>
+			<property>Mode</property>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -448,8 +448,8 @@
 		<label>Energy Consumed</label>
 		<description>Energy consumed in the current hour</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
@@ -459,8 +459,8 @@
 		<label>Energy Produced</label>
 		<description>Energy produced in the current hour</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
@@ -470,8 +470,8 @@
 		<label>COP</label>
 		<description>Ratio of energy produced to energy consumed over the polling window</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state readOnly="true" pattern="%.2f"/>
 	</channel-type>
@@ -481,8 +481,8 @@
 		<label>Is In Error</label>
 		<description>Whether the unit is currently reporting an error</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -492,8 +492,8 @@
 		<label>Error Code</label>
 		<description>The unit's current error code, if any</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -503,8 +503,8 @@
 		<label>In Standby Mode</label>
 		<description>Whether the unit is currently in standby mode</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
+			<point>Status</point>
+			<property>Mode</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -514,8 +514,8 @@
 		<label>Holiday Mode</label>
 		<description>Whether holiday mode is currently enabled</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
+			<point>Status</point>
+			<property>Mode</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -525,8 +525,8 @@
 		<label>Frost Protection</label>
 		<description>Whether frost protection is currently enabled</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
+			<point>Status</point>
+			<property>Mode</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>

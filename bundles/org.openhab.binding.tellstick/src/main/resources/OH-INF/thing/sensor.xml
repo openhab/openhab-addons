@@ -80,8 +80,8 @@
 		<description>Actual measured room temperature</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true">
 		</state>
@@ -93,8 +93,8 @@
 		<description>Actual measured room Humidity</description>
 		<category>Humidity</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Humidity</tag>
+			<point>Measurement</point>
+			<property>Humidity</property>
 		</tags>
 		<state pattern="%d %unit%" readOnly="true">
 		</state>
@@ -105,8 +105,8 @@
 		<label>Rainrate</label>
 		<description>The current rain rate</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Rain</tag>
+			<point>Measurement</point>
+			<property>Rain</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -116,8 +116,8 @@
 		<label>Total Rain</label>
 		<description>Total rain</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Rain</tag>
+			<point>Measurement</point>
+			<property>Rain</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true">
 		</state>
@@ -128,8 +128,8 @@
 		<label>Wind Gust</label>
 		<description>Current wind gust</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Wind</tag>
+			<point>Measurement</point>
+			<property>Wind</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"></state>
 	</channel-type>
@@ -139,8 +139,8 @@
 		<label>Wind Average</label>
 		<description>Current average wind</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Wind</tag>
+			<point>Measurement</point>
+			<property>Wind</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"></state>
 	</channel-type>
@@ -151,8 +151,8 @@
 		<description>Current wind direction</description>
 		<category>Wind</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Wind</tag>
+			<point>Measurement</point>
+			<property>Wind</property>
 		</tags>
 		<state min="0" max="360" step="1" readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -162,8 +162,8 @@
 		<label>Power</label>
 		<description>Current power</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point>Measurement</point>
+			<property>Power</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%">
 		</state>
@@ -174,8 +174,8 @@
 		<label>Lux</label>
 		<description>Current lumination</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Illuminance</tag>
+			<point>Measurement</point>
+			<property>Illuminance</property>
 		</tags>
 		<state readOnly="true" pattern="%f %unit%"/>
 	</channel-type>
@@ -185,8 +185,8 @@
 		<label>Ampere</label>
 		<description>Current ampere</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Current</tag>
+			<point>Measurement</point>
+			<property>Current</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"></state>
 	</channel-type>

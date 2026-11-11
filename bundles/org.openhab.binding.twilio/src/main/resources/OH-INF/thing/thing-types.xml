@@ -110,8 +110,8 @@
 		<label>Last Message Body</label>
 		<description>Body text of the last received SMS or WhatsApp message.</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -121,8 +121,8 @@
 		<label>Last Message From</label>
 		<description>Phone number of the last message sender.</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -132,8 +132,8 @@
 		<label>Last Message Date</label>
 		<description>Timestamp of the last received message.</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
+			<point>Status</point>
+			<property>Timestamp</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -143,8 +143,8 @@
 		<label>Last Message Media URL</label>
 		<description>URL of the first media attachment from the last received MMS or WhatsApp message.</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -154,8 +154,8 @@
 		<label>Last Message SID</label>
 		<description>Twilio Message SID of the last received message.</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -165,8 +165,8 @@
 		<label>Last Call From</label>
 		<description>Phone number of the last incoming caller.</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -176,8 +176,8 @@
 		<label>Last Call Status</label>
 		<description>Status of the last call (e.g. ringing, in-progress, completed).</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -187,8 +187,8 @@
 		<label>Last Call Date</label>
 		<description>Timestamp of the last incoming call.</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
+			<point>Status</point>
+			<property>Timestamp</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -198,8 +198,8 @@
 		<label>Last DTMF Digits</label>
 		<description>Last DTMF digits received from a caller during a voice call.</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>

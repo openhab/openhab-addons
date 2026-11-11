@@ -376,8 +376,8 @@
 		<label>PoE Out State</label>
 		<description>Defines the PoE-Out state of the port, allowing control over various power delivery modes</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Mode</tag>
+			<point>Control</point>
+			<property>Mode</property>
 		</tags>
 		<command>
 			<options>
@@ -393,8 +393,8 @@
 		<label>PoE Out Status</label>
 		<description>Shows current PoE-Out status on port</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
+			<point>Status</point>
+			<property>Mode</property>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -414,8 +414,8 @@
 		<label>PoE Out Consumption</label>
 		<description>Current power consumption of the port in watts</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point>Measurement</point>
+			<property>Power</property>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>

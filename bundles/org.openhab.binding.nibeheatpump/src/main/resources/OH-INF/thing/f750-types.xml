@@ -16,8 +16,8 @@
 		<label>BT1 Outdoor Temperature</label>
 		<description>Current outdoor temperature</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -27,8 +27,8 @@
 		<label>EP23-BT2 Supply Temp S4</label>
 		<description>Supply temperature for system 4</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -38,8 +38,8 @@
 		<label>EP22-BT2 Supply Temp S3</label>
 		<description>Supply temperature for system 3</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -49,8 +49,8 @@
 		<label>EP21-BT2 Supply Temp S2</label>
 		<description>Supply temperature for system 2</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -60,8 +60,8 @@
 		<label>BT2 Supply Temp S1</label>
 		<description>Supply temperature for system 1</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -71,8 +71,8 @@
 		<label>EB100-EP14-BT3 Return Temp</label>
 		<description>Return temperature</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -82,8 +82,8 @@
 		<label>BT7 HW Top</label>
 		<description>Hot water top temperature, BT7</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -93,8 +93,8 @@
 		<label>BT6 HW Load</label>
 		<description>Hot water load temperature, BT6</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -104,8 +104,8 @@
 		<label>EB100-EP14-BT12 Condensor Out</label>
 		<description>Condensor out temperature, BT12</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -115,8 +115,8 @@
 		<label>EB100-EP14-BT14 Hot Gas Temp</label>
 		<description>Hot gas temperature, BT14</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -126,8 +126,8 @@
 		<label>EB100-EP14-BT15 Liquid Line</label>
 		<description>Liquid line temperature, BT15</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -137,8 +137,8 @@
 		<label>EB100-BT16 Evaporator Temp</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -148,8 +148,8 @@
 		<label>EB100-EP14-BT17 Suction</label>
 		<description>Suction temperature, BT17</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -159,8 +159,8 @@
 		<label>BT20 Exhaust Air Temp. 1</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -170,8 +170,8 @@
 		<label>BT21 Vented Air Temp. 1</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -181,8 +181,8 @@
 		<label>EP23-BT50 Room Temp S4</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -192,8 +192,8 @@
 		<label>EP22-BT50 Room Temp S3</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -203,8 +203,8 @@
 		<label>EP21-BT50 Room Temp S2</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -214,8 +214,8 @@
 		<label>BT50 Room Temp S1</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -225,8 +225,8 @@
 		<label>BT53 Solar Panel Temp</label>
 		<description>Used in Solar and AHPS Docking accessories</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -236,8 +236,8 @@
 		<label>BT54 Solar Load Temp</label>
 		<description>Used in Solar and AHPS Docking accessories</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -247,8 +247,8 @@
 		<label>EB100-BT61 Supply Radiator Temp</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -258,8 +258,8 @@
 		<label>EB100-BT62 Return Radiator Temp</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -269,8 +269,8 @@
 		<label>EB100-BS1 Air Flow</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Airflow</tag>
+			<point>Measurement</point>
+			<property>Airflow</property>
 		</tags>
 		<state pattern="%.1f" readOnly="true">
 		</state>
@@ -294,8 +294,8 @@
 		<label>BT1 Average</label>
 		<description>EB100-BT1 Outdoor temperature average</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -305,8 +305,8 @@
 		<label>BT25 Ext. Supply</label>
 		<description>External supply temperature, BT25</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -330,8 +330,8 @@
 		<label>BT6 External Water Heater Load Temp.</label>
 		<description>Used in DEW, SCA and AHPS Docking accessories</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -341,8 +341,8 @@
 		<label>BT7 External Water Heater Top Temp.</label>
 		<description>Used in DEW, SCA and AHPS Docking accessories</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -373,8 +373,8 @@
 		<label>BT52 External Water Heater Load Temp.</label>
 		<description>Used in DEH and AHPS Docking accessories</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -384,8 +384,8 @@
 		<label>EP23-BT3 Return Temp S4</label>
 		<description>Return temperature for system 4</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -395,8 +395,8 @@
 		<label>EP22-BT3 Return Temp S3</label>
 		<description>Return temperature for system 3</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -406,8 +406,8 @@
 		<label>EP21-BT3 Return Temp S2</label>
 		<description>Return temperature for system 2</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -417,8 +417,8 @@
 		<label>AZ2-BT22 Supply Air Temp. SAM</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -428,8 +428,8 @@
 		<label>AZ2-BT23 Outdoor Temp. SAM</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -439,8 +439,8 @@
 		<label>AZ2-BT68 Flow Temp. SAM</label>
 		<description>Heat medium flow temperature to SAM module</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -450,8 +450,8 @@
 		<label>AZ2-BT69 Return Temp. SAM</label>
 		<description>Heat medium return temperature from SAM module</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -461,8 +461,8 @@
 		<label>EP30-BT53 Solar Panel Temp</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -472,8 +472,8 @@
 		<label>EP30-BT54 Solar Load Temp</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -483,8 +483,8 @@
 		<label>EP47-BT2 Supply Temp S8</label>
 		<description>Supply temperature for system 8</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -494,8 +494,8 @@
 		<label>EP46-BT2 Supply Temp S7</label>
 		<description>Supply temperature for system 7</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -505,8 +505,8 @@
 		<label>EP45-BT2 Supply Temp S6</label>
 		<description>Supply temperature for system 6</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -516,8 +516,8 @@
 		<label>EP44-BT2 Supply Temp S5</label>
 		<description>Supply temperature for system 5</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -527,8 +527,8 @@
 		<label>EP47-BT3 Return Temp S8</label>
 		<description>Return temperature for system 8</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -538,8 +538,8 @@
 		<label>EP46-BT3 Return Temp S7</label>
 		<description>Return temperature for system 7</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -549,8 +549,8 @@
 		<label>EP45-BT3 Return Temp S6</label>
 		<description>Return temperature for system 6</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -560,8 +560,8 @@
 		<label>EP44-BT3 Return Temp S5</label>
 		<description>Return temperature for system 5</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -571,8 +571,8 @@
 		<label>EP47-BT50 Room Temp S8</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -582,8 +582,8 @@
 		<label>EP46-BT50 Room Temp S7</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -593,8 +593,8 @@
 		<label>EP45-BT50 Room Temp S6</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -604,8 +604,8 @@
 		<label>EP44-BT50 Room Temp S5</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -615,8 +615,8 @@
 		<label>BT1 Average, 1h</label>
 		<description>EB100-BT1 Outdoor temperature average, 1h</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -626,8 +626,8 @@
 		<label>EP47-BT50 Room Temp S8 Average</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -637,8 +637,8 @@
 		<label>EP46-BT50 Room Temp S7 Average</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -648,8 +648,8 @@
 		<label>EP45-BT50 Room Temp S6 Average</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -659,8 +659,8 @@
 		<label>EP44-BT50 Room Temp S5 Average</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -670,8 +670,8 @@
 		<label>EP23-BT50 Room Temp S4 Average</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -681,8 +681,8 @@
 		<label>EP22-BT50 Room Temp S3 Average</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -692,8 +692,8 @@
 		<label>EP21-BT50 Room Temp S2 Average</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -703,8 +703,8 @@
 		<label>BT50 Room Temp S1 Average</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -714,8 +714,8 @@
 		<label>BT74 Average</label>
 		<description>BT74 heating cooling sensor average</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -725,8 +725,8 @@
 		<label>Calc. Supply S8</label>
 		<description>Calculated supply temperature for the climate system</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -736,8 +736,8 @@
 		<label>Calc. Supply S7</label>
 		<description>Calculated supply temperature for the climate system</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -747,8 +747,8 @@
 		<label>Calc. Supply S6</label>
 		<description>Calculated supply temperature for the climate system</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -758,8 +758,8 @@
 		<label>Calculated Supply S5</label>
 		<description>Calculated supply temperature for the climate system</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -998,8 +998,8 @@
 		<label>Heat Meter - Pool2 Cpr EP14</label>
 		<description>Accumulated energy production as calculated by the heat meter</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%.1f kWh" readOnly="true">
 		</state>
@@ -1044,8 +1044,8 @@
 		<label>+Adjust Temp Indoor</label>
 		<description>Average of all room sensors</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -1055,8 +1055,8 @@
 		<label>+Adjust Temp Outdoor</label>
 		<description>Outdoor temp</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -1087,8 +1087,8 @@
 		<label>BT64 Average</label>
 		<description>BT64 Cooling supply average</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -1152,8 +1152,8 @@
 		<label>External Energy Meter 2 Accumulated Energy</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%.2f kWh" readOnly="true">
 		</state>
@@ -1163,8 +1163,8 @@
 		<label>External Energy Meter 1 Accumulated Energy</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%.2f kWh" readOnly="true">
 		</state>
@@ -1249,8 +1249,8 @@
 		<label>Offset to Smart Home System</label>
 		<description>Offset to smart home system</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -1750,8 +1750,8 @@
 		<label>AA23-BE5 Temperature 10</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -1761,8 +1761,8 @@
 		<label>AA23-BE5 Temperature 9</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -1772,8 +1772,8 @@
 		<label>AA23-BE5 Temperature 8</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -1783,8 +1783,8 @@
 		<label>AA23-BE5 Temperature 7</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -1794,8 +1794,8 @@
 		<label>AA23-BE5 Temperature 6</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -1805,8 +1805,8 @@
 		<label>AA23-BE5 Temperature 5</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -1816,8 +1816,8 @@
 		<label>AA23-BE5 Temperature 4</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -1827,8 +1827,8 @@
 		<label>AA23-BE5 Temperature 3</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -1838,8 +1838,8 @@
 		<label>AA23-BE5 Temperature 2</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -1849,8 +1849,8 @@
 		<label>AA23-BE5 Temperature 1</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -1860,8 +1860,8 @@
 		<label>AA23-BE5 Energy 10</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%.1f kWh" readOnly="true">
 		</state>
@@ -1871,8 +1871,8 @@
 		<label>AA23-BE5 Energy 9</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%.1f kWh" readOnly="true">
 		</state>
@@ -1882,8 +1882,8 @@
 		<label>AA23-BE5 Energy 8</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%.1f kWh" readOnly="true">
 		</state>
@@ -1893,8 +1893,8 @@
 		<label>AA23-BE5 Energy 7</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%.1f kWh" readOnly="true">
 		</state>
@@ -1904,8 +1904,8 @@
 		<label>AA23-BE5 Energy 6</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%.1f kWh" readOnly="true">
 		</state>
@@ -1915,8 +1915,8 @@
 		<label>AA23-BE5 Energy 5</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%.1f kWh" readOnly="true">
 		</state>
@@ -1926,8 +1926,8 @@
 		<label>AA23-BE5 Energy 4</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%.1f kWh" readOnly="true">
 		</state>
@@ -1937,8 +1937,8 @@
 		<label>AA23-BE5 Energy 3</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%.1f kWh" readOnly="true">
 		</state>
@@ -1948,8 +1948,8 @@
 		<label>AA23-BE5 Energy 2</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%.1f kWh" readOnly="true">
 		</state>
@@ -1959,8 +1959,8 @@
 		<label>AA23-BE5 Energy 1</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%.1f kWh" readOnly="true">
 		</state>
@@ -1977,8 +1977,8 @@
 		<label>PV Panel Heat Offset</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -1988,8 +1988,8 @@
 		<label>PV Panel Pool Offset</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -2013,8 +2013,8 @@
 		<label>AA23-BE5 EME20 Total Energy</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%.1f kWh" readOnly="true">
 		</state>
@@ -2087,8 +2087,8 @@
 		<label>BT1 Average, 24h</label>
 		<description>EB100-BT1 Outdoor temperature average, 24h</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -2105,8 +2105,8 @@
 		<label>Heat Meter - HW Cpr and Add - Total System</label>
 		<description>Accumulated energy production as calculated by the heat meter, summaries of all heat pumps in system</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%.1f kWh" readOnly="true">
 		</state>
@@ -2116,8 +2116,8 @@
 		<label>Heat Meter - Heat Cpr and Add - Total System</label>
 		<description>Accumulated energy production as calculated by the heat meter, summaries of all heat pumps in system</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%.1f kWh" readOnly="true">
 		</state>
@@ -2127,8 +2127,8 @@
 		<label>Heat Meter - Pool Cpr - Total System</label>
 		<description>Accumulated energy production as calculated by the heat meter, summaries of all heat pumps in system</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%.1f kWh" readOnly="true">
 		</state>
@@ -2138,8 +2138,8 @@
 		<label>Heat Meter - HW Cpr - Total System</label>
 		<description>Accumulated energy production as calculated by the heat meter, summaries of all heat pumps in system</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%.1f kWh" readOnly="true">
 		</state>
@@ -2149,8 +2149,8 @@
 		<label>Heat Meter - Heat Cpr - Total System</label>
 		<description>Accumulated energy production as calculated by the heat meter, summaries of all heat pumps in system</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%.1f kWh" readOnly="true">
 		</state>
@@ -2160,8 +2160,8 @@
 		<label>External Energy Meter Accumulated System</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%d kWh" readOnly="true">
 		</state>
@@ -2179,8 +2179,8 @@
 		<description>Degree minutes, 16bit value (-32768 &lt; x &lt; 32767). Values outside valid values are rounded to the
 			closest valid value.</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Opening</tag>
+			<point>Control</point>
+			<property>Opening</property>
 		</tags>
 		<state min="-30000" max="30000" step="1" pattern="%.1f" readOnly="false">
 		</state>
@@ -2190,8 +2190,8 @@
 		<label>Calc. Supply S4</label>
 		<description>Calculated supply temperature for the climate system</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -2201,8 +2201,8 @@
 		<label>Calc. Supply S3</label>
 		<description>Calculated supply temperature for the climate system</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -2212,8 +2212,8 @@
 		<label>Calc. Supply S2</label>
 		<description>Calculated supply temperature for the climate system</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -2223,8 +2223,8 @@
 		<label>Calc. Supply S1</label>
 		<description>Calculated supply temperature for the climate system</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -2286,8 +2286,8 @@
 		<label>Int. El.add. Power</label>
 		<description>Current power from the internal electrical addition</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point>Measurement</point>
+			<property>Power</property>
 		</tags>
 		<state pattern="%.2f kW" readOnly="true">
 		</state>
@@ -2403,8 +2403,8 @@
 		<label>Inverter Temperature</label>
 		<description>Current inverter temparture</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -2421,8 +2421,8 @@
 		<label>Compr. Energy Total</label>
 		<description>Total compressor energy in kWh</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%.2f kWh" readOnly="true">
 		</state>
@@ -2499,8 +2499,8 @@
 		<label>Compr. Energy HW</label>
 		<description>Compressor energy during hot water production in kWh</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%.2f kWh" readOnly="true">
 		</state>
@@ -2632,8 +2632,8 @@
 		<label>Calculated Supply Air Temp.</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true">
 		</state>
@@ -2658,8 +2658,8 @@
 		<label>Heat Meter - HW Cpr and Add EP14</label>
 		<description>Accumulated energy production as calculated by the heat meter</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%.1f kWh" readOnly="true">
 		</state>
@@ -2669,8 +2669,8 @@
 		<label>Heat Meter - Heat Cpr and Add EP14</label>
 		<description>Accumulated energy production as calculated by the heat meter</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%.1f kWh" readOnly="true">
 		</state>
@@ -2680,8 +2680,8 @@
 		<label>Heat Meter - Pool Cpr EP14</label>
 		<description>Accumulated energy production as calculated by the heat meter</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%.1f kWh" readOnly="true">
 		</state>
@@ -2691,8 +2691,8 @@
 		<label>Heat Meter - HW Cpr EP14</label>
 		<description>Accumulated energy production as calculated by the heat meter</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%.1f kWh" readOnly="true">
 		</state>
@@ -2702,8 +2702,8 @@
 		<label>Heat Meter - Heat Cpr EP14</label>
 		<description>Accumulated energy production as calculated by the heat meter</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%.1f kWh" readOnly="true">
 		</state>
@@ -3039,8 +3039,8 @@
 		<label>Own Heating Curve P7</label>
 		<description>User defined heating curve point</description>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state min="5" max="80" step="1" pattern="%d°C" readOnly="false">
 		</state>
@@ -3050,8 +3050,8 @@
 		<label>Own Heating Curve P6</label>
 		<description>User defined heating curve point</description>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state min="5" max="80" step="1" pattern="%d°C" readOnly="false">
 		</state>
@@ -3061,8 +3061,8 @@
 		<label>Own Heating Curve P5</label>
 		<description>User defined heating curve point</description>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state min="5" max="80" step="1" pattern="%d°C" readOnly="false">
 		</state>
@@ -3072,8 +3072,8 @@
 		<label>Own Heating Curve P4</label>
 		<description>User defined heating curve point</description>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state min="5" max="80" step="1" pattern="%d°C" readOnly="false">
 		</state>
@@ -3083,8 +3083,8 @@
 		<label>Own Heating Curve P3</label>
 		<description>User defined heating curve point</description>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state min="5" max="80" step="1" pattern="%d°C" readOnly="false">
 		</state>
@@ -3094,8 +3094,8 @@
 		<label>Own Heating Curve P2</label>
 		<description>User defined heating curve point</description>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state min="5" max="80" step="1" pattern="%d°C" readOnly="false">
 		</state>
@@ -3105,8 +3105,8 @@
 		<label>Own Heating Curve P1</label>
 		<description>User defined heating curve point</description>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state min="5" max="80" step="1" pattern="%d°C" readOnly="false">
 		</state>
@@ -3116,8 +3116,8 @@
 		<label>Point Offset Outdoor Temp.</label>
 		<description>Outdoor temperature point where the heat curve is offset</description>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state min="-40" max="30" step="1" pattern="%d°C" readOnly="false">
 		</state>
@@ -3127,8 +3127,8 @@
 		<label>Point Offset</label>
 		<description>Amount of offset at the point offset temperature</description>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state min="-10" max="10" step="1" pattern="%d°C" readOnly="false">
 		</state>
@@ -3469,8 +3469,8 @@
 		<label>Max Int Add. Power</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point>Measurement</point>
+			<property>Power</property>
 		</tags>
 		<state min="0" max="4500" step="1" pattern="%.2f kW" readOnly="false">
 		</state>
@@ -3647,8 +3647,8 @@
 		<label>Floor Drying Temp. 7</label>
 		<description>Supply temperature each period</description>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state min="15" max="70" step="1" pattern="%d°C" readOnly="false">
 		</state>
@@ -3658,8 +3658,8 @@
 		<label>Floor Drying Temp. 6</label>
 		<description>Supply temperature each period</description>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state min="15" max="70" step="1" pattern="%d°C" readOnly="false">
 		</state>
@@ -3669,8 +3669,8 @@
 		<label>Floor Drying Temp. 5</label>
 		<description>Supply temperature each period</description>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state min="15" max="70" step="1" pattern="%d°C" readOnly="false">
 		</state>
@@ -3680,8 +3680,8 @@
 		<label>Floor Drying Temp. 4</label>
 		<description>Supply temperature each period</description>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state min="15" max="70" step="1" pattern="%d°C" readOnly="false">
 		</state>
@@ -3691,8 +3691,8 @@
 		<label>Floor Drying Temp. 3</label>
 		<description>Supply temperature each period</description>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state min="15" max="70" step="1" pattern="%d°C" readOnly="false">
 		</state>
@@ -3702,8 +3702,8 @@
 		<label>Floor Drying Temp. 2</label>
 		<description>Supply temperature each period</description>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state min="15" max="70" step="1" pattern="%d°C" readOnly="false">
 		</state>
@@ -3713,8 +3713,8 @@
 		<label>Floor Drying Temp. 1</label>
 		<description>Supply temperature each period</description>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state min="15" max="70" step="1" pattern="%d°C" readOnly="false">
 		</state>
@@ -3832,8 +3832,8 @@
 		<label>Shunt Controlled Add. Min. Temp.</label>
 		<description></description>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state min="5" max="90" step="1" pattern="%d°C" readOnly="false">
 		</state>
@@ -4116,8 +4116,8 @@
 		<label>Start Room Temp. Night Cooling</label>
 		<description></description>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state min="20" max="30" step="1" pattern="%d°C" readOnly="false">
 		</state>
@@ -4127,8 +4127,8 @@
 		<label>Night Cooling Min. Diff.</label>
 		<description>Minimum difference between room temp and outdoor temp to start night cooling</description>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state min="3" max="10" step="1" pattern="%d°C" readOnly="false">
 		</state>
@@ -4880,8 +4880,8 @@
 		<label>Max Int Add. Power, SG Ready</label>
 		<description></description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point>Measurement</point>
+			<property>Power</property>
 		</tags>
 		<state min="0" max="4500" step="1" pattern="%.2f kW" readOnly="false">
 		</state>
@@ -5042,8 +5042,8 @@
 		<label>AHPS External Addition Start Temperature.</label>
 		<description></description>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state min="40" max="55" step="1" pattern="%d°C" readOnly="false">
 		</state>
@@ -5053,8 +5053,8 @@
 		<label>AHPS External Addition Stop Temperature.</label>
 		<description></description>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state min="44" max="59" step="1" pattern="%d°C" readOnly="false">
 		</state>
@@ -5099,8 +5099,8 @@
 		<label>Start Room Temp. Night Cooling</label>
 		<description></description>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state min="20" max="30" step="1" pattern="%d°C" readOnly="false">
 		</state>
@@ -5110,8 +5110,8 @@
 		<label>Start Room Temp. Night Cooling</label>
 		<description></description>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state min="20" max="30" step="1" pattern="%d°C" readOnly="false">
 		</state>
@@ -5121,8 +5121,8 @@
 		<label>Start Room Temp. Night Cooling</label>
 		<description></description>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state min="20" max="30" step="1" pattern="%d°C" readOnly="false">
 		</state>
@@ -5132,8 +5132,8 @@
 		<label>Night Cooling Min. Diff.</label>
 		<description>Minimum difference between room temp and outdoor temp to start night cooling</description>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state min="3" max="10" step="1" pattern="%d°C" readOnly="false">
 		</state>
@@ -5143,8 +5143,8 @@
 		<label>Night Cooling Min. Diff.</label>
 		<description>Minimum difference between room temp and outdoor temp to start night cooling</description>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state min="3" max="10" step="1" pattern="%d°C" readOnly="false">
 		</state>
@@ -5154,8 +5154,8 @@
 		<label>Night Cooling Min. Diff.</label>
 		<description>Minimum difference between room temp and outdoor temp to start night cooling</description>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state min="3" max="10" step="1" pattern="%d°C" readOnly="false">
 		</state>

@@ -47,8 +47,8 @@
 		<label>Salinity (PPM)</label>
 		<description>Current salt content reading of the water (PPM).</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Water</tag>
+			<point>Measurement</point>
+			<property>Water</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -65,8 +65,8 @@
 		<label>Low Flow</label>
 		<description>Water flow rate is low.</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Water</tag>
+			<point>Status</point>
+			<property>Water</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -76,8 +76,8 @@
 		<label>Low Salt</label>
 		<description>Low salt level.</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Level</tag>
+			<point>Status</point>
+			<property>Level</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -87,8 +87,8 @@
 		<label>Very Low Salt</label>
 		<description>Very low salt level.</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Level</tag>
+			<point>Status</point>
+			<property>Level</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -112,8 +112,8 @@
 		<label>Low Voltage</label>
 		<description>Chlorinator cell is at a low voltage.</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Voltage</tag>
+			<point>Status</point>
+			<property>Voltage</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -123,8 +123,8 @@
 		<label>Low Water Temperature</label>
 		<description>Water temperature is too low for chlorine generation.</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Temperature</tag>
+			<point>Status</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>

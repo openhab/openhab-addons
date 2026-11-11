@@ -259,8 +259,8 @@
 		<description>Current temperature</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -271,8 +271,8 @@
 		<description>Current relative humidity</description>
 		<category>Humidity</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Humidity</tag>
+			<point>Measurement</point>
+			<property>Humidity</property>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
@@ -283,8 +283,8 @@
 		<description>Current set point</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="false" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -294,8 +294,8 @@
 		<label>Battery Voltage</label>
 		<description>Current Battery Voltage for the device</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Voltage</tag>
+			<point>Measurement</point>
+			<property>Voltage</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -312,8 +312,8 @@
 		<label>Currently Requesting Heat</label>
 		<description>Is this room requesting heat</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Heating</tag>
+			<point>Status</point>
+			<property>Heating</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -323,8 +323,8 @@
 		<label>Heating Override</label>
 		<description>The heating override button has been pressed</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Heating</tag>
+			<point>Status</point>
+			<property>Heating</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -334,8 +334,8 @@
 		<label>Hot Water Override</label>
 		<description>The hot water override button has been pressed</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Heating</tag>
+			<point>Status</point>
+			<property>Heating</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -345,8 +345,8 @@
 		<label>Signal RSSI</label>
 		<description>The reported network signal RSSI</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>RSSI</tag>
+			<point>Measurement</point>
+			<property>RSSI</property>
 		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
@@ -356,8 +356,8 @@
 		<label>Signal LQI</label>
 		<description>The reported network signal LQI</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>SignalStrength</tag>
+			<point>Measurement</point>
+			<property>SignalStrength</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -367,8 +367,8 @@
 		<label>Signal Strength (Wiser)</label>
 		<description>The reported network signal strength</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>SignalStrength</tag>
+			<point>Measurement</point>
+			<property>SignalStrength</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -399,8 +399,8 @@
 		<label>Away Mode Active</label>
 		<description>Away mode has been activated</description>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
+			<point>Switch</point>
+			<property>Mode</property>
 		</tags>
 	</channel-type>
 
@@ -410,8 +410,8 @@
 		<description>Away Mode Set Point</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="false" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -421,8 +421,8 @@
 		<label>Eco Mode Enabled</label>
 		<description>Eco Mode activation state (EcoIQ)</description>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
+			<point>Switch</point>
+			<property>Mode</property>
 		</tags>
 	</channel-type>
 
@@ -431,8 +431,8 @@
 		<label>Manual Mode Enabled</label>
 		<description>Manual Mode activation state</description>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
+			<point>Switch</point>
+			<property>Mode</property>
 		</tags>
 	</channel-type>
 
@@ -448,8 +448,8 @@
 		<label>Set Point</label>
 		<description>Hot water heating set point switch</description>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
+			<point>Switch</point>
+			<property>Mode</property>
 		</tags>
 	</channel-type>
 
@@ -458,8 +458,8 @@
 		<label>Boost Duration</label>
 		<description>Duration in hours to boost hot water for</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Duration</tag>
+			<point>Control</point>
+			<property>Duration</property>
 		</tags>
 		<state pattern="%.1f h" min="0" max="3" step="0.5"/>
 	</channel-type>
@@ -469,8 +469,8 @@
 		<label>Is Boosted</label>
 		<description>Is the hot water currently being boosted</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Heating</tag>
+			<point>Status</point>
+			<property>Heating</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -480,8 +480,8 @@
 		<label>Boost Remaining</label>
 		<description>How long until the boost deactivates</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Progress</tag>
+			<point>Measurement</point>
+			<property>Progress</property>
 		</tags>
 		<state readOnly="true" pattern="%.0f min"/>
 	</channel-type>
@@ -491,8 +491,8 @@
 		<label>Open Window Detection</label>
 		<description>Is window detection turned on</description>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Enabled</tag>
+			<point>Switch</point>
+			<property>Enabled</property>
 		</tags>
 	</channel-type>
 
@@ -501,8 +501,8 @@
 		<label>Window State</label>
 		<description>Is the window open or closed</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>OpenState</tag>
+			<point>Status</point>
+			<property>OpenState</property>
 		</tags>
 	</channel-type>
 
@@ -517,8 +517,8 @@
 		<label>Plug State</label>
 		<description>Is the smart plug switched on or off</description>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Power</tag>
+			<point>Switch</point>
+			<property>Power</property>
 		</tags>
 	</channel-type>
 
@@ -527,8 +527,8 @@
 		<label>Plug Off in Away Mode</label>
 		<description>Should the smart plug switch off when in away mode</description>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
+			<point>Switch</point>
+			<property>Mode</property>
 		</tags>
 	</channel-type>
 
@@ -537,8 +537,8 @@
 		<label>Comfort Mode Active</label>
 		<description>Should the room pre-heat to achieve the desired temperature</description>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
+			<point>Switch</point>
+			<property>Mode</property>
 		</tags>
 	</channel-type>
 
@@ -547,8 +547,8 @@
 		<label>Plug Instantaneous Power</label>
 		<description>Current Power being drawn through the plug</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point>Measurement</point>
+			<property>Power</property>
 		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
@@ -558,8 +558,8 @@
 		<label>Plug Energy Delivered</label>
 		<description>Cumulative energy drawn through the plug</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>

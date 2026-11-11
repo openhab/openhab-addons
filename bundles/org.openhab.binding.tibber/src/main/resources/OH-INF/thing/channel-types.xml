@@ -10,8 +10,8 @@
 		<description>Total price including taxes</description>
 		<category>Price</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Price</tag>
+			<point>Status</point>
+			<property>Price</property>
 		</tags>
 		<state readOnly="true" pattern="%.3f %unit%"></state>
 	</channel-type>
@@ -21,8 +21,8 @@
 		<description>Total price including taxes</description>
 		<category>Price</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Price</tag>
+			<point>Status</point>
+			<property>Price</property>
 		</tags>
 		<state readOnly="true" pattern="%.3f %unit%"></state>
 	</channel-type>
@@ -31,7 +31,7 @@
 		<label>Price Level</label>
 		<description>Current price level</description>
 		<tags>
-			<tag>Calculation</tag>
+			<point>Calculation</point>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -54,8 +54,8 @@
 		<description>Consumption at a given time interval (e.g., hourly, daily, last meter reading, accumulated since
 			midnight)</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state readOnly="true" pattern="%.3f %unit%"></state>
 	</channel-type>
@@ -65,8 +65,8 @@
 		<description>Consumption at a given time interval (e.g., hourly, daily, last meter reading, accumulated since
 			midnight)</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"></state>
 	</channel-type>
@@ -75,8 +75,8 @@
 		<label>Power Consumption/Production</label>
 		<description>Power consumption/production for a given time interval</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point>Measurement</point>
+			<property>Power</property>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"></state>
 	</channel-type>
@@ -85,8 +85,8 @@
 		<label>Voltage</label>
 		<description>Voltage on the given phase</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Voltage</tag>
+			<point>Measurement</point>
+			<property>Voltage</property>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"></state>
 	</channel-type>
@@ -95,8 +95,8 @@
 		<label>Current</label>
 		<description>Electric current on the given phase</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Current</tag>
+			<point>Measurement</point>
+			<property>Current</property>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"></state>
 	</channel-type>

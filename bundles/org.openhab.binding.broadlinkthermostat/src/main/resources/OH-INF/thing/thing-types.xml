@@ -66,8 +66,8 @@
 		<description>Switch display on/off and enable/disables heating</description>
 		<category>Switch</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Power</tag>
+			<point>Status</point>
+			<property>Power</property>
 		</tags>
 	</channel-type>
 	<channel-type id="mode">
@@ -75,8 +75,8 @@
 		<label>Mode</label>
 		<description>Current mode of the thermostat</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Mode</tag>
+			<point>Control</point>
+			<property>Mode</property>
 		</tags>
 		<state>
 			<options>
@@ -104,8 +104,8 @@
 		<description>Shows if thermostat is currently actively heating</description>
 		<category>Switch</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Heating</tag>
+			<point>Status</point>
+			<property>Heating</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -115,8 +115,8 @@
 		<description>Room temperature, measured directly at the device</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -126,8 +126,8 @@
 		<description>Room temperature, measured by the external sensor</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -137,8 +137,8 @@
 		<description>Temperature setpoint that open/close valve</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f %unit%" step="0.5"/>
 	</channel-type>
@@ -148,8 +148,8 @@
 		<description>Manual temperature adjustment</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f %unit%" step="0.5" min="-2.5" max="2.5"/>
 	</channel-type>
@@ -159,8 +159,8 @@
 		<description>Temperature</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -170,8 +170,8 @@
 		<description>Locks the device to only allow remote actions</description>
 		<category>Lock</category>
 		<tags>
-			<tag>Switch</tag>
-			<tag>LockState</tag>
+			<point>Switch</point>
+			<property>LockState</property>
 		</tags>
 	</channel-type>
 	<channel-type id="time">
@@ -180,8 +180,8 @@
 		<description>The time and day of week</description>
 		<category>Time</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
+			<point>Status</point>
+			<property>Timestamp</property>
 		</tags>
 	</channel-type>
 	<channel-type id="learningmode">
@@ -189,8 +189,8 @@
 		<label>Learning Mode</label>
 		<description>Put device in infrared learning mode when turned on</description>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
+			<point>Switch</point>
+			<property>Mode</property>
 		</tags>
 	</channel-type>
 	<channel-type id="savelearned">

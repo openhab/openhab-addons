@@ -8,8 +8,8 @@
 		<label>Value as Switch</label>
 		<description>Switch item channel</description>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Power</tag>
+			<point>Switch</point>
+			<property>Power</property>
 		</tags>
 	</channel-type>
 	<channel-type id="contact-type">
@@ -17,8 +17,8 @@
 		<label>Value as Contact</label>
 		<description>Contact item channel</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>OpenState</tag>
+			<point>Status</point>
+			<property>OpenState</property>
 		</tags>
 	</channel-type>
 	<channel-type id="datetime-type">
@@ -26,8 +26,8 @@
 		<label>Value as DateTime</label>
 		<description>DateTime item channel</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
+			<point>Status</point>
+			<property>Timestamp</property>
 		</tags>
 	</channel-type>
 	<channel-type id="dimmer-type">
@@ -35,8 +35,8 @@
 		<label>Value as Dimmer</label>
 		<description>Dimmer item channel</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Brightness</tag>
+			<point>Control</point>
+			<property>Brightness</property>
 		</tags>
 	</channel-type>
 	<channel-type id="rollershutter-type">
@@ -44,8 +44,8 @@
 		<label>Value as Rollershutter</label>
 		<description>Rollershutter item channel</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>OpenLevel</tag>
+			<point>Control</point>
+			<property>OpenLevel</property>
 		</tags>
 	</channel-type>
 	<channel-type id="string-type">
@@ -53,8 +53,8 @@
 		<label>Value as String</label>
 		<description>String item channel</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 	</channel-type>
 	<channel-type id="number-type">

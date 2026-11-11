@@ -43,7 +43,7 @@
 		<description>Send a beep command to this/all console(s).</description>
 		<category>SoundVolume</category>
 		<tags>
-			<tag>Control</tag>
+			<point>Control</point>
 		</tags>
 		<state>
 			<options>

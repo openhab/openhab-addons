@@ -38,7 +38,7 @@
 		<label>Name</label>
 		<description>Smart Hose Timer Base Station name.</description>
 		<tags>
-			<tag>Status</tag>
+			<point>Status</point>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -47,7 +47,7 @@
 		<label>Online</label>
 		<description>ON when Rachio reports that the Base Station is online or connected.</description>
 		<tags>
-			<tag>Status</tag>
+			<point>Status</point>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>

@@ -73,8 +73,8 @@
 		<label>Current Activity</label>
 		<description>The label/name of the current activity of a Harmony Hub</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
+			<point>Status</point>
+			<property>Mode</property>
 		</tags>
 	</channel-type>
 
@@ -97,8 +97,8 @@
 			associated
 			with the currently running activity.</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>MediaControl</tag>
+			<point>Control</point>
+			<property>MediaControl</property>
 		</tags>
 	</channel-type>
 

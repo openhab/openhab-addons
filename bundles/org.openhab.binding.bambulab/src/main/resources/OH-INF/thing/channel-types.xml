@@ -8,8 +8,8 @@
 		<label>Current Temperature</label>
 		<category>Temperature</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -18,8 +18,8 @@
 		<label>Current Temperature</label>
 		<category>Temperature</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -28,8 +28,8 @@
 		<label>Target Temperature</label>
 		<category>Temperature</category>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -52,8 +52,8 @@
 		<label>Wi-Fi Signal Strength</label>
 		<description>Current Wi-Fi signal strength.</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>RSSI</tag>
+			<point>Measurement</point>
+			<property>RSSI</property>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
@@ -66,8 +66,8 @@
 		<item-type unitHint="min">Number:Time</item-type>
 		<label>Time (min)</label>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Duration</tag>
+			<point>Measurement</point>
+			<property>Duration</property>
 		</tags>
 		<state readOnly="true" pattern="%1$tHh:%1$tMm"/>
 	</channel-type>
@@ -76,8 +76,8 @@
 		<label>Time Stamp</label>
 		<category>time</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
+			<point>Status</point>
+			<property>Timestamp</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -100,7 +100,7 @@
 		<item-type>Switch</item-type>
 		<label>Boolean Channel</label>
 		<tags>
-			<tag>Switch</tag>
+			<point>Switch</point>
 		</tags>
 	</channel-type>
 	<channel-type id="camera-image">
@@ -115,8 +115,8 @@
 		<label>Print Speed Level</label>
 		<description>Current speed setting of the print job.</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Speed</tag>
+			<point>Control</point>
+			<property>Speed</property>
 		</tags>
 		<state>
 			<options>
@@ -160,8 +160,8 @@
 		<item-type>Color</item-type>
 		<label>Tray Color</label>
 		<tags>
-			<tag>Status</tag>
-			<tag>Color</tag>
+			<point>Status</point>
+			<property>Color</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>

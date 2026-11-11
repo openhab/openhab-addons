@@ -9,8 +9,8 @@
 		<label>Fan Speed</label>
 		<description>Speed of the ventilation fan (0-5)</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Speed</tag>
+			<point>Control</point>
+			<property>Speed</property>
 		</tags>
 		<state readOnly="false">
 			<options>
@@ -30,8 +30,8 @@
 		<description>Target Humidity (30-70)</description>
 		<category>Humidity</category>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Humidity</tag>
+			<point>Setpoint</point>
+			<property>Humidity</property>
 		</tags>
 		<state readOnly="false">
 			<options>
@@ -76,8 +76,8 @@
 		<label>Sleep Mode</label>
 		<description>Sleep Mode</description>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
+			<point>Switch</point>
+			<property>Mode</property>
 		</tags>
 	</channel-type>
 
@@ -86,8 +86,8 @@
 		<label>Boost</label>
 		<description>Boost</description>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
+			<point>Switch</point>
+			<property>Mode</property>
 		</tags>
 	</channel-type>
 
@@ -109,8 +109,8 @@
 		<description>Current Temperature</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -121,8 +121,8 @@
 		<description>Current Humidity</description>
 		<category>Humidity</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Humidity</tag>
+			<point>Measurement</point>
+			<property>Humidity</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -132,8 +132,8 @@
 		<label>Air Quality</label>
 		<description>Current Air Quality measured in PM 2.5</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>ParticulateMatter</tag>
+			<point>Measurement</point>
+			<property>ParticulateMatter</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -143,8 +143,8 @@
 		<label>Water Level</label>
 		<description>Water Level</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Water</tag>
+			<point>Measurement</point>
+			<property>Water</property>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -162,8 +162,8 @@
 		<label>Fan RPM</label>
 		<description>Fan RPM</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Speed</tag>
+			<point>Measurement</point>
+			<property>Speed</property>
 		</tags>
 		<state pattern="%d RPM" readOnly="true"/>
 	</channel-type>

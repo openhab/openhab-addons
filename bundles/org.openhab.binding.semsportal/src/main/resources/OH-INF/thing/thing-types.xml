@@ -80,8 +80,8 @@
 		<label>Current Output</label>
 		<description>Current output in Watts</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point>Measurement</point>
+			<property>Power</property>
 		</tags>
 	</channel-type>
 	<channel-type id="todayTotal">
@@ -89,8 +89,8 @@
 		<label>Todays Total Output</label>
 		<description>Todays total output in kWh</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 	</channel-type>
 	<channel-type id="monthTotal">
@@ -98,8 +98,8 @@
 		<label>Current Month Total Output</label>
 		<description>The total output of this month in kWh</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 	</channel-type>
 	<channel-type id="overallTotal">
@@ -107,8 +107,8 @@
 		<label>Overall Total Output</label>
 		<description>The total output from the start of the installation in kWh</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 	</channel-type>
 	<channel-type id="todayIncome">

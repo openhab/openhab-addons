@@ -234,7 +234,7 @@
 		<description>Indicates if this alarm is configured. Deactivating this switch clears the alarm.</description>
 		<category>Switch</category>
 		<tags>
-			<tag>Control</tag>
+			<point>Control</point>
 		</tags>
 	</channel-type>
 
@@ -244,8 +244,8 @@
 		<description>The duration of the snooze function in minutes.</description>
 		<category>Time</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>Duration</tag>
+			<point>Control</point>
+			<property>Duration</property>
 		</tags>
 		<state pattern="%d min" min="1" max="20" step="1"/>
 	</channel-type>
@@ -256,8 +256,8 @@
 		<description>The type of sound used for the alarm clock sound.</description>
 		<category>Noise</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>Noise</tag>
+			<point>Control</point>
+			<property>Noise</property>
 		</tags>
 		<state>
 			<options>
@@ -285,8 +285,8 @@
 		<description>Turn the alarm clock on or off.</description>
 		<category>Switch</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>Power</tag>
+			<point>Control</point>
+			<property>Power</property>
 		</tags>
 	</channel-type>
 
@@ -296,8 +296,8 @@
 		<description>Alarm clock time.</description>
 		<category>Time</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>Timestamp</tag>
+			<point>Control</point>
+			<property>Timestamp</property>
 		</tags>
 		<state pattern="%1$tH:%1$tM"/>
 	</channel-type>
@@ -308,8 +308,8 @@
 		<description>Ambient noise played during the sunset.</description>
 		<category>Noise</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>Noise</tag>
+			<point>Control</point>
+			<property>Noise</property>
 		</tags>
 		<state>
 			<options>
@@ -332,7 +332,7 @@
 		<label>Breathing Rate</label>
 		<description>Breathing rate per minute.</description>
 		<tags>
-			<tag>Control</tag>
+			<point>Control</point>
 		</tags>
 		<state>
 			<options>
@@ -353,8 +353,8 @@
 		<description>The channel allows to set the light intensity.</description>
 		<category>Light</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>Light</tag>
+			<point>Control</point>
+			<property>Light</property>
 		</tags>
 		<state pattern="%d %%" min="0" max="100" step="4"/>
 	</channel-type>
@@ -365,8 +365,8 @@
 		<description>Choose a personal sunrise or sunset.</description>
 		<category>Sunset</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>ColorTemperature</tag>
+			<point>Control</point>
+			<property>ColorTemperature</property>
 		</tags>
 		<state>
 			<options>
@@ -383,7 +383,7 @@
 		<label>Frequency</label>
 		<description>The currently selected radio frequency.</description>
 		<tags>
-			<tag>Status</tag>
+			<point>Status</point>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -393,7 +393,7 @@
 		<label>Breath Guidance Type</label>
 		<description>Select a breath guidance type.</description>
 		<tags>
-			<tag>Control</tag>
+			<point>Control</point>
 		</tags>
 		<state>
 			<options>
@@ -409,8 +409,8 @@
 		<description>The current humidity in %.</description>
 		<category>Humidity</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Humidity</tag>
+			<point>Measurement</point>
+			<property>Humidity</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -421,8 +421,8 @@
 		<description>The current illuminance in lux.</description>
 		<category>Sun</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Light</tag>
+			<point>Measurement</point>
+			<property>Light</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -433,8 +433,8 @@
 		<description>The light switch channel allows to turn the night light on or off.</description>
 		<category>Light</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>Light</tag>
+			<point>Control</point>
+			<property>Light</property>
 		</tags>
 	</channel-type>
 
@@ -444,8 +444,8 @@
 		<description>The current noise in dB.</description>
 		<category>Noise</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Noise</tag>
+			<point>Measurement</point>
+			<property>Noise</property>
 		</tags>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
@@ -456,8 +456,8 @@
 		<description>How long after the normal alarm should Power Wake start.</description>
 		<category>Time</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>Duration</tag>
+			<point>Control</point>
+			<property>Duration</property>
 		</tags>
 		<state pattern="%d min" min="0" max="59" step="1"/>
 	</channel-type>
@@ -468,8 +468,8 @@
 		<description>Turn the power wake on or off.</description>
 		<category>Switch</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>Power</tag>
+			<point>Control</point>
+			<property>Power</property>
 		</tags>
 	</channel-type>
 
@@ -478,7 +478,7 @@
 		<label>FM Preset</label>
 		<description>The Device has 5 presets to store radio frequencies.</description>
 		<tags>
-			<tag>Control</tag>
+			<point>Control</point>
 		</tags>
 		<state/>
 	</channel-type>
@@ -489,8 +489,8 @@
 		<description>The duration of relax breathe program in minutes.</description>
 		<category>Time</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>Duration</tag>
+			<point>Control</point>
+			<property>Duration</property>
 		</tags>
 		<state>
 			<options>
@@ -507,8 +507,8 @@
 		<description>Remaining time from an activated program.</description>
 		<category>Time</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Duration</tag>
+			<point>Status</point>
+			<property>Duration</property>
 		</tags>
 		<state pattern="%1$tM:%1$tS min" readOnly="true"/>
 	</channel-type>
@@ -519,8 +519,8 @@
 		<description>The days on which the alarm is repeated.</description>
 		<category>Calendar</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>Timestamp</tag>
+			<point>Control</point>
+			<property>Timestamp</property>
 		</tags>
 	</channel-type>
 
@@ -530,8 +530,8 @@
 		<description>The channel allows to set the sunrise light intensity.</description>
 		<category>Light</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>Light</tag>
+			<point>Control</point>
+			<property>Light</property>
 		</tags>
 		<state pattern="%d %%" min="4" max="100" step="4"/>
 	</channel-type>
@@ -542,8 +542,8 @@
 		<description>The duration of sunrise program in minutes.</description>
 		<category>Time</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>Duration</tag>
+			<point>Control</point>
+			<property>Duration</property>
 		</tags>
 		<state>
 			<options>
@@ -565,8 +565,8 @@
 		<description>The duration of sunset program in minutes.</description>
 		<category>Time</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>Duration</tag>
+			<point>Control</point>
+			<property>Duration</property>
 		</tags>
 		<state>
 			<options>
@@ -587,8 +587,8 @@
 		<description>The current temperature in °C.</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>

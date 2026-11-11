@@ -294,8 +294,8 @@
 		<label>Timestamp</label>
 		<description>Status timestamp.</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
+			<point>Status</point>
+			<property>Timestamp</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -305,8 +305,8 @@
 		<label>Online</label>
 		<description>States whether a device is online or offline.</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
+			<point>Status</point>
+			<property>Mode</property>
 		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
@@ -316,7 +316,7 @@
 		<label>HTTP Status Code</label>
 		<description>States the HTTP status code which was returned by the last request.</description>
 		<tags>
-			<tag>Status</tag>
+			<point>Status</point>
 		</tags>
 		<state readOnly="true" pattern="%d"></state>
 	</channel-type>
@@ -326,8 +326,8 @@
 		<label>Latency</label>
 		<description>States the latency time.</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Duration</tag>
+			<point>Status</point>
+			<property>Duration</property>
 		</tags>
 		<state readOnly="true" pattern="%d %unit%"></state>
 	</channel-type>
@@ -338,8 +338,8 @@
 		<description>States the last seen date/time.</description>
 		<category>time</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
+			<point>Status</point>
+			<property>Timestamp</property>
 		</tags>
 		<state readOnly="true"></state>
 	</channel-type>

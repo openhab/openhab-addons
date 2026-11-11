@@ -9,8 +9,8 @@
 		<description>Current temperature.</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -61,8 +61,8 @@
 		<label>Cool Jet</label>
 		<category>Switch</category>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
+			<point>Switch</point>
+			<property>Mode</property>
 		</tags>
 	</channel-type>
 
@@ -71,8 +71,8 @@
 		<label>Air Clean</label>
 		<category>Switch</category>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
+			<point>Switch</point>
+			<property>Mode</property>
 		</tags>
 	</channel-type>
 
@@ -81,8 +81,8 @@
 		<label>Auto Dry</label>
 		<category>Switch</category>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
+			<point>Switch</point>
+			<property>Mode</property>
 		</tags>
 	</channel-type>
 
@@ -91,8 +91,8 @@
 		<label>Energy Saving</label>
 		<category>Switch</category>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
+			<point>Switch</point>
+			<property>Mode</property>
 		</tags>
 	</channel-type>
 
@@ -102,8 +102,8 @@
 		<description>Fan Vertical Direction</description>
 		<category>wind</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>Airflow</tag>
+			<point>Control</point>
+			<property>Airflow</property>
 		</tags>
 	</channel-type>
 
@@ -113,8 +113,8 @@
 		<description>Fan Horizontal Direction</description>
 		<category>wind</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>Airflow</tag>
+			<point>Control</point>
+			<property>Airflow</property>
 		</tags>
 	</channel-type>
 
@@ -124,8 +124,8 @@
 		<description>Target temperature.</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state min="5" max="80" step="1" readOnly="false" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -152,8 +152,8 @@
 		<description>Current Energy Consumption (kWh)</description>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
@@ -164,8 +164,8 @@
 		<description>AC Wind Strength</description>
 		<category>Wind</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>Airflow</tag>
+			<point>Control</point>
+			<property>Airflow</property>
 		</tags>
 	</channel-type>
 
@@ -174,8 +174,8 @@
 		<label>Operation Mode</label>
 		<description>AC Operation Mode</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Airconditioning</tag>
+			<point>Control</point>
+			<property>Airconditioning</property>
 		</tags>
 	</channel-type>
 
@@ -191,8 +191,8 @@
 		<label>Remote Start/Stop</label>
 		<description>Remote Start/Stop</description>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
+			<point>Switch</point>
+			<property>Mode</property>
 		</tags>
 	</channel-type>
 
@@ -201,8 +201,8 @@
 		<label>Standby Mode</label>
 		<description>Standby Mode</description>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
+			<point>Switch</point>
+			<property>Mode</property>
 		</tags>
 	</channel-type>
 
@@ -224,8 +224,8 @@
 		<label>Spin</label>
 		<description>Spin Speed</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Speed</tag>
+			<point>Status</point>
+			<property>Speed</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -235,8 +235,8 @@
 		<label>Spin</label>
 		<description>Spin Speed</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Speed</tag>
+			<point>Status</point>
+			<property>Speed</property>
 		</tags>
 	</channel-type>
 
@@ -298,8 +298,8 @@
 		<description>Target Temperature Level</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -309,8 +309,8 @@
 		<description>Target Temperature Level</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 	</channel-type>
 	<channel-type id="washerdryer-door-lock">
@@ -318,8 +318,8 @@
 		<label>Door Lock</label>
 		<description>Door Lock</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>LockState</tag>
+			<point>Status</point>
+			<property>LockState</property>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -369,8 +369,8 @@
 		<label>Child Lock</label>
 		<description>Dryer Child Lock</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>LockState</tag>
+			<point>Status</point>
+			<property>LockState</property>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -385,8 +385,8 @@
 		<label>Remaining Time</label>
 		<description>Dryer Remaining Time</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Progress</tag>
+			<point>Status</point>
+			<property>Progress</property>
 		</tags>
 		<state readOnly="true" pattern="%1$tH:%1$tM"/>
 	</channel-type>
@@ -409,8 +409,8 @@
 		<label>Door Open</label>
 		<description>Door status (at least one if combined fridge/freezer)</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>OpenState</tag>
+			<point>Status</point>
+			<property>OpenState</property>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -437,8 +437,8 @@
 		<description>Freezer target temperature</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
@@ -449,8 +449,8 @@
 		<description>Fridge target temperature</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
@@ -460,8 +460,8 @@
 		<label>Express Freeze</label>
 		<description>Express Freeze Mode</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
+			<point>Status</point>
+			<property>Mode</property>
 		</tags>
 	</channel-type>
 
@@ -470,8 +470,8 @@
 		<label>Express Cool</label>
 		<description>Express Cool</description>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
+			<point>Switch</point>
+			<property>Mode</property>
 		</tags>
 	</channel-type>
 
@@ -480,8 +480,8 @@
 		<label>Vacation</label>
 		<description>Vacation Mode</description>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
+			<point>Switch</point>
+			<property>Mode</property>
 		</tags>
 	</channel-type>
 
@@ -490,8 +490,8 @@
 		<label>Ice Plus</label>
 		<description>Ice Plus Feature</description>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
+			<point>Switch</point>
+			<property>Mode</property>
 		</tags>
 	</channel-type>
 
@@ -500,8 +500,8 @@
 		<label>Smart Saving</label>
 		<description>Smart Saving</description>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
+			<point>Switch</point>
+			<property>Mode</property>
 		</tags>
 	</channel-type>
 
@@ -510,8 +510,8 @@
 		<label>Smart Saving</label>
 		<description>Smart Saving Mode</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
+			<point>Status</point>
+			<property>Mode</property>
 		</tags>
 	</channel-type>
 
@@ -520,8 +520,8 @@
 		<label>Active Saving</label>
 		<description>Active Saving</description>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
+			<point>Switch</point>
+			<property>Mode</property>
 		</tags>
 	</channel-type>
 </thing:thing-descriptions>

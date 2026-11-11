@@ -9,8 +9,8 @@
 		<label>Monitoring</label>
 		<description>Monitoring state of the camera</description>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
+			<point>Switch</point>
+			<property>Mode</property>
 		</tags>
 	</channel-type>
 
@@ -27,8 +27,8 @@
 		<description>Status of the siren</description>
 		<category>Soundvolume</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>SoundVolume</tag>
+			<point>Status</point>
+			<property>SoundVolume</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -39,8 +39,8 @@
 		<description>Status of the siren</description>
 		<category>Soundvolume</category>
 		<tags>
-			<tag>Switch</tag>
-			<tag>SoundVolume</tag>
+			<point>Switch</point>
+			<property>SoundVolume</property>
 		</tags>
 	</channel-type>
 
@@ -50,8 +50,8 @@
 		<description>Windows of the room are opened.</description>
 		<category>Window</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>OpenState</tag>
+			<point>Status</point>
+			<property>OpenState</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -82,8 +82,8 @@
 		<label>Battery Status</label>
 		<description>Description of the battery status.</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Power</tag>
+			<point>Status</point>
+			<property>Power</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -114,8 +114,8 @@
 		<label>Person Count</label>
 		<description>Total number of persons that are at home.</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Presence</tag>
+			<point>Status</point>
+			<property>Presence</property>
 		</tags>
 		<state readOnly="true" pattern="%d"/>
 	</channel-type>
@@ -140,8 +140,8 @@
 		<description>Quantity of water over the period.</description>
 		<category>Rain</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Rain</tag>
+			<point>Measurement</point>
+			<property>Rain</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -152,8 +152,8 @@
 		<description>Current precipitation intensity.</description>
 		<category>Rain</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Rain</tag>
+			<point>Measurement</point>
+			<property>Rain</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f mm/h"/>
 	</channel-type>
@@ -164,8 +164,8 @@
 		<description>Default duration of manual setpoint changes.</description>
 		<category>Time</category>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Duration</tag>
+			<point>Setpoint</point>
+			<property>Duration</property>
 		</tags>
 		<state pattern="%d %unit%" min="5" max="720" step="5" readOnly="true"/>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
@@ -177,8 +177,8 @@
 		<description>State of the floodlight (ON/OFF/AUTO).</description>
 		<category>Lightbulb</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>Mode</tag>
+			<point>Control</point>
+			<property>Mode</property>
 		</tags>
 		<state pattern="%s">
 			<options>
@@ -225,8 +225,8 @@
 		<label>Alim State</label>
 		<description>State of the power connector</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Power</tag>
+			<point>Status</point>
+			<property>Power</property>
 		</tags>
 		<state readOnly="true" pattern="%s">
 			<options>
@@ -255,8 +255,8 @@
 		<description>Thermostat temperature setpoint.</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="false" min="7" max="30" step="0.5"/>
 	</channel-type>
@@ -266,8 +266,8 @@
 		<label>Thermostat Mode</label>
 		<description>Chosen thermostat mode (home, frost guard, manual, max).</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Mode</tag>
+			<point>Control</point>
+			<property>Mode</property>
 		</tags>
 		<state readOnly="false">
 			<options>
@@ -284,8 +284,8 @@
 		<label>House Mode</label>
 		<description>Chosen mode for the house (schedule, away, frost guard, manual).</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Mode</tag>
+			<point>Control</point>
+			<property>Mode</property>
 		</tags>
 		<state readOnly="false">
 			<options>
@@ -303,8 +303,8 @@
 		<description>Percentage of heating power.</description>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
@@ -315,8 +315,8 @@
 		<description>Moment when data was measured.</description>
 		<category>Time</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
+			<point>Status</point>
+			<property>Timestamp</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -335,8 +335,8 @@
 		<description>Air Quality indicator.</description>
 		<category>Carbondioxide</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>CO2</tag>
+			<point>Measurement</point>
+			<property>CO2</property>
 		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
@@ -347,8 +347,8 @@
 		<description>Current Noise Level.</description>
 		<category>SoundVolume</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Noise</tag>
+			<point>Measurement</point>
+			<property>Noise</property>
 		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
@@ -576,8 +576,8 @@
 		<description>Pressure measured relative to a full vacuum.</description>
 		<category>Pressure</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Pressure</tag>
+			<point>Measurement</point>
+			<property>Pressure</property>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
@@ -588,8 +588,8 @@
 		<description>Apparent computed temperature (based on temperature and humidity).</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Calculation</tag>
-			<tag>Temperature</tag>
+			<point>Calculation</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
@@ -631,8 +631,8 @@
 		<description>Direction of the highest gust in the last 5 minutes.</description>
 		<category>Wind</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Wind</tag>
+			<point>Measurement</point>
+			<property>Wind</property>
 		</tags>
 		<state min="0" max="360" step="1" readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
@@ -643,8 +643,8 @@
 		<description>Speed of the highest gust in the last 5 minutes.</description>
 		<category>Wind</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Wind</tag>
+			<point>Measurement</point>
+			<property>Wind</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -662,8 +662,8 @@
 		<label>Location</label>
 		<description>Location of the device.</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>GeoLocation</tag>
+			<point>Measurement</point>
+			<property>GeoLocation</property>
 		</tags>
 		<state readOnly="true" pattern="%2$s°N,%3$s°W, %1$s m"/>
 	</channel-type>

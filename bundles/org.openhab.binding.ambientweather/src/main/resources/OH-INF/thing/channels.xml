@@ -16,8 +16,8 @@
 		<label>Location</label>
 		<description>Weather station location</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>GeoLocation</tag>
+			<point>Status</point>
+			<property>GeoLocation</property>
 		</tags>
 		<state readOnly="true" pattern="%s"></state>
 	</channel-type>
@@ -27,8 +27,8 @@
 		<label>Observation Time</label>
 		<description>Observation date and time</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
+			<point>Status</point>
+			<property>Timestamp</property>
 		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
@@ -39,8 +39,8 @@
 		<description>Temperature</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -51,8 +51,8 @@
 		<description>Dew Point temperature</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -63,8 +63,8 @@
 		<description>Feeling temperature</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Calculation</tag>
-			<tag>Temperature</tag>
+			<point>Calculation</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -75,8 +75,8 @@
 		<description>Forecast relative humidity</description>
 		<category>Humidity</category>
 		<tags>
-			<tag>Forecast</tag>
-			<tag>Humidity</tag>
+			<point>Forecast</point>
+			<property>Humidity</property>
 		</tags>
 		<state readOnly="true" min="0" max="100" pattern="%d %unit%"/>
 	</channel-type>
@@ -87,8 +87,8 @@
 		<description>Barometric Pressure</description>
 		<category>Pressure</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Pressure</tag>
+			<point>Measurement</point>
+			<property>Pressure</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -99,8 +99,8 @@
 		<description>Pressure evolution trend (up, down, stable)</description>
 		<category>Pressure</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Pressure</tag>
+			<point>Measurement</point>
+			<property>Pressure</property>
 		</tags>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
@@ -111,8 +111,8 @@
 		<description>Rain fall hourly rate</description>
 		<category>Rain</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Rain</tag>
+			<point>Measurement</point>
+			<property>Rain</property>
 		</tags>
 		<state readOnly="true" pattern="%.7f %unit%"/>
 	</channel-type>
@@ -123,8 +123,8 @@
 		<description>Rain fall during the day</description>
 		<category>Rain</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Rain</tag>
+			<point>Measurement</point>
+			<property>Rain</property>
 		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
@@ -135,8 +135,8 @@
 		<description>Rain fall amount for the week</description>
 		<category>Rain</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Rain</tag>
+			<point>Measurement</point>
+			<property>Rain</property>
 		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
@@ -147,8 +147,8 @@
 		<description>Rain fall amount for the month</description>
 		<category>Rain</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Rain</tag>
+			<point>Measurement</point>
+			<property>Rain</property>
 		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
@@ -159,8 +159,8 @@
 		<description>Rain fall amount for the year</description>
 		<category>Rain</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Rain</tag>
+			<point>Measurement</point>
+			<property>Rain</property>
 		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
@@ -171,8 +171,8 @@
 		<description>Rain fall total amount since factory reset</description>
 		<category>Rain</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Rain</tag>
+			<point>Measurement</point>
+			<property>Rain</property>
 		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
@@ -183,8 +183,8 @@
 		<description>Rain fall in last 24 hours</description>
 		<category>Rain</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Rain</tag>
+			<point>Measurement</point>
+			<property>Rain</property>
 		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
@@ -195,8 +195,8 @@
 		<description>Rain fall total for last rain event</description>
 		<category>Rain</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Rain</tag>
+			<point>Measurement</point>
+			<property>Rain</property>
 		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
@@ -206,8 +206,8 @@
 		<label>Rain Last Time</label>
 		<description>Date and time of last rainfall</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
+			<point>Status</point>
+			<property>Timestamp</property>
 		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
@@ -218,8 +218,8 @@
 		<description>Wind speed</description>
 		<category>Wind</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Wind</tag>
+			<point>Measurement</point>
+			<property>Wind</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -230,8 +230,8 @@
 		<description>Maximum daily wind speed</description>
 		<category>Wind</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Wind</tag>
+			<point>Measurement</point>
+			<property>Wind</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -241,8 +241,8 @@
 		<label>Wind Direction Degrees</label>
 		<description>Wind direction in degrees</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Wind</tag>
+			<point>Measurement</point>
+			<property>Wind</property>
 		</tags>
 		<state readOnly="true" min="0" max="360" pattern="%.0f %unit%"/>
 	</channel-type>
@@ -252,8 +252,8 @@
 		<label>Wind Direction</label>
 		<description>Wind direction</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Wind</tag>
+			<point>Measurement</point>
+			<property>Wind</property>
 		</tags>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
@@ -264,8 +264,8 @@
 		<description>Wind gust</description>
 		<category>Wind</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Wind</tag>
+			<point>Measurement</point>
+			<property>Wind</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -275,8 +275,8 @@
 		<label>Wind Gust Direction Degrees</label>
 		<description>Wind gust direction in degrees</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Wind</tag>
+			<point>Measurement</point>
+			<property>Wind</property>
 		</tags>
 		<state readOnly="true" min="0" max="360" pattern="%.0f %unit%"/>
 	</channel-type>
@@ -286,8 +286,8 @@
 		<label>Wind Gust Direction</label>
 		<description>Wind gust direction</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Wind</tag>
+			<point>Measurement</point>
+			<property>Wind</property>
 		</tags>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
@@ -298,8 +298,8 @@
 		<description>Maximum daily wind gust</description>
 		<category>Wind</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Wind</tag>
+			<point>Measurement</point>
+			<property>Wind</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -310,8 +310,8 @@
 		<description>Wind speed 2-minute average</description>
 		<category>Wind</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Wind</tag>
+			<point>Measurement</point>
+			<property>Wind</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -321,8 +321,8 @@
 		<label>Wind Direction Degrees 2-minute</label>
 		<description>Wind direction 2-minute average in degrees</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Wind</tag>
+			<point>Measurement</point>
+			<property>Wind</property>
 		</tags>
 		<state readOnly="true" min="0" max="360" pattern="%.0f %unit%"/>
 	</channel-type>
@@ -332,8 +332,8 @@
 		<label>Wind Direction 2-minute</label>
 		<description>Wind direction 2-minute Average</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Wind</tag>
+			<point>Measurement</point>
+			<property>Wind</property>
 		</tags>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
@@ -344,8 +344,8 @@
 		<description>Wind speed 10-minute average</description>
 		<category>Wind</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Wind</tag>
+			<point>Measurement</point>
+			<property>Wind</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -355,8 +355,8 @@
 		<label>Wind Direction Degrees 10-minute</label>
 		<description>Wind direction 10-minute average in degrees</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Wind</tag>
+			<point>Measurement</point>
+			<property>Wind</property>
 		</tags>
 		<state readOnly="true" min="0" max="360" pattern="%.0f %unit%"/>
 	</channel-type>
@@ -366,8 +366,8 @@
 		<label>Wind Direction 10-minute</label>
 		<description>Wind direction 10-minute Average</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Wind</tag>
+			<point>Measurement</point>
+			<property>Wind</property>
 		</tags>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
@@ -384,8 +384,8 @@
 		<label>UV Index</label>
 		<description>Ultraviolet radiation index</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Ultraviolet</tag>
+			<point>Measurement</point>
+			<property>Ultraviolet</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f"/>
 	</channel-type>
@@ -395,8 +395,8 @@
 		<label>UV Danger</label>
 		<description>Ultraviolet radiation danger level</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Ultraviolet</tag>
+			<point>Measurement</point>
+			<property>Ultraviolet</property>
 		</tags>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
@@ -407,8 +407,8 @@
 		<description>Temperature of the soil</description>
 		<category>Sensor</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" min="0" max="100" pattern="%d %unit%"/>
 	</channel-type>
@@ -419,8 +419,8 @@
 		<description>Amount of moisture in the soil</description>
 		<category>Sensor</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Moisture</tag>
+			<point>Measurement</point>
+			<property>Moisture</property>
 		</tags>
 		<state readOnly="true" min="0" max="100" pattern="%d"/>
 	</channel-type>
@@ -431,8 +431,8 @@
 		<description>Soil moisture level from Very Dry to Very Wet</description>
 		<category>Sensor</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Moisture</tag>
+			<point>Measurement</point>
+			<property>Moisture</property>
 		</tags>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
@@ -443,8 +443,8 @@
 		<description>Amount of carbon dioxide</description>
 		<category>Sensor</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>CO2</tag>
+			<point>Measurement</point>
+			<property>CO2</property>
 		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
@@ -455,8 +455,8 @@
 		<description>Relay</description>
 		<category>Switch</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Power</tag>
+			<point>Status</point>
+			<property>Power</property>
 		</tags>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
@@ -467,8 +467,8 @@
 		<description>Indicates if battery is good or needs replacing</description>
 		<category>Battery</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>LowBattery</tag>
+			<point>Status</point>
+			<property>LowBattery</property>
 		</tags>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>

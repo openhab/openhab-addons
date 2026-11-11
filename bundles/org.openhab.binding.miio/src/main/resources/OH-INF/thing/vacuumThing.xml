@@ -142,8 +142,8 @@
 		<item-type>Number</item-type>
 		<label>Fan Power</label>
 		<tags>
-			<tag>Control</tag>
-			<tag>Speed</tag>
+			<point>Control</point>
+			<property>Speed</property>
 		</tags>
 		<state min="1" max="99" step="1" pattern="%.0f%%" readOnly="false"/>
 	</channel-type>
@@ -256,7 +256,7 @@
 		<label>Current Map</label>
 		<description>The active map (floor) of the vacuum. Select a map to load it on multi-floor enabled vacuums.</description>
 		<tags>
-			<tag>Control</tag>
+			<point>Control</point>
 		</tags>
 		<state pattern="%.0f"/>
 	</channel-type>
@@ -334,8 +334,8 @@
 		<item-type>Number</item-type>
 		<label>Control Fan Level</label>
 		<tags>
-			<tag>Control</tag>
-			<tag>Speed</tag>
+			<point>Control</point>
+			<property>Speed</property>
 		</tags>
 		<state min="-1" max="105" step="1" readOnly="false">
 			<options>

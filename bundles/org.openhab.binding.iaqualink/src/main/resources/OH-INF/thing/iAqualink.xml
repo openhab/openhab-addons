@@ -179,8 +179,8 @@
 		<label>Auxiliary Switch</label>
 		<description>The current state of auxiliary channel</description>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Power</tag>
+			<point>Switch</point>
+			<property>Power</property>
 		</tags>
 	</channel-type>
 
@@ -189,8 +189,8 @@
 		<label>Auxiliary Dimmer</label>
 		<description>The current state of auxiliary channel</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Brightness</tag>
+			<point>Control</point>
+			<property>Brightness</property>
 		</tags>
 		<state step="25"></state>
 	</channel-type>
@@ -200,8 +200,8 @@
 		<label>Jandy Color Lighting</label>
 		<description>Jandy Color Lighting Channel</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Light</tag>
+			<point>Control</point>
+			<property>Light</property>
 		</tags>
 		<state>
 			<options>
@@ -227,8 +227,8 @@
 		<label>Pentair SAm/SAL Lighting</label>
 		<description>Pentair SAm/SAL Lighting Channel</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Light</tag>
+			<point>Control</point>
+			<property>Light</property>
 		</tags>
 		<state>
 			<options>
@@ -253,8 +253,8 @@
 		<label>Jandy Led Water Colors Lighting</label>
 		<description>Jandy Led Water Colors Lighting Channel</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Light</tag>
+			<point>Control</point>
+			<property>Light</property>
 		</tags>
 		<state>
 			<options>
@@ -283,8 +283,8 @@
 		<label>Pentair intelliBrite Lighting</label>
 		<description>Pentair intelliBrite Lighting Channel</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Light</tag>
+			<point>Control</point>
+			<property>Light</property>
 		</tags>
 		<state>
 			<options>
@@ -313,8 +313,8 @@
 		<label>Hayward Universal Lighting</label>
 		<description>Hayward Universal Lighting Channel</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Light</tag>
+			<point>Control</point>
+			<property>Light</property>
 		</tags>
 		<state>
 			<options>
@@ -366,8 +366,8 @@
 		<label>Setpoint</label>
 		<category>Temperature</category>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f %unit%"/>
 
@@ -378,8 +378,8 @@
 		<label>Temperature</label>
 		<category>Temperature</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 

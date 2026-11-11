@@ -53,8 +53,8 @@
 		<label>General Waste</label>
 		<description>Next collection day for general waste</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
+			<point>Status</point>
+			<property>Timestamp</property>
 		</tags>
 		<state readOnly="true" pattern="%1$tF"/>
 	</channel-type>
@@ -63,8 +63,8 @@
 		<label>Lightweight Packaging</label>
 		<description>Next collection day for lightweight packaging</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
+			<point>Status</point>
+			<property>Timestamp</property>
 		</tags>
 		<state readOnly="true" pattern="%1$tF"/>
 	</channel-type>
@@ -73,8 +73,8 @@
 		<label>Bio Waste</label>
 		<description>Next collection day for bio waste</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
+			<point>Status</point>
+			<property>Timestamp</property>
 		</tags>
 		<state readOnly="true" pattern="%1$tF"/>
 	</channel-type>
@@ -83,8 +83,8 @@
 		<label>Paper</label>
 		<description>Next collection day for paper</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
+			<point>Status</point>
+			<property>Timestamp</property>
 		</tags>
 		<state readOnly="true" pattern="%1$tF"/>
 	</channel-type>
@@ -93,8 +93,8 @@
 		<label>Christmas Tree</label>
 		<description>Next collection day for Christmas trees</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
+			<point>Status</point>
+			<property>Timestamp</property>
 		</tags>
 		<state readOnly="true" pattern="%1$tF"/>
 	</channel-type>

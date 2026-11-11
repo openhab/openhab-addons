@@ -29,8 +29,8 @@
 		<label>Command</label>
 		<description>Command channel</description>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Power</tag>
+			<point>Switch</point>
+			<property>Power</property>
 		</tags>
 	</channel-type>
 
@@ -52,8 +52,8 @@
 		<label>Contact</label>
 		<description>Contact channel</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>OpenState</tag>
+			<point>Status</point>
+			<property>OpenState</property>
 		</tags>
 	</channel-type>
 
@@ -68,8 +68,8 @@
 		<label>Dimming Level</label>
 		<description>Dimming level channel</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Brightness</tag>
+			<point>Control</point>
+			<property>Brightness</property>
 		</tags>
 		<state min="0" max="100" step="1" readOnly="false"></state>
 	</channel-type>
@@ -79,8 +79,8 @@
 		<label>Fan Speed</label>
 		<description>Speed of fan</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Speed</tag>
+			<point>Control</point>
+			<property>Speed</property>
 		</tags>
 		<state min="1" max="6" step="1" readOnly="false"></state>
 	</channel-type>
@@ -96,8 +96,8 @@
 		<label>Fan Speed</label>
 		<description>Speed of fan</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Speed</tag>
+			<point>Status</point>
+			<property>Speed</property>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -114,8 +114,8 @@
 		<label>Reverse Fan</label>
 		<description>Reverse direction of the Fan</description>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
+			<point>Switch</point>
+			<property>Mode</property>
 		</tags>
 	</channel-type>
 
@@ -131,8 +131,8 @@
 		<label>Status</label>
 		<description>Status channel</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="false"></state>
 	</channel-type>
@@ -142,8 +142,8 @@
 		<label>Set-point</label>
 		<description>Requested temperature</description>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state min="0" max="255" step="1" pattern="%d °C" readOnly="false"></state>
 	</channel-type>
@@ -159,8 +159,8 @@
 		<label>Motion</label>
 		<description>Motion detection sensor state</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Motion</tag>
+			<point>Status</point>
+			<property>Motion</property>
 		</tags>
 		<state readOnly="false"></state>
 	</channel-type>
@@ -170,8 +170,8 @@
 		<label>Rain Rate</label>
 		<description>Rain fall rate in millimeters per hour</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Rain</tag>
+			<point>Measurement</point>
+			<property>Rain</property>
 		</tags>
 		<state pattern="%d mm/h" readOnly="true"></state>
 	</channel-type>
@@ -181,8 +181,8 @@
 		<label>Rain Total</label>
 		<description>Total rain in millimeters</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Rain</tag>
+			<point>Measurement</point>
+			<property>Rain</property>
 		</tags>
 		<state pattern="%.1f mm" readOnly="true"></state>
 	</channel-type>
@@ -192,8 +192,8 @@
 		<label>Shutter</label>
 		<description>Open/Close shutter/blind</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>OpenLevel</tag>
+			<point>Control</point>
+			<property>OpenLevel</property>
 		</tags>
 	</channel-type>
 
@@ -202,8 +202,8 @@
 		<label>Venetian Blind</label>
 		<description>Open/close and adjust angle of venetian blind</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Tilt</tag>
+			<point>Control</point>
+			<property>Tilt</property>
 		</tags>
 	</channel-type>
 
@@ -212,8 +212,8 @@
 		<label>Voltage</label>
 		<description>Measured voltage</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Voltage</tag>
+			<point>Measurement</point>
+			<property>Voltage</property>
 		</tags>
 		<state pattern="%d V" readOnly="true"></state>
 	</channel-type>
@@ -223,8 +223,8 @@
 		<label>Instant Power</label>
 		<description>Instant power consumption in Watts</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point>Measurement</point>
+			<property>Power</property>
 		</tags>
 		<state pattern="%d W" readOnly="true"></state>
 	</channel-type>
@@ -234,8 +234,8 @@
 		<label>Total Usage</label>
 		<description>Used energy in Watt hours</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%.2f Wh" readOnly="true"></state>
 	</channel-type>
@@ -245,8 +245,8 @@
 		<label>Instant Amp</label>
 		<description>Instant current in Amperes</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Current</tag>
+			<point>Measurement</point>
+			<property>Current</property>
 		</tags>
 		<state pattern="%.2f A" readOnly="true"></state>
 	</channel-type>
@@ -263,8 +263,8 @@
 		<label>UV</label>
 		<description>Current UV level</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Ultraviolet</tag>
+			<point>Measurement</point>
+			<property>Ultraviolet</property>
 		</tags>
 		<state pattern="%.1f" readOnly="true"></state>
 	</channel-type>
@@ -275,8 +275,8 @@
 		<description>Current temperature in degree Celsius</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true"></state>
 	</channel-type>
@@ -287,8 +287,8 @@
 		<description>Current food temperature in degrees Celsius</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true"></state>
 	</channel-type>
@@ -299,8 +299,8 @@
 		<description>Current BBQ temperature in degrees Celsius</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f °C" readOnly="true"></state>
 	</channel-type>
@@ -311,8 +311,8 @@
 		<description>Relative humidity level in percentages</description>
 		<category>Humidity</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Humidity</tag>
+			<point>Measurement</point>
+			<property>Humidity</property>
 		</tags>
 		<state min="0" max="100" step="1" pattern="%d %%" readOnly="true"></state>
 	</channel-type>
@@ -322,8 +322,8 @@
 		<label>Humidity Status</label>
 		<description>Current humidity status</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
+			<point>Status</point>
+			<property>Mode</property>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -341,8 +341,8 @@
 		<description>Barometric value in hPa.</description>
 		<category>Pressure</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Pressure</tag>
+			<point>Measurement</point>
+			<property>Pressure</property>
 		</tags>
 		<state min="0" max="2000" step="1" pattern="%d hPa." readOnly="true"></state>
 	</channel-type>
@@ -352,7 +352,7 @@
 		<label>Forecast</label>
 		<description>Weather forecast from device</description>
 		<tags>
-			<tag>Forecast</tag>
+			<point>Forecast</point>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -370,8 +370,8 @@
 		<label>Wind Speed</label>
 		<description>Average wind speed in meters per second</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Speed</tag>
+			<point>Measurement</point>
+			<property>Speed</property>
 		</tags>
 		<state pattern="%d m/s" readOnly="true"></state>
 	</channel-type>
@@ -381,8 +381,8 @@
 		<label>Wind Direction</label>
 		<description>Wind direction in degrees</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Wind</tag>
+			<point>Measurement</point>
+			<property>Wind</property>
 		</tags>
 		<state min="0" max="360" step="1" readOnly="true"></state>
 	</channel-type>

@@ -16,8 +16,8 @@
 		<label>Temperature</label>
 		<description>temperature value of this sensor</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -26,8 +26,8 @@
 		<label>Temperature</label>
 		<description>temperature value of this sensor</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 		<config-description>
@@ -43,8 +43,8 @@
 		<label>Temperature</label>
 		<description>temperature value of this sensor</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 		<config-description>
@@ -72,8 +72,8 @@
 		<label>Dewpoint</label>
 		<description>dewpoint (calculated from temperature and relative humidity)</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -83,8 +83,8 @@
 		<label>Humidity</label>
 		<description>Relative humidity (0-100%)</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Humidity</tag>
+			<point>Measurement</point>
+			<property>Humidity</property>
 		</tags>
 		<state readOnly="true" pattern="%.0f %%"/>
 	</channel-type>
@@ -93,8 +93,8 @@
 		<label>Humidity</label>
 		<description>Relative humidity (0-100%)</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Humidity</tag>
+			<point>Measurement</point>
+			<property>Humidity</property>
 		</tags>
 		<state readOnly="true" pattern="%.0f %%"/>
 		<config-description>
@@ -117,8 +117,8 @@
 		<label>Abs. Humidity</label>
 		<description>absolute humidity (calculated from temperature and relative humidity)</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Moisture</tag>
+			<point>Measurement</point>
+			<property>Moisture</property>
 		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
@@ -128,8 +128,8 @@
 		<label>Voltage</label>
 		<description>The voltage measured by the sensor</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Voltage</tag>
+			<point>Measurement</point>
+			<property>Voltage</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -139,8 +139,8 @@
 		<label>Supply Voltage</label>
 		<description>The sensor's supply voltage</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Voltage</tag>
+			<point>Measurement</point>
+			<property>Voltage</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -150,8 +150,8 @@
 		<label>Illuminance</label>
 		<description>Ambient light</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Illuminance</tag>
+			<point>Measurement</point>
+			<property>Illuminance</property>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
@@ -161,8 +161,8 @@
 		<label>Current</label>
 		<description>The current measured by the sensor</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Current</tag>
+			<point>Measurement</point>
+			<property>Current</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -171,8 +171,8 @@
 		<item-type>Switch</item-type>
 		<label>Digital I/O</label>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Power</tag>
+			<point>Switch</point>
+			<property>Power</property>
 		</tags>
 		<config-description>
 			<parameter name="mode" type="text">
@@ -201,8 +201,8 @@
 		<label>Pressure</label>
 		<description>The pressure measured by the sensor</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Pressure</tag>
+			<point>Measurement</point>
+			<property>Pressure</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>

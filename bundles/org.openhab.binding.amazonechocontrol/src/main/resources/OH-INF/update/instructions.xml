@@ -87,8 +87,8 @@
 				<type>amazonechocontrol:relativeHumidity</type>
 				<label>Humidity</label>
 				<tags>
-					<tag>Measurement</tag>
-					<tag>Temperature</tag>
+					<point>Measurement</point>
+					<property>Temperature</property>
 				</tags>
 			</update-channel>
 		</instruction-set>
