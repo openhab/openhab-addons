@@ -89,6 +89,7 @@ import org.slf4j.LoggerFactory;
  *         support for InfluxDB 2.0. Some tag code is based from not integrated
  *         branch from Dominik Vorreiter
  * @author Cedric Boon - Added support for InfluxDB 3.0
+ * @author Holger Friedrich - Stay registered without a valid configuration
  */
 @NonNullByDefault
 @Component(service = { PersistenceService.class,
@@ -108,11 +109,12 @@ public class InfluxDBPersistenceService implements ModifiablePersistenceService 
     private final InfluxDBMetadataService influxDBMetadataService;
 
     private final InfluxDBConfiguration configuration;
-    private final InfluxDBRepository influxDBRepository;
+    // null if the configuration is invalid
+    private final @Nullable InfluxDBRepository influxDBRepository;
     private boolean serviceActivated;
 
     // storage
-    private final ScheduledFuture<?> storeJob;
+    private final @Nullable ScheduledFuture<?> storeJob;
     private final BlockingQueue<InfluxPoint> pointsQueue = new LinkedBlockingQueue<>();
 
     // conversion
@@ -126,16 +128,20 @@ public class InfluxDBPersistenceService implements ModifiablePersistenceService 
         this.influxDBMetadataService = influxDBMetadataService;
         this.configuration = new InfluxDBConfiguration(config);
         if (configuration.isValid()) {
-            this.influxDBRepository = createInfluxDBRepository();
-            this.influxDBRepository.connect();
+            InfluxDBRepository repository = createInfluxDBRepository();
+            repository.connect();
+            this.influxDBRepository = repository;
             this.storeJob = ThreadPoolManager.getScheduledPool("org.openhab.influxdb")
                     .scheduleWithFixedDelay(this::commit, COMMIT_INTERVAL, COMMIT_INTERVAL, TimeUnit.SECONDS);
             serviceActivated = true;
+            logger.info("InfluxDB persistence service started.");
         } else {
-            throw new IllegalArgumentException("Configuration invalid.");
+            // InfluxDBConfiguration has already logged why. Failing the activation would make every consumer of the
+            // service log an error, so the service stays registered but rejects all operations until a valid
+            // configuration re-activates the component.
+            this.influxDBRepository = null;
+            this.storeJob = null;
         }
-
-        logger.info("InfluxDB persistence service started.");
     }
 
     // Visible for testing
@@ -155,6 +161,12 @@ public class InfluxDBPersistenceService implements ModifiablePersistenceService 
     public void deactivate() {
         serviceActivated = false;
 
+        ScheduledFuture<?> storeJob = this.storeJob;
+        InfluxDBRepository repository = influxDBRepository;
+        if (storeJob == null || repository == null) {
+            return;
+        }
+
         storeJob.cancel(false);
         commit(); // ensure we at least tried to store the data;
 
@@ -162,7 +174,7 @@ public class InfluxDBPersistenceService implements ModifiablePersistenceService 
             logger.warn("InfluxDB failed to finally store {} points.", pointsQueue.size());
         }
 
-        influxDBRepository.disconnect();
+        repository.disconnect();
         logger.info("InfluxDB persistence service stopped.");
     }
 
@@ -178,8 +190,9 @@ public class InfluxDBPersistenceService implements ModifiablePersistenceService 
 
     @Override
     public Set<PersistenceItemInfo> getItemInfo() throws UnsupportedOperationException {
-        if (checkConnection()) {
-            return influxDBRepository.getStoredItemsCount().entrySet().stream().map(InfluxDBPersistentItemInfo::new)
+        InfluxDBRepository repository = connectedRepository();
+        if (repository != null) {
+            return repository.getStoredItemsCount().entrySet().stream().map(InfluxDBPersistentItemInfo::new)
                     .collect(Collectors.toUnmodifiableSet());
         } else {
             logger.info("getItemInfo ignored, InfluxDB is not connected");
@@ -205,7 +218,8 @@ public class InfluxDBPersistenceService implements ModifiablePersistenceService 
     @Override
     public void store(Item item, ZonedDateTime date, State state, @Nullable String alias) {
         if (!serviceActivated) {
-            logger.warn("InfluxDB service not ready. Storing {} rejected.", item);
+            // debug only: without a valid configuration this happens for every item change
+            logger.debug("InfluxDB service not ready. Storing {} rejected.", item);
             return;
         }
         convert(item, state, date.toInstant(), alias).thenAccept(point -> {
@@ -223,12 +237,13 @@ public class InfluxDBPersistenceService implements ModifiablePersistenceService 
 
     @Override
     public boolean remove(FilterCriteria filter) throws IllegalArgumentException {
-        if (serviceActivated && checkConnection()) {
+        InfluxDBRepository repository = serviceActivated ? connectedRepository() : null;
+        if (repository != null) {
             if (filter.getItemName() == null) {
                 logger.warn("Item name is missing in filter {} when trying to remove data.", filter);
                 return false;
             }
-            return influxDBRepository.remove(filter);
+            return repository.remove(filter);
         } else {
             logger.debug("Remove query {} ignored, InfluxDB is not connected.", filter);
             return false;
@@ -247,11 +262,12 @@ public class InfluxDBPersistenceService implements ModifiablePersistenceService 
             logger.warn("Item name is missing in filter {} when querying data.", filter);
             return List.of();
         }
-        if (serviceActivated && checkConnection()) {
+        InfluxDBRepository repository = serviceActivated ? connectedRepository() : null;
+        if (repository != null) {
             logger.trace("Query-Filter: {}", filter);
 
-            List<InfluxDBRepository.InfluxRow> results = influxDBRepository.query(filter,
-                    configuration.getRetentionPolicy(), alias);
+            List<InfluxDBRepository.InfluxRow> results = repository.query(filter, configuration.getRetentionPolicy(),
+                    alias);
             return results.stream().map(r -> mapRowToHistoricItem(r, itemName)).collect(Collectors.toList());
         } else {
             logger.debug("Query for persisted data ignored, InfluxDB is not connected");
@@ -272,26 +288,31 @@ public class InfluxDBPersistenceService implements ModifiablePersistenceService 
     /**
      * check connection and try reconnect
      *
-     * @return true if connected
+     * @return the repository if connected, null otherwise
      */
-    private boolean checkConnection() {
-        if (influxDBRepository.isConnected()) {
-            return true;
+    private @Nullable InfluxDBRepository connectedRepository() {
+        InfluxDBRepository repository = influxDBRepository;
+        if (repository == null) {
+            return null;
+        }
+        if (repository.isConnected()) {
+            return repository;
         } else if (serviceActivated) {
             logger.debug("Connection lost, trying re-connection");
-            return influxDBRepository.connect();
+            return repository.connect() ? repository : null;
         }
-        return false;
+        return null;
     }
 
     private void commit() {
-        if (!pointsQueue.isEmpty() && checkConnection()) {
+        InfluxDBRepository repository = pointsQueue.isEmpty() ? null : connectedRepository();
+        if (repository != null) {
             List<InfluxPoint> points = new ArrayList<>();
             pointsQueue.drainTo(points);
-            if (!influxDBRepository.write(points)) {
+            if (!repository.write(points)) {
                 logger.warn("Re-queuing {} elements, failed to write batch.", points.size());
                 pointsQueue.addAll(points);
-                influxDBRepository.disconnect();
+                repository.disconnect();
             } else {
                 logger.trace("Wrote {} elements to database", points.size());
             }

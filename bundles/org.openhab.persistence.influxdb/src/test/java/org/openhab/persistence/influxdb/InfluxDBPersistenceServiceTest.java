@@ -12,7 +12,8 @@
  */
 package org.openhab.persistence.influxdb;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.openhab.persistence.influxdb.internal.InfluxDBConfiguration.DATABASE_PARAM;
@@ -34,6 +35,7 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import org.openhab.core.items.ItemRegistry;
 import org.openhab.core.items.MetadataRegistry;
+import org.openhab.core.persistence.FilterCriteria;
 import org.openhab.persistence.influxdb.internal.InfluxDBMetadataService;
 import org.openhab.persistence.influxdb.internal.InfluxDBRepository;
 import org.openhab.persistence.influxdb.internal.InfluxDBVersion;
@@ -125,18 +127,35 @@ public class InfluxDBPersistenceServiceTest {
     }
 
     @Test
-    public void activateWithInvalidV1ConfigShouldFail() {
-        assertThrows(IllegalArgumentException.class, () -> getService(INVALID_V1_CONFIGURATION));
+    public void activateWithInvalidV1ConfigShouldNotConnectRepository() {
+        getService(INVALID_V1_CONFIGURATION);
+        verify(influxDBRepositoryMock, never()).connect();
     }
 
     @Test
-    public void activateWithInvalidV2ShouldFail() {
-        assertThrows(IllegalArgumentException.class, () -> getService(INVALID_V2_CONFIGURATION));
+    public void activateWithInvalidV2ShouldNotConnectRepository() {
+        getService(INVALID_V2_CONFIGURATION);
+        verify(influxDBRepositoryMock, never()).connect();
     }
 
     @Test
-    public void activateWithInvalidV3ShouldFail() {
-        assertThrows(IllegalArgumentException.class, () -> getService(INVALID_V3_CONFIGURATION));
+    public void activateWithInvalidV3ShouldNotConnectRepository() {
+        getService(INVALID_V3_CONFIGURATION);
+        verify(influxDBRepositoryMock, never()).connect();
+    }
+
+    @Test
+    public void serviceWithInvalidConfigRejectsAllOperations() {
+        InfluxDBPersistenceService instance = getService(INVALID_V2_CONFIGURATION);
+        FilterCriteria filter = new FilterCriteria().setItemName("number");
+
+        instance.store(ItemTestHelper.createNumberItem("number", 5));
+
+        assertFalse(instance.query(filter).iterator().hasNext());
+        assertFalse(instance.remove(filter));
+        assertTrue(instance.getItemInfo().isEmpty());
+        instance.deactivate();
+        verifyNoInteractions(influxDBRepositoryMock);
     }
 
     @Test
