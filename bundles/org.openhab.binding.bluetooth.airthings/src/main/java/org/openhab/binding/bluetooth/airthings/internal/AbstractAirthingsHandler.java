@@ -43,10 +43,13 @@ import org.slf4j.LoggerFactory;
 public abstract class AbstractAirthingsHandler extends BeaconBluetoothHandler {
 
     private static final int CHECK_PERIOD_SEC = 10;
+    /** Minimum time between the starts of two connection attempts, capped by the refresh interval. */
+    private static final int MIN_RETRY_INTERVAL_SEC = 60;
 
     private final Logger logger = LoggerFactory.getLogger(AbstractAirthingsHandler.class);
 
     private AtomicInteger sinceLastReadSec = new AtomicInteger();
+    private AtomicInteger sinceLastAttemptSec = new AtomicInteger();
     private Optional<AirthingsConfiguration> configuration = Optional.empty();
     private @Nullable ScheduledFuture<?> scheduledTask;
     private volatile boolean handlerActive;
@@ -90,6 +93,7 @@ public abstract class AbstractAirthingsHandler extends BeaconBluetoothHandler {
                     TimeUnit.SECONDS);
         });
         sinceLastReadSec.set(refreshInterval); // update immediately
+        sinceLastAttemptSec.set(retryIntervalSec());
     }
 
     @Override
@@ -109,12 +113,13 @@ public abstract class AbstractAirthingsHandler extends BeaconBluetoothHandler {
         }
     }
 
-    private void executePeridioc() {
+    void executePeridioc() {
         if (!handlerActive) {
             return;
         }
         try {
             sinceLastReadSec.addAndGet(CHECK_PERIOD_SEC);
+            sinceLastAttemptSec.addAndGet(CHECK_PERIOD_SEC);
             execute();
         } catch (Exception e) { // catch all to avoid scheduleWithFixedDelay being suppressed
             logger.warn("Failed to read Airthings device", e);
@@ -152,6 +157,7 @@ public abstract class AbstractAirthingsHandler extends BeaconBluetoothHandler {
 
     private void connect() {
         logger.debug("Connect to device {}...", address);
+        sinceLastAttemptSec.set(0);
         if (!device.connect()) {
             errorConnectCounter++;
             if (errorConnectCounter < 6) {
@@ -243,6 +249,7 @@ public abstract class AbstractAirthingsHandler extends BeaconBluetoothHandler {
                 return;
             }
             if (error != null || data == null) {
+                sinceLastAttemptSec.set(0);
                 errorReadCounter++;
                 logger.debug("Read data from device {} failed {} times", address, errorReadCounter);
                 if (errorReadCounter >= 6) {
@@ -304,8 +311,17 @@ public abstract class AbstractAirthingsHandler extends BeaconBluetoothHandler {
 
     private boolean isTimeToRead() {
         int sinceLastRead = sinceLastReadSec.get();
-        logger.debug("Time since last update: {} sec", sinceLastRead);
-        return sinceLastRead >= refreshInterval;
+        int sinceLastAttempt = sinceLastAttemptSec.get();
+        logger.debug("Time since last update: {} sec, since last attempt: {} sec", sinceLastRead, sinceLastAttempt);
+        return sinceLastRead >= refreshInterval && sinceLastAttempt >= retryIntervalSec();
+    }
+
+    /**
+     * A failed attempt leaves the read overdue, so without a minimum spacing the next disconnect notification or tick
+     * would start the next attempt at once.
+     */
+    private int retryIntervalSec() {
+        return Math.min(refreshInterval, MIN_RETRY_INTERVAL_SEC);
     }
 
     /**

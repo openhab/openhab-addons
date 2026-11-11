@@ -20,6 +20,7 @@ import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.timeout;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.withSettings;
@@ -41,6 +42,7 @@ import org.openhab.binding.bluetooth.BluetoothAdapter;
 import org.openhab.binding.bluetooth.BluetoothCharacteristic;
 import org.openhab.binding.bluetooth.BluetoothDevice;
 import org.openhab.binding.bluetooth.BluetoothDevice.ConnectionState;
+import org.openhab.binding.bluetooth.notification.BluetoothConnectionStatusNotification;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
@@ -64,6 +66,8 @@ public class AbstractAirthingsHandlerTest {
             "test");
     private static final ThingUID BRIDGE_UID = new ThingUID("bluetooth", "bridge", "hub");
     private static final UUID DATA_UUID = UUID.randomUUID();
+    /** Refresh interval of the tests that exercise the timing of retries. */
+    private static final int REFRESH_INTERVAL_SEC = 300;
 
     private final Thing thing = mock(Thing.class);
     private final ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
@@ -75,19 +79,16 @@ public class AbstractAirthingsHandlerTest {
 
     private final AtomicReference<CompletableFuture<byte[]>> pendingRead = new AtomicReference<>();
     private final AtomicReference<ThingStatus> bridgeStatus = new AtomicReference<>(ThingStatus.ONLINE);
+    private final AtomicReference<ConnectionState> connectionState = new AtomicReference<>(ConnectionState.CONNECTED);
 
     private @Nullable TestAirThingsHandler handler;
 
     @BeforeEach
     public void setUp() {
-        Map<String, Object> configuration = new HashMap<>();
-        configuration.put("address", "00:11:22:33:44:55");
-        configuration.put("refreshInterval", 60000);
-
         when(thing.getUID()).thenReturn(THING_UID);
         when(thing.getThingTypeUID()).thenReturn(AirthingsBindingConstants.THING_TYPE_AIRTHINGS_WAVE_PLUS);
         when(thing.getBridgeUID()).thenReturn(BRIDGE_UID);
-        when(thing.getConfiguration()).thenReturn(new Configuration(configuration));
+        setRefreshInterval(60000);
         when(thing.getChannels()).thenReturn(List.of());
 
         when(callback.getBridge(any())).thenReturn(bridge);
@@ -96,7 +97,7 @@ public class AbstractAirthingsHandlerTest {
                 .thenAnswer(i -> ThingStatusInfoBuilder.create(bridgeStatus.get(), ThingStatusDetail.NONE).build());
         when(adapter.getDevice(any())).thenReturn(device);
 
-        when(device.getConnectionState()).thenReturn(ConnectionState.CONNECTED);
+        when(device.getConnectionState()).thenAnswer(i -> connectionState.get());
         when(device.getServices()).thenReturn(List.of());
         when(device.getCharacteristic(any())).thenReturn(characteristic);
         when(device.readCharacteristic(any())).thenAnswer(i -> {
@@ -121,6 +122,38 @@ public class AbstractAirthingsHandlerTest {
         handler.initialize();
         this.handler = handler;
         return handler;
+    }
+
+    private TestAirThingsHandler createHandler(int refreshInterval) {
+        setRefreshInterval(refreshInterval);
+        return createHandler();
+    }
+
+    private void setRefreshInterval(int refreshInterval) {
+        Map<String, Object> configuration = new HashMap<>();
+        configuration.put("address", "00:11:22:33:44:55");
+        configuration.put("refreshInterval", refreshInterval);
+        when(thing.getConfiguration()).thenReturn(new Configuration(configuration));
+    }
+
+    /**
+     * Makes the device behave like a BlueZ link: it starts disconnected, connect() is accepted, and disconnect() takes
+     * the link down at once while the DISCONNECTED notification arrives separately, delivered by the test.
+     */
+    private void useBlueZLikeLink() {
+        connectionState.set(ConnectionState.DISCONNECTED);
+        when(device.connect()).thenReturn(true);
+        when(device.disconnect()).thenAnswer(i -> {
+            connectionState.set(ConnectionState.DISCONNECTED);
+            return true;
+        });
+    }
+
+    /** One periodic check of the handler is 10 s. */
+    private void tick(TestAirThingsHandler handler, int checks) {
+        for (int i = 0; i < checks; i++) {
+            handler.executePeridioc();
+        }
     }
 
     private void failPendingRead() {
@@ -186,6 +219,124 @@ public class AbstractAirthingsHandlerTest {
         verify(callback, never()).stateUpdated(any(), any());
         assertEquals(0, handler.channelsUpdateCount.get());
         verify(device, atLeastOnce()).disconnect();
+    }
+
+    /**
+     * Control: the detector works. A fresh handler has never read, so a read is due, and when the stack reports the
+     * device as disconnected the handler connects. Without this, the "never connects" checks below could mean a blind
+     * test.
+     */
+    @Test
+    public void connectsWhenAReadIsDue() {
+        useBlueZLikeLink();
+        TestAirThingsHandler handler = createHandler(REFRESH_INTERVAL_SEC);
+
+        handler.onConnectionStateChange(new BluetoothConnectionStatusNotification(ConnectionState.DISCONNECTED));
+
+        verify(device).connect();
+    }
+
+    /**
+     * Only a successful read resets the refresh clock, so after a failed read the next read is still overdue. The
+     * handler must nevertheless not reconnect on the disconnect notification that its own disconnect() produces:
+     * attempts are spaced out.
+     */
+    @Test
+    public void failedReadDoesNotReconnectOnTheDisconnectEvent() {
+        useBlueZLikeLink();
+        TestAirThingsHandler handler = createHandler(REFRESH_INTERVAL_SEC);
+
+        // A link is up and the services are known: the handler starts a read.
+        connectionState.set(ConnectionState.CONNECTED);
+        handler.onServicesDiscovered();
+        verify(device).readCharacteristic(any());
+
+        // The read fails; the handler gives the link up.
+        failPendingRead();
+        verify(device).disconnect();
+        assertEquals(ConnectionState.DISCONNECTED, connectionState.get());
+        verify(device, never()).connect();
+
+        // The stack reports the link down, as BlueZ does after disconnect().
+        handler.onConnectionStateChange(new BluetoothConnectionStatusNotification(ConnectionState.DISCONNECTED));
+
+        verify(device, never()).connect();
+    }
+
+    /**
+     * The retry that the previous test defers still happens: attempts start at least 60 s apart, which is six checks
+     * of 10 s.
+     */
+    @Test
+    public void failedReadIsRetriedAfterTheRetryInterval() {
+        useBlueZLikeLink();
+        TestAirThingsHandler handler = createHandler(REFRESH_INTERVAL_SEC);
+
+        connectionState.set(ConnectionState.CONNECTED);
+        handler.onServicesDiscovered();
+        failPendingRead();
+        handler.onConnectionStateChange(new BluetoothConnectionStatusNotification(ConnectionState.DISCONNECTED));
+
+        tick(handler, 5);
+        verify(device, never()).connect();
+
+        tick(handler, 1);
+        verify(device, times(1)).connect();
+    }
+
+    /**
+     * A device that cannot be connected to, for example one out of range, is tried once per retry interval, not on
+     * every check.
+     */
+    @Test
+    public void failedConnectIsRetriedOncePerRetryInterval() {
+        useBlueZLikeLink();
+        when(device.connect()).thenReturn(false);
+        TestAirThingsHandler handler = createHandler(REFRESH_INTERVAL_SEC);
+
+        tick(handler, 1);
+        verify(device, times(1)).connect();
+
+        tick(handler, 5);
+        verify(device, times(1)).connect();
+
+        tick(handler, 1);
+        verify(device, times(2)).connect();
+    }
+
+    /**
+     * Recovery: the retry after a failure ends in a successful read, the thing goes ONLINE, and from then on the
+     * refresh interval alone decides, not the retry interval.
+     */
+    @Test
+    public void successfulRetryRestoresTheRefreshInterval() {
+        useBlueZLikeLink();
+        TestAirThingsHandler handler = createHandler(REFRESH_INTERVAL_SEC);
+
+        connectionState.set(ConnectionState.CONNECTED);
+        handler.onServicesDiscovered();
+        failPendingRead();
+        handler.onConnectionStateChange(new BluetoothConnectionStatusNotification(ConnectionState.DISCONNECTED));
+
+        tick(handler, 6);
+        verify(device, times(1)).connect();
+
+        // The link comes up and this read succeeds.
+        connectionState.set(ConnectionState.CONNECTED);
+        handler.onConnectionStateChange(new BluetoothConnectionStatusNotification(ConnectionState.CONNECTED));
+        verify(device, times(2)).readCharacteristic(any());
+        completePendingRead(new byte[] { 0 });
+        verify(callback).statusUpdated(any(),
+                argThat((ThingStatusInfo status) -> status.getStatus() == ThingStatus.ONLINE));
+        assertEquals(1, handler.channelsUpdateCount.get());
+
+        // The read just succeeded: nothing to do for 290 s, then the next read is due.
+        handler.onConnectionStateChange(new BluetoothConnectionStatusNotification(ConnectionState.DISCONNECTED));
+        tick(handler, 29);
+        verify(device, times(1)).connect();
+
+        tick(handler, 1);
+        verify(device, times(2)).connect();
     }
 
     private static final class TestAirThingsHandler extends AbstractAirthingsHandler {
