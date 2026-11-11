@@ -22,6 +22,7 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
@@ -123,9 +124,19 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
     private final Set<String> refreshedOnce = ConcurrentHashMap.newKeySet();
     private final AtomicBoolean readOnceRefreshPending = new AtomicBoolean();
     /** Sent property values awaiting the device answer; also guards writing them to {@link #deviceVariables} */
-    private final Map<String, SentValue> sentValues = new HashMap<>();
+    private final Map<String, PropertyWrites> sentValues = new HashMap<>();
 
-    private record SentValue(int commandId, @Nullable Object previousValue, Instant sentAt) {
+    /** Writes of a property awaiting the answer, in sent order, and the last value the device confirmed */
+    private static final class PropertyWrites {
+        private @Nullable Object confirmed;
+        private final LinkedHashMap<Integer, SentValue> pending = new LinkedHashMap<>();
+
+        PropertyWrites(@Nullable Object confirmed) {
+            this.confirmed = confirmed;
+        }
+    }
+
+    private record SentValue(Object value, Instant sentAt) {
     }
 
     public MiIoBasicHandler(Thing thing, MiIoDatabaseWatchService miIoDatabaseWatchService,
@@ -357,35 +368,44 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
         synchronized (sentValues) {
             int commandId = sendCommand(cmd);
             if (commandId != 0) {
-                sentValues.put(property, new SentValue(commandId, deviceVariables.get(property), now()));
+                sentValues.computeIfAbsent(property, p -> new PropertyWrites(deviceVariables.get(p))).pending
+                        .put(commandId, new SentValue(value, now()));
                 deviceVariables.put(property, value);
             }
         }
     }
 
     /**
-     * Releases the sent value answered by the response, and restores the previous value when the device rejected it.
+     * Releases the sent value answered by the response. A rejected value is replaced by the latest still pending
+     * value, or else by the last confirmed one.
      *
      * @param response answer from the device
      */
     private void settleSentValue(MiIoSendCommand response) {
         synchronized (sentValues) {
-            Iterator<Entry<String, SentValue>> iterator = sentValues.entrySet().iterator();
+            Iterator<Entry<String, PropertyWrites>> iterator = sentValues.entrySet().iterator();
             while (iterator.hasNext()) {
-                Entry<String, SentValue> entry = iterator.next();
-                SentValue sentValue = entry.getValue();
-                if (sentValue.commandId() != response.getId()) {
+                Entry<String, PropertyWrites> entry = iterator.next();
+                PropertyWrites writes = entry.getValue();
+                SentValue sentValue = writes.pending.remove(response.getId());
+                if (sentValue == null) {
                     continue;
                 }
-                iterator.remove();
-                if (isRejected(response)) {
-                    Object previousValue = sentValue.previousValue();
-                    if (previousValue != null) {
-                        deviceVariables.put(entry.getKey(), previousValue);
+                if (!isRejected(response)) {
+                    writes.confirmed = sentValue.value();
+                }
+                if (writes.pending.isEmpty()) {
+                    iterator.remove();
+                    Object confirmed = writes.confirmed;
+                    if (confirmed != null) {
+                        deviceVariables.put(entry.getKey(), confirmed);
                     } else {
                         deviceVariables.remove(entry.getKey());
                     }
+                } else {
+                    deviceVariables.put(entry.getKey(), writes.pending.sequencedValues().getLast().value());
                 }
+                return;
             }
         }
     }
@@ -932,12 +952,18 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
     protected boolean updateChannel(@Nullable MiIoBasicChannel basicChannel, String param, JsonElement value) {
         JsonElement val = value;
         synchronized (sentValues) {
-            SentValue sentValue = sentValues.get(param);
-            if (sentValue != null && now().isAfter(sentValue.sentAt().plus(SENT_VALUE_MAX_AGE))) {
-                sentValues.remove(param);
-                sentValue = null;
+            PropertyWrites writes = sentValues.get(param);
+            if (writes != null) {
+                // the poll may predate the pending writes; keep them, unless the device never answered them
+                writes.confirmed = val;
+                Instant expired = now().minus(SENT_VALUE_MAX_AGE);
+                writes.pending.values().removeIf(sent -> sent.sentAt().isBefore(expired));
+                if (writes.pending.isEmpty()) {
+                    sentValues.remove(param);
+                    writes = null;
+                }
             }
-            if (sentValue == null) {
+            if (writes == null) {
                 deviceVariables.put(param, val);
             }
         }

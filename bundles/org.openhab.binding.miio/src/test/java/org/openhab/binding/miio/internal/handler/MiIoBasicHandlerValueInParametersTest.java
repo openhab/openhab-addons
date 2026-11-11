@@ -526,6 +526,53 @@ public class MiIoBasicHandlerValueInParametersTest {
         assertEquals(startWith(90), handler.send("start", new StringType("start")));
     }
 
+    private static final String ACCEPTED = "{\"result\": [{\"did\": \"target\", \"siid\": 2, \"piid\": 4, \"code\": 0}]}";
+    private static final String REJECTED = "{\"result\": [{\"did\": \"target\", \"siid\": 2, \"piid\": 4, \"code\": -4005}]}";
+
+    @Test
+    public void twoRejectedSettingsRevertToTheConfirmedValue() {
+        loadTargetAndStartChannels();
+
+        handler.send("target", new DecimalType(80));
+        int firstId = handler.lastCommandId;
+        handler.send("target", new DecimalType(70));
+        int secondId = handler.lastCommandId;
+
+        handler.answer(firstId, REJECTED);
+        assertEquals(startWith(70), handler.send("start", new StringType("start")));
+        handler.answer(secondId, REJECTED);
+        assertEquals(startWith(90), handler.send("start", new StringType("start")));
+    }
+
+    @Test
+    public void rejectedSettingRevertsToAnEarlierAcceptedSetting() {
+        loadTargetAndStartChannels();
+
+        handler.send("target", new DecimalType(80));
+        int firstId = handler.lastCommandId;
+        handler.send("target", new DecimalType(70));
+        int secondId = handler.lastCommandId;
+
+        handler.answer(firstId, ACCEPTED);
+        assertEquals(startWith(70), handler.send("start", new StringType("start")));
+        handler.answer(secondId, REJECTED);
+        assertEquals(startWith(80), handler.send("start", new StringType("start")));
+    }
+
+    @Test
+    public void earlierRejectedSettingKeepsTheLaterAcceptedSetting() {
+        loadTargetAndStartChannels();
+
+        handler.send("target", new DecimalType(80));
+        int firstId = handler.lastCommandId;
+        handler.send("target", new DecimalType(70));
+        int secondId = handler.lastCommandId;
+
+        handler.answer(firstId, REJECTED);
+        handler.answer(secondId, ACCEPTED);
+        assertEquals(startWith(70), handler.send("start", new StringType("start")));
+    }
+
     @Test
     public void legacyNumberSentBeforeAnotherCommandIsUsedByIt() {
         handler.loadChannel(channel("""
