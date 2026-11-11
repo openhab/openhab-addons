@@ -19,7 +19,6 @@ import static org.openhab.binding.asuswrt.internal.helpers.AsuswrtUtils.getValue
 
 import java.net.HttpCookie;
 import java.net.URI;
-import java.nio.charset.Charset;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -112,7 +111,7 @@ public class AsuswrtHttpClient {
         httpRequest.timeout(HTTP_TIMEOUT_MS, TimeUnit.MILLISECONDS);
 
         // Add request body
-        httpRequest.body(new StringRequestContent(payload, Charset.forName(HTTP_CONTENT_CHARSET)));
+        httpRequest.body(new StringRequestContent(payload, HTTP_CONTENT_CHARSET));
         try {
             return httpRequest.send();
         } catch (Exception e) {
@@ -156,7 +155,7 @@ public class AsuswrtHttpClient {
             httpRequest = setHeaders(httpRequest, HTTP_CONTENT_TYPE, url);
 
             // Add request body
-            httpRequest.body(new StringRequestContent(payload, Charset.forName(HTTP_CONTENT_CHARSET)));
+            httpRequest.body(new StringRequestContent(payload, HTTP_CONTENT_CHARSET));
 
             httpRequest.timeout(HTTP_TIMEOUT_MS, TimeUnit.MILLISECONDS).send(new BufferingResponseListener() {
                 @NonNullByDefault({})
