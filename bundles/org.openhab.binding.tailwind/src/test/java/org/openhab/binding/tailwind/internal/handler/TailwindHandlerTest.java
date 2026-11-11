@@ -179,6 +179,19 @@ public class TailwindHandlerTest {
     }
 
     @Test
+    public void everyStatusRequestRegistersForReportsAgain() {
+        initializeOnline();
+        int port = notificationPort();
+
+        // For example after the controller rebooted and forgot the address
+        handler.poll();
+
+        awaitRequests("notify_url", 2);
+        String url = controller.requestsNamed("notify_url").get(1).value().get("url").getAsString();
+        assertEquals("127.0.0.1:" + port, url);
+    }
+
+    @Test
     public void onlyConnectedDoorsKeepTheirChannels() {
         initializeOnline();
 

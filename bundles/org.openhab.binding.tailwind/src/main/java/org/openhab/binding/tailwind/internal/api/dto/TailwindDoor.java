@@ -22,8 +22,6 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 public class TailwindDoor {
-    /** Index of the door, starting at 0. */
-    public @Nullable Integer index;
     /** {@code open} or {@code close}. */
     public @Nullable String status;
     /** 1 when the door is locked. */

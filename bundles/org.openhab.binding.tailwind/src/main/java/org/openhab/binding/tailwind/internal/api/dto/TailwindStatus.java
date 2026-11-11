@@ -52,8 +52,6 @@ public class TailwindStatus {
     public @Nullable Boolean serverMonitor;
     /** The doors, with the keys door1, door2 and door3. */
     public @Nullable Map<String, @Nullable TailwindDoor> data;
-    /** Only in status reports. */
-    public @Nullable TailwindNotification notify;
 
     public boolean isOk() {
         return RESULT_OK.equals(result);
