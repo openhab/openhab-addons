@@ -255,7 +255,7 @@ public class SamsungTvHandler extends BaseThingHandler implements RegistryListen
                 if (properties.isPresent()) {
                     return properties.get();
                 } else if (retryCount > 0) {
-                    logger.warn("{}: Cannot get TVProperties - Retry: {}", host, retryCount);
+                    logger.debug("{}: Cannot get TVProperties - Retry: {}", host, retryCount);
                     return fetchTVProperties(1000, retryCount);
                 }
             }
