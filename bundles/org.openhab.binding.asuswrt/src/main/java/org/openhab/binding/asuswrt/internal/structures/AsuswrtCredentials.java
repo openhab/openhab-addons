@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.asuswrt.internal.structures;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -55,7 +56,7 @@ public class AsuswrtCredentials {
      * Encodes a String using Base64.
      */
     private String b64encode(String string) {
-        return Base64.getEncoder().encodeToString((string).getBytes());
+        return Base64.getEncoder().encodeToString(string.getBytes(StandardCharsets.UTF_8));
     }
 
     /*
