@@ -184,7 +184,7 @@ The power channel is available on all TV's. Depending on the age of your TV, you
 For TVs using the WebSocket protocol, the Thing remains online when UPnP services are unavailable if a MAC address is configured for Wake-on-LAN.
 In this case, the binding cannot confirm that the TV is reachable; it may also be disconnected from the network or power.
 If the binding cannot determine the power state, the power channel can be `UNDEF`.
-If a wake attempt times out, the requested `power` or `artMode` channel becomes `UNDEF`.
+For a WebSocket TV with a configured MAC address, if a wake attempt times out, the requested `power` or `artMode` channel becomes `UNDEF` and the Thing goes offline with a communication error until the TV is rediscovered.
 
 ## Frame TV's
 

@@ -29,6 +29,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -132,6 +133,7 @@ public class SamsungTvHandler extends BaseThingHandler implements RegistryListen
 
     private Optional<ScheduledFuture<?>> pollingJob = Optional.empty();
     private boolean servicesOnline;
+    private final AtomicLong serviceDiscoveryCount = new AtomicLong();
     private volatile boolean disposed;
     private WolSend wolTask = new WolSend(this);
     private final ModeOnWake modeOnWake = new ModeOnWake();
@@ -751,8 +753,8 @@ public class SamsungTvHandler extends BaseThingHandler implements RegistryListen
         }
     }
 
-    private synchronized void shutdown(boolean reportedStandby) {
-        if (disposed) {
+    private synchronized void shutdown(boolean reportedStandby, long discoveryCount) {
+        if (disposed || (reportedStandby && discoveryCount != serviceDiscoveryCount.get())) {
             return;
         }
         stopServices();
@@ -825,6 +827,9 @@ public class SamsungTvHandler extends BaseThingHandler implements RegistryListen
         }
         if (configuration.isWebsocketProtocol() && !configuration.getMacAddress().isBlank()) {
             valueReceived(channel, UnDefType.UNDEF);
+            servicesOnline = false;
+            stopPolling();
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "TV did not wake up");
         } else {
             setUnavailable();
         }
@@ -1023,6 +1028,7 @@ public class SamsungTvHandler extends BaseThingHandler implements RegistryListen
     @Override
     public void remoteDeviceAdded(@Nullable Registry registry, @Nullable RemoteDevice device) {
         if (device != null && host.equals(Utils.getHost(device))) {
+            serviceDiscoveryCount.incrementAndGet();
             logger.debug("{}: remoteDeviceAdded: {}, {}, upnpUDN={}", host, Utils.getType(device),
                     device.getIdentity().getDescriptorURL(), Utils.getUdn(device));
             initializeConfig();
@@ -1035,7 +1041,7 @@ public class SamsungTvHandler extends BaseThingHandler implements RegistryListen
         if (device != null && host.equals(Utils.getHost(device))) {
             if (services.stream().anyMatch(s -> s.getServiceName().equals(Utils.getType(device)))) {
                 logger.debug("{}: Device removed: {}, udn={}", host, Utils.getType(device), Utils.getUdn(device));
-                shutdown(false);
+                shutdown(false, serviceDiscoveryCount.get());
             }
         }
     }
@@ -1075,11 +1081,12 @@ public class SamsungTvHandler extends BaseThingHandler implements RegistryListen
 
     public void setOffline() {
         // schedule this in the future to allow calling service to return immediately
-        scheduler.submit(() -> shutdown(false));
+        scheduler.submit(() -> shutdown(false, serviceDiscoveryCount.get()));
     }
 
     public void setStandby() {
-        scheduler.submit(() -> shutdown(true));
+        long discoveryCount = serviceDiscoveryCount.get();
+        scheduler.submit(() -> shutdown(true, discoveryCount));
     }
 
     public void putConfig(@Nullable String key, @Nullable Object value) {

@@ -149,7 +149,7 @@ public class WolSend {
         }
         // cancel job
         if (wolCount++ > WOL_SERVICE_CHECK_COUNT) {
-            logger.warn("{}: Service NOT found after {} attempts: stopping WOL attempts", host, wolCount);
+            logger.debug("{}: Service NOT found after {} attempts: stopping WOL attempts", host, wolCount);
             cancel();
             handler.wakeFailed(channel);
         }
