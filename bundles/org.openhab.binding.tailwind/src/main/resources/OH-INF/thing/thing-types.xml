@@ -93,7 +93,7 @@
 		<state min="0" max="100" pattern="%d %%"/>
 	</channel-type>
 
-	<channel-type id="rssi" advanced="true">
+	<channel-type id="rssi">
 		<item-type unitHint="dBm">Number:Power</item-type>
 		<label>Wi-Fi Signal Strength</label>
 		<description>Strength of the Wi-Fi signal the controller receives</description>
@@ -161,7 +161,7 @@
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 
-	<channel-type id="door-locked" advanced="true">
+	<channel-type id="door-locked">
 		<item-type>Switch</item-type>
 		<label>Locked</label>
 		<description>ON when the controller has locked the door, so that it does not accept commands</description>
