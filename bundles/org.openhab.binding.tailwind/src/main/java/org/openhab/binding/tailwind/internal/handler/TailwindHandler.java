@@ -32,7 +32,6 @@ import org.openhab.binding.tailwind.internal.api.TailwindException;
 import org.openhab.binding.tailwind.internal.api.TailwindUdpListener;
 import org.openhab.binding.tailwind.internal.api.TailwindUnauthorizedException;
 import org.openhab.binding.tailwind.internal.api.dto.TailwindDoor;
-import org.openhab.binding.tailwind.internal.api.dto.TailwindNotification;
 import org.openhab.binding.tailwind.internal.api.dto.TailwindStatus;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
@@ -54,9 +53,6 @@ import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonSyntaxException;
-
 /**
  * The {@link TailwindHandler} connects a TailWind controller Thing to the controller.
  *
@@ -74,7 +70,6 @@ public class TailwindHandler extends BaseThingHandler {
     private static final int RETRY_MAX_SECONDS = 300;
 
     private final Logger logger = LoggerFactory.getLogger(TailwindHandler.class);
-    private final Gson gson = new Gson();
     private final HttpClient httpClient;
     private final NetworkAddressService networkAddressService;
 
@@ -83,8 +78,6 @@ public class TailwindHandler extends BaseThingHandler {
     // publish anything or schedule more work.
     private volatile @Nullable TailwindApi api;
     private volatile @Nullable TailwindStatus lastStatus;
-    // False when the controller may have lost the address to send its status reports to
-    private volatile boolean notificationsRegistered;
     private @Nullable ScheduledFuture<?> pollJob;
     private @Nullable TailwindUdpListener listener;
     private int retryDelaySeconds = RETRY_MIN_SECONDS;
@@ -110,7 +103,6 @@ public class TailwindHandler extends BaseThingHandler {
         synchronized (this) {
             api = new TailwindApi(httpClient, config.hostname.trim(), config.token.trim());
             retryDelaySeconds = RETRY_MIN_SECONDS;
-            notificationsRegistered = false;
             pollJob = scheduler.schedule(this::poll, 0, TimeUnit.SECONDS);
         }
     }
@@ -132,7 +124,6 @@ public class TailwindHandler extends BaseThingHandler {
             oldListener.stop();
         }
         lastStatus = null;
-        notificationsRegistered = false;
     }
 
     @Override
@@ -168,14 +159,9 @@ public class TailwindHandler extends BaseThingHandler {
             } else if (group != null && group.startsWith(GROUP_DOOR_PREFIX) && CHANNEL_DOOR_CONTROL.equals(channel)) {
                 sendDoorCommand(currentApi, group, command);
             }
-        } catch (TailwindUnauthorizedException e) {
+        } catch (TailwindUnauthorizedException | TailwindCommunicationException e) {
             if (isCurrent(currentApi)) {
-                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.conf-error.token-rejected");
-            }
-        } catch (TailwindCommunicationException e) {
-            if (isCurrent(currentApi)) {
-                notificationsRegistered = false;
-                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                setOffline(e);
                 pollSoon();
             }
         } catch (TailwindException e) {
@@ -188,9 +174,7 @@ public class TailwindHandler extends BaseThingHandler {
         switch (channel) {
             case CHANNEL_LED_BRIGHTNESS -> {
                 PercentType brightness = command instanceof PercentType percent ? percent
-                        : command instanceof OnOffType onOff
-                                ? (onOff == OnOffType.ON ? PercentType.HUNDRED : PercentType.ZERO)
-                                : null;
+                        : command instanceof OnOffType onOff ? onOff.as(PercentType.class) : null;
                 if (brightness != null) {
                     currentApi.setLedBrightness(brightness.intValue());
                     updateState(channelUID, brightness);
@@ -216,13 +200,13 @@ public class TailwindHandler extends BaseThingHandler {
     }
 
     private void sendDoorCommand(TailwindApi currentApi, String group, Command command) throws TailwindException {
-        int doorIndex;
-        try {
-            doorIndex = Integer.parseInt(group.substring(GROUP_DOOR_PREFIX.length())) - 1;
-        } catch (NumberFormatException e) {
-            return;
-        }
-        if (doorIndex < 0 || doorIndex >= MAX_DOORS) {
+        int doorIndex = switch (group) {
+            case "door1" -> 0;
+            case "door2" -> 1;
+            case "door3" -> 2;
+            default -> -1;
+        };
+        if (doorIndex < 0) {
             return;
         }
         switch (command.toString().toLowerCase(Locale.ROOT)) {
@@ -233,20 +217,23 @@ public class TailwindHandler extends BaseThingHandler {
         }
     }
 
-    private void poll() {
+    /**
+     * Asks the controller for its status and schedules the next request. Package-private for tests.
+     */
+    void poll() {
         TailwindApi currentApi = api;
         if (currentApi == null) {
             return;
         }
         boolean online = false;
         try {
-            TailwindStatus status = currentApi.getStatus();
             String address = networkAddressService.getPrimaryIpv4HostAddress();
             if (address == null) {
                 if (isCurrent(currentApi)) {
                     updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.conf-error.no-primary-address");
                 }
             } else {
+                TailwindStatus status = currentApi.getStatus();
                 registerNotifications(currentApi, address);
                 if (isCurrent(currentApi)) {
                     updateStatus(ThingStatus.ONLINE);
@@ -254,19 +241,22 @@ public class TailwindHandler extends BaseThingHandler {
                     online = true;
                 }
             }
-        } catch (TailwindUnauthorizedException e) {
-            if (isCurrent(currentApi)) {
-                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.conf-error.token-rejected");
-            }
         } catch (TailwindException e) {
             if (isCurrent(currentApi)) {
-                notificationsRegistered = false;
-                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                setOffline(e);
             }
         } catch (RuntimeException e) {
             logger.warn("Unexpected error while asking {} for its status", thing.getUID(), e);
         }
         scheduleNextPoll(currentApi, online);
+    }
+
+    private void setOffline(TailwindException e) {
+        if (e instanceof TailwindUnauthorizedException) {
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.conf-error.token-rejected");
+        } else {
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+        }
     }
 
     private synchronized void scheduleNextPoll(TailwindApi currentApi, boolean online) {
@@ -296,8 +286,9 @@ public class TailwindHandler extends BaseThingHandler {
     }
 
     /**
-     * Starts the listener for status reports if it is not running, and tells the controller where to send them if
-     * it may not know.
+     * Starts the listener for status reports if it is not running, and tells the controller where to send them.
+     * This is repeated at every status request, so the controller gets the address back after it lost it, for example
+     * when it rebooted.
      */
     private void registerNotifications(TailwindApi currentApi, String address) throws TailwindException {
         int port;
@@ -312,9 +303,6 @@ public class TailwindHandler extends BaseThingHandler {
                 listener = currentListener;
             }
             port = currentListener.getPort();
-            if (port != -1 && notificationsRegistered) {
-                return;
-            }
             if (port == -1) {
                 try {
                     port = currentListener.start();
@@ -325,7 +313,6 @@ public class TailwindHandler extends BaseThingHandler {
             }
         }
         currentApi.setNotifyUrl(address + ":" + port);
-        notificationsRegistered = true;
         logger.debug("{} sends its status reports to {}:{}", thing.getUID(), address, port);
     }
 
@@ -333,14 +320,9 @@ public class TailwindHandler extends BaseThingHandler {
         if (api == null) {
             return;
         }
-        TailwindStatus status;
-        try {
-            status = gson.fromJson(message, TailwindStatus.class);
-        } catch (JsonSyntaxException e) {
-            logger.debug("Ignoring a status report that is not valid JSON: {}", e.getMessage());
-            return;
-        }
+        TailwindStatus status = TailwindApi.parse(message);
         if (status == null) {
+            logger.debug("Ignoring a status report that is not valid JSON");
             return;
         }
         // UDP has no sender check, so at least ignore reports of other controllers
@@ -350,28 +332,14 @@ public class TailwindHandler extends BaseThingHandler {
             logger.debug("Ignoring a status report from device {}", status.deviceId);
             return;
         }
-        TailwindNotification notification = status.notify;
-        if (notification != null && TailwindNotification.EVENT_REBOOT.equals(notification.event)) {
-            // Register again at the next status request, in case the controller forgets the address when it reboots
-            notificationsRegistered = false;
-        }
         handleStatus(status);
     }
 
     private void handleStatus(TailwindStatus status) {
         lastStatus = status;
-        String mac = TailwindDeviceId.toMacAddress(status.deviceId);
-        if (mac != null) {
-            updateProperty(Thing.PROPERTY_MAC_ADDRESS, mac);
-        }
-        String product = status.product;
-        if (product != null) {
-            updateProperty(Thing.PROPERTY_MODEL_ID, product);
-        }
-        String firmwareVersion = status.firmwareVersion;
-        if (firmwareVersion != null) {
-            updateProperty(Thing.PROPERTY_FIRMWARE_VERSION, firmwareVersion);
-        }
+        updatePropertyIfSet(Thing.PROPERTY_MAC_ADDRESS, TailwindDeviceId.toMacAddress(status.deviceId));
+        updatePropertyIfSet(Thing.PROPERTY_MODEL_ID, status.product);
+        updatePropertyIfSet(Thing.PROPERTY_FIRMWARE_VERSION, status.firmwareVersion);
         Integer doorCount = status.doorCount;
         if (doorCount != null) {
             updateDoorGroups(doorCount);
@@ -409,10 +377,7 @@ public class TailwindHandler extends BaseThingHandler {
     }
 
     private void updateChannels(TailwindStatus status) {
-        Integer nightMode = status.nightModeEnabled;
-        if (nightMode != null) {
-            updateState(channel(GROUP_CONTROLLER, CHANNEL_NIGHT_MODE), OnOffType.from(nightMode == 1));
-        }
+        updateFlag(channel(GROUP_CONTROLLER, CHANNEL_NIGHT_MODE), status.nightModeEnabled);
         Integer ledBrightness = status.ledBrightness;
         if (ledBrightness != null) {
             updateState(channel(GROUP_CONTROLLER, CHANNEL_LED_BRIGHTNESS),
@@ -438,14 +403,23 @@ public class TailwindHandler extends BaseThingHandler {
                 updateState(channel(group, CHANNEL_DOOR_STATUS), state);
                 updateState(channel(group, CHANNEL_DOOR_CONTROL), state);
             }
-            Integer lockup = door.lockup;
-            if (lockup != null) {
-                updateState(channel(group, CHANNEL_DOOR_LOCKED), OnOffType.from(lockup == 1));
-            }
-            Integer disabled = door.disabled;
-            if (disabled != null) {
-                updateState(channel(group, CHANNEL_DOOR_DISABLED), OnOffType.from(disabled == 1));
-            }
+            updateFlag(channel(group, CHANNEL_DOOR_LOCKED), door.lockup);
+            updateFlag(channel(group, CHANNEL_DOOR_DISABLED), door.disabled);
+        }
+    }
+
+    private void updatePropertyIfSet(String name, @Nullable String value) {
+        if (value != null) {
+            updateProperty(name, value);
+        }
+    }
+
+    /**
+     * Publishes a flag that the controller reports as 1 for on and 0 for off.
+     */
+    private void updateFlag(ChannelUID channelUID, @Nullable Integer flag) {
+        if (flag != null) {
+            updateState(channelUID, OnOffType.from(flag == 1));
         }
     }
 
