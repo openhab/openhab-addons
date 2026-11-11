@@ -16,13 +16,16 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.InputStream;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.junit.jupiter.api.Test;
 import org.openhab.core.thing.type.ChannelTypeUID;
+import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
 /**
@@ -33,11 +36,19 @@ import org.w3c.dom.NodeList;
 class UpdateInstructionsTest {
 
     @Test
-    void channelTypesHaveValidUids() throws Exception {
+    void channelTypesAreDeclared() throws Exception {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
         factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
         factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
+
+        Set<String> declaredTypes = new HashSet<>();
+        try (InputStream input = Objects.requireNonNull(getClass().getResourceAsStream("/OH-INF/thing/channels.xml"))) {
+            NodeList channelTypes = factory.newDocumentBuilder().parse(input).getElementsByTagName("channel-type");
+            for (int i = 0; i < channelTypes.getLength(); i++) {
+                declaredTypes.add("luxtronikheatpump:" + ((Element) channelTypes.item(i)).getAttribute("id"));
+            }
+        }
 
         try (InputStream input = Objects
                 .requireNonNull(getClass().getResourceAsStream("/OH-INF/update/instructions.xml"))) {
@@ -47,6 +58,7 @@ class UpdateInstructionsTest {
             for (int i = 0; i < typeElements.getLength(); i++) {
                 String uid = typeElements.item(i).getTextContent().trim();
                 assertDoesNotThrow(() -> new ChannelTypeUID(uid), "Invalid channel type UID: " + uid);
+                assertTrue(declaredTypes.contains(uid), "Undeclared channel type UID: " + uid);
             }
         }
     }
