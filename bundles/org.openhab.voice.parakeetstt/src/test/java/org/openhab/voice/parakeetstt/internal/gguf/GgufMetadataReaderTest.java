@@ -110,7 +110,7 @@ class GgufMetadataReaderTest {
                 new KvPair("general.architecture", 8, "parakeet"), //
                 new KvPair("general.name", 8, "nvidia/parakeet-tdt-0.6b"), //
                 new KvPair("general.languages", 9, List.of("en", "de", "fr")), //
-                new KvPair("parakeet.parakeetAarch", 8, "tdt"), //
+                new KvPair("parakeet.arch", 8, "tdt"), //
                 new KvPair("custom.other_int", 4, 42), //
                 new KvPair("custom.other_bool", 7, true) //
         ));
@@ -120,7 +120,7 @@ class GgufMetadataReaderTest {
         assertEquals("nvidia/parakeet-tdt-0.6b", metadata.name());
         assertEquals("parakeet", metadata.architecture());
         assertEquals(List.of("en", "de", "fr"), metadata.languages());
-        assertEquals("tdt", metadata.parakeetAarch());
+        assertEquals("tdt", metadata.parakeetArch());
         assertTrue(metadata.isAsr());
         assertFalse(metadata.isVadOnly());
     }
@@ -128,14 +128,31 @@ class GgufMetadataReaderTest {
     @Test
     void parsesVadModelMetadata() throws IOException {
         byte[] ggufBytes = createGgufHeader(3, List.of( //
-                new KvPair("general.architecture", 8, "silero-vad"), //
+                new KvPair("general.architecture", 8, "silero_vad"), //
                 new KvPair("general.name", 8, "Silero VAD v4") //
         ));
 
         GgufMetadata metadata = reader.parse(new ByteArrayInputStream(ggufBytes));
         assertNotNull(metadata);
         assertEquals("Silero VAD v4", metadata.name());
-        assertEquals("silero-vad", metadata.architecture());
+        assertEquals("silero_vad", metadata.architecture());
+        assertTrue(metadata.isVadOnly());
+        assertFalse(metadata.isAsr());
+    }
+
+    @Test
+    void parsesVadOnlyParakeetModelSliceMetadata() throws IOException {
+        byte[] ggufBytes = createGgufHeader(3, List.of( //
+                new KvPair("general.architecture", 8, "parakeet"), //
+                new KvPair("general.name", 8, "Parakeet VAD-only Slice"), //
+                new KvPair("parakeet.arch", 8, "vad") //
+        ));
+
+        GgufMetadata metadata = reader.parse(new ByteArrayInputStream(ggufBytes));
+        assertNotNull(metadata);
+        assertEquals("Parakeet VAD-only Slice", metadata.name());
+        assertEquals("parakeet", metadata.architecture());
+        assertEquals("vad", metadata.parakeetArch());
         assertTrue(metadata.isVadOnly());
         assertFalse(metadata.isAsr());
     }

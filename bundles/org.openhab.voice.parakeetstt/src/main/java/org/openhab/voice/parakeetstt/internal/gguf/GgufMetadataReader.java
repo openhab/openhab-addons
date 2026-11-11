@@ -62,9 +62,9 @@ public class GgufMetadataReader {
         INT64,
         FLOAT64;
 
-        public static GgufMetadataValueType fromOrdinal(int ordinal) {
+        public static GgufMetadataValueType fromOrdinal(int ordinal) throws IOException {
             if (ordinal < 0 || ordinal >= values().length) {
-                throw new IllegalArgumentException("Invalid GGUF metadata value type ordinal: " + ordinal);
+                throw new IOException("Invalid GGUF metadata value type ordinal: " + ordinal);
             }
             return values()[ordinal];
         }
@@ -73,7 +73,7 @@ public class GgufMetadataReader {
     private static final String KEY_GENERAL_NAME = "general.name";
     private static final String KEY_GENERAL_ARCHITECTURE = "general.architecture";
     private static final String KEY_GENERAL_LANGUAGES = "general.languages";
-    private static final String KEY_PARAKEET_ARCH = "parakeet.parakeetAarch";
+    private static final String KEY_PARAKEET_ARCH = "parakeet.arch";
 
     private static final int MAX_KEY_LENGTH = 512;
     private static final int MAX_STRING_LENGTH = 65536;

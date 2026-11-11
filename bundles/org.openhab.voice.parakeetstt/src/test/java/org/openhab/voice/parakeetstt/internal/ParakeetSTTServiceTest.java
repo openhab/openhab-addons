@@ -336,7 +336,7 @@ class ParakeetSTTServiceTest {
     @Test
     void getParameterOptionsFiltersAndFormatsLabelsWithGgufMetadata() throws IOException {
         createGgufModelFile("parakeet-tdt-0.6b.gguf", "nvidia/parakeet-tdt-0.6b", "parakeet", List.of("en"));
-        createGgufModelFile("silero-vad-f16.gguf", "Silero VAD v4", "silero-vad", null);
+        createGgufModelFile("silero-vad-f16.gguf", "Silero VAD v4", "silero_vad", null);
         createDummyModelFile("custom-model.gguf");
 
         URI uri = URI.create(CONFIG_URI);

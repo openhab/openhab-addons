@@ -26,7 +26,7 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 public record GgufMetadata(@Nullable String name, @Nullable String architecture, List<String> languages,
-        @Nullable String parakeetAarch) {
+        @Nullable String parakeetArch) {
 
     public GgufMetadata {
         languages = List.copyOf(languages);
@@ -38,7 +38,8 @@ public record GgufMetadata(@Nullable String name, @Nullable String architecture,
      * @return true if the architecture indicates a standalone VAD model
      */
     public boolean isVadOnly() {
-        return "silero-vad".equalsIgnoreCase(architecture) || "vad".equalsIgnoreCase(architecture);
+        return "silero_vad".equalsIgnoreCase(architecture)
+                || ("parakeet".equalsIgnoreCase(architecture) && "vad".equalsIgnoreCase(parakeetArch));
     }
 
     /**
@@ -47,6 +48,7 @@ public record GgufMetadata(@Nullable String name, @Nullable String architecture,
      * @return true if the architecture indicates an ASR model
      */
     public boolean isAsr() {
-        return "parakeet".equalsIgnoreCase(architecture) || "canary".equalsIgnoreCase(architecture);
+        return ("parakeet".equalsIgnoreCase(architecture) && !"vad".equalsIgnoreCase(parakeetArch))
+                || "canary".equalsIgnoreCase(architecture);
     }
 }
