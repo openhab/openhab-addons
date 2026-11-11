@@ -13,6 +13,7 @@
 package org.openhab.io.homekit.internal;
 
 import java.io.IOException;
+import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.security.InvalidAlgorithmParameterException;
@@ -36,6 +37,7 @@ import org.openhab.core.io.transport.mdns.MDNSClient;
 import org.openhab.core.items.ItemRegistry;
 import org.openhab.core.items.MetadataRegistry;
 import org.openhab.core.net.CidrAddress;
+import org.openhab.core.net.NetUtil;
 import org.openhab.core.net.NetworkAddressChangeListener;
 import org.openhab.core.net.NetworkAddressService;
 import org.openhab.core.service.ReadyMarker;
@@ -66,6 +68,7 @@ import io.github.hapjava.server.impl.crypto.HAPSetupCodeUtils;
  * Provides access to openHAB items via the HomeKit API
  *
  * @author Andy Lintner - Initial contribution
+ * @author Eugen Freiter - Recover the bridge after network changes
  */
 @Component(service = { Homekit.class }, configurationPid = HomekitSettings.CONFIG_PID, property = {
         Constants.SERVICE_PID + "=org.openhab.homekit", "port:Integer=9123" })
@@ -179,9 +182,12 @@ public class HomekitImpl implements Homekit, NetworkAddressChangeListener, Ready
                     clearStorage(i);
                     stopHomekitServer(i);
                 }
-                // Start up new instances
-                for (int i = oldSettings.instances; i < settings.instances; ++i) {
-                    startHomekitServer(i);
+                // Start up new instances; if the bridge is not running yet, it starts all instances later
+                InetAddress localNetworkInterface = networkInterface;
+                if (localNetworkInterface != null && !homekitServers.isEmpty()) {
+                    for (int i = homekitServers.size(); i < settings.instances; ++i) {
+                        startHomekitServer(i, localNetworkInterface);
+                    }
                 }
                 // Notify remaining instances of the change
                 for (HomekitChangeListener changeListener : changeListeners) {
@@ -214,7 +220,7 @@ public class HomekitImpl implements Homekit, NetworkAddressChangeListener, Ready
         stopHomekitServer();
     }
 
-    private HomekitRoot startBridge(HomekitServer homekitServer, HomekitAuthInfoImpl authInfo,
+    private HomekitRoot createBridge(HomekitServer homekitServer, HomekitAuthInfoImpl authInfo,
             HomekitChangeListener changeListener, int instance) throws IOException {
         String name = settings.name;
         if (instance != 1) {
@@ -224,16 +230,13 @@ public class HomekitImpl implements Homekit, NetworkAddressChangeListener, Ready
                 HomekitSettings.MANUFACTURER, HomekitSettings.MODEL, HomekitSettings.SERIAL_NUMBER,
                 FrameworkUtil.getBundle(getClass()).getVersion().toString(), HomekitSettings.HARDWARE_REVISION);
         changeListener.setBridge(bridge);
-        bridges.add(bridge);
         bridge.setConfigurationIndex(changeListener.getConfigurationRevision());
-        bridge.start();
         return bridge;
     }
 
-    private void startHomekitServer(int instance) throws IOException, InvalidAlgorithmParameterException {
+    private void startHomekitServer(int instance, InetAddress localNetworkInterface)
+            throws IOException, InvalidAlgorithmParameterException {
         logger.trace("starting HomeKit bridge instance {}", instance + 1);
-
-        InetAddress localNetworkInterface = ensureNetworkInterface();
 
         String storageKey = HomekitAuthInfoImpl.STORAGE_KEY;
         if (instance != 0) {
@@ -261,25 +264,56 @@ public class HomekitImpl implements Homekit, NetworkAddressChangeListener, Ready
             logger.trace("create HomeKit server with dedicated mDNS server");
             homekitServer = new HomekitServer(localNetworkInterface, settings.port + instance);
         }
-        homekitServers.add(homekitServer);
-        HomekitChangeListener changeListener = new HomekitChangeListener(itemRegistry, settings, metadataRegistry,
-                storage, instance + 1);
-        changeListeners.add(changeListener);
-        startBridge(homekitServer, authInfo, changeListener, instance + 1);
-        authInfos.add(authInfo);
-    }
-
-    private void startHomekitServer() throws IOException, InvalidAlgorithmParameterException {
-        if (homekitServers.isEmpty()) {
-            for (int i = 0; i < settings.instances; ++i) {
-                startHomekitServer(i);
+        // Register the instance only once it is fully started, and release what was set up if starting fails, so
+        // that a later attempt (e.g. after a network change) can start again from scratch.
+        HomekitChangeListener changeListener = null;
+        HomekitRoot bridge = null;
+        try {
+            changeListener = new HomekitChangeListener(itemRegistry, settings, metadataRegistry, storage, instance + 1);
+            bridge = createBridge(homekitServer, authInfo, changeListener, instance + 1);
+            bridge.start();
+            homekitServers.add(homekitServer);
+            changeListeners.add(changeListener);
+            bridges.add(bridge);
+            authInfos.add(authInfo);
+        } catch (IOException | RuntimeException e) {
+            if (bridge != null) {
+                bridge.stop();
             }
-        } else {
-            logger.warn("trying to start HomeKit server but it is already initialized");
+            if (changeListener != null) {
+                changeListener.stop();
+            }
+            homekitServer.stop();
+            throw e;
         }
     }
 
-    private InetAddress ensureNetworkInterface() throws IOException {
+    private void startHomekitServer() throws IOException, InvalidAlgorithmParameterException {
+        startHomekitServer(List.of());
+    }
+
+    private void startHomekitServer(List<CidrAddress> addedAddresses)
+            throws IOException, InvalidAlgorithmParameterException {
+        if (!homekitServers.isEmpty()) {
+            logger.warn("trying to start HomeKit server but it is already initialized");
+            return;
+        }
+        InetAddress localNetworkInterface = ensureNetworkInterface(addedAddresses);
+        if (localNetworkInterface == null) {
+            logger.debug("no network address available, HomeKit bridge will start once the network is up");
+            return;
+        }
+        try {
+            for (int i = 0; i < settings.instances; ++i) {
+                startHomekitServer(i, localNetworkInterface);
+            }
+        } catch (IOException | InvalidAlgorithmParameterException | RuntimeException e) {
+            stopHomekitServer();
+            throw e;
+        }
+    }
+
+    private @Nullable InetAddress ensureNetworkInterface(List<CidrAddress> addedAddresses) throws UnknownHostException {
         InetAddress localNetworkInterface = networkInterface;
         if (localNetworkInterface != null) {
             return localNetworkInterface;
@@ -288,12 +322,24 @@ public class HomekitImpl implements Homekit, NetworkAddressChangeListener, Ready
         String interfaceName = ((settings.networkInterface != null) && (!settings.networkInterface.isEmpty()))
                 ? settings.networkInterface
                 : networkAddressService.getPrimaryIpv4HostAddress();
+        if (interfaceName == null) {
+            // openHAB core determines its primary address only once, so it stays empty if the network was down
+            // at startup. Use an address that just came up, or else any address the host currently has.
+            InetAddress address = firstUsableAddress(addedAddresses);
+            return (networkInterface = address != null ? address
+                    : firstUsableAddress(NetUtil.getAllInterfaceAddresses()));
+        }
         try {
             return (networkInterface = Objects.requireNonNull(InetAddress.getByName(interfaceName)));
         } catch (UnknownHostException e) {
             logger.warn("cannot resolve the IPv4 address / hostname {}.", interfaceName);
             throw e;
         }
+    }
+
+    private static @Nullable InetAddress firstUsableAddress(Collection<CidrAddress> addresses) {
+        return addresses.stream().map(CidrAddress::getAddress).filter(address -> address instanceof Inet4Address
+                && !address.isLoopbackAddress() && !address.isLinkLocalAddress()).findFirst().orElse(null);
     }
 
     private void stopHomekitServer() {
@@ -305,9 +351,14 @@ public class HomekitImpl implements Homekit, NetworkAddressChangeListener, Ready
         bridges.clear();
         changeListeners.clear();
         authInfos.clear();
+        // resolve the address again on the next start, it may have changed while the bridge was down
+        networkInterface = null;
     }
 
     private void stopHomekitServer(int instance) {
+        if (instance >= homekitServers.size()) {
+            return;
+        }
         logger.trace("stopping HomeKit bridge instance {}", instance + 1);
         changeListeners.get(instance).stop();
         bridges.get(instance).stop();
@@ -424,7 +475,7 @@ public class HomekitImpl implements Homekit, NetworkAddressChangeListener, Ready
         });
         if (bridges.isEmpty() && !added.isEmpty()) {
             try {
-                startHomekitServer();
+                startHomekitServer(added);
             } catch (IOException | InvalidAlgorithmParameterException e) {
                 logger.warn("could not initialize HomeKit bridge: {}", e.getMessage());
             }
