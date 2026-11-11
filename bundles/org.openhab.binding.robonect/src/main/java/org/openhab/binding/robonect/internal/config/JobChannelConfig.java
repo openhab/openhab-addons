@@ -26,11 +26,11 @@ public class JobChannelConfig {
 
     private String afterMode;
 
-    private Integer duration;
+    private Integer durationMinutes;
 
-    private @Nullable String start;
+    private @Nullable String startTime;
 
-    private @Nullable String end;
+    private @Nullable String endTime;
 
     /**
      * Returns the job remote-start mode.
@@ -73,17 +73,17 @@ public class JobChannelConfig {
      *
      * @return the duration in minutes, or {@code null} if unset
      */
-    public Integer getDuration() {
-        return duration;
+    public Integer getDurationMinutes() {
+        return durationMinutes;
     }
 
     /**
      * Sets the job duration.
      *
-     * @param duration the duration in minutes
+     * @param durationMinutes the duration in minutes
      */
-    public void setDuration(Integer duration) {
-        this.duration = duration;
+    public void setDurationMinutes(Integer durationMinutes) {
+        this.durationMinutes = durationMinutes;
     }
 
     /**
@@ -91,17 +91,17 @@ public class JobChannelConfig {
      *
      * @return the start time in {@code HH:mm} format, or {@code null} if unset
      */
-    public @Nullable String getStart() {
-        return start;
+    public @Nullable String getStartTime() {
+        return startTime;
     }
 
     /**
      * Sets the optional job start time.
      *
-     * @param start the start time in {@code HH:mm} format, or {@code null} if unset
+     * @param startTime the start time in {@code HH:mm} format, or {@code null} if unset
      */
-    public void setStart(@Nullable String start) {
-        this.start = start;
+    public void setStartTime(@Nullable String startTime) {
+        this.startTime = startTime;
     }
 
     /**
@@ -109,16 +109,16 @@ public class JobChannelConfig {
      *
      * @return the end time in {@code HH:mm} format, or {@code null} if unset
      */
-    public @Nullable String getEnd() {
-        return end;
+    public @Nullable String getEndTime() {
+        return endTime;
     }
 
     /**
      * Sets the optional job end time.
      *
-     * @param end the end time in {@code HH:mm} format, or {@code null} if unset
+     * @param endTime the end time in {@code HH:mm} format, or {@code null} if unset
      */
-    public void setEnd(@Nullable String end) {
-        this.end = end;
+    public void setEndTime(@Nullable String endTime) {
+        this.endTime = endTime;
     }
 }

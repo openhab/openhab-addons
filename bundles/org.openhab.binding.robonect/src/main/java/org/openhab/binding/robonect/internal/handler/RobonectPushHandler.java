@@ -90,7 +90,7 @@ final class RobonectPushHandler {
 
     /** Reads the push mode from the optional web interface when publishing is allowed. */
     void refreshPushMode() {
-        if (!handler.isUnofficialApiEnabled() || !handler.canPublishState()) {
+        if (!handler.isWebApiEnabled() || !handler.canPublishState()) {
             return;
         }
         try {
@@ -107,7 +107,7 @@ final class RobonectPushHandler {
      * @param fullResponse whether an absent mode should be published as undefined
      */
     private void applyPushMode(@Nullable Integer mode, boolean fullResponse) {
-        if (handler.isUnofficialApiEnabled()) {
+        if (handler.isWebApiEnabled()) {
             handler.setState(CHANNEL_PUSH_MODE, mode == null ? null : new DecimalType(mode), fullResponse);
         }
     }
@@ -123,7 +123,7 @@ final class RobonectPushHandler {
                     command.getClass().getName());
             return;
         }
-        if (!handler.isUnofficialApiEnabled()) {
+        if (!handler.isWebApiEnabled()) {
             return;
         }
         int mode;

@@ -228,6 +228,11 @@ final class RobonectMowerHandler {
         }
         handler.cancelCommandRefresh("status");
         if (onOffCommand == OnOffType.ON) {
+            Integer configuredDuration = jobConfig.getDurationMinutes();
+            if (configuredDuration != null && (configuredDuration < 1 || configuredDuration >= 1440)) {
+                logger.debug("Invalid job duration: {}. Expected a value from 1 to 1439 minutes.", configuredDuration);
+                return;
+            }
             String configuredAfterMode = jobConfig.getAfterMode();
             String configuredRemoteStart = jobConfig.getRemoteStart();
             ModeCommand.@Nullable Mode afterMode;
@@ -247,9 +252,9 @@ final class RobonectMowerHandler {
             }
 
             RobonectClient.JobSettings settings = new RobonectClient.JobSettings().withAfterMode(afterMode)
-                    .withRemoteStart(remoteStart).withDuration(jobConfig.getDuration());
+                    .withRemoteStart(remoteStart).withDuration(configuredDuration);
             try {
-                settings.withStart(jobConfig.getStart()).withEnd(jobConfig.getEnd());
+                settings.withStart(jobConfig.getStartTime()).withEnd(jobConfig.getEndTime());
             } catch (IllegalArgumentException e) {
                 logger.debug("Invalid mowing job time: {}", e.getMessage());
                 return;
@@ -265,7 +270,7 @@ final class RobonectMowerHandler {
                 case null, default -> null;
             };
             expireLocalJob();
-            if (mowerApi.stopJob(afterMode).isSuccessful() && !handler.isAjaxUiScraping()) {
+            if (mowerApi.stopJob(afterMode).isSuccessful() && !handler.isAjaxApiEnabled()) {
                 // Only when ajax scraping is not active,
                 // clear the local job tracking since the job was successfully stopped
                 localJob = null;
@@ -349,7 +354,7 @@ final class RobonectMowerHandler {
     /** Clears local job tracking once the estimated end is reached. */
     private void expireLocalJob() {
         LocalJob job = localJob;
-        if (!handler.isAjaxUiScraping() && job != null && !Instant.now().isBefore(job.end().toInstant())) {
+        if (!handler.isAjaxApiEnabled() && job != null && !Instant.now().isBefore(job.end().toInstant())) {
             clearLocalJob();
         }
     }
@@ -386,7 +391,7 @@ final class RobonectMowerHandler {
         ModeCommand.Mode newMode = ModeCommand.Mode.valueOf(modeStr.toUpperCase());
         handler.cancelCommandRefresh("status");
         expireLocalJob();
-        if (mowerApi.setMode(newMode).isSuccessful() && !handler.isAjaxUiScraping()) {
+        if (mowerApi.setMode(newMode).isSuccessful() && !handler.isAjaxApiEnabled()) {
             localJob = newMode == ModeCommand.Mode.JOB
                     ? estimateJob(null, new RobonectClient.JobSettings(), ZonedDateTime.now(handler.getTimeZone()))
                     : null;
@@ -549,7 +554,7 @@ final class RobonectMowerHandler {
             if (!handler.canPublishState()) {
                 return null;
             }
-            boolean ajax = handler.isAjaxUiScraping();
+            boolean ajax = handler.isAjaxApiEnabled();
             info = mowerApi.getMowerInfo(ajax);
             if (!handler.canPublishState()) {
                 return null;

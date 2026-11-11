@@ -277,7 +277,7 @@ final class RobonectWeatherHandler {
         handler.setState(CHANNEL_WEATHER_SKIP_NIGHT, read(service, WeatherService::getConfig)
                 .map(WeatherConfig::getDontmowduringnight).map(OnOffType::from).orElse(null), fullResponse);
         Integer interval = read(service, WeatherService::getInterval).orElse(null);
-        if (interval == null && (fullResponse || service != null) && handler.isUnofficialApiEnabled()
+        if (interval == null && (fullResponse || service != null) && handler.isWebApiEnabled()
                 && handler.canPublishState()) {
             try {
                 interval = weatherApi.getWeatherIntervalViaWebInterface();

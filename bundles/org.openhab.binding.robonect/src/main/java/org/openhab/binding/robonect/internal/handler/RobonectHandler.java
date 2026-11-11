@@ -112,8 +112,8 @@ public class RobonectHandler extends BaseThingHandler {
     private volatile RobonectRemoteStartHandler remoteStartHandler;
     private volatile RobonectWeatherHandler weatherHandler;
     private final @Nullable RobonectPushServlet pushServlet;
-    private boolean ajaxUiScraping;
-    private volatile boolean useUnofficialApi;
+    private boolean useAjaxApi;
+    private volatile boolean useWebApi;
 
     /**
      * Creates a mower Thing handler without a push servlet.
@@ -532,8 +532,8 @@ public class RobonectHandler extends BaseThingHandler {
      *
      * @return {@code true} when Ajax UI scraping is enabled
      */
-    boolean isAjaxUiScraping() {
-        return ajaxUiScraping;
+    boolean isAjaxApiEnabled() {
+        return useAjaxApi;
     }
 
     /**
@@ -541,8 +541,8 @@ public class RobonectHandler extends BaseThingHandler {
      *
      * @return {@code true} when unofficial API operations are enabled
      */
-    boolean isUnofficialApiEnabled() {
-        return useUnofficialApi;
+    boolean isWebApiEnabled() {
+        return useWebApi;
     }
 
     /**
@@ -587,7 +587,7 @@ public class RobonectHandler extends BaseThingHandler {
      * @param enabled whether to use Ajax for job status and times instead of the locally tracked job
      */
     void configureAjaxChannels(boolean enabled) {
-        ajaxUiScraping = enabled;
+        useAjaxApi = enabled;
         updateDynamicChannels(Pattern.compile(CHANNEL_JOB_START + "|" + CHANNEL_JOB_END),
                 List.of(createChannel(CHANNEL_JOB_START, "DateTime", "jobTimeType", "Mowing Job Start Time"),
                         createChannel(CHANNEL_JOB_END, "DateTime", "jobTimeType", "Mowing Job End Time")));
@@ -599,7 +599,7 @@ public class RobonectHandler extends BaseThingHandler {
      * @param enabled whether the feature is enabled
      */
     void configureUnofficialChannels(boolean enabled) {
-        useUnofficialApi = enabled;
+        useWebApi = enabled;
         updateDynamicChannels(Pattern.compile(CHANNEL_PUSH_MODE),
                 enabled ? List.of(createChannel(CHANNEL_PUSH_MODE, "Number", "pushModeType", "Push Service Mode"))
                         : List.of());
@@ -783,8 +783,8 @@ public class RobonectHandler extends BaseThingHandler {
         disposed = false;
         updateState(CHANNEL_PUSH_PASSWORD, UnDefType.UNDEF);
         RobonectConfig robonectConfig = getConfigAs(RobonectConfig.class);
-        configureAjaxChannels(robonectConfig.isAjaxUiScraping());
-        configureUnofficialChannels(robonectConfig.isUseUnofficialApi());
+        configureAjaxChannels(robonectConfig.isAjaxApiEnabled());
+        configureUnofficialChannels(robonectConfig.isUseWebApi());
         RobonectEndpoint endpoint = new RobonectEndpoint(robonectConfig.getHost(), robonectConfig.getUser(),
                 robonectConfig.getPassword());
 
@@ -814,10 +814,10 @@ public class RobonectHandler extends BaseThingHandler {
         pollingSession = session;
         pollingJob = requestScheduler.scheduleWithFixedDelay(new MowerChannelPoller(session), 0,
                 Math.max(1, robonectConfig.getPollInterval()), TimeUnit.SECONDS);
-        int detailedPollInterval = robonectConfig.getDetailedPollInterval();
-        if (detailedPollInterval > 0) {
+        int pollIntervalExtended = robonectConfig.getPollIntervalExtended();
+        if (pollIntervalExtended > 0) {
             detailedPollingJob = requestScheduler.scheduleWithFixedDelay(new DetailedMowerChannelPoller(session), 0,
-                    detailedPollInterval, TimeUnit.SECONDS);
+                    pollIntervalExtended, TimeUnit.SECONDS);
         }
         String pushUser = robonectConfig.getPushUser();
         String pushPass = robonectConfig.getPushPass();
@@ -982,10 +982,10 @@ public class RobonectHandler extends BaseThingHandler {
     /**
      * Allows tests to enable UI scraping without initializing a Thing configuration.
      *
-     * @param ajaxUiScraping whether UI scraping is enabled
+     * @param useAjaxApi whether UI scraping is enabled
      */
-    protected void setAjaxUiScraping(boolean ajaxUiScraping) {
-        this.ajaxUiScraping = ajaxUiScraping;
+    protected void setUseAjaxApi(boolean useAjaxApi) {
+        this.useAjaxApi = useAjaxApi;
     }
 
     @NonNullByDefault
@@ -1004,7 +1004,7 @@ public class RobonectHandler extends BaseThingHandler {
          */
         private PollingSession(RobonectConfig config) {
             offlineTriggerDelay = TimeUnit.SECONDS.toMillis(config.getOfflineTimeout());
-            detailedPollingEnabled = config.getDetailedPollInterval() > 0;
+            detailedPollingEnabled = config.getPollIntervalExtended() > 0;
         }
     }
 
@@ -1117,7 +1117,7 @@ public class RobonectHandler extends BaseThingHandler {
     @NonNullByDefault
     private List<Runnable> createDetailedRefreshes(PollingSession session) {
         List<Runnable> updates = new ArrayList<>();
-        if (useUnofficialApi) {
+        if (useWebApi) {
             updates.add(() -> pushHandler.refreshPushMode());
         }
 

@@ -23,6 +23,7 @@ import java.time.LocalTime;
 import java.time.Month;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -309,7 +310,7 @@ public class RobonectHandlerTest {
     @CsvSource({ "1, false", "61, false", "61, true" })
     public void shouldPollNormalAndDetailedChannelsAtIndependentIntervals(int interval, boolean unofficialApi) {
         List<Runnable> pollers = initializePolling(
-                Map.of("detailedPollInterval", interval, "useUnofficialApi", unofficialApi));
+                Map.of("pollIntervalExtended", interval, "useWebApi", unofficialApi));
         verify(commandScheduler).scheduleWithFixedDelay(any(Runnable.class), eq(0L), eq(7L), eq(TimeUnit.SECONDS));
         verify(commandScheduler).scheduleWithFixedDelay(any(Runnable.class), eq(0L), eq((long) interval),
                 eq(TimeUnit.SECONDS));
@@ -356,7 +357,7 @@ public class RobonectHandlerTest {
     @ParameterizedTest
     @EnumSource(value = MowerStatus.class, names = { "MOWING", "SEARCH_CHARGING_STATION", "SEARCHING" })
     public void shouldMoveDriveDiagnosticsToNormalPollingWhileMowerIsActive(MowerStatus activeStatus) {
-        List<Runnable> pollers = initializePolling(Map.of("detailedPollInterval", 61));
+        List<Runnable> pollers = initializePolling(Map.of("pollIntervalExtended", 61));
         MowerInfo active = createSuccessfulMowerInfoResponse();
         Objects.requireNonNull(active.getStatus()).setStatus(activeStatus);
         when(mowerApiMock.getMowerInfo(anyBoolean())).thenReturn(active, createSuccessfulMowerInfoResponse());
@@ -405,7 +406,7 @@ public class RobonectHandlerTest {
     /** Checks that enabling the unofficial API leaves the zero detailed polling interval disabled. */
     @Test
     public void shouldNotScheduleDetailedPollingWhenIntervalIsZeroEvenWithUnofficialApiEnabled() {
-        List<Runnable> pollers = initializePolling(Map.of("detailedPollInterval", 0, "useUnofficialApi", true));
+        List<Runnable> pollers = initializePolling(Map.of("pollIntervalExtended", 0, "useWebApi", true));
         assertEquals(1, pollers.size());
         verify(commandScheduler, times(1)).scheduleWithFixedDelay(any(Runnable.class), eq(0L), anyLong(),
                 eq(TimeUnit.SECONDS));
@@ -423,7 +424,7 @@ public class RobonectHandlerTest {
     /** Invokes captured polling tasks after disposal to verify that they no longer access the mower. */
     @Test
     public void shouldCancelBothPollersOnDisposeAndIgnoreCancelledRuns() {
-        List<Runnable> pollers = initializePolling(Map.of("detailedPollInterval", 61));
+        List<Runnable> pollers = initializePolling(Map.of("pollIntervalExtended", 61));
         subject.dispose();
         verify(normalPollingJob).cancel(true);
         verify(detailedPollingJob).cancel(true);
@@ -436,9 +437,9 @@ public class RobonectHandlerTest {
     /** Checks that reinitializing the Thing cancels and replaces both schedules. */
     @Test
     public void shouldReplaceBothPollingSchedulesOnReinitialization() {
-        List<Runnable> pollers = initializePolling(Map.of("detailedPollInterval", 61));
+        List<Runnable> pollers = initializePolling(Map.of("pollIntervalExtended", 61));
         Configuration config = new Configuration(subject.getThing().getConfiguration().getProperties());
-        config.put("detailedPollInterval", 91);
+        config.put("pollIntervalExtended", 91);
         subject.thingUpdated(ThingBuilder.create(subject.getThing()).withConfiguration(config).build());
         subject.setRobonectClient(robonectClientMock);
         verify(normalPollingJob).cancel(true);
@@ -458,9 +459,9 @@ public class RobonectHandlerTest {
     @ParameterizedTest
     @ValueSource(booleans = { false, true })
     public void shouldEnableOrDisableDetailedPollingWhenIntervalChanges(boolean initiallyEnabled) {
-        List<Runnable> pollers = initializePolling(Map.of("detailedPollInterval", initiallyEnabled ? 61 : 0));
+        List<Runnable> pollers = initializePolling(Map.of("pollIntervalExtended", initiallyEnabled ? 61 : 0));
         Configuration config = new Configuration(subject.getThing().getConfiguration().getProperties());
-        config.put("detailedPollInterval", initiallyEnabled ? 0 : 61);
+        config.put("pollIntervalExtended", initiallyEnabled ? 0 : 61);
         clearInvocations(commandScheduler);
 
         subject.thingUpdated(ThingBuilder.create(subject.getThing()).withConfiguration(config).build());
@@ -492,7 +493,7 @@ public class RobonectHandlerTest {
     @ParameterizedTest
     @ValueSource(booleans = { false, true })
     public void shouldRecoverNormalPollingAfterCommunicationOrJsonFailure(boolean malformedJson) {
-        List<Runnable> pollers = initializePolling(Map.of("detailedPollInterval", 61));
+        List<Runnable> pollers = initializePolling(Map.of("pollIntervalExtended", 61));
         RuntimeException failure = malformedJson ? new JsonSyntaxException("Malformed response")
                 : new RobonectCommunicationException("Unavailable");
         when(mowerApiMock.getMowerInfo(anyBoolean())).thenThrow(failure)
@@ -514,7 +515,7 @@ public class RobonectHandlerTest {
     /** Reinitializes during the battery read to check that stale detailed work neither publishes nor continues. */
     @Test
     public void shouldStopDetailedPollingAndDiscardResponseAfterReinitialization() {
-        List<Runnable> pollers = initializePolling(Map.of("detailedPollInterval", 61));
+        List<Runnable> pollers = initializePolling(Map.of("pollIntervalExtended", 61));
         BatteryInfo result = ModelParser.parse("""
                 {"successful":true,"batteries":[{"charge":65}]}
                 """, BatteryInfo.class);
@@ -542,7 +543,7 @@ public class RobonectHandlerTest {
     public void shouldSerializePollersAndCancelWaitingPoller(String action) throws Exception {
         boolean dispose = "dispose".equals(action);
         boolean interrupt = "interrupt".equals(action);
-        List<Runnable> pollers = initializePolling(Map.of("detailedPollInterval", 61));
+        List<Runnable> pollers = initializePolling(Map.of("pollIntervalExtended", 61));
         CountDownLatch statusEntered = new CountDownLatch(1);
         CountDownLatch releaseStatus = new CountDownLatch(1);
         AtomicReference<Thread> detailedThread = new AtomicReference<>();
@@ -1109,7 +1110,7 @@ public class RobonectHandlerTest {
         job.setJobEnd("12:00");
         mowerInfo.setJob(job);
 
-        subject.setAjaxUiScraping(true);
+        subject.setUseAjaxApi(true);
         when(mowerApiMock.getMowerInfo(true)).thenReturn(mowerInfo);
 
         subject.handleCommand(new ChannelUID(new ThingUID("1:2:3"), RobonectBindingConstants.CHANNEL_STATUS),
@@ -1187,8 +1188,9 @@ public class RobonectHandlerTest {
         ChannelUID job = new ChannelUID(uid, RobonectBindingConstants.CHANNEL_JOB);
         ChannelUID start = new ChannelUID(uid, RobonectBindingConstants.CHANNEL_JOB_START);
         ChannelUID end = new ChannelUID(uid, RobonectBindingConstants.CHANNEL_JOB_END);
+        String endTime = ZonedDateTime.now(TIME_ZONE).minusMinutes(5).format(DateTimeFormatter.ofPattern("HH:mm"));
         Channel channel = ChannelBuilder.create(customJob, "Switch").withType(new ChannelTypeUID("robonect", "jobType"))
-                .withConfiguration(new Configuration(Map.of("duration", 0))).build();
+                .withConfiguration(new Configuration(Map.of("durationMinutes", 1, "endTime", endTime))).build();
         when(robonectThingMock.getChannel(customJob.getId())).thenReturn(channel);
         when(robonectThingMock.getChannels()).thenReturn(List.of(channel));
         when(mowerApiMock.startJob(any())).thenReturn(ModelParser.parse("{\"successful\":true}", RobonectAnswer.class));
@@ -1243,7 +1245,7 @@ public class RobonectHandlerTest {
         inactive.setJob(inactiveJob);
         when(mowerApiMock.getMowerInfo(true)).thenReturn(active, active, active, createSuccessfulMowerInfoResponse(),
                 active, active, inactive);
-        subject.setAjaxUiScraping(true);
+        subject.setUseAjaxApi(true);
 
         subject.handleCommand(first, OnOffType.ON);
         verify(mowerApiMock, never()).getMowerInfo(true);
@@ -1310,7 +1312,7 @@ public class RobonectHandlerTest {
             assertTrue(releaseStatus.await(10, TimeUnit.SECONDS));
             return createSuccessfulMowerInfoResponse();
         }).thenReturn(active);
-        subject.setAjaxUiScraping(true);
+        subject.setUseAjaxApi(true);
 
         AtomicReference<Thread> commandThread = new AtomicReference<>();
         var executor = Executors.newFixedThreadPool(2, Thread.ofPlatform().daemon().factory());
@@ -1359,7 +1361,7 @@ public class RobonectHandlerTest {
         MowerInfo mowerInfo = createSuccessfulMowerInfoResponse();
         Objects.requireNonNull(mowerInfo.getStatus()).setMode(MowerMode.EOD);
 
-        subject.setAjaxUiScraping(true);
+        subject.setUseAjaxApi(true);
         when(mowerApiMock.getMowerInfo(true)).thenReturn(mowerInfo);
 
         subject.handleCommand(new ChannelUID(new ThingUID("1:2:3"), RobonectBindingConstants.CHANNEL_STATUS),
@@ -1408,8 +1410,8 @@ public class RobonectHandlerTest {
     public void shouldStartJobWithOptionalTextTime(String start, boolean valid) {
         ThingUID uid = new ThingUID("robonect:mower:test");
         ChannelUID jobChannel = new ChannelUID(uid, RobonectBindingConstants.CHANNEL_JOB);
-        var config = new Configuration(
-                start == null ? Map.of("duration", 60) : Map.of("duration", 60, "start", start, "end", "10:00"));
+        var config = new Configuration(start == null ? Map.of("durationMinutes", 60)
+                : Map.of("durationMinutes", 60, "startTime", start, "endTime", "10:00"));
         Thing thing = ThingBuilder.create(RobonectBindingConstants.THING_TYPE_AUTOMOWER, uid)
                 .withChannel(ChannelBuilder.create(jobChannel, "Switch")
                         .withType(new ChannelTypeUID("robonect", "jobType")).withConfiguration(config).build())

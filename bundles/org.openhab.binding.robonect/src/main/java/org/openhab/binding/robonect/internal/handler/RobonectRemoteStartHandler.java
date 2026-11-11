@@ -144,7 +144,7 @@ final class RobonectRemoteStartHandler {
                     command.getClass().getName());
             return;
         }
-        if (!handler.isUnofficialApiEnabled()) {
+        if (!handler.isWebApiEnabled()) {
             logger.warn("Cannot update remote start {} {} because the unofficial API is disabled", remoteStart,
                     setting);
             return;

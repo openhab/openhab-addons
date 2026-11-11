@@ -15,12 +15,25 @@
 			<description>Signed wheel speed from -100 to 100 percent.</description>
 		</parameter>
 		<parameter name="timeout" type="integer" required="true" min="1" max="5000" unit="ms">
-			<label>Drive Timeout</label>
+			<label>Drive Timeout (milliseconds)</label>
 			<description>Duration of the wheel command in milliseconds, from 1 to 5000.</description>
 		</parameter>
 	</config-description>
 
 	<config-description uri="channel-type:robonect:jobType">
+		<parameter name="durationMinutes" type="integer" min="1" max="1439" unit="m">
+			<context>time</context>
+			<label>Job Duration</label>
+			<description>The duration of the job.</description>
+		</parameter>
+		<parameter name="startTime" type="text">
+			<label>Job Start Time</label>
+			<description>The time at which the job starts, in HH:mm format.</description>
+		</parameter>
+		<parameter name="endTime" type="text">
+			<label>Job End Time</label>
+			<description>The time at which the job ends, in HH:mm format.</description>
+		</parameter>
 		<parameter name="remoteStart" type="text">
 			<label>Remote Start</label>
 			<description>The location to start the mowing job from.</description>
@@ -34,11 +47,6 @@
 				<option value="REMOTE_5">Remote 5</option>
 			</options>
 		</parameter>
-		<parameter name="duration" type="integer" min="0" max="1439" unit="m">
-			<context>time</context>
-			<label>Job Duration</label>
-			<description>The duration of the job.</description>
-		</parameter>
 		<parameter name="afterMode" type="text">
 			<label>After Job Mode</label>
 			<description>The Mode to put the mower into after the job is done.</description>
@@ -48,14 +56,6 @@
 				<option value="EOD">End of day</option>
 				<option value="MANUAL">Manual</option>
 			</options>
-		</parameter>
-		<parameter name="start" type="text">
-			<label>Job Start Time</label>
-			<description>The time at which the job starts, in HH:mm format.</description>
-		</parameter>
-		<parameter name="end" type="text">
-			<label>Job End Time</label>
-			<description>The time at which the job ends, in HH:mm format.</description>
 		</parameter>
 	</config-description>
 </config-description:config-descriptions>

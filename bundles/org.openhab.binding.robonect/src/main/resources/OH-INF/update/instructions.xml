@@ -624,7 +624,7 @@
 				<label>Mower Mode</label>
 				<description>Operating mode: AUTO follows the timers, HOME remains in the charging station, MANUAL prepares the
 					mower for a separate lawn, and EOD returns home until the next day. Distinguishing EOD from HOME in state updates
-					requires the localized Ajax web-interface request enabled by ajaxUiScraping.</description>
+					requires the localized Ajax web-interface request enabled by useAjaxApi.</description>
 				<tags>
 					<tag>Control</tag>
 					<tag>Mode</tag>
@@ -683,8 +683,9 @@
 				<type>robonect:jobType</type>
 				<label>Mowing Job</label>
 				<description>Send ON to start a mowing job using this channel configuration, or OFF to stop it. Active job detection
-					uses the localized Ajax web-interface response when ajaxUiScraping is enabled; otherwise it uses the binding's
-					tracked job state.</description>
+					uses the localized Ajax web-interface response when useAjaxApi is enabled; otherwise it uses the binding's
+					tracked
+					job state.</description>
 			</update-channel>
 			<update-channel id="offlineTrigger">
 				<type>robonect:offlineTriggerType</type>

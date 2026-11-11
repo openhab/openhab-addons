@@ -506,7 +506,7 @@
 				<label>Mower Mode</label>
 				<description>Operating mode: AUTO follows the timers, HOME remains in the charging station, MANUAL prepares the
 					mower for a separate lawn, and EOD returns home until the next day. Distinguishing EOD from HOME in state updates
-					requires the localized Ajax web-interface request enabled by ajaxUiScraping.</description>
+					requires the localized Ajax web-interface request enabled by useAjaxApi.</description>
 			</channel>
 			<channel id="start" typeId="startType">
 				<label>Mower Start Release</label>
@@ -544,8 +544,9 @@
 			<channel id="job" typeId="jobType">
 				<label>Mowing Job</label>
 				<description>Send ON to start a mowing job using this channel configuration, or OFF to stop it. Active job detection
-					uses the localized Ajax web-interface response when ajaxUiScraping is enabled; otherwise it uses the binding's
-					tracked job state.</description>
+					uses the localized Ajax web-interface response when useAjaxApi is enabled; otherwise it uses the binding's
+					tracked
+					job state.</description>
 			</channel>
 			<channel id="offlineTrigger" typeId="offlineTriggerType">
 				<label>Offline Timeout Event</label>
@@ -643,10 +644,10 @@
 				<description>The interval for the binding to poll the mowers status information.
 				</description>
 			</parameter>
-			<parameter name="offlineTimeout" type="integer" required="false" unit="m">
+			<parameter name="offlineTimeout" type="integer" required="false" unit="s">
 				<label>Offline Timeout</label>
 				<default>30</default>
-				<description>The maximum time the mower may be offline before the offline trigger is triggered.
+				<description>The maximum time in seconds the mower may be offline before the offline trigger is triggered.
 				</description>
 			</parameter>
 			<parameter name="timezone" type="text" required="false">
@@ -654,7 +655,7 @@
 				<default>Europe/Berlin</default>
 				<description>The timezone configured on the robot (e.g. Europe/Berlin).</description>
 			</parameter>
-			<parameter name="detailedPollInterval" type="integer" required="false" min="0" unit="s">
+			<parameter name="pollIntervalExtended" type="integer" required="false" min="0" unit="s">
 				<label>Detailed Polling Interval</label>
 				<default>0</default>
 				<description>The interval in seconds between detailed information polls, independent of the normal polling
@@ -662,12 +663,12 @@
 					Set to 0 to disable detailed polling.
 					Also controls push-service mode polling when the unofficial API is enabled.</description>
 			</parameter>
-			<parameter name="ajaxUiScraping" type="boolean" required="false">
-				<label>Ajax UI Scraping</label>
+			<parameter name="useAjaxApi" type="boolean" required="false">
+				<label>Use Ajax API</label>
 				<default>false</default>
 				<description>Read additional job and end-of-day status from the localized Robonect web interface.</description>
 			</parameter>
-			<parameter name="useUnofficialApi" type="boolean" required="false">
+			<parameter name="useWebApi" type="boolean" required="false">
 				<label>Use Unofficial Web Interface API</label>
 				<default>false</default>
 				<description>Allow changing remote-start visibility, path, and corridor cut and expose the push-service mode
@@ -774,7 +775,7 @@
 		<item-type>Number</item-type>
 		<label>Remote Start Path</label>
 		<description>Route followed to the remote-start point, using the path code reported by the mower. Commands require
-			useUnofficialApi and a web-interface request.</description>
+			useWebApi and a web-interface request.</description>
 		<state readOnly="false"/>
 	</channel-type>
 
@@ -1139,14 +1140,15 @@
 		<item-type>Switch</item-type>
 		<label>Remote Start Visibility</label>
 		<description>Whether the remote-start point is visible in the Robonect web interface. Commands require
-			useUnofficialApi and save the setting through a web-interface request.</description>
+			useWebApi and
+			save the setting through a web-interface request.</description>
 		<state readOnly="false"/>
 	</channel-type>
 
 	<channel-type id="remoteCorridorCutType" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Remote Start CorridorCut</label>
-		<description>Whether CorridorCut is enabled for the remote-start point. Commands require useUnofficialApi and save the
+		<description>Whether CorridorCut is enabled for the remote-start point. Commands require useWebApi and save the
 			setting through a web-interface request.</description>
 		<state readOnly="false"/>
 	</channel-type>

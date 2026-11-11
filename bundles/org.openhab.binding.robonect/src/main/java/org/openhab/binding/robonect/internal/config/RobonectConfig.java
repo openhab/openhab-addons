@@ -37,11 +37,11 @@ public class RobonectConfig {
 
     private String timezone;
 
-    private int detailedPollInterval;
+    private int pollIntervalExtended;
 
-    private boolean ajaxUiScraping;
+    private boolean useAjaxApi;
 
-    private boolean useUnofficialApi;
+    private boolean useWebApi;
 
     /**
      * Returns the configured mower host.
@@ -120,8 +120,8 @@ public class RobonectConfig {
      *
      * @return the interval in seconds, or zero when disabled
      */
-    public int getDetailedPollInterval() {
-        return detailedPollInterval;
+    public int getPollIntervalExtended() {
+        return pollIntervalExtended;
     }
 
     /**
@@ -129,8 +129,8 @@ public class RobonectConfig {
      *
      * @return {@code true} if Ajax UI scraping is enabled
      */
-    public boolean isAjaxUiScraping() {
-        return ajaxUiScraping;
+    public boolean isAjaxApiEnabled() {
+        return useAjaxApi;
     }
 
     /**
@@ -138,7 +138,7 @@ public class RobonectConfig {
      *
      * @return {@code true} if unofficial operations are enabled
      */
-    public boolean isUseUnofficialApi() {
-        return useUnofficialApi;
+    public boolean isUseWebApi() {
+        return useWebApi;
     }
 }
