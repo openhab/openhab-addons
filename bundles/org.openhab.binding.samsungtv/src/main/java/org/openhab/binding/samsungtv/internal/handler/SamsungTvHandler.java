@@ -594,7 +594,7 @@ public class SamsungTvHandler extends BaseThingHandler implements RegistryListen
                 && ipControlPowerOn();
         if (!wolTask.send(channel, command) && !ipControlWoke) {
             if (getThing().getStatus() != ThingStatus.ONLINE) {
-                logger.warn("{}: TV is {}", host, getThing().getStatus());
+                logger.debug("{}: TV is {}", host, getThing().getStatus());
             } else {
                 logger.warn("{}: Channel '{}' not connected/supported", host, channel);
             }
