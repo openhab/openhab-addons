@@ -17,6 +17,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -47,6 +48,7 @@ import org.osgi.service.component.annotations.ReferencePolicy;
  *
  * @author Brian O'Connell - Initial contribution
  * @author Jimmy Tanagra - Add require injection
+ * @author Cody Cutrer - Support consoles with a clean environment
  */
 @NonNullByDefault
 @Component(service = { ScriptEngineFactory.class, JRubyScriptEngineFactory.class }, //
@@ -64,6 +66,24 @@ public class JRubyScriptEngineFactory extends AbstractScriptEngineFactory {
             Objects.requireNonNull(factory.getMimeTypes()).stream()).toList();
 
     private final JRubyDependencyTracker jrubyDependencyTracker;
+
+    private final ThreadLocal<Boolean> withoutBundle = ThreadLocal.withInitial(() -> false);
+
+    // ScriptEngineManager creates the engine and scopes its default presets synchronously.
+    // Limit the override to that call so other scripts and concurrent consoles are unaffected.
+    <T> T withoutBundle(Supplier<T> createEngine) {
+        boolean previous = withoutBundle.get();
+        withoutBundle.set(true);
+        try {
+            return createEngine.get();
+        } finally {
+            if (previous) {
+                withoutBundle.set(true);
+            } else {
+                withoutBundle.remove();
+            }
+        }
+    }
 
     // Adds $ in front of a set of variables so that Ruby recognizes them as global
     // variables
@@ -138,7 +158,7 @@ public class JRubyScriptEngineFactory extends AbstractScriptEngineFactory {
         // scopeValues is called twice. The first call only passed 'se'.
         // The second call passed the rest of the presets, including 'ir'.
         // We wait for the second call before running the require statements.
-        if (scopeValues.containsKey("ir")) {
+        if (scopeValues.containsKey("ir") && !withoutBundle.get()) {
             configuration.bundlerSetup(scriptEngine);
             configuration.injectRequire(scriptEngine);
         }
@@ -162,7 +182,7 @@ public class JRubyScriptEngineFactory extends AbstractScriptEngineFactory {
             return null;
         }
         ScriptEngine engine = factory.getScriptEngine();
-        configuration.configureRubyEnvironment(engine);
+        configuration.configureRubyEnvironment(engine, !withoutBundle.get());
         return new JRubyEngineWrapper((org.jruby.embed.jsr223.JRubyEngine) engine);
     }
 
