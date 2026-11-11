@@ -64,8 +64,7 @@ public class LeapMotionHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         if (!LeapMotionNativeLibrary.isAvailable()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.conf-error-native-library");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.conf-error-native-library");
             return;
         }
 
