@@ -193,8 +193,7 @@ public class Connection {
         this.requestBuilder = new HttpRequestBuilder(httpClient, cookieManager, gson);
         if (oldConnection != null) {
             LoginData oldLoginData = oldConnection.getLoginData();
-            this.loginData = new LoginData(cookieManager, oldLoginData.getDeviceId(), oldLoginData.getFrc(),
-                    oldLoginData.getSerial());
+            this.loginData = new LoginData(cookieManager, oldLoginData.getFrc(), oldLoginData.getSerial());
         } else {
             this.loginData = new LoginData(cookieManager);
         }
