@@ -1,7 +1,7 @@
 # Whisper Speech-to-Text
 
 Whisper STT Service uses [whisper.cpp](https://github.com/ggerganov/whisper.cpp) to perform offline speech-to-text in openHAB.
-It also uses [libfvad](https://github.com/dpirch/libfvad) for voice activity detection to isolate single command to transcribe, speeding up the execution.
+It also uses [Silero VAD](https://github.com/snakers4/silero-vad) for voice activity detection to isolate single command to transcribe, speeding up the execution.
 
 [Whisper.cpp](https://github.com/ggerganov/whisper.cpp) is a high-optimized lightweight c++ implementation of [whisper](https://github.com/openai/whisper) that allows to easily integrate it in different platforms and applications.
 
@@ -22,7 +22,7 @@ hausa, bashkir, javanese and sundanese.
 ### Supported platforms
 
 This add-on uses some native binaries to work when performing offline recognition.
-You can find here the used [whisper.cpp Java wrapper](https://github.com/GiviMAD/whisper-jni) and [libfvad Java wrapper](https://github.com/GiviMAD/libfvad-jni).
+You can find here the used [whisper.cpp Java wrapper](https://github.com/GiviMAD/whisper-jni) and [Silero VAD Java library](https://github.com/jvoice-project/silero-vad4j).
 
 The following platforms are supported:
 
@@ -134,9 +134,8 @@ General options.
 Configure VAD options.
 
 - **Audio Step** - Audio processing step in seconds for the voice activity detection.
-- **Voice Activity Detection Mode** - Selected VAD Mode.
-- **Voice Activity Detection Sensitivity** - Percentage in range 0-1 of voice activity in one second to consider it as voice.
-- **Voice Activity Detection Step** - VAD detector internal step in ms (only allows 10, 20 or 30). (Audio Step / Voice Activity Detection Step = number of vad executions per audio step).
+- **Voice Activity Detection Sensitivity** - Share of frames in range 0-1 in each audio step that must be voice for the step to count as voice. Higher values need more speech in a step.
+- **Voice Activity Detection Threshold** - Speech probability in range 0-1 at which a frame counts as voice. Increase it if background noise is detected as voice, decrease it if speech is missed.
 
 ### Whisper Configuration
 
@@ -225,11 +224,10 @@ org.openhab.voice.whisperstt:language=en
 org.openhab.voice.whisperstt:initSilenceSeconds=0.3
 org.openhab.voice.whisperstt:removeSilence=true
 org.openhab.voice.whisperstt:stepSeconds=0.3
-org.openhab.voice.whisperstt:vadStep=0.5
 org.openhab.voice.whisperstt:singleUtteranceMode=true
 org.openhab.voice.whisperstt:preloadModel=false
-org.openhab.voice.whisperstt:vadMode=LOW_BITRATE
 org.openhab.voice.whisperstt:vadSensitivity=0.1
+org.openhab.voice.whisperstt:vadThreshold=0.5
 org.openhab.voice.whisperstt:maxSilenceSeconds=2
 org.openhab.voice.whisperstt:minSeconds=2
 org.openhab.voice.whisperstt:maxSeconds=10
