@@ -20,6 +20,9 @@ import static org.openhab.voice.parakeetstt.internal.ParakeetSTTConstants.*;
 
 import java.io.IOException;
 import java.lang.foreign.MemorySegment;
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodType;
 import java.net.URI;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -55,7 +58,7 @@ import org.openhab.core.voice.stt.STTListener;
 import org.openhab.core.voice.stt.SpeechRecognitionErrorEvent;
 import org.openhab.core.voice.stt.SpeechRecognitionEvent;
 
-import io.github.jvoiceproject.parakeet.internal.NativeLibraryLoader;
+import io.github.jvoiceproject.parakeet.Parakeet;
 import io.github.jvoiceproject.parakeet.internal.ParakeetBinding;
 
 /**
@@ -74,9 +77,9 @@ class ParakeetSTTServiceTest {
     private @NonNullByDefault({}) ParakeetSTTService service;
 
     @BeforeEach
-    void setUp() {
+    void setUp() throws Throwable {
         fakeBinding = new FakeParakeetBinding();
-        NativeLibraryLoader.setInstance(fakeBinding);
+        setParakeetInstance(fakeBinding);
 
         localeProvider = mock(LocaleProvider.class);
         when(localeProvider.getLocale()).thenReturn(Locale.ENGLISH);
@@ -84,14 +87,16 @@ class ParakeetSTTServiceTest {
     }
 
     @AfterEach
-    void tearDown() {
+    void tearDown() throws Throwable {
         service.deactivate();
+        setParakeetInstance(null);
     }
 
-    private Path createDummyModelFile(String filename) throws IOException {
-        Path path = tempDir.resolve(filename);
-        Files.writeString(path, "dummy-gguf");
-        return path;
+    private static void setParakeetInstance(@Nullable ParakeetBinding binding) throws Throwable {
+        MethodHandles.Lookup lookup = MethodHandles.privateLookupIn(Parakeet.class, MethodHandles.lookup());
+        MethodHandle setInstance = lookup.findStatic(Parakeet.class, "setInstance",
+                MethodType.methodType(void.class, ParakeetBinding.class));
+        setInstance.invokeExact(binding);
     }
 
     private Path createGgufModelFile(String filename, @Nullable String name, @Nullable String architecture,
@@ -151,9 +156,9 @@ class ParakeetSTTServiceTest {
 
     @Test
     void getParameterOptionsScansParakeetFolderForGgufFiles() throws IOException {
-        createDummyModelFile("parakeet-tdt-0.6b.gguf");
-        createDummyModelFile("silero-vad-f16.gguf");
-        createDummyModelFile("readme.txt");
+        createGgufModelFile("parakeet-tdt-0.6b.gguf", null, null, null);
+        createGgufModelFile("silero-vad-f16.gguf", null, null, null);
+        Files.writeString(tempDir.resolve("readme.txt"), "readme");
 
         URI uri = URI.create(CONFIG_URI);
         Collection<ParameterOption> modelOptions = service.getParameterOptions(uri, PARAM_MODEL_NAME, null,
@@ -191,7 +196,7 @@ class ParakeetSTTServiceTest {
 
     @Test
     void streamingModeRecognizesAndFlushesOnEou() throws Exception {
-        createDummyModelFile("streaming-model.gguf");
+        createGgufModelFile("streaming-model.gguf", null, "parakeet", null);
         fakeBinding.streamingSupported = true;
         fakeBinding.streamFeedJsonResponses.add("{\"text\":\"Turn on\",\"eou\":false,\"eob\":false,\"frame_sec\":0.1}");
         fakeBinding.streamFeedJsonResponses
@@ -225,8 +230,8 @@ class ParakeetSTTServiceTest {
 
     @Test
     void offlineModeSegmentsWithVadAndBatchTranscribes() throws Exception {
-        createDummyModelFile("offline-asr.gguf");
-        createDummyModelFile("silero-vad.gguf");
+        createGgufModelFile("offline-asr.gguf", null, "parakeet", null);
+        createGgufModelFile("silero-vad.gguf", null, "silero_vad", null);
         fakeBinding.streamingSupported = false;
         fakeBinding.vadFeedJsonResponses.add(
                 "{\"frame_sec\":0.032,\"first_frame\":0,\"events\":[{\"type\":\"start\",\"time\":0.0}],\"probabilities\":[]}");
@@ -259,7 +264,7 @@ class ParakeetSTTServiceTest {
 
     @Test
     void autoModeFallsBackToOfflineAndUsesBundledVadComponent() throws Exception {
-        createDummyModelFile("bundle-model.gguf");
+        createGgufModelFile("bundle-model.gguf", null, "parakeet-bundle", null);
         fakeBinding.streamingSupported = false;
         fakeBinding.bundleComponentsJson = "[{\"name\":\"asr\",\"kind\":\"asr\",\"offset\":0,\"size\":100},{\"name\":\"vad\",\"kind\":\"vad\",\"offset\":100,\"size\":50}]";
         fakeBinding.vadFeedJsonResponses.add(
@@ -285,7 +290,7 @@ class ParakeetSTTServiceTest {
 
     @Test
     void preloadModelReusesLoadedModelAcrossRecognitions() throws Exception {
-        createDummyModelFile("preloaded.gguf");
+        createGgufModelFile("preloaded.gguf", null, "parakeet", null);
         fakeBinding.streamingSupported = true;
         fakeBinding.streamFinishJson = "{\"text\":\"Hello\",\"eou\":true,\"eob\":false,\"frame_sec\":0.1}";
 
@@ -313,7 +318,7 @@ class ParakeetSTTServiceTest {
 
     @Test
     void initialSilenceTimeoutEmitsErrorEvent() throws Exception {
-        createDummyModelFile("silence-model.gguf");
+        createGgufModelFile("silence-model.gguf", null, "parakeet", null);
         fakeBinding.streamingSupported = true;
 
         service.activate(Map.of( //
@@ -337,7 +342,7 @@ class ParakeetSTTServiceTest {
     void getParameterOptionsFiltersAndFormatsLabelsWithGgufMetadata() throws IOException {
         createGgufModelFile("parakeet-tdt-0.6b.gguf", "nvidia/parakeet-tdt-0.6b", "parakeet", List.of("en"));
         createGgufModelFile("silero-vad-f16.gguf", "Silero VAD v4", "silero_vad", null);
-        createDummyModelFile("custom-model.gguf");
+        createGgufModelFile("custom-model.gguf", null, null, null);
 
         URI uri = URI.create(CONFIG_URI);
         Collection<ParameterOption> modelOptions = service.getParameterOptions(uri, PARAM_MODEL_NAME, null,
@@ -374,7 +379,7 @@ class ParakeetSTTServiceTest {
 
     @Test
     void streamingModeFailureEmitsSpeechRecognitionErrorEvent() throws IOException, STTException, InterruptedException {
-        createDummyModelFile("fail-streaming.gguf");
+        createGgufModelFile("fail-streaming.gguf", null, "parakeet", null);
         fakeBinding.streamingSupported = false; // startTranscribeStream will fail
 
         service.activate(Map.of( //
@@ -395,8 +400,8 @@ class ParakeetSTTServiceTest {
 
     @Test
     void offlineModeFailureEmitsSpeechRecognitionErrorEvent() throws IOException, STTException, InterruptedException {
-        createDummyModelFile("offline-fail.gguf");
-        createDummyModelFile("silero-vad.gguf");
+        createGgufModelFile("offline-fail.gguf", null, "parakeet", null);
+        createGgufModelFile("silero-vad.gguf", null, "silero_vad", null);
         fakeBinding.batchTranscribeReturnsNull = true; // transcribe fails
         fakeBinding.vadFeedJsonResponses.add(
                 "{\"frame_sec\":0.032,\"first_frame\":0,\"events\":[{\"type\":\"start\",\"time\":0.0},{\"type\":\"end\",\"time\":0.1}],\"probabilities\":[]}");

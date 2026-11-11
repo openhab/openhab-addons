@@ -26,8 +26,10 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -54,8 +56,6 @@ import org.openhab.core.voice.stt.STTService;
 import org.openhab.core.voice.stt.STTServiceHandle;
 import org.openhab.core.voice.stt.SpeechRecognitionErrorEvent;
 import org.openhab.core.voice.stt.SpeechRecognitionEvent;
-import org.openhab.voice.parakeetstt.internal.gguf.GgufMetadata;
-import org.openhab.voice.parakeetstt.internal.gguf.GgufMetadataReader;
 import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -73,6 +73,8 @@ import io.github.jvoiceproject.parakeet.ParakeetModel;
 import io.github.jvoiceproject.parakeet.transcribe.TranscribeOptions;
 import io.github.jvoiceproject.parakeet.transcribe.TranscribeStream;
 import io.github.jvoiceproject.parakeet.transcribe.TranscribeStreamResult;
+import io.github.jvoiceproject.parakeet.util.GgufMetadata;
+import io.github.jvoiceproject.parakeet.util.GgufMetadataReader;
 import io.github.jvoiceproject.parakeet.vad.VadEvent;
 import io.github.jvoiceproject.parakeet.vad.VadOptions;
 import io.github.jvoiceproject.parakeet.vad.VadStream;
@@ -120,6 +122,7 @@ public class ParakeetSTTService implements STTService, ConfigOptionProvider {
     private final Set<AtomicBoolean> activeRecognitions = ConcurrentHashMap.newKeySet();
 
     private volatile ParakeetSTTConfiguration config = new ParakeetSTTConfiguration();
+    private @Nullable Future<?> activateTask;
 
     /**
      * Cached models kept in memory across recognition requests when model preloading is enabled.
@@ -144,11 +147,16 @@ public class ParakeetSTTService implements STTService, ConfigOptionProvider {
     @Activate
     protected void activate(Map<String, Object> config) {
         ensureModelDirectoryExists();
-        try {
-            logger.debug("Using parakeet.cpp version {} (ABI {})", Parakeet.version(), Parakeet.abiVersion());
-        } catch (RuntimeException | LinkageError e) {
-            logger.warn("Unable to initialize Parakeet native library: {}", e.getMessage());
-        }
+
+        activateTask = executor.submit(() -> {
+            try {
+                Parakeet.loadLibrary();
+                logger.debug("Using parakeet.cpp version {} (ABI {})", Parakeet.version(), Parakeet.abiVersion());
+            } catch (RuntimeException | IOException | LinkageError e) {
+                logger.warn("Unable to initialize Parakeet native library: {}", e.getMessage());
+                logger.debug("Stack trace:", e);
+            }
+        });
         configChange(config);
     }
 
@@ -159,6 +167,11 @@ public class ParakeetSTTService implements STTService, ConfigOptionProvider {
 
     @Deactivate
     protected void deactivate() {
+        Future<?> activateTask = this.activateTask;
+        if (activateTask != null && !activateTask.isDone()) {
+            activateTask.cancel(true);
+        }
+
         for (AtomicBoolean aborted : activeRecognitions) {
             aborted.set(true);
         }
@@ -284,11 +297,18 @@ public class ParakeetSTTService implements STTService, ConfigOptionProvider {
         try (Stream<Path> files = Files.list(parakeetFolder)) {
             return files.filter(Files::isRegularFile) //
                     .filter(path -> path.getFileName().toString().endsWith(MODEL_EXTENSION)) //
-                    .map(path -> {
+                    .<@Nullable ModelOptionCandidate> map(path -> {
                         String filename = path.getFileName().toString();
-                        GgufMetadata metadata = ggufMetadataReader.read(path);
+                        GgufMetadata metadata;
+                        try {
+                            metadata = ggufMetadataReader.read(path);
+                        } catch (IOException e) {
+                            logger.warn("Unable to read Parakeet model metadata for '{}': {}", filename,
+                                    e.getMessage());
+                            return null;
+                        }
                         return new ModelOptionCandidate(filename, metadata);
-                    }) //
+                    }).filter(Objects::nonNull) //
                     .filter(candidate -> matchesModelParameter(param, candidate)) //
                     .sorted(Comparator.comparing(ModelOptionCandidate::filename)) //
                     .map(candidate -> new ParameterOption(candidate.filename(), candidate.label())) //
