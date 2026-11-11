@@ -17,11 +17,15 @@ import static org.openhab.binding.miio.internal.MiIoBindingConstants.*;
 import java.awt.Color;
 import java.io.IOException;
 import java.net.URL;
+import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -95,6 +99,10 @@ import com.google.gson.JsonSyntaxException;
  */
 @NonNullByDefault
 public class MiIoBasicHandler extends MiIoAbstractHandler {
+    private static final Duration SENT_VALUE_MAX_AGE = Duration.ofMinutes(1);
+    private static final Set<CommandParameterType> LEGACY_PROPERTY_VALUE_TYPES = Set.of(CommandParameterType.NUMBER,
+            CommandParameterType.STRING, CommandParameterType.ONOFF, CommandParameterType.ONOFFBOOL,
+            CommandParameterType.ONOFFBOOLSTRING, CommandParameterType.ONOFFNUMBER);
     private static final Pattern VALUE_TOKEN = Pattern.compile("$value$", Pattern.LITERAL | Pattern.CASE_INSENSITIVE);
 
     protected final Logger logger = LoggerFactory.getLogger(MiIoBasicHandler.class);
@@ -115,6 +123,21 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
     private Map<String, Integer> customRefreshInterval = new HashMap<>();
     private final Set<String> refreshedOnce = ConcurrentHashMap.newKeySet();
     private final AtomicBoolean readOnceRefreshPending = new AtomicBoolean();
+    /** Sent property values awaiting the device answer; also guards writing them to {@link #deviceVariables} */
+    private final Map<String, PropertyWrites> sentValues = new HashMap<>();
+
+    /** Writes of a property awaiting the answer, in sent order, and the last value the device confirmed */
+    private static final class PropertyWrites {
+        private @Nullable Object confirmed;
+        private final LinkedHashMap<Integer, SentValue> pending = new LinkedHashMap<>();
+
+        PropertyWrites(@Nullable Object confirmed) {
+            this.confirmed = confirmed;
+        }
+    }
+
+    private record SentValue(Object value, Instant sentAt) {
+    }
 
     public MiIoBasicHandler(Thing thing, MiIoDatabaseWatchService miIoDatabaseWatchService,
             CloudConnector cloudConnector, ChannelTypeRegistry channelTypeRegistry,
@@ -134,6 +157,9 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
         refreshListCustomCommands = new HashMap<>();
         refreshedOnce.clear();
         readOnceRefreshPending.set(false);
+        synchronized (sentValues) {
+            sentValues.clear();
+        }
     }
 
     @Override
@@ -269,6 +295,8 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
                             valueInParameters = true;
                         }
                     }
+                    final JsonElement propertyValue = value != null && value.isJsonPrimitive()
+                            && writesOwnProperty(miIoBasicChannel, action, command, valueInParameters) ? value : null;
                     // Check for miot channel
                     if (value != null && !valueInParameters) {
                         if (action.isMiOtAction()) {
@@ -300,7 +328,11 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
                     }
                     if (value != null) {
                         logger.debug("Sending command {}", cmd);
-                        sendCommand(cmd);
+                        if (propertyValue != null) {
+                            sendPropertyValue(cmd, miIoBasicChannel.getProperty(), propertyValue);
+                        } else {
+                            sendCommand(cmd);
+                        }
                     } else {
                         if (miIoDeviceActionCondition != null) {
                             logger.debug("Conditional command {} not send, condition '{}' not met", cmd,
@@ -322,6 +354,141 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
         } else {
             logger.debug("Actions not loaded yet, or none available");
         }
+    }
+
+    /**
+     * Sends a command that writes a polled property, and keeps the sent value until the device answers.
+     *
+     * @param cmd command to send
+     * @param property property written by the command
+     * @param value value sent for the property
+     */
+    private void sendPropertyValue(String cmd, String property, JsonElement value) {
+        // registered under the lock, so the answer cannot be processed first
+        synchronized (sentValues) {
+            int commandId = sendCommand(cmd);
+            if (commandId != 0) {
+                sentValues.computeIfAbsent(property, p -> new PropertyWrites(deviceVariables.get(p))).pending
+                        .put(commandId, new SentValue(value, now()));
+                deviceVariables.put(property, value);
+            }
+        }
+    }
+
+    /**
+     * Releases the sent value answered by the response. A rejected value is replaced by the latest still pending
+     * value, or else by the last confirmed one.
+     *
+     * @param response answer from the device
+     */
+    private void settleSentValue(MiIoSendCommand response) {
+        synchronized (sentValues) {
+            Iterator<Entry<String, PropertyWrites>> iterator = sentValues.entrySet().iterator();
+            while (iterator.hasNext()) {
+                Entry<String, PropertyWrites> entry = iterator.next();
+                PropertyWrites writes = entry.getValue();
+                SentValue sentValue = writes.pending.remove(response.getId());
+                if (sentValue == null) {
+                    continue;
+                }
+                if (!isRejected(response)) {
+                    writes.confirmed = sentValue.value();
+                }
+                if (writes.pending.isEmpty()) {
+                    iterator.remove();
+                    Object confirmed = writes.confirmed;
+                    if (confirmed != null) {
+                        deviceVariables.put(entry.getKey(), confirmed);
+                    } else {
+                        deviceVariables.remove(entry.getKey());
+                    }
+                } else {
+                    deviceVariables.put(entry.getKey(), writes.pending.sequencedValues().getLast().value());
+                }
+                return;
+            }
+        }
+    }
+
+    Instant now() {
+        return Instant.now();
+    }
+
+    private static boolean isRejected(MiIoSendCommand response) {
+        if (response.isError()) {
+            return true;
+        }
+        // MIoT reports a failure per property as a negative code
+        JsonElement result = response.getResult();
+        if (result.isJsonArray()) {
+            for (JsonElement element : result.getAsJsonArray()) {
+                if (element.isJsonObject() && element.getAsJsonObject().get("code") instanceof JsonPrimitive code
+                        && code.isNumber() && code.getAsInt() < 0) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Checks whether the action sends the command value as the value of the channel's own property.
+     *
+     * @return true for a MIoT set_properties of the channel, or a legacy action that sends the value unchanged
+     */
+    private static boolean writesOwnProperty(MiIoBasicChannel channel, MiIoDeviceAction action, Command command,
+            boolean valueInParameters) {
+        String property = channel.getProperty();
+        if (property.isBlank() || action.isMiOtAction()) {
+            return false;
+        }
+        CommandParameterType paramType = action.getparameterType();
+        if (channel.isMiOt()) {
+            // a nested value is written to the property named in the parameter
+            return MiIoCommand.SET_PROPERTIES.getCommand().equals(action.getCommand()) && !valueInParameters
+                    && paramType != CommandParameterType.NONE && paramType != CommandParameterType.EMPTY;
+        }
+        // an HSB command sends only its brightness to a NUMBER action
+        if (!LEGACY_PROPERTY_VALUE_TYPES.contains(paramType) || command instanceof HSBType) {
+            return false;
+        }
+        MiIoDeviceActionCondition condition = action.getCondition();
+        if (condition != null && !keepsValue(condition)) {
+            return false;
+        }
+        return !valueInParameters || isValueOfProperty(action.getParameters(), property);
+    }
+
+    private static boolean keepsValue(MiIoDeviceActionCondition condition) {
+        return switch (condition.getName().toUpperCase(Locale.ROOT)) {
+            case "FIRMWARE", "BRIGHTNESSEXISTING", "LOWERCASE" -> true;
+            case "MATCHVALUE" -> !containsMember(condition.getParameters(), "returnValue");
+            default -> false;
+        };
+    }
+
+    private static boolean containsMember(JsonElement element, String name) {
+        if (element.isJsonArray()) {
+            for (JsonElement entry : element.getAsJsonArray()) {
+                if (entry.isJsonObject() && entry.getAsJsonObject().has(name)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Checks whether a parameter object holds the value under the property name, e.g. {"lp_threshold": "$value$"}.
+     */
+    private static boolean isValueOfProperty(JsonArray parameters, String property) {
+        for (JsonElement parameter : parameters) {
+            if (parameter.isJsonObject() && parameter.getAsJsonObject().get(property) instanceof JsonPrimitive value
+                    && value.isString() && "$value$".equalsIgnoreCase(value.getAsString())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private static boolean hasNestedValueToken(JsonArray parameters) {
@@ -784,7 +951,22 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
      */
     protected boolean updateChannel(@Nullable MiIoBasicChannel basicChannel, String param, JsonElement value) {
         JsonElement val = value;
-        deviceVariables.put(param, val);
+        synchronized (sentValues) {
+            PropertyWrites writes = sentValues.get(param);
+            if (writes != null) {
+                // the poll may predate the pending writes; keep them, unless the device never answered them
+                writes.confirmed = val;
+                Instant expired = now().minus(SENT_VALUE_MAX_AGE);
+                writes.pending.values().removeIf(sent -> sent.sentAt().isBefore(expired));
+                if (writes.pending.isEmpty()) {
+                    sentValues.remove(param);
+                    writes = null;
+                }
+            }
+            if (writes == null) {
+                deviceVariables.put(param, val);
+            }
+        }
         if (basicChannel == null) {
             logger.debug("Channel not found for {}", param);
             return false;
@@ -901,6 +1083,7 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
     @Override
     public void onMessageReceived(MiIoSendCommand response) {
         super.onMessageReceived(response);
+        settleSentValue(response);
         if (response.isError()) {
             String errorChannel = cmds.get(response.getId());
             if (errorChannel != null && getCustomRefreshChannel(errorChannel) != null) {

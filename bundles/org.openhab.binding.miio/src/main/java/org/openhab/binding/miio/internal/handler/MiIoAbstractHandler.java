@@ -21,7 +21,6 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.time.Instant;
 import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
@@ -107,7 +106,7 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
     protected int lastId;
 
     protected Map<Integer, String> cmds = new ConcurrentHashMap<>();
-    protected Map<String, Object> deviceVariables = new HashMap<>();
+    protected Map<String, Object> deviceVariables = new ConcurrentHashMap<>();
     protected final ExpiringCache<String> network = new ExpiringCache<>(CACHE_EXPIRY_NETWORK, () -> {
         int ret = sendCommand(MiIoCommand.MIIO_INFO);
         if (ret != 0) {

@@ -19,6 +19,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,6 +35,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import org.openhab.binding.miio.internal.MiIoBindingConstants;
+import org.openhab.binding.miio.internal.MiIoCommand;
+import org.openhab.binding.miio.internal.MiIoSendCommand;
 import org.openhab.binding.miio.internal.basic.BasicChannelTypeProvider;
 import org.openhab.binding.miio.internal.basic.MiIoBasicChannel;
 import org.openhab.binding.miio.internal.basic.MiIoBasicDevice;
@@ -56,7 +60,9 @@ import org.openhab.core.thing.type.ChannelTypeRegistry;
 import org.openhab.core.types.Command;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.google.gson.JsonPrimitive;
 
 /**
  * Tests the commands sent for actions that have the channel value inside a parameter, such as the input of MIoT
@@ -86,6 +92,9 @@ public class MiIoBasicHandlerValueInParametersTest {
 
     private class CapturingHandler extends MiIoBasicHandler {
         private final List<String> sentCommands = new ArrayList<>();
+        private int lastCommandId;
+        private boolean connected = true;
+        private Instant now = Instant.parse("2026-01-01T00:00:00Z");
 
         CapturingHandler(Thing thing, MiIoDatabaseWatchService miIoDatabaseWatchService, CloudConnector cloudConnector,
                 ChannelTypeRegistry channelTypeRegistry, BasicChannelTypeProvider basicChannelTypeProvider,
@@ -119,6 +128,16 @@ public class MiIoBasicHandlerValueInParametersTest {
             }
         }
 
+        void poll(String property, JsonPrimitive value) {
+            updateChannel(null, property, value);
+        }
+
+        void answer(int commandId, String response) {
+            MiIoSendCommand command = new MiIoSendCommand(commandId, MiIoCommand.SET_PROPERTIES, new JsonObject(), "");
+            command.setResponse(JsonParser.parseString(response).getAsJsonObject());
+            onMessageReceived(command);
+        }
+
         List<String> send(String channel, Command command) {
             sentCommands.clear();
             handleCommand(new ChannelUID(thingUID, channel), command);
@@ -130,9 +149,14 @@ public class MiIoBasicHandlerValueInParametersTest {
         }
 
         @Override
+        Instant now() {
+            return now;
+        }
+
+        @Override
         protected int sendCommand(String command, String params, String cloudServer, String sender) {
             sentCommands.add(command + params);
-            return 1;
+            return connected ? ++lastCommandId : 0;
         }
     }
 
@@ -406,5 +430,282 @@ public class MiIoBasicHandlerValueInParametersTest {
         assertEquals(List.of("set_power[\"on\",\"smooth\",500,5]"), handler.send("nightlightBrightness", OnOffType.ON));
         assertEquals(List.of("set_scene[\"nightlight\",50]"),
                 handler.send("nightlightBrightness", new PercentType(50)));
+    }
+
+    private static MiIoBasicChannel channel(String json) {
+        MiIoBasicChannel channel = new Gson().fromJson(json, MiIoBasicChannel.class);
+        assertNotNull(channel);
+        return channel;
+    }
+
+    @Test
+    public void miotSettingSentBeforeAnotherCommandIsUsedByIt() {
+        handler.loadChannel(channel("""
+                {"property": "target-temperature", "siid": 2, "piid": 4, "channel": "target", "type": "Number",
+                 "actions": [{"command": "set_properties", "parameterType": "NUMBER"}]}
+                """));
+        handler.loadChannel(channel("""
+                {"property": "", "channel": "start", "type": "String", "actions": [{"command": "set_properties",
+                 "parameterType": "NONE", "parameters": [{"did": "target-temperature", "siid": 2, "piid": 4,
+                 "value": "$target-temperature$"}], "condition": {"name": "matchValue", "parameters":
+                 [{"matchValue": "start", "returnValue": 1}]}}]}
+                """));
+        handler.poll("target-temperature", new JsonPrimitive(90));
+
+        assertEquals(List.of("set_properties[{\"did\":\"target\",\"siid\":2,\"piid\":4,\"value\":80}]"),
+                handler.send("target", new DecimalType(80)));
+        assertEquals(List.of("set_properties[{\"did\":\"target-temperature\",\"siid\":2,\"piid\":4,\"value\":80}]"),
+                handler.send("start", new StringType("start")));
+    }
+
+    private void loadTargetAndStartChannels() {
+        handler.loadChannel(channel("""
+                {"property": "target-temperature", "siid": 2, "piid": 4, "channel": "target", "type": "Number",
+                 "actions": [{"command": "set_properties", "parameterType": "NUMBER"}]}
+                """));
+        handler.loadChannel(channel("""
+                {"property": "", "channel": "start", "type": "String", "actions": [{"command": "set_properties",
+                 "parameterType": "NONE", "parameters": [{"did": "target-temperature", "siid": 2, "piid": 4,
+                 "value": "$target-temperature$"}], "condition": {"name": "matchValue", "parameters":
+                 [{"matchValue": "start", "returnValue": 1}]}}]}
+                """));
+        handler.poll("target-temperature", new JsonPrimitive(90));
+    }
+
+    private List<String> startWith(int targetTemperature) {
+        return List.of("set_properties[{\"did\":\"target-temperature\",\"siid\":2,\"piid\":4,\"value\":"
+                + targetTemperature + "}]");
+    }
+
+    @Test
+    public void pollAnsweredBeforeTheSettingIsAnsweredDoesNotReplaceIt() {
+        loadTargetAndStartChannels();
+
+        handler.send("target", new DecimalType(80));
+        int settingId = handler.lastCommandId;
+        handler.poll("target-temperature", new JsonPrimitive(90));
+        assertEquals(startWith(80), handler.send("start", new StringType("start")));
+
+        handler.answer(settingId, "{\"result\": [{\"did\": \"target\", \"siid\": 2, \"piid\": 4, \"code\": 0}]}");
+        assertEquals(startWith(80), handler.send("start", new StringType("start")));
+        handler.poll("target-temperature", new JsonPrimitive(85));
+        assertEquals(startWith(85), handler.send("start", new StringType("start")));
+    }
+
+    @Test
+    public void settingThatIsNeverAnsweredNoLongerBlocksPollsAfterAMinute() {
+        loadTargetAndStartChannels();
+
+        handler.send("target", new DecimalType(80));
+        handler.now = handler.now.plus(Duration.ofSeconds(59));
+        handler.poll("target-temperature", new JsonPrimitive(90));
+        assertEquals(startWith(80), handler.send("start", new StringType("start")));
+
+        handler.now = handler.now.plus(Duration.ofSeconds(2));
+        handler.poll("target-temperature", new JsonPrimitive(85));
+        assertEquals(startWith(85), handler.send("start", new StringType("start")));
+    }
+
+    @Test
+    public void settingThatIsNotQueuedIsNotKept() {
+        loadTargetAndStartChannels();
+        handler.connected = false;
+
+        handler.send("target", new DecimalType(80));
+        assertEquals(startWith(90), handler.send("start", new StringType("start")));
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = { "{\"error\": \"No Response from device\"}",
+            "{\"result\": [{\"did\": \"target\", \"siid\": 2, \"piid\": 4, \"code\": -4005}]}" })
+    public void settingRejectedByTheDeviceIsReverted(String response) {
+        loadTargetAndStartChannels();
+
+        handler.send("target", new DecimalType(80));
+        handler.answer(handler.lastCommandId, response);
+        assertEquals(startWith(90), handler.send("start", new StringType("start")));
+    }
+
+    private static final String ACCEPTED = "{\"result\": [{\"did\": \"target\", \"siid\": 2, \"piid\": 4, \"code\": 0}]}";
+    private static final String REJECTED = "{\"result\": [{\"did\": \"target\", \"siid\": 2, \"piid\": 4, \"code\": -4005}]}";
+
+    @Test
+    public void twoRejectedSettingsRevertToTheConfirmedValue() {
+        loadTargetAndStartChannels();
+
+        handler.send("target", new DecimalType(80));
+        int firstId = handler.lastCommandId;
+        handler.send("target", new DecimalType(70));
+        int secondId = handler.lastCommandId;
+
+        handler.answer(firstId, REJECTED);
+        assertEquals(startWith(70), handler.send("start", new StringType("start")));
+        handler.answer(secondId, REJECTED);
+        assertEquals(startWith(90), handler.send("start", new StringType("start")));
+    }
+
+    @Test
+    public void rejectedSettingRevertsToAnEarlierAcceptedSetting() {
+        loadTargetAndStartChannels();
+
+        handler.send("target", new DecimalType(80));
+        int firstId = handler.lastCommandId;
+        handler.send("target", new DecimalType(70));
+        int secondId = handler.lastCommandId;
+
+        handler.answer(firstId, ACCEPTED);
+        assertEquals(startWith(70), handler.send("start", new StringType("start")));
+        handler.answer(secondId, REJECTED);
+        assertEquals(startWith(80), handler.send("start", new StringType("start")));
+    }
+
+    @Test
+    public void earlierRejectedSettingKeepsTheLaterAcceptedSetting() {
+        loadTargetAndStartChannels();
+
+        handler.send("target", new DecimalType(80));
+        int firstId = handler.lastCommandId;
+        handler.send("target", new DecimalType(70));
+        int secondId = handler.lastCommandId;
+
+        handler.answer(firstId, REJECTED);
+        handler.answer(secondId, ACCEPTED);
+        assertEquals(startWith(70), handler.send("start", new StringType("start")));
+    }
+
+    @Test
+    public void legacyNumberSentBeforeAnotherCommandIsUsedByIt() {
+        handler.loadChannel(channel("""
+                {"property": "appointStart", "channel": "appointStart", "type": "Number", "actions": [{"command":
+                 "set_appoint", "parameterType": "NUMBER", "parameters": [1, "$value$", "$appointEnd$"]}]}
+                """));
+        handler.loadChannel(channel("""
+                {"property": "appointEnd", "channel": "appointEnd", "type": "Number", "actions": [{"command":
+                 "set_appoint", "parameterType": "NUMBER", "parameters": [1, "$appointStart$", "$value$"]}]}
+                """));
+        handler.poll("appointStart", new JsonPrimitive(6));
+        handler.poll("appointEnd", new JsonPrimitive(8));
+
+        assertEquals(List.of("set_appoint[1,5,8]"), handler.send("appointStart", new DecimalType(5)));
+        assertEquals(List.of("set_appoint[1,5,9]"), handler.send("appointEnd", new DecimalType(9)));
+    }
+
+    /**
+     * Loads a channel whose command sends the current values of the given properties.
+     */
+    private void loadShowChannel(String... properties) {
+        StringBuilder parameters = new StringBuilder("\"$value$\"");
+        for (String property : properties) {
+            parameters.append(", \"$").append(property).append("$\"");
+        }
+        handler.loadChannel(channel("""
+                {"property": "", "channel": "show", "type": "String", "actions": [{"command": "show",
+                 "parameterType": "STRING", "parameters": [%s]}]}
+                """.formatted(parameters)));
+    }
+
+    private List<String> show() {
+        return handler.send("show", new StringType("x"));
+    }
+
+    @Test
+    public void legacySwitchAndTextAreKept() {
+        handler.loadChannel(channel("""
+                {"property": "power", "channel": "power", "type": "Switch", "actions": [{"command": "set_power",
+                 "parameterType": "ONOFF"}]}
+                """));
+        handler.loadChannel(channel("""
+                {"property": "mode", "channel": "mode", "type": "String", "actions": [{"command": "set_mode",
+                 "parameterType": "STRING", "condition": {"name": "LowerCase"}}]}
+                """));
+        loadShowChannel("power", "mode");
+        handler.poll("power", new JsonPrimitive("off"));
+        handler.poll("mode", new JsonPrimitive("auto"));
+
+        handler.send("power", OnOffType.ON);
+        handler.send("mode", new StringType("Silent"));
+        assertEquals(List.of("show[\"x\",on,silent]"), show());
+    }
+
+    @Test
+    public void legacyValueNestedUnderThePropertyNameIsKept() {
+        handler.loadChannel(channel("""
+                {"property": "lp_threshold", "channel": "lp_threshold", "type": "Number", "actions": [{"command":
+                 "set_lowpower_autooff", "parameterType": "NUMBER", "parameters": [{"lp_autooff": 1,
+                 "lp_threshold": "$value$"}]}]}
+                """));
+        handler.loadChannel(channel("""
+                {"property": "lp_other", "channel": "lp_other", "type": "Number", "actions": [{"command":
+                 "set_other", "parameterType": "NUMBER", "parameters": [{"level": "$value$"}]}]}
+                """));
+        loadShowChannel("lp_threshold", "lp_other");
+        handler.poll("lp_threshold", new JsonPrimitive(10));
+        handler.poll("lp_other", new JsonPrimitive(1));
+
+        handler.send("lp_threshold", new DecimalType(20));
+        handler.send("lp_other", new DecimalType(2));
+        assertEquals(List.of("show[\"x\",20,1]"), show());
+    }
+
+    @Test
+    public void legacyLightCompanionActionsDoNotChangeTheProperty() throws IOException {
+        handler.loadDatabase("yeelink.light.bslamp2.json");
+        loadShowChannel("bright", "rgb", "nl_br");
+        handler.poll("bright", new JsonPrimitive(30));
+        handler.poll("rgb", new JsonPrimitive(255));
+        handler.poll("nl_br", new JsonPrimitive(5));
+
+        handler.send("brightness", new PercentType(60));
+        handler.send("rgbColor", new HSBType("120,100,40"));
+        handler.send("nightlightBrightness", OnOffType.ON);
+        assertEquals(List.of("show[\"x\",60,255,5]"), show());
+    }
+
+    @Test
+    public void valueChangedByAConditionIsNotKept() {
+        handler.loadChannel(channel("""
+                {"property": "mode", "channel": "mode", "type": "Number", "actions": [{"command": "set_mode",
+                 "parameterType": "NUMBER", "condition": {"name": "matchValue", "parameters": [{"matchValue": "2",
+                 "returnValue": 7}]}}]}
+                """));
+        loadShowChannel("mode");
+        handler.poll("mode", new JsonPrimitive(1));
+
+        assertEquals(List.of("set_mode[7]"), handler.send("mode", new DecimalType(2)));
+        assertEquals(List.of("show[\"x\",1]"), show());
+    }
+
+    @Test
+    public void miotValueChangedByAConditionIsKept() {
+        handler.loadChannel(channel("""
+                {"property": "mode", "siid": 2, "piid": 3, "channel": "mode", "type": "String", "actions":
+                 [{"command": "set_properties", "parameterType": "STRING", "condition": {"name": "matchValue",
+                 "parameters": [{"matchValue": "left", "returnValue": 2}]}}]}
+                """));
+        loadShowChannel("mode");
+        handler.poll("mode", new JsonPrimitive(1));
+
+        handler.send("mode", new StringType("left"));
+        assertEquals(List.of("show[\"x\",2]"), show());
+    }
+
+    @Test
+    public void miotNestedPropertyAndActionInputAreNotKept() {
+        handler.loadChannel(channel("""
+                {"property": "brightness", "siid": 2, "piid": 2, "channel": "brightness", "type": "Dimmer",
+                 "actions": [{"command": "set_properties", "parameterType": "ONOFFBOOL", "parameters": [{"did": "on",
+                 "siid": 2, "piid": 1, "value": "$value$"}]}]}
+                """));
+        handler.loadChannel(channel("""
+                {"property": "start-time", "channel": "start", "type": "Number", "actions":
+                 [{"command": "action", "parameterType": "NUMBER", "siid": 3, "aiid": 1}]}
+                """));
+        loadShowChannel("brightness", "start-time");
+        handler.poll("brightness", new JsonPrimitive(30));
+        handler.poll("start-time", new JsonPrimitive(5));
+
+        handler.send("brightness", OnOffType.ON);
+        handler.send("start", new DecimalType(9));
+        assertEquals(List.of("show[\"x\",30,5]"), show());
     }
 }
