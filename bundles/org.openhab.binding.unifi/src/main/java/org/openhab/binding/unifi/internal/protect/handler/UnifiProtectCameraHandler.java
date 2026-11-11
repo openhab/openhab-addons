@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
@@ -75,6 +76,7 @@ import com.google.gson.JsonNull;
  * Child handler for a UniFi Protect Camera.
  *
  * @author Dan Cunningham - Initial contribution
+ * @author Joseph Matz - Ordered privacy commands and state publication
  */
 @NonNullByDefault
 public class UnifiProtectCameraHandler extends UnifiProtectAbstractDeviceHandler<Camera> {
@@ -87,6 +89,10 @@ public class UnifiProtectCameraHandler extends UnifiProtectAbstractDeviceHandler
     // unifiprotect:* channel types, a canonical unifi:* thing needs unifi:* ones. Hardcoding the
     // binding id here would stamp unifi:* types onto legacy things, which the UI cannot resolve.
     private final String channelTypeNamespace;
+    private final Object privacyCommandLock = new Object();
+    private CompletableFuture<Void> privacyCommand = CompletableFuture.completedFuture(null);
+    private volatile boolean privacyDisposed;
+    private volatile long privacyGeneration;
 
     public UnifiProtectCameraHandler(Thing thing, UnifiMediaService media, TranslationService translationService,
             ThingTypeRegistry thingTypeRegistry) {
@@ -99,14 +105,54 @@ public class UnifiProtectCameraHandler extends UnifiProtectAbstractDeviceHandler
 
     @Override
     public void initialize() {
+        synchronized (privacyCommandLock) {
+            privacyDisposed = false;
+            privacyGeneration++;
+        }
         enableWebRTC = getConfigAs(UnifiProtectCameraConfiguration.class).enableWebRTC;
         super.initialize();
     }
 
     @Override
     public void dispose() {
+        CompletableFuture<Void> pendingPrivacyCommand;
+        synchronized (privacyCommandLock) {
+            privacyDisposed = true;
+            privacyGeneration++;
+            pendingPrivacyCommand = privacyCommand;
+            privacyCommand = CompletableFuture.completedFuture(null);
+        }
+        pendingPrivacyCommand.cancel(false);
         super.dispose();
         media.unregisterHandler(this);
+    }
+
+    private void setPrivacyMode(UniFiProtectHybridClient api, boolean enabled) {
+        CompletableFuture<Boolean> start = new CompletableFuture<>();
+        CompletableFuture<Void> update;
+        synchronized (privacyCommandLock) {
+            if (privacyDisposed) {
+                return;
+            }
+            long generation = privacyGeneration;
+            String cameraId = deviceId;
+            // Include state publication in the queue, not just the API request.
+            update = privacyCommand.handle((ignored, failure) -> Boolean.TRUE).thenCompose(ignored -> start)
+                    .thenCompose(ignored -> {
+                        if (privacyDisposed || generation != privacyGeneration || !api.equals(getApiClient())) {
+                            return CompletableFuture.completedFuture(null);
+                        }
+                        return api.getPrivateClient().setCameraPrivacyMode(cameraId, enabled).thenAccept(camera -> {
+                            if (!privacyDisposed && generation == privacyGeneration && api.equals(getApiClient())) {
+                                updateState(CHANNEL_PRIVACY_MODE,
+                                        OnOffType.from(PrivacyZoneHelper.isPrivacyModeEnabled(camera.privacyZones)));
+                            }
+                        });
+                    });
+            privacyCommand = update;
+        }
+        logOnFailure(update, "set privacy mode");
+        start.complete(Boolean.TRUE);
     }
 
     @Override
@@ -263,12 +309,7 @@ public class UnifiProtectCameraHandler extends UnifiProtectAbstractDeviceHandler
                 break;
             case CHANNEL_PRIVACY_MODE:
                 if (command instanceof OnOffType enabled) {
-                    logOnFailure(
-                            api.getPrivateClient().setCameraPrivacyMode(deviceId, enabled == OnOffType.ON)
-                                    .thenAccept(updatedCamera -> updateState(CHANNEL_PRIVACY_MODE,
-                                            OnOffType.from(PrivacyZoneHelper
-                                                    .isPrivacyModeEnabled(updatedCamera.privacyZones)))),
-                            "set privacy mode");
+                    setPrivacyMode(api, enabled == OnOffType.ON);
                 }
                 break;
             case CHANNEL_SMART_DETECT_PERSON_ENABLED:

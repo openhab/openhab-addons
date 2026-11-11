@@ -15,10 +15,12 @@ package org.openhab.binding.unifi.internal.protect.util;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
+import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.unifi.internal.protect.api.priv.dto.devices.Camera;
+import org.openhab.binding.unifi.internal.protect.api.priv.dto.gson.JsonUtil;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -116,6 +118,31 @@ public class PrivacyZoneHelperTest {
         assertFalse(PrivacyZoneHelper.isPrivacyModeEnabled(null));
         assertFalse(PrivacyZoneHelper.isPrivacyModeEnabled(List.of(existing)));
         assertTrue(PrivacyZoneHelper.isPrivacyModeEnabled(List.of(existing, managed)));
+    }
+
+    @Test
+    public void generatedCoordinatesAreWholeNumbersAndRoundTripThroughCameraDto() {
+        JsonArray zones = PrivacyZoneHelper.updatePrivacyZones(new JsonArray(), true);
+        JsonArray points = zones.get(0).getAsJsonObject().getAsJsonArray("points");
+        assertEquals("[[0,0],[1,0],[1,1],[0,1]]", points.toString());
+        JsonObject cameraJson = new JsonObject();
+        cameraJson.add("privacyZones", zones);
+        Camera camera = Objects.requireNonNull(JsonUtil.getGson().fromJson(cameraJson, Camera.class));
+        assertEquals(List.of(List.of(0, 0), List.of(1, 0), List.of(1, 1), List.of(0, 1)),
+                camera.privacyZones.get(0).points);
+        assertTrue(PrivacyZoneHelper.isPrivacyModeEnabled(camera.privacyZones));
+    }
+
+    @Test
+    public void persistedMaskCanBeRemovedAfterRestartWithoutTouchingExistingZone() {
+        JsonArray baseline = new JsonArray();
+        JsonObject existing = zone(7, "Neighbor Window");
+        existing.addProperty("futureField", "preserve-me");
+        baseline.add(existing);
+        JsonArray enabled = PrivacyZoneHelper.updatePrivacyZones(baseline, true);
+        JsonArray reloaded = Objects.requireNonNull(JsonUtil.getGson().fromJson(enabled.toString(), JsonArray.class));
+        assertEquals(baseline, PrivacyZoneHelper.updatePrivacyZones(reloaded, false));
+        assertEquals(2, reloaded.size());
     }
 
     private static JsonObject zone(int id, String name) {

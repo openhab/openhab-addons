@@ -158,20 +158,30 @@ The NVR bridge provides comprehensive monitoring channels for system health, sto
 
 #### Basic Control & Settings
 
-| Channel ID         | Item Type | RW  | Description                                            | Advanced |
-| ------------------ | --------- | --- | ------------------------------------------------------ | -------- |
-| mic-volume         | Dimmer    | RW  | Microphone volume (0-100)                              | true     |
-| video-mode         | String    | RW  | Camera video mode (`default`, `highFps`, `sport`, ...) | true     |
-| hdr-type           | String    | RW  | HDR mode (`auto`, `on`, `off`)                         | true     |
-| osd-name           | Switch    | RW  | Show name on OSD                                       | true     |
-| osd-date           | Switch    | RW  | Show date on OSD                                       | true     |
-| osd-logo           | Switch    | RW  | Show logo on OSD                                       | true     |
-| led-enabled        | Switch    | RW  | Enable/disable camera status LED                       | true     |
-| privacy-mode       | Switch    | RW  | Enable/disable an openHAB-managed full-frame privacy mask | true  |
-| active-patrol-slot | Number    | RW  | Active PTZ patrol slot (set 0 to stop)                 | false    |
+| Channel ID         | Item Type | RW  | Description                                               | Advanced |
+| ------------------ | --------- | --- | --------------------------------------------------------- | -------- |
+| mic-volume         | Dimmer    | RW  | Microphone volume (0-100)                                 | true     |
+| video-mode         | String    | RW  | Camera video mode (`default`, `highFps`, `sport`, ...)    | true     |
+| hdr-type           | String    | RW  | HDR mode (`auto`, `on`, `off`)                            | true     |
+| osd-name           | Switch    | RW  | Show name on OSD                                          | true     |
+| osd-date           | Switch    | RW  | Show date on OSD                                          | true     |
+| osd-logo           | Switch    | RW  | Show logo on OSD                                          | true     |
+| led-enabled        | Switch    | RW  | Enable/disable camera status LED                          | true     |
+| privacy-mode       | Switch    | RW  | Enable/disable an openHAB-managed full-frame privacy mask | true     |
+| active-patrol-slot | Number    | RW  | Active PTZ patrol slot (set 0 to stop)                    | false    |
 
 When `privacy-mode` is enabled, the binding adds a dedicated full-frame privacy zone named `openHAB Privacy Mode`.
 Disabling it removes only that zone; privacy zones configured separately in Protect are preserved.
+The channel state is read from the zone stored on the camera, including after an openHAB or binding restart.
+Repeated privacy commands for the same camera are processed in order.
+
+**This channel masks video only.**
+It does not mute the microphone, stop recording, disable the camera, or change infrared illumination or status LEDs.
+Control those settings independently with `mic-enabled`, `recording-mode` (`always`, `motion`, or `never`), `ir-mode`, and `led-enabled`.
+A rule can combine these channels when a particular privacy scenario requires multiple changes.
+For example, a rule can enable the video mask and set `recording-mode` to `never` while leaving the microphone unchanged.
+Turning the video mask off does not restore or override these independent settings, including changes made while the mask was enabled.
+If a rule temporarily changes other settings and needs to restore their previous values across restarts, that rule must persist those values separately.
 
 #### Streaming URLs
 
