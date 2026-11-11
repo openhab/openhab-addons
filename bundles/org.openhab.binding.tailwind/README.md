@@ -75,6 +75,8 @@ The channels of the other doors start with `door2#` and `door3#`.
 
 The controller only moves a door that is not already in the requested state.
 `partial` opens the door for the partial open time of the Thing configuration.
+A partially open door has the status `open`, so the controller ignores `open` and `partial` for it.
+To open it fully, close it first.
 
 ## Full Example
 
