@@ -596,7 +596,7 @@ public class SamsungTvHandler extends BaseThingHandler implements RegistryListen
             if (getThing().getStatus() != ThingStatus.ONLINE) {
                 logger.debug("{}: TV is {}", host, getThing().getStatus());
             } else {
-                logger.warn("{}: Channel '{}' not connected/supported", host, channel);
+                logger.debug("{}: Channel '{}' not connected/supported", host, channel);
             }
         }
     }
