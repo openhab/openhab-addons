@@ -15,6 +15,7 @@ package org.openhab.binding.freeboxos.internal.api.rest;
 import static org.openhab.binding.freeboxos.internal.FreeboxOsBindingConstants.THING_FREEPLUG;
 
 import java.util.List;
+import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -61,7 +62,7 @@ public class FreeplugManager extends RestManager {
             int txRate) { // tx rate (from the “cco” freeplug to the freeplugs) (in Mb/s) -1 if not available
     }
 
-    private static record Network(MACAddress id, List<Freeplug> members) {
+    private static record Network(@Nullable MACAddress id, @Nullable List<Freeplug> members) {
     }
 
     public FreeplugManager(FreeboxOsSession session) throws FreeboxException {
@@ -70,7 +71,10 @@ public class FreeplugManager extends RestManager {
 
     // Most of the users will host only one CPL network on their server, so we hide the network level in the manager
     public List<Freeplug> getPlugs() throws FreeboxException {
-        return get(Networks.class).stream().map(Network::members).flatMap(List::stream).toList();
+        // The API is sometimes returning a Network object with id and members fields with a null value.
+        // So Network objects with a null members field are just ignored.
+        return get(Networks.class).stream().map(Network::members).filter(Objects::nonNull).flatMap(List::stream)
+                .toList();
     }
 
     public @Nullable Freeplug getPlug(MACAddress mac) throws FreeboxException {
