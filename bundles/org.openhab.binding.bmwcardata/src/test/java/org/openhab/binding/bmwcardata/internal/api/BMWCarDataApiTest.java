@@ -1,0 +1,267 @@
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+package org.openhab.binding.bmwcardata.internal.api;
+
+import static com.github.tomakehurst.wiremock.client.WireMock.*;
+import static org.junit.jupiter.api.Assertions.*;
+
+import java.time.Clock;
+import java.util.List;
+import java.util.Map;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jetty.client.HttpClient;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.openhab.binding.bmwcardata.internal.MapStorage;
+import org.openhab.binding.bmwcardata.internal.api.dto.TelematicValue;
+import org.openhab.binding.bmwcardata.internal.api.dto.VehicleMapping;
+import org.openhab.core.library.types.RawType;
+
+import com.github.tomakehurst.wiremock.WireMockServer;
+import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
+import com.github.tomakehurst.wiremock.http.Fault;
+import com.google.gson.Gson;
+import com.google.gson.JsonPrimitive;
+
+/**
+ * Tests the {@link BMWCarDataApi}.
+ *
+ * @author Michael Weger - Initial contribution
+ */
+@NonNullByDefault
+class BMWCarDataApiTest {
+
+    private static final WireMockServer SERVER = new WireMockServer(WireMockConfiguration.options().dynamicPort());
+    private static final HttpClient HTTP_CLIENT = new HttpClient();
+    private static final String VIN = "WBA12345678901234";
+
+    private @NonNullByDefault({}) BMWCarDataApi api;
+    private @NonNullByDefault({}) RequestBudget budget;
+
+    @BeforeAll
+    static void startServer() throws Exception {
+        SERVER.start();
+        HTTP_CLIENT.start();
+    }
+
+    @AfterAll
+    static void stopServer() throws Exception {
+        SERVER.stop();
+        HTTP_CLIENT.stop();
+    }
+
+    @BeforeEach
+    void setUp() {
+        SERVER.resetAll();
+        budget = new RequestBudget(new MapStorage(), "budget", 3, Clock.systemUTC());
+        api = new BMWCarDataApi(HTTP_CLIENT, new Gson(), () -> "token", budget, "http://localhost:" + SERVER.port());
+    }
+
+    @Test
+    void getTelematicDataSendsHeadersAndContainer() throws Exception {
+        SERVER.stubFor(get(urlPathEqualTo("/customers/vehicles/" + VIN + "/telematicData")).willReturn(okJson("""
+                {"telematicData":{"vehicle.vehicle.travelledDistance":
+                  {"value":"12345","unit":"km","timestamp":"2026-10-01T10:00:00.000Z"}}}""")));
+
+        Map<String, TelematicValue> data = api.getTelematicData(VIN, "container-1");
+
+        TelematicValue value = data.get("vehicle.vehicle.travelledDistance");
+        assertNotNull(value);
+        assertEquals("km", value.unit);
+        assertEquals(new JsonPrimitive("12345"), value.value);
+        SERVER.verify(getRequestedFor(urlPathEqualTo("/customers/vehicles/" + VIN + "/telematicData"))
+                .withQueryParam("containerId", equalTo("container-1"))
+                .withHeader("Authorization", equalTo("Bearer token")).withHeader("x-version", equalTo("v1")));
+    }
+
+    @Test
+    void getVehicleMappingsAcceptsArrayAndObject() throws Exception {
+        SERVER.stubFor(get("/customers/vehicles/mappings").willReturn(okJson("""
+                [{"vin":"%s","mappingType":"PRIMARY","mappedSince":"2025-01-01T00:00:00Z"}]""".formatted(VIN))));
+        List<VehicleMapping> mappings = api.getVehicleMappings();
+        assertEquals(1, mappings.size());
+        assertEquals(VIN, mappings.get(0).vin);
+        assertEquals(VehicleMapping.MAPPING_TYPE_PRIMARY, mappings.get(0).mappingType);
+
+        SERVER.stubFor(get("/customers/vehicles/mappings").willReturn(okJson("""
+                {"mappings":[{"vin":"%s","mappingType":"SECONDARY"}]}""".formatted(VIN))));
+        assertEquals("SECONDARY", api.getVehicleMappings().get(0).mappingType);
+
+        SERVER.stubFor(get("/customers/vehicles/mappings").willReturn(okJson("""
+                {"vin":"%s","mappingType":"PRIMARY"}""".formatted(VIN))));
+        mappings = api.getVehicleMappings();
+        assertEquals(1, mappings.size());
+        assertEquals(VIN, mappings.get(0).vin);
+    }
+
+    @Test
+    void getVehicleMappingsSkipsNullAndRejectsMalformedResponses() throws Exception {
+        SERVER.stubFor(get("/customers/vehicles/mappings").willReturn(okJson("""
+                [null,{"vin":"%s","mappingType":"PRIMARY"}]""".formatted(VIN))));
+        List<VehicleMapping> mappings = api.getVehicleMappings();
+        assertEquals(1, mappings.size());
+        assertEquals(VIN, mappings.get(0).vin);
+
+        SERVER.stubFor(get("/customers/vehicles/mappings").willReturn(okJson("{\"unexpected\":true}")));
+        BMWCarDataException e = assertThrows(BMWCarDataException.class, () -> api.getVehicleMappings());
+        assertEquals("Unexpected vehicle mappings response", e.getMessage());
+
+        SERVER.stubFor(get("/customers/vehicles/mappings").willReturn(okJson("[\"not a mapping\"]")));
+        e = assertThrows(BMWCarDataException.class, () -> api.getVehicleMappings());
+        assertEquals("Malformed vehicle mappings response", e.getMessage());
+    }
+
+    @Test
+    void getVehicleImageRequestsAnImage() throws Exception {
+        byte[] png = { (byte) 0x89, 'P', 'N', 'G', '\r', '\n', 0x1a, '\n' };
+        String path = "/customers/vehicles/" + VIN + "/image";
+        SERVER.stubFor(get(path).willReturn(aResponse().withHeader("Content-Type", "image/png").withBody(png)));
+
+        RawType image = api.getVehicleImage(VIN);
+
+        assertEquals("image/png", image.getMimeType());
+        assertArrayEquals(png, image.getBytes());
+        SERVER.verify(getRequestedFor(urlEqualTo(path)).withHeader("Accept", equalTo("image/*")));
+
+        // CU-126: BMW has no image of the vehicle; the HTTP status of this error is not documented
+        SERVER.stubFor(get(path).willReturn(aResponse().withStatus(404).withHeader("Content-Type", "application/json")
+                .withBody("{\"exveErrorId\":\"CU-126\"}")));
+        BMWCarDataException e = assertThrows(BMWCarDataException.class, () -> api.getVehicleImage(VIN));
+        assertEquals("CU-126", e.getErrorId());
+    }
+
+    @Test
+    void createContainerReturnsId() throws Exception {
+        SERVER.stubFor(post("/customers/containers").willReturn(okJson("{\"containerId\":\"c-1\"}")));
+
+        assertEquals("c-1", api.createContainer("openHAB", "purpose", List.of("vehicle.isMoving")));
+
+        SERVER.verify(postRequestedFor(urlEqualTo("/customers/containers"))
+                .withRequestBody(matchingJsonPath("$.technicalDescriptors[0]", equalTo("vehicle.isMoving")))
+                .withRequestBody(matchingJsonPath("$.name", equalTo("openHAB"))));
+    }
+
+    @Test
+    void requestsAreCountedAndWithheldWhenBudgetIsUsedUp() throws Exception {
+        String path = "/customers/vehicles/" + VIN + "/basicData";
+        SERVER.stubFor(get(path).willReturn(okJson("{\"brand\":\"BMW\"}")));
+
+        for (int i = 0; i < 3; i++) {
+            api.getBasicData(VIN);
+        }
+        BMWCarDataException e = assertThrows(BMWCarDataException.class, () -> api.getBasicData(VIN));
+
+        assertTrue(e.isBudgetExhausted());
+        assertTrue(e.isRateLimited());
+        assertEquals(3, budget.used());
+        SERVER.verify(3, getRequestedFor(urlEqualTo(path)));
+    }
+
+    @Test
+    void bmwRateLimitMarksBudgetExhausted() {
+        String path = "/customers/vehicles/" + VIN + "/basicData";
+        SERVER.stubFor(get(path).willReturn(
+                aResponse().withStatus(403).withBody("{\"exveErrorId\":\"CU-429\",\"exveErrorMsg\":\"Rate limit\"}")));
+
+        BMWCarDataException e = assertThrows(BMWCarDataException.class, () -> api.getBasicData(VIN));
+
+        assertEquals("CU-429", e.getErrorId());
+        assertTrue(e.isRateLimited());
+        assertFalse(e.isBudgetExhausted());
+        assertFalse(budget.hasRoomFor(1));
+    }
+
+    @Test
+    void errorResponsesAreClassified() {
+        String path = "/customers/vehicles/" + VIN + "/basicData";
+        // without WWW-Authenticate header, the HTTP client fails the request
+        SERVER.stubFor(get(path).willReturn(unauthorized()));
+        assertThrows(BMWCarDataAuthException.class, () -> api.getBasicData(VIN));
+
+        // with the header, the HTTP client returns the response
+        SERVER.stubFor(get(path).willReturn(
+                unauthorized().withHeader("WWW-Authenticate", "Bearer error=\"invalid_token\"").withBody("{}")));
+        assertThrows(BMWCarDataAuthException.class, () -> api.getBasicData(VIN));
+
+        SERVER.stubFor(get(path).willReturn(aResponse().withStatus(429).withBody("{\"exveErrorId\":\"CU-429\"}")));
+        BMWCarDataException e = assertThrows(BMWCarDataException.class, () -> api.getBasicData(VIN));
+        assertTrue(e.isRateLimited());
+        assertFalse(e instanceof BMWCarDataAuthException);
+        assertEquals("HTTP 429 CU-429", e.getShortDescription());
+    }
+
+    @Test
+    void shortDescriptionOnlyTakesAnErrorIdInBmwsFormat() {
+        // the short description becomes an argument of a status description, which commas and quotes would break
+        String path = "/customers/vehicles/" + VIN + "/basicData";
+        SERVER.stubFor(get(path).willReturn(aResponse().withStatus(400)
+                .withBody("{\"exveErrorId\":\"CU-1, [\\\"injected\\\"]\",\"exveErrorMsg\":\"Bad request\"}")));
+        BMWCarDataException e = assertThrows(BMWCarDataException.class, () -> api.getBasicData(VIN));
+        assertEquals("HTTP 400", e.getShortDescription());
+    }
+
+    @Test
+    void shortDescriptionTellsAMissingFromAnUnusableResponse() {
+        String path = "/customers/vehicles/" + VIN + "/basicData";
+        // BMW answered, but not with what the binding needs
+        SERVER.stubFor(get(path).willReturn(okJson("not json")));
+        BMWCarDataException e = assertThrows(BMWCarDataException.class, () -> api.getBasicData(VIN));
+        assertEquals("invalid response", e.getShortDescription());
+
+        SERVER.stubFor(get(path).willReturn(aResponse().withFault(Fault.CONNECTION_RESET_BY_PEER)));
+        e = assertThrows(BMWCarDataException.class, () -> api.getBasicData(VIN));
+        assertEquals("no response", e.getShortDescription());
+
+        assertEquals("request budget used up", BMWCarDataException.budgetExhausted(40, 40).getShortDescription());
+    }
+
+    @Test
+    void gatewayErrorPageIsNotQuoted() {
+        String path = "/customers/vehicles/" + VIN + "/basicData";
+        SERVER.stubFor(get(path).willReturn(aResponse().withStatus(502)
+                .withBody("<html><head><title>502 Bad Gateway</title></head><body>nginx/1.31.3</body></html>")));
+        BMWCarDataException e = assertThrows(BMWCarDataException.class, () -> api.getBasicData(VIN));
+        assertEquals(
+                "BMW CarData request GET /customers/vehicles/WBA***1234/basicData failed with HTTP 502: Bad Gateway",
+                e.getMessage());
+        assertEquals(502, e.getHttpStatus());
+        assertTrue(e.isTransient());
+    }
+
+    @Test
+    void onlyFailuresOnBmwSideAreTransient() {
+        String path = "/customers/vehicles/" + VIN + "/basicData";
+        SERVER.stubFor(get(path).willReturn(aResponse().withStatus(404)));
+        assertFalse(assertThrows(BMWCarDataException.class, () -> api.getBasicData(VIN)).isTransient());
+
+        SERVER.stubFor(get(path).willReturn(aResponse().withStatus(429).withBody("{\"exveErrorId\":\"CU-429\"}")));
+        assertFalse(assertThrows(BMWCarDataException.class, () -> api.getBasicData(VIN)).isTransient());
+        // withheld by the budget, not sent at all
+        assertFalse(assertThrows(BMWCarDataException.class, () -> api.getBasicData(VIN)).isTransient());
+
+        // connection refused
+        BMWCarDataApi unreachable = new BMWCarDataApi(HTTP_CLIENT, new Gson(), () -> "token",
+                new RequestBudget(new MapStorage(), "budget", 3, Clock.systemUTC()), "http://localhost:1");
+        assertTrue(assertThrows(BMWCarDataException.class, () -> unreachable.getBasicData(VIN)).isTransient());
+    }
+
+    @Test
+    void invalidIdentifiersAreRejectedWithoutRequest() {
+        assertThrows(BMWCarDataException.class, () -> api.getBasicData("../containers"));
+        assertThrows(BMWCarDataException.class, () -> api.getTelematicData(VIN, "a/b"));
+        assertTrue(SERVER.getAllServeEvents().isEmpty());
+    }
+}
