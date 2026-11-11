@@ -47,7 +47,7 @@ public final class LeapMotionNativeLibrary {
             System.loadLibrary(LIBRARY_NAME);
             return true;
         } catch (UnsatisfiedLinkError e) {
-            LoggerFactory.getLogger(LeapMotionNativeLibrary.class).info(
+            LoggerFactory.getLogger(LeapMotionNativeLibrary.class).warn(
                     "The native Leap Motion library '{}' cannot be loaded, the binding is not functional on this platform: {}",
                     LIBRARY_NAME, e.getMessage());
             return false;
