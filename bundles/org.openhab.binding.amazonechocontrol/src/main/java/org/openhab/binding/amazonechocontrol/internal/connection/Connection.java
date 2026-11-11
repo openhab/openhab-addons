@@ -154,7 +154,8 @@ public class Connection {
     private final Gson gson;
 
     private LoginData loginData;
-    private CookieManager cookieManager = new CookieManager();
+    // The request builder holds this exact instance, so it must never be replaced, only cleared.
+    private final CookieManager cookieManager = new CookieManager();
     private final HttpRequestBuilder requestBuilder;
     private @Nullable Date verifyTime;
     private volatile boolean closed = false;
@@ -580,11 +581,10 @@ public class Connection {
     }
 
     public void logout(boolean reset) {
+        cookieManager.getCookieStore().removeAll();
         if (reset) {
-            cookieManager = new CookieManager();
             loginData = new LoginData(cookieManager);
         } else {
-            cookieManager.getCookieStore().removeAll();
             // reset all members
             loginData.setRefreshToken(null);
             loginData.setLoginTime(null);
