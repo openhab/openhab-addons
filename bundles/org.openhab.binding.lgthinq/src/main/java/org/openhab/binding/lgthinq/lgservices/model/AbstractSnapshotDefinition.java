@@ -50,4 +50,14 @@ public abstract class AbstractSnapshotDefinition implements SnapshotDefinition {
     public void setRawData(Map<String, Object> rawData) {
         this.rawData = rawData;
     }
+
+    /**
+     * Formats an hour/minute pair as {@code HH:MM}.
+     * Some devices report the whole duration in the minute field (e.g. hour 0, minute 65) instead of keeping
+     * minutes within 0-59 as their capability declares, so the pair is normalized to total minutes first.
+     */
+    protected static String formatHourMinute(double hour, double minute) {
+        long totalMinutes = Math.round(hour * 60 + minute);
+        return String.format("%02d:%02d", totalMinutes / 60, totalMinutes % 60);
+    }
 }

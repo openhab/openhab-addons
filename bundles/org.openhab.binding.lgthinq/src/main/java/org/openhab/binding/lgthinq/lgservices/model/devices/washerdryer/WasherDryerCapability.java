@@ -47,6 +47,7 @@ public class WasherDryerCapability extends AbstractCapability<WasherDryerCapabil
     private FeatureDefinition rinse = FeatureDefinition.NULL_DEFINITION;
     private FeatureDefinition error = FeatureDefinition.NULL_DEFINITION;
     private FeatureDefinition dryLevel = FeatureDefinition.NULL_DEFINITION;
+    private FeatureDefinition previousState = FeatureDefinition.NULL_DEFINITION;
     private FeatureDefinition processState = FeatureDefinition.NULL_DEFINITION;
     private boolean hasDoorLook;
     private Map<String, CommandDefinition> commandsDefinition = new HashMap<>();
@@ -114,6 +115,14 @@ public class WasherDryerCapability extends AbstractCapability<WasherDryerCapabil
 
     public void setProcessState(FeatureDefinition processState) {
         this.processState = processState;
+    }
+
+    public FeatureDefinition getPreviousState() {
+        return previousState;
+    }
+
+    public void setPreviousState(FeatureDefinition previousState) {
+        this.previousState = previousState;
     }
 
     public Map<String, CourseDefinition> getCourses() {

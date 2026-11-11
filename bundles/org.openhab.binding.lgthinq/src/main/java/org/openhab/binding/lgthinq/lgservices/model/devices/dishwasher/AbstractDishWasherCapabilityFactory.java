@@ -46,7 +46,6 @@ public abstract class AbstractDishWasherCapabilityFactory extends AbstractCapabi
 
     protected abstract String getControlConvertingRulesNodeName();
 
-    @SuppressWarnings("unused")
     protected abstract MonitoringResultFormat getMonitorDataFormat(JsonNode rootNode);
 
     @Override

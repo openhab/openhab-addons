@@ -13,6 +13,9 @@
 package org.openhab.binding.lgthinq.internal.handler;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.*;
+import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.LG_API_PLATFORM_TYPE_V2;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -22,20 +25,33 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.lgthinq.handler.JsonUtils;
+import org.openhab.binding.lgthinq.internal.LGThinQStateDescriptionProvider;
+import org.openhab.binding.lgthinq.lgservices.errors.LGThinqApiException;
 import org.openhab.binding.lgthinq.lgservices.errors.LGThinqException;
 import org.openhab.binding.lgthinq.lgservices.model.CapabilityFactory;
 import org.openhab.binding.lgthinq.lgservices.model.CommandDefinition;
 import org.openhab.binding.lgthinq.lgservices.model.devices.washerdryer.WasherDryerCapability;
 import org.openhab.binding.lgthinq.lgservices.model.devices.washerdryer.WasherDryerSnapshot;
+import org.openhab.core.io.net.http.HttpClientFactory;
+import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.StringType;
+import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingUID;
+import org.openhab.core.thing.binding.ThingHandlerCallback;
+import org.openhab.core.thing.binding.builder.ThingBuilder;
+import org.openhab.core.thing.link.ItemChannelLinkRegistry;
+import org.openhab.core.types.UnDefType;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
- * Tests for the remote start payload of the {@link LGThinQWasherDryerHandler}.
+ * Tests for the remote start payload and the state publication of the {@link LGThinQWasherDryerHandler}.
  *
  * @author Carlo Dischler - Initial contribution
+ * @author Nemer Daud - Add state publication tests
  */
 @NonNullByDefault
 class LGThinQWasherDryerHandlerTest {
@@ -43,6 +59,9 @@ class LGThinQWasherDryerHandlerTest {
     private final ObjectMapper mapper = new ObjectMapper();
     private @NonNullByDefault({}) WasherDryerCapability cap;
     private @NonNullByDefault({}) Map<String, Object> cmdTemplate;
+    private final ThingUID thingUID = new ThingUID(THING_TYPE_WASHING_MACHINE, "test");
+    private ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
+    private LGThinQWasherDryerHandler handler = createHandler();
 
     @BeforeEach
     void setUp() throws JsonProcessingException, LGThinqException {
@@ -157,5 +176,68 @@ class LGThinQWasherDryerHandlerTest {
         assertEquals("SOILWASH_NORMAL", data.get("soilWash"));
         assertEquals("TURBOWASH_OFF", data.get("turboWash"));
         assertEquals("CREASECARE_OFF", data.get("creaseCare"));
+    }
+
+    @BeforeEach
+    void setUpHandler() {
+        callback = mock(ThingHandlerCallback.class);
+        handler = createHandler();
+        handler.setCallback(callback);
+    }
+
+    @Test
+    void publishesCurrentPreviousAndProcessStatesIndependently() throws LGThinqApiException {
+        WasherDryerSnapshot snapshot = new WasherDryerSnapshot();
+        snapshot.setState("RUNNING");
+        snapshot.setPreviousState("DETECTING");
+        snapshot.setProcessState("WASHING");
+
+        // the remote start handling of updateDeviceChannels reads the capability
+        handler.thinQCapability = cap;
+        handler.updateDeviceChannels(snapshot);
+
+        verify(callback).stateUpdated(channel(CHANNEL_WMD_STATE_ID), new StringType("RUNNING"));
+        verify(callback).stateUpdated(channel(CHANNEL_WMD_PREVIOUS_STATE_ID), new StringType("DETECTING"));
+        verify(callback).stateUpdated(channel(CHANNEL_WMD_PROCESS_STATE_ID), new StringType("WASHING"));
+    }
+
+    @Test
+    void publishesUndefWhenProcessStateIsUnavailable() throws LGThinqApiException {
+        WasherDryerSnapshot snapshot = new WasherDryerSnapshot();
+        snapshot.setState("RUNNING");
+        snapshot.setPreviousState("DETECTING");
+
+        // the remote start handling of updateDeviceChannels reads the capability
+        handler.thinQCapability = cap;
+        handler.updateDeviceChannels(snapshot);
+
+        verify(callback).stateUpdated(channel(CHANNEL_WMD_STATE_ID), new StringType("RUNNING"));
+        verify(callback).stateUpdated(channel(CHANNEL_WMD_PREVIOUS_STATE_ID), new StringType("DETECTING"));
+        verify(callback).stateUpdated(channel(CHANNEL_WMD_PROCESS_STATE_ID), UnDefType.UNDEF);
+    }
+
+    @Test
+    void clearsDashboardChannelsWhenDeviceDisconnects() {
+        handler.onDeviceDisconnected();
+
+        verify(callback).stateUpdated(channel(CHANNEL_AC_POWER_ID), OnOffType.OFF);
+        verify(callback).stateUpdated(channel(CHANNEL_WMD_STATE_ID), UnDefType.UNDEF);
+        verify(callback).stateUpdated(channel(CHANNEL_WMD_PREVIOUS_STATE_ID), UnDefType.UNDEF);
+        verify(callback).stateUpdated(channel(CHANNEL_WMD_PROCESS_STATE_ID), UnDefType.UNDEF);
+        verify(callback).stateUpdated(channel(CHANNEL_WMD_COURSE_ID), UnDefType.UNDEF);
+        verify(callback).stateUpdated(channel(CHANNEL_WMD_TEMP_LEVEL_ID), UnDefType.UNDEF);
+        verify(callback).stateUpdated(channel(CHANNEL_WMD_DOOR_LOCK_ID), UnDefType.UNDEF);
+        verify(callback).stateUpdated(channel(CHANNEL_WMD_REMAIN_TIME_ID), UnDefType.UNDEF);
+    }
+
+    private LGThinQWasherDryerHandler createHandler() {
+        Thing thing = ThingBuilder.create(THING_TYPE_WASHING_MACHINE, thingUID)
+                .withProperties(Map.of(PROP_INFO_PLATFORM_TYPE, LG_API_PLATFORM_TYPE_V2)).build();
+        return new LGThinQWasherDryerHandler(thing, mock(LGThinQStateDescriptionProvider.class),
+                mock(ItemChannelLinkRegistry.class), mock(HttpClientFactory.class));
+    }
+
+    private ChannelUID channel(String channelId) {
+        return new ChannelUID(thingUID, CHANNEL_DASHBOARD_GRP_ID + "#" + channelId);
     }
 }

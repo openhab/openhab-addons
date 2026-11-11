@@ -33,6 +33,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class WasherDryerSnapshot extends AbstractSnapshotDefinition {
     private DevicePowerState powerState = DevicePowerState.DV_POWER_UNK;
     private String state = "";
+    private String previousState = "";
     private String processState = "";
     private boolean online;
     private String course = "";
@@ -91,13 +92,23 @@ public class WasherDryerSnapshot extends AbstractSnapshotDefinition {
     }
 
     @JsonProperty("processState")
-    @JsonAlias({ "ProcessState", "preState", "PreState" })
+    @JsonAlias({ "ProcessState" })
     public String getProcessState() {
         return processState;
     }
 
     public void setProcessState(String processState) {
         this.processState = processState;
+    }
+
+    @JsonProperty("preState")
+    @JsonAlias({ "PreState" })
+    public String getPreviousState() {
+        return previousState;
+    }
+
+    public void setPreviousState(String previousState) {
+        this.previousState = previousState;
     }
 
     @JsonProperty("error")
@@ -167,12 +178,12 @@ public class WasherDryerSnapshot extends AbstractSnapshotDefinition {
 
     @JsonIgnore
     public String getRemainingTime() {
-        return String.format("%02.0f:%02.0f", getRemainingHour(), getRemainingMinute());
+        return formatHourMinute(getRemainingHour(), getRemainingMinute());
     }
 
     @JsonIgnore
     public String getReserveTime() {
-        return String.format("%02.0f:%02.0f", getReserveHour(), getReserveMinute());
+        return formatHourMinute(getReserveHour(), getReserveMinute());
     }
 
     @JsonProperty("remainTimeHour")

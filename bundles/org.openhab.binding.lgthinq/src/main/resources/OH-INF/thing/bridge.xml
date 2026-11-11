@@ -32,7 +32,7 @@
 				<description>The User Country registered in LG Account</description>
 				<options>
 					<option value="US">United States</option>
-					<option value="UK">United Kingdom</option>
+					<option value="GB">United Kingdom</option>
 					<option value="BE">Belgium</option>
 					<option value="BR">Brazil</option>
 					<option value="IT">Italy</option>

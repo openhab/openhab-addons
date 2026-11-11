@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<update:update-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:update="https://openhab.org/schemas/update-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/update-description/v1.0.0 https://openhab.org/schemas/update-description-1.0.0.xsd">
+
+	<thing-type uid="lgthinq:washer-201">
+		<instruction-set targetVersion="1">
+			<add-channel id="previous-state" groupIds="dashboard">
+				<type>lgthinq:washerdryer-previous-state</type>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+
+	<thing-type uid="lgthinq:washer-tower-221">
+		<instruction-set targetVersion="1">
+			<add-channel id="previous-state" groupIds="dashboard">
+				<type>lgthinq:washerdryer-previous-state</type>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+
+	<thing-type uid="lgthinq:dryer-202">
+		<instruction-set targetVersion="1">
+			<add-channel id="previous-state" groupIds="dashboard">
+				<type>lgthinq:washerdryer-previous-state</type>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+
+	<thing-type uid="lgthinq:dryer-tower-222">
+		<instruction-set targetVersion="1">
+			<add-channel id="previous-state" groupIds="dashboard">
+				<type>lgthinq:washerdryer-previous-state</type>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+
+</update:update-descriptions>

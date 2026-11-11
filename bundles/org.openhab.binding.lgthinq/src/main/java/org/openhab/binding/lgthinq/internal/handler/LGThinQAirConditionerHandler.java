@@ -166,7 +166,7 @@ public class LGThinQAirConditionerHandler extends LGThinQAbstractDeviceHandler<A
                 updateState(energySavingChannelUID, OnOffType.from(energySavingOn.equals(shot.getEnergySavingMode())));
             }
             if (getThing().getChannel(autoDryChannelUID) != null) {
-                Double autoDryOn = Double.valueOf(acCap.getCoolJetModeCommandOn());
+                Double autoDryOn = Double.valueOf(acCap.getAutoDryModeCommandOn());
                 updateState(autoDryChannelUID, OnOffType.from(autoDryOn.equals(shot.getAutoDryMode())));
             }
             if (DeviceTypes.HEAT_PUMP.equals(getDeviceType())) {
