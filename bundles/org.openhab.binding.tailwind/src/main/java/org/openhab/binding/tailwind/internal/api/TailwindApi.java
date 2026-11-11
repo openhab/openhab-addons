@@ -41,9 +41,9 @@ import com.google.gson.JsonSyntaxException;
  */
 @NonNullByDefault
 public class TailwindApi {
-    static final String TOKEN_HEADER = "TOKEN";
+    private static final String TOKEN_HEADER = "TOKEN";
     /** The information a controller gives when it rejects the Local Control Key. */
-    static final String INFO_TOKEN_FAIL = "token check fail";
+    private static final String INFO_TOKEN_FAIL = "token check fail";
 
     private static final int TIMEOUT_SECONDS = 10;
     private static final String VERSION_0_1 = "0.1";
@@ -51,7 +51,8 @@ public class TailwindApi {
     private static final String TYPE_GET = "get";
     private static final String TYPE_SET = "set";
 
-    private final Gson gson = new Gson();
+    private static final Gson GSON = new Gson();
+
     private final HttpClient httpClient;
     private final String url;
     private final String token;
@@ -144,7 +145,7 @@ public class TailwindApi {
         ContentResponse response;
         try {
             response = httpClient.newRequest(url).method(HttpMethod.POST).header(TOKEN_HEADER, token)
-                    .content(new StringContentProvider(gson.toJson(request))).timeout(TIMEOUT_SECONDS, TimeUnit.SECONDS)
+                    .content(new StringContentProvider(GSON.toJson(request))).timeout(TIMEOUT_SECONDS, TimeUnit.SECONDS)
                     .send();
         } catch (TimeoutException | ExecutionException e) {
             throw new TailwindCommunicationException("No answer from the controller: " + e.getMessage(), e);
@@ -168,9 +169,14 @@ public class TailwindApi {
         return status;
     }
 
-    private @Nullable TailwindStatus parse(@Nullable String content) {
+    /**
+     * Parses an answer or a status report of a controller.
+     *
+     * @return the status, or {@code null} when the content is not a valid status
+     */
+    public static @Nullable TailwindStatus parse(@Nullable String content) {
         try {
-            return gson.fromJson(content, TailwindStatus.class);
+            return GSON.fromJson(content, TailwindStatus.class);
         } catch (JsonSyntaxException e) {
             return null;
         }
