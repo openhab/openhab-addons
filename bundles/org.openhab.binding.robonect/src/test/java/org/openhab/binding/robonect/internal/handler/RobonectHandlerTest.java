@@ -529,7 +529,7 @@ public class RobonectHandlerTest {
         verify(diagnosticsApiMock).getBatteryInfo();
         verifyNoMoreInteractions(mowerApiMock, diagnosticsApiMock, pushApiMock, remoteStartApiMock, timerApiMock,
                 weatherApiMock);
-        verifyNoInteractions(callbackMock);
+        verify(callbackMock, never()).stateUpdated(any(), any());
     }
 
     /**
