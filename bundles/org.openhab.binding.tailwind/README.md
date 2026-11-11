@@ -55,7 +55,7 @@ The Thing has a `controller` channel group, and a `door1`, `door2` and `door3` g
 |-----------------------------|--------------|------------|---------------------------------------------------------------------------------------------------------------|
 | `controller#night-mode`     | Switch       | R          | ON when night mode is enabled in the TailWind app                                                             |
 | `controller#led-brightness` | Dimmer       | RW         | Brightness of the status LED                                                                                  |
-| `controller#rssi`           | Number:Power | R          | Strength of the Wi-Fi signal the controller receives. Advanced.                                               |
+| `controller#rssi`           | Number:Power | R          | Strength of the Wi-Fi signal the controller receives                                                          |
 | `controller#server-monitor` | Switch       | RW         | ON: the controller reboots itself when it loses the TailWind cloud server. Firmware 10.61 or later. Advanced. |
 | `controller#command`        | String       | W          | `identify` blinks the LED, `reboot` restarts the controller. Firmware 10.10 or later. Advanced.               |
 
@@ -70,7 +70,7 @@ The channels of the other doors start with `door2#` and `door3#`.
 |------------------|--------|------------|------------------------------------------------------------------------------------------|
 | `door1#status`   | String | R          | `open` or `close`                                                                        |
 | `door1#control`  | String | RW         | Send `open`, `partial` or `close` to move the door. The state is the status of the door. |
-| `door1#locked`   | Switch | R          | ON when the controller has locked the door. Advanced.                                    |
+| `door1#locked`   | Switch | R          | ON when the controller has locked the door                                               |
 | `door1#disabled` | Switch | R          | ON when the door is disabled in the TailWind app. Advanced.                              |
 
 The controller only moves a door that is not already in the requested state.
