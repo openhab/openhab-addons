@@ -949,7 +949,8 @@ The processor ends a telnet session after three failed login attempts.
 Other connection problems are retried every `reconnect` minutes.
 The bridge waits up to 10 seconds for a successful login or an explicit command prompt before sending startup commands.
 A silent processor causes a communication error and a retry; silence is never treated as a successful login.
-The bridge asks the processor for a reply every minute, and reconnects if nothing at all has been received for 150 seconds, which detects a connection lost without notice, such as a network outage.
+When nothing has been received for a minute, the bridge asks the processor for its O/S revision (`OSREV`), a read-only query, and it reconnects if nothing at all has been received for 150 seconds.
+This detects a connection lost without notice, such as a network outage.
 The password is never written to the log.
 
 ```java

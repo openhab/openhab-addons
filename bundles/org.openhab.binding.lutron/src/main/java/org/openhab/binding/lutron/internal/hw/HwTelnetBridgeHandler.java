@@ -34,6 +34,9 @@ import org.slf4j.LoggerFactory;
 public class HwTelnetBridgeHandler extends HwBridgeHandler implements HwTelnetConnection.Listener {
     private static final int HEARTBEAT_INTERVAL_SECONDS = 60;
     private static final long DEFAULT_IDLE_TIMEOUT_MS = TimeUnit.SECONDS.toMillis(150);
+    // A read-only query. Monitoring commands such as DLMON change a setting, which the processor might store, and
+    // the heartbeat can be sent about half a million times a year.
+    private static final String HEARTBEAT_COMMAND = "OSREV";
 
     private final Logger logger = LoggerFactory.getLogger(HwTelnetBridgeHandler.class);
 
@@ -45,8 +48,9 @@ public class HwTelnetBridgeHandler extends HwBridgeHandler implements HwTelnetCo
     private @Nullable ScheduledFuture<?> heartbeatJob;
     private volatile boolean disposed;
 
-    // Not final so that tests can shorten it
+    // Not final so that tests can shorten them
     volatile long idleTimeoutMs = DEFAULT_IDLE_TIMEOUT_MS;
+    volatile long heartbeatQuietMs = TimeUnit.SECONDS.toMillis(HEARTBEAT_INTERVAL_SECONDS);
 
     public HwTelnetBridgeHandler(Bridge bridge) {
         super(bridge);
@@ -141,8 +145,9 @@ public class HwTelnetBridgeHandler extends HwBridgeHandler implements HwTelnetCo
 
     /**
      * A connection that is lost without being closed, for example when the network drops, produces no error until
-     * the operating system gives up on it, which can take hours. So the processor is asked for a reply regularly and
-     * the connection is treated as lost when nothing at all has been received for too long.
+     * the operating system gives up on it, which can take hours. So the processor is asked for a reply when it has
+     * been quiet for a while, and the connection is treated as lost when nothing at all has been received for too
+     * long.
      */
     void heartbeat() {
         HwTelnetConnection current = connection;
@@ -157,8 +162,11 @@ public class HwTelnetBridgeHandler extends HwBridgeHandler implements HwTelnetCo
                     + " s. Check the network connection and that Suppress Replies is not selected for the login.");
             return;
         }
-        // DLMON is answered with a confirmation message when the login's Suppress Replies option is disabled.
-        sendCommand("DLMON");
+        if (idle < heartbeatQuietMs) {
+            // Data received recently shows that the connection works
+            return;
+        }
+        sendCommand(HEARTBEAT_COMMAND);
     }
 
     private synchronized void scheduleReconnect() {

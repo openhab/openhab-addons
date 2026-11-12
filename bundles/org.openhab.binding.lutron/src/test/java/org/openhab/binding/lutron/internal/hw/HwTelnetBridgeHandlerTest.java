@@ -142,12 +142,26 @@ public class HwTelnetBridgeHandlerTest {
     }
 
     @Test
-    public void heartbeatAsksProcessorForAReply() throws Exception {
+    public void quietProcessorIsAskedForAReply() throws Exception {
+        // Any time since the last data received counts as quiet
+        handler().heartbeatQuietMs = -1;
+
         handler().heartbeat();
 
         BufferedReader reader = fromBinding;
         assertNotNull(reader);
-        assertEquals("DLMON", reader.readLine());
+        assertEquals("OSREV", reader.readLine());
+    }
+
+    @Test
+    public void heartbeatSendsNothingAfterRecentData() throws Exception {
+        // The login has just completed, so data was received less than a minute ago
+        handler().heartbeat();
+        handler().sendCommand("KBMON");
+
+        BufferedReader reader = fromBinding;
+        assertNotNull(reader);
+        assertEquals("KBMON", reader.readLine(), "the heartbeat must not send anything before the marker");
     }
 
     @Test
