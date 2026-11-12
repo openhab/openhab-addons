@@ -105,6 +105,13 @@ public class TailwindApiTest {
     }
 
     @Test
+    public void unauthorizedHttpStatusIsUnauthorized() {
+        controller.answerAllWith(401, "");
+
+        assertThrows(TailwindUnauthorizedException.class, api::getStatus);
+    }
+
+    @Test
     public void refusedRequestIsNotACommunicationError() {
         controller.answerAllWith(200, "{\"result\":\"Fail\",\"info\":\"door_idx out of range\"}");
 

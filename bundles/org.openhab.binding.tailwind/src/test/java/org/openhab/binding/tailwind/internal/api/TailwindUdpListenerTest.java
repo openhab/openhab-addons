@@ -37,7 +37,8 @@ public class TailwindUdpListenerTest {
     private static final int WAIT_SECONDS = 20;
 
     private final BlockingQueue<String> messages = new LinkedBlockingQueue<>();
-    private final TailwindUdpListener listener = new TailwindUdpListener("tailwind-test-udp", messages::add);
+    private final TailwindUdpListener listener = new TailwindUdpListener("tailwind-test-udp",
+            (sender, message) -> messages.add(message));
 
     @AfterEach
     public void tearDown() {
