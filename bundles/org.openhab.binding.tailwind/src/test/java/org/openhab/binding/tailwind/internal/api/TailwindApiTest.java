@@ -37,7 +37,7 @@ public class TailwindApiTest {
     private final TailwindApi api = new TailwindApi(controller.httpClient, "192.168.1.50", "123456");
 
     @Test
-    public void statusRequestIsSentWithTheTokenAndParsed() throws TailwindException {
+    public void statusRequestIsSentWithTheTokenAndParsed() throws TailwindException, InterruptedException {
         TailwindStatus status = api.getStatus();
 
         Received request = controller.requests.get(0);
@@ -64,7 +64,7 @@ public class TailwindApiTest {
     }
 
     @Test
-    public void doorCommandsCarryIndexCommandAndPartialTime() throws TailwindException {
+    public void doorCommandsCarryIndexCommandAndPartialTime() throws TailwindException, InterruptedException {
         api.openDoor(0);
         api.openDoorPartially(1, 2500);
         api.closeDoor(2);
@@ -77,7 +77,7 @@ public class TailwindApiTest {
     }
 
     @Test
-    public void otherCommandsMatchTheApiDocument() throws TailwindException {
+    public void otherCommandsMatchTheApiDocument() throws TailwindException, InterruptedException {
         api.setNotifyUrl("192.168.1.10:50904");
         api.setLedBrightness(40);
         api.setServerMonitor(false);
@@ -130,6 +130,13 @@ public class TailwindApiTest {
 
         controller.answerAllWith(200, "{\"result\":");
         assertThrows(TailwindCommunicationException.class, api::getStatus);
+    }
+
+    @Test
+    public void interruptionIsPassedOn() {
+        controller.setInterrupted(true);
+
+        assertThrows(InterruptedException.class, api::getStatus);
     }
 
     @Test

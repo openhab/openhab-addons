@@ -72,6 +72,7 @@ public class FakeController {
     private volatile Function<Received, Answer> behavior = received -> new Answer(200,
             "dev_st".equals(received.name()) ? STATUS : OK);
     private volatile boolean unreachable;
+    private volatile boolean interrupted;
 
     public FakeController() {
         when(httpClient.newRequest(anyString())).thenAnswer(invocation -> request(invocation.getArgument(0)));
@@ -88,6 +89,11 @@ public class FakeController {
 
     public void setUnreachable(boolean unreachable) {
         this.unreachable = unreachable;
+    }
+
+    /** Makes requests fail as if the waiting thread was interrupted. */
+    public void setInterrupted(boolean interrupted) {
+        this.interrupted = interrupted;
     }
 
     public List<Received> requestsNamed(String name) {
@@ -111,6 +117,9 @@ public class FakeController {
             return request;
         }).when(request).content(any());
         doAnswer(invocation -> {
+            if (interrupted) {
+                throw new InterruptedException();
+            }
             if (unreachable) {
                 throw new TimeoutException("Total timeout 10000 ms elapsed");
             }
