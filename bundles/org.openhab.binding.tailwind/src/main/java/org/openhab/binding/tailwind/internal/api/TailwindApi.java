@@ -155,7 +155,10 @@ public class TailwindApi {
         }
 
         TailwindStatus status = parse(response.getContentAsString());
-        if (status != null && INFO_TOKEN_FAIL.equals(status.info)) {
+        // Controllers answer a wrong key with HTTP 400 and this information
+        if ((status != null && INFO_TOKEN_FAIL.equals(status.info))
+                || response.getStatus() == HttpStatus.UNAUTHORIZED_401
+                || response.getStatus() == HttpStatus.FORBIDDEN_403) {
             throw new TailwindUnauthorizedException("The controller rejected the Local Control Key");
         }
         if (response.getStatus() != HttpStatus.OK_200 || status == null) {

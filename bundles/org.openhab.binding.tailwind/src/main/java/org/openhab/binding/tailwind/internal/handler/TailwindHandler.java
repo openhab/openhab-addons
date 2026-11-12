@@ -14,10 +14,13 @@ package org.openhab.binding.tailwind.internal.handler;
 
 import static org.openhab.binding.tailwind.internal.TailwindBindingConstants.*;
 
+import java.net.InetAddress;
 import java.net.SocketException;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -78,7 +81,12 @@ public class TailwindHandler extends BaseThingHandler {
     // publish anything or schedule more work.
     private volatile @Nullable TailwindApi api;
     private volatile @Nullable TailwindStatus lastStatus;
+    // The controller's addresses, the only senders whose status reports are accepted
+    private volatile Set<InetAddress> controllerAddresses = Set.of();
     private @Nullable ScheduledFuture<?> pollJob;
+    // Changes whenever a status request is scheduled, or the handler is disposed. A request of an older generation
+    // does not schedule the next one, so there is never more than one chain of requests.
+    private int pollGeneration;
     private @Nullable TailwindUdpListener listener;
     private int retryDelaySeconds = RETRY_MIN_SECONDS;
 
@@ -100,10 +108,12 @@ public class TailwindHandler extends BaseThingHandler {
             return;
         }
         updateStatus(ThingStatus.UNKNOWN);
+        lastStatus = null;
+        controllerAddresses = Set.of();
         synchronized (this) {
             api = new TailwindApi(httpClient, config.hostname.trim(), config.token.trim());
             retryDelaySeconds = RETRY_MIN_SECONDS;
-            pollJob = scheduler.schedule(this::poll, 0, TimeUnit.SECONDS);
+            schedulePoll(0);
         }
     }
 
@@ -112,6 +122,7 @@ public class TailwindHandler extends BaseThingHandler {
         TailwindUdpListener oldListener;
         synchronized (this) {
             api = null;
+            pollGeneration++;
             ScheduledFuture<?> job = pollJob;
             if (job != null) {
                 job.cancel(true);
@@ -165,7 +176,8 @@ public class TailwindHandler extends BaseThingHandler {
                 pollSoon();
             }
         } catch (TailwindException e) {
-            logger.warn("Command {} for {} failed: {}", command, channelUID, e.getMessage());
+            // For example a command for a door that is disabled
+            logger.debug("Command {} for {} failed: {}", command, channelUID, e.getMessage());
         }
     }
 
@@ -200,12 +212,12 @@ public class TailwindHandler extends BaseThingHandler {
     }
 
     private void sendDoorCommand(TailwindApi currentApi, String group, Command command) throws TailwindException {
-        int doorIndex = switch (group) {
-            case "door1" -> 0;
-            case "door2" -> 1;
-            case "door3" -> 2;
-            default -> -1;
-        };
+        int doorIndex = -1;
+        for (int index = 0; index < MAX_DOORS; index++) {
+            if ((GROUP_DOOR_PREFIX + (index + 1)).equals(group)) {
+                doorIndex = index;
+            }
+        }
         if (doorIndex < 0) {
             return;
         }
@@ -218,9 +230,17 @@ public class TailwindHandler extends BaseThingHandler {
     }
 
     /**
-     * Asks the controller for its status and schedules the next request. Package-private for tests.
+     * Asks the controller for its status now and schedules the next request. Package-private for tests.
      */
     void poll() {
+        int generation;
+        synchronized (this) {
+            generation = pollGeneration;
+        }
+        poll(generation);
+    }
+
+    private void poll(int generation) {
         TailwindApi currentApi = api;
         if (currentApi == null) {
             return;
@@ -234,11 +254,17 @@ public class TailwindHandler extends BaseThingHandler {
                 }
             } else {
                 TailwindStatus status = currentApi.getStatus();
-                registerNotifications(currentApi, address);
                 if (isCurrent(currentApi)) {
                     updateStatus(ThingStatus.ONLINE);
                     handleStatus(status);
                     online = true;
+                }
+                // After publishing the status, so that it cannot replace a newer report. Without reports, door
+                // changes still show at the next status request.
+                try {
+                    registerNotifications(currentApi, address);
+                } catch (TailwindException e) {
+                    logger.debug("{} cannot receive status reports: {}", thing.getUID(), e.getMessage());
                 }
             }
         } catch (TailwindException e) {
@@ -248,7 +274,7 @@ public class TailwindHandler extends BaseThingHandler {
         } catch (RuntimeException e) {
             logger.warn("Unexpected error while asking {} for its status", thing.getUID(), e);
         }
-        scheduleNextPoll(currentApi, online);
+        scheduleNextPoll(generation, online);
     }
 
     private void setOffline(TailwindException e) {
@@ -259,8 +285,8 @@ public class TailwindHandler extends BaseThingHandler {
         }
     }
 
-    private synchronized void scheduleNextPoll(TailwindApi currentApi, boolean online) {
-        if (!isCurrent(currentApi)) {
+    private synchronized void scheduleNextPoll(int generation, boolean online) {
+        if (generation != pollGeneration || api == null) {
             return;
         }
         int delay;
@@ -271,17 +297,27 @@ public class TailwindHandler extends BaseThingHandler {
             delay = retryDelaySeconds;
             retryDelaySeconds = Math.min(retryDelaySeconds * 2, RETRY_MAX_SECONDS);
         }
-        pollJob = scheduler.schedule(this::poll, delay, TimeUnit.SECONDS);
+        schedulePoll(delay);
+    }
+
+    /**
+     * Replaces the scheduled status request with one after the given delay.
+     */
+    private synchronized void schedulePoll(int delaySeconds) {
+        ScheduledFuture<?> job = pollJob;
+        if (job != null) {
+            job.cancel(false);
+        }
+        int generation = ++pollGeneration;
+        pollJob = scheduler.schedule(() -> poll(generation), delaySeconds, TimeUnit.SECONDS);
     }
 
     /**
      * Brings the next status request forward, to find out sooner when the controller can be reached again.
      */
     private synchronized void pollSoon() {
-        ScheduledFuture<?> job = pollJob;
-        // A request that is already running schedules the next one itself
-        if (api != null && job != null && job.cancel(false)) {
-            pollJob = scheduler.schedule(this::poll, RETRY_MIN_SECONDS, TimeUnit.SECONDS);
+        if (api != null) {
+            schedulePoll(RETRY_MIN_SECONDS);
         }
     }
 
@@ -312,12 +348,21 @@ public class TailwindHandler extends BaseThingHandler {
                 }
             }
         }
+        try {
+            controllerAddresses = Set.of(InetAddress.getAllByName(config.hostname.trim()));
+        } catch (UnknownHostException e) {
+            throw new TailwindCommunicationException("Cannot resolve " + config.hostname + ": " + e.getMessage(), e);
+        }
         currentApi.setNotifyUrl(address + ":" + port);
         logger.debug("{} sends its status reports to {}:{}", thing.getUID(), address, port);
     }
 
-    private void handleNotification(String message) {
+    private void handleNotification(InetAddress sender, String message) {
         if (api == null) {
+            return;
+        }
+        if (!controllerAddresses.contains(sender)) {
+            logger.debug("Ignoring a status report from {}, which is not the controller", sender.getHostAddress());
             return;
         }
         TailwindStatus status = TailwindApi.parse(message);
@@ -325,7 +370,7 @@ public class TailwindHandler extends BaseThingHandler {
             logger.debug("Ignoring a status report that is not valid JSON");
             return;
         }
-        // UDP has no sender check, so at least ignore reports of other controllers
+        // A controller that took over the address of another one
         String reportedMac = TailwindDeviceId.toMacAddress(status.deviceId);
         String mac = thing.getProperties().get(Thing.PROPERTY_MAC_ADDRESS);
         if (reportedMac == null || !reportedMac.equals(mac)) {
