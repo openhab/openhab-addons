@@ -10,8 +10,6 @@
 			<channel id="evcs-number" typeId="hager-flow-evse-evcs-number"/>
 			<channel id="evcs-type" typeId="hager-flow-evse-evcs-type"/>
 			<channel id="evcs-name" typeId="hager-flow-evse-evcs-name"/>
-			<channel id="evcs-serial" typeId="hager-flow-evse-evcs-serial"/>
-			<channel id="evcs-firmware-version" typeId="hager-flow-evse-evcs-firmware-version"/>
 		</channels>
 	</channel-group-type>
 	<channel-group-type id="hager-flow-evse-general-status-and-configuration">

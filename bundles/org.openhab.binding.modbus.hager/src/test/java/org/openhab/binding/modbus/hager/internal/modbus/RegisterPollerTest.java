@@ -39,6 +39,7 @@ import org.openhab.core.io.transport.modbus.ModbusReadCallback;
 import org.openhab.core.io.transport.modbus.ModbusReadRequestBlueprint;
 import org.openhab.core.io.transport.modbus.ModbusRegisterArray;
 import org.openhab.core.io.transport.modbus.PollTask;
+import org.openhab.core.thing.Thing;
 
 /**
  * The {@link RegisterPollerTest} verifies the lifecycle of the regular polls and of the one-time requests. In
@@ -201,6 +202,34 @@ public class RegisterPollerTest {
         deliverFailure(1, new IllegalStateException("connection closed"));
 
         verify(listener).onStatus(PollStatus.FAILED);
+    }
+
+    @Test
+    public void testPropertyRegisterIsReadOnceAndNotPolled() {
+        Register propertyRegister = new Register("evcs-serial", "identity", 100, 1, DataType.STRING, Access.READ_ONLY,
+                null, Map.of(), List.of(), Thing.PROPERTY_SERIAL_NUMBER);
+        RegisterPoller propertyPoller = new RegisterPoller(THING_UID, SLAVE_ID, REFRESH_MS,
+                List.of(READ_ONLY_REGISTER, propertyRegister), listener);
+        List<ModbusReadRequestBlueprint> propertyRequests = new ArrayList<>();
+        List<ModbusReadCallback> propertyCallbacks = new ArrayList<>();
+        when(comms.submitOneTimePoll(any(), any(), any())).thenAnswer(invocation -> {
+            propertyRequests.add(invocation.getArgument(0));
+            propertyCallbacks.add(invocation.getArgument(1));
+            return mockFuture();
+        });
+
+        propertyPoller.start(comms);
+
+        verify(comms, times(1)).registerRegularPoll(any(), anyLong(), anyLong(), any(), any());
+        verify(comms, times(1)).submitOneTimePoll(any(), any(), any());
+        // the property block does not take part in the poll status
+        deliverResult(0, new ModbusRegisterArray(1));
+        verify(listener).onStatus(PollStatus.OK);
+        // its values are published through the same listener
+        propertyCallbacks.get(0)
+                .handle(new AsyncModbusReadResult(propertyRequests.get(0), new ModbusRegisterArray(0x534E)));
+        verify(listener).onUpdates(argThat(updates -> updates.size() == 1
+                && "evcs-serial".equals(updates.get(0).channelId()) && "SN".equals(updates.get(0).state().toString())));
     }
 
     private void deliverResult(int index, ModbusRegisterArray registers) {

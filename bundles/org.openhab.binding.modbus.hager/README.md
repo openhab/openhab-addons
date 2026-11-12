@@ -62,18 +62,21 @@ Values which are declared as an enumeration in the Modbus table are provided as 
 Numeric status and type codes are provided as `Number` channels with state options mapping the codes.
 The possible values are listed in the channel description.
 Registers with independent bits are provided as one `Switch` channel per bit.
+Static device identification values are provided as Thing properties, not as channels.
 
 ### Hager Flow EMS (`hager-flow-ems`)
 
-#### Device Identification (`device-identification`)
+#### Device Identification (Thing properties)
 
-| Channel | Type | Access | Label | Description |
-|---------|------|--------|-------|-------------|
-| vendor-name | String | RO | Vendor Name |  |
-| product-code | String | RO | Product Code |  |
-| vendor-url | String | RO | Vendor URL |  |
-| product-serial-number | String | RO | Product Code (Serial number) |  |
-| sw-version | String | RO | SW version |  |
+| Property          | Register | Content                |
+|-------------------|----------|------------------------|
+| `vendor`          | 0        | Vendor name            |
+| `modelId`         | 16       | Product code           |
+| `vendorUrl`       | 32       | Vendor URL             |
+| `serialNumber`    | 48       | Product serial number  |
+| `firmwareVersion` | 64       | Software version       |
+
+The values are read once when the Thing starts and refreshed on every reconnect.
 
 #### General Information (`general-information`)
 
@@ -145,8 +148,8 @@ Registers with independent bits are provided as one `Switch` channel per bit.
 | evcs-number           | Number | RO     | EVCS Number           |                                                                                                                                                                                     |
 | evcs-type             | Number | RO     | EVCS Type             | State options: 0 = virtual, 1 = E3DC wallbox, 2 = Easy Connect wallbox, 4 = wallbox RSCP group (farming), 5 = Edison Connect wallbox, 6 = Multi Connect wallbox, 7 = Eebus Wallbox. |
 | evcs-name             | String | RO     | EVCS Name             | Friendly name set by User.                                                                                                                                                          |
-| evcs-serial           | String | RO     | EVCS Serial           |                                                                                                                                                                                     |
-| evcs-firmware-version | String | RO     | EVCS Firmware version |                                                                                                                                                                                     |
+
+`serialNumber` and `firmwareVersion` are provided as Thing properties.
 
 #### General Status and configuration (`general-status-and-configuration`)
 

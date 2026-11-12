@@ -52,6 +52,9 @@ public class HagerFlowDeviceHandler extends BaseThingHandler implements Register
 
     private static final Logger LOGGER = LoggerFactory.getLogger(HagerFlowDeviceHandler.class);
 
+    private static final String NO_ENERGY_MANAGER = "No energy manager configured";
+    private static final String NOT_AN_ENERGY_MANAGER = "Bridge is not an energy manager";
+    private static final String ENERGY_MANAGER_NOT_INITIALIZED = "Energy manager is not initialized";
     private static final String BRIDGE_NOT_INITIALIZED = "Communication interface of the energy manager is not available";
     private static final String BRIDGE_OFFLINE = "Energy manager is offline";
 
@@ -69,7 +72,7 @@ public class HagerFlowDeviceHandler extends BaseThingHandler implements Register
     public HagerFlowDeviceHandler(Thing thing, HagerFlowRole role) {
         super(thing);
         this.role = role;
-        channels = new HagerFlowChannels(thing, role.registers(), this::updateState);
+        channels = new HagerFlowChannels(thing, role.registers(), this::updateProperty, this::updateState);
     }
 
     @Override
@@ -140,23 +143,29 @@ public class HagerFlowDeviceHandler extends BaseThingHandler implements Register
 
     private @Nullable ModbusCommunicationInterface connectEndpoint() {
         Bridge bridge = getBridge();
-        ThingHandler handler = bridge == null ? null : bridge.getHandler();
+        if (bridge == null) {
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, NO_ENERGY_MANAGER);
+            LOGGER.debug("[{}] {}", thing.getUID(), NO_ENERGY_MANAGER);
+            return null;
+        }
+        ThingHandler handler = bridge.getHandler();
+        if (handler == null) {
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE, ENERGY_MANAGER_NOT_INITIALIZED);
+            LOGGER.debug("[{}] Energy manager {} is not initialized yet", thing.getUID(), bridge.getUID());
+            return null;
+        }
         if (!(handler instanceof HagerFlowEmsHandler ems)) {
-            updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED, BRIDGE_NOT_INITIALIZED);
-            LOGGER.debug("[{}] Bridge {} is not an energy manager, {}: {}", thing.getUID(),
-                    bridge == null ? "<null>" : bridge.getUID(), BRIDGE_NOT_INITIALIZED,
-                    handler == null ? "<null>" : handler.getClass().getSimpleName());
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, NOT_AN_ENERGY_MANAGER);
+            LOGGER.debug("[{}] {}: {}", thing.getUID(), NOT_AN_ENERGY_MANAGER, bridge.getUID());
             return null;
         }
         ModbusCommunicationInterface communicationInterface = ems.getComms();
         if (communicationInterface == null) {
             updateStatus(ThingStatusDetail.BRIDGE_OFFLINE, BRIDGE_NOT_INITIALIZED);
-            LOGGER.debug("[{}] Energy manager {} has no communication interface yet", thing.getUID(),
-                    bridge == null ? "<null>" : bridge.getUID());
+            LOGGER.debug("[{}] Energy manager {} has no communication interface yet", thing.getUID(), bridge.getUID());
             return null;
         }
-        LOGGER.debug("[{}] Using Modbus connection of energy manager {}", thing.getUID(),
-                bridge == null ? "<null>" : bridge.getUID());
+        LOGGER.debug("[{}] Using Modbus connection of energy manager {}", thing.getUID(), bridge.getUID());
         return communicationInterface;
     }
 

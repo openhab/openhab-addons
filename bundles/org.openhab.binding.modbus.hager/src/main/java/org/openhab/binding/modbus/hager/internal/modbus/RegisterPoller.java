@@ -91,6 +91,7 @@ public class RegisterPoller {
     private final long refreshMillis;
     private final Listener listener;
     private final Map<ReadRange, List<Register>> blocks = new LinkedHashMap<>();
+    private final Map<ReadRange, List<Register>> propertyBlocks = new LinkedHashMap<>();
     private final List<PollTask> pollTasks = new ArrayList<>();
     private final List<Future<?>> oneTimeRequests = new ArrayList<>();
     private final Map<ReadRange, Boolean> outcomes = new LinkedHashMap<>();
@@ -108,7 +109,8 @@ public class RegisterPoller {
      * @param thingUid UID of the Thing this poller belongs to, used to attribute the log messages
      * @param slaveId Modbus unit id to read from
      * @param refreshMillis poll interval in milliseconds
-     * @param registers all registers of the Thing
+     * @param registers all registers of the Thing; registers with a Thing property are read once on start instead of
+     *            being polled regularly
      * @param listener receiver of the decoded values and the communication status
      */
     public RegisterPoller(String thingUid, int slaveId, long refreshMillis, List<Register> registers,
@@ -117,8 +119,13 @@ public class RegisterPoller {
         this.slaveId = slaveId;
         this.refreshMillis = refreshMillis;
         this.listener = listener;
-        for (ReadRange range : ReadRange.of(registers)) {
-            blocks.put(range, registers.stream().filter(range::contains).toList());
+        List<Register> polled = registers.stream().filter(register -> register.propertyName() == null).toList();
+        List<Register> properties = registers.stream().filter(register -> register.propertyName() != null).toList();
+        for (ReadRange range : ReadRange.of(polled)) {
+            blocks.put(range, polled.stream().filter(range::contains).toList());
+        }
+        for (ReadRange range : ReadRange.of(properties)) {
+            propertyBlocks.put(range, properties.stream().filter(range::contains).toList());
         }
     }
 
@@ -144,17 +151,24 @@ public class RegisterPoller {
                             result -> handleResult(range, block.getValue(), result),
                             failure -> handleFailure(range, failure)));
                 }
+                for (Map.Entry<ReadRange, List<Register>> block : propertyBlocks.entrySet()) {
+                    ReadRange range = block.getKey();
+                    oneTimeRequests.add(communicationInterface.submitOneTimePoll(readRequest(range),
+                            result -> handlePropertyResult(range, block.getValue(), result),
+                            failure -> handlePropertyFailure(range, failure)));
+                }
             } catch (IllegalStateException e) {
                 // the endpoint closed the interface before the polls were registered; close() unregisters them again
                 LOGGER.debug("[{}] Communication interface is closed already: {}", thingUid, e.getMessage());
                 running = false;
                 comms = null;
                 pollTasks.clear();
+                oneTimeRequests.clear();
                 return;
             }
         }
-        LOGGER.debug("[{}] Polling slave {} every {} ms with {} read blocks: {}", thingUid, slaveId, refreshMillis,
-                blocks.size(), blocks.keySet());
+        LOGGER.debug("[{}] Polling slave {} every {} ms with {} read blocks and {} property blocks: {}", thingUid,
+                slaveId, refreshMillis, blocks.size(), propertyBlocks.size(), blocks.keySet());
     }
 
     /**
@@ -304,15 +318,55 @@ public class RegisterPoller {
                 return;
             }
             LOGGER.trace("[{}] Slave {} answered {} with {}", thingUid, slaveId, range, array.toHexString());
-            List<ChannelUpdate> updates = new ArrayList<>();
-            for (Register register : blockRegisters) {
-                updates.addAll(RegisterDecoder.decode(thingUid, register, array, range.start()));
-            }
+            List<ChannelUpdate> updates = decode(range, blockRegisters, array);
             if (!updates.isEmpty()) {
                 listener.onUpdates(updates);
             }
             setOutcome(range, true);
         }
+    }
+
+    /**
+     * Publishes the values of a property block which was read once on start. Property reads are not regular polls and
+     * do not take part in the poll status.
+     */
+    private void handlePropertyResult(ReadRange range, List<Register> blockRegisters, AsyncModbusReadResult result) {
+        synchronized (lock) {
+            if (!running) {
+                return;
+            }
+            Optional<ModbusRegisterArray> registers = result.getRegisters();
+            if (registers.isEmpty() || registers.get().size() < range.length()) {
+                LOGGER.debug("[{}] Slave {} returned no complete answer for property block {}", thingUid, slaveId,
+                        range);
+                return;
+            }
+            ModbusRegisterArray array = registers.get();
+            LOGGER.trace("[{}] Slave {} answered property block {} with {}", thingUid, slaveId, range,
+                    array.toHexString());
+            List<ChannelUpdate> updates = decode(range, blockRegisters, array);
+            if (!updates.isEmpty()) {
+                listener.onUpdates(updates);
+            }
+        }
+    }
+
+    private void handlePropertyFailure(ReadRange range, AsyncModbusFailure<ModbusReadRequestBlueprint> failure) {
+        synchronized (lock) {
+            if (!running) {
+                return;
+            }
+            LOGGER.debug("[{}] Slave {} failed to answer property block {}: {}", thingUid, slaveId, range,
+                    failure.getCause().getMessage());
+        }
+    }
+
+    private List<ChannelUpdate> decode(ReadRange range, List<Register> blockRegisters, ModbusRegisterArray array) {
+        List<ChannelUpdate> updates = new ArrayList<>();
+        for (Register register : blockRegisters) {
+            updates.addAll(RegisterDecoder.decode(thingUid, register, array, range.start()));
+        }
+        return updates;
     }
 
     private void handleFailure(ReadRange range, AsyncModbusFailure<ModbusReadRequestBlueprint> failure) {

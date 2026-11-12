@@ -30,8 +30,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link HagerFlowChannels} resolves the decoded register values of one Thing to its channels and looks up the
- * register behind a channel.
+ * The {@link HagerFlowChannels} resolves the decoded register values of one Thing to its channels and Thing properties
+ * and looks up the register behind a channel.
  *
  * @author Bernd Weymann - Initial contribution
  */
@@ -42,10 +42,13 @@ class HagerFlowChannels {
 
     private final Map<ChannelKey, ChannelUID> channelUids = new HashMap<>();
     private final Map<String, Register> registers = new HashMap<>();
+    private final BiConsumer<String, String> propertyConsumer;
     private final BiConsumer<ChannelUID, State> stateConsumer;
     private final String thingUid;
 
-    HagerFlowChannels(Thing thing, List<Register> registers, BiConsumer<ChannelUID, State> stateConsumer) {
+    HagerFlowChannels(Thing thing, List<Register> registers, BiConsumer<String, String> propertyConsumer,
+            BiConsumer<ChannelUID, State> stateConsumer) {
+        this.propertyConsumer = propertyConsumer;
         this.stateConsumer = stateConsumer;
         this.thingUid = thing.getUID().toString();
         for (Register register : registers) {
@@ -55,19 +58,30 @@ class HagerFlowChannels {
                     this.registers.put(flag.channelId(), register);
                     add(thing, register.groupId(), flag.channelId());
                 }
-            } else if (register.dataType() != DataType.BITFIELD) {
+            } else if (register.propertyName() == null && register.dataType() != DataType.BITFIELD) {
                 add(thing, register.groupId(), register.channelId());
             }
         }
     }
 
     /**
-     * Publishes the given decoded values to their channels.
+     * Publishes the given decoded values to their channels or Thing properties.
      *
      * @param updates the decoded values
      */
     void apply(List<ChannelUpdate> updates) {
         for (ChannelUpdate update : updates) {
+            Register register = registers.get(update.channelId());
+            if (register != null) {
+                String propertyName = register.propertyName();
+                if (propertyName != null) {
+                    String value = update.state().toString();
+                    if (!value.isBlank()) {
+                        propertyConsumer.accept(propertyName, value);
+                    }
+                    continue;
+                }
+            }
             ChannelUID channelUID = channelUids.get(new ChannelKey(update.groupId(), update.channelId()));
             if (channelUID == null) {
                 LOGGER.debug("[{}] No channel {} in group {}", thingUid, update.channelId(), update.groupId());

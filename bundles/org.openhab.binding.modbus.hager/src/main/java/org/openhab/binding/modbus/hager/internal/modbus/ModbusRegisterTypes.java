@@ -82,8 +82,16 @@ public final class ModbusRegisterTypes {
      * @param enumValues maps the raw value of a register to the label of the selected meaning, empty if the register
      *            is not a whole value enumeration
      * @param bitFlags independently meaningful bits of the register, empty if it has none
+     * @param propertyName the Thing property the value is published to instead of a channel, {@code null} for channel
+     *            registers
      */
     public record Register(String channelId, String groupId, int address, int length, DataType dataType, Access access,
-            @Nullable Unit<?> unit, Map<Integer, String> enumValues, List<BitFlag> bitFlags) {
+            @Nullable Unit<?> unit, Map<Integer, String> enumValues, List<BitFlag> bitFlags,
+            @Nullable String propertyName) {
+
+        public Register(String channelId, String groupId, int address, int length, DataType dataType, Access access,
+                @Nullable Unit<?> unit, Map<Integer, String> enumValues, List<BitFlag> bitFlags) {
+            this(channelId, groupId, address, length, dataType, access, unit, enumValues, bitFlags, null);
+        }
     }
 }

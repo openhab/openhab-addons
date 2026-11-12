@@ -19,9 +19,11 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.modbus.hager.internal.HagerFlowBindingConstants;
 import org.openhab.binding.modbus.hager.internal.modbus.ModbusRegisterTypes.BitFlag;
 import org.openhab.binding.modbus.hager.internal.modbus.ModbusRegisterTypes.Register;
 import org.openhab.core.library.unit.Units;
+import org.openhab.core.thing.Thing;
 
 /**
  * The {@link HagerFlowEmsRegisterMap} declares the Modbus registers of the Hager Flow EMS.
@@ -43,15 +45,16 @@ public final class HagerFlowEmsRegisterMap {
     private static final String GROUP_ROOT_MAIN_MEASUREMENTS = "root-main-measurements";
 
     public static final Register VENDOR_NAME = new Register("vendor-name", GROUP_DEVICE_IDENTIFICATION, 0, 16, STRING,
-            READ_ONLY, null, Map.of(), List.of());
+            READ_ONLY, null, Map.of(), List.of(), Thing.PROPERTY_VENDOR);
     public static final Register PRODUCT_CODE = new Register("product-code", GROUP_DEVICE_IDENTIFICATION, 16, 16,
-            STRING, READ_ONLY, null, Map.of(), List.of());
+            STRING, READ_ONLY, null, Map.of(), List.of(), Thing.PROPERTY_MODEL_ID);
     public static final Register VENDOR_URL = new Register("vendor-url", GROUP_DEVICE_IDENTIFICATION, 32, 16, STRING,
-            READ_ONLY, null, Map.of(), List.of());
+            READ_ONLY, null, Map.of(), List.of(), HagerFlowBindingConstants.PROPERTY_VENDOR_URL);
     public static final Register PRODUCT_SERIAL_NUMBER = new Register("product-serial-number",
-            GROUP_DEVICE_IDENTIFICATION, 48, 16, STRING, READ_ONLY, null, Map.of(), List.of());
+            GROUP_DEVICE_IDENTIFICATION, 48, 16, STRING, READ_ONLY, null, Map.of(), List.of(),
+            Thing.PROPERTY_SERIAL_NUMBER);
     public static final Register SW_VERSION = new Register("sw-version", GROUP_DEVICE_IDENTIFICATION, 64, 16, STRING,
-            READ_ONLY, null, Map.of(), List.of());
+            READ_ONLY, null, Map.of(), List.of(), Thing.PROPERTY_FIRMWARE_VERSION);
     public static final Register MAX_CURRENT_PHASE = new Register("max-current-phase", GROUP_GENERAL_INFORMATION, 272,
             1, U16, READ_ONLY, Units.AMPERE, Map.of(), List.of());
     public static final Register MAX_CURRENT_PHASE_DERATED = new Register("max-current-phase-derated",

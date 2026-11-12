@@ -20,6 +20,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -27,11 +28,13 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.modbus.hager.internal.HagerFlowRole;
+import org.openhab.binding.modbus.hager.internal.modbus.ChannelUpdate;
 import org.openhab.binding.modbus.hager.internal.modbus.RegisterPoller.PollStatus;
 import org.openhab.binding.modbus.handler.ModbusEndpointThingHandler;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.io.transport.modbus.ModbusCommunicationInterface;
 import org.openhab.core.io.transport.modbus.PollTask;
+import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -231,6 +234,126 @@ public class HagerFlowHandlerTest {
         handler.bridgeStatusChanged(new ThingStatusInfo(ThingStatus.ONLINE, ThingStatusDetail.NONE, null));
 
         verify(comms, timeout(TIMEOUT_MS).atLeastOnce()).registerRegularPoll(any(), anyLong(), anyLong(), any(), any());
+    }
+
+    @Test
+    public void testDeviceWithoutBridgeIsConfigurationError() {
+        Thing thing = deviceThing();
+        ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
+        HagerFlowDeviceHandler handler = new HagerFlowDeviceHandler(thing, HagerFlowRole.EVSE);
+        handler.setCallback(callback);
+
+        handler.initialize();
+
+        verify(callback, timeout(TIMEOUT_MS)).statusUpdated(eq(thing),
+                argThat(info -> info.getStatus() == ThingStatus.OFFLINE
+                        && info.getStatusDetail() == ThingStatusDetail.CONFIGURATION_ERROR));
+    }
+
+    @Test
+    public void testDeviceWithForeignBridgeIsConfigurationError() {
+        Thing thing = deviceThing();
+        Bridge emsBridge = mock(Bridge.class);
+        when(emsBridge.getUID()).thenReturn(EMS_UID);
+        when(emsBridge.getHandler()).thenReturn(mock(BridgeHandler.class));
+        when(thing.getBridgeUID()).thenReturn(EMS_UID);
+        ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
+        when(callback.getBridge(EMS_UID)).thenReturn(emsBridge);
+
+        HagerFlowDeviceHandler handler = new HagerFlowDeviceHandler(thing, HagerFlowRole.EVSE);
+        handler.setCallback(callback);
+
+        handler.initialize();
+
+        verify(callback, timeout(TIMEOUT_MS)).statusUpdated(eq(thing),
+                argThat(info -> info.getStatus() == ThingStatus.OFFLINE
+                        && info.getStatusDetail() == ThingStatusDetail.CONFIGURATION_ERROR));
+    }
+
+    @Test
+    public void testEmsWithoutBridgeIsConfigurationError() {
+        Bridge emsThing = mock(Bridge.class);
+        when(emsThing.getUID()).thenReturn(EMS_UID);
+        when(emsThing.getConfiguration()).thenReturn(configuration(0, 5000));
+        ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
+
+        HagerFlowEmsHandler handler = new HagerFlowEmsHandler(emsThing);
+        handler.setCallback(callback);
+
+        handler.initialize();
+
+        verify(callback, timeout(TIMEOUT_MS)).statusUpdated(eq((Thing) emsThing),
+                argThat(info -> info.getStatus() == ThingStatus.OFFLINE
+                        && info.getStatusDetail() == ThingStatusDetail.CONFIGURATION_ERROR));
+    }
+
+    @Test
+    public void testEmsWithNonModbusBridgeIsConfigurationError() {
+        Bridge modbusBridge = mock(Bridge.class);
+        when(modbusBridge.getUID()).thenReturn(MODBUS_BRIDGE_UID);
+        when(modbusBridge.getHandler()).thenReturn(mock(BridgeHandler.class));
+        Bridge emsThing = mock(Bridge.class);
+        when(emsThing.getUID()).thenReturn(EMS_UID);
+        when(emsThing.getBridgeUID()).thenReturn(MODBUS_BRIDGE_UID);
+        when(emsThing.getConfiguration()).thenReturn(configuration(0, 5000));
+        ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
+        when(callback.getBridge(MODBUS_BRIDGE_UID)).thenReturn(modbusBridge);
+
+        HagerFlowEmsHandler handler = new HagerFlowEmsHandler(emsThing);
+        handler.setCallback(callback);
+
+        handler.initialize();
+
+        verify(callback, timeout(TIMEOUT_MS)).statusUpdated(eq((Thing) emsThing),
+                argThat(info -> info.getStatus() == ThingStatus.OFFLINE
+                        && info.getStatusDetail() == ThingStatusDetail.CONFIGURATION_ERROR));
+    }
+
+    @Test
+    public void testDevicePublishesIdentityAsThingProperties() {
+        Thing thing = deviceThing();
+        when(thing.getProperties()).thenReturn(new HashMap<>());
+        ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
+        HagerFlowDeviceHandler handler = new HagerFlowDeviceHandler(thing, HagerFlowRole.EVSE);
+        handler.setCallback(callback);
+
+        handler.onUpdates(List.of(new ChannelUpdate("identity", "evcs-serial", new StringType("SN123")),
+                new ChannelUpdate("identity", "evcs-firmware-version", new StringType("1.2.3"))));
+
+        verify(thing).setProperty(Thing.PROPERTY_SERIAL_NUMBER, "SN123");
+        verify(thing).setProperty(Thing.PROPERTY_FIRMWARE_VERSION, "1.2.3");
+        verify(callback, times(2)).thingUpdated(thing);
+        verify(callback, never()).stateUpdated(any(), any());
+    }
+
+    @Test
+    public void testDeviceIgnoresEmptyIdentityValue() {
+        Thing thing = deviceThing();
+        when(thing.getProperties()).thenReturn(new HashMap<>());
+        ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
+        HagerFlowDeviceHandler handler = new HagerFlowDeviceHandler(thing, HagerFlowRole.EVSE);
+        handler.setCallback(callback);
+
+        handler.onUpdates(List.of(new ChannelUpdate("identity", "evcs-serial", new StringType(" "))));
+
+        verify(thing, never()).setProperty(any(), any());
+        verify(callback, never()).thingUpdated(any());
+    }
+
+    @Test
+    public void testEmsPublishesVendorAsThingProperty() {
+        Bridge emsThing = mock(Bridge.class);
+        when(emsThing.getUID()).thenReturn(EMS_UID);
+        when(emsThing.getProperties()).thenReturn(new HashMap<>());
+        ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
+        HagerFlowEmsHandler handler = new HagerFlowEmsHandler(emsThing);
+        handler.setCallback(callback);
+
+        handler.onUpdates(List.of(new ChannelUpdate("device-identification", "vendor-name", new StringType("Hager"))));
+
+        verify(emsThing).setProperty(Thing.PROPERTY_VENDOR, "Hager");
+        verify(callback).thingUpdated(emsThing);
+        verify(callback, never()).stateUpdated(any(), any());
     }
 
     /**

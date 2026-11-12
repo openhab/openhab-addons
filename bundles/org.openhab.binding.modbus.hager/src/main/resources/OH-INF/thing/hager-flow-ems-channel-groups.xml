@@ -3,17 +3,6 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
-	<channel-group-type id="hager-flow-ems-device-identification">
-		<label>Device Identification</label>
-		<description>Identification of the device, read as ASCII strings.</description>
-		<channels>
-			<channel id="vendor-name" typeId="hager-flow-ems-vendor-name"/>
-			<channel id="product-code" typeId="hager-flow-ems-product-code"/>
-			<channel id="vendor-url" typeId="hager-flow-ems-vendor-url"/>
-			<channel id="product-serial-number" typeId="hager-flow-ems-product-serial-number"/>
-			<channel id="sw-version" typeId="hager-flow-ems-sw-version"/>
-		</channels>
-	</channel-group-type>
 	<channel-group-type id="hager-flow-ems-general-information">
 		<label>General Information</label>
 		<description>Setup of the energy manager, such as fuse rating and connected charging stations.</description>

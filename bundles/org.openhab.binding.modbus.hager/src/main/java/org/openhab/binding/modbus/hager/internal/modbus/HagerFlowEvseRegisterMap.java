@@ -22,6 +22,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.modbus.hager.internal.modbus.ModbusRegisterTypes.BitFlag;
 import org.openhab.binding.modbus.hager.internal.modbus.ModbusRegisterTypes.Register;
 import org.openhab.core.library.unit.Units;
+import org.openhab.core.thing.Thing;
 
 /**
  * The {@link HagerFlowEvseRegisterMap} declares the Modbus registers of the Hager Flow EVSE.
@@ -49,9 +50,9 @@ public final class HagerFlowEvseRegisterMap {
     public static final Register EVCS_NAME = new Register("evcs-name", GROUP_IDENTITY, 4099, 50, STRING, READ_ONLY,
             null, Map.of(), List.of());
     public static final Register EVCS_SERIAL = new Register("evcs-serial", GROUP_IDENTITY, 4149, 16, STRING, READ_ONLY,
-            null, Map.of(), List.of());
+            null, Map.of(), List.of(), Thing.PROPERTY_SERIAL_NUMBER);
     public static final Register EVCS_FIRMWARE_VERSION = new Register("evcs-firmware-version", GROUP_IDENTITY, 4165, 32,
-            STRING, READ_ONLY, null, Map.of(), List.of());
+            STRING, READ_ONLY, null, Map.of(), List.of(), Thing.PROPERTY_FIRMWARE_VERSION);
     public static final Register EVCS_STATE = new Register("evcs-state", GROUP_GENERAL_STATUS_AND_CONFIGURATION, 4608,
             1, U16, READ_ONLY, null, Map.of(),
             List.of(new BitFlag(0, "evcs-state-normal-mode", "normal mode", "not in normal mode"),

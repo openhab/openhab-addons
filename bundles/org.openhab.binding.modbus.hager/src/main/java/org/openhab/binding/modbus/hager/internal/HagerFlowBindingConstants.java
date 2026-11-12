@@ -45,6 +45,9 @@ public class HagerFlowBindingConstants {
 
     public static final String READ_ERROR = "Modbus read error";
 
+    /** Thing property for the vendor URL, which has no core constant. */
+    public static final String PROPERTY_VENDOR_URL = "vendorUrl";
+
     /** Raw value switching a boolean register on. */
     public static final int ON = 1;
 

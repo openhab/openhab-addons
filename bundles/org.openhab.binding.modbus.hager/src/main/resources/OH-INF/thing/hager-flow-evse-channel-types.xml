@@ -30,14 +30,6 @@
 		<label>EVCS Name</label>
 		<description>Friendly name set by User.</description>
 	</channel-type>
-	<channel-type id="hager-flow-evse-evcs-serial">
-		<item-type>String</item-type>
-		<label>EVCS Serial</label>
-	</channel-type>
-	<channel-type id="hager-flow-evse-evcs-firmware-version">
-		<item-type>String</item-type>
-		<label>EVCS Firmware version</label>
-	</channel-type>
 	<channel-type id="hager-flow-evse-evcs-state-normal-mode">
 		<item-type>Switch</item-type>
 		<label>Normal Mode</label>

@@ -3,26 +3,6 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
-	<channel-type id="hager-flow-ems-vendor-name">
-		<item-type>String</item-type>
-		<label>Vendor Name</label>
-	</channel-type>
-	<channel-type id="hager-flow-ems-product-code">
-		<item-type>String</item-type>
-		<label>Product Code</label>
-	</channel-type>
-	<channel-type id="hager-flow-ems-vendor-url">
-		<item-type>String</item-type>
-		<label>Vendor URL</label>
-	</channel-type>
-	<channel-type id="hager-flow-ems-product-serial-number">
-		<item-type>String</item-type>
-		<label>Product Code (Serial number)</label>
-	</channel-type>
-	<channel-type id="hager-flow-ems-sw-version">
-		<item-type>String</item-type>
-		<label>SW version</label>
-	</channel-type>
 	<channel-type id="hager-flow-ems-max-current-phase">
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>Max Current Phase</label>

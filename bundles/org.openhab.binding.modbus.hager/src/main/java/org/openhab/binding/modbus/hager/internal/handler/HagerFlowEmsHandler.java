@@ -68,7 +68,7 @@ public class HagerFlowEmsHandler extends BaseBridgeHandler implements RegisterPo
 
     public HagerFlowEmsHandler(Bridge thing) {
         super(thing);
-        channels = new HagerFlowChannels(thing, role.registers(), this::updateState);
+        channels = new HagerFlowChannels(thing, role.registers(), this::updateProperty, this::updateState);
     }
 
     /**
@@ -149,13 +149,18 @@ public class HagerFlowEmsHandler extends BaseBridgeHandler implements RegisterPo
     private @Nullable ModbusCommunicationInterface connectEndpoint() {
         Bridge bridge = getBridge();
         if (bridge == null) {
-            updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED, NO_BRIDGE);
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, NO_BRIDGE);
             LOGGER.debug("[{}] {}", thing.getUID(), NO_BRIDGE);
             return null;
         }
         ThingHandler handler = bridge.getHandler();
+        if (handler == null) {
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE, String.format(BRIDGE_NOT_INITIALIZED, bridge.getLabel()));
+            LOGGER.debug("[{}] Bridge {} is not initialized yet", thing.getUID(), bridge.getUID());
+            return null;
+        }
         if (!(handler instanceof ModbusEndpointThingHandler endpoint)) {
-            updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED, NOT_A_MODBUS_BRIDGE);
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, NOT_A_MODBUS_BRIDGE);
             LOGGER.debug("[{}] {}: {}", thing.getUID(), NOT_A_MODBUS_BRIDGE, bridge.getUID());
             return null;
         }
