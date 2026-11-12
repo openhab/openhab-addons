@@ -13,9 +13,12 @@
 package org.openhab.binding.denonmarantz.internal;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.QuantityType;
@@ -39,6 +42,8 @@ public class DenonMarantzState {
     private @Nullable State mainVolumeDB;
     private @Nullable State input;
     private @Nullable State surroundProgram;
+    private @Nullable State allZoneStereo;
+    private @Nullable State speakerPreset;
 
     private @Nullable State artist;
     private @Nullable State album;
@@ -64,6 +69,7 @@ public class DenonMarantzState {
     private @Nullable State zone4Input;
 
     private DenonMarantzStateChangedListener handler;
+    private final Map<String, State> channelVolumes = new HashMap<>();
 
     public DenonMarantzState(DenonMarantzStateChangedListener handler) {
         this.handler = handler;
@@ -89,7 +95,46 @@ public class DenonMarantzState {
                 return input;
             case DenonMarantzBindingConstants.CHANNEL_SURROUND_PROGRAM:
                 return surroundProgram;
-
+            case DenonMarantzBindingConstants.CHANNEL_ALL_ZONE_STEREO:
+                return allZoneStereo;
+            case DenonMarantzBindingConstants.CHANNEL_SPEAKER_PRESET:
+                return speakerPreset;
+            case DenonMarantzBindingConstants.CHANNEL_CVFL:
+            case DenonMarantzBindingConstants.CHANNEL_CVFR:
+            case DenonMarantzBindingConstants.CHANNEL_CVC:
+            case DenonMarantzBindingConstants.CHANNEL_CVSW:
+            case DenonMarantzBindingConstants.CHANNEL_CVSW2:
+            case DenonMarantzBindingConstants.CHANNEL_CVSW3:
+            case DenonMarantzBindingConstants.CHANNEL_CVSW4:
+            case DenonMarantzBindingConstants.CHANNEL_CVSL:
+            case DenonMarantzBindingConstants.CHANNEL_CVSR:
+            case DenonMarantzBindingConstants.CHANNEL_CVSBL:
+            case DenonMarantzBindingConstants.CHANNEL_CVSBR:
+            case DenonMarantzBindingConstants.CHANNEL_CVSB:
+            case DenonMarantzBindingConstants.CHANNEL_CVFHL:
+            case DenonMarantzBindingConstants.CHANNEL_CVFHR:
+            case DenonMarantzBindingConstants.CHANNEL_CVFWL:
+            case DenonMarantzBindingConstants.CHANNEL_CVFWR:
+            case DenonMarantzBindingConstants.CHANNEL_CVTFL:
+            case DenonMarantzBindingConstants.CHANNEL_CVTFR:
+            case DenonMarantzBindingConstants.CHANNEL_CVTML:
+            case DenonMarantzBindingConstants.CHANNEL_CVTMR:
+            case DenonMarantzBindingConstants.CHANNEL_CVTRL:
+            case DenonMarantzBindingConstants.CHANNEL_CVTRR:
+            case DenonMarantzBindingConstants.CHANNEL_CVRHL:
+            case DenonMarantzBindingConstants.CHANNEL_CVRHR:
+            case DenonMarantzBindingConstants.CHANNEL_CVFDL:
+            case DenonMarantzBindingConstants.CHANNEL_CVFDR:
+            case DenonMarantzBindingConstants.CHANNEL_CVSDL:
+            case DenonMarantzBindingConstants.CHANNEL_CVSDR:
+            case DenonMarantzBindingConstants.CHANNEL_CVBDL:
+            case DenonMarantzBindingConstants.CHANNEL_CVBDR:
+            case DenonMarantzBindingConstants.CHANNEL_CVSHL:
+            case DenonMarantzBindingConstants.CHANNEL_CVSHR:
+            case DenonMarantzBindingConstants.CHANNEL_CVTS:
+            case DenonMarantzBindingConstants.CHANNEL_CVCH:
+            case DenonMarantzBindingConstants.CHANNEL_CVTTR:
+                return channelVolumes.get(channelID);
             case DenonMarantzBindingConstants.CHANNEL_NOW_PLAYING_ARTIST:
                 return artist;
             case DenonMarantzBindingConstants.CHANNEL_NOW_PLAYING_ALBUM:
@@ -184,6 +229,32 @@ public class DenonMarantzState {
         if (!newVal.equals(this.surroundProgram)) {
             this.surroundProgram = newVal;
             handler.stateChanged(DenonMarantzBindingConstants.CHANNEL_SURROUND_PROGRAM, newVal);
+        }
+    }
+
+    public void setAllZoneStereo(boolean allZoneStereo) {
+        OnOffType newVal = OnOffType.from(allZoneStereo);
+        if (newVal != this.allZoneStereo) {
+            this.allZoneStereo = newVal;
+            handler.stateChanged(DenonMarantzBindingConstants.CHANNEL_ALL_ZONE_STEREO, newVal);
+        }
+    }
+
+    public void setSpeakerPreset(BigDecimal preset) {
+        DecimalType newVal = new DecimalType(preset);
+        if (!newVal.equals(this.speakerPreset)) {
+            this.speakerPreset = newVal;
+            handler.stateChanged(DenonMarantzBindingConstants.CHANNEL_SPEAKER_PRESET, newVal);
+        }
+    }
+
+    public void setChannelVolume(String channel, BigDecimal volume) {
+        QuantityType<?> newVal = new QuantityType<>(volume, Units.DECIBEL);
+        State oldVal = channelVolumes.get(channel);
+
+        if (!newVal.equals(oldVal)) {
+            channelVolumes.put(channel, newVal);
+            handler.stateChanged(channel, newVal);
         }
     }
 
