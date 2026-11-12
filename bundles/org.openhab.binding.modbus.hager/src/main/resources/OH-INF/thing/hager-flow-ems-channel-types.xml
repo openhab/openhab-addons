@@ -156,9 +156,19 @@
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="hager-flow-ems-blackout-active">
-		<item-type>String</item-type>
+		<item-type>Number</item-type>
 		<label>Blackout Active</label>
-		<description>Possible values: NOT_POSSIBLE, ACTIVE, NOT_ACTIVE, NOT_AVAILABLE, SWITCH_IN_ISLAND_STATE.</description>
+		<description>State options: 0 = NOT_POSSIBLE, 1 = ACTIVE, 2 = NOT_ACTIVE, 3 = NOT_AVAILABLE, 4 =
+			SWITCH_IN_ISLAND_STATE.</description>
+		<state readOnly="true">
+			<options>
+				<option value="0">NOT_POSSIBLE</option>
+				<option value="1">ACTIVE</option>
+				<option value="2">NOT_ACTIVE</option>
+				<option value="3">NOT_AVAILABLE</option>
+				<option value="4">SWITCH_IN_ISLAND_STATE</option>
+			</options>
+		</state>
 	</channel-type>
 	<channel-type id="hager-flow-ems-sgready-brain-disable">
 		<item-type>String</item-type>
@@ -176,9 +186,18 @@
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="hager-flow-ems-slaveid-type">
-		<item-type>String</item-type>
+		<item-type>Number</item-type>
 		<label>SlaveID type</label>
-		<description>Possible values: Main system (EMS), EVSE, Storage, Power Meter, SG-Ready.</description>
+		<description>State options: 0 = Main system (EMS), 1 = EVSE, 2 = Storage, 3 = Power Meter, 4 = SG-Ready.</description>
+		<state readOnly="true">
+			<options>
+				<option value="0">Main system (EMS)</option>
+				<option value="1">EVSE</option>
+				<option value="2">Storage</option>
+				<option value="3">Power Meter</option>
+				<option value="4">SG-Ready</option>
+			</options>
+		</state>
 	</channel-type>
 	<channel-type id="hager-flow-ems-slave-id-index-by-type">
 		<item-type>Number</item-type>

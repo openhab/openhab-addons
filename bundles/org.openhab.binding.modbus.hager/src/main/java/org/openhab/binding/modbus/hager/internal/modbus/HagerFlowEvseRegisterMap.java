@@ -12,13 +12,8 @@
  */
 package org.openhab.binding.modbus.hager.internal.modbus;
 
-import static org.openhab.binding.modbus.hager.internal.modbus.ModbusRegisterTypes.Access.READ_ONLY;
-import static org.openhab.binding.modbus.hager.internal.modbus.ModbusRegisterTypes.Access.READ_WRITE;
-import static org.openhab.binding.modbus.hager.internal.modbus.ModbusRegisterTypes.DataType.BITFIELD;
-import static org.openhab.binding.modbus.hager.internal.modbus.ModbusRegisterTypes.DataType.BOOL;
-import static org.openhab.binding.modbus.hager.internal.modbus.ModbusRegisterTypes.DataType.STRING;
-import static org.openhab.binding.modbus.hager.internal.modbus.ModbusRegisterTypes.DataType.U16;
-import static org.openhab.binding.modbus.hager.internal.modbus.ModbusRegisterTypes.DataType.U32;
+import static org.openhab.binding.modbus.hager.internal.modbus.ModbusRegisterTypes.Access.*;
+import static org.openhab.binding.modbus.hager.internal.modbus.ModbusRegisterTypes.DataType.*;
 
 import java.util.List;
 import java.util.Map;
@@ -50,10 +45,7 @@ public final class HagerFlowEvseRegisterMap {
     public static final Register EVCS_NUMBER = new Register("evcs-number", GROUP_IDENTITY, 4097, 1, U16, READ_ONLY,
             null, Map.of(), List.of());
     public static final Register EVCS_TYPE = new Register("evcs-type", GROUP_IDENTITY, 4098, 1, U16, READ_ONLY, null,
-            Map.ofEntries(Map.entry(0, "virtual"), Map.entry(1, "E3DC wallbox"), Map.entry(2, "Easy Connect wallbox"),
-                    Map.entry(4, "wallbox RSCP group (farming)"), Map.entry(5, "Edison Connect wallbox"),
-                    Map.entry(6, "Multi Connect wallbox"), Map.entry(7, "Eebus Wallbox")),
-            List.of());
+            Map.of(), List.of());
     public static final Register EVCS_NAME = new Register("evcs-name", GROUP_IDENTITY, 4099, 50, STRING, READ_ONLY,
             null, Map.of(), List.of());
     public static final Register EVCS_SERIAL = new Register("evcs-serial", GROUP_IDENTITY, 4149, 16, STRING, READ_ONLY,
@@ -81,22 +73,16 @@ public final class HagerFlowEvseRegisterMap {
             GROUP_GENERAL_STATUS_AND_CONFIGURATION, 4613, 1, U16, READ_ONLY, null,
             Map.ofEntries(Map.entry(0, "EVCS disconnected"), Map.entry(1, "EVCS connected")), List.of());
     public static final Register EVCS_WORKING_STATE = new Register("evcs-working-state",
-            GROUP_GENERAL_STATUS_AND_CONFIGURATION, 4614, 1, U16, READ_ONLY, null,
-            Map.ofEntries(Map.entry(0, "EVCS not working properly"), Map.entry(1, "EVCS working normally")), List.of());
+            GROUP_GENERAL_STATUS_AND_CONFIGURATION, 4614, 1, U16, READ_ONLY, null, Map.of(), List.of());
     public static final Register EVCS_SERVICE_STATE = new Register("evcs-service-state",
-            GROUP_GENERAL_STATUS_AND_CONFIGURATION, 4615, 1, U16, READ_ONLY, null,
-            Map.ofEntries(Map.entry(0, "no upgrade ongoing"), Map.entry(1, "firmware upgrade ongoing")), List.of());
+            GROUP_GENERAL_STATUS_AND_CONFIGURATION, 4615, 1, U16, READ_ONLY, null, Map.of(), List.of());
     public static final Register EVCS_POWER_METER_CONNECTION_STATE = new Register("evcs-power-meter-connection-state",
             GROUP_GENERAL_STATUS_AND_CONFIGURATION, 4616, 1, U16, READ_ONLY, null,
             Map.ofEntries(Map.entry(0, "power meter disconnected"), Map.entry(1, "power meter connected")), List.of());
     public static final Register EVCS_POWER_METER_WORKING_STATE = new Register("evcs-power-meter-working-state",
-            GROUP_GENERAL_STATUS_AND_CONFIGURATION, 4617, 1, U16, READ_ONLY, null,
-            Map.ofEntries(Map.entry(0, "power meter not working properly"),
-                    Map.entry(1, "power meter working normally")),
-            List.of());
+            GROUP_GENERAL_STATUS_AND_CONFIGURATION, 4617, 1, U16, READ_ONLY, null, Map.of(), List.of());
     public static final Register EVCS_POWER_METER_SERVICE_STATE = new Register("evcs-power-meter-service-state",
-            GROUP_GENERAL_STATUS_AND_CONFIGURATION, 4618, 1, U16, READ_ONLY, null,
-            Map.ofEntries(Map.entry(0, "no upgrade ongoing"), Map.entry(1, "firmware upgrade ongoing")), List.of());
+            GROUP_GENERAL_STATUS_AND_CONFIGURATION, 4618, 1, U16, READ_ONLY, null, Map.of(), List.of());
     public static final Register EVCS_AVAILABILITY = new Register("evcs-availability",
             GROUP_GENERAL_STATUS_AND_CONFIGURATION, 4619, 1, U16, READ_ONLY, null,
             Map.ofEntries(Map.entry(0, "Unavailable (charge is forbidden)"),

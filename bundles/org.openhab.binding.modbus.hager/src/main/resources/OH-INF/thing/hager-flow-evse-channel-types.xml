@@ -9,10 +9,21 @@
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="hager-flow-evse-evcs-type">
-		<item-type>String</item-type>
+		<item-type>Number</item-type>
 		<label>EVCS Type</label>
-		<description>Possible values: virtual, E3DC wallbox, Easy Connect wallbox, wallbox RSCP group (farming), Edison
-			Connect wallbox, Multi Connect wallbox, Eebus Wallbox.</description>
+		<description>State options: 0 = virtual, 1 = E3DC wallbox, 2 = Easy Connect wallbox, 4 = wallbox RSCP group (farming),
+			5 = Edison Connect wallbox, 6 = Multi Connect wallbox, 7 = Eebus Wallbox.</description>
+		<state readOnly="true">
+			<options>
+				<option value="0">virtual</option>
+				<option value="1">E3DC wallbox</option>
+				<option value="2">Easy Connect wallbox</option>
+				<option value="4">wallbox RSCP group (farming)</option>
+				<option value="5">Edison Connect wallbox</option>
+				<option value="6">Multi Connect wallbox</option>
+				<option value="7">Eebus Wallbox</option>
+			</options>
+		</state>
 	</channel-type>
 	<channel-type id="hager-flow-evse-evcs-name">
 		<item-type>String</item-type>
@@ -95,14 +106,26 @@
 		<description>Possible values: EVCS disconnected, EVCS connected.</description>
 	</channel-type>
 	<channel-type id="hager-flow-evse-evcs-working-state">
-		<item-type>String</item-type>
+		<item-type>Number</item-type>
 		<label>EVCS Working State</label>
-		<description>Possible values: EVCS not working properly, EVCS working normally.</description>
+		<description>State options: 0 = EVCS not working properly, 1 = EVCS working normally.</description>
+		<state readOnly="true">
+			<options>
+				<option value="0">EVCS not working properly</option>
+				<option value="1">EVCS working normally</option>
+			</options>
+		</state>
 	</channel-type>
 	<channel-type id="hager-flow-evse-evcs-service-state">
-		<item-type>String</item-type>
+		<item-type>Number</item-type>
 		<label>EVCS Service State</label>
-		<description>Possible values: no upgrade ongoing, firmware upgrade ongoing.</description>
+		<description>State options: 0 = no upgrade ongoing, 1 = firmware upgrade ongoing.</description>
+		<state readOnly="true">
+			<options>
+				<option value="0">no upgrade ongoing</option>
+				<option value="1">firmware upgrade ongoing</option>
+			</options>
+		</state>
 	</channel-type>
 	<channel-type id="hager-flow-evse-evcs-power-meter-connection-state">
 		<item-type>String</item-type>
@@ -110,14 +133,26 @@
 		<description>Possible values: power meter disconnected, power meter connected.</description>
 	</channel-type>
 	<channel-type id="hager-flow-evse-evcs-power-meter-working-state">
-		<item-type>String</item-type>
+		<item-type>Number</item-type>
 		<label>EVCS Power Meter Working State</label>
-		<description>Possible values: power meter not working properly, power meter working normally.</description>
+		<description>State options: 0 = power meter not working properly, 1 = power meter working normally.</description>
+		<state readOnly="true">
+			<options>
+				<option value="0">power meter not working properly</option>
+				<option value="1">power meter working normally</option>
+			</options>
+		</state>
 	</channel-type>
 	<channel-type id="hager-flow-evse-evcs-power-meter-service-state">
-		<item-type>String</item-type>
+		<item-type>Number</item-type>
 		<label>EVCS Power Meter Service State</label>
-		<description>Possible values: no upgrade ongoing, firmware upgrade ongoing.</description>
+		<description>State options: 0 = no upgrade ongoing, 1 = firmware upgrade ongoing.</description>
+		<state readOnly="true">
+			<options>
+				<option value="0">no upgrade ongoing</option>
+				<option value="1">firmware upgrade ongoing</option>
+			</options>
+		</state>
 	</channel-type>
 	<channel-type id="hager-flow-evse-evcs-availability">
 		<item-type>String</item-type>

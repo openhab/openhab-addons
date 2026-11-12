@@ -74,7 +74,6 @@ public class HagerFlowDeviceHandler extends BaseThingHandler implements Register
 
     @Override
     public void initialize() {
-        updateStatus(ThingStatus.UNKNOWN);
         HagerFlowConfiguration currentConfig = getConfigAs(HagerFlowConfiguration.class);
         LOGGER.debug("[{}] Initializing {} with slave id {} and refresh {} ms", thing.getUID(), role.thingType(),
                 currentConfig.slaveId, currentConfig.refresh);
@@ -84,6 +83,7 @@ public class HagerFlowDeviceHandler extends BaseThingHandler implements Register
             updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, problem.get());
             return;
         }
+        updateStatus(ThingStatus.UNKNOWN);
         config = currentConfig;
         restart(currentConfig);
     }

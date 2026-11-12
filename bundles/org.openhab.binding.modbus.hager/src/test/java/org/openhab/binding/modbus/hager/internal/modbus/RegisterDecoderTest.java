@@ -125,6 +125,42 @@ public class RegisterDecoderTest {
     }
 
     @Test
+    public void testSgReadyWorkingPublishesSignedStatusCodes() {
+        // 0xffff is -1, 0xfffe is -2 and 0xfffd is -3 as signed 16 bit
+        assertEquals(new DecimalType(0),
+                decode(HagerFlowSgReadyRegisterMap.SGREADY_WORKING, new ModbusRegisterArray(0)));
+        assertEquals(new DecimalType(-1),
+                decode(HagerFlowSgReadyRegisterMap.SGREADY_WORKING, new ModbusRegisterArray(0xffff)));
+        assertEquals(new DecimalType(-2),
+                decode(HagerFlowSgReadyRegisterMap.SGREADY_WORKING, new ModbusRegisterArray(0xfffe)));
+        assertEquals(new DecimalType(-3),
+                decode(HagerFlowSgReadyRegisterMap.SGREADY_WORKING, new ModbusRegisterArray(0xfffd)));
+        // undocumented codes stay visible as a number
+        assertEquals(new DecimalType(1),
+                decode(HagerFlowSgReadyRegisterMap.SGREADY_WORKING, new ModbusRegisterArray(1)));
+    }
+
+    @Test
+    public void testConvertedStatusCodeChannelsPublishNumbers() {
+        assertEquals(new DecimalType(5), decode(HagerFlowEmsRegisterMap.BLACKOUT_ACTIVE, new ModbusRegisterArray(5)));
+        assertEquals(new DecimalType(2), decode(HagerFlowEmsRegisterMap.SLAVEID_TYPE, new ModbusRegisterArray(2)));
+        assertEquals(new DecimalType(3), decode(HagerFlowEvseRegisterMap.EVCS_TYPE, new ModbusRegisterArray(3)));
+        assertEquals(new DecimalType(1),
+                decode(HagerFlowEvseRegisterMap.EVCS_WORKING_STATE, new ModbusRegisterArray(1)));
+        assertEquals(new DecimalType(1),
+                decode(HagerFlowEvseRegisterMap.EVCS_SERVICE_STATE, new ModbusRegisterArray(1)));
+        assertEquals(new DecimalType(1),
+                decode(HagerFlowEvseRegisterMap.EVCS_POWER_METER_WORKING_STATE, new ModbusRegisterArray(1)));
+        assertEquals(new DecimalType(1),
+                decode(HagerFlowEvseRegisterMap.EVCS_POWER_METER_SERVICE_STATE, new ModbusRegisterArray(1)));
+        assertEquals(new DecimalType(8),
+                decode(HagerFlowPowermeterRegisterMap.POWERMETER_TYPE, new ModbusRegisterArray(8)));
+        // sgready-status is a signed 32 bit register
+        assertEquals(new DecimalType(4),
+                decode(HagerFlowSgReadyRegisterMap.SGREADY_STATUS, new ModbusRegisterArray(0, 4)));
+    }
+
+    @Test
     public void testBitFlags() {
         Register register = new Register("evcs-state", GROUP, 0, 1, U16, READ_ONLY, null, Map.of(),
                 List.of(new BitFlag(0, "evcs-state-normal-mode", "normal mode", "not normal mode"),

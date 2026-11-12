@@ -58,8 +58,9 @@ Each Hager Flow system has to have such a base meter, additional power meters ar
 ## Channels
 
 All register values are read only except the boost mode of a charging station.
-Values which are declared as an enumeration in the Modbus table are provided as `String` channels,
-the possible values are listed in the channel description.
+Values which are declared as an enumeration in the Modbus table are provided as `String` channels.
+Numeric status and type codes are provided as `Number` channels with state options mapping the codes.
+The possible values are listed in the channel description.
 Registers with independent bits are provided as one `Switch` channel per bit.
 
 ### Hager Flow EMS (`hager-flow-ems`)
@@ -76,36 +77,36 @@ Registers with independent bits are provided as one `Switch` channel per bit.
 
 #### General Information (`general-information`)
 
-| Channel | Type | Access | Label | Description |
-|---------|------|--------|-------|-------------|
-| max-current-phase | Number:ElectricCurrent | RO | Max Current Phase | Main Fuse. |
-| max-current-phase-derated | Number:ElectricCurrent | RO | Max Current Phase Derated (80%) | Main Fuse derated. |
-| max-power-phase | Number:Power | RO | Max Power Phase | Main Fuse. |
-| max-power-phase-derated | Number:Power | RO | Max Power Phase Derated (80%) | Main Fuse derated. |
-| max-power | Number:Power | RO | Max Power | Max Installation power from grid. |
-| max-power-derated | Number:Power | RO | Max Power Derated (80%) | Max Installation power from grid derated. |
-| evcs-count | Number | RO | EVCS Number | Number of Connected EVSE. |
-| evcs-list-evcs-1 | Switch | RO | EVCS 1 | Charging station 1 is connected to the energy manager. |
-| evcs-list-evcs-2 | Switch | RO | EVCS 2 | Charging station 2 is connected to the energy manager. |
-| evcs-list-evcs-3 | Switch | RO | EVCS 3 | Charging station 3 is connected to the energy manager. |
-| evcs-list-evcs-4 | Switch | RO | EVCS 4 | Charging station 4 is connected to the energy manager. |
-| evcs-list-evcs-5 | Switch | RO | EVCS 5 | Charging station 5 is connected to the energy manager. |
-| evcs-list-evcs-6 | Switch | RO | EVCS 6 | Charging station 6 is connected to the energy manager. |
-| evcs-list-evcs-7 | Switch | RO | EVCS 7 | Charging station 7 is connected to the energy manager. |
-| evcs-list-evcs-8 | Switch | RO | EVCS 8 | Charging station 8 is connected to the energy manager. |
-| phase-number | Number | RO | Phase Number | One phase or Three phases. |
-| sun-power-priority-battery-first | Switch | RO | Battery First | Battery is charged before the car. |
-| sun-power-priority-allow-battery-discharge-into-car | Switch | RO | Battery to Car | Battery discharge into the car is allowed. |
-| blackout-active | String | RO | Blackout Active | Possible values: NOT_POSSIBLE, ACTIVE, NOT_ACTIVE, NOT_AVAILABLE, SWITCH_IN_ISLAND_STATE. |
-| sgready-brain-disable | String | RO | SGReady Brain disable | Possible values: SGReady Brain enabled, SGReady Brain disabled. |
-| sgready-power | Number:Power | RO | SGReady Power | Total nominal power controlled by the SG-Ready interface. |
+| Channel                                             | Type                   | Access | Label                           | Description                                                                                                 |
+|-----------------------------------------------------|------------------------|--------|---------------------------------|-------------------------------------------------------------------------------------------------------------|
+| max-current-phase                                   | Number:ElectricCurrent | RO     | Max Current Phase               | Main Fuse.                                                                                                  |
+| max-current-phase-derated                           | Number:ElectricCurrent | RO     | Max Current Phase Derated (80%) | Main Fuse derated.                                                                                          |
+| max-power-phase                                     | Number:Power           | RO     | Max Power Phase                 | Main Fuse.                                                                                                  |
+| max-power-phase-derated                             | Number:Power           | RO     | Max Power Phase Derated (80%)   | Main Fuse derated.                                                                                          |
+| max-power                                           | Number:Power           | RO     | Max Power                       | Max Installation power from grid.                                                                           |
+| max-power-derated                                   | Number:Power           | RO     | Max Power Derated (80%)         | Max Installation power from grid derated.                                                                   |
+| evcs-count                                          | Number                 | RO     | EVCS Number                     | Number of Connected EVSE.                                                                                   |
+| evcs-list-evcs-1                                    | Switch                 | RO     | EVCS 1                          | Charging station 1 is connected to the energy manager.                                                      |
+| evcs-list-evcs-2                                    | Switch                 | RO     | EVCS 2                          | Charging station 2 is connected to the energy manager.                                                      |
+| evcs-list-evcs-3                                    | Switch                 | RO     | EVCS 3                          | Charging station 3 is connected to the energy manager.                                                      |
+| evcs-list-evcs-4                                    | Switch                 | RO     | EVCS 4                          | Charging station 4 is connected to the energy manager.                                                      |
+| evcs-list-evcs-5                                    | Switch                 | RO     | EVCS 5                          | Charging station 5 is connected to the energy manager.                                                      |
+| evcs-list-evcs-6                                    | Switch                 | RO     | EVCS 6                          | Charging station 6 is connected to the energy manager.                                                      |
+| evcs-list-evcs-7                                    | Switch                 | RO     | EVCS 7                          | Charging station 7 is connected to the energy manager.                                                      |
+| evcs-list-evcs-8                                    | Switch                 | RO     | EVCS 8                          | Charging station 8 is connected to the energy manager.                                                      |
+| phase-number                                        | Number                 | RO     | Phase Number                    | One phase or Three phases.                                                                                  |
+| sun-power-priority-battery-first                    | Switch                 | RO     | Battery First                   | Battery is charged before the car.                                                                          |
+| sun-power-priority-allow-battery-discharge-into-car | Switch                 | RO     | Battery to Car                  | Battery discharge into the car is allowed.                                                                  |
+| blackout-active                                     | Number                 | RO     | Blackout Active                 | State options: 0 = NOT_POSSIBLE, 1 = ACTIVE, 2 = NOT_ACTIVE, 3 = NOT_AVAILABLE, 4 = SWITCH_IN_ISLAND_STATE. |
+| sgready-brain-disable                               | String                 | RO     | SGReady Brain disable           | Possible values: SGReady Brain enabled, SGReady Brain disabled.                                             |
+| sgready-power                                       | Number:Power           | RO     | SGReady Power                   | Total nominal power controlled by the SG-Ready interface.                                                   |
 
 #### Slave ID identity (`slave-id-identity`)
 
-| Channel | Type | Access | Label | Description |
-|---------|------|--------|-------|-------------|
-| slaveid-type | String | RO | SlaveID type | Possible values: Main system (EMS), EVSE, Storage, Power Meter, SG-Ready. |
-| slave-id-index-by-type | Number | RO | Slave ID index by type |  |
+| Channel                | Type   | Access | Label                  | Description                                                                                 |
+|------------------------|--------|--------|------------------------|---------------------------------------------------------------------------------------------|
+| slaveid-type           | Number | RO     | SlaveID type           | State options: 0 = Main system (EMS), 1 = EVSE, 2 = Storage, 3 = Power Meter, 4 = SG-Ready. |
+| slave-id-index-by-type | Number | RO     | Slave ID index by type |                                                                                             |
 
 #### Slave ID 0 - Root/Main Measurements (`root-main-measurements`)
 
@@ -139,44 +140,44 @@ Registers with independent bits are provided as one `Switch` channel per bit.
 
 #### Identity information (`identity`)
 
-| Channel | Type | Access | Label | Description |
-|---------|------|--------|-------|-------------|
-| evcs-number | Number | RO | EVCS Number |  |
-| evcs-type | String | RO | EVCS Type | Possible values: virtual, E3DC wallbox, Easy Connect wallbox, wallbox RSCP group (farming), Edison Connect wallbox, Multi Connect wallbox, Eebus Wallbox. |
-| evcs-name | String | RO | EVCS Name | Friendly name set by User. |
-| evcs-serial | String | RO | EVCS Serial |  |
-| evcs-firmware-version | String | RO | EVCS Firmware version |  |
+| Channel               | Type   | Access | Label                 | Description                                                                                                                                                                         |
+|-----------------------|--------|--------|-----------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| evcs-number           | Number | RO     | EVCS Number           |                                                                                                                                                                                     |
+| evcs-type             | Number | RO     | EVCS Type             | State options: 0 = virtual, 1 = E3DC wallbox, 2 = Easy Connect wallbox, 4 = wallbox RSCP group (farming), 5 = Edison Connect wallbox, 6 = Multi Connect wallbox, 7 = Eebus Wallbox. |
+| evcs-name             | String | RO     | EVCS Name             | Friendly name set by User.                                                                                                                                                          |
+| evcs-serial           | String | RO     | EVCS Serial           |                                                                                                                                                                                     |
+| evcs-firmware-version | String | RO     | EVCS Firmware version |                                                                                                                                                                                     |
 
 #### General Status and configuration (`general-status-and-configuration`)
 
-| Channel | Type | Access | Label | Description |
-|---------|------|--------|-------|-------------|
-| evcs-state-normal-mode | Switch | RO | Normal Mode | Charging station operates in normal mode. |
-| evcs-state-default-mode | Switch | RO | Default Mode | Charging station fell back to default mode because of a parameter error. |
-| evcs-state-sun-mode-active | Switch | RO | Sun Mode | Charging from surplus photovoltaic power is active. |
-| evcs-state-temperature-derating-active | Switch | RO | Temperature Derating | Charging power is reduced because of high temperature. |
-| evcs-state-schuko-active | Switch | RO | Schuko Socket | The additional Schuko socket is active. |
-| evcs-state-crc-wrong-meter-value-range | Switch | RO | Meter Value Error | The energy meter reports a value outside the expected range. |
-| evcs-state-limited-operation | Switch | RO | Limited Operation | Not all operating modes are available. |
-| evcs-energy-all | Number:Energy | RO | EVCS Energy All | EVCS Energy index. |
-| evcs-solar-energy | Number:Energy | RO | EVCS Solar Energy | EVCS Solar Energy index. |
-| evcs-connection-state | String | RO | EVCS Connection State | Possible values: EVCS disconnected, EVCS connected. |
-| evcs-working-state | String | RO | EVCS Working State | Possible values: EVCS not working properly, EVCS working normally. |
-| evcs-service-state | String | RO | EVCS Service State | Possible values: no upgrade ongoing, firmware upgrade ongoing. |
-| evcs-power-meter-connection-state | String | RO | EVCS Power Meter Connection State | Possible values: power meter disconnected, power meter connected. |
-| evcs-power-meter-working-state | String | RO | EVCS Power Meter Working State | Possible values: power meter not working properly, power meter working normally. |
-| evcs-power-meter-service-state | String | RO | EVCS Power Meter Service State | Possible values: no upgrade ongoing, firmware upgrade ongoing. |
-| evcs-availability | String | RO | EVCS Availability | Possible values: Unavailable (charge is forbidden), Available (charge might be authorized). |
-| evcs-station-enabled | String | RO | EVCS Station Enabled | Possible values: Disabled, Enabled. |
-| evcs-max-charging-power | Number:Power | RO | EVCS Max Charging Power | In total for all phases. This value might be changed when charging session is started. |
-| evcs-max-charging-power-per-phase | Number:Power | RO | EVCS Max Charging Power per Phase |  |
-| evcs-max-charging-current | Number:ElectricCurrent | RO | EVCS Max Charging Current | EVCS max allowed charging current. |
-| evcs-min-charging-power | Number:Power | RO | EVCS Min Charging Power |  |
-| evcs-min-charging-power-per-phase | Number:Power | RO | EVCS Min Charging Power per Phase |  |
-| evcs-min-charging-current | Number:ElectricCurrent | RO | EVCS Min Charging Current | EVCS min allowed charging current. |
-| evcs-boost-mode | Switch | RW | EVCS Boost Mode | Boost mode override for the next charging session. |
-| evcs-phase-management | String | RO | EVCS Phase Management | Possible values: mono, tri, auto. |
-| evcs-charge-strategy | String | RO | EVCS Charge Strategy | Possible values: Boost (Immediate), Delayed, disabled. |
+| Channel                                | Type                   | Access | Label                             | Description                                                                                 |
+|----------------------------------------|------------------------|--------|-----------------------------------|---------------------------------------------------------------------------------------------|
+| evcs-state-normal-mode                 | Switch                 | RO     | Normal Mode                       | Charging station operates in normal mode.                                                   |
+| evcs-state-default-mode                | Switch                 | RO     | Default Mode                      | Charging station fell back to default mode because of a parameter error.                    |
+| evcs-state-sun-mode-active             | Switch                 | RO     | Sun Mode                          | Charging from surplus photovoltaic power is active.                                         |
+| evcs-state-temperature-derating-active | Switch                 | RO     | Temperature Derating              | Charging power is reduced because of high temperature.                                      |
+| evcs-state-schuko-active               | Switch                 | RO     | Schuko Socket                     | The additional Schuko socket is active.                                                     |
+| evcs-state-crc-wrong-meter-value-range | Switch                 | RO     | Meter Value Error                 | The energy meter reports a value outside the expected range.                                |
+| evcs-state-limited-operation           | Switch                 | RO     | Limited Operation                 | Not all operating modes are available.                                                      |
+| evcs-energy-all                        | Number:Energy          | RO     | EVCS Energy All                   | EVCS Energy index.                                                                          |
+| evcs-solar-energy                      | Number:Energy          | RO     | EVCS Solar Energy                 | EVCS Solar Energy index.                                                                    |
+| evcs-connection-state                  | String                 | RO     | EVCS Connection State             | Possible values: EVCS disconnected, EVCS connected.                                         |
+| evcs-working-state                     | Number                 | RO     | EVCS Working State                | State options: 0 = EVCS not working properly, 1 = EVCS working normally.                    |
+| evcs-service-state                     | Number                 | RO     | EVCS Service State                | State options: 0 = no upgrade ongoing, 1 = firmware upgrade ongoing.                        |
+| evcs-power-meter-connection-state      | String                 | RO     | EVCS Power Meter Connection State | Possible values: power meter disconnected, power meter connected.                           |
+| evcs-power-meter-working-state         | Number                 | RO     | EVCS Power Meter Working State    | State options: 0 = power meter not working properly, 1 = power meter working normally.      |
+| evcs-power-meter-service-state         | Number                 | RO     | EVCS Power Meter Service State    | State options: 0 = no upgrade ongoing, 1 = firmware upgrade ongoing.                        |
+| evcs-availability                      | String                 | RO     | EVCS Availability                 | Possible values: Unavailable (charge is forbidden), Available (charge might be authorized). |
+| evcs-station-enabled                   | String                 | RO     | EVCS Station Enabled              | Possible values: Disabled, Enabled.                                                         |
+| evcs-max-charging-power                | Number:Power           | RO     | EVCS Max Charging Power           | In total for all phases. This value might be changed when charging session is started.      |
+| evcs-max-charging-power-per-phase      | Number:Power           | RO     | EVCS Max Charging Power per Phase |                                                                                             |
+| evcs-max-charging-current              | Number:ElectricCurrent | RO     | EVCS Max Charging Current         | EVCS max allowed charging current.                                                          |
+| evcs-min-charging-power                | Number:Power           | RO     | EVCS Min Charging Power           |                                                                                             |
+| evcs-min-charging-power-per-phase      | Number:Power           | RO     | EVCS Min Charging Power per Phase |                                                                                             |
+| evcs-min-charging-current              | Number:ElectricCurrent | RO     | EVCS Min Charging Current         | EVCS min allowed charging current.                                                          |
+| evcs-boost-mode                        | Switch                 | RW     | EVCS Boost Mode                   | Boost mode override for the next charging session.                                          |
+| evcs-phase-management                  | String                 | RO     | EVCS Phase Management             | Possible values: mono, tri, auto.                                                           |
+| evcs-charge-strategy                   | String                 | RO     | EVCS Charge Strategy              | Possible values: Boost (Immediate), Delayed, disabled.                                      |
 
 #### Charging Session Information (`charging-session-information`)
 
@@ -223,11 +224,11 @@ Registers with independent bits are provided as one `Switch` channel per bit.
 
 #### PowerMeter Identity (`identity`)
 
-| Channel | Type | Access | Label | Description |
-|---------|------|--------|-------|-------------|
-| powermeter-id | Number | RO | PowerMeter Id |  |
-| powermeter-name | String | RO | PowerMeter Name |  |
-| powermeter-type | String | RO | PowerMeter Type | Possible values: UNDEFINED, ROOT, ADDITIONAL, ADDITIONAL PRODUCTION, ADDITIONAL CONSUMPTION, FARM, UNUSED, WALLBOX, FARM ADDITIONAL. |
+| Channel         | Type   | Access | Label           | Description                                                                                                                                                            |
+|-----------------|--------|--------|-----------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| powermeter-id   | Number | RO     | PowerMeter Id   |                                                                                                                                                                        |
+| powermeter-name | String | RO     | PowerMeter Name |                                                                                                                                                                        |
+| powermeter-type | Number | RO     | PowerMeter Type | State options: 0 = UNDEFINED, 1 = ROOT, 2 = ADDITIONAL, 3 = ADDITIONAL PRODUCTION, 4 = ADDITIONAL CONSUMPTION, 5 = FARM, 6 = UNUSED, 7 = WALLBOX, 8 = FARM ADDITIONAL. |
 
 #### PowerMeter Status (`status`)
 
@@ -260,18 +261,18 @@ Registers with independent bits are provided as one `Switch` channel per bit.
 
 #### SG-Ready Identity (`identity`)
 
-| Channel | Type | Access | Label | Description |
-|---------|------|--------|-------|-------------|
-| sgready-index | Number | RO | SGReady index |  |
-| sgready-name | String | RO | SGReady Name |  |
+| Channel       | Type   | Access | Label         | Description |
+|---------------|--------|--------|---------------|-------------|
+| sgready-index | Number | RO     | SGReady index |             |
+| sgready-name  | String | RO     | SGReady Name  |             |
 
 #### SG-Ready Status (`status`)
 
-| Channel | Type | Access | Label | Description |
-|---------|------|--------|-------|-------------|
-| sgready-active | String | RO | SGReady active | Possible values: Inactive, active. |
-| sgready-working | Switch | RO | SGReady working |  |
-| sgready-status | String | RO | SGReady status | Possible values: STATE_1_BLOCK, STATE_2_NORMAL, STATE_3_GO, STATE_4_FORCE_GO. |
+| Channel         | Type   | Access | Label           | Description                                                                                   |
+|-----------------|--------|--------|-----------------|-----------------------------------------------------------------------------------------------|
+| sgready-active  | String | RO     | SGReady active  | Possible values: Inactive, active.                                                            |
+| sgready-working | Number | RO     | SGReady working | State options: 0 = OK, -1 = hardware issue, -2 = reserved, -3 = SGReady controller not alive. |
+| sgready-status  | Number | RO     | SGReady status  | State options: 1 = STATE_1_BLOCK, 2 = STATE_2_NORMAL, 3 = STATE_3_GO, 4 = STATE_4_FORCE_GO.   |
 
 ## Full Example
 
@@ -297,7 +298,7 @@ Number:Dimensionless   HagerFlow_BatterySoc           "Battery Charge" { channel
 Number                 HagerFlow_EvcsCount            "Connected Charging Stations" { channel="modbus:hager-flow-ems:flow:ems:general-information#evcs-count" }
 Switch                 HagerFlow_Evcs1Connected       "EVCS 1 Connected" { channel="modbus:hager-flow-ems:flow:ems:general-information#evcs-list-evcs-1" }
 Switch                 HagerFlow_BatteryFirst         "Battery First" { channel="modbus:hager-flow-ems:flow:ems:general-information#sun-power-priority-battery-first" }
-String                 HagerFlow_BlackoutState        "Blackout State" { channel="modbus:hager-flow-ems:flow:ems:general-information#blackout-active" }
+Number                 HagerFlow_BlackoutState        "Blackout State" { channel="modbus:hager-flow-ems:flow:ems:general-information#blackout-active" }
 String                 HagerFlow_EvseName             "Charging Station Name" { channel="modbus:hager-flow-evse:flow:ems:evse1:identity#evcs-name" }
 String                 HagerFlow_EvseConnected        "Charging Station Connected" { channel="modbus:hager-flow-evse:flow:ems:evse1:general-status-and-configuration#evcs-connection-state" }
 Switch                 HagerFlow_EvseBoostMode        "Charging Station Boost Mode" { channel="modbus:hager-flow-evse:flow:ems:evse1:general-status-and-configuration#evcs-boost-mode" }
@@ -306,7 +307,7 @@ Number:Energy          HagerFlow_EvseSessionEnergy    "Energy Of The Session" { 
 Number:Dimensionless   HagerFlow_StorageSoc           "Storage Charge" { channel="modbus:hager-flow-storage:flow:ems:storage:status#battery-state-of-charge" }
 Number:Power           HagerFlow_MeterPower           "Meter Power" { channel="modbus:hager-flow-powermeter:flow:ems:meter1:measurements#powermeter-power-sum" }
 Number:Energy          HagerFlow_MeterEnergy          "Meter Energy" { channel="modbus:hager-flow-powermeter:flow:ems:meter1:measurements#powermeter-energy-sum" }
-String                 HagerFlow_SgReadyState         "SG-Ready State" { channel="modbus:hager-flow-sgready:flow:ems:sgready1:status#sgready-status" }
+Number                 HagerFlow_SgReadyState         "SG-Ready State" { channel="modbus:hager-flow-sgready:flow:ems:sgready1:status#sgready-status" }
 ```
 
 The channel UID is built from the binding, the Thing type, the bridge chain and the channel group:
@@ -342,7 +343,36 @@ The signs were observed on a running device, see
 
 ## Known Limitations
 
-The following deviations from the Hager Flow Modbus table are known:
+- The `Modbus Wallbox specific` registers (MAC address, IP address, gateway, subnet, DHCP, RFID, register
+  `5376` onwards) hold network and setup data and are not part of this binding.
+- The `Slave ID identity` registers (type and index of the Modbus unit) are only provided by the energy
+  manager Thing.
+  The same registers exist for every other unit id and can be read there with the Modbus binding directly.
+
+Deviations from the vendor table are listed [at the end of this document](#deviations-from-the-vendor-modbus-table).
+
+## Source
+
+The register addresses, data types and value ranges are transcribed from the Hager Flow XEM470 Modbus table,
+document `01.Modbus.table.Flow` version `FR2_2024_03`.
+The vendor table is not publicly published; it was provided by Hager for
+[openhab-addons issue 18711](https://github.com/openhab/openhab-addons/issues/18711).
+
+## Deviations from the Vendor Modbus Table
+
+The following deviations from the vendor table are known and are handled deliberately by the binding.
+They were found while comparing the table with a running device for
+[openhab-addons issue 18711](https://github.com/openhab/openhab-addons/issues/18711) and while reviewing the table.
+
+| Register                        | Documented                        | Binding handling                                     |
+|---------------------------------|-----------------------------------|------------------------------------------------------|
+| `4102`, `4104`, `4106`, `4108`  | `U32`                             | `I32`, the values can become negative                |
+| `4134` (All Battery Current ΣL) | address `4134`                    | read from `4133`                                     |
+| `4098` (Storage DCDC status)    | `bool`, `0`/`1`                   | `Number` channel, values above `1` occur             |
+| `4151` (SGReady working)        | `bool`, range `-3..0`             | `Number` channel, the state options map the codes    |
+| `513` (Sun Power priority)      | address missing in the text layer | read from `513`, inferred from the surrounding range |
+
+Two entries are not decoded because the table itself is incomplete:
 
 - `status` (register `4945`, charging session information) packs the `ALG Data` byte structure of Annex 1 of
   the Modbus table.
@@ -350,33 +380,10 @@ The following deviations from the Hager Flow Modbus table are known:
 - `EVCS Charge Strategy daytime` and `EVCS Charge Strategy Minimum Energy Value` (registers `4634` and `4698`).
   The Modbus table declares a length of 64 words for seven weekday values, which does not divide evenly.
   A correct transcription needs clarification by the vendor.
-- The `Modbus Wallbox specific` registers (MAC address, IP address, gateway, subnet, DHCP, RFID, register
-  `5376` onwards) hold network and setup data and are not part of this binding.
-- The `Slave ID identity` registers (type and index of the Modbus unit) are only provided by the energy
-  manager Thing.
-  The same registers exist for every other unit id and can be read there with the Modbus binding directly.
-- `SGReady working` (register `4151`) is declared as `bool` in the Modbus table but documents the four
-  states `0`, `-1`, `-2` and `-3`.
-  The register is provided as a `Switch`, so `0` is `OFF` and every other value is `ON`.
-  The detailed state is not part of the channel.
-- `Storage DCDC status` (register `4098`) is declared as `bool` in the Modbus table, but a device reports the
-  value `2` while the battery sits at its reserve level.
-  The register is provided as a `Number` channel, so values beyond `0` and `1` stay visible.
 
-The Root/Main power values (registers `4102`, `4104`, `4106` and `4108`) are declared as `U32` in the Modbus
-table, but they are read as `I32` because they can become negative.
-The vendor was notified about the incorrect documentation, see
-[openhab-addons issue 18711](https://github.com/openhab/openhab-addons/issues/18711).
-
-The All Battery Current value of the energy manager is read from register `4133`, the Modbus table documents
-it as register `4134`.
-The correction was confirmed against a running device, see
-[issue comment](https://github.com/openhab/openhab-addons/issues/18711#issuecomment-6082009683).
-
-The register addresses of the `Sun Power priority` register (`513`) were inferred from the address range
-around it, because the address column of that row is not contained in the text layer of the source document.
-
-## Source
-
-The register addresses, data types and value ranges are transcribed from the Hager Flow XEM470 Modbus table,
-document `01.Modbus.table.Flow` version `FR2_2024_03`.
+The incorrect `U32` documentation of the Root/Main power values was reported to the vendor.
+The All Battery Current address and the Storage DCDC status deviation were confirmed against a running device,
+see [issue comment](https://github.com/openhab/openhab-addons/issues/18711#issuecomment-6082009683) and
+[issue comment](https://github.com/openhab/openhab-addons/issues/18711#issuecomment-6108071235).
+The status codes of `SGReady working` are taken from the table itself, which declares the register as `bool` with
+the range `-3..0`.

@@ -12,12 +12,8 @@
  */
 package org.openhab.binding.modbus.hager.internal.modbus;
 
-import static org.openhab.binding.modbus.hager.internal.modbus.ModbusRegisterTypes.Access.READ_ONLY;
-import static org.openhab.binding.modbus.hager.internal.modbus.ModbusRegisterTypes.DataType.BITSTRING;
-import static org.openhab.binding.modbus.hager.internal.modbus.ModbusRegisterTypes.DataType.I32;
-import static org.openhab.binding.modbus.hager.internal.modbus.ModbusRegisterTypes.DataType.STRING;
-import static org.openhab.binding.modbus.hager.internal.modbus.ModbusRegisterTypes.DataType.U16;
-import static org.openhab.binding.modbus.hager.internal.modbus.ModbusRegisterTypes.DataType.U32;
+import static org.openhab.binding.modbus.hager.internal.modbus.ModbusRegisterTypes.Access.*;
+import static org.openhab.binding.modbus.hager.internal.modbus.ModbusRegisterTypes.DataType.*;
 
 import java.util.List;
 import java.util.Map;
@@ -88,18 +84,14 @@ public final class HagerFlowEmsRegisterMap {
                     new BitFlag(1, "sun-power-priority-allow-battery-discharge-into-car",
                             "allow battery discharge into car", "forbid battery discharge into car")));
     public static final Register BLACKOUT_ACTIVE = new Register("blackout-active", GROUP_GENERAL_INFORMATION, 514, 1,
-            U16, READ_ONLY, null, Map.ofEntries(Map.entry(0, "NOT_POSSIBLE"), Map.entry(1, "ACTIVE"),
-                    Map.entry(2, "NOT_ACTIVE"), Map.entry(3, "NOT_AVAILABLE"), Map.entry(4, "SWITCH_IN_ISLAND_STATE")),
-            List.of());
+            U16, READ_ONLY, null, Map.of(), List.of());
     public static final Register SGREADY_BRAIN_DISABLE = new Register("sgready-brain-disable",
             GROUP_GENERAL_INFORMATION, 515, 1, U16, READ_ONLY, null,
             Map.ofEntries(Map.entry(0, "SGReady Brain enabled"), Map.entry(1, "SGReady Brain disabled")), List.of());
     public static final Register SGREADY_POWER = new Register("sgready-power", GROUP_GENERAL_INFORMATION, 516, 2, U32,
             READ_ONLY, Units.WATT, Map.of(), List.of());
     public static final Register SLAVEID_TYPE = new Register("slaveid-type", GROUP_SLAVE_ID_IDENTITY, 4096, 1, U16,
-            READ_ONLY, null, Map.ofEntries(Map.entry(0, "Main system (EMS)"), Map.entry(1, "EVSE"),
-                    Map.entry(2, "Storage"), Map.entry(3, "Power Meter"), Map.entry(4, "SG-Ready")),
-            List.of());
+            READ_ONLY, null, Map.of(), List.of());
     public static final Register SLAVE_ID_INDEX_BY_TYPE = new Register("slave-id-index-by-type",
             GROUP_SLAVE_ID_IDENTITY, 4097, 1, U16, READ_ONLY, null, Map.of(), List.of());
     public static final Register ROOT_MAIN_CURRENT_SUM = new Register("root-main-current-sum",

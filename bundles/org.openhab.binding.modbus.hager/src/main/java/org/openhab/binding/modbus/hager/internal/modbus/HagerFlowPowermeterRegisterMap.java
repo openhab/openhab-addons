@@ -12,12 +12,8 @@
  */
 package org.openhab.binding.modbus.hager.internal.modbus;
 
-import static org.openhab.binding.modbus.hager.internal.modbus.ModbusRegisterTypes.Access.READ_ONLY;
-import static org.openhab.binding.modbus.hager.internal.modbus.ModbusRegisterTypes.DataType.BOOL;
-import static org.openhab.binding.modbus.hager.internal.modbus.ModbusRegisterTypes.DataType.F64;
-import static org.openhab.binding.modbus.hager.internal.modbus.ModbusRegisterTypes.DataType.I32;
-import static org.openhab.binding.modbus.hager.internal.modbus.ModbusRegisterTypes.DataType.STRING;
-import static org.openhab.binding.modbus.hager.internal.modbus.ModbusRegisterTypes.DataType.U16;
+import static org.openhab.binding.modbus.hager.internal.modbus.ModbusRegisterTypes.Access.*;
+import static org.openhab.binding.modbus.hager.internal.modbus.ModbusRegisterTypes.DataType.*;
 
 import java.util.List;
 import java.util.Map;
@@ -50,11 +46,7 @@ public final class HagerFlowPowermeterRegisterMap {
     public static final Register POWERMETER_NAME = new Register("powermeter-name", GROUP_IDENTITY, 4098, 50, STRING,
             READ_ONLY, null, Map.of(), List.of());
     public static final Register POWERMETER_TYPE = new Register("powermeter-type", GROUP_IDENTITY, 4148, 1, U16,
-            READ_ONLY, null,
-            Map.ofEntries(Map.entry(0, "UNDEFINED"), Map.entry(1, "ROOT"), Map.entry(2, "ADDITIONAL"),
-                    Map.entry(3, "ADDITIONAL PRODUCTION"), Map.entry(4, "ADDITIONAL CONSUMPTION"), Map.entry(5, "FARM"),
-                    Map.entry(6, "UNUSED"), Map.entry(7, "WALLBOX"), Map.entry(8, "FARM ADDITIONAL")),
-            List.of());
+            READ_ONLY, null, Map.of(), List.of());
     public static final Register POWERMETER_CONNECTION_STATUS = new Register("powermeter-connection-status",
             GROUP_STATUS, 4149, 1, BOOL, READ_ONLY, null, Map.of(), List.of());
     public static final Register POWERMETER_WORKING_STATUS = new Register("powermeter-working-status", GROUP_STATUS,

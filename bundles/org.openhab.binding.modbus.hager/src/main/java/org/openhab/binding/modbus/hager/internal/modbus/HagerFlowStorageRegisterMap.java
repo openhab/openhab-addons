@@ -12,9 +12,8 @@
  */
 package org.openhab.binding.modbus.hager.internal.modbus;
 
-import static org.openhab.binding.modbus.hager.internal.modbus.ModbusRegisterTypes.Access.READ_ONLY;
-import static org.openhab.binding.modbus.hager.internal.modbus.ModbusRegisterTypes.DataType.BOOL;
-import static org.openhab.binding.modbus.hager.internal.modbus.ModbusRegisterTypes.DataType.U16;
+import static org.openhab.binding.modbus.hager.internal.modbus.ModbusRegisterTypes.Access.*;
+import static org.openhab.binding.modbus.hager.internal.modbus.ModbusRegisterTypes.DataType.*;
 
 import java.util.List;
 import java.util.Map;

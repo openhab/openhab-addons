@@ -12,11 +12,8 @@
  */
 package org.openhab.binding.modbus.hager.internal.modbus;
 
-import static org.openhab.binding.modbus.hager.internal.modbus.ModbusRegisterTypes.Access.READ_ONLY;
-import static org.openhab.binding.modbus.hager.internal.modbus.ModbusRegisterTypes.DataType.BOOL;
-import static org.openhab.binding.modbus.hager.internal.modbus.ModbusRegisterTypes.DataType.I32;
-import static org.openhab.binding.modbus.hager.internal.modbus.ModbusRegisterTypes.DataType.STRING;
-import static org.openhab.binding.modbus.hager.internal.modbus.ModbusRegisterTypes.DataType.U16;
+import static org.openhab.binding.modbus.hager.internal.modbus.ModbusRegisterTypes.Access.*;
+import static org.openhab.binding.modbus.hager.internal.modbus.ModbusRegisterTypes.DataType.*;
 
 import java.util.List;
 import java.util.Map;
@@ -47,12 +44,10 @@ public final class HagerFlowSgReadyRegisterMap {
             READ_ONLY, null, Map.of(), List.of());
     public static final Register SGREADY_ACTIVE = new Register("sgready-active", GROUP_STATUS, 4150, 1, U16, READ_ONLY,
             null, Map.of(0, "Inactive", 1, "active"), List.of());
-    public static final Register SGREADY_WORKING = new Register("sgready-working", GROUP_STATUS, 4151, 1, BOOL,
+    public static final Register SGREADY_WORKING = new Register("sgready-working", GROUP_STATUS, 4151, 1, I16,
             READ_ONLY, null, Map.of(), List.of());
-    public static final Register SGREADY_STATUS = new Register(
-            "sgready-status", GROUP_STATUS, 4152, 2, I32, READ_ONLY, null, Map.ofEntries(Map.entry(1, "STATE_1_BLOCK"),
-                    Map.entry(2, "STATE_2_NORMAL"), Map.entry(3, "STATE_3_GO"), Map.entry(4, "STATE_4_FORCE_GO")),
-            List.of());
+    public static final Register SGREADY_STATUS = new Register("sgready-status", GROUP_STATUS, 4152, 2, I32, READ_ONLY,
+            null, Map.of(), List.of());
     /** All registers of this role, in the order of the source document. */
     public static final List<Register> ALL = List.of(SGREADY_INDEX, SGREADY_NAME, SGREADY_ACTIVE, SGREADY_WORKING,
             SGREADY_STATUS);

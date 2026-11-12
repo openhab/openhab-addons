@@ -13,10 +13,23 @@
 		<label>PowerMeter Name</label>
 	</channel-type>
 	<channel-type id="hager-flow-powermeter-type">
-		<item-type>String</item-type>
+		<item-type>Number</item-type>
 		<label>PowerMeter Type</label>
-		<description>Possible values: UNDEFINED, ROOT, ADDITIONAL, ADDITIONAL PRODUCTION, ADDITIONAL CONSUMPTION, FARM,
-			UNUSED, WALLBOX, FARM ADDITIONAL.</description>
+		<description>State options: 0 = UNDEFINED, 1 = ROOT, 2 = ADDITIONAL, 3 = ADDITIONAL PRODUCTION, 4 = ADDITIONAL
+			CONSUMPTION, 5 = FARM, 6 = UNUSED, 7 = WALLBOX, 8 = FARM ADDITIONAL.</description>
+		<state readOnly="true">
+			<options>
+				<option value="0">UNDEFINED</option>
+				<option value="1">ROOT</option>
+				<option value="2">ADDITIONAL</option>
+				<option value="3">ADDITIONAL PRODUCTION</option>
+				<option value="4">ADDITIONAL CONSUMPTION</option>
+				<option value="5">FARM</option>
+				<option value="6">UNUSED</option>
+				<option value="7">WALLBOX</option>
+				<option value="8">FARM ADDITIONAL</option>
+			</options>
+		</state>
 	</channel-type>
 	<channel-type id="hager-flow-powermeter-connection-status">
 		<item-type>Switch</item-type>
