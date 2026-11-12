@@ -39,6 +39,7 @@ import org.openhab.core.types.Type;
 import org.openhab.core.util.ColorUtil;
 
 import io.calimero.KNXException;
+import io.calimero.dptxlator.DPTXlator;
 import io.calimero.dptxlator.DPTXlator2ByteUnsigned;
 import io.calimero.dptxlator.DPTXlator4ByteFloat;
 import io.calimero.dptxlator.DPTXlator4ByteSigned;
@@ -46,7 +47,9 @@ import io.calimero.dptxlator.DPTXlator4ByteUnsigned;
 import io.calimero.dptxlator.DPTXlator64BitSigned;
 import io.calimero.dptxlator.DPTXlator8BitSigned;
 import io.calimero.dptxlator.DPTXlator8BitUnsigned;
+import io.calimero.dptxlator.DptId;
 import io.calimero.dptxlator.DptXlator2ByteSigned;
+import io.calimero.dptxlator.TranslatorTypes;
 
 /**
  *
@@ -108,6 +111,27 @@ class DPTTest {
             assertEquals(new PercentType(percent),
                     ValueDecoder.decode("5.001", translator.getData(), PercentType.class), percent + " %");
         }
+    }
+
+    @Test
+    void colorRoundTripKeepsEveryStep() throws KNXException {
+        for (int raw = 0; raw < 256; raw++) {
+            byte[] rgb = { (byte) raw, (byte) (255 - raw), (byte) (raw / 2), 0, 0, 0x0e };
+            assertArrayEquals(rgb, roundTrip("251.600", rgb, HSBType.class), "251.600 rgb " + raw);
+            byte[] white = { 0, 0, 0, (byte) raw, 0, 0x01 };
+            assertArrayEquals(white, roundTrip("251.600", white, PercentType.class), "251.600 w " + raw);
+            byte[] xyY = { 0x50, 0, 0x54, 0, (byte) raw, 0x03 };
+            assertEquals(raw, roundTrip("242.600", xyY, HSBType.class)[4] & 0xff, "242.600 Y " + raw);
+        }
+        HSBType off = (HSBType) ValueDecoder.decode("242.600", new byte[] { 0x50, 0, 0x54, 0, 0, 0x03 }, HSBType.class);
+        assertEquals(PercentType.ZERO, Objects.requireNonNull(off).getBrightness());
+    }
+
+    private static byte[] roundTrip(String dpt, byte[] data, Class<? extends Type> type) throws KNXException {
+        Type state = Objects.requireNonNull(ValueDecoder.decode(dpt, data, type));
+        DPTXlator translator = TranslatorTypes.createTranslator(DptId.from(dpt));
+        translator.setValue(Objects.requireNonNull(ValueEncoder.encode(state, dpt)));
+        return translator.getData();
     }
 
     @Test
@@ -536,9 +560,9 @@ class DPTTest {
         HSBType hsbType = (HSBType) ValueDecoder.decode("251.600", data, HSBType.class);
 
         assertNotNull(hsbType);
-        assertEquals(207, hsbType.getHue().doubleValue(), 0.5);
-        assertEquals(23, hsbType.getSaturation().doubleValue(), 0.5);
-        assertEquals(19, hsbType.getBrightness().doubleValue(), 0.5);
+        assertEquals(212.7, hsbType.getHue().doubleValue(), 0.1);
+        assertEquals(22.45, hsbType.getSaturation().doubleValue(), 0.1);
+        assertEquals(19.2, hsbType.getBrightness().doubleValue(), 0.1);
 
         String enc = ValueEncoder.encode(hsbType, "251.600");
         // white should be "100 100 100 - %", but expect small deviation due to rounding
@@ -687,7 +711,7 @@ class DPTTest {
 
         final double tolerance = 0.001;
         if ((Math.abs(dx - rx) > tolerance) || (Math.abs(dy - ry) > tolerance)
-                || (Math.abs(dY - rY) > tolerance * 100)) {
+                || (Math.round(rY * 2.55) != (value[4] & 0xff))) {
             // print failures in a useful format
             Assertions.assertEquals(String.format("(%.4f %.4f) %.1f %%", dx, dy, dY), result);
         }

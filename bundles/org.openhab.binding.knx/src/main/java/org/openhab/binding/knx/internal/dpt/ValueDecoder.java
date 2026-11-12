@@ -442,12 +442,14 @@ public class ValueDecoder {
             if (stringx != null && stringy != null) {
                 double x = Double.parseDouble(stringx.replace(",", "."));
                 double y = Double.parseDouble(stringy.replace(",", "."));
+                HSBType color = ColorUtil.xyToHsb(new double[] { x, y });
                 if (stringY == null) {
-                    return ColorUtil.xyToHsb(new double[] { x, y });
-                } else {
-                    double pY = Double.parseDouble(stringY.replace(",", "."));
-                    return ColorUtil.xyToHsb(new double[] { x, y, pY / 100.0 });
+                    return color;
                 }
+                // Y is the brightness in percent like DPT 5.001, not the CIE luminance ColorUtil expects
+                double brightness = Double.parseDouble(stringY.replace(",", "."));
+                return new HSBType(color.getHue(), color.getSaturation(),
+                        new PercentType(scalingToPercent(brightness)));
             }
         }
         LOGGER.warn("Failed to convert '{}' (DPT 242): Pattern does not match", value);
@@ -466,16 +468,14 @@ public class ValueDecoder {
                 case "600":
                     if (rString != null && gString != null && bString != null && HSBType.class.equals(preferredType)) {
                         // does not support PercentType and r,g,b valid -> HSBType
-                        int r = coerceToRange((int) (Double.parseDouble(rString.replace(",", ".")) * 2.55), 0, 255);
-                        int g = coerceToRange((int) (Double.parseDouble(gString.replace(",", ".")) * 2.55), 0, 255);
-                        int b = coerceToRange((int) (Double.parseDouble(bString.replace(",", ".")) * 2.55), 0, 255);
+                        int r = percentToStep(rString);
+                        int g = percentToStep(gString);
+                        int b = percentToStep(bString);
 
                         return HSBType.fromRGB(r, g, b);
                     } else if (wString != null && PercentType.class.equals(preferredType)) {
                         // does support PercentType and w valid -> PercentType
-                        BigDecimal w = new BigDecimal(wString.replace(",", "."));
-
-                        return new PercentType(w);
+                        return new PercentType(scalingToPercent(Double.parseDouble(wString.replace(",", "."))));
                     }
                 case "60600":
                     // special type used by OH for .600 indicating that RGBW should be handled with a single HSBType,
@@ -483,10 +483,10 @@ public class ValueDecoder {
                     if (rString != null && gString != null && bString != null && wString != null
                             && HSBType.class.equals(preferredType)) {
                         // does support PercentType and w valid -> PercentType
-                        int r = coerceToRange((int) (Double.parseDouble(rString.replace(",", ".")) * 2.55), 0, 255);
-                        int g = coerceToRange((int) (Double.parseDouble(gString.replace(",", ".")) * 2.55), 0, 255);
-                        int b = coerceToRange((int) (Double.parseDouble(bString.replace(",", ".")) * 2.55), 0, 255);
-                        int w = coerceToRange((int) (Double.parseDouble(wString.replace(",", ".")) * 2.55), 0, 255);
+                        int r = percentToStep(rString);
+                        int g = percentToStep(gString);
+                        int b = percentToStep(bString);
+                        int w = percentToStep(wString);
 
                         return ColorUtil.rgbToHsb(new int[] { r, g, b, w });
                     }
@@ -498,6 +498,11 @@ public class ValueDecoder {
         }
         LOGGER.warn("Failed to convert '{}' (DPT 251): Pattern does not match or invalid content", value);
         return null;
+    }
+
+    // Calimero gives one decimal, rounding (not truncating) gets the step back
+    private static int percentToStep(String percent) {
+        return coerceToRange((int) Math.round(Double.parseDouble(percent.replace(",", ".")) * 2.55), 0, 255);
     }
 
     /**
