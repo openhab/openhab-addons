@@ -32,8 +32,19 @@
     </dependency>
     <dependency>
       <groupId>com.github.oshi</groupId>
+      <artifactId>oshi-common</artifactId>
+      <version>6.12.0</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.slf4j</groupId>
+          <artifactId>slf4j-api</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>com.github.oshi</groupId>
       <artifactId>oshi-core</artifactId>
-      <version>6.5.0</version>
+      <version>6.12.0</version>
       <exclusions>
         <exclusion>
           <groupId>org.slf4j</groupId>
