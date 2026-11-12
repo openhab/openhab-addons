@@ -517,6 +517,8 @@ public enum MiIoDevices {
     XIAOMI_KETTLE_MEK02("xiaomi.kettle.mek02", "Xiaomi Smart Electric Hot Water Dispenser 5L", THING_TYPE_BASIC),
     XIAOMI_KETTLE_V20("xiaomi.kettle.v20", "Xiaomi Smart Kettle 2 Pro", THING_TYPE_BASIC),
     XIAOMI_KETTLE_V21("xiaomi.kettle.v21", "Xiaomi Smart Kettle 2 Pro", THING_TYPE_BASIC),
+    XIAOMI_PET_WATERER_70M2("xiaomi.pet_waterer.70m2", "Mijia Smart Pet Fountain 2", THING_TYPE_BASIC),
+    XIAOMI_PET_WATERER_IV02("xiaomi.pet_waterer.iv02", "Xiaomi Smart Pet Fountain 2", THING_TYPE_BASIC),
     XIAOMI_REPEATER_V2("xiaomi.repeater.v2", "Mi Wi-Fi Repeater 2", THING_TYPE_UNSUPPORTED),
     XIAOMI_VACUUM_B106BK("xiaomi.vacuum.b106bk", "Xiaomi Robot Vacuum T12", THING_TYPE_BASIC),
     XIAOMI_VACUUM_B106EU("xiaomi.vacuum.b106eu", "Xiaomi Robot Vacuum S12", THING_TYPE_BASIC),
