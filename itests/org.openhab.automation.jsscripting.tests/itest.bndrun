@@ -19,7 +19,7 @@ Import-Package: \
 #
 
 -runbundles: \
-	biz.aQute.tester.junit-platform;version='[7.4.0,7.4.1)',\
+	biz.aQute.tester.junit-platform;version='[7.5.0,7.5.1)',\
 	com.fasterxml.jackson.core.jackson-annotations;version='[2.22.0,2.22.1)',\
 	com.sun.jna;version='[5.19.1,5.19.2)',\
 	com.sun.xml.bind.jaxb-osgi;version='[2.3.9,2.3.10)',\
