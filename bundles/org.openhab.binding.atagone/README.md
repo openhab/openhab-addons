@@ -1,12 +1,72 @@
 # ATAG ONE Binding
 
-This binding integrates the [ATAG ONE](https://www.atag.nl/producten/thermostaten/atag-one) smart thermostat with openHAB via its local HTTP API, without requiring any cloud connection or MQTT broker.
+This binding integrates the [ATAG ONE](https://www.atag.nl/producten/thermostaten/atag-one) smart thermostat with openHAB.
+It talks to the thermostat either directly over the local network, or through the ATAG ONE portal.
+No MQTT broker is needed.
 
 ## Supported Things
 
 | Thing ID | Description |
 |----------|-------------|
-| `thermostat` | ATAG ONE thermostat (local LAN API) |
+| `thermostat` | ATAG ONE thermostat (local network or portal) |
+
+## Connection
+
+The `connection` parameter selects how the binding reaches the thermostat.
+
+| Value    | Behaviour                                                                                            |
+|----------|------------------------------------------------------------------------------------------------------|
+| `auto`   | Uses the portal when `email` and `password` are set, otherwise the local network (default).          |
+| `local`  | Always uses the local network and needs `hostname`.                                                  |
+| `remote` | Always uses the portal and needs `email` and `password`.                                             |
+
+The portal is the preferred connection.
+Changes made through it show up in the portal immediately, while the local API is polled on a fixed interval.
+The local connection stays available for diagnostics, and for the settings and measurements the portal does not carry.
+
+### Portal connection
+
+Enter the email address and password of your ATAG ONE portal account on the Thing.
+The binding finds the thermostat on the account by itself, so a `hostname` is not needed.
+Only accounts with a single thermostat are supported.
+
+The portal has no public API.
+The binding makes the same calls as the portal's web pages, so a change to those pages can break the portal connection.
+
+The portal receives new measurements from the thermostat about every two minutes.
+The refresh interval is therefore at least 60 seconds with the portal connection, and a lower value is raised to 60.
+A change sent through the portal is visible in the portal at once, and reaches the thermostat within about two minutes.
+
+If the portal rejects the credentials, the Thing goes `OFFLINE` with `CONFIGURATION_ERROR` and the message from the portal.
+The binding does not retry, because repeated failed logins lock the account.
+Correct the credentials and save the Thing to try again.
+
+If the thermostat stops reporting to the portal, for example because its WiFi is down, the Thing goes `OFFLINE` with `COMMUNICATION_ERROR` after about ten minutes.
+It goes `ONLINE` again by itself once the thermostat reports again.
+
+With `connection` on `auto`, entering only one of `email` and `password` is a `CONFIGURATION_ERROR`.
+
+### Portal and local network together
+
+With `connection` on `auto`, a Thing that has both the portal account and a `hostname` uses the portal as its main source.
+The binding then also asks the thermostat on the local network for the three values the portal lacks.
+Writes always go through the portal.
+
+If the thermostat does not answer locally, the Thing stays `ONLINE` and those three channels show `UNDEF` until it does.
+A thermostat that has not been paired locally yet is paired in the background, see Pairing below.
+Set `connection` to `remote` to use the portal alone.
+
+### Differences with the portal connection
+
+| Area                                              | Portal connection                                                                 |
+|---------------------------------------------------|-----------------------------------------------------------------------------------|
+| `heating#modulation-level`                        | Not available, shown as `UNDEF`, unless a `hostname` is set as well.              |
+| `heating#boiler-temperature`                      | Not available, shown as `UNDEF`, unless a `hostname` is set as well.              |
+| `heating#boiler-return-temperature`               | Not available, shown as `UNDEF`, unless a `hostname` is set as well.              |
+| `heating#target-temperature` after a mode change  | Can lag by up to about two minutes, until the thermostat reports again.           |
+| Fireplace mode                                    | Can be started. It can only be ended on the thermostat itself.                    |
+
+All other channels, actions and settings work the same way with both connections.
 
 ## Discovery
 
@@ -16,6 +76,8 @@ Discovery is optional — the Thing can also be created manually (see below).
 
 ## Pairing
 
+Pairing applies to the local network.
+With the portal connection it only matters when a `hostname` is set as well.
 Pairing is normally automatic — no action is needed on the thermostat itself. The binding generates
 a stable client identifier on first contact and the Thing goes `ONLINE` directly.
 
@@ -32,9 +94,12 @@ client ID is reused, so this step is not repeated.
 
 | Parameter | Type | Required | Default | Description |
 |-----------|------|----------|---------|-------------|
-| `hostname` | text | yes | — | IP address or hostname of the thermostat |
+| `connection` | text | no | `auto` | `auto`, `local` or `remote` (advanced) |
+| `email` | text | remote | — | Email address of the portal account |
+| `password` | text | remote | — | Password of the portal account |
+| `hostname` | text | local | — | IP address or hostname of the thermostat |
 | `port` | integer | no | `10000` | HTTP port of the local API |
-| `refreshInterval` | integer | no | `30` | Poll interval in seconds |
+| `refreshInterval` | integer | no | `30` | Poll interval in seconds, at least 60 with the portal connection |
 | `clientId` | text | no | auto | Stable client identifier used for pairing (advanced) |
 
 ### Textual configuration example
@@ -47,6 +112,16 @@ Thing atagone:thermostat:boiler "ATAG ONE" [
 ```
 
 `clientId` is omitted — the binding generates one on first pairing and persists it automatically.
+
+With the portal connection the Thing needs the portal account instead of a host:
+
+```java
+Thing atagone:thermostat:boiler "ATAG ONE" [
+    email           = "me@example.com",
+    password        = "secret",
+    refreshInterval = 60
+]
+```
 
 ## Thing Properties
 
@@ -241,7 +316,7 @@ and two for replacing a whole week's schedule in one device write.
 |--------|-------------|
 | `activateVacation(int days)` | Activates holiday mode immediately for the given number of days |
 | `activateExtend(int minutes)` | Activates extend mode immediately, additive to the time remaining until the next schedule boundary; `minutes` must be a multiple of 15 |
-| `activateFireplace(int hours)` | Activates fireplace mode immediately for the given number of hours |
+| `activateFireplace(int hours)` | Activates fireplace mode immediately for the given number of hours, 1 to 24 (hours, not seconds) |
 | `cancelMode()` | Cancels whichever timed preset is currently active or pending and returns to auto. Returns `true` if the mode being left is fireplace, meaning the write is accepted but requires confirming on the thermostat's physical display to actually take effect |
 | `setChSchedulePeriod(String weekday, LocalTime start, LocalTime end, double temperatureCelsius)` | Sets one time period in a weekday's central heating schedule, keyed by its `start`. A period that starts at the same time is replaced, and an earlier period that runs past `start` has its end trimmed to `start`. An `end` of `00:00` means midnight at the end of the day |
 | `clearChSchedulePeriod(String weekday, LocalTime start)` | Removes the time period that starts at `start` from a weekday's central heating schedule |

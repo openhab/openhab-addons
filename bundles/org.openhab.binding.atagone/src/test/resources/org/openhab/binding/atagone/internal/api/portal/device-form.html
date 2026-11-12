@@ -1,0 +1,483 @@
+<html><body><form action="/Device/EditDevice" class="form-horizontal" data-ajax="true" data-ajax-complete="updateFrontend({initSelect:true, sizeFieldsets:true, scrollToTop: true, formHighlighting: true, timePicker:true, alternateGrayFieldsets: true });initLocation();UpdateFrostProtection(false);" data-ajax-method="POST" data-ajax-mode="replace" data-ajax-update="#editDeviceContainer" id="editDeviceForm" method="post"><input name="__RequestVerificationToken" type="hidden" value="tok123" /><input id="deviceId" name="deviceId" type="hidden" value="1234-5678-9012_34-56-789-012" />    <fieldset class="">
+
+        
+
+        
+
+        <legend>CENTRAL HEATING</legend>
+
+        <div class="form-group no-border-top">
+
+            <label class="control-label col-xs-6" for="control_mode">Operating mode</label>
+
+            <div class="col-xs-6">
+
+<select autocomplete="off" class="form-control input-md" id="operating_mode" name="control_mode"><option selected="selected" value="room_control">Thermostat</option>
+
+<option value="wdr">Weather dependent</option>
+
+</select>            </div>
+
+        </div>
+
+        <div class="form-group">
+
+            <label class="control-label col-xs-6" for="ch_heating_type">Heating type</label>
+
+            <div class="col-xs-6">
+
+                <select autocomplete="off" class="form-control input-md" id="heating_type" name="ch_heating_type"><option value="air_heating">Air heating</option>
+
+<option value="convector">Convector</option>
+
+<option value="radiator">Radiator</option>
+
+<option value="radiator_undefloor">Radiator + floor</option>
+
+<option selected="selected" value="underfloor">Floor</option>
+
+<option value="underfloor_radiator">Floor + radiator</option>
+
+</select>
+
+            </div>
+
+        </div>
+
+        <div class="form-group">
+
+            <label class="control-label col-xs-6" for="isolation_level">Insulation level</label>
+
+            <div class="col-xs-6">
+
+                <select autocomplete="off" class="form-control input-md" id="isolation" name="isolation_level"><option value="poor">Poor</option>
+
+<option value="average">Average</option>
+
+<option selected="selected" value="good">Good</option>
+
+</select>
+
+            </div>
+
+        </div>
+
+        <div class="form-group">
+
+            <label class="control-label col-xs-6" for="ch_building_size">Building size</label>
+
+            <div class="col-xs-6">
+
+                <select autocomplete="off" class="form-control input-md" id="building_size" name="ch_building_size"><option value="small">Small</option>
+
+<option selected="selected" value="medium">Medium</option>
+
+<option value="large">Large</option>
+
+</select>
+
+            </div>
+
+        </div>
+
+            <div class="wdr_settings_container disabled_section">
+
+                <div class="form-group">
+
+                    <label class="control-label col-xs-6" for="wdr_temps_influence">Temperature influence</label>
+
+                    <div class="col-xs-6">
+
+                        <select autocomplete="off" class="form-control input-md" id="wdr_temps_influence" name="wdr_temps_influence"><option value="off">Off</option>
+
+<option value="less">Less</option>
+
+<option selected="selected" value="medium">Medium</option>
+
+<option value="more">More</option>
+
+<option value="room">Room control</option>
+
+</select>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        <div class="form-group">
+
+            <label class="control-label col-xs-6" for="climate_zone">Climate zone</label>
+
+            <div class="col-xs-6">
+
+                <input class="form-control input-md" id="climate_zone" name="climate_zone" placeholder="Climate zone" type="text" value="-10.0" />
+
+            </div>
+
+        </div>
+
+            <div class="wdr_settings_container disabled_section">
+
+                <div class="form-group">
+
+                    <label class="control-label col-xs-6" for="wdr_temps_offset">Temperature correction</label>
+
+                    <div class="col-xs-6">
+
+                        <input class="form-control input-md" id="wdr_temps_offset" name="wdr_temps_offset" placeholder="Temperature correction" type="text" value="0.0" />
+
+                    </div>
+
+                </div>
+
+                <div class="form-group">
+
+                    <label class="control-label col-xs-6" for="summer_eco_mode">Summer eco mode</label>
+
+                    <div class="col-xs-6">
+
+                        <input class="form-control input-md cmn-toggle cmn-toggle-round medium" id="summer_eco_mode" name="summer_eco_mode" type="checkbox" value="true" /><input name="summer_eco_mode" type="hidden" value="false" />
+
+                        <label for="summer_eco_mode"> </label>
+
+                    </div>
+
+                </div>
+
+                <div class="summereco_settings_container disabled_section">
+
+                    <div class="form-group">
+
+                        <label class="control-label col-xs-6" for="summer_eco_temp">Summer eco mode temperature</label>
+
+                        <div class="col-xs-6">
+
+                            <input class="form-control input-md" id="summer_eco_mode_temp" name="summer_eco_temp" placeholder="Summer eco mode temperature" type="text" value="13.0" />
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        <div class="form-group">
+
+            <label class="control-label col-xs-6" for="frost_protection">Frost protection</label>
+
+            <div class="col-xs-6">
+
+                <select autocomplete="off" class="form-control input-md" id="frost_protection" name="frost_protection"><option selected="selected" value="off">Off</option>
+
+<option value="outside">Outside</option>
+
+<option value="room">Inside</option>
+
+<option value="outside, room">Inside + Outside</option>
+
+</select>
+
+                <div id="frost_prot_off" style="display:none;">
+
+                    <label class="form-control-static no-wrap">Off</label>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="frost_protection_settings disabled_section">
+
+            <div class="form-group frost_protection_temp_inside_container">
+
+                <label class="control-label col-xs-6" for="frost_protection_temp_inside">Frost protection temperature inside</label>
+
+                <div class="col-xs-6">
+
+                    <input class="form-control input-md" id="frost_protection_temp_inside" name="frost_protection_temp_inside" placeholder="Frost protection temperature inside" type="text" value="4.0" />
+
+                </div>
+
+            </div>
+
+                <div class="form-group frost_protection_temp_outside_container">
+
+                    <label class="control-label col-xs-6" for="frost_protection_temp_outside">Frost protection temperature outside</label>
+
+                    <div class="col-xs-6">
+
+                        <input class="form-control input-md" id="frost_protection_temp_outside" name="frost_protection_temp_outside" placeholder="Frost protection temperature outside" type="text" value="0.0" />
+
+                    </div>
+
+                </div>
+
+        </div>
+
+            <div class="form-group">
+
+                <label class="control-label col-xs-6" for="max_preheat">Maximum pre-heat time</label>
+
+                <div class="col-xs-6">
+
+                    <select autocomplete="off" class="form-control input-md" id="max_preheat" name="max_preheat"><option value="180">3</option>
+
+<option value="120">2</option>
+
+<option value="60">1</option>
+
+<option selected="selected" value="240">Automatic</option>
+
+<option value="0">Off</option>
+
+</select>
+
+                </div>
+
+            </div>
+
+        <div class="form-group">
+
+            <label class="control-label col-xs-6" for="ch_base_temp">Base temperature</label>
+
+            <div class="col-xs-6">
+
+                <input class="form-control input-md" id="ch_base_temp" name="ch_base_temp" placeholder="Base temperature central heating schedule" type="text" value="22.5" />
+
+            </div>
+
+        </div>
+
+        <div class="form-group">
+
+            <label class="control-label col-xs-6" for="vacation_mode_temp">Vacation mode temperature</label>
+
+            <div class="col-xs-6">
+
+                <input class="form-control input-md" id="vacation_mode_temp" name="vacation_mode_temp" placeholder="Vacation mode temperature" type="text" value="14.0" />
+
+            </div>
+
+        </div>
+
+
+
+        <input id="ch_mode_vacation" name="ch_mode_vacation" type="hidden" value="7" />
+
+        <input id="ch_mode_extend" name="ch_mode_extend" type="hidden" value="1" />
+
+
+
+        <div class=" form-group">
+
+            <label class="control-label col-xs-6" for="time_zone">Time zone</label>
+
+            <div class="col-xs-6">
+
+                <select autocomplete="off" class="form-control input-md" id="time_zone" name="time_zone"><option value="Amsterdam">Amsterdam</option>
+
+<option selected="selected" value="Berlin">Berlin</option>
+
+<option value="Brussels">Brussels</option>
+
+<option value="Dublin">Dublin</option>
+
+<option value="Edinburgh">Edinburgh</option>
+
+<option value="Frankfurt">Frankfurt</option>
+
+<option value="London">London</option>
+
+<option value="Luxembourg">Luxembourg</option>
+
+<option value="Paris">Paris</option>
+
+<option value="Rome">Rome</option>
+
+</select>
+
+            </div>
+
+        </div>
+
+    </fieldset>
+
+        <fieldset class=" ">
+
+            <legend>HOT WATER</legend>
+
+            <div class="form-group no-border-top">
+
+                <label class="control-label col-xs-6" for="dhw_base_temp">Base temperature</label>
+
+                <div class="col-xs-6">
+
+                    <input class="form-control input-md" id="dhw_base_temp" name="dhw_base_temp" placeholder="Base temperature domestic hot water schedule" type="text" value="55.0" />
+
+                </div>
+
+            </div>
+
+                <div class="form-group">
+
+                    <label class="control-label col-xs-6" for="dhw_legion_enabled">Legionella protection active</label>
+
+                    <div class="col-xs-6">
+
+                        <input checked="checked" class="form-control input-md cmn-toggle cmn-toggle-round medium" id="dhw_legion_enabled" name="dhw_legion_enabled" type="checkbox" value="true" /><input name="dhw_legion_enabled" type="hidden" value="false" />
+
+                        <label for="dhw_legion_enabled"> </label>
+
+                    </div>
+
+                </div>
+
+                <div class="legion_settings_container ">
+
+                    <div class="form-group">
+
+                        <label class="control-label col-xs-6" for="dhw_legion_day">Weekday</label>
+
+                        <div class="col-xs-6">
+
+                            <select autocomplete="off" class="form-control input-md" id="dhw_legion_day" name="dhw_legion_day"><option value="1">Monday</option>
+
+<option value="2">Tuesday</option>
+
+<option value="3">Wednesday</option>
+
+<option value="4">Thursday</option>
+
+<option value="5">Friday</option>
+
+<option value="6">Saturday</option>
+
+<option selected="selected" value="7">Sunday</option>
+
+</select>
+
+                        </div>
+
+                    </div>
+
+                    <div class="form-group">
+
+                        <label class="control-label col-xs-6" for="dhw_legion_time">Start time</label>
+
+                        <div class="col-xs-6">
+
+                            <input Value="07:00" class="form-control input-md datepicker" data-date-format=" HH:mm" id="dhw_legion_time" name="dhw_legion_time" placeholder="03:15" type="text" value="07:00:00" />
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+        </fieldset>
+
+    <fieldset class=" ">
+
+        <legend>LOCATION</legend>
+
+        <div class="form-group">
+
+    <label class="control-label col-xs-6" for="Country">Country</label>
+
+    <div class="col-xs-6">
+
+        <select Name="Location.Country" autocomplete="off" class="form-control input-md" id="Country" name="Country"><option value="AT">Austria</option>
+
+<option value="BE">Belgium</option>
+
+<option value="FR">France</option>
+
+<option value="DE">Germany</option>
+
+<option value="IT">Italy</option>
+
+<option selected="selected" value="NL">Netherlands</option>
+
+<option value="GB">United Kingdom</option>
+
+</select>
+
+    </div>
+
+</div>
+
+<div class="form-group">
+
+    <label class="control-label col-xs-6" for="Postal_code">Postal code</label>
+
+    <div class="col-xs-6">
+
+        <input Name="Location.Postal_code" autocomplete="off" class="form-control input-md" id="Postal_code" name="Postal_code" placeholder="Postal code" type="text" value="1234" />
+
+    </div>
+
+</div>
+
+<div class="form-group">
+
+    <label class="control-label col-xs-6" for="City">City</label>
+
+    <div class="col-xs-6">
+
+        <p class="city form-control-static">Teststadt</p>
+
+        <input Name="Location.City" class="city" id="City" name="City" type="hidden" value="Teststadt" />
+
+    </div>
+
+</div>
+
+<div class="form-group">
+
+    <label class="control-label col-xs-6" for="Street">Street</label>
+
+    <div class="col-xs-6">
+
+        <select Name="Location.Street" autocomplete="off" class="dynamic form-control input-md" id="Street" name="Street"><option selected="selected" value="Teststraße">Teststraße</option></select>
+
+    </div>
+
+</div>
+
+<div class="form-group">
+
+    <label class="control-label col-xs-6" for="Housenumber">House name or number</label>
+
+    <div class="col-xs-6">
+
+        <input Name="Location.Housenumber" class="form-control input-md" id="Housenumber" name="Housenumber" placeholder="House name or number" type="text" value="1" />
+
+    </div>
+
+</div>
+
+<div class="form-group">
+
+    <label class="control-label col-xs-6" for="HousenumberSuffix">House number suffix</label>
+
+    <div class="col-xs-6">
+
+        <input Name="Location.HousenumberSuffix" class="form-control input-md" id="HousenumberSuffix" name="HousenumberSuffix" placeholder="House number suffix" type="text" value="" />
+
+    </div>
+
+</div>
+
+        <div class="form-group no-border-top text-center">
+
+            <button id="edit_device" type="submit" class="btn btn-success" formnovalidate>SAVE</button>
+
+        </div>
+
+    </fieldset>
+
+</form></body></html>

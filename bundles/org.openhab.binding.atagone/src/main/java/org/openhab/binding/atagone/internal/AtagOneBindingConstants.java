@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.atagone.internal;
 
+import java.time.ZoneId;
 import java.util.Map;
 import java.util.Set;
 
@@ -174,6 +175,13 @@ public class AtagOneBindingConstants {
             Map.entry(1, "berlin"), Map.entry(2, "brussels"), Map.entry(3, "dublin"), Map.entry(4, "edinburgh"),
             Map.entry(5, "frankfurt"), Map.entry(6, "london"), Map.entry(7, "luxembourg"), Map.entry(8, "paris"),
             Map.entry(9, "rome"));
+    /** The zone for each {@link #TIME_ZONE_NAMES} index, in which the portal shows the thermostat's times. */
+    public static final Map<Integer, ZoneId> TIME_ZONE_IDS = Map.ofEntries(Map.entry(0, ZoneId.of("Europe/Amsterdam")),
+            Map.entry(1, ZoneId.of("Europe/Berlin")), Map.entry(2, ZoneId.of("Europe/Brussels")),
+            Map.entry(3, ZoneId.of("Europe/Dublin")), Map.entry(4, ZoneId.of("Europe/London")),
+            Map.entry(5, ZoneId.of("Europe/Berlin")), Map.entry(6, ZoneId.of("Europe/London")),
+            Map.entry(7, ZoneId.of("Europe/Luxembourg")), Map.entry(8, ZoneId.of("Europe/Paris")),
+            Map.entry(9, ZoneId.of("Europe/Rome")));
     public static final Map<String, Integer> TIME_ZONE_BY_NAME = Map.ofEntries(Map.entry("amsterdam", 0),
             Map.entry("berlin", 1), Map.entry("brussels", 2), Map.entry("dublin", 3), Map.entry("edinburgh", 4),
             Map.entry("frankfurt", 5), Map.entry("london", 6), Map.entry("luxembourg", 7), Map.entry("paris", 8),
