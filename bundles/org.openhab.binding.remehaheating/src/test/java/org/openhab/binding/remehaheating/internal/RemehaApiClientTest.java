@@ -62,6 +62,12 @@ public class RemehaApiClientTest {
     }
 
     @Test
+    public void testGetHeatingCurveWithoutToken() {
+        JsonObject result = apiClient.getHeatingCurve("zone123");
+        assertNull(result); // Should return null without access token
+    }
+
+    @Test
     public void testSetTemperature() {
         boolean result = apiClient.setTemperature("zone123", 21.5);
         assertFalse(result); // Should return false without access token
