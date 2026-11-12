@@ -5,7 +5,7 @@ It currently supports Anker SOLIX devices with officially exposed Modbus profile
 
 ## Prerequisites
 
-This add-on is a Modbus sub-binding and requires the base Modbus binding to be installed and active.
+This add-on is a Modbus sub-binding and requires the Modbus Core Binding to be installed and active.
 It is not a standalone binding.
 
 When installed via the normal openHAB add-on workflow, dependencies are handled by openHAB.
