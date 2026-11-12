@@ -91,6 +91,35 @@ public class SonosXMLParserTest {
     }
 
     @Test
+    public void getZoneGroupFromXMLListsTheSatellitesOfAHomeTheater() throws IOException {
+        InputStream resourceStream = getClass().getResourceAsStream("/ZoneGroupState-home-theater.xml");
+        assertNotNull(resourceStream);
+        final String xml = new String(resourceStream.readAllBytes(), StandardCharsets.UTF_8);
+        List<SonosZoneGroup> groups = SonosXMLParser.getZoneGroupFromXML(xml);
+        assertEquals(3, groups.size());
+        assertEquals(List.of("RINCON_00000000000301400", "RINCON_00000000000201400"), groups.get(0).getSatellites());
+        assertEquals(List.of("RINCON_00000000000701400", "RINCON_00000000000601400", "RINCON_00000000000501400"),
+                groups.get(1).getSatellites());
+        assertEquals(List.of(), groups.get(2).getSatellites());
+    }
+
+    @Test
+    public void getZoneGroupFromXMLListsNoSatellitesForTheHiddenSpeakersOfAStereoPair() {
+        String channelMap = "RINCON_00000000000A01400:LF,LF;RINCON_00000000000B01400:RF,RF;RINCON_00000000000C01400:SW,SW";
+        String xml = """
+                <ZoneGroupState><ZoneGroups>\
+                <ZoneGroup Coordinator="RINCON_00000000000B01400" ID="RINCON_00000000000B01400:1">\
+                <ZoneGroupMember UUID="RINCON_00000000000A01400" ZoneName="Office" Invisible="1" ChannelMapSet="%1$s"/>\
+                <ZoneGroupMember UUID="RINCON_00000000000B01400" ZoneName="Office" ChannelMapSet="%1$s"/>\
+                <ZoneGroupMember UUID="RINCON_00000000000C01400" ZoneName="Office" Invisible="1" ChannelMapSet="%1$s"/>\
+                </ZoneGroup></ZoneGroups></ZoneGroupState>\
+                """.formatted(channelMap);
+        List<SonosZoneGroup> groups = SonosXMLParser.getZoneGroupFromXML(xml);
+        assertEquals(1, groups.size());
+        assertEquals(List.of(), groups.get(0).getSatellites());
+    }
+
+    @Test
     public void getMetaDataFromXML() throws IOException {
         InputStream resourceStream = getClass().getResourceAsStream("/MetaData.xml");
         assertNotNull(resourceStream);
