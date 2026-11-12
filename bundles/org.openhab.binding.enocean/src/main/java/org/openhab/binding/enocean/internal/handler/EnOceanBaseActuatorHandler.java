@@ -32,6 +32,7 @@ import org.openhab.binding.enocean.internal.eep.StateMachineProvider;
 import org.openhab.binding.enocean.internal.messages.BasePacket;
 import org.openhab.binding.enocean.internal.statemachine.STMStateMachine;
 import org.openhab.binding.enocean.internal.statemachine.STMTransitionConfiguration;
+import org.openhab.binding.enocean.internal.statemachine.STMWatchdog;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.StringType;
@@ -249,7 +250,7 @@ public class EnOceanBaseActuatorHandler extends EnOceanBaseSensorHandler {
             boolean hasSenderId = senderIdHex != null && !senderIdHex.isEmpty();
             if (hasSenderId || validateSenderIdOffset(getConfiguration().senderIdOffset)) {
                 // Initialize state machine if the sending EEP provides one
-                stm = null;
+                stopStateMachine();
                 if (EEPFactory.createEEP(localEEPType) instanceof StateMachineProvider<?, ?> stmEEP) {
                     STMTransitionConfiguration<?, ?> transConfig = stmEEP.getTransitionConfiguration(getThing());
                     if (transConfig != null) {
@@ -428,6 +429,14 @@ public class EnOceanBaseActuatorHandler extends EnOceanBaseSensorHandler {
             refreshJob.cancel(true);
             this.refreshJob = null;
         }
+        stopStateMachine();
+    }
+
+    private void stopStateMachine() {
+        STMStateMachine<?, ?> localStm = stm;
+        if (localStm != null) {
+            localStm.dispose();
+        }
         stm = null;
     }
 
@@ -440,7 +449,19 @@ public class EnOceanBaseActuatorHandler extends EnOceanBaseSensorHandler {
         for (Object action : smProvider.getRequiredCallbackActions(getThing())) {
             stm.register((Enum) action, this::processStoredCommand);
         }
+        STMWatchdog watchdog = smProvider.getWatchdog(getThing());
+        if (watchdog != null) {
+            stm.registerWatchdog(watchdog, this::onWatchdogTimeout);
+        }
         return stm;
+    }
+
+    private void onWatchdogTimeout(Object timedOutState) {
+        logger.warn(
+                "{}: No feedback from the actuator while in state {}. Resetting the state machine to INVALID. "
+                        + "Make sure the actuator reports its movements, e.g. for an Eltako FSB14 it must be in the "
+                        + "feedback list of the FAM14 (operating mode 7) and the FAM14 must poll it.",
+                thing.getUID(), timedOutState);
     }
 
     /**

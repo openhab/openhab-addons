@@ -585,9 +585,19 @@ On first use, the state machine must be calibrated. Two methods are available:
 
 In both cases, the state machine transitions from INVALID to IDLE state once calibration is complete.
 The calibration/state-machine state is persisted internally by the binding using StorageService (JSON in userdata) and restored automatically after restart. No linked state-machine item or openHAB persistence configuration is required for this internal persistence.
+Only the states IDLE and INVALID are restored after a restart.
+Any other state, for example a movement that was running at shutdown, is replaced by INVALID and requires a new calibration.
 
 ### Hardware Requirements
 
 **Important:** The FSB14 must send feedback telegrams for state machine operation.
 Configure the FAM14 with the PCT14 tool: add the FSB14 to the feedback list and set the operating mode to 7.
 For FSB14 addresses > 126, a bus connection (FAM14/FGW14-USB) is required as feedback is not sent via radio.
+
+### Missing Feedback
+
+The state machine waits for the feedback of the FSB14 during every movement started by openHAB.
+The feedback reaches openHAB with a delay of up to one polling cycle of the FAM14 (about 6 seconds, longer with many actuators).
+If no feedback arrives within the configured `shutTime` (plus `swapTime` in mode `blinds`) plus 15 seconds, the binding logs a warning and sets the state machine to INVALID.
+The next UP or DOWN command then calibrates the state machine again.
+If this warning appears, check that the FSB14 is in the feedback list of the FAM14 and that the FAM14 polls it.
