@@ -192,6 +192,7 @@ public enum MiIoDevices {
     MIDEA_AIRCONDITION_V2("midea.aircondition.v2", "Midea Air Conditioner v2", THING_TYPE_UNSUPPORTED),
     MIDEA_AIRCONDITION_XA1("midea.aircondition.xa1", "Midea AC-Cool Golden", THING_TYPE_UNSUPPORTED),
     MIJIA_VACUUM_V2("mijia.vacuum.v2", "Mi Robot Vacuum-Mop Essential", THING_TYPE_BASIC),
+    MMGG_FEEDER_FI1("mmgg.feeder.fi1", "Xiaomi Smart Pet Food Feeder", THING_TYPE_BASIC),
     MMGG_PET_WATERER_S1("mmgg.pet_waterer.s1", "Mijia Smart Pet Water Dispenser", THING_TYPE_BASIC),
     MMGG_PET_WATERER_S2("mmgg.pet_waterer.s2", "Mijia Smart Pet Water Dispenser", THING_TYPE_BASIC),
     MMGG_PET_WATERER_S3("mmgg.pet_waterer.s3", "Mijia Smart Pet Water Dispenser", THING_TYPE_BASIC),
