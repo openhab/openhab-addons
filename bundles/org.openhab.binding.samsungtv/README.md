@@ -73,7 +73,7 @@ Also under `advanced`, _"Use IP Control"_ is off by default.
 Samsung IP Control is a local interface on port 1516, available on 2020 and later TVs.
 When it is on, the binding asks the TV for its power state over IP Control instead of the REST interface.
 Commanding `artMode` OFF then switches the TV to standby over IP Control, instead of sending a long press of the power key, which newer Frame TVs ignore.
-When the TV is offline, commanding `power` or `artMode` ON wakes it over IP Control as well as with WOL, as some TVs ignore WOL in network standby.
+When the TV is in standby or offline, commanding `power` or `artMode` ON wakes it over IP Control as well as with WOL, as some TVs ignore WOL in network standby.
 To use it, enable _IP Remote_ on the TV (Settings, General, Network, Expert Settings) and turn on _"Use IP Control"_.
 The next time the TV is on and not in art mode, the TV asks you to accept the connection from openHAB.
 You have 30 seconds to accept it, and the returned token is stored in _"IP Control Token"_.
@@ -180,6 +180,11 @@ The `sourceApp` channel will show `Internet` (if configured correctly) and sendi
 ### Power
 
 The power channel is available on all TV's. Depending on the age of your TV, you may not be able to send power ON commands (see [WOL](#wol)). It should represent the ON state of your TV though.
+
+For TVs using the WebSocket protocol, the Thing remains online when UPnP services are unavailable if a MAC address is configured for Wake-on-LAN.
+In this case, the binding cannot confirm that the TV is reachable; it may also be disconnected from the network or power.
+If the binding cannot determine the power state, the power channel can be `UNDEF`.
+For a WebSocket TV with a configured MAC address, if a wake attempt times out, the requested `power` or `artMode` channel becomes `UNDEF` and the Thing goes offline with a communication error until the TV is rediscovered.
 
 ## Frame TV's
 

@@ -29,6 +29,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -85,6 +86,7 @@ import com.google.gson.JsonSyntaxException;
  * @author Nick Waterton - Improve Frame TV handling and some refactoring
  * @author Nick Waterton - Keep art mode when 2025 Frame TV's report standby
  * @author Nick Waterton - Added IP Control power state
+ * @author Kai Kreuzer - Keep Wake-on-LAN capable TVs online in standby
  */
 @NonNullByDefault
 public class SamsungTvHandler extends BaseThingHandler implements RegistryListener {
@@ -120,7 +122,7 @@ public class SamsungTvHandler extends BaseThingHandler implements RegistryListen
     private final Set<SamsungTvService> services = new CopyOnWriteArraySet<>();
 
     /* Store powerState to be able to restore upon new link */
-    private boolean powerState = false;
+    private volatile State powerState = UnDefType.UNDEF;
 
     /* Store if art mode is supported to be able to skip switching power state to ON during initialization */
     public boolean artModeSupported = false;
@@ -130,6 +132,9 @@ public class SamsungTvHandler extends BaseThingHandler implements RegistryListen
     public boolean initialized = false;
 
     private Optional<ScheduledFuture<?>> pollingJob = Optional.empty();
+    private boolean servicesOnline;
+    private final AtomicLong serviceDiscoveryCount = new AtomicLong();
+    private volatile boolean disposed;
     private WolSend wolTask = new WolSend(this);
     private final ModeOnWake modeOnWake = new ModeOnWake();
 
@@ -250,7 +255,7 @@ public class SamsungTvHandler extends BaseThingHandler implements RegistryListen
                 if (properties.isPresent()) {
                     return properties.get();
                 } else if (retryCount > 0) {
-                    logger.warn("{}: Cannot get TVProperties - Retry: {}", host, retryCount);
+                    logger.debug("{}: Cannot get TVProperties - Retry: {}", host, retryCount);
                     return fetchTVProperties(1000, retryCount);
                 }
             }
@@ -331,6 +336,8 @@ public class SamsungTvHandler extends BaseThingHandler implements RegistryListen
             TVProperties properties = fetchTVProperties(0, 0);
             if ("on".equals(properties.getPowerState())) {
                 updateSettings(properties);
+            } else if ("standby".equals(properties.getPowerState())) {
+                valueReceived(POWER, OnOffType.OFF);
             }
         }
     }
@@ -378,7 +385,6 @@ public class SamsungTvHandler extends BaseThingHandler implements RegistryListen
             }
             return properties.getPowerState();
         });
-        setPowerState("on".equals(powerState));
         logger.debug("{}: PowerState is: {}", host, powerState);
         return powerState;
     }
@@ -568,6 +574,7 @@ public class SamsungTvHandler extends BaseThingHandler implements RegistryListen
         if (OnOffType.OFF.equals(command) && (ART_MODE.equals(channel) || POWER.equals(channel))) {
             // a later OFF command overrides the mode requested by an ON command that is still waking the TV
             clearModeOnWake();
+            wolTask.cancel();
         }
         // Delegate command to correct service
         for (SamsungTvService service : services) {
@@ -587,9 +594,9 @@ public class SamsungTvHandler extends BaseThingHandler implements RegistryListen
                 && ipControlPowerOn();
         if (!wolTask.send(channel, command) && !ipControlWoke) {
             if (getThing().getStatus() != ThingStatus.ONLINE) {
-                logger.warn("{}: TV is {}", host, getThing().getStatus());
+                logger.debug("{}: TV is {}", host, getThing().getStatus());
             } else {
-                logger.warn("{}: Channel '{}' not connected/supported", host, channel);
+                logger.debug("{}: Channel '{}' not connected/supported", host, channel);
             }
         }
     }
@@ -598,7 +605,7 @@ public class SamsungTvHandler extends BaseThingHandler implements RegistryListen
     public void channelLinked(ChannelUID channelUID) {
         logger.trace("{}: channelLinked: {}", host, channelUID);
         if (POWER.equals(channelUID.getId())) {
-            valueReceived(POWER, OnOffType.from(getPowerState()));
+            valueReceived(POWER, powerState);
         }
         services.stream().forEach(a -> a.clearCache());
         if (Arrays.asList(ART_COLOR_TEMPERATURE, ART_IMAGE).contains(channelUID.getId())) {
@@ -626,12 +633,12 @@ public class SamsungTvHandler extends BaseThingHandler implements RegistryListen
     }
 
     public synchronized void setPowerState(boolean state) {
-        powerState = state;
-        logger.trace("{}: PowerState set to: {}", host, powerState ? "on" : "off");
+        powerState = OnOffType.from(state);
+        logger.trace("{}: PowerState set to: {}", host, state ? "on" : "off");
     }
 
     public boolean getPowerState() {
-        return powerState;
+        return OnOffType.ON.equals(powerState);
     }
 
     public void setArtMode2022(boolean artmode) {
@@ -675,6 +682,7 @@ public class SamsungTvHandler extends BaseThingHandler implements RegistryListen
 
     @Override
     public void initialize() {
+        disposed = false;
         updateStatus(ThingStatus.UNKNOWN);
 
         logger.debug("{}: Initializing Samsung TV handler for uid '{}'", host, getThing().getUID());
@@ -717,6 +725,7 @@ public class SamsungTvHandler extends BaseThingHandler implements RegistryListen
     @Override
     public void dispose() {
         logger.debug("{}: Disposing SamsungTvHandler", host);
+        disposed = true;
         stopPolling();
         wolTask.cancel();
         ipControl = null;
@@ -729,7 +738,9 @@ public class SamsungTvHandler extends BaseThingHandler implements RegistryListen
     }
 
     private synchronized void stopServices() {
-        stopPolling();
+        if (!isFrame2022() || !configuration.isWebsocketProtocol() || configuration.getMacAddress().isBlank()) {
+            stopPolling();
+        }
         if (!services.isEmpty()) {
             if (isFrame2022()) {
                 logger.debug("{}: Shutdown all Samsung services except RemoteControllerService", host);
@@ -742,16 +753,26 @@ public class SamsungTvHandler extends BaseThingHandler implements RegistryListen
         }
     }
 
-    private synchronized void shutdown() {
+    private synchronized void shutdown(boolean reportedStandby, long discoveryCount) {
+        if (disposed || (reportedStandby && discoveryCount != serviceDiscoveryCount.get())) {
+            return;
+        }
         stopServices();
-        putOffline();
+        if (reportedStandby) {
+            clearStandbyState();
+        }
+        setUnavailable();
     }
 
     public synchronized void putOnline() {
-        if (getThing().getStatus() != ThingStatus.ONLINE) {
+        if (disposed) {
+            return;
+        }
+        findServiceInstance(RemoteControllerService.SERVICE_NAME)
+                .ifPresent(s -> ((RemoteControllerService) s).pingConnections());
+        if (!servicesOnline || pollingJob.isEmpty() || getThing().getStatus() != ThingStatus.ONLINE) {
+            servicesOnline = true;
             updateStatus(ThingStatus.ONLINE);
-            findServiceInstance(RemoteControllerService.SERVICE_NAME)
-                    .ifPresent(s -> ((RemoteControllerService) s).pingConnections());
             startPolling();
             if (!getArtModeSupported()) {
                 if (getArtMode2022()) {
@@ -766,8 +787,8 @@ public class SamsungTvHandler extends BaseThingHandler implements RegistryListen
                 } else if (configuration.isWebsocketProtocol()) {
                     // if TV is registered to SmartThings it wakes up regularly (every 5 minutes or so), even if it's in
                     // standby, so check the power state locally to see if it's actually on
-                    fetchPowerState();
-                    valueReceived(POWER, OnOffType.from(getPowerState()));
+                    String powerState = fetchPowerState();
+                    valueReceived(POWER, OnOffType.from("on".equals(powerState)));
                     if (getPowerState()) {
                         pairIpControl();
                     }
@@ -779,20 +800,56 @@ public class SamsungTvHandler extends BaseThingHandler implements RegistryListen
         }
     }
 
-    public synchronized void putOffline() {
-        if (getThing().getStatus() != ThingStatus.OFFLINE) {
-            stopPolling();
-            valueReceived(ART_MODE, OnOffType.OFF);
-            valueReceived(POWER, OnOffType.OFF);
-            if (getArtMode2022()) {
-                valueReceived(SET_ART_MODE, OnOffType.OFF);
+    private synchronized void setUnavailable() {
+        if (disposed) {
+            return;
+        }
+        servicesOnline = false;
+        if (configuration.isWebsocketProtocol() && !configuration.getMacAddress().isBlank()) {
+            if (getPowerState()) {
+                // TV was on in TV mode and the connection dropped, e.g. UPnP lost the TV while it stays on
+                valueReceived(POWER, UnDefType.UNDEF);
+            } else {
+                // TV is in standby or art mode (power already OFF). All (optionally stale) standby state must be
+                // cleared so artMode does not stay ON indefinitely. This happens e.g. on 2021 Frame TVs that do not
+                // send go_to_standby, so standby is only detected when the MediaRenderer disappears.
+                clearStandbyState();
             }
-            valueReceived(ART_IMAGE, UnDefType.NULL);
-            valueReceived(ART_LABEL, new StringType(""));
-            valueReceived(SOURCE_APP, new StringType(""));
+            if (getThing().getStatus() != ThingStatus.ONLINE) {
+                updateStatus(ThingStatus.ONLINE);
+                logger.debug("{}: TV is {} (Wake-on-LAN available)", host, getThing().getStatus());
+            }
+        } else if (getThing().getStatus() != ThingStatus.OFFLINE) {
+            stopPolling();
+            clearStandbyState();
             updateStatus(ThingStatus.OFFLINE);
             logger.debug("{}: TV is {}", host, getThing().getStatus());
         }
+    }
+
+    public synchronized void wakeFailed(String channel) {
+        if (disposed) {
+            return;
+        }
+        if (configuration.isWebsocketProtocol() && !configuration.getMacAddress().isBlank()) {
+            valueReceived(channel, UnDefType.UNDEF);
+            servicesOnline = false;
+            stopPolling();
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "TV did not wake up");
+        } else {
+            setUnavailable();
+        }
+    }
+
+    private void clearStandbyState() {
+        valueReceived(ART_MODE, OnOffType.OFF);
+        valueReceived(POWER, OnOffType.OFF);
+        if (getArtMode2022()) {
+            valueReceived(SET_ART_MODE, OnOffType.OFF);
+        }
+        valueReceived(ART_IMAGE, UnDefType.NULL);
+        valueReceived(ART_LABEL, new StringType(""));
+        valueReceived(SOURCE_APP, new StringType(""));
     }
 
     public boolean isChannelLinked(String ch) {
@@ -827,7 +884,7 @@ public class SamsungTvHandler extends BaseThingHandler implements RegistryListen
         logger.debug("{}: Received value '{}':'{}' for thing '{}'", host, variable, value, this.getThing().getUID());
 
         if (POWER.equals(variable)) {
-            setPowerState(OnOffType.ON.equals(value));
+            powerState = value;
         }
         updateState(variable, value);
     }
@@ -878,7 +935,7 @@ public class SamsungTvHandler extends BaseThingHandler implements RegistryListen
         if (isOnline) {
             putOnline();
         } else {
-            putOffline();
+            setUnavailable();
         }
     }
 
@@ -892,6 +949,9 @@ public class SamsungTvHandler extends BaseThingHandler implements RegistryListen
      * @return true if service restated or created, false otherwise
      */
     private synchronized boolean createService(String type, String udn) {
+        if (disposed) {
+            return false;
+        }
         Optional<SamsungTvService> service = findServiceInstance(type);
 
         if (service.isPresent()) {
@@ -974,6 +1034,7 @@ public class SamsungTvHandler extends BaseThingHandler implements RegistryListen
     @Override
     public void remoteDeviceAdded(@Nullable Registry registry, @Nullable RemoteDevice device) {
         if (device != null && host.equals(Utils.getHost(device))) {
+            serviceDiscoveryCount.incrementAndGet();
             logger.debug("{}: remoteDeviceAdded: {}, {}, upnpUDN={}", host, Utils.getType(device),
                     device.getIdentity().getDescriptorURL(), Utils.getUdn(device));
             initializeConfig();
@@ -986,7 +1047,7 @@ public class SamsungTvHandler extends BaseThingHandler implements RegistryListen
         if (device != null && host.equals(Utils.getHost(device))) {
             if (services.stream().anyMatch(s -> s.getServiceName().equals(Utils.getType(device)))) {
                 logger.debug("{}: Device removed: {}, udn={}", host, Utils.getType(device), Utils.getUdn(device));
-                shutdown();
+                shutdown(false, serviceDiscoveryCount.get());
             }
         }
     }
@@ -1026,7 +1087,12 @@ public class SamsungTvHandler extends BaseThingHandler implements RegistryListen
 
     public void setOffline() {
         // schedule this in the future to allow calling service to return immediately
-        scheduler.submit(this::shutdown);
+        scheduler.submit(() -> shutdown(false, serviceDiscoveryCount.get()));
+    }
+
+    public void setStandby() {
+        long discoveryCount = serviceDiscoveryCount.get();
+        scheduler.submit(() -> shutdown(true, discoveryCount));
     }
 
     public void putConfig(@Nullable String key, @Nullable Object value) {

@@ -386,7 +386,7 @@ public class MainTVServerService implements UpnpIOParticipant, SamsungTvService 
                     break;
                 case "PowerOFF":
                     logger.debug("{}: TV has Powered Off", host);
-                    handler.setOffline();
+                    handler.setStandby();
                     break;
                 case "MajorCh":
                 case "ChannelName":

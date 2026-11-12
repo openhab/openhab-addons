@@ -32,6 +32,7 @@ import org.slf4j.LoggerFactory;
  * Used by {@link SamsungTvHandler}
  *
  * @author Nick Waterton - Initial contribution
+ * @author Kai Kreuzer - Guard wake retries and report failed wake-ups
  */
 @NonNullByDefault
 public class WolSend {
@@ -137,19 +138,20 @@ public class WolSend {
         // the websocket service is kept while 2022 and later Frame TV's are in standby, so wait until it is connected
         Optional<SamsungTvService> service = handler.findServiceInstance(RemoteControllerService.SERVICE_NAME)
                 .filter(s -> s.isUpnp() || s.checkConnection());
-        service.ifPresent(s -> {
+        if (service.isPresent()) {
             logger.debug("{}: RemoteControllerService connected after {} attempts", host, wolCount);
             // do not resend command if artMode command as TV wakes up in artMode
             if (!channel.equals(ART_MODE)) {
-                sendCommand((RemoteControllerService) s);
+                sendCommand((RemoteControllerService) service.get());
             }
             cancel();
-        });
+            return;
+        }
         // cancel job
         if (wolCount++ > WOL_SERVICE_CHECK_COUNT) {
-            logger.warn("{}: Service NOT found after {} attempts: stopping WOL attempts", host, wolCount);
+            logger.debug("{}: Service NOT found after {} attempts: stopping WOL attempts", host, wolCount);
             cancel();
-            handler.putOffline();
+            handler.wakeFailed(channel);
         }
     }
 }
