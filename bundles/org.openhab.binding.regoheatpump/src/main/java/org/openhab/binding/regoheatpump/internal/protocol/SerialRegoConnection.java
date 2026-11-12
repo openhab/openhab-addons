@@ -18,6 +18,7 @@ import java.io.OutputStream;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.io.transport.serial.PortInUseException;
@@ -36,32 +37,43 @@ import org.slf4j.LoggerFactory;
 public class SerialRegoConnection implements RegoConnection {
     private final int baudRate;
     private final String portName;
+    private final @NonNull Object portLock;
     private @Nullable SerialPort serialPort;
     private final SerialPortIdentifier serialPortIdentifier;
-    private static final Map<String, Object> PORT_LOCKS = new ConcurrentHashMap<>();
+    private static final Map<String, @NonNull Object> PORT_LOCKS = new ConcurrentHashMap<>();
     private static final Logger logger = LoggerFactory.getLogger(SerialRegoConnection.class);
 
     public SerialRegoConnection(SerialPortIdentifier serialPortIdentifier, int baudRate) {
         this.serialPortIdentifier = serialPortIdentifier;
         this.portName = serialPortIdentifier.getName();
         this.baudRate = baudRate;
+        Object lock = PORT_LOCKS.computeIfAbsent(portName, key -> new Object());
+        if (lock == null) {
+            throw new IllegalStateException("Failed to initialize serial port lock for '" + portName + "'");
+        }
+        this.portLock = lock;
     }
 
     @Override
     public void connect() throws IOException {
-        Object lock = PORT_LOCKS.computeIfAbsent(portName, k -> new Object());
+        synchronized (portLock) {
+            if (serialPort != null) {
+                return;
+            }
 
-        synchronized (lock) {
+            SerialPort openedPort = null;
             try {
-                SerialPort serialPort = serialPortIdentifier.open(SerialRegoConnection.class.getCanonicalName(), 2000);
-                serialPort.enableReceiveTimeout(100);
-                serialPort.setSerialPortParams(baudRate, SerialPort.DATABITS_8, SerialPort.STOPBITS_1,
+                openedPort = serialPortIdentifier.open(SerialRegoConnection.class.getCanonicalName(), 2000);
+                openedPort.enableReceiveTimeout(100);
+                openedPort.setSerialPortParams(baudRate, SerialPort.DATABITS_8, SerialPort.STOPBITS_1,
                         SerialPort.PARITY_NONE);
-                this.serialPort = serialPort;
+                serialPort = openedPort;
             } catch (PortInUseException e) {
+                closeSerialPort(openedPort);
                 logger.debug("Port '{}' is in use (owner: {}).", portName, e.getMessage());
                 throw new IOException("Serial port already used: " + portName, e);
             } catch (UnsupportedCommOperationException e) {
+                closeSerialPort(openedPort);
                 throw new IOException("Unsupported operation on '" + portName + "': " + e.getMessage(), e);
             }
         }
@@ -74,44 +86,49 @@ public class SerialRegoConnection implements RegoConnection {
 
     @Override
     public void close() {
-        SerialPort serialPort = this.serialPort;
-        this.serialPort = null; // Nullify first to prevent concurrent access
+        synchronized (portLock) {
+            closeSerialPort(serialPort);
+            serialPort = null;
+        }
+    }
 
-        if (serialPort != null) {
+    private void closeSerialPort(@Nullable SerialPort serialPortToClose) {
+        if (serialPortToClose == null) {
+            return;
+        }
+
+        try {
+            // Close input/output streams first to ensure clean shutdown
             try {
-                // Close input/output streams first to ensure clean shutdown
-                try {
-                    InputStream inputStream = serialPort.getInputStream();
-                    if (inputStream != null) {
-                        inputStream.close();
-                    }
-                } catch (Exception e) {
-                    // Log but continue with port closure
+                InputStream inputStream = serialPortToClose.getInputStream();
+                if (inputStream != null) {
+                    inputStream.close();
                 }
-
-                try {
-                    OutputStream outputStream = serialPort.getOutputStream();
-                    if (outputStream != null) {
-                        outputStream.close();
-                    }
-                } catch (Exception e) {
-                    // Log but continue with port closure
-                }
-
-                // Remove any event listeners to prevent callbacks after closure
-                try {
-                    serialPort.removeEventListener();
-                } catch (Exception e) {
-                    // Some implementations may not support this
-                }
-
-                // Finally close the serial port
-                serialPort.close();
-
             } catch (Exception e) {
-                // Log the error but don't rethrow - we want to ensure the port reference is nullified
-                logger.warn("Error closing serial port {}: {}", portName, e.getMessage(), e);
+                // Log but continue with port closure
             }
+
+            try {
+                OutputStream outputStream = serialPortToClose.getOutputStream();
+                if (outputStream != null) {
+                    outputStream.close();
+                }
+            } catch (Exception e) {
+                // Log but continue with port closure
+            }
+
+            // Remove any event listeners to prevent callbacks after closure
+            try {
+                serialPortToClose.removeEventListener();
+            } catch (Exception e) {
+                // Some implementations may not support this
+            }
+
+            // Finally close the serial port
+            serialPortToClose.close();
+        } catch (Exception e) {
+            // Log the error but don't rethrow - we want to ensure the port reference is nullified
+            logger.warn("Error closing serial port {}: {}", portName, e.getMessage(), e);
         }
     }
 

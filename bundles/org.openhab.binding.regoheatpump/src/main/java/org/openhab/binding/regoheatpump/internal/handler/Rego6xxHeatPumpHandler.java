@@ -99,9 +99,11 @@ abstract class Rego6xxHeatPumpHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(Rego6xxHeatPumpHandler.class);
     private final Map<String, ChannelDescriptor> channelDescriptors = new HashMap<>();
     private final RegoRegisterMapper mapper = RegoRegisterMapper.REGO600;
+    private final Object connectionLock = new Object();
     private @Nullable RegoConnection connection;
     private @Nullable ScheduledFuture<?> scheduledRefreshFuture;
     private int refreshInterval;
+    private boolean disposed;
 
     protected Rego6xxHeatPumpHandler(Thing thing) {
         super(thing);
@@ -113,11 +115,14 @@ abstract class Rego6xxHeatPumpHandler extends BaseThingHandler {
     public void initialize() {
         refreshInterval = ((Number) getConfig().get(REFRESH_INTERVAL)).intValue();
 
-        try {
-            connection = createConnection();
-        } catch (IOException e) {
-            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-            return;
+        synchronized (connectionLock) {
+            disposed = false;
+            try {
+                connection = createConnection();
+            } catch (IOException e) {
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                return;
+            }
         }
 
         scheduledRefreshFuture = scheduler.scheduleWithFixedDelay(this::refresh, 2, refreshInterval, TimeUnit.SECONDS);
@@ -129,7 +134,10 @@ abstract class Rego6xxHeatPumpHandler extends BaseThingHandler {
     public void dispose() {
         super.dispose();
 
-        closeAndNullifyConnection("Handler disposal");
+        synchronized (connectionLock) {
+            disposed = true;
+            closeAndNullifyConnectionLocked("Handler disposal");
+        }
 
         ScheduledFuture<?> scheduledRefreshFuture = this.scheduledRefreshFuture;
         this.scheduledRefreshFuture = null;
@@ -358,6 +366,12 @@ abstract class Rego6xxHeatPumpHandler extends BaseThingHandler {
      * @param reason the reason for closing the connection (for logging)
      */
     private void closeAndNullifyConnection(String reason) {
+        synchronized (connectionLock) {
+            closeAndNullifyConnectionLocked(reason);
+        }
+    }
+
+    private void closeAndNullifyConnectionLocked(String reason) {
         RegoConnection connection = this.connection;
         this.connection = null; // Nullify first to prevent concurrent access
 
@@ -412,15 +426,21 @@ abstract class Rego6xxHeatPumpHandler extends BaseThingHandler {
         }
 
         // Send command to device and wait for response.
-        RegoConnection connection = this.connection;
-        if (connection == null) {
-            // Lazily create a connection if it was not present (e.g. after previous failure)
-            connection = createConnection();
-            this.connection = connection;
-        }
+        RegoConnection connection;
+        synchronized (connectionLock) {
+            if (disposed) {
+                throw new IOException("Handler disposed while processing command");
+            }
+            connection = this.connection;
+            if (connection == null) {
+                // Lazily create a connection if it was not present (e.g. after previous failure)
+                connection = createConnection();
+                this.connection = connection;
+            }
 
-        if (!connection.isConnected()) {
-            connection.connect();
+            if (!connection.isConnected()) {
+                connection.connect();
+            }
         }
 
         // Give heat pump some time between commands. Feeding commands too quickly
