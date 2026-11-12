@@ -105,8 +105,10 @@ public class ValueEncoder {
             } else if (value instanceof StopMoveType) {
                 return StopMoveType.STOP == value ? dpt.getLowerValue() : dpt.getUpperValue();
             } else if (value instanceof PercentType type) {
-                int intValue = type.intValue();
-                return "251.600".equals(dptId) ? String.format("- - - %d %%", intValue) : String.valueOf(intValue);
+                if ("251.600".equals(dptId)) {
+                    return String.format("- - - %d %%", type.intValue());
+                }
+                return type.toBigDecimal().stripTrailingZeros().toPlainString();
             } else if (value instanceof DecimalType || value instanceof QuantityType<?>) {
                 return handleNumericTypes(dptId, mainNumber, dpt, value);
             } else if (value instanceof StringType) {

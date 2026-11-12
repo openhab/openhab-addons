@@ -15,6 +15,7 @@ package org.openhab.binding.knx.internal.dpt;
 import static org.openhab.binding.knx.internal.KNXBindingConstants.disableUoM;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -499,6 +500,19 @@ public class ValueDecoder {
         return null;
     }
 
+    /**
+     * Whole percent when it encodes to the same step, so a value sent from openHAB comes back unchanged. Otherwise
+     * one decimal, which tells all 256 steps apart and keeps the lowest step above 0.
+     */
+    private static BigDecimal scalingToPercent(double value) {
+        long step = Math.round(value * 255 / 100);
+        long whole = Math.round(value);
+        if (Math.round(whole * 255 / 100.0) == step) {
+            return BigDecimal.valueOf(whole);
+        }
+        return BigDecimal.valueOf(value).setScale(1, RoundingMode.HALF_UP);
+    }
+
     private static @Nullable Type handleNumericDpt(String id, DPTXlator translator, Class<? extends Type> preferredType)
             throws KNXFormatException {
         Set<Class<? extends Type>> allowedTypes = DPTUtil.getAllowedTypes(id);
@@ -506,9 +520,7 @@ public class ValueDecoder {
         double value = translator.getNumericValue();
         if (allowedTypes.contains(PercentType.class)
                 && (HSBType.class.equals(preferredType) || PercentType.class.equals(preferredType))) {
-            // raw 1 is 0.39 %; rounding it to 0 would turn a lit lamp OFF
-            long percent = value > 0 ? Math.max(1, Math.round(value)) : 0;
-            return new PercentType(BigDecimal.valueOf(percent));
+            return new PercentType(scalingToPercent(value));
         }
 
         if (allowedTypes.contains(QuantityType.class) && !disableUoM) {
