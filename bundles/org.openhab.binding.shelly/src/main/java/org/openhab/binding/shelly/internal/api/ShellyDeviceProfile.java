@@ -136,6 +136,7 @@ public class ShellyDeviceProfile {
     public int maxTemp = 0; // Bulb/Duo: Max Light Temp
 
     public static final int MAX_WAKEUP_PERIOD_SECONDS = 24 * 3600; // longest configurable sleep period of a device
+    public int wakeupPeriod = 0; // wakeup period configured on the device in seconds, 0 if it has none
     public int learnedWakeupPeriod = 0; // longest wakeup period observed to exceed the configured one, in seconds
     private int reportedWakeupPeriod = 0; // last wakeup period reported in a status update, in minutes
     public int updatePeriod = 2 * UPDATE_SETTINGS_INTERVAL_SECONDS + 10;
@@ -337,11 +338,13 @@ public class ShellyDeviceProfile {
      * the longest period a device can be configured to is assumed.
      */
     public void updateWatchdogPeriod() {
+        wakeupPeriod = 0;
         if (settings.sleepMode != null && !isTRV) {
             // Sensor, usually 12h, H&T in USB mode 10min
-            applyWakeupPeriod("m".equalsIgnoreCase(getString(settings.sleepMode.unit)) //
+            wakeupPeriod = "m".equalsIgnoreCase(getString(settings.sleepMode.unit)) //
                     ? settings.sleepMode.period * 60 // minutes
-                    : settings.sleepMode.period * 3600); // hours
+                    : settings.sleepMode.period * 3600; // hours
+            applyWakeupPeriod(wakeupPeriod);
         } else if (!alwaysOn && !isTRV) {
             // Sleeping device with unknown wakeup period
             applyWakeupPeriod(MAX_WAKEUP_PERIOD_SECONDS);
@@ -353,10 +356,10 @@ public class ShellyDeviceProfile {
         }
     }
 
-    private void applyWakeupPeriod(int wakeupPeriod) {
+    private void applyWakeupPeriod(int period) {
         // Proportional margin absorbs wakeup jitter that grows with the sleep interval, plus a fixed
         // margin for the report round-trip itself
-        updatePeriod = (int) Math.round(Math.max(wakeupPeriod, learnedWakeupPeriod) * 1.1) + 60;
+        updatePeriod = (int) Math.round(Math.max(period, learnedWakeupPeriod) * 1.1) + 60;
         if (isSmoke) {
             // Smoke sensors wake up far less predictably than other sensors, grant an extra 30min
             updatePeriod += 1800;

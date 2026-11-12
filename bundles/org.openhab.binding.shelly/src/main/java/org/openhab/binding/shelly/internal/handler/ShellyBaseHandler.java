@@ -228,6 +228,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
     public void initialize() {
         // core re-initializes the same instance after dispose() on thingUpdated() and handleConfigurationUpdate()
         stopping = false;
+        resetStats();
         // start background initialization:
         initJob = scheduler.schedule(() -> {
             boolean start = false;
@@ -365,7 +366,8 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         lastWakeupReason.set("");
         cache.setThingName(thingName);
         cache.clear();
-        resetStats();
+        // A device restart or reconnect also gets here and must not wipe the counters and alarm it just recorded
+        stats.lastUptime.set(0);
 
         profile.initFromThingType(thing.getThingTypeUID());
         if (logger.isDebugEnabled()) {
@@ -1064,6 +1066,8 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         if (!alarm.isEmpty()) {
             postEvent(alarm, false);
         }
+
+        ShellyComponents.updateDiagnosticsStats(this, stats);
     }
 
     @Override
@@ -1993,6 +1997,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
     public void resetStats() {
         // reset statistics
         stats = new ShellyDeviceStats();
+        api.resetTimeoutCounters();
     }
 
     @Override
