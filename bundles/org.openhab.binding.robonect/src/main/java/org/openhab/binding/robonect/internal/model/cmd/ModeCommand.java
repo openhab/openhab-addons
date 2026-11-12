@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.robonect.internal.model.cmd;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * 
  * The mode commands sets the mower into the corresponding mode. In addition to the mowers standard modes
@@ -29,6 +32,7 @@ package org.openhab.binding.robonect.internal.model.cmd;
  * @author Marco Meyer - Initial contribution
  * @author Nico Brüttner - Docking station and expanded remote start options
  */
+@NonNullByDefault
 public class ModeCommand implements Command {
 
     /**
@@ -98,15 +102,15 @@ public class ModeCommand implements Command {
 
     private Mode mode;
 
-    private RemoteStart remoteStart;
+    private @Nullable RemoteStart remoteStart;
 
-    private Mode after;
+    private @Nullable Mode after;
 
-    private String start;
+    private @Nullable String start;
 
-    private String end;
+    private @Nullable String end;
 
-    private Integer duration;
+    private @Nullable Integer duration;
 
     /**
      * Creates a mode command.
@@ -123,7 +127,7 @@ public class ModeCommand implements Command {
      * @param remoteStart the desired remote-start option
      * @return - the command instance.
      */
-    public ModeCommand withRemoteStart(RemoteStart remoteStart) {
+    public ModeCommand withRemoteStart(@Nullable RemoteStart remoteStart) {
         this.remoteStart = remoteStart;
         return this;
     }
@@ -134,7 +138,7 @@ public class ModeCommand implements Command {
      * @param afterMode - the desired mode after job execution.
      * @return - the command instance.
      */
-    public ModeCommand withAfter(Mode afterMode) {
+    public ModeCommand withAfter(@Nullable Mode afterMode) {
         this.after = afterMode;
         return this;
     }
@@ -145,7 +149,7 @@ public class ModeCommand implements Command {
      * @param startTime - the start time.
      * @return - the command instance.
      */
-    public ModeCommand withStart(String startTime) {
+    public ModeCommand withStart(@Nullable String startTime) {
         this.start = startTime;
         return this;
     }
@@ -156,7 +160,7 @@ public class ModeCommand implements Command {
      * @param endTime - the end time.
      * @return - the command instance.
      */
-    public ModeCommand withEnd(String endTime) {
+    public ModeCommand withEnd(@Nullable String endTime) {
         this.end = endTime;
         return this;
     }
@@ -167,7 +171,7 @@ public class ModeCommand implements Command {
      * @param durationInMinutes - the duration in minutes.
      * @return - the command instance.
      */
-    public ModeCommand withDuration(Integer durationInMinutes) {
+    public ModeCommand withDuration(@Nullable Integer durationInMinutes) {
         this.duration = durationInMinutes;
         return this;
     }
@@ -180,6 +184,12 @@ public class ModeCommand implements Command {
      */
     @Override
     public String toCommandURL(String baseURL) {
+        RemoteStart rs = remoteStart;
+        Mode af = after;
+        String st = start;
+        String en = end;
+        Integer dur = duration;
+
         StringBuilder sb = new StringBuilder(baseURL);
         sb.append("?cmd=mode&mode=");
         sb.append(mode.cmd);
@@ -190,25 +200,25 @@ public class ModeCommand implements Command {
             case HOME:
                 break;
             case JOB:
-                if (remoteStart != null) {
+                if (rs != null) {
                     sb.append("&remotestart=");
-                    sb.append(remoteStart.code);
+                    sb.append(rs.code);
                 }
-                if (after != null) {
+                if (af != null) {
                     sb.append("&after=");
-                    sb.append(after.code);
+                    sb.append(af.code);
                 }
-                if (start != null) {
+                if (st != null) {
                     sb.append("&start=");
-                    sb.append(start);
+                    sb.append(st);
                 }
-                if (end != null) {
+                if (en != null) {
                     sb.append("&end=");
-                    sb.append(end);
+                    sb.append(en);
                 }
-                if (duration != null) {
+                if (dur != null) {
                     sb.append("&duration=");
-                    sb.append(duration);
+                    sb.append(dur);
                 }
                 break;
         }

@@ -12,21 +12,25 @@
  */
 package org.openhab.binding.robonect.internal.model;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * Clock information returned by the Robonect status API.
  *
  * @author Nico Brüttner - Initial contribution
  */
+@NonNullByDefault
 public class Clock {
 
-    private String unix;
+    private @Nullable String unix;
 
     /**
      * Returns the Unix timestamp in seconds.
      *
      * @return the Unix timestamp in seconds
      */
-    public String getUnix() {
+    public @Nullable String getUnix() {
         return unix;
     }
 
@@ -35,7 +39,7 @@ public class Clock {
      *
      * @param unix the Unix timestamp in seconds
      */
-    public void setUnix(String unix) {
+    public void setUnix(@Nullable String unix) {
         this.unix = unix;
     }
 }

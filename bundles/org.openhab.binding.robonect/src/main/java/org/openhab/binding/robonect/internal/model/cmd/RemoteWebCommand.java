@@ -15,11 +15,14 @@ package org.openhab.binding.robonect.internal.model.cmd;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Builds the save request for remote-start settings in the Robonect web interface.
  *
  * @author Nico Brüttner - Initial contribution
  */
+@NonNullByDefault
 public class RemoteWebCommand implements Command {
     private final String url;
 

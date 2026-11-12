@@ -1,5 +1,15 @@
-/* Copyright (c) 2010-2026 Contributors to the openHAB project
- * SPDX-License-Identifier: EPL-2.0 */
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
 package org.openhab.binding.robonect.internal.model;
 
 import java.lang.reflect.Type;
@@ -19,7 +29,7 @@ import com.google.gson.annotations.JsonAdapter;
 /**
  * Push-service polling interval and numbered triggers returned by Robonect.
  *
- * @author Nico Brüttner - Dynamic push triggers
+ * @author Nico Brüttner - Initial contribution: dynamic push triggers
  */
 @NonNullByDefault
 @JsonAdapter(PushTriggers.Deserializer.class)
@@ -100,8 +110,12 @@ public class PushTriggers {
             for (Map.Entry<String, JsonElement> entry : object.entrySet()) {
                 String key = entry.getKey();
                 if (key.matches("trigger\\d+") && entry.getValue().isJsonObject()) {
-                    result.triggers.put(key.substring("trigger".length()),
-                            context.deserialize(entry.getValue(), Trigger.class));
+                    @Nullable
+                    Trigger trigger = context.deserialize(entry.getValue(), Trigger.class);
+                    if (trigger == null) {
+                        throw new JsonParseException("Push trigger data must not be null");
+                    }
+                    result.triggers.put(key.substring("trigger".length()), trigger);
                 }
             }
             return result;

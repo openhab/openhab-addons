@@ -38,8 +38,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 final class RobonectTransport {
-    // Preserve the client logger category used by existing logging configurations.
-    private final Logger logger = LoggerFactory.getLogger(RobonectClient.class);
+    private final Logger logger = LoggerFactory.getLogger(RobonectTransport.class);
     final String baseUrl;
     final String webBaseUrl;
     final String ajaxUrl;
@@ -190,10 +189,14 @@ final class RobonectTransport {
                 logger.debug("Response body was: {} ", responseString);
             }
             return responseString;
-        } catch (ExecutionException | TimeoutException | InterruptedException e) {
-            if (e instanceof InterruptedException) {
-                Thread.currentThread().interrupt();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            if (sensitive) {
+                throw new RobonectCommunicationException("Could not send command");
             }
+            throw new RobonectCommunicationException("Could not send command " + command.toCommandURL(commandBaseUrl),
+                    e);
+        } catch (ExecutionException | TimeoutException e) {
             if (sensitive) {
                 // Transport exceptions can contain the request URL, so do not retain their causes here.
                 throw new RobonectCommunicationException("Could not send command");
@@ -202,7 +205,7 @@ final class RobonectTransport {
                     e);
         } catch (RuntimeException e) {
             if (sensitive) {
-                throw new RobonectCommunicationException("Could not update push-service password");
+                throw new RobonectCommunicationException("Could not send command");
             }
             throw e;
         }

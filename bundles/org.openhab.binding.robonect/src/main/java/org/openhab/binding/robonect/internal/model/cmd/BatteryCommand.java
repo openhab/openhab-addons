@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.robonect.internal.model.cmd;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Queries battery information from the Robonect API.
  *
  * @author Nico Brüttner - Initial contribution
  */
+@NonNullByDefault
 public class BatteryCommand implements Command {
     /**
      * Builds the battery status URL for this {@link Command}.

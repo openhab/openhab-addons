@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.robonect.internal.model;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * The mower information holds the main information from the majority of the available channels. This class is a POJO
  * to deserialize the JSON response from the module.
@@ -19,27 +22,28 @@ package org.openhab.binding.robonect.internal.model;
  * @author Marco Meyer - Initial contribution
  * @author Nico Brüttner - Mower identification, clock, and job status fields
  */
+@NonNullByDefault
 public class MowerInfo extends RobonectAnswer {
 
-    private String name;
-    private String id;
-    private Status status;
-    private Timer timer;
-    private Wlan wlan;
-    private Health health;
-    private Blades blades;
-    private Clock clock;
-    private ErrorEntry error;
+    private @Nullable String name;
+    private @Nullable String id;
+    private @Nullable Status status;
+    private @Nullable Timer timer;
+    private @Nullable Wlan wlan;
+    private @Nullable Health health;
+    private @Nullable Blades blades;
+    private @Nullable Clock clock;
+    private @Nullable ErrorEntry error;
 
     // not returned by the mower status API. Only used when Ajax scraping is enabled
-    private Job job;
+    private @Nullable Job job;
 
     /**
      * Returns the name of the mower.
      *
      * @return the name of the mower
      */
-    public String getName() {
+    public @Nullable String getName() {
         return name;
     }
 
@@ -48,7 +52,7 @@ public class MowerInfo extends RobonectAnswer {
      *
      * @return the identifier reported by Robonect, if available
      */
-    public String getId() {
+    public @Nullable String getId() {
         return id;
     }
 
@@ -57,7 +61,7 @@ public class MowerInfo extends RobonectAnswer {
      *
      * @return some status information of the mower. See {@link Status} for details.
      */
-    public Status getStatus() {
+    public @Nullable Status getStatus() {
         return status;
     }
 
@@ -66,7 +70,7 @@ public class MowerInfo extends RobonectAnswer {
      *
      * @return the current timer status information.
      */
-    public Timer getTimer() {
+    public @Nullable Timer getTimer() {
         return timer;
     }
 
@@ -75,7 +79,7 @@ public class MowerInfo extends RobonectAnswer {
      *
      * @return the WLAN signal status.
      */
-    public Wlan getWlan() {
+    public @Nullable Wlan getWlan() {
         return wlan;
     }
 
@@ -84,7 +88,7 @@ public class MowerInfo extends RobonectAnswer {
      *
      * @return the error information reported by the mower, or {@code null} if absent
      */
-    public ErrorEntry getError() {
+    public @Nullable ErrorEntry getError() {
         return error;
     }
 
@@ -93,7 +97,7 @@ public class MowerInfo extends RobonectAnswer {
      *
      * @return the job information reported by the mower, or {@code null} if absent
      */
-    public Job getJob() {
+    public @Nullable Job getJob() {
         return job;
     }
 
@@ -102,7 +106,7 @@ public class MowerInfo extends RobonectAnswer {
      *
      * @return the health status information.
      */
-    public Health getHealth() {
+    public @Nullable Health getHealth() {
         return health;
     }
 
@@ -111,7 +115,7 @@ public class MowerInfo extends RobonectAnswer {
      *
      * @return the blades status information.
      */
-    public Blades getBlades() {
+    public @Nullable Blades getBlades() {
         return blades;
     }
 
@@ -120,7 +124,7 @@ public class MowerInfo extends RobonectAnswer {
      *
      * @return the clock reported by Robonect, if available
      */
-    public Clock getClock() {
+    public @Nullable Clock getClock() {
         return clock;
     }
 
@@ -201,7 +205,7 @@ public class MowerInfo extends RobonectAnswer {
      *
      * @param error the mower error information
      */
-    public void setError(ErrorEntry error) {
+    public void setError(@Nullable ErrorEntry error) {
         this.error = error;
     }
 
@@ -210,7 +214,7 @@ public class MowerInfo extends RobonectAnswer {
      *
      * @param job the job information
      */
-    public void setJob(Job job) {
+    public void setJob(@Nullable Job job) {
         this.job = job;
     }
 }

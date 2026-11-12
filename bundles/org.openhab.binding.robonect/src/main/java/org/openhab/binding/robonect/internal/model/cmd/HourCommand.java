@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.robonect.internal.model.cmd;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Queries operating statistics from the Robonect API.
  *
  * @author Nico Brüttner - Initial contribution
  */
+@NonNullByDefault
 public class HourCommand implements Command {
     /**
      * Builds the operating statistics URL for this {@link Command}.

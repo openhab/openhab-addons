@@ -17,6 +17,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.util.Base64;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.servlet.Servlet;
@@ -158,7 +159,8 @@ public class RobonectPushServlet extends HttpServlet {
      * @return the complete URL, including the query string when present
      */
     private String getFullURL(HttpServletRequest request) {
-        StringBuilder requestURL = new StringBuilder(request.getRequestURL().toString());
+        StringBuilder requestURL = new StringBuilder(
+                Optional.ofNullable(request.getRequestURL()).orElseThrow().toString());
         String queryString = request.getQueryString();
 
         if (queryString == null) {
@@ -168,7 +170,13 @@ public class RobonectPushServlet extends HttpServlet {
         }
     }
 
-    @NonNullByDefault
+    /**
+     * Represents a registered push handler with its associated credentials.
+     *
+     * @param handler the push handler to be invoked
+     * @param utf8 the UTF-8 encoded Basic credentials
+     * @param legacy the legacy encoded Basic credentials
+     */
     private record Registration(Runnable handler, byte[] utf8, byte[] legacy) {
         /**
          * Compares the supplied Basic credentials with the registered UTF-8 and legacy encodings.

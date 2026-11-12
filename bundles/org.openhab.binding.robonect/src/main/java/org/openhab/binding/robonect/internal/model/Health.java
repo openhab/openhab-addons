@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.robonect.internal.model;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
@@ -20,6 +21,7 @@ import org.eclipse.jdt.annotation.Nullable;
  * 
  * @author Marco Meyer - Initial contribution
  */
+@NonNullByDefault
 public class Health {
 
     private @Nullable Integer temperature;

@@ -15,16 +15,20 @@ package org.openhab.binding.robonect.internal.model.cmd;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * Queries remote-start point information from the Robonect API.
  *
  * @author Nico Brüttner - Initial contribution
  */
+@NonNullByDefault
 public class RemoteCommand implements Command {
     private final int remoteStart;
-    private String name;
-    private Integer distance;
-    private Integer proportion;
+    private @Nullable String name;
+    private @Nullable Integer distance;
+    private @Nullable Integer proportion;
 
     /**
      * Creates a command that reads all remote-start points.

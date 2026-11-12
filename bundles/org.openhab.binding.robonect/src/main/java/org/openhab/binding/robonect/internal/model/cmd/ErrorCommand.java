@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.robonect.internal.model.cmd;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Implementation of the error command allowing to retrieve the list of errors or resetting the list.
  * 
  * @author Marco Meyer - Initial contribution
  */
+@NonNullByDefault
 public class ErrorCommand implements Command {
 
     private boolean reset = false;

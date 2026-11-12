@@ -19,6 +19,8 @@ import java.util.Objects;
 
 import org.junit.jupiter.api.Test;
 
+import com.google.gson.JsonParseException;
+
 /**
  * The goal of this class is to test the model parser to make sure the structures
  * returned from the module can be handled.
@@ -27,6 +29,12 @@ import org.junit.jupiter.api.Test;
  * @author Nico Brüttner - Push trigger and duration parsing tests
  */
 public class ModelParserTest {
+    /** Rejects a JSON null response because endpoint APIs require a response model. */
+    @Test
+    public void shouldRejectNullResponse() {
+        assertThrows(JsonParseException.class, () -> ModelParser.parse("null", RobonectAnswer.class));
+    }
+
     /** Checks that a response containing only a success flag can be parsed. */
     @Test
     public void shouldParseSimpleSuccessModel() {

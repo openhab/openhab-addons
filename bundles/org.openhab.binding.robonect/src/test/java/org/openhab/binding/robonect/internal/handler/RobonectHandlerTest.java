@@ -48,6 +48,7 @@ import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
@@ -92,6 +93,7 @@ import org.openhab.binding.robonect.internal.model.WlanInfo;
 import org.openhab.binding.robonect.internal.model.cmd.DirectCommand;
 import org.openhab.binding.robonect.internal.model.cmd.DoorCommand.Direction;
 import org.openhab.binding.robonect.internal.model.cmd.ModeCommand;
+import org.openhab.core.common.ThreadPoolManager;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
@@ -142,6 +144,7 @@ public class RobonectHandlerTest {
     private @Mock ThingHandlerCallback callbackMock;
     private @Mock HttpClientFactory httpClientFactoryMock;
     private @Mock TimeZoneProvider timeZoneProvider;
+    private @Mock RobonectPushServlet pushServletMock;
     private @Mock ScheduledExecutorService commandScheduler;
     private @Mock ScheduledFuture<?> commandRefreshJob;
     private @Mock ScheduledFuture<?> normalPollingJob;
@@ -163,10 +166,17 @@ public class RobonectHandlerTest {
         doReturn(commandRefreshJob).when(commandScheduler).schedule(any(Runnable.class), anyLong(),
                 eq(TimeUnit.SECONDS));
 
-        subject = new RobonectHandler(robonectThingMock, httpClientFactoryMock, timeZoneProvider, null,
-                commandScheduler);
+        subject = createHandler(robonectThingMock, httpClientFactoryMock, timeZoneProvider, pushServletMock);
         subject.setCallback(callbackMock);
-        subject.setRobonectClient(robonectClientMock);
+        subject.createEndpointHandlers(robonectClientMock);
+    }
+
+    private RobonectHandler createHandler(Thing thing, HttpClientFactory httpClientFactory,
+            TimeZoneProvider timeZoneProvider, RobonectPushServlet pushServlet) {
+        try (MockedStatic<ThreadPoolManager> threadPoolManager = Mockito.mockStatic(ThreadPoolManager.class)) {
+            threadPoolManager.when(() -> ThreadPoolManager.getScheduledPool(anyString())).thenReturn(commandScheduler);
+            return new RobonectHandler(thing, httpClientFactory, timeZoneProvider, pushServlet);
+        }
     }
 
     /** Disposes the handler so its scheduled work cannot leak into another test. */
@@ -294,7 +304,7 @@ public class RobonectHandlerTest {
         var config = new Configuration(parameters);
         Thing thing = ThingBuilder.create(RobonectBindingConstants.THING_TYPE_AUTOMOWER, new ThingUID("1:2:3"))
                 .withConfiguration(config).build();
-        subject = new RobonectHandler(thing, httpClientFactoryMock, timeZoneProvider, servlet, commandScheduler);
+        subject = createHandler(thing, httpClientFactoryMock, timeZoneProvider, servlet);
         subject.setCallback(callbackMock);
         doReturn(commandRefreshJob).when(commandScheduler).schedule(any(Runnable.class), eq(0L), eq(TimeUnit.SECONDS));
         subject.initialize();
@@ -441,7 +451,7 @@ public class RobonectHandlerTest {
         Configuration config = new Configuration(subject.getThing().getConfiguration().getProperties());
         config.put("pollIntervalExtended", 91);
         subject.thingUpdated(ThingBuilder.create(subject.getThing()).withConfiguration(config).build());
-        subject.setRobonectClient(robonectClientMock);
+        subject.createEndpointHandlers(robonectClientMock);
         verify(normalPollingJob).cancel(true);
         verify(detailedPollingJob).cancel(true);
         verify(commandScheduler).scheduleWithFixedDelay(any(Runnable.class), eq(0L), eq(91L), eq(TimeUnit.SECONDS));
@@ -465,7 +475,7 @@ public class RobonectHandlerTest {
         clearInvocations(commandScheduler);
 
         subject.thingUpdated(ThingBuilder.create(subject.getThing()).withConfiguration(config).build());
-        subject.setRobonectClient(robonectClientMock);
+        subject.createEndpointHandlers(robonectClientMock);
 
         verify(normalPollingJob).cancel(true);
         verify(detailedPollingJob, times(initiallyEnabled ? 1 : 0)).cancel(true);
@@ -521,7 +531,7 @@ public class RobonectHandlerTest {
                 """, BatteryInfo.class);
         when(diagnosticsApiMock.getBatteryInfo()).thenAnswer(invocation -> {
             subject.initialize();
-            subject.setRobonectClient(robonectClientMock);
+            subject.createEndpointHandlers(robonectClientMock);
             clearInvocations(callbackMock);
             return result;
         });
@@ -618,12 +628,12 @@ public class RobonectHandlerTest {
         config.put("timezone", TIME_ZONE.getId());
         Thing thing = ThingBuilder.create(RobonectBindingConstants.THING_TYPE_AUTOMOWER, new ThingUID("1:2:3"))
                 .withConfiguration(new Configuration(config)).build();
-        subject = new RobonectHandler(thing, httpClientFactoryMock, timeZoneProvider, null, commandScheduler);
+        subject = createHandler(thing, httpClientFactoryMock, timeZoneProvider, pushServletMock);
         subject.setCallback(callbackMock);
         doReturn(normalPollingJob, detailedPollingJob).when(commandScheduler)
                 .scheduleWithFixedDelay(any(Runnable.class), eq(0L), anyLong(), eq(TimeUnit.SECONDS));
         subject.initialize();
-        subject.setRobonectClient(robonectClientMock);
+        subject.createEndpointHandlers(robonectClientMock);
         when(diagnosticsApiMock.getVersionInfo()).thenReturn(new VersionInfo());
         when(mowerApiMock.getMowerInfo(anyBoolean())).thenReturn(createSuccessfulMowerInfoResponse());
 
@@ -655,9 +665,9 @@ public class RobonectHandlerTest {
     @Test
     public void shouldCreateChannelsForEveryWireSensorAndBattery() {
         Thing thing = ThingBuilder.create(RobonectBindingConstants.THING_TYPE_AUTOMOWER, new ThingUID("1:2:3")).build();
-        subject = new RobonectHandler(thing, httpClientFactoryMock, timeZoneProvider, null, commandScheduler);
+        subject = createHandler(thing, httpClientFactoryMock, timeZoneProvider, pushServletMock);
         subject.setCallback(callbackMock);
-        subject.setRobonectClient(robonectClientMock);
+        subject.createEndpointHandlers(robonectClientMock);
 
         when(diagnosticsApiMock.getWireInfo()).thenReturn(ModelParser.parse("""
                 {"successful":true,"sensors":[{"description":"Left","quality":70,"g2":0},
@@ -783,9 +793,9 @@ public class RobonectHandlerTest {
                         ChannelBuilder.create(new ChannelUID(uid, "push-trigger-0-parked-leave"), "Switch")
                                 .withLabel("Push Trigger Setting").build())
                 .build();
-        subject = new RobonectHandler(thing, httpClientFactoryMock, timeZoneProvider, null, commandScheduler);
+        subject = createHandler(thing, httpClientFactoryMock, timeZoneProvider, pushServletMock);
         subject.setCallback(callbackMock);
-        subject.setRobonectClient(robonectClientMock);
+        subject.createEndpointHandlers(robonectClientMock);
         when(pushApiMock.getPushInfo()).thenReturn(ModelParser.parse("""
                 {"successful":true,"push":{"trigger":{
                 "trigger0":{"name":"Parked","enter":true,"leave":false}}}}
@@ -811,9 +821,9 @@ public class RobonectHandlerTest {
                 .withChannels(ChannelBuilder.create(new ChannelUID(uid, "push-trigger-0-name"), "String").build(),
                         ChannelBuilder.create(new ChannelUID(uid, "push-trigger-12-enter"), "Switch").build())
                 .build();
-        subject = new RobonectHandler(thing, httpClientFactoryMock, timeZoneProvider, null, commandScheduler);
+        subject = createHandler(thing, httpClientFactoryMock, timeZoneProvider, pushServletMock);
         subject.setCallback(callbackMock);
-        subject.setRobonectClient(robonectClientMock);
+        subject.createEndpointHandlers(robonectClientMock);
         when(pushApiMock.getPushInfo()).thenReturn(ModelParser.parse("""
                 {"successful":true,"push":{"trigger":{"interval":30,
                 "trigger0":{"name":"Parked","enter":true,"leave":false},
@@ -854,9 +864,9 @@ public class RobonectHandlerTest {
     public void shouldKeepDuplicatePushTriggerNamesDistinctAndIgnoreInvalidNames() {
         ThingUID uid = new ThingUID("1:2:3");
         Thing thing = ThingBuilder.create(RobonectBindingConstants.THING_TYPE_AUTOMOWER, uid).build();
-        subject = new RobonectHandler(thing, httpClientFactoryMock, timeZoneProvider, null, commandScheduler);
+        subject = createHandler(thing, httpClientFactoryMock, timeZoneProvider, pushServletMock);
         subject.setCallback(callbackMock);
-        subject.setRobonectClient(robonectClientMock);
+        subject.createEndpointHandlers(robonectClientMock);
         when(pushApiMock.getPushInfo()).thenReturn(ModelParser.parse("""
                 {"successful":true,"push":{"trigger":{
                 "trigger0":{"name":"Parked","enter":true,"leave":false},
@@ -1188,7 +1198,12 @@ public class RobonectHandlerTest {
         ChannelUID job = new ChannelUID(uid, RobonectBindingConstants.CHANNEL_JOB);
         ChannelUID start = new ChannelUID(uid, RobonectBindingConstants.CHANNEL_JOB_START);
         ChannelUID end = new ChannelUID(uid, RobonectBindingConstants.CHANNEL_JOB_END);
-        String endTime = ZonedDateTime.now(TIME_ZONE).minusMinutes(5).format(DateTimeFormatter.ofPattern("HH:mm"));
+        LocalTime now = LocalTime.now(TIME_ZONE);
+        LocalTime expiredEnd = now.minusMinutes(5);
+        if (expiredEnd.isAfter(now)) {
+            expiredEnd = LocalTime.MIDNIGHT;
+        }
+        String endTime = expiredEnd.format(DateTimeFormatter.ofPattern("HH:mm"));
         Channel channel = ChannelBuilder.create(customJob, "Switch").withType(new ChannelTypeUID("robonect", "jobType"))
                 .withConfiguration(new Configuration(Map.of("durationMinutes", 1, "endTime", endTime))).build();
         when(robonectThingMock.getChannel(customJob.getId())).thenReturn(channel);
@@ -1388,9 +1403,9 @@ public class RobonectHandlerTest {
                 .withChannel(ChannelBuilder.create(jobChannel, "Switch")
                         .withType(new ChannelTypeUID("robonect", "jobType")).withConfiguration(jobConfig).build())
                 .build();
-        subject = new RobonectHandler(thing, httpClientFactoryMock, timeZoneProvider, null, commandScheduler);
+        subject = createHandler(thing, httpClientFactoryMock, timeZoneProvider, pushServletMock);
         subject.setCallback(callbackMock);
-        subject.setRobonectClient(robonectClientMock);
+        subject.createEndpointHandlers(robonectClientMock);
         when(mowerApiMock.getMowerInfo(false)).thenReturn(createSuccessfulMowerInfoResponse());
 
         when(mowerApiMock.stopJob(expectedMode)).thenReturn(new RobonectAnswer());
@@ -1416,9 +1431,9 @@ public class RobonectHandlerTest {
                 .withChannel(ChannelBuilder.create(jobChannel, "Switch")
                         .withType(new ChannelTypeUID("robonect", "jobType")).withConfiguration(config).build())
                 .build();
-        subject = new RobonectHandler(thing, httpClientFactoryMock, timeZoneProvider, null, commandScheduler);
+        subject = createHandler(thing, httpClientFactoryMock, timeZoneProvider, pushServletMock);
         subject.setCallback(callbackMock);
-        subject.setRobonectClient(robonectClientMock);
+        subject.createEndpointHandlers(robonectClientMock);
         when(mowerApiMock.getMowerInfo(false)).thenReturn(createSuccessfulMowerInfoResponse());
 
         if (valid) {
@@ -1956,10 +1971,10 @@ public class RobonectHandlerTest {
     @Test
     public void shouldApplyPartialPushWriteWithoutRemovingOtherTriggers() {
         ThingUID uid = new ThingUID("1:2:3");
-        subject = new RobonectHandler(ThingBuilder.create(RobonectBindingConstants.THING_TYPE_AUTOMOWER, uid).build(),
-                httpClientFactoryMock, timeZoneProvider, null, commandScheduler);
+        subject = createHandler(ThingBuilder.create(RobonectBindingConstants.THING_TYPE_AUTOMOWER, uid).build(),
+                httpClientFactoryMock, timeZoneProvider, pushServletMock);
         subject.setCallback(callbackMock);
-        subject.setRobonectClient(robonectClientMock);
+        subject.createEndpointHandlers(robonectClientMock);
         PushInfo full = ModelParser.parse("""
                 {"successful":true,"push":{"trigger":{
                 "trigger0":{"name":"Parked","enter":false,"leave":false},
@@ -2144,11 +2159,11 @@ public class RobonectHandlerTest {
 
     /** Uses a mutable Thing so dynamic channel changes can be inspected in the tests. */
     private void useRealThingForPushMode() {
-        subject = new RobonectHandler(
+        subject = createHandler(
                 ThingBuilder.create(RobonectBindingConstants.THING_TYPE_AUTOMOWER, new ThingUID("1:2:3")).build(),
-                httpClientFactoryMock, timeZoneProvider, null, commandScheduler);
+                httpClientFactoryMock, timeZoneProvider, pushServletMock);
         subject.setCallback(callbackMock);
-        subject.setRobonectClient(robonectClientMock);
+        subject.createEndpointHandlers(robonectClientMock);
     }
 
     /**
@@ -2188,10 +2203,10 @@ public class RobonectHandlerTest {
     @ValueSource(strings = { "00:00", "08:15", "23:59" })
     public void shouldPreserveTimerLocalTimeOnReadAndWrite(String time) {
         ThingUID uid = new ThingUID("1:2:3");
-        subject = new RobonectHandler(ThingBuilder.create(RobonectBindingConstants.THING_TYPE_AUTOMOWER, uid).build(),
-                httpClientFactoryMock, timeZoneProvider, null, commandScheduler);
+        subject = createHandler(ThingBuilder.create(RobonectBindingConstants.THING_TYPE_AUTOMOWER, uid).build(),
+                httpClientFactoryMock, timeZoneProvider, pushServletMock);
         subject.setCallback(callbackMock);
-        subject.setRobonectClient(robonectClientMock);
+        subject.createEndpointHandlers(robonectClientMock);
         when(timerApiMock.getTimersInfo()).thenReturn(ModelParser.parse("""
                 {"successful":true,"timer":[{"id":1,"start":"%s","end":"%s"}]}
                 """.formatted(time, time), TimersInfo.class));

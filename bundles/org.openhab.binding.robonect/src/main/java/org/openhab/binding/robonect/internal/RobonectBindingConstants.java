@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.robonect.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
@@ -21,6 +22,7 @@ import org.openhab.core.thing.ThingTypeUID;
  * @author Marco Meyer - Initial contribution
  * @author Nico Brüttner - Channel identifiers for diagnostics, controls, and mower jobs
  */
+@NonNullByDefault
 public class RobonectBindingConstants {
 
     public static final String BINDING_ID = "robonect";

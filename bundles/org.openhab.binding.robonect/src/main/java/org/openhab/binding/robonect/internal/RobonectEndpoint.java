@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.robonect.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.util.StringUtil;
 
 /**
@@ -19,13 +21,14 @@ import org.eclipse.jetty.util.StringUtil;
  * 
  * @author Marco Meyer - Initial contribution
  */
+@NonNullByDefault
 public class RobonectEndpoint {
 
     private final String ipAddress;
 
-    private final String user;
+    private final @Nullable String user;
 
-    private final String password;
+    private final @Nullable String password;
 
     private boolean useAuthentication = false;
 
@@ -36,7 +39,7 @@ public class RobonectEndpoint {
      * @param user the username
      * @param password the password
      */
-    public RobonectEndpoint(String ipAddress, String user, String password) {
+    public RobonectEndpoint(String ipAddress, @Nullable String user, @Nullable String password) {
         this.ipAddress = ipAddress;
         this.user = user;
         this.password = password;
@@ -57,7 +60,7 @@ public class RobonectEndpoint {
      *
      * @return the configured username
      */
-    public String getUser() {
+    public @Nullable String getUser() {
         return user;
     }
 
@@ -66,7 +69,7 @@ public class RobonectEndpoint {
      *
      * @return the configured password
      */
-    public String getPassword() {
+    public @Nullable String getPassword() {
         return password;
     }
 

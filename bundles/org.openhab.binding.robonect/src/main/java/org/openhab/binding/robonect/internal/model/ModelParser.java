@@ -12,8 +12,13 @@
  */
 package org.openhab.binding.robonect.internal.model;
 
+import java.util.Optional;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonParseException;
 
 /**
  * Parses JSON responses from the Robonect module using Gson.
@@ -21,6 +26,7 @@ import com.google.gson.GsonBuilder;
  * @author Marco Meyer - Initial contribution
  * @author Nico Brüttner - Shared JSON parser for endpoint responses
  */
+@NonNullByDefault
 public final class ModelParser {
 
     private static final Gson GSON = new GsonBuilder()
@@ -40,9 +46,11 @@ public final class ModelParser {
      * @param jsonString the JSON response
      * @param type the class of the expected result
      * @param <T> the result type
-     * @return the parsed object, or {@code null} when the JSON represents {@code null}
+     * @return the parsed object
+     * @throws JsonParseException if the JSON is invalid or represents {@code null}
      */
     public static <T> T parse(String jsonString, Class<T> type) {
-        return GSON.fromJson(jsonString, type);
+        return Optional.ofNullable(GSON.fromJson(jsonString, type))
+                .orElseThrow(() -> new JsonParseException("Expected a JSON object but received null"));
     }
 }

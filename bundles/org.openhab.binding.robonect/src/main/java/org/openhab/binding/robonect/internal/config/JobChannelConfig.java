@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.robonect.internal.config;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
@@ -20,13 +21,14 @@ import org.eclipse.jdt.annotation.Nullable;
  * @author Marco Meyer - Initial contribution
  * @author Nico Brüttner - Optional job timing configuration
  */
+@NonNullByDefault
 public class JobChannelConfig {
 
-    private String remoteStart;
+    private @Nullable String remoteStart;
 
-    private String afterMode;
+    private @Nullable String afterMode;
 
-    private Integer durationMinutes;
+    private @Nullable Integer durationMinutes;
 
     private @Nullable String startTime;
 
@@ -37,7 +39,7 @@ public class JobChannelConfig {
      *
      * @return the selected remote-start mode
      */
-    public String getRemoteStart() {
+    public @Nullable String getRemoteStart() {
         return remoteStart;
     }
 
@@ -46,7 +48,7 @@ public class JobChannelConfig {
      *
      * @param remoteStart the remote-start mode
      */
-    public void setRemoteStart(String remoteStart) {
+    public void setRemoteStart(@Nullable String remoteStart) {
         this.remoteStart = remoteStart;
     }
 
@@ -55,7 +57,7 @@ public class JobChannelConfig {
      *
      * @return the configured after-job mode
      */
-    public String getAfterMode() {
+    public @Nullable String getAfterMode() {
         return afterMode;
     }
 
@@ -64,7 +66,7 @@ public class JobChannelConfig {
      *
      * @param afterMode the after-job mode
      */
-    public void setAfterMode(String afterMode) {
+    public void setAfterMode(@Nullable String afterMode) {
         this.afterMode = afterMode;
     }
 
@@ -73,7 +75,7 @@ public class JobChannelConfig {
      *
      * @return the duration in minutes, or {@code null} if unset
      */
-    public Integer getDurationMinutes() {
+    public @Nullable Integer getDurationMinutes() {
         return durationMinutes;
     }
 
@@ -82,7 +84,7 @@ public class JobChannelConfig {
      *
      * @param durationMinutes the duration in minutes
      */
-    public void setDurationMinutes(Integer durationMinutes) {
+    public void setDurationMinutes(@Nullable Integer durationMinutes) {
         this.durationMinutes = durationMinutes;
     }
 

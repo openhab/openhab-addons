@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.robonect.internal.model.cmd;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * 
  * Interface implemented by all commands. The robonect module is called with urls like
@@ -20,6 +22,7 @@ package org.openhab.binding.robonect.internal.model.cmd;
  * 
  * @author Marco Meyer - Initial contribution
  */
+@NonNullByDefault
 public interface Command {
 
     /**

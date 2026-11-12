@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.robonect.internal.model;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -21,15 +24,16 @@ import com.google.gson.annotations.SerializedName;
  * 
  * @author Marco Meyer - Initial contribution
  */
+@NonNullByDefault
 public class RobonectAnswer {
 
     private boolean successful;
 
     @SerializedName("error_code")
-    private Integer errorCode;
+    private @Nullable Integer errorCode;
 
     @SerializedName("error_message")
-    private String errorMessage;
+    private @Nullable String errorMessage;
 
     /**
      * Reports whether the request was successful.
@@ -54,7 +58,7 @@ public class RobonectAnswer {
      *
      * @return the error code reported by the module, or {@code null} if absent
      */
-    public Integer getErrorCode() {
+    public @Nullable Integer getErrorCode() {
         return errorCode;
     }
 
@@ -63,7 +67,7 @@ public class RobonectAnswer {
      *
      * @return the error message reported by the module, or {@code null} if absent
      */
-    public String getErrorMessage() {
+    public @Nullable String getErrorMessage() {
         return errorMessage;
     }
 }

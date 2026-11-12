@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.robonect.internal.model;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
@@ -20,6 +21,7 @@ import org.eclipse.jdt.annotation.Nullable;
  * @author Marco Meyer - Initial contribution
  * @author Nico Brüttner - Version 1 firmware and hardware metadata
  */
+@NonNullByDefault
 public class VersionInfo extends RobonectAnswer {
 
     public static final String NOT_AVAILABLE = "n/a";
@@ -182,14 +184,14 @@ public class VersionInfo extends RobonectAnswer {
         return application;
     }
 
-    private RobonectVersion robonect;
+    private @Nullable RobonectVersion robonect;
 
     /**
      * Returns the Robonect module version information, or the unavailable-value placeholder if absent.
      *
      * @return the Robonect module version information, or the unavailable-value placeholder if absent
      */
-    public RobonectVersion getRobonect() {
+    public @Nullable RobonectVersion getRobonect() {
         if (robonect != null) {
             return robonect;
         } else {

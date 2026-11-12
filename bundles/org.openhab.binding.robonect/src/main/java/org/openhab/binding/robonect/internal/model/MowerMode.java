@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.robonect.internal.model;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The mower mode from the status information. Please note
  * that EOD and JOB from {@link org.openhab.binding.robonect.internal.model.cmd.ModeCommand.Mode}
@@ -19,6 +21,7 @@ package org.openhab.binding.robonect.internal.model;
  * 
  * @author Marco Meyer - Initial contribution
  */
+@NonNullByDefault
 public enum MowerMode {
 
     /**

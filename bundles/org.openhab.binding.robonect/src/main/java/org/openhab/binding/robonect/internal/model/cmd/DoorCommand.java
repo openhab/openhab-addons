@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.robonect.internal.model.cmd;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
@@ -19,6 +20,7 @@ import org.eclipse.jdt.annotation.Nullable;
  *
  * @author Nico Brüttner - Initial contribution
  */
+@NonNullByDefault
 public class DoorCommand implements Command {
     public enum Direction {
         OPEN("open"),
@@ -68,8 +70,9 @@ public class DoorCommand implements Command {
      */
     @Override
     public String toCommandURL(String baseUrl) {
-        if (direction != null) {
-            return baseUrl + "?cmd=door&" + direction.parameter + "=1";
+        Direction dir = direction;
+        if (dir != null) {
+            return baseUrl + "?cmd=door&" + dir.parameter + "=1";
         }
         return baseUrl + "?cmd=door" + (release ? "&release" : "");
     }

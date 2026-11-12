@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.robonect.internal.model;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
@@ -20,13 +21,14 @@ import org.eclipse.jdt.annotation.Nullable;
  * @author Marco Meyer - Initial contribution
  * @author Nico Brüttner - Optional status values, home detection, and prevention codes
  */
+@NonNullByDefault
 public class Status {
 
     private @Nullable Integer battery;
     private @Nullable Integer duration;
     private @Nullable Integer hours;
-    private MowerStatus status;
-    private MowerMode mode;
+    private @Nullable MowerStatus status;
+    private @Nullable MowerMode mode;
     private @Nullable Boolean stopped;
     private @Nullable Boolean home;
     private @Nullable Integer prevent;
@@ -73,7 +75,7 @@ public class Status {
      *
      * @return - The status the mower is currently in; see {@link MowerStatus} for details.
      */
-    public MowerStatus getStatus() {
+    public @Nullable MowerStatus getStatus() {
         return status;
     }
 
@@ -109,7 +111,7 @@ public class Status {
      *
      * @return - The mode the mower is currently in. See {@link MowerMode} for details.
      */
-    public MowerMode getMode() {
+    public @Nullable MowerMode getMode() {
         return mode;
     }
 

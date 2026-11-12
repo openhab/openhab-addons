@@ -12,11 +12,15 @@
  */
 package org.openhab.binding.robonect.internal.model;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * An object holding the timer information of the mower status.
  * 
  * @author Marco Meyer - Initial contribution
  */
+@NonNullByDefault
 public class Timer {
 
     /**
@@ -74,16 +78,16 @@ public class Timer {
         }
     }
 
-    private TimerMode status;
+    private @Nullable TimerMode status;
 
-    private NextTimer next;
+    private @Nullable NextTimer next;
 
     /**
      * Returns the timer mode; see {@link TimerMode}.
      *
      * @return - the timer mode. see {@link TimerMode}
      */
-    public TimerMode getStatus() {
+    public @Nullable TimerMode getStatus() {
         return status;
     }
 
@@ -92,7 +96,7 @@ public class Timer {
      *
      * @return - information about when the next timer execution will be. See {@link NextTimer}
      */
-    public NextTimer getNext() {
+    public @Nullable NextTimer getNext() {
         return next;
     }
 

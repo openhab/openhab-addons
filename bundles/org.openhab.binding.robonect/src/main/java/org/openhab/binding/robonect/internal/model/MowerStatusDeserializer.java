@@ -14,6 +14,9 @@ package org.openhab.binding.robonect.internal.model;
 
 import java.lang.reflect.Type;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
@@ -24,6 +27,7 @@ import com.google.gson.JsonParseException;
  * 
  * @author Marco Meyer - Initial contribution
  */
+@NonNullByDefault
 public class MowerStatusDeserializer implements JsonDeserializer<MowerStatus> {
     /**
      * Converts a numeric JSON status code to the corresponding {@link MowerStatus}.
@@ -35,7 +39,7 @@ public class MowerStatusDeserializer implements JsonDeserializer<MowerStatus> {
      * @throws JsonParseException if Gson cannot deserialize the value
      */
     @Override
-    public MowerStatus deserialize(JsonElement jsonElement, Type type,
+    public @Nullable MowerStatus deserialize(JsonElement jsonElement, Type type,
             JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
         int code = jsonElement.getAsInt();
         return MowerStatus.fromCode(code);

@@ -12,16 +12,17 @@
  */
 package org.openhab.binding.robonect.internal.model.cmd;
 
-import org.openhab.binding.robonect.internal.model.MowerStatus;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * Queries the mowers status. The status holds a lot of status information.
- * See {@link MowerStatus}
+ * See {@link org.openhab.binding.robonect.internal.model.MowerStatus}
  * or the documentation at <a href="http://www.robonect.de/viewtopic.php?f=11&t=38">
  * http://www.robonect.de/viewtopic.php?f=11&amp;t=38</a>
  * 
  * @author Marco Meyer - Initial contribution
  */
+@NonNullByDefault
 public class StatusCommand implements Command {
     /**
      * Builds the mower status URL for this {@link Command}.

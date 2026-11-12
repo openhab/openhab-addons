@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.robonect.internal.model.cmd;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The command starts the mower if it was stopped.
  * 
  * @author Marco Meyer - Initial contribution
  */
+@NonNullByDefault
 public class StartCommand implements Command {
 
     /**

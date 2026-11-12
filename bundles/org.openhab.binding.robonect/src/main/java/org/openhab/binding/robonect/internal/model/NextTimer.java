@@ -12,23 +12,27 @@
  */
 package org.openhab.binding.robonect.internal.model;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * This object will be part of the status response and holds the next timer execution information.
  * 
  * @author Marco Meyer - Initial contribution
  */
+@NonNullByDefault
 public class NextTimer {
 
-    private String date;
-    private String time;
-    private String unix;
+    private @Nullable String date;
+    private @Nullable String time;
+    private @Nullable String unix;
 
     /**
      * Returns the date (dd.MM.yy) of the next timer execution.
      *
      * @return - The date (dd.MM.yy) of the next timer execution.
      */
-    public String getDate() {
+    public @Nullable String getDate() {
         return date;
     }
 
@@ -37,7 +41,7 @@ public class NextTimer {
      *
      * @return - the timestamp ({@code HH:mm}:ss) of the next timer execution
      */
-    public String getTime() {
+    public @Nullable String getTime() {
         return time;
     }
 
@@ -46,7 +50,7 @@ public class NextTimer {
      *
      * @return - the next timer execution in the form of a unix timestamp.
      */
-    public String getUnix() {
+    public @Nullable String getUnix() {
         return unix;
     }
 

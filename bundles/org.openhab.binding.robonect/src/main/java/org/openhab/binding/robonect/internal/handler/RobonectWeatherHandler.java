@@ -13,7 +13,7 @@
 package org.openhab.binding.robonect.internal.handler;
 
 import static org.openhab.binding.robonect.internal.RobonectBindingConstants.*;
-import static org.openhab.binding.robonect.internal.handler.RobonectHandler.read;
+import static org.openhab.binding.robonect.internal.handler.RobonectUtils.read;
 
 import java.time.DateTimeException;
 
@@ -43,7 +43,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Handles the mower's weather API endpoint.
  *
- * @author Nico Brüttner - Initial weather endpoint handling
+ * @author Nico Brüttner - Initial contribution: weather endpoint handling
  */
 @NonNullByDefault
 final class RobonectWeatherHandler {

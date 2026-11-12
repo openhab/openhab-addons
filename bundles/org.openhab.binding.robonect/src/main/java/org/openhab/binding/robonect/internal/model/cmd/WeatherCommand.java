@@ -1,18 +1,32 @@
-/* Copyright (c) 2010-2026 Contributors to the openHAB project
- * SPDX-License-Identifier: EPL-2.0 */
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
 package org.openhab.binding.robonect.internal.model.cmd;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * Queries weather information from the Robonect API.
  *
  * @author Nico Brüttner - Initial contribution
  */
+@NonNullByDefault
 public class WeatherCommand implements Command {
-    private String parameter;
-    private String value;
+    private @Nullable String parameter;
+    private @Nullable String value;
 
     /**
      * Sets a weather-service property.

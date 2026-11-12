@@ -14,21 +14,25 @@ package org.openhab.binding.robonect.internal.model;
 
 import java.util.List;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * Simple POJO for deserialize the list of errors from the errors command.
  * 
  * @author Marco Meyer - Initial contribution
  */
+@NonNullByDefault
 public class ErrorList extends RobonectAnswer {
 
-    private List<ErrorEntry> errors;
+    private @Nullable List<ErrorEntry> errors;
 
     /**
      * Returns the list of errors.
      *
      * @return the list of errors.
      */
-    public List<ErrorEntry> getErrors() {
+    public @Nullable List<ErrorEntry> getErrors() {
         return errors;
     }
 }

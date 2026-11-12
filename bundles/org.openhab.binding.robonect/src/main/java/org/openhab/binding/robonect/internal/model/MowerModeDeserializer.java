@@ -14,6 +14,9 @@ package org.openhab.binding.robonect.internal.model;
 
 import java.lang.reflect.Type;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
@@ -24,6 +27,7 @@ import com.google.gson.JsonParseException;
  * 
  * @author Marco Meyer - Initial contribution
  */
+@NonNullByDefault
 public class MowerModeDeserializer implements JsonDeserializer<MowerMode> {
 
     /**
@@ -36,7 +40,7 @@ public class MowerModeDeserializer implements JsonDeserializer<MowerMode> {
      * @throws JsonParseException if Gson cannot deserialize the value
      */
     @Override
-    public MowerMode deserialize(JsonElement jsonElement, Type type,
+    public @Nullable MowerMode deserialize(JsonElement jsonElement, Type type,
             JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
         int mode = jsonElement.getAsInt();
         return MowerMode.fromMode(mode);

@@ -13,7 +13,7 @@
 package org.openhab.binding.robonect.internal.handler;
 
 import static org.openhab.binding.robonect.internal.RobonectBindingConstants.*;
-import static org.openhab.binding.robonect.internal.handler.RobonectHandler.read;
+import static org.openhab.binding.robonect.internal.handler.RobonectUtils.read;
 
 import java.util.ArrayList;
 import java.util.IntSummaryStatistics;
@@ -61,7 +61,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Handles telemetry and diagnostic API endpoints.
  *
- * @author Nico Brüttner - Initial diagnostics endpoint handling
+ * @author Nico Brüttner - Initial contribution: diagnostics endpoint handling
  */
 @NonNullByDefault
 final class RobonectDiagnosticsHandler {
@@ -356,19 +356,25 @@ final class RobonectDiagnosticsHandler {
         }
         if (info.isSuccessful()) {
             Map<String, String> properties = handler.editEndpointProperties();
-            if (info.getApplication() != null) {
+            var application = info.getApplication();
+            var robonect = info.getRobonect();
+            if (application != null) {
                 properties.put(Thing.PROPERTY_SERIAL_NUMBER, valueOrNotAvailable(info.getSerial()));
-                properties.put(Thing.PROPERTY_HARDWARE_VERSION, valueOrNotAvailable(info.getRobonect().getVersion()));
-                properties.put(Thing.PROPERTY_FIRMWARE_VERSION,
-                        valueOrNotAvailable(info.getApplication().getVersion()));
-                properties.put(PROPERTY_COMPILED, valueOrNotAvailable(info.getApplication().getCompiled()));
-                properties.put(PROPERTY_COMMENT, valueOrNotAvailable(info.getApplication().getComment()));
+                properties.put(Thing.PROPERTY_HARDWARE_VERSION,
+                        valueOrNotAvailable(read(robonect, VersionInfo.RobonectVersion::getVersion).orElse(null)));
+                properties.put(Thing.PROPERTY_FIRMWARE_VERSION, valueOrNotAvailable(application.getVersion()));
+                properties.put(PROPERTY_COMPILED, valueOrNotAvailable(application.getCompiled()));
+                properties.put(PROPERTY_COMMENT, valueOrNotAvailable(application.getComment()));
             } else {
-                properties.put(Thing.PROPERTY_SERIAL_NUMBER, valueOrNotAvailable(info.getRobonect().getSerial()));
+                properties.put(Thing.PROPERTY_SERIAL_NUMBER,
+                        valueOrNotAvailable(read(robonect, VersionInfo.RobonectVersion::getSerial).orElse(null)));
                 properties.put(Thing.PROPERTY_HARDWARE_VERSION, VersionInfo.NOT_AVAILABLE);
-                properties.put(Thing.PROPERTY_FIRMWARE_VERSION, valueOrNotAvailable(info.getRobonect().getVersion()));
-                properties.put(PROPERTY_COMPILED, valueOrNotAvailable(info.getRobonect().getCompiled()));
-                properties.put(PROPERTY_COMMENT, valueOrNotAvailable(info.getRobonect().getComment()));
+                properties.put(Thing.PROPERTY_FIRMWARE_VERSION,
+                        valueOrNotAvailable(read(robonect, VersionInfo.RobonectVersion::getVersion).orElse(null)));
+                properties.put(PROPERTY_COMPILED,
+                        valueOrNotAvailable(read(robonect, VersionInfo.RobonectVersion::getCompiled).orElse(null)));
+                properties.put(PROPERTY_COMMENT,
+                        valueOrNotAvailable(read(robonect, VersionInfo.RobonectVersion::getComment).orElse(null)));
             }
             handler.updateEndpointProperties(properties);
         } else {

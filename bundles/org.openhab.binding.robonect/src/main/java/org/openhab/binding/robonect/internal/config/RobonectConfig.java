@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.robonect.internal.config;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
@@ -20,13 +21,14 @@ import org.eclipse.jdt.annotation.Nullable;
  * @author Marco Meyer - Initial contribution
  * @author Nico Brüttner - Detailed polling, push credentials, and web interface settings
  */
+@NonNullByDefault
 public class RobonectConfig {
 
-    private String host;
+    private String host = "";
 
-    private String user;
+    private @Nullable String user;
 
-    private String password;
+    private @Nullable String password;
 
     private @Nullable String pushUser;
     private @Nullable String pushPass;
@@ -35,7 +37,7 @@ public class RobonectConfig {
 
     private int offlineTimeout;
 
-    private String timezone;
+    private @Nullable String timezone;
 
     private int pollIntervalExtended;
 
@@ -57,7 +59,7 @@ public class RobonectConfig {
      *
      * @return the username
      */
-    public String getUser() {
+    public @Nullable String getUser() {
         return user;
     }
 
@@ -66,7 +68,7 @@ public class RobonectConfig {
      *
      * @return the password
      */
-    public String getPassword() {
+    public @Nullable String getPassword() {
         return password;
     }
 
@@ -111,7 +113,7 @@ public class RobonectConfig {
      *
      * @return the time zone identifier
      */
-    public String getTimezone() {
+    public @Nullable String getTimezone() {
         return timezone;
     }
 

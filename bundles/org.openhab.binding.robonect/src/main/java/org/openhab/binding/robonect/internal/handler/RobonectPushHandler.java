@@ -13,13 +13,14 @@
 package org.openhab.binding.robonect.internal.handler;
 
 import static org.openhab.binding.robonect.internal.RobonectBindingConstants.*;
-import static org.openhab.binding.robonect.internal.handler.RobonectHandler.read;
+import static org.openhab.binding.robonect.internal.handler.RobonectUtils.read;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -48,7 +49,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Handles push and extension endpoints.
  *
- * @author Nico Brüttner - Initial push endpoint handling
+ * @author Nico Brüttner - Initial contribution: push endpoint handling
  */
 @NonNullByDefault
 final class RobonectPushHandler {
@@ -235,8 +236,10 @@ final class RobonectPushHandler {
         if (!info.isSuccessful() || trigger == null || trigger.getEnter() == null || trigger.getLeave() == null) {
             return;
         }
-        boolean enter = matcher.group(2).equals("enter") ? onOff == OnOffType.ON : trigger.getEnter();
-        boolean leave = matcher.group(2).equals("leave") ? onOff == OnOffType.ON : trigger.getLeave();
+        boolean enter = matcher.group(2).equals("enter") ? onOff == OnOffType.ON
+                : Optional.ofNullable(trigger.getEnter()).orElseThrow().booleanValue();
+        boolean leave = matcher.group(2).equals("leave") ? onOff == OnOffType.ON
+                : Optional.ofNullable(trigger.getLeave()).orElseThrow().booleanValue();
         int value = (enter ? 1 : 0) | (leave ? 2 : 0);
         handler.cancelCommandRefresh("push");
         PushInfo result = pushApi.updatePush("trigger" + matcher.group(1), Integer.toString(value));
@@ -268,9 +271,9 @@ final class RobonectPushHandler {
             value = string.toFullString();
         } else if (command instanceof Number num && channelId.equals(CHANNEL_PUSH_INTERVAL)) {
             parameter = "interval";
-            value = String
-                    .valueOf(command instanceof QuantityType<?> quantity ? quantity.toUnit(Units.SECOND).intValue()
-                            : num.intValue());
+            value = String.valueOf(command instanceof QuantityType<?> quantity
+                    ? Optional.ofNullable(quantity.toUnit(Units.SECOND)).orElseThrow().intValue()
+                    : num.intValue());
         } else {
             logUnsupportedCommandType(channelId, command);
             return;

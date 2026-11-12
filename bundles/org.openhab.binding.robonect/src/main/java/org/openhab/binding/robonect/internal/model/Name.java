@@ -12,21 +12,25 @@
  */
 package org.openhab.binding.robonect.internal.model;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * Response holding the name of the mower used in the name command.
  * 
  * @author Marco Meyer - Initial contribution
  */
+@NonNullByDefault
 public class Name extends RobonectAnswer {
 
-    private String name;
+    private @Nullable String name;
 
     /**
      * Returns the mower name.
      *
      * @return - The mower name.
      */
-    public String getName() {
+    public @Nullable String getName() {
         return name;
     }
 }

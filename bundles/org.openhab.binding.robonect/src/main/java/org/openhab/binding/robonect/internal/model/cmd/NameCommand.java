@@ -15,19 +15,18 @@ package org.openhab.binding.robonect.internal.model.cmd;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * The command allows to set or retrieve the mower name.
  *
  * @author Marco Meyer - Initial contribution
  */
+@NonNullByDefault
 public class NameCommand implements Command {
 
-    private final Logger logger = LoggerFactory.getLogger(NameCommand.class);
-
-    private String newName;
+    private @Nullable String newName;
 
     /**
      * Sets the mower name; a {@code null} name is sent as an empty string.
@@ -35,7 +34,7 @@ public class NameCommand implements Command {
      * @param newName - the mower name.
      * @return - the command instance.
      */
-    public NameCommand withNewName(String newName) {
+    public NameCommand withNewName(@Nullable String newName) {
         this.newName = newName != null ? newName : "";
         return this;
     }

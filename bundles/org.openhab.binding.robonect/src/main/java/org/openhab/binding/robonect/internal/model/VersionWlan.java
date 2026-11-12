@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.robonect.internal.model;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 import com.google.gson.annotations.SerializedName;
@@ -21,6 +22,7 @@ import com.google.gson.annotations.SerializedName;
  *
  * @author Nico Brüttner - Initial contribution
  */
+@NonNullByDefault
 public class VersionWlan {
 
     @SerializedName("at-version")

@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.robonect.internal.model.cmd;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Queries localized status text used by the Robonect web interface.
  *
- * @author Nico Brüttner - Ajax UI compatibility
+ * @author Nico Brüttner - Initial contribution: Ajax UI compatibility
  */
+@NonNullByDefault
 public class AjaxCommand implements Command {
 
     private final int type;

@@ -12,8 +12,7 @@
  */
 package org.openhab.binding.robonect.internal.handler;
 
-import static org.openhab.binding.robonect.internal.RobonectBindingConstants.*;
-import static org.openhab.binding.robonect.internal.handler.RobonectHandler.read;
+import static org.openhab.binding.robonect.internal.handler.RobonectUtils.read;
 
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -40,7 +39,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Handles reads, updates, and dynamic channels for timer API responses.
  *
- * @author Nico Brüttner - Initial timer endpoint handling
+ * @author Nico Brüttner - Initial contribution: timer endpoint handling
  */
 @NonNullByDefault
 final class RobonectTimerHandler {
@@ -94,7 +93,7 @@ final class RobonectTimerHandler {
                     default -> "su";
                 };
                 value = onOff == OnOffType.ON ? "1" : "0";
-            } else if (command instanceof DateTimeType dateTime && (setting.equals("start") || setting.equals("end"))) {
+            } else if (command instanceof DateTimeType dateTime && ("start".equals(setting) || "end".equals(setting))) {
                 LocalTime time = dateTime.getZonedDateTime(handler.getTimeZone()).toLocalTime();
                 parameter = setting;
                 value = time.format(DateTimeFormatter.ofPattern("HH:mm"));
@@ -102,7 +101,7 @@ final class RobonectTimerHandler {
                 if (TIMER_SWITCH_SETTINGS.contains(setting)) {
                     logger.debug("Ignoring timer command of type {}; OnOffType is expected for {}.",
                             command.getClass().getName(), channelId);
-                } else if (setting.equals("start") || setting.equals("end")) {
+                } else if ("start".equals(setting) || "end".equals(setting)) {
                     logger.debug("Ignoring timer command of type {}; DateTimeType is expected for {}.",
                             command.getClass().getName(), channelId);
                 }

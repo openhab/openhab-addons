@@ -39,7 +39,7 @@ The `mower` Thing supports the following configuration parameters. All parameter
 
 - Both `pushUser` and `pushPass` must be set to enable the push callback endpoint.
 - Motor, battery, and wire diagnostics use normal polling while the mower reports `MOWING`, `SEARCH_CHARGING_STATION`, or
-`SEARCHING`; at other times they use the extended polling schedule.
+  `SEARCHING`; at other times they use the extended polling schedule.
 
 An example `.things` configuration with every optional parameter is:
 

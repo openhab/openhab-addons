@@ -96,7 +96,7 @@ public final class RobonectMowerApi {
         if (isAjaxScrapingEnabled) {
             mowerInfo.setJob(null);
             if (mowerInfo.isSuccessful() && status != null) {
-                getAdditionalMowerInfo(mowerInfo);
+                getAdditionalMowerInfo(mowerInfo, status);
             }
             Job job = mowerInfo.getJob();
             if (job != null && job.isJobActiv() != null) {
@@ -114,9 +114,10 @@ public final class RobonectMowerApi {
     /**
      * Enriches a successful status response with job information and end-of-day mode from the web interface.
      *
-     * @param mowerInfo the response to update, with a non-null status
+     * @param mowerInfo the response to update
+     * @param status the status from the response
      */
-    private void getAdditionalMowerInfo(MowerInfo mowerInfo) {
+    private void getAdditionalMowerInfo(MowerInfo mowerInfo, Status status) {
         try {
             AjaxInfo ajaxInfo = getAjaxInfo();
             if (ajaxInfo == null) {
@@ -125,10 +126,10 @@ public final class RobonectMowerApi {
             String controlText = ajaxInfo.getControlMenuText();
             String timerText = ajaxInfo.getTimerMenuText();
 
-            MowerMode apiMowerMode = mowerInfo.getStatus().getMode();
+            MowerMode apiMowerMode = status.getMode();
             Job job = new Job();
             if (apiMowerMode == MowerMode.HOME && controlText != null && END_OF_DAY_LABELS.contains(controlText)) {
-                mowerInfo.getStatus().setMode(MowerMode.EOD);
+                status.setMode(MowerMode.EOD);
             }
             if ((apiMowerMode == MowerMode.AUTO || apiMowerMode == MowerMode.HOME) && timerText != null
                     && !timerText.isBlank()) {
@@ -162,7 +163,7 @@ public final class RobonectMowerApi {
      *
      * @return the parsed Ajax information
      */
-    public AjaxInfo getAjaxInfo() {
+    public @Nullable AjaxInfo getAjaxInfo() {
         String response = transport.sendCommand(new AjaxCommand(1, 2), transport.ajaxUrl);
         return ModelParser.parse(URLDecoder.decode(response, StandardCharsets.ISO_8859_1), AjaxInfo.class);
     }

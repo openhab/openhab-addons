@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.robonect.internal.model.cmd;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Queries motor information from the Robonect API.
  *
  * @author Nico Brüttner - Initial contribution
  */
+@NonNullByDefault
 public class MotorCommand implements Command {
     /**
      * Builds the motor status URL for this {@link Command}.

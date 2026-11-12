@@ -13,7 +13,7 @@
 package org.openhab.binding.robonect.internal.handler;
 
 import static org.openhab.binding.robonect.internal.RobonectBindingConstants.*;
-import static org.openhab.binding.robonect.internal.handler.RobonectHandler.read;
+import static org.openhab.binding.robonect.internal.handler.RobonectUtils.read;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -37,7 +37,6 @@ import org.openhab.binding.robonect.internal.model.ErrorEntry;
 import org.openhab.binding.robonect.internal.model.Health;
 import org.openhab.binding.robonect.internal.model.Job;
 import org.openhab.binding.robonect.internal.model.MowerInfo;
-import org.openhab.binding.robonect.internal.model.MowerMode;
 import org.openhab.binding.robonect.internal.model.MowerStatus;
 import org.openhab.binding.robonect.internal.model.Name;
 import org.openhab.binding.robonect.internal.model.NextTimer;
@@ -77,7 +76,6 @@ final class RobonectMowerHandler {
     private final RobonectHandler handler;
     private final RobonectMowerApi mowerApi;
     private final RobonectDiagnosticsHandler diagnostics;
-    private volatile @Nullable MowerMode latestMowerMode;
     private @Nullable LocalJob localJob;
 
     record LocalJob(@Nullable String channelId, ZonedDateTime start, ZonedDateTime end) {

@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.robonect.internal.model;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -19,26 +22,27 @@ import com.google.gson.annotations.SerializedName;
  * 
  * @author Marco Meyer - Initial contribution
  */
+@NonNullByDefault
 public class ErrorEntry {
 
-    private String date;
+    private @Nullable String date;
 
     @SerializedName("error_code")
-    private Integer errorCode;
+    private @Nullable Integer errorCode;
 
     @SerializedName("error_message")
-    private String errorMessage;
+    private @Nullable String errorMessage;
 
-    private String time;
+    private @Nullable String time;
 
-    private String unix;
+    private @Nullable String unix;
 
     /**
      * Returns the date the error happened in the format {@code dd.MM.yy}.
      *
      * @return the date the error happened in the format {@code dd.MM.yy}
      */
-    public String getDate() {
+    public @Nullable String getDate() {
         return date;
     }
 
@@ -49,7 +53,7 @@ public class ErrorEntry {
      *         <a href="http://www.robonect.de/viewtopic.php?f=11&amp;t=110">
      *         http://www.robonect.de/viewtopic.php?f=11&amp;t=110</a>
      */
-    public Integer getErrorCode() {
+    public @Nullable Integer getErrorCode() {
         return errorCode;
     }
 
@@ -58,7 +62,7 @@ public class ErrorEntry {
      *
      * @return The localized error message from the mower.
      */
-    public String getErrorMessage() {
+    public @Nullable String getErrorMessage() {
         return errorMessage;
     }
 
@@ -67,7 +71,7 @@ public class ErrorEntry {
      *
      * @return The time the error happened in the format {@code HH:mm:ss}
      */
-    public String getTime() {
+    public @Nullable String getTime() {
         return time;
     }
 
@@ -76,7 +80,7 @@ public class ErrorEntry {
      *
      * @return The unix time when the error happened.
      */
-    public String getUnix() {
+    public @Nullable String getUnix() {
         return unix;
     }
 
@@ -85,7 +89,7 @@ public class ErrorEntry {
      *
      * @param date the error date
      */
-    public void setDate(String date) {
+    public void setDate(@Nullable String date) {
         this.date = date;
     }
 
@@ -94,7 +98,7 @@ public class ErrorEntry {
      *
      * @param errorCode the error code
      */
-    public void setErrorCode(Integer errorCode) {
+    public void setErrorCode(@Nullable Integer errorCode) {
         this.errorCode = errorCode;
     }
 
@@ -103,7 +107,7 @@ public class ErrorEntry {
      *
      * @param errorMessage the localized error message
      */
-    public void setErrorMessage(String errorMessage) {
+    public void setErrorMessage(@Nullable String errorMessage) {
         this.errorMessage = errorMessage;
     }
 
@@ -112,7 +116,7 @@ public class ErrorEntry {
      *
      * @param time the error time
      */
-    public void setTime(String time) {
+    public void setTime(@Nullable String time) {
         this.time = time;
     }
 
@@ -121,7 +125,7 @@ public class ErrorEntry {
      *
      * @param unix the error timestamp in seconds
      */
-    public void setUnix(String unix) {
+    public void setUnix(@Nullable String unix) {
         this.unix = unix;
     }
 }

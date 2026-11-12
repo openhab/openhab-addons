@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.robonect.internal.model;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
@@ -19,6 +20,7 @@ import org.eclipse.jdt.annotation.Nullable;
  *
  * @author Nico Brüttner - Initial contribution
  */
+@NonNullByDefault
 public class VersionHardware {
 
     private @Nullable Integer serial;

@@ -12,13 +12,15 @@
  */
 package org.openhab.binding.robonect.internal.model;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * Localized status text returned by the undocumented Robonect web-interface endpoint.
  *
- * @author Nico Brüttner - Ajax UI compatibility
+ * @author Nico Brüttner - Initial contribution: Ajax UI compatibility
  */
+@NonNullByDefault
 public class AjaxInfo {
 
     private @Nullable String tmnucontrol;

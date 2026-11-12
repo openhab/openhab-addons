@@ -12,9 +12,9 @@
  */
 package org.openhab.binding.robonect.internal.handler;
 
-import static org.openhab.binding.robonect.internal.RobonectBindingConstants.*;
-import static org.openhab.binding.robonect.internal.handler.RobonectHandler.read;
+import static org.openhab.binding.robonect.internal.handler.RobonectUtils.read;
 
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -36,7 +36,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Handles writes to the mower's remote-start API endpoints.
  *
- * @author Nico Brüttner - Initial remote-start endpoint handling
+ * @author Nico Brüttner - Initial contribution: remote-start endpoint handling
  */
 @NonNullByDefault
 final class RobonectRemoteStartHandler {
@@ -71,14 +71,14 @@ final class RobonectRemoteStartHandler {
         }
         int remoteStart = Integer.parseInt(matcher.group(1));
         String setting = matcher.group(2);
-        if (setting.equals("visible") || setting.equals("path") || setting.equals("corridor-cut")) {
+        if ("visible".equals(setting) || "path".equals(setting) || "corridor-cut".equals(setting)) {
             updateViaWebInterface(remoteStart, setting, command);
             return;
         }
         String name = null;
         Integer distance = null;
         Integer proportion = null;
-        if (setting.equals("name")) {
+        if ("name".equals(setting)) {
             if (!(command instanceof StringType string)) {
                 logger.debug("Ignoring remote start name command of type {}; StringType is expected.",
                         command.getClass().getName());
@@ -89,15 +89,16 @@ final class RobonectRemoteStartHandler {
                 logger.warn("Remote start {} name exceeds 16 characters; truncating it", remoteStart);
                 name = name.substring(0, 16);
             }
-        } else if (setting.equals("distance") || setting.equals("proportion")) {
+        } else if ("distance".equals(setting) || "proportion".equals(setting)) {
             if (!(command instanceof Number num)) {
                 logger.debug("Ignoring remote start {} command of type {}; Number is expected.", setting,
                         command.getClass().getName());
                 return;
             }
             try {
-                if (setting.equals("distance")) {
-                    int value = num instanceof QuantityType<?> quantity ? quantity.toUnit(SIUnits.METRE).intValue()
+                if ("distance".equals(setting)) {
+                    int value = num instanceof QuantityType<?> quantity
+                            ? Optional.ofNullable(quantity.toUnit(SIUnits.METRE)).orElseThrow().intValue()
                             : num.intValue();
                     if (value < 0 || value > 300) {
                         logger.warn("Ignoring invalid remote start distance {}", value);
@@ -105,7 +106,8 @@ final class RobonectRemoteStartHandler {
                     }
                     distance = value;
                 } else {
-                    int value = num instanceof QuantityType<?> quantity ? quantity.toUnit(Units.PERCENT).intValue()
+                    int value = num instanceof QuantityType<?> quantity
+                            ? Optional.ofNullable(quantity.toUnit(Units.PERCENT)).orElseThrow().intValue()
                             : num.intValue();
                     if (value < 0 || value > 100) {
                         logger.warn("Ignoring invalid remote start proportion {}", value);
@@ -134,12 +136,12 @@ final class RobonectRemoteStartHandler {
      * @param command the command received for the channel
      */
     private void updateViaWebInterface(int remoteStart, String setting, Command command) {
-        if ((setting.equals("visible") || setting.equals("corridor-cut")) && !(command instanceof OnOffType)) {
+        if (("visible".equals(setting) || "corridor-cut".equals(setting)) && !(command instanceof OnOffType)) {
             logger.debug("Ignoring remote start {} command of type {}; OnOffType is expected.", setting,
                     command.getClass().getName());
             return;
         }
-        if (setting.equals("path") && !(command instanceof DecimalType)) {
+        if ("path".equals(setting) && !(command instanceof DecimalType)) {
             logger.debug("Ignoring remote start path command of type {}; DecimalType is expected.",
                     command.getClass().getName());
             return;
@@ -182,9 +184,9 @@ final class RobonectRemoteStartHandler {
             return;
         }
 
-        if (setting.equals("visible")) {
+        if ("visible".equals(setting)) {
             visible = command == OnOffType.ON;
-        } else if (setting.equals("corridor-cut")) {
+        } else if ("corridor-cut".equals(setting)) {
             corridorCut = command == OnOffType.ON;
         } else {
             try {

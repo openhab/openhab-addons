@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.robonect.internal.model.cmd;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Command for changing the Robonect module's operating state.
  *
  * @author Nico Brüttner - Initial contribution
  */
+@NonNullByDefault
 public class ServiceCommand implements Command {
 
     public enum Operation {
