@@ -503,6 +503,8 @@ public enum MiIoDevices {
     XIAOMI_FAN_P76("xiaomi.fan.p76", "Xiaomi Smart Standing Air Circulation Fan", THING_TYPE_BASIC),
     XIAOMI_FAN_P85("xiaomi.fan.p85", "Mijia Smart Standing Fan Pro Slim", THING_TYPE_BASIC),
     XIAOMI_FAN_P90("xiaomi.fan.p90", "Mijia Smart Air Circulation Fan Pro", THING_TYPE_BASIC),
+    XIAOMI_FEEDER_IV2001("xiaomi.feeder.iv2001", "Xiaomi Smart Pet Food Feeder 2", THING_TYPE_BASIC),
+    XIAOMI_FEEDER_PI2001("xiaomi.feeder.pi2001", "Mijia Smart Pet Food Feeder 2", THING_TYPE_BASIC),
     XIAOMI_DERH_13L("xiaomi.derh.13l", "Mijia Smart Dehumidifier 13L", THING_TYPE_BASIC),
     XIAOMI_DERH_LITE("xiaomi.derh.lite", "Xiaomi Smart Dehumidifier Lite", THING_TYPE_BASIC),
     XIAOMI_HUMIDIFIER_3LITE("xiaomi.humidifier.3lite", "Xiaomi Smart Evaporative Humidifier", THING_TYPE_BASIC),

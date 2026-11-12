@@ -1,0 +1,427 @@
+{
+	"deviceMapping": {
+		"id": [
+			"xiaomi.feeder.iv2001",
+			"xiaomi.feeder.pi2001"
+		],
+		"propertyMethod": "get_properties",
+		"maxProperties": 1,
+		"channels": [
+			{
+				"property": "fault",
+				"siid": 2,
+				"piid": 1,
+				"friendlyName": "Fault",
+				"channel": "fault",
+				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "0",
+							"label": "No Faults"
+						},
+						{
+							"value": "1",
+							"label": "Fault"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "alarm",
+				"tags": [
+					"Status"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"No Faults\",\"1\"\u003d\"Fault\"]`"
+			},
+			{
+				"property": "pet-food-left-level",
+				"siid": 2,
+				"piid": 6,
+				"friendlyName": "Food Level",
+				"channel": "food_level",
+				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "0",
+							"label": "Normal"
+						},
+						{
+							"value": "1",
+							"label": "Low"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "alarm",
+				"tags": [
+					"Alarm"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Normal\",\"1\"\u003d\"Low\"]`"
+			},
+			{
+				"property": "",
+				"friendlyName": "Dispense Food",
+				"channel": "dispense_food",
+				"type": "Number",
+				"stateDescription": {
+					"minimum": 1,
+					"maximum": 150,
+					"step": 1,
+					"pattern": "%.0f"
+				},
+				"refresh": false,
+				"actions": [
+					{
+						"command": "action",
+						"parameterType": "NUMBER",
+						"siid": 2,
+						"aiid": 1,
+						"parameters": [
+							{
+								"piid": 8,
+								"value": "$value$"
+							}
+						]
+					}
+				],
+				"category": "settings",
+				"tags": [
+					"Control"
+				],
+				"readmeComment": "Dispenses the given number of portions of about 10 g (pi2001 with older firmware: grams)"
+			},
+			{
+				"property": "food-stuck",
+				"siid": 2,
+				"piid": 10,
+				"friendlyName": "Food Jammed",
+				"channel": "food_jammed",
+				"type": "Switch",
+				"stateDescription": {
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "alarm",
+				"tags": [
+					"Alarm"
+				]
+			},
+			{
+				"property": "bowl-abnormal",
+				"siid": 2,
+				"piid": 11,
+				"friendlyName": "Food Bowl Error",
+				"channel": "bowl_error",
+				"type": "Switch",
+				"stateDescription": {
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "alarm",
+				"tags": [
+					"Alarm"
+				],
+				"readmeComment": "On when the food bowl was removed or is not placed correctly"
+			},
+			{
+				"property": "bowl-empty",
+				"siid": 2,
+				"piid": 13,
+				"friendlyName": "Food Bowl Empty",
+				"channel": "bowl_empty",
+				"type": "Switch",
+				"stateDescription": {
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "alarm",
+				"tags": [
+					"Alarm"
+				],
+				"readmeComment": "Refill reminder: on when the food bowl was empty for the set time"
+			},
+			{
+				"property": "bowl-full",
+				"siid": 2,
+				"piid": 15,
+				"friendlyName": "Food Bowl Full",
+				"channel": "bowl_full",
+				"type": "Switch",
+				"stateDescription": {
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "status",
+				"tags": [
+					"Status"
+				]
+			},
+			{
+				"property": "eaten-food-measure",
+				"siid": 2,
+				"piid": 22,
+				"friendlyName": "Food Eaten Today",
+				"channel": "food_eaten_today",
+				"type": "Number",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 65535,
+					"step": 1,
+					"pattern": "%.0f g",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "status",
+				"tags": [
+					"Measurement"
+				]
+			},
+			{
+				"property": "food-out-status",
+				"siid": 2,
+				"piid": 26,
+				"friendlyName": "Dispensing",
+				"channel": "dispensing",
+				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "0",
+							"label": "Idle"
+						},
+						{
+							"value": "1",
+							"label": "Busy"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "status",
+				"tags": [
+					"Status"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Idle\",\"1\"\u003d\"Busy\"]`"
+			},
+			{
+				"property": "physical-controls-locked",
+				"siid": 3,
+				"piid": 1,
+				"friendlyName": "Child Lock",
+				"channel": "child_lock",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "lock",
+				"tags": [
+					"Switch"
+				],
+				"readmeComment": "Disables the dispense buttons of the feeder"
+			},
+			{
+				"property": "auto-screen-off",
+				"siid": 3,
+				"piid": 3,
+				"friendlyName": "Auto Screen Off",
+				"channel": "auto_screen_off",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFNUMBER"
+					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch"
+				]
+			},
+			{
+				"property": "feeder-schedule",
+				"siid": 5,
+				"piid": 1,
+				"friendlyName": "Feeding Schedule",
+				"channel": "schedule",
+				"type": "String",
+				"stateDescription": {
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "time",
+				"tags": [
+					"Status"
+				],
+				"readmeComment": "Format `[A,HHMMPPEE,...]`: A 1 when automatic feeding is on, then per meal the time, the portions (two digits) and 01 when enabled or 00 when disabled"
+			},
+			{
+				"property": "schedule-progress-display",
+				"siid": 5,
+				"piid": 4,
+				"friendlyName": "Display Schedule Progress",
+				"channel": "schedule_progress_display",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "action",
+						"parameterType": "ONOFFBOOL",
+						"siid": 5,
+						"aiid": 4,
+						"parameters": [
+							{
+								"piid": 4,
+								"value": "$value$"
+							}
+						]
+					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch"
+				],
+				"readmeComment": "Shows the progress of the feeding schedule as a percentage on the feeder"
+			},
+			{
+				"property": "dispensing-correction",
+				"siid": 5,
+				"piid": 12,
+				"friendlyName": "Dispensing Error Correction",
+				"channel": "dispensing_correction",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFNUMBER"
+					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch"
+				],
+				"readmeComment": "Dispenses extra food to keep the error within 5 g"
+			},
+			{
+				"property": "spillage-prevention",
+				"siid": 5,
+				"piid": 14,
+				"friendlyName": "Food Bowl Spillage Prevention",
+				"channel": "spillage_prevention",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFNUMBER"
+					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch"
+				],
+				"readmeComment": "Stops automatic dispensing when the food bowl is full"
+			},
+			{
+				"property": "schedule-progress",
+				"siid": 5,
+				"piid": 15,
+				"friendlyName": "Schedule Progress",
+				"channel": "schedule_progress",
+				"type": "Number:Dimensionless",
+				"unit": "percentage",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 100,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "status",
+				"tags": [
+					"Measurement",
+					"Progress"
+				]
+			},
+			{
+				"property": "screen-display",
+				"siid": 5,
+				"piid": 18,
+				"friendlyName": "Screen Display",
+				"channel": "screen_display",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "Food Left (g)"
+						},
+						{
+							"value": "1",
+							"label": "Food Eaten (g)"
+						},
+						{
+							"value": "2",
+							"label": "Percentage"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "settings",
+				"tags": [
+					"Control"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Food Left (g)\",\"1\"\u003d\"Food Eaten (g)\",\"2\"\u003d\"Percentage\"]`"
+			},
+			{
+				"property": "desiccant-left-level",
+				"siid": 6,
+				"piid": 1,
+				"friendlyName": "Desiccant Left Level",
+				"channel": "desiccant_left_level",
+				"type": "Number:Dimensionless",
+				"unit": "percentage",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 100,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "status",
+				"tags": [
+					"Measurement",
+					"Level"
+				]
+			}
+		],
+		"experimental": true
+	}
+}
