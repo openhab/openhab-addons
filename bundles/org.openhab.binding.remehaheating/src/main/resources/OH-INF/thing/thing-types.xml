@@ -21,7 +21,25 @@
 			<channel id="water-pressure-ok" typeId="water-pressure-ok"/>
 			<channel id="outdoor-temperature" typeId="outdoor-temperature"/>
 			<channel id="status" typeId="status"/>
+			<channel id="thermal-mode" typeId="thermal-mode"/>
+			<channel id="operating-mode" typeId="operating-mode"/>
+			<channel id="seasonal-mode" typeId="seasonal-mode"/>
+			<channel id="holiday-active" typeId="holiday-active"/>
+			<channel id="zone-mode" typeId="zone-mode"/>
+			<channel id="heating-demand" typeId="heating-demand"/>
+			<channel id="next-setpoint" typeId="next-setpoint"/>
+			<channel id="next-switch-time" typeId="next-switch-time"/>
+			<channel id="fireplace-mode-active" typeId="fireplace-mode-active"/>
+			<channel id="dhw-next-switch-time" typeId="dhw-next-switch-time"/>
+			<channel id="dhw-anti-legionella" typeId="dhw-anti-legionella"/>
+			<channel id="heating-curve-slope" typeId="heating-curve-slope"/>
+			<channel id="heating-curve-base-setpoint" typeId="heating-curve-base-setpoint"/>
+			<channel id="heating-curve-max-flow-temperature" typeId="heating-curve-max-flow-temperature"/>
 		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 
 		<config-description>
 			<parameter name="email" type="text" required="true">
@@ -148,6 +166,153 @@
 			<tag>Status</tag>
 		</tags>
 		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="thermal-mode">
+		<item-type>String</item-type>
+		<label>Thermal Mode</label>
+		<description>Active thermal mode of the appliance, e.g. heating or hot water</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="operating-mode">
+		<item-type>String</item-type>
+		<label>Operating Mode</label>
+		<description>Operating mode of the appliance</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="seasonal-mode">
+		<item-type>String</item-type>
+		<label>Seasonal Mode</label>
+		<description>Seasonal mode of the appliance, e.g. winter or summer</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="holiday-active">
+		<item-type>Switch</item-type>
+		<label>Holiday Mode Active</label>
+		<description>Indicates whether the holiday schedule is currently active</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="zone-mode">
+		<item-type>String</item-type>
+		<label>Zone Mode</label>
+		<description>Mode of the climate zone, e.g. scheduling or manual</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="heating-demand">
+		<item-type>String</item-type>
+		<label>Heating Demand</label>
+		<description>Current comfort demand of the climate zone, e.g. whether the appliance is producing heat</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="next-setpoint">
+		<item-type unitHint="°C">Number:Temperature</item-type>
+		<label>Next Target Temperature</label>
+		<description>Target room temperature of the next schedule switch point</description>
+		<category>temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="next-switch-time">
+		<item-type>DateTime</item-type>
+		<label>Next Switch Time</label>
+		<description>Time of the next schedule switch point of the climate zone</description>
+		<category>time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
+		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM"/>
+	</channel-type>
+
+	<channel-type id="fireplace-mode-active">
+		<item-type>Switch</item-type>
+		<label>Fireplace Mode Active</label>
+		<description>Indicates whether the fireplace mode of the climate zone is active</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="dhw-next-switch-time">
+		<item-type>DateTime</item-type>
+		<label>Hot Water Next Switch</label>
+		<description>Time of the next schedule switch point of the hot water zone</description>
+		<category>time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
+		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM"/>
+	</channel-type>
+
+	<channel-type id="dhw-anti-legionella">
+		<item-type>Switch</item-type>
+		<label>Hot Water Legionella</label>
+		<description>Indicates whether the anti-legionella function of the hot water zone is enabled</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="heating-curve-slope">
+		<item-type>Number</item-type>
+		<label>Heating Curve Slope</label>
+		<description>Slope of the heating curve of the climate zone</description>
+		<state readOnly="true" min="0" max="4" step="0.1" pattern="%.1f"/>
+	</channel-type>
+
+	<channel-type id="heating-curve-base-setpoint">
+		<item-type unitHint="°C">Number:Temperature</item-type>
+		<label>Heating Curve Base</label>
+		<description>Base setpoint of the heating curve of the climate zone</description>
+		<category>temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state readOnly="true" min="15" max="60" step="0.5" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="heating-curve-max-flow-temperature">
+		<item-type unitHint="°C">Number:Temperature</item-type>
+		<label>Maximum Flow Temperature</label>
+		<description>Maximum flow temperature of the heating curve of the climate zone</description>
+		<category>temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="water-pressure-ok">

@@ -18,7 +18,9 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.SecureRandom;
 import java.util.Base64;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -35,6 +37,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 
 /**
  * The {@link RemehaApiClient} handles OAuth2 PKCE authentication and API communication with Remeha Home services.
@@ -248,6 +251,16 @@ public class RemehaApiClient {
     }
 
     /**
+     * Retrieves the heating curve settings of a climate zone.
+     *
+     * @param climateZoneId Climate zone identifier from dashboard data
+     * @return Heating curve JSON object or null if the request fails or the installation has no heating curve
+     */
+    public @Nullable JsonObject getHeatingCurve(String climateZoneId) {
+        return getJson("/climate-zones/" + climateZoneId + "/heating-curve");
+    }
+
+    /**
      * Sets the target room temperature for a climate zone.
      *
      * @param climateZoneId Climate zone identifier from dashboard data
@@ -268,6 +281,54 @@ public class RemehaApiClient {
      */
     public boolean setDhwMode(String hotWaterZoneId, String mode) {
         return apiRequest("/hot-water-zones/" + hotWaterZoneId + "/modes/" + mode, null);
+    }
+
+    /** Sends an authenticated GET request. On HTTP 401 it re-authenticates and repeats the request once. */
+    private @Nullable JsonObject getJson(String path) {
+        String token = accessToken;
+        if (token == null) {
+            if (!reAuthenticate()) {
+                return null;
+            }
+            token = accessToken;
+            if (token == null) {
+                return null;
+            }
+        }
+        try {
+            ContentResponse response = sendGet(path, token);
+            if (response.getStatus() == 401) {
+                logger.debug("GET {} received 401, attempting re-authentication", path);
+                accessToken = null;
+                if (!reAuthenticate()) {
+                    return null;
+                }
+                token = accessToken;
+                if (token == null) {
+                    return null;
+                }
+                response = sendGet(path, token);
+            }
+            if (response.getStatus() != 200) {
+                logger.debug("GET {} failed with status {}", path, response.getStatus());
+                return null;
+            }
+            return gson.fromJson(response.getContentAsString(), JsonObject.class);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            logger.debug("GET {} interrupted", path);
+            return null;
+        } catch (TimeoutException | ExecutionException | JsonParseException e) {
+            logger.debug("GET {} failed: {}", path, e.getMessage());
+            return null;
+        }
+    }
+
+    private ContentResponse sendGet(String path, String token)
+            throws InterruptedException, TimeoutException, ExecutionException {
+        return httpClient.newRequest(API_BASE_URL + path).method(HttpMethod.GET)
+                .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS).header("Authorization", "Bearer " + token)
+                .header("Ocp-Apim-Subscription-Key", SUBSCRIPTION_KEY).send();
     }
 
     /**
