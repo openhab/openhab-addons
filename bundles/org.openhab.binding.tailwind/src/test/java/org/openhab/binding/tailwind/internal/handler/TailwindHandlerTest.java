@@ -242,6 +242,18 @@ public class TailwindHandlerTest {
     }
 
     @Test
+    public void interruptedStatusRequestLeavesTheStatusAlone() {
+        initializeOnline();
+        clearInvocations(callback);
+        controller.setInterrupted(true);
+
+        handler.poll();
+
+        assertTrue(Thread.interrupted(), "the interruption must be kept");
+        verify(callback, never()).statusUpdated(any(), any());
+    }
+
+    @Test
     public void missingPrimaryAddressIsAConfigurationError() {
         when(networkAddressService.getPrimaryIpv4HostAddress()).thenReturn(null);
 
