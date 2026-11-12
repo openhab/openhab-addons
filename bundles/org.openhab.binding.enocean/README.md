@@ -585,9 +585,46 @@ On first use, the state machine must be calibrated. Two methods are available:
 
 In both cases, the state machine transitions from INVALID to IDLE state once calibration is complete.
 The calibration/state-machine state is persisted internally by the binding using StorageService (JSON in userdata) and restored automatically after restart. No linked state-machine item or openHAB persistence configuration is required for this internal persistence.
+Only the states IDLE and INVALID are restored after a restart.
+Any other state, for example a movement that was running at shutdown, is replaced by INVALID and requires a new calibration.
 
 ### Hardware Requirements
 
-**Important:** The FSB14 must send feedback telegrams for state machine operation.
-Configure the FAM14 with the PCT14 tool: add the FSB14 to the feedback list and set the operating mode to 7.
+**Important:** The FSB14 must send its confirmation telegrams for state machine operation: the start of a movement, the stop with the driven time and the end position.
+The FAM14 polls these telegrams cyclically.
+Which actuators it polls and where it sends the telegrams depends on the position of its upper rotary switch:
+
+- Positions 2 to 4 poll all actuators found by the bus scan, positions 5 to 7 only the actuators of the device list (feedback list) created with the PCT14 tool. With positions 5 to 7 the FSB14 must be in that list.
+- Positions 2 and 5 send the telegrams into the Eltako wireless network, positions 3, 4, 6 and 7 only use the bus.
+- Positions 4 and 7 additionally poll the status telegrams of the actuators.
+
+Use a position that sends into the wireless network (2 or 5) if the gateway is connected via radio, and a bus position (3, 4, 6 or 7, e.g. 7) if the gateway is connected to the bus (e.g. FGW14-USB).
 For FSB14 addresses > 126, a bus connection (FAM14/FGW14-USB) is required as feedback is not sent via radio.
+
+### Operation with Wall Switches
+
+A wall switch acts directly on the FSB14 and is not seen by the binding.
+The binding follows such a movement through the feedback of the FSB14: it reports every start, every stop with the driven time and the reaching of an end position.
+The position channel is updated from the reported driven time, and the state machine is in the state MOVEMENT_MANUAL_UP or MOVEMENT_MANUAL_DOWN while the FSB14 is moving and no openHAB command is active.
+openHAB commands are ignored in this state, like in any other moving state.
+
+The slats are not adjusted automatically after a movement started or interrupted with a wall switch.
+This also applies when a movement requested by openHAB is interrupted with a wall switch.
+A movement stopped with a STOP command from openHAB is still followed by the slat adjustment.
+
+In mode `blinds` the binding calculates the effect of such a movement on the slats and updates the dimmer channel (angle) together with the position.
+When moving down the slats close first (angle 100) and only then the position changes, when moving up they open first (angle 0).
+The time for turning the slats from one end to the other is taken from `swapTime`.
+If the dimmer channel has no value, the angle is only set when the movement lasted longer than `swapTime`.
+
+The FSB14 reports the end position only after the run time set at the device has elapsed.
+A movement started with a wall switch therefore stays in MOVEMENT_MANUAL_* until then, and for at most five minutes.
+After that time without feedback, the state machine is set to INVALID.
+
+### Missing Feedback
+
+The state machine waits for the feedback of the FSB14 during every movement started by openHAB.
+The feedback reaches openHAB with a delay of up to one polling cycle of the FAM14 (about 6 seconds, longer with many actuators).
+If no feedback arrives within the configured `shutTime` (plus `swapTime` in mode `blinds`) plus 15 seconds, the binding logs a warning and sets the state machine to INVALID.
+The next UP or DOWN command then calibrates the state machine again.
+If this warning appears, check that the FSB14 is in the feedback list of the FAM14 (if the FAM14 is operated with a device list) and that the FAM14 sends the telegrams to the network of the gateway, see [Hardware Requirements](#hardware-requirements).
