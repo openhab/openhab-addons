@@ -807,7 +807,13 @@ public class SamsungTvHandler extends BaseThingHandler implements RegistryListen
         servicesOnline = false;
         if (configuration.isWebsocketProtocol() && !configuration.getMacAddress().isBlank()) {
             if (getPowerState()) {
+                // TV was on in TV mode and the connection dropped, e.g. UPnP lost the TV while it stays on
                 valueReceived(POWER, UnDefType.UNDEF);
+            } else {
+                // TV is in standby or art mode (power already OFF). All (optionally stale) standby state must be
+                // cleared so artMode does not stay ON indefinitely. This happens e.g. on 2021 Frame TVs that do not
+                // send go_to_standby, so standby is only detected when the MediaRenderer disappears.
+                clearStandbyState();
             }
             if (getThing().getStatus() != ThingStatus.ONLINE) {
                 updateStatus(ThingStatus.ONLINE);
