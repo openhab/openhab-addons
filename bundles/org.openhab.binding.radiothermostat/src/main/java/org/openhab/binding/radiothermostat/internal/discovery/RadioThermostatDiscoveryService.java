@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.radiothermostat.internal.discovery;
 
+import static org.openhab.binding.radiothermostat.internal.RadioThermostatBindingConstants.*;
+
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.Inet4Address;
@@ -26,13 +28,13 @@ import java.net.URISyntaxException;
 import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 import java.util.Enumeration;
+import java.util.Locale;
 import java.util.Scanner;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.radiothermostat.internal.RadioThermostatBindingConstants;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
@@ -71,7 +73,7 @@ public class RadioThermostatDiscoveryService extends AbstractDiscoveryService {
     private @Nullable ScheduledFuture<?> scheduledFuture = null;
 
     public RadioThermostatDiscoveryService() {
-        super(RadioThermostatBindingConstants.SUPPORTED_THING_TYPES_UIDS, 30, true);
+        super(SUPPORTED_THING_TYPES_UIDS, 30, true);
     }
 
     @Override
@@ -214,7 +216,7 @@ public class RadioThermostatDiscoveryService extends AbstractDiscoveryService {
             if (pair.length != 2) {
                 continue;
             }
-            String key = pair[0].toLowerCase();
+            String key = pair[0].toLowerCase(Locale.ENGLISH);
             String value = pair[1].trim();
             logger.debug("key: {} value: {}.", key, value);
             if ("location".equals(key)) {
@@ -266,15 +268,13 @@ public class RadioThermostatDiscoveryService extends AbstractDiscoveryService {
 
         logger.debug("Discovery returned: {} uuid {} name {}", sysinfo, uuid, name);
 
-        ThingUID thingUid = new ThingUID(RadioThermostatBindingConstants.THING_TYPE_RTHERM, uuid);
+        ThingUID thingUid = new ThingUID(THING_TYPE_RTHERM, uuid);
 
         logger.debug("Got discovered device.");
 
         String label = String.format("Radio Thermostat (%s)", name);
-        result = DiscoveryResultBuilder.create(thingUid).withLabel(label)
-                .withRepresentationProperty(RadioThermostatBindingConstants.PROPERTY_IP)
-                .withProperty(RadioThermostatBindingConstants.PROPERTY_IP, ip)
-                .withProperty(RadioThermostatBindingConstants.PROPERTY_ISCT80, isCT80).build();
+        result = DiscoveryResultBuilder.create(thingUid).withLabel(label).withRepresentationProperty(PROPERTY_IP)
+                .withProperty(PROPERTY_IP, ip).withProperty(PROPERTY_ISCT80, isCT80).build();
         logger.debug("New Radio Thermostat discovered with ID=<{}>", uuid);
         this.thingDiscovered(result);
     }
