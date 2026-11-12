@@ -799,16 +799,13 @@ public class ApplianceHandler extends BaseThingHandler {
         if ("Power".equals(point.label())) {
             return point.writable() ? Set.of("Control", "Power") : Set.of("Measurement", "Power");
         }
-        if ("Current Temperature".equals(point.label())) {
-            return Set.of("Measurement", "Temperature");
-        }
-        if ("Target Temperature".equals(point.label()) || point.label().endsWith("Target Temperature")) {
+        if (point.label().endsWith("Target Temperature")) {
             return Set.of("Control", "Setpoint", "Temperature");
         }
-        if ("Cooler Temperature".equals(point.label()) || "Freezer Temperature".equals(point.label())) {
+        if (Set.of("Current Temperature", "Cooler Temperature", "Freezer Temperature").contains(point.label())) {
             return Set.of("Measurement", "Temperature");
         }
-        if ("Cooler Door".equals(point.label()) || "Freezer Door".equals(point.label())) {
+        if (point.label().endsWith(" Door")) {
             return Set.of("Measurement", "Contact");
         }
         if ("Power Consumption".equals(point.label())) {
