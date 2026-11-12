@@ -16,11 +16,15 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.regex.Pattern;
 
 import org.apache.commons.net.telnet.TelnetClient;
@@ -69,10 +73,22 @@ public class HwTelnetConnection implements Closeable {
         }
     }
 
+    /**
+     * Gives access to the socket, so that it can be closed while a write is blocked on it.
+     */
+    private static final class HwTelnetClient extends TelnetClient {
+        @Nullable
+        Socket socket() {
+            return _socket_;
+        }
+    }
+
     static final int DEFAULT_PORT = 23;
 
     private static final int CONNECT_TIMEOUT_MS = 10_000;
     private static final int LOGIN_TIMEOUT_MS = 10_000;
+    private static final int WRITE_TIMEOUT_MS = 10_000;
+    private static final int QUIT_TIMEOUT_MS = 1_000;
     private static final int BUFFER_SIZE = 1024;
     private static final int MAX_PENDING_CHARS = 4096;
 
@@ -98,8 +114,12 @@ public class HwTelnetConnection implements Closeable {
     private final @Nullable String password;
     private final Listener listener;
     private final String threadName;
+    private final ScheduledExecutorService scheduler;
 
-    private final TelnetClient client = new TelnetClient();
+    private final HwTelnetClient client = new HwTelnetClient();
+    // Serializes commands. A write blocks when the processor stops reading and the send buffer is full, so close()
+    // never takes this lock and every write is bounded by a timeout that closes the socket.
+    private final ReentrantLock writeLock = new ReentrantLock();
     private final CompletableFuture<Boolean> loginResult = new CompletableFuture<>();
     private final StringBuilder pending = new StringBuilder();
 
@@ -107,18 +127,21 @@ public class HwTelnetConnection implements Closeable {
     private volatile boolean closing;
     // Not final so that tests can shorten it
     volatile long loginTimeoutMs = LOGIN_TIMEOUT_MS;
+    volatile long writeTimeoutMs = WRITE_TIMEOUT_MS;
     private volatile long lastReceivedNanos = System.nanoTime();
     private volatile @Nullable OutputStream output;
+    private volatile @Nullable Socket socket;
     private @Nullable Thread readerThread;
 
     public HwTelnetConnection(String host, int port, @Nullable String user, @Nullable String password,
-            Listener listener, String threadName) {
+            Listener listener, String threadName, ScheduledExecutorService scheduler) {
         this.host = host;
         this.port = port;
         this.user = user;
         this.password = password;
         this.listener = listener;
         this.threadName = threadName;
+        this.scheduler = scheduler;
     }
 
     /**
@@ -131,6 +154,7 @@ public class HwTelnetConnection implements Closeable {
         logger.debug("Connecting to HomeWorks processor at {}:{}", host, port);
         client.setConnectTimeout(CONNECT_TIMEOUT_MS);
         client.connect(host, port);
+        socket = client.socket();
         client.setKeepAlive(true);
         output = client.getOutputStream();
         InputStream input = client.getInputStream();
@@ -171,8 +195,37 @@ public class HwTelnetConnection implements Closeable {
 
     /**
      * Sends a command line to the processor.
+     *
+     * @throws IOException if the connection is closed, or the processor did not accept the command in time, in which
+     *             case the connection is closed and the loss is reported to the listener
      */
-    public synchronized void send(String command) throws IOException {
+    public void send(String command) throws IOException {
+        writeLock.lock();
+        try {
+            write(command, writeTimeoutMs);
+        } finally {
+            writeLock.unlock();
+        }
+    }
+
+    /**
+     * Sends {@code QUIT} if no other command is being sent, waiting at most a short time for it, and then closes the
+     * connection.
+     */
+    public void quitAndClose() {
+        if (writeLock.tryLock()) {
+            try {
+                write("QUIT", QUIT_TIMEOUT_MS);
+            } catch (IOException e) {
+                logger.debug("Could not send QUIT before closing: {}", e.getMessage());
+            } finally {
+                writeLock.unlock();
+            }
+        }
+        close();
+    }
+
+    private void write(String command, long timeoutMs) throws IOException {
         OutputStream out = output;
         if (out == null || state == State.CLOSED) {
             throw new IOException("Connection is closed");
@@ -181,8 +234,18 @@ public class HwTelnetConnection implements Closeable {
             throw new IOException("Login is not complete");
         }
         logger.debug("Sending to HomeWorks processor: {}", command);
-        out.write((command + "\r\n").getBytes(StandardCharsets.US_ASCII));
-        out.flush();
+        ScheduledFuture<?> watchdog = scheduler.schedule(this::closeSocket, timeoutMs, TimeUnit.MILLISECONDS);
+        try {
+            out.write((command + "\r\n").getBytes(StandardCharsets.US_ASCII));
+            out.flush();
+        } catch (IOException e) {
+            if (watchdog.isDone() && !watchdog.isCancelled()) {
+                throw new IOException("Processor did not accept data for " + timeoutMs + " ms", e);
+            }
+            throw e;
+        } finally {
+            watchdog.cancel(false);
+        }
     }
 
     /**
@@ -200,10 +263,10 @@ public class HwTelnetConnection implements Closeable {
     @Override
     public void close() {
         closing = true;
-        synchronized (this) {
-            state = State.CLOSED;
-        }
+        state = State.CLOSED;
         loginResult.completeExceptionally(new IOException("Connection closed"));
+        // Makes a blocked write fail at once
+        closeSocket();
         try {
             client.disconnect();
         } catch (IOException e) {
@@ -215,6 +278,20 @@ public class HwTelnetConnection implements Closeable {
             thread.interrupt();
         }
         logger.debug("Closed telnet connection to {}:{}", host, port);
+    }
+
+    /**
+     * Closes the socket, which makes a blocked write fail and ends the reader.
+     */
+    private void closeSocket() {
+        Socket current = socket;
+        if (current != null) {
+            try {
+                current.close();
+            } catch (IOException e) {
+                logger.debug("Error closing socket to {}:{}: {}", host, port, e.getMessage());
+            }
+        }
     }
 
     private void readLoop(InputStream input) {
@@ -239,9 +316,7 @@ public class HwTelnetConnection implements Closeable {
         }
         if (!closing) {
             logger.debug("Telnet connection to {}:{} ended: {}", host, port, reason);
-            synchronized (this) {
-                state = State.CLOSED;
-            }
+            state = State.CLOSED;
             loginResult.completeExceptionally(new IOException(reason));
             listener.connectionClosed(this, reason);
         }
@@ -266,9 +341,7 @@ public class HwTelnetConnection implements Closeable {
             // A command prompt instead of a login prompt: the processor does not require a login.
             logger.debug("Received command prompt from {}:{} without a login prompt, no login is required", host, port);
             pending.setLength(0);
-            synchronized (this) {
-                state = State.READY;
-            }
+            state = State.READY;
             loginResult.complete(Boolean.TRUE);
         } else if (partial.length() > MAX_PENDING_CHARS) {
             logger.debug("Discarding {} characters of unterminated data from {}:{}", partial.length(), host, port);
@@ -291,9 +364,7 @@ public class HwTelnetConnection implements Closeable {
         if (current == State.AWAITING_LOGIN_RESULT) {
             if (LOGIN_SUCCESSFUL.matcher(rawLine).matches()) {
                 logger.debug("Login to {}:{} successful", host, port);
-                synchronized (this) {
-                    state = State.READY;
-                }
+                state = State.READY;
                 loginResult.complete(Boolean.TRUE);
                 return;
             } else if (LOGIN_INCORRECT.matcher(rawLine).matches()) {
@@ -323,9 +394,7 @@ public class HwTelnetConnection implements Closeable {
             loginResult.completeExceptionally(new HwLoginException("Processor requires a login"));
             return;
         }
-        synchronized (this) {
-            state = State.AWAITING_LOGIN_RESULT;
-        }
+        state = State.AWAITING_LOGIN_RESULT;
         // The password is never logged.
         logger.debug("Sending login for user {}", loginUser);
         String loginLine = loginPassword == null || loginPassword.isEmpty() ? loginUser

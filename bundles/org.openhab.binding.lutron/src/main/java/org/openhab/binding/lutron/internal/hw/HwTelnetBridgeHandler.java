@@ -80,7 +80,7 @@ public class HwTelnetBridgeHandler extends HwBridgeHandler implements HwTelnetCo
         closeConnection(false);
 
         HwTelnetConnection newConnection = new HwTelnetConnection(config.ipAddress, config.port, config.user,
-                config.password, this, "OH-binding-" + getThing().getUID() + "-HwTelnetReader");
+                config.password, this, "OH-binding-" + getThing().getUID() + "-HwTelnetReader", scheduler);
         // Not under a lock: open() waits for the login, and dispose() must not wait for it.
         connecting = newConnection;
         try {
@@ -187,13 +187,10 @@ public class HwTelnetBridgeHandler extends HwBridgeHandler implements HwTelnetCo
         }
         if (current != null) {
             if (sendQuit) {
-                try {
-                    current.send("QUIT");
-                } catch (IOException e) {
-                    logger.debug("Could not send QUIT before closing: {}", e.getMessage());
-                }
+                current.quitAndClose();
+            } else {
+                current.close();
             }
-            current.close();
         }
     }
 

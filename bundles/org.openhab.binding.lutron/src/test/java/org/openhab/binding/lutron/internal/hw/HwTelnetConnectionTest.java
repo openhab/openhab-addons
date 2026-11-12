@@ -17,6 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTimeoutPreemptively;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.BufferedReader;
@@ -27,10 +28,14 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -126,6 +131,7 @@ public class HwTelnetConnectionTest {
         }
     }
 
+    private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
     private @Nullable FakeProcessor processor;
     private @Nullable HwTelnetConnection connection;
 
@@ -144,6 +150,7 @@ public class HwTelnetConnectionTest {
         if (fake != null) {
             fake.close();
         }
+        scheduler.shutdownNow();
     }
 
     private FakeProcessor fake() {
@@ -155,7 +162,7 @@ public class HwTelnetConnectionTest {
     private HwTelnetConnection connect(@Nullable String user, @Nullable String password,
             HwTelnetConnection.Listener listener) {
         HwTelnetConnection created = new HwTelnetConnection("127.0.0.1", fake().port(), user, password, listener,
-                "test-reader");
+                "test-reader", scheduler);
         connection = created;
         return created;
     }
@@ -179,6 +186,99 @@ public class HwTelnetConnectionTest {
         opener.setDaemon(true);
         opener.start();
         return opener;
+    }
+
+    /**
+     * Opens the connection and completes the login, and returns the processor's view of what is sent to it.
+     */
+    private BufferedReader openLoggedIn(HwTelnetConnection conn) throws Exception {
+        BlockingQueue<Object> outcome = new LinkedBlockingQueue<>();
+        openInBackground(conn, outcome);
+        fake().send("LOGIN: ");
+        BufferedReader in = reader();
+        in.readLine();
+        fake().send("login successful\r\nLNET> ");
+        assertEquals("open", outcome.poll(WAIT_SECONDS, TimeUnit.SECONDS));
+        return in;
+    }
+
+    /**
+     * Sends long commands on a helper thread until a write fails. The fake processor does not read them, so the send
+     * buffers fill up and a write blocks. Returns once the writer has stopped making progress.
+     */
+    private BlockingQueue<IOException> sendUntilBlocked(HwTelnetConnection conn) throws InterruptedException {
+        BlockingQueue<IOException> failure = new LinkedBlockingQueue<>();
+        AtomicLong sent = new AtomicLong();
+        String command = "X".repeat(65_536);
+        Thread writer = new Thread(() -> {
+            try {
+                while (true) {
+                    conn.send(command);
+                    sent.incrementAndGet();
+                }
+            } catch (IOException e) {
+                failure.add(e);
+            }
+        }, "test-writer");
+        writer.setDaemon(true);
+        writer.start();
+
+        long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(WAIT_SECONDS);
+        long last = -1;
+        while (System.nanoTime() < deadline && failure.isEmpty()) {
+            long now = sent.get();
+            if (now == last) {
+                break;
+            }
+            last = now;
+            Thread.sleep(500);
+        }
+        return failure;
+    }
+
+    @Test
+    public void closeDoesNotWaitForABlockedWrite() throws Exception {
+        RecordingListener listener = new RecordingListener();
+        HwTelnetConnection conn = connect("lutron", "secret", listener);
+        // Longer than the bound on close() below, so that the write timeout cannot end the blocked write first
+        conn.writeTimeoutMs = TimeUnit.SECONDS.toMillis(40);
+        openLoggedIn(conn);
+        BlockingQueue<IOException> failure = sendUntilBlocked(conn);
+
+        // QUIT cannot be sent while the other write holds the connection, so it is skipped
+        assertTimeoutPreemptively(Duration.ofSeconds(WAIT_SECONDS), conn::quitAndClose);
+
+        assertNotNull(failure.poll(WAIT_SECONDS, TimeUnit.SECONDS), "the blocked write did not fail");
+        assertFalse(listener.closed.await(1, TimeUnit.SECONDS));
+    }
+
+    @Test
+    public void blockedWriteTimesOutAndIsReportedAsALostConnection() throws Exception {
+        RecordingListener listener = new RecordingListener();
+        HwTelnetConnection conn = connect("lutron", "secret", listener);
+        conn.writeTimeoutMs = 200;
+        openLoggedIn(conn);
+
+        BlockingQueue<IOException> failure = sendUntilBlocked(conn);
+
+        IOException e = failure.poll(WAIT_SECONDS, TimeUnit.SECONDS);
+        assertNotNull(e, "the blocked write did not time out");
+        assertTrue(String.valueOf(e.getMessage()).contains("did not accept data"), e.toString());
+        assertTrue(listener.closed.await(WAIT_SECONDS, TimeUnit.SECONDS), "the lost connection was not reported");
+        assertFalse(conn.isReady());
+    }
+
+    @Test
+    public void quitAndCloseSendsQuit() throws Exception {
+        RecordingListener listener = new RecordingListener();
+        HwTelnetConnection conn = connect("lutron", "secret", listener);
+        BufferedReader in = openLoggedIn(conn);
+
+        conn.quitAndClose();
+
+        assertEquals("QUIT", in.readLine());
+        assertNull(in.readLine());
+        assertFalse(listener.closed.await(1, TimeUnit.SECONDS));
     }
 
     @Test
