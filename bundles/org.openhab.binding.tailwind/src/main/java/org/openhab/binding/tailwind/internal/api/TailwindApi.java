@@ -63,7 +63,7 @@ public class TailwindApi {
         this.token = token;
     }
 
-    public TailwindStatus getStatus() throws TailwindException {
+    public TailwindStatus getStatus() throws TailwindException, InterruptedException {
         return send(VERSION_0_1, TYPE_GET, "dev_st", null);
     }
 
@@ -72,7 +72,7 @@ public class TailwindApi {
      *
      * @param hostAndPort the address, such as {@code 192.168.1.10:50904}
      */
-    public void setNotifyUrl(String hostAndPort) throws TailwindException {
+    public void setNotifyUrl(String hostAndPort) throws TailwindException, InterruptedException {
         JsonObject value = new JsonObject();
         value.addProperty("url", hostAndPort);
         value.addProperty("proto", "udp");
@@ -80,7 +80,7 @@ public class TailwindApi {
         send(VERSION_0_1, TYPE_SET, "notify_url", value);
     }
 
-    public void openDoor(int doorIndex) throws TailwindException {
+    public void openDoor(int doorIndex) throws TailwindException, InterruptedException {
         send(VERSION_0_1, TYPE_SET, "door_op", doorOperation(doorIndex, TailwindBindingConstants.DOOR_OPEN));
     }
 
@@ -89,34 +89,35 @@ public class TailwindApi {
      *
      * @param partialTimeMillis the time the door runs, in milliseconds
      */
-    public void openDoorPartially(int doorIndex, long partialTimeMillis) throws TailwindException {
+    public void openDoorPartially(int doorIndex, long partialTimeMillis)
+            throws TailwindException, InterruptedException {
         JsonObject value = doorOperation(doorIndex, TailwindBindingConstants.DOOR_OPEN);
         value.addProperty("partial_time", partialTimeMillis);
         send(VERSION_0_1, TYPE_SET, "door_op", value);
     }
 
-    public void closeDoor(int doorIndex) throws TailwindException {
+    public void closeDoor(int doorIndex) throws TailwindException, InterruptedException {
         send(VERSION_0_1, TYPE_SET, "door_op", doorOperation(doorIndex, TailwindBindingConstants.DOOR_CLOSE));
     }
 
     /**
      * @param brightness the brightness of the status LED, from 0 to 100
      */
-    public void setLedBrightness(int brightness) throws TailwindException {
+    public void setLedBrightness(int brightness) throws TailwindException, InterruptedException {
         JsonObject value = new JsonObject();
         value.addProperty("brightness", brightness);
         send(VERSION_0_1, TYPE_SET, "status_led", value);
     }
 
-    public void identify() throws TailwindException {
+    public void identify() throws TailwindException, InterruptedException {
         send(VERSION_0_2, TYPE_SET, "identify", null);
     }
 
-    public void reboot() throws TailwindException {
+    public void reboot() throws TailwindException, InterruptedException {
         send(VERSION_0_2, TYPE_SET, "reboot", null);
     }
 
-    public void setServerMonitor(boolean enable) throws TailwindException {
+    public void setServerMonitor(boolean enable) throws TailwindException, InterruptedException {
         JsonObject value = new JsonObject();
         value.addProperty("enable", enable);
         send(VERSION_0_2, TYPE_SET, "server_monitor", value);
@@ -130,7 +131,7 @@ public class TailwindApi {
     }
 
     private TailwindStatus send(String version, String type, String name, @Nullable JsonObject value)
-            throws TailwindException {
+            throws TailwindException, InterruptedException {
         JsonObject data = new JsonObject();
         data.addProperty("type", type);
         data.addProperty("name", name);
@@ -149,9 +150,6 @@ public class TailwindApi {
                     .send();
         } catch (TimeoutException | ExecutionException e) {
             throw new TailwindCommunicationException("No answer from the controller: " + e.getMessage(), e);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new TailwindCommunicationException("Interrupted while waiting for the controller", e);
         }
 
         TailwindStatus status = parse(response.getContentAsString());

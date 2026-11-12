@@ -175,6 +175,9 @@ public class TailwindHandler extends BaseThingHandler {
                 setOffline(e);
                 pollSoon();
             }
+        } catch (InterruptedException e) {
+            // The handler is being disposed
+            Thread.currentThread().interrupt();
         } catch (TailwindException e) {
             // For example a command for a door that is disabled
             logger.debug("Command {} for {} failed: {}", command, channelUID, e.getMessage());
@@ -182,7 +185,7 @@ public class TailwindHandler extends BaseThingHandler {
     }
 
     private void sendControllerCommand(TailwindApi currentApi, ChannelUID channelUID, String channel, Command command)
-            throws TailwindException {
+            throws TailwindException, InterruptedException {
         switch (channel) {
             case CHANNEL_LED_BRIGHTNESS -> {
                 PercentType brightness = command instanceof PercentType percent ? percent
@@ -211,7 +214,8 @@ public class TailwindHandler extends BaseThingHandler {
         }
     }
 
-    private void sendDoorCommand(TailwindApi currentApi, String group, Command command) throws TailwindException {
+    private void sendDoorCommand(TailwindApi currentApi, String group, Command command)
+            throws TailwindException, InterruptedException {
         int doorIndex = -1;
         for (int index = 0; index < MAX_DOORS; index++) {
             if ((GROUP_DOOR_PREFIX + (index + 1)).equals(group)) {
@@ -271,6 +275,10 @@ public class TailwindHandler extends BaseThingHandler {
             if (isCurrent(currentApi)) {
                 setOffline(e);
             }
+        } catch (InterruptedException e) {
+            // The handler is being disposed, so no further request is scheduled
+            Thread.currentThread().interrupt();
+            return;
         } catch (RuntimeException e) {
             logger.warn("Unexpected error while asking {} for its status", thing.getUID(), e);
         }
@@ -326,7 +334,8 @@ public class TailwindHandler extends BaseThingHandler {
      * This is repeated at every status request, so the controller gets the address back after it lost it, for example
      * when it rebooted.
      */
-    private void registerNotifications(TailwindApi currentApi, String address) throws TailwindException {
+    private void registerNotifications(TailwindApi currentApi, String address)
+            throws TailwindException, InterruptedException {
         int port;
         synchronized (this) {
             if (!isCurrent(currentApi)) {

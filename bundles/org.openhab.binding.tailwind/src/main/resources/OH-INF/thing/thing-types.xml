@@ -82,6 +82,10 @@
 		<label>Night Mode</label>
 		<description>ON when night mode is enabled in the TailWind app. In night mode the controller closes the doors
 			automatically during the hours set in the app.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -90,6 +94,10 @@
 		<label>LED Brightness</label>
 		<description>Brightness of the status LED of the controller</description>
 		<category>Light</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Brightness</tag>
+		</tags>
 		<state min="0" max="100" pattern="%d %%"/>
 	</channel-type>
 
