@@ -15,9 +15,10 @@ package org.openhab.binding.tailwind.internal.api;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.net.InetAddress;
 import java.net.SocketException;
 import java.nio.charset.StandardCharsets;
-import java.util.function.Consumer;
+import java.util.function.BiConsumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -36,14 +37,14 @@ public class TailwindUdpListener {
 
     private final Logger logger = LoggerFactory.getLogger(TailwindUdpListener.class);
     private final String threadName;
-    private final Consumer<String> consumer;
+    private final BiConsumer<InetAddress, String> consumer;
     private @Nullable DatagramSocket socket;
 
     /**
      * @param threadName name of the thread that receives the messages
-     * @param consumer called on that thread with the text of each message
+     * @param consumer called on that thread with the sender and the text of each message
      */
-    public TailwindUdpListener(String threadName, Consumer<String> consumer) {
+    public TailwindUdpListener(String threadName, BiConsumer<InetAddress, String> consumer) {
         this.threadName = threadName;
         this.consumer = consumer;
     }
@@ -100,7 +101,7 @@ public class TailwindUdpListener {
                 continue;
             }
             try {
-                consumer.accept(message);
+                consumer.accept(packet.getAddress(), message);
             } catch (RuntimeException e) {
                 logger.warn("Handling a status report failed", e);
             }

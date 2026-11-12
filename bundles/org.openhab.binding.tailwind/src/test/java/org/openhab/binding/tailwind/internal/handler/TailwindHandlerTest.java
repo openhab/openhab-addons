@@ -79,7 +79,7 @@ public class TailwindHandlerTest {
     private final NetworkAddressService networkAddressService = mock(NetworkAddressService.class);
     private final ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
 
-    private TailwindHandler handler = newHandler(Map.of("hostname", "192.168.1.50", "token", "123456"));
+    private TailwindHandler handler = newHandler(Map.of("hostname", "127.0.0.1", "token", "123456"));
 
     private TailwindHandler newHandler(Map<String, Object> config) {
         List<Channel> channels = new ArrayList<>();
@@ -125,11 +125,17 @@ public class TailwindHandlerTest {
     private void initializeOnline() {
         handler.initialize();
         verifyStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
-        // The states of the first status follow the status update
+        // The states of the first status follow the status update, and the registration for reports follows them
         verify(callback, timeout(WAIT_MS)).stateUpdated(eq(channel("door2", "disabled")), any());
+        awaitAtLeast("notify_url", 1);
     }
 
     private void awaitRequests(String name, int count) {
+        awaitAtLeast(name, count);
+        assertEquals(count, controller.requestsNamed(name).size(), name + " requests");
+    }
+
+    private void awaitAtLeast(String name, int count) {
         long deadline = System.nanoTime() + TimeUnit.MILLISECONDS.toNanos(WAIT_MS);
         while (controller.requestsNamed(name).size() < count && System.nanoTime() < deadline) {
             try {
@@ -139,7 +145,7 @@ public class TailwindHandlerTest {
                 break;
             }
         }
-        assertEquals(count, controller.requestsNamed(name).size(), name + " requests");
+        assertTrue(controller.requestsNamed(name).size() >= count, name + " requests");
     }
 
     private int notificationPort() {
@@ -209,7 +215,7 @@ public class TailwindHandlerTest {
         verifyStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
         assertEquals("@text/offline.conf-error.no-hostname", handler.getThing().getStatusInfo().getDescription());
 
-        handler = newHandler(Map.of("hostname", "192.168.1.50"));
+        handler = newHandler(Map.of("hostname", "127.0.0.1"));
         handler.initialize();
         assertEquals("@text/offline.conf-error.no-token", handler.getThing().getStatusInfo().getDescription());
         assertTrue(controller.requests.isEmpty());
@@ -249,7 +255,7 @@ public class TailwindHandlerTest {
 
     @Test
     public void doorCommandsAreSentWithThePartialOpenTimeOfTheDoor() {
-        handler = newHandler(Map.of("hostname", "192.168.1.50", "token", "123456", "door2PartialOpenTime", 4.5));
+        handler = newHandler(Map.of("hostname", "127.0.0.1", "token", "123456", "door2PartialOpenTime", 4.5));
         initializeOnline();
 
         handler.handleCommand(channel("door1", "control"), new StringType("close"));
@@ -300,6 +306,32 @@ public class TailwindHandlerTest {
 
         verify(callback, timeout(WAIT_MS)).stateUpdated(channel("controller", "led-brightness"), new PercentType(10));
         verify(callback, never()).stateUpdated(channel("door1", "status"), new StringType("close"));
+    }
+
+    @Test
+    public void statusReportsFromOtherAddressesAreIgnored() throws Exception {
+        // A controller address that the loopback interface is not
+        handler = newHandler(Map.of("hostname", "192.0.2.1", "token", "123456"));
+        initializeOnline();
+
+        sendReport(notificationPort(), FakeController.STATUS.replace("\"status\":\"open\"", "\"status\":\"close\""));
+
+        verify(callback, after(1000).never()).stateUpdated(channel("door1", "status"), new StringType("close"));
+    }
+
+    @Test
+    public void failedRegistrationForReportsKeepsTheThingOnline() {
+        controller.answerWith(received -> switch (received.name()) {
+            case "dev_st" -> new Answer(200, FakeController.STATUS);
+            case "notify_url" -> new Answer(200, "{\"result\":\"Fail\",\"info\":\"not supported\"}");
+            default -> new Answer(200, FakeController.OK);
+        });
+
+        initializeOnline();
+        awaitRequests("notify_url", 1);
+
+        verify(callback, after(500).never()).statusUpdated(any(),
+                argThat(info -> info.getStatus() == ThingStatus.OFFLINE));
     }
 
     @Test
