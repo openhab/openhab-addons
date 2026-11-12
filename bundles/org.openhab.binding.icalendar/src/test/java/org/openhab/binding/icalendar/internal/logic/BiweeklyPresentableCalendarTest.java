@@ -55,6 +55,7 @@ public class BiweeklyPresentableCalendarTest {
     private AbstractPresentableCalendar calendar_issue9647;
     private AbstractPresentableCalendar calendar_issue10808;
     private AbstractPresentableCalendar calendar_issue11084;
+    private AbstractPresentableCalendar calendar_issueXXXXX;
     private AbstractPresentableCalendar calendar_location;
 
     @BeforeEach
@@ -68,6 +69,8 @@ public class BiweeklyPresentableCalendarTest {
                 new FileInputStream("src/test/resources/test-issue10808.ics"));
         calendar_issue11084 = new BiweeklyPresentableCalendar(
                 new FileInputStream("src/test/resources/test-issue11084.ics"));
+        calendar_issueXXXXX = new BiweeklyPresentableCalendar(
+                new FileInputStream("src/test/resources/test-issueXXXXX.ics"));
         calendar_location = new BiweeklyPresentableCalendar(
                 new FileInputStream("src/test/resources/test-location.ics"));
     }
@@ -150,6 +153,14 @@ public class BiweeklyPresentableCalendarTest {
         Event currentEvent6 = calendar_issue11084.getCurrentEvent(Instant.parse("2021-08-16T16:45:05Z"));
         assertNotNull(currentEvent6);
         assertTrue("TEST_REPEATING_EVENT_3".contentEquals(currentEvent6.title));
+
+        Event currentEvent7 = calendar_issueXXXXX.getNextEvent(Instant.parse("2026-03-01T00:00:00Z"));
+        assertNotNull(currentEvent7);
+        assertEquals(Instant.parse("2026-03-10T03:55:00Z"), currentEvent7.start);
+
+        Event currentEvent8 = calendar_issueXXXXX.getNextEvent(Instant.parse("2026-04-01T00:00:00Z"));
+        assertNotNull(currentEvent8);
+        assertEquals(Instant.parse("2026-04-14T03:55:00Z"), currentEvent8.start);
     }
 
     /**
