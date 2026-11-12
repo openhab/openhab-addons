@@ -18,6 +18,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -487,6 +488,17 @@ class ResourcesTest {
         assertEquals(BigDecimal.valueOf(1800), stateDescription(delay).getStep());
         assertEquals(json("{\"x.com.samsung.da.delayEndTime\":\"01:30:00\"}"),
                 resources.command(delay, new QuantityType<>(5400, Units.SECOND)));
+        assertThrows(IllegalArgumentException.class,
+                () -> resources.command(delay, new QuantityType<>(5401, Units.SECOND)));
+        // The duration sent to the appliance must stay ASCII even on systems with non-ASCII digit locales.
+        Locale previous = Locale.getDefault(Locale.Category.FORMAT);
+        Locale.setDefault(Locale.Category.FORMAT, new Locale("ar", "EG"));
+        try {
+            assertEquals(json("{\"x.com.samsung.da.delayEndTime\":\"01:30:00\"}"),
+                    resources.command(delay, new QuantityType<>(5400, Units.SECOND)));
+        } finally {
+            Locale.setDefault(Locale.Category.FORMAT, previous);
+        }
         assertThrows(IllegalArgumentException.class,
                 () -> resources.command(delay, new QuantityType<>(5401, Units.SECOND)));
 

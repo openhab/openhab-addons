@@ -359,6 +359,13 @@ public class ApplianceHandler extends BaseThingHandler {
                     if (transport == null) {
                         logger.debug("Appliance {} opening transport to {}:{} (port 0 enables secure-port discovery)",
                                 getThing().getUID(), current.configuration.host, current.configuration.port);
+                        String pinnedFingerprint = current.certificateFingerprint;
+                        if (pinnedFingerprint != null && current.configuration.ownerPsk.isBlank()) {
+                            // A certificate pinned by the first authenticated connection must stay pinned across
+                            // reconnects; otherwise a different valid certificate with the same appliance UUID
+                            // could replace the learned fingerprint with its own.
+                            current.configuration.serverFingerprint = pinnedFingerprint;
+                        }
                         transport = transportFactory.create(current.configuration);
                         current.transport = transport;
                         if (!isActive(current)) {

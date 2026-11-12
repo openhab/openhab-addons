@@ -1027,6 +1027,21 @@ class ApplianceHandlerTest {
     }
 
     @Test
+    void automaticReconnectReusesTheLearnedCertificatePin() throws Exception {
+        transport.peerFingerprint = "ab".repeat(32);
+        initialize(Map.of("serverFingerprint", ""), Map.of());
+        awaitStatus(ThingStatus.ONLINE);
+        transport.failRead = true;
+        executor.firePoll();
+        awaitStatus(ThingStatus.OFFLINE);
+        transport.failRead = false;
+        transport.peerFingerprint = "cd".repeat(32);
+        executor.firePoll();
+        awaitStatus(ThingStatus.ONLINE);
+        assertEquals("ab".repeat(32), configurations.getLast().serverFingerprint);
+    }
+
+    @Test
     void failedPostIsNotRetriedAndScheduledReadsRecover() throws Exception {
         ApplianceHandler handler = initialize();
         awaitStatus(ThingStatus.ONLINE);

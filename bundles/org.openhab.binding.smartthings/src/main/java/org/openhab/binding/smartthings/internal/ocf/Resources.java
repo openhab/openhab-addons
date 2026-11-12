@@ -20,6 +20,7 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -805,7 +806,7 @@ public class Resources {
                 long totalMinutes = seconds.longValueExact() / 60;
                 long hours = totalMinutes / 60;
                 long minutes = totalMinutes % 60;
-                result.addProperty(DELAY_END_FIELD, String.format("%02d:%02d:00", hours, minutes));
+                result.addProperty(DELAY_END_FIELD, String.format(Locale.ROOT, "%02d:%02d:00", hours, minutes));
             } else {
                 throw new IllegalArgumentException("Command is not supported by this dryer resource");
             }
