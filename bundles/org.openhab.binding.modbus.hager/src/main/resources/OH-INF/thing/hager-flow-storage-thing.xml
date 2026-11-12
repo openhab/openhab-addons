@@ -9,6 +9,7 @@
 		</supported-bridge-type-refs>
 		<label>Hager Flow Storage</label>
 		<description>Battery storage of a Hager Flow system.</description>
+		<semantic-equipment-tag>Battery</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="status" typeId="hager-flow-storage-status"/>
 		</channel-groups>
@@ -22,6 +23,7 @@
 				<label>Refresh Interval</label>
 				<description>Interval the registers are polled in milliseconds.</description>
 				<default>5000</default>
+				<advanced>true</advanced>
 			</parameter>
 		</config-description>
 	</thing-type>

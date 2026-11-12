@@ -9,6 +9,7 @@
 		</supported-bridge-type-refs>
 		<label>Hager Flow EVSE</label>
 		<description>Charging station of a Hager Flow system with status, session and instantaneous charging values.</description>
+		<semantic-equipment-tag>EVSE</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="identity" typeId="hager-flow-evse-identity"/>
 			<channel-group id="general-status-and-configuration"
@@ -26,6 +27,7 @@
 				<label>Refresh Interval</label>
 				<description>Interval the registers are polled in milliseconds.</description>
 				<default>5000</default>
+				<advanced>true</advanced>
 			</parameter>
 		</config-description>
 	</thing-type>

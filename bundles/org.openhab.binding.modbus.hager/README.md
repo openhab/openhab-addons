@@ -1,23 +1,20 @@
 # Hager Flow Modbus Binding
 
 Integrates the Hager Flow energy management system into openHAB over Modbus.
-The Hager Flow XEM470 exposes several logical devices on one connection, each of them addressed by its own
-Modbus unit id: the energy manager itself, up to eight charging stations (EVSE), a battery storage, up to
-eight power meters and up to ten SG-Ready devices.
+The Hager Flow XEM470 exposes several logical devices on one connection, each of them addressed by its own Modbus unit id: the energy manager itself, up to eight charging stations (EVSE), a battery storage, up to eight power meters and up to ten SG-Ready devices.
 Every one of them is available as a Thing of this binding.
 
-Communication is handled by the [Modbus binding](https://www.openhab.org/addons/bindings/modbus/), so a
-Modbus TCP or Modbus serial bridge is required as the root of the Thing hierarchy.
+Communication is handled by the [Modbus binding](https://www.openhab.org/addons/bindings/modbus/), so a Modbus TCP or Modbus serial bridge is required as the root of the Thing hierarchy.
 
 ## Supported Things
 
-| Thing Type ID | Label | Description |
-|---------------|-------|-------------|
-| hager-flow-ems | Hager Flow EMS | Energy manager of a Hager Flow system, providing general settings and the summed measurements of all connected devices. |
-| hager-flow-evse | Hager Flow EVSE | Charging station of a Hager Flow system with status, session and instantaneous charging values. |
-| hager-flow-storage | Hager Flow Storage | Battery storage of a Hager Flow system. |
-| hager-flow-powermeter | Hager Flow PowerMeter | Power meter of a Hager Flow system with per phase power, voltage and energy values. |
-| hager-flow-sgready | Hager Flow SG-Ready Device | SG-Ready device of a Hager Flow system. |
+| Thing Type ID         | Label                      | Description                                                                                                             |
+|-----------------------|----------------------------|-------------------------------------------------------------------------------------------------------------------------|
+| hager-flow-ems        | Hager Flow EMS             | Energy manager of a Hager Flow system, providing general settings and the summed measurements of all connected devices. |
+| hager-flow-evse       | Hager Flow EVSE            | Charging station of a Hager Flow system with status, session and instantaneous charging values.                         |
+| hager-flow-storage    | Hager Flow Storage         | Battery storage of a Hager Flow system.                                                                                 |
+| hager-flow-powermeter | Hager Flow PowerMeter      | Power meter of a Hager Flow system with per phase power, voltage and energy values.                                     |
+| hager-flow-sgready    | Hager Flow SG-Ready Device | SG-Ready device of a Hager Flow system.                                                                                 |
 
 Thing hierarchy: the energy manager is a Bridge which is attached to the Modbus bridge.
 All other roles are Things which are attached to the energy manager.
@@ -31,28 +28,26 @@ The binding does not provide a discovery service, all Things have to be added ma
 ### Modbus Bridge
 
 Create a Modbus TCP or Modbus serial bridge which connects to the device.
-The unit id of the Modbus bridge itself is not used by this binding, because every Hager Flow Thing
-carries its own `slaveId`.
+The unit id of the Modbus bridge itself is not used by this binding, because every Hager Flow Thing carries its own `slaveId`.
 
 ### Hager Flow Thing Configuration
 
-| Parameter | Type | Required | Default | Description |
-|-----------|------|----------|---------|-------------|
-| slaveId | integer | yes | see below | Modbus unit id of the device |
-| refresh | integer | no | 5000 | Interval the registers are polled in milliseconds, at least 1000 |
+| Parameter | Type    | Required | Default   | Description                                                      |
+|-----------|---------|----------|-----------|------------------------------------------------------------------|
+| slaveId   | integer | yes      | see below | Modbus unit id of the device                                     |
+| refresh   | integer | no       | 5000      | Interval the registers are polled in milliseconds, at least 1000 |
 
 The valid range and the default of `slaveId` depend on the role:
 
-| Thing Type ID | Role | slaveId range | slaveId default |
-|---------------|------|---------------|-----------------|
-| hager-flow-ems | Hager Flow EMS | 0 - 247 | 0 |
-| hager-flow-evse | Hager Flow EVSE | 1 - 8 | 1 |
-| hager-flow-storage | Hager Flow Storage | 0 - 247 | 20 |
-| hager-flow-powermeter | Hager Flow PowerMeter | 30 - 37 | 30 |
-| hager-flow-sgready | Hager Flow SG-Ready Device | 50 - 59 | 50 |
+| Thing Type ID         | Role                       | slaveId range | slaveId default |
+|-----------------------|----------------------------|---------------|-----------------|
+| hager-flow-ems        | Hager Flow EMS             | 0 - 247       | 0               |
+| hager-flow-evse       | Hager Flow EVSE            | 1 - 8         | 1               |
+| hager-flow-storage    | Hager Flow Storage         | 0 - 247       | 20              |
+| hager-flow-powermeter | Hager Flow PowerMeter      | 30 - 37       | 30              |
+| hager-flow-sgready    | Hager Flow SG-Ready Device | 50 - 59       | 50              |
 
-The power meter with the default `slaveId` `30` is the `ROOT` meter at the grid connection and reports `ROOT` in the
-`powermeter-type` channel.
+The power meter with the default `slaveId` `30` is the `ROOT` meter at the grid connection and reports `ROOT` in the `powermeter-type` channel.
 Each Hager Flow system has to have such a base meter, additional power meters are optional.
 
 ## Channels
@@ -68,13 +63,13 @@ Static device identification values are provided as Thing properties, not as cha
 
 #### Device Identification (Thing properties)
 
-| Property          | Register | Content                |
-|-------------------|----------|------------------------|
-| `vendor`          | 0        | Vendor name            |
-| `modelId`         | 16       | Product code           |
-| `vendorUrl`       | 32       | Vendor URL             |
-| `serialNumber`    | 48       | Product serial number  |
-| `firmwareVersion` | 64       | Software version       |
+| Property          | Register | Content               |
+|-------------------|----------|-----------------------|
+| `vendor`          | 0        | Vendor name           |
+| `modelId`         | 16       | Product code          |
+| `vendorUrl`       | 32       | Vendor URL            |
+| `serialNumber`    | 48       | Product serial number |
+| `firmwareVersion` | 64       | Software version      |
 
 The values are read once when the Thing starts and refreshed on every reconnect.
 
@@ -113,41 +108,41 @@ The values are read once when the Thing starts and refreshed on every reconnect.
 
 #### Slave ID 0 - Root/Main Measurements (`root-main-measurements`)
 
-| Channel | Type | Access | Label | Description |
-|---------|------|--------|-------|-------------|
-| root-main-current-sum | Number:ElectricCurrent | RO | Root/Main Current (ΣL) |  |
-| root-main-current-l1 | Number:ElectricCurrent | RO | Root/Main Current (L1) |  |
-| root-main-current-l2 | Number:ElectricCurrent | RO | Root/Main Current (L2) |  |
-| root-main-current-l3 | Number:ElectricCurrent | RO | Root/Main Current (L3) |  |
-| root-main-power-sum | Number:Power | RO | Root/Main Power (ΣL) |  |
-| root-main-power-l1 | Number:Power | RO | Root/Main Power (L1) |  |
-| root-main-power-l2 | Number:Power | RO | Root/Main Power (L2) |  |
-| root-main-power-l3 | Number:Power | RO | Root/Main Power (L3) |  |
-| all-evcs-current-sum | Number:ElectricCurrent | RO | All EVCS Current (ΣL) |  |
-| all-evcs-power-sum | Number:Power | RO | All EVCS Power (ΣL) |  |
-| all-pv-current-sum | Number:ElectricCurrent | RO | All PV Current (ΣL) |  |
-| all-pv-power-sum | Number:Power | RO | All PV Power (ΣL) |  |
-| all-battery-current-sum | Number:ElectricCurrent | RO | All Battery Current (ΣL) |  |
-| all-battery-power-sum | Number:Power | RO | All Battery Power (ΣL) |  |
-| battery-state-of-charge | Number:Dimensionless | RO | Battery State of Charge |  |
-| all-house-consumption-current-sum | Number:ElectricCurrent | RO | All HouseConsumption Current (ΣL) |  |
-| all-house-consumption-power-sum | Number:Power | RO | All HouseConsumption Power (ΣL) |  |
-| autarky-last-hour | Number:Dimensionless | RO | Autarky (last hour) |  |
-| self-consumption-last-hour | Number:Dimensionless | RO | Self Consumption (last hour) |  |
-| margin-to-max-power-total | Number:Power | RO | MarginToMaxPowerTotal |  |
-| margin-to-max-power-l1 | Number:Power | RO | MarginToMaxPowerL1 |  |
-| margin-to-max-power-l2 | Number:Power | RO | MarginToMaxPowerL2 |  |
-| margin-to-max-power-l3 | Number:Power | RO | MarginToMaxPowerL3 |  |
+| Channel                           | Type                   | Access | Label                             |
+|-----------------------------------|------------------------|--------|-----------------------------------|
+| root-main-current-sum             | Number:ElectricCurrent | RO     | Root/Main Current (ΣL)            |
+| root-main-current-l1              | Number:ElectricCurrent | RO     | Root/Main Current (L1)            |
+| root-main-current-l2              | Number:ElectricCurrent | RO     | Root/Main Current (L2)            |
+| root-main-current-l3              | Number:ElectricCurrent | RO     | Root/Main Current (L3)            |
+| root-main-power-sum               | Number:Power           | RO     | Root/Main Power (ΣL)              |
+| root-main-power-l1                | Number:Power           | RO     | Root/Main Power (L1)              |
+| root-main-power-l2                | Number:Power           | RO     | Root/Main Power (L2)              |
+| root-main-power-l3                | Number:Power           | RO     | Root/Main Power (L3)              |
+| all-evcs-current-sum              | Number:ElectricCurrent | RO     | All EVCS Current (ΣL)             |
+| all-evcs-power-sum                | Number:Power           | RO     | All EVCS Power (ΣL)               |
+| all-pv-current-sum                | Number:ElectricCurrent | RO     | All PV Current (ΣL)               |
+| all-pv-power-sum                  | Number:Power           | RO     | All PV Power (ΣL)                 |
+| all-battery-current-sum           | Number:ElectricCurrent | RO     | All Battery Current (ΣL)          |
+| all-battery-power-sum             | Number:Power           | RO     | All Battery Power (ΣL)            |
+| battery-state-of-charge           | Number:Dimensionless   | RO     | Battery State of Charge           |
+| all-house-consumption-current-sum | Number:ElectricCurrent | RO     | All HouseConsumption Current (ΣL) |
+| all-house-consumption-power-sum   | Number:Power           | RO     | All HouseConsumption Power (ΣL)   |
+| autarky-last-hour                 | Number:Dimensionless   | RO     | Autarky (last hour)               |
+| self-consumption-last-hour        | Number:Dimensionless   | RO     | Self Consumption (last hour)      |
+| margin-to-max-power-total         | Number:Power           | RO     | MarginToMaxPowerTotal             |
+| margin-to-max-power-l1            | Number:Power           | RO     | MarginToMaxPowerL1                |
+| margin-to-max-power-l2            | Number:Power           | RO     | MarginToMaxPowerL2                |
+| margin-to-max-power-l3            | Number:Power           | RO     | MarginToMaxPowerL3                |
 
 ### Hager Flow EVSE (`hager-flow-evse`)
 
 #### Identity information (`identity`)
 
-| Channel               | Type   | Access | Label                 | Description                                                                                                                                                                         |
-|-----------------------|--------|--------|-----------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| evcs-number           | Number | RO     | EVCS Number           |                                                                                                                                                                                     |
-| evcs-type             | Number | RO     | EVCS Type             | State options: 0 = virtual, 1 = E3DC wallbox, 2 = Easy Connect wallbox, 4 = wallbox RSCP group (farming), 5 = Edison Connect wallbox, 6 = Multi Connect wallbox, 7 = Eebus Wallbox. |
-| evcs-name             | String | RO     | EVCS Name             | Friendly name set by User.                                                                                                                                                          |
+| Channel     | Type   | Access | Label       | Description                                                                                                                                                                         |
+|-------------|--------|--------|-------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| evcs-number | Number | RO     | EVCS Number |                                                                                                                                                                                     |
+| evcs-type   | Number | RO     | EVCS Type   | State options: 0 = virtual, 1 = E3DC wallbox, 2 = Easy Connect wallbox, 4 = wallbox RSCP group (farming), 5 = Edison Connect wallbox, 6 = Multi Connect wallbox, 7 = Eebus Wallbox. |
+| evcs-name   | String | RO     | EVCS Name   | Friendly name set by User.                                                                                                                                                          |
 
 `serialNumber` and `firmwareVersion` are provided as Thing properties.
 
@@ -184,44 +179,44 @@ The values are read once when the Thing starts and refreshed on every reconnect.
 
 #### Charging Session Information (`charging-session-information`)
 
-| Channel | Type | Access | Label | Description |
-|---------|------|--------|-------|-------------|
-| evcs-state-session-sun-mode-active | Switch | RO | Sun Mode | Charging from surplus photovoltaic power was active during the session. |
-| evcs-state-session-temperature-derating-active | Switch | RO | Temperature Derating | Charging power was reduced during the session because of high temperature. |
-| charging-session-id | String | RO | Charging Session ID |  |
-| charging-session-badge-id | String | RO | Charging Session Badge ID |  |
-| active-phase | Number | RO | Active Phase |  |
-| energy-session | Number:Energy | RO | Energy Session | Energy meter since start of current charging session, restarts at 0 Wh at each charging session. |
-| grid-energy-session | Number:Energy | RO | Grid Energy Session | Energy meter since start of current charging session, restarts at 0 Wh at each charging session. |
-| solar-energy-session | Number:Energy | RO | Solar Energy Session | Energy meter since start of current charging session, restarts at 0 Wh at each charging session. |
+| Channel                                        | Type          | Access | Label                     | Description                                                                                      |
+|------------------------------------------------|---------------|--------|---------------------------|--------------------------------------------------------------------------------------------------|
+| evcs-state-session-sun-mode-active             | Switch        | RO     | Sun Mode                  | Charging from surplus photovoltaic power was active during the session.                          |
+| evcs-state-session-temperature-derating-active | Switch        | RO     | Temperature Derating      | Charging power was reduced during the session because of high temperature.                       |
+| charging-session-id                            | String        | RO     | Charging Session ID       |                                                                                                  |
+| charging-session-badge-id                      | String        | RO     | Charging Session Badge ID |                                                                                                  |
+| active-phase                                   | Number        | RO     | Active Phase              |                                                                                                  |
+| energy-session                                 | Number:Energy | RO     | Energy Session            | Energy meter since start of current charging session, restarts at 0 Wh at each charging session. |
+| grid-energy-session                            | Number:Energy | RO     | Grid Energy Session       | Energy meter since start of current charging session, restarts at 0 Wh at each charging session. |
+| solar-energy-session                           | Number:Energy | RO     | Solar Energy Session      | Energy meter since start of current charging session, restarts at 0 Wh at each charging session. |
 
 #### Instantaneous Measures (`instantaneous-measures`)
 
-| Channel | Type | Access | Label | Description |
-|---------|------|--------|-------|-------------|
-| total-charging-current | Number:ElectricCurrent | RO | Total Charging Current |  |
-| charging-current-l1 | Number:ElectricCurrent | RO | Charging Current (L1) |  |
-| charging-current-l2 | Number:ElectricCurrent | RO | Charging Current (L2) |  |
-| charging-current-l3 | Number:ElectricCurrent | RO | Charging Current (L3) |  |
-| charging-power-total | Number:Power | RO | Charging Power Total |  |
-| charging-power-l1 | Number:Power | RO | Charging Power (L1) |  |
-| charging-power-l2 | Number:Power | RO | Charging Power (L2) |  |
-| charging-power-l3 | Number:Power | RO | Charging Power (L3) |  |
-| assign-power-total | Number:Power | RO | Assign Power Total |  |
-| assigned-power-l1 | Number:Power | RO | Assigned Power (L1) |  |
-| assigned-power-l2 | Number:Power | RO | Assigned Power (L2) |  |
-| assigned-power-l3 | Number:Power | RO | Assigned Power (L3) |  |
+| Channel                | Type                   | Access | Label                  |
+|------------------------|------------------------|--------|------------------------|
+| total-charging-current | Number:ElectricCurrent | RO     | Total Charging Current |
+| charging-current-l1    | Number:ElectricCurrent | RO     | Charging Current (L1)  |
+| charging-current-l2    | Number:ElectricCurrent | RO     | Charging Current (L2)  |
+| charging-current-l3    | Number:ElectricCurrent | RO     | Charging Current (L3)  |
+| charging-power-total   | Number:Power           | RO     | Charging Power Total   |
+| charging-power-l1      | Number:Power           | RO     | Charging Power (L1)    |
+| charging-power-l2      | Number:Power           | RO     | Charging Power (L2)    |
+| charging-power-l3      | Number:Power           | RO     | Charging Power (L3)    |
+| assign-power-total     | Number:Power           | RO     | Assign Power Total     |
+| assigned-power-l1      | Number:Power           | RO     | Assigned Power (L1)    |
+| assigned-power-l2      | Number:Power           | RO     | Assigned Power (L2)    |
+| assigned-power-l3      | Number:Power           | RO     | Assigned Power (L3)    |
 
 ### Hager Flow Storage (`hager-flow-storage`)
 
 #### Storage Status (`status`)
 
-| Channel | Type | Access | Label | Description |
-|---------|------|--------|-------|-------------|
-| storage-index | Number | RO | Storage Index |  |
-| storage-dcdc-status | Number | RO | Storage DCDC status |  |
-| storage-bat-status | Switch | RO | Storage Bat Status |  |
-| battery-state-of-charge | Number:Dimensionless | RO | Battery State of Charge |  |
+| Channel                 | Type                 | Access | Label                   |
+|-------------------------|----------------------|--------|-------------------------|
+| storage-index           | Number               | RO     | Storage Index           |
+| storage-dcdc-status     | Number               | RO     | Storage DCDC status     |
+| storage-bat-status      | Switch               | RO     | Storage Bat Status      |
+| battery-state-of-charge | Number:Dimensionless | RO     | Battery State of Charge |
 
 ### Hager Flow PowerMeter (`hager-flow-powermeter`)
 
@@ -235,39 +230,39 @@ The values are read once when the Thing starts and refreshed on every reconnect.
 
 #### PowerMeter Status (`status`)
 
-| Channel | Type | Access | Label | Description |
-|---------|------|--------|-------|-------------|
-| powermeter-connection-status | Switch | RO | PowerMeter Connection status |  |
-| powermeter-working-status | Switch | RO | PowerMeter Working status |  |
-| powermeter-in-service-status | Switch | RO | PowerMeter In service status |  |
-| powermeter-active-phase-l1-active | Switch | RO | Phase L1 | Phase L1 carries current. |
-| powermeter-active-phase-l2-active | Switch | RO | Phase L2 | Phase L2 carries current. |
-| powermeter-active-phase-l3-active | Switch | RO | Phase L3 | Phase L3 carries current. |
+| Channel                           | Type   | Access | Label                        | Description               |
+|-----------------------------------|--------|--------|------------------------------|---------------------------|
+| powermeter-connection-status      | Switch | RO     | PowerMeter Connection status |                           |
+| powermeter-working-status         | Switch | RO     | PowerMeter Working status    |                           |
+| powermeter-in-service-status      | Switch | RO     | PowerMeter In service status |                           |
+| powermeter-active-phase-l1-active | Switch | RO     | Phase L1                     | Phase L1 carries current. |
+| powermeter-active-phase-l2-active | Switch | RO     | Phase L2                     | Phase L2 carries current. |
+| powermeter-active-phase-l3-active | Switch | RO     | Phase L3                     | Phase L3 carries current. |
 
 #### PowerMeter Measurements (`measurements`)
 
-| Channel | Type | Access | Label | Description |
-|---------|------|--------|-------|-------------|
-| powermeter-power-sum | Number:Power | RO | PowerMeter Power (ΣL) |  |
-| powermeter-power-l1 | Number:Power | RO | PowerMeter Power (L1) |  |
-| powermeter-power-l2 | Number:Power | RO | PowerMeter Power (L2) |  |
-| powermeter-power-l3 | Number:Power | RO | PowerMeter Power (L3) |  |
-| powermeter-voltage-l1 | Number:ElectricPotential | RO | PowerMeter Voltage (L1) |  |
-| powermeter-voltage-l2 | Number:ElectricPotential | RO | PowerMeter Voltage (L2) |  |
-| powermeter-voltage-l3 | Number:ElectricPotential | RO | PowerMeter Voltage (L3) |  |
-| powermeter-energy-sum | Number:Energy | RO | PowerMeter Energy (ΣL) |  |
-| powermeter-energy-l1 | Number:Energy | RO | PowerMeter Energy (L1) |  |
-| powermeter-energy-l2 | Number:Energy | RO | PowerMeter Energy (L2) |  |
-| powermeter-energy-l3 | Number:Energy | RO | PowerMeter Energy (L3) |  |
+| Channel               | Type                     | Access | Label                   |
+|-----------------------|--------------------------|--------|-------------------------|
+| powermeter-power-sum  | Number:Power             | RO     | PowerMeter Power (ΣL)   |
+| powermeter-power-l1   | Number:Power             | RO     | PowerMeter Power (L1)   |
+| powermeter-power-l2   | Number:Power             | RO     | PowerMeter Power (L2)   |
+| powermeter-power-l3   | Number:Power             | RO     | PowerMeter Power (L3)   |
+| powermeter-voltage-l1 | Number:ElectricPotential | RO     | PowerMeter Voltage (L1) |
+| powermeter-voltage-l2 | Number:ElectricPotential | RO     | PowerMeter Voltage (L2) |
+| powermeter-voltage-l3 | Number:ElectricPotential | RO     | PowerMeter Voltage (L3) |
+| powermeter-energy-sum | Number:Energy            | RO     | PowerMeter Energy (ΣL)  |
+| powermeter-energy-l1  | Number:Energy            | RO     | PowerMeter Energy (L1)  |
+| powermeter-energy-l2  | Number:Energy            | RO     | PowerMeter Energy (L2)  |
+| powermeter-energy-l3  | Number:Energy            | RO     | PowerMeter Energy (L3)  |
 
 ### Hager Flow SG-Ready Device (`hager-flow-sgready`)
 
 #### SG-Ready Identity (`identity`)
 
-| Channel       | Type   | Access | Label         | Description |
-|---------------|--------|--------|---------------|-------------|
-| sgready-index | Number | RO     | SGReady index |             |
-| sgready-name  | String | RO     | SGReady Name  |             |
+| Channel       | Type   | Access | Label         |
+|---------------|--------|--------|---------------|
+| sgready-index | Number | RO     | SGReady index |
+| sgready-name  | String | RO     | SGReady Name  |
 
 #### SG-Ready Status (`status`)
 
@@ -313,59 +308,45 @@ Number:Energy          HagerFlow_MeterEnergy          "Meter Energy" { channel="
 Number                 HagerFlow_SgReadyState         "SG-Ready State" { channel="modbus:hager-flow-sgready:flow:ems:sgready1:status#sgready-status" }
 ```
 
-The channel UID is built from the binding, the Thing type, the bridge chain and the channel group:
-`modbus:<thingTypeId>:<modbusBridgeId>:<emsThingId>:<thingId>:<groupId>#<channelId>`
-for the subordinate roles and `modbus:hager-flow-ems:<modbusBridgeId>:<emsThingId>:<groupId>#<channelId>`
-for the energy manager itself.
+The channel UID is built from the binding, the Thing type, the bridge chain and the channel group: `modbus:<thingTypeId>:<modbusBridgeId>:<emsThingId>:<thingId>:<groupId>#<channelId>` for the subordinate roles and `modbus:hager-flow-ems:<modbusBridgeId>:<emsThingId>:<groupId>#<channelId>` for the energy manager itself.
 
 ### Battery Power Sign
 
-`all-battery-power-sum` (register `4138`) is positive while the battery charges and negative while it
-discharges.
-Setups which expect the opposite sign can invert the value with the `invert` profile of the Basic Profiles
-add-on:
+`all-battery-power-sum` (register `4138`) is positive while the battery charges and negative while it discharges.
+Setups which expect the opposite sign can invert the value with the `invert` profile of the Basic Profiles add-on:
 
 ```java
 Number:Power HagerFlow_BatteryPower "Battery Power" { channel="modbus:hager-flow-ems:flow:ems:root-main-measurements#all-battery-power-sum" [profile="basic-profiles:invert"] }
 ```
 
-The sign was observed on a running device, see
-[issue comment](https://github.com/openhab/openhab-addons/issues/18711#issuecomment-6086682236).
+The sign was observed on a running device, see [issue comment](https://github.com/openhab/openhab-addons/issues/18711#issuecomment-6086682236).
 
 ### PowerMeter Power and Energy Sign
 
 Power and energy of the power meter are signed.
 Negative power means feed-in into the grid and positive power means consumption.
-The energy counters are net values per phase, that is `import minus export` since commissioning, so they decrease
-while the system feeds in.
-`powermeter-energy-sum` (register `4164`) is the sum of the three phases and equals `powermeter-energy-l1` plus
-`powermeter-energy-l2` plus `powermeter-energy-l3`.
+The energy counters are net values per phase, that is `import minus export` since commissioning, so they decrease while the system feeds in.
+`powermeter-energy-sum` (register `4164`) is the sum of the three phases and equals `powermeter-energy-l1` plus `powermeter-energy-l2` plus `powermeter-energy-l3`.
 
-The signs were observed on a running device, see
-[issue comment](https://github.com/openhab/openhab-addons/issues/18711#issuecomment-6108071235).
+The signs were observed on a running device, see [issue comment](https://github.com/openhab/openhab-addons/issues/18711#issuecomment-6108071235).
 
 ## Known Limitations
 
-- The `Modbus Wallbox specific` registers (MAC address, IP address, gateway, subnet, DHCP, RFID, register
-  `5376` onwards) hold network and setup data and are not part of this binding.
-- The `Slave ID identity` registers (type and index of the Modbus unit) are only provided by the energy
-  manager Thing.
+- The `Modbus Wallbox specific` registers (MAC address, IP address, gateway, subnet, DHCP, RFID, register `5376` onwards) hold network and setup data and are not part of this binding.
+- The `Slave ID identity` registers (type and index of the Modbus unit) are only provided by the energy manager Thing.
   The same registers exist for every other unit id and can be read there with the Modbus binding directly.
 
 Deviations from the vendor table are listed [at the end of this document](#deviations-from-the-vendor-modbus-table).
 
 ## Source
 
-The register addresses, data types and value ranges are transcribed from the Hager Flow XEM470 Modbus table,
-document `01.Modbus.table.Flow` version `FR2_2024_03`.
-The vendor table is not publicly published; it was provided by Hager for
-[openhab-addons issue 18711](https://github.com/openhab/openhab-addons/issues/18711).
+The register addresses, data types and value ranges are transcribed from the Hager Flow XEM470 Modbus table, document `01.Modbus.table.Flow` version `FR2_2024_03`.
+The vendor table is not publicly published; it was provided by Hager for [openhab-addons issue 18711](https://github.com/openhab/openhab-addons/issues/18711).
 
 ## Deviations from the Vendor Modbus Table
 
 The following deviations from the vendor table are known and are handled deliberately by the binding.
-They were found while comparing the table with a running device for
-[openhab-addons issue 18711](https://github.com/openhab/openhab-addons/issues/18711) and while reviewing the table.
+They were found while comparing the table with a running device for [openhab-addons issue 18711](https://github.com/openhab/openhab-addons/issues/18711) and while reviewing the table.
 
 | Register                        | Documented                        | Binding handling                                     |
 |---------------------------------|-----------------------------------|------------------------------------------------------|
@@ -377,16 +358,12 @@ They were found while comparing the table with a running device for
 
 Two entries are not decoded because the table itself is incomplete:
 
-- `status` (register `4945`, charging session information) packs the `ALG Data` byte structure of Annex 1 of
-  the Modbus table.
+- `status` (register `4945`, charging session information) packs the `ALG Data` byte structure of Annex 1 of the Modbus table.
   Its sub fields are not documented in the table itself, so the register is not decoded.
 - `EVCS Charge Strategy daytime` and `EVCS Charge Strategy Minimum Energy Value` (registers `4634` and `4698`).
   The Modbus table declares a length of 64 words for seven weekday values, which does not divide evenly.
   A correct transcription needs clarification by the vendor.
 
 The incorrect `U32` documentation of the Root/Main power values was reported to the vendor.
-The All Battery Current address and the Storage DCDC status deviation were confirmed against a running device,
-see [issue comment](https://github.com/openhab/openhab-addons/issues/18711#issuecomment-6082009683) and
-[issue comment](https://github.com/openhab/openhab-addons/issues/18711#issuecomment-6108071235).
-The status codes of `SGReady working` are taken from the table itself, which declares the register as `bool` with
-the range `-3..0`.
+The All Battery Current address and the Storage DCDC status deviation were confirmed against a running device, see [issue comment](https://github.com/openhab/openhab-addons/issues/18711#issuecomment-6082009683) and [issue comment](https://github.com/openhab/openhab-addons/issues/18711#issuecomment-6108071235).
+The status codes of `SGReady working` are taken from the table itself, which declares the register as `bool` with the range `-3..0`.
