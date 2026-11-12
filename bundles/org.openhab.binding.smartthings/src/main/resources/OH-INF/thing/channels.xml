@@ -46,6 +46,12 @@
 		<description>Read-only energy measurement in the device-reported unit.</description>
 		<state readOnly="true"/>
 	</channel-type>
+	<channel-type id="contact-readonly">
+		<item-type>Contact</item-type>
+		<label>Contact State</label>
+		<description>Read-only open/closed contact state.</description>
+		<state readOnly="true"/>
+	</channel-type>
 	<channel-type id="time">
 		<item-type unitHint="s">Number:Time</item-type>
 		<label>Duration</label>

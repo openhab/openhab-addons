@@ -31,6 +31,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.ImperialUnits;
@@ -66,6 +67,15 @@ public class Resources {
     private static final String REMOTE_VS = "/remotectrl/vs/0";
     private static final String CURRENT = "/temperature/current/0";
     private static final String DESIRED = "/temperature/desired/0";
+    private static final String CURRENT_COOLER = "/temperature/current/cooler/0";
+    private static final String DESIRED_COOLER = "/temperature/desired/cooler/0";
+    private static final String CURRENT_FREEZER = "/temperature/current/freezer/0";
+    private static final String DESIRED_FREEZER = "/temperature/desired/freezer/0";
+    private static final String DOOR_COOLER = "/door/cooler/0";
+    private static final String DOOR_FREEZER = "/door/freezer/0";
+    private static final String REFRIGERATION = "/refrigeration/vs/0";
+    private static final String RAPID_COOL_FIELD = VENDOR + "rapidFridge";
+    private static final String RAPID_FREEZE_FIELD = VENDOR + "rapidFreezing";
     private static final String TEMPERATURE_CONTROL = "/temperature/control/vs/0";
     private static final String AIRFLOW = "/airflow/0";
     private static final String MODE = "/mode/vs/0";
@@ -102,6 +112,13 @@ public class Resources {
             new ResourceHandler(REMOTE_VS, ResourceKind.VENDOR_REMOTE, Set.of("remote-control")),
             new ResourceHandler(CURRENT, ResourceKind.TEMPERATURE, Set.of("current-temperature")),
             new ResourceHandler(DESIRED, ResourceKind.TEMPERATURE, Set.of("target-temperature")),
+            new ResourceHandler(CURRENT_COOLER, ResourceKind.TEMPERATURE, Set.of("cooler-current-temperature")),
+            new ResourceHandler(DESIRED_COOLER, ResourceKind.TEMPERATURE, Set.of("cooler-target-temperature")),
+            new ResourceHandler(CURRENT_FREEZER, ResourceKind.TEMPERATURE, Set.of("freezer-current-temperature")),
+            new ResourceHandler(DESIRED_FREEZER, ResourceKind.TEMPERATURE, Set.of("freezer-target-temperature")),
+            new ResourceHandler(DOOR_COOLER, ResourceKind.DOOR, Set.of("cooler-door")),
+            new ResourceHandler(DOOR_FREEZER, ResourceKind.DOOR, Set.of("freezer-door")),
+            new ResourceHandler(REFRIGERATION, ResourceKind.REFRIGERATION, Set.of("rapid-cool", "rapid-freeze")),
             new ResourceHandler(TEMPERATURES_VS, ResourceKind.VENDOR_TEMPERATURES,
                     Set.of("current-temperature", "target-temperature")),
             new ResourceHandler(ENERGY, ResourceKind.ENERGY, Set.of("power-consumption", "cumulative-energy")),
@@ -149,7 +166,9 @@ public class Resources {
         DRYER_SETTINGS,
         WATER,
         KIDS_LOCK,
-        AIRFLOW
+        AIRFLOW,
+        DOOR,
+        REFRIGERATION
     }
 
     private record ResourceHandler(String suffix, ResourceKind kind, Set<String> channelIds) {
@@ -250,6 +269,8 @@ public class Resources {
                     case WATER -> addWaterPoint(result, channelIds, href, rep);
                     case KIDS_LOCK -> addKidsLockPoint(result, channelIds, href, rep);
                     case AIRFLOW -> addAirflowPoint(result, channelIds, href, rep);
+                    case DOOR -> addDoorPoint(result, channelIds, href, rep);
+                    case REFRIGERATION -> addRefrigerationPoints(result, channelIds, href, rep);
                 }
             } else {
                 ModeResource mode = modeResource(href);
@@ -345,11 +366,41 @@ public class Resources {
         if (!rep.has("temperature")) {
             return;
         }
-        boolean desired = href.endsWith(DESIRED);
+        boolean desired = isDesiredTemperatureHref(href);
         if (standardTemperatureUsable(href) || !hasVendorTemperatureFallback(href, desired)) {
-            add(points, channelIds, href, "temperature", "Number:Temperature",
-                    desired ? "Target Temperature" : "Current Temperature", desired && bounds(href, rep) != null);
+            boolean writable = desired && bounds(href, rep) != null;
+            if (isFridgeTemperatureHref(href)) {
+                String id;
+                String label;
+                if (href.endsWith(CURRENT_COOLER)) {
+                    id = "cooler-current-temperature";
+                    label = "Cooler Temperature";
+                } else if (href.endsWith(DESIRED_COOLER)) {
+                    id = "cooler-target-temperature";
+                    label = "Cooler Target Temperature";
+                } else if (href.endsWith(CURRENT_FREEZER)) {
+                    id = "freezer-current-temperature";
+                    label = "Freezer Temperature";
+                } else {
+                    id = "freezer-target-temperature";
+                    label = "Freezer Target Temperature";
+                }
+                add(points, channelIds, new Point(id, href, "temperature", "Number:Temperature", label,
+                        description(href, "temperature", label), writable));
+            } else {
+                add(points, channelIds, href, "temperature", "Number:Temperature",
+                        desired ? "Target Temperature" : "Current Temperature", writable);
+            }
         }
+    }
+
+    private static boolean isFridgeTemperatureHref(String href) {
+        return href.endsWith(CURRENT_COOLER) || href.endsWith(DESIRED_COOLER) || href.endsWith(CURRENT_FREEZER)
+                || href.endsWith(DESIRED_FREEZER);
+    }
+
+    private static boolean isDesiredTemperatureHref(String href) {
+        return href.endsWith(DESIRED) || href.endsWith(DESIRED_COOLER) || href.endsWith(DESIRED_FREEZER);
     }
 
     private void addVendorTemperaturePoints(List<Point> points, @Nullable Set<String> channelIds, String href,
@@ -488,6 +539,31 @@ public class Resources {
         }
     }
 
+    private void addDoorPoint(List<Point> points, @Nullable Set<String> channelIds, String href, JsonObject rep) {
+        if (!rep.has("openState")) {
+            return;
+        }
+        boolean freezer = href.endsWith(DOOR_FREEZER);
+        String id = freezer ? "freezer-door" : "cooler-door";
+        String label = freezer ? "Freezer Door" : "Cooler Door";
+        add(points, channelIds,
+                new Point(id, href, "openState", "Contact", label, description(href, "openState", label), false));
+    }
+
+    private void addRefrigerationPoints(List<Point> points, @Nullable Set<String> channelIds, String href,
+            JsonObject rep) {
+        if (rep.has(RAPID_COOL_FIELD)) {
+            String label = "Power Cool";
+            add(points, channelIds, new Point("rapid-cool", href, RAPID_COOL_FIELD, "String", label,
+                    description(href, RAPID_COOL_FIELD, label), false));
+        }
+        if (rep.has(RAPID_FREEZE_FIELD)) {
+            String label = "Power Freeze";
+            add(points, channelIds, new Point("rapid-freeze", href, RAPID_FREEZE_FIELD, "String", label,
+                    description(href, RAPID_FREEZE_FIELD, label), false));
+        }
+    }
+
     /** Describes the same choices and limits used to validate commands, without guessing device capabilities. */
     synchronized StateDescriptionFragment stateDescription(Point point) {
         StateDescriptionFragmentBuilder builder = StateDescriptionFragmentBuilder.create()
@@ -495,7 +571,7 @@ public class Resources {
         JsonObject rep = resources.get(point.href());
         if (rep != null && "Number:Temperature".equals(point.itemType())) {
             JsonObject item = point.href().endsWith(TEMPERATURES_VS) ? temperatureItem(rep) : null;
-            Bounds limits = point.href().endsWith(DESIRED) ? bounds(point.href(), rep)
+            Bounds limits = isDesiredTemperatureHref(point.href()) ? bounds(point.href(), rep)
                     : item != null && point.field().equals(VENDOR + "desired") ? vendorBounds(item) : null;
             if (limits != null) {
                 builder.withMinimum(limits.minimum()).withMaximum(limits.maximum()).withStep(limits.increment());
@@ -559,6 +635,16 @@ public class Resources {
                     : point.href().endsWith(REMOTE_VS) ? vendorBoolean(value) : booleanValue(value);
             return enabled == null ? UnDefType.UNDEF : OnOffType.from(enabled);
         }
+        if ("Contact".equals(point.itemType())) {
+            String openState = string(value);
+            if ("Open".equals(openState)) {
+                return OpenClosedType.OPEN;
+            }
+            if ("Close".equals(openState)) {
+                return OpenClosedType.CLOSED;
+            }
+            return UnDefType.UNDEF;
+        }
         if ("Number:Temperature".equals(point.itemType())) {
             BigDecimal temperature = number(value);
             Unit<Temperature> unit = temperatureRep == null ? null
@@ -617,8 +703,11 @@ public class Resources {
         String suffix = href.endsWith(POWER) ? POWER
                 : href.endsWith(POWER_VS) ? POWER_VS
                         : href.endsWith(DESIRED) ? DESIRED
-                                : href.endsWith(TEMPERATURES_VS) ? TEMPERATURES_VS
-                                        : href.endsWith(AIRFLOW) ? AIRFLOW : modesSuffix == null ? MODE : modesSuffix;
+                                : href.endsWith(DESIRED_COOLER) ? DESIRED_COOLER
+                                        : href.endsWith(DESIRED_FREEZER) ? DESIRED_FREEZER
+                                                : href.endsWith(TEMPERATURES_VS) ? TEMPERATURES_VS
+                                                        : href.endsWith(AIRFLOW) ? AIRFLOW
+                                                                : modesSuffix == null ? MODE : modesSuffix;
         if (!remoteEnabled(prefix(href, suffix))) {
             throw new IllegalArgumentException("Remote Control is not explicitly enabled");
         }
@@ -629,7 +718,8 @@ public class Resources {
             } else {
                 result.addProperty(VENDOR + "power", onOff == OnOffType.ON ? "On" : "Off");
             }
-        } else if (DESIRED.equals(suffix) || TEMPERATURES_VS.equals(suffix)) {
+        } else if (DESIRED.equals(suffix) || DESIRED_COOLER.equals(suffix) || DESIRED_FREEZER.equals(suffix)
+                || TEMPERATURES_VS.equals(suffix)) {
             JsonObject rep = resources.get(href);
             JsonObject item = rep == null || !TEMPERATURES_VS.equals(suffix) ? null : temperatureItem(rep);
             Bounds limits = rep == null ? null : item == null ? bounds(href, rep) : vendorBounds(item);
@@ -961,7 +1051,7 @@ public class Resources {
                     + " reported by the appliance. Valid commands for supported air purifiers are integers from 0 to 4.";
         }
         Bounds limits = null;
-        if (rep != null && href.endsWith(DESIRED)) {
+        if (rep != null && isDesiredTemperatureHref(href)) {
             limits = bounds(href, rep);
         } else if (rep != null && href.endsWith(TEMPERATURES_VS) && (VENDOR + "desired").equals(field)) {
             JsonObject item = temperatureItem(rep);
@@ -1000,7 +1090,7 @@ public class Resources {
         if (!base.isEmpty() && (resources.containsKey(REMOTE) || resources.containsKey(REMOTE_VS))) {
             return remoteEnabled("");
         }
-        return deviceType(base, "oic.d.airconditioner");
+        return deviceType(base, "oic.d.airconditioner") || deviceType(base, "oic.d.refrigerator");
     }
 
     private boolean dryerSettingWritable(String href) {
@@ -1068,7 +1158,8 @@ public class Resources {
         BigDecimal maximum = number(range.getAsJsonArray().get(1));
         BigDecimal increment = number(rep.has("increment") ? rep.get("increment") : rep.get("step"));
         if (increment == null && !rep.has("increment") && !rep.has("step")) {
-            String base = prefix(href, DESIRED);
+            String base = href.endsWith(DESIRED_COOLER) ? prefix(href, DESIRED_COOLER)
+                    : href.endsWith(DESIRED_FREEZER) ? prefix(href, DESIRED_FREEZER) : prefix(href, DESIRED);
             JsonObject control = resources.get(base + TEMPERATURE_CONTROL);
             if (control == null) {
                 JsonObject vendor = resources.get(base + TEMPERATURES_VS);
@@ -1098,6 +1189,9 @@ public class Resources {
     }
 
     private boolean hasVendorTemperatureFallback(String href, boolean desired) {
+        if (isFridgeTemperatureHref(href)) {
+            return false;
+        }
         JsonObject rep = resources.get(prefix(href, desired ? DESIRED : CURRENT) + TEMPERATURES_VS);
         JsonObject item = rep == null ? null : temperatureItem(rep);
         return item != null && item.has(VENDOR + (desired ? "desired" : "current"));

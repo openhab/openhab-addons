@@ -29,6 +29,7 @@ public final class SmartThingsBindingConstants {
     public static final ThingTypeUID THING_TYPE_DEHUMIDIFIER = new ThingTypeUID(BINDING_ID, "dehumidifier");
     public static final ThingTypeUID THING_TYPE_DRYER = new ThingTypeUID(BINDING_ID, "dryer");
     public static final ThingTypeUID THING_TYPE_WASHER = new ThingTypeUID(BINDING_ID, "washer");
+    public static final ThingTypeUID THING_TYPE_REFRIGERATOR = new ThingTypeUID(BINDING_ID, "refrigerator");
 
     private SmartThingsBindingConstants() {
     }

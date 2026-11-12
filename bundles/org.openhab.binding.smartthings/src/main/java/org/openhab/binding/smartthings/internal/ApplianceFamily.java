@@ -29,7 +29,8 @@ public enum ApplianceFamily {
     AIR_PURIFIER(SmartThingsBindingConstants.THING_TYPE_AIR_PURIFIER, "oic.d.airpurifier"),
     DEHUMIDIFIER(SmartThingsBindingConstants.THING_TYPE_DEHUMIDIFIER, "oic.d.dehumidifier"),
     DRYER(SmartThingsBindingConstants.THING_TYPE_DRYER, "oic.d.dryer"),
-    WASHER(SmartThingsBindingConstants.THING_TYPE_WASHER, "oic.d.washer");
+    WASHER(SmartThingsBindingConstants.THING_TYPE_WASHER, "oic.d.washer"),
+    REFRIGERATOR(SmartThingsBindingConstants.THING_TYPE_REFRIGERATOR, "oic.d.refrigerator");
 
     private final ThingTypeUID thingTypeUID;
     private final String deviceType;

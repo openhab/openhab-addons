@@ -802,8 +802,14 @@ public class ApplianceHandler extends BaseThingHandler {
         if ("Current Temperature".equals(point.label())) {
             return Set.of("Measurement", "Temperature");
         }
-        if ("Target Temperature".equals(point.label())) {
+        if ("Target Temperature".equals(point.label()) || point.label().endsWith("Target Temperature")) {
             return Set.of("Control", "Setpoint", "Temperature");
+        }
+        if ("Cooler Temperature".equals(point.label()) || "Freezer Temperature".equals(point.label())) {
+            return Set.of("Measurement", "Temperature");
+        }
+        if ("Cooler Door".equals(point.label()) || "Freezer Door".equals(point.label())) {
+            return Set.of("Measurement", "Contact");
         }
         if ("Power Consumption".equals(point.label())) {
             return Set.of("Measurement", "Power");
@@ -847,6 +853,7 @@ public class ApplianceHandler extends BaseThingHandler {
                 for (Point point : points) {
                     String type = switch (point.itemType()) {
                         case "Switch" -> "switch";
+                        case "Contact" -> "contact";
                         case "Number" -> "number";
                         case "Number:Temperature" -> "temperature";
                         case "Number:Energy" -> "energy";
@@ -867,6 +874,7 @@ public class ApplianceHandler extends BaseThingHandler {
                             new ChannelTypeUID(BINDING_ID, type + "-readonly");
                         case "Number:Time" ->
                             new ChannelTypeUID(BINDING_ID, point.writable() ? type : type + "-readonly");
+                        case "Contact" -> new ChannelTypeUID(BINDING_ID, type + "-readonly");
                         default -> new ChannelTypeUID(BINDING_ID, point.advanced() ? type + "-readonly-advanced"
                                 : point.writable() ? type : type + "-readonly");
                     };

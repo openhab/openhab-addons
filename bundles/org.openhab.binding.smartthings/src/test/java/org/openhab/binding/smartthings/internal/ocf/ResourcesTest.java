@@ -888,6 +888,64 @@ class ResourcesTest {
         assertTrue(resources.points().stream().noneMatch(p -> p.href().equals("/diagnostic/vs/0")));
     }
 
+    @Test
+    void refrigeratorExposesCompartmentTemperaturesDoorsAndRapidModes() throws IOException {
+        resources.update("/temperature/current/cooler/0", json("{\"temperature\":1,\"units\":\"C\"}"));
+        resources.update("/temperature/desired/cooler/0", json("{\"temperature\":3,\"units\":\"C\",\"range\":[1,7]}"));
+        resources.update("/temperature/current/freezer/0", json("{\"temperature\":-23,\"units\":\"C\"}"));
+        resources.update("/temperature/desired/freezer/0",
+                json("{\"temperature\":-19,\"units\":\"C\",\"range\":[-23,-15]}"));
+        resources.update("/door/cooler/0", json("{\"openState\":\"Close\",\"openMode\":\"Auto\"}"));
+        resources.update("/door/freezer/0", json("{\"openState\":\"Close\",\"openMode\":\"Auto\"}"));
+        resources.update("/refrigeration/vs/0",
+                json("{\"x.com.samsung.da.rapidFridge\":\"Off\",\"x.com.samsung.da.rapidFreezing\":\"Off\"}"));
+
+        Point coolerCurrent = point("/temperature/current/cooler/0", "temperature");
+        assertEquals("cooler-current-temperature", coolerCurrent.id());
+        assertEquals("Cooler Temperature", coolerCurrent.label());
+        assertFalse(coolerCurrent.writable());
+        assertEquals(new QuantityType<>(1, SIUnits.CELSIUS), resources.state(coolerCurrent));
+
+        Point freezerTarget = point("/temperature/desired/freezer/0", "temperature");
+        assertEquals("freezer-target-temperature", freezerTarget.id());
+        assertEquals("Freezer Target Temperature", freezerTarget.label());
+        assertEquals(new QuantityType<>(-19, SIUnits.CELSIUS), resources.state(freezerTarget));
+
+        Point coolerDoor = point("/door/cooler/0", "openState");
+        assertEquals("cooler-door", coolerDoor.id());
+        assertEquals("Contact", coolerDoor.itemType());
+        assertFalse(coolerDoor.writable());
+        assertEquals(org.openhab.core.library.types.OpenClosedType.CLOSED, resources.state(coolerDoor));
+
+        assertEquals(new StringType("Off"),
+                resources.state(point("/refrigeration/vs/0", "x.com.samsung.da.rapidFridge")));
+        assertEquals("rapid-cool", point("/refrigeration/vs/0", "x.com.samsung.da.rapidFridge").id());
+        assertEquals("rapid-freeze", point("/refrigeration/vs/0", "x.com.samsung.da.rapidFreezing").id());
+
+        resources.update("/door/cooler/0", json("{\"openState\":\"Open\"}"));
+        assertEquals(org.openhab.core.library.types.OpenClosedType.OPEN,
+                resources.state(point("/door/cooler/0", "openState")));
+        resources.update("/door/cooler/0", json("{\"openState\":\"Ajar\"}"));
+        assertEquals(UnDefType.UNDEF, resources.state(point("/door/cooler/0", "openState")));
+
+        Point coolerTarget = point("/temperature/desired/cooler/0", "temperature");
+        assertFalse(coolerTarget.writable());
+        assertThrows(IllegalArgumentException.class, () -> resources.command(coolerTarget, new DecimalType(3)));
+    }
+
+    @Test
+    void refrigeratorSetpointsAreWritableOnlyWithAdvertisedBoundsAndPassRemoteGate() throws IOException {
+        resources.update("/oic/d", json("{\"rt\":[\"oic.d.refrigerator\"]}"));
+        resources.update("/temperature/desired/cooler/0",
+                json("{\"temperature\":3,\"units\":\"C\",\"range\":[1,7],\"increment\":1}"));
+        resources.update("/temperature/current/freezer/0", json("{\"temperature\":-23,\"units\":\"C\"}"));
+        Point coolerTarget = point("/temperature/desired/cooler/0", "temperature");
+        assertTrue(coolerTarget.writable());
+        assertEquals(json("{\"temperature\":4}"), resources.command(coolerTarget, new DecimalType(4)));
+        assertThrows(IllegalArgumentException.class, () -> resources.command(coolerTarget, new DecimalType(8)));
+        assertThrows(IllegalArgumentException.class, () -> resources.command(coolerTarget, new DecimalType(4.5)));
+    }
+
     private void vendorTemperatures() throws IOException {
         resources.update("/oic/d", json("{\"rt\":[\"oic.d.airconditioner\"]}"));
         resources.update("/temperatures/vs/0",

@@ -11,6 +11,7 @@ The Samsung SmartThings binding controls and monitors compatible Samsung applian
 | Dehumidifier | `smartthings:dehumidifier` | Samsung dehumidifier. |
 | Dryer | `smartthings:dryer` | Samsung dryer. |
 | Washer | `smartthings:washer` | Samsung washer. |
+| Refrigerator | `smartthings:refrigerator` | Samsung refrigerator or freezer. |
 | Generic appliance | `smartthings:appliance` | Diagnostic Thing for unclassified devices; it is not a general-purpose fallback for unsupported appliances. |
 
 Compatibility depends on appliance model and firmware. Discovery chooses a concrete Thing when the appliance advertises a supported OCF device type. Unclassified devices are excluded unless enabled in the binding configuration.
@@ -139,6 +140,22 @@ The tables list the channels declared by each concrete Thing. A declared channel
 | `progress` | Number:Dimensionless | y | Cycle progress from 0 to 100%. |
 | `water-consumption` | Number | y | Raw water-consumption reading; no unit is inferred. |
 | `kidslock` | String | y | Child-lock state. |
+
+### Refrigerator (`smartthings:refrigerator`)
+
+| Channel | Item type | Read-only | Description |
+|---|---|---|---|
+| `cooler-current-temperature` | Number:Temperature | y | Current temperature of the cooler (fridge) compartment. |
+| `cooler-target-temperature` | Number:Temperature | n | Target cooler temperature, subject to the reported range and increment. |
+| `freezer-current-temperature` | Number:Temperature | y | Current temperature of the freezer compartment. |
+| `freezer-target-temperature` | Number:Temperature | n | Target freezer temperature, subject to the reported range and increment. |
+| `cooler-door` | Contact | y | Whether the cooler (fridge) door is open or closed. |
+| `freezer-door` | Contact | y | Whether the freezer door is open or closed. |
+| `rapid-cool` | String | y | Power Cool (rapid fridge) state as `On` or `Off`. |
+| `rapid-freeze` | String | y | Power Freeze (rapid freezing) state as `On` or `Off`. |
+| `mode` | String | y | Operating mode reported by the refrigerator. |
+| `power-consumption` | Number:Power | y | Instantaneous electrical power. |
+| `cumulative-energy` | Number:Energy | y | Cumulative energy in the unit reported by the appliance. |
 
 The generic `smartthings:appliance` Thing is intended for diagnostics of unclassified devices; no channel list is provided for it.
 
