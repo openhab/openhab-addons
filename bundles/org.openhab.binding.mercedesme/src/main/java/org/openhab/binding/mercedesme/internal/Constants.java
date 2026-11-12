@@ -63,6 +63,7 @@ public class Constants {
     public static final String MB_KEY_CHARGE_STATUS = "chargingstatus";
     public static final String MB_KEY_CHARGE_ERROR = "chargingErrorDetails";
     public static final String MB_KEY_SERVICEINTERVALDAYS = "serviceintervaldays";
+    public static final String MB_KEY_SERVICEINTERVALDISTANCE = "serviceintervaldistance";
     public static final String MB_KEY_TIREWARNINGSRDK = "tirewarningsrdk";
     public static final String MB_KEY_STARTER_BATTERY_STATE = "starterBatteryState";
     public static final String MB_KEY_FLIP_WINDOW_STATUS = "flipWindowStatus";
@@ -214,6 +215,7 @@ public class Constants {
     public static final String OH_CHANNEL_RADIUS_FUEL = "radius-fuel";
     public static final String OH_CHANNEL_RADIUS_ELECTRIC = "radius-electric";
     public static final String OH_CHANNEL_SERVICE_DAYS = "service-days";
+    public static final String OH_CHANNEL_SERVICE_DISTANCE = "service-distance";
     public static final String OH_CHANNEL_TIRES_RDK = "tires-rdk";
     public static final String OH_CHANNEL_ENGINE = "engine";
     public static final String OH_CHANNEL_COOLANT_FLUID = "coolant-fluid";

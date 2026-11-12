@@ -374,6 +374,12 @@ States and controls are depending on your vehicle capabilities.
 | engine              | Switch               |  Engine Warning                 |     | X      | X          |
 | tires-rdk           | Number               |  Tire Pressure Warnings         | X   | X      | X          |
 | service-days        | Number               |  Next Service in _x_ days       | X   | X      | X          |
+| service-distance    | Number:Length        |  Next Service in _x_ km         | X   | X      | X          |
+
+**Note:** Vehicles report the service interval either in days or in kilometres, never both. The attribute
+the vehicle does not use is flagged as not available, so only one of the two channels carries a value while
+the other stays `UNDEF`. Check which channel is populated for your vehicle and use that one - or evaluate
+both in a rule.
 
 #### Starter Battery Mapping
 
@@ -838,6 +844,7 @@ Switch                  EQA_BrakeLiningWear         {channel="mercedesme:bev:471
 Switch                  EQA_WashWater               {channel="mercedesme:bev:4711:eqa:service#wash-water" }
 Number                  EQA_TirePressureWarn        {channel="mercedesme:bev:4711:eqa:service#tires-rdk" }
 Number                  EQA_ServiceInDays           {channel="mercedesme:bev:4711:eqa:service#service-days" }
+Number:Length           EQA_ServiceInDistance       {channel="mercedesme:bev:4711:eqa:service#service-distance", stateDescription=" " [pattern="%d %unit%", readOnly=true], unit="km"}
 
 Number:Length           EQA_Mileage                 {channel="mercedesme:bev:4711:eqa:range#mileage", stateDescription=" " [pattern="%d %unit%", readOnly=true], unit="km"}
 Number:Length           EQA_Range                   {channel="mercedesme:bev:4711:eqa:range#range-electric", stateDescription=" " [pattern="%d %unit%", readOnly=true], unit="km"}

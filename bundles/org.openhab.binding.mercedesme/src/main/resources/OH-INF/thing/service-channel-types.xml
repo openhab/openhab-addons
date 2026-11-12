@@ -86,4 +86,9 @@
 		<state readOnly="true">
 		</state>
 	</channel-type>
+	<channel-type id="service-distance">
+		<item-type unitHint="km,mi">Number:Length</item-type>
+		<label>Service in Distance</label>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
 </thing:thing-descriptions>

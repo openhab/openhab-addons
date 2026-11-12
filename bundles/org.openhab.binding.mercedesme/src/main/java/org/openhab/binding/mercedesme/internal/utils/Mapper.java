@@ -101,12 +101,42 @@ public class Mapper {
         defaultTemperatureUnit = temperatureUnit;
     }
 
+    private static boolean isServiceInterval(String key) {
+        return MB_KEY_SERVICEINTERVALDAYS.equals(key) || MB_KEY_SERVICEINTERVALDISTANCE.equals(key);
+    }
+
+    /**
+     * Converts an attribute of a partial update to a channel state.
+     *
+     * @param key - MB_KEY_* attribute key
+     * @param value - attribute value
+     * @return channel state map, {@link #INVALID_MAP} if the channel shall not be updated
+     */
     public static ChannelStateMap getChannelStateMap(String key, VehicleAttributeStatus value) {
+        return getChannelStateMap(key, value, false);
+    }
+
+    /**
+     * Converts an attribute to a channel state.
+     *
+     * @param key - MB_KEY_* attribute key
+     * @param value - attribute value
+     * @param fullUpdate - true if the attribute belongs to a full update snapshot, false for partial updates
+     * @return channel state map, {@link #INVALID_MAP} if the channel shall not be updated
+     */
+    public static ChannelStateMap getChannelStateMap(String key, VehicleAttributeStatus value, boolean fullUpdate) {
         if (CHANNELS.isEmpty()) {
             init();
         }
         String[] ch = CHANNELS.get(key);
         if (ch != null) {
+            // The service interval is reported either in days or in kilometres, depending on the vehicle; the
+            // attribute the car does not use is flagged VALUE_INVALID / nil. A full update is the authoritative
+            // snapshot and clears the channel, while a partial update only announces changes - an invalid value
+            // there is no proof that the last known value is gone, so keep it.
+            if (isServiceInterval(key) && Utils.isNil(value)) {
+                return fullUpdate ? new ChannelStateMap(ch[0], ch[1], UnDefType.UNDEF) : INVALID_MAP;
+            }
             State state;
             UOMObserver observer = null;
             // in scope for the Average-speed case below, which reuses it
@@ -120,6 +150,7 @@ public class Mapper {
                 case MB_KEY_DISTANCE_START:
                 case MB_KEY_DISTANCE_RESET:
                 case MB_KEY_ECOSCORE_BONUS:
+                case MB_KEY_SERVICEINTERVALDISTANCE:
                     // unit lookup runs unconditionally - a unit may be present while the value is nil
                     lengthUnit = defaultLengthUnit;
                     if (value.hasDistanceUnit()) {
@@ -135,6 +166,12 @@ public class Mapper {
                         state = UnDefType.UNDEF;
                     } else {
                         state = QuantityType.valueOf(Utils.getDouble(value), lengthUnit);
+                    }
+                    if (MB_KEY_SERVICEINTERVALDISTANCE.equals(key)) {
+                        // no unit observer: its pattern contains the literal unit reported by the vehicle and would
+                        // override the %unit% pattern of the channel type, breaking items using another unit
+                        INSTANCE.logger.trace("Service interval distance {} -> {}", ch[0], state);
+                        return new ChannelStateMap(ch[0], ch[1], state);
                     }
                     return new ChannelStateMap(ch[0], ch[1], state, observer);
 
@@ -690,6 +727,9 @@ public class Mapper {
         if (vsu.hasOdo()) {
             putInt64Distance(attributes, MB_KEY_ODO, vsu.getOdo());
         }
+        if (vsu.hasServiceintervaldistance()) {
+            putInt64Distance(attributes, MB_KEY_SERVICEINTERVALDISTANCE, vsu.getServiceintervaldistance());
+        }
         if (vsu.hasDistanceReset()) {
             putDoubleDistance(attributes, MB_KEY_DISTANCE_RESET, vsu.getDistanceReset());
         }
@@ -995,6 +1035,7 @@ public class Mapper {
         CHANNELS.put(MB_KEY_WARNINGENGINELIGHT, new String[] { OH_CHANNEL_ENGINE, GROUP_SERVICE });
         CHANNELS.put(MB_KEY_TIREWARNINGSRDK, new String[] { OH_CHANNEL_TIRES_RDK, GROUP_SERVICE });
         CHANNELS.put(MB_KEY_SERVICEINTERVALDAYS, new String[] { OH_CHANNEL_SERVICE_DAYS, GROUP_SERVICE });
+        CHANNELS.put(MB_KEY_SERVICEINTERVALDISTANCE, new String[] { OH_CHANNEL_SERVICE_DISTANCE, GROUP_SERVICE });
 
         CHANNELS.put(MB_KEY_ODO, new String[] { OH_CHANNEL_MILEAGE, GROUP_RANGE });
         CHANNELS.put(MB_KEY_RANGEELECTRIC, new String[] { OH_CHANNEL_RANGE_ELECTRIC, GROUP_RANGE });
