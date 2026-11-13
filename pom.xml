@@ -629,7 +629,16 @@ Import-Package: \
                   <version>3.9.6</version>
                 </requireMavenVersion>
                 <requireJavaVersion>
+                  <version>[21.0,22.0),[25.0,26.0)</version>
+                </requireJavaVersion>
+                <requireJavaVersion>
                   <version>[21.0,22.0)</version>
+                  <message>++ WARNING ++ WARNING ++ WARNING ++ WARNING ++ WARNING ++ WARNING ++
+JDK 25 compiler is in use, generating Java 21 bytecode.
+This is not officially supported.
+Consider using JDK 21 for building and testing.
+++ WARNING ++ WARNING ++ WARNING ++ WARNING ++ WARNING ++ WARNING ++</message>
+                  <level>WARN</level>
                 </requireJavaVersion>
               </rules>
             </configuration>
