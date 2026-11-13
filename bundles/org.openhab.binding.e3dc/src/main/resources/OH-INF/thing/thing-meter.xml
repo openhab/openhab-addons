@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="e3dc"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="power-meter">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+		</supported-bridge-type-refs>
+
+		<label>E3/DC Power Meter</label>
+		<description>Values of a power meter connected to the E3/DC home power plant.</description>
+
+		<channel-groups>
+			<channel-group id="meter" typeId="meter"/>
+		</channel-groups>
+
+		<config-description>
+			<parameter name="meterIndex" type="integer" min="0" max="7" required="true">
+				<label>Meter Index</label>
+				<description>Zero based index of the power meter on the device.</description>
+				<default>0</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+</thing:thing-descriptions>

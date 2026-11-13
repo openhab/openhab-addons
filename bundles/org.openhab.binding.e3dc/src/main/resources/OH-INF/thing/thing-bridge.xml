@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="e3dc"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="bridge">
+		<label>E3/DC Connection</label>
+		<description>Connection to an E3/DC home power plant over the RSCP interface.</description>
+
+		<channel-groups>
+			<channel-group id="statistics" typeId="statistics-group"/>
+		</channel-groups>
+
+		<config-description>
+			<parameter name="host" type="text" required="true">
+				<context>network-address</context>
+				<label>Host</label>
+				<description>Host name or IP address of the E3/DC device.</description>
+			</parameter>
+			<parameter name="port" type="integer" min="1" max="65535">
+				<label>Port</label>
+				<description>TCP port of the RSCP interface.</description>
+				<default>5033</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="userName" type="text" required="true">
+				<label>User Name</label>
+				<description>User name of the E3/DC account, usually the e-mail address.</description>
+			</parameter>
+			<parameter name="password" type="text" required="true">
+				<context>password</context>
+				<label>Password</label>
+				<description>Password of the E3/DC account.</description>
+			</parameter>
+			<parameter name="rscpPassword" type="text" required="true">
+				<context>password</context>
+				<label>RSCP Password</label>
+				<description>Encryption key configured on the device under Main Page, Personalize, User profile, RSCP password.
+					Unrelated to the two passwords above.</description>
+			</parameter>
+			<parameter name="refreshInterval" type="integer" unit="s" min="1" max="300">
+				<label>Refresh Interval</label>
+				<description>Interval the device is polled in seconds, between 1 and 300.</description>
+				<default>5</default>
+			</parameter>
+			<parameter name="historyInterval" type="integer" unit="min" min="1" max="1440">
+				<label>History Interval</label>
+				<description>Interval the history counters (day, week, month, year) are requested in minutes, between 1 and
+					1440.
+					Never shorter than the refresh interval.</description>
+				<default>15</default>
+			</parameter>
+			<parameter name="timeout" type="integer" unit="s" min="1" max="60">
+				<label>Timeout</label>
+				<description>Timeout for a single request in seconds, between 1 and 60.</description>
+				<default>10</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+</thing:thing-descriptions>

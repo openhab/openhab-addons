@@ -1,0 +1,263 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="e3dc"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-type id="inverter-ac-frequency">
+		<item-type>Number:Frequency</item-type>
+		<label>AC Frequency</label>
+		<description>Grid frequency measured by the inverter</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Frequency</tag>
+		</tags>
+		<state pattern="%.3f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="inverter-on-grid">
+		<item-type>Switch</item-type>
+		<label>On Grid</label>
+		<description>Whether the inverter is connected to the grid</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="inverter-string-count">
+		<item-type>Number</item-type>
+		<label>String Count</label>
+		<description>Number of photovoltaic strings in use</description>
+		<state pattern="%d" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="inverter-ac-power-l1">
+		<item-type>Number:Power</item-type>
+		<label>AC Power L1</label>
+		<description>Alternating current power of phase L1</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="inverter-ac-power-l2">
+		<item-type>Number:Power</item-type>
+		<label>AC Power L2</label>
+		<description>Alternating current power of phase L2</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="inverter-ac-power-l3">
+		<item-type>Number:Power</item-type>
+		<label>AC Power L3</label>
+		<description>Alternating current power of phase L3</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="inverter-ac-voltage-l1">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>AC Voltage L1</label>
+		<description>Alternating current voltage of phase L1</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Voltage</tag>
+		</tags>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="inverter-ac-voltage-l2">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>AC Voltage L2</label>
+		<description>Alternating current voltage of phase L2</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Voltage</tag>
+		</tags>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="inverter-ac-voltage-l3">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>AC Voltage L3</label>
+		<description>Alternating current voltage of phase L3</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Voltage</tag>
+		</tags>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="inverter-ac-current-l1">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>AC Current L1</label>
+		<description>Alternating current of phase L1</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Current</tag>
+		</tags>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="inverter-ac-current-l2">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>AC Current L2</label>
+		<description>Alternating current of phase L2</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Current</tag>
+		</tags>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="inverter-ac-current-l3">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>AC Current L3</label>
+		<description>Alternating current of phase L3</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Current</tag>
+		</tags>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="inverter-apparent-power-l1">
+		<item-type>Number:Power</item-type>
+		<label>Apparent Power L1</label>
+		<description>Apparent power of phase L1</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="inverter-apparent-power-l2">
+		<item-type>Number:Power</item-type>
+		<label>Apparent Power L2</label>
+		<description>Apparent power of phase L2</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="inverter-apparent-power-l3">
+		<item-type>Number:Power</item-type>
+		<label>Apparent Power L3</label>
+		<description>Apparent power of phase L3</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="inverter-reactive-power-l1">
+		<item-type>Number:Power</item-type>
+		<label>Reactive Power L1</label>
+		<description>Reactive power of phase L1</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="inverter-reactive-power-l2">
+		<item-type>Number:Power</item-type>
+		<label>Reactive Power L2</label>
+		<description>Reactive power of phase L2</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="inverter-reactive-power-l3">
+		<item-type>Number:Power</item-type>
+		<label>Reactive Power L3</label>
+		<description>Reactive power of phase L3</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="inverter-energy-total-l1">
+		<item-type>Number:Energy</item-type>
+		<label>Total Energy L1</label>
+		<description>Energy produced on phase L1 since commissioning</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="inverter-energy-total-l2">
+		<item-type>Number:Energy</item-type>
+		<label>Total Energy L2</label>
+		<description>Energy produced on phase L2 since commissioning</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="inverter-energy-total-l3">
+		<item-type>Number:Energy</item-type>
+		<label>Total Energy L3</label>
+		<description>Energy produced on phase L3 since commissioning</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="inverter-energy-day-l1">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Today L1</label>
+		<description>Energy produced on phase L1 today</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="inverter-energy-day-l2">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Today L2</label>
+		<description>Energy produced on phase L2 today</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="inverter-energy-day-l3">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Today L3</label>
+		<description>Energy produced on phase L3 today</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+</thing:thing-descriptions>

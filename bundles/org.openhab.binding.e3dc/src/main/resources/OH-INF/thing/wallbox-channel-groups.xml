@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="e3dc"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-group-type id="wallbox-status-control">
+		<label>Status &amp; Control</label>
+		<channels>
+			<channel id="plugged" typeId="status-plugged"/>
+			<channel id="locked" typeId="status-locked"/>
+			<channel id="charging" typeId="status-charging"/>
+			<channel id="key-state" typeId="status-key-state"/>
+			<channel id="soc" typeId="status-soc"/>
+			<channel id="sun-mode" typeId="control-sun-mode"/>
+			<channel id="suspended" typeId="control-suspended"/>
+			<channel id="toggle" typeId="control-toggle"/>
+			<channel id="min-charge-current" typeId="settings-min-charge-current"/>
+			<channel id="max-charge-current" typeId="settings-max-charge-current"/>
+			<channel id="number-phases" typeId="settings-number-phases"/>
+			<channel id="auto-phase-switch" typeId="settings-auto-phase-switch"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="wallbox-session">
+		<label>Session</label>
+		<channels>
+			<channel id="power-l1" typeId="power-l1"/>
+			<channel id="power-l2" typeId="power-l2"/>
+			<channel id="power-l3" typeId="power-l3"/>
+			<channel id="phase-l1" typeId="last-charge-phase-l1"/>
+			<channel id="energy-l1" typeId="last-charge-energy-l1"/>
+			<channel id="phase-l2" typeId="last-charge-phase-l2"/>
+			<channel id="energy-l2" typeId="last-charge-energy-l2"/>
+			<channel id="phase-l3" typeId="last-charge-phase-l3"/>
+			<channel id="energy-l3" typeId="last-charge-energy-l3"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="wallbox-counters">
+		<label>Counters</label>
+		<channels>
+			<channel id="total" typeId="counters-total"/>
+			<channel id="solar" typeId="counters-solar"/>
+		</channels>
+	</channel-group-type>
+
+</thing:thing-descriptions>

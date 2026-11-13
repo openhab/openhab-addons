@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="e3dc"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-group-type id="history">
+		<label>History</label>
+		<description>Energy counters and shares of the completed day, the last seven days, the current month and the current
+			year</description>
+		<channels>
+			<channel id="day-solar" typeId="history-day-solar"/>
+			<channel id="day-house" typeId="history-day-house"/>
+			<channel id="day-grid-in" typeId="history-day-grid-in"/>
+			<channel id="day-grid-out" typeId="history-day-grid-out"/>
+			<channel id="day-battery-in" typeId="history-day-battery-in"/>
+			<channel id="day-battery-out" typeId="history-day-battery-out"/>
+			<channel id="day-autarky" typeId="history-day-autarky"/>
+			<channel id="day-consumed-production" typeId="history-day-consumed-production"/>
+			<channel id="week-solar" typeId="history-week-solar"/>
+			<channel id="week-house" typeId="history-week-house"/>
+			<channel id="week-grid-in" typeId="history-week-grid-in"/>
+			<channel id="week-grid-out" typeId="history-week-grid-out"/>
+			<channel id="week-battery-in" typeId="history-week-battery-in"/>
+			<channel id="week-battery-out" typeId="history-week-battery-out"/>
+			<channel id="week-autarky" typeId="history-week-autarky"/>
+			<channel id="week-consumed-production" typeId="history-week-consumed-production"/>
+			<channel id="month-solar" typeId="history-month-solar"/>
+			<channel id="month-house" typeId="history-month-house"/>
+			<channel id="month-grid-in" typeId="history-month-grid-in"/>
+			<channel id="month-grid-out" typeId="history-month-grid-out"/>
+			<channel id="month-battery-in" typeId="history-month-battery-in"/>
+			<channel id="month-battery-out" typeId="history-month-battery-out"/>
+			<channel id="month-autarky" typeId="history-month-autarky"/>
+			<channel id="month-consumed-production" typeId="history-month-consumed-production"/>
+			<channel id="year-solar" typeId="history-year-solar"/>
+			<channel id="year-house" typeId="history-year-house"/>
+			<channel id="year-grid-in" typeId="history-year-grid-in"/>
+			<channel id="year-grid-out" typeId="history-year-grid-out"/>
+			<channel id="year-battery-in" typeId="history-year-battery-in"/>
+			<channel id="year-battery-out" typeId="history-year-battery-out"/>
+			<channel id="year-autarky" typeId="history-year-autarky"/>
+			<channel id="year-consumed-production" typeId="history-year-consumed-production"/>
+		</channels>
+	</channel-group-type>
+
+</thing:thing-descriptions>
