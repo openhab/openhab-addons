@@ -14,6 +14,7 @@ package org.openhab.binding.lgthinq.lgservices.model.devices.washerdryer;
 
 import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.*;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -99,6 +100,14 @@ public abstract class AbstractWasherDryerCapabilityFactory extends AbstractCapab
         // ----------------------------
         wdCap.setDryLevel(newFeatureDefinition(getDryLevelNodeName(), monitorValueNode));
         wdCap.setSoilWash(newFeatureDefinition(getSoilWashFeatureNodeName(), monitorValueNode));
+        Map<String, FeatureDefinition> optionFeatures = new HashMap<>();
+        for (String featureName : getOptionFeatureNodeNames()) {
+            FeatureDefinition optionFd = newFeatureDefinition(featureName, monitorValueNode);
+            if (!FeatureDefinition.NULL_DEFINITION.equals(optionFd)) {
+                optionFeatures.put(featureName, optionFd);
+            }
+        }
+        wdCap.setOptionFeatures(optionFeatures);
         wdCap.setCommandsDefinition(getCommandsDefinition(rootNode));
         // DoorLock feat can be in alone (v2) or inside Options node (v1)
         if (monitorValueNode.get(getDoorLockFeatureNodeName()) != null
@@ -132,6 +141,8 @@ public abstract class AbstractWasherDryerCapabilityFactory extends AbstractCapab
     }
 
     protected abstract String getDryLevelNodeName();
+
+    protected abstract Collection<String> getOptionFeatureNodeNames();
 
     protected abstract String getNotSelectedCourseKey();
 

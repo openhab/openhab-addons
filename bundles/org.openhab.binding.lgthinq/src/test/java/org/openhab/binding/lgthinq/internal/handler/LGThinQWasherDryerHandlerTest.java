@@ -98,6 +98,15 @@ class LGThinQWasherDryerHandlerTest {
     }
 
     @Test
+    void selectedOptionsOverrideSnapshot() throws JsonProcessingException {
+        Map<String, Object> data = LGThinQWasherDryerHandler.buildRemoteStartData(cap, cmdTemplate, snapshot("COTTON"),
+                "COTTON", Map.of("steam", "STEAM_OFF", "preWash", "PREWASH_ON"), false);
+
+        assertEquals("STEAM_OFF", data.get("steam"));
+        assertEquals("PREWASH_ON", data.get("preWash"));
+    }
+
+    @Test
     void keepsMachineSettingsForCurrentCourse() throws JsonProcessingException {
         Map<String, Object> data = LGThinQWasherDryerHandler.buildRemoteStartData(cap, cmdTemplate, snapshot("COTTON"),
                 "COTTON", Map.of(), false);
@@ -166,6 +175,15 @@ class LGThinQWasherDryerHandlerTest {
 
         assertEquals("INITIAL_BIT_ON", waiting.get("initialBit"));
         assertEquals("INITIAL_BIT_OFF", paused.get("initialBit"));
+    }
+
+    @Test
+    void optionChannelsMapToFeatures() {
+        assertEquals("steam", LGThinQWasherDryerHandler.getOptionFeature("rs-steam"));
+        assertEquals("dryLevel", LGThinQWasherDryerHandler.getOptionFeature("rs-dry-level"));
+        assertEquals("steamSoftener", LGThinQWasherDryerHandler.getOptionFeature("rs-steam-softener"));
+        assertNull(LGThinQWasherDryerHandler.getOptionFeature("rs-spin"));
+        assertNull(LGThinQWasherDryerHandler.getOptionFeature("steam"));
     }
 
     @Test

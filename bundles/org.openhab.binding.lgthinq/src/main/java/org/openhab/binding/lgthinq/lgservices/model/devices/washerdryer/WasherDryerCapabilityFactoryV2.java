@@ -12,7 +12,10 @@
  */
 package org.openhab.binding.lgthinq.lgservices.model.devices.washerdryer;
 
+import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.WMD_OPTION_CHANNELS;
+
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -277,5 +280,10 @@ public class WasherDryerCapabilityFactoryV2 extends AbstractWasherDryerCapabilit
     @Override
     protected String getDryLevelNodeName() {
         return "dryLevel";
+    }
+
+    @Override
+    protected Collection<String> getOptionFeatureNodeNames() {
+        return WMD_OPTION_CHANNELS.keySet();
     }
 }
