@@ -55,6 +55,7 @@
 			<tag>Status</tag>
 			<tag>OpenState</tag>
 		</tags>
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="datetime">

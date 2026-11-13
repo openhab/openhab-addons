@@ -167,10 +167,7 @@ public class RFXComRfyMessage extends RFXComDeviceMessageImpl<RFXComRfyMessage.S
     public void convertFromState(String channelId, Type type) throws RFXComUnsupportedChannelException {
         switch (channelId) {
             case CHANNEL_SHUTTER:
-                if (type instanceof OpenClosedType) {
-                    this.command = (type == OpenClosedType.CLOSED ? Commands.DOWN : Commands.UP);
-
-                } else if (type instanceof UpDownType) {
+                if (type instanceof UpDownType) {
                     this.command = (type == UpDownType.DOWN ? Commands.DOWN : Commands.UP);
 
                 } else if (type instanceof StopMoveType) {
@@ -199,10 +196,7 @@ public class RFXComRfyMessage extends RFXComDeviceMessageImpl<RFXComRfyMessage.S
                 break;
 
             case CHANNEL_VENETIAN_BLIND:
-                if (type instanceof OpenClosedType) {
-                    this.command = (type == OpenClosedType.CLOSED ? Commands.DOWN_SHORT : Commands.UP_SHORT);
-
-                } else if (type instanceof OnOffType) {
+                if (type instanceof OnOffType) {
                     this.command = (type == OnOffType.ON ? Commands.DOWN_SHORT : Commands.UP_SHORT);
 
                 } else if (type instanceof IncreaseDecreaseType) {

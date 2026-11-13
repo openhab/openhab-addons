@@ -30,6 +30,7 @@ import org.openhab.binding.rfxcom.internal.config.RFXComDeviceConfiguration;
 import org.openhab.binding.rfxcom.internal.config.RFXComLighting4DeviceConfiguration;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComInvalidStateException;
+import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedChannelException;
 import org.openhab.binding.rfxcom.internal.messages.RFXComBaseMessage.PacketType;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.library.types.OnOffType;
@@ -37,6 +38,7 @@ import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.types.Command;
+import org.openhab.core.types.State;
 import org.openhab.core.util.HexUtils;
 
 /**
@@ -156,7 +158,7 @@ public class RFXComLighting4MessageTest {
 
     private void testRxWithConfig(String hexMsg, RFXComDeviceConfiguration config,
             RFXComLighting4Message.SubType subType, String deviceId, @Nullable Integer pulse, int commandByte,
-            @Nullable Integer seqNbr, int signalLevel, ChannelUID channelUID, Command command) throws RFXComException {
+            @Nullable Integer seqNbr, int signalLevel, ChannelUID channelUID, State state) throws RFXComException {
         RFXComLighting4Message msg = (RFXComLighting4Message) RFXComMessageFactoryImpl.INSTANCE
                 .createMessage(HexUtils.hexToBytes(hexMsg));
         assertEquals(deviceId, msg.getDeviceId(), "Sensor Id");
@@ -166,7 +168,7 @@ public class RFXComLighting4MessageTest {
         }
         assertEquals(signalLevel, RFXComTestHelper.getActualIntValue(msg, config, CHANNEL_SIGNAL_LEVEL),
                 "Signal Level");
-        assertEquals(command, msg.convertToCommand(channelUID.getId(), config, null));
+        assertEquals(state, msg.convertToState(channelUID.getId(), config, null));
 
         byte[] decoded = msg.decodeMessage();
 
@@ -255,10 +257,6 @@ public class RFXComLighting4MessageTest {
 
         testTxWithConfig(config, commandChannelUID, OnOffType.ON, PT2262, "703696", 417, 0xA, "09130000ABCD0A01A100");
         testTxWithConfig(config, commandChannelUID, OnOffType.OFF, PT2262, "703696", 417, 0xB, "09130000ABCD0B01A100");
-        testTxWithConfig(config, contactChannelUID, OpenClosedType.OPEN, PT2262, "703696", 417, 0xC,
-                "09130000ABCD0C01A100");
-        testTxWithConfig(config, contactChannelUID, OpenClosedType.CLOSED, PT2262, "703696", 417, 0xD,
-                "09130000ABCD0D01A100");
     }
 
     @Test
@@ -273,10 +271,20 @@ public class RFXComLighting4MessageTest {
         testTxWithConfig(config, commandChannelUID, OnOffType.ON, PT2262, "703696", 417, 0xA, "09130000ABCD0A01A100");
         // Falls back on deprecated behaviour, but should be assertThrows in the future.
         testTxWithConfig(config, commandChannelUID, OnOffType.OFF, PT2262, "703696", 417, 0x4, "09130000ABCD0401A100");
-        testTxWithConfig(config, contactChannelUID, OpenClosedType.OPEN, PT2262, "703696", 417, 0xC,
-                "09130000ABCD0C01A100");
-        assertThrows(RFXComInvalidStateException.class, () -> testTxWithConfig(config, contactChannelUID,
-                OpenClosedType.CLOSED, PT2262, "703696", 417, 0xD, "??"));
+    }
+
+    @Test
+    void testContactChannelRejectsCommands() {
+        RFXComLighting4DeviceConfiguration config = new RFXComLighting4DeviceConfiguration();
+        config.deviceId = "703696";
+        config.subType = PT2262.toString();
+        assertThrows(RFXComUnsupportedChannelException.class, () -> RFXComMessageFactoryImpl.INSTANCE
+                .createMessage(LIGHTING4, config, contactChannelUID, OnOffType.ON));
+        RFXComLighting4Message message = new RFXComLighting4Message();
+        assertThrows(RFXComUnsupportedChannelException.class,
+                () -> message.convertFromState(CHANNEL_CONTACT, OpenClosedType.OPEN));
+        assertThrows(RFXComUnsupportedChannelException.class,
+                () -> message.convertFromState(CHANNEL_CONTACT, OpenClosedType.CLOSED));
     }
 
     @Test
@@ -290,9 +298,5 @@ public class RFXComLighting4MessageTest {
         testTxWithConfig(config, commandChannelUID, OnOffType.ON, PT2262, "703696", 417, 0x1, "09130000ABCD0101A100");
         // Falls back on deprecated behaviour, but should be assertThrows in the future.
         testTxWithConfig(config, commandChannelUID, OnOffType.OFF, PT2262, "703696", 417, 0x4, "09130000ABCD0401A100");
-        assertThrows(RFXComInvalidStateException.class, () -> testTxWithConfig(config, contactChannelUID,
-                OpenClosedType.OPEN, PT2262, "703696", 417, 0xC, "??"));
-        assertThrows(RFXComInvalidStateException.class, () -> testTxWithConfig(config, contactChannelUID,
-                OpenClosedType.CLOSED, PT2262, "703696", 417, 0xD, "??"));
     }
 }
