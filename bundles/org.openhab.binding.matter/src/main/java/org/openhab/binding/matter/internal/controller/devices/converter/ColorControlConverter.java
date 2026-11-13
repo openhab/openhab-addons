@@ -33,6 +33,7 @@ import org.openhab.binding.matter.internal.client.dto.cluster.gen.OnOffCluster;
 import org.openhab.binding.matter.internal.client.dto.ws.AttributeChangedMessage;
 import org.openhab.binding.matter.internal.handler.MatterBaseThingHandler;
 import org.openhab.binding.matter.internal.util.ValueUtils;
+import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
@@ -91,10 +92,13 @@ public class ColorControlConverter extends GenericConverter<ColorControlCluster>
     private ColorUpdateState hueSaturationState = ColorUpdateState.READY;
     private ColorUpdateState xyState = ColorUpdateState.READY;
     private ColorUpdateState colorTemperatureState = ColorUpdateState.READY;
+    private LevelTransition transition;
+    private boolean ownsTransition = true;
 
     public ColorControlConverter(ColorControlCluster cluster, MatterBaseThingHandler handler, int endpointNumber,
             String labelPrefix) {
         super(cluster, handler, endpointNumber, labelPrefix);
+        transition = new LevelTransition(handler, endpointNumber);
         supportsHue = initializingCluster.featureMap.hueSaturation;
         supportsColorTemperature = initializingCluster.featureMap.colorTemperature;
         // The inovelli device for example sends a max mireds of 65279 (matter spec max value), which means they did not
@@ -134,18 +138,19 @@ public class ColorControlConverter extends GenericConverter<ColorControlCluster>
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        Integer channelTransition = transition.channelTransitionTime(channelUID);
         if (command instanceof HSBType color) {
             PercentType brightness = color.getBrightness();
             if (brightness.equals(PercentType.ZERO)) {
                 handler.sendClusterCommand(endpointNumber, OnOffCluster.CLUSTER_NAME, OnOffCluster.off());
             } else {
-                ClusterCommand levelCommand = LevelControlCluster.moveToLevelWithOnOff(
-                        ValueUtils.percentToLevel(brightness), 0, levelControlOptionsBitmap, levelControlOptionsBitmap);
+                ClusterCommand levelCommand = LevelTransition.moveToLevelWithOnOff(
+                        ValueUtils.percentToLevel(brightness), channelTransition, levelControlOptionsBitmap);
                 handler.sendClusterCommand(endpointNumber, LevelControlCluster.CLUSTER_NAME, levelCommand);
                 if (supportsHue) {
-                    changeColorHueSaturation(color);
+                    changeColorHueSaturation(color, channelTransition);
                 } else {
-                    changeColorXY(color);
+                    changeColorXY(color, channelTransition);
                 }
             }
         } else if (command instanceof OnOffType onOffType) {
@@ -156,16 +161,16 @@ public class ColorControlConverter extends GenericConverter<ColorControlCluster>
                 if (!lastOnOff) {
                     handler.sendClusterCommand(endpointNumber, OnOffCluster.CLUSTER_NAME, OnOffCluster.on());
                 }
-                ClusterCommand tempCommand = ColorControlCluster
-                        .moveToColorTemperature(percentTypeToMireds(percentType), 0, EXECUTE_IF_OFF, EXECUTE_IF_OFF);
+                ClusterCommand tempCommand = ColorControlCluster.moveToColorTemperature(
+                        percentTypeToMireds(percentType), transition.colorTransitionTime(channelTransition),
+                        EXECUTE_IF_OFF, EXECUTE_IF_OFF);
                 handler.sendClusterCommand(endpointNumber, ColorControlCluster.CLUSTER_NAME, tempCommand);
             } else {
                 if (percentType.equals(PercentType.ZERO)) {
                     handler.sendClusterCommand(endpointNumber, OnOffCluster.CLUSTER_NAME, OnOffCluster.off());
                 } else {
-                    ClusterCommand levelCommand = LevelControlCluster.moveToLevelWithOnOff(
-                            ValueUtils.percentToLevel(percentType), 0, levelControlOptionsBitmap,
-                            levelControlOptionsBitmap);
+                    ClusterCommand levelCommand = LevelTransition.moveToLevelWithOnOff(
+                            ValueUtils.percentToLevel(percentType), channelTransition, levelControlOptionsBitmap);
                     handler.sendClusterCommand(endpointNumber, LevelControlCluster.CLUSTER_NAME, levelCommand);
                 }
             }
@@ -174,8 +179,8 @@ public class ColorControlConverter extends GenericConverter<ColorControlCluster>
             if (!lastOnOff) {
                 handler.sendClusterCommand(endpointNumber, OnOffCluster.CLUSTER_NAME, OnOffCluster.on());
             }
-            ClusterCommand tempCommand = ColorControlCluster.moveToColorTemperature(decimal.intValue(), 0,
-                    EXECUTE_IF_OFF, EXECUTE_IF_OFF);
+            ClusterCommand tempCommand = ColorControlCluster.moveToColorTemperature(decimal.intValue(),
+                    transition.colorTransitionTime(channelTransition), EXECUTE_IF_OFF, EXECUTE_IF_OFF);
             handler.sendClusterCommand(endpointNumber, ColorControlCluster.CLUSTER_NAME, tempCommand);
         } else if (channelUID.getIdWithoutGroup().equals(CHANNEL_ID_COLOR_TEMPERATURE_ABS)
                 && command instanceof QuantityType<?> quantity) {
@@ -184,8 +189,8 @@ public class ColorControlConverter extends GenericConverter<ColorControlCluster>
                 if (!lastOnOff) {
                     handler.sendClusterCommand(endpointNumber, OnOffCluster.CLUSTER_NAME, OnOffCluster.on());
                 }
-                ClusterCommand tempCommand = ColorControlCluster.moveToColorTemperature(quantity.intValue(), 0,
-                        EXECUTE_IF_OFF, EXECUTE_IF_OFF);
+                ClusterCommand tempCommand = ColorControlCluster.moveToColorTemperature(quantity.intValue(),
+                        transition.colorTransitionTime(channelTransition), EXECUTE_IF_OFF, EXECUTE_IF_OFF);
                 handler.sendClusterCommand(endpointNumber, ColorControlCluster.CLUSTER_NAME, tempCommand);
             }
         }
@@ -268,6 +273,11 @@ public class ColorControlConverter extends GenericConverter<ColorControlCluster>
             case OnOffCluster.ATTRIBUTE_ON_OFF:
                 updateOnOff((Boolean) message.value);
                 break;
+            case LevelControlCluster.ATTRIBUTE_ON_OFF_TRANSITION_TIME:
+                if (ownsTransition) {
+                    transition.onEvent(message);
+                }
+                break;
             default:
                 logger.debug("Unknown attribute {}", message.path.attributeName);
         }
@@ -278,11 +288,29 @@ public class ColorControlConverter extends GenericConverter<ColorControlCluster>
     }
 
     @Override
+    public void handleConfigurationUpdate(Configuration config) {
+        if (ownsTransition) {
+            transition.handleConfigurationUpdate(config);
+        }
+    }
+
+    /**
+     * Uses the Level Control converter's transition, which then owns its config and events.
+     */
+    public void shareTransition(LevelControlConverter levelControlConverter) {
+        transition = levelControlConverter.transition();
+        ownsTransition = false;
+    }
+
+    @Override
     public void initState() {
         initState(true, null);
     }
 
     public void initState(boolean onOff, @Nullable LevelControlCluster levelControlCluster) {
+        if (ownsTransition) {
+            transition.initialize(levelControlCluster);
+        }
         Integer brightness = 100;
         if (levelControlCluster != null) {
             if (levelControlCluster.currentLevel != null) {
@@ -434,19 +462,22 @@ public class ColorControlConverter extends GenericConverter<ColorControlCluster>
         colorModeToTemperature();
     }
 
-    private void changeColorHueSaturation(HSBType color) {
+    private void changeColorHueSaturation(HSBType color, @Nullable Integer channelTransition) {
         int hue = (int) (color.getHue().floatValue() * 254.0f / 360.0f + 0.5f);
         int saturation = ValueUtils.percentToSaturation(color.getSaturation());
-        handler.sendClusterCommand(endpointNumber, ColorControlCluster.CLUSTER_NAME, ColorControlCluster
-                .moveToHueAndSaturation(hue, saturation, 0, initializingCluster.options, initializingCluster.options));
+        handler.sendClusterCommand(endpointNumber, ColorControlCluster.CLUSTER_NAME,
+                ColorControlCluster.moveToHueAndSaturation(hue, saturation,
+                        transition.colorTransitionTime(channelTransition), initializingCluster.options,
+                        initializingCluster.options));
     }
 
-    private void changeColorXY(HSBType color) {
+    private void changeColorXY(HSBType color, @Nullable Integer channelTransition) {
         PercentType xy[] = color.toXY();
         int x = (int) (xy[0].floatValue() / 100.0f * 65536.0f + 0.5f); // up to 65279
         int y = (int) (xy[1].floatValue() / 100.0f * 65536.0f + 0.5f); // up to 65279
         handler.sendClusterCommand(endpointNumber, ColorControlCluster.CLUSTER_NAME,
-                ColorControlCluster.moveToColor(x, y, 0, initializingCluster.options, initializingCluster.options));
+                ColorControlCluster.moveToColor(x, y, transition.colorTransitionTime(channelTransition),
+                        initializingCluster.options, initializingCluster.options));
     }
 
     private PercentType miredsToPercentType(Integer mireds) {
