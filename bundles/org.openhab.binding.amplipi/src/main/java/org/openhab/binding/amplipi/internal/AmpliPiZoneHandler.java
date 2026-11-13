@@ -60,7 +60,7 @@ public class AmpliPiZoneHandler extends BaseThingHandler implements AmpliPiStatu
     private final HttpClient httpClient;
     private final Gson gson;
 
-    private @Nullable AmpliPiHandler bridgeHandler;
+    private volatile @Nullable AmpliPiHandler bridgeHandler;
 
     private @Nullable Zone zoneState;
 
@@ -194,7 +194,19 @@ public class AmpliPiZoneHandler extends BaseThingHandler implements AmpliPiStatu
     }
 
     @Override
+    public void dispose() {
+        if (bridgeHandler != null) {
+            bridgeHandler.removeStatusChangeListener(this);
+            bridgeHandler = null;
+        }
+        super.dispose();
+    }
+
+    @Override
     public void receive(Status status) {
+        if (bridgeHandler == null) {
+            return;
+        }
         int id = getId(thing);
         supportsVolumeDelta = supportsVolumeDelta(status);
         Optional<Zone> zone = status.getZones().stream().filter(z -> z.getId().equals(id)).findFirst();
