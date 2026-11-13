@@ -18,7 +18,6 @@ import java.util.List;
 
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
-import javax.activation.PatchedMailcapCommandMap;
 import javax.mail.MessagingException;
 import javax.mail.Part;
 import javax.mail.internet.MimeMultipart;
@@ -28,6 +27,7 @@ import org.apache.commons.mail.Email;
 import org.apache.commons.mail.EmailException;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.mail.internal.action.SendMailActions;
+import org.openhab.binding.mail.internal.activation.PatchedMailcapCommandMap;
 import org.openhab.binding.mail.internal.config.SMTPConfig;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
