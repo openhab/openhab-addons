@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="modbus"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<channel-type id="hager-flow-powermeter-id">
+		<item-type>Number</item-type>
+		<label>PowerMeter Id</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="hager-flow-powermeter-name">
+		<item-type>String</item-type>
+		<label>PowerMeter Name</label>
+	</channel-type>
+	<channel-type id="hager-flow-powermeter-type">
+		<item-type>Number</item-type>
+		<label>PowerMeter Type</label>
+		<description>State options: 0 = UNDEFINED, 1 = ROOT, 2 = ADDITIONAL, 3 = ADDITIONAL PRODUCTION, 4 = ADDITIONAL
+			CONSUMPTION, 5 = FARM, 6 = UNUSED, 7 = WALLBOX, 8 = FARM ADDITIONAL.</description>
+		<state readOnly="true">
+			<options>
+				<option value="0">UNDEFINED</option>
+				<option value="1">ROOT</option>
+				<option value="2">ADDITIONAL</option>
+				<option value="3">ADDITIONAL PRODUCTION</option>
+				<option value="4">ADDITIONAL CONSUMPTION</option>
+				<option value="5">FARM</option>
+				<option value="6">UNUSED</option>
+				<option value="7">WALLBOX</option>
+				<option value="8">FARM ADDITIONAL</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="hager-flow-powermeter-connection-status">
+		<item-type>Switch</item-type>
+		<label>PowerMeter Connection status</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="hager-flow-powermeter-working-status">
+		<item-type>Switch</item-type>
+		<label>PowerMeter Working status</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="hager-flow-powermeter-in-service-status">
+		<item-type>Switch</item-type>
+		<label>PowerMeter In service status</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="hager-flow-powermeter-active-phase-l1-active">
+		<item-type>Switch</item-type>
+		<label>Phase L1</label>
+		<description>Phase L1 carries current.</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="hager-flow-powermeter-active-phase-l2-active">
+		<item-type>Switch</item-type>
+		<label>Phase L2</label>
+		<description>Phase L2 carries current.</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="hager-flow-powermeter-active-phase-l3-active">
+		<item-type>Switch</item-type>
+		<label>Phase L3</label>
+		<description>Phase L3 carries current.</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="hager-flow-powermeter-power-sum">
+		<item-type>Number:Power</item-type>
+		<label>PowerMeter Power (ΣL)</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="hager-flow-powermeter-power-l1">
+		<item-type>Number:Power</item-type>
+		<label>PowerMeter Power (L1)</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="hager-flow-powermeter-power-l2">
+		<item-type>Number:Power</item-type>
+		<label>PowerMeter Power (L2)</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="hager-flow-powermeter-power-l3">
+		<item-type>Number:Power</item-type>
+		<label>PowerMeter Power (L3)</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="hager-flow-powermeter-voltage-l1">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>PowerMeter Voltage (L1)</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Voltage</tag>
+		</tags>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="hager-flow-powermeter-voltage-l2">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>PowerMeter Voltage (L2)</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Voltage</tag>
+		</tags>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="hager-flow-powermeter-voltage-l3">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>PowerMeter Voltage (L3)</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Voltage</tag>
+		</tags>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="hager-flow-powermeter-energy-sum">
+		<item-type>Number:Energy</item-type>
+		<label>PowerMeter Energy (ΣL)</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="hager-flow-powermeter-energy-l1">
+		<item-type>Number:Energy</item-type>
+		<label>PowerMeter Energy (L1)</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="hager-flow-powermeter-energy-l2">
+		<item-type>Number:Energy</item-type>
+		<label>PowerMeter Energy (L2)</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="hager-flow-powermeter-energy-l3">
+		<item-type>Number:Energy</item-type>
+		<label>PowerMeter Energy (L3)</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+</thing:thing-descriptions>
