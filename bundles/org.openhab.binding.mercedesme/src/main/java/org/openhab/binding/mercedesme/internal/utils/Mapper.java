@@ -818,7 +818,6 @@ public class Mapper {
             putChargingPredictionSoc(attributes, MB_KEY_CHARGING_PREDICTION_MAX_SOC,
                     vsu.getChargingPredictionMaxSoc());
         }
-        }
 
         // consumption
         if (vsu.hasLiquidconsumptionreset()) {
