@@ -495,6 +495,6 @@ class LoggingToolsTest {
     void toolAnnotationsDescribeSideEffects() {
         LoggingTools t = tools();
         McpTestHelper.assertReadOnlyTool(t.getReadLogsTool());
-        McpTestHelper.assertWriteTool(t.getManageLogLevelTool(), false, true);
+        McpTestHelper.assertWriteTool(t.getManageLogLevelTool(), false, false);
     }
 }

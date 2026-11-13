@@ -248,7 +248,8 @@ public class LoggingTools {
                         action='set' only: auto-revert to the previous level after this many seconds (default 1800 = 30 min). \
                         Pass 0 to make the change persistent (the operator will have to revert it via Main UI or another set call)."""));
 
-        // 'set' only changes a logger level, which 'DEFAULT' restores, so it is not treated as destructive.
+        // 'set' only changes a logger level, which 'DEFAULT' restores, so it is not treated as destructive. It is
+        // not idempotent: repeating a 'set' to the level already in effect cancels the pending auto-revert.
         return McpSchema.Tool.builder().name("manage_log_level").description("""
                 List current log levels or set a single logger's level. Action-dispatched: \
                 action='get' lists effective levels (optionally filtered by loggerFilter); useful before \
@@ -263,7 +264,7 @@ public class LoggingTools {
                 (HTTP whiteboard). For an add-on, scope to that add-on's package (e.g. \
                 'org.openhab.binding.<name>') — that's safe and almost always sufficient.""")
                 .inputSchema(new McpSchema.JsonSchema("object", p, List.of("action"), null, null, null))
-                .annotations(writeAnnotations(false, true)).build();
+                .annotations(writeAnnotations(false, false)).build();
     }
 
     public CallToolResult handleManageLogLevel(McpSyncServerExchange exchange, McpSchema.CallToolRequest request) {
