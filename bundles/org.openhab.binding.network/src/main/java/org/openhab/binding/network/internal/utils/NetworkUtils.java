@@ -153,8 +153,8 @@ public class NetworkUtils {
             for (int i = 1; i <= addressCount; i++) {
                 int octet = i & ~ipMask;
                 byte[] segments = baseIp.getAddress().getAddress();
-                segments[2] += (octet >> 8);
-                segments[3] += octet;
+                segments[2] = (byte) (segments[2] + (octet >> 8));
+                segments[3] = (byte) (segments[3] + octet);
                 result.add(InetAddress.getByAddress(segments).getHostAddress());
             }
         } catch (UnknownHostException e) {

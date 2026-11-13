@@ -176,7 +176,7 @@ public class PriceCalculator {
     public Map<String, Object> calculateBestPrice(Instant earliestStart, Instant latestEnd, List<CurveEntry> curve)
             throws PriceCalculationException {
         checkBoundaries(earliestStart, latestEnd);
-        int totalDuration = 0;
+        long totalDuration = 0;
         for (Iterator<CurveEntry> iterator = curve.iterator(); iterator.hasNext();) {
             CurveEntry curveEntry = iterator.next();
             totalDuration += curveEntry.durationSeconds;

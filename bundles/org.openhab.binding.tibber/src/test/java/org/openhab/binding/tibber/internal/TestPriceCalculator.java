@@ -28,6 +28,8 @@ import java.util.Map;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.openhab.binding.tibber.internal.calculator.PriceCalculator;
 import org.openhab.binding.tibber.internal.dto.CurveEntry;
 import org.openhab.binding.tibber.internal.dto.PriceInfo;
@@ -43,6 +45,7 @@ import com.google.gson.JsonParser;
  * The {@link TestPriceCalculator} tests price calculations.
  *
  * @author Bernd Weymann - Initial contribution
+ * @author Leo Siepel - Test duration overflow
  */
 @NonNullByDefault
 public class TestPriceCalculator {
@@ -147,6 +150,29 @@ public class TestPriceCalculator {
             totalDuration += priceInfo.durationSeconds;
         }
         assertEquals(totalDuration, Duration.between(start, end).getSeconds(), "Total duration");
+    }
+
+    @ParameterizedTest
+    @ValueSource(longs = { 2147483648L, 4294967296L, 4294967356L })
+    void curvesWithLongDurationsDoNotWrapIntoThePriceWindow(long duration) throws PriceCalculationException {
+        Instant start = priceCalculator.priceInfoStart();
+        Instant end = priceCalculator.priceInfoEnd();
+        Map<String, Object> noFittingCurve = priceCalculator.calculateBestPrice(start, end,
+                List.of(new CurveEntry(1000, Duration.between(start, end).toSeconds() + 1)));
+
+        assertEquals(noFittingCurve,
+                priceCalculator.calculateBestPrice(start, end, List.of(new CurveEntry(1000, duration))));
+    }
+
+    @Test
+    void sumOfCurveDurationsDoesNotOverflowAnInteger() throws PriceCalculationException {
+        Instant start = priceCalculator.priceInfoStart();
+        Instant end = priceCalculator.priceInfoEnd();
+        Map<String, Object> noFittingCurve = priceCalculator.calculateBestPrice(start, end,
+                List.of(new CurveEntry(1000, Duration.between(start, end).toSeconds() + 1)));
+
+        assertEquals(noFittingCurve, priceCalculator.calculateBestPrice(start, end,
+                List.of(new CurveEntry(1000, Integer.MAX_VALUE), new CurveEntry(1000, Integer.MAX_VALUE))));
     }
 
     @Test
