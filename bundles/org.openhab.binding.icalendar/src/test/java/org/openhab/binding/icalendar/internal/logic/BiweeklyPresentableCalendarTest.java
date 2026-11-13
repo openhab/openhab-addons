@@ -31,7 +31,6 @@ import org.junit.jupiter.api.Test;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.OnOffType;
-import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.PlayPauseType;
 import org.openhab.core.library.types.QuantityType;
@@ -73,6 +72,16 @@ public class BiweeklyPresentableCalendarTest {
                 new FileInputStream("src/test/resources/test-issueXXXXX.ics"));
         calendar_location = new BiweeklyPresentableCalendar(
                 new FileInputStream("src/test/resources/test-location.ics"));
+    }
+
+    @Test
+    public void testContactWordsAreStringCommands() {
+        for (String prefix : List.of("BEGIN", "END")) {
+            for (String value : List.of("OPEN", "CLOSED")) {
+                CommandTag tag = new CommandTag(prefix + ":Calendar_Test_String:" + value);
+                assertEquals(new StringType(value), tag.getCommand());
+            }
+        }
     }
 
     /**
@@ -325,7 +334,7 @@ public class BiweeklyPresentableCalendarTest {
         // BEGIN:Calendar_Test_Contact:OPEN:abc
         Command cmd1 = cmdTags.get(1).getCommand();
         assertNotNull(cmd1);
-        assertEquals(OpenClosedType.class, cmd1.getClass());
+        assertEquals(StringType.class, cmd1.getClass());
 
         // BEGIN:Calendar_Test_Dimmer:ON:abc
         Command cmd2 = cmdTags.get(2).getCommand();
@@ -388,7 +397,7 @@ public class BiweeklyPresentableCalendarTest {
         // BEGIN:Calendar_Test_Contact:CLOSED:abc
         cmd1 = cmdTags.get(1).getCommand();
         assertNotNull(cmd1);
-        assertEquals(OpenClosedType.class, cmd1.getClass());
+        assertEquals(StringType.class, cmd1.getClass());
 
         // BEGIN:Calendar_Test_Dimmer:0%:abc
         cmd2 = cmdTags.get(2).getCommand();
@@ -451,7 +460,7 @@ public class BiweeklyPresentableCalendarTest {
         // BEGIN:Calendar_Test_Contact:OPEN:abc
         cmd1 = cmdTags.get(1).getCommand();
         assertNotNull(cmd1);
-        assertEquals(OpenClosedType.class, cmd1.getClass());
+        assertEquals(StringType.class, cmd1.getClass());
 
         // BEGIN:Calendar_Test_Dimmer:50%:abc
         cmd2 = cmdTags.get(2).getCommand();
