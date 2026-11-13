@@ -16,7 +16,6 @@ import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Map;
 
@@ -317,33 +316,45 @@ public abstract class E3DCThingHandler extends BaseThingHandler implements E3DCD
      * it under the year it belongs to. The entry is replaced as the running year grows.
      */
     private void sendYearValue(ChannelUID channelUID, State state) {
-        LocalDate yearStart = LocalDate.now(ZoneOffset.UTC).withDayOfYear(1);
+        ZoneId zone = getZone();
+        LocalDate yearStart = LocalDate.now(zone).withDayOfYear(1);
         TimeSeries series = new TimeSeries(TimeSeries.Policy.REPLACE);
-        series.add(yearStart.atStartOfDay(ZoneId.systemDefault()).toInstant(), state);
+        series.add(yearStart.atStartOfDay(zone).toInstant(), state);
         sendTimeSeries(channelUID, series);
     }
 
     /**
      * The state of a moment value. A plain number is taken as seconds, or as milliseconds when it is too large;
-     * a moment of zero means nothing happened yet and is undefined. {@code null} means no moment at all.
+     * a moment outside {@value #EARLIEST_MOMENT_SECONDS} to {@value #LATEST_MOMENT_SECONDS} seconds since 1970
+     * means nothing happened yet, because the device fills a moment that was never set with zero or with a
+     * placeholder far in the future. Such a moment is undefined. {@code null} means no moment at all.
      */
     static @Nullable State timestampState(RscpValue value) {
         Object raw = value.getValue();
-        if (raw instanceof Instant moment) {
-            return moment.getEpochSecond() <= 0 && moment.getNano() == 0 ? UnDefType.UNDEF
-                    : new DateTimeType(moment.atZone(ZoneId.systemDefault()));
-        }
-        if (raw instanceof Number number) {
+        Instant moment;
+        if (raw instanceof Instant instant) {
+            moment = instant;
+        } else if (raw instanceof Number number) {
             long seconds = number.longValue();
             if (seconds <= 0) {
                 return UnDefType.UNDEF;
             }
-            Instant moment = seconds > MILLISECONDS_THRESHOLD ? Instant.ofEpochMilli(seconds)
-                    : Instant.ofEpochSecond(seconds);
-            return new DateTimeType(moment.atZone(ZoneId.systemDefault()));
+            moment = seconds > MILLISECONDS_THRESHOLD ? Instant.ofEpochMilli(seconds) : Instant.ofEpochSecond(seconds);
+        } else {
+            return null;
         }
-        return null;
+        long epochSecond = moment.getEpochSecond();
+        if (epochSecond < EARLIEST_MOMENT_SECONDS || epochSecond > LATEST_MOMENT_SECONDS) {
+            return UnDefType.UNDEF;
+        }
+        return new DateTimeType(moment.atZone(ZoneId.systemDefault()));
     }
+
+    /** The start of the year 2000, no moment the device reports is older than that. */
+    private static final long EARLIEST_MOMENT_SECONDS = 946_684_800L;
+
+    /** The start of the year 2100, a later moment is a placeholder and not a point in time. */
+    private static final long LATEST_MOMENT_SECONDS = 4_102_444_800L;
 
     /** Seconds since 1970 stay below this until the year 5138, so a larger number counts milliseconds. */
     private static final long MILLISECONDS_THRESHOLD = 100_000_000_000L;
@@ -460,6 +471,11 @@ public abstract class E3DCThingHandler extends BaseThingHandler implements E3DCD
     /** The energy of a battery capacity at a given voltage. */
     static @Nullable Double energyKwh(@Nullable Double ampereHours, double volts) {
         return ampereHours == null ? null : ampereHours * volts / 1000.0;
+    }
+
+    protected ZoneId getZone() {
+        E3DCBridgeHandler bridge = getBridgeHandler();
+        return bridge != null ? bridge.getZone() : ZoneId.systemDefault();
     }
 
     protected @Nullable E3DCBridgeHandler getBridgeHandler() {

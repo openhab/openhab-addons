@@ -16,7 +16,6 @@ import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -33,6 +32,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -47,6 +47,7 @@ import org.openhab.binding.e3dc.internal.rscp.RscpError;
 import org.openhab.binding.e3dc.internal.rscp.RscpException;
 import org.openhab.binding.e3dc.internal.rscp.RscpTag;
 import org.openhab.binding.e3dc.internal.rscp.RscpValue;
+import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.MetricPrefix;
 import org.openhab.core.library.unit.Units;
@@ -174,7 +175,8 @@ public class E3DCBridgeHandler extends BaseBridgeHandler {
     private final Set<Integer> loggedErrors = new HashSet<>();
 
     private @Nullable E3DCBridgeConfiguration config;
-    private @Nullable RscpClient client;
+    // read by the command path and the dispose while the poll replaces it, so it has to be visible to all of them
+    private volatile @Nullable RscpClient client;
 
     /** The attempt under way, so a dispose can close it; until it finishes the client is not in {@link #client}. */
     private volatile @Nullable RscpClient pendingClient;
@@ -182,13 +184,35 @@ public class E3DCBridgeHandler extends BaseBridgeHandler {
     /** Counts the connection attempts; closing raises it, so a stale attempt does not install its connection. */
     private final AtomicInteger connectionGeneration = new AtomicInteger();
 
+    /** Guards {@link #pollJob}, which the poll thread, a refresh and the dispose all replace or cancel. */
+    private final Object jobLock = new Object();
+
     private @Nullable ScheduledFuture<?> pollJob;
+
+    /**
+     * Serializes the connect and poll cycles. All state a poll keeps (dropped tags, logged answers, the history
+     * bookkeeping and the loop ratio window) is only touched while this lock is held, so a scheduled poll, a
+     * refresh and a reconnect can never run through it at the same time.
+     */
+    private final ReentrantLock pollLock = new ReentrantLock();
+
+    private final TimeZoneProvider timeZoneProvider;
 
     /** Time the last refresh command started a poll, so a burst of refreshes becomes one poll. */
     private final AtomicLong lastRefreshMillis = new AtomicLong();
 
-    public E3DCBridgeHandler(Bridge bridge) {
+    public E3DCBridgeHandler(Bridge bridge, TimeZoneProvider timeZoneProvider) {
         super(bridge);
+        this.timeZoneProvider = timeZoneProvider;
+    }
+
+    /**
+     * The time zone the day, week, month and year boundaries of the history are taken in. The device counts its
+     * periods in local time, so one zone is used for the request, for the day that makes the history due and for
+     * the timestamps of the published series.
+     */
+    public ZoneId getZone() {
+        return timeZoneProvider.getTimeZone();
     }
 
     @Override
@@ -222,6 +246,15 @@ public class E3DCBridgeHandler extends BaseBridgeHandler {
     }
 
     private void connectAndPoll() {
+        pollLock.lock();
+        try {
+            connectAndPollLocked();
+        } finally {
+            pollLock.unlock();
+        }
+    }
+
+    private void connectAndPollLocked() {
         E3DCBridgeConfiguration current = config;
         if (current == null || !isActive()) {
             return;
@@ -265,7 +298,7 @@ public class E3DCBridgeHandler extends BaseBridgeHandler {
             listener.run();
         }
 
-        pollOnce();
+        pollGuarded();
         // a first poll that lost the connection has already scheduled the next attempt
         if (isConnected()) {
             scheduleNextPoll();
@@ -289,8 +322,10 @@ public class E3DCBridgeHandler extends BaseBridgeHandler {
         if (!isActive()) {
             return;
         }
-        cancelPollJob();
-        pollJob = scheduler.schedule(task, delaySeconds, TimeUnit.SECONDS);
+        synchronized (jobLock) {
+            cancelPollJob();
+            pollJob = scheduler.schedule(task, delaySeconds, TimeUnit.SECONDS);
+        }
     }
 
     /**
@@ -307,13 +342,31 @@ public class E3DCBridgeHandler extends BaseBridgeHandler {
             return;
         }
         scheduler.execute(() -> {
-            if (isActive() && isConnected()) {
-                pollCycle();
+            // a poll that is running delivers fresh data anyway, so a refresh does not queue up behind it
+            if (!pollLock.tryLock()) {
+                logger.trace("Refresh skipped, a poll is already running");
+                return;
+            }
+            try {
+                if (isActive() && isConnected()) {
+                    pollCycleLocked();
+                }
+            } finally {
+                pollLock.unlock();
             }
         });
     }
 
     private void pollCycle() {
+        pollLock.lock();
+        try {
+            pollCycleLocked();
+        } finally {
+            pollLock.unlock();
+        }
+    }
+
+    private void pollCycleLocked() {
         if (!isActive()) {
             return;
         }
@@ -322,19 +375,29 @@ public class E3DCBridgeHandler extends BaseBridgeHandler {
             connectAndPoll();
             return;
         }
-        try {
-            pollOnce();
-            // the reconnect of a failed poll reports offline, so the status is only restored while connected
-            if (isConnected() && getThing().getStatus() != ThingStatus.ONLINE) {
-                updateStatus(ThingStatus.ONLINE);
-            }
-        } catch (RuntimeException e) {
-            logger.debug("Unexpected problem during the poll cycle", e);
+        pollGuarded();
+        // the reconnect of a failed poll reports offline, so the status is only restored while connected
+        if (isConnected() && getThing().getStatus() != ThingStatus.ONLINE) {
+            updateStatus(ThingStatus.ONLINE);
         }
         if (isConnected()) {
             scheduleNextPoll();
         }
         // otherwise the reconnect that the failed poll scheduled continues the cycle
+    }
+
+    /**
+     * Polls once and treats an unexpected failure like a lost connection. A thread that dies on a defective
+     * answer would leave the bridge online without any data, and after a defective frame the cipher chaining of
+     * the connection cannot be trusted either, so the connection is closed and built up again.
+     */
+    private void pollGuarded() {
+        try {
+            pollOnce();
+        } catch (RuntimeException e) {
+            logger.warn("Unexpected problem during the poll, the connection is built up again", e);
+            handleCommunicationFailure(new RscpException("Unexpected problem during the poll: " + e, e));
+        }
     }
 
     private void pollOnce() {
@@ -349,7 +412,7 @@ public class E3DCBridgeHandler extends BaseBridgeHandler {
             long answered = System.nanoTime();
             if (withHistory) {
                 lastHistoryPollMillis = System.currentTimeMillis();
-                lastHistoryDay = LocalDate.now(ZoneOffset.UTC);
+                lastHistoryDay = LocalDate.now(getZone());
             }
             reportTagSupport(response);
             logContainerAnswers(response);
@@ -516,13 +579,13 @@ public class E3DCBridgeHandler extends BaseBridgeHandler {
         return items;
     }
 
-    /** Whether this poll has to carry the history containers, due at the history interval and on a new UTC day. */
+    /** Whether this poll has to carry the history containers, due at the history interval and on a new local day. */
     private boolean isHistoryDue() {
         E3DCBridgeConfiguration current = config;
         if (current == null || lastHistoryPollMillis == 0) {
             return true;
         }
-        if (!LocalDate.now(ZoneOffset.UTC).equals(lastHistoryDay)) {
+        if (!LocalDate.now(getZone()).equals(lastHistoryDay)) {
             return true;
         }
         return System.currentTimeMillis() - lastHistoryPollMillis >= current.historyIntervalSeconds() * 1000L;
@@ -602,8 +665,9 @@ public class E3DCBridgeHandler extends BaseBridgeHandler {
      */
     private RscpValue historyRequest(int container) {
         int requestTag = RscpTag.pollTagFor(container);
-        // RSCP timestamps are UTC, so the period boundaries are taken in UTC as well
-        LocalDate today = LocalDate.now(ZoneOffset.UTC);
+        // the device counts its periods in local time, so the date and the start of the period use one zone
+        ZoneId zone = getZone();
+        LocalDate today = LocalDate.now(zone);
         LocalDate start = switch (container) {
             case RscpTag.DB_HISTORY_DATA_DAY -> today;
             case RscpTag.DB_HISTORY_DATA_WEEK -> today.minusDays(6);
@@ -611,7 +675,7 @@ public class E3DCBridgeHandler extends BaseBridgeHandler {
             case RscpTag.DB_HISTORY_DATA_YEAR -> today.withDayOfYear(1);
             default -> today;
         };
-        Instant startTime = start.atStartOfDay(ZoneId.systemDefault()).toInstant();
+        Instant startTime = start.atStartOfDay(zone).toInstant();
         // the span has to reach the end of the current period, so it covers the days from start to today
         long dayCount = switch (container) {
             case RscpTag.DB_HISTORY_DATA_WEEK -> 7;
@@ -635,14 +699,14 @@ public class E3DCBridgeHandler extends BaseBridgeHandler {
     }
 
     /** The request for the history of one whole calendar year, used by the history fetch of the thing action. */
-    public static RscpValue yearHistoryRequest(int year) {
+    public static RscpValue yearHistoryRequest(int year, ZoneId zone) {
         LocalDate start = LocalDate.of(year, 1, 1);
-        return periodHistoryRequest(RscpTag.DB_HISTORY_DATA_YEAR, start, start.lengthOfYear());
+        return periodHistoryRequest(RscpTag.DB_HISTORY_DATA_YEAR, start, start.lengthOfYear(), zone);
     }
 
     /** The request for the history of a finished period, used by the history fetch of the thing action. */
-    public static RscpValue periodHistoryRequest(int container, LocalDate start, int days) {
-        Instant startTime = start.atStartOfDay(ZoneId.systemDefault()).toInstant();
+    public static RscpValue periodHistoryRequest(int container, LocalDate start, int days, ZoneId zone) {
+        Instant startTime = start.atStartOfDay(zone).toInstant();
         return historyPeriodRequest(RscpTag.pollTagFor(container), startTime, Duration.ofDays(days).toSeconds());
     }
 
@@ -768,10 +832,12 @@ public class E3DCBridgeHandler extends BaseBridgeHandler {
     }
 
     private void cancelPollJob() {
-        ScheduledFuture<?> job = pollJob;
-        pollJob = null;
-        if (job != null) {
-            job.cancel(false);
+        synchronized (jobLock) {
+            ScheduledFuture<?> job = pollJob;
+            pollJob = null;
+            if (job != null) {
+                job.cancel(false);
+            }
         }
     }
 

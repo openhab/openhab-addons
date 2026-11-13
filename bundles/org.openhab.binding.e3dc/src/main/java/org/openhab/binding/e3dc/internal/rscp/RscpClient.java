@@ -66,10 +66,11 @@ public class RscpClient implements AutoCloseable {
 
     private volatile long lastDeviceWaitNanos;
 
-    private @Nullable Socket socket;
-    private @Nullable InputStream input;
-    private @Nullable OutputStream output;
-    private @Nullable RscpCipher cipher;
+    // closing happens on another thread than the requests, so the connection state has to be visible to both
+    private volatile @Nullable Socket socket;
+    private volatile @Nullable InputStream input;
+    private volatile @Nullable OutputStream output;
+    private volatile @Nullable RscpCipher cipher;
 
     public RscpClient(String host, int port, String user, String password, String rscpPassword, int timeoutMillis) {
         this.host = host;
@@ -319,6 +320,12 @@ public class RscpClient implements AutoCloseable {
         if (probe.length < RscpCodec.HEADER_LENGTH) {
             throw new RscpException("The response header is incomplete");
         }
+        // anything but the magic means the stream is out of sync or the RSCP key is wrong, so stop before the
+        // length of a garbage header makes this read tens of kilobytes
+        if (probe[0] != RscpCodec.MAGIC_BYTES[0] || probe[1] != RscpCodec.MAGIC_BYTES[1]) {
+            throw new RscpException(String.format("Not an RSCP response, magic was %02X %02X. The RSCP password may"
+                    + " not match the one set on the device.", probe[0], probe[1]));
+        }
         // the flag sits in the second control byte, index 2 is zero
         int ctrl = probe[3] & 0xFF;
         int dataLength = ByteBuffer.wrap(probe, 16, 2).order(ByteOrder.LITTLE_ENDIAN).getShort() & 0xFFFF;
@@ -336,6 +343,8 @@ public class RscpClient implements AutoCloseable {
             try {
                 current.close();
             } catch (IOException e) {
+                // nothing is left to do for a socket that fails to close, the connection is dropped anyway
+                logger.debug("Closing the connection to {}:{} failed: {}", host, port, e.getMessage());
             }
         }
     }

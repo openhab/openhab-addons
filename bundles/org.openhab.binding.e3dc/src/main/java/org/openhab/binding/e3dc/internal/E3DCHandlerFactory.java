@@ -20,13 +20,16 @@ import org.openhab.binding.e3dc.internal.handler.E3DCBridgeHandler;
 import org.openhab.binding.e3dc.internal.handler.E3DCPowerMeterHandler;
 import org.openhab.binding.e3dc.internal.handler.E3DCPowerPlantHandler;
 import org.openhab.binding.e3dc.internal.handler.E3DCWallboxHandler;
+import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * @author Bernd Weymann - Initial contribution
@@ -34,6 +37,13 @@ import org.osgi.service.component.annotations.Component;
 @NonNullByDefault
 @Component(configurationPid = "binding.e3dc", service = ThingHandlerFactory.class)
 public class E3DCHandlerFactory extends BaseThingHandlerFactory {
+
+    private final TimeZoneProvider timeZoneProvider;
+
+    @Activate
+    public E3DCHandlerFactory(@Reference TimeZoneProvider timeZoneProvider) {
+        this.timeZoneProvider = timeZoneProvider;
+    }
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -44,7 +54,7 @@ public class E3DCHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         if (E3DCBindingConstants.THING_TYPE_BRIDGE.equals(thingTypeUID) && thing instanceof Bridge bridge) {
-            return new E3DCBridgeHandler(bridge);
+            return new E3DCBridgeHandler(bridge, timeZoneProvider);
         }
         if (E3DCBindingConstants.THING_TYPE_POWER_PLANT.equals(thingTypeUID)) {
             return new E3DCPowerPlantHandler(thing);
