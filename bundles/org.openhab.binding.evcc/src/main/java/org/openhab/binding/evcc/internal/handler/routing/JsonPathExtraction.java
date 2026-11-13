@@ -12,9 +12,6 @@
  */
 package org.openhab.binding.evcc.internal.handler.routing;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.slf4j.Logger;
@@ -42,8 +39,6 @@ import com.google.gson.JsonElement;
 @NonNullByDefault
 public class JsonPathExtraction implements ExtractionStrategy {
 
-    private static final Pattern ROOT_INDEX_PATTERN = Pattern.compile("\\$\\[(\\d+)\\]");
-
     private final Logger logger = LoggerFactory.getLogger(JsonPathExtraction.class);
     private final String jsonPath;
 
@@ -66,13 +61,6 @@ public class JsonPathExtraction implements ExtractionStrategy {
             return jsonPath.substring(2);
         }
         return null;
-    }
-
-    @Override
-    @Nullable
-    public Integer getTargetIndex() {
-        Matcher matcher = ROOT_INDEX_PATTERN.matcher(jsonPath);
-        return matcher.matches() ? Integer.valueOf(matcher.group(1)) : null;
     }
 
     @Override

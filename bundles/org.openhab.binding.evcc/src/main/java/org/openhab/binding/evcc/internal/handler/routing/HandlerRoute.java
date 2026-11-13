@@ -100,17 +100,6 @@ public class HandlerRoute {
     }
 
     /**
-     * Get the array index this route's extraction targets, if statically determinable.
-     *
-     * @return the target index, or {@code null} when it cannot be determined
-     * @see ExtractionStrategy#getTargetIndex()
-     */
-    @Nullable
-    public Integer getTargetIndex() {
-        return extraction.getTargetIndex();
-    }
-
-    /**
      * Get the incoming message key that this route matches.
      *
      * @return The route key (e.g., "battery", "grid")

@@ -24,6 +24,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.evcc.internal.EvccBindingConstants;
+import org.openhab.binding.evcc.internal.handler.routing.FixedValueExtraction;
 import org.openhab.binding.evcc.internal.handler.routing.HandlerRoute;
 import org.openhab.binding.evcc.internal.handler.routing.JsonPathExtraction;
 import org.openhab.binding.evcc.internal.handler.routing.LoadpointStateTransformer;
@@ -129,9 +130,8 @@ class EvccBridgeHandlerTest {
     private RecordingHandler registerLoadpointRoute(int index, @Nullable StateTransformer transformer) {
         RecordingHandler handler = new RecordingHandler(EvccBindingConstants.JSON_KEY_LOADPOINTS, index);
         bridgeHandler.getMessageRouter()
-                .registerRoute(new HandlerRoute(EvccBindingConstants.JSON_KEY_LOADPOINTS,
-                        new JsonPathExtraction("$[" + index + "]"), handler, EvccBindingConstants.JSON_KEY_LOADPOINTS,
-                        transformer));
+                .registerRoute(new HandlerRoute(EvccBindingConstants.JSON_KEY_LOADPOINTS + "." + index,
+                        new FixedValueExtraction(), handler, EvccBindingConstants.JSON_KEY_LOADPOINTS, transformer));
         return handler;
     }
 
@@ -193,30 +193,12 @@ class EvccBridgeHandlerTest {
     }
 
     @Test
-    void indexedDeltaStillDispatchesMergedValueToRoutesWithoutStaticIndex() {
-        RecordingHandler allLoadpoints = new RecordingHandler(EvccBindingConstants.JSON_KEY_LOADPOINTS, "all");
-        bridgeHandler.getMessageRouter().registerRoute(new HandlerRoute(EvccBindingConstants.JSON_KEY_LOADPOINTS,
-                new JsonPathExtraction("$"), allLoadpoints, EvccBindingConstants.JSON_KEY_LOADPOINTS));
-        partialUpdate("loadpoints.0.mode", new JsonPrimitive("pv"));
-
-        partialUpdate("loadpoints.1.chargePower", new JsonPrimitive(1500));
-
-        JsonElement dispatched = allLoadpoints.lastValue;
-        Assertions.assertNotNull(dispatched);
-        assertEquals(2, dispatched.getAsJsonArray().size());
-        assertEquals("pv", dispatched.getAsJsonArray().get(0).getAsJsonObject().get("mode").getAsString());
-    }
-
-    @Test
-    void indexedDotNotationKeyIsRoutedUsingMergedCachedValue() {
+    void indexedDotNotationKeyIsRoutedUnderTheElementKey() {
         // evcc reports individual loadpoint field changes using dot notation
         // ("loadpoints.<index>.<field>"), never as a full "loadpoints" array snapshot.
-        // The route registered by a loadpoint handler only matches the literal key
-        // "loadpoints", so the dotted key must be resolved to its root ("loadpoints")
-        // and dispatched using the up-to-date merged value for that root.
-        RecordingHandler loadpointHandler = new RecordingHandler(EvccBindingConstants.JSON_KEY_LOADPOINTS, 1);
-        bridgeHandler.getMessageRouter().registerRoute(new HandlerRoute(EvccBindingConstants.JSON_KEY_LOADPOINTS,
-                new JsonPathExtraction("$[1]"), loadpointHandler, EvccBindingConstants.JSON_KEY_LOADPOINTS));
+        // The loadpoint handler registers its route under the element key ("loadpoints.<index>"),
+        // so the dotted key must be routed under that key with the changed field.
+        RecordingHandler loadpointHandler = registerLoadpointRoute(1, null);
 
         partialUpdate("loadpoints.1.chargePower", new JsonPrimitive(1500));
 

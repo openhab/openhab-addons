@@ -64,8 +64,8 @@ import com.google.gson.JsonObject;
 @NonNullByDefault
 public class EvccBridgeHandler extends BaseBridgeHandler {
     private static final long PERIODIC_STATE_REFRESH_INTERVAL_MINUTES = 5;
-    // "<root>.<index>.<field>", e.g. "loadpoints.0.chargePower"
-    private static final Pattern INDEXED_KEY_PATTERN = Pattern.compile("([^.]+)\\.(\\d+)\\.(.+)");
+    // "<root>.<index>.<field>", e.g. "loadpoints.0.chargePower": group 1 is the element key, group 2 the field
+    private static final Pattern INDEXED_KEY_PATTERN = Pattern.compile("([^.]+\\.\\d+)\\.(.+)");
 
     private final Logger logger = LoggerFactory.getLogger(EvccBridgeHandler.class);
 
@@ -244,8 +244,8 @@ public class EvccBridgeHandler extends BaseBridgeHandler {
      * Handle partial state updates from the websocket.
      *
      * Merges all keys of the message into the cached state, processes any pending handlers and dispatches the
-     * update to relevant handlers. Indexed keys of array elements ("loadpoints.0.chargePower") are dispatched once
-     * per element and only to the route of that element, carrying only the changed fields.
+     * update to relevant handlers. Indexed keys of array elements ("loadpoints.0.chargePower") are grouped per
+     * element and routed once under the element key ("loadpoints.0"), carrying only the changed fields.
      *
      * @param delta The delta message, mapping update keys (e.g. "grid", "loadpoints.0.chargePower") to values
      */
@@ -263,31 +263,27 @@ public class EvccBridgeHandler extends BaseBridgeHandler {
 
         // evcc reports every changed field of an array element as its own key (e.g. "loadpoints.0.chargePower").
         // Collect them per element so each affected handler receives one update containing only the changed fields.
-        Map<ArrayElement, JsonObject> elementDeltas = new LinkedHashMap<>();
+        Map<String, JsonObject> elementDeltas = new LinkedHashMap<>();
         for (Map.Entry<String, JsonElement> entry : delta.entrySet()) {
             String key = entry.getKey();
             Matcher matcher = INDEXED_KEY_PATTERN.matcher(key);
             if (matcher.matches()) {
-                ArrayElement element = new ArrayElement(matcher.group(1), Integer.parseInt(matcher.group(2)));
-                JsonObject elementDelta = elementDeltas.get(element);
+                String elementKey = matcher.group(1);
+                JsonObject elementDelta = elementDeltas.get(elementKey);
                 if (elementDelta == null) {
                     elementDelta = new JsonObject();
-                    elementDeltas.put(element, elementDelta);
+                    elementDeltas.put(elementKey, elementDelta);
                 }
-                elementDelta.add(matcher.group(3), entry.getValue());
+                elementDelta.add(matcher.group(2), entry.getValue());
             } else {
                 dispatchUpdate(key, entry.getValue());
             }
         }
-        elementDeltas.forEach((element, elementDelta) -> {
-            if (!messageRouter.routeIndexedDelta(element.root(), element.index(), elementDelta,
-                    cachedState.get(element.root()))) {
-                logger.debug("No route registered for websocket update key '{}.{}'", element.root(), element.index());
+        elementDeltas.forEach((elementKey, elementDelta) -> {
+            if (!messageRouter.route(elementKey, elementDelta)) {
+                logger.debug("No route registered for websocket update key '{}'", elementKey);
             }
         });
-    }
-
-    private record ArrayElement(String root, int index) {
     }
 
     /**
