@@ -28,8 +28,8 @@ Fragment-Host: org.openhab.io.yamlcomposer
 	junit-platform-engine;version='[1.14.4,1.14.5)',\
 	junit-platform-launcher;version='[1.14.4,1.14.5)',\
 	org.apache.aries.spifly.dynamic.bundle;version='[1.3.8,1.3.9)',\
-	org.apache.felix.configadmin;version='[1.9.26,1.9.27)',\
-	org.apache.felix.scr;version='[2.2.18,2.2.19)',\
+	org.apache.felix.configadmin;version='[1.10.0,1.10.1)',\
+	org.apache.felix.scr;version='[2.3.0,2.3.1)',\
 	org.eclipse.equinox.event;version='[1.7.300,1.7.301)',\
 	org.eclipse.jetty.ee10.servlet;version='[12.1.14,12.1.15)',\
 	org.eclipse.jetty.http;version='[12.1.14,12.1.15)',\
@@ -73,7 +73,6 @@ Fragment-Host: org.openhab.io.yamlcomposer
 	org.objectweb.asm.tree;version='[9.11.1,9.11.2)',\
 	org.objectweb.asm.tree.analysis;version='[9.11.1,9.11.2)',\
 	org.objectweb.asm.util;version='[9.11.1,9.11.2)',\
-	biz.aQute.tester.junit-platform;version='[7.4.0,7.4.1)',\
 	com.sun.jna;version='[5.19.1,5.19.2)',\
 	org.apache.commons.lang3;version='[3.21.0,3.21.1)',\
 	org.openhab.core.addon;version='[5.3.0,5.3.1)',\
@@ -94,4 +93,4 @@ Fragment-Host: org.openhab.io.yamlcomposer
 	com.google.gson;version='[2.15.0,2.15.1)',\
 	com.google.guava;version='[33.8.0,33.8.1)',\
 	com.google.guava.failureaccess;version='[1.0.3,1.0.4)',\
-	biz.aQute.tester.junit-platform;version='[7.4.0,7.4.1)'
+	biz.aQute.tester.junit-platform;version='[7.5.0,7.5.1)'
