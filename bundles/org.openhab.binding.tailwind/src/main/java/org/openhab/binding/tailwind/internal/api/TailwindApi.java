@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.tailwind.internal.api;
 
+import java.net.UnknownHostException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -54,13 +55,20 @@ public class TailwindApi {
     private static final Gson GSON = new Gson();
 
     private final HttpClient httpClient;
-    private final String url;
+    private volatile String url;
     private final String token;
 
     public TailwindApi(HttpClient httpClient, String hostname, String token) {
         this.httpClient = httpClient;
         this.url = "http://" + hostname + "/json";
         this.token = token;
+    }
+
+    /**
+     * Sends the next requests to another host name or address of the same controller.
+     */
+    public void setHost(String hostname) {
+        url = "http://" + hostname + "/json";
     }
 
     public TailwindStatus getStatus() throws TailwindException, InterruptedException {
@@ -148,7 +156,14 @@ public class TailwindApi {
             response = httpClient.newRequest(url).method(HttpMethod.POST).header(TOKEN_HEADER, token)
                     .content(new StringContentProvider(GSON.toJson(request))).timeout(TIMEOUT_SECONDS, TimeUnit.SECONDS)
                     .send();
-        } catch (TimeoutException | ExecutionException e) {
+        } catch (ExecutionException e) {
+            if (e.getCause() instanceof UnknownHostException) {
+                throw new TailwindCommunicationException("Cannot find the controller at " + host(url)
+                        + ". If this openHAB server cannot resolve .local names, enter the IP address of the controller instead.",
+                        e);
+            }
+            throw new TailwindCommunicationException("No answer from the controller: " + e.getMessage(), e);
+        } catch (TimeoutException e) {
             throw new TailwindCommunicationException("No answer from the controller: " + e.getMessage(), e);
         }
 
@@ -168,6 +183,10 @@ public class TailwindApi {
             throw new TailwindException("The controller refused the request '" + name + "': " + status.info);
         }
         return status;
+    }
+
+    private static String host(String url) {
+        return url.substring("http://".length(), url.length() - "/json".length());
     }
 
     /**

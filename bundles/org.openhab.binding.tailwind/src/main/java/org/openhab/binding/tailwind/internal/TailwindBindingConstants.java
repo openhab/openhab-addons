@@ -39,6 +39,8 @@ public class TailwindBindingConstants {
     public static final int MAX_DOORS = 3;
 
     public static final String CONFIG_HOSTNAME = "hostname";
+    /** Thing property with the last known IPv4 address of the controller. */
+    public static final String PROPERTY_IP_ADDRESS = "ipAddress";
 
     public static final String GROUP_CONTROLLER = "controller";
     /** Door channel groups are door1 to door3. */

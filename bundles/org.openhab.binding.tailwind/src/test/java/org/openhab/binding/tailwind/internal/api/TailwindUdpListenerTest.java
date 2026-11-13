@@ -76,4 +76,17 @@ public class TailwindUdpListenerTest {
         send(newPort, "again".getBytes(StandardCharsets.UTF_8));
         assertEquals("again", messages.poll(WAIT_SECONDS, TimeUnit.SECONDS));
     }
+
+    @Test
+    public void listenerUsesTheGivenPort() throws Exception {
+        int freePort;
+        try (DatagramSocket probe = new DatagramSocket()) {
+            freePort = probe.getLocalPort();
+        }
+
+        assertEquals(freePort, listener.start(freePort));
+        assertEquals(freePort, listener.getPort());
+        send(freePort, "fixed".getBytes(StandardCharsets.UTF_8));
+        assertEquals("fixed", messages.poll(WAIT_SECONDS, TimeUnit.SECONDS));
+    }
 }

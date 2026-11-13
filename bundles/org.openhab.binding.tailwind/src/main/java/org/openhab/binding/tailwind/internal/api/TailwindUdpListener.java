@@ -54,9 +54,18 @@ public class TailwindUdpListener {
      *
      * @return the port
      */
-    public synchronized int start() throws SocketException {
+    public int start() throws SocketException {
+        return start(0);
+    }
+
+    /**
+     * Starts listening on the given port, or on a free port if it is 0.
+     *
+     * @return the port
+     */
+    public synchronized int start(int port) throws SocketException {
         stop();
-        DatagramSocket newSocket = new DatagramSocket();
+        DatagramSocket newSocket = port > 0 ? new DatagramSocket(port) : new DatagramSocket();
         socket = newSocket;
         // A thread of its own, because receiving blocks for as long as the listener runs
         Thread thread = new Thread(() -> receive(newSocket), threadName);

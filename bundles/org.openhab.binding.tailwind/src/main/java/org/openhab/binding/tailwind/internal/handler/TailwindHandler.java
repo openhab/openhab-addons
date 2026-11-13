@@ -14,6 +14,9 @@ package org.openhab.binding.tailwind.internal.handler;
 
 import static org.openhab.binding.tailwind.internal.TailwindBindingConstants.*;
 
+import java.io.IOException;
+import java.net.DatagramSocket;
+import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
@@ -32,7 +35,8 @@ import org.openhab.binding.tailwind.internal.TailwindDeviceId;
 import org.openhab.binding.tailwind.internal.api.TailwindApi;
 import org.openhab.binding.tailwind.internal.api.TailwindCommunicationException;
 import org.openhab.binding.tailwind.internal.api.TailwindException;
-import org.openhab.binding.tailwind.internal.api.TailwindUdpListener;
+import org.openhab.binding.tailwind.internal.api.TailwindUdpReceiver;
+import org.openhab.binding.tailwind.internal.api.TailwindUdpReceiver.Registration;
 import org.openhab.binding.tailwind.internal.api.TailwindUnauthorizedException;
 import org.openhab.binding.tailwind.internal.api.dto.TailwindDoor;
 import org.openhab.binding.tailwind.internal.api.dto.TailwindStatus;
@@ -75,6 +79,7 @@ public class TailwindHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(TailwindHandler.class);
     private final HttpClient httpClient;
     private final NetworkAddressService networkAddressService;
+    private final TailwindUdpReceiver udpReceiver;
 
     private TailwindConfiguration config = new TailwindConfiguration();
     // Set by initialize() and cleared by dispose(). Work that started with another instance is stale and must not
@@ -87,31 +92,47 @@ public class TailwindHandler extends BaseThingHandler {
     // Changes whenever a status request is scheduled, or the handler is disposed. A request of an older generation
     // does not schedule the next one, so there is never more than one chain of requests.
     private int pollGeneration;
-    private @Nullable TailwindUdpListener listener;
+    private @Nullable Registration registration;
+    // The host name or address from the configuration, without URL parts
+    private String hostname = "";
+    // True while the host name cannot be resolved and the last known address is used instead
+    private boolean usingLastKnownAddress;
     private int retryDelaySeconds = RETRY_MIN_SECONDS;
 
-    public TailwindHandler(Thing thing, HttpClient httpClient, NetworkAddressService networkAddressService) {
+    public TailwindHandler(Thing thing, HttpClient httpClient, NetworkAddressService networkAddressService,
+            TailwindUdpReceiver udpReceiver) {
         super(thing);
         this.httpClient = httpClient;
         this.networkAddressService = networkAddressService;
+        this.udpReceiver = udpReceiver;
     }
 
     @Override
     public void initialize() {
         config = getConfigAs(TailwindConfiguration.class);
-        if (config.hostname.isBlank()) {
-            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.conf-error.no-hostname");
+        String hostname = TailwindConfiguration.normalizeHostname(config.hostname);
+        if (hostname.isEmpty()) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/offline.conf-error.no-hostname");
             return;
         }
         if (config.token.isBlank()) {
-            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.conf-error.no-token");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/offline.conf-error.no-token");
+            return;
+        }
+        if (config.udpPort < 0 || config.udpPort > 65535) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/offline.conf-error.invalid-udp-port");
             return;
         }
         updateStatus(ThingStatus.UNKNOWN);
         lastStatus = null;
         controllerAddresses = Set.of();
         synchronized (this) {
-            api = new TailwindApi(httpClient, config.hostname.trim(), config.token.trim());
+            this.hostname = hostname;
+            usingLastKnownAddress = false;
+            api = new TailwindApi(httpClient, hostname, config.token.trim());
             retryDelaySeconds = RETRY_MIN_SECONDS;
             schedulePoll(0);
         }
@@ -119,7 +140,7 @@ public class TailwindHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
-        TailwindUdpListener oldListener;
+        Registration oldRegistration;
         synchronized (this) {
             api = null;
             pollGeneration++;
@@ -128,11 +149,11 @@ public class TailwindHandler extends BaseThingHandler {
                 job.cancel(true);
                 pollJob = null;
             }
-            oldListener = listener;
-            listener = null;
+            oldRegistration = registration;
+            registration = null;
         }
-        if (oldListener != null) {
-            oldListener.stop();
+        if (oldRegistration != null) {
+            oldRegistration.close();
         }
         lastStatus = null;
     }
@@ -251,10 +272,17 @@ public class TailwindHandler extends BaseThingHandler {
         }
         boolean online = false;
         try {
+            String host = resolveHost();
+            currentApi.setHost(host);
             String address = networkAddressService.getPrimaryIpv4HostAddress();
             if (address == null) {
+                // No primary address in the network settings: use the address the controller can reach
+                address = localAddressTowards(host);
+            }
+            if (address == null) {
                 if (isCurrent(currentApi)) {
-                    updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.conf-error.no-primary-address");
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                            "@text/offline.conf-error.no-primary-address");
                 }
             } else {
                 TailwindStatus status = currentApi.getStatus();
@@ -266,9 +294,10 @@ public class TailwindHandler extends BaseThingHandler {
                 // After publishing the status, so that it cannot replace a newer report. Without reports, door
                 // changes still show at the next status request.
                 try {
-                    registerNotifications(currentApi, address);
+                    registerNotifications(currentApi, host, address);
                 } catch (TailwindException e) {
-                    logger.debug("{} cannot receive status reports: {}", thing.getUID(), e.getMessage());
+                    logger.warn("{} cannot receive status reports, so door changes show only every 5 minutes: {}",
+                            thing.getUID(), e.getMessage());
                 }
             }
         } catch (TailwindException e) {
@@ -287,9 +316,10 @@ public class TailwindHandler extends BaseThingHandler {
 
     private void setOffline(TailwindException e) {
         if (e instanceof TailwindUnauthorizedException) {
-            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.conf-error.token-rejected");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/offline.conf-error.token-rejected");
         } else {
-            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 
@@ -334,36 +364,82 @@ public class TailwindHandler extends BaseThingHandler {
      * This is repeated at every status request, so the controller gets the address back after it lost it, for example
      * when it rebooted.
      */
-    private void registerNotifications(TailwindApi currentApi, String address)
+    private void registerNotifications(TailwindApi currentApi, String host, String address)
             throws TailwindException, InterruptedException {
         int port;
         synchronized (this) {
             if (!isCurrent(currentApi)) {
                 return;
             }
-            TailwindUdpListener currentListener = listener;
-            if (currentListener == null) {
-                currentListener = new TailwindUdpListener("OH-binding-" + thing.getUID() + "-udp",
-                        this::handleNotification);
-                listener = currentListener;
+            Registration currentRegistration = registration;
+            if (currentRegistration != null && currentRegistration.getPort() == -1) {
+                // The listener stopped after an error
+                currentRegistration.close();
+                currentRegistration = null;
             }
-            port = currentListener.getPort();
-            if (port == -1) {
+            if (currentRegistration == null) {
                 try {
-                    port = currentListener.start();
+                    currentRegistration = udpReceiver.register(config.udpPort, this::handleNotification);
                 } catch (SocketException e) {
+                    registration = null;
                     throw new TailwindCommunicationException(
                             "Cannot open a UDP port for status reports: " + e.getMessage(), e);
                 }
+                registration = currentRegistration;
             }
+            port = currentRegistration.getPort();
         }
         try {
-            controllerAddresses = Set.of(InetAddress.getAllByName(config.hostname.trim()));
+            controllerAddresses = Set.of(InetAddress.getAllByName(host));
         } catch (UnknownHostException e) {
-            throw new TailwindCommunicationException("Cannot resolve " + config.hostname + ": " + e.getMessage(), e);
+            throw new TailwindCommunicationException("Cannot resolve " + host + ": " + e.getMessage(), e);
         }
         currentApi.setNotifyUrl(address + ":" + port);
         logger.debug("{} sends its status reports to {}:{}", thing.getUID(), address, port);
+    }
+
+    /**
+     * Returns the host to send requests to. That is the configured host name, unless it cannot be resolved and an
+     * address of the controller is known. Some systems cannot resolve .local names, for example some Docker setups.
+     */
+    private String resolveHost() {
+        String configured = hostname;
+        try {
+            InetAddress address = InetAddress.getByName(configured);
+            if (address instanceof Inet4Address && !configured.equals(address.getHostAddress())) {
+                updateProperty(PROPERTY_IP_ADDRESS, address.getHostAddress());
+            }
+            if (usingLastKnownAddress) {
+                usingLastKnownAddress = false;
+                logger.debug("{} can resolve {} again", thing.getUID(), configured);
+            }
+            return configured;
+        } catch (UnknownHostException e) {
+            String lastKnown = thing.getProperties().get(PROPERTY_IP_ADDRESS);
+            if (lastKnown == null || lastKnown.isBlank()) {
+                return configured;
+            }
+            if (!usingLastKnownAddress) {
+                usingLastKnownAddress = true;
+                logger.debug("{} cannot resolve {}, so it uses the last known address {} of the controller",
+                        thing.getUID(), configured, lastKnown);
+            }
+            return lastKnown;
+        }
+    }
+
+    /**
+     * Returns the local IPv4 address that the given host is reached from, or null if it cannot be found.
+     * No packet is sent: connecting a UDP socket only chooses the route.
+     */
+    private static @Nullable String localAddressTowards(String host) {
+        try (DatagramSocket socket = new DatagramSocket()) {
+            socket.connect(InetAddress.getByName(host), 80);
+            InetAddress local = socket.getLocalAddress();
+            return local instanceof Inet4Address && !local.isAnyLocalAddress() ? local.getHostAddress() : null;
+        } catch (IOException | RuntimeException e) {
+            return null;
+        }
     }
 
     private void handleNotification(InetAddress sender, String message) {

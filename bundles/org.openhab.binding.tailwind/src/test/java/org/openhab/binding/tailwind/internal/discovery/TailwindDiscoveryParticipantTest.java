@@ -52,13 +52,14 @@ public class TailwindDiscoveryParticipantTest {
     }
 
     @Test
-    public void controllerIsDiscoveredWithItsAddressAndProperties() {
+    public void controllerIsDiscoveredWithItsHostNameAndProperties() {
         DiscoveryResult result = participant.createResult(service);
 
         assertNotNull(result);
         assertEquals(new ThingUID("tailwind", "iq3", "246f28867d80"), result.getThingUID());
-        assertEquals("192.168.1.50", result.getProperties().get("hostname"));
+        assertEquals("tailwind-246f28867d80.local", result.getProperties().get("hostname"));
         assertEquals("246f28867d80", result.getProperties().get("macAddress"));
+        assertEquals("192.168.1.50", result.getProperties().get("ipAddress"));
         assertEquals("10.80", result.getProperties().get("firmwareVersion"));
         assertEquals("V1.3", result.getProperties().get("hardwareVersion"));
         assertEquals("macAddress", result.getRepresentationProperty());
@@ -66,13 +67,13 @@ public class TailwindDiscoveryParticipantTest {
     }
 
     @Test
-    public void hostNameIsUsedWhenTheServiceHasNoAddress() {
-        when(service.getInet4Addresses()).thenReturn(new Inet4Address[0]);
+    public void addressIsUsedWhenTheServiceHasNoHostName() {
+        when(service.getServer()).thenReturn(null);
 
         DiscoveryResult result = participant.createResult(service);
 
         assertNotNull(result);
-        assertEquals("tailwind-246f28867d80.local", result.getProperties().get("hostname"));
+        assertEquals("192.168.1.50", result.getProperties().get("hostname"));
     }
 
     @Test

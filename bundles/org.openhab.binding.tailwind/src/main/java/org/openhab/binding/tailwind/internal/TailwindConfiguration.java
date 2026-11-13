@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.tailwind.internal;
 
+import java.util.Locale;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
@@ -22,12 +24,35 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class TailwindConfiguration {
     private static final double DEFAULT_PARTIAL_OPEN_TIME = 2.5;
+    public static final int DEFAULT_UDP_PORT = 50904;
 
     public String hostname = "";
     public String token = "";
+    public int udpPort = DEFAULT_UDP_PORT;
     public double door1PartialOpenTime = DEFAULT_PARTIAL_OPEN_TIME;
     public double door2PartialOpenTime = DEFAULT_PARTIAL_OPEN_TIME;
     public double door3PartialOpenTime = DEFAULT_PARTIAL_OPEN_TIME;
+
+    /**
+     * Returns the host name of the controller without the parts users often copy along with it, such as
+     * {@code http://tailwind-30aea4801880.local/json}.
+     */
+    public static String normalizeHostname(String hostname) {
+        String host = hostname.trim();
+        String lower = host.toLowerCase(Locale.ROOT);
+        if (lower.startsWith("http://")) {
+            host = host.substring("http://".length());
+        } else if (lower.startsWith("https://")) {
+            host = host.substring("https://".length());
+        }
+        if (host.toLowerCase(Locale.ROOT).endsWith("/json")) {
+            host = host.substring(0, host.length() - "/json".length());
+        }
+        while (host.endsWith("/")) {
+            host = host.substring(0, host.length() - 1);
+        }
+        return host.trim();
+    }
 
     /**
      * Returns the time in milliseconds that a door runs when it is opened partially.
