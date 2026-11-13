@@ -112,8 +112,8 @@ public class LuxtronikHeatpumpDiscovery extends AbstractDiscoveryService {
         octet++;
         octet &= ~ipMask;
         byte[] octets = adr.getAddress().getAddress();
-        octets[2] += (octet >> 8);
-        octets[3] += octet;
+        octets[2] = (byte) (octets[2] + (octet >> 8));
+        octets[3] = (byte) (octets[3] + octet);
         String address = "";
         try {
             InetAddress iAdr = null;

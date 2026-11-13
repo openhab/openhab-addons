@@ -278,7 +278,7 @@ public class MeteostickBridgeHandler extends BaseBridgeHandler {
                                 // Create the channel command
                                 int channels = 0;
                                 for (int channel : eventListeners.keySet()) {
-                                    channels += Math.pow(2, channel - 1);
+                                    channels |= 1 << (channel - 1);
                                 }
 
                                 // Device has been reset - reconfigure

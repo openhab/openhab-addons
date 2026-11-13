@@ -108,8 +108,8 @@ public abstract class _4BSMessage extends EEP {
 
             try {
                 int manufId = (Integer.parseInt(c.manufacturerId, 16) & 0x7ff); // => 11 bit
-                db2 += (manufId >>> 8);
-                db1 += (manufId & 0xff);
+                db2 = (byte) (db2 | (manufId >>> 8));
+                db1 = (byte) (manufId & 0xff);
             } catch (Exception e) {
             }
 

@@ -39,7 +39,7 @@ public class PrefixedSeekableByteChannel implements SeekableByteChannel {
 
         if (position < prefix.length) {
             dst.put(Arrays.copyOfRange(prefix, (int) position, prefix.length));
-            read += prefix.length - position;
+            read = prefix.length - (int) position;
         }
 
         read += source.read(dst);
