@@ -14,7 +14,9 @@ package org.openhab.binding.e3dc.internal.handler;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.time.Instant;
 import java.time.LocalDate;
+import java.time.ZoneId;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
@@ -89,12 +91,33 @@ class E3DCHistoryFetchTest {
 
     @Test
     void thePeriodRequestCarriesStartIntervalAndSpan() {
-        var request = E3DCBridgeHandler.periodHistoryRequest(RscpTag.DB_HISTORY_DATA_WEEK, LocalDate.of(2026, 2, 2), 7);
+        var request = E3DCBridgeHandler.periodHistoryRequest(RscpTag.DB_HISTORY_DATA_WEEK, LocalDate.of(2026, 2, 2), 7,
+                ZoneId.of("UTC"));
         assertEquals(RscpTag.DB_REQ_HISTORY_DATA_WEEK, request.getTag());
         assertEquals(3, request.getChildren().size());
         // the interface declares these parameters as timestamps, which are moments of twelve bytes
         assertEquals(RscpType.TIMESTAMP, request.getChildren().get(0).getType());
         assertEquals(RscpType.TIMESTAMP, request.getChildren().get(1).getType());
         assertEquals(RscpType.TIMESTAMP, request.getChildren().get(2).getType());
+    }
+
+    @Test
+    void thePeriodStartsAtLocalMidnightOfTheGivenZone() {
+        // in winter Berlin is one hour ahead of UTC, so its midnight is 23:00 of the day before in UTC
+        var request = E3DCBridgeHandler.periodHistoryRequest(RscpTag.DB_HISTORY_DATA_DAY, LocalDate.of(2026, 2, 2), 1,
+                ZoneId.of("Europe/Berlin"));
+
+        assertEquals(Instant.parse("2026-02-01T23:00:00Z"), request.getChildren().get(0).getValue());
+    }
+
+    @Test
+    void thePeriodStartDependsOnTheZoneNotOnTheSystemDefault() {
+        var utc = E3DCBridgeHandler.periodHistoryRequest(RscpTag.DB_HISTORY_DATA_DAY, LocalDate.of(2026, 7, 1), 1,
+                ZoneId.of("UTC"));
+        var sydney = E3DCBridgeHandler.periodHistoryRequest(RscpTag.DB_HISTORY_DATA_DAY, LocalDate.of(2026, 7, 1), 1,
+                ZoneId.of("Australia/Sydney"));
+
+        assertEquals(Instant.parse("2026-07-01T00:00:00Z"), utc.getChildren().get(0).getValue());
+        assertEquals(Instant.parse("2026-06-30T14:00:00Z"), sydney.getChildren().get(0).getValue());
     }
 }

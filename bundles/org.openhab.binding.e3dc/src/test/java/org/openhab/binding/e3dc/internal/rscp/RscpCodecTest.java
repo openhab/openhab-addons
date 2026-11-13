@@ -216,7 +216,7 @@ class RscpCodecTest {
     // ------------------------------------------------------------------ decoding
 
     @Test
-    void decodingRecoversTagTypeAndValue() {
+    void decodingRecoversTagTypeAndValue() throws Exception {
         byte[] payload = item(RscpTag.EMS_POWER_PV, RscpType.INT32.getCode(),
                 ByteBuffer.allocate(4).order(ByteOrder.LITTLE_ENDIAN).putInt(4711).array());
 
@@ -230,7 +230,7 @@ class RscpCodecTest {
     }
 
     @Test
-    void decodedContainersExposeTheirChildren() {
+    void decodedContainersExposeTheirChildren() throws Exception {
         byte[] child = item(RscpTag.EMS_MAX_CHARGE_POWER, RscpType.INT32.getCode(),
                 ByteBuffer.allocate(4).order(ByteOrder.LITTLE_ENDIAN).putInt(9000).array());
         byte[] payload = item(RscpTag.EMS_GET_POWER_SETTINGS, RscpType.CONTAINER.getCode(), child);
@@ -244,7 +244,7 @@ class RscpCodecTest {
     }
 
     @Test
-    void anErrorItemBecomesTheCorrespondingErrorCode() {
+    void anErrorItemBecomesTheCorrespondingErrorCode() throws Exception {
         // RSCP_ERR_UNKNOWN_TAG is what a device answers for a data point it does not implement
         byte[] payload = item(RscpTag.EMS_REQ_BAT_SOC, RscpType.ERROR.getCode(),
                 ByteBuffer.allocate(4).order(ByteOrder.LITTLE_ENDIAN).putInt(7).array());
@@ -258,7 +258,7 @@ class RscpCodecTest {
     }
 
     @Test
-    void aFrameWithoutTheCrcBitIsDecodedWithoutATrailer() {
+    void aFrameWithoutTheCrcBitIsDecodedWithoutATrailer() throws Exception {
         byte[] payload = item(RscpTag.EMS_BAT_SOC, RscpType.DOUBLE64.getCode(),
                 ByteBuffer.allocate(8).order(ByteOrder.LITTLE_ENDIAN).putDouble(42.5).array());
 
@@ -359,6 +359,69 @@ class RscpCodecTest {
                 () -> RscpCodec.readFrame(new ByteArrayInputStream(encoded)));
         String message = String.valueOf(exception.getMessage());
         assertTrue(message.contains("CRC"), "the failure must name the CRC: " + exception);
+    }
+
+    // ------------------------------------------------------------------ validation of a decoded frame
+
+    @Test
+    void decodingRejectsAWrongMagic() {
+        byte[] encoded = frame(item(RscpTag.EMS_POWER_PV, RscpType.INT32.getCode(), new byte[4]), true);
+        encoded[0] = 0x00;
+
+        RscpException exception = assertThrows(RscpException.class, () -> RscpCodec.decodeFrame(encoded));
+
+        assertTrue(String.valueOf(exception.getMessage()).contains("magic"), "the failure names the magic");
+    }
+
+    @Test
+    void decodingRejectsACorruptedPayloadByItsCrc() {
+        byte[] encoded = frame(item(RscpTag.EMS_POWER_PV, RscpType.INT32.getCode(), new byte[4]), true);
+        encoded[RscpCodec.HEADER_LENGTH] ^= 0x01;
+
+        RscpException exception = assertThrows(RscpException.class, () -> RscpCodec.decodeFrame(encoded));
+
+        assertTrue(String.valueOf(exception.getMessage()).contains("CRC"), "the failure names the CRC");
+    }
+
+    @Test
+    void decodingRejectsAFrameShorterThanItsHeader() {
+        byte[] tooShort = new byte[RscpCodec.HEADER_LENGTH - 1];
+
+        assertThrows(RscpException.class, () -> RscpCodec.decodeFrame(tooShort));
+    }
+
+    @Test
+    void decodingRejectsAFrameThatIsShorterThanItsHeaderAnnounces() {
+        byte[] encoded = frame(item(RscpTag.EMS_POWER_PV, RscpType.INT32.getCode(), new byte[4]), true);
+        byte[] truncated = java.util.Arrays.copyOf(encoded, encoded.length - 6);
+
+        RscpException exception = assertThrows(RscpException.class, () -> RscpCodec.decodeFrame(truncated));
+
+        assertTrue(String.valueOf(exception.getMessage()).contains("truncated"), "the failure says truncated");
+    }
+
+    @Test
+    void decodingRejectsAnItemOfAnUnknownType() {
+        byte[] payload = item(RscpTag.EMS_POWER_PV, 0x7F, new byte[4]);
+
+        assertThrows(RscpException.class, () -> RscpCodec.decodeFrame(frame(payload, true)));
+    }
+
+    @Test
+    void decodingRejectsAnItemThatAnnouncesFewerBytesThanItsTypeNeeds() {
+        // an INT32 with two bytes would otherwise read into the bytes of the next item
+        byte[] payload = item(RscpTag.EMS_POWER_PV, RscpType.INT32.getCode(), new byte[2]);
+
+        assertThrows(RscpException.class, () -> RscpCodec.decodeFrame(frame(payload, true)));
+    }
+
+    @Test
+    void decodingRejectsAContainerThatRunsPastTheEndOfTheFrame() {
+        // the container announces ten bytes of children, the frame carries only a child header cut short
+        byte[] truncatedChild = new byte[] { 1, 0, 0, 0, (byte) RscpType.INT32.getCode() };
+        byte[] payload = item(RscpTag.EMS_GET_POWER_SETTINGS, RscpType.CONTAINER.getCode(), truncatedChild);
+
+        assertThrows(RscpException.class, () -> RscpCodec.decodeFrame(frame(payload, true)));
     }
 
     @Test

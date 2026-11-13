@@ -16,11 +16,14 @@ import java.io.ByteArrayOutputStream;
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
+import java.time.DateTimeException;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.zip.CRC32;
 
@@ -74,23 +77,50 @@ public final class RscpCodec {
     private RscpCodec() {
     }
 
-    public static List<RscpValue> decodeFrame(byte[] frame) {
-        ByteBuffer buffer = ByteBuffer.wrap(frame).order(ByteOrder.LITTLE_ENDIAN);
-        buffer.getShort(); // magic
+    /**
+     * Decodes a complete frame. The magic, the declared length and, when the frame carries one, the CRC32 are
+     * verified first, so a damaged or out of sync frame is reported instead of being decoded into garbage.
+     *
+     * @throws RscpException if the frame is not a well formed RSCP frame
+     */
+    public static List<RscpValue> decodeFrame(byte[] frame) throws RscpException {
+        if (frame.length < HEADER_LENGTH) {
+            throw new RscpException(
+                    "The frame has " + frame.length + " bytes, less than the header of " + HEADER_LENGTH + " bytes");
+        }
+        if (frame[0] != MAGIC_BYTES[0] || frame[1] != MAGIC_BYTES[1]) {
+            throw new RscpException(String.format("Not an RSCP frame, magic was %02X %02X", frame[0], frame[1]));
+        }
         // the flag sits in the second control byte, which is read from the raw header
-        int ctrl = frame[3] & 0xFF;
-        buffer.getShort(); // control
-        buffer.getLong(); // seconds
-        buffer.getInt(); // nanos
-        int dataLength = buffer.getShort() & 0xFFFF;
-        int end = Math.min(HEADER_LENGTH + dataLength, frame.length - ((ctrl & CTRL_CRC) != 0 ? 4 : 0));
-        ByteBuffer data = ByteBuffer.wrap(frame, HEADER_LENGTH, Math.max(0, end - HEADER_LENGTH)).slice()
-                .order(ByteOrder.LITTLE_ENDIAN);
+        boolean hasCrc = (frame[3] & CTRL_CRC) != 0;
+        int dataLength = ByteBuffer.wrap(frame, HEADER_LENGTH - 2, 2).order(ByteOrder.LITTLE_ENDIAN).getShort()
+                & 0xFFFF;
+        int expectedLength = HEADER_LENGTH + dataLength + (hasCrc ? 4 : 0);
+        if (frame.length < expectedLength) {
+            throw new RscpException(
+                    "The frame is truncated: " + frame.length + " bytes, the header announces " + expectedLength);
+        }
+        if (hasCrc && !crcMatches(Arrays.copyOf(frame, expectedLength))) {
+            throw new RscpException("RSCP frame CRC mismatch");
+        }
+        ByteBuffer data = ByteBuffer.wrap(frame, HEADER_LENGTH, dataLength).slice().order(ByteOrder.LITTLE_ENDIAN);
         List<RscpValue> items = new ArrayList<>();
-        while (data.hasRemaining()) {
-            items.add(decodeItem(data));
+        try {
+            while (data.hasRemaining()) {
+                items.add(decodeItem(data));
+            }
+        } catch (BufferUnderflowException | IllegalArgumentException | DateTimeException e) {
+            throw new RscpException("Malformed RSCP item: " + e, e);
         }
         return items;
+    }
+
+    /** Whether the CRC32 in the last four bytes matches the bytes before it. */
+    private static boolean crcMatches(byte[] frame) {
+        CRC32 crc = new CRC32();
+        crc.update(frame, 0, frame.length - 4);
+        int expected = ByteBuffer.wrap(frame, frame.length - 4, 4).order(ByteOrder.LITTLE_ENDIAN).getInt();
+        return (int) crc.getValue() == expected;
     }
 
     private static RscpValue decodeItem(ByteBuffer buffer) {
@@ -98,6 +128,7 @@ public final class RscpCodec {
         int typeCode = buffer.get() & 0xFF;
         int length = buffer.getShort() & 0xFFFF;
         RscpType type = RscpType.fromCode(typeCode);
+        requireLength(type, length);
         if (type == RscpType.CONTAINER) {
             int end = buffer.position() + length;
             List<RscpValue> children = new ArrayList<>();
@@ -178,6 +209,22 @@ public final class RscpCodec {
             }
         }
         return RscpValue.scalar(tag, type, value);
+    }
+
+    /** Rejects an item that announces fewer bytes than its type needs, which would read into the next item. */
+    private static void requireLength(RscpType type, int length) {
+        int minimum = switch (type) {
+            case BOOL, CHAR8, UCHAR8 -> 1;
+            case INT16, UINT16 -> 2;
+            case INT32, UINT32, FLOAT32 -> 4;
+            case INT64, UINT64, DOUBLE64 -> 8;
+            case TIMESTAMP -> 12;
+            default -> 0;
+        };
+        if (length < minimum) {
+            throw new IllegalArgumentException(
+                    "Item of type " + type + " announces " + length + " bytes, at least " + minimum + " are needed");
+        }
     }
 
     private static void skip(ByteBuffer buffer, int count) {
@@ -325,13 +372,8 @@ public final class RscpCodec {
         System.arraycopy(header, 0, frame, 0, HEADER_LENGTH);
         byte[] rest = readFully(in, remaining);
         System.arraycopy(rest, 0, frame, HEADER_LENGTH, remaining);
-        if ((ctrl & CTRL_CRC) != 0) {
-            CRC32 crc = new CRC32();
-            crc.update(frame, 0, frame.length - 4);
-            int expected = ByteBuffer.wrap(frame, frame.length - 4, 4).order(ByteOrder.LITTLE_ENDIAN).getInt();
-            if ((int) crc.getValue() != expected) {
-                throw new IOException("RSCP frame CRC mismatch");
-            }
+        if ((ctrl & CTRL_CRC) != 0 && !crcMatches(frame)) {
+            throw new IOException("RSCP frame CRC mismatch");
         }
         return frame;
     }

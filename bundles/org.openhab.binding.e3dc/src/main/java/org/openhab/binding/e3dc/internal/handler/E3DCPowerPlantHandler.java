@@ -16,7 +16,6 @@ import java.time.DayOfWeek;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -343,7 +342,7 @@ public class E3DCPowerPlantHandler extends E3DCThingHandler {
      */
     public int fetchHistory() {
         List<LocalDate> starts = new ArrayList<>();
-        for (int year = LocalDate.now(ZoneOffset.UTC).getYear() - 1; year >= FIRST_HISTORY_YEAR; year--) {
+        for (int year = LocalDate.now(getZone()).getYear() - 1; year >= FIRST_HISTORY_YEAR; year--) {
             starts.add(LocalDate.of(year, 1, 1));
         }
         return fetchPeriods(RscpTag.DB_HISTORY_DATA_YEAR, starts, MAX_EMPTY_YEARS);
@@ -361,7 +360,7 @@ public class E3DCPowerPlantHandler extends E3DCThingHandler {
             logger.warn("History not fetched: the count has to be between 1 and {}", MAX_PERIODS);
             return -1;
         }
-        LocalDate today = LocalDate.now(ZoneOffset.UTC);
+        LocalDate today = LocalDate.now(getZone());
         List<LocalDate> starts = new ArrayList<>();
         int container;
         switch (name) {
@@ -420,6 +419,7 @@ public class E3DCPowerPlantHandler extends E3DCThingHandler {
         }
         Map<String, E3DCChannelSpec> channels = registry.groups().getOrDefault(E3DCBindingConstants.GROUP_HISTORY,
                 Map.of());
+        ZoneId zone = bridge.getZone();
         Map<String, TimeSeries> series = new LinkedHashMap<>();
         int delivered = 0;
         EmptyPeriods emptyPeriods = new EmptyPeriods(maxEmpty);
@@ -429,8 +429,8 @@ public class E3DCPowerPlantHandler extends E3DCThingHandler {
             }
             RscpValue response;
             try {
-                response = bridge.sendRequest(
-                        List.of(E3DCBridgeHandler.periodHistoryRequest(container, start, daysOf(container, start))));
+                response = bridge.sendRequest(List
+                        .of(E3DCBridgeHandler.periodHistoryRequest(container, start, daysOf(container, start), zone)));
             } catch (RscpException e) {
                 logger.debug("History of {} not fetched: {}", start, e.getMessage());
                 emptyPeriods.record(false);
@@ -449,7 +449,7 @@ public class E3DCPowerPlantHandler extends E3DCThingHandler {
                 }
             }
             if (states.values().stream().anyMatch(E3DCPowerPlantHandler::isNonZero)) {
-                Instant stamp = start.atStartOfDay(ZoneId.systemDefault()).toInstant();
+                Instant stamp = start.atStartOfDay(zone).toInstant();
                 states.forEach((key, state) -> {
                     TimeSeries timeSeries = series.get(key);
                     if (timeSeries == null) {

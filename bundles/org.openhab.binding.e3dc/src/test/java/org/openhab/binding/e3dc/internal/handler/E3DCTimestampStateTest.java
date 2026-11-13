@@ -81,6 +81,23 @@ class E3DCTimestampStateTest {
     }
 
     @Test
+    void aMomentBeforeTheYear2000IsUndefined() {
+        assertEquals(UnDefType.UNDEF, E3DCThingHandler.timestampState(timestamp(86_400)));
+        assertEquals(UnDefType.UNDEF, E3DCThingHandler.timestampState(timestamp(-1)));
+    }
+
+    @Test
+    void aPlaceholderFarInTheFutureIsUndefined() {
+        // the device answered a charge that never started with a moment in the year 290309
+        RscpValue placeholder = RscpValue.timestamp(RscpTag.EMS_MANUAL_CHARGE_LASTSTART,
+                Instant.ofEpochSecond(9_164_000_000_000L, 224_192_000));
+
+        assertEquals(UnDefType.UNDEF, E3DCThingHandler.timestampState(placeholder));
+        assertEquals(UnDefType.UNDEF, E3DCThingHandler
+                .timestampState(RscpValue.of(RscpTag.EMS_MANUAL_CHARGE_LASTSTART, RscpType.UINT64, Long.MAX_VALUE)));
+    }
+
+    @Test
     void aValueThatIsNoMomentCarriesNoState() {
         assertNull(E3DCThingHandler.timestampState(RscpValue.bool(RscpTag.EMS_MANUAL_CHARGE_ACTIVE, true)));
         assertNull(E3DCThingHandler.timestampState(RscpValue.none(RscpTag.EMS_MANUAL_CHARGE_LASTSTART)));
