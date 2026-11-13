@@ -19,6 +19,7 @@ import static org.mockito.Mockito.*;
 import static org.openhab.binding.smartthings.internal.SmartThingsBindingConstants.THING_TYPE_AIR_CONDITIONER;
 import static org.openhab.binding.smartthings.internal.SmartThingsBindingConstants.THING_TYPE_APPLIANCE;
 import static org.openhab.binding.smartthings.internal.SmartThingsBindingConstants.THING_TYPE_DRYER;
+import static org.openhab.binding.smartthings.internal.SmartThingsBindingConstants.THING_TYPE_REFRIGERATOR;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -50,6 +51,7 @@ import org.openhab.core.config.core.Configuration;
 import org.openhab.core.events.EventPublisher;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -65,6 +67,7 @@ import org.openhab.core.thing.link.ItemChannelLinkRegistry;
 import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
+import org.openhab.core.types.UnDefType;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -930,6 +933,36 @@ class ApplianceHandlerTest {
         transport.listener("/power/0").onUpdate(json("{\"value\":false}"));
         awaitStatus(ThingStatus.ONLINE);
         assertEquals(OnOffType.OFF, states.get(power.getId()));
+    }
+
+    @Test
+    void rapidModeTurnsSetpointToUndefinedUntilItIsOffAgain() throws Exception {
+        transport.observe = true;
+        transport.identity = json("{\"di\":\"" + DEVICE_ID + "\",\"rt\":[\"oic.d.refrigerator\"]}");
+        transport.batch = json(
+                "[{\"href\":\"/temperature/desired/cooler/0\",\"rep\":{\"temperature\":3,\"units\":\"C\","
+                        + "\"range\":[1,7],\"increment\":1}},{\"href\":\"/temperature/desired/freezer/0\",\"rep\":"
+                        + "{\"temperature\":-19,\"units\":\"C\",\"range\":[-23,-15],\"increment\":1}},"
+                        + "{\"href\":\"/refrigeration/vs/0\",\"rep\":{\"x.com.samsung.da.rapidFridge\":\"Off\","
+                        + "\"x.com.samsung.da.rapidFreezing\":\"Off\"}}]");
+        initialize(THING_TYPE_REFRIGERATOR, Map.of(), Map.of(),
+                List.of("cooler-target-temperature", "freezer-target-temperature", "rapid-cool"));
+        awaitStatus(ThingStatus.ONLINE);
+        ChannelUID coolerTarget = new ChannelUID(UID, "cooler-target-temperature");
+        ChannelUID freezerTarget = new ChannelUID(UID, "freezer-target-temperature");
+        assertEquals(new QuantityType<>(3, SIUnits.CELSIUS), states.get(coolerTarget.getId()));
+        assertEquals(new QuantityType<>(-19, SIUnits.CELSIUS), states.get(freezerTarget.getId()));
+
+        transport.listener("/refrigeration/vs/0")
+                .onUpdate(json("{\"x.com.samsung.da.rapidFridge\":\"On\",\"x.com.samsung.da.rapidFreezing\":\"Off\"}"));
+        awaitStatus(ThingStatus.ONLINE);
+        assertEquals(UnDefType.UNDEF, states.get(coolerTarget.getId()));
+        assertEquals(new QuantityType<>(-19, SIUnits.CELSIUS), states.get(freezerTarget.getId()));
+
+        transport.listener("/refrigeration/vs/0").onUpdate(
+                json("{\"x.com.samsung.da.rapidFridge\":\"Off\",\"x.com.samsung.da.rapidFreezing\":\"Off\"}"));
+        awaitStatus(ThingStatus.ONLINE);
+        assertEquals(new QuantityType<>(3, SIUnits.CELSIUS), states.get(coolerTarget.getId()));
     }
 
     @Test

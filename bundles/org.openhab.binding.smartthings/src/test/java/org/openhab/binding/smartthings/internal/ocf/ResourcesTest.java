@@ -965,21 +965,18 @@ class ResourcesTest {
     }
 
     @Test
-    void refrigeratorSetpointIsUndefinedWhileRapidModeIsOn() throws IOException {
+    void rapidModeOnOnlyForSetpointPointsOfTheMatchingCompartment() throws IOException {
         resources.update("/temperature/desired/cooler/0",
                 json("{\"temperature\":3,\"units\":\"C\",\"range\":[1,7],\"increment\":1}"));
         resources.update("/temperature/desired/freezer/0",
                 json("{\"temperature\":-19,\"units\":\"C\",\"range\":[-23,-15],\"increment\":1}"));
+        resources.update("/temperature/current/cooler/0", json("{\"temperature\":2,\"units\":\"C\"}"));
         resources.update("/refrigeration/vs/0",
                 json("{\"x.com.samsung.da.rapidFridge\":\"On\",\"x.com.samsung.da.rapidFreezing\":\"Off\"}"));
-        assertEquals(UnDefType.UNDEF, resources.state(point("/temperature/desired/cooler/0", "temperature")));
-        assertEquals(new QuantityType<>(-19, SIUnits.CELSIUS),
-                resources.state(point("/temperature/desired/freezer/0", "temperature")));
-        resources.update("/refrigeration/vs/0",
-                json("{\"x.com.samsung.da.rapidFridge\":\"Off\",\"x.com.samsung.da.rapidFreezing\":\"On\"}"));
-        assertEquals(new QuantityType<>(3, SIUnits.CELSIUS),
-                resources.state(point("/temperature/desired/cooler/0", "temperature")));
-        assertEquals(UnDefType.UNDEF, resources.state(point("/temperature/desired/freezer/0", "temperature")));
+        assertTrue(resources.rapidModeOn(point("/temperature/desired/cooler/0", "temperature")));
+        assertFalse(resources.rapidModeOn(point("/temperature/desired/freezer/0", "temperature")));
+        assertFalse(resources.rapidModeOn(point("/temperature/current/cooler/0", "temperature")));
+        assertFalse(resources.rapidModeOn(point("/refrigeration/vs/0", "x.com.samsung.da.rapidFridge")));
     }
 
     @Test

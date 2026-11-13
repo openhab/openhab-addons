@@ -655,14 +655,6 @@ public class Resources {
             return UnDefType.UNDEF;
         }
         if ("Number:Temperature".equals(point.itemType())) {
-            // While a rapid mode is on, the app replaces the setpoint with the mode name, so it has no setpoint.
-            String rapidField = point.href().endsWith(DESIRED_COOLER) ? RAPID_COOL_FIELD
-                    : point.href().endsWith(DESIRED_FREEZER) ? RAPID_FREEZE_FIELD : null;
-            JsonObject refrigeration = rapidField == null ? null : refrigerationRep(point.href());
-            if (rapidField != null && refrigeration != null
-                    && Boolean.TRUE.equals(onOff(refrigeration.get(rapidField)))) {
-                return UnDefType.UNDEF;
-            }
             BigDecimal temperature = number(value);
             Unit<Temperature> unit = temperatureRep == null ? null
                     : temperatureUnit(
@@ -1216,10 +1208,26 @@ public class Resources {
         return item != null && item.has(VENDOR + (desired ? "desired" : "current"));
     }
 
-    private @Nullable JsonObject refrigerationRep(String href) {
-        String suffix = href.endsWith(DESIRED_COOLER) ? DESIRED_COOLER : DESIRED_FREEZER;
-        JsonObject rep = resources.get(prefix(href, suffix) + REFRIGERATION);
-        return rep == null || isStub(rep) ? null : rep;
+    /**
+     * Whether the rapid mode of the refrigerator compartment that {@code point} belongs to is on. While a rapid
+     * mode is on, the app replaces the setpoint with the mode name, so the setpoint channel has no meaningful
+     * value to report. Only compartment setpoint points have a rapid-mode counterpart; every other point returns
+     * false.
+     */
+    public synchronized boolean rapidModeOn(Point point) {
+        String suffix;
+        String field;
+        if (point.href().endsWith(DESIRED_COOLER)) {
+            suffix = DESIRED_COOLER;
+            field = RAPID_COOL_FIELD;
+        } else if (point.href().endsWith(DESIRED_FREEZER)) {
+            suffix = DESIRED_FREEZER;
+            field = RAPID_FREEZE_FIELD;
+        } else {
+            return false;
+        }
+        JsonObject rep = resources.get(prefix(point.href(), suffix) + REFRIGERATION);
+        return rep != null && !isStub(rep) && Boolean.TRUE.equals(onOff(rep.get(field)));
     }
 
     private static @Nullable JsonObject temperatureItem(JsonObject rep) {

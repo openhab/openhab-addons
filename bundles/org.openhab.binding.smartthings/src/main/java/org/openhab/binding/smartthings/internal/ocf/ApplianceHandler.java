@@ -47,6 +47,7 @@ import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
+import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -923,6 +924,11 @@ public class ApplianceHandler extends BaseThingHandler {
                     return;
                 }
                 State state = current.resources.state(point);
+                // While a refrigerator rapid mode is on, the setpoint is replaced by the mode name and has no
+                // meaningful value, so publish UNDEF instead of keeping a stale setpoint.
+                if (current.resources.rapidModeOn(point)) {
+                    state = UnDefType.UNDEF;
+                }
                 if (!awaitingConfirmation(current, point, state)) {
                     updateState(point.id(), state);
                 }
