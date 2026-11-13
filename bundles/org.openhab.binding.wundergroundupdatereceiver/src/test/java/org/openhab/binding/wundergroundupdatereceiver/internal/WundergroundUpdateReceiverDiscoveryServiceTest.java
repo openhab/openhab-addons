@@ -40,6 +40,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Answers;
 import org.openhab.core.config.core.Configuration;
+import org.openhab.core.test.storage.VolatileStorageService;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.DefaultSystemChannelTypeProvider;
@@ -104,7 +105,9 @@ class WundergroundUpdateReceiverDiscoveryServiceTest {
         ManagedThingProvider managedThingProvider = mock(ManagedThingProvider.class);
         when(managedThingProvider.get(any())).thenReturn(thing);
         WundergroundUpdateReceiverHandler handler = new WundergroundUpdateReceiverHandler(thing, sut, discoveryService,
-                new WundergroundUpdateReceiverUnknownChannelTypeProvider(), channelTypeRegistry, managedThingProvider);
+                new WundergroundUpdateReceiverUnknownChannelTypeProvider(new VolatileStorageService(),
+                        mock(ManagedThingProvider.class)),
+                channelTypeRegistry, managedThingProvider);
         handler.setCallback(mock(ThingHandlerCallback.class));
 
         // When
@@ -227,7 +230,9 @@ class WundergroundUpdateReceiverDiscoveryServiceTest {
         ManagedThingProvider managedThingProvider = mock(ManagedThingProvider.class);
         when(managedThingProvider.get(TEST_THING_UID)).thenReturn(thing);
         WundergroundUpdateReceiverHandler handler = new WundergroundUpdateReceiverHandler(thing, sut, discoveryService,
-                new WundergroundUpdateReceiverUnknownChannelTypeProvider(), channelTypeRegistry, managedThingProvider);
+                new WundergroundUpdateReceiverUnknownChannelTypeProvider(new VolatileStorageService(),
+                        mock(ManagedThingProvider.class)),
+                channelTypeRegistry, managedThingProvider);
         handler.setCallback(mock(ThingHandlerCallback.class));
         handler.initialize();
         sut.addHandler(handler);
@@ -280,7 +285,9 @@ class WundergroundUpdateReceiverDiscoveryServiceTest {
         ManagedThingProvider managedThingProvider = mock(ManagedThingProvider.class);
         when(managedThingProvider.get(any())).thenReturn(thing);
         WundergroundUpdateReceiverHandler handler = new WundergroundUpdateReceiverHandler(thing, sut, discoveryService,
-                new WundergroundUpdateReceiverUnknownChannelTypeProvider(), channelTypeRegistry, managedThingProvider);
+                new WundergroundUpdateReceiverUnknownChannelTypeProvider(new VolatileStorageService(),
+                        mock(ManagedThingProvider.class)),
+                channelTypeRegistry, managedThingProvider);
         handler.setCallback(mock(ThingHandlerCallback.class));
 
         // When
@@ -364,7 +371,9 @@ class WundergroundUpdateReceiverDiscoveryServiceTest {
         ManagedThingProvider managedThingProvider = mock(ManagedThingProvider.class);
         when(managedThingProvider.get(any())).thenReturn(null);
         WundergroundUpdateReceiverHandler handler = new WundergroundUpdateReceiverHandler(thing, sut, discoveryService,
-                new WundergroundUpdateReceiverUnknownChannelTypeProvider(), channelTypeRegistry, managedThingProvider);
+                new WundergroundUpdateReceiverUnknownChannelTypeProvider(new VolatileStorageService(),
+                        mock(ManagedThingProvider.class)),
+                channelTypeRegistry, managedThingProvider);
         handler.setCallback(mock(ThingHandlerCallback.class));
 
         // When
@@ -445,7 +454,9 @@ class WundergroundUpdateReceiverDiscoveryServiceTest {
         ManagedThingProvider managedThingProvider = mock(ManagedThingProvider.class);
         when(managedThingProvider.get(any())).thenReturn(null);
         WundergroundUpdateReceiverHandler handler = new WundergroundUpdateReceiverHandler(thing, sut, discoveryService,
-                new WundergroundUpdateReceiverUnknownChannelTypeProvider(), channelTypeRegistry, managedThingProvider);
+                new WundergroundUpdateReceiverUnknownChannelTypeProvider(new VolatileStorageService(),
+                        mock(ManagedThingProvider.class)),
+                channelTypeRegistry, managedThingProvider);
         handler.setCallback(mock(ThingHandlerCallback.class));
 
         // When
@@ -555,7 +566,8 @@ class WundergroundUpdateReceiverDiscoveryServiceTest {
                     new StateChannelTypeBuilderImpl(LAST_RECEIVED_DATETIME_CHANNELTYPEUID, "Last Received", "DateTime")
                             .build());
             this.addChannelTypeProvider(provider);
-            this.addChannelTypeProvider(new WundergroundUpdateReceiverUnknownChannelTypeProvider());
+            this.addChannelTypeProvider(new WundergroundUpdateReceiverUnknownChannelTypeProvider(
+                    new VolatileStorageService(), mock(ManagedThingProvider.class)));
         }
     }
 
