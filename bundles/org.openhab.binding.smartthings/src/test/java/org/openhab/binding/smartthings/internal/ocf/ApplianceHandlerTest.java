@@ -936,6 +936,32 @@ class ApplianceHandlerTest {
     }
 
     @Test
+    void confirmationTimerPublishesPreviousStateWithoutFurtherEvent() throws Exception {
+        transport.observe = true;
+        transport.power = false;
+        transport.batch = json("[{\"href\":\"/power/0\",\"rep\":{\"value\":false}},"
+                + "{\"href\":\"/remotectrl/0\",\"rep\":{\"value\":true}}]");
+        ApplianceHandler handler = initialize();
+        awaitStatus(ThingStatus.ONLINE);
+        ChannelUID power = channel(handler, "Power").getUID();
+        assertEquals(OnOffType.OFF, states.get(power.getId()));
+        clearInvocations(callback);
+        transport.staleWrites = true;
+
+        handler.handleCommand(power, OnOffType.ON);
+        awaitStatus(ThingStatus.ONLINE);
+        executor.awaitWorkers();
+        verify(callback, never()).stateUpdated(eq(power), eq(OnOffType.OFF));
+
+        // With established observations no poll is running, so only the confirmation timer can republish the
+        // previous state once the window elapsed and the appliance never applied the command.
+        executor.advance(6000);
+        executor.fireConfirmation();
+        verify(callback, times(1)).stateUpdated(eq(power), eq(OnOffType.OFF));
+        assertEquals(OnOffType.OFF, states.get(power.getId()));
+    }
+
+    @Test
     void rapidModeTurnsSetpointToUndefinedUntilItIsOffAgain() throws Exception {
         transport.observe = true;
         transport.identity = json("{\"di\":\"" + DEVICE_ID + "\",\"rt\":[\"oic.d.refrigerator\"]}");
@@ -1396,6 +1422,33 @@ class ApplianceHandlerTest {
 
         void advance(long millis) {
             nanoTime.addAndGet(TimeUnit.MILLISECONDS.toNanos(millis));
+        }
+
+        void fireConfirmation() throws Exception {
+            // The expiry task publishes the cached state again; run it like a poll to keep tests deterministic.
+            // Fire the earliest non-cancelled task so the confirmation timer wins over the later fallback poll,
+            // and wait for it to finish since execute() only submits to the pool.
+            awaitWorkers();
+            Poll poll = null;
+            for (Poll candidate : polls) {
+                if (!candidate.future().isCancelled() && (poll == null || candidate.due() < poll.due())) {
+                    poll = candidate;
+                }
+            }
+            assertNotNull(poll, "No confirmation timer scheduled");
+            polls.remove(poll);
+            final Poll task = poll;
+            task.future().cancel(false);
+            nanoTime.accumulateAndGet(task.due(), Math::max);
+            CountDownLatch done = new CountDownLatch(1);
+            execute(() -> {
+                try {
+                    task.task().run();
+                } finally {
+                    done.countDown();
+                }
+            });
+            assertTrue(done.await(WAIT_SECONDS, TimeUnit.SECONDS));
         }
 
         void awaitWorkers() throws Exception {

@@ -168,6 +168,8 @@ public class ApplianceHandler extends BaseThingHandler {
         @Nullable
         ScheduledFuture<?> poll;
         @Nullable
+        ScheduledFuture<?> confirmation;
+        @Nullable
         ScheduledFuture<?> worker;
         boolean running;
         boolean refresh = true;
@@ -267,6 +269,10 @@ public class ApplianceHandler extends BaseThingHandler {
                 ScheduledFuture<?> poll = previous.poll;
                 if (poll != null) {
                     poll.cancel(false);
+                }
+                ScheduledFuture<?> confirmation = previous.confirmation;
+                if (confirmation != null) {
+                    confirmation.cancel(false);
                 }
                 ScheduledFuture<?> worker = previous.worker;
                 if (worker != null) {
@@ -772,6 +778,7 @@ public class ApplianceHandler extends BaseThingHandler {
             }
             current.expectations.put(point.id(), new CommandExpectation(previous, expected,
                     nanoTime.getAsLong() + TimeUnit.MILLISECONDS.toNanos(COMMAND_CONFIRMATION_MILLIS)));
+            scheduleConfirmation(current);
         }
     }
 
@@ -789,6 +796,30 @@ public class ApplianceHandler extends BaseThingHandler {
             return false;
         }
         return state.equals(expectation.previous());
+    }
+
+    /**
+     * Publishes the cached state once the confirmation window expires. With all observations established no poll
+     * is running, so without this timer a command the appliance never applies would stay on the commanded value
+     * indefinitely; the one-shot is lifecycle-bound like the fallback poll.
+     */
+    private void scheduleConfirmation(Session current) {
+        synchronized (lifecycle) {
+            if (!isActive(current)) {
+                return;
+            }
+            if (current.confirmation != null && !current.confirmation.isDone()) {
+                current.confirmation.cancel(false);
+            }
+            current.confirmation = executor.schedule(() -> {
+                synchronized (lifecycle) {
+                    if (isActive(current)) {
+                        current.confirmation = null;
+                        publish(current);
+                    }
+                }
+            }, COMMAND_CONFIRMATION_MILLIS, TimeUnit.MILLISECONDS);
+        }
     }
 
     private static @Nullable State expectedState(Point point, Command command) {
@@ -955,6 +986,10 @@ public class ApplianceHandler extends BaseThingHandler {
             current.observations.clear();
             current.notifications.clear();
             current.expectations.clear();
+            if (current.confirmation != null) {
+                current.confirmation.cancel(false);
+                current.confirmation = null;
+            }
             schedulePoll(current);
             logger.debug("Appliance {} going OFFLINE ({}): {}", getThing().getUID(), detail, message);
             updateStatus(ThingStatus.OFFLINE, detail, message);
