@@ -105,7 +105,7 @@ public class ItemTools {
                                 Map.of("type", "array", "items", Map.of("type", "string"), "description",
                                         "List of exact item names to retrieve")),
                         List.of("itemNames"), null, null, null))
-                .build();
+                .annotations(readOnlyAnnotations()).build();
     }
 
     /**
@@ -171,7 +171,8 @@ public class ItemTools {
 
         return McpSchema.Tool.builder().name("search_items").description(
                 "Search for items by name, label, synonyms, type, tags, or group membership. Returns matching items ranked by relevance with their current state. Use this when you need to find specific items or don't know the exact item name.")
-                .inputSchema(new McpSchema.JsonSchema("object", properties, List.of(), null, null, null)).build();
+                .inputSchema(new McpSchema.JsonSchema("object", properties, List.of(), null, null, null))
+                .annotations(readOnlyAnnotations()).build();
     }
 
     /**
@@ -291,6 +292,8 @@ public class ItemTools {
                         All item types also accept REFRESH as a command (asks the binding to re-poll the device), \
                         and NULL or UNDEF as a state (clears the value). Use get_item first if you're not sure of an item's type."""));
 
+        // Commands drive real devices and overwrite current state, and relative commands such as INCREASE or
+        // NEXT make repeated calls cumulative.
         return McpSchema.Tool.builder().name("set_item").description("""
                 Change an item's value. Action-dispatched: \
                 action='command' sends a command through the binding to control the physical device — \
@@ -300,7 +303,7 @@ public class ItemTools {
                 the item's state is, not requesting that openHAB change it. Most device-control intents should use \
                 'command'. See the 'value' field for the full list of accepted values per item type.""").inputSchema(
                 new McpSchema.JsonSchema("object", props, List.of("action", "itemName", "value"), null, null, null))
-                .build();
+                .annotations(writeAnnotations(true, false)).build();
     }
 
     /**
@@ -419,13 +422,14 @@ public class ItemTools {
         props.put("groupFunction", Map.of("type", "string", "description",
                 "create only, for Group items: aggregation function (AND, OR, NAND, NOR, AVG, SUM, MIN, MAX, COUNT, LATEST, EARLIEST, EQUALITY)."));
 
+        // Annotated for the most impactful action: 'delete' removes the item and 'update' overwrites it.
         return McpSchema.Tool.builder().name("manage_item").description("""
                 Create, update, or delete an item. Action-dispatched: \
                 action='create' requires name and type; \
                 action='update' requires name (and any fields to change — label, category, tags, groupNames); \
                 action='delete' requires only name (links are removed automatically).""")
                 .inputSchema(new McpSchema.JsonSchema("object", props, List.of("action", "name"), null, null, null))
-                .build();
+                .annotations(writeAnnotations(true, false)).build();
     }
 
     /**

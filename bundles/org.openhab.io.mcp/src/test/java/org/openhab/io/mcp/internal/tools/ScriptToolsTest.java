@@ -217,4 +217,11 @@ class ScriptToolsTest {
         assertEquals(true, parsed.get("success"));
         assertEquals("declare module 'openhab';", parsed.get("types"));
     }
+
+    @Test
+    void toolAnnotationsDescribeSideEffects() {
+        ScriptTools t = enabled();
+        McpTestHelper.assertWriteTool(t.getExecuteScriptTool(), true, false);
+        McpTestHelper.assertReadOnlyTool(t.getGetOpenhabJsTypesTool());
+    }
 }

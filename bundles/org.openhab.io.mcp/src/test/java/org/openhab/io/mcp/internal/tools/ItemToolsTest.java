@@ -680,4 +680,13 @@ class ItemToolsTest {
         assertError(result);
         assertErrorContains(result, "required");
     }
+
+    @Test
+    void toolAnnotationsDescribeSideEffects() {
+        ItemTools t = tools();
+        McpTestHelper.assertReadOnlyTool(t.getItemTool());
+        McpTestHelper.assertReadOnlyTool(t.getSearchItemsTool());
+        McpTestHelper.assertWriteTool(t.getSetItemTool(), true, false);
+        McpTestHelper.assertWriteTool(t.getManageItemTool(), true, false);
+    }
 }

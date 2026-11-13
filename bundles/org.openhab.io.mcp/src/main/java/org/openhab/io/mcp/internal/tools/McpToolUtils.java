@@ -48,6 +48,25 @@ public class McpToolUtils {
     }
 
     /**
+     * Annotations for a tool that does not modify openHAB. The MCP specification defines the destructive and
+     * idempotent hints as meaningful only for tools that are not read-only, so they are left unset.
+     */
+    public static McpSchema.ToolAnnotations readOnlyAnnotations() {
+        return new McpSchema.ToolAnnotations(null, true, null, null, null, null);
+    }
+
+    /**
+     * Annotations for a tool that modifies openHAB. The destructive hint is always set explicitly because the MCP
+     * specification treats an absent value as {@code true}.
+     *
+     * @param destructive whether the tool may delete or overwrite existing state rather than only add to it
+     * @param idempotent whether repeating a call with the same arguments has no additional effect
+     */
+    public static McpSchema.ToolAnnotations writeAnnotations(boolean destructive, boolean idempotent) {
+        return new McpSchema.ToolAnnotations(null, false, destructive, idempotent, null, null);
+    }
+
+    /**
      * Serializes the given data object to JSON and wraps it in a successful
      * {@link CallToolResult} with a single {@link McpSchema.TextContent} entry.
      *

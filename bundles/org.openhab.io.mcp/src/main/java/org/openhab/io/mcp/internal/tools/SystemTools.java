@@ -89,7 +89,8 @@ public class SystemTools {
                 '+5m' that the server resolves itself. Use this tool when you need the server's wall-clock time \
                 for reasoning ('is it morning?', 'what day is it?') or for absolute scheduling against an \
                 unfamiliar timezone.""")
-                .inputSchema(new McpSchema.JsonSchema("object", Map.of(), List.of(), null, null, null)).build();
+                .inputSchema(new McpSchema.JsonSchema("object", Map.of(), List.of(), null, null, null))
+                .annotations(readOnlyAnnotations()).build();
     }
 
     /**
@@ -135,7 +136,8 @@ public class SystemTools {
                 climate readings (temperature/humidity), device health (offline things), \
                 and energy data. Use this when the user asks about the overall status \
                 of their home or wants a summary.""")
-                .inputSchema(new McpSchema.JsonSchema("object", Map.of(), List.of(), null, null, null)).build();
+                .inputSchema(new McpSchema.JsonSchema("object", Map.of(), List.of(), null, null, null))
+                .annotations(readOnlyAnnotations()).build();
     }
 
     /**

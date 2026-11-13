@@ -153,8 +153,10 @@ public class StaticAssetTools {
                 "Default 'minimal' keeps put/delete responses compact (just success+path+url). 'full' echoes file metadata.",
                 "enum", List.of("minimal", "full")));
 
+        // Annotated for the most impactful action: 'delete' removes the file and 'put' overwrites it.
         return McpSchema.Tool.builder().name("manage_static_asset").description(description)
-                .inputSchema(new McpSchema.JsonSchema("object", p, List.of("action"), null, null, null)).build();
+                .inputSchema(new McpSchema.JsonSchema("object", p, List.of("action"), null, null, null))
+                .annotations(writeAnnotations(true, false)).build();
     }
 
     public CallToolResult handleManageStaticAsset(McpSyncServerExchange exchange, McpSchema.CallToolRequest request) {

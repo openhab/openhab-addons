@@ -325,4 +325,9 @@ class StaticAssetToolsTest {
         CallToolResult result = call(tools(), args("action", "wat"));
         assertErrorContains(result, "Invalid action");
     }
+
+    @Test
+    void toolAnnotationsDescribeSideEffects() {
+        McpTestHelper.assertWriteTool(tools().getManageStaticAssetTool(), true, false);
+    }
 }

@@ -219,4 +219,20 @@ class McpToolUtilsTest {
         Map<String, Object> parsed = parseResult(result);
         assertEquals("hello", parsed.get("state"));
     }
+
+    @Test
+    void testWriteAnnotationsSerializeExplicitDestructiveHint() throws Exception {
+        String json = jsonMapper.writeValueAsString(McpToolUtils.writeAnnotations(false, true));
+        assertTrue(json.contains("\"readOnlyHint\":false"), json);
+        assertTrue(json.contains("\"destructiveHint\":false"), json);
+        assertTrue(json.contains("\"idempotentHint\":true"), json);
+    }
+
+    @Test
+    void testReadOnlyAnnotationsOmitWriteHints() throws Exception {
+        String json = jsonMapper.writeValueAsString(McpToolUtils.readOnlyAnnotations());
+        assertTrue(json.contains("\"readOnlyHint\":true"), json);
+        assertFalse(json.contains("destructiveHint"), json);
+        assertFalse(json.contains("idempotentHint"), json);
+    }
 }
