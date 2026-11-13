@@ -1,0 +1,19 @@
+syntax = "proto2";
+option java_package = "org.openhab.binding.atv.internal.client.protocols.mrp.dto";
+
+import "atv/mrp/protobuf/ProtocolMessage.proto";
+
+extend ProtocolMessage {
+  optional SetConnectionStateMessage setConnectionStateMessage = 42;
+}
+
+message SetConnectionStateMessage {
+  enum ConnectionState {
+    None = 0;
+    Connecting = 1;
+    Connected = 2;
+    Disconnected = 3;
+  }
+
+  optional ConnectionState state = 1;
+}

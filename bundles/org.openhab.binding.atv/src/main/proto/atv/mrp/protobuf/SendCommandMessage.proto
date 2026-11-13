@@ -1,0 +1,17 @@
+syntax = "proto2";
+option java_package = "org.openhab.binding.atv.internal.client.protocols.mrp.dto";
+
+import "atv/mrp/protobuf/ProtocolMessage.proto";
+import "atv/mrp/protobuf/CommandInfo.proto";
+import "atv/mrp/protobuf/CommandOptions.proto";
+import "atv/mrp/protobuf/PlayerPath.proto";
+
+extend ProtocolMessage {
+  optional SendCommandMessage sendCommandMessage = 6;
+}
+
+message SendCommandMessage {
+  optional Command command = 1;
+  optional CommandOptions options = 2;
+  optional PlayerPath playerPath = 3;
+}
