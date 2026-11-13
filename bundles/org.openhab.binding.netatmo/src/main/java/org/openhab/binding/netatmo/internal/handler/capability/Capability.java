@@ -105,46 +105,46 @@ public class Capability {
         statusReason = null;
     }
 
-    protected void afterNewData(@SuppressWarnings("unused") @Nullable NAObject newData) {
+    protected void afterNewData(@Nullable NAObject newData) {
         if (!properties.equals(getThing().getProperties())) {
             getThing().setProperties(properties);
         }
         firstLaunch = false;
     }
 
-    protected void updateNAThing(@SuppressWarnings("unused") NAThing newData) {
+    protected void updateNAThing(NAThing newData) {
         // do nothing by default, can be overridden by subclasses
     }
 
-    protected void updateNAMain(@SuppressWarnings("unused") NAMain newData) {
+    protected void updateNAMain(NAMain newData) {
         // do nothing by default, can be overridden by subclasses
     }
 
-    protected void updateHomeEvent(@SuppressWarnings("unused") HomeEvent newData) {
+    protected void updateHomeEvent(HomeEvent newData) {
         // do nothing by default, can be overridden by subclasses
     }
 
-    protected void updateHomeStatus(@SuppressWarnings("unused") HomeStatus newData) {
+    protected void updateHomeStatus(HomeStatus newData) {
         // do nothing by default, can be overridden by subclasses
     }
 
-    protected void updateHomeData(@SuppressWarnings("unused") HomeData newData) {
+    protected void updateHomeData(HomeData newData) {
         // do nothing by default, can be overridden by subclasses
     }
 
-    protected void updateEvent(@SuppressWarnings("unused") Event newData) {
+    protected void updateEvent(Event newData) {
         // do nothing by default, can be overridden by subclasses
     }
 
-    protected void updateWebhookEvent(@SuppressWarnings("unused") WebhookEvent newData) {
+    protected void updateWebhookEvent(WebhookEvent newData) {
         // do nothing by default, can be overridden by subclasses
     }
 
-    protected void updateNADevice(@SuppressWarnings("unused") Device newData) {
+    protected void updateNADevice(Device newData) {
         // do nothing by default, can be overridden by subclasses
     }
 
-    protected void updateErrors(@SuppressWarnings("unused") NAError error) {
+    protected void updateErrors(NAError error) {
         // do nothing by default, can be overridden by subclasses
     }
 
@@ -163,12 +163,11 @@ public class Capability {
         // do nothing by default, can be overridden by subclasses
     }
 
-    public void updateHomeStatusModule(@SuppressWarnings("unused") HomeStatusModule newData) {
+    public void updateHomeStatusModule(HomeStatusModule newData) {
         // do nothing by default, can be overridden by subclasses
     }
 
-    public void handleCommand(@SuppressWarnings("unused") String channelName,
-            @SuppressWarnings("unused") Command command) {
+    public void handleCommand(String channelName, Command command) {
         // do nothing by default, can be overridden by subclasses
     }
 
