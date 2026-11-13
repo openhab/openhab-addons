@@ -78,6 +78,7 @@ import com.google.gson.Gson;
  * If a Components configuration changes, the known ChannelGroupType and ChannelTypes are replaced with the new ones.
  *
  * @author David Graeff - Initial contribution
+ * @author Cody Cutrer - Resolve normalized component ID collisions
  */
 @NonNullByDefault
 public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
@@ -354,7 +355,7 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
                         haComponentsByHaId.remove(known.getHaID());
                         haComponents.remove(known.getComponentId());
                         if (!known.getComponentId().equals(discovered.getComponentId())) {
-                            discovered.resolveConflict();
+                            discovered.setComponentId(known.getComponentId());
                         }
                     } else {
                         known.setConfigSeen();
@@ -556,7 +557,11 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
 
     // should only be called when it's safe to access haComponents
     private boolean addComponent(AbstractComponent<?> component) {
-        AbstractComponent<?> existing = haComponents.get(component.getComponentId());
+        AbstractComponent<?> matchingId = haComponents.get(component.getComponentId());
+        AbstractComponent<?> existing = matchingId != null ? matchingId
+                : haComponents.values().stream().filter(
+                        candidate -> candidate.getDefaultComponentId().equals(component.getDefaultComponentId()))
+                        .findFirst().orElse(null);
         if (existing != null) {
             // Check for components that merge together
             if (component.mergeable(existing)) {
@@ -575,11 +580,16 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
 
             // rename the conflict
             haComponents.remove(existing.getComponentId());
-            existing.resolveConflict();
-            component.resolveConflict();
-            haComponents.put(existing.getComponentId(), existing);
+            if (existing.getHaID().component.equals(component.getHaID().component)) {
+                existing.resolveDiscoveryIdConflict();
+                component.resolveDiscoveryIdConflict();
+            } else {
+                existing.resolveConflict();
+                component.resolveConflict();
+            }
+            reserveComponentId(existing);
         }
-        haComponents.put(component.getComponentId(), component);
+        reserveComponentId(component);
         haComponentsByUniqueId.put(component.getUniqueId(), component);
         haComponentsByHaId.put(component.getHaID(), component);
 
@@ -591,6 +601,19 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
             }
         }
         return true;
+    }
+
+    private void reserveComponentId(AbstractComponent<?> component) {
+        AbstractComponent<?> existing = haComponents.remove(component.getComponentId());
+        if (existing != null) {
+            // Encoded discovery topics distinguish IDs even when normalization or a platform suffix collides.
+            existing.resolveDiscoveryIdConflict();
+            component.resolveDiscoveryIdConflict();
+            reserveComponentId(existing);
+            reserveComponentId(component);
+        } else {
+            haComponents.put(component.getComponentId(), component);
+        }
     }
 
     /**

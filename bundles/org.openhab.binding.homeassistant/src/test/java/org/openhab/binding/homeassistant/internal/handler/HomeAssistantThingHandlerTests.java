@@ -21,6 +21,7 @@ import static org.mockito.Mockito.*;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -56,6 +57,7 @@ import com.google.gson.Gson;
  * Tests for {@link HomeAssistantThingHandler}
  *
  * @author Anton Kharuzhy - Initial contribution
+ * @author Cody Cutrer - Test normalized component ID collisions
  */
 @ExtendWith(MockitoExtension.class)
 @NonNullByDefault
@@ -546,6 +548,74 @@ public class HomeAssistantThingHandlerTests extends AbstractHomeAssistantTests {
 
         assertThat(nonSpyThingHandler.getThing().getChannels().size(), is(1));
         assertThat(nonSpyThingHandler.getThing().getChannel(channelId), notNullValue());
+    }
+
+    @ParameterizedTest
+    @CsvSource({ "false, false", "true, false", "false, true", "true, true" })
+    public void testDeviceComponentIdCollisions(boolean reverseOrder, boolean grouped) {
+        setupThingHandlerWithTopics(List.of("device/testnode/dev1"));
+        thingHandler.initialize();
+
+        String first = deviceSensorConfig("temp.sensor", grouped);
+        String second = deviceSensorConfig("temp_sensor", grouped);
+        String payload = """
+                {
+                  "dev": {"identifiers": ["testnode_dev1"], "name": "dev1"},
+                  "o": {"name": "repro"},
+                  "cmps": {%s, %s, %s, %s}
+                }
+                """.formatted(reverseOrder ? second : first, reverseOrder ? first : second,
+                deviceSensorConfig("temp:sensor", grouped), deviceSensorConfig("humidity", grouped));
+        String configTopic = "homeassistant/device/testnode/dev1/config";
+        thingHandler.discoverComponents.processMessage(configTopic, payload.getBytes(StandardCharsets.UTF_8));
+        thingHandler.delayedProcessing.forceProcessNow();
+
+        var channels = nonSpyThingHandler.getThing().getChannels();
+        assertThat(channels.size(), is(grouped ? 8 : 4));
+        assertThat(channels.stream().map(Channel::getUID).distinct().count(), is((long) channels.size()));
+        assertThat(nonSpyThingHandler.getThing().getChannel(grouped ? "testnode_humidity#sensor" : "testnode_humidity"),
+                notNullValue());
+        Map<String, String> componentIds = nonSpyThingHandler.getComponents().values().stream().collect(
+                Collectors.toMap(component -> component.getHaID().objectID, component -> component.getComponentId()));
+        assertThat(componentIds.size(), is(4));
+        assertThat(componentIds.get("testnode temp.sensor"),
+                is("testnode_temp_sensor_homeassistant_2Fsensor_2Fdev1_2Ftestnode_20temp_2Esensor_2Fconfig"));
+        assertThat(componentIds.get("testnode temp_sensor"),
+                is("testnode_temp_sensor_homeassistant_2Fsensor_2Fdev1_2Ftestnode_20temp_5Fsensor_2Fconfig"));
+
+        // A changed payload replaces the components; their channel IDs must remain stable.
+        thingHandler.discoverComponents.processMessage(configTopic,
+                payload.replace("Temperature", "Updated temperature").getBytes(StandardCharsets.UTF_8));
+        thingHandler.delayedProcessing.forceProcessNow();
+        assertThat(
+                nonSpyThingHandler.getThing().getChannels().stream().map(Channel::getUID).collect(Collectors.toSet()),
+                is(channels.stream().map(Channel::getUID).collect(Collectors.toSet())));
+        assertThat(
+                nonSpyThingHandler.getComponents().values().stream().collect(Collectors
+                        .toMap(component -> component.getHaID().objectID, component -> component.getComponentId())),
+                is(componentIds));
+
+        String persistedCache = thingHandler.config.deviceConfig;
+        nonSpyThingHandler.dispose();
+        setupThingHandlerWithTopics(List.of("device/testnode/dev1"));
+        haThing.getConfiguration().put(HandlerConfiguration.PROPERTY_DEVICE_CONFIG, persistedCache);
+        thingHandler.initialize();
+        thingHandler.delayedProcessing.forceProcessNow();
+        assertThat(
+                nonSpyThingHandler.getThing().getChannels().stream().map(Channel::getUID).collect(Collectors.toSet()),
+                is(channels.stream().map(Channel::getUID).collect(Collectors.toSet())));
+    }
+
+    private static String deviceSensorConfig(String componentId, boolean grouped) {
+        return """
+                "%s": {
+                  "p": "sensor",
+                  "name": "Temperature",
+                  "unique_id": "%s",
+                  "state_topic": "test/dev1/%s"%s
+                }
+                """.formatted(componentId, componentId, componentId,
+                grouped ? ", \"json_attributes_topic\": \"test/dev1/attributes\"" : "");
     }
 
     @Test
