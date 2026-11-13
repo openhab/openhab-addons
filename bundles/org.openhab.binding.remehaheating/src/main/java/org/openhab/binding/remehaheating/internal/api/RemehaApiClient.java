@@ -326,8 +326,10 @@ public class RemehaApiClient {
     private ContentResponse sendGet(String path, String token)
             throws InterruptedException, TimeoutException, ExecutionException {
         return httpClient.newRequest(API_BASE_URL + path).method(HttpMethod.GET)
-                .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS).header("Authorization", "Bearer " + token)
-                .header("Ocp-Apim-Subscription-Key", SUBSCRIPTION_KEY).send();
+                .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS).headers(h -> {
+                    h.add("Authorization", "Bearer " + token);
+                    h.add("Ocp-Apim-Subscription-Key", SUBSCRIPTION_KEY);
+                }).send();
     }
 
     /**
