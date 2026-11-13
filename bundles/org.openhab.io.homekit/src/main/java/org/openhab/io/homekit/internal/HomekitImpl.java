@@ -60,6 +60,7 @@ import org.slf4j.LoggerFactory;
 
 import io.github.hapjava.accessories.HomekitAccessory;
 import io.github.hapjava.server.HomekitAccessoryCategories;
+import io.github.hapjava.server.HomekitAdvertisers;
 import io.github.hapjava.server.impl.HomekitRoot;
 import io.github.hapjava.server.impl.HomekitServer;
 import io.github.hapjava.server.impl.crypto.HAPSetupCodeUtils;
@@ -261,8 +262,17 @@ public class HomekitImpl implements Homekit, NetworkAddressChangeListener, Ready
             if (settings.useOHmDNS) {
                 logger.trace("no suitable mDNS server for IP {} found", localNetworkInterface);
             }
-            logger.trace("create HomeKit server with dedicated mDNS server");
-            homekitServer = new HomekitServer(localNetworkInterface, settings.port + instance);
+            // On macOS (and other hosts with a system mDNSResponder), a dedicated JmDNS
+            // instance cannot bind UDP 5353. Prefer native DNS-SD / Bonjour via HAP-Java.
+            if (HomekitAdvertisers.isNativeDnssdSupported()) {
+                logger.debug("Creating HomeKit server with native DNS-SD advertiser for {} (no UDP 5353 bind)",
+                        localNetworkInterface);
+                homekitServer = new HomekitServer(localNetworkInterface, settings.port + instance,
+                        HomekitAdvertisers.nativeDnssd());
+            } else {
+                logger.trace("create HomeKit server with dedicated mDNS server");
+                homekitServer = new HomekitServer(localNetworkInterface, settings.port + instance);
+            }
         }
         // Register the instance only once it is fully started, and release what was set up if starting fails, so
         // that a later attempt (e.g. after a network change) can start again from scratch.
