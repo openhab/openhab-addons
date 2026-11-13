@@ -221,8 +221,13 @@ public class AmpliPiHandler extends BaseBridgeHandler {
     }
 
     public void playPA(String audioUrl, @Nullable PercentType volume) {
+        playPA(audioUrl, volume, null);
+    }
+
+    public void playPA(String audioUrl, @Nullable PercentType volume, @Nullable List<Integer> zones) {
         Announcement announcement = new Announcement();
         announcement.setMedia(audioUrl);
+        announcement.setZones(zones);
         if (volume != null) {
             announcement.setVol(AmpliPiUtils.percentTypeToVolume(volume));
         }
