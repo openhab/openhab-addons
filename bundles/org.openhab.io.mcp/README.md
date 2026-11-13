@@ -58,6 +58,25 @@ Paste the token into your MCP client as an `Authorization: Bearer oh.…` header
 Tokens are tied to the user that created them, so the assistant's permissions match whatever that user can do through the openHAB UI.
 If you want to restrict what the assistant can touch, create a dedicated openHAB user with limited permissions and generate the token from that account.
 
+### Keeping the token out of config files
+
+The examples below show `oh.YOUR_TOKEN` inline for brevity, but a token pasted into a client config file is stored in plain text, where it can end up in backups, dotfile repositories, or a project folder the assistant itself can read.
+Where your client allows it, keep the token in a secret store and have the client read it at connect time instead:
+
+- **OAuth:** clients that support it never need a static token (see the note below).
+- **Claude Code `headersHelper`:** a command that prints the headers as JSON each time Claude Code connects.
+  On macOS, store the token once in the Keychain with `security add-generic-password -a "$USER" -s openhab-api-token -w` (it prompts for the value), then add the server with:
+
+  ```bash
+  claude mcp add-json --scope user openhab "$(cat <<'EOF'
+  {"type":"http","url":"http://openhab.local:8080/mcp","headersHelper":"printf '{\"Authorization\":\"Bearer %s\"}' \"$(security find-generic-password -a \"$USER\" -s openhab-api-token -w)\""}
+  EOF
+  )"
+  ```
+
+- **Environment variables:** many clients expand variables in header values, for example `"Authorization": "Bearer ${OPENHAB_API_TOKEN}"` in Claude Code's `.mcp.json`.
+  Check your client's documentation for the exact syntax, and set the variable from your secret store rather than a plain-text profile.
+
 > Modern MCP clients (recent Claude, ChatGPT, `mcp-remote`) can drive a browser-based OAuth login — no token pasting needed.
 > The server advertises the necessary OAuth metadata automatically; just give the client your server URL and it'll walk you through sign-in the first time.
 
@@ -278,6 +297,10 @@ Requires a paid ChatGPT plan (Plus, Pro, Business, Enterprise, Education).
 > That will improve as clients add support; the server is already ready for it.
 
 ## What the assistant can do
+
+`search_items` and `get_rules` return results in pages (50 by default, adjustable with the `limit` and `offset` arguments), and each response includes the `total` so the assistant knows when to fetch more.
+Tool-description context usage depends on the client: clients that load every enabled tool up front incur a larger baseline, while clients with tool search can defer descriptions until needed.
+Leave features off that you don't need.
 
 ### Items
 
