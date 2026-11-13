@@ -27,4 +27,9 @@ public class VolumioEvents {
      *
      */
     public static final String PUSH_STATE = "pushState";
+
+    /**
+     * Pushes the current play queue, as a JSON array, in reply to {@code getQueue} and whenever the queue changes.
+     */
+    public static final String PUSH_QUEUE = "pushQueue";
 }

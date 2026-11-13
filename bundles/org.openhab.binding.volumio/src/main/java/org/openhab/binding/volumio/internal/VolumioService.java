@@ -16,6 +16,7 @@ import java.net.InetAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.UnknownHostException;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.json.JSONException;
@@ -30,6 +31,10 @@ import io.socket.client.Socket;
 import io.socket.emitter.Emitter;
 
 /**
+ * Thin wrapper around the Volumio Socket.IO (WebSocket) API.
+ *
+ * @see <a href="https://developers.volumio.com/api/websocket-api">Volumio WebSocket API</a>
+ *
  * @author Patrick Sernetz - Initial Contribution
  * @author Chris Wohlbrecht - Adaption for openHAB 3
  * @author Michael Loercher - Adaption for openHAB 3
@@ -41,7 +46,10 @@ public class VolumioService {
 
     private final Socket socket;
 
-    private boolean connected;
+    private volatile boolean connected;
+
+    /** Used to log a failed connection attempt only once per outage; retries are logged at debug level. */
+    private final AtomicBoolean connectErrorLogged = new AtomicBoolean();
 
     public VolumioService(String protocol, String hostname, int port, int timeout)
             throws URISyntaxException, UnknownHostException {
@@ -51,7 +59,7 @@ public class VolumioService {
 
         IO.Options opts = new IO.Options();
         opts.reconnection = true;
-        opts.reconnectionDelay = 1000 * 30;
+        opts.reconnectionDelay = 1000 * 5;
         opts.reconnectionDelayMax = 1000 * 60;
         opts.timeout = timeout;
 
@@ -69,22 +77,31 @@ public class VolumioService {
 
         socket.on(Socket.EVENT_RECONNECTING, arg0 -> logger.debug("Trying to reconnect to Volumio on {}", hostname));
 
-        socket.on(Socket.EVENT_CONNECT_ERROR, arg0 -> logger.error("Could not connect to Volumio on {}", hostname));
+        socket.on(Socket.EVENT_CONNECT_ERROR, arg0 -> {
+            if (connectErrorLogged.compareAndSet(false, true)) {
+                logger.warn("Could not connect to Volumio on {}, will keep retrying", hostname);
+            } else {
+                logger.debug("Could not connect to Volumio on {}", hostname);
+            }
+        });
 
         socket.on(Socket.EVENT_CONNECT_TIMEOUT,
-                arg0 -> logger.error("Timedout while conntecting to Volumio on {}", hostname));
+                arg0 -> logger.debug("Timed out while connecting to Volumio on {}", hostname));
 
         socket.on(Socket.EVENT_CONNECT, arg0 -> {
-            logger.info("Connected to Volumio on {}", hostname);
-            setConnected(true);
-
+            logger.debug("Connected to Volumio on {}", hostname);
+            connectErrorLogged.set(false);
+            connected = true;
+            // Volumio does not push the current state on connect, so ask for it
+            getState();
+            getQueue();
         }).on(Socket.EVENT_DISCONNECT, arg0 -> {
-            logger.warn("Disconnected from Volumio on {}", hostname);
-            setConnected(false);
+            logger.debug("Disconnected from Volumio on {}", hostname);
+            connected = false;
         });
     }
 
-    public void connect() throws InterruptedException {
+    public void connect() {
         socket.connect();
     }
 
@@ -109,6 +126,10 @@ public class VolumioService {
         socket.emit(VolumioCommands.GET_STATE);
     }
 
+    public void getQueue() {
+        socket.emit(VolumioCommands.GET_QUEUE);
+    }
+
     public void play() {
         socket.emit(VolumioCommands.PLAY);
     }
@@ -119,6 +140,15 @@ public class VolumioService {
 
     public void stop() {
         socket.emit(VolumioCommands.STOP);
+    }
+
+    /**
+     * Seek within the current track.
+     *
+     * @param seconds the position to jump to, in seconds
+     */
+    public void seek(int seconds) {
+        socket.emit(VolumioCommands.SEEK, seconds);
     }
 
     public void play(Integer index) {
@@ -137,6 +167,17 @@ public class VolumioService {
         socket.emit(VolumioCommands.VOLUME, level.intValue());
     }
 
+    /**
+     * Raise or lower the volume by Volumio's built-in step ({@code volume} with {@code +} or {@code -}).
+     */
+    public void changeVolume(boolean increase) {
+        socket.emit(VolumioCommands.VOLUME, increase ? "+" : "-");
+    }
+
+    public void setMute(boolean mute) {
+        socket.emit(mute ? VolumioCommands.MUTE : VolumioCommands.UNMUTE, "");
+    }
+
     public void shutdown() {
         socket.emit(VolumioCommands.SHUTDOWN);
     }
@@ -146,15 +187,7 @@ public class VolumioService {
     }
 
     public void playPlaylist(String playlistName) {
-        JSONObject item = new JSONObject();
-
-        try {
-            item.put("name", playlistName);
-
-            socket.emit(VolumioCommands.PLAY_PLAYLIST, item);
-        } catch (JSONException e) {
-            logger.error("The following error occurred {}", e.getMessage());
-        }
+        emitJson(VolumioCommands.PLAY_PLAYLIST, "name", playlistName);
     }
 
     public void clearQueue() {
@@ -162,39 +195,15 @@ public class VolumioService {
     }
 
     public void setRandom(boolean val) {
-        JSONObject item = new JSONObject();
-
-        try {
-            item.put("value", val);
-
-            socket.emit(VolumioCommands.RANDOM, item);
-        } catch (JSONException e) {
-            logger.error("The following error occurred {}", e.getMessage());
-        }
+        emitJson(VolumioCommands.RANDOM, "value", val);
     }
 
     public void setRepeat(boolean val) {
-        JSONObject item = new JSONObject();
-
-        try {
-            item.put("value", val);
-
-            socket.emit(VolumioCommands.REPEAT, item);
-        } catch (JSONException e) {
-            logger.error("The following error occurred {}", e.getMessage());
-        }
+        emitJson(VolumioCommands.REPEAT, "value", val);
     }
 
     public void playFavorites(String favoriteName) {
-        JSONObject item = new JSONObject();
-
-        try {
-            item.put("name", favoriteName);
-
-            socket.emit(VolumioCommands.PLAY_FAVOURITES, item);
-        } catch (JSONException e) {
-            logger.error("The following error occurred {}", e.getMessage());
-        }
+        emitJson(VolumioCommands.PLAY_FAVOURITES, "name", favoriteName);
     }
 
     /**
@@ -209,65 +218,85 @@ public class VolumioService {
         socket.emit(VolumioCommands.PLAY_RADIO_FAVOURITES);
     }
 
-    public void playURI(String uri) {
-        JSONObject item = new JSONObject();
-        logger.debug("PlayURI: {}", uri);
-        try {
-            item.put("uri", uri);
-
-            socket.emit(VolumioCommands.PLAY, uri);
-        } catch (JSONException e) {
-            logger.error("The following error occurred {}", e.getMessage());
-        }
-    }
-
     public void addPlay(String uri, String title, String serviceType) {
-        JSONObject item = new JSONObject();
-
-        try {
-            item.put("uri", uri);
-            item.put("title", title);
-            item.put("service", serviceType);
-
-            socket.emit(VolumioCommands.ADD_PLAY, item);
-        } catch (JSONException e) {
-            logger.error("The following error occurred {}", e.getMessage());
-        }
+        emitItem(VolumioCommands.ADD_PLAY, uri, title, serviceType);
     }
 
     public void replacePlay(String uri, String title, String serviceType) {
-        JSONObject item = new JSONObject();
+        emitItem(VolumioCommands.REPLACE_AND_PLAY, uri, title, serviceType);
+    }
 
+    public void addToQueue(String uri) {
+        emitJson(VolumioCommands.ADD_TO_QUEUE, "uri", uri);
+    }
+
+    /**
+     * @param index position in the queue, 0 for the first track
+     */
+    public void removeFromQueue(int index) {
+        emitJson(VolumioCommands.REMOVE_FROM_QUEUE, "value", index);
+    }
+
+    /** Add all tracks of a playlist to the queue, without replacing it. */
+    public void enqueuePlaylist(String playlistName) {
+        emitJson(VolumioCommands.ENQUEUE, "name", playlistName);
+    }
+
+    public void addToFavourites(String uri, String title, String serviceType) {
+        emitItem(VolumioCommands.ADD_TO_FAVOURITES, uri, title, serviceType);
+    }
+
+    public void removeFromFavourites(String uri, String serviceType) {
         try {
+            JSONObject item = new JSONObject();
             item.put("uri", uri);
-            item.put("title", title);
             item.put("service", serviceType);
-
-            socket.emit(VolumioCommands.REPLACE_AND_PLAY, item);
+            socket.emit(VolumioCommands.REMOVE_FROM_FAVOURITES, item);
         } catch (JSONException e) {
-            logger.error("The following error occurred {}", e.getMessage());
+            logger.debug("Could not build payload for {}: {}", VolumioCommands.REMOVE_FROM_FAVOURITES, e.getMessage());
         }
     }
 
     public boolean isConnected() {
-        return this.connected;
+        return connected;
     }
 
-    public void setConnected(boolean status) {
-        this.connected = status;
+    /**
+     * Execute a system command. The command is matched case-insensitively.
+     *
+     * @return false if the command is not known
+     */
+    public boolean sendSystemCommand(String command) {
+        logger.debug("Sending system command: {}", command);
+        if (VolumioCommands.SHUTDOWN.equalsIgnoreCase(command)) {
+            shutdown();
+            return true;
+        } else if (VolumioCommands.REBOOT.equalsIgnoreCase(command)) {
+            reboot();
+            return true;
+        }
+        return false;
     }
 
-    public void sendSystemCommand(String string) {
-        logger.warn("Jukebox Command: {}", string);
-        switch (string) {
-            case VolumioCommands.SHUTDOWN:
-                shutdown();
-                break;
-            case VolumioCommands.REBOOT:
-                reboot();
-                break;
-            default:
-                break;
+    private void emitItem(String event, String uri, String title, String serviceType) {
+        try {
+            JSONObject item = new JSONObject();
+            item.put("uri", uri);
+            item.put("title", title);
+            item.put("service", serviceType);
+            socket.emit(event, item);
+        } catch (JSONException e) {
+            logger.debug("Could not build payload for {}: {}", event, e.getMessage());
+        }
+    }
+
+    private void emitJson(String event, String key, Object value) {
+        try {
+            JSONObject item = new JSONObject();
+            item.put(key, value);
+            socket.emit(event, item);
+        } catch (JSONException e) {
+            logger.debug("Could not build payload for {}: {}", event, e.getMessage());
         }
     }
 }
