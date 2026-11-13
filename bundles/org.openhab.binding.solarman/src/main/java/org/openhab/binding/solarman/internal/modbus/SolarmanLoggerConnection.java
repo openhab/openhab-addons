@@ -13,11 +13,11 @@
 package org.openhab.binding.solarman.internal.modbus;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.net.SocketAddress;
-import java.net.SocketTimeoutException;
-import java.util.Arrays;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -28,68 +28,75 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * Owns a cancellable socket and reassembles complete V5 or raw TCP frames.
+ *
  * @author Catalin Sanda - Initial contribution
+ * @author Ricardo Costa - Advanced profiles and shared compatibility corrections
  */
 @NonNullByDefault
 public class SolarmanLoggerConnection implements AutoCloseable {
     private final Logger logger = LoggerFactory.getLogger(SolarmanLoggerConnection.class);
-    @Nullable
-    private Socket socket;
+    private volatile @Nullable Socket socket;
 
-    public SolarmanLoggerConnection(String hostName, int port) {
-        SocketAddress sockaddr = new InetSocketAddress(hostName, port);
-        Socket localSocket = connectSocket(sockaddr);
+    SolarmanLoggerConnection() {
+        this(new Socket());
+    }
 
-        if (localSocket == null) {
-            logger.debug("Error creating socket");
-        } else {
-            socket = localSocket;
+    SolarmanLoggerConnection(Socket socket) {
+        this.socket = socket;
+    }
+
+    public SolarmanLoggerConnection(String hostname, int port) {
+        this();
+        connect(hostname, port);
+    }
+
+    void connect(String hostname, int port) {
+        Socket local = socket;
+        if (local == null) {
+            return;
+        }
+        try {
+            local.setSoTimeout(10_000);
+            local.connect(new InetSocketAddress(hostname, port), 10_000);
+        } catch (IOException e) {
+            logger.debug("Could not connect to logger at {}:{}", hostname, port, e);
+            close();
         }
     }
 
-    public byte[] sendRequest(byte[] reqFrame) throws SolarmanConnectionException {
-        // Will not be used by multiple threads, so not bothering making it thread safe for now
-        Socket localSocket = socket;
-
-        if (localSocket == null) {
-            throw new SolarmanConnectionException("Socket is null, not reading data this time");
+    public byte[] sendRequest(byte[] request) throws SolarmanConnectionException {
+        Socket local = socket;
+        if (local == null || !isConnected()) {
+            throw new SolarmanConnectionException("Logger connection is closed");
         }
-
         try {
-            logger.trace("Request frame: {}", bytesToHex(reqFrame));
-            localSocket.getOutputStream().write(reqFrame);
-        } catch (IOException e) {
-            logger.debug("Unable to send frame to logger");
-            return new byte[0];
-        }
-
-        byte[] buffer = new byte[1024];
-        int attempts = 5;
-
-        while (attempts > 0) {
-            attempts--;
-            try {
-                int bytesRead = localSocket.getInputStream().read(buffer);
-                if (bytesRead < 0) {
-                    throw new SolarmanConnectionException("No data received");
-                } else {
-                    byte[] data = Arrays.copyOfRange(buffer, 0, bytesRead);
-                    if (logger.isDebugEnabled()) {
-                        logger.trace("Response frame: {}", bytesToHex(data));
-                    }
-                    return data;
-                }
-            } catch (SocketTimeoutException e) {
-                logger.debug("Connection timeout", e);
-                if (attempts == 0) {
-                    throw new SolarmanConnectionException("Too many socket timeouts", e);
-                }
-            } catch (IOException e) {
-                throw new SolarmanConnectionException("Error reading data from ", e);
+            logger.debug("Request frame: {}", bytesToHex(request));
+            local.getOutputStream().write(request);
+            InputStream input = local.getInputStream();
+            boolean v5 = request.length > 0 && request[0] == (byte) 0xA5;
+            byte[] header = readFully(input, v5 ? 3 : 6);
+            int payloadLength = Short.toUnsignedInt(ByteBuffer.wrap(header, v5 ? 1 : 4, 2)
+                    .order(v5 ? ByteOrder.LITTLE_ENDIAN : ByteOrder.BIG_ENDIAN).getShort());
+            int totalLength = (v5 ? 13 : 6) + payloadLength;
+            if (totalLength < header.length || totalLength > 4096) {
+                throw new SolarmanConnectionException("Invalid response frame length");
             }
+            byte[] response = ByteBuffer.allocate(totalLength).put(header)
+                    .put(readFully(input, totalLength - header.length)).array();
+            logger.debug("Response frame: {}", bytesToHex(response));
+            return response;
+        } catch (IOException e) {
+            throw new SolarmanConnectionException("Unable to exchange a complete logger frame", e);
         }
+    }
 
-        return new byte[0];
+    private byte[] readFully(InputStream input, int length) throws IOException {
+        byte[] bytes = input.readNBytes(length);
+        if (bytes.length != length) {
+            throw new IOException("Connection closed before the response frame was complete");
+        }
+        return bytes;
     }
 
     protected static String bytesToHex(byte[] bytes) {
@@ -97,35 +104,26 @@ public class SolarmanLoggerConnection implements AutoCloseable {
                 .collect(Collectors.joining());
     }
 
-    private @Nullable Socket connectSocket(SocketAddress socketAddress) {
-        try {
-            Socket clientSocket = new Socket();
+    boolean isOpen() {
+        Socket local = socket;
+        return local != null && !local.isClosed();
+    }
 
-            clientSocket.setSoTimeout(10_000);
-            clientSocket.connect(socketAddress, 10_000);
-
-            return clientSocket;
-        } catch (IOException e) {
-            logger.debug("Could not open socket on IP {}", socketAddress, e);
-            return null;
-        }
+    public boolean isConnected() {
+        Socket local = socket;
+        return local != null && local.isConnected() && !local.isClosed();
     }
 
     @Override
     public void close() {
-        Socket localSocket = socket;
-        if (localSocket != null && !localSocket.isClosed()) {
+        Socket local = socket;
+        socket = null;
+        if (local != null) {
             try {
-                localSocket.close();
+                local.close();
             } catch (IOException e) {
-                logger.debug("Unable to close connection");
+                logger.debug("Unable to close logger connection", e);
             }
         }
-        socket = null;
-    }
-
-    public boolean isConnected() {
-        Socket localSocket = socket;
-        return localSocket != null && localSocket.isConnected();
     }
 }

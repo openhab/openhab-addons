@@ -1,0 +1,23 @@
+sitemap sunsynk label="Deye Inverter" {
+    Frame label="Measurements" {
+        Text item=DeyeBatteryPower
+        Text item=DeyeBatterySOC
+        Text item=DeyePVPower
+        Text item=DeyeClock
+    }
+    Frame label="Controls" {
+        Switch item=DeyeGridCharge
+        Switch item=DeyeUseTimer
+        Setpoint item=DeyeChargeCurrent minValue=0 maxValue=185 step=1
+        Selection item=DeyeProgramCharge mappings=["No Grid or Gen"="Disabled", "Allow Grid"="Grid", "Allow Gen"="Generator", "Allow Grid & Gen"="Grid and Generator"]
+        Selection item=DeyeProgramTime mappings=["00:00"="00:00", "06:00"="06:00", "12:00"="12:00", "18:00"="18:00"]
+    }
+    Frame label="Time of Use SOC" {
+        Slider item=DeyeProgramSOC1 minValue=20 maxValue=100 step=1 releaseOnly
+        Slider item=DeyeProgramSOC2 minValue=20 maxValue=100 step=1 releaseOnly
+        Slider item=DeyeProgramSOC3 minValue=20 maxValue=100 step=1 releaseOnly
+        Slider item=DeyeProgramSOC4 minValue=20 maxValue=100 step=1 releaseOnly
+        Slider item=DeyeProgramSOC5 minValue=20 maxValue=100 step=1 releaseOnly
+        Slider item=DeyeProgramSOC6 minValue=20 maxValue=100 step=1 releaseOnly
+    }
+}

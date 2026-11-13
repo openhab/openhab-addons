@@ -16,7 +16,9 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -28,25 +30,44 @@ import org.openhab.binding.solarman.internal.modbus.exception.SolarmanProtocolEx
 
 /**
  * @author Catalin Sanda - Initial contribution
+ * @author Ricardo Costa - Advanced profiles and shared compatibility corrections
  */
 @NonNullByDefault
 public class SolarmanV5Protocol implements SolarmanProtocol {
     private final SolarmanLoggerConfiguration solarmanLoggerConfiguration;
+    private final boolean strictValidation;
+    private final AtomicInteger sequence = new AtomicInteger();
 
     public SolarmanV5Protocol(SolarmanLoggerConfiguration solarmanLoggerConfiguration) {
+        this(solarmanLoggerConfiguration, false);
+    }
+
+    public SolarmanV5Protocol(SolarmanLoggerConfiguration solarmanLoggerConfiguration, boolean strictValidation) {
         this.solarmanLoggerConfiguration = solarmanLoggerConfiguration;
+        this.strictValidation = strictValidation;
     }
 
     @Override
     public Map<Integer, byte[]> readRegisters(SolarmanLoggerConnection solarmanLoggerConnection, byte mbFunctionCode,
             int firstReg, int lastReg) throws SolarmanException {
         int regCount = lastReg - firstReg + 1;
-        byte[] modbusFrame = buildModbusReadHoldingRegistersFrame(DEFAULT_SLAVE_ID, mbFunctionCode, firstReg, regCount);
+        byte[] modbusFrame = buildModbusReadHoldingRegistersFrame((byte) solarmanLoggerConfiguration.slaveId,
+                mbFunctionCode, firstReg, regCount);
         byte[] solarmanV5Frame = buildSolarmanV5Frame(modbusFrame);
         byte[] respFrame = solarmanLoggerConnection.sendRequest(solarmanV5Frame);
         if (respFrame.length > 0) {
-            byte[] modbusRespFrame = extractModbusResponseFrame(respFrame, solarmanV5Frame);
-            return parseModbusReadHoldingRegistersResponse(modbusRespFrame, firstReg, lastReg);
+            try {
+                byte[] modbusRespFrame = extractModbusResponseFrame(respFrame, solarmanV5Frame);
+                if (strictValidation) {
+                    SolarmanResponseValidator.validateRead(modbusRespFrame, Byte.toUnsignedInt(mbFunctionCode),
+                            regCount, true, solarmanLoggerConfiguration.slaveId);
+                }
+                return parseModbusReadHoldingRegistersResponse(modbusRespFrame, firstReg, lastReg);
+            } catch (SolarmanProtocolException e) {
+                throw new SolarmanProtocolException(String.format(Locale.ROOT,
+                        "V5 read response rejected: function=0x%02X, registers=0x%04X..0x%04X, reason=%s",
+                        Byte.toUnsignedInt(mbFunctionCode), firstReg, lastReg, e.getMessage()), e);
+            }
         } else {
             throw new SolarmanConnectionException("Response frame was empty");
         }
@@ -55,13 +76,23 @@ public class SolarmanV5Protocol implements SolarmanProtocol {
     @Override
     public boolean writeRegisters(SolarmanLoggerConnection solarmanLoggerConnection, int firstReg, byte[] data)
             throws SolarmanException {
-        byte[] modbusFrame = buildModbusWriteHoldingRegistersFrame(DEFAULT_SLAVE_ID, firstReg, data);
+        SolarmanResponseValidator.validateWriteRequest(firstReg, data);
+        byte[] modbusFrame = buildModbusWriteHoldingRegistersFrame((byte) solarmanLoggerConfiguration.slaveId, firstReg,
+                data);
         byte[] solarmanV5Frame = buildSolarmanV5Frame(modbusFrame);
         byte[] respFrame = solarmanLoggerConnection.sendRequest(solarmanV5Frame);
         if (respFrame.length > 0) {
-            byte[] modbusRespFrame = extractModbusResponseFrame(respFrame, solarmanV5Frame);
-            parseModbusWriteHoldingRegistersResponse(modbusRespFrame, data);
-            return true;
+            try {
+                byte[] modbusRespFrame = extractModbusResponseFrame(respFrame, solarmanV5Frame);
+                SolarmanResponseValidator.validateWrite(modbusRespFrame, firstReg, data.length / 2, true,
+                        solarmanLoggerConfiguration.slaveId);
+                parseModbusWriteHoldingRegistersResponse(modbusRespFrame, data);
+                return true;
+            } catch (SolarmanProtocolException e) {
+                throw new SolarmanProtocolException(String.format(Locale.ROOT,
+                        "V5 write response rejected: function=0x10, register=0x%04X, count=%d, reason=%s", firstReg,
+                        data.length / 2, e.getMessage()), e);
+            }
         } else {
             throw new SolarmanConnectionException("Response frame was empty");
         }
@@ -127,8 +158,8 @@ public class SolarmanV5Protocol implements SolarmanProtocol {
         // This is done by initialising this byte to a random value, and incrementing for each subsequent request.
         // The second byte is incremented by the data logging stick for every response sent (either to Solarman Cloud or
         // local requests).
-        // Note: the increment part is not implemented yet
-        byte[] serial = new byte[] { (byte) 0x00, (byte) 0x00 };
+        // Advanced profiles increment the request sequence. Legacy loggers retain their existing sequence behavior.
+        byte[] serial = new byte[] { (byte) (strictValidation ? sequence.getAndIncrement() : 0), 0 };
 
         // (four bytes) – Serial number of Solarman data logging stick
         byte[] loggerSerial = ByteBuffer.allocate(Integer.BYTES).order(ByteOrder.LITTLE_ENDIAN)
@@ -275,6 +306,9 @@ public class SolarmanV5Protocol implements SolarmanProtocol {
             throws SolarmanException {
         if (responseFrame == null || responseFrame.length == 0) {
             throw new SolarmanProtocolException("No response frame");
+        } else if (strictValidation) {
+            SolarmanResponseValidator.validateEnvelope(responseFrame, requestFrame, true);
+            return Arrays.copyOfRange(responseFrame, 25, responseFrame.length - 2);
         } else if (responseFrame.length == 29) {
             parseResponseErrorCode(responseFrame, requestFrame);
             throw new IllegalStateException("This should never be reached as previous method should always throw");
