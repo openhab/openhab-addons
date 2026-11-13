@@ -38,6 +38,7 @@ import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
+import org.eclipse.paho.client.mqttv3.MqttSecurityException;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 import org.openhab.binding.roborock.internal.api.GetUrlByEmail;
 import org.openhab.binding.roborock.internal.api.Home;
@@ -74,6 +75,7 @@ import com.google.gson.JsonParser;
  * sent to one of the channels.
  *
  * @author Paul Smedley - Initial contribution
+ * @author Leo Siepel - Fix MQTT connection lifecycle
  */
 @NonNullByDefault
 public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCallbackExtended {
@@ -92,7 +94,9 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
     private final SchedulerTask mqttWatchdogTask;
     private final RoborockWebTargets webTargets;
     private final MqttInboundLivenessWatchdog mqttWatchdog;
-    private @Nullable MqttClient mqttClient;
+    private volatile @Nullable MqttClient mqttClient;
+    // Guarded by this; invalidates connection attempts when the client is replaced or disconnected.
+    private long mqttClientGeneration;
     private volatile boolean disposed = false;
     private String country = "";
     private String countryCode = "";
@@ -465,13 +469,7 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
             logger.debug("Credentials incomplete; delaying MQTT connection.");
             return;
         }
-        try {
-            connectMqttClient(localRriot);
-            logger.debug("Bridge connected to MQTT");
-            updateStatus(ThingStatus.ONLINE);
-        } catch (MqttException e) {
-            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/offline.comm-error.no-mqtt");
-        }
+        connectMqttClient(localRriot);
     }
 
     @Override
@@ -480,30 +478,92 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
         teardown();
     }
 
-    public void connectMqttClient(Rriot localRriot) throws MqttException {
+    private void connectMqttClient(Rriot localRriot) {
+        long generation;
+        synchronized (this) {
+            generation = mqttClientGeneration;
+            if (!isCurrentMqttSession(localRriot, generation)) {
+                return;
+            }
+        }
+        @Nullable
+        MqttClient localMqttClient = null;
         try {
             URI mqttURL = new URI(localRriot.r.m);
-            mqttUser = ProtocolUtils.md5Hex(localRriot.u + ':' + localRriot.k).substring(2, 10);
+            String localMqttUser = ProtocolUtils.md5Hex(localRriot.u + ':' + localRriot.k).substring(2, 10);
             String mqttPassword = ProtocolUtils.md5Hex(localRriot.s + ':' + localRriot.k).substring(16);
             String serverURI = "ssl://" + mqttURL.getHost() + ":" + mqttURL.getPort();
-            String clientId = mqttUser;
-            MqttClient localMqttClient = mqttClient = new MqttClient(serverURI, clientId, new MemoryPersistence());
+            localMqttClient = new MqttClient(serverURI, localMqttUser, new MemoryPersistence());
             localMqttClient.setCallback(this);
             MqttConnectOptions connOpts = new MqttConnectOptions();
             connOpts.setCleanSession(true);
-            connOpts.setUserName(mqttUser);
+            connOpts.setUserName(localMqttUser);
             connOpts.setPassword(mqttPassword.toCharArray());
             connOpts.setAutomaticReconnect(true);
             connOpts.setConnectionTimeout(60);
             connOpts.setKeepAliveInterval(30);
+            @Nullable
+            MqttClient previousClient;
+            boolean current;
+            synchronized (this) {
+                current = isCurrentMqttSession(localRriot, generation);
+                previousClient = mqttClient;
+                if (current) {
+                    mqttClient = localMqttClient;
+                    mqttUser = localMqttUser;
+                    generation = ++mqttClientGeneration;
+                }
+            }
+            if (!current) {
+                closeMqttClient(localMqttClient);
+                return;
+            }
+            closeMqttClient(previousClient);
             localMqttClient.connect(connOpts);
-            mqttWatchdog.reset(Instant.now());
+            synchronized (this) {
+                current = isCurrentMqttSession(localRriot, generation) && localMqttClient.equals(mqttClient);
+                if (current) {
+                    mqttWatchdog.reset(Instant.now());
+                    updateStatus(ThingStatus.ONLINE);
+                }
+            }
+            if (!current) {
+                closeMqttClient(localMqttClient);
+            }
         } catch (URISyntaxException e) {
-            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.comm-error.mqtt-url-bad");
-            throw new MqttException(e);
+            synchronized (this) {
+                if (isCurrentMqttSession(localRriot, generation)) {
+                    updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.comm-error.mqtt-url-bad");
+                }
+            }
+        } catch (MqttSecurityException e) {
+            mqttConnectionFailed(localMqttClient, localRriot, generation, false);
         } catch (MqttException e) {
-            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/offline.comm-error.mqtt-login-fail");
-            throw e;
+            mqttConnectionFailed(localMqttClient, localRriot, generation, true);
+        }
+    }
+
+    private boolean isCurrentMqttSession(Rriot localRriot, long generation) {
+        return !disposed && generation == mqttClientGeneration && localRriot.equals(rriot)
+                && hasValidCredentials(token, localRriot);
+    }
+
+    private void mqttConnectionFailed(@Nullable MqttClient failedClient, Rriot localRriot, long generation,
+            boolean retry) {
+        synchronized (this) {
+            if (failedClient != null && failedClient.equals(mqttClient)) {
+                mqttClient = null;
+            }
+        }
+        closeMqttClient(failedClient);
+        synchronized (this) {
+            if (isCurrentMqttSession(localRriot, generation) && mqttClient == null) {
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/offline.comm-error.mqtt-login-fail");
+                // Paho only retries after an established connection is lost.
+                if (retry && isCurrentMqttSession(localRriot, generation)) {
+                    mqttConnectTask.schedule(60);
+                }
+            }
         }
     }
 
@@ -542,7 +602,8 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
             return;
         }
         String causeMessage = cause != null ? cause.getMessage() : "unknown";
-        logger.warn("MQTT connection lost: {}. Attempting automatic reconnection...", causeMessage);
+        logger.debug("MQTT connection lost: {}. Attempting automatic reconnection...", causeMessage);
+        updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/offline.comm-error.no-mqtt");
     }
 
     @Override
@@ -578,18 +639,28 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
     }
 
     public void disconnectMqttClient() {
+        closeMqttClient(detachMqttClient());
+    }
+
+    private synchronized @Nullable MqttClient detachMqttClient() {
+        ++mqttClientGeneration;
+        @Nullable
         MqttClient localMqttClient = mqttClient;
-        if (localMqttClient != null) {
+        mqttClient = null;
+        return localMqttClient;
+    }
+
+    private void closeMqttClient(@Nullable MqttClient client) {
+        if (client != null) {
             try {
-                if (localMqttClient.isConnected()) {
-                    localMqttClient.disconnect();
+                if (client.isConnected()) {
+                    client.disconnect();
                 }
-                localMqttClient.close();
+                client.close();
             } catch (MqttException e) {
-                logger.error("Error while disconnecting MQTT client.", e);
+                logger.debug("Error while closing MQTT client: {}", e.getMessage(), e);
             }
         }
-        this.mqttClient = null;
     }
 
     public int sendRPCCommand(String method, String params, String thingID, String localKey, byte[] nonce, int id)
@@ -719,15 +790,16 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
     }
 
     void recycleMqttClient(Rriot localRriot) {
-        disconnectMqttClient();
-        try {
-            connectMqttClient(localRriot);
-            logger.debug("MQTT client recycled after inbound liveness watchdog trigger");
-            updateStatus(ThingStatus.ONLINE);
-        } catch (MqttException e) {
-            logger.warn("MQTT recycle attempt failed", e);
-            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/offline.comm-error.no-mqtt");
+        @Nullable
+        MqttClient localMqttClient;
+        synchronized (this) {
+            if (disposed || !localRriot.equals(rriot) || !hasValidCredentials(token, localRriot)) {
+                return;
+            }
+            localMqttClient = detachMqttClient();
         }
+        closeMqttClient(localMqttClient);
+        connectMqttClient(localRriot);
     }
 
     @Override
