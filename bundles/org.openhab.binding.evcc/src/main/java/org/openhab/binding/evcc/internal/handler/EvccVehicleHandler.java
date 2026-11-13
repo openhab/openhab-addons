@@ -64,6 +64,7 @@ public class EvccVehicleHandler extends EvccBaseThingHandler {
             }
             String url = endpoint + "/" + getPropertyOrConfigValue(PROPERTY_VEHICLE_ID) + "/" + datapoint + "/" + value;
             logger.debug("Sending command to this url: {}", url);
+            forgetLastState(channelUID);
             performApiRequest(url, POST, JsonNull.INSTANCE);
         } else {
             super.handleCommand(channelUID, command);

@@ -52,6 +52,8 @@ public class EvccHeatingHandler extends EvccLoadpointHandler {
         @Nullable
         String apiKey = HeatingStateTransformer.toApiKey(key);
         if (apiKey != null) {
+            // The commanded state is echoed to the API key channel below, not to this channel
+            forgetLastState(channelUID);
             // Address the original temperature endpoint instead of the remapped SoC channel key
             channelUID = new ChannelUID(getThing().getUID(), getThingKey(apiKey));
         }

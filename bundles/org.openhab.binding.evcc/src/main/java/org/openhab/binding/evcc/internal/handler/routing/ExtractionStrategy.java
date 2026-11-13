@@ -53,6 +53,20 @@ public interface ExtractionStrategy {
     }
 
     /**
+     * The array index this strategy extracts from the root, if it can be determined statically
+     * (e.g. {@code 1} for a {@code "$[1]"} JsonPath).
+     * <p>
+     * Used by {@link MessageRouter} to dispatch an indexed delta (e.g. {@code "loadpoints.1.chargePower"})
+     * only to the route of the affected array element.
+     *
+     * @return the extracted array index, or {@code null} when it cannot be determined
+     */
+    @Nullable
+    default Integer getTargetIndex() {
+        return null;
+    }
+
+    /**
      * Get a human-readable description of this extraction strategy.
      */
     String describe();

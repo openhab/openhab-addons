@@ -22,6 +22,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 
 /**
  * Routes incoming websocket messages to handlers based on registered routes.
@@ -31,6 +32,7 @@ import com.google.gson.JsonElement;
  * - Clear separation of concerns between routing and handler logic
  *
  * @author Marcel Goerentz - Initial contribution
+ * @author Michael Weger - Dispatch indexed deltas per array element
  */
 @NonNullByDefault
 public class MessageRouter {
@@ -103,41 +105,84 @@ public class MessageRouter {
                 }
                 logger.trace("Route matched for key '{}': {}", key, route.describe());
                 matched = true;
-                JsonElement processed = route.process(value);
-                if (processed != null) {
-                    logger.trace("Extraction succeeded, dispatching to handler with dispatch key '{}'",
-                            route.getDispatchKey());
-                    EvccThingLifecycleAware handler = route.getHandler();
-                    // Synchronize on the handler instance itself - the same monitor its own
-                    // dispose() synchronizes on - so the disposed check and the dispatch call
-                    // are atomic with respect to concurrent disposal (e.g. during
-                    // reinitialization).
-                    synchronized (handler) {
-                        if (handler.isDisposed()) {
-                            logger.debug("Skipping dispatch to already disposed handler for route: {}",
-                                    route.getRouteKey());
-                            continue;
-                        }
-                        try {
-                            @Nullable
-                            StateTransformer transformer = route.getTransformer();
-                            if (transformer != null && processed.isJsonObject()) {
-                                handler.applyNormalizedUpdate(transformer.transform(processed.getAsJsonObject()));
-                            } else {
-                                handler.handleUpdate(route.getDispatchKey(), processed);
-                            }
-                        } catch (Exception e) {
-                            logger.warn("Handler failed to process routed message for {}", route.getRouteKey(), e);
-                        }
-                    }
-                } else {
-                    logger.debug("Message extraction failed for route: {}", route.getRouteKey());
-                }
+                processAndDispatch(route, value);
             }
         }
         if (!matched && !routes.isEmpty()) {
             logger.trace("No route matched for key '{}'", key);
         }
         return matched;
+    }
+
+    /**
+     * Route the changed members of a single array element, e.g. the fields of one evcc
+     * {@code "loadpoints.<index>.<field>"} delta message.
+     * <p>
+     * Routes that statically target an array index (see {@link HandlerRoute#getTargetIndex()}) only receive
+     * the delta of their own element, so a handler is neither triggered by changes of other elements nor
+     * re-applies unchanged members of its own element. Routes whose index cannot be determined statically
+     * still receive their extraction from the merged value.
+     *
+     * @param key The message key of the array (e.g. "loadpoints")
+     * @param index The index of the changed array element
+     * @param delta The changed members of that element
+     * @param mergedValue The complete, merged array the delta was applied to, or {@code null} if unknown
+     * @return {@code true} when at least one route matched the key
+     */
+    public boolean routeIndexedDelta(String key, int index, JsonObject delta, @Nullable JsonElement mergedValue) {
+        boolean matched = false;
+        for (HandlerRoute route : routes) {
+            if (!route.matches(key)) {
+                continue;
+            }
+            matched = true;
+            Integer targetIndex = route.getTargetIndex();
+            if (targetIndex == null) {
+                if (mergedValue != null) {
+                    processAndDispatch(route, mergedValue);
+                }
+            } else if (targetIndex == index) {
+                dispatch(route, delta);
+            }
+        }
+        if (!matched && !routes.isEmpty()) {
+            logger.trace("No route matched for key '{}'", key);
+        }
+        return matched;
+    }
+
+    private void processAndDispatch(HandlerRoute route, JsonElement value) {
+        JsonElement processed = route.process(value);
+        if (processed != null) {
+            dispatch(route, processed);
+        } else {
+            logger.debug("Message extraction failed for route: {}", route.getRouteKey());
+        }
+    }
+
+    private void dispatch(HandlerRoute route, JsonElement processed) {
+        logger.trace("Dispatching to handler with dispatch key '{}'", route.getDispatchKey());
+        EvccThingLifecycleAware handler = route.getHandler();
+        // Synchronize on the handler instance itself - the same monitor its own
+        // dispose() synchronizes on - so the disposed check and the dispatch call
+        // are atomic with respect to concurrent disposal (e.g. during
+        // reinitialization).
+        synchronized (handler) {
+            if (handler.isDisposed()) {
+                logger.debug("Skipping dispatch to already disposed handler for route: {}", route.getRouteKey());
+                return;
+            }
+            try {
+                @Nullable
+                StateTransformer transformer = route.getTransformer();
+                if (transformer != null && processed.isJsonObject()) {
+                    handler.applyNormalizedUpdate(transformer.transform(processed.getAsJsonObject()));
+                } else {
+                    handler.handleUpdate(route.getDispatchKey(), processed);
+                }
+            } catch (Exception e) {
+                logger.warn("Handler failed to process routed message for {}", route.getRouteKey(), e);
+            }
+        }
     }
 }

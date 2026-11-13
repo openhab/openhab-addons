@@ -71,6 +71,7 @@ public class EvccSiteHandler extends EvccBaseThingHandler {
             }
             String url = endpoint + "/" + datapoint + "/" + value;
             logger.debug("Sending command to this url: {}", url);
+            forgetLastState(channelUID);
             performApiRequest(url, POST, JsonNull.INSTANCE);
         } else {
             super.handleCommand(channelUID, command);

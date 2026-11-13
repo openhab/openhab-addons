@@ -25,7 +25,6 @@ import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 /**
@@ -50,7 +49,7 @@ public class EvccWebSocketClient {
     private final String wsUrl;
 
     private final java.util.function.Consumer<JsonObject> onFullState;
-    private final java.util.function.BiConsumer<String, JsonElement> onPartialUpdate;
+    private final java.util.function.Consumer<JsonObject> onPartialUpdate;
     private final Runnable onConnected;
     private final Runnable onDisconnected;
 
@@ -68,8 +67,7 @@ public class EvccWebSocketClient {
 
     public EvccWebSocketClient(String wsUrl, ScheduledExecutorService scheduler,
             java.util.function.Consumer<JsonObject> onFullState,
-            java.util.function.BiConsumer<String, JsonElement> onPartialUpdate, Runnable onConnected,
-            Runnable onDisconnected) {
+            java.util.function.Consumer<JsonObject> onPartialUpdate, Runnable onConnected, Runnable onDisconnected) {
         this.wsUrl = wsUrl;
         this.scheduler = scheduler;
         this.onFullState = onFullState;
@@ -228,7 +226,7 @@ public class EvccWebSocketClient {
             awaitingInitialState = false;
             onFullState.accept(obj);
         } else {
-            obj.entrySet().forEach(e -> onPartialUpdate.accept(e.getKey(), e.getValue()));
+            onPartialUpdate.accept(obj);
         }
     }
 }
