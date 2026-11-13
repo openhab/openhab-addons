@@ -130,6 +130,12 @@ Complex accessories require a tag on a Group Item indicating the accessory type,
 A HomeKit accessory has mandatory and optional characteristics (listed below in the table).
 The mapping between openHAB items and HomeKit accessory and characteristics is done by means of [metadata](https://www.openhab.org/docs/concepts/items.html#item-metadata).
 
+For simple items whose HomeKit metadata contains only `Lighting`, Brightness is automatically linked for Dimmer and Color items, and Hue and Saturation are also linked for Color items.
+For a Dimmer item with only `Fan`, RotationSpeed is automatically linked.
+This also applies to groups with a corresponding base item type.
+Explicitly linking any characteristics disables these automatic optional links; for example, use `Lighting,Lighting.OnState` to expose only the power control.
+Groups without a base item continue to use explicitly configured member characteristics.
+
 If the first word of the item name matches the room name in the Home app, the Home app will hide it.
 E.g., an item with the name "Kitchen Light" will be shown in the "Kitchen" room as "Light". This is the recommended naming convention for HomeKit items and rooms.
 
