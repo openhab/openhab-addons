@@ -38,21 +38,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Proposes the batteries and the battery cell modules of the device as things.
+ * Proposes the batteries and the battery cell modules of the device as things. The power plant is always
+ * proposed. The device is asked which batteries it has and, for power meters and wallboxes, which indexes
+ * answer with values, since it reports no count for them.
  *
  * <p>
- * The power plant is always proposed. The device is asked which batteries it has, and for each battery which
- * cell modules it reports. For power meters and wallboxes the device gives no count, so the indexes are asked
- * for one after the other and each one that answers with values is proposed.
- *
- * <p>
- * Every answer is logged at DEBUG level, those of indexes that are not proposed included, so that the
- * behaviour of a device can be analysed from the log.
- *
- * <p>
- * A scan asks the device one request at a time, so it can take a while. It is serialized by a lock of its own
- * rather than by the monitor of the service, because the lifecycle methods of the service must not wait for a
- * scan that is still running.
+ * A scan asks the device one request at a time and is serialized by a lock of its own rather than by the
+ * monitor of the service, because the lifecycle methods must not wait for a scan that is still running.
  *
  * @author Bernd Weymann - Initial contribution
  */
@@ -76,10 +68,8 @@ public class E3DCDiscoveryService extends AbstractThingHandlerDiscoveryService<E
 
     private @Nullable ScheduledFuture<?> backgroundScan;
 
-    /** The scan that waits for the first poll of a fresh connection, kept so that it can be cancelled. */
     private @Nullable ScheduledFuture<?> delayedScan;
 
-    /** Asks for a scan once the first poll after the connection came up has filled the things. */
     private final Runnable onlineScan = this::scheduleDelayedScan;
 
     public E3DCDiscoveryService() {
@@ -238,9 +228,8 @@ public class E3DCDiscoveryService extends AbstractThingHandlerDiscoveryService<E
     }
 
     /**
-     * Asks for the indexes 0 to {@code max - 1} of one kind of device and proposes those that answer with values.
-     * The device reports no count for these, so the answers are the only information. They are logged at DEBUG
-     * level for every index, which shows how the device answers for an index it does not have.
+     * Asks for the indexes 0 to {@code max - 1} of one kind of device and proposes those that answer with
+     * values; the device reports no count for these, so the answers are the only information.
      */
     @SuppressWarnings("null") // the JDK functional interfaces carry no null annotations
     private int probe(E3DCBridgeHandler bridge, ThingUID bridgeUid, String groupId, int max,

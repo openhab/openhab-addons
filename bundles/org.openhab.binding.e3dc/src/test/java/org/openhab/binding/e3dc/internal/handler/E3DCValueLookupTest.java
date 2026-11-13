@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.e3dc.internal.E3DCBindingConstants;
 import org.openhab.binding.e3dc.internal.E3DCChannelSpec;
@@ -28,7 +29,9 @@ import org.openhab.binding.e3dc.internal.rscp.RscpType;
 import org.openhab.binding.e3dc.internal.rscp.RscpValue;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.State;
 
 /**
@@ -75,7 +78,9 @@ class E3DCValueLookupTest {
         E3DCChannelSpec spec = E3DCBindingConstants.GROUP_WALLBOX_STATUS_CONTROL.equals(group)
                 ? E3DCChannelSpec.wallbox().spec(group, channel)
                 : E3DCBindingConstants.GROUP_MODULE.equals(group) ? E3DCChannelSpec.batteryModule().spec(group, channel)
-                        : E3DCChannelSpec.powerPlant().spec(group, channel);
+                        : E3DCBindingConstants.GROUP_METER.equals(group)
+                                ? E3DCChannelSpec.powerMeter().spec(group, channel)
+                                : E3DCChannelSpec.powerPlant().spec(group, channel);
         assertNotNull(spec, "the channel " + group + "#" + channel + " must exist");
         return spec;
     }
@@ -218,19 +223,106 @@ class E3DCValueLookupTest {
 
         RscpValue text = RscpValue.of(RscpTag.INFO_SW_RELEASE, RscpType.CSTRING, "S10_2026_027");
         assertEquals(new StringType("S10_2026_027"),
-                E3DCThingHandler.valueState(text, spec(E3DCBindingConstants.GROUP_SYSTEM, "software-version")));
+                E3DCThingHandler.valueState(text, spec(E3DCBindingConstants.GROUP_IDLE_PERIODS, "charge-periods")));
     }
 
     @Test
     void textTheDeviceSendsAsBytesIsDecodedAndNumbersOnTextChannelsStayText() {
-        E3DCChannelSpec name = spec(E3DCBindingConstants.GROUP_MODULE, "device-name");
-        RscpValue bytes = RscpValue.of(RscpTag.BAT_DCB_DEVICE_NAME, RscpType.CSTRING,
-                "BAT_2\0".getBytes(java.nio.charset.StandardCharsets.UTF_8));
-        assertEquals(new StringType("BAT_2"), E3DCThingHandler.valueState(bytes, name, true));
+        E3DCChannelSpec text = spec(E3DCBindingConstants.GROUP_IDLE_PERIODS, "charge-periods");
+        RscpValue bytes = RscpValue.of(RscpTag.EMS_PERIOD_NAME, RscpType.CSTRING,
+                "weekend\0".getBytes(java.nio.charset.StandardCharsets.UTF_8));
+        assertEquals(new StringType("weekend"), E3DCThingHandler.valueState(bytes, text, true));
 
-        E3DCChannelSpec firmware = spec(E3DCBindingConstants.GROUP_MODULE, "firmware-version");
         RscpValue version = RscpValue.of(RscpTag.BAT_DCB_FW_VERSION, RscpType.UINT32, 260L);
-        assertEquals(new StringType("260"), E3DCThingHandler.valueState(version, firmware, true));
-        assertTrue(E3DCThingHandler.valueState(version, firmware, false) instanceof DecimalType);
+        assertEquals(new StringType("260"), E3DCThingHandler.valueState(version, text, true));
+        assertTrue(E3DCThingHandler.valueState(version, text, false) instanceof DecimalType);
+    }
+
+    /** A thing property states a specification number together with its unit. */
+    @Test
+    void aPropertyStatesANumberWithItsUnit() {
+        assertEquals("64 V", E3DCThingHandler.quantity(64.0, "V"));
+        assertEquals("64.5 V", E3DCThingHandler.quantity(64.5, "V"));
+        assertEquals("100 A", E3DCThingHandler.quantity(100, "A"));
+        assertEquals("8", E3DCThingHandler.quantity(8, ""));
+    }
+
+    /** A meter response that holds exactly one device. */
+    private static RscpValue meter(int index, double power) {
+        return RscpValue.container(0,
+                List.of(RscpValue.container(RscpTag.PM_DATA, List.of(RscpValue.uchar8(RscpTag.PM_INDEX, index),
+                        RscpValue.of(RscpTag.PM_POWER_L1, RscpType.DOUBLE64, power)))));
+    }
+
+    /**
+     * A device that is absent from the response has no value: the container of another device must not fill
+     * its channels.
+     */
+    @Test
+    void aDeviceTheResponseDoesNotHoldHasNoValue() {
+        E3DCChannelSpec power = spec(E3DCBindingConstants.GROUP_METER, "power-l1");
+
+        assertNotNull(E3DCThingHandler.findValue(meter(0, 1234.0), power, 0));
+        assertNull(E3DCThingHandler.findValue(meter(0, 1234.0), power, 1),
+                "the values of device 0 must not stand in for device 1");
+    }
+
+    @Test
+    void aResponseWithoutAnIndexIsReadByPosition() {
+        RscpValue unindexed = RscpValue.container(0, List.of(RscpValue.container(RscpTag.PM_DATA,
+                List.of(RscpValue.of(RscpTag.PM_POWER_L1, RscpType.DOUBLE64, 1234.0)))));
+        E3DCChannelSpec power = spec(E3DCBindingConstants.GROUP_METER, "power-l1");
+
+        assertNotNull(E3DCThingHandler.findValue(unindexed, power, 1),
+                "a device that carries no index of its own is told apart by position");
+    }
+
+    private static QuantityType<?> quantityOf(@Nullable State state) {
+        assertTrue(state instanceof QuantityType<?>, "the state must be a quantity, but was " + state);
+        return (QuantityType<?>) state;
+    }
+
+    @Test
+    void aMeasurementIsPublishedInTheUnitOfItsDevice() {
+        E3DCChannelSpec power = spec(E3DCBindingConstants.GROUP_POWER, "solar-power");
+        QuantityType<?> watts = quantityOf(E3DCThingHandler.withUnit(new DecimalType(2000), "Number:Power", power));
+        assertEquals(2000.0, watts.doubleValue(), 0.001);
+        assertEquals(Units.WATT, watts.getUnit());
+
+        E3DCChannelSpec voltage = spec(E3DCBindingConstants.GROUP_METER, "voltage-l1");
+        assertEquals(Units.VOLT,
+                quantityOf(E3DCThingHandler.withUnit(new DecimalType(237.2), "Number:ElectricPotential", voltage))
+                        .getUnit());
+
+        E3DCChannelSpec share = spec(E3DCBindingConstants.GROUP_POWER, "autarky");
+        assertEquals(Units.PERCENT,
+                quantityOf(E3DCThingHandler.withUnit(new DecimalType(42), "Number:Dimensionless", share)).getUnit());
+    }
+
+    /**
+     * The device reports every energy counter in Wh, and the ones that are divided by a thousand are published
+     * in kWh. A counter that keeps its raw value stays in Wh.
+     */
+    @Test
+    void anEnergyCounterIsPublishedInTheUnitItIsScaledTo() {
+        E3DCChannelSpec scaled = spec(E3DCBindingConstants.GROUP_METER, "energy-l1");
+        QuantityType<?> kilowattHours = quantityOf(
+                E3DCThingHandler.withUnit(new DecimalType(12.5), "Number:Energy", scaled));
+        assertEquals(12.5, kilowattHours.doubleValue(), 0.001);
+        assertEquals(Units.KILOWATT_HOUR, kilowattHours.getUnit());
+
+        E3DCChannelSpec raw = spec(E3DCBindingConstants.GROUP_EMERGENCY, "energy");
+        assertEquals(Units.WATT_HOUR,
+                quantityOf(E3DCThingHandler.withUnit(new DecimalType(450), "Number:Energy", raw)).getUnit());
+    }
+
+    @Test
+    void aChannelWithoutADimensionKeepsAPlainNumber() {
+        // the capacities are reported in Ah on a channel whose item type is a plain number
+        E3DCChannelSpec capacity = spec(E3DCBindingConstants.GROUP_MODULE, "remaining-capacity");
+
+        State state = E3DCThingHandler.withUnit(new DecimalType(38.5), "Number", capacity);
+
+        assertTrue(state instanceof DecimalType, "a value whose channel carries no dimension stays a plain number");
     }
 }

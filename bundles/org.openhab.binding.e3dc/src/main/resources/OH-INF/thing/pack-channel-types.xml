@@ -33,13 +33,6 @@
 		<state pattern="%d" readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="pack-module-count">
-		<item-type>Number</item-type>
-		<label>Module Count</label>
-		<description>Number of battery modules</description>
-		<state pattern="%d" readOnly="true"/>
-	</channel-type>
-
 	<channel-type id="pack-soh">
 		<item-type>Number:Dimensionless</item-type>
 		<label>State of Health</label>
@@ -59,13 +52,6 @@
 		<label>Error Code</label>
 		<description>Error code of the battery</description>
 		<state pattern="%d" readOnly="true"/>
-	</channel-type>
-
-	<channel-type id="pack-device-name">
-		<item-type>String</item-type>
-		<label>Device Name</label>
-		<description>Name of the battery</description>
-		<state pattern="%s" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="pack-training-mode">

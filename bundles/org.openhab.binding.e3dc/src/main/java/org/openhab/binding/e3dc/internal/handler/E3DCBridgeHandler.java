@@ -13,6 +13,7 @@
 package org.openhab.binding.e3dc.internal.handler;
 
 import java.time.Duration;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
@@ -30,6 +31,7 @@ import java.util.TreeSet;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -44,7 +46,6 @@ import org.openhab.binding.e3dc.internal.rscp.RscpClient;
 import org.openhab.binding.e3dc.internal.rscp.RscpError;
 import org.openhab.binding.e3dc.internal.rscp.RscpException;
 import org.openhab.binding.e3dc.internal.rscp.RscpTag;
-import org.openhab.binding.e3dc.internal.rscp.RscpType;
 import org.openhab.binding.e3dc.internal.rscp.RscpValue;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.MetricPrefix;
@@ -62,17 +63,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Represents the connection to one E3/DC device.
- *
- * <p>
- * This handler owns the RSCP connection and the poll cycle. Child handlers register as
- * {@link E3DCDataListener} and extract their channels from each response.
- *
- * <p>
- * Not every device implements every data point. A request for an unsupported tag is answered with an
- * error item rather than a failure, so such tags are counted and dropped after a few attempts. That
- * keeps the binding working on systems with fewer features without asserting anything about which
- * model supports what.
+ * Represents the connection to one E3/DC device, owning the RSCP connection and the poll cycle. Not every
+ * device implements every data point: an unsupported tag is answered with an error item rather than a
+ * failure, so such tags are counted and dropped after a few attempts.
  *
  * @author Bernd Weymann - Initial contribution
  */
@@ -82,40 +75,22 @@ public class E3DCBridgeHandler extends BaseBridgeHandler {
     /** How many consecutive error responses a tag may produce before it is no longer requested. */
     private static final int UNSUPPORTED_TAG_THRESHOLD = 3;
 
-    /** Wait before establishing a lost connection again. */
     private static final int RECONNECT_DELAY_SECONDS = 30;
 
     /** Shortest distance between two polls that refresh commands asked for, so a burst becomes one poll. */
     private static final long REFRESH_MIN_INTERVAL_MILLIS = 1000;
 
-    /**
-     * The tags requested on every poll, which are the root values of the channels of all thing types. A
-     * fixed set keeps the poll independent of which things the user has created.
-     *
-     * <p>
-     * A value that is read through a container that addresses one of several devices does not belong here:
-     * it is part of the request of that container, see {@link #containerRequests()}.
-     */
+    /** The tags requested on every poll, independent of which things exist. */
     private static final Set<Integer> POLL_TAGS = pollTags();
 
-    /**
-     * Containers whose nested values the binding publishes, requested with no parameter. Containers that
-     * address one of several devices are not part of this set for the same reason.
-     */
+    /** Containers whose nested values the binding publishes, requested with no parameter. */
     private static final Set<Integer> POLL_CONTAINERS = pollContainers();
 
-    /**
-     * Containers the device only answers when the request states the period it covers. They are asked
-     * for separately from {@link #POLL_CONTAINERS} because they need parameters a bare container
-     * request does not carry.
-     */
+    /** History containers, which the device answers only when the request states the period it covers. */
     private static final Set<Integer> WINDOWED_CONTAINERS = Set.of(RscpTag.DB_HISTORY_DATA_DAY,
             RscpTag.DB_HISTORY_DATA_WEEK, RscpTag.DB_HISTORY_DATA_MONTH, RscpTag.DB_HISTORY_DATA_YEAR);
 
-    /**
-     * The channel groups a thing needs a container request for, with the configuration key holding the index
-     * of the addressed device.
-     */
+    /** The channel groups a thing needs a container request for, with the config key of the addressed device. */
     private static final Map<ThingTypeUID, List<GroupRequest>> GROUP_REQUESTS = Map.of(//
             E3DCBindingConstants.THING_TYPE_WALLBOX,
             List.of(new GroupRequest(E3DCBindingConstants.GROUP_WALLBOX, "wallboxIndex")), //
@@ -129,7 +104,6 @@ public class E3DCBridgeHandler extends BaseBridgeHandler {
             List.of(new GroupRequest(E3DCBindingConstants.GROUP_INVERTER, null),
                     new GroupRequest(E3DCBindingConstants.GROUP_EMERGENCY, null)));
 
-    /** One channel group of a thing, with the configuration key of the device it addresses. */
     private record GroupRequest(String groupId, @Nullable String indexConfigurationKey) {
     }
 
@@ -201,6 +175,13 @@ public class E3DCBridgeHandler extends BaseBridgeHandler {
 
     private @Nullable E3DCBridgeConfiguration config;
     private @Nullable RscpClient client;
+
+    /** The attempt under way, so a dispose can close it; until it finishes the client is not in {@link #client}. */
+    private volatile @Nullable RscpClient pendingClient;
+
+    /** Counts the connection attempts; closing raises it, so a stale attempt does not install its connection. */
+    private final AtomicInteger connectionGeneration = new AtomicInteger();
+
     private @Nullable ScheduledFuture<?> pollJob;
 
     /** Time the last refresh command started a poll, so a burst of refreshes becomes one poll. */
@@ -217,6 +198,10 @@ public class E3DCBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void initialize() {
+        // a re-initialization starts over: no job and no connection of the previous initialization may outlive it
+        connectionGeneration.incrementAndGet();
+        cancelPollJob();
+        closeClient();
         config = getConfigAs(E3DCBridgeConfiguration.class);
 
         E3DCBridgeConfiguration current = config;
@@ -242,8 +227,11 @@ public class E3DCBridgeHandler extends BaseBridgeHandler {
             return;
         }
 
+        int generation = connectionGeneration.get();
         RscpClient newClient = new RscpClient(current.host, current.port, current.userName, current.password,
                 current.rscpPassword, current.timeoutSeconds() * 1000);
+        // a dispose during the blocking connect has to be able to close the socket this attempt has opened
+        pendingClient = newClient;
         try {
             newClient.connect();
         } catch (RscpException e) {
@@ -253,12 +241,18 @@ public class E3DCBridgeHandler extends BaseBridgeHandler {
             }
             logger.debug("Cannot connect to {}:{}: {}", current.host, current.port, e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-            // a device that is unreachable while the thing is initialized has to be tried again: without a
-            // scheduled retry the bridge would stay offline until the thing is disabled and enabled again
+            // without a scheduled retry the bridge would stay offline until the thing is re-enabled
             scheduleReconnect();
             return;
         }
+        pendingClient = null;
+        closeClient();
         client = newClient;
+        if (!isActive() || generation != connectionGeneration.get()) {
+            // the handler was disposed or initialized again while the connection was being established
+            closeClient();
+            return;
+        }
         droppedTags.clear();
         loggedAnswers.clear();
         loggedErrors.clear();
@@ -290,13 +284,7 @@ public class E3DCBridgeHandler extends BaseBridgeHandler {
         schedule(this::connectAndPoll, RECONNECT_DELAY_SECONDS);
     }
 
-    /**
-     * Replaces any pending job with the given one, so exactly one timer is ever outstanding.
-     *
-     * <p>
-     * Every path that wants to run again goes through here. Without this a lost connection would stop
-     * the cycle silently, because a failing poll returns without rescheduling.
-     */
+    /** Replaces any pending job with the given one, so exactly one timer is ever outstanding. */
     private void schedule(Runnable task, long delaySeconds) {
         if (!isActive()) {
             return;
@@ -306,14 +294,8 @@ public class E3DCBridgeHandler extends BaseBridgeHandler {
     }
 
     /**
-     * Asks for an immediate poll, used when a channel receives a refresh command.
-     *
-     * <p>
-     * The work is queued on the scheduler rather than run here: a refresh arrives on a framework thread
-     * and the poll performs blocking socket I/O. A burst of refreshes is collapsed into one poll, because
-     * the framework sends a refresh for every link when a thing comes up, and the device is slow enough
-     * that a poll per link would occupy it for minutes. A refresh that is dropped is covered by the next
-     * poll of the interval.
+     * Asks for an immediate poll when a channel receives a refresh. The work is queued on the scheduler rather
+     * than run here, because a refresh arrives on a framework thread and the poll performs blocking socket I/O.
      */
     public void requestRefresh() {
         if (!isActive() || !isConnected()) {
@@ -342,8 +324,7 @@ public class E3DCBridgeHandler extends BaseBridgeHandler {
         }
         try {
             pollOnce();
-            // a poll that lost the connection reports offline and schedules the reconnect, so the status is
-            // only restored while the connection is actually up
+            // the reconnect of a failed poll reports offline, so the status is only restored while connected
             if (isConnected() && getThing().getStatus() != ThingStatus.ONLINE) {
                 updateStatus(ThingStatus.ONLINE);
             }
@@ -395,14 +376,8 @@ public class E3DCBridgeHandler extends BaseBridgeHandler {
     }
 
     /**
-     * Records the loop ratio of the cycle: the time the device was occupied by this client divided by the
-     * poll interval.
-     *
-     * <p>
-     * The time covers everything that went over the connection since the last poll, so commands and history
-     * fetches are included. The dispatch to the thing handlers is not, because it loads openHAB and not the
-     * device. A ratio of 1 means the client keeps the device busy for the whole interval. The target is a
-     * working assumption until the measurements show where the device starts to suffer.
+     * Records the loop ratio: the time the device was occupied by this client divided by the poll interval,
+     * including commands and history fetches but not the dispatch to the thing handlers.
      */
     private void recordLoopRatio(RscpClient current, boolean withHistory, long dispatchNanos) {
         E3DCBridgeConfiguration currentConfig = config;
@@ -441,7 +416,6 @@ public class E3DCBridgeHandler extends BaseBridgeHandler {
         }
     }
 
-    /** Publishes the figures of the last poll on the channels of the statistics group. */
     private void updateStatistics(RscpClient current, double ratio, long dispatchNanos) {
         publishStatistic("loop-ratio", new QuantityType<>(ratio * 100, Units.PERCENT));
         publishStatistic("poll-duration", milliseconds(current.getLastWireNanos()));
@@ -450,7 +424,6 @@ public class E3DCBridgeHandler extends BaseBridgeHandler {
         publishStatistic("answer-size", new QuantityType<>(current.getLastAnswerBytes(), Units.BYTE));
     }
 
-    /** Publishes the summary of the last window of polls. */
     private void updateWindowStatistics(double average, double peak) {
         publishStatistic("loop-ratio-average", new QuantityType<>(average * 100, Units.PERCENT));
         publishStatistic("loop-ratio-peak", new QuantityType<>(peak * 100, Units.PERCENT));
@@ -467,13 +440,7 @@ public class E3DCBridgeHandler extends BaseBridgeHandler {
         }
     }
 
-    /**
-     * The size of the answer per top level element, as the number of values it holds.
-     *
-     * <p>
-     * Only used for the trace: it shows which parts of the answer are large, which is where the device spends
-     * its time and the connection its bytes.
-     */
+    /** The size of the answer per top level element, in values, only used for the trace. */
     private static String answerWeight(RscpValue response) {
         List<RscpValue> elements = response.getTag() == 0 ? response.getChildren() : List.of(response);
         StringBuilder text = new StringBuilder();
@@ -494,21 +461,14 @@ public class E3DCBridgeHandler extends BaseBridgeHandler {
         return count;
     }
 
-    /**
-     * Logs the containers the parameterised requests were answered with.
-     *
-     * <p>
-     * A request the device rejects is otherwise invisible: the container simply stays without values and the
-     * channels of the thing stay empty.
-     */
+    /** Logs the containers the parameterised requests were answered with, so a rejected request is visible. */
     private void logContainerAnswers(RscpValue response) {
         // the trees are long texts, so nothing is searched or built while debug logging is off
         if (!logger.isDebugEnabled()) {
             return;
         }
         for (E3DCContainerRequests.Container container : E3DCContainerRequests.all()) {
-            // the trees are the same with every poll, so debug shows each one once per connection and
-            // trace shows all of them
+            // the trees are the same with every poll, so debug shows each one once per connection
             if (!logger.isTraceEnabled() && !loggedAnswers.add(container.responseTag())) {
                 continue;
             }
@@ -520,16 +480,8 @@ public class E3DCBridgeHandler extends BaseBridgeHandler {
 
     /**
      * Builds the elements of one request: every root tag, the values nested in containers and one request
-     * per container whose answer depends on the parameters of the request.
-     *
-     * <p>
-     * The channel specs name the tags the device answers with, but a request has to carry the matching
-     * {@code *_REQ_*} tag: the device does not recognise a response tag in a request. A container that
-     * answers everything it has is requested by its own request tag without listing its members.
-     *
-     * <p>
-     * The elements are top level items of the frame, not children of a common container: an RSCP frame
-     * has no root element other than the list itself.
+     * per container whose answer depends on the parameters of the request. A request has to carry the
+     * matching {@code *_REQ_*} tag, because the device does not recognise a response tag in a request.
      */
     private List<RscpValue> buildRequest(boolean withHistory) {
         List<RscpValue> items = new ArrayList<>();
@@ -564,14 +516,7 @@ public class E3DCBridgeHandler extends BaseBridgeHandler {
         return items;
     }
 
-    /**
-     * Whether this poll has to carry the history containers.
-     *
-     * <p>
-     * The history counters change slowly, so they are requested at the history interval and not with every
-     * poll. They are also due on the first poll after a connect and when the day has changed, so the
-     * periods of a request never lag behind the date.
-     */
+    /** Whether this poll has to carry the history containers, due at the history interval and on a new UTC day. */
     private boolean isHistoryDue() {
         E3DCBridgeConfiguration current = config;
         if (current == null || lastHistoryPollMillis == 0) {
@@ -584,11 +529,9 @@ public class E3DCBridgeHandler extends BaseBridgeHandler {
     }
 
     /**
-     * One request per container whose answer depends on the parameters of the request.
-     *
-     * <p>
-     * Which containers a system needs follows from the things it has, so a system without a wallbox does not
-     * ask for one. A container of a thing that exists more than once is requested once per configured index.
+     * One request per container whose answer depends on the parameters of the request. Which containers are
+     * needed follows from the things that exist; a container of a thing that exists more than once is requested
+     * once per configured index.
      */
     private List<RscpValue> containerRequests() {
         Map<String, RscpValue> requests = new LinkedHashMap<>();
@@ -618,7 +561,6 @@ public class E3DCBridgeHandler extends BaseBridgeHandler {
         for (Thing thing : getThing().getThings()) {
             if (E3DCBindingConstants.THING_TYPE_BATTERY_MODULE.equals(thing.getThingTypeUID())) {
                 Integer module = configuredIndex(thing, "moduleIndex");
-                // a module thing created from a file may omit the battery, which is the first one
                 Integer battery = configuredIndex(thing, "batteryIndex");
                 if (module != null && module >= 0 && (battery == null || battery >= 0)) {
                     int batteryIndex = battery != null ? battery : 0;
@@ -634,10 +576,7 @@ public class E3DCBridgeHandler extends BaseBridgeHandler {
         return modules;
     }
 
-    /**
-     * The index a container is requested with: the configured one when the group names a configuration key,
-     * otherwise the first device of that kind.
-     */
+    /** The index a container is requested with, or the first device of that kind when no config key applies. */
     private static @Nullable Integer configuredIndex(Thing thing, @Nullable String configKey) {
         if (configKey == null) {
             return 0;
@@ -657,13 +596,9 @@ public class E3DCBridgeHandler extends BaseBridgeHandler {
     }
 
     /**
-     * The history containers need the period they cover, otherwise the device answers them with an
-     * error. {@code START} is the beginning of the period in epoch seconds, {@code INTERVAL} the
-     * resolution of a single value and {@code SPAN} the length of the period.
-     *
-     * <p>
-     * Each container is asked for the period that ends with the current one, so the day container
-     * covers today, the week container the last seven days and so on.
+     * The history containers need the period they cover, otherwise the device answers them with an error:
+     * {@code START} is the beginning of the period in epoch seconds, {@code INTERVAL} the resolution of a value
+     * and {@code SPAN} the length of the period.
      */
     private RscpValue historyRequest(int container) {
         int requestTag = RscpTag.pollTagFor(container);
@@ -676,7 +611,7 @@ public class E3DCBridgeHandler extends BaseBridgeHandler {
             case RscpTag.DB_HISTORY_DATA_YEAR -> today.withDayOfYear(1);
             default -> today;
         };
-        long startSeconds = start.atStartOfDay(ZoneId.systemDefault()).toEpochSecond();
+        Instant startTime = start.atStartOfDay(ZoneId.systemDefault()).toInstant();
         // the span has to reach the end of the current period, so it covers the days from start to today
         long dayCount = switch (container) {
             case RscpTag.DB_HISTORY_DATA_WEEK -> 7;
@@ -684,49 +619,34 @@ public class E3DCBridgeHandler extends BaseBridgeHandler {
             case RscpTag.DB_HISTORY_DATA_YEAR -> today.lengthOfYear();
             default -> 1;
         };
-        long seconds = Duration.ofDays(dayCount).toSeconds();
-        return RscpValue.container(requestTag,
-                List.of(RscpValue.of(RscpTag.DB_REQ_HISTORY_TIME_START, RscpType.UINT64, startSeconds),
-                        RscpValue.of(RscpTag.DB_REQ_HISTORY_TIME_INTERVAL, RscpType.UINT64, seconds),
-                        RscpValue.of(RscpTag.DB_REQ_HISTORY_TIME_SPAN, RscpType.UINT64, seconds)));
+        return historyPeriodRequest(requestTag, startTime, Duration.ofDays(dayCount).toSeconds());
     }
 
     /**
-     * The request for the history of one whole calendar year, used by the history fetch of the thing action.
-     *
-     * <p>
-     * It carries the same parameters as the request of the running year, only with the boundaries of the
-     * given year, so the answer belongs to exactly this year.
-     *
-     * @param year the calendar year
-     * @return the request for the year container
+     * The request for one history container. The interface declares {@code START}, {@code INTERVAL} and
+     * {@code SPAN} as timestamps, so each is a moment of twelve bytes rather than a number; a duration is
+     * carried in the seconds of such a moment, with zero nanoseconds.
      */
+    private static RscpValue historyPeriodRequest(int requestTag, Instant start, long seconds) {
+        return RscpValue.container(requestTag,
+                List.of(RscpValue.timestamp(RscpTag.DB_REQ_HISTORY_TIME_START, start),
+                        RscpValue.timestamp(RscpTag.DB_REQ_HISTORY_TIME_INTERVAL, Instant.ofEpochSecond(seconds)),
+                        RscpValue.timestamp(RscpTag.DB_REQ_HISTORY_TIME_SPAN, Instant.ofEpochSecond(seconds))));
+    }
+
+    /** The request for the history of one whole calendar year, used by the history fetch of the thing action. */
     public static RscpValue yearHistoryRequest(int year) {
         LocalDate start = LocalDate.of(year, 1, 1);
         return periodHistoryRequest(RscpTag.DB_HISTORY_DATA_YEAR, start, start.lengthOfYear());
     }
 
-    /**
-     * The request for the history of a finished period, used by the history fetch of the thing action.
-     *
-     * @param container the history container of the period, for example {@link RscpTag#DB_HISTORY_DATA_DAY}
-     * @param start the first day of the period
-     * @param days the number of days the period covers
-     * @return the request for the container
-     */
+    /** The request for the history of a finished period, used by the history fetch of the thing action. */
     public static RscpValue periodHistoryRequest(int container, LocalDate start, int days) {
-        long startSeconds = start.atStartOfDay(ZoneId.systemDefault()).toEpochSecond();
-        long seconds = Duration.ofDays(days).toSeconds();
-        return RscpValue.container(RscpTag.pollTagFor(container),
-                List.of(RscpValue.of(RscpTag.DB_REQ_HISTORY_TIME_START, RscpType.UINT64, startSeconds),
-                        RscpValue.of(RscpTag.DB_REQ_HISTORY_TIME_INTERVAL, RscpType.UINT64, seconds),
-                        RscpValue.of(RscpTag.DB_REQ_HISTORY_TIME_SPAN, RscpType.UINT64, seconds)));
+        Instant startTime = start.atStartOfDay(ZoneId.systemDefault()).toInstant();
+        return historyPeriodRequest(RscpTag.pollTagFor(container), startTime, Duration.ofDays(days).toSeconds());
     }
 
-    /**
-     * Counts error responses per tag and stops requesting tags the device does not implement, so a
-     * system with fewer features keeps polling without repeatedly asking for the same missing value.
-     */
+    /** Counts error responses per tag and stops requesting tags the device does not implement. */
     private void reportTagSupport(RscpValue response) {
         Set<Integer> errored = new HashSet<>();
         collectErrors(response, errored);
@@ -753,7 +673,6 @@ public class E3DCBridgeHandler extends BaseBridgeHandler {
             }
         }
         loggedErrors.retainAll(errored);
-        // tags that answered successfully are considered supported again
         for (int tag : new HashSet<>(tagFailures.keySet())) {
             if (!errored.contains(tag)) {
                 tagFailures.remove(tag);
@@ -791,7 +710,6 @@ public class E3DCBridgeHandler extends BaseBridgeHandler {
         }
         if (isActive()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-            // a fresh connection is attempted after a short wait
             scheduleReconnect();
         }
     }
@@ -840,6 +758,8 @@ public class E3DCBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void dispose() {
+        // an attempt that is still under way has to stop and must not install its connection afterwards
+        connectionGeneration.incrementAndGet();
         cancelPollJob();
         closeClient();
         listeners.clear();
@@ -856,6 +776,12 @@ public class E3DCBridgeHandler extends BaseBridgeHandler {
     }
 
     private void closeClient() {
+        // the attempt that is under way comes first, because it is not in client while it is being established
+        RscpClient pending = pendingClient;
+        pendingClient = null;
+        if (pending != null) {
+            pending.close();
+        }
         RscpClient current = client;
         client = null;
         if (current != null) {
@@ -864,8 +790,8 @@ public class E3DCBridgeHandler extends BaseBridgeHandler {
     }
 
     /**
-     * Whether this handler still wants to talk to the device. A disposed or uninitialized handler
-     * must not reconnect, otherwise a scheduled retry could outlive the thing.
+     * Whether this handler still wants to talk to the device, so a disposed handler's scheduled retry cannot
+     * outlive it.
      */
     private boolean isActive() {
         return getThing().getStatus() != ThingStatus.UNINITIALIZED && getCallback() != null;

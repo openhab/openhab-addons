@@ -27,13 +27,7 @@ import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.thing.ThingUID;
 
 /**
- * What the discovery makes of the answers of the device.
- *
- * <p>
- * The device reports its batteries, and every battery reports its cell modules. For power meters and wallboxes
- * it reports no count, so each index is asked for and the answer decides. The power plant is always there.
- * The functions here only read answers and build results, which keeps them testable without
- * a device.
+ * What the discovery makes of the answers of the device; the functions only read answers and build results.
  *
  * @author Bernd Weymann - Initial contribution
  */
@@ -46,7 +40,7 @@ final class E3DCDiscovery {
     /** The most cell modules that are proposed for one system. */
     static final int MAX_MODULES = 32;
 
-    /** The most power meters and wallboxes that are probed. The device reports no count for them. */
+    /** The most power meters that are probed; the device reports no count for them. */
     static final int MAX_METERS = 8;
 
     static final int MAX_WALLBOXES = 8;
@@ -59,17 +53,8 @@ final class E3DCDiscovery {
     private E3DCDiscovery() {
     }
 
-    /**
-     * The batteries worth asking for, from the answer to the question which batteries are available.
-     *
-     * <p>
-     * The answer is read in either of the two shapes it may have: a container that lists the battery indexes,
-     * or a plain number, which is taken as the number of batteries. When the answer says nothing, battery 0 is
-     * tried, because every system with storage has one. Each candidate is checked by asking for its data, see
-     * {@link #isBatteryAnswered(RscpValue)}.
-     *
-     * @param answer the answer of the device, or {@code null} when the question failed
-     */
+    // The answer is read in either of the two shapes it may have: a container listing the battery indexes,
+    // or a plain number taken as the count; when it says nothing, battery 0 is tried.
     static List<Integer> batteryCandidates(@Nullable RscpValue answer) {
         RscpValue available = answer != null ? answer.find(RscpTag.BAT_AVAILABLE_BATTERIES) : null;
         if (available == null) {
@@ -96,24 +81,13 @@ final class E3DCDiscovery {
         return candidates;
     }
 
-    /**
-     * Whether the device answered the data request of a battery with values.
-     *
-     * <p>
-     * A device answers a request for a battery it does not have with errors or with nothing. Such a battery is
-     * not proposed.
-     */
+    // A battery the device does not have is answered with errors or with nothing.
     static boolean isBatteryAnswered(RscpValue answer) {
         return hasData(answer, RscpTag.BAT_DATA, RscpTag.BAT_INDEX);
     }
 
-    /**
-     * Whether the device answered the data request of a power meter with values.
-     *
-     * <p>
-     * Besides carrying values, a meter has at least one active phase: an answer that reports the phases as 0
-     * is what a device might send for an index without a meter, so it does not count.
-     */
+    // Besides values, a meter has at least one active phase: an answer that reports the phases as 0 is what a
+    // device might send for an index without a meter.
     static boolean isMeterAnswered(RscpValue answer) {
         if (!hasData(answer, RscpTag.PM_DATA, RscpTag.PM_INDEX)) {
             return false;
@@ -122,15 +96,11 @@ final class E3DCDiscovery {
         return phases == null || phases.intValue() != 0;
     }
 
-    /** Whether the device answered the data request of a wallbox with values. */
     static boolean isWallboxAnswered(RscpValue answer) {
         return hasData(answer, RscpTag.WB_DATA, RscpTag.WB_INDEX);
     }
 
-    /**
-     * Whether a data container holds at least one value that is not an error. The index the device repeats
-     * in its answer is no value: it is there for every index that is asked for.
-     */
+    // The index the device repeats in its answer is no value, it is there for every index that is asked for.
     private static boolean hasData(RscpValue answer, int dataTag, int indexTag) {
         for (RscpValue data : answer.findAll(dataTag)) {
             if (data.getChildren().stream().anyMatch(child -> !child.isError() && child.getTag() != indexTag)) {
@@ -140,7 +110,6 @@ final class E3DCDiscovery {
         return false;
     }
 
-    /** The indexes of the cell modules in the answer of a battery, each one once and in ascending order. */
     static List<Integer> moduleIndexes(RscpValue answer) {
         TreeSet<Integer> indexes = new TreeSet<>();
         for (RscpValue module : answer.findAll(RscpTag.BAT_DCB_INFO)) {
@@ -179,16 +148,8 @@ final class E3DCDiscovery {
                 .withRepresentationProperty(PROPERTY_BATTERY_INDEX).withLabel("E3/DC Battery " + (index + 1)).build();
     }
 
-    /**
-     * The cell module of one battery.
-     *
-     * <p>
-     * {@code BAT_DCB_INDEX} counts the modules inside one battery, so the battery belongs to the identity of a
-     * module: a system with several batteries reports module 0 once per battery. The result has no
-     * representation property on purpose: it can name only one property, and neither the module index nor the
-     * battery index identifies a module alone, so either one would hide the modules of the other batteries.
-     * The thing UID carries both indexes and keeps the proposals apart.
-     */
+    // BAT_DCB_INDEX counts the modules inside one battery, so the battery belongs to the identity of a module.
+    // No representation property: neither index identifies a module alone.
     static DiscoveryResult module(ThingUID bridge, int battery, int module) {
         return DiscoveryResultBuilder
                 .create(new ThingUID(E3DCBindingConstants.THING_TYPE_BATTERY_MODULE, bridge,

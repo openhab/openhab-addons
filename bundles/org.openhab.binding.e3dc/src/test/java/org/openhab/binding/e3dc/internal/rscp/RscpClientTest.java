@@ -50,6 +50,9 @@ class RscpClientTest {
     private static final String USER = "bernd@example.com";
     private static final String PASSWORD = "secret";
 
+    /** The access level a device grants to a user account. */
+    private static final int AUTH_LEVEL_USER = 10;
+
     /** Starts a fake device that runs the given script and returns the bound port. */
     private static int startDevice(DeviceScript script) throws IOException {
         ServerSocket server = new ServerSocket(0, 1, InetAddress.getLoopbackAddress());
@@ -180,6 +183,63 @@ class RscpClientTest {
             RscpException exception = assertThrows(RscpException.class, client::connect);
             String message = String.valueOf(exception.getMessage());
             assertTrue(message.contains("credentials"), "the message must name the credentials: " + message);
+        } finally {
+            client.close();
+        }
+        script.await();
+    }
+
+    @Test
+    void aLoginWithoutAccessLevelIsRejected() throws Exception {
+        DeviceScript script = new DeviceScript() {
+            @Override
+            void serve(Socket socket) throws Exception {
+                InputStream in = socket.getInputStream();
+                OutputStream out = socket.getOutputStream();
+                RscpCipher cipher = new RscpCipher(RSCP_PASSWORD.getBytes(StandardCharsets.UTF_8));
+                readEncryptedFrame(in, cipher);
+
+                // a wrong login is answered with an access level of zero, which is no error item
+                out.write(cipher.encrypt(
+                        frame(item(RscpTag.RSCP_AUTHENTICATION, RscpType.UCHAR8.getCode(), new byte[] { 0 }))));
+                out.flush();
+            }
+        };
+        int port = startDevice(script);
+
+        RscpClient client = new RscpClient("127.0.0.1", port, USER, PASSWORD, RSCP_PASSWORD, 5000);
+        try {
+            RscpException exception = assertThrows(RscpException.class, client::connect);
+            String message = String.valueOf(exception.getMessage());
+            assertTrue(message.contains("access level"), "the message must name the access level: " + message);
+            assertFalse(client.isConnected(), "a rejected login must not keep the connection open");
+        } finally {
+            client.close();
+        }
+        script.await();
+    }
+
+    @Test
+    void aResponseWithoutTheAuthenticationLevelIsRejected() throws Exception {
+        DeviceScript script = new DeviceScript() {
+            @Override
+            void serve(Socket socket) throws Exception {
+                InputStream in = socket.getInputStream();
+                OutputStream out = socket.getOutputStream();
+                RscpCipher cipher = new RscpCipher(RSCP_PASSWORD.getBytes(StandardCharsets.UTF_8));
+                readEncryptedFrame(in, cipher);
+
+                // without the level item nothing proves that the login was accepted
+                out.write(cipher.encrypt(okResponseWithoutLevel()));
+                out.flush();
+            }
+        };
+        int port = startDevice(script);
+
+        RscpClient client = new RscpClient("127.0.0.1", port, USER, PASSWORD, RSCP_PASSWORD, 5000);
+        try {
+            assertThrows(RscpException.class, client::connect);
+            assertFalse(client.isConnected());
         } finally {
             client.close();
         }
@@ -340,6 +400,16 @@ class RscpClientTest {
     }
 
     private static byte[] okResponse() {
+        byte[] child = item(RscpTag.EMS_MAX_CHARGE_POWER, RscpType.INT32.getCode(),
+                ByteBuffer.allocate(4).order(ByteOrder.LITTLE_ENDIAN).putInt(9000).array());
+        ByteArrayOutputStream payload = new ByteArrayOutputStream();
+        payload.writeBytes(
+                item(RscpTag.RSCP_AUTHENTICATION, RscpType.UCHAR8.getCode(), new byte[] { (byte) AUTH_LEVEL_USER }));
+        payload.writeBytes(item(RscpTag.EMS_GET_POWER_SETTINGS, RscpType.CONTAINER.getCode(), child));
+        return frame(payload.toByteArray());
+    }
+
+    private static byte[] okResponseWithoutLevel() {
         byte[] child = item(RscpTag.EMS_MAX_CHARGE_POWER, RscpType.INT32.getCode(),
                 ByteBuffer.allocate(4).order(ByteOrder.LITTLE_ENDIAN).putInt(9000).array());
         return frame(item(RscpTag.EMS_GET_POWER_SETTINGS, RscpType.CONTAINER.getCode(), child));

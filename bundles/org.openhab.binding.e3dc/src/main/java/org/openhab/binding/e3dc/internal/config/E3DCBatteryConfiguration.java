@@ -15,13 +15,10 @@ package org.openhab.binding.e3dc.internal.config;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Configuration of a battery thing.
- *
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
 public class E3DCBatteryConfiguration {
 
-    /** Zero based index of the battery within the device. */
     public int batteryIndex;
 }

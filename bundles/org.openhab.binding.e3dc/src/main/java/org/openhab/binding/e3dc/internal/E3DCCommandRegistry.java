@@ -21,8 +21,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * The writable channels of one thing type, keyed by channel group and then channel id.
- *
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault

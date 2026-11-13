@@ -13,6 +13,7 @@
 package org.openhab.binding.e3dc.internal.rscp;
 
 import java.nio.charset.StandardCharsets;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -21,11 +22,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * One RSCP data item.
- *
- * <p>
- * RSCP responses are trees: an item of type {@code CONTAINER} carries children. Scalar values are
- * kept in their decoded Java representation so callers apply unit conversions themselves.
+ * One RSCP data item. RSCP responses are trees: an item of type {@code CONTAINER} carries children. Scalar
+ * values are kept in their decoded Java representation so callers apply unit conversions themselves.
  *
  * @author Bernd Weymann - Initial contribution
  */
@@ -80,6 +78,11 @@ public final class RscpValue {
         return new RscpValue(tag, RscpType.INT32, value, List.of());
     }
 
+    /** A moment, which the interface carries as seconds and nanoseconds since 1970. */
+    public static RscpValue timestamp(int tag, Instant instant) {
+        return new RscpValue(tag, RscpType.TIMESTAMP, instant, List.of());
+    }
+
     public int getTag() {
         return tag;
     }
@@ -100,7 +103,6 @@ public final class RscpValue {
         return type == RscpType.ERROR;
     }
 
-    /** The error a device reported, or {@code null} if this item is not an error item. */
     public @Nullable RscpError getError() {
         return value instanceof RscpError error ? error : null;
     }
@@ -120,12 +122,8 @@ public final class RscpValue {
     }
 
     /**
-     * First descendant matching the given chain of tags, each nested in the previous one.
-     *
-     * <p>
-     * Some responses are nested more than one container deep, for example the history data where the
-     * requested values sit inside a sum container. Chaining {@link #find(int)} calls walks such a path
-     * without searching the whole subtree again on every level.
+     * First descendant matching the given chain of tags, each nested in the previous one, as needed for the
+     * history data where the requested values sit inside a sum container.
      */
     public @Nullable RscpValue find(List<Integer> tagPath) {
         RscpValue current = this;
@@ -139,7 +137,6 @@ public final class RscpValue {
         return current;
     }
 
-    /** All descendants with the given tag in document order. */
     public List<RscpValue> findAll(int searchTag) {
         List<RscpValue> result = new ArrayList<>();
         if (tag == searchTag) {
@@ -173,7 +170,6 @@ public final class RscpValue {
         return found.value instanceof String string ? string : null;
     }
 
-    /** True if this item or any descendant is an error item. */
     public boolean containsError() {
         if (isError()) {
             return true;
@@ -186,7 +182,6 @@ public final class RscpValue {
         return false;
     }
 
-    /** The first error found in this item or its descendants, or {@code null}. */
     public @Nullable RscpError findError() {
         if (isError()) {
             return getError();
@@ -200,12 +195,10 @@ public final class RscpValue {
         return null;
     }
 
-    /** The value as a number, or {@code null} if it is absent or of another kind. */
     public @Nullable Number asNumber() {
         return value instanceof Number number ? number : null;
     }
 
-    /** The value as a byte array, or {@code null} if it is absent or of another kind. */
     public byte @Nullable [] asBytes() {
         return value instanceof byte[] bytes ? bytes : null;
     }
@@ -220,13 +213,9 @@ public final class RscpValue {
     }
 
     /**
-     * This item with all of its descendants, one per line and indented by the nesting.
-     *
-     * <p>
-     * {@link #toString()} names a container only by the number of its children, which does not show what a
-     * device answered. This renders the whole tree, which is what a log needs to tell a wrong request from a
-     * data point the device does not implement. Credentials never appear in a response, so the rendering is
-     * safe to log.
+     * This item with all of its descendants, one per line and indented by the nesting. It shows what a device
+     * answered, which {@link #toString()} does not; credentials never appear in a response, so it is safe to
+     * log.
      */
     public String describeTree() {
         StringBuilder tree = new StringBuilder();
@@ -241,7 +230,6 @@ public final class RscpValue {
         }
     }
 
-    /** Renders the value the way it is logged; credentials never appear in a response. */
     public String describeValue() {
         if (value == null) {
             return "<none>";

@@ -114,7 +114,7 @@ class E3DCCommandHandlerTest {
     @Test
     void aPowerLimitWriteCarriesEveryParameterOfTheSettingsContainer() {
         E3DCCommandHandler handler = handlerWithSettings();
-        E3DCCommandSpec spec = spec(E3DCBindingConstants.GROUP_BATTERY, "max-charge-power");
+        E3DCCommandSpec spec = spec(E3DCBindingConstants.GROUP_BATTERY_LIMITS, "max-charge-power");
 
         RscpValue request = request(handler, spec, new DecimalType(5000));
         assertNotNull(request);
@@ -130,7 +130,7 @@ class E3DCCommandHandlerTest {
     @Test
     void aPowerLimitWriteAppliesTheNewValueAndKeepsTheOthers() {
         E3DCCommandHandler handler = handlerWithSettings();
-        E3DCCommandSpec spec = spec(E3DCBindingConstants.GROUP_BATTERY, "max-charge-power");
+        E3DCCommandSpec spec = spec(E3DCBindingConstants.GROUP_BATTERY_LIMITS, "max-charge-power");
 
         RscpValue settings = settingsOf(request(handler, spec, new DecimalType(5000)));
 
@@ -145,7 +145,7 @@ class E3DCCommandHandlerTest {
     void parametersThatWereNeverReadAreNotWrittenAsZero() {
         // a device that has not answered the settings request yet
         E3DCCommandHandler handler = new E3DCCommandHandler();
-        E3DCCommandSpec spec = spec(E3DCBindingConstants.GROUP_BATTERY, "discharge-start-power");
+        E3DCCommandSpec spec = spec(E3DCBindingConstants.GROUP_BATTERY_LIMITS, "discharge-start-power");
 
         RscpValue settings = settingsOf(request(handler, spec, new DecimalType(250)));
 
@@ -157,7 +157,7 @@ class E3DCCommandHandlerTest {
     @Test
     void switchingThePowerLimitsOffIsSentAsABoolean() {
         E3DCCommandHandler handler = handlerWithSettings();
-        E3DCCommandSpec spec = spec(E3DCBindingConstants.GROUP_BATTERY_CONTROL, "power-limits-used");
+        E3DCCommandSpec spec = spec(E3DCBindingConstants.GROUP_BATTERY_LIMITS, "power-limits-used");
 
         RscpValue settings = settingsOf(request(handler, spec, OnOffType.OFF));
 
@@ -170,7 +170,7 @@ class E3DCCommandHandlerTest {
     @Test
     void theWeatherFlagIsSentInsideTheSettingsContainer() {
         E3DCCommandHandler handler = handlerWithSettings();
-        E3DCCommandSpec spec = spec(E3DCBindingConstants.GROUP_BATTERY_CONTROL, "weather-regulated-charge");
+        E3DCCommandSpec spec = spec(E3DCBindingConstants.GROUP_BATTERY_MODE, "weather-regulated-charge");
 
         RscpValue settings = settingsOf(request(handler, spec, OnOffType.ON));
 
@@ -185,7 +185,7 @@ class E3DCCommandHandlerTest {
     @Test
     void aTextCommandForANumericChannelIsRejected() {
         E3DCCommandHandler handler = handlerWithSettings();
-        E3DCCommandSpec spec = spec(E3DCBindingConstants.GROUP_BATTERY, "max-charge-power");
+        E3DCCommandSpec spec = spec(E3DCBindingConstants.GROUP_BATTERY_LIMITS, "max-charge-power");
 
         assertNull(handler.buildRequest(spec, new StringType("lots"), 0));
     }
@@ -193,7 +193,7 @@ class E3DCCommandHandlerTest {
     @Test
     void aTextCommandForASwitchChannelIsAcceptedWhenItIsRecognisable() {
         E3DCCommandHandler handler = handlerWithSettings();
-        E3DCCommandSpec spec = spec(E3DCBindingConstants.GROUP_BATTERY_CONTROL, "weather-regulated-charge");
+        E3DCCommandSpec spec = spec(E3DCBindingConstants.GROUP_BATTERY_MODE, "weather-regulated-charge");
 
         assertNotNull(handler.buildRequest(spec, new StringType("on"), 0));
         assertNotNull(handler.buildRequest(spec, new StringType("false"), 0));
@@ -203,7 +203,7 @@ class E3DCCommandHandlerTest {
     @Test
     void aNegativeValueIsRejectedBecauseTheDeviceExpectsUnsignedValues() {
         E3DCCommandHandler handler = handlerWithSettings();
-        E3DCCommandSpec spec = spec(E3DCBindingConstants.GROUP_BATTERY, "max-charge-power");
+        E3DCCommandSpec spec = spec(E3DCBindingConstants.GROUP_BATTERY_LIMITS, "max-charge-power");
 
         assertNull(handler.buildRequest(spec, new DecimalType(-1), 0));
     }
@@ -211,7 +211,7 @@ class E3DCCommandHandlerTest {
     @Test
     void aFractionalValueIsRoundedToTheNearestWholeWatt() {
         E3DCCommandHandler handler = handlerWithSettings();
-        E3DCCommandSpec spec = spec(E3DCBindingConstants.GROUP_BATTERY, "max-discharge-power");
+        E3DCCommandSpec spec = spec(E3DCBindingConstants.GROUP_BATTERY_LIMITS, "max-discharge-power");
 
         RscpValue settings = settingsOf(request(handler, spec, new DecimalType(4999.6)));
         assertEquals(5000, numberAt(settings, RscpTag.EMS_MAX_DISCHARGE_POWER));
@@ -220,7 +220,7 @@ class E3DCCommandHandlerTest {
     @Test
     void aValueBeyondTheUnsignedRangeIsRejected() {
         E3DCCommandHandler handler = handlerWithSettings();
-        E3DCCommandSpec spec = spec(E3DCBindingConstants.GROUP_BATTERY, "max-charge-power");
+        E3DCCommandSpec spec = spec(E3DCBindingConstants.GROUP_BATTERY_LIMITS, "max-charge-power");
 
         assertNull(handler.buildRequest(spec, new DecimalType(4294967296L), 0),
                 "four bytes cannot carry a larger value, so it must not be sent as a truncated one");
@@ -242,7 +242,7 @@ class E3DCCommandHandlerTest {
         assertEquals(50, numberAt(request(handler, percentage, new QuantityType<>(50, Units.PERCENT)),
                 RscpTag.SE_PARAM_EP_RESERVE));
         assertEquals(50,
-                numberAt(request(handler, spec(E3DCBindingConstants.GROUP_BATTERY, "wallbox-discharge-until"),
+                numberAt(request(handler, spec(E3DCBindingConstants.GROUP_WALLBOX_PRIORITY, "discharge-until"),
                         new QuantityType<>(0.5, Units.ONE)), RscpTag.EMS_REQ_SET_WB_DISCHARGE_BAT_UNTIL),
                 "the byte channel rounds the same share to the whole percent");
     }
@@ -278,7 +278,7 @@ class E3DCCommandHandlerTest {
         handler.updateFromResponse(settingsResponse(RscpTag.EMS_SET_POWER_SETTINGS, 1, 5000, 6000, 100, 1));
 
         RscpValue settings = settingsOf(request(handler,
-                spec(E3DCBindingConstants.GROUP_BATTERY, "discharge-start-power"), new DecimalType(250)));
+                spec(E3DCBindingConstants.GROUP_BATTERY_LIMITS, "discharge-start-power"), new DecimalType(250)));
 
         assertEquals(5000, numberAt(settings, RscpTag.EMS_MAX_CHARGE_POWER),
                 "a following write must not send the limit that the acknowledged write replaced");
@@ -289,13 +289,13 @@ class E3DCCommandHandlerTest {
     @Test
     void anAcknowledgedWriteIsKeptForTheNextCommand() {
         E3DCCommandHandler handler = handlerWithSettings();
-        List<RscpValue> written = handler.buildRequest(spec(E3DCBindingConstants.GROUP_BATTERY, "max-charge-power"),
-                new DecimalType(5000), 0);
+        List<RscpValue> written = handler.buildRequest(
+                spec(E3DCBindingConstants.GROUP_BATTERY_LIMITS, "max-charge-power"), new DecimalType(5000), 0);
         assertNotNull(written);
         handler.rememberAcknowledged(written);
 
         RscpValue settings = settingsOf(request(handler,
-                spec(E3DCBindingConstants.GROUP_BATTERY, "max-discharge-power"), new DecimalType(6000)));
+                spec(E3DCBindingConstants.GROUP_BATTERY_LIMITS, "max-discharge-power"), new DecimalType(6000)));
 
         assertEquals(5000, numberAt(settings, RscpTag.EMS_MAX_CHARGE_POWER));
         assertEquals(6000, numberAt(settings, RscpTag.EMS_MAX_DISCHARGE_POWER));
@@ -311,7 +311,7 @@ class E3DCCommandHandlerTest {
                                 RscpValue.of(RscpTag.EMS_WEATHER_REGULATED_CHARGE_ENABLED, RscpType.ERROR, 6L))))));
 
         RscpValue settings = settingsOf(request(handler,
-                spec(E3DCBindingConstants.GROUP_BATTERY, "max-discharge-power"), new DecimalType(6000)));
+                spec(E3DCBindingConstants.GROUP_BATTERY_LIMITS, "max-discharge-power"), new DecimalType(6000)));
 
         assertNull(settings.find(RscpTag.EMS_WEATHER_REGULATED_CHARGE_ENABLED),
                 "an error item cannot be encoded, so it must not be written back");
@@ -332,15 +332,15 @@ class E3DCCommandHandlerTest {
     void theWritableChannelsCoverTheDocumentedControls() {
         E3DCCommandRegistry registry = E3DCCommandSpec.powerPlant();
 
-        assertNotNull(registry.spec(E3DCBindingConstants.GROUP_BATTERY, "max-charge-power"));
-        assertNotNull(registry.spec(E3DCBindingConstants.GROUP_BATTERY, "max-discharge-power"));
-        assertNotNull(registry.spec(E3DCBindingConstants.GROUP_BATTERY, "discharge-start-power"));
-        assertNotNull(registry.spec(E3DCBindingConstants.GROUP_BATTERY_CONTROL, "power-limits-used"));
-        assertNotNull(registry.spec(E3DCBindingConstants.GROUP_BATTERY_CONTROL, "weather-regulated-charge"));
-        assertNull(registry.spec(E3DCBindingConstants.GROUP_SYSTEM, "mode"),
+        assertNotNull(registry.spec(E3DCBindingConstants.GROUP_BATTERY_LIMITS, "max-charge-power"));
+        assertNotNull(registry.spec(E3DCBindingConstants.GROUP_BATTERY_LIMITS, "max-discharge-power"));
+        assertNotNull(registry.spec(E3DCBindingConstants.GROUP_BATTERY_LIMITS, "discharge-start-power"));
+        assertNotNull(registry.spec(E3DCBindingConstants.GROUP_BATTERY_LIMITS, "power-limits-used"));
+        assertNotNull(registry.spec(E3DCBindingConstants.GROUP_BATTERY_MODE, "weather-regulated-charge"));
+        assertNull(registry.spec(E3DCBindingConstants.GROUP_BATTERY_MODE, "active-mode"),
                 "the mode is read only, see set-power-mode");
         assertNotNull(registry.spec(E3DCBindingConstants.GROUP_MANUAL_BATTERY_CHARGE, "set-manual-charge"));
-        assertNull(registry.spec(E3DCBindingConstants.GROUP_BATTERY_CONTROL, "set-manual-charge"),
+        assertNull(registry.spec(E3DCBindingConstants.GROUP_BATTERY_LIMITS, "set-manual-charge"),
                 "the manual charge has its own group");
     }
 

@@ -19,6 +19,7 @@ import java.time.LocalDate;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.e3dc.internal.rscp.RscpTag;
+import org.openhab.binding.e3dc.internal.rscp.RscpType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
@@ -91,5 +92,9 @@ class E3DCHistoryFetchTest {
         var request = E3DCBridgeHandler.periodHistoryRequest(RscpTag.DB_HISTORY_DATA_WEEK, LocalDate.of(2026, 2, 2), 7);
         assertEquals(RscpTag.DB_REQ_HISTORY_DATA_WEEK, request.getTag());
         assertEquals(3, request.getChildren().size());
+        // the interface declares these parameters as timestamps, which are moments of twelve bytes
+        assertEquals(RscpType.TIMESTAMP, request.getChildren().get(0).getType());
+        assertEquals(RscpType.TIMESTAMP, request.getChildren().get(1).getType());
+        assertEquals(RscpType.TIMESTAMP, request.getChildren().get(2).getType());
     }
 }

@@ -18,12 +18,9 @@ import java.util.Map;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * RSCP tag identifiers used by this binding.
- *
- * <p>
- * This is a deliberate subset of the RSCP interface: the data points the binding reads and writes,
- * together with the tags needed for the handshake and for control. Tags that are not listed here are
- * still decoded from a response, they only render as their numeric id in logs.
+ * RSCP tag identifiers used by this binding, a deliberate subset of the interface: the data points the
+ * binding reads and writes, plus the tags needed for the handshake and for control. Tags not listed here
+ * are still decoded, they only render as their numeric id in logs.
  *
  * @author Bernd Weymann - Initial contribution
  */
@@ -31,9 +28,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public final class RscpTag {
 
     /**
-     * The marker bit that a response tag carries in addition to the request tag of the same data
-     * point, for example {@code TAG_EMS_POWER_PV} (0x01800001) against {@code TAG_EMS_REQ_POWER_PV}
-     * (0x01000001).
+     * The marker bit that a response tag carries in addition to the request tag of the same data point, for
+     * example {@code TAG_EMS_POWER_PV} (0x01800001) against {@code TAG_EMS_REQ_POWER_PV} (0x01000001).
      */
     public static final int RESPONSE_MARKER = 0x00800000;
 
@@ -148,11 +144,6 @@ public final class RscpTag {
     public static final int EMS_GET_WB_DISCHARGE_BAT_UNTIL = 0x0180027D;
 
     /**
-     * The idle periods of the second version, which name the periods and let the client manage the whole
-     * list. The vendor header names the response with a {@code RES_} segment while the request is named
-     * {@code REQ_GET_}, so both variants are declared.
-     */
-    /**
      * The messages the energy manager keeps. The request is answered with one {@link #EMS_ERROR_CONTAINER} per
      * message, which holds the fields below.
      */
@@ -180,9 +171,8 @@ public final class RscpTag {
     public static final int EMS_PERIOD_STOP = 0x01800305;
 
     /**
-     * The type of a period as the request side names it. The device accepts it inside a written period and
-     * reference clients also read it from the reported one, so reading accepts this tag next to
-     * {@link #EMS_PERIOD_TYPE}.
+     * The type of a period as the request side names it; the device accepts it inside a written period and
+     * reference clients also read it from the reported one.
      */
     public static final int EMS_IDLE_PERIOD_TYPE = 0x01000083;
 
@@ -225,11 +215,9 @@ public final class RscpTag {
     public static final int PVI_DC_CURRENT = 0x028DC003;
 
     /**
-     * The data points an inverter request reads.
-     *
-     * <p>
-     * {@code PVI_REQ_DATA} carries the inverter index and these tags, each one a parameter of its own; the
-     * values of the trackers are reported once per tracker inside the answer.
+     * The data points an inverter request reads. {@code PVI_REQ_DATA} carries the inverter index and these
+     * tags, each one a parameter of its own; the tracker values are reported once per tracker inside the
+     * answer.
      */
     public static final int PVI_REQ_TEMPERATURE = 0x02000100;
     public static final int PVI_REQ_AC_POWER = 0x020AC001;
@@ -264,15 +252,13 @@ public final class RscpTag {
     public static final int BAT_AVAILABLE_BATTERIES = 0x03800057;
 
     /**
-     * The container the battery data arrives in, including the cell module values in
-     * {@link #BAT_DCB_INFO}.
+     * The container the battery data arrives in, including the cell module values in {@link #BAT_DCB_INFO}.
      */
     public static final int BAT_REQ_DATA = 0x03040000;
 
     /** The battery a request addresses; the first child of {@link #BAT_REQ_DATA}. */
     public static final int BAT_INDEX = 0x03040001;
 
-    /** The container holding the battery values of the addressed battery, including the module values. */
     public static final int BAT_DATA = 0x03840000;
     public static final int PM_INDEX = 0x05040001;
     public static final int PM_POWER_L1 = 0x05800001;
@@ -290,11 +276,8 @@ public final class RscpTag {
     public static final int PM_REQ_DATA = 0x05040000;
 
     /**
-     * The data points a meter request reads.
-     *
-     * <p>
-     * {@code PM_REQ_DATA} carries the meter index and these tags, each one a parameter of its own; without
-     * them the device answers the container with its index only.
+     * The data points a meter request reads. {@code PM_REQ_DATA} carries the meter index and these tags, each
+     * one a parameter of its own; without them the device answers the container with its index only.
      */
     public static final int PM_REQ_POWER_L1 = 0x05000001;
     public static final int PM_REQ_POWER_L2 = 0x05000002;
@@ -836,29 +819,20 @@ public final class RscpTag {
     private RscpTag() {
     }
 
-    /** The symbolic name of a tag, or a hex rendering when the tag is not part of this catalogue. */
     public static String nameOf(int tag) {
         String name = NAMES.get(tag);
         return name != null ? name : String.format("UNKNOWN_0x%08X", tag);
     }
 
     /**
-     * The request tag to ask the device for the value that arrives under the given response tag.
+     * The request tag to ask the device for the value that arrives under the given response tag. A channel
+     * spec names the response tag, but a request has to carry the matching {@code *_REQ_*} tag, so the tag is
+     * derived by the rule the interface follows: a response tag is the request tag with
+     * {@link #RESPONSE_MARKER} set.
      *
      * <p>
-     * A channel spec names the tag the device answers with, but a request has to carry the matching
-     * {@code *_REQ_*} tag: the device does not recognise a response tag in a request. The catalogue
-     * declares the request tags of the values the binding writes, but not one for every value it
-     * reads, so the tag is derived by the rule the interface follows: a response tag is the request
-     * tag with {@link #RESPONSE_MARKER} set, which is how the vendor header pairs
-     * {@code TAG_EMS_POWER_PV} (0x01800001) with {@code TAG_EMS_REQ_POWER_PV} (0x01000001). The same
-     * rule holds for containers, for example {@code TAG_PM_DATA} (0x05840000) against
-     * {@code TAG_PM_REQ_DATA} (0x05040000).
-     *
-     * <p>
-     * A few data points do not follow the rule. The wallbox external data is the case here: the device
-     * names the packed status struct only as a response, and it is requested by asking the wallbox
-     * container, so it maps to {@link #WB_REQ_DATA} rather than to a tag of its own.
+     * A few data points do not follow the rule: the wallbox external data is requested through the wallbox
+     * container, and the available batteries use a request id that is not the marked response id.
      *
      * @return the request tag, or {@code 0} when the given tag does not carry the response marker
      */
@@ -878,19 +852,14 @@ public final class RscpTag {
     }
 
     /**
-     * The tag to send when asking the device for the given data point.
-     *
-     * <p>
-     * A tag that already names a request is sent as it is. Some data points, the emergency power
-     * reserve among them, use the same id for the request and the response, so their channel specs
-     * carry the request tag directly instead of a response tag.
+     * The tag to send when asking the device for the given data point: a tag that already names a request is
+     * sent as it is, because some data points use the same id for the request and the response.
      */
     public static int pollTagFor(int tag) {
         int requestTag = requestFor(tag);
         return requestTag != 0 ? requestTag : tag;
     }
 
-    /** True when the given tag is already the request variant of a data point. */
     public static boolean isRequestTag(int tag) {
         String name = NAMES.get(tag);
         return name != null && name.contains("REQ");

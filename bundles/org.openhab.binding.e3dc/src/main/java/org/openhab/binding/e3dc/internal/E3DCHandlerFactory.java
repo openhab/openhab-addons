@@ -29,8 +29,6 @@ import org.openhab.core.thing.binding.ThingHandlerFactory;
 import org.osgi.service.component.annotations.Component;
 
 /**
- * Creates the handlers of this binding.
- *
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault

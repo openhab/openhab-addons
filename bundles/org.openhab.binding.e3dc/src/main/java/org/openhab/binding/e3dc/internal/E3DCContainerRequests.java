@@ -23,60 +23,23 @@ import org.openhab.binding.e3dc.internal.rscp.RscpTag;
 import org.openhab.binding.e3dc.internal.rscp.RscpValue;
 
 /**
- * The containers the device answers only to a request that states what to read.
- *
- * <p>
- * Such a container carries the data points to read as parameters of its own, and - where it addresses one
- * of several devices - the index of the addressed device as its first child. Asking for the container alone
- * is answered with a format error, asking for it with the index only with the empty container, so every
- * data point of these groups has to be requested this way.
- *
- * <p>
- * The parameters are the request variants of the tags the channels of the group read. {@code WB_EXTERN_DATA}
- * is the exception: its packed status struct is read through the extern data of all sources.
+ * The containers the device answers only to a request that states what to read. Such a container carries the
+ * data points as parameters of its own and, where it addresses one of several devices, the index as its
+ * first child. Asking for it alone is answered with a format error, with the index only as an empty container.
  *
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
 public final class E3DCContainerRequests {
 
-    /**
-     * One container that is requested per device, with the group whose channels it serves.
-     *
-     * @param groupId the channel group whose values live in this container
-     * @param containerTag the tag the request is sent with
-     * @param indexTag the tag the index of the addressed device is written with, or {@code 0} when this
-     *            container addresses no device
-     * @param responseTag the container the channels read their values from, which the request is answered
-     *            with
-     * @param parameters the data points to read, each one a parameter of the request
-     */
     public record Container(String groupId, int containerTag, int indexTag, int responseTag, List<Integer> parameters) {
 
-        /**
-         * The request for one device: the index first when the container addresses a device, then the data
-         * points to read.
-         *
-         * @param index the device the container addresses
-         * @param unsupported data points the device has already reported as unsupported, which are left out
-         */
         public RscpValue request(int index, Set<Integer> unsupported) {
             return request(index, unsupported, List.of());
         }
 
-        /**
-         * The request for one device, including the cell modules to read.
-         *
-         * <p>
-         * {@code BAT_REQ_DCB_INFO} is only answered for the module whose index it carries as value. Sent without
-         * a value the device reports a single module, so it is left out of the plain parameters and added once
-         * per requested module instead. The values of the inverter that exist once per phase, tracker or
-         * temperature sensor are requested once per index, see {@link E3DCContainerRequests#INDEX_PROBES}.
-         *
-         * @param index the device the container addresses
-         * @param unsupported data points the device has already reported as unsupported, which are left out
-         * @param moduleIndexes the indexes of the cell modules to read, in ascending order
-         */
+        // BAT_REQ_DCB_INFO is only answered for the module whose index it carries as value, so it is added
+        // once per requested module rather than sent without a value, which would report a single module.
         public RscpValue request(int index, Set<Integer> unsupported, Collection<Integer> moduleIndexes) {
             if (containerTag == RscpTag.SE_REQ_EP_RESERVE) {
                 // the reserve is asked for by its bare tag without a value; the device answers with all its values
@@ -109,24 +72,15 @@ public final class E3DCContainerRequests {
         }
     }
 
-    /**
-     * How many indexes of the trackers and temperature sensors of the inverter are asked for, counted from 0.
-     *
-     * <p>
-     * The device reports the number of strings it uses wrongly, so every poll asks for the indexes 0 to 5. An
-     * index the inverter does not have is answered with an error, which does not matter for the others. The
-     * channels are created for the indexes that deliver a value.
-     */
+    // The device reports the number of strings wrongly, so the indexes 0 to 5 are probed on every poll; an
+    // error for an index the inverter does not have does not matter for the others.
     public static final int INDEX_PROBES = 6;
 
-    /** The number of phases of the inverter, each one asked for with its own request. */
     private static final int PHASES = 3;
 
-    /** The values of the inverter that exist once per tracker or temperature sensor. */
     private static final Set<Integer> PROBED_PARAMETERS = Set.of(RscpTag.PVI_REQ_DC_POWER, RscpTag.PVI_REQ_DC_VOLTAGE,
             RscpTag.PVI_REQ_DC_CURRENT, RscpTag.PVI_REQ_TEMPERATURE);
 
-    /** How often a parameter of the inverter is requested with its own index, or 0 when it is requested once. */
     private static int indexedRequests(int parameter) {
         if (PHASE_PARAMETERS.contains(parameter)) {
             return PHASES;
@@ -134,18 +88,12 @@ public final class E3DCContainerRequests {
         return PROBED_PARAMETERS.contains(parameter) ? INDEX_PROBES : 0;
     }
 
-    /**
-     * Whether the parameter is requested for indexes the inverter may not have. An error for such a parameter
-     * says nothing about the parameter itself, so it must not be taken as a reason to stop requesting it.
-     */
+    // A probed parameter may not exist on the device, so an error for it says nothing about the parameter.
     public static boolean isProbed(int requestTag) {
         return PROBED_PARAMETERS.contains(requestTag);
     }
 
-    /**
-     * The values of the inverter that exist once per phase. Like {@code BAT_REQ_DCB_INFO}, they are only
-     * answered for the phase whose index they carry as value, so every phase is requested on its own.
-     */
+    // Values that exist once per phase are only answered for the phase whose index they carry as value.
     private static final Set<Integer> PHASE_PARAMETERS = Set.of(RscpTag.PVI_REQ_AC_POWER, RscpTag.PVI_REQ_AC_VOLTAGE,
             RscpTag.PVI_REQ_AC_CURRENT, RscpTag.PVI_REQ_AC_APPARENT_POWER, RscpTag.PVI_REQ_AC_REACTIVE_POWER,
             RscpTag.PVI_REQ_AC_ENERGY_ALL, RscpTag.PVI_REQ_AC_ENERGY_DAY);
@@ -167,10 +115,7 @@ public final class E3DCContainerRequests {
                     RscpTag.PM_REQ_ENERGY_L1, RscpTag.PM_REQ_ENERGY_L2, RscpTag.PM_REQ_ENERGY_L3,
                     RscpTag.PM_REQ_ACTIVE_PHASES, RscpTag.PM_REQ_MAX_PHASE_POWER));
 
-    /**
-     * The request of a battery: the answer holds the values of the battery itself and the container of every
-     * cell module. The battery and its modules share this request, so it is sent once when both are present.
-     */
+    /** The battery and its cell modules share this request, so it is sent once when both are present. */
     private static final List<Integer> BATTERY_PARAMETERS = List.of(RscpTag.BAT_REQ_RSOC, RscpTag.BAT_REQ_DCB_INFO,
             RscpTag.BAT_REQ_DCB_COUNT, RscpTag.requestFor(RscpTag.BAT_MODULE_VOLTAGE),
             RscpTag.requestFor(RscpTag.BAT_CURRENT), RscpTag.requestFor(RscpTag.BAT_CHARGE_CYCLES),
@@ -182,15 +127,11 @@ public final class E3DCContainerRequests {
     private static final Container BATTERY = new Container(E3DCBindingConstants.GROUP_PACK, RscpTag.BAT_REQ_DATA,
             RscpTag.BAT_INDEX, RscpTag.BAT_DATA, BATTERY_PARAMETERS);
 
-    /**
-     * The battery of the cell modules, asked for with the index of the battery rather than of a module: the
-     * answer holds the container of every module of that battery, which is what the module channels read. The
-     * module indexes count inside one battery, so they are requested with the battery they belong to.
-     */
+    // The battery of the cell modules, asked for with the battery index: the module indexes count inside one
+    // battery.
     private static final Container BATTERY_MODULE = new Container(E3DCBindingConstants.GROUP_MODULE,
             RscpTag.BAT_REQ_DATA, RscpTag.BAT_INDEX, RscpTag.BAT_DCB_INFO, BATTERY_PARAMETERS);
 
-    /** The inverter, whose tracker values the answer reports once per tracker. */
     private static final Container INVERTER = new Container(E3DCBindingConstants.GROUP_INVERTER, RscpTag.PVI_REQ_DATA,
             RscpTag.PVI_INDEX, RscpTag.PVI_DATA,
             List.of(RscpTag.PVI_REQ_AC_POWER, RscpTag.PVI_REQ_AC_VOLTAGE, RscpTag.PVI_REQ_AC_CURRENT,
@@ -199,10 +140,8 @@ public final class E3DCContainerRequests {
                     RscpTag.PVI_REQ_DC_VOLTAGE, RscpTag.PVI_REQ_DC_CURRENT, RscpTag.PVI_REQ_TEMPERATURE,
                     RscpTag.PVI_REQ_ON_GRID, RscpTag.PVI_REQ_USED_STRING_COUNT));
 
-    /**
-     * The reserve kept for emergency power, which addresses no device and therefore carries no index. The
-     * device adds the parameters it reports by itself to the answer of a request that names them.
-     */
+    // The reserve addresses no device and carries no index; the device adds the parameters it reports by
+    // itself to the answer of a request that names them.
     private static final Container RESERVE = new Container(E3DCBindingConstants.GROUP_EMERGENCY,
             RscpTag.SE_REQ_EP_RESERVE, 0, RscpTag.SE_EP_RESERVE, List.of(RscpTag.SE_PARAM_EP_RESERVE,
                     RscpTag.SE_PARAM_LAST_SOC, RscpTag.SE_PARAM_EP_RESERVE_W, RscpTag.SE_PARAM_EP_RESERVE_MAX_W));
@@ -210,7 +149,6 @@ public final class E3DCContainerRequests {
     private static final List<Container> CONTAINERS = List.of(WALLBOX, METER, BATTERY, BATTERY_MODULE, INVERTER,
             RESERVE);
 
-    /** The container of one channel group, or {@code null} when the group is requested as a bare container. */
     public static @Nullable Container forGroup(String groupId) {
         for (Container container : CONTAINERS) {
             if (container.groupId().equals(groupId)) {
@@ -220,7 +158,6 @@ public final class E3DCContainerRequests {
         return null;
     }
 
-    /** The container whose values arrive in the given response container, or {@code null}. */
     public static @Nullable Container forResponseTag(int responseTag) {
         for (Container container : CONTAINERS) {
             if (container.responseTag() == responseTag) {
@@ -230,7 +167,6 @@ public final class E3DCContainerRequests {
         return null;
     }
 
-    /** The container a request tag belongs to, or {@code null} when the tag addresses no such container. */
     public static @Nullable Container forContainerTag(int containerTag) {
         for (Container container : CONTAINERS) {
             if (container.containerTag() == containerTag) {
@@ -240,10 +176,8 @@ public final class E3DCContainerRequests {
         return null;
     }
 
-    /**
-     * Whether the tag is a parameter of one of these containers, so the value it stands for arrives with the
-     * request of that container and is not asked for on its own.
-     */
+    // Whether the tag is a parameter of one of these containers, so its value arrives with the container
+    // request and is not asked for on its own.
     public static boolean isParameter(int requestTag) {
         for (Container container : CONTAINERS) {
             if (container.parameters().contains(requestTag)) {

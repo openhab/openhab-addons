@@ -43,10 +43,12 @@ import org.openhab.binding.e3dc.internal.E3DCPowerMode;
 import org.openhab.binding.e3dc.internal.actions.E3DCActions;
 import org.openhab.binding.e3dc.internal.rscp.RscpException;
 import org.openhab.binding.e3dc.internal.rscp.RscpTag;
+import org.openhab.binding.e3dc.internal.rscp.RscpType;
 import org.openhab.binding.e3dc.internal.rscp.RscpValue;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -58,11 +60,9 @@ import org.openhab.core.types.State;
 import org.openhab.core.types.TimeSeries;
 
 /**
- * The home power plant itself, publishing power, battery, inverter, energy and system channels.
- *
- * <p>
- * The power mode channel is not a plain value: the device only holds a forced mode for a short time, so the
- * handler sends the mode again with every poll cycle until the requested number of cycles is over.
+ * The home power plant itself, publishing power, battery, inverter, energy and system channels. The power
+ * mode is held by the device for a short time only, so the handler sends it again with every poll until the
+ * requested number of cycles is over.
  *
  * @author Bernd Weymann - Initial contribution
  */
@@ -82,13 +82,26 @@ public class E3DCPowerPlantHandler extends E3DCThingHandler {
     /** The channel that shows the energy the running manual charge still has to charge. */
     static final String CHANNEL_MANUAL_CHARGE_REMAINING = "manual-charge-remaining";
 
-    /** The switch that blocks charging of the battery around the clock. */
     static final String CHANNEL_BLOCK_CHARGING = "block-charging";
-    /** The switch that blocks discharging of the battery around the clock. */
     static final String CHANNEL_BLOCK_DISCHARGING = "block-discharging";
+    static final String CHANNEL_CHARGE_PERIODS = "charge-periods";
+    static final String CHANNEL_DISCHARGE_PERIODS = "discharge-periods";
     private static final int VERIFY_ATTEMPTS = 6;
     private static final int VERIFY_DELAY_SECONDS = 1;
-    static final String CHANNEL_IDLE_PERIODS = "idle-periods";
+
+    /** The properties the device reports about itself rather than as a measurement. */
+    static final String PROPERTY_PRODUCTION_DATE = "productionDate";
+    static final String PROPERTY_TIME_ZONE = "timeZone";
+    static final String PROPERTY_INSTALLED_PEAK_POWER = "installedPeakPower";
+    static final String PROPERTY_INVERTER_COUNT = "inverterCount";
+    static final String PROPERTY_BATTERY_COUNT = "batteryCount";
+    static final String PROPERTY_COUPLING_MODE = "couplingMode";
+
+    /** The values read once per connection to publish them as thing properties. */
+    private static final List<Integer> PROPERTY_VALUE_TAGS = List.of(RscpTag.INFO_SW_RELEASE,
+            RscpTag.INFO_SERIAL_NUMBER, RscpTag.INFO_PRODUCTION_DATE, RscpTag.INFO_TIME_ZONE,
+            RscpTag.EMS_INSTALLED_PEAK_POWER, RscpTag.PVI_INVERTER_COUNT, RscpTag.BAT_AVAILABLE_BATTERIES,
+            RscpTag.EMS_COUPLING_MODE);
 
     private final E3DCChannelRegistry registry = E3DCChannelSpec.powerPlant();
     private final E3DCCommandRegistry commandRegistry = E3DCCommandSpec.powerPlant();
@@ -105,6 +118,9 @@ public class E3DCPowerPlantHandler extends E3DCThingHandler {
     /** Serializes access to the pending lock switch check, which runs on a scheduler thread. */
     private final Object verifyLock = new Object();
     private @Nullable ScheduledFuture<?> verifyJob;
+
+    /** Reads the values that describe the device whenever the connection comes up. */
+    private final Runnable propertiesListener = () -> scheduler.execute(this::readProperties);
 
     /** The trackers and temperature sensors the channels were created for. */
     private E3DCInverterChannels.@Nullable Found knownInverterChannels;
@@ -139,31 +155,42 @@ public class E3DCPowerPlantHandler extends E3DCThingHandler {
     }
 
     @Override
+    public void initialize() {
+        super.initialize();
+        E3DCBridgeHandler bridge = getBridgeHandler();
+        if (bridge != null) {
+            bridge.addOnlineListener(propertiesListener);
+            if (bridge.isConnected()) {
+                propertiesListener.run();
+            }
+        }
+    }
+
+    @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (E3DCBindingConstants.GROUP_BATTERY_CONTROL.equals(channelUID.getGroupId())
-                && CHANNEL_SET_POWER_MODE.equals(channelUID.getIdWithoutGroup())) {
+        String groupId = channelUID.getGroupId();
+        String channelId = channelUID.getIdWithoutGroup();
+        if (E3DCBindingConstants.GROUP_BATTERY_MODE.equals(groupId) && CHANNEL_SET_POWER_MODE.equals(channelId)) {
             if (!(command instanceof RefreshType)) {
                 setPowerMode(command.toString());
             }
             return;
         }
-        if (E3DCBindingConstants.GROUP_BATTERY_CONTROL.equals(channelUID.getGroupId())
-                && CHANNEL_IDLE_PERIODS.equals(channelUID.getIdWithoutGroup())) {
+        if (E3DCBindingConstants.GROUP_IDLE_PERIODS.equals(groupId)
+                && (CHANNEL_CHARGE_PERIODS.equals(channelId) || CHANNEL_DISCHARGE_PERIODS.equals(channelId))) {
             if (command instanceof RefreshType) {
                 super.handleCommand(channelUID, command);
             } else {
-                setIdlePeriods(command.toString().trim());
+                setPeriods(channelId, command.toString().trim());
             }
             return;
         }
-        if (E3DCBindingConstants.GROUP_BATTERY_CONTROL.equals(channelUID.getGroupId())
-                && (CHANNEL_BLOCK_CHARGING.equals(channelUID.getIdWithoutGroup())
-                        || CHANNEL_BLOCK_DISCHARGING.equals(channelUID.getIdWithoutGroup()))) {
+        if (E3DCBindingConstants.GROUP_IDLE_PERIODS.equals(groupId)
+                && (CHANNEL_BLOCK_CHARGING.equals(channelId) || CHANNEL_BLOCK_DISCHARGING.equals(channelId))) {
             if (command instanceof RefreshType) {
                 super.handleCommand(channelUID, command);
             } else if (command instanceof OnOffType) {
-                E3DCIdlePeriod.Type type = CHANNEL_BLOCK_CHARGING.equals(channelUID.getIdWithoutGroup())
-                        ? E3DCIdlePeriod.Type.CHARGE
+                E3DCIdlePeriod.Type type = CHANNEL_BLOCK_CHARGING.equals(channelId) ? E3DCIdlePeriod.Type.CHARGE
                         : E3DCIdlePeriod.Type.DISCHARGE;
                 block(channelUID, type, OnOffType.ON.equals(command));
             } else {
@@ -171,9 +198,8 @@ public class E3DCPowerPlantHandler extends E3DCThingHandler {
             }
             return;
         }
-        if (E3DCBindingConstants.GROUP_MANUAL_BATTERY_CHARGE.equals(channelUID.getGroupId())
-                && CHANNEL_SET_MANUAL_CHARGE.equals(channelUID.getIdWithoutGroup())
-                && !(command instanceof RefreshType)) {
+        if (E3DCBindingConstants.GROUP_MANUAL_BATTERY_CHARGE.equals(groupId)
+                && CHANNEL_SET_MANUAL_CHARGE.equals(channelId) && !(command instanceof RefreshType)) {
             logger.debug("Starting a manual battery charge with {}", command);
         }
         super.handleCommand(channelUID, command);
@@ -184,16 +210,7 @@ public class E3DCPowerPlantHandler extends E3DCThingHandler {
         return !CHANNEL_SET_MANUAL_CHARGE.equals(channelUID.getIdWithoutGroup());
     }
 
-    /**
-     * Forces a power mode on the device.
-     *
-     * <p>
-     * The channel is command only, so nothing is published as its state.
-     *
-     * @param text the mode as {@code auto}, {@code idle:<cycles>} or
-     *            {@code charge|discharge|grid_charge:<watts>:<cycles>}
-     * @return whether the device accepted the mode
-     */
+    /** Forces a power mode on the device; the channel is command only, so no state is published. */
     public boolean setPowerMode(String text) {
         E3DCPowerMode mode = E3DCPowerMode.parse(text);
         E3DCBridgeHandler bridge = getBridgeHandler();
@@ -222,12 +239,7 @@ public class E3DCPowerPlantHandler extends E3DCThingHandler {
         return true;
     }
 
-    /**
-     * Reads the idle periods of the second version from the device.
-     *
-     * @return the periods, one per line as {@code name:days:mode:active:hh:mm-hh:mm}, or {@code null} when the
-     *         device could not be asked
-     */
+    /** Reads the idle periods of the second version from the device, one per line, or {@code null} on failure. */
     public @Nullable String getIdlePeriods() {
         synchronized (idleLock) {
             List<E3DCIdlePeriod> periods = readIdlePeriods();
@@ -235,12 +247,7 @@ public class E3DCPowerPlantHandler extends E3DCThingHandler {
         }
     }
 
-    /**
-     * Replaces the whole list of idle periods of the second version on the device.
-     *
-     * @param text the periods, one per line; an empty text removes all of them
-     * @return whether the device accepted the new list
-     */
+    /** Replaces the whole list of idle periods of the second version on the device; an empty text removes all. */
     public boolean setIdlePeriods(String text) {
         List<E3DCIdlePeriod> periods = E3DCIdlePeriod.parseAll(text);
         if (periods == null) {
@@ -257,12 +264,28 @@ public class E3DCPowerPlantHandler extends E3DCThingHandler {
         }
     }
 
-    /**
-     * Removes the idle period of the given name and keeps all others.
-     *
-     * @param name the name of the period
-     * @return whether a period of that name existed and the device accepted the shortened list
-     */
+    /** Replaces the periods of one direction and keeps the periods of the other direction. */
+    private boolean setPeriods(String channelId, String text) {
+        E3DCIdlePeriod.Type type = CHANNEL_CHARGE_PERIODS.equals(channelId) ? E3DCIdlePeriod.Type.CHARGE
+                : E3DCIdlePeriod.Type.DISCHARGE;
+        List<E3DCIdlePeriod> periods = E3DCIdlePeriod.parseAll(text, type);
+        if (periods == null) {
+            logger.warn("The idle periods were not written: every line must read name:days:active:hh:mm-hh:mm");
+            return false;
+        }
+        return changeIdlePeriods(current -> {
+            List<E3DCIdlePeriod> updated = new ArrayList<>();
+            for (E3DCIdlePeriod period : current) {
+                if (period.type() != type) {
+                    updated.add(period);
+                }
+            }
+            updated.addAll(periods);
+            return updated;
+        });
+    }
+
+    /** Removes the idle period of the given name and keeps all others. */
     public boolean deleteIdlePeriod(String name) {
         String wanted = name.trim();
         boolean[] found = new boolean[1];
@@ -315,16 +338,8 @@ public class E3DCPowerPlantHandler extends E3DCThingHandler {
 
     /**
      * Fetches the yearly history of all earlier years once and publishes it on the {@code history#year-*}
-     * channels as time series entries, one entry per year stamped with the start of the year.
-     *
-     * <p>
-     * The fetch starts at the last completed year and goes back year by year; the running year is polled
-     * anyway. Each year is asked for on its own, so an answer can only belong to the year it was requested
-     * for. It stops after {@value #MAX_EMPTY_YEARS} years in a row without data, which tolerates a single gap
-     * and ends before the installation of the device. A year already known to persistence is replaced.
-     *
-     * @return the number of years the device delivered data for, or {@code -1} when the device is not
-     *         connected
+     * channels as one time series entry per year. It starts at the last completed year, goes back year by year
+     * and stops after {@value #MAX_EMPTY_YEARS} years in a row without data.
      */
     public int fetchHistory() {
         List<LocalDate> starts = new ArrayList<>();
@@ -336,18 +351,9 @@ public class E3DCPowerPlantHandler extends E3DCThingHandler {
 
     /**
      * Fetches the history of finished days, weeks or months and publishes it on the {@code history#day-*},
-     * {@code history#week-*} or {@code history#month-*} channels as time series entries stamped with the start of
-     * the period.
-     *
-     * <p>
-     * It starts at the last finished period and goes back. A week runs from Monday to Sunday, a month is a
-     * calendar month. It stops after {@value #MAX_EMPTY_PERIODS} periods in a row without data or after
-     * {@code count} periods, at most {@value #MAX_PERIODS}.
-     *
-     * @param period {@code day}, {@code week}, {@code month} or {@code year}
-     * @param count the number of finished periods to go back
-     * @return the number of periods the device delivered data for, or {@code -1} when the device is not
-     *         connected or the arguments are not valid
+     * {@code history#week-*} or {@code history#month-*} channels, one time series entry per period. A week runs
+     * from Monday to Sunday, a month is a calendar month, and the fetch stops after {@value #MAX_EMPTY_PERIODS}
+     * periods in a row without data or after {@code count} periods.
      */
     public int fetchPeriodHistory(String period, int count) {
         String name = period.trim().toLowerCase(Locale.ROOT);
@@ -405,14 +411,7 @@ public class E3DCPowerPlantHandler extends E3DCThingHandler {
         };
     }
 
-    /**
-     * Requests the periods one by one, newest first, and publishes what the device delivers as time series.
-     *
-     * @param container the history container of the periods
-     * @param starts the first day of each period, newest first
-     * @param maxEmpty the number of periods in a row without data after which the fetch stops
-     * @return the number of periods with data, or {@code -1} when the device is not connected
-     */
+    /** Requests the periods one by one, newest first, and publishes what the device delivers as time series. */
     private int fetchPeriods(int container, List<LocalDate> starts, int maxEmpty) {
         E3DCBridgeHandler bridge = getBridgeHandler();
         if (bridge == null || !bridge.isConnected()) {
@@ -487,11 +486,8 @@ public class E3DCPowerPlantHandler extends E3DCThingHandler {
     }
 
     /**
-     * The rule that ends a history fetch: it stops after a given number of periods in a row without data.
-     *
-     * <p>
-     * A single gap is tolerated, because a period the device does not report says nothing about the periods
-     * before it, and the years before the installation of the device must not be requested one by one.
+     * The rule that ends a history fetch: it stops after a given number of periods in a row without data. A
+     * single gap is tolerated, and the years before the installation must not be requested one by one.
      */
     static final class EmptyPeriods {
 
@@ -513,7 +509,6 @@ public class E3DCPowerPlantHandler extends E3DCThingHandler {
         }
     }
 
-    /** What is wrong with a list of periods, or {@code null} when the device can take it. */
     private static @Nullable String problemOf(List<E3DCIdlePeriod> periods) {
         List<String> names = new ArrayList<>();
         for (E3DCIdlePeriod period : periods) {
@@ -529,11 +524,8 @@ public class E3DCPowerPlantHandler extends E3DCThingHandler {
     }
 
     /**
-     * Switches the lock of charging or discharging.
-     *
-     * <p>
-     * The device has no such function, so the lock is an idle period of its own over all seven days. Switching
-     * it on also turns on the use of idle periods, because the period does nothing otherwise.
+     * Switches the lock of charging or discharging. The device has no such function, so the lock is an idle
+     * period of its own over all seven days; switching it on also turns on the use of idle periods.
      */
     private void block(ChannelUID channelUID, E3DCIdlePeriod.Type type, boolean on) {
         E3DCIdlePeriod blocker = E3DCIdlePeriod.blocker(type);
@@ -564,12 +556,8 @@ public class E3DCPowerPlantHandler extends E3DCThingHandler {
     }
 
     /**
-     * Queues the next check of a lock switch, replacing a check that is still pending.
-     *
-     * <p>
-     * The chain is cancelled in {@link #dispose()}, otherwise a check that was waiting would keep running
-     * after the thing is gone, ask the disposed handler for its bridge and repeat that until its attempts
-     * are used up.
+     * Queues the next check of a lock switch, replacing a check that is still pending. The chain is cancelled
+     * in {@link #dispose()}, otherwise a check that was waiting would keep running after the thing is gone.
      */
     private void scheduleVerify(ChannelUID channelUID, E3DCIdlePeriod.Type type, boolean on, int attempt) {
         synchronized (verifyLock) {
@@ -589,6 +577,10 @@ public class E3DCPowerPlantHandler extends E3DCThingHandler {
 
     @Override
     public void dispose() {
+        E3DCBridgeHandler bridge = getBridgeHandler();
+        if (bridge != null) {
+            bridge.removeOnlineListener(propertiesListener);
+        }
         synchronized (verifyLock) {
             cancelVerifyJob();
         }
@@ -596,12 +588,8 @@ public class E3DCPowerPlantHandler extends E3DCThingHandler {
     }
 
     /**
-     * Checks what the device reports after a lock was written and publishes it on the switch.
-     *
-     * <p>
-     * The write is answered at once, but the list the device reports may still be the old one for a moment.
-     * The check therefore repeats until the device reports what was written, and gives up with a warning
-     * that names what the device holds.
+     * Checks what the device reports after a lock was written and publishes it on the switch. The write is
+     * answered at once, but the reported list may still be the old one, so the check repeats until it matches.
      */
     private void verifyBlock(ChannelUID channelUID, E3DCIdlePeriod.Type type, boolean on, int attempt) {
         IdleState state;
@@ -628,14 +616,8 @@ public class E3DCPowerPlantHandler extends E3DCThingHandler {
         updateState(channelUID, blocked ? OnOffType.ON : OnOffType.OFF);
     }
 
-    /**
-     * The periods of the device together with whether it uses them.
-     *
-     * @param periods the periods the device reported
-     * @param enabled whether the device uses idle periods at all
-     */
+    /** The periods of the device together with whether it uses them. */
     private record IdleState(List<E3DCIdlePeriod> periods, boolean enabled) {
-        /** Whether idle periods are in use and the list holds the active period of the lock switch of the type. */
         boolean blocks(E3DCIdlePeriod.Type type) {
             return enabled && periods.stream().anyMatch(period -> period.blocks(type));
         }
@@ -720,8 +702,7 @@ public class E3DCPowerPlantHandler extends E3DCThingHandler {
         for (E3DCIdlePeriod.Type type : E3DCIdlePeriod.Type.values()) {
             String channelId = type == E3DCIdlePeriod.Type.CHARGE ? CHANNEL_BLOCK_CHARGING : CHANNEL_BLOCK_DISCHARGING;
             boolean blocked = enabled && periods.stream().anyMatch(period -> period.blocks(type));
-            updateState(
-                    new ChannelUID(getThing().getUID(), E3DCBindingConstants.GROUP_BATTERY_CONTROL + "#" + channelId),
+            updateState(new ChannelUID(getThing().getUID(), E3DCBindingConstants.GROUP_IDLE_PERIODS + "#" + channelId),
                     blocked ? OnOffType.ON : OnOffType.OFF);
         }
     }
@@ -734,6 +715,19 @@ public class E3DCPowerPlantHandler extends E3DCThingHandler {
         updateManualChargeRemaining(response);
         logManualCharge(response);
         repeatHeldMode();
+    }
+
+    /** The device reports one list of idle periods, so each channel renders only its own direction. */
+    @Override
+    protected void updateListChannel(ChannelUID channelUID, String channelId, E3DCChannelSpec spec,
+            RscpValue response) {
+        if (spec.tag() == RscpTag.EMS_GET_IDLE_PERIODS_2) {
+            E3DCIdlePeriod.Type type = CHANNEL_CHARGE_PERIODS.equals(channelId) ? E3DCIdlePeriod.Type.CHARGE
+                    : E3DCIdlePeriod.Type.DISCHARGE;
+            updateState(channelUID, new StringType(E3DCIdlePeriod.toTextFromResponse(response, type)));
+        } else {
+            super.updateListChannel(channelUID, channelId, spec, response);
+        }
     }
 
     @Override
@@ -749,9 +743,57 @@ public class E3DCPowerPlantHandler extends E3DCThingHandler {
     }
 
     /**
-     * Publishes the energy the running manual charge still has to charge: the energy it was started with less
-     * the energy charged so far. The device reports neither value, so the channel is calculated.
+     * Reads the values that describe the device and publishes them as thing properties. They are no
+     * measurements, so they are read once per connection instead of being polled on every cycle.
      */
+    private void readProperties() {
+        E3DCBridgeHandler bridge = getBridgeHandler();
+        if (bridge == null || !bridge.isConnected()) {
+            return;
+        }
+        List<RscpValue> request = new ArrayList<>();
+        for (int valueTag : PROPERTY_VALUE_TAGS) {
+            request.add(RscpValue.none(RscpTag.pollTagFor(valueTag)));
+        }
+        RscpValue response;
+        try {
+            response = bridge.sendRequest(request);
+        } catch (RscpException e) {
+            logger.debug("The properties of the device could not be read: {}", e.getMessage());
+            return;
+        }
+        setProperty(Thing.PROPERTY_FIRMWARE_VERSION, response.findString(RscpTag.INFO_SW_RELEASE));
+        setProperty(Thing.PROPERTY_SERIAL_NUMBER, response.findString(RscpTag.INFO_SERIAL_NUMBER));
+        setProperty(PROPERTY_PRODUCTION_DATE, response.findString(RscpTag.INFO_PRODUCTION_DATE));
+        setProperty(PROPERTY_TIME_ZONE, response.findString(RscpTag.INFO_TIME_ZONE));
+        setProperty(PROPERTY_INSTALLED_PEAK_POWER, kilowatts(response, RscpTag.EMS_INSTALLED_PEAK_POWER));
+        setProperty(PROPERTY_INVERTER_COUNT, number(response, RscpTag.PVI_INVERTER_COUNT));
+        setProperty(PROPERTY_BATTERY_COUNT, batteryCount(response));
+        setProperty(PROPERTY_COUPLING_MODE, number(response, RscpTag.EMS_COUPLING_MODE));
+    }
+
+    /** The number of batteries: one container per battery on some devices, a plain value on others. */
+    private static @Nullable String batteryCount(RscpValue response) {
+        RscpValue value = response.find(RscpTag.BAT_AVAILABLE_BATTERIES);
+        if (value != null && value.getType() == RscpType.CONTAINER) {
+            return Integer.toString(value.findAll(RscpTag.BAT_INDEX).size());
+        }
+        return number(response, RscpTag.BAT_AVAILABLE_BATTERIES);
+    }
+
+    private static @Nullable String number(RscpValue response, int tag) {
+        Number value = response.findNumber(tag);
+        return value != null ? Long.toString(value.longValue()) : null;
+    }
+
+    private static @Nullable String kilowatts(RscpValue response, int tag) {
+        Number value = response.findNumber(tag);
+        return value != null && value.doubleValue() > 0
+                ? String.format(Locale.ROOT, "%.1f kW", value.doubleValue() / 1000.0)
+                : null;
+    }
+
+    /** Publishes the energy the running manual charge still has to charge; the device reports neither value. */
     private void updateManualChargeRemaining(RscpValue response) {
         RscpValue container = response.find(RscpTag.EMS_GET_MANUAL_CHARGE);
         if (container == null) {
@@ -771,15 +813,8 @@ public class E3DCPowerPlantHandler extends E3DCThingHandler {
     }
 
     /**
-     * The energy a manual charge still has to charge.
-     *
-     * <p>
-     * Nothing is left when no charge is running. The charged energy can start slightly below zero, as the counter
-     * follows the battery power, so the result never exceeds the energy the charge was started with.
-     *
-     * @param active whether a manual charge is running
-     * @param targetWh the energy the charge was started with in Wh
-     * @param chargedWh the energy charged so far in Wh
+     * The energy a manual charge still has to charge: nothing while no charge runs. The charged energy can start
+     * slightly below zero, so the result never exceeds the energy the charge was started with.
      */
     static double remainingWh(boolean active, double targetWh, double chargedWh) {
         if (!active) {
@@ -789,12 +824,8 @@ public class E3DCPowerPlantHandler extends E3DCThingHandler {
     }
 
     /**
-     * Logs what the device answers about the manual battery charge.
-     *
-     * <p>
-     * Debug logging shows a summary of the values whenever it differs from the one logged before, trace logging
-     * shows the whole answer with the RSCP type of every value with each poll. A poll that brings no answer is
-     * logged as well, because the device may not answer the request at all.
+     * Logs what the device answers about the manual battery charge: a summary whenever it changes at debug
+     * level, the whole answer with every poll at trace level.
      */
     private void logManualCharge(RscpValue response) {
         if (!logger.isDebugEnabled()) {
@@ -830,12 +861,8 @@ public class E3DCPowerPlantHandler extends E3DCThingHandler {
     }
 
     /**
-     * Creates the channels of the trackers and temperature sensors the device answers and publishes their values.
-     *
-     * <p>
-     * The device is asked for the indexes 0 to 5 of both. Every index that answers with a value gets its
-     * channels, so an installation with one, three or more trackers gets what it has, and a tracker that is
-     * connected later is picked up as soon as it answers.
+     * Creates the channels of the trackers and temperature sensors the device answers and publishes their
+     * values. Every index that answers gets its channels, and a tracker connected later is picked up.
      */
     private void updateTrackers(RscpValue response) {
         RscpValue inverter = response.find(RscpTag.PVI_DATA);
@@ -854,13 +881,9 @@ public class E3DCPowerPlantHandler extends E3DCThingHandler {
     }
 
     /**
-     * Adds the channels of the trackers and sensors that answered and remembers which ones are read.
-     *
-     * <p>
-     * This runs with every poll, because a thing that is defined in a file gets its channels back from the
-     * definition when the file is reloaded, which removes the ones added here. Comparing the channels is
-     * cheap; the thing is only updated when they differ. Indexes that answered once stay in the list, so a
-     * single failed poll does not drop a channel.
+     * Adds the channels of the trackers and sensors that answered and remembers which ones are read. This runs
+     * with every poll, because a thing defined in a file gets its channels back from the definition when the
+     * file is reloaded; indexes that answered once stay, so a single failed poll does not drop a channel.
      */
     private void adaptInverterChannels(E3DCInverterChannels.Found answered) {
         E3DCInverterChannels.Found known = knownInverterChannels;
@@ -886,12 +909,8 @@ public class E3DCPowerPlantHandler extends E3DCThingHandler {
     }
 
     /**
-     * Logs what the device answered about its trackers and temperature sensors.
-     *
-     * <p>
-     * At debug level the whole answer of the inverter is logged once, and again when the indexes that answer
-     * change or the level is switched on, followed by the values of the trackers every 20th poll. At trace
-     * level the values are logged with every poll. Nothing is built while the level is off.
+     * Logs what the device answered about its trackers and temperature sensors: once at debug level, and the
+     * values every 20th poll, or with every poll at trace level.
      */
     private void logTrackers(RscpValue inverter, E3DCInverterChannels.Found found) {
         if (!logger.isDebugEnabled()) {

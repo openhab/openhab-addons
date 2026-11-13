@@ -203,10 +203,11 @@ class E3DCChannelSpecTest {
         Set<String> groups = E3DCChannelSpec.powerPlant().groups().keySet();
 
         assertEquals(Set.of(E3DCBindingConstants.GROUP_POWER, E3DCBindingConstants.GROUP_BATTERY,
+                E3DCBindingConstants.GROUP_BATTERY_LIMITS, E3DCBindingConstants.GROUP_BATTERY_MODE,
+                E3DCBindingConstants.GROUP_IDLE_PERIODS, E3DCBindingConstants.GROUP_WALLBOX_PRIORITY,
                 E3DCBindingConstants.GROUP_GRID, E3DCBindingConstants.GROUP_INVERTER,
                 E3DCBindingConstants.GROUP_HISTORY, E3DCBindingConstants.GROUP_EMERGENCY,
-                E3DCBindingConstants.GROUP_SYSTEM, E3DCBindingConstants.GROUP_BATTERY_CONTROL,
-                E3DCBindingConstants.GROUP_MANUAL_BATTERY_CHARGE), groups);
+                E3DCBindingConstants.GROUP_SYSTEM, E3DCBindingConstants.GROUP_MANUAL_BATTERY_CHARGE), groups);
     }
 
     /**
@@ -300,7 +301,7 @@ class E3DCChannelSpecTest {
 
     @Test
     void theNestedBatteryLimitsAreReadFromTheSettingsContainer() {
-        E3DCChannelSpec spec = E3DCChannelSpec.powerPlant().spec(E3DCBindingConstants.GROUP_BATTERY,
+        E3DCChannelSpec spec = E3DCChannelSpec.powerPlant().spec(E3DCBindingConstants.GROUP_BATTERY_LIMITS,
                 "max-charge-power");
 
         assertNotNull(spec);
@@ -373,7 +374,7 @@ class E3DCChannelSpecTest {
             assertEquals(RscpTag.EMS_GET_MANUAL_CHARGE, spec.container(), channel.getKey());
             assertEquals(channel.getValue(), spec.tag(), channel.getKey());
         }
-        assertNull(registry.spec(E3DCBindingConstants.GROUP_BATTERY_CONTROL, "manual-charge-energy"),
+        assertNull(registry.spec(E3DCBindingConstants.GROUP_BATTERY, "manual-charge-energy"),
                 "the manual charge channels moved to their own group");
     }
 
@@ -630,7 +631,7 @@ class E3DCChannelSpecTest {
 
         assertEquals(Set.of(E3DCBindingConstants.GROUP_MODULE), registry.groups().keySet());
         Map<String, E3DCChannelSpec> channels = registry.channels(E3DCBindingConstants.GROUP_MODULE);
-        assertEquals(32, channels.size(), "the module reports 32 values");
+        assertEquals(16, channels.size(), "the module reports 16 measured values");
         for (Map.Entry<String, E3DCChannelSpec> channel : channels.entrySet()) {
             E3DCChannelSpec spec = channel.getValue();
             assertEquals(RscpTag.BAT_DCB_INFO, spec.container(), channel.getKey() + " must read the module container");

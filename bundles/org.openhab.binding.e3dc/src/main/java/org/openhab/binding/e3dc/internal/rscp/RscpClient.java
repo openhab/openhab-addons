@@ -33,17 +33,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * A synchronous RSCP connection to an E3/DC device.
- *
- * <p>
- * The connection is a plain TCP socket; every frame is encrypted with Rijndael-256 in CBC mode, so
- * the chaining state belongs to the connection and a new socket needs a fresh {@link RscpCipher}.
- * Authentication happens inside the encrypted channel with the credentials of the E3/DC cloud account.
- *
- * <p>
- * Requests are serialized inside {@link #request(List)}: request and response are not correlated by an
- * identifier, so two requests in flight would read each other's answer and corrupt the chaining state of
- * the cipher. The timing figures are written by the requesting thread and read by the poll, so they are
+ * A synchronous RSCP connection to an E3DC device. The socket is plain TCP; every frame is encrypted with
+ * Rijndael-256 in CBC mode, so the chaining state belongs to the connection and a new socket needs a fresh
+ * {@link RscpCipher}. Requests are serialized inside {@link #request(List)} because request and response are
+ * not correlated by an identifier, so two requests in flight would read each other's answer and corrupt that
+ * state. The timing figures are written by the requesting thread and read by the poll, so they are
  * {@code volatile}.
  *
  * @author Bernd Weymann - Initial contribution
@@ -52,6 +46,9 @@ import org.slf4j.LoggerFactory;
 public class RscpClient implements AutoCloseable {
 
     public static final int DEFAULT_PORT = 5033;
+
+    /** The access level the account has to reach; zero means the device did not accept the login. */
+    private static final int MIN_ACCESS_LEVEL = 10;
 
     private final Logger logger = LoggerFactory.getLogger(RscpClient.class);
 
@@ -62,13 +59,11 @@ public class RscpClient implements AutoCloseable {
     private final byte[] key;
     private final int timeoutMillis;
 
-    /** Time spent on the wire by all requests of this connection, from sending to the complete answer. */
     private final AtomicLong busyNanos = new AtomicLong();
 
     private volatile long lastWireNanos;
     private volatile int lastAnswerBytes;
 
-    /** Time the device needed to start its answer, measured for the trace of the last request. */
     private volatile long lastDeviceWaitNanos;
 
     private @Nullable Socket socket;
@@ -85,7 +80,6 @@ public class RscpClient implements AutoCloseable {
         this.timeoutMillis = timeoutMillis;
     }
 
-    /** Opens the socket and authenticates. */
     public void connect() throws RscpException {
         close();
         logger.debug("Connecting to {}:{} with a timeout of {} ms", host, port, timeoutMillis);
@@ -126,16 +120,25 @@ public class RscpClient implements AutoCloseable {
             }
             throw new RscpException("Authentication failed with " + error);
         }
-        logger.debug("Authentication succeeded, the device answered with {}", response);
+        int accessLevel = accessLevelOf(response);
+        if (accessLevel < MIN_ACCESS_LEVEL) {
+            // a wrong login is answered with an access level of zero rather than with an error item
+            close();
+            throw new RscpException("The device accepted the connection but not the login: the access level is "
+                    + accessLevel + ". Check the user name and password of the E3/DC account and the RSCP password.");
+        }
+        logger.debug("Authentication succeeded, the device answered with access level {}", accessLevel);
+    }
+
+    private static int accessLevelOf(RscpValue response) {
+        RscpValue level = response.find(RscpTag.RSCP_AUTHENTICATION);
+        return level != null && level.getValue() instanceof Number number ? number.intValue() : 0;
     }
 
     /**
-     * Turns a failure during the handshake into a message that names the likely cause.
-     *
-     * <p>
-     * The two failures look alike in a log but have different causes: a timeout means that nothing arrived
-     * at all, while a connection that closes without a single byte usually means the device could not
-     * decrypt the request, which points at the RSCP key rather than at the credentials.
+     * Turns a handshake failure into a message naming the likely cause: a timeout means nothing arrived,
+     * while a connection closing without a single byte usually means the device could not decrypt the
+     * request, which points at the RSCP key rather than at the credentials.
      */
     private String explainHandshakeFailure(RscpException cause) {
         String detail = cause.getMessage();
@@ -162,21 +165,9 @@ public class RscpClient implements AutoCloseable {
     }
 
     /**
-     * Sends the elements and returns the decoded answer.
-     *
-     * <p>
-     * A device side error item for a requested tag is not treated as a failure: it is returned so the
-     * caller can distinguish an unsupported data point from a failed request.
-     *
-     * <p>
-     * The device answers with exactly one frame that carries all elements, so one frame is read. Reading
-     * further frames would consume the answer of the next request, because the device replies about a
-     * second later while a follow-up read waits only a fraction of that.
-     *
-     * <p>
-     * Requests are sent one at a time. The poll and a command arrive on different threads but share one
-     * socket and one cipher whose chaining state moves with every frame, so two requests in flight would
-     * read each other's answer, corrupt that state, and both end in a timeout.
+     * Sends the elements and returns the decoded answer. A device side error item is returned rather than
+     * treated as a failure, so the caller can tell an unsupported data point from a failed request; exactly
+     * one frame is read, because further frames would be the answer of the next request.
      */
     public synchronized RscpValue request(List<RscpValue> requestItems) throws RscpException {
         long started = System.nanoTime();
@@ -197,8 +188,7 @@ public class RscpClient implements AutoCloseable {
         List<RscpValue> received = RscpCodec.decodeFrame(plainResponse);
         long decoded = System.nanoTime();
         if (logger.isTraceEnabled()) {
-            // the device wait is the time until the first block of the answer arrives; it is what the device
-            // needs to collect the data, the transfer afterwards depends on the size of the answer
+            // the device wait is the time until the first block arrives; the rest depends on the answer size
             logger.trace(
                     "Timing of one request: encode {} ms, send {} ms, device wait {} ms, "
                             + "transfer and decrypt {} ms, decode {} ms, total {} ms; "
@@ -220,27 +210,21 @@ public class RscpClient implements AutoCloseable {
     }
 
     /**
-     * The time all requests of this connection spent on the wire so far, in nanoseconds.
-     *
-     * <p>
-     * Each request counts from sending to the complete answer, which is the time the device is occupied by
-     * this client. Polls, commands and fetches all go through the same connection, so they are all included.
+     * The time all requests of this connection spent on the wire so far in nanoseconds, from sending to the
+     * complete answer.
      */
     public long getBusyNanos() {
         return busyNanos.get();
     }
 
-    /** Time the last request spent on the wire, from sending to the complete answer, in nanoseconds. */
     public long getLastWireNanos() {
         return lastWireNanos;
     }
 
-    /** Time the device needed to start the answer to the last request, in nanoseconds. */
     public long getLastDeviceWaitNanos() {
         return lastDeviceWaitNanos;
     }
 
-    /** Size of the answer to the last request in bytes, as plain frame. */
     public int getLastAnswerBytes() {
         return lastAnswerBytes;
     }
@@ -249,7 +233,6 @@ public class RscpClient implements AutoCloseable {
         return String.format("%.1f", nanos / 1_000_000.0);
     }
 
-    /** Requests one tag, which is a top level element of the frame. */
     public RscpValue requestTag(int tag) throws RscpException {
         return request(List.of(RscpValue.none(tag)));
     }
@@ -272,12 +255,9 @@ public class RscpClient implements AutoCloseable {
     }
 
     /**
-     * Reads one encrypted frame.
-     *
-     * <p>
-     * The whole frame is buffered before decryption because CBC chains across blocks: decrypting a
-     * prefix twice would advance the chaining state twice and corrupt the stream. The plain header is
-     * only known after the first block, which is probed with a throwaway cipher state.
+     * Reads one encrypted frame. The whole frame is buffered before decryption because CBC chains across
+     * blocks: decrypting a prefix twice would advance the chaining state twice and corrupt the stream; the
+     * plain header is probed with a throwaway cipher state.
      */
     private byte[] receive() throws RscpException {
         RscpCipher currentCipher = cipher;
@@ -319,13 +299,9 @@ public class RscpClient implements AutoCloseable {
     }
 
     /**
-     * Keeps an interruption visible to the caller.
-     *
-     * <p>
-     * A {@link SocketTimeoutException} is also an {@link InterruptedIOException}, but it only reports that the
-     * device stayed silent and is an expected communication failure. Any other {@link InterruptedIOException}
-     * means the thread was interrupted, for example because the handler is being disposed, so the flag is set
-     * again and the callers stop instead of retrying.
+     * Keeps an interruption visible to the caller. A {@link SocketTimeoutException} is also an
+     * {@link InterruptedIOException}, but it only reports that the device stayed silent; any other
+     * {@link InterruptedIOException} means the thread was interrupted, so the flag is set again.
      */
     private static void restoreInterrupt(IOException e) {
         if (e instanceof InterruptedIOException && !(e instanceof SocketTimeoutException)) {
@@ -333,10 +309,7 @@ public class RscpClient implements AutoCloseable {
         }
     }
 
-    /**
-     * Derives the plaintext frame length from a buffer holding at least the first cipher block,
-     * without touching the connection's chaining state.
-     */
+    /** Derives the plaintext frame length from the first cipher block without touching the chaining state. */
     private int plainFrameLength(byte[] encrypted) throws RscpException {
         RscpCipher currentCipher = cipher;
         if (currentCipher == null) {
@@ -363,7 +336,6 @@ public class RscpClient implements AutoCloseable {
             try {
                 current.close();
             } catch (IOException e) {
-                // closing a socket is best effort
             }
         }
     }

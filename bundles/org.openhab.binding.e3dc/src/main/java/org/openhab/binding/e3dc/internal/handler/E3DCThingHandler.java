@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.e3dc.internal.handler;
 
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -21,6 +19,8 @@ import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Map;
+
+import javax.measure.Unit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -40,6 +40,7 @@ import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
@@ -59,10 +60,6 @@ import org.slf4j.LoggerFactory;
 /**
  * Base class for the things that consume poll data from the bridge.
  *
- * <p>
- * Subclasses only provide the channel registry. This class extracts each channel value from the poll
- * response according to its {@link E3DCChannelSpec} and updates the channel.
- *
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
@@ -78,10 +75,7 @@ public abstract class E3DCThingHandler extends BaseThingHandler implements E3DCD
     /** The channels this handler publishes, grouped by channel group. */
     protected abstract E3DCChannelRegistry getRegistry();
 
-    /**
-     * The index of this thing's device within a container that holds several, or `null` when the
-     * container holds a single entry.
-     */
+    /** The index of this thing's device in a container that holds several, or {@code null} for a single device. */
     protected @Nullable Integer getDeviceIndex() {
         return null;
     }
@@ -128,14 +122,7 @@ public abstract class E3DCThingHandler extends BaseThingHandler implements E3DCD
         }
     }
 
-    /**
-     * The value of one channel in a poll response.
-     *
-     * @param response the answer of the device
-     * @param spec the channel specification
-     * @param deviceIndex the index of this thing's device, or {@code null} when the container holds a single
-     *            entry
-     */
+    /** The value of one channel in a poll response, or {@code null} when this answer does not carry it. */
     static @Nullable RscpValue findValue(RscpValue response, E3DCChannelSpec spec, @Nullable Integer deviceIndex) {
         RscpValue scope = response;
         if (spec.container() != 0) {
@@ -165,12 +152,7 @@ public abstract class E3DCThingHandler extends BaseThingHandler implements E3DCD
     }
 
     /**
-     * Picks the container of an inverter value that exists once per phase, tracker or sensor.
-     *
-     * <p>
-     * Each container carries the index the request asked for, which is what selects it. An index the device did
-     * not answer must not be filled from another container. Containers without any index are told apart by
-     * their position instead.
+     * Picks the container of an inverter value that exists once per phase, tracker or sensor by its index.
      */
     private static @Nullable RscpValue findIndexed(List<RscpValue> containers, E3DCChannelSpec spec) {
         boolean indexed = false;
@@ -189,10 +171,7 @@ public abstract class E3DCThingHandler extends BaseThingHandler implements E3DCD
         return spec.valueIndex() < containers.size() ? containers.get(spec.valueIndex()).find(spec.tag()) : null;
     }
 
-    /**
-     * Picks the container instance belonging to this thing's device index. Devices that can exist more
-     * than once are returned as several containers, each carrying its own index.
-     */
+    /** Picks the container instance belonging to this thing's device index. */
     private static @Nullable RscpValue selectContainer(RscpValue response, int container,
             @Nullable Integer deviceIndex) {
         List<RscpValue> candidates = response.findAll(container);
@@ -203,26 +182,22 @@ public abstract class E3DCThingHandler extends BaseThingHandler implements E3DCD
             return candidates.get(0);
         }
         int indexTag = indexTagFor(container);
+        boolean indexed = false;
         for (RscpValue candidate : candidates) {
             Number reported = candidate.findNumber(indexTag);
-            if (reported != null && reported.intValue() == deviceIndex) {
-                return candidate;
+            if (reported != null) {
+                indexed = true;
+                if (reported.intValue() == deviceIndex) {
+                    return candidate;
+                }
             }
         }
-        if (container == RscpTag.BAT_DCB_INFO) {
-            // another module's values must never stand in for this module
-            return null;
-        }
-        return candidates.get(0);
+        // another device's values must never stand in for the requested one; only a response that carries
+        // no index at all is told apart by position
+        return indexed ? null : candidates.get(0);
     }
 
-    /**
-     * The tag that carries the index of a container that holds several devices.
-     *
-     * <p>
-     * The cell modules of a battery are addressed inside their own container rather than by position,
-     * so the index tag belongs to the module container itself.
-     */
+    /** The tag that carries the index of a container that holds several devices. */
     private static int indexTagFor(int container) {
         if (container == RscpTag.PM_DATA) {
             return RscpTag.PM_INDEX;
@@ -257,12 +232,7 @@ public abstract class E3DCThingHandler extends BaseThingHandler implements E3DCD
         State state = spec.tag() == RscpTag.BAT_AVAILABLE_BATTERIES && value.getType() == RscpType.CONTAINER
                 ? new DecimalType(value.findAll(RscpTag.BAT_INDEX).size())
                 : valueState(value, spec, textChannel);
-        if (state instanceof DecimalType decimal && channel != null
-                && "Number:Dimensionless".equals(channel.getAcceptedItemType())) {
-            // a share is reported in percent; sent as a plain number it would be taken for a fraction of one and
-            // shown as 100 times the value
-            state = new QuantityType<>(decimal.toBigDecimal(), Units.PERCENT);
-        }
+        state = withUnit(state, channel == null ? null : channel.getAcceptedItemType(), spec);
         if (state != null) {
             updateState(channelUID, state);
             if (spec.container() == RscpTag.DB_HISTORY_DATA_YEAR) {
@@ -272,14 +242,79 @@ public abstract class E3DCThingHandler extends BaseThingHandler implements E3DCD
     }
 
     /**
-     * Publishes the value of the current year as one entry of a time series, stamped with the start of the
-     * year.
-     *
-     * <p>
-     * The year channels are a time series of yearly values. The state of the channel is the current year;
-     * the entry makes the same value available to persistence under the year it belongs to, so the
-     * years add up to one series. An entry that already exists for the year is replaced, as the value of
-     * the running year grows.
+     * Publishes values of the poll that describe the device as thing properties instead of channels. A value
+     * that the answer does not carry leaves its property as it is.
+     */
+    protected void updateProperties(RscpValue response, Map<String, E3DCChannelSpec> properties) {
+        for (Map.Entry<String, E3DCChannelSpec> property : properties.entrySet()) {
+            RscpValue value = findValue(response, property.getValue(), getDeviceIndex());
+            if (value != null) {
+                State state = valueState(value, property.getValue(), true);
+                if (state != null) {
+                    setProperty(property.getKey(), state.toString());
+                }
+            }
+        }
+    }
+
+    /** Publishes numeric values of the poll as thing properties, each followed by the unit it is stated in. */
+    protected void updateProperties(RscpValue response, Map<String, E3DCChannelSpec> properties, String unit) {
+        for (Map.Entry<String, E3DCChannelSpec> property : properties.entrySet()) {
+            RscpValue value = findValue(response, property.getValue(), getDeviceIndex());
+            Number number = value != null ? value.asNumber() : null;
+            if (number != null) {
+                setProperty(property.getKey(), quantity(number, unit));
+            }
+        }
+    }
+
+    /** A measured number as text, without a decimal part it does not need. */
+    static String quantity(Number value, String unit) {
+        double number = value.doubleValue();
+        String text = number == Math.rint(number) && Math.abs(number) < 1e15 ? Long.toString((long) number)
+                : Double.toString(number);
+        return unit.isEmpty() ? text : text + " " + unit;
+    }
+
+    /** Updates a thing property only when its value changed, so a poll does not rewrite it every cycle. */
+    protected void setProperty(String property, @Nullable String value) {
+        if (value == null || value.isBlank()) {
+            return;
+        }
+        if (!value.equals(getThing().getProperties().get(property))) {
+            updateProperty(property, value);
+        }
+    }
+
+    /**
+     * The state with the unit of its channel. A measurement has to be published as a quantity: a plain number is
+     * taken as being in the unit of the item, which shows a device reading of 2000 W as 2000 kW on a kW item. The
+     * energy counters follow the scaling the device needs: reported in Wh, divided by a thousand is published in kWh.
+     */
+    static @Nullable State withUnit(@Nullable State state, @Nullable String acceptedItemType, E3DCChannelSpec spec) {
+        if (!(state instanceof DecimalType decimal) || acceptedItemType == null) {
+            return state;
+        }
+        Unit<?> unit = unitOf(acceptedItemType, spec);
+        return unit != null ? new QuantityType<>(decimal.toBigDecimal(), unit) : state;
+    }
+
+    private static @Nullable Unit<?> unitOf(String acceptedItemType, E3DCChannelSpec spec) {
+        return switch (acceptedItemType) {
+            case "Number:Power" -> Units.WATT;
+            case "Number:Energy" -> spec.divisor() == 1000 ? Units.KILOWATT_HOUR : Units.WATT_HOUR;
+            case "Number:ElectricPotential" -> Units.VOLT;
+            case "Number:ElectricCurrent" -> Units.AMPERE;
+            case "Number:Temperature" -> SIUnits.CELSIUS;
+            case "Number:Frequency" -> Units.HERTZ;
+            case "Number:Dimensionless" -> Units.PERCENT;
+            default -> null;
+        };
+    }
+
+    /**
+     * Publishes the yearly value as a time series entry stamped with the start of the year, so persistence holds
+     * it under the year it belongs to. The entry is replaced as the running year grows.
      */
     private void sendYearValue(ChannelUID channelUID, State state) {
         LocalDate yearStart = LocalDate.now(ZoneOffset.UTC).withDayOfYear(1);
@@ -289,56 +324,38 @@ public abstract class E3DCThingHandler extends BaseThingHandler implements E3DCD
     }
 
     /**
-     * The state of a value that names a moment, for a channel that carries a DateTime item.
-     *
-     * <p>
-     * The interface has a timestamp type of its own, which holds the seconds since 1970 in its first eight bytes.
-     * A device may also report a moment as a plain number, which is taken as seconds, or as milliseconds when it is
-     * too large for seconds. A moment of zero means that nothing happened yet, so it is published as undefined.
-     *
-     * @return the moment, {@code UNDEF} for a moment of zero, or {@code null} when the value is no moment
+     * The state of a moment value. A plain number is taken as seconds, or as milliseconds when it is too large;
+     * a moment of zero means nothing happened yet and is undefined. {@code null} means no moment at all.
      */
     static @Nullable State timestampState(RscpValue value) {
         Object raw = value.getValue();
-        long seconds;
-        if (raw instanceof byte[] bytes && value.getType() == RscpType.TIMESTAMP && bytes.length >= 8) {
-            seconds = ByteBuffer.wrap(bytes, 0, 8).order(ByteOrder.LITTLE_ENDIAN).getLong();
-        } else if (raw instanceof Number number) {
-            seconds = number.longValue();
-        } else {
-            return null;
+        if (raw instanceof Instant moment) {
+            return moment.getEpochSecond() <= 0 && moment.getNano() == 0 ? UnDefType.UNDEF
+                    : new DateTimeType(moment.atZone(ZoneId.systemDefault()));
         }
-        if (seconds <= 0) {
-            return UnDefType.UNDEF;
+        if (raw instanceof Number number) {
+            long seconds = number.longValue();
+            if (seconds <= 0) {
+                return UnDefType.UNDEF;
+            }
+            Instant moment = seconds > MILLISECONDS_THRESHOLD ? Instant.ofEpochMilli(seconds)
+                    : Instant.ofEpochSecond(seconds);
+            return new DateTimeType(moment.atZone(ZoneId.systemDefault()));
         }
-        Instant instant = seconds > MILLISECONDS_THRESHOLD ? Instant.ofEpochMilli(seconds)
-                : Instant.ofEpochSecond(seconds);
-        return new DateTimeType(instant.atZone(ZoneId.systemDefault()));
+        return null;
     }
 
     /** Seconds since 1970 stay below this until the year 5138, so a larger number counts milliseconds. */
     private static final long MILLISECONDS_THRESHOLD = 100_000_000_000L;
 
-    /**
-     * The state a value of this interface publishes on its channel, or {@code null} when it carries none.
-     *
-     * <p>
-     * Most values are numbers, but the interface also reports plain booleans, for example the charging mode of
-     * a wallbox. Treated by their kind alone they would silently keep the channel at its previous state.
-     */
+    /** The state a value publishes on its channel, or {@code null} when it carries none. */
     static @Nullable State valueState(RscpValue value, E3DCChannelSpec spec) {
         return valueState(value, spec, false);
     }
 
     /**
-     * The state of a value for a channel that is either numeric or text.
-     *
-     * <p>
-     * A text channel must receive text even when the device reports a number, such as the version of a battery
-     * module: a number sent to a String item is converted by the framework to a date, which shows as a time
-     * in 1970. Text the device reports arrives as bytes, which are decoded here.
-     *
-     * @param textChannel whether the channel carries a String item
+     * The state of a value for a channel that is either numeric or text. A text channel needs text even for a
+     * number, because the framework converts a number on a String item to a date in 1970.
      */
     static @Nullable State valueState(RscpValue value, E3DCChannelSpec spec, boolean textChannel) {
         Object raw = value.getValue();
@@ -356,35 +373,36 @@ public abstract class E3DCThingHandler extends BaseThingHandler implements E3DCD
         if (raw instanceof Boolean flag) {
             return flag ? OnOffType.ON : OnOffType.OFF;
         }
-        // other kinds, for example byte arrays not mapped to a bit field, carry no publishable value
         return raw instanceof String string ? new StringType(string) : null;
     }
 
-    /**
-     * Publishes the channels that render a list instead of a single value. The list is taken from the
-     * response the handler currently holds, so it follows the poll cycle like the other channels.
-     */
+    /** Publishes the channels that render a list instead of a single value. */
     private void updateLists(RscpValue response) {
         for (Map.Entry<String, Map<String, E3DCChannelSpec>> group : getRegistry().groups().entrySet()) {
             for (Map.Entry<String, E3DCChannelSpec> channel : group.getValue().entrySet()) {
                 if (channel.getValue().isList()) {
                     ChannelUID channelUID = new ChannelUID(getThing().getUID(),
                             group.getKey() + "#" + channel.getKey());
-                    if (channel.getValue().tag() == RscpTag.EMS_STORED_ERRORS) {
-                        updateMessages(channelUID, channel.getKey(), response);
-                    } else {
-                        updateState(channelUID, new StringType(E3DCIdlePeriod.toTextFromResponse(response)));
-                    }
+                    updateListChannel(channelUID, channel.getKey(), channel.getValue(), response);
                 }
             }
         }
     }
 
     /**
-     * Publishes the messages of the energy manager, as the JSON array or as the switch that says whether there
-     * are any. A poll that carries no answer to the request leaves both as they were, because an answer that
-     * did not come says nothing about the messages.
+     * Publishes one channel that renders a list. A device may report one list that feeds several channels,
+     * so a handler tells the channels apart by their id.
      */
+    protected void updateListChannel(ChannelUID channelUID, String channelId, E3DCChannelSpec spec,
+            RscpValue response) {
+        if (spec.tag() == RscpTag.EMS_STORED_ERRORS) {
+            updateMessages(channelUID, channelId, response);
+        } else {
+            updateState(channelUID, new StringType(E3DCIdlePeriod.toTextFromResponse(response)));
+        }
+    }
+
+    /** Publishes the messages of the energy manager; a poll without an answer leaves both channels unchanged. */
     private void updateMessages(ChannelUID channelUID, String channelId, RscpValue response) {
         List<E3DCMessages.Message> messages = E3DCMessages.fromResponse(response);
         if (messages == null) {
@@ -412,13 +430,8 @@ public abstract class E3DCThingHandler extends BaseThingHandler implements E3DCD
     }
 
     /**
-     * Publishes capacities in kWh. The device reports them in Ah, so each is multiplied by the voltage
+     * Publishes the capacities in kWh: the device reports them in Ah, so each is multiplied by the voltage
      * reported in the same response.
-     *
-     * @param response the poll response
-     * @param groupId the channel group holding the capacity, voltage and energy channels
-     * @param voltageChannel the channel the voltage is read from
-     * @param sources the energy channels, each with the capacity channel it is calculated from
      */
     protected void updateEnergies(RscpValue response, String groupId, String voltageChannel,
             Map<String, String> sources) {
@@ -444,13 +457,7 @@ public abstract class E3DCThingHandler extends BaseThingHandler implements E3DCD
         return value != null && value.getValue() instanceof Number number ? spec.scale(number.doubleValue()) : null;
     }
 
-    /**
-     * The energy of a battery capacity at a given voltage.
-     *
-     * @param ampereHours the capacity in Ah, or {@code null} when the device did not report it
-     * @param volts the voltage in V
-     * @return the energy in kWh, or {@code null} when there is no capacity
-     */
+    /** The energy of a battery capacity at a given voltage. */
     static @Nullable Double energyKwh(@Nullable Double ampereHours, double volts) {
         return ampereHours == null ? null : ampereHours * volts / 1000.0;
     }
@@ -507,11 +514,8 @@ public abstract class E3DCThingHandler extends BaseThingHandler implements E3DCD
     }
 
     /**
-     * The item state mirroring the value that was written.
-     *
-     * <p>
-     * A switch is sent as a number on this interface, so its channel has to be updated with a state the item
-     * accepts: a {@code DecimalType} on a Switch item is ignored by the framework.
+     * The item state mirroring the written value. A switch is sent as a number on this interface, so its channel
+     * needs a state the item accepts: a {@code DecimalType} on a Switch item is ignored by the framework.
      */
     private @Nullable State stateFor(RscpValue value, E3DCCommandSpec spec) {
         Object raw = value.getValue();
@@ -525,11 +529,8 @@ public abstract class E3DCThingHandler extends BaseThingHandler implements E3DCD
     }
 
     /**
-     * The command specification of a channel, or {@code null} when the channel cannot be written.
-     *
-     * <p>
-     * The registry is keyed by the id of the channel inside its group, while the id of a channel UID
-     * carries the group as well, so the lookup has to use the id without the group.
+     * The command specification of a channel, or {@code null} when the channel cannot be written. The registry is
+     * keyed by the id inside the group, while the channel UID id carries the group as well.
      */
     static @Nullable E3DCCommandSpec findSpec(E3DCCommandRegistry commands, ChannelUID channelUID) {
         String groupId = channelUID.getGroupId();

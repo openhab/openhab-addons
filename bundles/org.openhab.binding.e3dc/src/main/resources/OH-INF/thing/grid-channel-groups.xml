@@ -8,6 +8,9 @@
 		<label>Grid</label>
 		<channels>
 			<channel id="active-phases" typeId="grid-active-phases"/>
+			<channel id="limit-active" typeId="system-grid-in-limit"/>
+			<channel id="derate-at-percent" typeId="system-derate-at-percent"/>
+			<channel id="derate-at-power" typeId="system-derate-at-power"/>
 		</channels>
 	</channel-group-type>
 

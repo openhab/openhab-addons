@@ -15,9 +15,6 @@ package org.openhab.binding.e3dc.internal.rscp;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Signals a recoverable RSCP communication problem: connection loss, timeout, a malformed frame or a
- * device side error response.
- *
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
