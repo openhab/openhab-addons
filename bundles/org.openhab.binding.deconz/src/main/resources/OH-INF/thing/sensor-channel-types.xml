@@ -103,8 +103,9 @@
 	</channel-type>
 
 	<channel-type id="externalwindowopen">
-		<item-type>Contact</item-type>
+		<item-type>Switch</item-type>
 		<label>External Window Open</label>
+		<description>Forward an external window status to the thermostat: ON for open, OFF for closed.</description>
 		<tags>
 			<tag>Status</tag>
 			<tag>OpenState</tag>

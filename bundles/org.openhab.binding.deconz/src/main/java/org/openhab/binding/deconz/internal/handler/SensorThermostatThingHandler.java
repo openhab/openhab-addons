@@ -59,6 +59,7 @@ import com.google.gson.Gson;
  * sensor is published to the framework.
  *
  * @author Lukas Agethen - Initial contribution
+ * @author Leo Siepel - Remove contact command support
  */
 @NonNullByDefault
 public class SensorThermostatThingHandler extends SensorBaseThingHandler {
@@ -119,7 +120,13 @@ public class SensorThermostatThingHandler extends SensorBaseThingHandler {
                     return;
                 }
             }
-            case CHANNEL_EXTERNAL_WINDOW_OPEN -> newConfig.externalwindowopen = OpenClosedType.OPEN.equals(command);
+            case CHANNEL_EXTERNAL_WINDOW_OPEN -> {
+                if (command instanceof OnOffType onOffCommand) {
+                    newConfig.externalwindowopen = onOffCommand == OnOffType.ON;
+                } else {
+                    return;
+                }
+            }
             default -> {
                 // no supported command
                 return;
@@ -141,12 +148,7 @@ public class SensorThermostatThingHandler extends SensorBaseThingHandler {
             case CHANNEL_TEMPERATURE_OFFSET ->
                 updateQuantityTypeChannel(channelUID, newConfig.offset, CELSIUS, 1.0 / 100);
             case CHANNEL_THERMOSTAT_MODE -> updateState(channelUID, new StringType(mode));
-            case CHANNEL_EXTERNAL_WINDOW_OPEN -> {
-                Boolean open = newConfig.externalwindowopen;
-                if (open != null) {
-                    updateState(channelUID, open ? OpenClosedType.OPEN : OpenClosedType.CLOSED);
-                }
-            }
+            case CHANNEL_EXTERNAL_WINDOW_OPEN -> updateSwitchChannel(channelUID, newConfig.externalwindowopen);
         }
     }
 
