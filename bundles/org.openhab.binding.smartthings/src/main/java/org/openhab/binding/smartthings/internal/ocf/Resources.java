@@ -567,9 +567,8 @@ public class Resources {
             JsonObject rep) {
         for (RefrigerationField field : REFRIGERATION_FIELDS) {
             if (rep.has(field.field())) {
-                String value = string(rep.get(field.field()));
-                add(points, channelIds, new Point(field.channelId(), href, field.field(), "String", field.label(),
-                        "Enable or disable " + field.label() + ".", List.of("On", "Off").contains(value)));
+                add(points, channelIds, new Point(field.channelId(), href, field.field(), "Switch", field.label(),
+                        "Enable or disable " + field.label() + ".", onOff(rep.get(field.field())) != null));
             }
         }
     }
@@ -621,10 +620,6 @@ public class Resources {
         if (point.href().endsWith(DRYER_SETTINGS) && WRINKLE_PREVENT_FIELD.equals(point.field())) {
             return List.of("On", "Off").stream().map(value -> new StateOption(value, value)).toList();
         }
-        if (point.href().endsWith(REFRIGERATION)
-                && REFRIGERATION_FIELDS.stream().anyMatch(field -> field.field().equals(point.field()))) {
-            return List.of("On", "Off").stream().map(value -> new StateOption(value, value)).toList();
-        }
         JsonObject rep = resources.get(point.href());
         return rep != null && modeResource(point.href()) != null && point.field().equals(VENDOR + "modes")
                 ? supportedModes(rep).stream().distinct().map(value -> new StateOption(value, value)).toList()
@@ -645,7 +640,7 @@ public class Resources {
         JsonObject temperatureRep = point.href().endsWith(TEMPERATURES_VS) ? temperatureItem(rep) : rep;
         JsonElement value = temperatureRep == null ? null : temperatureRep.get(point.field());
         if ("Switch".equals(point.itemType())) {
-            Boolean enabled = point.href().endsWith(POWER_VS) ? onOff(value)
+            Boolean enabled = point.href().endsWith(POWER_VS) || point.href().endsWith(REFRIGERATION) ? onOff(value)
                     : point.href().endsWith(REMOTE_VS) ? vendorBoolean(value) : booleanValue(value);
             return enabled == null ? UnDefType.UNDEF : OnOffType.from(enabled);
         }
@@ -660,6 +655,14 @@ public class Resources {
             return UnDefType.UNDEF;
         }
         if ("Number:Temperature".equals(point.itemType())) {
+            // While a rapid mode is on, the app replaces the setpoint with the mode name, so it has no setpoint.
+            String rapidField = point.href().endsWith(DESIRED_COOLER) ? RAPID_COOL_FIELD
+                    : point.href().endsWith(DESIRED_FREEZER) ? RAPID_FREEZE_FIELD : null;
+            JsonObject refrigeration = rapidField == null ? null : refrigerationRep(point.href());
+            if (rapidField != null && refrigeration != null
+                    && Boolean.TRUE.equals(onOff(refrigeration.get(rapidField)))) {
+                return UnDefType.UNDEF;
+            }
             BigDecimal temperature = number(value);
             Unit<Temperature> unit = temperatureRep == null ? null
                     : temperatureUnit(
@@ -773,9 +776,8 @@ public class Resources {
         } else if (AIRFLOW.equals(suffix) && command instanceof DecimalType decimal
                 && !(command instanceof QuantityType<?>) && validSpeed(decimal.toBigDecimal())) {
             result.addProperty("speed", decimal.intValue());
-        } else if (REFRIGERATION.equals(suffix) && command instanceof StringType text
-                && List.of("On", "Off").contains(text.toString())) {
-            result.addProperty(current.field(), text.toString());
+        } else if (REFRIGERATION.equals(suffix) && command instanceof OnOffType onOff) {
+            result.addProperty(current.field(), onOff == OnOffType.ON ? "On" : "Off");
         } else if (modesSuffix != null && command instanceof StringType text) {
             JsonObject rep = resources.get(href);
             if (rep == null || !supportedModes(rep).contains(text.toString())) {
@@ -1212,6 +1214,12 @@ public class Resources {
         JsonObject rep = resources.get(prefix(href, desired ? DESIRED : CURRENT) + TEMPERATURES_VS);
         JsonObject item = rep == null ? null : temperatureItem(rep);
         return item != null && item.has(VENDOR + (desired ? "desired" : "current"));
+    }
+
+    private @Nullable JsonObject refrigerationRep(String href) {
+        String suffix = href.endsWith(DESIRED_COOLER) ? DESIRED_COOLER : DESIRED_FREEZER;
+        JsonObject rep = resources.get(prefix(href, suffix) + REFRIGERATION);
+        return rep == null || isStub(rep) ? null : rep;
     }
 
     private static @Nullable JsonObject temperatureItem(JsonObject rep) {
