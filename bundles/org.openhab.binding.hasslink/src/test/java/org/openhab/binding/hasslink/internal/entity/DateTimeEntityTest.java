@@ -24,10 +24,13 @@ import java.util.Map;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.openhab.binding.hasslink.internal.ItemType;
 import org.openhab.binding.hasslink.internal.api.dto.EntityState;
 import org.openhab.binding.hasslink.internal.entity.impl.DateTimeEntity;
 import org.openhab.core.library.types.DateTimeType;
+import org.openhab.core.types.UnDefType;
 
 /**
  * Tests channel discovery, date-time state mapping, and commands for Home Assistant entities.
@@ -81,6 +84,25 @@ class DateTimeEntityTest extends AbstractEntityTest {
             assertThat(state.state(), is("2020-01-01T12:00:00+00:00"));
             assertThat(entity.parseState(state, context),
                     is(Map.of(EntityType.PRIMARY_ATTR, new ParsedData.StateData(expected))));
+        }
+
+        @ParameterizedTest
+        @ValueSource(strings = { "", "unknown", "unavailable" })
+        @DisplayName("maps empty and non-operational states to UNDEF")
+        void mapsEmptyAndNonOperationalStatesToUndef(String rawDate) {
+            EntityState state = new EntityState(ENTITY_ID, rawDate, Map.of());
+
+            assertThat(entity.parseState(state, context),
+                    is(Map.of(EntityType.PRIMARY_ATTR, new ParsedData.StateData(UnDefType.UNDEF))));
+        }
+
+        @Test
+        @DisplayName("maps short malformed state to UNDEF")
+        void mapsShortMalformedStateToUndef() {
+            EntityState state = new EntityState(ENTITY_ID, "invalid", Map.of());
+
+            assertThat(entity.parseState(state, context),
+                    is(Map.of(EntityType.PRIMARY_ATTR, new ParsedData.StateData(UnDefType.UNDEF))));
         }
     }
 
