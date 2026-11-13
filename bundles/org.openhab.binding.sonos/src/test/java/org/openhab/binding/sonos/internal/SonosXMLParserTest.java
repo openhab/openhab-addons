@@ -17,6 +17,8 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -136,6 +138,57 @@ public class SonosXMLParserTest {
         assertEquals(
                 "/getaa?s=1&u=x-sonosapi-hls-static%3alibrarytrack%253ai.eoD8VQ5SZOB8QX7%3fsid%3d204%26flags%3d8232%26sn%3d9",
                 sonosMetaData.getAlbumArtUri());
+    }
+
+    @Test
+    public void getMetaDataFromXMLRejectsXXE() throws IOException {
+        Path canary = Files.createTempFile("sonos-xxe-canary", ".txt");
+        try {
+            Files.writeString(canary, "XXE_CANARY");
+            String xxe = """
+                    <?xml version="1.0"?>
+                    <!DOCTYPE root [ <!ENTITY xxe SYSTEM "%s"> ]>
+                    <DIDL-Lite><item><dc:title>&xxe;</dc:title></item></DIDL-Lite>
+                    """.formatted(canary.toUri());
+            SonosMetaData metaData = SonosXMLParser.getMetaDataFromXML(xxe);
+            assertEquals("", metaData.getTitle());
+        } finally {
+            Files.deleteIfExists(canary);
+        }
+    }
+
+    @Test
+    public void getZoneGroupFromXMLRejectsXXE() throws IOException {
+        Path canary = Files.createTempFile("sonos-xxe-canary", ".txt");
+        try {
+            Files.writeString(canary, "XXE_CANARY");
+            String xxe = """
+                    <?xml version="1.0"?>
+                    <!DOCTYPE root [ <!ENTITY xxe SYSTEM "%s"> ]>
+                    <ZoneGroups><ZoneGroup>&xxe;</ZoneGroup></ZoneGroups>
+                    """.formatted(canary.toUri());
+            assertTrue(SonosXMLParser.getZoneGroupFromXML(xxe).isEmpty());
+        } finally {
+            Files.deleteIfExists(canary);
+        }
+    }
+
+    @Test
+    public void getRoomNameRejectsXXE() throws IOException {
+        Path canary = Files.createTempFile("sonos-xxe-canary", ".txt");
+        Path descriptor = Files.createTempFile("sonos-descriptor", ".xml");
+        try {
+            Files.writeString(canary, "XXE_CANARY");
+            Files.writeString(descriptor, """
+                    <?xml version="1.0"?>
+                    <!DOCTYPE root [ <!ENTITY xxe SYSTEM "%s"> ]>
+                    <root><roomName>&xxe;</roomName></root>
+                    """.formatted(canary.toUri()));
+            assertNull(SonosXMLParser.getRoomName(descriptor.toUri().toURL()));
+        } finally {
+            Files.deleteIfExists(canary);
+            Files.deleteIfExists(descriptor);
+        }
     }
 
     @Test

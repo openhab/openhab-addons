@@ -25,6 +25,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.xml.XMLConstants;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
@@ -44,6 +45,7 @@ import org.xml.sax.helpers.DefaultHandler;
  * to parse XML data returned by the Zone Players
  *
  * @author Karel Goderis - Initial contribution
+ * @author Kai Kreuzer - Hardened XML parsers against XXE attacks
  */
 @NonNullByDefault
 public class SonosXMLParser {
@@ -88,6 +90,17 @@ public class SonosXMLParser {
         desc
     }
 
+    private static SAXParser createSecureSAXParser() throws ParserConfigurationException, SAXException {
+        SAXParserFactory factory = SAXParserFactory.newInstance();
+        factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+        factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+        factory.setFeature("http://xml.org/sax/features/external-general-entities", false);
+        factory.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+        factory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+        factory.setXIncludeAware(false);
+        return factory.newSAXParser();
+    }
+
     /**
      * @param xml
      * @return a list of alarms from the given xml string.
@@ -95,8 +108,7 @@ public class SonosXMLParser {
     public static List<SonosAlarm> getAlarmsFromStringResult(String xml) {
         AlarmHandler handler = new AlarmHandler();
         try {
-            SAXParserFactory factory = SAXParserFactory.newInstance();
-            SAXParser saxParser = factory.newSAXParser();
+            SAXParser saxParser = createSecureSAXParser();
             saxParser.parse(new InputSource(new StringReader(xml)), handler);
         } catch (IOException | SAXException | ParserConfigurationException e) {
             LOGGER.warn("Could not parse Alarms from string '{}'", xml);
@@ -111,8 +123,7 @@ public class SonosXMLParser {
     public static List<SonosEntry> getEntriesFromString(String xml) {
         EntryHandler handler = new EntryHandler();
         try {
-            SAXParserFactory factory = SAXParserFactory.newInstance();
-            SAXParser saxParser = factory.newSAXParser();
+            SAXParser saxParser = createSecureSAXParser();
             saxParser.parse(new InputSource(new StringReader(xml)), handler);
         } catch (IOException | SAXException | ParserConfigurationException e) {
             LOGGER.warn("Could not parse Entries from string '{}'", xml);
@@ -132,9 +143,7 @@ public class SonosXMLParser {
      */
     public static @Nullable SonosResourceMetaData getResourceMetaData(String xml)
             throws SAXException, ParserConfigurationException {
-        SAXParserFactory factory = SAXParserFactory.newInstance();
-        factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
-        SAXParser saxParser = factory.newSAXParser();
+        SAXParser saxParser = createSecureSAXParser();
         ResourceMetaDataHandler handler = new ResourceMetaDataHandler();
         try {
             saxParser.parse(new InputSource(new StringReader(xml)), handler);
@@ -151,8 +160,7 @@ public class SonosXMLParser {
     public static List<SonosZoneGroup> getZoneGroupFromXML(String xml) {
         ZoneGroupHandler handler = new ZoneGroupHandler();
         try {
-            SAXParserFactory factory = SAXParserFactory.newInstance();
-            SAXParser saxParser = factory.newSAXParser();
+            SAXParser saxParser = createSecureSAXParser();
             saxParser.parse(new InputSource(new StringReader(xml)), handler);
         } catch (IOException | SAXException | ParserConfigurationException e) {
             LOGGER.warn("Could not parse ZoneGroup from string '{}'", xml);
@@ -164,8 +172,7 @@ public class SonosXMLParser {
     public static List<String> getRadioTimeFromXML(String xml) {
         OpmlHandler handler = new OpmlHandler();
         try {
-            SAXParserFactory factory = SAXParserFactory.newInstance();
-            SAXParser saxParser = factory.newSAXParser();
+            SAXParser saxParser = createSecureSAXParser();
             saxParser.parse(new InputSource(new StringReader(xml)), handler);
         } catch (IOException | SAXException | ParserConfigurationException e) {
             LOGGER.warn("Could not parse RadioTime from string '{}'", xml);
@@ -177,8 +184,7 @@ public class SonosXMLParser {
     public static Map<String, String> getRenderingControlFromXML(String xml) {
         RenderingControlEventHandler handler = new RenderingControlEventHandler();
         try {
-            SAXParserFactory factory = SAXParserFactory.newInstance();
-            SAXParser saxParser = factory.newSAXParser();
+            SAXParser saxParser = createSecureSAXParser();
             saxParser.parse(new InputSource(new StringReader(xml)), handler);
         } catch (IOException | SAXException | ParserConfigurationException e) {
             LOGGER.warn("Could not parse Rendering Control from string '{}'", xml);
@@ -189,8 +195,7 @@ public class SonosXMLParser {
     public static Map<String, String> getAVTransportFromXML(String xml) {
         AVTransportEventHandler handler = new AVTransportEventHandler();
         try {
-            SAXParserFactory factory = SAXParserFactory.newInstance();
-            SAXParser saxParser = factory.newSAXParser();
+            SAXParser saxParser = createSecureSAXParser();
             saxParser.parse(new InputSource(new StringReader(xml)), handler);
         } catch (IOException | SAXException | ParserConfigurationException e) {
             LOGGER.warn("Could not parse AV Transport from string '{}'", xml);
@@ -201,8 +206,7 @@ public class SonosXMLParser {
     public static SonosMetaData getMetaDataFromXML(String xml) {
         MetaDataHandler handler = new MetaDataHandler();
         try {
-            SAXParserFactory factory = SAXParserFactory.newInstance();
-            SAXParser saxParser = factory.newSAXParser();
+            SAXParser saxParser = createSecureSAXParser();
             saxParser.parse(new InputSource(new StringReader(xml)), handler);
         } catch (IOException | SAXException | ParserConfigurationException e) {
             LOGGER.warn("Could not parse MetaData from string '{}'", xml);
@@ -214,8 +218,7 @@ public class SonosXMLParser {
     public static List<SonosMusicService> getMusicServicesFromXML(String xml) {
         MusicServiceHandler handler = new MusicServiceHandler();
         try {
-            SAXParserFactory factory = SAXParserFactory.newInstance();
-            SAXParser saxParser = factory.newSAXParser();
+            SAXParser saxParser = createSecureSAXParser();
             saxParser.parse(new InputSource(new StringReader(xml)), handler);
         } catch (IOException | SAXException | ParserConfigurationException e) {
             LOGGER.warn("Could not parse music services from string '{}'", xml);
@@ -920,8 +923,7 @@ public class SonosXMLParser {
     public static @Nullable String getRoomName(URL descriptorURL) {
         RoomNameHandler roomNameHandler = new RoomNameHandler();
         try {
-            SAXParserFactory factory = SAXParserFactory.newInstance();
-            SAXParser saxParser = factory.newSAXParser();
+            SAXParser saxParser = createSecureSAXParser();
             saxParser.parse(new InputSource(descriptorURL.openStream()), roomNameHandler);
         } catch (SAXException | ParserConfigurationException e) {
             LOGGER.warn("Could not parse Sonos room name from URL '{}'", descriptorURL);
@@ -960,8 +962,7 @@ public class SonosXMLParser {
     public static @Nullable String parseModelDescription(URL descriptorURL) {
         ModelNameHandler modelNameHandler = new ModelNameHandler();
         try {
-            SAXParserFactory factory = SAXParserFactory.newInstance();
-            SAXParser saxParser = factory.newSAXParser();
+            SAXParser saxParser = createSecureSAXParser();
             saxParser.parse(new InputSource(descriptorURL.openStream()), modelNameHandler);
         } catch (SAXException | ParserConfigurationException e) {
             LOGGER.warn("Could not parse Sonos model name from URL '{}'", descriptorURL);
