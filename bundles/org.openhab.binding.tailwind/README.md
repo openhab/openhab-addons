@@ -24,7 +24,7 @@ Everything else is set up automatically, including the channels of the doors tha
 |------------------------|---------|----------|---------|----------------------------------------------------------------------------------|
 | `hostname`             | text    | yes      |         | Host name or IP address of the controller, such as `tailwind-30aea4801880.local` |
 | `token`                | text    | yes      |         | The 6-digit Local Control Key of the controller                                  |
-| `udpPort`              | integer | no       | 50904   | UDP port that receives the status reports of the controller. Advanced.          |
+| `udpPort`              | integer | no       | 50904   | UDP port that receives the status reports of the controller. Advanced.           |
 | `door1PartialOpenTime` | decimal | no       | 2.5     | Seconds that door 1 runs when it is opened partially (0.5 to 15). Advanced.      |
 | `door2PartialOpenTime` | decimal | no       | 2.5     | Seconds that door 2 runs when it is opened partially (0.5 to 15). Advanced.      |
 | `door3PartialOpenTime` | decimal | no       | 2.5     | Seconds that door 3 runs when it is opened partially (0.5 to 15). Advanced.      |
@@ -107,10 +107,10 @@ An item in an `.items` file needs `unit="dBm"`, as in the [Full Example](#full-e
 
 ## Troubleshooting
 
-| Problem                                                       | Cause and solution                                                                                                              |
-|---------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------|
-| The Thing is offline with a configuration error about the key | The Local Control Key is wrong. Copy it again from the TailWind web dashboard.                                                  |
-| The Thing is offline with a communication error               | The controller cannot be reached at `hostname`. Check the address, and use the IP address if `.local` names cannot be resolved. |
+| Problem                                                       | Cause and solution                                                                                                                           |
+|---------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------|
+| The Thing is offline with a configuration error about the key | The Local Control Key is wrong. Copy it again from the TailWind web dashboard.                                                               |
+| The Thing is offline with a communication error               | The controller cannot be reached at `hostname`. Check the address, and use the IP address if `.local` names cannot be resolved.              |
 | Door changes appear only after several minutes                | The status reports do not arrive. Check the firewall and Docker setup in Status Reports, and that no other system registers for the reports. |
 
 For more detail in the log, run `log:set DEBUG org.openhab.binding.tailwind` in the openHAB console.
@@ -126,24 +126,24 @@ This version has a new Thing type, `iq3`, and new channel and parameter names, s
 1. Install this binding, add the controller from the Inbox and enter its Local Control Key.
 1. Link the items to the new channels. The names changed like this:
 
-| Old                                         | New                                      |
-|---------------------------------------------|------------------------------------------|
-| `webServerAddress`                          | `hostname`                               |
-| `authToken`                                 | `token`                                  |
-| `doorOnePartialOpen` (and two, three)       | `door1PartialOpenTime` (and 2, 3)        |
-| `doorCount`                                 | not needed, doors are detected           |
-| `doorOneName` (and two, three)              | the label of the items, see Door Names   |
-| `openHabHostAddress`                        | not needed, see Status Reports           |
-| `controller#nightModeEnabled` (Number)      | `controller#night-mode` (Switch)         |
-| `controller#ledBrightness`                  | `controller#led-brightness`              |
-| `controller#routerRssi` (Number)            | `controller#rssi` (Number:Power, dBm)    |
-| `controller#serverMonitor`                  | `controller#server-monitor`              |
-| `controller#supportCommand`                 | `controller#command`                     |
-| `controller#productID`, `#firmwareVersion`  | Thing properties                         |
-| `doorOne#status`                            | `door1#status`                           |
-| `doorOne#openClose`                         | `door1#control`                          |
-| `doorOne#lockup` (Number)                   | `door1#locked` (Switch)                  |
-| `doorOne#disabled` (Number)                 | `door1#disabled` (Switch)                |
+| Old                                        | New                                    |
+|--------------------------------------------|----------------------------------------|
+| `webServerAddress`                         | `hostname`                             |
+| `authToken`                                | `token`                                |
+| `doorOnePartialOpen` (and two, three)      | `door1PartialOpenTime` (and 2, 3)      |
+| `doorCount`                                | not needed, doors are detected         |
+| `doorOneName` (and two, three)             | the label of the items, see Door Names |
+| `openHabHostAddress`                       | not needed, see Status Reports         |
+| `controller#nightModeEnabled` (Number)     | `controller#night-mode` (Switch)       |
+| `controller#ledBrightness`                 | `controller#led-brightness`            |
+| `controller#routerRssi` (Number)           | `controller#rssi` (Number:Power, dBm)  |
+| `controller#serverMonitor`                 | `controller#server-monitor`            |
+| `controller#supportCommand`                | `controller#command`                   |
+| `controller#productID`, `#firmwareVersion` | Thing properties                       |
+| `doorOne#status`                           | `door1#status`                         |
+| `doorOne#openClose`                        | `door1#control`                        |
+| `doorOne#lockup` (Number)                  | `door1#locked` (Switch)                |
+| `doorOne#disabled` (Number)                | `door1#disabled` (Switch)              |
 
 ## Full Example
 

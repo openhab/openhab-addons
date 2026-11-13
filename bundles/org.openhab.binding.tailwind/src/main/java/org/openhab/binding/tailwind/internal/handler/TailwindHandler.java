@@ -97,6 +97,9 @@ public class TailwindHandler extends BaseThingHandler {
     private String hostname = "";
     // True while the host name cannot be resolved and the last known address is used instead
     private boolean usingLastKnownAddress;
+    // True after warning that the status reports cannot be registered, so that the warning is not repeated at every
+    // status request
+    private boolean reportsWarned;
     private int retryDelaySeconds = RETRY_MIN_SECONDS;
 
     public TailwindHandler(Thing thing, HttpClient httpClient, NetworkAddressService networkAddressService,
@@ -112,18 +115,15 @@ public class TailwindHandler extends BaseThingHandler {
         config = getConfigAs(TailwindConfiguration.class);
         String hostname = TailwindConfiguration.normalizeHostname(config.hostname);
         if (hostname.isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.conf-error.no-hostname");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.conf-error.no-hostname");
             return;
         }
         if (config.token.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.conf-error.no-token");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.conf-error.no-token");
             return;
         }
         if (config.udpPort < 0 || config.udpPort > 65535) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.conf-error.invalid-udp-port");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.conf-error.invalid-udp-port");
             return;
         }
         updateStatus(ThingStatus.UNKNOWN);
@@ -132,6 +132,7 @@ public class TailwindHandler extends BaseThingHandler {
         synchronized (this) {
             this.hostname = hostname;
             usingLastKnownAddress = false;
+            reportsWarned = false;
             api = new TailwindApi(httpClient, hostname, config.token.trim());
             retryDelaySeconds = RETRY_MIN_SECONDS;
             schedulePoll(0);
@@ -281,8 +282,7 @@ public class TailwindHandler extends BaseThingHandler {
             }
             if (address == null) {
                 if (isCurrent(currentApi)) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                            "@text/offline.conf-error.no-primary-address");
+                    updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.conf-error.no-primary-address");
                 }
             } else {
                 TailwindStatus status = currentApi.getStatus();
@@ -295,9 +295,15 @@ public class TailwindHandler extends BaseThingHandler {
                 // changes still show at the next status request.
                 try {
                     registerNotifications(currentApi, host, address);
+                    reportsWarned = false;
                 } catch (TailwindException e) {
-                    logger.warn("{} cannot receive status reports, so door changes show only every 5 minutes: {}",
-                            thing.getUID(), e.getMessage());
+                    if (reportsWarned) {
+                        logger.debug("{} still cannot receive status reports: {}", thing.getUID(), e.getMessage());
+                    } else {
+                        reportsWarned = true;
+                        logger.warn("{} cannot receive status reports, so door changes show only every 5 minutes: {}",
+                                thing.getUID(), e.getMessage());
+                    }
                 }
             }
         } catch (TailwindException e) {
@@ -316,10 +322,9 @@ public class TailwindHandler extends BaseThingHandler {
 
     private void setOffline(TailwindException e) {
         if (e instanceof TailwindUnauthorizedException) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.conf-error.token-rejected");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.conf-error.token-rejected");
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 

@@ -38,8 +38,7 @@
 			</parameter>
 			<parameter name="udpPort" type="integer" min="0" max="65535">
 				<label>Status Report Port</label>
-				<description>UDP port on the openHAB server that receives the status reports of the controller. Several
-					controllers
+				<description>UDP port on the openHAB server that receives the status reports of the controller. Several controllers
 					can use the same port. If another program uses the port, a free port is used instead.</description>
 				<default>50904</default>
 				<advanced>true</advanced>
