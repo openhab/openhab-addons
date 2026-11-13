@@ -473,6 +473,8 @@ class ResourcesTest {
     }
 
     @Test
+    // Intentionally switches the default locale to prove the duration encoding stays ASCII.
+    @SuppressWarnings("PMD.SetDefaultLocale")
     void dryerCommandsValidateCapabilitiesAndEncodeSingleFields() throws IOException {
         resources.update("/remotectrl/0", json("{\"value\":true}"));
         resources.update("/operational/state/vs/0", json("""
@@ -492,7 +494,7 @@ class ResourcesTest {
                 () -> resources.command(delay, new QuantityType<>(5401, Units.SECOND)));
         // The duration sent to the appliance must stay ASCII even on systems with non-ASCII digit locales.
         Locale previous = Locale.getDefault(Locale.Category.FORMAT);
-        Locale.setDefault(Locale.Category.FORMAT, new Locale("ar", "EG"));
+        Locale.setDefault(Locale.Category.FORMAT, Locale.forLanguageTag("ar-EG"));
         try {
             assertEquals(json("{\"x.com.samsung.da.delayEndTime\":\"01:30:00\"}"),
                     resources.command(delay, new QuantityType<>(5400, Units.SECOND)));

@@ -417,7 +417,7 @@ class ApplianceDiscoveryServiceTest {
             if (lastOctet <= 4) {
                 initialProbes.countDown();
             }
-            if (address.equals("10.0.0.1")) {
+            if ("10.0.0.1".equals(address)) {
                 try {
                     releaseFirstProbe.await(5, TimeUnit.SECONDS);
                 } catch (InterruptedException e) {

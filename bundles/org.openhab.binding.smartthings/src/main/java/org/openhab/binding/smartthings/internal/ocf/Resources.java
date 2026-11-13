@@ -466,7 +466,7 @@ public class Resources {
         for (String field : List.of("currentMachineState", "currentJobState")) {
             if (rep.has(field)) {
                 add(points, channelIds, href, field, "String",
-                        field.equals("currentMachineState") ? "Machine State" : "Job State", false);
+                        "currentMachineState".equals(field) ? "Machine State" : "Job State", false);
             }
         }
         if (rep.has("remainingTime")) {
