@@ -7,24 +7,28 @@
 		"maxProperties": 1,
 		"channels": [
 			{
-				"property": "on",
+				"property": "fault",
 				"siid": 2,
 				"piid": 1,
-				"friendlyName": "Power",
-				"channel": "power",
-				"type": "Switch",
+				"friendlyName": "Fault",
+				"channel": "fault",
+				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "0",
+							"label": "No Faults"
+						}
+					]
+				},
 				"refresh": true,
-				"actions": [
-					{
-						"command": "set_properties",
-						"parameterType": "ONOFFBOOL"
-					}
-				],
-				"category": "switch",
+				"actions": [],
+				"category": "alarm",
 				"tags": [
-					"Switch",
-					"Power"
-				]
+					"Status"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"No Faults\"]`"
 			},
 			{
 				"property": "status",
