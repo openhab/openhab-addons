@@ -933,6 +933,11 @@ class ResourcesTest {
                 resources.state(point("/refrigeration/vs/0", "x.com.samsung.da.rapidFridge")));
         assertEquals("rapid-cool", point("/refrigeration/vs/0", "x.com.samsung.da.rapidFridge").id());
         assertEquals("rapid-freeze", point("/refrigeration/vs/0", "x.com.samsung.da.rapidFreezing").id());
+        assertTrue(point("/refrigeration/vs/0", "x.com.samsung.da.rapidFridge").writable());
+        assertTrue(point("/refrigeration/vs/0", "x.com.samsung.da.rapidFreezing").writable());
+        assertEquals(List.of("On", "Off"),
+                resources.commandOptions(point("/refrigeration/vs/0", "x.com.samsung.da.rapidFridge")).stream()
+                        .map(option -> option.getCommand()).toList());
 
         resources.update("/door/cooler/0", json("{\"openState\":\"Open\"}"));
         assertEquals(org.openhab.core.library.types.OpenClosedType.OPEN,
@@ -943,6 +948,21 @@ class ResourcesTest {
         Point coolerTarget = point("/temperature/desired/cooler/0", "temperature");
         assertFalse(coolerTarget.writable());
         assertThrows(IllegalArgumentException.class, () -> resources.command(coolerTarget, new DecimalType(3)));
+    }
+
+    @Test
+    void refrigeratorRapidModesAreWritableWithOnOffCommands() throws IOException {
+        resources.update("/oic/d", json("{\"rt\":[\"oic.d.refrigerator\"]}"));
+        resources.update("/refrigeration/vs/0",
+                json("{\"x.com.samsung.da.rapidFridge\":\"Off\",\"x.com.samsung.da.rapidFreezing\":\"On\"}"));
+        Point rapidCool = point("/refrigeration/vs/0", "x.com.samsung.da.rapidFridge");
+        Point rapidFreeze = point("/refrigeration/vs/0", "x.com.samsung.da.rapidFreezing");
+        assertEquals(json("{\"x.com.samsung.da.rapidFridge\":\"On\"}"),
+                resources.command(rapidCool, new StringType("On")));
+        assertEquals(json("{\"x.com.samsung.da.rapidFreezing\":\"Off\"}"),
+                resources.command(rapidFreeze, new StringType("Off")));
+        assertThrows(IllegalArgumentException.class, () -> resources.command(rapidCool, new StringType("Fast")));
+        assertThrows(IllegalArgumentException.class, () -> resources.command(rapidCool, OnOffType.ON));
     }
 
     @Test

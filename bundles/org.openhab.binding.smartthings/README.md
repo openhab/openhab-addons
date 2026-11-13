@@ -151,8 +151,8 @@ The tables list the channels declared by each concrete Thing. A declared channel
 | `freezer-target-temperature` | Number:Temperature | n | Target freezer temperature, subject to the reported range and increment. |
 | `cooler-door` | Contact | y | Whether the cooler (fridge) door is open or closed. |
 | `freezer-door` | Contact | y | Whether the freezer door is open or closed. |
-| `rapid-cool` | String | y | Power Cool (rapid fridge) state as `On` or `Off`. |
-| `rapid-freeze` | String | y | Power Freeze (rapid freezing) state as `On` or `Off`. |
+| `rapid-cool` | String | n | Power Cool (rapid fridge) mode, enabled with `On` or `Off`; writes require remote control. |
+| `rapid-freeze` | String | n | Power Freeze (rapid freezing) mode, enabled with `On` or `Off`; writes require remote control. |
 | `mode` | String | y | Operating mode reported by the refrigerator. |
 | `power-consumption` | Number:Power | y | Instantaneous electrical power. |
 | `cumulative-energy` | Number:Energy | y | Cumulative energy in the unit reported by the appliance. |

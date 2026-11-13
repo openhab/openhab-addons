@@ -567,8 +567,9 @@ public class Resources {
             JsonObject rep) {
         for (RefrigerationField field : REFRIGERATION_FIELDS) {
             if (rep.has(field.field())) {
+                String value = string(rep.get(field.field()));
                 add(points, channelIds, new Point(field.channelId(), href, field.field(), "String", field.label(),
-                        description(href, field.field(), field.label()), false));
+                        "Enable or disable " + field.label() + ".", List.of("On", "Off").contains(value)));
             }
         }
     }
@@ -618,6 +619,10 @@ public class Resources {
                     : supportedDryLevels(rep).stream().map(value -> new StateOption(value, value)).toList();
         }
         if (point.href().endsWith(DRYER_SETTINGS) && WRINKLE_PREVENT_FIELD.equals(point.field())) {
+            return List.of("On", "Off").stream().map(value -> new StateOption(value, value)).toList();
+        }
+        if (point.href().endsWith(REFRIGERATION)
+                && REFRIGERATION_FIELDS.stream().anyMatch(field -> field.field().equals(point.field()))) {
             return List.of("On", "Off").stream().map(value -> new StateOption(value, value)).toList();
         }
         JsonObject rep = resources.get(point.href());
@@ -709,7 +714,8 @@ public class Resources {
         }
         ModeResource mode = modeResource(href);
         String modesSuffix = mode == null ? null : mode.suffix();
-        String suffix = List.of(POWER, POWER_VS, DESIRED, DESIRED_COOLER, DESIRED_FREEZER, TEMPERATURES_VS, AIRFLOW)
+        String suffix = List
+                .of(POWER, POWER_VS, DESIRED, DESIRED_COOLER, DESIRED_FREEZER, TEMPERATURES_VS, AIRFLOW, REFRIGERATION)
                 .stream().filter(href::endsWith).findFirst().orElseGet(() -> modesSuffix == null ? MODE : modesSuffix);
         if (!remoteEnabled(prefix(href, suffix))) {
             throw new IllegalArgumentException("Remote Control is not explicitly enabled");
@@ -767,6 +773,9 @@ public class Resources {
         } else if (AIRFLOW.equals(suffix) && command instanceof DecimalType decimal
                 && !(command instanceof QuantityType<?>) && validSpeed(decimal.toBigDecimal())) {
             result.addProperty("speed", decimal.intValue());
+        } else if (REFRIGERATION.equals(suffix) && command instanceof StringType text
+                && List.of("On", "Off").contains(text.toString())) {
+            result.addProperty(current.field(), text.toString());
         } else if (modesSuffix != null && command instanceof StringType text) {
             JsonObject rep = resources.get(href);
             if (rep == null || !supportedModes(rep).contains(text.toString())) {

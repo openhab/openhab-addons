@@ -35,13 +35,15 @@
 				<label>Freezer Door</label>
 				<description>Whether the freezer door is open or closed.</description>
 			</channel>
-			<channel id="rapid-cool" typeId="string-readonly">
+			<channel id="rapid-cool" typeId="string">
 				<label>Power Cool</label>
-				<description>Power Cool (rapid fridge) state reported by the refrigerator as On or Off.</description>
+				<description>Power Cool (rapid fridge) mode of the refrigerator. Enable or disable it with On or Off; writes require
+					remote control.</description>
 			</channel>
-			<channel id="rapid-freeze" typeId="string-readonly">
+			<channel id="rapid-freeze" typeId="string">
 				<label>Power Freeze</label>
-				<description>Power Freeze (rapid freezing) state reported by the refrigerator as On or Off.</description>
+				<description>Power Freeze (rapid freezing) mode of the refrigerator. Enable or disable it with On or Off; writes
+					require remote control.</description>
 			</channel>
 			<channel id="mode" typeId="string-readonly">
 				<label>Operating Mode</label>
