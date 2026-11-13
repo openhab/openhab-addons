@@ -21,6 +21,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.dto.HomeStatusModule;
 import org.openhab.binding.netatmo.internal.api.dto.NAThing;
+import org.openhab.binding.netatmo.internal.api.dto.WebhookEvent;
+import org.openhab.binding.netatmo.internal.utils.ChannelTypeUtils;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.types.State;
@@ -105,5 +107,33 @@ public class CameraChannelHelper extends ChannelHelper {
         }
         String finalQual = configQual != null ? configQual : "poor";
         return toStringType("%s/live/%sindex.m3u8", url, local ? "files/%s/".formatted(finalQual) : "");
+    }
+
+    @Override
+    protected @Nullable State internalGetWebhookEvent(String channelId, @Nullable String groupId, WebhookEvent event) {
+        if (GROUP_LAST_EVENT.equals(groupId) || GROUP_SUB_EVENT.equals(groupId)) {
+            return switch (channelId) {
+                case CHANNEL_EVENT_TYPE -> toStringType(event.getEventType());
+                case CHANNEL_EVENT_MESSAGE -> toStringType(event.getName());
+                case CHANNEL_EVENT_TIME -> toDateTimeType(event.getTime());
+                case CHANNEL_EVENT_SUBTYPE ->
+                    event.getSubTypeDescription().map(ChannelTypeUtils::toStringType).orElse(UnDefType.NULL);
+                case CHANNEL_EVENT_SNAPSHOT -> pictureIfUrlPresent(event.getSnapshotUrl(), true);
+                case CHANNEL_EVENT_SNAPSHOT_URL -> pictureIfUrlPresent(event.getSnapshotUrl(), false);
+                case CHANNEL_EVENT_VIGNETTE -> pictureIfUrlPresent(event.getVignetteUrl(), true);
+                case CHANNEL_EVENT_VIGNETTE_URL -> pictureIfUrlPresent(event.getVignetteUrl(), false);
+                case CHANNEL_EVENT_PERSON_ID -> event.getPersons().isEmpty() ? UnDefType.NULL
+                        : toStringType(event.getPersons().values().iterator().next().getId());
+                default -> null;
+            };
+        }
+        return null;
+    }
+
+    private State pictureIfUrlPresent(@Nullable String url, boolean toRaw) {
+        if (url == null || url.isBlank()) {
+            return UnDefType.NULL;
+        }
+        return toRaw ? toRawType(url) : toStringType(url);
     }
 }

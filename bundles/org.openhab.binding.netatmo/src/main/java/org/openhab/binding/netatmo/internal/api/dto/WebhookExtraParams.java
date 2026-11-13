@@ -13,7 +13,10 @@
 package org.openhab.binding.netatmo.internal.api.dto;
 
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.data.EventType;
 import org.openhab.binding.netatmo.internal.api.data.ModuleType;
@@ -25,18 +28,20 @@ import org.openhab.binding.netatmo.internal.api.data.ModuleType;
  * @author Gaël L'hopital - Initial contribution
  *
  */
+@NonNullByDefault
 public class WebhookExtraParams {
     int correlationId;
     int sequenceId;
     String source = "";
     public ModuleType deviceType = ModuleType.UNKNOWN;
     public EventType eventType = EventType.UNKNOWN;
+    @Nullable
     String mode;
     String roomId = "";
-    public Double setpoint;
-    public Double temperature;
-    public String boilerStatus;
-
+    public @Nullable Double setpoint;
+    public @Nullable Double temperature;
+    public @Nullable String boilerStatus;
+    public List<WebhookDashboard> modules = new ArrayList<>();
     @Nullable
     ZonedDateTime ts;
     // To bo continued

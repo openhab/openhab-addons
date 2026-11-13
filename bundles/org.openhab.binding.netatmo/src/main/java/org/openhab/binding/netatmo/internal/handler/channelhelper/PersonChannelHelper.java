@@ -22,6 +22,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.dto.HomeDataPerson;
 import org.openhab.binding.netatmo.internal.api.dto.HomeStatusPerson;
 import org.openhab.binding.netatmo.internal.api.dto.NAThing;
+import org.openhab.binding.netatmo.internal.api.dto.WebhookEvent;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.types.State;
@@ -58,5 +59,13 @@ public class PersonChannelHelper extends ChannelHelper {
             }
         }
         return null;
+    }
+
+    @Override
+    protected @Nullable State internalGetWebhookEvent(String channelId, @Nullable String groupId, WebhookEvent event) {
+        if (GROUP_LAST_EVENT.equals(groupId) && CHANNEL_EVENT_CAMERA_ID.equals(channelId)) {
+            return toStringType(event.getCameraId());
+        }
+        return super.internalGetWebhookEvent(channelId, groupId, event);
     }
 }

@@ -13,7 +13,7 @@
 package org.openhab.binding.netatmo.internal.handler.capability;
 
 import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
-import static org.openhab.binding.netatmo.internal.utils.ChannelTypeUtils.*;
+import static org.openhab.binding.netatmo.internal.utils.ChannelTypeUtils.commandToQuantity;
 
 import java.util.Collection;
 import java.util.List;
@@ -22,11 +22,8 @@ import java.util.Optional;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.action.RoomActions;
-import org.openhab.binding.netatmo.internal.api.data.EventType;
-import org.openhab.binding.netatmo.internal.api.data.ModuleType;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.MeasureClass;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.SetpointMode;
-import org.openhab.binding.netatmo.internal.api.dto.WebhookExtraParams;
 import org.openhab.binding.netatmo.internal.handler.CommonInterface;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.thing.binding.ThingHandlerService;
@@ -41,12 +38,12 @@ import org.slf4j.LoggerFactory;
  *
  */
 @NonNullByDefault
-public class RoomCapability extends WebhookListenerCapability {
+public class RoomCapability extends Capability {
     private final Logger logger = LoggerFactory.getLogger(RoomCapability.class);
     private @Nullable EnergyCapability energyCapability;
 
     public RoomCapability(CommonInterface handler) {
-        super(handler, EventType.TEMPERATURE_VARIATION_EVENT);
+        super(handler);
     }
 
     protected Optional<EnergyCapability> getEnergyCapability() {
@@ -82,16 +79,5 @@ public class RoomCapability extends WebhookListenerCapability {
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
         return List.of(RoomActions.class);
-    }
-
-    @Override
-    public void pushData(WebhookExtraParams newData) {
-        if (newData.deviceType.equals(ModuleType.PLUG)
-                && newData.eventType.equals(EventType.TEMPERATURE_VARIATION_EVENT)) {
-            handler.updateState(GROUP_SETPOINT, CHANNEL_VALUE,
-                    toQuantityType(newData.setpoint, MeasureClass.INSIDE_TEMPERATURE));
-            handler.updateState(GROUP_TEMPERATURE, CHANNEL_VALUE,
-                    toQuantityType(newData.temperature, MeasureClass.INSIDE_TEMPERATURE));
-        }
     }
 }

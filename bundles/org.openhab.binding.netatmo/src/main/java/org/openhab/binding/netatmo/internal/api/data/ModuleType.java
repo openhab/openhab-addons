@@ -40,7 +40,6 @@ import org.openhab.binding.netatmo.internal.handler.capability.PresenceCapabilit
 import org.openhab.binding.netatmo.internal.handler.capability.RefreshAutoCapability;
 import org.openhab.binding.netatmo.internal.handler.capability.RefreshCapability;
 import org.openhab.binding.netatmo.internal.handler.capability.RoomCapability;
-import org.openhab.binding.netatmo.internal.handler.capability.Therm1Capability;
 import org.openhab.binding.netatmo.internal.handler.capability.WeatherCapability;
 import org.openhab.binding.netatmo.internal.handler.channelhelper.AirQualityChannelHelper;
 import org.openhab.binding.netatmo.internal.handler.channelhelper.ApiBridgeChannelHelper;
@@ -152,9 +151,8 @@ public enum ModuleType {
             ChannelGroup.BATTERY_EXT),
 
     THERMOSTAT(FeatureArea.ENERGY, "NATherm1", 1, "device", PLUG,
-            Set.of(Therm1Capability.class, ChannelHelperCapability.class, ParentUpdateCapability.class),
-            ChannelGroup.SIGNAL, ChannelGroup.BATTERY_EXT,
-            new ChannelGroup(Therm1ChannelHelper.class, GROUP_TYPE_TH_PROPERTIES)),
+            Set.of(ChannelHelperCapability.class, ParentUpdateCapability.class), ChannelGroup.SIGNAL,
+            ChannelGroup.BATTERY_EXT, new ChannelGroup(Therm1ChannelHelper.class, GROUP_TYPE_TH_PROPERTIES)),
 
     ROOM(FeatureArea.ENERGY, "NARoom", 1, "virtual", HOME,
             Set.of(RoomCapability.class, ChannelHelperCapability.class, ParentUpdateCapability.class),
@@ -232,5 +230,18 @@ public enum ModuleType {
         return AS_SET.stream().filter(mt -> mt.thingTypeUID.equals(thingTypeUID)).findFirst()
                 .orElseThrow(() -> new IllegalArgumentException(
                         "No known ModuleType matched '%s'".formatted(thingTypeUID.toString())));
+    }
+
+    public Set<EventType> getMonitored() {
+        if (WEATHER_STATION.equals(this) || RAIN.equals(this)) {
+            return Set.of(EventType.UNKNOWN);
+        }
+        if (THERMOSTAT.equals(this)) {
+            return Set.of(EventType.BOILER_EVENT);
+        }
+        if (ROOM.equals(this)) {
+            return Set.of(EventType.TEMPERATURE_VARIATION_EVENT);
+        }
+        return Set.of();
     }
 }

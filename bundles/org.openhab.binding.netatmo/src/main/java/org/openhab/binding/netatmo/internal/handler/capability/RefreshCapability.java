@@ -20,7 +20,6 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.netatmo.internal.api.dto.NAObject;
 import org.openhab.binding.netatmo.internal.handler.ApiBridgeHandler;
 import org.openhab.binding.netatmo.internal.handler.CommonInterface;
 import org.openhab.core.thing.ThingStatus;
@@ -74,7 +73,7 @@ public class RefreshCapability extends Capability {
     }
 
     @Override
-    protected void afterNewData(@Nullable NAObject newData) {
+    protected void afterNewData(@Nullable Object newData) {
         expiring = false;
         super.afterNewData(newData);
     }

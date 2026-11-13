@@ -12,14 +12,8 @@
  */
 package org.openhab.binding.netatmo.internal.handler.capability;
 
-import java.util.Set;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.netatmo.internal.api.data.EventType;
-import org.openhab.binding.netatmo.internal.api.dto.NAObject;
-import org.openhab.binding.netatmo.internal.api.dto.WebhookEvent;
-import org.openhab.binding.netatmo.internal.api.dto.WebhookExtraParams;
 import org.openhab.binding.netatmo.internal.handler.ApiBridgeHandler;
 import org.openhab.binding.netatmo.internal.handler.CommonInterface;
 import org.openhab.binding.netatmo.internal.servlet.WebhookServlet;
@@ -32,32 +26,25 @@ import org.openhab.binding.netatmo.internal.servlet.WebhookServlet;
  */
 @NonNullByDefault
 public abstract class WebhookListenerCapability extends Capability {
-
     private @Nullable WebhookServlet servlet;
-    private Set<EventType> monitoredEvents;
 
     public WebhookListenerCapability(CommonInterface handler) {
         super(handler);
-        this.monitoredEvents = Set.of();
-    }
-
-    public WebhookListenerCapability(CommonInterface handler, EventType... monitoredEvents) {
-        super(handler);
-        this.monitoredEvents = Set.of(monitoredEvents);
     }
 
     @Override
     // We'll switch to push mode if possible and only after a first reading with pull mode
-    protected void afterNewData(@Nullable NAObject newData) {
+    protected void afterNewData(@Nullable Object newData) {
         if (handler.getAccountHandler() instanceof ApiBridgeHandler accountHandler
                 && accountHandler.getWebhookServlet() instanceof WebhookServlet whs && !whs.equals(servlet)) {
-            if (monitoredEvents.isEmpty()) {
+            if (moduleType.getMonitored().isEmpty()) {
                 whs.registerDataListener(handler.getId(), this);
             } else {
-                whs.monitorEvents(handler.getId(), this, monitoredEvents);
+                whs.monitorEvents(handler.getId(), this, moduleType.getMonitored());
             }
             servlet = whs;
         }
+        super.afterNewData(newData);
     }
 
     public boolean pullMode() {
@@ -71,13 +58,5 @@ public abstract class WebhookListenerCapability extends Capability {
             servlet = null;
         }
         super.dispose();
-    }
-
-    public void pushData(WebhookExtraParams newData) {
-        // do nothing by default, can be overridden by subclasses
-    }
-
-    protected void updateWebhookEvent(WebhookEvent newData) {
-        // do nothing by default, can be overridden by subclasses
     }
 }
