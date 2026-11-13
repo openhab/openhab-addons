@@ -169,6 +169,7 @@ public class NetatmoConstants {
     // Global variables
     public static final int THERM_MAX_SETPOINT = 30;
 
+    // Token scopes
     public enum Scope {
         @SerializedName("read_station")
         READ_STATION,
