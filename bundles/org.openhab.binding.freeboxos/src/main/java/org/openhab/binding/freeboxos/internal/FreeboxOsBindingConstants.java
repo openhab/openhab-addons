@@ -19,7 +19,6 @@ import java.util.stream.Stream;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.freeboxos.internal.api.rest.HomeManager.Category;
 import org.openhab.core.library.types.OnOffType;
-import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.UpDownType;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.types.Command;
@@ -212,6 +211,6 @@ public class FreeboxOsBindingConstants {
     public static final String PIR_TAMPER_UPDATE = PIR_TAMPER + TIMESTAMP_POSTFIX;
     public static final String PIR_TRIGGER_UPDATE = PIR_TRIGGER + TIMESTAMP_POSTFIX;
 
-    public static final Set<Command> TRUE_COMMANDS = Set.of(OnOffType.ON, UpDownType.UP, OpenClosedType.OPEN);
-    public static final Set<Class<?>> ON_OFF_CLASSES = Set.of(OnOffType.class, UpDownType.class, OpenClosedType.class);
+    public static final Set<Command> TRUE_COMMANDS = Set.of(OnOffType.ON, UpDownType.UP);
+    public static final Set<Class<?>> ON_OFF_CLASSES = Set.of(OnOffType.class, UpDownType.class);
 }
