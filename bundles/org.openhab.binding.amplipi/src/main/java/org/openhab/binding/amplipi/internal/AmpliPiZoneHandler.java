@@ -195,8 +195,9 @@ public class AmpliPiZoneHandler extends BaseThingHandler implements AmpliPiStatu
 
     @Override
     public void dispose() {
-        if (bridgeHandler != null) {
-            bridgeHandler.removeStatusChangeListener(this);
+        AmpliPiHandler localBridgeHandler = bridgeHandler;
+        if (localBridgeHandler != null) {
+            localBridgeHandler.removeStatusChangeListener(this);
             bridgeHandler = null;
         }
         super.dispose();
