@@ -1,0 +1,254 @@
+{
+	"deviceMapping": {
+		"id": [
+			"mmgg.feeder.fi1"
+		],
+		"propertyMethod": "get_properties",
+		"maxProperties": 1,
+		"channels": [
+			{
+				"property": "pet-food-left-level",
+				"siid": 2,
+				"piid": 6,
+				"friendlyName": "Food Level",
+				"channel": "food_level",
+				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "0",
+							"label": "Normal"
+						},
+						{
+							"value": "1",
+							"label": "Low"
+						},
+						{
+							"value": "2",
+							"label": "Empty"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "alarm",
+				"tags": [
+					"Alarm"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Normal\",\"1\"\u003d\"Low\",\"2\"\u003d\"Empty\"]`"
+			},
+			{
+				"property": "",
+				"friendlyName": "Dispense Food",
+				"channel": "dispense_food",
+				"type": "Number",
+				"stateDescription": {
+					"minimum": 1,
+					"maximum": 30,
+					"step": 1,
+					"pattern": "%.0f"
+				},
+				"refresh": false,
+				"actions": [
+					{
+						"command": "action",
+						"parameterType": "NUMBER",
+						"siid": 2,
+						"aiid": 1,
+						"parameters": [
+							{
+								"piid": 5,
+								"value": "$value$"
+							}
+						]
+					}
+				],
+				"category": "settings",
+				"tags": [
+					"Control"
+				],
+				"readmeComment": "Dispenses the given number of portions"
+			},
+			{
+				"property": "indicator-light",
+				"siid": 3,
+				"piid": 1,
+				"friendlyName": "Indicator Light",
+				"channel": "indicator_light",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFNUMBER"
+					}
+				],
+				"category": "light",
+				"tags": [
+					"Switch",
+					"Light"
+				]
+			},
+			{
+				"property": "outletstatus",
+				"siid": 4,
+				"piid": 8,
+				"friendlyName": "Food Compartment Cover Open",
+				"channel": "cover_open",
+				"type": "Switch",
+				"stateDescription": {
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "alarm",
+				"tags": [
+					"Alarm",
+					"Opening"
+				]
+			},
+			{
+				"property": "doorstatus",
+				"siid": 4,
+				"piid": 9,
+				"friendlyName": "Feeder Blocked",
+				"channel": "feeder_blocked",
+				"type": "Switch",
+				"stateDescription": {
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "alarm",
+				"tags": [
+					"Alarm"
+				],
+				"readmeComment": "On when the food outlet is blocked; dispensing then fails"
+			},
+			{
+				"property": "feedplan-contr",
+				"siid": 5,
+				"piid": 5,
+				"friendlyName": "Feeding Schedule",
+				"channel": "feeding_schedule",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFNUMBER"
+					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch"
+				],
+				"readmeComment": "Turns the feeding schedule set in the app on or off"
+			},
+			{
+				"property": "key-stat",
+				"siid": 6,
+				"piid": 1,
+				"friendlyName": "Child Lock",
+				"channel": "child_lock",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFNUMBER"
+					}
+				],
+				"category": "lock",
+				"tags": [
+					"Switch"
+				],
+				"readmeComment": "Disables the buttons of the feeder"
+			},
+			{
+				"property": "cleantime",
+				"siid": 8,
+				"piid": 1,
+				"friendlyName": "Time Until Cleaning",
+				"channel": "remain_clean_time",
+				"type": "Number:Time",
+				"unit": "days",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 14,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "time",
+				"tags": [
+					"Measurement",
+					"Duration"
+				]
+			},
+			{
+				"property": "desiccant-left-time",
+				"siid": 11,
+				"piid": 2,
+				"friendlyName": "Desiccant Left Time",
+				"channel": "desiccant_left_time",
+				"type": "Number:Time",
+				"unit": "days",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 30,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "time",
+				"tags": [
+					"Measurement",
+					"Duration"
+				]
+			},
+			{
+				"property": "",
+				"friendlyName": "Reset",
+				"channel": "reset",
+				"type": "String",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "desiccant",
+							"label": "Reset Desiccant"
+						}
+					]
+				},
+				"refresh": false,
+				"actions": [
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 11,
+						"aiid": 1,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "desiccant"
+								}
+							]
+						}
+					}
+				],
+				"category": "settings",
+				"tags": [
+					"Control"
+				],
+				"readmeComment": "Resets the remaining days after replacing the desiccant"
+			}
+		],
+		"experimental": true
+	}
+}

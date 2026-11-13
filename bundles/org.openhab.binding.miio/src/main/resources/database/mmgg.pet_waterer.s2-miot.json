@@ -12,7 +12,7 @@
 				"property": "fault",
 				"siid": 2,
 				"piid": 1,
-				"friendlyName": "Pet Drinking Fountain - Device Fault",
+				"friendlyName": "Fault",
 				"channel": "fault",
 				"type": "Number",
 				"stateDescription": {
@@ -20,20 +20,24 @@
 					"options": [
 						{
 							"value": "0",
-							"label": "No faults"
+							"label": "No Faults"
 						}
 					]
 				},
 				"refresh": true,
 				"actions": [],
-				"readmeComment": "Value mapping `[\"0\"\u003d\"No faults\"]`"
+				"category": "alarm",
+				"tags": [
+					"Status"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"No Faults\"]`"
 			},
 			{
 				"property": "on",
 				"siid": 2,
 				"piid": 2,
 				"friendlyName": "Power",
-				"channel": "on",
+				"channel": "power",
 				"type": "Switch",
 				"refresh": true,
 				"actions": [
@@ -41,7 +45,13 @@
 						"command": "set_properties",
 						"parameterType": "ONOFFBOOL"
 					}
-				]
+				],
+				"category": "switch",
+				"tags": [
+					"Switch",
+					"Power"
+				],
+				"readmeComment": "Off stops the water flow"
 			},
 			{
 				"property": "mode",
@@ -54,11 +64,11 @@
 					"options": [
 						{
 							"value": "1",
-							"label": "Common"
+							"label": "Normal"
 						},
 						{
 							"value": "2",
-							"label": "Smart "
+							"label": "Smart"
 						}
 					]
 				},
@@ -69,14 +79,19 @@
 						"parameterType": "NUMBER"
 					}
 				],
-				"readmeComment": "Value mapping `[\"1\"\u003d\"Common\",\"2\"\u003d\"Smart \"]`"
+				"category": "settings",
+				"tags": [
+					"Control",
+					"Mode"
+				],
+				"readmeComment": "Value mapping `[\"1\"\u003d\"Normal\",\"2\"\u003d\"Smart\"]`"
 			},
 			{
 				"property": "filter-left-time",
 				"siid": 3,
 				"piid": 1,
-				"friendlyName": "Filter - Filter Left Time",
-				"channel": "filter-left-time",
+				"friendlyName": "Filter Left Time",
+				"channel": "filter_left_time",
 				"type": "Number:Time",
 				"unit": "days",
 				"stateDescription": {
@@ -87,14 +102,19 @@
 					"readOnly": true
 				},
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"category": "time",
+				"tags": [
+					"Measurement",
+					"Duration"
+				]
 			},
 			{
 				"property": "on1",
 				"siid": 4,
 				"piid": 1,
-				"friendlyName": "Indicator Light - Switch",
-				"channel": "on1",
+				"friendlyName": "Indicator Light",
+				"channel": "indicator_light",
 				"type": "Switch",
 				"refresh": true,
 				"actions": [
@@ -102,14 +122,19 @@
 						"command": "set_properties",
 						"parameterType": "ONOFFBOOL"
 					}
+				],
+				"category": "light",
+				"tags": [
+					"Switch",
+					"Light"
 				]
 			},
 			{
 				"property": "cotton-left-time",
 				"siid": 5,
 				"piid": 1,
-				"friendlyName": "Filter Cotton - Cotton Left Time",
-				"channel": "cotton-left-time",
+				"friendlyName": "Cotton Filter Left Time",
+				"channel": "cotton_left_time",
 				"type": "Number:Time",
 				"unit": "days",
 				"stateDescription": {
@@ -120,14 +145,19 @@
 					"readOnly": true
 				},
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"category": "time",
+				"tags": [
+					"Measurement",
+					"Duration"
+				]
 			},
 			{
 				"property": "remain-clean-time",
 				"siid": 6,
 				"piid": 1,
-				"friendlyName": "Remain Clean Time - Remain Clean Time",
-				"channel": "remain-clean-time",
+				"friendlyName": "Time Until Cleaning",
+				"channel": "remain_clean_time",
 				"type": "Number:Time",
 				"unit": "days",
 				"stateDescription": {
@@ -138,40 +168,91 @@
 					"readOnly": true
 				},
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"category": "time",
+				"tags": [
+					"Measurement",
+					"Duration"
+				]
 			},
 			{
 				"property": "no-water-flag",
 				"siid": 7,
 				"piid": 1,
-				"friendlyName": "No Water Flag - No Water Flag",
-				"channel": "no-water-flag",
+				"friendlyName": "Water Present",
+				"channel": "no_water_flag",
 				"type": "Switch",
 				"stateDescription": {
 					"readOnly": true
 				},
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"category": "water",
+				"tags": [
+					"Status",
+					"Water"
+				],
+				"readmeComment": "Off when the water tank is empty"
+			},
+			{
+				"property": "no-water-time",
+				"siid": 7,
+				"piid": 2,
+				"friendlyName": "No Water Duration",
+				"channel": "no_water_time",
+				"type": "Number:Time",
+				"unit": "minutes",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 10080,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "time",
+				"tags": [
+					"Measurement",
+					"Duration"
+				]
+			},
+			{
+				"property": "pump-block-flag",
+				"siid": 7,
+				"piid": 3,
+				"friendlyName": "Pump Blocked",
+				"channel": "pump_block_flag",
+				"type": "Switch",
+				"stateDescription": {
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "alarm",
+				"tags": [
+					"Alarm"
+				],
+				"readmeComment": "On when the pump is jammed and needs cleaning"
 			},
 			{
 				"property": "",
-				"friendlyName": "Consumables Reset",
-				"channel": "resetConsumable",
+				"friendlyName": "Reset",
+				"channel": "reset",
 				"type": "String",
 				"stateDescription": {
-					"readOnly": true,
 					"options": [
 						{
-							"value": "remain-clean-time-reset-clean-time",
-							"label": "Reset Clean Time"
+							"value": "filter",
+							"label": "Reset Filter"
 						},
 						{
-							"value": "filter-cotton-reset-cotton-life",
-							"label": "Reset Cotton Time"
+							"value": "cotton",
+							"label": "Reset Cotton Filter"
 						},
 						{
-							"value": "filter-reset-filter-life",
-							"label": "Reset Filter Life"
+							"value": "clean",
+							"label": "Reset Cleaning Time"
 						}
 					]
 				},
@@ -180,13 +261,13 @@
 					{
 						"command": "action",
 						"parameterType": "EMPTY",
-						"siid": 6,
+						"siid": 3,
 						"aiid": 1,
 						"condition": {
 							"name": "matchValue",
 							"parameters": [
 								{
-									"matchValue": "remain-clean-time-reset-clean-time"
+									"matchValue": "filter"
 								}
 							]
 						}
@@ -200,7 +281,7 @@
 							"name": "matchValue",
 							"parameters": [
 								{
-									"matchValue": "filter-cotton-reset-cotton-life"
+									"matchValue": "cotton"
 								}
 							]
 						}
@@ -208,53 +289,26 @@
 					{
 						"command": "action",
 						"parameterType": "EMPTY",
-						"siid": 3,
+						"siid": 6,
 						"aiid": 1,
 						"condition": {
 							"name": "matchValue",
 							"parameters": [
 								{
-									"matchValue": "filter-reset-filter-life"
+									"matchValue": "clean"
 								}
 							]
 						}
 					}
 				],
-				"readmeComment": "Value mapping `[\"remain-clean-time-reset-clean-time\"\u003d\"Reset Clean Time\",\"filter-cotton-reset-cotton-life\"\u003d\"Reset Cotton Time\",\"filter-reset-filter-life\"\u003d\"Reset Filter Life\"]`"
-			},
-			{
-				"property": "no-water-time",
-				"siid": 7,
-				"piid": 2,
-				"friendlyName": "No Water Flag - No Water Time",
-				"channel": "no-water-time",
-				"type": "Number:Time",
-				"unit": "minutes",
-				"stateDescription": {
-					"minimum": 0,
-					"maximum": 10080,
-					"step": 1,
-					"pattern": "%.0f %unit%",
-					"readOnly": true
-				},
-				"refresh": true,
-				"actions": []
-			},
-			{
-				"property": "pump-block-flag",
-				"siid": 7,
-				"piid": 3,
-				"friendlyName": "No Water Flag - Pump Block Flag",
-				"channel": "pump-block-flag",
-				"type": "Switch",
-				"stateDescription": {
-					"readOnly": true
-				},
-				"refresh": true,
-				"actions": []
+				"category": "settings",
+				"tags": [
+					"Control"
+				],
+				"readmeComment": "Resets the remaining days after replacing the filter or cotton filter, or after cleaning"
 			}
 		],
-		"readmeComment": "Identified manual actions for execution\u003cbr /\u003e`action{\"did\":\"filter-reset-filter-life\",\"siid\":3,\"aiid\":1,\"in\":[]}`\u003cbr /\u003e`action{\"did\":\"filter-cotton-reset-cotton-life\",\"siid\":5,\"aiid\":1,\"in\":[]}`\u003cbr /\u003e`action{\"did\":\"remain-clean-time-reset-clean-time\",\"siid\":6,\"aiid\":1,\"in\":[]}`\u003cbr /\u003ePlease test and feedback if they are working so they can be linked to a channel.",
+		"readmeComment": "Smart mode runs the pump 10 minutes on and 10 minutes off from 08:00 to 21:59, otherwise 10 minutes on and 50 minutes off.",
 		"experimental": true
 	}
 }

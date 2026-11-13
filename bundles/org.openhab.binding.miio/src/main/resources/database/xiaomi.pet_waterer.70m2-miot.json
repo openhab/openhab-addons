@@ -1,0 +1,397 @@
+{
+	"deviceMapping": {
+		"id": [
+			"xiaomi.pet_waterer.70m2"
+		],
+		"propertyMethod": "get_properties",
+		"maxProperties": 1,
+		"channels": [
+			{
+				"property": "fault",
+				"siid": 2,
+				"piid": 1,
+				"friendlyName": "Fault",
+				"channel": "fault",
+				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "0",
+							"label": "No Faults"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "alarm",
+				"tags": [
+					"Status"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"No Faults\"]`"
+			},
+			{
+				"property": "status",
+				"siid": 2,
+				"piid": 3,
+				"friendlyName": "Status",
+				"channel": "status",
+				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "1",
+							"label": "On Standby"
+						},
+						{
+							"value": "2",
+							"label": "Water Dispensing"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "status",
+				"tags": [
+					"Status"
+				],
+				"readmeComment": "Value mapping `[\"1\"\u003d\"On Standby\",\"2\"\u003d\"Water Dispensing\"]`"
+			},
+			{
+				"property": "mode",
+				"siid": 2,
+				"piid": 4,
+				"friendlyName": "Mode",
+				"channel": "mode",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "Sensing"
+						},
+						{
+							"value": "1",
+							"label": "Intermittent"
+						},
+						{
+							"value": "2",
+							"label": "Continuous"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "settings",
+				"tags": [
+					"Control",
+					"Mode"
+				],
+				"readmeComment": "Continuous mode is only available while charging. Value mapping `[\"0\"\u003d\"Sensing\",\"1\"\u003d\"Intermittent\",\"2\"\u003d\"Continuous\"]`"
+			},
+			{
+				"property": "out-water-interval",
+				"siid": 2,
+				"piid": 7,
+				"friendlyName": "Dispense Interval",
+				"channel": "water_interval",
+				"type": "Number:Time",
+				"unit": "minutes",
+				"stateDescription": {
+					"minimum": 15,
+					"maximum": 120,
+					"step": 15,
+					"pattern": "%.0f %unit%"
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "time",
+				"tags": [
+					"Setpoint",
+					"Duration"
+				],
+				"readmeComment": "Interval of the intermittent mode"
+			},
+			{
+				"property": "water-shortage-status",
+				"siid": 2,
+				"piid": 10,
+				"friendlyName": "Water Shortage",
+				"channel": "water_shortage",
+				"type": "Switch",
+				"stateDescription": {
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "alarm",
+				"tags": [
+					"Alarm",
+					"Water"
+				]
+			},
+			{
+				"property": "filter-life-level",
+				"siid": 3,
+				"piid": 1,
+				"friendlyName": "Filter Life Level",
+				"channel": "filter_life_level",
+				"type": "Number:Dimensionless",
+				"unit": "percentage",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 100,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "status",
+				"tags": [
+					"Measurement",
+					"Level"
+				]
+			},
+			{
+				"property": "filter-left-time",
+				"siid": 3,
+				"piid": 2,
+				"friendlyName": "Filter Left Time",
+				"channel": "filter_left_time",
+				"type": "Number:Time",
+				"unit": "hours",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 1000,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "time",
+				"tags": [
+					"Measurement",
+					"Duration"
+				]
+			},
+			{
+				"property": "physical-controls-locked",
+				"siid": 4,
+				"piid": 1,
+				"friendlyName": "Child Lock",
+				"channel": "child_lock",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "lock",
+				"tags": [
+					"Switch"
+				],
+				"readmeComment": "All buttons except the power button are disabled"
+			},
+			{
+				"property": "battery-level",
+				"siid": 5,
+				"piid": 1,
+				"friendlyName": "Battery Level",
+				"channel": "battery_level",
+				"type": "Number:Dimensionless",
+				"unit": "percentage",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 100,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "battery",
+				"tags": [
+					"Measurement",
+					"StateOfCharge"
+				]
+			},
+			{
+				"property": "charging-state",
+				"siid": 5,
+				"piid": 2,
+				"friendlyName": "Charging State",
+				"channel": "charging_state",
+				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "0",
+							"label": "Not Charging"
+						},
+						{
+							"value": "1",
+							"label": "Charging"
+						},
+						{
+							"value": "2",
+							"label": "Fully Charged"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "battery",
+				"tags": [
+					"Status"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Not Charging\",\"1\"\u003d\"Charging\",\"2\"\u003d\"Fully Charged\"]`"
+			},
+			{
+				"property": "no-disturb",
+				"siid": 6,
+				"piid": 1,
+				"friendlyName": "Do Not Disturb",
+				"channel": "dnd",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch"
+				],
+				"readmeComment": "The indicators are off during the DND period"
+			},
+			{
+				"property": "low-battery",
+				"siid": 9,
+				"piid": 5,
+				"friendlyName": "Low Battery",
+				"channel": "low_battery",
+				"type": "Switch",
+				"stateDescription": {
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "lowbattery",
+				"tags": [
+					"Alarm",
+					"LowBattery"
+				]
+			},
+			{
+				"property": "usb-insert-state",
+				"siid": 9,
+				"piid": 6,
+				"friendlyName": "Charger Connected",
+				"channel": "charger_connected",
+				"type": "Switch",
+				"stateDescription": {
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "energy",
+				"tags": [
+					"Status",
+					"Power"
+				]
+			},
+			{
+				"property": "time-period-start",
+				"siid": 9,
+				"piid": 10,
+				"friendlyName": "Do Not Disturb Start",
+				"channel": "dnd_start",
+				"type": "Number:Time",
+				"unit": "seconds",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 86400,
+					"step": 1,
+					"pattern": "%.0f %unit%"
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "time",
+				"tags": [
+					"Setpoint",
+					"Duration"
+				],
+				"readmeComment": "Seconds after midnight"
+			},
+			{
+				"property": "time-period-end",
+				"siid": 9,
+				"piid": 11,
+				"friendlyName": "Do Not Disturb End",
+				"channel": "dnd_end",
+				"type": "Number:Time",
+				"unit": "seconds",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 86400,
+					"step": 1,
+					"pattern": "%.0f %unit%"
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "time",
+				"tags": [
+					"Setpoint",
+					"Duration"
+				],
+				"readmeComment": "Seconds after midnight"
+			},
+			{
+				"property": "pump-block",
+				"siid": 9,
+				"piid": 12,
+				"friendlyName": "Pump Blocked",
+				"channel": "pump_block_flag",
+				"type": "Switch",
+				"stateDescription": {
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "alarm",
+				"tags": [
+					"Alarm"
+				]
+			}
+		],
+		"experimental": true
+	}
+}
