@@ -98,7 +98,7 @@ html {
 function retrieveToken()
 {
     var prmId = document.getElementById('prmId').value;
-    document.location= "${retrieveToken.uri}" + "&code=" + prmId; 
+    document.location= "${retrieveToken.uri}" + "&code=" + encodeURIComponent(prmId);
 }
 </script>
 </head>
