@@ -23,21 +23,9 @@ import org.openhab.binding.e3dc.internal.rscp.RscpTag;
 import org.openhab.binding.e3dc.internal.rscp.RscpValue;
 
 /**
- * A power mode the energy manager is told to hold: automatic, idle, or forced discharge, charge or grid charge
- * with a power.
- *
- * <p>
- * The device only keeps a mode for a short time, so a mode other than automatic has to be sent again with every
- * poll cycle for as long as it should hold. The text form is the one of rscp2mqtt:
- * <ul>
- * <li>{@code auto}</li>
- * <li>{@code idle:<cycles>}</li>
- * <li>{@code discharge:<watts>:<cycles>}, {@code charge:<watts>:<cycles>}, {@code grid_charge:<watts>:<cycles>}</li>
- * </ul>
- *
- * @param mode the mode number: 0 automatic, 1 idle, 2 discharge, 3 charge, 4 grid charge
- * @param watts the power for discharge, charge and grid charge, otherwise 0
- * @param cycles for how many poll cycles the mode is held, 0 for automatic
+ * A power mode the energy manager is told to hold. The device keeps it only for a short time, so it is sent
+ * again with every poll cycle while it should hold. The text form is the one of rscp2mqtt: {@code auto},
+ * {@code idle:<cycles>} or {@code discharge|charge|grid_charge:<watts>:<cycles>}.
  *
  * @author Bernd Weymann - Initial contribution
  */
@@ -55,7 +43,6 @@ public record E3DCPowerMode(int mode, int watts, int cycles) {
     private static final Pattern POWER_PATTERN = Pattern.compile("(discharge|charge|grid_charge):(\\d{1,5}):(\\d{1,4})",
             Pattern.CASE_INSENSITIVE);
 
-    /** Reads the text form, or returns {@code null} when it is not a power mode. */
     public static @Nullable E3DCPowerMode parse(String text) {
         String value = text.trim();
         if (AUTO_PATTERN.matcher(value).matches()) {
@@ -77,14 +64,12 @@ public record E3DCPowerMode(int mode, int watts, int cycles) {
         return null;
     }
 
-    /** The request that sets this mode: one container holding the mode and the power. */
     public List<RscpValue> toRequest() {
         return List.of(RscpValue.container(RscpTag.EMS_REQ_SET_POWER,
                 List.of(RscpValue.uchar8(RscpTag.EMS_REQ_SET_POWER_MODE, mode),
                         RscpValue.int32(RscpTag.EMS_REQ_SET_POWER_VALUE, watts))));
     }
 
-    /** Whether the mode has to be sent again with every poll cycle to stay in effect. */
     public boolean isHeld() {
         return mode != AUTO && cycles > 0;
     }

@@ -53,8 +53,6 @@ public class E3DCWallboxHandler extends E3DCThingHandler {
 
     @Override
     public void initialize() {
-        // read here rather than in the constructor: an updated index reaches an already created handler only
-        // through initialize(), which the framework calls again after a configuration change
         config = getConfigAs(E3DCWallboxConfiguration.class);
         super.initialize();
     }
@@ -86,11 +84,8 @@ public class E3DCWallboxHandler extends E3DCThingHandler {
     }
 
     /**
-     * Handles the toggle of the charging, which suspends a running session and resumes a suspended one.
-     *
-     * <p>
-     * The toggle is the opposite of the last reported suspended state, written as that state, so it works
-     * like the toggle of rscp2mqtt without a second way to write to the wallbox.
+     * Handles the toggle: the interface has no toggle command, so the opposite of the last reported suspended
+     * state is written.
      */
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {

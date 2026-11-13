@@ -15,11 +15,7 @@ package org.openhab.binding.e3dc.internal.rscp;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Error codes an E3/DC device returns in an RSCP item of type {@code ERROR}.
- *
- * <p>
- * {@link #UNKNOWN_TAG} is the code used to report that a requested data point is not implemented by
- * the device, which is how capabilities are detected.
+ * Error codes an E3/DC device returns; {@link #UNKNOWN_TAG} means the data point is not implemented.
  *
  * @author Bernd Weymann - Initial contribution
  */

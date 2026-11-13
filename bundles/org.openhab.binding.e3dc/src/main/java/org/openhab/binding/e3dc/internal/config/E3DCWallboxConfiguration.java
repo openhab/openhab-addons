@@ -15,13 +15,10 @@ package org.openhab.binding.e3dc.internal.config;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Configuration of a wallbox thing.
- *
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
 public class E3DCWallboxConfiguration {
 
-    /** Zero based index of the wallbox within the device. */
     public int wallboxIndex;
 }

@@ -32,21 +32,9 @@ import org.osgi.service.component.annotations.ServiceScope;
  * <p>
  * They read and replace the idle periods of the second version, the named time windows during which the
  * battery is locked against charging or discharging. A period is written as one line
- * {@code name:days:mode:active:hh:mm-hh:mm}, for example {@code weekend:saturday,sunday:charge:true:08:00-18:00}.
- *
- * <p>
- * {@code deleteIdlePeriod} removes one period by its name and keeps the others.
- *
- * <p>
- * {@code fetchHistory} reads the yearly history of all earlier years once and publishes it on the
- * {@code history#year-*} channels as time series, so the requests beyond the running year are made only
- * when the user asks for them. {@code fetchPeriodHistory} does the same for finished days, weeks and months.
- *
- * <p>
- * The device replaces its whole list on every write, so {@code setIdlePeriods} takes the complete list. The
- * switches {@code battery-control#block-charging} and {@code battery-control#block-discharging} manage one period of
- * their own
- * and keep all others.
+ * {@code name:days:mode:active:hh:mm-hh:mm}. The device replaces its whole list on every write, so
+ * {@code setIdlePeriods} takes the complete list, and the block switches manage one period of their own and
+ * keep the others.
  *
  * @author Bernd Weymann - Initial contribution
  */
@@ -116,7 +104,6 @@ public class E3DCActions implements ThingActions {
         return current != null ? current.fetchHistory() : -1;
     }
 
-    /** Fetches the yearly history of all earlier years once and returns the number of years that had data. */
     public static int fetchHistory(ThingActions actions) {
         return ((E3DCActions) actions).fetchHistory();
     }
@@ -129,27 +116,22 @@ public class E3DCActions implements ThingActions {
         return current != null ? current.fetchPeriodHistory(period, count) : -1;
     }
 
-    /** Fetches the history of finished days, weeks, months or years and returns the number of periods with data. */
     public static int fetchPeriodHistory(ThingActions actions, String period, int count) {
         return ((E3DCActions) actions).fetchPeriodHistory(period, count);
     }
 
-    /** Reads the idle periods, one per line, or {@code null} when the device could not be asked. */
     public static @Nullable String getIdlePeriods(ThingActions actions) {
         return ((E3DCActions) actions).getIdlePeriods();
     }
 
-    /** Forces a power mode and reports whether the device accepted it. */
     public static boolean setPowerMode(ThingActions actions, String mode, int watts, int cycles) {
         return ((E3DCActions) actions).setPowerMode(mode, watts, cycles);
     }
 
-    /** Removes the idle period of the given name, keeps the others and reports whether the device accepted it. */
     public static boolean deleteIdlePeriod(ThingActions actions, String name) {
         return ((E3DCActions) actions).deleteIdlePeriod(name);
     }
 
-    /** Replaces the whole list of idle periods and reports whether the device accepted it. */
     public static boolean setIdlePeriods(ThingActions actions, String periods) {
         return ((E3DCActions) actions).setIdlePeriods(periods);
     }

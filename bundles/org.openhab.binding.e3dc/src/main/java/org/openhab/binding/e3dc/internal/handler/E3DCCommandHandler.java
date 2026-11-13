@@ -29,19 +29,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Builds and sends the write requests of the binding.
- *
- * <p>
- * The power settings are one container holding the charge and discharge limits together with the
- * weather regulated charge flag. The device resets the enclosed limits when the power limits flag is
- * switched off, so a write has to carry every parameter of that container. This class remembers the
- * last values so writing one parameter does not discard the others.
- *
- * <p>
- * The poll updates that snapshot on its own thread while a command builds its request on a framework
- * thread, so reading the snapshot, sending the request and applying the acknowledgement are serialized
- * here: otherwise a command could be built from values the poll read half way and a second command could
- * undo a write that was not acknowledged yet.
+ * Builds and sends the write requests of the binding, serialized against the poll. The device resets the
+ * power limits when the power limits flag is off, so a write has to carry all remembered parameters.
  *
  * @author Bernd Weymann - Initial contribution
  */
@@ -50,11 +39,9 @@ public class E3DCCommandHandler {
 
     private final Logger logger = LoggerFactory.getLogger(E3DCCommandHandler.class);
 
-    /** The containers a snapshot of the power settings is taken from: the poll and the acknowledgement of a write. */
     private static final Set<Integer> POWER_SETTINGS_CONTAINERS = Set.of(RscpTag.EMS_GET_POWER_SETTINGS,
             RscpTag.EMS_SET_POWER_SETTINGS);
 
-    /** Last known value of each parameter of the power settings container. */
     private final Map<Integer, RscpValue> powerSettings = new LinkedHashMap<>();
 
     /** Remembers the device state so a later write can complete the parameters it does not change. */
@@ -67,13 +54,7 @@ public class E3DCCommandHandler {
         }
     }
 
-    /**
-     * Takes the parameters of one settings container into the snapshot.
-     *
-     * <p>
-     * The parameter is kept as the item the device sent or the one that was written, so a later request can
-     * repeat it without knowing which RSCP type the device expects for it.
-     */
+    /** Takes the parameters of a settings container into the snapshot as the typed items the device sent. */
     private void remember(RscpValue settings) {
         for (int tag : E3DCCommandSpec.POWER_SETTINGS_PARAMETERS) {
             RscpValue parameter = settings.find(tag);
@@ -84,30 +65,14 @@ public class E3DCCommandHandler {
         }
     }
 
-    /**
-     * Builds the request of a converted command, sends it and applies the acknowledgement to the snapshot as one
-     * transaction.
-     *
-     * @param bridge the connection to send the request over
-     * @param spec the command specification of the channel
-     * @param value the already converted value, which the caller also publishes as the new state
-     * @param deviceIndex the index of the addressed device for containers that hold several
-     * @return whether the device accepted the command
-     */
+    /** Builds the request of a converted command, sends it and applies the acknowledgement as one transaction. */
     public synchronized boolean execute(E3DCBridgeHandler bridge, E3DCCommandSpec spec, RscpValue value,
             int deviceIndex) {
         List<RscpValue> request = buildRequest(spec, value, deviceIndex);
         return request != null && send(bridge, request);
     }
 
-    /**
-     * Builds the request for a command on a settable channel.
-     *
-     * @param spec the command specification of the channel
-     * @param command the command received from openHAB
-     * @param deviceIndex the index of the addressed device for containers that hold several
-     * @return the request to send, or {@code null} when the command cannot be represented
-     */
+    /** Builds the request for a command on a settable channel, or {@code null} when it cannot be represented. */
     public synchronized @Nullable List<RscpValue> buildRequest(E3DCCommandSpec spec, Command command, int deviceIndex) {
         RscpValue value = spec.toValue(command);
         return value == null ? null : buildRequest(spec, value, deviceIndex);
@@ -127,19 +92,14 @@ public class E3DCCommandHandler {
             items.add(RscpValue.uchar8(indexTag, deviceIndex));
         }
         if (spec.container() == RscpTag.SE_REQ_SET_EP_RESERVE) {
-            // the reserve addresses no device, but the device rejects a write without the index of the data set
-            // (it answers -1): the index is a signed four byte value that is always zero
+            // the reserve addresses no device, but the device rejects a write without its int32 data set index
             items.add(RscpValue.int32(RscpTag.SE_PARAM_INDEX, 0));
         }
         items.add(value);
         return List.of(RscpValue.container(spec.container(), items));
     }
 
-    /**
-     * Assembles the complete settings container, replacing the parameter being written and carrying
-     * the remaining ones from the last poll. Parameters that have never been read are left out rather
-     * than written as zero, which would change a limit the user did not touch.
-     */
+    /** The complete settings container; parameters never read are left out rather than written as zero. */
     private List<RscpValue> buildPowerSettingsRequest(int changedTag, RscpValue changedValue) {
         List<RscpValue> parameters = new ArrayList<>();
         for (int tag : E3DCCommandSpec.POWER_SETTINGS_PARAMETERS) {
@@ -169,8 +129,7 @@ public class E3DCCommandHandler {
                 logger.debug("The device rejected the command: {}", response.findError());
                 return false;
             }
-            // an acknowledged write is the new state of the device, so a following write does not undo it even
-            // when the answer carries no settings container of its own
+            // the acknowledged write is the new device state, so a later write must not undo it
             rememberAcknowledged(request);
             updateFromResponse(response);
             return true;
@@ -189,7 +148,6 @@ public class E3DCCommandHandler {
         }
     }
 
-    /** The index tag of a container that addresses one of several devices. */
     private int indexTagFor(int container) {
         if (container == RscpTag.WB_DATA || container == RscpTag.WB_REQ_DATA) {
             return RscpTag.WB_INDEX;

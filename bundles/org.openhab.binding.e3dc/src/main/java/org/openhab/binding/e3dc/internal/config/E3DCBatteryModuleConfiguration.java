@@ -15,16 +15,12 @@ package org.openhab.binding.e3dc.internal.config;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Configuration of one battery cell module.
- *
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
 public class E3DCBatteryModuleConfiguration {
 
-    /** Zero based index of the module within the data of its battery. */
     public int moduleIndex;
 
-    /** Zero based index of the battery that reports this module. */
     public int batteryIndex;
 }

@@ -21,8 +21,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * The channels of one thing type, keyed by channel group and then channel id.
- *
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
@@ -40,12 +38,10 @@ public final class E3DCChannelRegistry {
         return channels != null ? channels : Map.of();
     }
 
-    /** Every group with its channels, in declaration order. */
     public Map<String, Map<String, E3DCChannelSpec>> groups() {
         return Collections.unmodifiableMap(byGroup);
     }
 
-    /** Every distinct spec this registry needs. */
     public List<E3DCChannelSpec> all() {
         return byGroup.values().stream().flatMap(map -> map.values().stream()).distinct().toList();
     }
@@ -55,7 +51,6 @@ public final class E3DCChannelRegistry {
         return channels != null ? channels.get(channelId) : null;
     }
 
-    /** Every distinct container that has to be requested to fill this registry. */
     public List<Integer> containers() {
         return all().stream().map(E3DCChannelSpec::container).filter(container -> container != 0).distinct().toList();
     }

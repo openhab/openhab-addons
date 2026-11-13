@@ -17,8 +17,6 @@ import java.nio.charset.StandardCharsets;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * RSCP data types as used in the type field of an RSCP data item.
- *
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
@@ -62,10 +60,7 @@ public enum RscpType {
         throw new IllegalArgumentException(String.format("Unknown RSCP type 0x%02x", code));
     }
 
-    /**
-     * Renders a decoded value for logging. Passwords are never part of a decoded response, so only
-     * the value itself needs conversion.
-     */
+    /** Renders a decoded value for logging; passwords are never part of a decoded response. */
     static String toStringValue(RscpType type, Object value) {
         if (value instanceof byte[] bytes) {
             if (type == CSTRING) {

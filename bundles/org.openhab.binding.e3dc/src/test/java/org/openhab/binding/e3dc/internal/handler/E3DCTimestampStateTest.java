@@ -14,8 +14,6 @@ package org.openhab.binding.e3dc.internal.handler;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.time.Instant;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -42,8 +40,7 @@ class E3DCTimestampStateTest {
     private static final long SECONDS = 1_761_428_400L;
 
     private static RscpValue timestamp(long seconds) {
-        byte[] bytes = ByteBuffer.allocate(12).order(ByteOrder.LITTLE_ENDIAN).putLong(seconds).putInt(0).array();
-        return RscpValue.of(RscpTag.EMS_MANUAL_CHARGE_LASTSTART, RscpType.TIMESTAMP, bytes);
+        return RscpValue.timestamp(RscpTag.EMS_MANUAL_CHARGE_LASTSTART, Instant.ofEpochSecond(seconds));
     }
 
     private static Instant instantOf(State state) {
@@ -51,7 +48,7 @@ class E3DCTimestampStateTest {
     }
 
     @Test
-    void aTimestampValueHoldsTheSecondsInItsFirstEightBytes() {
+    void aTimestampValueIsReadAsTheMomentItNames() {
         State state = E3DCThingHandler.timestampState(timestamp(SECONDS));
 
         assertNotNull(state);

@@ -283,6 +283,45 @@ class E3DCIdlePeriodTest {
         assertTrue(periods.get(0).blocks(E3DCIdlePeriod.Type.DISCHARGE));
     }
 
+    /** The channel of a direction carries the text without the direction, which the channel itself means. */
+    @Test
+    void aDirectionalChannelTextNamesNoDirection() {
+        E3DCIdlePeriod period = E3DCIdlePeriod.parse("weekend:saturday,sunday:true:08:00-18:00",
+                E3DCIdlePeriod.Type.CHARGE);
+
+        assertNotNull(period);
+        assertEquals(E3DCIdlePeriod.Type.CHARGE, period.type());
+        assertEquals("weekend", period.name());
+        assertTrue(period.active());
+        assertEquals("weekend:saturday,sunday:true:08:00-18:00", period.toDirectionalText());
+    }
+
+    @Test
+    void aDirectionalListRendersOnlyItsOwnDirection() {
+        List<E3DCIdlePeriod> periods = List.of(parsed("weekend:saturday,sunday:charge:true:08:00-18:00"),
+                parsed("night:monday,tuesday:discharge:false:00:00-06:00"));
+
+        assertEquals("weekend:saturday,sunday:true:08:00-18:00",
+                E3DCIdlePeriod.toText(periods, E3DCIdlePeriod.Type.CHARGE));
+        assertEquals("night:monday,tuesday:false:00:00-06:00",
+                E3DCIdlePeriod.toText(periods, E3DCIdlePeriod.Type.DISCHARGE));
+        // and the rendered text parses back with the direction of the channel
+        List<E3DCIdlePeriod> parsed = E3DCIdlePeriod.parseAll("night:monday,tuesday:false:00:00-06:00",
+                E3DCIdlePeriod.Type.DISCHARGE);
+        assertNotNull(parsed);
+        assertEquals(periods.get(1), parsed.get(0));
+    }
+
+    @Test
+    void aMalformedDirectionalLineIsRejected() {
+        assertNull(E3DCIdlePeriod.parse("weekend:saturday,sunday:true:08:00-18:00:x", E3DCIdlePeriod.Type.CHARGE),
+                "a text that is longer than a window is no period");
+        assertNull(E3DCIdlePeriod.parse("weekend:moonday:true:08:00-18:00", E3DCIdlePeriod.Type.CHARGE),
+                "a day that does not exist");
+        assertNull(E3DCIdlePeriod.parseAll("x:weekend:monday:true:08:00-18:00", E3DCIdlePeriod.Type.CHARGE),
+                "the days are the second field");
+    }
+
     private static E3DCIdlePeriod parsed(String text) {
         return requireNonNull(E3DCIdlePeriod.parse(text));
     }

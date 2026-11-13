@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.e3dc.internal;
 
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,17 +19,12 @@ import java.util.List;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.e3dc.internal.rscp.RscpTag;
-import org.openhab.binding.e3dc.internal.rscp.RscpType;
 import org.openhab.binding.e3dc.internal.rscp.RscpValue;
 
 /**
- * The messages the energy manager keeps, such as a schedule that is being executed or a lost connection to the
- * smart meter gateway.
- *
- * <p>
- * The device answers the request for its stored errors with one container per message. Despite the name, not
- * every message is an error: the type tells them apart, and the device reports a running schedule with type 1,
- * the same as a lost connection.
+ * The messages the energy manager keeps, such as a running schedule or a lost connection to the smart meter
+ * gateway. The request for the stored errors is answered with one container per message; not every message
+ * is an error, and a running schedule has the same type as a lost connection.
  *
  * @author Bernd Weymann - Initial contribution
  */
@@ -44,24 +37,13 @@ public final class E3DCMessages {
     private E3DCMessages() {
     }
 
-    /**
-     * One message of the energy manager.
-     *
-     * @param type the kind of message as the device numbers it, or {@code null} when it did not say
-     * @param source the part of the system that raised the message, or {@code null}
-     * @param code the code of the message, or {@code null}
-     * @param text the text of the message, or {@code null}
-     * @param timestamp when the message was raised, or {@code null} when the device did not say
-     */
     public record Message(@Nullable Integer type, @Nullable String source, @Nullable Integer code,
             @Nullable String text, @Nullable Instant timestamp) {
     }
 
     /**
-     * The messages a poll response carries.
-     *
-     * @return the messages in the order of the response, an empty list when the device reports none, or
-     *         {@code null} when the response holds no answer to the request, so nothing is known
+     * The messages of a poll response; empty when none are reported, {@code null} when the request is not
+     * answered.
      */
     public static @Nullable List<Message> fromResponse(RscpValue response) {
         RscpValue stored = response.find(RscpTag.EMS_STORED_ERRORS);
@@ -78,7 +60,6 @@ public final class E3DCMessages {
         return messages;
     }
 
-    /** One message, or {@code null} when the container names neither a text nor a code. */
     private static @Nullable Message fromContainer(RscpValue container) {
         Number type = container.findNumber(RscpTag.EMS_ERROR_TYPE);
         Number code = container.findNumber(RscpTag.EMS_ERROR_CODE);
@@ -102,28 +83,20 @@ public final class E3DCMessages {
 
     /** The moment a value names, or {@code null} when it is none or zero, which means nothing happened yet. */
     static @Nullable Instant timestampOf(RscpValue value) {
-        Object raw = value.getValue();
-        long seconds;
-        if (raw instanceof byte[] bytes && value.getType() == RscpType.TIMESTAMP && bytes.length >= 8) {
-            seconds = ByteBuffer.wrap(bytes, 0, 8).order(ByteOrder.LITTLE_ENDIAN).getLong();
-        } else if (raw instanceof Number number) {
-            seconds = number.longValue();
-        } else {
-            return null;
+        if (value.getValue() instanceof Instant moment) {
+            return moment.getEpochSecond() <= 0 && moment.getNano() == 0 ? null : moment;
         }
-        if (seconds <= 0) {
-            return null;
+        if (value.getValue() instanceof Number number) {
+            long seconds = number.longValue();
+            if (seconds <= 0) {
+                return null;
+            }
+            return seconds > MILLISECONDS_THRESHOLD ? Instant.ofEpochMilli(seconds) : Instant.ofEpochSecond(seconds);
         }
-        return seconds > MILLISECONDS_THRESHOLD ? Instant.ofEpochMilli(seconds) : Instant.ofEpochSecond(seconds);
+        return null;
     }
 
-    /**
-     * The messages as a JSON array, for example
-     * {@code [{"type":1,"source":"EMS","code":32803,"message":"A schedule is being executed! (AI360)"}]}.
-     *
-     * <p>
-     * A field the device did not report is left out. Without messages the array is empty.
-     */
+    /** The messages as a JSON array; a field the device did not report is left out. */
     public static String toJson(List<Message> messages) {
         StringBuilder json = new StringBuilder("[");
         boolean first = true;

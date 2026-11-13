@@ -4,62 +4,9 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<channel-type id="system-software-version">
-		<item-type>String</item-type>
-		<label>Software Version</label>
-		<description>Firmware version of the device</description>
-		<state readOnly="true"/>
-	</channel-type>
-
-	<channel-type id="system-serial-number">
-		<item-type>String</item-type>
-		<label>Serial Number</label>
-		<description>Serial number of the device</description>
-		<state readOnly="true"/>
-	</channel-type>
-
-	<channel-type id="system-production-date">
-		<item-type>String</item-type>
-		<label>Production Date</label>
-		<description>Manufacturing date of the device</description>
-		<state readOnly="true"/>
-	</channel-type>
-
-	<channel-type id="system-time-zone">
-		<item-type>String</item-type>
-		<label>Time Zone</label>
-		<description>Time zone configured on the device</description>
-		<state readOnly="true"/>
-	</channel-type>
-
-	<channel-type id="system-installed-peak-power">
-		<item-type>Number:Power</item-type>
-		<label>Installed Peak Power</label>
-		<description>Peak power of the installed photovoltaic system</description>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
-		</tags>
-		<state pattern="%.0f %unit%" readOnly="true"/>
-	</channel-type>
-
-	<channel-type id="system-inverter-count">
-		<item-type>Number</item-type>
-		<label>Inverter Count</label>
-		<description>Number of inverters in the system</description>
-		<state pattern="%d" readOnly="true"/>
-	</channel-type>
-
-	<channel-type id="system-battery-count">
-		<item-type>Number</item-type>
-		<label>Battery Count</label>
-		<description>Number of batteries in the system</description>
-		<state pattern="%d" readOnly="true"/>
-	</channel-type>
-
 	<channel-type id="system-mode">
 		<item-type>Number</item-type>
-		<label>Mode</label>
+		<label>Active Mode</label>
 		<description>Operating mode of the energy management system</description>
 		<state pattern="%s" readOnly="true">
 			<options>
@@ -92,13 +39,6 @@
 				<option value="grid_charge:3000:60">Grid Charge 3000 W</option>
 			</options>
 		</command>
-	</channel-type>
-
-	<channel-type id="system-coupling-mode">
-		<item-type>Number</item-type>
-		<label>Coupling Mode</label>
-		<description>How the power plant is coupled to the grid</description>
-		<state pattern="%d" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="emergency-power-status">
@@ -176,14 +116,6 @@
 		<label>Power Save</label>
 		<description>Power saving mode is active</description>
 		<state readOnly="true"/>
-	</channel-type>
-
-	<channel-type id="battery-control-idle-periods">
-		<item-type>String</item-type>
-		<label>Idle Periods</label>
-		<description>Periods during which the battery is locked against charging or discharging, one period per line as
-			name:days:mode:active:hh:mm-hh:mm</description>
-		<state readOnly="false"/>
 	</channel-type>
 
 	<channel-type id="battery-control-block-charging">

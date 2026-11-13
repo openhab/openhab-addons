@@ -18,8 +18,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
- * Constants shared across the binding.
- *
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
@@ -27,70 +25,64 @@ public final class E3DCBindingConstants {
 
     public static final String BINDING_ID = "e3dc";
 
-    /** The device connection. All other things depend on it. */
     public static final ThingTypeUID THING_TYPE_BRIDGE = new ThingTypeUID(BINDING_ID, "bridge");
 
-    /** The home power plant itself. */
     public static final ThingTypeUID THING_TYPE_POWER_PLANT = new ThingTypeUID(BINDING_ID, "power-plant");
 
-    /** One wallbox attached to the power plant. */
     public static final ThingTypeUID THING_TYPE_WALLBOX = new ThingTypeUID(BINDING_ID, "wallbox");
 
-    /** One power meter attached to the power plant. */
     public static final ThingTypeUID THING_TYPE_POWER_METER = new ThingTypeUID(BINDING_ID, "power-meter");
 
-    /** One battery of the power plant, addressed by its index. */
     public static final ThingTypeUID THING_TYPE_BATTERY = new ThingTypeUID(BINDING_ID, "battery");
 
-    /** One battery cell module of the power plant. */
     public static final ThingTypeUID THING_TYPE_BATTERY_MODULE = new ThingTypeUID(BINDING_ID, "battery-module");
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_BRIDGE, THING_TYPE_POWER_PLANT,
             THING_TYPE_WALLBOX, THING_TYPE_POWER_METER, THING_TYPE_BATTERY, THING_TYPE_BATTERY_MODULE);
 
-    /** Channel group ids of the power plant thing. */
     public static final String GROUP_POWER = "power";
     public static final String GROUP_BATTERY = "battery";
     public static final String GROUP_INVERTER = "inverter";
     public static final String GROUP_GRID = "grid";
     public static final String GROUP_SYSTEM = "system";
 
-    /** The switch of the group {@code system} that tells whether the energy manager holds any message. */
+    /** The system channels: the switch says whether any message is stored, the text channel lists them as JSON. */
     public static final String CHANNEL_HAS_MESSAGES = "has-messages";
-    /** The text channel of the group {@code system} that lists the messages as a JSON array. */
     public static final String CHANNEL_MESSAGES = "messages";
-    /** The battery controls and states: locks, power mode, idle periods and the block switches. */
-    public static final String GROUP_BATTERY_CONTROL = "battery-control";
 
-    /** The manual battery charge: the command that starts it and the values the device reports about it. */
+    /** The power limits and the charging strategy of the battery. */
+    public static final String GROUP_BATTERY_LIMITS = "battery-limits";
+
+    /** The operating mode of the energy manager, including a temporary override. */
+    public static final String GROUP_BATTERY_MODE = "battery-mode";
+
+    /** The time windows during which the battery is locked against charging or discharging. */
+    public static final String GROUP_IDLE_PERIODS = "idle-periods";
+
+    /** The order in which the power plant assigns solar power to the battery and the car. */
+    public static final String GROUP_WALLBOX_PRIORITY = "wallbox-priority";
+
     public static final String GROUP_MANUAL_BATTERY_CHARGE = "manual-battery-charge";
 
-    /** The energy counters and shares of the completed day, week, month and year. */
     public static final String GROUP_STATISTICS = "statistics";
 
     public static final String GROUP_HISTORY = "history";
 
-    /** The emergency power of the battery: the reserve kept for it and the state of the supply. */
     public static final String GROUP_EMERGENCY = "emergency";
 
-    /** The request of the wallbox data, whose values the channel groups below share. */
+    /** The request of the wallbox data, which its channel groups share. */
     public static final String GROUP_WALLBOX = "wallbox";
 
-    /** Channel group ids of the wallbox thing. */
     public static final String GROUP_WALLBOX_STATUS_CONTROL = "status-control";
     public static final String GROUP_WALLBOX_SESSION = "session";
     public static final String GROUP_WALLBOX_COUNTERS = "counters";
 
-    /** Channel group ids of the power meter thing. */
     public static final String GROUP_METER = "meter";
 
-    /** Channel group id of the battery thing. */
     public static final String GROUP_PACK = "pack";
 
-    /** Channel group ids of the battery module thing. */
     public static final String GROUP_MODULE = "module";
 
-    /** Channel ids used by more than one thing type. */
     public static final String CHANNEL_POWER = "power";
     public static final String CHANNEL_SOC = "soc";
     public static final String CHANNEL_ENERGY = "energy";

@@ -17,13 +17,9 @@ import java.util.Arrays;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Rijndael-256 CBC chaining for RSCP.
- *
- * <p>
- * The key is the RSCP password as configured on the device, truncated or padded with {@code 0xFF} to
- * 32 bytes. Both chaining vectors start as 32 {@code 0xFF} bytes and are replaced by the last processed
- * cipher block after every operation, so the chaining state is carried across frames for the lifetime
- * of a connection.
+ * Rijndael-256 CBC chaining for RSCP. The key is the RSCP password truncated or padded with {@code 0xFF};
+ * both chaining vectors start as 32 {@code 0xFF} bytes and are replaced by the last processed cipher block,
+ * so the chaining state is carried across frames for the lifetime of a connection.
  *
  * @author Bernd Weymann - Initial contribution
  */
@@ -44,7 +40,6 @@ final class RscpCipher {
         Arrays.fill(decryptIv, (byte) 0xFF);
     }
 
-    /** Encrypts with zero padding up to a whole number of blocks. */
     byte[] encrypt(byte[] plain) {
         int paddedLength = ((plain.length + BLOCK - 1) / BLOCK) * BLOCK;
         byte[] in = Arrays.copyOf(plain, paddedLength);
@@ -60,10 +55,7 @@ final class RscpCipher {
         return out;
     }
 
-    /**
-     * Decrypts whole blocks. Trailing bytes that do not form a complete block are ignored, matching
-     * the zero padding applied during encryption.
-     */
+    /** Decrypts whole blocks; trailing bytes that do not form a complete block are ignored. */
     byte[] decrypt(byte[] encrypted) {
         int length = (encrypted.length / BLOCK) * BLOCK;
         byte[] out = new byte[length];
@@ -76,10 +68,6 @@ final class RscpCipher {
         return out;
     }
 
-    /**
-     * Decrypts a prefix without changing the chaining state, used to learn the frame length from its
-     * header before the complete frame has been read.
-     */
     byte[] peek(byte[] encrypted) {
         byte[] iv = decryptIv.clone();
         int length = (encrypted.length / BLOCK) * BLOCK;

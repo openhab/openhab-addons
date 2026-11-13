@@ -21,7 +21,7 @@ import org.openhab.core.thing.Thing;
 
 /**
  * One power meter attached to the power plant.
- *
+ * 
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
@@ -36,8 +36,6 @@ public class E3DCPowerMeterHandler extends E3DCThingHandler {
 
     @Override
     public void initialize() {
-        // read here rather than in the constructor: an updated index reaches an already created handler only
-        // through initialize(), which the framework calls again after a configuration change
         config = getConfigAs(E3DCPowerMeterConfiguration.class);
         super.initialize();
     }

@@ -20,10 +20,6 @@
 			<channel id="remaining-energy" typeId="module-remaining-energy"/>
 			<channel id="full-charge-energy" typeId="module-full-charge-energy"/>
 			<channel id="design-energy" typeId="module-design-energy"/>
-			<channel id="design-voltage" typeId="module-design-voltage"/>
-			<channel id="max-charge-voltage" typeId="module-max-charge-voltage"/>
-			<channel id="max-charge-current" typeId="module-max-charge-current"/>
-			<channel id="max-discharge-current" typeId="module-max-discharge-current"/>
 			<channel id="charge-high-temperature" typeId="module-charge-high-temperature"/>
 			<channel id="charge-low-temperature" typeId="module-charge-low-temperature"/>
 			<channel id="cycles" typeId="module-cycles"/>
@@ -31,18 +27,6 @@
 			<channel id="warning" typeId="module-warning"/>
 			<channel id="alarm" typeId="module-alarm"/>
 			<channel id="error" typeId="module-error"/>
-			<channel id="nr-sensor" typeId="module-nr-sensor"/>
-			<channel id="nr-series-cell" typeId="module-nr-series-cell"/>
-			<channel id="nr-parallel-cell" typeId="module-nr-parallel-cell"/>
-			<channel id="firmware-version" typeId="module-firmware-version"/>
-			<channel id="protocol-version" typeId="module-protocol-version"/>
-			<channel id="table-version" typeId="module-table-version"/>
-			<channel id="pcb-version" typeId="module-pcb-version"/>
-			<channel id="device-name" typeId="module-device-name"/>
-			<channel id="manufacturer" typeId="module-manufacturer"/>
-			<channel id="manufacture-date" typeId="module-manufacture-date"/>
-			<channel id="serial-number" typeId="module-serial-number"/>
-			<channel id="serial-code" typeId="module-serial-code"/>
 		</channels>
 	</channel-group-type>
 

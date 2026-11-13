@@ -14,14 +14,12 @@ package org.openhab.binding.e3dc.internal;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
+import java.time.Instant;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.e3dc.internal.rscp.RscpTag;
-import org.openhab.binding.e3dc.internal.rscp.RscpType;
 import org.openhab.binding.e3dc.internal.rscp.RscpValue;
 
 /**
@@ -106,10 +104,9 @@ class E3DCMessagesTest {
 
     @Test
     void readsTheTimestampAsAnInstant() {
-        byte[] bytes = ByteBuffer.allocate(12).order(ByteOrder.LITTLE_ENDIAN).putLong(1_761_775_200L).putInt(0).array();
         RscpValue stamped = RscpValue.container(RscpTag.EMS_ERROR_CONTAINER,
                 List.of(RscpValue.cstring(RscpTag.EMS_ERROR_MESSAGE, "x"),
-                        RscpValue.of(RscpTag.EMS_ERROR_TIMESTAMP, RscpType.TIMESTAMP, bytes)));
+                        RscpValue.timestamp(RscpTag.EMS_ERROR_TIMESTAMP, Instant.ofEpochSecond(1_761_775_200L))));
         List<E3DCMessages.Message> messages = E3DCMessages.fromResponse(response(stamped));
         assertNotNull(messages);
         assertEquals("[{\"message\":\"x\",\"timestamp\":\"2025-10-29T22:00:00Z\"}]", E3DCMessages.toJson(messages));

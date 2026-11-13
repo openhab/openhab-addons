@@ -19,6 +19,7 @@ import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.zip.CRC32;
@@ -56,21 +57,15 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public final class RscpCodec {
 
-    /** The magic of a frame as it travels on the wire. */
     static final byte[] MAGIC_BYTES = { (byte) 0xE3, (byte) 0xDC };
     /** The protocol version, carried in the second control byte together with the CRC flag. */
     static final int VERSION = 0x11;
 
-    /** The bit in the first control byte that announces the trailing CRC32. */
     static final int CTRL_CRC = 0x10;
 
     /**
-     * The control bytes of a frame with a CRC, as they travel on the wire.
-     *
-     * <p>
-     * The first byte is zero and the second carries the protocol version together with the CRC
-     * flag. This is what a byte comparison against a client that works on real hardware shows for
-     * the login frame: magic, control {0x00, 0x11} and an identical payload.
+     * The control bytes of a frame with a CRC, as they travel on the wire: the first byte is zero and the
+     * second carries the protocol version together with the CRC flag.
      */
     static final byte[] CTRL_BYTES = { 0, (byte) VERSION };
     static final int HEADER_LENGTH = 18;
@@ -79,7 +74,6 @@ public final class RscpCodec {
     private RscpCodec() {
     }
 
-    /** Decodes every item contained in a frame payload. */
     public static List<RscpValue> decodeFrame(byte[] frame) {
         ByteBuffer buffer = ByteBuffer.wrap(frame).order(ByteOrder.LITTLE_ENDIAN);
         buffer.getShort(); // magic
@@ -159,6 +153,13 @@ public final class RscpCodec {
                 value = buffer.getDouble();
                 skip(buffer, length - 8);
                 break;
+            case TIMESTAMP: {
+                long seconds = buffer.getLong();
+                int nanos = buffer.getInt();
+                skip(buffer, length - 12);
+                value = Instant.ofEpochSecond(seconds, nanos);
+                break;
+            }
             case ERROR: {
                 int code = 0;
                 for (int i = 0; i < Math.min(length, 4); i++) {
@@ -186,12 +187,8 @@ public final class RscpCodec {
     }
 
     /**
-     * Encodes a frame including the CRC32 trailer.
-     *
-     * <p>
-     * A frame carries a list of elements, each one a top level item. There is no outer element with a
-     * tag of its own, so callers pass the items directly; wrapping them in a container would announce a
-     * tag the interface does not have.
+     * Encodes a frame including the CRC32 trailer. A frame carries a list of elements, each one a top level
+     * item; there is no outer element with a tag of its own, so callers pass the items directly.
      */
     public static byte[] encodeFrame(List<RscpValue> items) throws IOException {
         ByteArrayOutputStream payload = new ByteArrayOutputStream();
@@ -206,7 +203,6 @@ public final class RscpCodec {
         ByteBuffer frame = ByteBuffer.allocate(HEADER_LENGTH + data.length + 4).order(ByteOrder.LITTLE_ENDIAN);
         frame.put(MAGIC_BYTES[0]);
         frame.put(MAGIC_BYTES[1]);
-        // the control bytes are written as they travel
         frame.put(CTRL_BYTES[0]);
         frame.put(CTRL_BYTES[1]);
         long now = System.currentTimeMillis();
@@ -260,6 +256,12 @@ public final class RscpCodec {
             case UINT64:
                 data = ByteBuffer.allocate(8).order(ByteOrder.LITTLE_ENDIAN).putLong(toLong(item)).array();
                 break;
+            case TIMESTAMP: {
+                Instant instant = requireInstant(item);
+                data = ByteBuffer.allocate(12).order(ByteOrder.LITTLE_ENDIAN).putLong(instant.getEpochSecond())
+                        .putInt(instant.getNano()).array();
+                break;
+            }
             case FLOAT32:
                 data = ByteBuffer.allocate(4).order(ByteOrder.LITTLE_ENDIAN).putFloat(requireNumber(item).floatValue())
                         .array();
@@ -288,6 +290,13 @@ public final class RscpCodec {
         return number;
     }
 
+    private static Instant requireInstant(RscpValue item) throws IOException {
+        if (item.getValue() instanceof Instant instant) {
+            return instant;
+        }
+        throw new IOException("RSCP type TIMESTAMP needs an Instant value");
+    }
+
     private static byte[] requireBytes(RscpValue item) throws IOException {
         byte[] bytes = item.asBytes();
         if (bytes == null) {
@@ -300,10 +309,6 @@ public final class RscpCodec {
         return requireNumber(item).longValue();
     }
 
-    /**
-     * Reads a complete frame from a plaintext stream. The length is taken from the header, so this
-     * does not depend on socket read timing.
-     */
     public static byte[] readFrame(InputStream in) throws IOException {
         byte[] header = readFully(in, HEADER_LENGTH);
         ByteBuffer buffer = ByteBuffer.wrap(header).order(ByteOrder.LITTLE_ENDIAN);

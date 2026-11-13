@@ -19,6 +19,7 @@ import java.io.ByteArrayOutputStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
+import java.time.Instant;
 import java.util.List;
 import java.util.Objects;
 import java.util.zip.CRC32;
@@ -177,6 +178,39 @@ class RscpCodecTest {
         assertEquals(2 * (ITEM_HEADER + 1), containerLength);
         assertEquals(RscpCodec.HEADER_LENGTH + ITEM_HEADER + containerLength + 4, encoded.length,
                 "the frame payload is the container header plus its children");
+    }
+
+    @Test
+    void aTimestampIsEncodedAsSecondsAndNanoseconds() throws Exception {
+        Instant moment = Instant.ofEpochSecond(1_761_428_400L, 250_000_000);
+
+        byte[] encoded = RscpCodec.encodeFrame(List.of(RscpValue.timestamp(RscpTag.DB_REQ_HISTORY_TIME_START, moment)));
+
+        ByteBuffer buffer = ByteBuffer.wrap(encoded).order(ByteOrder.LITTLE_ENDIAN);
+        buffer.position(RscpCodec.HEADER_LENGTH);
+        assertEquals(RscpTag.DB_REQ_HISTORY_TIME_START, buffer.getInt(), "the item tag");
+        assertEquals(RscpType.TIMESTAMP.getCode(), buffer.get() & 0xFF, "the timestamp type");
+        assertEquals(12, buffer.getShort() & 0xFFFF, "a timestamp carries seconds and nanoseconds");
+        assertEquals(1_761_428_400L, buffer.getLong(), "seconds since 1970");
+        assertEquals(250_000_000, buffer.getInt(), "the nanoseconds");
+    }
+
+    @Test
+    void aTimestampSurvivesTheRoundTrip() throws Exception {
+        Instant moment = Instant.ofEpochSecond(1_761_428_400L, 250_000_000);
+
+        RscpValue decoded = firstOf(RscpCodec
+                .decodeFrame(RscpCodec.encodeFrame(List.of(RscpValue.timestamp(RscpTag.EMS_ERROR_TIMESTAMP, moment)))));
+
+        assertEquals(RscpType.TIMESTAMP, decoded.getType());
+        assertEquals(moment, decoded.getValue(), "the decoded item carries the moment itself");
+    }
+
+    @Test
+    void aTimestampWithoutAMomentIsRejected() {
+        RscpValue wrong = RscpValue.of(RscpTag.EMS_ERROR_TIMESTAMP, RscpType.TIMESTAMP, 42L);
+
+        assertThrows(java.io.IOException.class, () -> RscpCodec.encodeFrame(List.of(wrong)));
     }
 
     // ------------------------------------------------------------------ decoding

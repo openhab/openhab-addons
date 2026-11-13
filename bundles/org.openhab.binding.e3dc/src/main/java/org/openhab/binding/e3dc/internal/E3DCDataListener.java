@@ -16,21 +16,13 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.e3dc.internal.rscp.RscpValue;
 
 /**
- * Receives the decoded RSCP response of each poll cycle.
- *
- * <p>
- * Listeners are called on the bridge's scheduler thread. The response is only valid for the duration
- * of the call, so implementations must extract what they need instead of retaining it.
+ * Receives the decoded RSCP response of each poll cycle, on the bridge's scheduler thread; the response
+ * is only valid for the duration of the call.
  *
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
 public interface E3DCDataListener {
 
-    /**
-     * Called after every successful poll.
-     *
-     * @param response the decoded root item of the poll response
-     */
     void onData(RscpValue response);
 }

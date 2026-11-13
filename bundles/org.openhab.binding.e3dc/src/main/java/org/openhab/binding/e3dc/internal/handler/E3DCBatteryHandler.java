@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.e3dc.internal.handler;
 
+import static java.util.Map.entry;
+
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -20,6 +22,7 @@ import org.openhab.binding.e3dc.internal.E3DCBindingConstants;
 import org.openhab.binding.e3dc.internal.E3DCChannelRegistry;
 import org.openhab.binding.e3dc.internal.E3DCChannelSpec;
 import org.openhab.binding.e3dc.internal.config.E3DCBatteryConfiguration;
+import org.openhab.binding.e3dc.internal.rscp.RscpTag;
 import org.openhab.binding.e3dc.internal.rscp.RscpValue;
 import org.openhab.core.thing.Thing;
 
@@ -31,9 +34,13 @@ import org.openhab.core.thing.Thing;
 @NonNullByDefault
 public class E3DCBatteryHandler extends E3DCThingHandler {
 
-    /** The energy channels and the capacity channel each one is calculated from. */
     private static final Map<String, String> ENERGY_SOURCES = Map.of("design-energy", "design-capacity",
             "usable-energy", "usable-capacity", "usable-remaining-energy", "usable-remaining-capacity");
+
+    /** The values that describe the battery rather than measuring it, published as thing properties. */
+    private static final Map<String, E3DCChannelSpec> PROPERTIES = Map.ofEntries(//
+            entry("deviceName", E3DCChannelSpec.in(RscpTag.BAT_DATA, RscpTag.BAT_DEVICE_NAME)), //
+            entry("moduleCount", E3DCChannelSpec.in(RscpTag.BAT_DATA, RscpTag.BAT_DCB_COUNT)));
 
     private final E3DCChannelRegistry registry = E3DCChannelSpec.battery();
     private E3DCBatteryConfiguration config = new E3DCBatteryConfiguration();
@@ -44,8 +51,6 @@ public class E3DCBatteryHandler extends E3DCThingHandler {
 
     @Override
     public void initialize() {
-        // read here rather than in the constructor: an updated index reaches an already created handler only
-        // through initialize(), which the framework calls again after a configuration change
         config = getConfigAs(E3DCBatteryConfiguration.class);
         super.initialize();
     }
@@ -64,5 +69,6 @@ public class E3DCBatteryHandler extends E3DCThingHandler {
     public void onData(RscpValue response) {
         super.onData(response);
         updateEnergies(response, E3DCBindingConstants.GROUP_PACK, "voltage", ENERGY_SOURCES);
+        updateProperties(response, PROPERTIES);
     }
 }

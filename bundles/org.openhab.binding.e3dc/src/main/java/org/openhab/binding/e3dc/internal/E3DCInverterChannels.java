@@ -31,14 +31,10 @@ import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.type.ChannelTypeUID;
 
 /**
- * The photovoltaic trackers and temperature sensors of the inverter, whose number depends on the installation.
- *
- * <p>
- * The device reports the number of strings it uses wrongly, so the binding asks for the indexes 0 to 5 of
- * both on every poll, see {@link E3DCContainerRequests#INDEX_PROBES}. An index the inverter does not have is
- * answered with an error. For every index that answers with a value the thing gets its channels: power,
- * voltage and current for a tracker, the temperature for a sensor. Channels are only added, never removed,
- * so an item that is linked to a channel keeps its link when the device fails to answer once.
+ * The photovoltaic trackers and temperature sensors of the inverter, whose number depends on the
+ * installation. The device reports the number of strings it uses wrongly, so the binding asks for the
+ * indexes 0 to 5 of both on every poll, see {@link E3DCContainerRequests#INDEX_PROBES}. Channels are only
+ * added, never removed, so a linked item keeps its link when the device fails to answer once.
  *
  * @author Bernd Weymann - Initial contribution
  */
@@ -54,23 +50,14 @@ public final class E3DCInverterChannels {
     private static final String TRACKER_PREFIX = "tracker-";
     private static final String TEMPERATURE_PREFIX = "temperature-";
 
-    /** The channel type every added temperature channel has. */
     public static final String TEMPERATURE_TYPE = "inverter-temperature";
 
-    /**
-     * The indexes the inverter answered with a value.
-     *
-     * @param trackers the indexes of the trackers, counted from 0
-     * @param sensors the indexes of the temperature sensors, counted from 0
-     */
     public record Found(SortedSet<Integer> trackers, SortedSet<Integer> sensors) {
 
-        /** Whether the inverter answered nothing for any tracker or sensor. */
         public boolean isEmpty() {
             return trackers.isEmpty() && sensors.isEmpty();
         }
 
-        /** The facts in one line, which is what a log needs to tell how the channels came about. */
         public String describe() {
             return "trackers " + display(trackers) + ", temperature sensors " + display(sensors);
         }
@@ -84,13 +71,9 @@ public final class E3DCInverterChannels {
     }
 
     /**
-     * Reads which trackers and temperature sensors the inverter answered with a value.
-     *
-     * <p>
-     * Every value arrives in a container of its own, which carries the index the request asked for next to the
-     * value. A container without index or without value says nothing and is skipped.
-     *
-     * @param inverter the container with the inverter data
+     * Reads which trackers and temperature sensors the inverter answered with a value. Every value arrives in
+     * a container of its own that carries the index the request asked for; a container without index or
+     * value is skipped.
      */
     public static Found discover(RscpValue inverter) {
         SortedSet<Integer> trackers = new TreeSet<>();
@@ -112,17 +95,14 @@ public final class E3DCInverterChannels {
         }
     }
 
-    /** The channel id of one value of a tracker, counted from 1. */
     public static String trackerChannelId(int tracker, String kind) {
         return TRACKER_PREFIX + tracker + "-" + kind;
     }
 
-    /** The channel id of a temperature sensor, counted from 1. */
     public static String temperatureChannelId(int sensor) {
         return TEMPERATURE_PREFIX + sensor;
     }
 
-    /** The number of the tracker a channel id belongs to, or 0 when it is no tracker channel. */
     public static int trackerOf(String channelId) {
         for (String kind : KINDS) {
             String suffix = "-" + kind;
@@ -133,7 +113,6 @@ public final class E3DCInverterChannels {
         return 0;
     }
 
-    /** The number of the temperature sensor a channel id belongs to, or 0 when it is no temperature channel. */
     public static int sensorOf(String channelId) {
         return channelId.startsWith(TEMPERATURE_PREFIX) ? number(channelId.substring(TEMPERATURE_PREFIX.length())) : 0;
     }
@@ -147,11 +126,8 @@ public final class E3DCInverterChannels {
     }
 
     /**
-     * The value channels of the trackers and sensors that were found, which are read from the answer by the
-     * index the container carries.
-     *
-     * @param found the trackers and sensors the inverter answered
-     * @return the channels by id
+     * The value channels of the trackers and sensors that were found, read from the answer by the index
+     * its container carries.
      */
     public static Map<String, E3DCChannelSpec> specs(Found found) {
         Map<String, E3DCChannelSpec> specs = new LinkedHashMap<>();
@@ -171,17 +147,10 @@ public final class E3DCInverterChannels {
     }
 
     /**
-     * The channels of a thing once the trackers and sensors that were found are added.
-     *
-     * <p>
-     * Missing channels are created and nothing is removed. A channel of a tracker or sensor that an earlier
-     * version declared with a type of its own is rebuilt with the type used now, under the same id, so the
-     * links of the items stay. Everything else stays as it is.
-     *
-     * @param existing the channels the thing has now
-     * @param thing the thing the channels belong to
-     * @param found the trackers and sensors the inverter answered
-     * @return the new list of channels, or {@code null} when nothing has to change
+     * The channels of a thing once the trackers and sensors that were found are added. Missing channels are
+     * created and nothing is removed. A channel that an earlier version declared with a type of its own is
+     * rebuilt with the type used now, under the same id, so the links of the items stay. Returns {@code null}
+     * when nothing has to change.
      */
     public static @Nullable List<Channel> reconcile(List<Channel> existing, ThingUID thing, Found found) {
         List<Channel> channels = new ArrayList<>();
@@ -233,7 +202,6 @@ public final class E3DCInverterChannels {
         return type != null && typeId.equals(type.getId());
     }
 
-    /** The kind of value a tracker channel id ends with. */
     private static String kindOf(String channelId) {
         for (String kind : KINDS) {
             if (channelId.endsWith("-" + kind)) {
@@ -276,11 +244,7 @@ public final class E3DCInverterChannels {
                 .withDescription("Temperature of sensor " + sensor + " of the inverter").build();
     }
 
-    /**
-     * The values of every tracker and sensor in the answer, one line per index.
-     *
-     * @param inverter the container with the inverter data
-     */
+    /** The values of every tracker and sensor in the answer, one line per index. */
     public static String describeValues(RscpValue inverter) {
         Found found = discover(inverter);
         if (found.isEmpty()) {

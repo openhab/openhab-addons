@@ -15,13 +15,10 @@ package org.openhab.binding.e3dc.internal.config;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Configuration of a power meter thing.
- *
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
 public class E3DCPowerMeterConfiguration {
 
-    /** Zero based index of the power meter within the device. */
     public int meterIndex;
 }
