@@ -646,6 +646,40 @@ Switch        demoSwitch         "Light [%s]"               <light>          { c
 Dimmer        demoDimmer         "Dimmer [%d %%]"           <light>          { channel="hue:0210:bridge:1:color", channel="knx:device:bridge:generic:controlDimmer" }
 ```
 
+## Rule Actions
+
+The bridge offers two actions to reach any group address from a rule, without defining a channel for it.
+
+- `writeGroup(groupAddress, dpt, value)` sends a value, given as text like an item command (e.g. `ON`, `21.5 °C`, `50`).
+- `readGroup(groupAddress, dpt)` sends a read request. The answer updates every channel listening to that group address.
+
+Both return `false` when the bridge is not connected or an argument is invalid; the reason is logged.
+They bypass items and channels, so nothing in openHAB shows what was written.
+
+:::: tabs
+
+::: tab JavaScript
+
+```javascript
+const knx = actions.thingActions("knx", "knx:ip:bridge");
+knx.writeGroup("1/2/3", "1.001", "ON");
+knx.readGroup("1/2/4", "9.001");
+```
+
+:::
+
+::: tab DSL
+
+```java
+val knx = getActions("knx", "knx:ip:bridge")
+knx.writeGroup("1/2/3", "1.001", "ON")
+knx.readGroup("1/2/4", "9.001")
+```
+
+:::
+
+::::
+
 ## Console Commands
 
 The KNX binding provides additional functionality which can be triggered from the openHAB console.
