@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.evcc.internal.api;
 
+import java.io.IOException;
 import java.net.URI;
+import java.nio.ByteBuffer;
 import java.util.Optional;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -37,12 +40,17 @@ import com.google.gson.JsonObject;
  * decoupled from openHAB-specific logic or Thing lifecycle management.
  *
  * @author Marcel Goerentz - Initial contribution
+ * @author Michael Weger - Detect dead connections by ping/pong
  */
 
 @NonNullByDefault
 public class EvccWebSocketClient {
 
+    private static final long PING_INTERVAL_SECONDS = 15;
+    private static final int MAX_UNANSWERED_PINGS = 3;
+
     private final Logger logger = LoggerFactory.getLogger(EvccWebSocketClient.class);
+    private final AtomicInteger unansweredPings = new AtomicInteger();
 
     private final WebSocketClient client = new WebSocketClient();
     private final ScheduledExecutorService scheduler;
@@ -138,13 +146,34 @@ public class EvccWebSocketClient {
         logger.info("Scheduled EVCC WebSocket reconnect in 10 seconds");
     }
 
+    // evcc only sends messages once per control cycle (its configurable "interval"), so silence alone does not
+    // indicate a dead connection. The watchdog pings evcc instead and reconnects only if neither a pong nor a
+    // message is received for several consecutive pings.
     private void startWatchdog() {
         stopWatchdog();
-        watchdogJob = scheduler.schedule(() -> {
-            logger.warn("EVCC WebSocket watchdog timeout — reconnecting");
+        unansweredPings.set(0);
+        watchdogJob = scheduler.scheduleWithFixedDelay(this::checkConnection, PING_INTERVAL_SECONDS,
+                PING_INTERVAL_SECONDS, TimeUnit.SECONDS);
+    }
+
+    private void checkConnection() {
+        Session s = session;
+        if (stopped || s == null) {
+            return;
+        }
+        if (unansweredPings.get() >= MAX_UNANSWERED_PINGS) {
+            logger.warn("EVCC WebSocket did not answer {} pings — reconnecting", MAX_UNANSWERED_PINGS);
+            stopWatchdog();
             closeSession();
             scheduleReconnect();
-        }, 30, TimeUnit.SECONDS);
+            return;
+        }
+        unansweredPings.incrementAndGet();
+        try {
+            s.getRemote().sendPing(ByteBuffer.allocate(0));
+        } catch (IOException e) {
+            logger.debug("Failed to send EVCC WebSocket ping: {}", e.getMessage());
+        }
     }
 
     private void stopWatchdog() {
@@ -208,12 +237,16 @@ public class EvccWebSocketClient {
         scheduleReconnect();
     }
 
+    void handlePong() {
+        unansweredPings.set(0);
+    }
+
     void handleMessage(@Nullable JsonObject obj) {
         if (stopped) {
             return;
         }
         logger.trace("Message received: {}", obj);
-        startWatchdog();
+        unansweredPings.set(0);
         if (obj == null) {
             return;
         }

@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.evcc.internal.handler;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
@@ -36,12 +37,14 @@ import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
+import org.openhab.core.thing.binding.builder.ThingStatusInfoBuilder;
 import org.openhab.core.thing.type.ChannelTypeRegistry;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
@@ -66,6 +69,7 @@ class EvccStateUpdateTest {
     private final ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
     private EvccBridgeHandler bridgeHandler = newBridgeHandler();
     private final Bridge bridge = mock(Bridge.class);
+    private int loadpointDispatches;
 
     private static EvccBridgeHandler newBridgeHandler() {
         HttpClientFactory httpClientFactory = mock(HttpClientFactory.class);
@@ -109,6 +113,12 @@ class EvccStateUpdateTest {
 
             @Override
             public void logUnknownChannelXmlAsync(String key, String itemType) {
+            }
+
+            @Override
+            public void applyNormalizedUpdate(JsonObject normalized) {
+                loadpointDispatches++;
+                super.applyNormalizedUpdate(normalized);
             }
         };
         handler.setCallback(callback);
@@ -272,6 +282,20 @@ class EvccStateUpdateTest {
         sendDelta(JSON_KEY_VEHICLES, vehicles.deepCopy());
 
         verify(callback).stateUpdated(eq(limitSoc), any(State.class));
+    }
+
+    @Test
+    void bridgeComingBackOnlineDoesNotDuplicateRoutes() {
+        EvccLoadpointHandler handler = startLoadpointHandler(0);
+        sendFullState(idleLoadpoint());
+        ThingStatusInfo online = ThingStatusInfoBuilder.create(ThingStatus.ONLINE).build();
+        handler.bridgeStatusChanged(online);
+        handler.bridgeStatusChanged(online);
+        loadpointDispatches = 0;
+
+        sendDelta("loadpoints.0.chargeDuration", 1);
+
+        assertEquals(1, loadpointDispatches);
     }
 
     @Test

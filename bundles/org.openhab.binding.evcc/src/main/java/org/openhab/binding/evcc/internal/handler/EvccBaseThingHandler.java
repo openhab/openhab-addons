@@ -142,6 +142,9 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
         updateStatus(ThingStatus.UNKNOWN);
         if (bridge.getHandler() instanceof EvccBridgeHandler handler) {
             bridgeHandler = handler;
+            // initialize() runs again whenever the bridge comes back ONLINE; drop the routes registered before,
+            // otherwise every update would be dispatched once per reconnect.
+            handler.getMessageRouter().unregisterRoutes(this);
         } else {
             updateStatus(ThingStatus.UNKNOWN);
         }
