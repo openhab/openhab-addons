@@ -30,6 +30,7 @@ import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
 import org.openhab.binding.shelly.internal.config.ShellyBindingConfiguration;
 import org.openhab.binding.shelly.internal.config.ShellyBindingRuntimeConfig;
+import org.openhab.binding.shelly.internal.handler.ShellyThingInterface;
 import org.openhab.binding.shelly.internal.handler.ShellyThingTable;
 import org.openhab.binding.shelly.internal.provider.ShellyTranslationProvider;
 import org.openhab.core.config.discovery.DiscoveryResult;
@@ -151,6 +152,8 @@ public class ShellyMDNSDiscoveryParticipant implements MDNSDiscoveryParticipant 
         }
         logger.debug("{}: Shelly device discovered: IP address={}", serviceName, address);
 
+        @Nullable
+        DiscoveryResult result;
         try {
             // Get device settings — capture a consistent local snapshot; @Modified may run concurrently
             ShellyBindingRuntimeConfig cfg = this.bindingConfig;
@@ -164,8 +167,7 @@ public class ShellyMDNSDiscoveryParticipant implements MDNSDiscoveryParticipant 
             String gen = getString(service.getPropertyString("gen"));
             boolean gen2 = "2".equals(gen) || "3".equals(gen) || "4".equals(gen)
                     || ShellyDeviceProfile.isGeneration2(serviceName);
-            return ShellyBasicDiscoveryService.createResult(gen2, serviceName, address, cfg, httpClient, messages,
-                    thingTable);
+            result = discoverDevice(gen2, serviceName, address, cfg);
         } catch (IOException e) {
             logger.debug("{}: Exception on processing serviceInfo '{}'", serviceName, service.getNiceTextString(), e);
             return null;
@@ -175,6 +177,36 @@ public class ShellyMDNSDiscoveryParticipant implements MDNSDiscoveryParticipant 
             logger.debug("{}: Configuration Admin unavailable, skipping discovery result", serviceName);
             return null;
         }
+
+        if (result != null) {
+            handleAnnouncement(serviceName, address);
+        }
+        return result;
+    }
+
+    protected @Nullable DiscoveryResult discoverDevice(boolean gen2, String serviceName, String address,
+            ShellyBindingRuntimeConfig cfg) {
+        return ShellyBasicDiscoveryService.createResult(gen2, serviceName, address, cfg, httpClient, messages,
+                thingTable);
+    }
+
+    /**
+     * A sleeping battery device announces itself each time it wakes up, the Thing of the device decides whether to
+     * use this short window for an update.
+     */
+    private void handleAnnouncement(String serviceName, String address) {
+        ShellyThingInterface thing = thingTable.findAnnouncedThing(serviceName, address);
+        if (thing == null) {
+            return;
+        }
+
+        if (!thing.checkRepresentation(address)) {
+            // Polls go to the configured address, which may no longer reach the device
+            logger.info("{}: Device announced a different IP address {}, check the Thing configuration",
+                    thing.getThingName(), address);
+        }
+
+        thing.onDeviceWakeup();
     }
 
     @Override

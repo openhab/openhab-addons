@@ -20,6 +20,7 @@ import java.lang.reflect.Field;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -56,6 +57,7 @@ class ShellyBaseHandlerDisposeTest {
         setField(handler, "api", api);
         setField(handler, "logger", LoggerFactory.getLogger(ShellyBaseHandler.class));
         setField(handler, "vibrationFilter", new AtomicInteger());
+        setField(handler, "statusRefreshRunning", new AtomicBoolean());
         setField(handler, "initLock", new Object());
         handler.profile = profile;
         handler.scheduledUpdates = 1;
@@ -84,6 +86,7 @@ class ShellyBaseHandlerDisposeTest {
         setField(handler, "api", api);
         setField(handler, "logger", LoggerFactory.getLogger(ShellyBaseHandler.class));
         setField(handler, "vibrationFilter", new AtomicInteger());
+        setField(handler, "statusRefreshRunning", new AtomicBoolean());
         setField(handler, "initLock", new Object());
         handler.profile = profile;
         handler.scheduledUpdates = 1;
