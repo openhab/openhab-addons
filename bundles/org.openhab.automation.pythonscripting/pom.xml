@@ -19,6 +19,11 @@
   </properties>
 
   <dependencies>
+    <dependency>
+      <groupId>org.openhab.core.bundles</groupId>
+      <artifactId>org.openhab.core.graal</artifactId>
+      <version>${project.version}</version>
+    </dependency>
     <!-- Graal Polyglot Framework -->
     <dependency>
       <groupId>org.openhab.osgiify</groupId>
