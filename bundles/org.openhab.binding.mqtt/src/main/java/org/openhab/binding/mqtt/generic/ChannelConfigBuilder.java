@@ -68,6 +68,13 @@ public class ChannelConfigBuilder {
         return this;
     }
 
+    public ChannelConfigBuilder withUpDownCommandTopic(@Nullable String topic) {
+        if (topic != null) {
+            config.upDownCommandTopic = topic;
+        }
+        return this;
+    }
+
     public ChannelConfigBuilder withRetain(boolean retain) {
         config.retained = retain;
         return this;
