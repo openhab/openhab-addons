@@ -58,8 +58,8 @@ import org.openhab.binding.netatmo.internal.api.HomeApi;
 import org.openhab.binding.netatmo.internal.api.ListBodyResponse;
 import org.openhab.binding.netatmo.internal.api.NetatmoException;
 import org.openhab.binding.netatmo.internal.api.RestManager;
-import org.openhab.binding.netatmo.internal.api.SecurityApi;
 import org.openhab.binding.netatmo.internal.api.WeatherApi;
+import org.openhab.binding.netatmo.internal.api.WebhookApi;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.FeatureArea;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.Scope;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.ServiceError;
@@ -126,7 +126,7 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
 
     private @Nullable OAuthClientService oAuthClientService;
     private @Nullable ScheduledFuture<?> connectJob;
-    private @Nullable WebhookServlet webHookServlet;
+    private @Nullable WebhookServlet webhookServlet;
     private @Nullable GrantServlet grantServlet;
 
     public ApiBridgeHandler(Bridge bridge, HttpClient httpClient, NADeserializer deserializer,
@@ -173,15 +173,14 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
         freeConnectJob();
 
         ApiHandlerConfiguration configuration = getConfiguration();
-        if (!configuration.webHookUrl.isBlank()
-                && getRestManager(SecurityApi.class) instanceof SecurityApi securityApi) {
-            WebhookServlet webHookServlet = this.webHookServlet;
-            if (webHookServlet != null) {
-                webHookServlet.dispose();
+        if (!configuration.webHookUrl.isBlank() && getRestManager(WebhookApi.class) instanceof WebhookApi api) {
+            WebhookServlet servlet = this.webhookServlet;
+            if (servlet != null) {
+                servlet.dispose();
             }
-            webHookServlet = this.webHookServlet = new WebhookServlet(this, httpService, deserializer, securityApi,
+            servlet = this.webhookServlet = new WebhookServlet(this, httpService, deserializer, api,
                     configuration.webHookUrl, configuration.webHookPostfix);
-            webHookServlet.startListening();
+            servlet.startListening();
         }
 
         updateStatus(ThingStatus.ONLINE);
@@ -274,11 +273,11 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
     public void dispose() {
         logger.debug("Shutting down Netatmo API bridge handler.");
 
-        WebhookServlet webHookServlet = this.webHookServlet;
+        WebhookServlet webHookServlet = this.webhookServlet;
         if (webHookServlet != null) {
             webHookServlet.dispose();
         }
-        this.webHookServlet = null;
+        this.webhookServlet = null;
 
         freeGrantServlet();
 
@@ -561,8 +560,8 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
         return Set.of(NetatmoDiscoveryService.class);
     }
 
-    public Optional<WebhookServlet> getWebHookServlet() {
-        return Optional.ofNullable(webHookServlet);
+    public @Nullable WebhookServlet getWebhookServlet() {
+        return webhookServlet;
     }
 
     public @Nullable Duration getIdleTime() {
