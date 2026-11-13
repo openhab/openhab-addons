@@ -74,6 +74,9 @@
 		<item-type>Number</item-type>
 		<label>Active Phases</label>
 		<description>Number of phases in use (1 to 3)</description>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
 		<state pattern="%d" readOnly="true"/>
 	</channel-type>
 

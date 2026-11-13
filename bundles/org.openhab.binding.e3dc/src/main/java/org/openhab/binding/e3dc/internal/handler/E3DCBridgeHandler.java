@@ -233,11 +233,11 @@ public class E3DCBridgeHandler extends BaseBridgeHandler {
             return;
         }
         if (current.host.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Host is not configured");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Host is not configured");
             return;
         }
         if (current.rscpPassword.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "RSCP password is not configured");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "RSCP password is not configured");
             return;
         }
 
@@ -273,7 +273,7 @@ public class E3DCBridgeHandler extends BaseBridgeHandler {
                 return;
             }
             logger.debug("Cannot connect to {}:{}: {}", current.host, current.port, e.getMessage());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             // without a scheduled retry the bridge would stay offline until the thing is re-enabled
             scheduleReconnect();
             return;
@@ -773,7 +773,7 @@ public class E3DCBridgeHandler extends BaseBridgeHandler {
             return;
         }
         if (isActive()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             scheduleReconnect();
         }
     }

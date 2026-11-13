@@ -19,6 +19,9 @@
 		<item-type>Switch</item-type>
 		<label>On Grid</label>
 		<description>Whether the inverter is connected to the grid</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -26,6 +29,9 @@
 		<item-type>Number</item-type>
 		<label>String Count</label>
 		<description>Number of photovoltaic strings in use</description>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
 		<state pattern="%d" readOnly="true"/>
 	</channel-type>
 

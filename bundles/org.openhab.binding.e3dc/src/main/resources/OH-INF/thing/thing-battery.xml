@@ -11,6 +11,7 @@
 
 		<label>E3/DC Battery</label>
 		<description>Values of one battery of the E3/DC home power plant.</description>
+		<semantic-equipment-tag>Battery</semantic-equipment-tag>
 
 		<channel-groups>
 			<channel-group id="pack" typeId="pack"/>

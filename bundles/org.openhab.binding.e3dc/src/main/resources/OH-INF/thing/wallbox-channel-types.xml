@@ -63,6 +63,10 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>State of Charge</label>
 		<description>State of charge of the connected vehicle</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>StateOfCharge</tag>
+		</tags>
 		<state pattern="%.0f %%" readOnly="true"/>
 	</channel-type>
 
@@ -120,6 +124,9 @@
 		<item-type>Number</item-type>
 		<label>Number of Phases</label>
 		<description>Number of phases used for charging</description>
+		<tags>
+			<tag>Setpoint</tag>
+		</tags>
 		<state pattern="%s">
 			<options>
 				<option value="1">Single phase</option>
@@ -132,6 +139,10 @@
 		<item-type>Switch</item-type>
 		<label>Automatic Phase Switch</label>
 		<description>Whether the wallbox changes the number of phases by itself</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Switch</tag>
+		</tags>
 		<state/>
 	</channel-type>
 
@@ -139,6 +150,9 @@
 		<item-type>Switch</item-type>
 		<label>Key State</label>
 		<description>State of the wallbox key switch</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -146,6 +160,9 @@
 		<item-type>Switch</item-type>
 		<label>Plugged</label>
 		<description>A vehicle is connected</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -153,6 +170,10 @@
 		<item-type>Switch</item-type>
 		<label>Locked</label>
 		<description>The connector is locked</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Lock</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -160,6 +181,9 @@
 		<item-type>Switch</item-type>
 		<label>Charging</label>
 		<description>A charging session is running</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -167,6 +191,10 @@
 		<item-type>Switch</item-type>
 		<label>Suspended</label>
 		<description>Charging is currently suspended</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Switch</tag>
+		</tags>
 		<state/>
 	</channel-type>
 
@@ -174,6 +202,10 @@
 		<item-type>Switch</item-type>
 		<label>Toggle Charging</label>
 		<description>Suspends a running charging session and resumes a suspended one</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Switch</tag>
+		</tags>
 		<state/>
 	</channel-type>
 
@@ -181,6 +213,10 @@
 		<item-type>Switch</item-type>
 		<label>Sun Mode</label>
 		<description>Charging uses surplus photovoltaic power</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Switch</tag>
+		</tags>
 		<state/>
 	</channel-type>
 
@@ -188,6 +224,9 @@
 		<item-type>Switch</item-type>
 		<label>Session Phase L1</label>
 		<description>Whether the wallbox charged on phase L1 in the last charging session</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -206,6 +245,9 @@
 		<item-type>Switch</item-type>
 		<label>Session Phase L2</label>
 		<description>Whether the wallbox charged on phase L2 in the last charging session</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -224,6 +266,9 @@
 		<item-type>Switch</item-type>
 		<label>Session Phase L3</label>
 		<description>Whether the wallbox charged on phase L3 in the last charging session</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 

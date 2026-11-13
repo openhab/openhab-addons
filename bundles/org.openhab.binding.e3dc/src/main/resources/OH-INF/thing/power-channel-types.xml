@@ -63,6 +63,9 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Autarky</label>
 		<description>Share of consumption covered by the power plant</description>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
 		<state pattern="%.0f %%" readOnly="true"/>
 	</channel-type>
 
@@ -70,6 +73,9 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Self Consumption</label>
 		<description>Share of production used on site</description>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
 		<state pattern="%.0f %%" readOnly="true"/>
 	</channel-type>
 

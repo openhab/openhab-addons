@@ -84,14 +84,14 @@ public abstract class E3DCThingHandler extends BaseThingHandler implements E3DCD
         updateStatus(ThingStatus.UNKNOWN);
         E3DCBridgeHandler bridge = getBridgeHandler();
         if (bridge == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "The bridge is not available");
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE, "The bridge is not available");
             return;
         }
         bridge.registerDataListener(this);
         if (bridge.isConnected()) {
             updateStatus(ThingStatus.ONLINE);
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
         }
     }
 
@@ -304,6 +304,7 @@ public abstract class E3DCThingHandler extends BaseThingHandler implements E3DCD
             case "Number:Energy" -> spec.divisor() == 1000 ? Units.KILOWATT_HOUR : Units.WATT_HOUR;
             case "Number:ElectricPotential" -> Units.VOLT;
             case "Number:ElectricCurrent" -> Units.AMPERE;
+            case "Number:ElectricCharge" -> Units.AMPERE_HOUR;
             case "Number:Temperature" -> SIUnits.CELSIUS;
             case "Number:Frequency" -> Units.HERTZ;
             case "Number:Dimensionless" -> Units.PERCENT;
