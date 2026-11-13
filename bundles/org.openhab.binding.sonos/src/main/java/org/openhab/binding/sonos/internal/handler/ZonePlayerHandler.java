@@ -1165,7 +1165,7 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
             if (service.isRegistered(this)) {
                 for (String subscription : SERVICE_SUBSCRIPTIONS) {
                     Boolean state = subscriptionState.get(subscription);
-                    if (state == null || !state) {
+                    if ((state == null || !state) && !isRefusedByHomeTheaterSatellite(subscription)) {
                         logger.debug("{}: Subscribing to service {}...", getUDN(), subscription);
                         service.addSubscription(this, subscription, SUBSCRIPTION_DURATION);
                         subscriptionState.put(subscription, true);
@@ -1173,6 +1173,14 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
                 }
             }
         }
+    }
+
+    private boolean isRefusedByHomeTheaterSatellite(String subscription) {
+        return SERVICE_RENDERING_CONTROL.equals(subscription) && isHomeTheaterSatellite();
+    }
+
+    private boolean isHomeTheaterSatellite() {
+        return getZoneGroups().stream().anyMatch(group -> group.getSatellites().contains(getUDN()));
     }
 
     private void removeSubscription() {

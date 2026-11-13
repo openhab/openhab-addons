@@ -536,6 +536,7 @@ public class SonosXMLParser {
         private final List<SonosZoneGroup> groups = new ArrayList<>();
         private final List<String> currentGroupPlayers = new ArrayList<>();
         private final List<String> currentGroupPlayerZones = new ArrayList<>();
+        private final List<String> currentGroupSatellites = new ArrayList<>();
         private String coordinator = "";
         private String groupId = "";
 
@@ -555,6 +556,8 @@ public class SonosXMLParser {
                 if (htInfoSet != null) {
                     currentGroupPlayers.addAll(getAllHomeTheaterMembers(htInfoSet));
                 }
+            } else if ("Satellite".equals(qName) && attributes != null) {
+                currentGroupSatellites.add(attributes.getValue("UUID"));
             }
         }
 
@@ -562,9 +565,11 @@ public class SonosXMLParser {
         public void endElement(@Nullable String uri, @Nullable String localName, @Nullable String qName)
                 throws SAXException {
             if ("ZoneGroup".equals(qName)) {
-                groups.add(new SonosZoneGroup(groupId, coordinator, currentGroupPlayers, currentGroupPlayerZones));
+                groups.add(new SonosZoneGroup(groupId, coordinator, currentGroupPlayers, currentGroupPlayerZones,
+                        currentGroupSatellites));
                 currentGroupPlayers.clear();
                 currentGroupPlayerZones.clear();
+                currentGroupSatellites.clear();
             }
         }
 
