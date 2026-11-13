@@ -26,6 +26,7 @@ import org.openhab.io.yamlcomposer.internal.expression.ExpressionEvaluator;
  * variable substitution and expression evaluation in YAML processing.
  *
  * @author Jimmy Tanagra - Initial contribution
+ * @author Leo Siepel - Bound substitution pattern backtracking
  */
 @NonNullByDefault
 public class StringInterpolator {
@@ -44,18 +45,7 @@ public class StringInterpolator {
      * - ${ name|default('value') } : Use default if variable is not set
      * - ${ name|upper } : Convert to uppercase
      */
-    public static final Pattern DEFAULT_SUBSTITUTION_PATTERN = Pattern.compile("""
-            \\$\\{
-            (?<content>
-                (?:
-                    "[^"]*" |
-                    '[^']*' |
-                    \\{[^}]*?\\} |
-                    [^}]
-                )*?
-            )
-            \\}
-            """, Pattern.COMMENTS | Pattern.DOTALL);
+    public static final Pattern DEFAULT_SUBSTITUTION_PATTERN = createSubstitutionPattern(DEFAULT_BEGIN, DEFAULT_END);
 
     private StringInterpolator() {
         // Utility class, no instances
@@ -72,14 +62,18 @@ public class StringInterpolator {
         if (DEFAULT_BEGIN.equals(begin) && DEFAULT_END.equals(end)) {
             return DEFAULT_SUBSTITUTION_PATTERN;
         }
+        return createSubstitutionPattern(begin, end);
+    }
+
+    private static Pattern createSubstitutionPattern(String begin, String end) {
         String quotedBegin = Pattern.quote(begin);
         String quotedEnd = Pattern.quote(end);
-        // Allow quoted segments to contain the end delimiter; otherwise stop at the
-        // first closing delimiter.
-        String content = """
-                "[^"]*"|'[^']*'|\\{[^}]*?\\}|(?:(?!%s).)
-                """.formatted(quotedEnd).strip();
-        String regex = quotedBegin + "(?<content>(" + content + ")*?)" + quotedEnd;
+        String literal = "(?:(?!" + quotedEnd + ").)";
+        String segments = "\"[^\"]*+\"|'[^']*+'|\\{[^}]*+\\}|" + literal;
+        // Commit to quoted/braced segments instead of retrying every partition of the content.
+        // The literal fallback still passes malformed expressions to the evaluator for diagnostics.
+        String regex = quotedBegin + "(?<content>(?:(?!" + quotedEnd + ")(?:" + segments + "))*+|" + literal + "*+)"
+                + quotedEnd;
         return Pattern.compile(regex, Pattern.DOTALL);
     }
 
