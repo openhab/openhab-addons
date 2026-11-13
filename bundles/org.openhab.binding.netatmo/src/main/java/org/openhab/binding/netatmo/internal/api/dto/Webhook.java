@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.netatmo.internal.api.dto;
 
+<<<<<<< Upstream, based on main
 import java.net.URI;
 import java.util.List;
 
@@ -34,5 +35,28 @@ public class Webhook {
 
     public URI getUri() {
         return URI.create(url);
+=======
+import java.util.List;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.netatmo.internal.api.ApiResponse;
+
+/**
+ * The {@link Webhook} is the answer to API getWebhooks
+ *
+ * @author Gaël L'hopital - Initial contribution
+ *
+ */
+
+@NonNullByDefault
+public class Webhook {
+    public class WebhooksResponse extends ApiResponse<List<Webhook>> {
+    }
+
+    private String url = "";
+
+    public String getUrl() {
+        return url;
+>>>>>>> 194ac54 Use new API endpoints for webhooks
     }
 }
