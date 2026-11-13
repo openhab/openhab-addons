@@ -169,10 +169,11 @@ public class NetatmoConstants {
     // Global variables
     public static final int THERM_MAX_SETPOINT = 30;
 
-    // Token scopes
     public enum Scope {
         @SerializedName("read_station")
         READ_STATION,
+        @SerializedName("write_station")
+        WRITE_STATION,
         @SerializedName("read_thermostat")
         READ_THERMOSTAT,
         @SerializedName("write_thermostat")
@@ -191,8 +192,12 @@ public class NetatmoConstants {
         ACCESS_PRESENCE,
         @SerializedName("read_smokedetector")
         READ_SMOKEDETECTOR,
+        @SerializedName("write_smokedetector")
+        WRITE_SMOKEDETECTOR,
         @SerializedName("read_homecoach")
         READ_HOMECOACH,
+        @SerializedName("write_homecoach")
+        WRITE_HOMECOACH,
         @SerializedName("read_doorbell")
         READ_DOORBELL,
         @SerializedName("write_doorbell")
@@ -201,6 +206,8 @@ public class NetatmoConstants {
         ACCESS_DOORBELL,
         @SerializedName("read_carbonmonoxidedetector")
         READ_CARBONMONOXIDEDETECTOR,
+        @SerializedName("write_carbonmonoxidedetector")
+        WRITE_CARBONMONOXIDEDETECTOR,
         UNKNOWN
     }
 
@@ -221,10 +228,11 @@ public class NetatmoConstants {
         UNKNOWN
     }
 
-    private static final Scope[] SMOKE_SCOPES = { Scope.READ_SMOKEDETECTOR };
-    private static final Scope[] CARBON_MONOXIDE_SCOPES = { Scope.READ_CARBONMONOXIDEDETECTOR };
-    private static final Scope[] AIR_CARE_SCOPES = { Scope.READ_HOMECOACH };
-    private static final Scope[] WEATHER_SCOPES = { Scope.READ_STATION };
+    private static final Scope[] SMOKE_SCOPES = { Scope.READ_SMOKEDETECTOR, Scope.WRITE_SMOKEDETECTOR };
+    private static final Scope[] CARBON_MONOXIDE_SCOPES = { Scope.READ_CARBONMONOXIDEDETECTOR,
+            Scope.WRITE_CARBONMONOXIDEDETECTOR };
+    private static final Scope[] AIR_CARE_SCOPES = { Scope.READ_HOMECOACH, Scope.WRITE_HOMECOACH };
+    private static final Scope[] WEATHER_SCOPES = { Scope.READ_STATION, Scope.WRITE_STATION };
     private static final Scope[] THERMOSTAT_SCOPES = { Scope.READ_THERMOSTAT, Scope.WRITE_THERMOSTAT };
     private static final Scope[] WELCOME_SCOPES = { Scope.READ_CAMERA, Scope.WRITE_CAMERA, Scope.ACCESS_CAMERA };
     private static final Scope[] DOORBELL_SCOPES = { Scope.READ_DOORBELL, Scope.WRITE_DOORBELL, Scope.ACCESS_DOORBELL };
