@@ -299,7 +299,8 @@ Requires a paid ChatGPT plan (Plus, Pro, Business, Enterprise, Education).
 ## What the assistant can do
 
 `search_items` and `get_rules` return results in pages (50 by default, adjustable with the `limit` and `offset` arguments), and each response includes the `total` so the assistant knows when to fetch more.
-MCP clients load the description of every enabled tool into the assistant's context when they connect, so each opt-in feature below adds to that baseline; leave features off that you don't need.
+Tool-description context usage depends on the client: clients that load every enabled tool up front incur a larger baseline, while clients with tool search can defer descriptions until needed.
+Leave features off that you don't need.
 
 ### Items
 
