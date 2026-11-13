@@ -57,7 +57,7 @@ public class AmpliPiGroupHandler extends BaseThingHandler implements AmpliPiStat
     private final HttpClient httpClient;
     private final Gson gson;
 
-    private @Nullable AmpliPiHandler bridgeHandler;
+    private volatile @Nullable AmpliPiHandler bridgeHandler;
 
     private @Nullable Group groupState;
 
@@ -154,7 +154,20 @@ public class AmpliPiGroupHandler extends BaseThingHandler implements AmpliPiStat
     }
 
     @Override
+    public void dispose() {
+        AmpliPiHandler localBridgeHandler = bridgeHandler;
+        if (localBridgeHandler != null) {
+            localBridgeHandler.removeStatusChangeListener(this);
+            bridgeHandler = null;
+        }
+        super.dispose();
+    }
+
+    @Override
     public void receive(Status status) {
+        if (bridgeHandler == null) {
+            return;
+        }
         int id = getId(thing);
         Optional<Group> group = status.getGroups().stream().filter(z -> z.getId().equals(id)).findFirst();
         group.ifPresent(this::updateGroupState);

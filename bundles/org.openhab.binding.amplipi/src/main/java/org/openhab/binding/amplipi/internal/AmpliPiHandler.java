@@ -14,11 +14,11 @@ package org.openhab.binding.amplipi.internal;
 
 import static org.openhab.binding.amplipi.internal.AmpliPiBindingConstants.*;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -78,7 +78,8 @@ public class AmpliPiHandler extends BaseBridgeHandler {
     private String url = "http://amplipi";
     private List<Preset> presets = List.of();
     private List<Stream> streams = List.of();
-    private List<AmpliPiStatusChangeListener> changeListeners = new ArrayList<>();
+    // Handlers register/unregister from the framework thread while the polling job iterates.
+    private List<AmpliPiStatusChangeListener> changeListeners = new CopyOnWriteArrayList<>();
 
     private @Nullable ScheduledFuture<?> refreshJob;
 
