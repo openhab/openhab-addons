@@ -52,6 +52,7 @@ public class WasherDryerCapability extends AbstractCapability<WasherDryerCapabil
     private boolean hasDoorLook;
     private Map<String, CommandDefinition> commandsDefinition = new HashMap<>();
     private Map<String, CourseDefinition> courses = new LinkedHashMap<>();
+    private Map<String, FeatureDefinition> optionFeatures = new HashMap<>();
 
     public String getDefaultCourseId() {
         return defaultCourseId;
@@ -75,6 +76,14 @@ public class WasherDryerCapability extends AbstractCapability<WasherDryerCapabil
 
     public void setCommandsDefinition(Map<String, CommandDefinition> commandsDefinition) {
         this.commandsDefinition = commandsDefinition;
+    }
+
+    public Map<String, FeatureDefinition> getOptionFeatures() {
+        return optionFeatures;
+    }
+
+    public void setOptionFeatures(Map<String, FeatureDefinition> optionFeatures) {
+        this.optionFeatures = optionFeatures;
     }
 
     public FeatureDefinition getDryLevel() {
