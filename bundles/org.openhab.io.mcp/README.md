@@ -32,7 +32,7 @@ Every connection must present an openHAB bearer token (see [Authentication](#aut
 | `enableStaticAssets`   | `false` | NO       | Let the assistant list, read, upload, and delete files in `$OPENHAB_CONF/html` (the folder served at `/static/*`). Useful for SVG icons, images, CSS overrides, and other static files the UI references. ADMIN-scoped token required. See [Static assets](#static-assets-opt-in). |
 | `registerCloudWebhook` | `false` | NO       | Let remote MCP clients reach this server through openHAB Cloud (`myopenhab.org`) with no port forwarding. Requires the openHAB Cloud add-on. See [openHAB Cloud](#2-openhab-cloud) under Connecting a client.                                                                      |
 | `exposeUntaggedItems`  | `false` | YES      | Also include items that aren't assigned to a Location/Equipment/Point. Most people leave this off.                                                                                                                                                                                 |
-| `maxItemsPerPage`      | `100`   | YES      | Maximum items returned in one paginated response.                                                                                                                                                                                                                                  |
+| `maxItemsPerPage`      | `100`   | YES      | Upper bound for the `limit` argument of `search_items`, `get_things`, and `get_rules`. Those tools return 50 results per page by default, or this value if it is lower.                                                                                                            |
 | `resourceCoalesceMs`   | `500`   | YES      | Rate-limit update notifications for chatty items like power meters.                                                                                                                                                                                                                |
 
 ## Authentication
@@ -298,7 +298,7 @@ Requires a paid ChatGPT plan (Plus, Pro, Business, Enterprise, Education).
 
 ## What the assistant can do
 
-`search_items` and `get_rules` return results in pages (50 by default, adjustable with the `limit` and `offset` arguments), and each response includes the `total` so the assistant knows when to fetch more.
+`search_items`, `get_things`, and `get_rules` return results in pages (50 by default, up to `maxItemsPerPage`, adjustable with the `limit` and `offset` arguments), and each response includes the `total` so the assistant knows when to fetch more.
 Tool-description context usage depends on the client: clients that load every enabled tool up front incur a larger baseline, while clients with tool search can defer descriptions until needed.
 Leave features off that you don't need.
 

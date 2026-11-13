@@ -67,6 +67,8 @@ public class ItemTools {
     private final EventPublisher eventPublisher;
     private final McpJsonMapper jsonMapper;
     private final FuzzyItemMatcher fuzzyMatcher;
+    private final int maxItemsPerPage;
+    private final int defaultPageLimit;
 
     /**
      * Constructs a new {@code ItemTools} instance with the required openHAB services.
@@ -76,14 +78,19 @@ public class ItemTools {
      * @param metadataRegistry the metadata registry used for fuzzy matching, may be {@code null}
      * @param eventPublisher the event publisher for sending commands and state updates
      * @param jsonMapper the JSON mapper for serializing tool results
+     * @param maxItemsPerPage upper bound for the {@code limit} argument of the paginated list tool; values
+     *            below 1 are treated as 1
      */
     public ItemTools(ItemRegistry itemRegistry, ItemBuilderFactory itemBuilderFactory,
-            @Nullable MetadataRegistry metadataRegistry, EventPublisher eventPublisher, McpJsonMapper jsonMapper) {
+            @Nullable MetadataRegistry metadataRegistry, EventPublisher eventPublisher, McpJsonMapper jsonMapper,
+            int maxItemsPerPage) {
         this.itemRegistry = itemRegistry;
         this.itemBuilderFactory = itemBuilderFactory;
         this.eventPublisher = eventPublisher;
         this.jsonMapper = jsonMapper;
         this.fuzzyMatcher = new FuzzyItemMatcher(metadataRegistry);
+        this.maxItemsPerPage = Math.max(1, maxItemsPerPage);
+        this.defaultPageLimit = Math.min(DEFAULT_PAGE_LIMIT, this.maxItemsPerPage);
     }
 
     /**
@@ -161,8 +168,10 @@ public class ItemTools {
         properties.put("group", Map.of("type", "string", "description", "Filter items that are members of this group"));
         properties.put("recursive", Map.of("type", "boolean", "description",
                 "When filtering by group, include items in nested subgroups (default: true)"));
-        properties.put("limit", Map.of("type", "integer", "description", "Maximum results to return (default: 50)"));
-        properties.put("offset", Map.of("type", "integer", "description", "Number of results to skip (default: 0)"));
+        properties.put("limit", Map.of("type", "integer", "minimum", 1, "maximum", maxItemsPerPage, "description",
+                "Maximum results to return (default: " + defaultPageLimit + ", max: " + maxItemsPerPage + ")"));
+        properties.put("offset",
+                Map.of("type", "integer", "minimum", 0, "description", "Number of results to skip (default: 0)"));
 
         return McpSchema.Tool.builder().name("search_items").description(
                 "Search for items by name, label, synonyms, type, tags, or group membership. Returns matching items ranked by relevance with their current state. Use this when you need to find specific items or don't know the exact item name.")
@@ -185,8 +194,8 @@ public class ItemTools {
         List<String> tags = getStringListArg(args, "tags");
         String group = getStringArg(args, "group");
         boolean recursive = getBooleanArg(args, "recursive", true);
-        int limit = getIntArg(args, "limit", 50);
-        int offset = getIntArg(args, "offset", 0);
+        int limit = Math.max(1, Math.min(maxItemsPerPage, getIntArg(args, "limit", defaultPageLimit)));
+        int offset = Math.max(0, getIntArg(args, "offset", 0));
 
         Iterable<Item> source;
         if (group != null) {
@@ -234,7 +243,8 @@ public class ItemTools {
         }
 
         int total = matchingItems.size();
-        List<Item> page = matchingItems.subList(Math.min(offset, total), Math.min(offset + limit, total));
+        int start = Math.min(offset, total);
+        List<Item> page = matchingItems.subList(start, Math.min(start + limit, total));
 
         List<Map<String, Object>> items = new ArrayList<>();
         for (Item item : page) {
