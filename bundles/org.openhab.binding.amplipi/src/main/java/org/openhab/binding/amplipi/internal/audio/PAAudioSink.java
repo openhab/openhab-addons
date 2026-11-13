@@ -14,12 +14,15 @@ package org.openhab.binding.amplipi.internal.audio;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.amplipi.internal.AmpliPiBindingConstants;
 import org.openhab.binding.amplipi.internal.AmpliPiHandler;
+import org.openhab.binding.amplipi.internal.AmpliPiZoneHandler;
 import org.openhab.core.audio.AudioFormat;
 import org.openhab.core.audio.AudioSinkSync;
 import org.openhab.core.audio.AudioStream;
@@ -38,6 +41,10 @@ import org.slf4j.LoggerFactory;
 /**
  * This is an audio sink that allows to do public announcements on the AmpliPi.
  *
+ * <p>
+ * Attached to the controller bridge, the announcement is played on all zones; attached to a zone thing (opt-in via
+ * the {@code audioSink} configuration parameter), it is restricted to that zone only.
+ *
  * @author Kai Kreuzer - Initial contribution
  *
  */
@@ -50,7 +57,7 @@ public class PAAudioSink extends AudioSinkSync implements ThingHandlerService {
     private static final Set<AudioFormat> SUPPORTED_AUDIO_FORMATS = Set.of(AudioFormat.MP3, AudioFormat.WAV);
     private static final Set<Class<? extends AudioStream>> SUPPORTED_AUDIO_STREAMS = Set.of(AudioStream.class);
 
-    private @Nullable AmpliPiHandler handler;
+    private @Nullable ThingHandler handler;
 
     private @Nullable PercentType volume;
 
@@ -63,13 +70,28 @@ public class PAAudioSink extends AudioSinkSync implements ThingHandlerService {
             logger.debug("AmpliPi sink does not support stopping the currently playing stream.");
             return;
         }
-        AmpliPiHandler localHandler = this.handler;
-        if (localHandler == null) {
+        ThingHandler localHandler = this.handler;
+        AmpliPiHandler bridgeHandler = null;
+        List<Integer> zones = null;
+        boolean targetResolved = false;
+        if (localHandler instanceof AmpliPiHandler bridgeHandlerInstance) {
+            bridgeHandler = bridgeHandlerInstance;
+            targetResolved = true;
+        } else if (localHandler instanceof AmpliPiZoneHandler zoneHandler) {
+            bridgeHandler = zoneHandler.getBridgeHandler();
+            Object zoneId = zoneHandler.getThing().getConfiguration().get(AmpliPiBindingConstants.CFG_PARAM_ID);
+            if (zoneId != null) {
+                zones = List.of(Integer.valueOf(zoneId.toString()));
+                targetResolved = true;
+            }
+        }
+        if (bridgeHandler == null || !targetResolved) {
             tryClose(audioStream);
             return;
         }
+        AmpliPiHandler localBridgeHandler = bridgeHandler;
         logger.debug("Received audio stream of format {}", audioStream.getFormat());
-        String callbackUrl = localHandler.getCallbackUrl();
+        String callbackUrl = localBridgeHandler.getCallbackUrl();
         String audioUrl;
         if (audioStream instanceof URLAudioStream urlAudioStream) {
             // it is an external URL, so we can directly pass this on.
@@ -79,7 +101,7 @@ public class PAAudioSink extends AudioSinkSync implements ThingHandlerService {
             // we need to serve it for a while
             StreamServed streamServed;
             try {
-                streamServed = localHandler.getAudioHTTPServer().serve(audioStream, 10, true);
+                streamServed = localBridgeHandler.getAudioHTTPServer().serve(audioStream, 10, true);
             } catch (IOException e) {
                 tryClose(audioStream);
                 throw new UnsupportedAudioStreamException(
@@ -92,7 +114,7 @@ public class PAAudioSink extends AudioSinkSync implements ThingHandlerService {
             tryClose(audioStream);
             return;
         }
-        localHandler.playPA(audioUrl, volume);
+        localBridgeHandler.playPA(audioUrl, volume, zones);
         // we reset the volume value again, so that a next invocation without a volume will again use the zones
         // defaults.
         volume = null;
@@ -152,7 +174,7 @@ public class PAAudioSink extends AudioSinkSync implements ThingHandlerService {
 
     @Override
     public void setThingHandler(ThingHandler handler) {
-        this.handler = (AmpliPiHandler) handler;
+        this.handler = handler;
     }
 
     @Override
