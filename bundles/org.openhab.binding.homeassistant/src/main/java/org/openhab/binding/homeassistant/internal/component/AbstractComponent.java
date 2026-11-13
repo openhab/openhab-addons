@@ -148,7 +148,7 @@ public abstract class AbstractComponent<C extends AbstractComponentConfiguration
         // (components of different types, but the same object id)
         // we'll resolve them later
         HaID haID = componentContext.getHaID();
-        groupId = componentId = haID.objectID.replace('-', '_');
+        groupId = componentId = haID.objectID.replaceAll("[^\\w]", "_");
         uniqueId = haID.component + "_" + haID.getGroupId(config.getUniqueId());
 
         this.configSeen = false;

@@ -28,6 +28,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.openhab.binding.homeassistant.internal.AbstractHomeAssistantTests;
@@ -517,6 +519,33 @@ public class HomeAssistantThingHandlerTests extends AbstractHomeAssistantTests {
         assertThat(nonSpyThingHandler.getThing().getChannels().size(), is(2));
         nonSpyThingHandler.getThing().getChannels()
                 .forEach(channel -> assertThat(channel.getConfiguration().containsKey("config"), is(false)));
+    }
+
+    @ParameterizedTest
+    @CsvSource({ "temp, testnode_temp", "temp-sensor, testnode_temp_sensor",
+            "temp.sensor:reading#1, testnode_temp_sensor_reading_1", "témperature, testnode_t_mperature" })
+    public void testDeviceWithNodeId(String componentId, String channelId) {
+        setupThingHandlerWithTopics(List.of("device/testnode/dev1"));
+        thingHandler.initialize();
+
+        thingHandler.discoverComponents.processMessage("homeassistant/device/testnode/dev1/config", """
+                {
+                  "dev": {"identifiers": ["testnode_dev1"], "name": "dev1"},
+                  "o": {"name": "repro"},
+                  "cmps": {
+                    "%s": {
+                      "p": "sensor",
+                      "name": "Temperature",
+                      "unique_id": "testnode_dev1_temp",
+                      "state_topic": "test/dev1/temp"
+                    }
+                  }
+                }
+                """.formatted(componentId).getBytes(StandardCharsets.UTF_8));
+        thingHandler.delayedProcessing.forceProcessNow();
+
+        assertThat(nonSpyThingHandler.getThing().getChannels().size(), is(1));
+        assertThat(nonSpyThingHandler.getThing().getChannel(channelId), notNullValue());
     }
 
     @Test
