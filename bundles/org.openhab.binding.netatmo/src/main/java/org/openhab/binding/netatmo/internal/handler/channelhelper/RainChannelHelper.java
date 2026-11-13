@@ -21,6 +21,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.MeasureClass;
 import org.openhab.binding.netatmo.internal.api.dto.Dashboard;
+import org.openhab.binding.netatmo.internal.api.dto.WebhookDashboard;
 import org.openhab.core.types.State;
 
 /**
@@ -40,12 +41,25 @@ public class RainChannelHelper extends ChannelHelper {
     protected @Nullable State internalGetDashboard(String channelId, Dashboard dashboard) {
         switch (channelId) {
             case CHANNEL_VALUE:
-                return toQuantityType(dashboard.getRain(), MeasureClass.RAIN_INTENSITY);
+                return toRainState(dashboard.rain);
             case CHANNEL_SUM_RAIN1:
                 return toQuantityType(dashboard.getSumRain1(), MeasureClass.RAIN_QUANTITY);
             case CHANNEL_SUM_RAIN24:
                 return toQuantityType(dashboard.getSumRain24(), MeasureClass.RAIN_QUANTITY);
         }
         return null;
+    }
+
+    @Override
+    protected @Nullable State internalGetWebDashboard(String channelId, @Nullable String groupId,
+            WebhookDashboard dashboard) {
+        if (CHANNEL_VALUE.equals(channelId) && dashboard.rain instanceof Double value) {
+            return toRainState(value);
+        }
+        return null;
+    }
+
+    private State toRainState(@Nullable Double rain) {
+        return toQuantityType(rain, MeasureClass.RAIN_INTENSITY);
     }
 }

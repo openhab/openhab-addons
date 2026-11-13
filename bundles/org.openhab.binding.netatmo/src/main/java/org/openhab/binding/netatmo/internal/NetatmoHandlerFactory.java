@@ -41,7 +41,6 @@ import org.openhab.binding.netatmo.internal.handler.capability.PresenceCapabilit
 import org.openhab.binding.netatmo.internal.handler.capability.RefreshAutoCapability;
 import org.openhab.binding.netatmo.internal.handler.capability.RefreshCapability;
 import org.openhab.binding.netatmo.internal.handler.capability.RoomCapability;
-import org.openhab.binding.netatmo.internal.handler.capability.Therm1Capability;
 import org.openhab.binding.netatmo.internal.handler.capability.WeatherCapability;
 import org.openhab.binding.netatmo.internal.handler.channelhelper.ChannelHelper;
 import org.openhab.binding.netatmo.internal.providers.NetatmoDescriptionProvider;
@@ -155,8 +154,6 @@ public class NetatmoHandlerFactory extends BaseThingHandlerFactory {
                 newCap = new RefreshCapability(handler);
             } else if (capability == ParentUpdateCapability.class) {
                 newCap = new ParentUpdateCapability(handler);
-            } else if (capability == Therm1Capability.class) {
-                newCap = new Therm1Capability(handler);
             }
             if (newCap != null) {
                 handler.getCapabilities().put(newCap);

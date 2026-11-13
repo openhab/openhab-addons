@@ -140,13 +140,26 @@ public class WebhookServlet extends NetatmoServlet {
         event.getNAObjectList().forEach(id -> {
             if (dataListeners.get(id) instanceof WebhookListenerCapability module) {
                 logger.trace("Dispatching webhook event to {}", id);
-                module.setNewData(event);
+                module.getHandler().setNewData(event);
             }
         });
         EventType eventType = event.getEventType();
         if (EventType.DEVICE_EVENT.equals(eventType) && event.getExtraParams() instanceof WebhookExtraParams whep) {
-            ListenerMap listeners = eventListeners.computeIfAbsent(whep.eventType, k -> new ListenerMap());
-            listeners.values().forEach(listener -> listener.pushData(whep));
+            EventType extraParamsEventType = whep.eventType;
+            ListenerMap listeners = eventListeners.get(extraParamsEventType);
+            if (listeners != null) {
+                if (!EventType.UNKNOWN.equals(extraParamsEventType)) {
+                    listeners.values().forEach(listener -> listener.getHandler().setNewData(whep));
+                } else {
+                    // no event type is provided, we expect to find a list of modules
+                    whep.modules.forEach(module -> {
+                        WebhookListenerCapability listener = listeners.get(module.id);
+                        if (listener != null) {
+                            listener.getHandler().setNewData(module);
+                        }
+                    });
+                }
+            }
         }
     }
 
@@ -160,7 +173,11 @@ public class WebhookServlet extends NetatmoServlet {
         monitoredEvents.forEach(eventType -> {
             logger.debug("*** Registering webhook listener '{}' on event '{}' with capability '{}'", id, eventType,
                     listener.getClass().getSimpleName());
-            ListenerMap listeners = eventListeners.computeIfAbsent(eventType, k -> new ListenerMap());
+            ListenerMap listeners = eventListeners.get(eventType);
+            if (listeners == null) {
+                listeners = new ListenerMap();
+                eventListeners.put(eventType, listeners);
+            }
             listeners.put(id, listener);
         });
     }
