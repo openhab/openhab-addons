@@ -74,7 +74,7 @@ class ThingToolsTest {
     @BeforeEach
     void setUp() {
         thingTools = new ThingTools(Objects.requireNonNull(thingRegistry), Objects.requireNonNull(linkRegistry),
-                jsonMapper);
+                jsonMapper, 100);
     }
 
     private ThingTools tools() {
@@ -214,6 +214,57 @@ class ThingToolsTest {
         assertEquals(3, parsed.get("total"));
         assertEquals(1, parsed.get("offset"));
         assertEquals(2, parsed.get("limit"));
+    }
+
+    @Test
+    void getThingsClampsNonPositiveLimitAndNegativeOffset() throws Exception {
+        stubThreeThings();
+
+        for (int requestedLimit : new int[] { 0, -5 }) {
+            Map<String, Object> parsed = getThings(tools(), Map.of("limit", requestedLimit, "offset", -3));
+            assertEquals(3, parsed.get("total"));
+            assertEquals(0, parsed.get("offset"));
+            assertEquals(1, parsed.get("limit"));
+            @SuppressWarnings("unchecked")
+            List<Map<String, Object>> things = (List<Map<String, Object>>) Objects.requireNonNull(parsed.get("things"));
+            assertEquals(1, things.size());
+            assertEquals("hue:type:t1", things.get(0).get("uid"));
+        }
+    }
+
+    @Test
+    void getThingsCapsLimitAtMaxItemsPerPage() throws Exception {
+        stubThreeThings();
+        ThingTools smallPages = new ThingTools(Objects.requireNonNull(thingRegistry),
+                Objects.requireNonNull(linkRegistry), jsonMapper, 2);
+
+        Map<String, Object> aboveMax = getThings(smallPages, Map.of("limit", 500));
+        assertEquals(2, aboveMax.get("limit"));
+        assertEquals(2, ((List<?>) Objects.requireNonNull(aboveMax.get("things"))).size());
+
+        assertEquals(2, getThings(smallPages, Map.of()).get("limit"));
+
+        Map<String, Object> pastEnd = getThings(smallPages, Map.of("offset", Integer.MAX_VALUE));
+        assertEquals(3, pastEnd.get("total"));
+        assertTrue(((List<?>) Objects.requireNonNull(pastEnd.get("things"))).isEmpty());
+    }
+
+    @Test
+    void getThingsDefaultLimitIsFiftyWhenMaxIsHigher() throws Exception {
+        when(Objects.requireNonNull(thingRegistry).getAll()).thenReturn(List.of());
+
+        assertEquals(50, getThings(tools(), Map.of()).get("limit"));
+    }
+
+    private void stubThreeThings() {
+        Thing t1 = mockThing("t1", "Thing 1", ThingStatus.ONLINE, "hue");
+        Thing t2 = mockThing("t2", "Thing 2", ThingStatus.ONLINE, "hue");
+        Thing t3 = mockThing("t3", "Thing 3", ThingStatus.ONLINE, "hue");
+        when(Objects.requireNonNull(thingRegistry).getAll()).thenReturn(List.of(t1, t2, t3));
+    }
+
+    private Map<String, Object> getThings(ThingTools target, Map<String, Object> args) throws Exception {
+        return parseResult(target.handleGetThings(createRequest(new HashMap<>(args))));
     }
 
     @Test

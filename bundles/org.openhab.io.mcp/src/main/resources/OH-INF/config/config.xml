@@ -87,7 +87,7 @@
 			<default>false</default>
 			<advanced>true</advanced>
 		</parameter>
-		<parameter name="maxItemsPerPage" type="integer" required="false">
+		<parameter name="maxItemsPerPage" type="integer" required="false" min="1">
 			<label>Maximum Items Per Page</label>
 			<description>Maximum number of items returned per page in paginated tool responses.</description>
 			<default>100</default>

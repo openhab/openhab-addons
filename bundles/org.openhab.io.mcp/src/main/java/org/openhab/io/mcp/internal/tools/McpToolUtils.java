@@ -40,6 +40,9 @@ public class McpToolUtils {
 
     private static final ObjectMapper JACKSON = new ObjectMapper();
 
+    /** Page size used by the paginated list tools when the caller passes no {@code limit}. */
+    static final int DEFAULT_PAGE_LIMIT = 50;
+
     /**
      * Returns the shared thread-safe Jackson ObjectMapper instance.
      */
