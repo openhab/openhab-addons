@@ -46,6 +46,7 @@ import org.junit.jupiter.api.Test;
 import org.openhab.binding.tailwind.internal.FakeController;
 import org.openhab.binding.tailwind.internal.FakeController.Answer;
 import org.openhab.binding.tailwind.internal.FakeController.Received;
+import org.openhab.binding.tailwind.internal.api.TailwindUdpReceiver;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
@@ -78,10 +79,15 @@ public class TailwindHandlerTest {
     private final FakeController controller = new FakeController();
     private final NetworkAddressService networkAddressService = mock(NetworkAddressService.class);
     private final ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
+    private final TailwindUdpReceiver udpReceiver = new TailwindUdpReceiver();
 
     private TailwindHandler handler = newHandler(Map.of("hostname", "127.0.0.1", "token", "123456"));
 
     private TailwindHandler newHandler(Map<String, Object> config) {
+        return newHandler(config, Map.of());
+    }
+
+    private TailwindHandler newHandler(Map<String, Object> config, Map<String, String> properties) {
         List<Channel> channels = new ArrayList<>();
         for (String id : List.of("night-mode", "led-brightness", "rssi", "server-monitor", "command")) {
             channels.add(ChannelBuilder.create(new ChannelUID(THING_UID, "controller", id)).build());
@@ -92,8 +98,9 @@ public class TailwindHandlerTest {
             }
         }
         Thing thing = ThingBuilder.create(new ThingTypeUID("tailwind", "iq3"), THING_UID).withChannels(channels)
-                .withConfiguration(new Configuration(config)).build();
-        TailwindHandler newHandler = new TailwindHandler(thing, controller.httpClient, networkAddressService);
+                .withConfiguration(new Configuration(config)).withProperties(properties).build();
+        TailwindHandler newHandler = new TailwindHandler(thing, controller.httpClient, networkAddressService,
+                udpReceiver);
         newHandler.setCallback(callback);
         return newHandler;
     }
@@ -111,6 +118,7 @@ public class TailwindHandlerTest {
     @AfterEach
     public void tearDown() {
         handler.dispose();
+        udpReceiver.stop();
     }
 
     private static ChannelUID channel(String group, String id) {
@@ -254,15 +262,34 @@ public class TailwindHandlerTest {
     }
 
     @Test
-    public void missingPrimaryAddressIsAConfigurationError() {
+    public void withoutPrimaryAddressTheAddressTowardsTheControllerIsUsed() {
         when(networkAddressService.getPrimaryIpv4HostAddress()).thenReturn(null);
+        handler = newHandler(Map.of("hostname", "127.0.0.1", "token", "123456"));
 
-        handler.initialize();
+        initializeOnline();
 
-        verifyStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
-        assertEquals("@text/offline.conf-error.no-primary-address",
-                handler.getThing().getStatusInfo().getDescription());
-        assertTrue(controller.requestsNamed("notify_url").isEmpty());
+        String url = controller.requestsNamed("notify_url").get(0).value().get("url").getAsString();
+        assertTrue(url.startsWith("127.0.0.1:"), url);
+    }
+
+    @Test
+    public void hostnameWithUrlPartsIsUsedWithoutThem() {
+        handler = newHandler(Map.of("hostname", "http://192.168.1.50/json", "token", "123456"));
+
+        initializeOnline();
+
+        assertEquals("http://192.168.1.50/json", controller.requests.get(0).url());
+    }
+
+    @Test
+    public void lastKnownAddressIsUsedWhenTheHostNameCannotBeResolved() {
+        // .invalid names never resolve
+        handler = newHandler(Map.of("hostname", "tailwind-30aea4801880.invalid", "token", "123456"),
+                Map.of("ipAddress", "192.168.1.77"));
+
+        initializeOnline();
+
+        assertEquals("http://192.168.1.77/json", controller.requests.get(0).url());
     }
 
     @Test

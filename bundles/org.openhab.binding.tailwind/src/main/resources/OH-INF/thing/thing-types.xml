@@ -28,12 +28,21 @@
 			<parameter name="hostname" type="text" required="true">
 				<context>network-address</context>
 				<label>Hostname</label>
-				<description>IP address or host name of the controller, for example 192.168.1.50 or tailwind-30aea4801880.local</description>
+				<description>Host name or IP address of the controller, for example tailwind-30aea4801880.local. The host name is
+					recommended, because it does not change when the controller gets another IP address.</description>
 			</parameter>
 			<parameter name="token" type="text" required="true">
 				<context>password</context>
 				<label>Local Control Key</label>
 				<description>The 6-digit Local Control Key of the controller, from the TailWind web dashboard</description>
+			</parameter>
+			<parameter name="udpPort" type="integer" min="0" max="65535">
+				<label>Status Report Port</label>
+				<description>UDP port on the openHAB server that receives the status reports of the controller. Several
+					controllers
+					can use the same port. If another program uses the port, a free port is used instead.</description>
+				<default>50904</default>
+				<advanced>true</advanced>
 			</parameter>
 			<parameter name="door1PartialOpenTime" type="decimal" min="0.5" max="15" step="0.5" unit="s">
 				<label>Door 1 Partial Open Time</label>

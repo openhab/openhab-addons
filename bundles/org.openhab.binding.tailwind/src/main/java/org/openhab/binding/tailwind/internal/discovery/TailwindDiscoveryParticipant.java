@@ -75,6 +75,11 @@ public class TailwindDiscoveryParticipant implements MDNSDiscoveryParticipant {
         properties.put(Thing.PROPERTY_MAC_ADDRESS, thingUID.getId());
         properties.put(Thing.PROPERTY_VENDOR, VENDOR);
         properties.put(Thing.PROPERTY_MODEL_ID, PRODUCT_IQ3);
+        Inet4Address[] addresses = service.getInet4Addresses();
+        if (addresses.length > 0) {
+            // Used when the openHAB server cannot resolve the .local host name
+            properties.put(PROPERTY_IP_ADDRESS, addresses[0].getHostAddress());
+        }
         String firmwareVersion = service.getPropertyString("SW ver");
         if (firmwareVersion != null) {
             properties.put(Thing.PROPERTY_FIRMWARE_VERSION, firmwareVersion);
@@ -88,17 +93,17 @@ public class TailwindDiscoveryParticipant implements MDNSDiscoveryParticipant {
     }
 
     /**
-     * Returns the IPv4 address of the controller, or its host name if the service has no address yet.
+     * Returns the .local host name of the controller, or its IPv4 address if the service has no host name.
+     *
+     * The host name is preferred, because it stays the same when the router gives the controller another address.
+     * The Tailwind Local Control API uses it in all its examples.
      */
     private static @Nullable String hostname(ServiceInfo service) {
-        Inet4Address[] addresses = service.getInet4Addresses();
-        if (addresses.length > 0) {
-            return addresses[0].getHostAddress();
-        }
         String server = service.getServer();
-        if (server == null || server.isBlank()) {
-            return null;
+        if (server != null && !server.isBlank()) {
+            return server.endsWith(".") ? server.substring(0, server.length() - 1) : server;
         }
-        return server.endsWith(".") ? server.substring(0, server.length() - 1) : server;
+        Inet4Address[] addresses = service.getInet4Addresses();
+        return addresses.length > 0 ? addresses[0].getHostAddress() : null;
     }
 }
