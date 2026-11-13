@@ -45,6 +45,7 @@ import org.slf4j.LoggerFactory;
  * sent to one of the channels.
  *
  * @author Mark Herwege - Initial Contribution
+ * @author Leo Siepel - Validate percentage action states
  */
 @NonNullByDefault
 public class NikoHomeControlActionHandler extends NikoHomeControlBaseHandler implements NhcActionEvent {
@@ -304,12 +305,20 @@ public class NikoHomeControlActionHandler extends NikoHomeControlBaseHandler imp
                 updateStatus(ThingStatus.ONLINE);
                 break;
             case DIMMER:
+                if (actionState < 0 || actionState > 100) {
+                    logger.debug("Ignoring out-of-range {} state {} for action {}", actionType, actionState, deviceId);
+                    return;
+                }
                 updateState(CHANNEL_BRIGHTNESS, new PercentType((int) actionState));
                 updateStatus(ThingStatus.ONLINE);
                 break;
             case ROLLERSHUTTER:
-                updateState(CHANNEL_ROLLERSHUTTER,
-                        !invert ? new PercentType(100 - (int) actionState) : new PercentType((int) actionState));
+                if (actionState < 0 || actionState > 100) {
+                    logger.debug("Ignoring out-of-range {} state {} for action {}", actionType, actionState, deviceId);
+                    return;
+                }
+                int percentage = (int) actionState;
+                updateState(CHANNEL_ROLLERSHUTTER, new PercentType(invert ? percentage : 100 - percentage));
                 updateStatus(ThingStatus.ONLINE);
                 break;
             default:
