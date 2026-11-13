@@ -12,10 +12,13 @@
  */
 package org.openhab.binding.homeassistant.internal;
 
+import java.net.URI;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.function.Predicate;
+
+import javax.measure.Unit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -34,10 +37,13 @@ import org.openhab.core.thing.type.AutoUpdatePolicy;
 import org.openhab.core.thing.type.ChannelDefinition;
 import org.openhab.core.thing.type.ChannelDefinitionBuilder;
 import org.openhab.core.thing.type.ChannelKind;
+import org.openhab.core.thing.type.ChannelType;
+import org.openhab.core.thing.type.ChannelTypeBuilder;
 import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.CommandDescription;
 import org.openhab.core.types.StateDescription;
+import org.openhab.core.util.UIDUtils;
 
 /**
  * An {@link AbstractComponent}s derived class consists of one or multiple channels.
@@ -53,22 +59,30 @@ import org.openhab.core.types.StateDescription;
  * as keeps the {@link ChannelState} and {@link Channel} in one place.
  *
  * @author David Graeff - Initial contribution
+ * @author Cody Cutrer - Dynamic numeric channel types with unit hints
  */
 @NonNullByDefault
 public class ComponentChannel {
     private final ChannelState channelState;
     private Channel channel;
+    private final @Nullable ChannelType channelType;
     private final @Nullable StateDescription stateDescription;
     private final @Nullable CommandDescription commandDescription;
     private final ChannelStateUpdateListener channelStateUpdateListener;
 
-    private ComponentChannel(ChannelState channelState, Channel channel, @Nullable StateDescription stateDescription,
-            @Nullable CommandDescription commandDescription, ChannelStateUpdateListener channelStateUpdateListener) {
+    private ComponentChannel(ChannelState channelState, Channel channel, @Nullable ChannelType channelType,
+            @Nullable StateDescription stateDescription, @Nullable CommandDescription commandDescription,
+            ChannelStateUpdateListener channelStateUpdateListener) {
         this.channelState = channelState;
         this.channel = channel;
+        this.channelType = channelType;
         this.stateDescription = stateDescription;
         this.commandDescription = commandDescription;
         this.channelStateUpdateListener = channelStateUpdateListener;
+    }
+
+    public @Nullable ChannelType getChannelType() {
+        return channelType;
     }
 
     public Channel getChannel() {
@@ -152,6 +166,7 @@ public class ComponentChannel {
         private @Nullable Configuration configuration;
 
         private String format = "%s";
+        private @Nullable Unit<?> unitHint;
 
         public Builder(AbstractComponent<?> component, String channelID, ChannelTypeUID channelTypeUID,
                 Value valueState, String label, ChannelStateUpdateListener channelStateUpdateListener) {
@@ -235,6 +250,11 @@ public class ComponentChannel {
             return this;
         }
 
+        public Builder withUnitHint(@Nullable Unit<?> unit) {
+            this.unitHint = unit;
+            return this;
+        }
+
         public Builder withFormat(String format) {
             this.format = format;
             return this;
@@ -300,6 +320,17 @@ public class ComponentChannel {
                         channelTypeUID.getId() + "-advanced");
             }
 
+            ChannelType channelType = null;
+            Unit<?> unit = unitHint;
+            if (unit != null && valueState.getItemType().startsWith("Number:")) {
+                channelTypeUID = new ChannelTypeUID(channelTypeUID.getBindingId(),
+                        channelTypeUID.getId() + "-" + UIDUtils.encode(unit.toString()));
+                channelType = ChannelTypeBuilder
+                        .state(channelTypeUID, "Number (" + unit + ")", valueState.getItemType())
+                        .withUnitHint(unit.toString()).isAdvanced(isAdvanced)
+                        .withConfigDescriptionURI(URI.create("channel-type:homeassistant:channel")).build();
+            }
+
             ChannelKind kind;
             StateDescription stateDescription = null;
             CommandDescription commandDescription = null;
@@ -322,8 +353,8 @@ public class ComponentChannel {
                     .withKind(kind).withLabel(label).withConfiguration(configuration)
                     .withAutoUpdatePolicy(autoUpdatePolicy).build();
 
-            ComponentChannel result = new ComponentChannel(channelState, channel, stateDescription, commandDescription,
-                    channelStateUpdateListener);
+            ComponentChannel result = new ComponentChannel(channelState, channel, channelType, stateDescription,
+                    commandDescription, channelStateUpdateListener);
 
             if (addToComponent) {
                 component.getChannelMap().put(channelID, result);
