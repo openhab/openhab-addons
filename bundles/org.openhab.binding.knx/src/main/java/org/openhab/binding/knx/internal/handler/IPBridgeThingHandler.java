@@ -55,7 +55,11 @@ public class IPBridgeThingHandler extends KNXBridgeBaseThingHandler {
 
     static final int NO_LOCAL_IP_RETRY_SECONDS = 30;
 
-    private @Nullable IPClient client = null;
+    private final Object lifecycleLock = new Object();
+    // bumped by dispose(), so an init still running cannot retry or start a client afterwards
+    private long generation = 0;
+
+    private volatile @Nullable IPClient client = null;
     private @Nullable final NetworkAddressService networkAddressService;
 
     public IPBridgeThingHandler(Bridge bridge, @Nullable NetworkAddressService networkAddressService) {
@@ -68,10 +72,13 @@ public class IPBridgeThingHandler extends KNXBridgeBaseThingHandler {
         // initialization would take too long and show a warning during binding startup
         // KNX secure is adding serious delay
         updateStatus(ThingStatus.UNKNOWN);
-        initJob = scheduler.submit(this::initializeLater);
+        synchronized (lifecycleLock) {
+            long current = generation;
+            initJob = scheduler.submit(() -> initializeLater(current));
+        }
     }
 
-    public void initializeLater() {
+    void initializeLater(long current) {
         IPBridgeConfiguration config = getConfigAs(IPBridgeConfiguration.class);
         boolean securityAvailable = false;
         try {
@@ -191,48 +198,60 @@ public class IPBridgeThingHandler extends KNXBridgeBaseThingHandler {
             String localIp = localNetworkAddressService.getPrimaryIpv4HostAddress();
             if (localIp == null) {
                 logger.debug("Bridge {} has no local IPv4 address", thing.getUID());
+                synchronized (lifecycleLock) {
+                    if (generation != current) {
+                        return;
+                    }
+                    // not a bus problem, so retry even when autoReconnectPeriod is 0
+                    initJob = scheduler.schedule(() -> initializeLater(current), NO_LOCAL_IP_RETRY_SECONDS,
+                            TimeUnit.SECONDS);
+                }
                 updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/error.knx-no-local-ipv4");
-                // not a bus problem, so retry even when autoReconnectPeriod is 0
-                initJob = scheduler.schedule(this::initializeLater, NO_LOCAL_IP_RETRY_SECONDS, TimeUnit.SECONDS);
                 return;
             }
             localEndPoint = new InetSocketAddress(localIp, 0);
         }
 
-        updateStatus(ThingStatus.UNKNOWN);
-        client = new IPClient(ipConnectionType, ip, localSource, port, localEndPoint, useNAT, autoReconnectPeriod,
-                secureRouting.backboneGroupKey, secureRouting.latencyToleranceMs, secureTunnel.devKey,
-                secureTunnel.user, secureTunnel.userKey, thing.getUID(), config.getResponseTimeout(),
-                config.getReadingPause(), config.getReadRetriesLimit(), getScheduler(), getCommandExtensionData(),
-                openhabSecurity, this);
-
-        IPClient tmpClient = client;
-        if (tmpClient != null) {
-            tmpClient.initialize();
+        IPClient newClient = new IPClient(ipConnectionType, ip, localSource, port, localEndPoint, useNAT,
+                autoReconnectPeriod, secureRouting.backboneGroupKey, secureRouting.latencyToleranceMs,
+                secureTunnel.devKey, secureTunnel.user, secureTunnel.userKey, thing.getUID(),
+                config.getResponseTimeout(), config.getReadingPause(), config.getReadRetriesLimit(), getScheduler(),
+                getCommandExtensionData(), openhabSecurity, this);
+        synchronized (lifecycleLock) {
+            if (generation != current) {
+                return;
+            }
+            client = newClient;
         }
+        updateStatus(ThingStatus.UNKNOWN);
+        // outside the lock as connecting can take seconds, a disposed client ignores connect()
+        newClient.initialize();
 
         logger.trace("Bridge {} completed KNX scheduled initialization", thing.getUID());
     }
 
     @Override
     public void dispose() {
-        Future<?> tmpInitJob = initJob;
-        if (tmpInitJob != null) {
-            if (!tmpInitJob.isDone()) {
-                logger.trace("Bridge {}, shutdown during init, trying to cancel", thing.getUID());
-                tmpInitJob.cancel(true);
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    logger.trace("Bridge {}, cancellation interrupted", thing.getUID());
-                }
-            }
+        Future<?> tmpInitJob;
+        IPClient tmpClient;
+        synchronized (lifecycleLock) {
+            generation++;
+            tmpInitJob = initJob;
             initJob = null;
+            tmpClient = client;
+            client = null;
         }
-        IPClient tmpClient = client;
+        if (tmpInitJob != null && !tmpInitJob.isDone()) {
+            logger.trace("Bridge {}, shutdown during init, trying to cancel", thing.getUID());
+            tmpInitJob.cancel(true);
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                logger.trace("Bridge {}, cancellation interrupted", thing.getUID());
+            }
+        }
         if (tmpClient != null) {
             tmpClient.dispose();
-            client = null;
         }
         super.dispose();
     }
