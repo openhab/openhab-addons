@@ -814,13 +814,10 @@ public class Mapper {
         // clock hour
         if (vsu.hasEndofchargetime()) {
             putClockHour(attributes, MB_KEY_ENDOFCHARGETIME, vsu.getEndofchargetime());
+        } else if (vsu.hasChargingPredictionMaxSoc()) {
+            putChargingPredictionSoc(attributes, MB_KEY_CHARGING_PREDICTION_MAX_SOC,
+                    vsu.getChargingPredictionMaxSoc());
         }
-        // MB.OS vehicles have no endofchargetime - their charge end time is a Timestamp inside
-        // charging_prediction_max_soc. Legacy vehicles send an empty prediction next to a valid
-        // endofchargetime, so don't let the empty one take over their charge end time.
-        if (vsu.hasChargingPredictionMaxSoc()
-                && (vsu.getChargingPredictionMaxSoc().getValue().hasPredictedEndTime() || !vsu.hasEndofchargetime())) {
-            putChargingPredictionSoc(attributes, MB_KEY_CHARGING_PREDICTION_MAX_SOC, vsu.getChargingPredictionMaxSoc());
         }
 
         // consumption
