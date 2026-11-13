@@ -98,14 +98,13 @@ public class SerialRegoConnection implements RegoConnection {
         }
 
         try {
-            // Close input/output streams first to ensure clean shutdown
             try {
                 InputStream inputStream = serialPortToClose.getInputStream();
                 if (inputStream != null) {
                     inputStream.close();
                 }
             } catch (Exception e) {
-                // Log but continue with port closure
+                logger.debug("Error closing serial input stream on {}: {}", portName, e.getMessage(), e);
             }
 
             try {
@@ -114,20 +113,16 @@ public class SerialRegoConnection implements RegoConnection {
                     outputStream.close();
                 }
             } catch (Exception e) {
-                // Log but continue with port closure
+                logger.debug("Error closing serial output stream on {}: {}", portName, e.getMessage(), e);
             }
 
-            // Remove any event listeners to prevent callbacks after closure
             try {
                 serialPortToClose.removeEventListener();
             } catch (Exception e) {
-                // Some implementations may not support this
+                logger.debug("Error removing serial event listener on {}: {}", portName, e.getMessage(), e);
             }
-
-            // Finally close the serial port
             serialPortToClose.close();
         } catch (Exception e) {
-            // Log the error but don't rethrow - we want to ensure the port reference is nullified
             logger.warn("Error closing serial port {}: {}", portName, e.getMessage(), e);
         }
     }
