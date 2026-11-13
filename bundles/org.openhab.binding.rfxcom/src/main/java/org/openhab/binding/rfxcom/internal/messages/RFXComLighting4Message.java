@@ -250,30 +250,6 @@ public class RFXComLighting4Message extends RFXComDeviceMessageImpl<RFXComLighti
                 }
                 break;
 
-            case CHANNEL_CONTACT:
-                if (type instanceof OpenClosedType) {
-                    if (type == OpenClosedType.OPEN) {
-                        if (config.openCommandId != null) {
-                            commandId = config.openCommandId;
-                        } else {
-                            throw new RFXComInvalidStateException(channelId, type.toString(),
-                                    "openCommandId not configured for this device");
-                        }
-                    }
-                    if (type == OpenClosedType.CLOSED) {
-                        if (config.closedCommandId != null) {
-                            commandId = config.closedCommandId;
-                        } else {
-                            throw new RFXComInvalidStateException(channelId, type.toString(),
-                                    "closedCommandId not configured for this device");
-                        }
-                    }
-                } else {
-                    throw new RFXComInvalidStateException(channelId, type.toString(),
-                            "Channel only supports OpenClosedType");
-                }
-                break;
-
             case CHANNEL_COMMAND_ID:
                 if (type instanceof DecimalType decimalCommand) {
                     commandId = (byte) decimalCommand.intValue();
