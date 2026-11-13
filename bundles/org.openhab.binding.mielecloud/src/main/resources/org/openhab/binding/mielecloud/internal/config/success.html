@@ -43,7 +43,7 @@
 
                     function updateLocale(locale) {
                         var thingsTemplate = document.getElementById("things-template")
-                        thingsTemplate.innerHTML = thingsTemplate.innerHTML.replace(/locale=".."/g, "locale=\"" + locale + "\"")
+                        thingsTemplate.value = thingsTemplate.value.replace(/locale=".."/g, "locale=\"" + locale + "\"")
                     }
                 </script>
                 <div id="success-body">
