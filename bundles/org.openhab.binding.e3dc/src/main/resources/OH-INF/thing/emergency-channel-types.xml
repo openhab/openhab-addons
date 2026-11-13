@@ -8,6 +8,10 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Reserve</label>
 		<description>Share of the battery kept for emergency power</description>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>StateOfCharge</tag>
+		</tags>
 		<state pattern="%.0f %%"/>
 		<command>
 			<options>
@@ -68,6 +72,10 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Reserve Last SoC</label>
 		<description>State of charge the battery was left with for emergency power</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>StateOfCharge</tag>
+		</tags>
 		<state pattern="%.0f %%" readOnly="true"/>
 	</channel-type>
 

@@ -8,6 +8,10 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>State of Charge</label>
 		<description>Battery state of charge</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>StateOfCharge</tag>
+		</tags>
 		<state pattern="%.1f %%" readOnly="true"/>
 	</channel-type>
 
@@ -15,6 +19,10 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Real State of Charge</label>
 		<description>State of charge the battery reports itself</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>StateOfCharge</tag>
+		</tags>
 		<state pattern="%.1f %%" readOnly="true"/>
 	</channel-type>
 
@@ -165,6 +173,10 @@
 		<item-type>Switch</item-type>
 		<label>Discharge Battery to Car</label>
 		<description>The house battery may discharge into the car</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Switch</tag>
+		</tags>
 		<state/>
 	</channel-type>
 
@@ -172,6 +184,10 @@
 		<item-type>Switch</item-type>
 		<label>Charge Battery before Car</label>
 		<description>The house battery is charged before the car</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Switch</tag>
+		</tags>
 		<state/>
 	</channel-type>
 
@@ -179,6 +195,10 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Discharge Battery until</label>
 		<description>State of charge down to which the battery may discharge into the car</description>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>StateOfCharge</tag>
+		</tags>
 		<state pattern="%.0f %%"/>
 	</channel-type>
 
@@ -186,6 +206,10 @@
 		<item-type>Switch</item-type>
 		<label>Battery Off in Mix Mode</label>
 		<description>No battery charging while the wallbox charges in mix mode</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Switch</tag>
+		</tags>
 		<state/>
 	</channel-type>
 

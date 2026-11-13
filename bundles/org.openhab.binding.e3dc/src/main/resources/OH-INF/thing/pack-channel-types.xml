@@ -30,13 +30,19 @@
 		<item-type>Number</item-type>
 		<label>Charge Cycles</label>
 		<description>Number of charge cycles of the battery</description>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
 		<state pattern="%d" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="pack-soh">
 		<item-type>Number:Dimensionless</item-type>
 		<label>State of Health</label>
-		<description>Absolute state of charge of the battery, a measure of its state of health</description>
+		<description>State of health of the battery</description>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
 		<state pattern="%.1f %%" readOnly="true"/>
 	</channel-type>
 
@@ -44,6 +50,9 @@
 		<item-type>Number</item-type>
 		<label>Status Code</label>
 		<description>Status code of the battery</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
 		<state pattern="%d" readOnly="true"/>
 	</channel-type>
 
@@ -51,6 +60,9 @@
 		<item-type>Number</item-type>
 		<label>Error Code</label>
 		<description>Error code of the battery</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
 		<state pattern="%d" readOnly="true"/>
 	</channel-type>
 
@@ -58,35 +70,47 @@
 		<item-type>Number</item-type>
 		<label>Training Mode</label>
 		<description>Training mode of the battery</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state pattern="%d" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="pack-design-capacity">
-		<item-type>Number</item-type>
+		<item-type>Number:ElectricCharge</item-type>
 		<label>Design Capacity</label>
 		<description>Design capacity of the battery</description>
-		<state pattern="%.1f Ah" readOnly="true"/>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
+		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="pack-usable-capacity">
-		<item-type>Number</item-type>
+		<item-type>Number:ElectricCharge</item-type>
 		<label>Usable Capacity</label>
 		<description>Usable capacity of the battery</description>
-		<state pattern="%.1f Ah" readOnly="true"/>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
+		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="pack-usable-remaining-capacity">
-		<item-type>Number</item-type>
+		<item-type>Number:ElectricCharge</item-type>
 		<label>Usable Remaining Capacity</label>
 		<description>Usable capacity left in the battery</description>
-		<state pattern="%.1f Ah" readOnly="true"/>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
+		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="pack-design-energy">
 		<item-type>Number:Energy</item-type>
 		<label>Design Energy</label>
-		<description>Design capacity of the battery in kWh, calculated from the design capacity and the current battery
-			voltage</description>
+		<description>Design energy of the battery</description>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Energy</tag>
@@ -97,8 +121,7 @@
 	<channel-type id="pack-usable-energy">
 		<item-type>Number:Energy</item-type>
 		<label>Usable Energy</label>
-		<description>Usable capacity of the battery in kWh, calculated from the usable capacity and the current battery
-			voltage</description>
+		<description>Usable energy of the battery</description>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Energy</tag>
@@ -109,8 +132,7 @@
 	<channel-type id="pack-usable-remaining-energy">
 		<item-type>Number:Energy</item-type>
 		<label>Usable Remaining Energy</label>
-		<description>Usable energy left in the battery in kWh, calculated from the remaining capacity and the current battery
-			voltage</description>
+		<description>Usable energy left in the battery</description>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Energy</tag>

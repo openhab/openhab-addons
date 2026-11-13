@@ -21,7 +21,7 @@ import org.openhab.core.thing.Thing;
 
 /**
  * One power meter attached to the power plant.
- * 
+ *
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault

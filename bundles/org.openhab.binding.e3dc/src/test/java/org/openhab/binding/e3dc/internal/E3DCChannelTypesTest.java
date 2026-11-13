@@ -52,8 +52,8 @@ class E3DCChannelTypesTest {
 
     /** The item types whose channel types may name a unit in their state pattern. */
     private static final Set<String> UNIT_ITEM_TYPES = Set.of("Number:Power", "Number:Energy",
-            "Number:ElectricPotential", "Number:ElectricCurrent", "Number:Frequency", "Number:Temperature",
-            "Number:Time", "Number:DataAmount");
+            "Number:ElectricPotential", "Number:ElectricCurrent", "Number:ElectricCharge", "Number:Frequency",
+            "Number:Temperature", "Number:Time", "Number:DataAmount");
 
     private static final Pattern CHANNEL_TYPE = Pattern
             .compile("<channel-type id=\"([^\"]+)\"[^>]*>(.*?)</channel-type>", Pattern.DOTALL);

@@ -11,20 +11,21 @@
 
 		<label>E3/DC Power Plant</label>
 		<description>Values of the E3/DC home power plant like power flows, battery and energy counters.</description>
+		<semantic-equipment-tag>Inverter</semantic-equipment-tag>
 
 		<channel-groups>
+			<channel-group id="system" typeId="system"/>
 			<channel-group id="power" typeId="power"/>
+			<channel-group id="grid" typeId="grid"/>
+			<channel-group id="inverter" typeId="inverter"/>
 			<channel-group id="battery" typeId="battery"/>
 			<channel-group id="battery-limits" typeId="battery-limits"/>
 			<channel-group id="battery-mode" typeId="battery-mode"/>
 			<channel-group id="idle-periods" typeId="idle-periods"/>
+			<channel-group id="manual-battery-charge" typeId="manual-battery-charge"/>
 			<channel-group id="wallbox-priority" typeId="wallbox-priority"/>
 			<channel-group id="emergency" typeId="emergency"/>
-			<channel-group id="manual-battery-charge" typeId="manual-battery-charge"/>
-			<channel-group id="grid" typeId="grid"/>
-			<channel-group id="inverter" typeId="inverter"/>
 			<channel-group id="history" typeId="history"/>
-			<channel-group id="system" typeId="system"/>
 		</channel-groups>
 	</thing-type>
 

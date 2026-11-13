@@ -74,6 +74,9 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Autarky Today</label>
 		<description>Share of consumption covered by the power plant on the completed day</description>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
 		<state pattern="%.0f %%" readOnly="true"/>
 	</channel-type>
 
@@ -147,6 +150,9 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Autarky This Week</label>
 		<description>Share of consumption covered by the power plant in the last seven days</description>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
 		<state pattern="%.0f %%" readOnly="true"/>
 	</channel-type>
 
@@ -220,6 +226,9 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Autarky This Month</label>
 		<description>Share of consumption covered by the power plant in the current month</description>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
 		<state pattern="%.0f %%" readOnly="true"/>
 	</channel-type>
 
@@ -293,6 +302,9 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Autarky This Year</label>
 		<description>Share of consumption covered by the power plant in the current year</description>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
 		<state pattern="%.0f %%" readOnly="true"/>
 	</channel-type>
 
@@ -300,6 +312,9 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Self Consumption Today</label>
 		<description>Share of production used on site on the completed day</description>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
 		<state pattern="%.0f %%" readOnly="true"/>
 	</channel-type>
 
@@ -307,6 +322,9 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Self Consumed This Week</label>
 		<description>Share of production used on site in the last seven days</description>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
 		<state pattern="%.0f %%" readOnly="true"/>
 	</channel-type>
 
@@ -314,6 +332,9 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Self Consumed This Month</label>
 		<description>Share of production used on site in the current month</description>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
 		<state pattern="%.0f %%" readOnly="true"/>
 	</channel-type>
 
@@ -321,6 +342,9 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Self Consumed This Year</label>
 		<description>Share of production used on site in the current year</description>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
 		<state pattern="%.0f %%" readOnly="true"/>
 	</channel-type>
 

@@ -15,6 +15,7 @@ package org.openhab.binding.e3dc.internal.handler;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
+import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
@@ -264,7 +265,9 @@ class E3DCCommandHandlerTest {
             assertEquals(2, children.size(), channel + " carries the index and the value");
             assertEquals(RscpTag.SE_PARAM_INDEX, children.get(0).getTag(), channel + " starts with the index");
             assertEquals(RscpType.INT32, children.get(0).getType(), channel + " sends the index as INT32");
-            assertEquals(0, ((Number) children.get(0).getValue()).intValue(), channel + " addresses data set zero");
+            Object index = Objects.requireNonNull(children.get(0).getValue());
+            assertInstanceOf(Number.class, index, channel + " sends a numeric index");
+            assertEquals(0, ((Number) index).intValue(), channel + " addresses data set zero");
             assertEquals(RscpType.FLOAT32, children.get(1).getType(), channel + " sends the value as Float32");
         }
     }

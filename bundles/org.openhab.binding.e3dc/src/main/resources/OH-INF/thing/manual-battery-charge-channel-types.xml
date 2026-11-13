@@ -7,7 +7,7 @@
 	<channel-type id="manual-battery-charge-set-manual-charge">
 		<item-type>Number:Energy</item-type>
 		<label>Set Manual Charge Energy</label>
-		<description>Start a manual battery charge with this energy, sent to the device in Wh</description>
+		<description>Energy of a manual battery charge</description>
 		<tags>
 			<tag>Setpoint</tag>
 			<tag>Energy</tag>

@@ -11,6 +11,7 @@
 
 		<label>E3/DC Power Meter</label>
 		<description>Values of a power meter connected to the E3/DC home power plant.</description>
+		<semantic-equipment-tag>ElectricMeter</semantic-equipment-tag>
 
 		<channel-groups>
 			<channel-group id="meter" typeId="meter"/>

@@ -8,6 +8,10 @@
 		<item-type>Number</item-type>
 		<label>Active Mode</label>
 		<description>Operating mode of the energy management system</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state pattern="%s" readOnly="true">
 			<options>
 				<option value="0">Automatic</option>
@@ -22,8 +26,11 @@
 	<channel-type id="battery-control-set-power-mode">
 		<item-type>String</item-type>
 		<label>Set Power Mode</label>
-		<description>Forces a battery mode for a number of poll cycles: auto, idle:cycles or charge, discharge,
-			grid_charge:watts:cycles</description>
+		<description>Forced battery mode for a number of poll cycles</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
 		<command>
 			<options>
 				<option value="auto">Automatic</option>
@@ -45,6 +52,9 @@
 		<item-type>Number</item-type>
 		<label>Emergency Power Status</label>
 		<description>State of the emergency power supply</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
 		<state pattern="%d" readOnly="true"/>
 	</channel-type>
 
@@ -52,6 +62,10 @@
 		<item-type>Switch</item-type>
 		<label>Charging Lock</label>
 		<description>Battery charging is currently blocked</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Lock</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -59,6 +73,10 @@
 		<item-type>Switch</item-type>
 		<label>Discharging Lock</label>
 		<description>Battery discharging is currently blocked</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Lock</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -66,6 +84,9 @@
 		<item-type>Switch</item-type>
 		<label>Emergency Power Available</label>
 		<description>Emergency power reserve is available</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -73,6 +94,9 @@
 		<item-type>Switch</item-type>
 		<label>Charging Throttled</label>
 		<description>Battery charging is currently limited</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -80,6 +104,9 @@
 		<item-type>Switch</item-type>
 		<label>Grid Limit Active</label>
 		<description>Grid consumption is currently limited</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -87,6 +114,10 @@
 		<item-type>Switch</item-type>
 		<label>Charging Time Lock</label>
 		<description>Battery charging is blocked by a time window</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Lock</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -94,6 +125,10 @@
 		<item-type>Switch</item-type>
 		<label>Discharging Time Lock</label>
 		<description>Battery discharging is blocked by a time window</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Lock</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -101,6 +136,10 @@
 		<item-type>Switch</item-type>
 		<label>Weather Regulated Charge</label>
 		<description>Charging follows the weather forecast</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Switch</tag>
+		</tags>
 		<state/>
 	</channel-type>
 
@@ -108,6 +147,10 @@
 		<item-type>Switch</item-type>
 		<label>Power Limits Used</label>
 		<description>Configured power limits are active</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Switch</tag>
+		</tags>
 		<state/>
 	</channel-type>
 
@@ -115,23 +158,31 @@
 		<item-type>Switch</item-type>
 		<label>Power Save</label>
 		<description>Power saving mode is active</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="battery-control-block-charging">
 		<item-type>Switch</item-type>
 		<label>Block Charging</label>
-		<description>Blocks charging of the battery on all days around the clock with an idle period of its own and
-			switches on
-			the use of idle periods. See the thing actions getIdlePeriods and setIdlePeriods</description>
+		<description>Blocks charging of the battery around the clock</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Switch</tag>
+		</tags>
 		<state readOnly="false"/>
 	</channel-type>
 
 	<channel-type id="battery-control-block-discharging">
 		<item-type>Switch</item-type>
 		<label>Block Discharging</label>
-		<description>Blocks discharging of the battery on all days around the clock with an idle period of its own and
-			switches on the use of idle periods. See the thing actions getIdlePeriods and setIdlePeriods</description>
+		<description>Blocks discharging of the battery around the clock</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Switch</tag>
+		</tags>
 		<state readOnly="false"/>
 	</channel-type>
 
@@ -139,6 +190,9 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Derate at Percent</label>
 		<description>Share of the installed peak power at which the feed in is reduced</description>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
 		<state pattern="%.0f %%" readOnly="true"/>
 	</channel-type>
 
@@ -157,6 +211,10 @@
 		<item-type>Switch</item-type>
 		<label>Idle Periods Enabled</label>
 		<description>Whether the device uses the configured idle periods</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Switch</tag>
+		</tags>
 		<state readOnly="false"/>
 	</channel-type>
 
@@ -164,6 +222,9 @@
 		<item-type>Switch</item-type>
 		<label>Has Messages</label>
 		<description>The energy manager holds at least one message</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -171,6 +232,9 @@
 		<item-type>String</item-type>
 		<label>Messages</label>
 		<description>Messages of the energy manager as a JSON array</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
