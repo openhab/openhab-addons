@@ -105,8 +105,10 @@ public class ValueEncoder {
             } else if (value instanceof StopMoveType) {
                 return StopMoveType.STOP == value ? dpt.getLowerValue() : dpt.getUpperValue();
             } else if (value instanceof PercentType type) {
-                int intValue = type.intValue();
-                return "251.600".equals(dptId) ? String.format("- - - %d %%", intValue) : String.valueOf(intValue);
+                if ("251.600".equals(dptId)) {
+                    return String.format("- - - %,.1f %%", type.doubleValue());
+                }
+                return type.toBigDecimal().stripTrailingZeros().toPlainString();
             } else if (value instanceof DecimalType || value instanceof QuantityType<?>) {
                 return handleNumericTypes(dptId, mainNumber, dpt, value);
             } else if (value instanceof StringType) {
@@ -165,8 +167,9 @@ public class ValueEncoder {
                 return "r:" + hue + " g:" + convertPercentToByte(hsb.getSaturation()) + " b:"
                         + convertPercentToByte(hsb.getBrightness());
             case "242.600":
-                double[] xyY = ColorUtil.hsbToXY(hsb);
-                return String.format("(%,.4f %,.4f) %,.1f %%", xyY[0], xyY[1], xyY[2] * 100.0);
+                // xy from the color at full brightness, Y is the brightness itself, see ValueDecoder
+                double[] xy = ColorUtil.hsbToXY(new HSBType(hsb.getHue(), hsb.getSaturation(), PercentType.HUNDRED));
+                return String.format("(%,.4f %,.4f) %,.1f %%", xy[0], xy[1], hsb.getBrightness().doubleValue());
             case "251.600":
                 PercentType[] rgbw = ColorUtil.hsbToRgbPercent(hsb);
                 return String.format("%,.1f %,.1f %,.1f - %%", rgbw[0].doubleValue(), rgbw[1].doubleValue(),

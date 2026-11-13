@@ -877,19 +877,18 @@ public class Back2BackTest {
         int x = (int) (14.65 * 65535.0 / 100.0);
         int y = (int) (11.56 * 65535.0 / 100.0);
         // encoding is always xy and brightness (C+B, 0x03), do not test other combinations
-        helper("242.600", new byte[] { (byte) ((x >> 8) & 0xff), (byte) (x & 0xff), (byte) ((y >> 8) & 0xff),
-                (byte) (y & 0xff), (byte) 0x28, 0x3 }, new HSBType("220,90,50"), new byte[] { 0, 8, 0, 8, 0, 0 },
-                new byte[0]);
-        // TODO check brightness
+        helper("242.600",
+                new byte[] { (byte) ((x >> 8) & 0xff), (byte) (x & 0xff), (byte) ((y >> 8) & 0xff), (byte) (y & 0xff),
+                        (byte) 0x28, 0x3 },
+                new HSBType("219.961,85.629,15.7"), new byte[] { 0, 8, 0, 8, 0, 0 }, new byte[0]);
 
         // RGBW, only RGB part
-        helper("251.600", new byte[] { 0x26, 0x2b, 0x31, 0x00, 0x00, 0x0e }, new HSBType("207, 23, 19"),
-                new byte[] { 1, 1, 1, 0, 0, 0 }, new byte[0]);
+        helper("251.600", new byte[] { 0x26, 0x2b, 0x31, 0x00, 0x00, 0x0e }, new HSBType("212.726, 22.45, 19.216"));
         // RGBW, only RGB part
         helper("251.600", new byte[] { (byte) 0xff, (byte) 0xff, (byte) 0xff, 0x00, 0x00, 0x0e },
-                new HSBType("0, 0, 100"), new byte[] { 1, 1, 1, 0, 0, 0 }, new byte[0]);
+                new HSBType("0, 0, 100"));
         // RGBW, only W part
-        helper("251.600", new byte[] { 0x0, 0x0, 0x0, 0x1A, 0x00, 0x01 }, new PercentType("10.2"));
+        helper("251.600", new byte[] { 0x0, 0x0, 0x0, 0x1A, 0x00, 0x01 }, new PercentType("10"));
         // RGBW, all
         helper("251.60600", new byte[] { (byte) 0x0, (byte) 0x0, (byte) 0x0, (byte) 0xff, 0x00, 0x0f },
                 new HSBType("0, 0, 100"), new byte[] { 1, 1, 1, 2, 0, 0 }, new byte[0]);

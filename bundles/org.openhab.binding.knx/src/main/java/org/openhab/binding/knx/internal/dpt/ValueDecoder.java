@@ -15,6 +15,7 @@ package org.openhab.binding.knx.internal.dpt;
 import static org.openhab.binding.knx.internal.KNXBindingConstants.disableUoM;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -441,12 +442,14 @@ public class ValueDecoder {
             if (stringx != null && stringy != null) {
                 double x = Double.parseDouble(stringx.replace(",", "."));
                 double y = Double.parseDouble(stringy.replace(",", "."));
+                HSBType color = ColorUtil.xyToHsb(new double[] { x, y });
                 if (stringY == null) {
-                    return ColorUtil.xyToHsb(new double[] { x, y });
-                } else {
-                    double pY = Double.parseDouble(stringY.replace(",", "."));
-                    return ColorUtil.xyToHsb(new double[] { x, y, pY / 100.0 });
+                    return color;
                 }
+                // Y is the brightness in percent like DPT 5.001, not the CIE luminance ColorUtil expects
+                double brightness = Double.parseDouble(stringY.replace(",", "."));
+                return new HSBType(color.getHue(), color.getSaturation(),
+                        new PercentType(scalingToPercent(brightness)));
             }
         }
         LOGGER.warn("Failed to convert '{}' (DPT 242): Pattern does not match", value);
@@ -465,16 +468,14 @@ public class ValueDecoder {
                 case "600":
                     if (rString != null && gString != null && bString != null && HSBType.class.equals(preferredType)) {
                         // does not support PercentType and r,g,b valid -> HSBType
-                        int r = coerceToRange((int) (Double.parseDouble(rString.replace(",", ".")) * 2.55), 0, 255);
-                        int g = coerceToRange((int) (Double.parseDouble(gString.replace(",", ".")) * 2.55), 0, 255);
-                        int b = coerceToRange((int) (Double.parseDouble(bString.replace(",", ".")) * 2.55), 0, 255);
+                        int r = percentToStep(rString);
+                        int g = percentToStep(gString);
+                        int b = percentToStep(bString);
 
                         return HSBType.fromRGB(r, g, b);
                     } else if (wString != null && PercentType.class.equals(preferredType)) {
                         // does support PercentType and w valid -> PercentType
-                        BigDecimal w = new BigDecimal(wString.replace(",", "."));
-
-                        return new PercentType(w);
+                        return new PercentType(scalingToPercent(Double.parseDouble(wString.replace(",", "."))));
                     }
                 case "60600":
                     // special type used by OH for .600 indicating that RGBW should be handled with a single HSBType,
@@ -482,10 +483,10 @@ public class ValueDecoder {
                     if (rString != null && gString != null && bString != null && wString != null
                             && HSBType.class.equals(preferredType)) {
                         // does support PercentType and w valid -> PercentType
-                        int r = coerceToRange((int) (Double.parseDouble(rString.replace(",", ".")) * 2.55), 0, 255);
-                        int g = coerceToRange((int) (Double.parseDouble(gString.replace(",", ".")) * 2.55), 0, 255);
-                        int b = coerceToRange((int) (Double.parseDouble(bString.replace(",", ".")) * 2.55), 0, 255);
-                        int w = coerceToRange((int) (Double.parseDouble(wString.replace(",", ".")) * 2.55), 0, 255);
+                        int r = percentToStep(rString);
+                        int g = percentToStep(gString);
+                        int b = percentToStep(bString);
+                        int w = percentToStep(wString);
 
                         return ColorUtil.rgbToHsb(new int[] { r, g, b, w });
                     }
@@ -499,6 +500,24 @@ public class ValueDecoder {
         return null;
     }
 
+    // Calimero gives one decimal, rounding (not truncating) gets the step back
+    private static int percentToStep(String percent) {
+        return coerceToRange((int) Math.round(Double.parseDouble(percent.replace(",", ".")) * 2.55), 0, 255);
+    }
+
+    /**
+     * Whole percent when it encodes to the same step, so a value sent from openHAB comes back unchanged. Otherwise
+     * one decimal, which tells all 256 steps apart and keeps the lowest step above 0.
+     */
+    private static BigDecimal scalingToPercent(double value) {
+        long step = Math.round(value * 255 / 100);
+        long whole = Math.round(value);
+        if (Math.round(whole * 255 / 100.0) == step) {
+            return BigDecimal.valueOf(whole);
+        }
+        return BigDecimal.valueOf(value).setScale(1, RoundingMode.HALF_UP);
+    }
+
     private static @Nullable Type handleNumericDpt(String id, DPTXlator translator, Class<? extends Type> preferredType)
             throws KNXFormatException {
         Set<Class<? extends Type>> allowedTypes = DPTUtil.getAllowedTypes(id);
@@ -506,7 +525,7 @@ public class ValueDecoder {
         double value = translator.getNumericValue();
         if (allowedTypes.contains(PercentType.class)
                 && (HSBType.class.equals(preferredType) || PercentType.class.equals(preferredType))) {
-            return new PercentType(BigDecimal.valueOf(Math.round(value)));
+            return new PercentType(scalingToPercent(value));
         }
 
         if (allowedTypes.contains(QuantityType.class) && !disableUoM) {
