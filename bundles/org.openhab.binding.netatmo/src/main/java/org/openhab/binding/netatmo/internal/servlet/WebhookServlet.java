@@ -28,8 +28,11 @@ import javax.ws.rs.core.UriBuilder;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.netatmo.internal.api.NetatmoException;
 import org.openhab.binding.netatmo.internal.api.WebhookApi;
+<<<<<<< Upstream, based on main
 import org.openhab.binding.netatmo.internal.api.data.EventType;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.ServiceError;
+=======
+>>>>>>> 194ac54 Use new API endpoints for webhooks
 import org.openhab.binding.netatmo.internal.api.dto.Webhook;
 import org.openhab.binding.netatmo.internal.api.dto.WebhookEvent;
 import org.openhab.binding.netatmo.internal.deserialization.NADeserializer;
@@ -62,6 +65,11 @@ public class WebhookServlet extends NetatmoServlet {
         this.uri = UriBuilder.fromUri(webHookUrl).path(getPath() + webHookPostfix).build();
         this.deserializer = deserializer;
         this.api = api;
+<<<<<<< Upstream, based on main
+=======
+        this.webHookUrl = webHookUrl;
+        this.webHookPostfix = webHookPostfix;
+>>>>>>> 194ac54 Use new API endpoints for webhooks
     }
 
     @Override
@@ -69,6 +77,7 @@ public class WebhookServlet extends NetatmoServlet {
         super.startListening();
         try {
             logger.debug("Getting list of active webhooks");
+<<<<<<< Upstream, based on main
             List<Webhook> currentHooks = api.getWebhooks();
             if (currentHooks.stream().anyMatch(url -> url.getUri().equals(uri))) {
                 logger.info("The webhook {} is already present", uri);
@@ -76,6 +85,16 @@ public class WebhookServlet extends NetatmoServlet {
             } else {
                 logger.info("Setting up the webhook {}", uri);
                 setHooked(api.appendWebhook(uri));
+=======
+            String stringUri = uri.toString();
+            List<Webhook> currentHooks = api.getWebhooks();
+            if (currentHooks.stream().anyMatch(url -> url.getUrl().equals(stringUri))) {
+                logger.info("The webhook {} is already present", stringUri);
+                hookSet = true;
+            } else {
+                logger.info("Setting up the webhook {}", stringUri);
+                hookSet = api.appendWebhook(uri);
+>>>>>>> 194ac54 Use new API endpoints for webhooks
             }
         } catch (NetatmoException e) {
             if (ServiceError.WEBHOOK_LIMIT_REACHED.equals(e.getStatusCode())) {
@@ -93,9 +112,14 @@ public class WebhookServlet extends NetatmoServlet {
 
     @Override
     public void dispose() {
+<<<<<<< Upstream, based on main
         if (hooked) {
+=======
+        if (hookSet) {
+>>>>>>> 194ac54 Use new API endpoints for webhooks
             logger.info("Releasing webhook");
             try {
+<<<<<<< Upstream, based on main
                 List<Webhook> currentHooks = api.getWebhooks();
                 currentHooks.removeIf(url -> url.getUri().equals(uri));
                 if (currentHooks.isEmpty()) {
@@ -103,6 +127,10 @@ public class WebhookServlet extends NetatmoServlet {
                 } else {
                     api.setWebhooks(currentHooks.stream().map(wh -> wh.getUri()).toList());
                 }
+=======
+                api.dropWebhook();
+                hookSet = false;
+>>>>>>> 194ac54 Use new API endpoints for webhooks
             } catch (NetatmoException e) {
                 logger.warn("Error releasing webhook: {}", e.getMessage());
             }

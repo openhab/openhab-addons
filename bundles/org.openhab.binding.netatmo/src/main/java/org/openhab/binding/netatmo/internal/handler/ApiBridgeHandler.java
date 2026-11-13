@@ -177,13 +177,22 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
         freeConnectJob();
 
         ApiHandlerConfiguration configuration = getConfiguration();
+<<<<<<< Upstream, based on main
         hookState(false);
         if (!configuration.webHookUrl.isBlank() && getRestManager(WebhookApi.class) instanceof WebhookApi api) {
             WebhookServlet servlet = webhookServlet;
+=======
+        if (!configuration.webHookUrl.isBlank() && getRestManager(WebhookApi.class) instanceof WebhookApi api) {
+            WebhookServlet servlet = this.webhookServlet;
+>>>>>>> 194ac54 Use new API endpoints for webhooks
             if (servlet != null) {
                 servlet.dispose();
             }
+<<<<<<< Upstream, based on main
             servlet = webhookServlet = new WebhookServlet(this, httpService, deserializer, api,
+=======
+            servlet = this.webhookServlet = new WebhookServlet(this, httpService, deserializer, api,
+>>>>>>> 194ac54 Use new API endpoints for webhooks
                     configuration.webHookUrl, configuration.webHookPostfix);
             servlet.startListening();
         }

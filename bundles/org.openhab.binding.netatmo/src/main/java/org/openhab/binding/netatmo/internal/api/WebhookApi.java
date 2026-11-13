@@ -16,6 +16,7 @@ import static org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.PAT
 
 import java.net.URI;
 import java.util.List;
+<<<<<<< Upstream, based on main
 import java.util.stream.Collectors;
 
 import javax.ws.rs.core.UriBuilder;
@@ -84,5 +85,55 @@ public class WebhookApi extends RestManager {
                 uris.stream().map(URI::toString).map(PAYLOAD_POST_WEBHOOK::formatted).collect(Collectors.joining(",")));
         put(WEBHOOKS_URI_BUILDER.clone(), WebhooksResponse.class, payload);
         return true;
+=======
+
+import javax.ws.rs.core.UriBuilder;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.FeatureArea;
+import org.openhab.binding.netatmo.internal.api.dto.Webhook;
+import org.openhab.binding.netatmo.internal.api.dto.Webhook.WebhooksResponse;
+import org.openhab.binding.netatmo.internal.handler.ApiBridgeHandler;
+
+/**
+ * Base class for all Webhooks related endpoints
+ * https://dev.netatmo.com/apidocumentation/webhooks#documentation
+ *
+ * @author Gaël L'hopital - Initial contribution
+ */
+@NonNullByDefault
+public class WebhookApi extends RestManager {
+    private static final UriBuilder WEBHOOKS_URI_BUILDER = getApiBaseBuilder(PATH_WEBHOOK);
+    private static final String PAYLOAD_POST_WEBHOOK = "{\"url\":\"%s\"}";
+
+    public WebhookApi(ApiBridgeHandler apiClient) {
+        super(apiClient, FeatureArea.NONE);
+    }
+
+    /**
+     * Delete all webhooks
+     *
+     * @throws NetatmoException If fail to call the API, e.g. server or deserializing error
+     */
+    public void dropWebhook() throws NetatmoException {
+        delete(WEBHOOKS_URI_BUILDER.clone(), ApiResponse.Ok.class);
+    }
+
+    /**
+     * Appends a single webhook
+     *
+     * @param uri Your Webhook callback url (required)
+     * @throws NetatmoException If fail to call the API, e.g. server or deserializing error
+     */
+    public boolean appendWebhook(URI uri) throws NetatmoException {
+        String payload = PAYLOAD_POST_WEBHOOK.formatted(uri.toString());
+        post(WEBHOOKS_URI_BUILDER.clone(), ApiResponse.Ok.class, payload);
+        return true;
+    }
+
+    public List<Webhook> getWebhooks() throws NetatmoException {
+        List<Webhook> result = get(WEBHOOKS_URI_BUILDER.clone(), WebhooksResponse.class).getBody();
+        return result != null ? result : List.of();
+>>>>>>> 194ac54 Use new API endpoints for webhooks
     }
 }
