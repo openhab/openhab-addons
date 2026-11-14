@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="smartthings"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="dryer">
+		<label>Samsung Dryer</label>
+		<channels>
+			<channel id="power" typeId="system.power">
+				<label>Power</label>
+				<description>Switch the dryer on or off when supported by the dryer.</description>
+			</channel>
+			<channel id="remote-control" typeId="switch-readonly-advanced">
+				<label>Remote Control</label>
+				<description>Whether the dryer currently permits remote control.</description>
+			</channel>
+			<channel id="power-consumption" typeId="system.electric-power">
+				<label>Power Consumption</label>
+				<description>Instantaneous electrical power reported by the dryer.</description>
+			</channel>
+			<channel id="cumulative-energy" typeId="energy-readonly">
+				<label>Cumulative Energy</label>
+				<description>Cumulative energy reported by the dryer.</description>
+			</channel>
+			<channel id="dryer-mode" typeId="string">
+				<label>Dryer Mode</label>
+				<description>Current dryer course.</description>
+			</channel>
+			<channel id="cycle-control" typeId="string">
+				<label>Cycle Control</label>
+				<description>Set the dryer cycle to Run, Pause, or Ready when Remote Control is enabled.</description>
+			</channel>
+			<channel id="delay-end-time" typeId="time">
+				<label>Delay End Time</label>
+				<description>Set delay end from 0 to 24 hours in 30-minute increments when Remote Control is enabled.</description>
+			</channel>
+			<channel id="dry-level" typeId="string">
+				<label>Dry Level</label>
+				<description>Select one of the dry levels supported by the dryer.</description>
+			</channel>
+			<channel id="wrinkle-prevent" typeId="string">
+				<label>Wrinkle Prevention</label>
+				<description>Enable or disable wrinkle prevention.</description>
+			</channel>
+			<channel id="machine-state" typeId="string-readonly">
+				<label>Machine State</label>
+				<description>Current dryer machine state.</description>
+			</channel>
+			<channel id="job-state" typeId="string-readonly">
+				<label>Job State</label>
+				<description>Current dryer job state.</description>
+			</channel>
+			<channel id="remaining-time" typeId="time-readonly">
+				<label>Remaining Time</label>
+				<description>Remaining dryer cycle duration in seconds.</description>
+			</channel>
+			<channel id="progress" typeId="percentage-readonly">
+				<label>Cycle Progress</label>
+				<description>Dryer cycle progress from 0 to 100 percent.</description>
+			</channel>
+			<channel id="kidslock" typeId="string-readonly-advanced">
+				<label>Child Lock</label>
+				<description>Child-lock state reported by the dryer.</description>
+			</channel>
+		</channels>
+		<representation-property>deviceId</representation-property>
+		<config-description-ref uri="thing-type:smartthings:device"/>
+	</thing-type>
+</thing:thing-descriptions>

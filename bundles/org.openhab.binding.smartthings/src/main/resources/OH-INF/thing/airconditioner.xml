@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="smartthings"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="airconditioner">
+		<label>Samsung Air Conditioner</label>
+		<description>Samsung air conditioner.</description>
+		<semantic-equipment-tag>AirConditioner</semantic-equipment-tag>
+		<channels>
+			<channel id="power" typeId="system.power">
+				<label>Power</label>
+				<description>Switch the air conditioner on or off when supported by the air conditioner.</description>
+			</channel>
+			<channel id="remote-control" typeId="switch-readonly-advanced">
+				<label>Remote Control</label>
+				<description>Whether the air conditioner currently permits remote control.</description>
+			</channel>
+			<channel id="current-temperature" typeId="system.indoor-temperature">
+				<label>Current Temperature</label>
+				<description>Measured temperature reported by the air conditioner.</description>
+			</channel>
+			<channel id="target-temperature" typeId="temperature">
+				<label>Target Temperature</label>
+				<description>Desired temperature, writable within the air conditioner-reported range and increment.</description>
+			</channel>
+			<channel id="mode" typeId="string">
+				<label>Operating Mode</label>
+				<description>Operating mode of the air conditioner.</description>
+			</channel>
+			<channel id="wind-strength" typeId="string">
+				<label>Fan Strength</label>
+				<description>Fan strength setting.</description>
+			</channel>
+			<channel id="wind-direction" typeId="string">
+				<label>Wind Direction</label>
+				<description>Airflow direction or swing setting.</description>
+			</channel>
+			<channel id="mode-convenient" typeId="string">
+				<label>Comfort Mode</label>
+				<description>Comfort or convenience setting for the air conditioner.</description>
+			</channel>
+			<channel id="power-consumption" typeId="system.electric-power">
+				<label>Power Consumption</label>
+				<description>Instantaneous electrical power reported by the air conditioner.</description>
+			</channel>
+			<channel id="cumulative-energy" typeId="energy-readonly">
+				<label>Cumulative Energy</label>
+				<description>Cumulative energy reported by the air conditioner.</description>
+			</channel>
+		</channels>
+		<representation-property>deviceId</representation-property>
+		<config-description-ref uri="thing-type:smartthings:device"/>
+	</thing-type>
+</thing:thing-descriptions>
