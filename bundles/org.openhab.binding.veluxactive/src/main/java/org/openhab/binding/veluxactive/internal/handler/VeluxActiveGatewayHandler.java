@@ -67,8 +67,8 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class VeluxActiveGatewayHandler extends VeluxActiveModuleHandler implements BridgeHandler {
 
-    private final static int MINIMUM_FIRMWARE_VERSION_REQUIRED_FOR_SIGNING = 27;
-    private final static int MINIMUM_FIRMWARE_VERSION_REQUIRED_FOR_SIGNING_WITH_NONCE = 60;
+    private static final int MINIMUM_FIRMWARE_VERSION_REQUIRED_FOR_SIGNING = 27;
+    private static final int MINIMUM_FIRMWARE_VERSION_REQUIRED_FOR_SIGNING_WITH_NONCE = 60;
 
     private final Logger logger = LoggerFactory.getLogger(VeluxActiveGatewayHandler.class);
     private final SigningKeyStore signingKeys;
