@@ -58,6 +58,12 @@
             <!-- set the version to be the same as the level in your runtime -->
             <version>${openjpa.version}</version>
           </dependency>
+          <dependency>
+            <!-- newer ASM than the one of openjpa, required to enhance Java 25 class files -->
+            <groupId>org.apache.xbean</groupId>
+            <artifactId>xbean-asm9-shaded</artifactId>
+            <version>4.28</version>
+          </dependency>
         </dependencies>
         <executions>
           <execution>
