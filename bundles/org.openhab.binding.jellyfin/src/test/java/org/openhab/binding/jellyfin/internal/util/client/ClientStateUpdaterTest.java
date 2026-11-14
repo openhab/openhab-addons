@@ -20,6 +20,8 @@ import java.util.UUID;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.openhab.binding.jellyfin.internal.Constants;
 import org.openhab.binding.jellyfin.internal.gen.current.model.BaseItemDto;
 import org.openhab.binding.jellyfin.internal.gen.current.model.BaseItemKind;
@@ -29,7 +31,9 @@ import org.openhab.binding.jellyfin.internal.gen.current.model.SessionInfoDto;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.PlayPauseType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 
@@ -40,6 +44,7 @@ import org.openhab.core.types.UnDefType;
  * playback state, position/duration conversions, and null/blank value handling.
  *
  * @author Patrik Gfeller - Initial contribution
+ * @author Leo Siepel - Time quantity regression tests
  */
 @SuppressWarnings("checkstyle:MethodName")
 @NonNullByDefault
@@ -80,8 +85,8 @@ class ClientStateUpdaterTest {
 
         assertEquals(PlayPauseType.PLAY, states.get(Constants.MEDIA_CONTROL_CHANNEL));
         assertEquals(new PercentType(50), states.get(Constants.PLAYING_ITEM_PERCENTAGE_CHANNEL));
-        assertEquals(new DecimalType(2), states.get(Constants.PLAYING_ITEM_SECOND_CHANNEL));
-        assertEquals(new DecimalType(3), states.get(Constants.PLAYING_ITEM_TOTAL_SECOND_CHANNEL));
+        assertEquals(new QuantityType<>(2, Units.SECOND), states.get(Constants.PLAYING_ITEM_SECOND_CHANNEL));
+        assertEquals(new QuantityType<>(3, Units.SECOND), states.get(Constants.PLAYING_ITEM_TOTAL_SECOND_CHANNEL));
         assertEquals(new StringType(playingItem.getId().toString()), states.get(Constants.PLAYING_ITEM_ID_CHANNEL));
         assertEquals(new StringType("Pilot"), states.get(Constants.PLAYING_ITEM_NAME_CHANNEL));
         assertEquals(new StringType("My Show"), states.get(Constants.PLAYING_ITEM_SERIES_NAME_CHANNEL));
@@ -90,6 +95,27 @@ class ClientStateUpdaterTest {
         assertEquals(new DecimalType(5), states.get(Constants.PLAYING_ITEM_EPISODE_CHANNEL));
         assertEquals(new StringType("Action, Drama"), states.get(Constants.PLAYING_ITEM_GENRES_CHANNEL));
         assertEquals(new StringType(BaseItemKind.EPISODE.toString()), states.get(Constants.PLAYING_ITEM_TYPE_CHANNEL));
+    }
+
+    @ParameterizedTest
+    @CsvSource({ "0, 0, 00:00:00", "15000000, 2, 00:00:02", "36610000000, 3661, 01:01:01" })
+    void calculateChannelStatesFormatsTimeQuantities(long ticks, long seconds, String formatted) {
+        BaseItemDto playingItem = new BaseItemDto();
+        playingItem.setRunTimeTicks(ticks);
+        PlayerStateInfo playState = new PlayerStateInfo();
+        playState.setPositionTicks(ticks);
+        SessionInfoDto session = new SessionInfoDto();
+        session.setNowPlayingItem(playingItem);
+        session.setPlayState(playState);
+
+        Map<String, State> states = ClientStateUpdater.calculateChannelStates(session);
+
+        for (String channel : new String[] { Constants.PLAYING_ITEM_SECOND_CHANNEL,
+                Constants.PLAYING_ITEM_TOTAL_SECOND_CHANNEL }) {
+            QuantityType<?> state = assertInstanceOf(QuantityType.class, states.get(channel));
+            assertEquals(new QuantityType<>(seconds, Units.SECOND), state);
+            assertEquals(formatted, state.format("%1$tT"));
+        }
     }
 
     @Test

@@ -13,9 +13,14 @@
 package org.openhab.binding.jellyfin.internal.handler;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
@@ -24,11 +29,17 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
+import org.mockito.ArgumentCaptor;
 import org.openhab.binding.jellyfin.internal.Constants;
 import org.openhab.binding.jellyfin.internal.gen.current.model.BaseItemDto;
 import org.openhab.binding.jellyfin.internal.gen.current.model.PlayerStateInfo;
 import org.openhab.binding.jellyfin.internal.gen.current.model.SessionInfoDto;
 import org.openhab.binding.jellyfin.internal.util.extrapolation.PlaybackExtrapolator;
+import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.unit.Units;
+import org.openhab.core.types.State;
 
 /**
  * Unit tests for {@link PlaybackExtrapolator}.
@@ -39,6 +50,7 @@ import org.openhab.binding.jellyfin.internal.util.extrapolation.PlaybackExtrapol
  * and anonymous-subclass workarounds.
  *
  * @author Patrik Gfeller - Initial contribution
+ * @author Leo Siepel - Time quantity regression tests
  */
 @NonNullByDefault
 class ClientHandlerExtrapolationTest {
@@ -72,6 +84,33 @@ class ClientHandlerExtrapolationTest {
     void tearDown() {
         extrapolator.dispose();
         exec.shutdownNow();
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = { true, false })
+    void testExtrapolationPublishesTimeQuantities(boolean runtimeKnown) {
+        ScheduledExecutorService scheduler = mock(ScheduledExecutorService.class);
+        Map<String, State> states = new HashMap<>();
+        PlaybackExtrapolator extrapolation = new PlaybackExtrapolator(channel -> true, states::put, () -> {
+        }, scheduler);
+        SessionInfoDto session = buildPlayingSession(0L, 100_000_000L);
+        if (!runtimeKnown) {
+            session.setNowPlayingItem(new BaseItemDto());
+        }
+        try {
+            extrapolation.start(session);
+            ArgumentCaptor<Runnable> tick = ArgumentCaptor.forClass(Runnable.class);
+            verify(scheduler).scheduleWithFixedDelay(tick.capture(), eq(1L), eq(1L), eq(TimeUnit.SECONDS));
+
+            tick.getValue().run();
+
+            QuantityType<?> state = assertInstanceOf(QuantityType.class,
+                    states.get(Constants.PLAYING_ITEM_SECOND_CHANNEL));
+            assertEquals(new QuantityType<>(1, Units.SECOND), state);
+            assertEquals("00:00:01", state.format("%1$tT"));
+        } finally {
+            extrapolation.dispose();
+        }
     }
 
     @Test

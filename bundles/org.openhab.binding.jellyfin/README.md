@@ -121,35 +121,44 @@ When enabled, a dynamic `Image` channel is created automatically with the channe
 
 ## Channels
 
-| channel                    | Type   | Description                                                                                                     |
-| -------------------------- | ------ | --------------------------------------------------------------------------------------------------------------- |
-| send-notification          | String | Display message in client                                                                                       |
-| media-control              | Player | Control media playback: play, pause, next, previous, fast-forward, rewind (standard openHAB Player channel)     |
-| media-stop                 | Switch | Stop playback: send ON to stop (complements media-control which doesn't have native stop command)               |
-| media-shuffle              | Switch | Control shuffle mode (ON=random order, OFF=sequential order)                                                    |
-| media-repeat               | String | Control repeat mode (off=play once, one=repeat item, all=repeat queue)                                          |
-| media-quality              | Number | Set maximum streaming bitrate in Kbps (140-8000)                                                                |
-| media-audio-track          | Number | Select audio track by zero-based index                                                                          |
-| media-subtitle             | Number | Select subtitle stream by index (-1=disable, 0+=track selection)                                                |
-| playing-item-id            | String | Id of the item currently playing (readonly)                                                                     |
-| playing-item-name          | String | Name of the item currently playing (readonly)                                                                   |
-| playing-item-series-name   | String | Name of the item's series currently playing, only have value when item is an episode (readonly)                 |
-| playing-item-season-name   | String | Name of the item's season currently playing, only have value when item is an episode (readonly)                 |
-| playing-item-season        | Number | Number of the item's season currently playing, only have value when item is an episode (readonly)               |
-| playing-item-episode       | Number | Number of the episode item currently playing, only have value when item is an episode (readonly)                |
-| playing-item-genders       | String | Comma-separated list of the item's genres currently playing (readonly)                                          |
-| playing-item-type          | String | Type of the item currently playing (readonly)                                                                   |
-| playing-item-percentage    | Dimmer | Played percentage for the item currently playing, allow seek                                                    |
-| playing-item-second        | Number | Current second for the item currently playing, allow seek                                                       |
-| playing-item-total-seconds | Number | Total seconds for the item currently playing (readonly)                                                         |
-| play-by-terms              | String | Play media by terms, works for series, episodes and movies; terms search is explained bellow                    |
-| play-next-by-terms         | String | Add to playback queue as next by terms, works for series, episodes and movies; terms search is explained bellow |
-| play-last-by-terms         | String | Add to playback queue as last by terms, works for series, episodes and movies; terms search is explained bellow |
-| browse-by-terms            | String | Browse media by terms, works for series, episodes and movies; terms search is explained bellow                  |
-| play-by-id                 | String | Play media by id, works for series, episodes and movies; id search is explained bellow                          |
-| play-next-by-id            | String | Add to playback queue as next by id, works for series, episodes and movies                                      |
-| play-last-by-id            | String | Add to playback queue as last by id, works for series, episodes and movies                                      |
-| browse-by-id               | String | Browse media by id, works for series, episodes and movies                                                       |
+| channel                    | Type        | Description                                                                                                     |
+| -------------------------- | ----------- | --------------------------------------------------------------------------------------------------------------- |
+| send-notification          | String      | Display message in client                                                                                       |
+| media-control              | Player      | Control media playback: play, pause, next, previous, fast-forward, rewind (standard openHAB Player channel)     |
+| media-stop                 | Switch      | Stop playback: send ON to stop (complements media-control which doesn't have native stop command)               |
+| media-shuffle              | Switch      | Control shuffle mode (ON=random order, OFF=sequential order)                                                    |
+| media-repeat               | String      | Control repeat mode (off=play once, one=repeat item, all=repeat queue)                                          |
+| media-quality              | Number      | Set maximum streaming bitrate in Kbps (140-8000)                                                                |
+| media-audio-track          | Number      | Select audio track by zero-based index                                                                          |
+| media-subtitle             | Number      | Select subtitle stream by index (-1=disable, 0+=track selection)                                                |
+| playing-item-id            | String      | Id of the item currently playing (readonly)                                                                     |
+| playing-item-name          | String      | Name of the item currently playing (readonly)                                                                   |
+| playing-item-series-name   | String      | Name of the item's series currently playing, only have value when item is an episode (readonly)                 |
+| playing-item-season-name   | String      | Name of the item's season currently playing, only have value when item is an episode (readonly)                 |
+| playing-item-season        | Number      | Number of the item's season currently playing, only have value when item is an episode (readonly)               |
+| playing-item-episode       | Number      | Number of the episode item currently playing, only have value when item is an episode (readonly)                |
+| playing-item-genders       | String      | Comma-separated list of the item's genres currently playing (readonly)                                          |
+| playing-item-type          | String      | Type of the item currently playing (readonly)                                                                   |
+| playing-item-percentage    | Dimmer      | Played percentage for the item currently playing, allow seek                                                    |
+| playing-item-second        | Number:Time | Current second for the item currently playing, allow seek                                                       |
+| playing-item-total-seconds | Number:Time | Total seconds for the item currently playing (readonly)                                                         |
+| play-by-terms              | String      | Play media by terms, works for series, episodes and movies; terms search is explained bellow                    |
+| play-next-by-terms         | String      | Add to playback queue as next by terms, works for series, episodes and movies; terms search is explained bellow |
+| play-last-by-terms         | String      | Add to playback queue as last by terms, works for series, episodes and movies; terms search is explained bellow |
+| browse-by-terms            | String      | Browse media by terms, works for series, episodes and movies; terms search is explained bellow                  |
+| play-by-id                 | String      | Play media by id, works for series, episodes and movies; id search is explained bellow                          |
+| play-next-by-id            | String      | Add to playback queue as next by id, works for series, episodes and movies                                      |
+| play-last-by-id            | String      | Add to playback queue as last by id, works for series, episodes and movies                                      |
+| browse-by-id               | String      | Browse media by id, works for series, episodes and movies                                                       |
+
+### Playback Time Items
+
+Link `playing-item-second` and `playing-item-total-seconds` to `Number:Time` Items.
+Their default display pattern is `%1$tT` (`HH:mm:ss`).
+When upgrading an existing setup, change any plain `Number` Items linked to these channels to `Number:Time` and set their unit metadata to `s` to retain seconds as the stored unit.
+Plain `Number` Items discard the time unit and cannot use the new display pattern.
+Remove any custom label or state-description pattern to inherit the channel's default time display.
+Seek commands accept time quantities such as `2 min`; commands without a unit are interpreted as seconds.
 
 ### Image Channels (Dynamic)
 
@@ -270,8 +279,8 @@ Number nJellyfinAndroidPlayingItemEpisode      { channel="jellyfin:client:exampl
 String strJellyfinAndroidPlayingItemGenders    { channel="jellyfin:client:exampleServerId:<JELLYFIN_DEVICE_ID>:playing-item-genders" }
 String strJellyfinAndroidPlayingItemType       { channel="jellyfin:client:exampleServerId:<JELLYFIN_DEVICE_ID>:playing-item-type" }
 Dimmer dJellyfinAndroidPlayingItemPercentage   { channel="jellyfin:client:exampleServerId:<JELLYFIN_DEVICE_ID>:playing-item-percentage" }
-Number nJellyfinAndroidPlayingItemSecond       { channel="jellyfin:client:exampleServerId:<JELLYFIN_DEVICE_ID>:playing-item-second" }
-Number nJellyfinAndroidPlayingItemTotalSeconds { channel="jellyfin:client:exampleServerId:<JELLYFIN_DEVICE_ID>:playing-item-total-seconds" }
+Number:Time nJellyfinAndroidPlayingItemSecond       { channel="jellyfin:client:exampleServerId:<JELLYFIN_DEVICE_ID>:playing-item-second", unit="s" }
+Number:Time nJellyfinAndroidPlayingItemTotalSeconds { channel="jellyfin:client:exampleServerId:<JELLYFIN_DEVICE_ID>:playing-item-total-seconds", unit="s" }
 String strJellyfinAndroidPlayByTerms           { channel="jellyfin:client:exampleServerId:<JELLYFIN_DEVICE_ID>:play-by-terms" }
 String strJellyfinAndroidPlayByNextTerms       { channel="jellyfin:client:exampleServerId:<JELLYFIN_DEVICE_ID>:play-next-by-terms" }
 String strJellyfinAndroidPlayByLastTerms       { channel="jellyfin:client:exampleServerId:<JELLYFIN_DEVICE_ID>:play-last-by-terms" }

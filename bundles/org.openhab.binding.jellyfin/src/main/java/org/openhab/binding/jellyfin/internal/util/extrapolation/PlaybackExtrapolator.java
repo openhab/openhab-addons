@@ -24,9 +24,10 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.jellyfin.internal.Constants;
 import org.openhab.binding.jellyfin.internal.gen.current.model.SessionInfoDto;
 import org.openhab.binding.jellyfin.internal.util.tick.TickConverter;
-import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.PlayPauseType;
+import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -160,7 +161,8 @@ public final class PlaybackExtrapolator {
                         secs = 0;
                     }
                     if (linkedChecker.test(Constants.PLAYING_ITEM_SECOND_CHANNEL)) {
-                        stateUpdater.accept(Constants.PLAYING_ITEM_SECOND_CHANNEL, new DecimalType(secs));
+                        stateUpdater.accept(Constants.PLAYING_ITEM_SECOND_CHANNEL,
+                                new QuantityType<>(secs, Units.SECOND));
                     }
                 } else {
                     long secs = TickConverter.ticksToSeconds(pos2);
@@ -168,7 +170,8 @@ public final class PlaybackExtrapolator {
                         secs = 0;
                     }
                     if (linkedChecker.test(Constants.PLAYING_ITEM_SECOND_CHANNEL)) {
-                        stateUpdater.accept(Constants.PLAYING_ITEM_SECOND_CHANNEL, new DecimalType(secs));
+                        stateUpdater.accept(Constants.PLAYING_ITEM_SECOND_CHANNEL,
+                                new QuantityType<>(secs, Units.SECOND));
                     }
                 }
 

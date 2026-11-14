@@ -111,20 +111,25 @@ For security reasons the credentials are automatically deleted from the Thing co
 
 ## Channels
 
-|Group   |Channel        |Item-Type|Description                                                               |
-|--------|---------------|---------|--------------------------------------------------------------------------|
-|control |power          |Switch   |Toggle power state (same as sending "POWER" to the key channel), see note.|
-|        |channel        |Number   |Select program channel (outbound only, current channel is not available)  |
-|        |player         |Player   |Send commands to the receiver - see below                                 |
-|        |key            |String   |Send key code to the receiver (see code table below)                      |
-|        |mute           |Switch   |Mute volume (mute the speaker)                                            |
-|status  |playMode       |String   |Current play mode - this info is not reliable                             |
-|        |channelCode    |Number   |The channel code from the EPG.                                            |
-|program |title          |String   |Title of the running program or video being played                        |
-|        |text           |String   |Some description (as reported by the receiver, could be empty)            |
-|        |start          |DateTime |Time when the program started                                             |
-|        |position       |Number   |Position in minutes within a movie.                                       |
-|        |duration       |Number   |Remaining time in minutes, usually not updated for TV program             |
+| Group    | Channel         | Item-Type   | Description                                                                |
+| -------- | --------------- | ----------- | -------------------------------------------------------------------------- |
+| control  | power           | Switch      | Toggle power state (same as sending "POWER" to the key channel), see note. |
+|          | channel         | Number      | Select program channel (outbound only, current channel is not available)   |
+|          | player          | Player      | Send commands to the receiver - see below                                  |
+|          | key             | String      | Send key code to the receiver (see code table below)                       |
+|          | mute            | Switch      | Mute volume (mute the speaker)                                             |
+| status   | playMode        | String      | Current play mode - this info is not reliable                              |
+|          | channelCode     | Number      | The channel code from the EPG.                                             |
+| program  | title           | String      | Title of the running program or video being played                         |
+|          | text            | String      | Some description (as reported by the receiver, could be empty)             |
+|          | start           | DateTime    | Time when the program started                                              |
+|          | position        | Number:Time | Position in minutes within a movie.                                        |
+|          | duration        | Number:Time | Remaining time in minutes, usually not updated for TV program              |
+
+The program `position` and `duration` channels use `Number:Time` Items with the default display pattern `%1$tT` (`HH:mm:ss`).
+When upgrading an existing setup, change any plain `Number` Items linked to these channels to `Number:Time` and set their unit metadata to `min` to retain minutes as the stored unit.
+Plain `Number` Items discard the time unit and cannot use the new display pattern.
+Remove any custom label or state-description pattern to inherit the channel's default time display.
 
 Please note:
 
@@ -222,8 +227,8 @@ String MagentaTV_Key          "Key"          {channel="magentatv:receiver:XXXXXX
 String MagentaTV_ProgTitle   "Program Title" {channel="magentatv:receiver:XXXXXXXXXXX:program#title"}
 String MagentaTV_ProgDescr   "Description"   {channel="magentatv:receiver:XXXXXXXXXXX:program#text"}
 String MagentaTV_ProgStart   "Start Time"    {channel="magentatv:receiver:XXXXXXXXXXX:program#tart"}
-String MagentaTV_ProgDur     "Duration"      {channel="magentatv:receiver:XXXXXXXXXXX:program#duration"}
-String MagentaTV_ProgPos     "Position"      {channel="magentatv:receiver:XXXXXXXXXXX:program#position"}
+Number:Time MagentaTV_ProgDur     "Duration"      {channel="magentatv:receiver:XXXXXXXXXXX:program#duration", unit="min"}
+Number:Time MagentaTV_ProgPos     "Position"      {channel="magentatv:receiver:XXXXXXXXXXX:program#position", unit="min"}
 
 # MagentaTV Play Status
 Number MagentaTV_ChCode    "Channel Code"    {channel="magentatv:receiver:XXXXXXXXXXX:status#channelCode"}
@@ -270,13 +275,13 @@ DateTime RB_GF_LR_TVReceiver_ProgStart
          (gRB_GF_LR_TVReceiver)
          {channel="magentatv:receiver:XXXXXXXXXXX:program#start"}
 Number:Time RB_GF_LR_TVReceiver_ProgDuration
-         "Label [%d min]"
+         "Duration"
          (gRB_GF_LR_TVReceiver)
-         {channel="magentatv:receiver:XXXXXXXXXXX:program#duration"}
+         {channel="magentatv:receiver:XXXXXXXXXXX:program#duration", unit="min"}
 Number:Time RB_GF_LR_TVReceiver_PlayPosition
-         "Label [%d min.]"
+         "Position"
          (gRB_GF_LR_TVReceiver)
-         {channel="magentatv:receiver:XXXXXXXXXXX:program#position"}
+         {channel="magentatv:receiver:XXXXXXXXXXX:program#position", unit="min"}
 String   RB_GF_LR_TVReceiver_PlayMode
          "Label [%s]"
          (gRB_GF_LR_TVReceiver)
