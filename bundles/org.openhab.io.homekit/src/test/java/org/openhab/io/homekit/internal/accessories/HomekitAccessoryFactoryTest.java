@@ -62,6 +62,9 @@ class HomekitAccessoryFactoryTest {
                 Arguments.of(new ColorItem("explicitBrightness"), "Lighting,Lighting.Brightness", List.of(BRIGHTNESS)),
                 Arguments.of(new DimmerItem("explicitFan"), "Fan,Fan.ActiveStatus", List.of()),
                 Arguments.of(new DimmerItem("multipleAccessories"), "Lighting,Fan", List.of()),
+                Arguments.of(new ColorItem("trailingComma"), "Lighting,", List.of(BRIGHTNESS, HUE, SATURATION)),
+                Arguments.of(new ColorItem("unknownCharacteristic"), "Lighting.Typo",
+                        List.of(BRIGHTNESS, HUE, SATURATION)),
                 Arguments.of(new ColorItem("whitespace"), " Lighting ", List.of(BRIGHTNESS, HUE, SATURATION)));
     }
 
@@ -74,13 +77,14 @@ class HomekitAccessoryFactoryTest {
 
     @ParameterizedTest
     @MethodSource("configuredCharacteristics")
-    void explicitMetadataCharacteristicsDisableAutomaticLinks(Map<String, Object> configuration,
+    void metadataConfigurationPreservesAutomaticLinks(Map<String, Object> configuration,
             List<HomekitCharacteristicType> expected) throws Exception {
         assertOptionalCharacteristics(new ColorItem("configuredLight"), "Lighting", configuration, expected);
     }
 
     static Stream<Arguments> configuredCharacteristics() {
-        return Stream.of(Arguments.of(Map.of("Name", "My light"), List.of()),
+        return Stream.of(Arguments.of(Map.of("Name", "My light"), List.of(BRIGHTNESS, HUE, SATURATION)),
+                Arguments.of(Map.of("Manufacturer", "IKEA"), List.of(BRIGHTNESS, HUE, SATURATION)),
                 Arguments.of(Map.of("commandDelay", 100), List.of(BRIGHTNESS, HUE, SATURATION)));
     }
 
@@ -109,7 +113,8 @@ class HomekitAccessoryFactoryTest {
         MetadataRegistry registry = mock(MetadataRegistry.class);
         when(registry.get(any(MetadataKey.class)))
                 .thenReturn(new Metadata(new MetadataKey("homekit", item.getName()), value, configuration));
-        HomekitAccessoryType type = HomekitAccessoryType.valueOfTag(value.split(",")[0].trim()).orElseThrow();
+        HomekitAccessoryType type = HomekitAccessoryType.valueOfTag(value.split(",")[0].split("\\.")[0].trim())
+                .orElseThrow();
         HomekitTaggedItem tagged = new HomekitTaggedItem(new HomekitOHItemProxy(item), type, configuration);
         AbstractHomekitAccessoryImpl accessory = HomekitAccessoryFactory.create(tagged, registry,
                 mock(HomekitAccessoryUpdater.class), new HomekitSettings());

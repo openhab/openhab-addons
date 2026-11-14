@@ -525,13 +525,10 @@ public class HomekitAccessoryFactory {
                     .forEach(characteristic -> characteristicItems.put(characteristic.getValue(), (GenericItem) item)));
         } else {
             final Item item = taggedItem.getItem();
-            final Metadata metadata = metadataRegistry.get(new MetadataKey(METADATA_KEY, item.getUID()));
+            final var accessoryTypes = getAccessoryTypes(item, metadataRegistry);
             // Explicit characteristics retain full control over which optional controls are exposed.
-            if (metadata != null
-                    && HomekitAccessoryType.valueOfTag(metadata.getValue().trim())
-                            .filter(type -> type == taggedItem.getAccessoryType()).isPresent()
-                    && metadata.getConfiguration().keySet().stream()
-                            .noneMatch(key -> HomekitCharacteristicType.valueOfTag(key).isPresent())) {
+            if (accessoryTypes.size() == 1 && isRootAccessory(accessoryTypes.getFirst())
+                    && accessoryTypes.getFirst().getKey() == taggedItem.getAccessoryType()) {
                 if (taggedItem.getAccessoryType() == LIGHTBULB) {
                     if (taggedItem.getBaseItem() instanceof DimmerItem) {
                         characteristicItems.put(BRIGHTNESS, (GenericItem) item);
@@ -544,7 +541,7 @@ public class HomekitAccessoryFactory {
                     characteristicItems.put(ROTATION_SPEED, (GenericItem) item);
                 }
             }
-            getAccessoryTypes(taggedItem.getItem(), metadataRegistry).stream().filter(c -> !isRootAccessory(c))
+            accessoryTypes.stream().filter(c -> !isRootAccessory(c))
                     .filter(c -> !isMandatoryCharacteristic(taggedItem, c.getValue()))
                     .forEach(characteristic -> characteristicItems.put(characteristic.getValue(),
                             (GenericItem) taggedItem.getItem()));
