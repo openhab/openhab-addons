@@ -46,6 +46,7 @@ import com.google.gson.Gson;
  * in a time limited discovery mode or as a background discovery.
  *
  * @author David Graeff - Initial contribution
+ * @author Cody Cutrer - Track originating discovery topics for component removal
  */
 @NonNullByDefault
 public class DiscoverComponents implements MqttMessageSubscriber {
@@ -66,7 +67,13 @@ public class DiscoverComponents implements MqttMessageSubscriber {
     protected @Nullable ComponentDiscovered discoveredListener;
     private int discoverTime;
     private Set<String> topics = new HashSet<>();
-    private final Set<HaID> knownDeviceComponents = new HashSet<>();
+    private final Set<ComponentIdentity> knownDeviceComponents = new HashSet<>();
+
+    /**
+     * The originating discovery topic and the component topic produced from its payload.
+     */
+    public record ComponentIdentity(HaID source, HaID component) {
+    }
 
     /**
      * Implement this to get notified of new components
@@ -74,7 +81,7 @@ public class DiscoverComponents implements MqttMessageSubscriber {
     public static interface ComponentDiscovered {
         void componentDiscovered(HaID homeAssistantTopicID, AbstractComponent<?> component);
 
-        void componentRemoved(HaID homeAssistantTopicID);
+        void componentRemoved(ComponentIdentity identity);
 
         void deviceConfigUpdated(HaID homeAssistantTopicID, String configPayload);
     }
@@ -121,11 +128,12 @@ public class DiscoverComponents implements MqttMessageSubscriber {
                     // that are about to show up again under a device component.
                     if (HomeAssistantBindingConstants.DEVICE_COMPONENT.equals(haID.component)) {
                         if (discoveredListener != null) {
+                            discoveredListener.deviceConfigUpdated(haID, "");
                             knownDeviceComponents.forEach(discoveredListener::componentRemoved);
                         }
                         knownDeviceComponents.clear();
                     } else if (discoveredListener != null) {
-                        discoveredListener.componentRemoved(haID);
+                        discoveredListener.componentRemoved(new ComponentIdentity(haID, haID));
                     }
                     return;
                 }
@@ -140,11 +148,12 @@ public class DiscoverComponents implements MqttMessageSubscriber {
                 if (discoveredListener != null) {
                     if (HomeAssistantBindingConstants.DEVICE_COMPONENT.equals(haID.component)) {
                         discoveredListener.deviceConfigUpdated(haID, config);
-                        Set<HaID> currentComponents = components.stream().map(AbstractComponent::getHaID)
-                                .collect(Collectors.toSet());
+                        Set<ComponentIdentity> currentComponents = components.stream()
+                                .map(AbstractComponent::getDiscoveryIdentity).collect(Collectors.toSet());
                         knownDeviceComponents.stream().filter(component -> !currentComponents.contains(component))
                                 .forEach(discoveredListener::componentRemoved);
-                        components.stream().filter(component -> !knownDeviceComponents.contains(component.getHaID()))
+                        components.stream()
+                                .filter(component -> !knownDeviceComponents.contains(component.getDiscoveryIdentity()))
                                 .forEach(component -> discoveredListener.componentDiscovered(component.getHaID(),
                                         component));
                         knownDeviceComponents.clear();
@@ -161,11 +170,20 @@ public class DiscoverComponents implements MqttMessageSubscriber {
             }
         } else if (discoveredListener != null) {
             if (HomeAssistantBindingConstants.DEVICE_COMPONENT.equals(haID.component)) {
+                discoveredListener.deviceConfigUpdated(haID, "");
                 knownDeviceComponents.forEach(discoveredListener::componentRemoved);
                 knownDeviceComponents.clear();
             }
-            discoveredListener.componentRemoved(haID);
+            discoveredListener.componentRemoved(new ComponentIdentity(haID, haID));
         }
+    }
+
+    /**
+     * Seeds removal tracking before subscribing when a device payload is restored from the Thing.
+     */
+    public synchronized void restoreDeviceComponents(List<AbstractComponent<?>> components) {
+        knownDeviceComponents.clear();
+        components.stream().map(AbstractComponent::getDiscoveryIdentity).forEach(knownDeviceComponents::add);
     }
 
     /**
