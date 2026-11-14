@@ -815,8 +815,7 @@ public class Mapper {
         if (vsu.hasEndofchargetime()) {
             putClockHour(attributes, MB_KEY_ENDOFCHARGETIME, vsu.getEndofchargetime());
         } else if (vsu.hasChargingPredictionMaxSoc()) {
-            putChargingPredictionSoc(attributes, MB_KEY_CHARGING_PREDICTION_MAX_SOC,
-                    vsu.getChargingPredictionMaxSoc());
+            putChargingPredictionSoc(attributes, MB_KEY_CHARGING_PREDICTION_MAX_SOC, vsu.getChargingPredictionMaxSoc());
         }
 
         // consumption
