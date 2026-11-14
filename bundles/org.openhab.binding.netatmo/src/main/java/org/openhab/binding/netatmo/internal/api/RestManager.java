@@ -99,7 +99,7 @@ public abstract class RestManager {
 
     protected static UriBuilder getApiBaseBuilder(String... paths) {
         UriBuilder builder = UriBuilder.fromUri(URL_API);
-        Stream.of(paths).forEach(path -> builder.path(path));
+        Stream.of(paths).forEach(builder::path);
         return builder;
     }
 
