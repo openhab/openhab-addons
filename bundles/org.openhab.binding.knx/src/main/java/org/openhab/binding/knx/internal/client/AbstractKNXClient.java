@@ -52,6 +52,7 @@ import io.calimero.cemi.CemiTData;
 import io.calimero.datapoint.CommandDP;
 import io.calimero.datapoint.Datapoint;
 import io.calimero.device.ProcessCommunicationResponder;
+import io.calimero.link.KNXLinkClosedException;
 import io.calimero.link.KNXNetworkLink;
 import io.calimero.link.NetworkLinkListener;
 import io.calimero.mgmt.Destination;
@@ -243,8 +244,7 @@ public abstract class AbstractKNXClient implements NetworkLinkListener, KNXClien
             deviceInfoClient = new DeviceInfoClientImpl(managementClient);
 
             // ProcessCommunicator provides main KNX communication (Calimero).
-            final boolean useGoDiagnostics = true;
-            ProcessCommunicator processCommunicator = new ProcessCommunicatorImpl(link, sal, useGoDiagnostics);
+            ProcessCommunicator processCommunicator = newProcessCommunicator(link, sal);
             processCommunicator.responseTimeout(Duration.ofSeconds(responseTimeout));
             processCommunicator.addProcessListener(processListener);
             this.processCommunicator = processCommunicator;
@@ -375,13 +375,6 @@ public abstract class AbstractKNXClient implements NetworkLinkListener, KNXClien
         }
         ReadDatapoint datapoint = readDatapoints.poll();
         if (datapoint != null) {
-            // TODO #8872: allow write access, currently only listening mode
-            if (openhabSecurity.groupKeys().containsKey(datapoint.getDatapoint().getMainAddress())) {
-                logger.debug("outgoing secure communication not implemented, explicit read from GA '{}' skipped",
-                        datapoint.getDatapoint().getMainAddress());
-                return;
-            }
-
             datapoint.incrementRetries();
             try {
                 logger.trace("Sending a Group Read Request telegram for {}", datapoint.getDatapoint().getMainAddress());
@@ -407,6 +400,12 @@ public abstract class AbstractKNXClient implements NetworkLinkListener, KNXClien
                         e.getMessage());
             }
         }
+    }
+
+    static ProcessCommunicator newProcessCommunicator(KNXNetworkLink link, SecureApplicationLayer sal)
+            throws KNXLinkClosedException {
+        // secure group addresses are written with their group key; GO diagnostics would need device tool keys
+        return new ProcessCommunicatorImpl(link, sal, false);
     }
 
     public void dispose() {
@@ -584,12 +583,6 @@ public abstract class AbstractKNXClient implements NetworkLinkListener, KNXClien
             return;
         }
 
-        // TODO #8872: allow write access, currently only listening mode
-        if (openhabSecurity.groupKeys().containsKey(groupAddress)) {
-            logger.debug("outgoing secure communication not implemented, write to GA '{}' skipped", groupAddress);
-            return;
-        }
-
         Datapoint datapoint = new CommandDP(groupAddress, thingUID.toString(), 0,
                 NORMALIZED_DPT.getOrDefault(dpt, dpt));
         String mappedValue = ValueEncoder.encode(type, dpt);
@@ -614,6 +607,9 @@ public abstract class AbstractKNXClient implements NetworkLinkListener, KNXClien
                             type, datapoint, e.getLocalizedMessage());
                     throw e;
                 }
+            } catch (KnxSecureException e) {
+                // a missing key or sender is a configuration error, retrying does not help
+                throw new KNXException(e.getMessage(), e);
             }
         }
     }
