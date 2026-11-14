@@ -168,6 +168,8 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
 
     private static final int HTTP_TIMEOUT = 5000;
 
+    private static final int UNANSWERED_POLLS_BEFORE_OFFLINE = 2;
+
     private final Logger logger = LoggerFactory.getLogger(ZonePlayerHandler.class);
 
     private final ThingRegistry localThingRegistry;
@@ -189,6 +191,7 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
 
     private @Nullable ScheduledFuture<?> pollingJob;
     private boolean modelLookedUp;
+    private int unansweredPolls;
     private @Nullable SonosZonePlayerState savedState;
 
     private Map<String, Boolean> subscriptionState = new HashMap<>();
@@ -237,6 +240,7 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
         configuration = getConfigAs(ZonePlayerConfiguration.class);
 
         modelLookedUp = false;
+        unansweredPolls = 0;
         ThingTypeUID modelThingTypeUID = lookUpModelThingType();
         if (modelThingTypeUID != null) {
             // we change the type, so we might need a different handler -> let's finish
@@ -284,9 +288,7 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
                 }
 
                 // Check if the Sonos zone can be joined
-                // If not, set the thing state to OFFLINE and do nothing else
-                updatePlayerState();
-                if (getThing().getStatus() != ThingStatus.ONLINE) {
+                if (!updatePlayerState() || getThing().getStatus() != ThingStatus.ONLINE) {
                     return;
                 }
 
@@ -1218,9 +1220,13 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
         return result;
     }
 
-    private void updatePlayerState() {
+    private boolean updatePlayerState() {
         if (!updateZoneInfo()) {
-            if (!ThingStatus.OFFLINE.equals(getThing().getStatus())) {
+            unansweredPolls++;
+            ThingStatus status = getThing().getStatus();
+            if (ThingStatus.ONLINE.equals(status) && unansweredPolls < UNANSWERED_POLLS_BEFORE_OFFLINE) {
+                logger.debug("Sonos player {} did not answer, waiting for the next poll", getUDN());
+            } else if (!ThingStatus.OFFLINE.equals(status)) {
                 logger.debug("Sonos player {} is not available in local network", getUDN());
                 updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                         "@text/offline.not-available-on-network [\"" + getUDN() + "\"]");
@@ -1228,10 +1234,14 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
                     subscriptionState = new HashMap<>();
                 }
             }
-        } else if (!ThingStatus.ONLINE.equals(getThing().getStatus())) {
+            return false;
+        }
+        unansweredPolls = 0;
+        if (!ThingStatus.ONLINE.equals(getThing().getStatus())) {
             logger.debug("Sonos player {} has been found in local network", getUDN());
             updateStatus(ThingStatus.ONLINE);
         }
+        return true;
     }
 
     protected void updateCurrentZoneName() {
