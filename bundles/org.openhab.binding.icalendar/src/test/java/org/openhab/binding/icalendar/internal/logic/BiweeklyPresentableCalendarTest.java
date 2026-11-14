@@ -31,7 +31,6 @@ import org.junit.jupiter.api.Test;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.OnOffType;
-import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.PlayPauseType;
 import org.openhab.core.library.types.QuantityType;
@@ -322,11 +321,6 @@ public class BiweeklyPresentableCalendarTest {
         assertNotNull(cmd0);
         assertEquals(OnOffType.class, cmd0.getClass());
 
-        // BEGIN:Calendar_Test_Contact:OPEN:abc
-        Command cmd1 = cmdTags.get(1).getCommand();
-        assertNotNull(cmd1);
-        assertEquals(OpenClosedType.class, cmd1.getClass());
-
         // BEGIN:Calendar_Test_Dimmer:ON:abc
         Command cmd2 = cmdTags.get(2).getCommand();
         assertNotNull(cmd2);
@@ -385,11 +379,6 @@ public class BiweeklyPresentableCalendarTest {
         assertNotNull(cmd0);
         assertEquals(PercentType.class, cmd0.getClass());
 
-        // BEGIN:Calendar_Test_Contact:CLOSED:abc
-        cmd1 = cmdTags.get(1).getCommand();
-        assertNotNull(cmd1);
-        assertEquals(OpenClosedType.class, cmd1.getClass());
-
         // BEGIN:Calendar_Test_Dimmer:0%:abc
         cmd2 = cmdTags.get(2).getCommand();
         assertNotNull(cmd2);
@@ -447,11 +436,6 @@ public class BiweeklyPresentableCalendarTest {
         cmd0 = cmdTags.get(0).getCommand();
         assertNotNull(cmd0);
         assertEquals(HSBType.class, cmd0.getClass());
-
-        // BEGIN:Calendar_Test_Contact:OPEN:abc
-        cmd1 = cmdTags.get(1).getCommand();
-        assertNotNull(cmd1);
-        assertEquals(OpenClosedType.class, cmd1.getClass());
 
         // BEGIN:Calendar_Test_Dimmer:50%:abc
         cmd2 = cmdTags.get(2).getCommand();
@@ -559,7 +543,7 @@ public class BiweeklyPresentableCalendarTest {
         assertEquals(QuantityType.class, cmd0.getClass());
 
         // <p>END:Calendar_Test_Temperature:23.4°C:abc</p>
-        cmd1 = cmdTags.get(1).getCommand();
+        Command cmd1 = cmdTags.get(1).getCommand();
         assertNotNull(cmd1);
         assertEquals(QuantityType.class, cmd1.getClass());
 
