@@ -18,8 +18,10 @@ import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketConnect;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketError;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketFrame;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
+import org.eclipse.jetty.websocket.api.extensions.Frame;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -53,6 +55,13 @@ public class EvccWebSocketAdapter {
         @Nullable
         JsonObject obj = gson.fromJson(message, JsonObject.class);
         parent.handleMessage(obj);
+    }
+
+    @OnWebSocketFrame
+    public void onFrame(Session session, Frame frame) {
+        if (frame.getType() == Frame.Type.PONG) {
+            parent.handlePong();
+        }
     }
 
     @OnWebSocketError

@@ -248,6 +248,7 @@ public class EvccPlanHandler extends EvccBaseThingHandler implements EvccPeriodi
                 }
             }
             String channelKey = Utils.getKeyFromChannelUID(channelUID);
+            forgetLastState(channelUID);
             updatePlan(channelKey, stateString);
         } else {
             super.handleCommand(channelUID, command);
