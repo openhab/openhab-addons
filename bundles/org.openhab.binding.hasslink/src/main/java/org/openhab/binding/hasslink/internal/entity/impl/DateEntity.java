@@ -57,11 +57,10 @@ public class DateEntity implements EntityType {
     @Override
     public Map<String, ParsedData> parseState(EntityState entityState, EntityContext context) {
         State dateState = UnDefType.UNDEF;
-        String rawDate = entityState.state();
-        if (!rawDate.isBlank()) {
+        if (!entityState.isUnavailableOrUnknown()) {
             try {
-                dateState = DateTimeType.valueOf(rawDate);
-            } catch (IllegalArgumentException e) {
+                dateState = DateTimeType.valueOf(entityState.state());
+            } catch (IllegalArgumentException | StringIndexOutOfBoundsException e) {
                 // Update the item to UNDEF on parse error
             }
         }

@@ -26,6 +26,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.openhab.binding.hasslink.internal.ItemType;
 import org.openhab.binding.hasslink.internal.api.dto.EntityState;
 import org.openhab.binding.hasslink.internal.entity.impl.DateEntity;
@@ -81,12 +82,12 @@ class DateEntityTest extends AbstractEntityTest {
                     is(new ParsedData.StateData(DateTimeType.valueOf(state.state()))));
         }
 
-        @ParameterizedTest(name = "{0}")
-        @MethodSource("org.openhab.binding.hasslink.internal.entity.DateEntityTest#fixtures")
-        @DisplayName("maps unavailable or unknown state to UNDEF")
-        void handlesUnavailableState(Fixture fixture) {
-            EntityState unavailable = new EntityState("date.anniversary", "unavailable", Map.of());
-            Map<String, ParsedData> parsed = entity.parseState(unavailable, context);
+        @ParameterizedTest
+        @ValueSource(strings = { "", "unknown", "unavailable", "invalid" })
+        @DisplayName("maps empty, non-operational, or malformed state to UNDEF")
+        void mapsEmptyNonOperationalOrMalformedStateToUndef(String rawDate) {
+            EntityState state = new EntityState("date.anniversary", rawDate, Map.of());
+            Map<String, ParsedData> parsed = entity.parseState(state, context);
 
             assertThat(parsed.get(EntityType.PRIMARY_ATTR), is(new ParsedData.StateData(UnDefType.UNDEF)));
         }
