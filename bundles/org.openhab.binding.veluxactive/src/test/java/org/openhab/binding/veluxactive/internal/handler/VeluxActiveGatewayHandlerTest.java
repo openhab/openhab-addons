@@ -141,7 +141,7 @@ class VeluxActiveGatewayHandlerTest {
     void removalDeletesCredentialsAfterDisposal() {
         handler.dispose();
         handler.handleRemoval();
-        verify(signingKeys).remove("gateway");
+        verify(signingKeys).removeIfUnowned("gateway", thing.getUID());
     }
 
     @BeforeEach

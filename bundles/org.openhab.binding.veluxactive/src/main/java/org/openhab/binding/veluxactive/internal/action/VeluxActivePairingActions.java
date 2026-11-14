@@ -45,15 +45,15 @@ public class VeluxActivePairingActions implements ThingActions {
         this.handler = handler instanceof VeluxActiveGatewayHandler gateway ? gateway : null;
     }
 
-    @RuleAction(label = "Pair Gateway", description = "Start pairing, then press the gateway button. Use pairingStatus to check progress.")
-    public @ActionOutput(type = "java.lang.String", label = "Pairing Result") String pair(
-            @ActionInput(name = "host", label = "Gateway IP Address", description = "The IP address of this gateway on the local network") String host) {
+    @RuleAction(label = "@text/action.gateway.pair.label", description = "@text/action.gateway.pair.description")
+    public @ActionOutput(type = "java.lang.String", label = "@text/action.gateway.pair.output.label") String pair(
+            @ActionInput(name = "host", label = "@text/action.gateway.pair.host.label", description = "@text/action.gateway.pair.host.description") String host) {
         VeluxActiveGatewayHandler gateway = handler;
         return gateway == null ? "UNAVAILABLE" : gateway.pair(host);
     }
 
-    @RuleAction(label = "Pairing Status", description = "Read the result of the current gateway pairing attempt.")
-    public @ActionOutput(type = "java.lang.String", label = "Pairing Status") String pairingStatus() {
+    @RuleAction(label = "@text/action.gateway.pairing-status.label", description = "@text/action.gateway.pairing-status.description")
+    public @ActionOutput(type = "java.lang.String", label = "@text/action.gateway.pairing-status.output.label") String pairingStatus() {
         VeluxActiveGatewayHandler gateway = handler;
         return gateway == null ? "UNAVAILABLE" : gateway.pairingStatus();
     }

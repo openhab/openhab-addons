@@ -27,6 +27,9 @@ import org.openhab.binding.veluxactive.internal.VeluxActiveBindingConstants;
 import org.openhab.binding.veluxactive.internal.exception.ApiException;
 import org.openhab.core.storage.Storage;
 import org.openhab.core.storage.StorageService;
+import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingRegistry;
+import org.openhab.core.thing.ThingUID;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -48,11 +51,13 @@ public class SigningKeyStore {
             + ".pairings";
 
     private final Storage<String> storage;
+    private final ThingRegistry thingRegistry;
     private final Gson gson = new Gson();
 
     @Activate
-    public SigningKeyStore(@Reference StorageService storageService) {
+    public SigningKeyStore(@Reference StorageService storageService, @Reference ThingRegistry thingRegistry) {
         storage = storageService.getStorage(STORAGE_NAME, getClass().getClassLoader());
+        this.thingRegistry = thingRegistry;
     }
 
     public synchronized void put(String gatewayId, SigningKey key) {
@@ -64,8 +69,21 @@ public class SigningKeyStore {
         return storage.get(gatewayId) != null;
     }
 
-    public synchronized void remove(String gatewayId) {
-        storage.remove(gatewayId);
+    public void removeIfUnowned(String gatewayId, ThingUID removingThingUID) {
+        boolean hasOtherOwner = thingRegistry.getAll().stream()
+                .anyMatch(thing -> isOtherOwner(thing, gatewayId, removingThingUID));
+        if (!hasOtherOwner) {
+            synchronized (this) {
+                storage.remove(gatewayId);
+            }
+        }
+    }
+
+    private static boolean isOtherOwner(Thing thing, String gatewayId, ThingUID removingThingUID) {
+        Object configuredModuleId = thing.getConfiguration().get("moduleId");
+        return !thing.getUID().equals(removingThingUID)
+                && VeluxActiveBindingConstants.THING_TYPE_GATEWAY.equals(thing.getThingTypeUID())
+                && gatewayId.equals(configuredModuleId);
     }
 
     public synchronized Map<String, Object> sign(String gatewayId, String moduleId, String field, Object value,

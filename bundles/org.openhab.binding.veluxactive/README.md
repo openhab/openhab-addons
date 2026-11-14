@@ -53,6 +53,8 @@ Its children remain OFFLINE until the gateway recovers.
 Pair each gateway once to enable departure unlocking and window-opening commands.
 The gateway must be ONLINE, and openHAB must be able to reach its LAN IP address on TCP port 25050.
 The binding uses a temporary encrypted local connection to retrieve the signing key; ordinary commands continue through the cloud API.
+The gateway protocol reuses ChaCha20-Poly1305 nonce values across both directions and does not authenticate the ephemeral key exchange.
+Pair only on a trusted network; this connection must not be treated as secure transport.
 
 1. Get the gateway's IP address from your router. Use the address of the gateway represented by this Bridge.
 1. Invoke the gateway Thing action `pair(host)` using its IP address.
@@ -67,7 +69,8 @@ Firmware 60 and later uses HMAC-SHA512 with a nonce; earlier supported firmware 
 
 Keys and replay counters are retained in private openHAB storage across normal restarts.
 Protect openHAB's userdata and backups as they contain these credentials.
-Removing the gateway Thing removes its locally stored key; a gateway factory reset requires pairing again.
+Removing the last configured gateway Thing for a physical gateway removes its locally stored key; removing one of several Things for that gateway preserves the shared key.
+A gateway factory reset requires pairing again.
 Deleting the local key does not revoke it on the gateway.
 After pairing, send OFF to the gateway's `locked` channel to leave departure mode, or send position commands to its window Things.
 

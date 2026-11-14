@@ -31,6 +31,12 @@ public record VeluxActiveAccountConfiguration(String username, String password, 
         refreshInterval = refreshInterval > 0 ? refreshInterval : DEFAULT_REFRESH_INTERVAL;
     }
 
+    @Override
+    public String toString() {
+        return "VeluxActiveAccountConfiguration[username=" + username + ", password=[redacted], refreshInterval="
+                + refreshInterval + "]";
+    }
+
     public boolean isComplete() {
         return !username.isBlank() && !password.isBlank();
     }

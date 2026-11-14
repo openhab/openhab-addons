@@ -249,7 +249,7 @@ public class VeluxActiveGatewayHandler extends VeluxActiveModuleHandler implemen
         finishPairing("CANCELLED");
         String moduleId = getConfigAs(VeluxActiveModuleConfiguration.class).moduleId;
         if (!moduleId.isBlank()) {
-            signingKeys.remove(moduleId);
+            signingKeys.removeIfUnowned(moduleId, getThing().getUID());
         }
         super.handleRemoval();
     }

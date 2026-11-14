@@ -50,7 +50,10 @@ import org.eclipse.jdt.annotation.Nullable;
 /**
  * One cancellable local Netcom pairing session. The gateway must first be put into retrieve-key mode via the cloud
  * and authorized with its physical button. Framing uses little-endian 16-bit fields; secure frame counters use
- * a big-endian 64-bit counter in the final eight bytes of a 12-byte nonce, with no additional authenticated data.
+ * a big-endian 64-bit counter in the final eight bytes of a 12-byte nonce, with no additional authenticated data. The
+ * current protocol implementation uses the same session key and starts each direction's counter at zero, reusing nonce
+ * values across directions. Preserve this wire behavior for compatibility; this exchange must not be treated as secure
+ * transport and pairing should only be performed on a trusted network.
  *
  * @author Jacob Laursen - Initial contribution
  */
