@@ -41,6 +41,8 @@ import org.openhab.core.items.ItemRegistry;
 import org.openhab.core.items.Metadata;
 import org.openhab.core.items.MetadataKey;
 import org.openhab.core.items.MetadataRegistry;
+import org.openhab.core.library.items.ColorItem;
+import org.openhab.core.library.items.DimmerItem;
 import org.openhab.io.homekit.internal.HomekitAccessoryType;
 import org.openhab.io.homekit.internal.HomekitAccessoryUpdater;
 import org.openhab.io.homekit.internal.HomekitCharacteristicType;
@@ -58,6 +60,7 @@ import io.github.hapjava.characteristics.Characteristic;
  *
  * @author Andy Lintner - Initial contribution
  * @author Eugen Freiter - refactoring for optional characteristics
+ * @author Cody Cutrer - Automatic lighting and fan characteristics
  */
 @NonNullByDefault
 public class HomekitAccessoryFactory {
@@ -521,7 +524,24 @@ public class HomekitAccessoryFactory {
                     .filter(c -> !isMandatoryCharacteristic(taggedItem, c.getValue()))
                     .forEach(characteristic -> characteristicItems.put(characteristic.getValue(), (GenericItem) item)));
         } else {
-            getAccessoryTypes(taggedItem.getItem(), metadataRegistry).stream().filter(c -> !isRootAccessory(c))
+            final Item item = taggedItem.getItem();
+            final var accessoryTypes = getAccessoryTypes(item, metadataRegistry);
+            // Explicit characteristics retain full control over which optional controls are exposed.
+            if (accessoryTypes.size() == 1 && isRootAccessory(accessoryTypes.getFirst())
+                    && accessoryTypes.getFirst().getKey() == taggedItem.getAccessoryType()) {
+                if (taggedItem.getAccessoryType() == LIGHTBULB) {
+                    if (taggedItem.getBaseItem() instanceof DimmerItem) {
+                        characteristicItems.put(BRIGHTNESS, (GenericItem) item);
+                    }
+                    if (taggedItem.getBaseItem() instanceof ColorItem) {
+                        characteristicItems.put(HUE, (GenericItem) item);
+                        characteristicItems.put(SATURATION, (GenericItem) item);
+                    }
+                } else if (taggedItem.getAccessoryType() == FAN && taggedItem.getBaseItem() instanceof DimmerItem) {
+                    characteristicItems.put(ROTATION_SPEED, (GenericItem) item);
+                }
+            }
+            accessoryTypes.stream().filter(c -> !isRootAccessory(c))
                     .filter(c -> !isMandatoryCharacteristic(taggedItem, c.getValue()))
                     .forEach(characteristic -> characteristicItems.put(characteristic.getValue(),
                             (GenericItem) taggedItem.getItem()));

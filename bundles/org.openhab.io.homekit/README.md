@@ -130,6 +130,13 @@ Complex accessories require a tag on a Group Item indicating the accessory type,
 A HomeKit accessory has mandatory and optional characteristics (listed below in the table).
 The mapping between openHAB items and HomeKit accessory and characteristics is done by means of [metadata](https://www.openhab.org/docs/concepts/items.html#item-metadata).
 
+For simple items whose HomeKit metadata contains only `Lighting`, Brightness is automatically linked for Dimmer and Color items, and Hue and Saturation are also linked for Color items.
+For a Dimmer item with only `Fan`, RotationSpeed is automatically linked.
+This also applies to groups with a corresponding base item type.
+Metadata configuration settings such as `Name` and `Manufacturer` do not disable these automatic links.
+Explicitly linking any characteristics disables these automatic optional links; for example, use `Lighting,Lighting.OnState` to expose only the power control.
+Groups without a base item continue to use explicitly configured member characteristics.
+
 If the first word of the item name matches the room name in the Home app, the Home app will hide it.
 E.g., an item with the name "Kitchen Light" will be shown in the "Kitchen" room as "Light". This is the recommended naming convention for HomeKit items and rooms.
 
@@ -319,7 +326,7 @@ However, some dimmer devices, for example, do not expect brightness on "ON" even
 In order to support different devices, the HomeKit integration can filter some events. Which events should be filtered is defined via the dimmerMode configuration.
 
 ```java
-Dimmer dimmer_light   "Dimmer Light"     {homekit="Lighting, Lighting.Brightness" [dimmerMode="<mode>"]}
+Dimmer dimmer_light   "Dimmer Light"     {homekit="Lighting" [dimmerMode="<mode>"]}
 ```
 
 The following modes are supported:
@@ -332,9 +339,9 @@ The following modes are supported:
 Examples:
 
  ```java
- Dimmer dimmer_light_1   "Dimmer Light 1"     {homekit="Lighting, Lighting.Brightness" [dimmerMode="filterOn"]}
- Dimmer dimmer_light_2   "Dimmer Light 2"     {homekit="Lighting, Lighting.Brightness" [dimmerMode="filterBrightness100"]}
- Dimmer dimmer_light_3   "Dimmer Light 3"     {homekit="Lighting, Lighting.Brightness" [dimmerMode="filterOnExceptBrightness100"]}
+ Dimmer dimmer_light_1   "Dimmer Light 1"     {homekit="Lighting" [dimmerMode="filterOn"]}
+ Dimmer dimmer_light_2   "Dimmer Light 2"     {homekit="Lighting" [dimmerMode="filterBrightness100"]}
+ Dimmer dimmer_light_3   "Dimmer Light 3"     {homekit="Lighting" [dimmerMode="filterOnExceptBrightness100"]}
  ```
 
 ### Color Temperature
@@ -1024,8 +1031,8 @@ See the sample below for example items:
 
 ```java
 Color           color_light_single         "Color Light Single"                                        {homekit="Lighting"}
-Color           color_light_dimmable       "Legacy Color Light Dimmable"                               {homekit="Lighting, Lighting.Brightness"}
-Color           color_light_hue            "Legacy Color Light Hue"                                    {homekit="Lighting, Lighting.Hue, Lighting.Brightness, Lighting.Saturation"}
+Color           color_light_dimmable       "Color Light Dimmable"                                      {homekit="Lighting"}
+Color           color_light_hue            "Color Light Hue"                                           {homekit="Lighting"}
 
 Rollershutter   window_covering            "Window Rollershutter"                                      {homekit="WindowCovering"}
 Rollershutter   window_covering_long       "Window Rollershutter long"                                 {homekit="WindowCovering, WindowCovering.CurrentPosition, WindowCovering.TargetPosition, WindowCovering.PositionState"}
