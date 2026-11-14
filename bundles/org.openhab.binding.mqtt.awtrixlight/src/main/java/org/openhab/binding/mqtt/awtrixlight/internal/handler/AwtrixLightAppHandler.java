@@ -13,6 +13,8 @@
 package org.openhab.binding.mqtt.awtrixlight.internal.handler;
 
 import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.*;
+import static org.openhab.binding.mqtt.awtrixlight.internal.ng.AwtrixNgBindingConstants.THING_TYPE_NG_APP;
+import static org.openhab.binding.mqtt.awtrixlight.internal.ng.AwtrixNgBindingConstants.THING_TYPE_NG_CLOCK;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
@@ -25,6 +27,7 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mqtt.awtrixlight.internal.AppConfigOptions;
+import org.openhab.binding.mqtt.awtrixlight.internal.FirmwareSwitchConfiguration;
 import org.openhab.binding.mqtt.awtrixlight.internal.Helper;
 import org.openhab.binding.mqtt.awtrixlight.internal.app.AwtrixApp;
 import org.openhab.core.io.transport.mqtt.MqttMessageSubscriber;
@@ -420,6 +423,12 @@ public class AwtrixLightAppHandler extends BaseThingHandler implements MqttMessa
 
     @Override
     public void initialize() {
+        Bridge clock = getBridge();
+        if (clock != null && THING_TYPE_NG_CLOCK.equals(clock.getThingTypeUID())) {
+            logger.info("The clock of {} runs AWTRIX NG, changing the app to an AWTRIX NG app", getThing().getUID());
+            changeThingType(THING_TYPE_NG_APP, FirmwareSwitchConfiguration.forApp(getConfig()));
+            return;
+        }
         this.synchronizationRequired = true;
         AppConfigOptions config = getConfigAs(AppConfigOptions.class);
         if (!this.appName.isBlank() && !this.appName.equals(config.appname)) {
