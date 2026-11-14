@@ -41,6 +41,8 @@ public class RobonectConfig {
 
     private int pollIntervalExtended;
 
+    private int pollIntervalConfig;
+
     private boolean useAjaxApi;
 
     private boolean useWebApi;
@@ -124,6 +126,15 @@ public class RobonectConfig {
      */
     public int getPollIntervalExtended() {
         return pollIntervalExtended;
+    }
+
+    /**
+     * Returns the configuration polling interval.
+     *
+     * @return the interval in seconds, or zero when disabled
+     */
+    public int getPollIntervalConfig() {
+        return pollIntervalConfig;
     }
 
     /**

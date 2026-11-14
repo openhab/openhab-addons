@@ -328,8 +328,11 @@ public class RobonectHandlerTest {
         pollers.getFirst().run();
         verify(diagnosticsApiMock).getVersionInfo();
         verify(mowerApiMock).getMowerInfo(anyBoolean());
-        verify(diagnosticsApiMock).getWlanInfo();
+        verify(diagnosticsApiMock, never()).getWlanInfo();
+        verify(mowerApiMock).getDoorInfo();
         verify(diagnosticsApiMock, never()).getBatteryInfo();
+        verify(weatherApiMock).getWeatherInfo();
+        verify(weatherApiMock, times(unofficialApi ? 1 : 0)).getWeatherIntervalViaWebInterface();
         clearInvocations(mowerApiMock, diagnosticsApiMock, pushApiMock, remoteStartApiMock, timerApiMock,
                 weatherApiMock);
 
@@ -340,13 +343,12 @@ public class RobonectHandlerTest {
         verify(diagnosticsApiMock).getHourInfo();
         verify(remoteStartApiMock).getRemoteInfo();
         verify(diagnosticsApiMock).getWireInfo();
-        verify(diagnosticsApiMock).getPortalInfo();
-        verify(timerApiMock).getTimersInfo();
-        verify(weatherApiMock).getWeatherInfo();
-        verify(weatherApiMock, times(unofficialApi ? 1 : 0)).getWeatherIntervalViaWebInterface();
-        verify(pushApiMock).getExtInfo();
-        verify(pushApiMock).getPushInfo();
-        verify(mowerApiMock).getDoorInfo();
+        verify(diagnosticsApiMock, never()).getPortalInfo();
+        verify(timerApiMock, never()).getTimersInfo();
+        verify(weatherApiMock, never()).getWeatherInfo();
+        verify(pushApiMock, never()).getExtInfo();
+        verify(pushApiMock, never()).getPushInfo();
+        verify(mowerApiMock, never()).getDoorInfo();
         verifyNoMoreInteractions(mowerApiMock, diagnosticsApiMock, pushApiMock, remoteStartApiMock, timerApiMock,
                 weatherApiMock);
     }
@@ -357,6 +359,25 @@ public class RobonectHandlerTest {
         assertEquals(1, initializePolling(Map.of()).size());
         verify(commandScheduler, times(1)).scheduleWithFixedDelay(any(Runnable.class), eq(0L), anyLong(),
                 eq(TimeUnit.SECONDS));
+    }
+
+    @Test
+    public void shouldPollConfigurationAtItsOwnIntervalAndCancelOnDispose() {
+        List<Runnable> pollers = initializePolling(Map.of("pollIntervalConfig", 90));
+        assertEquals(2, pollers.size());
+        verify(commandScheduler).scheduleWithFixedDelay(any(Runnable.class), eq(0L), eq(90L), eq(TimeUnit.SECONDS));
+        pollers.getLast().run();
+        verify(diagnosticsApiMock).getWlanInfo();
+        verify(diagnosticsApiMock).getPortalInfo();
+        verify(timerApiMock).getTimersInfo();
+        verify(pushApiMock).getExtInfo();
+        verify(pushApiMock).getPushInfo();
+        verify(mowerApiMock, never()).getMowerInfo(anyBoolean());
+        subject.dispose();
+        verify(detailedPollingJob).cancel(true);
+        clearInvocations(diagnosticsApiMock, timerApiMock, pushApiMock);
+        pollers.getLast().run();
+        verifyNoInteractions(diagnosticsApiMock, timerApiMock, pushApiMock);
     }
 
     /**
@@ -402,7 +423,7 @@ public class RobonectHandlerTest {
         poller.run();
         verify(diagnosticsApiMock).getVersionInfo();
         verify(mowerApiMock, times(2)).getMowerInfo(anyBoolean());
-        verify(diagnosticsApiMock, times(2)).getWlanInfo();
+        verify(mowerApiMock, times(2)).getDoorInfo();
 
         when(mowerApiMock.getMowerInfo(anyBoolean())).thenThrow(new RobonectCommunicationException("Unavailable"))
                 .thenReturn(createSuccessfulMowerInfoResponse());
@@ -410,7 +431,7 @@ public class RobonectHandlerTest {
         poller.run();
         verify(diagnosticsApiMock, times(2)).getVersionInfo();
         verify(mowerApiMock, times(4)).getMowerInfo(anyBoolean());
-        verify(diagnosticsApiMock, times(3)).getWlanInfo();
+        verify(mowerApiMock, times(3)).getDoorInfo();
     }
 
     /** Checks that enabling the unofficial API leaves the zero detailed polling interval disabled. */
@@ -426,6 +447,7 @@ public class RobonectHandlerTest {
         Objects.requireNonNull(active.getStatus()).setStatus(MowerStatus.MOWING);
         when(mowerApiMock.getMowerInfo(anyBoolean())).thenReturn(active);
         pollers.getFirst().run();
+        verify(weatherApiMock).getWeatherInfo();
         verify(diagnosticsApiMock, never()).getBatteryInfo();
         verify(diagnosticsApiMock, never()).getMotorInfo();
         verify(diagnosticsApiMock, never()).getWireInfo();
@@ -596,15 +618,15 @@ public class RobonectHandlerTest {
             detailed.get(10, TimeUnit.SECONDS);
             if (dispose) {
                 verifyNoInteractions(callbackMock);
-                verify(diagnosticsApiMock, never()).getWlanInfo();
+                verify(mowerApiMock, never()).getDoorInfo();
                 verify(diagnosticsApiMock, never()).getBatteryInfo();
             } else if (interrupt) {
-                verify(diagnosticsApiMock).getWlanInfo();
+                verify(mowerApiMock).getDoorInfo();
                 verify(diagnosticsApiMock, never()).getBatteryInfo();
             } else {
                 var order = inOrder(mowerApiMock, diagnosticsApiMock);
                 order.verify(mowerApiMock).getMowerInfo(anyBoolean());
-                order.verify(diagnosticsApiMock).getWlanInfo();
+                order.verify(mowerApiMock).getDoorInfo();
                 order.verify(diagnosticsApiMock).getBatteryInfo();
             }
         } finally {
