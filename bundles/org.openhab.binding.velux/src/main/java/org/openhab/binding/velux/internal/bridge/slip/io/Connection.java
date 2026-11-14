@@ -40,6 +40,7 @@ import org.slf4j.LoggerFactory;
  * </UL>
  *
  * @author Guenther Schreiner - Initial contribution.
+ * @author Cold Leeks - Connection failure handling
  */
 @NonNullByDefault
 public class Connection implements Closeable {
@@ -58,6 +59,7 @@ public class Connection implements Closeable {
      * Timestamp of last communication in milliseconds.
      */
     private long lastCommunicationInMSecs = 0;
+    private volatile boolean lastCommunicationOk = false;
     /**
      * SSL socket for communication.
      */
@@ -86,28 +88,22 @@ public class Connection implements Closeable {
         logger.trace("io() on {}: called.", host);
 
         lastCommunicationInMSecs = System.currentTimeMillis();
+        lastCommunicationOk = false;
 
         /** Local handles */
         int retryCount = 0;
         IOException lastIOE = new IOException("Unexpected I/O exception.");
 
         do {
+            boolean connected = false;
             try {
                 if (!connectivity.isReady()) {
                     // dispose old connectivity class instances (if any)
                     resetConnection();
-                    try {
-                        logger.trace("io() on {}: connecting to port {}", cfg.ipAddress, cfg.tcpPort);
-                        connectivity = new SSLconnection(bridgeInstance);
-                    } catch (ConnectException ce) {
-                        throw new ConnectException(String
-                                .format("raised a non-recoverable error during connection setup: %s", ce.getMessage()));
-                    } catch (IOException e) {
-                        logger.warn("io() on {}: raised an error during connection setup: {}.", host, e.getMessage());
-                        lastIOE = new IOException(String.format("error during connection setup: %s.", e.getMessage()));
-                        continue;
-                    }
+                    logger.trace("io() on {}: connecting to port {}", cfg.ipAddress, cfg.tcpPort);
+                    connectivity = new SSLconnection(bridgeInstance);
                 }
+                connected = true;
                 boolean sending = request.length > 0;
                 if (sending) {
                     try {
@@ -122,6 +118,7 @@ public class Connection implements Closeable {
                         }
                     } catch (IOException e) {
                         logger.info("io() on {}: raised an error during sending: {}.", host, e.getMessage());
+                        lastIOE = e;
                         break;
                     }
                 }
@@ -142,12 +139,13 @@ public class Connection implements Closeable {
                 }
                 lastSuccessfulCommunicationInMSecs = System.currentTimeMillis();
                 lastCommunicationInMSecs = lastSuccessfulCommunicationInMSecs;
+                lastCommunicationOk = true;
                 logger.trace("io() on {}: finished.", host);
                 return packet;
             } catch (IOException ioe) {
                 logger.info("io() on {}: Exception occurred during I/O: {}.", host, ioe.getMessage());
                 lastIOE = ioe;
-                if (bridgeInstance.isDisposing()) {
+                if (connected || bridgeInstance.isDisposing()) {
                     break;
                 } else {
                     // Error Retries with Exponential Backoff
@@ -158,6 +156,8 @@ public class Connection implements Closeable {
                         Thread.sleep(waitTime);
                     } catch (InterruptedException ie) {
                         logger.trace("io() on {}: wait interrupted.", host);
+                        Thread.currentThread().interrupt();
+                        break;
                     }
                 }
             }
@@ -206,6 +206,14 @@ public class Connection implements Closeable {
      */
     public long lastSuccessfulCommunication() {
         return lastSuccessfulCommunicationInMSecs;
+    }
+
+    public boolean lastCommunicationOk() {
+        return lastCommunicationOk;
+    }
+
+    public void markCommunicationFailed() {
+        lastCommunicationOk = false;
     }
 
     /**

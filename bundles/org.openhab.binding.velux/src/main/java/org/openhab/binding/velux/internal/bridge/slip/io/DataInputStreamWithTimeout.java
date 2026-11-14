@@ -106,7 +106,10 @@ class DataInputStreamWithTimeout implements Closeable {
                     throw new IOException("Poller thread terminated prematurely");
                 }
                 Thread.sleep(SLEEP_INTERVAL_MSECS); // throws InterruptedException
-            } catch (ExecutionException | InterruptedException e) {
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                throw new IOException(e);
+            } catch (ExecutionException e) {
                 // re-cast other exceptions as IOException
                 throw new IOException(e);
             }
@@ -124,6 +127,11 @@ class DataInputStreamWithTimeout implements Closeable {
         int size = slipMessageQueue.size();
         logger.trace("available() => slip message count {}", size);
         return size;
+    }
+
+    public boolean hasTerminated() {
+        Future<Boolean> currentFuture = future;
+        return currentFuture != null && currentFuture.isDone();
     }
 
     /**
@@ -172,7 +180,10 @@ class DataInputStreamWithTimeout implements Closeable {
                 future.get(MAX_WAIT_SECONDS, TimeUnit.SECONDS);
             } catch (ExecutionException e) {
                 // expected exception due to e.g. IOException on socket close
-            } catch (TimeoutException | InterruptedException e) {
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                logger.debug("stopPolling() interrupted", e);
+            } catch (TimeoutException e) {
                 // unexpected exception due to e.g. KLF200 'zombie state'
                 logger.warn("stopPolling() exception '{}' => PLEASE REPORT !!", e.getMessage());
             }
