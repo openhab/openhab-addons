@@ -37,8 +37,10 @@ import org.openhab.core.library.types.NextPreviousType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.PlayPauseType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.RewindFastforwardType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.types.Command;
 import org.slf4j.Logger;
@@ -153,7 +155,12 @@ public final class ClientCommandRouter {
 
         // Seek by seconds
         if (Constants.PLAYING_ITEM_SECOND_CHANNEL.equals(channelId)) {
-            if (command instanceof DecimalType secs) {
+            if (command instanceof QuantityType<?> quantity) {
+                QuantityType<?> seconds = quantity.toUnit(Units.SECOND);
+                if (seconds != null) {
+                    seekToSeconds(seconds.intValue());
+                }
+            } else if (command instanceof DecimalType secs) {
                 seekToSeconds(secs.intValue());
             }
             return;

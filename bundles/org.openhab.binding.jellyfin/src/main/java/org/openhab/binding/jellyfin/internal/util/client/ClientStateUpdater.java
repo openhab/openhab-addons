@@ -27,7 +27,9 @@ import org.openhab.binding.jellyfin.internal.gen.current.model.SessionInfoDto;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.PlayPauseType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 
@@ -74,7 +76,7 @@ public final class ClientStateUpdater {
         // Position seconds channel
         if (positionTicks != null) {
             long seconds = Math.round(positionTicks / 10_000_000.0);
-            states.put(Constants.PLAYING_ITEM_SECOND_CHANNEL, new DecimalType(seconds));
+            states.put(Constants.PLAYING_ITEM_SECOND_CHANNEL, new QuantityType<>(seconds, Units.SECOND));
         } else {
             states.put(Constants.PLAYING_ITEM_SECOND_CHANNEL, UnDefType.NULL);
         }
@@ -82,7 +84,7 @@ public final class ClientStateUpdater {
         // Total runtime seconds channel
         if (runTimeTicks != null) {
             long totalSeconds = Math.round(runTimeTicks / 10_000_000.0);
-            states.put(Constants.PLAYING_ITEM_TOTAL_SECOND_CHANNEL, new DecimalType(totalSeconds));
+            states.put(Constants.PLAYING_ITEM_TOTAL_SECOND_CHANNEL, new QuantityType<>(totalSeconds, Units.SECOND));
         } else {
             states.put(Constants.PLAYING_ITEM_TOTAL_SECOND_CHANNEL, UnDefType.NULL);
         }

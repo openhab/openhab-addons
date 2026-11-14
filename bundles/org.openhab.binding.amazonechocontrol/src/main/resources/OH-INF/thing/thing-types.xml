@@ -525,12 +525,12 @@
 	<channel-type id="mediaProgressTime" advanced="true">
 		<item-type>Number:Time</item-type>
 		<label>Media Play Time</label>
-		<state pattern="%d %unit%"/>
+		<state pattern="%1$tT"/>
 	</channel-type>
 	<channel-type id="mediaLength" advanced="true">
 		<item-type>Number:Time</item-type>
 		<label>Media Length</label>
-		<state readOnly="true" pattern="%d %unit%"/>
+		<state readOnly="true" pattern="%1$tT"/>
 	</channel-type>
 	<channel-type id="startCommand">
 		<item-type>String</item-type>
