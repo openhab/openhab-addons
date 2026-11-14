@@ -100,6 +100,21 @@ public class DeviceTrigger extends AbstractComponent<DeviceTrigger.Configuration
     }
 
     @Override
+    public void setComponentId(String componentId) {
+        String previousId = this.componentId;
+        super.setComponentId(componentId);
+        ComponentChannel channel = channels.remove(previousId);
+        if (channel != null) {
+            channels.put(componentId, channel);
+        }
+    }
+
+    @Override
+    public String getDefaultComponentId() {
+        return config.getSubtype();
+    }
+
+    @Override
     public boolean mergeable(AbstractComponent<?> other) {
         if (other instanceof DeviceTrigger newTrigger && newTrigger.getConfig().getSubtype().equals(config.getSubtype())
                 && newTrigger.getConfig().getTopic().equals(config.getTopic())

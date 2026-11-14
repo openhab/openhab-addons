@@ -29,6 +29,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.homeassistant.internal.ComponentChannel;
 import org.openhab.binding.homeassistant.internal.ComponentChannelType;
+import org.openhab.binding.homeassistant.internal.DiscoverComponents.ComponentIdentity;
 import org.openhab.binding.homeassistant.internal.HaID;
 import org.openhab.binding.homeassistant.internal.HomeAssistantBindingConstants;
 import org.openhab.binding.homeassistant.internal.HomeAssistantChannelTransformation;
@@ -60,12 +61,14 @@ import org.openhab.core.thing.type.ChannelGroupTypeUID;
 import org.openhab.core.thing.type.ChannelKind;
 import org.openhab.core.types.CommandDescription;
 import org.openhab.core.types.StateDescription;
+import org.openhab.core.util.UIDUtils;
 
 /**
  * A HomeAssistant component is comparable to a channel group.
  * It has a name and consists of multiple channels.
  *
  * @author David Graeff - Initial contribution
+ * @author Cody Cutrer - Resolve normalized component ID collisions
  * @param <C> Config class derived from {@link AbstractComponentConfiguration}
  */
 @NonNullByDefault
@@ -119,6 +122,7 @@ public abstract class AbstractComponent<C extends AbstractComponentConfiguration
     protected final String uniqueId;
     protected @Nullable String groupId;
     protected String componentId;
+    private final String defaultComponentId;
 
     /**
      * Creates component based on generic configuration and component configuration type.
@@ -148,7 +152,8 @@ public abstract class AbstractComponent<C extends AbstractComponentConfiguration
         // (components of different types, but the same object id)
         // we'll resolve them later
         HaID haID = componentContext.getHaID();
-        groupId = componentId = haID.objectID.replace('-', '_');
+        defaultComponentId = haID.objectID.replaceAll("[^\\w]", "_");
+        groupId = componentId = defaultComponentId;
         uniqueId = haID.component + "_" + haID.getGroupId(config.getUniqueId());
 
         this.configSeen = false;
@@ -217,15 +222,41 @@ public abstract class AbstractComponent<C extends AbstractComponentConfiguration
         }
     }
 
+    public String getDefaultComponentId() {
+        return defaultComponentId;
+    }
+
     public void resolveConflict() {
-        HaID haID = componentContext.getHaID();
-        if (channels.size() == 1) {
-            componentId = componentId + "_" + haID.component;
-            channels.values().forEach(c -> c.resetUID(buildChannelUID(componentId)));
-        } else {
-            groupId = componentId = componentId + "_" + haID.component;
-            channels.values().forEach(c -> c.resetUID(buildChannelUID(c.getChannel().getUID().getIdWithoutGroup())));
+        if (componentId.equals(getDefaultComponentId())) {
+            setComponentId(getDefaultComponentId() + "_" + getHaID().component);
         }
+    }
+
+    /**
+     * Distinguishes components whose IDs still collide after adding the platform.
+     */
+    public void resolveDiscoveryIdConflict() {
+        if (componentId.equals(getDefaultComponentId())
+                || componentId.equals(getDefaultComponentId() + "_" + getHaID().component)) {
+            setComponentId(getDefaultComponentId() + "_" + UIDUtils.encode(getHaID().getTopic("config")));
+        }
+    }
+
+    /**
+     * Distinguishes device and individual discovery configs with identical component topics.
+     */
+    public void resolveUniqueIdConflict() {
+        // uniqueId is UID-encoded and cannot contain the ':' delimiter.
+        setComponentId(UIDUtils.encode(getHaID().getTopic("config") + ":" + getUniqueId()));
+    }
+
+    public void setComponentId(String componentId) {
+        this.componentId = componentId;
+        if (groupId != null) {
+            groupId = componentId;
+        }
+        channels.values().forEach(c -> c.resetUID(
+                buildChannelUID(groupId == null ? componentId : c.getChannel().getUID().getIdWithoutGroup())));
     }
 
     protected ComponentChannel.Builder buildChannel(String channelID, ComponentChannelType channelType,
@@ -394,6 +425,10 @@ public abstract class AbstractComponent<C extends AbstractComponentConfiguration
 
     public boolean hasGroup() {
         return groupId != null;
+    }
+
+    public ComponentIdentity getDiscoveryIdentity() {
+        return new ComponentIdentity(componentContext.getDiscoveryTopic(), getHaID());
     }
 
     public HaID getHaID() {

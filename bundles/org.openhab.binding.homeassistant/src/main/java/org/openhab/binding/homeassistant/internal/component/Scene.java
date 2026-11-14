@@ -159,6 +159,21 @@ public class Scene extends AbstractComponent<Scene.Configuration> {
     }
 
     @Override
+    public void setComponentId(String componentId) {
+        String previousId = this.componentId;
+        super.setComponentId(componentId);
+        ComponentChannel channel = channels.remove(previousId);
+        if (channel != null) {
+            channels.put(componentId, channel);
+        }
+    }
+
+    @Override
+    public String getDefaultComponentId() {
+        return SCENE_CHANNEL_ID;
+    }
+
+    @Override
     public boolean mergeable(AbstractComponent<?> other) {
         return other instanceof Scene;
     }
