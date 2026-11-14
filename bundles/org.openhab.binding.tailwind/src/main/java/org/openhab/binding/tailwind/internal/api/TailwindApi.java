@@ -26,6 +26,8 @@ import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.tailwind.internal.TailwindBindingConstants;
 import org.openhab.binding.tailwind.internal.api.dto.TailwindStatus;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -54,6 +56,7 @@ public class TailwindApi {
 
     private static final Gson GSON = new Gson();
 
+    private final Logger logger = LoggerFactory.getLogger(TailwindApi.class);
     private final HttpClient httpClient;
     private volatile String url;
     private final String token;
@@ -151,23 +154,34 @@ public class TailwindApi {
         request.addProperty("version", version);
         request.add("data", data);
 
+        String requestUrl = url;
+        String body = GSON.toJson(request);
+        // The Local Control Key is sent as a header, so the body can be logged
+        logger.trace("Request to {}: {}", host(requestUrl), body);
+        long start = System.nanoTime();
         ContentResponse response;
         try {
-            response = httpClient.newRequest(url).method(HttpMethod.POST).header(TOKEN_HEADER, token)
-                    .content(new StringContentProvider(GSON.toJson(request))).timeout(TIMEOUT_SECONDS, TimeUnit.SECONDS)
-                    .send();
+            response = httpClient.newRequest(requestUrl).method(HttpMethod.POST).header(TOKEN_HEADER, token)
+                    .content(new StringContentProvider(body)).timeout(TIMEOUT_SECONDS, TimeUnit.SECONDS).send();
         } catch (ExecutionException e) {
+            logger.debug("{} to {} failed after {} ms: {}", name, host(requestUrl), millisSince(start), e.getMessage());
             if (e.getCause() instanceof UnknownHostException) {
-                throw new TailwindCommunicationException("Cannot find the controller at " + host(url)
+                throw new TailwindCommunicationException("Cannot find the controller at " + host(requestUrl)
                         + ". If this openHAB server cannot resolve .local names, enter the IP address of the controller instead.",
                         e);
             }
             throw new TailwindCommunicationException("No answer from the controller: " + e.getMessage(), e);
         } catch (TimeoutException e) {
+            logger.debug("{} to {} failed after {} ms: {}", name, host(requestUrl), millisSince(start), e.getMessage());
             throw new TailwindCommunicationException("No answer from the controller: " + e.getMessage(), e);
         }
 
-        TailwindStatus status = parse(response.getContentAsString());
+        String answer = response.getContentAsString();
+        logger.trace("Answer from {}: {}", host(requestUrl), answer);
+        TailwindStatus status = parse(answer);
+        logger.debug("{}{} answered in {} ms: HTTP {}, {}", name, value == null ? "" : " " + value, millisSince(start),
+                response.getStatus(), status == null ? "no valid JSON"
+                        : status.result + (status.info == null ? "" : " (" + status.info + ")"));
         // Controllers answer a wrong key with HTTP 400 and this information
         if ((status != null && INFO_TOKEN_FAIL.equals(status.info))
                 || response.getStatus() == HttpStatus.UNAUTHORIZED_401
@@ -183,6 +197,10 @@ public class TailwindApi {
             throw new TailwindException("The controller refused the request '" + name + "': " + status.info);
         }
         return status;
+    }
+
+    private static long millisSince(long startNanos) {
+        return TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - startNanos);
     }
 
     private static String host(String url) {
