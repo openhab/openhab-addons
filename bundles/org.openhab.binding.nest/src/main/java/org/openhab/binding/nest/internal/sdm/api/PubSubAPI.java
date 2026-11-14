@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.nest.internal.sdm.dto.PubSubRequestsResponses.PubSubAcknowledgeRequest;
 import org.openhab.binding.nest.internal.sdm.dto.PubSubRequestsResponses.PubSubCreateRequest;
@@ -257,11 +257,12 @@ public class PubSubAPI {
             throws FailedSendingPubSubDataException, InvalidPubSubAccessTokenException {
         try {
             logger.debug("Posting JSON to: {}", url);
+            final String authHeader = getAuthorizationHeader();
             String response = httpClient.newRequest(url) //
                     .method(POST) //
-                    .header(ACCEPT, APPLICATION_JSON) //
-                    .header(AUTHORIZATION, getAuthorizationHeader()) //
-                    .content(new StringContentProvider(requestContent), APPLICATION_JSON) //
+                    .headers(h -> h.add(ACCEPT, APPLICATION_JSON)) //
+                    .headers(h -> h.add(AUTHORIZATION, authHeader)) //
+                    .body(new StringRequestContent(APPLICATION_JSON, requestContent)) //
                     .timeout(REQUEST_TIMEOUT.toNanos(), TimeUnit.NANOSECONDS) //
                     .send() //
                     .getContentAsString();
@@ -284,11 +285,12 @@ public class PubSubAPI {
             throws FailedSendingPubSubDataException, InvalidPubSubAccessTokenException {
         try {
             logger.debug("Putting JSON to: {}", url);
+            final String authHeader = getAuthorizationHeader();
             String response = httpClient.newRequest(url) //
                     .method(HttpMethod.PUT) //
-                    .header(ACCEPT, APPLICATION_JSON) //
-                    .header(AUTHORIZATION, getAuthorizationHeader()) //
-                    .content(new StringContentProvider(requestContent), APPLICATION_JSON) //
+                    .headers(h -> h.add(ACCEPT, APPLICATION_JSON)) //
+                    .headers(h -> h.add(AUTHORIZATION, authHeader)) //
+                    .body(new StringRequestContent(APPLICATION_JSON, requestContent)) //
                     .timeout(REQUEST_TIMEOUT.toNanos(), TimeUnit.NANOSECONDS) //
                     .send() //
                     .getContentAsString();

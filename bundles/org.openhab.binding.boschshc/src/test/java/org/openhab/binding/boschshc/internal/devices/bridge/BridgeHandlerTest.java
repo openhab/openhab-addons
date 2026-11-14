@@ -35,8 +35,8 @@ import java.util.function.BiFunction;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.ContentResponse;
+import org.eclipse.jetty.client.Request;
 import org.eclipse.jetty.http.HttpMethod;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -273,7 +273,7 @@ class BridgeHandlerTest {
         when(httpClient.getBoschSmartHomeUrl(anyString())).thenCallRealMethod();
         when(httpClient.getBoschShcUrl(anyString())).thenCallRealMethod();
         Request request = mock(Request.class);
-        when(request.header(anyString(), anyString())).thenReturn(request);
+        when(request.headers(any())).thenReturn(request);
         ContentResponse response = mock(ContentResponse.class);
         when(response.getStatus()).thenReturn(200);
         when(response.getContentAsString()).thenReturn("""
@@ -326,7 +326,7 @@ class BridgeHandlerTest {
         when(httpClient.getServiceStateUrl(anyString(), anyString())).thenCallRealMethod();
 
         Request request = mock(Request.class);
-        when(request.header(anyString(), anyString())).thenReturn(request);
+        when(request.headers(any())).thenReturn(request);
         ContentResponse response = mock(ContentResponse.class);
         when(response.getStatus()).thenReturn(200);
         when(response.getContentAsString())
@@ -346,7 +346,7 @@ class BridgeHandlerTest {
         when(httpClient.getBoschShcUrl(anyString())).thenCallRealMethod();
 
         Request request = mock(Request.class);
-        when(request.header(anyString(), anyString())).thenReturn(request);
+        when(request.headers(any())).thenReturn(request);
         ContentResponse response = mock(ContentResponse.class);
         when(response.getStatus()).thenReturn(200);
         when(request.send()).thenReturn(response);
@@ -366,7 +366,7 @@ class BridgeHandlerTest {
         when(httpClient.getBoschShcUrl(anyString())).thenCallRealMethod();
 
         Request request = mock(Request.class);
-        when(request.header(anyString(), anyString())).thenReturn(request);
+        when(request.headers(any())).thenReturn(request);
         ContentResponse response = mock(ContentResponse.class);
         when(response.getStatus()).thenReturn(200);
         when(request.send()).thenReturn(response);
@@ -405,7 +405,7 @@ class BridgeHandlerTest {
         when(httpClient.getServiceUrl(anyString(), anyString())).thenCallRealMethod();
 
         Request request = mock(Request.class);
-        when(request.header(anyString(), anyString())).thenReturn(request);
+        when(request.headers(any())).thenReturn(request);
         ContentResponse response = mock(ContentResponse.class);
         when(response.getStatus()).thenReturn(200);
         when(response.getContentAsString()).thenReturn("""
@@ -441,7 +441,7 @@ class BridgeHandlerTest {
         when(httpClient.getServiceUrl(anyString(), anyString())).thenCallRealMethod();
 
         Request request = mock(Request.class);
-        when(request.header(anyString(), anyString())).thenReturn(request);
+        when(request.headers(any())).thenReturn(request);
         ContentResponse response = mock(ContentResponse.class);
         when(response.getStatus()).thenReturn(500);
         when(response.getContentAsString()).thenReturn(
@@ -466,7 +466,7 @@ class BridgeHandlerTest {
         when(httpClient.getServiceUrl(anyString(), anyString())).thenCallRealMethod();
 
         Request request = mock(Request.class);
-        when(request.header(anyString(), anyString())).thenReturn(request);
+        when(request.headers(any())).thenReturn(request);
         ContentResponse response = mock(ContentResponse.class);
         when(response.getStatus()).thenReturn(500);
         when(response.getContentAsString()).thenReturn("");
@@ -488,7 +488,7 @@ class BridgeHandlerTest {
         when(httpClient.getServiceStateUrl(anyString(), anyString(), any())).thenCallRealMethod();
 
         Request request = mock(Request.class);
-        when(request.header(anyString(), anyString())).thenReturn(request);
+        when(request.headers(any())).thenReturn(request);
         ContentResponse response = mock(ContentResponse.class);
 
         when(httpClient.createRequest(anyString(), same(HttpMethod.PUT), any(BinarySwitchServiceState.class)))
@@ -507,7 +507,7 @@ class BridgeHandlerTest {
         String stateId = UUID.randomUUID().toString();
 
         Request request = mock(Request.class);
-        when(request.header(anyString(), anyString())).thenReturn(request);
+        when(request.headers(any())).thenReturn(request);
         ContentResponse response = mock(ContentResponse.class);
         when(response.getStatus()).thenReturn(200);
         when(request.send()).thenReturn(response);
@@ -526,7 +526,7 @@ class BridgeHandlerTest {
         when(httpClient.getBoschShcUrl(anyString())).thenCallRealMethod();
 
         Request request = mock(Request.class);
-        when(request.header(anyString(), anyString())).thenReturn(request);
+        when(request.headers(any())).thenReturn(request);
         ContentResponse response = mock(ContentResponse.class);
         when(response.getStatus()).thenReturn(200);
         when(request.send()).thenReturn(response);
@@ -564,7 +564,7 @@ class BridgeHandlerTest {
         String stateId = UUID.randomUUID().toString();
 
         Request request = mock(Request.class);
-        when(request.header(anyString(), anyString())).thenReturn(request);
+        when(request.headers(any())).thenReturn(request);
         ContentResponse response = mock(ContentResponse.class);
         when(response.getStatus()).thenReturn(200);
         when(request.send()).thenReturn(response);
@@ -583,7 +583,7 @@ class BridgeHandlerTest {
         when(httpClient.getBoschShcUrl(anyString())).thenCallRealMethod();
 
         Request request = mock(Request.class);
-        when(request.header(anyString(), anyString())).thenReturn(request);
+        when(request.headers(any())).thenReturn(request);
         ContentResponse response = mock(ContentResponse.class);
         when(response.getStatus()).thenReturn(401);
         when(request.send()).thenReturn(response);
@@ -600,7 +600,7 @@ class BridgeHandlerTest {
         when(httpClient.getBoschShcUrl(anyString())).thenCallRealMethod();
 
         Request request = mock(Request.class);
-        when(request.header(anyString(), anyString())).thenReturn(request);
+        when(request.headers(any())).thenReturn(request);
         ContentResponse response = mock(ContentResponse.class);
         when(response.getStatus()).thenReturn(401);
         when(request.send()).thenThrow(new TimeoutException("text exception"));

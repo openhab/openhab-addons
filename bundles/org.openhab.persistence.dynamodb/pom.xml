@@ -23,7 +23,6 @@
     <dep.noembedding>netty-common,netty-transport,netty-transport-native-epoll,netty-transport-native-unix-common,netty-buffer,netty-resolver,netty-codec,netty-codec-http,netty-codec-http2,netty-handler</dep.noembedding>
     <!-- slf4j version matching the version specified in openhab-core/pom.xml -->
     <slf4j.version>2.0.19</slf4j.version>
-    <jetty.version>9.4.58.v20250814</jetty.version>
   </properties>
 
   <!-- Let's ensure the correct versions with dependencyManagement.
@@ -104,7 +103,7 @@
     <dependency>
       <groupId>com.amazonaws</groupId>
       <artifactId>DynamoDBLocal</artifactId>
-      <version>1.15.0</version>
+      <version>2.6.1</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -155,13 +154,6 @@
       <type>dylib</type>
       <scope>test</scope>
     </dependency>
-    <dependency>
-      <groupId>org.eclipse.jetty</groupId>
-      <artifactId>jetty-http</artifactId>
-      <version>${jetty.version}</version>
-      <scope>test</scope>
-    </dependency>
-
     <!-- -->
     <!-- -->
     <!-- SDK (runtime) dependencies -->
@@ -276,15 +268,6 @@
       <version>1.0.1</version>
     </dependency>
   </dependencies>
-
-  <!--Custom repository for DynamoDBLocal -->
-  <repositories>
-    <repository>
-      <id>dynamodb-local-repo</id>
-      <name>DynamoDB Local Release Repository</name>
-      <url>https://s3-us-west-2.amazonaws.com/dynamodb-local/release</url>
-    </repository>
-  </repositories>
 
   <build>
     <plugins>

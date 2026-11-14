@@ -25,10 +25,9 @@ import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentProvider;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.Request;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.pushover.internal.config.PushoverAccountConfiguration;
@@ -134,14 +133,14 @@ public class PushoverAPIConnection {
     }
 
     private String get(String url) throws CommunicationException, ConfigurationException {
-        return executeRequest(HttpMethod.GET, url, null);
+        return executeRequest(HttpMethod.GET, url, (Request.Content) null);
     }
 
-    private String post(String url, ContentProvider body) throws CommunicationException, ConfigurationException {
+    private String post(String url, Request.Content body) throws CommunicationException, ConfigurationException {
         return executeRequest(HttpMethod.POST, url, body);
     }
 
-    private synchronized String executeRequest(HttpMethod httpMethod, String url, @Nullable ContentProvider body)
+    private synchronized String executeRequest(HttpMethod httpMethod, String url, Request.@Nullable Content body)
             throws CommunicationException, ConfigurationException {
         logger.trace("Pushover request: {} - URL = '{}'", httpMethod, url);
         try {
@@ -152,7 +151,7 @@ public class PushoverAPIConnection {
                 if (logger.isTraceEnabled()) {
                     logger.trace("Pushover request body: '{}'", body);
                 }
-                request.content(body);
+                request.body(body);
             }
 
             final ContentResponse contentResponse = request.send();

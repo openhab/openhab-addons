@@ -12,9 +12,9 @@
  */
 package org.openhab.binding.denonmarantz.internal.xml.dto.commands;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 /**
  * Used to unmarshall {@code <list>} items of the {@code <functionrename>} CommandRX.

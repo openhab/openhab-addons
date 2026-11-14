@@ -14,9 +14,9 @@ package org.openhab.binding.bosesoundtouch.internal.handler;
 
 import static org.openhab.binding.bosesoundtouch.internal.BoseSoundTouchBindingConstants.*;
 
-import java.io.IOException;
 import java.net.URI;
-import java.util.Arrays;
+import java.nio.ByteBuffer;
+import java.time.Duration;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
@@ -28,12 +28,15 @@ import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.websocket.api.Callback;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.StatusCode;
-import org.eclipse.jetty.websocket.api.WebSocketFrameListener;
-import org.eclipse.jetty.websocket.api.WebSocketListener;
-import org.eclipse.jetty.websocket.api.extensions.Frame;
-import org.eclipse.jetty.websocket.api.extensions.Frame.Type;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketError;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketOpen;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketPong;
+import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.openhab.binding.bosesoundtouch.internal.APIRequest;
@@ -77,7 +80,8 @@ import org.slf4j.LoggerFactory;
  * @author Alexander Kostadinov - Handling of websocket ping-pong mechanism for thing status check
  */
 @NonNullByDefault
-public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocketListener, WebSocketFrameListener {
+@WebSocket
+public class BoseSoundTouchHandler extends BaseThingHandler {
 
     private static final int MAX_MISSED_PONGS_COUNT = 2;
 
@@ -372,7 +376,7 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
         return this.presetContainer;
     }
 
-    @Override
+    @OnWebSocketOpen
     public void onWebSocketConnect(@Nullable Session session) {
         logger.debug("{}: onWebSocketConnect('{}')", getDeviceName(), session);
         this.session = session;
@@ -380,7 +384,7 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
         updateStatus(ThingStatus.ONLINE);
     }
 
-    @Override
+    @OnWebSocketError
     public void onWebSocketError(@Nullable Throwable e) {
         Throwable localThrowable = (e != null) ? e
                 : new IllegalStateException("Null Exception passed to onWebSocketError");
@@ -394,12 +398,13 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
         }
         Session localSession = session;
         if (localSession != null) {
-            localSession.close(StatusCode.SERVER_ERROR, getDeviceName() + ": Failure: " + localThrowable.getMessage());
+            localSession.close(StatusCode.SERVER_ERROR, getDeviceName() + ": Failure: " + localThrowable.getMessage(),
+                    Callback.NOOP);
             session = null;
         }
     }
 
-    @Override
+    @OnWebSocketMessage
     public void onWebSocketText(@Nullable String msg) {
         logger.debug("{}: onWebSocketText('{}')", getDeviceName(), msg);
         try {
@@ -412,13 +417,14 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
         }
     }
 
-    @Override
-    public void onWebSocketBinary(byte @Nullable [] payload, int offset, int len) {
+    @OnWebSocketMessage
+    public void onWebSocketBinary(ByteBuffer payload, Callback callback) {
         // we don't expect binary data so just dump if we get some...
-        logger.debug("{}: onWebSocketBinary({}, {}, '{}')", getDeviceName(), offset, len, Arrays.toString(payload));
+        logger.debug("{}: onWebSocketBinary({} bytes)", getDeviceName(), payload.remaining());
+        callback.succeed();
     }
 
-    @Override
+    @OnWebSocketClose
     public void onWebSocketClose(int code, @Nullable String reason) {
         logger.debug("{}: onClose({}, '{}')", getDeviceName(), code, reason);
         missedPongsCount = 0;
@@ -429,28 +435,22 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
         }
     }
 
-    @Override
-    public void onWebSocketFrame(@Nullable Frame frame) {
-        Frame localFrame = frame;
-        if (localFrame != null) {
-            if (localFrame.getType() == Type.PONG) {
-                missedPongsCount = 0;
-            }
-        }
+    @OnWebSocketPong
+    public void onWebSocketPong(ByteBuffer payload) {
+        missedPongsCount = 0;
     }
 
     private synchronized void openConnection() {
         closeConnection();
         try {
             WebSocketClient localClient = new WebSocketClient();
-            // we need longer timeouts for web socket.
-            localClient.setMaxIdleTimeout(360 * 1000);
             // Port seems to be hard coded, therefore no user input or discovery is necessary
             String wsUrl = "ws://" + getIPAddress() + ":8080/";
             logger.debug("{}: Connecting to: {}", getDeviceName(), wsUrl);
             ClientUpgradeRequest request = new ClientUpgradeRequest();
             request.setSubProtocols("gabbo");
             localClient.setStopTimeout(1000);
+            localClient.setIdleTimeout(Duration.ofSeconds(360));
             localClient.start();
             sessionFuture = localClient.connect(this, new URI(wsUrl), request);
             client = localClient;
@@ -463,7 +463,7 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
         Session localSession = this.session;
         if (localSession != null) {
             try {
-                localSession.close(StatusCode.NORMAL, "Binding shutdown");
+                localSession.close(StatusCode.NORMAL, "Binding shutdown", Callback.NOOP);
             } catch (Exception e) {
                 logger.debug("{}: Error while closing websocket communication: {} ({})", getDeviceName(),
                         e.getClass().getName(), e.getMessage());
@@ -500,9 +500,9 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
         if (localSession != null) {
             if (getThing().getStatus() == ThingStatus.ONLINE && localSession.isOpen()) {
                 try {
-                    localSession.getRemote().sendPing(null);
+                    localSession.sendPing(ByteBuffer.allocate(0), Callback.NOOP);
                     missedPongsCount++;
-                } catch (IOException e) {
+                } catch (Exception e) {
                     onWebSocketError(e);
                     closeConnection();
                     openConnection();

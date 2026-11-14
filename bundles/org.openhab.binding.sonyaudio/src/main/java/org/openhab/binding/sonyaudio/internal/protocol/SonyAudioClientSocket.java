@@ -20,12 +20,12 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import org.eclipse.jetty.websocket.api.RemoteEndpoint;
+import org.eclipse.jetty.websocket.api.Callback;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
-import org.eclipse.jetty.websocket.api.annotations.OnWebSocketConnect;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketError;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketOpen;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
@@ -112,15 +112,12 @@ public class SonyAudioClientSocket {
             return connected;
         }
 
-        RemoteEndpoint remote = session.getRemote();
-
         ByteBuffer payload = ByteBuffer.allocate(4).putInt(ping++);
-        try {
-            remote.sendPing(payload);
-        } catch (IOException e) {
-            logger.warn("Connection to {} lost: {}", uri, e.getMessage());
+        session.sendPing(payload, Callback.from(() -> {
+        }, t -> {
+            logger.warn("Connection to {} lost: {}", uri, t.getMessage());
             connected = false;
-        }
+        }));
 
         return connected;
     }
@@ -128,7 +125,7 @@ public class SonyAudioClientSocket {
     @WebSocket
     public class SonyAudioWebSocketListener {
 
-        @OnWebSocketConnect
+        @OnWebSocketOpen
         public void onConnect(Session wssession) {
             logger.debug("Connected to server");
             session = wssession;
@@ -201,7 +198,7 @@ public class SonyAudioClientSocket {
     private void sendMessage(String str) throws IOException {
         if (isConnected()) {
             logger.debug("send message for {}: {}", uri.toString(), str);
-            session.getRemote().sendString(str);
+            session.sendText(str, Callback.NOOP);
         } else {
             String stack = "";
             stack += "Printing stack trace:\n";

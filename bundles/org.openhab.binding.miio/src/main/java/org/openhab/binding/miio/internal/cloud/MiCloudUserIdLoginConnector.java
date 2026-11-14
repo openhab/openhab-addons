@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.miio.internal.cloud;
 
-import java.net.CookieStore;
-import java.net.HttpCookie;
 import java.net.MalformedURLException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -21,17 +19,18 @@ import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
+import org.eclipse.jetty.client.FormRequestContent;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.FormContentProvider;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.http.HttpCookie;
+import org.eclipse.jetty.http.HttpCookieStore;
 import org.eclipse.jetty.http.HttpField;
 import org.eclipse.jetty.http.HttpFields;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.util.Fields;
-import org.eclipse.jetty.util.HttpCookieStore;
 import org.openhab.binding.miio.internal.MiIoCrypto;
 import org.openhab.binding.miio.internal.MiIoCryptoException;
 import org.openhab.binding.miio.internal.Utils;
@@ -147,8 +146,8 @@ public class MiCloudUserIdLoginConnector extends MiCloudConnector {
         String url = "https://account.xiaomi.com/pass/serviceLogin?sid=xiaomiio&_json=true";
         Request request = httpClient.newRequest(url).timeout(REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS);
         request.agent(USERAGENT);
-        request.header(HttpHeader.CONTENT_TYPE, "application/x-www-form-urlencoded");
-        request.cookie(new HttpCookie("userId", !this.userId.isEmpty() ? this.userId : this.username));
+        request.headers(h -> h.add(HttpHeader.CONTENT_TYPE, "application/x-www-form-urlencoded"));
+        request.cookie(HttpCookie.build("userId", !this.userId.isEmpty() ? this.userId : this.username).build());
 
         final ContentResponse responseStep1 = request.send();
         final String content = responseStep1.getContentAsString();
@@ -204,7 +203,7 @@ public class MiCloudUserIdLoginConnector extends MiCloudConnector {
         }
         fields.put("_json", "true");
 
-        request.content(new FormContentProvider(fields));
+        request.body(new FormRequestContent(fields));
         final ContentResponse responseStep2 = request.send();
 
         final String content2 = responseStep2.getContentAsString();
@@ -285,29 +284,32 @@ public class MiCloudUserIdLoginConnector extends MiCloudConnector {
     }
 
     private void get2factory(String url) {
-        CookieStore cookieStore = httpClient.getCookieStore();
+        // Jetty 12 cannot change the cookie store of a started client, so these requests use a separate client
+        HttpClient faClient = new HttpClient();
+        faClient.setHttpCookieStore(new HttpCookieStore.Empty());
+        faClient.setFollowRedirects(httpClient.isFollowRedirects());
         try {
-            httpClient.setCookieStore(new HttpCookieStore.Empty());
+            faClient.start();
             logger.debug("Trying to request code from {}", url);
 
-            Request request = httpClient.newRequest(url).timeout(REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS);
+            Request request = faClient.newRequest(url).timeout(REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS);
             request.agent(BROWSER_USERAGENT);
             request.method(HttpMethod.GET);
             debugRequest(request);
 
             String newurl = url.replace("authStart", "list");
-            request = httpClient.newRequest(newurl).timeout(REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS);
+            request = faClient.newRequest(newurl).timeout(REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS);
             request.agent(BROWSER_USERAGENT);
             debugRequest(request);
 
-            request = httpClient.newRequest("https://account.xiaomi.com/identity/auth/verifyEmail?_flag=8&_json=true")
+            request = faClient.newRequest("https://account.xiaomi.com/identity/auth/verifyEmail?_flag=8&_json=true")
                     .timeout(REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS);
             request.agent(BROWSER_USERAGENT);
             debugRequest(request);
 
             long ms = java.time.Instant.now().toEpochMilli();
             String mailticket = "https://account.xiaomi.com/identity/auth/sendEmailTicket?_dc=" + ms;
-            request = httpClient.newRequest(mailticket).timeout(REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS);
+            request = faClient.newRequest(mailticket).timeout(REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS);
             request.agent(BROWSER_USERAGENT);
             request.method(HttpMethod.POST);
 
@@ -315,7 +317,7 @@ public class MiCloudUserIdLoginConnector extends MiCloudConnector {
             fields.put("retry", "0");
             fields.put("icode", "");
             fields.put("_json", "true");
-            request.content(new FormContentProvider(fields));
+            request.body(new FormRequestContent(fields));
             debugRequest(request);
 
             String verifyticket = "https://account.xiaomi.com/identity/auth/verifyEmail?_dc=" + ms;
@@ -325,10 +327,14 @@ public class MiCloudUserIdLoginConnector extends MiCloudConnector {
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             logger.warn("2FA setup interrupted: {}", e.getMessage());
-        } catch (TimeoutException | ExecutionException e) {
+        } catch (Exception e) {
             logger.warn("Error requesting 2FA code: {}", e.getMessage(), e);
         } finally {
-            httpClient.setCookieStore(cookieStore);
+            try {
+                faClient.stop();
+            } catch (Exception e) {
+                logger.debug("Error stopping 2FA http client: {}", e.getMessage());
+            }
         }
     }
 
@@ -351,7 +357,7 @@ public class MiCloudUserIdLoginConnector extends MiCloudConnector {
             fields.put("trust", "false");
             fields.put("_json", "true");
             fields.put("ticket", faCode.trim());
-            fa.content(new FormContentProvider(fields));
+            fa.body(new FormRequestContent(fields));
 
             ContentResponse result = debugRequest(fa);
             String resultContent = result.getContentAsString();

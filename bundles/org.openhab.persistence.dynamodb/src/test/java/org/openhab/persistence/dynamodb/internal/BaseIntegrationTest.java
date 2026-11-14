@@ -194,8 +194,9 @@ public class BaseIntegrationTest extends JavaTest {
             String endpoint = String.format("http://127.0.0.1:%d", port);
             try {
                 localEndpointOverride = new URI(endpoint);
-                DynamoDBProxyServer localEmbeddedServer = ServerRunner
-                        .createServerFromCommandLineArgs(new String[] { "-inMemory", "-port", String.valueOf(port) });
+                // telemetry would need a newer AWS SDK v2 than the one the binding uses
+                DynamoDBProxyServer localEmbeddedServer = ServerRunner.createServerFromCommandLineArgs(
+                        new String[] { "-inMemory", "-disableTelemetry", "-port", String.valueOf(port) });
                 localEmbeddedServer.start();
                 embeddedServer = localEmbeddedServer;
             } catch (Exception e) {
@@ -336,8 +337,9 @@ public class BaseIntegrationTest extends JavaTest {
             }
         } else {
             // Place some values to pass the configuration validation
+            // DynamoDB Local 2.x only accepts letters and digits in the access key ID
             config.put("region", "eu-west-1");
-            config.put("accessKey", "dummy-access-key");
+            config.put("accessKey", "dummyAccessKey");
             config.put("secretKey", "dummy-secret-key");
         }
         return config;

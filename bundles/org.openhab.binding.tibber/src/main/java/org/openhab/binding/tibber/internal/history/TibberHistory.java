@@ -14,6 +14,7 @@ package org.openhab.binding.tibber.internal.history;
 
 import static org.openhab.binding.tibber.internal.TibberBindingConstants.*;
 
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ScheduledExecutorService;
@@ -21,9 +22,9 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.ContentResponse;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.tibber.internal.handler.TibberHandler;
 import org.openhab.core.common.ThreadPoolManager;
@@ -371,7 +372,7 @@ public class TibberHistory {
         Request request = handler.getRequest();
         String content = String.format(QUERY_CONTAINER, body);
         logger.debug("History query: {}", content);
-        request.content(new StringContentProvider(content, "utf-8"));
+        request.body(new StringRequestContent(content, StandardCharsets.UTF_8));
         try {
             ContentResponse cr = request.timeout(10, TimeUnit.SECONDS).send();
             int status = cr.getStatus();

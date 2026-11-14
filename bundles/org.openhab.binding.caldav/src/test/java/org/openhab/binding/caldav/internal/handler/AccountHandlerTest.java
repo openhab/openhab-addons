@@ -50,11 +50,12 @@ import javax.net.ssl.SSLHandshakeException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.BufferingResponseListener;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.api.Response;
-import org.eclipse.jetty.client.api.Result;
-import org.eclipse.jetty.client.util.BufferingResponseListener;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.Response;
+import org.eclipse.jetty.client.Result;
+import org.eclipse.jetty.io.Content;
 import org.eclipse.jetty.util.component.LifeCycle;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.junit.jupiter.api.Test;
@@ -277,7 +278,9 @@ class AccountHandlerTest {
                                     "<d:current-user-principal><d:href>/</d:href></d:current-user-principal>"
                                             + "<c:calendar-home-set><d:href>/</d:href></c:calendar-home-set>")
                             + "</d:multistatus>";
-                    listener.onContent(response, ByteBuffer.wrap(xml.getBytes(StandardCharsets.UTF_8)));
+                    listener.onContent(response,
+                            Content.Chunk.from(ByteBuffer.wrap(xml.getBytes(StandardCharsets.UTF_8)), true), () -> {
+                            });
                 }
                 listener.onComplete(new Result(request, response, cause));
                 return null;
@@ -1808,7 +1811,7 @@ class AccountHandlerTest {
         });
         server.start();
         HttpClient http = new HttpClient();
-        http.addLifeCycleListener(new org.eclipse.jetty.util.component.LifeCycle.Listener() {
+        http.addEventListener(new org.eclipse.jetty.util.component.LifeCycle.Listener() {
             /**
              * Signals completion of HTTP client shutdown to the lifecycle test.
              *

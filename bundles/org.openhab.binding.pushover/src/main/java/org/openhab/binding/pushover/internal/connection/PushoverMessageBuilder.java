@@ -24,10 +24,13 @@ import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.api.ContentProvider;
-import org.eclipse.jetty.client.util.MultiPartContentProvider;
-import org.eclipse.jetty.client.util.PathContentProvider;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.MultiPartRequestContent;
+import org.eclipse.jetty.client.PathRequestContent;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.StringRequestContent;
+import org.eclipse.jetty.http.HttpFields;
+import org.eclipse.jetty.http.HttpHeader;
+import org.eclipse.jetty.http.MultiPart;
 import org.openhab.core.i18n.CommunicationException;
 import org.openhab.core.i18n.ConfigurationException;
 import org.openhab.core.io.net.http.HttpUtil;
@@ -73,7 +76,7 @@ public class PushoverMessageBuilder {
     private static final int MAX_URL_TITLE_LENGTH = 100;
     public static final String DEFAULT_CONTENT_TYPE = "image/jpeg";
 
-    private final MultiPartContentProvider body = new MultiPartContentProvider();
+    private final MultiPartRequestContent body = new MultiPartRequestContent();
 
     private @Nullable String message;
     private @Nullable String title;
@@ -91,8 +94,8 @@ public class PushoverMessageBuilder {
     private boolean monospace = false;
 
     private PushoverMessageBuilder(String apikey, String user) throws ConfigurationException {
-        body.addFieldPart(MESSAGE_KEY_TOKEN, new StringContentProvider(apikey), null);
-        body.addFieldPart(MESSAGE_KEY_USER, new StringContentProvider(user), null);
+        body.addPart(new MultiPart.ContentSourcePart(MESSAGE_KEY_TOKEN, null, null, new StringRequestContent(apikey)));
+        body.addPart(new MultiPart.ContentSourcePart(MESSAGE_KEY_USER, null, null, new StringRequestContent(user)));
     }
 
     public static PushoverMessageBuilder getInstance(@Nullable String apikey, @Nullable String user)
@@ -178,14 +181,15 @@ public class PushoverMessageBuilder {
         return this;
     }
 
-    public ContentProvider build() throws CommunicationException {
+    public Request.Content build() throws CommunicationException {
         String message = this.message;
         if (message != null) {
             if (message.length() > MAX_MESSAGE_LENGTH) {
                 throw new IllegalArgumentException(String.format(
                         "Skip sending the message as 'message' is longer than %d characters.", MAX_MESSAGE_LENGTH));
             }
-            body.addFieldPart(MESSAGE_KEY_MESSAGE, new StringContentProvider(message), null);
+            body.addPart(new MultiPart.ContentSourcePart(MESSAGE_KEY_MESSAGE, null, null,
+                    new StringRequestContent(message)));
         }
 
         String title = this.title;
@@ -194,7 +198,8 @@ public class PushoverMessageBuilder {
                 throw new IllegalArgumentException(String
                         .format("Skip sending the message as 'title' is longer than %d characters.", MAX_TITLE_LENGTH));
             }
-            body.addFieldPart(MESSAGE_KEY_TITLE, new StringContentProvider(title), null);
+            body.addPart(
+                    new MultiPart.ContentSourcePart(MESSAGE_KEY_TITLE, null, null, new StringRequestContent(title)));
         }
 
         String device = this.device;
@@ -202,31 +207,35 @@ public class PushoverMessageBuilder {
             if (device.length() > MAX_DEVICE_LENGTH) {
                 logger.warn("Skip 'device' as it is longer than {} characters. Got: {}.", MAX_DEVICE_LENGTH, device);
             } else {
-                body.addFieldPart(MESSAGE_KEY_DEVICE, new StringContentProvider(device), null);
+                body.addPart(new MultiPart.ContentSourcePart(MESSAGE_KEY_DEVICE, null, null,
+                        new StringRequestContent(device)));
             }
         }
 
         if (priority != DEFAULT_PRIORITY) {
             if (VALID_PRIORITY_LIST.contains(priority)) {
-                body.addFieldPart(MESSAGE_KEY_PRIORITY, new StringContentProvider(String.valueOf(priority)), null);
+                body.addPart(new MultiPart.ContentSourcePart(MESSAGE_KEY_PRIORITY, null, null,
+                        new StringRequestContent(String.valueOf(priority))));
 
                 if (priority == EMERGENCY_PRIORITY) {
                     if (retry < MIN_RETRY_SECONDS) {
                         logger.warn("Retry value of {} is too small. Using default value of {}.", retry,
                                 MIN_RETRY_SECONDS);
-                        body.addFieldPart(MESSAGE_KEY_RETRY,
-                                new StringContentProvider(String.valueOf(MIN_RETRY_SECONDS)), null);
+                        body.addPart(new MultiPart.ContentSourcePart(MESSAGE_KEY_RETRY, null, null,
+                                new StringRequestContent(String.valueOf(MIN_RETRY_SECONDS))));
                     } else {
-                        body.addFieldPart(MESSAGE_KEY_RETRY, new StringContentProvider(String.valueOf(retry)), null);
+                        body.addPart(new MultiPart.ContentSourcePart(MESSAGE_KEY_RETRY, null, null,
+                                new StringRequestContent(String.valueOf(retry))));
                     }
 
                     if (0 < expire && expire <= MAX_EXPIRE_SECONDS) {
-                        body.addFieldPart(MESSAGE_KEY_EXPIRE, new StringContentProvider(String.valueOf(expire)), null);
+                        body.addPart(new MultiPart.ContentSourcePart(MESSAGE_KEY_EXPIRE, null, null,
+                                new StringRequestContent(String.valueOf(expire))));
                     } else {
                         logger.warn("Expire value of {} is invalid. Using default value of {}.", expire,
                                 MAX_EXPIRE_SECONDS);
-                        body.addFieldPart(MESSAGE_KEY_EXPIRE,
-                                new StringContentProvider(String.valueOf(MAX_EXPIRE_SECONDS)), null);
+                        body.addPart(new MultiPart.ContentSourcePart(MESSAGE_KEY_EXPIRE, null, null,
+                                new StringRequestContent(String.valueOf(MAX_EXPIRE_SECONDS))));
                     }
                 }
             } else {
@@ -239,7 +248,8 @@ public class PushoverMessageBuilder {
             if (priority == EMERGENCY_PRIORITY) {
                 logger.warn("TTL value of {} will be ignored for emergency priority.", ttl);
             }
-            body.addFieldPart(MESSAGE_KEY_TTL, new StringContentProvider(String.valueOf(ttl.getSeconds())), null);
+            body.addPart(new MultiPart.ContentSourcePart(MESSAGE_KEY_TTL, null, null,
+                    new StringRequestContent(String.valueOf(ttl.getSeconds()))));
         }
 
         String url = this.url;
@@ -248,7 +258,7 @@ public class PushoverMessageBuilder {
                 throw new IllegalArgumentException(String
                         .format("Skip sending the message as 'url' is longer than %d characters.", MAX_URL_LENGTH));
             }
-            body.addFieldPart(MESSAGE_KEY_URL, new StringContentProvider(url), null);
+            body.addPart(new MultiPart.ContentSourcePart(MESSAGE_KEY_URL, null, null, new StringRequestContent(url)));
 
             String urlTitle = this.urlTitle;
             if (urlTitle != null) {
@@ -257,12 +267,14 @@ public class PushoverMessageBuilder {
                             String.format("Skip sending the message as 'urlTitle' is longer than %d characters.",
                                     MAX_URL_TITLE_LENGTH));
                 }
-                body.addFieldPart(MESSAGE_KEY_URL_TITLE, new StringContentProvider(urlTitle), null);
+                body.addPart(new MultiPart.ContentSourcePart(MESSAGE_KEY_URL_TITLE, null, null,
+                        new StringRequestContent(urlTitle)));
             }
         }
 
         if (sound != null) {
-            body.addFieldPart(MESSAGE_KEY_SOUND, new StringContentProvider(sound), null);
+            body.addPart(
+                    new MultiPart.ContentSourcePart(MESSAGE_KEY_SOUND, null, null, new StringRequestContent(sound)));
         }
 
         String attachment = this.attachment;
@@ -295,11 +307,13 @@ public class PushoverMessageBuilder {
         }
 
         if (html) {
-            body.addFieldPart(MESSAGE_KEY_HTML, new StringContentProvider("1"), null);
+            body.addPart(new MultiPart.ContentSourcePart(MESSAGE_KEY_HTML, null, null, new StringRequestContent("1")));
         } else if (monospace) {
-            body.addFieldPart(MESSAGE_KEY_MONOSPACE, new StringContentProvider("1"), null);
+            body.addPart(
+                    new MultiPart.ContentSourcePart(MESSAGE_KEY_MONOSPACE, null, null, new StringRequestContent("1")));
         }
 
+        body.close();
         return body;
     }
 
@@ -316,8 +330,9 @@ public class PushoverMessageBuilder {
 
     private void addFilePart(Path path, @Nullable String contentType) throws CommunicationException {
         try {
-            body.addFilePart(MESSAGE_KEY_ATTACHMENT, path.toFile().getName(),
-                    new PathContentProvider(contentType == null ? DEFAULT_CONTENT_TYPE : contentType, path), null);
+            String ct = contentType == null ? DEFAULT_CONTENT_TYPE : contentType;
+            body.addPart(new MultiPart.ContentSourcePart(MESSAGE_KEY_ATTACHMENT, path.toFile().getName(),
+                    HttpFields.build().add(HttpHeader.CONTENT_TYPE, ct), new PathRequestContent(ct, path)));
         } catch (IOException e) {
             logger.debug("IOException occurred while adding content - skip sending the message: {}", e.getMessage(), e);
             throw new CommunicationException(TEXT_ERROR_SKIP_SENDING_MESSAGE, e.getCause(), e.getLocalizedMessage());

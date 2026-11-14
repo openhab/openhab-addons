@@ -16,10 +16,6 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Scanner;
 
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.openhab.binding.konnected.internal.gson.KonnectedModuleGson;
 import org.openhab.binding.konnected.internal.handler.KonnectedHandler;
 import org.slf4j.Logger;
@@ -27,6 +23,10 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
+
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * Main OSGi service and HTTP servlet for Konnected Webhook.

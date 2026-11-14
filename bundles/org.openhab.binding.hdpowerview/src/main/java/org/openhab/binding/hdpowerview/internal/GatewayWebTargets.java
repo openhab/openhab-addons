@@ -24,17 +24,13 @@ import java.util.concurrent.TimeoutException;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLSession;
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.sse.InboundSseEvent;
-import javax.ws.rs.sse.SseEventSource;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
@@ -48,12 +44,17 @@ import org.openhab.binding.hdpowerview.internal.dto.requests.ShadeMotion;
 import org.openhab.binding.hdpowerview.internal.exceptions.HubProcessingException;
 import org.openhab.binding.hdpowerview.internal.handler.GatewayBridgeHandler;
 import org.openhab.core.thing.Thing;
-import org.osgi.service.jaxrs.client.SseEventSourceFactory;
+import org.osgi.service.jakartars.client.SseEventSourceFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonParseException;
+
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.sse.InboundSseEvent;
+import jakarta.ws.rs.sse.SseEventSource;
 
 /**
  * JAX-RS targets for communicating with an HD PowerView Generation 3 Gateway.
@@ -249,13 +250,15 @@ public class GatewayWebTargets implements Closeable, HostnameVerifier {
                 logger.trace("invoke() request JSON:{}", jsonCommand);
             }
         }
-        Request request = httpClient.newRequest(url).method(method).header("Connection", "close").accept("*/*")
-                .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+        Request request = httpClient.newRequest(url).method(method).headers(h -> {
+            h.add("Connection", "close");
+            h.add(HttpHeader.ACCEPT, "*/*");
+        }).timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS);
         if (query != null) {
             request.param(query.getKey(), query.getValue());
         }
         if (jsonCommand != null) {
-            request.header(HttpHeader.CONTENT_TYPE, "application/json").content(new StringContentProvider(jsonCommand));
+            request.body(new StringRequestContent("application/json", jsonCommand));
         }
         ContentResponse response;
         try {

@@ -34,7 +34,7 @@ import com.google.gson.JsonSyntaxException;
  * @author Nick Waterton - changes to sendKey(), some refactoring
  */
 @NonNullByDefault
-class WebSocketRemote extends WebSocketBase {
+public class WebSocketRemote extends WebSocketBase {
     private final Logger logger = LoggerFactory.getLogger(WebSocketRemote.class);
 
     private static Gson gson = new Gson();

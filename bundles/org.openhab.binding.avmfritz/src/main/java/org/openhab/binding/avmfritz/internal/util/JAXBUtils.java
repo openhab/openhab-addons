@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.avmfritz.internal.util;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLInputFactory;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -22,6 +20,9 @@ import org.openhab.binding.avmfritz.internal.dto.DeviceListModel;
 import org.openhab.binding.avmfritz.internal.dto.templates.TemplateListModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBException;
 
 /**
  * Implementation for a static use of JAXBContext as singleton instance.

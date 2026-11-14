@@ -23,7 +23,6 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.openhab.binding.entsoe.internal.client.EntsoeClient;
 import org.openhab.binding.entsoe.internal.client.EntsoeDocumentParser;
 import org.openhab.binding.entsoe.internal.client.EntsoeRequest;
@@ -44,7 +43,7 @@ import org.xml.sax.SAXException;
 public class ReleaseTest {
     private static final String TOKEN = "VALID_TOKEN_NEEDED";
     private final Logger logger = LoggerFactory.getLogger(ReleaseTest.class);
-    private static HttpClient httpClient = new HttpClient(new SslContextFactory.Client());
+    private static HttpClient httpClient = new HttpClient();
     private static String[][] provenEicCodes = { { "10Y1001A1001A39I", "EE Estonia" },
             { "10Y1001A1001A44P", "SE1 Swedish Elspot Area 1" }, { "10Y1001A1001A45N", "SE2 Swedish Elspot Area 2" },
             { "10Y1001A1001A46L", "SE3 Swedish Elspot Area 3" }, { "10Y1001A1001A47J", "SE4 Swedish Elspot Area 4" },

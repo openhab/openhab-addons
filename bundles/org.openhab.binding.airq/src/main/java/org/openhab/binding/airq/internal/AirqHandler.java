@@ -54,11 +54,10 @@ import javax.measure.Unit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.StringContentProvider;
-import org.eclipse.jetty.http.HttpHeader;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.openhab.binding.airq.internal.action.AirqActions;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
@@ -919,8 +918,7 @@ public class AirqHandler extends BaseThingHandler {
         int timeout = 10;
         Request request = httpClient.newRequest(address).timeout(timeout, TimeUnit.SECONDS).method(requestMethod);
         if (body != null) {
-            request = request.content(new StringContentProvider(body)).header(HttpHeader.CONTENT_TYPE,
-                    "application/x-www-form-urlencoded");
+            request = request.body(new StringRequestContent("application/x-www-form-urlencoded", body));
         }
         try {
             ContentResponse response = request.send();

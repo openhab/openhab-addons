@@ -17,7 +17,6 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import java.net.URLDecoder;
-import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.util.ArrayDeque;
@@ -28,15 +27,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentProvider;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.http.HttpField;
 import org.eclipse.jetty.http.HttpFields;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpStatus;
+import org.eclipse.jetty.io.Content;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.asuswrt.internal.helpers.AsuswrtErrorHandler;
@@ -92,7 +93,7 @@ class AsuswrtConnectorTest {
         assertEquals(2, requests.size());
         RecordedRequest nonceRequest = requests.get(0);
         assertEquals("http://router.example.test/get_Nonce.cgi", nonceRequest.url);
-        assertEquals("application/json", nonceRequest.contentType);
+        assertEquals("application/json", nonceRequest.headers.get("content-type"));
         assertEquals("http://router.example.test/", nonceRequest.headers.get("referer"));
         String requestId = nonceRequest.body.replaceAll(".*\"id\":\"([^\"]+)\".*", "$1");
         assertTrue(requestId.matches("[A-Za-z0-9]{10}"));
@@ -159,14 +160,18 @@ class AsuswrtConnectorTest {
         requests.add(recordedRequest);
 
         when(request.method(anyString())).thenReturn(request);
-        when(request.header(anyString(), anyString())).thenAnswer(invocation -> {
-            recordedRequest.headers.put(invocation.getArgument(0), invocation.getArgument(1));
+        when(request.headers(any())).thenAnswer(invocation -> {
+            HttpFields.Mutable fields = HttpFields.build();
+            Consumer<HttpFields.Mutable> consumer = invocation.getArgument(0);
+            consumer.accept(fields);
+            for (HttpField field : fields) {
+                recordedRequest.headers.put(field.getLowerCaseName(), field.getValue());
+            }
             return request;
         });
         when(request.timeout(anyLong(), eq(TimeUnit.MILLISECONDS))).thenReturn(request);
-        when(request.content(any(ContentProvider.class), anyString())).thenAnswer(invocation -> {
+        when(request.body(any(Request.Content.class))).thenAnswer(invocation -> {
             recordedRequest.body = contentAsString(invocation.getArgument(0));
-            recordedRequest.contentType = invocation.getArgument(1);
             return request;
         });
         when(request.send()).thenAnswer(invocation -> responses.remove());
@@ -175,7 +180,7 @@ class AsuswrtConnectorTest {
 
     private ContentResponse response(int status, String body, String... setCookieHeaders) {
         ContentResponse response = mock(ContentResponse.class);
-        HttpFields headers = new HttpFields();
+        HttpFields.Mutable headers = HttpFields.build();
         for (String setCookieHeader : setCookieHeaders) {
             headers.add(HttpHeader.SET_COOKIE, setCookieHeader);
         }
@@ -186,12 +191,8 @@ class AsuswrtConnectorTest {
         return response;
     }
 
-    private String contentAsString(ContentProvider contentProvider) {
-        StringBuilder body = new StringBuilder();
-        for (ByteBuffer buffer : contentProvider) {
-            body.append(StandardCharsets.UTF_8.decode(buffer.slice()));
-        }
-        return body.toString();
+    private String contentAsString(Request.Content content) throws Exception {
+        return Content.Source.asString(content, StandardCharsets.UTF_8);
     }
 
     private Map<String, String> parseForm(String body) {
@@ -213,7 +214,6 @@ class AsuswrtConnectorTest {
         private final String url;
         private final Map<String, String> headers = new LinkedHashMap<>();
         private String body = "";
-        private String contentType = "";
 
         private RecordedRequest(String url) {
             this.url = url;

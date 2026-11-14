@@ -25,8 +25,8 @@ import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpStatus;
 import org.json.JSONArray;
@@ -107,9 +107,10 @@ public class OSMGeoResolver extends BaseGeoResolver {
      */
     private String apiCall(String url) {
         try {
-            ContentResponse response = httpClient.newRequest(url).header(HttpHeader.ACCEPT_LANGUAGE, config.language)
-                    .header(HttpHeader.USER_AGENT, userAgentSupplier.get())
-                    .timeout(HTTP_TIMEOUT_SECONDS, TimeUnit.SECONDS).send();
+            ContentResponse response = httpClient.newRequest(url).headers(headers -> {
+                headers.put(HttpHeader.ACCEPT_LANGUAGE, config.language);
+                headers.put(HttpHeader.USER_AGENT, userAgentSupplier.get());
+            }).timeout(HTTP_TIMEOUT_SECONDS, TimeUnit.SECONDS).send();
             int statusResponse = response.getStatus();
             String jsonResponse = response.getContentAsString();
             if (statusResponse == HttpStatus.OK_200) {

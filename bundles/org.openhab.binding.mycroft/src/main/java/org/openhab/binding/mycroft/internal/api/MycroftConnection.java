@@ -14,6 +14,7 @@ package org.openhab.binding.mycroft.internal.api;
 
 import java.io.IOException;
 import java.net.URI;
+import java.time.Duration;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
@@ -27,11 +28,12 @@ import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.websocket.api.Callback;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
-import org.eclipse.jetty.websocket.api.annotations.OnWebSocketConnect;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketError;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketOpen;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.openhab.binding.mycroft.internal.api.dto.BaseMessage;
@@ -68,7 +70,7 @@ public class MycroftConnection {
         this.connectionListener = listener;
         this.client = client;
         this.client.setConnectTimeout(TIMEOUT_MILLISECONDS);
-        this.client.setMaxIdleTimeout(0);
+        this.client.setIdleTimeout(Duration.ZERO);
         this.socketName = "Websocket-Mycroft$" + System.currentTimeMillis() + "-" + INSTANCE_COUNTER.incrementAndGet();
 
         GsonBuilder gsonBuilder = new GsonBuilder();
@@ -144,22 +146,22 @@ public class MycroftConnection {
         final Session storedSession = this.session;
         try {
             if (storedSession != null) {
-                storedSession.getRemote().sendString(message);
+                storedSession.sendText(message, Callback.NOOP);
             } else {
                 throw new IOException("Session is not initialized");
             }
         } catch (IOException e) {
             if (storedSession != null && storedSession.isOpen()) {
-                storedSession.close(-1, "Sending message error");
+                storedSession.close();
             }
             throw e;
         }
     }
 
-    @OnWebSocketConnect
+    @OnWebSocketOpen
     public void onConnect(Session session) {
         connectionState = ConnectionState.CONNECTED;
-        logger.debug("{} successfully connected to {}: {}", socketName, session.getRemoteAddress().getAddress(),
+        logger.debug("{} successfully connected to {}: {}", socketName, session.getRemoteSocketAddress(),
                 session.hashCode());
         connectionListener.connectionEstablished();
         this.session = session;
@@ -207,7 +209,7 @@ public class MycroftConnection {
 
         Session storedSession = this.session;
         if (storedSession != null && storedSession.isOpen()) {
-            storedSession.close(-1, "Processing error");
+            storedSession.close();
         }
     }
 

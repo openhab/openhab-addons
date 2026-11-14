@@ -15,8 +15,8 @@ package org.openhab.binding.nuki.internal.discovery;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.nuki.internal.constants.NukiBindingConstants;
 import org.openhab.binding.nuki.internal.constants.NukiLinkBuilder;

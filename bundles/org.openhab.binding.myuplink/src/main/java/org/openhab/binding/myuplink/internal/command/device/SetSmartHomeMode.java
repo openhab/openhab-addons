@@ -17,8 +17,8 @@ import static org.openhab.binding.myuplink.internal.MyUplinkBindingConstants.*;
 import java.nio.charset.StandardCharsets;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.myuplink.internal.command.AbstractWriteCommand;
 import org.openhab.binding.myuplink.internal.command.JsonResultProcessor;
@@ -55,10 +55,10 @@ public class SetSmartHomeMode extends AbstractWriteCommand {
 
         String body = buildJsonObject(JSON_KEY_SMART_HOME_MODE, command.toString());
 
-        StringContentProvider cp = new StringContentProvider(WEB_REQUEST_PATCH_CONTENT_TYPE, body,
+        StringRequestContent cp = new StringRequestContent(WEB_REQUEST_PATCH_CONTENT_TYPE, body,
                 StandardCharsets.UTF_8);
 
-        requestToPrepare.content(cp);
+        requestToPrepare.body(cp);
 
         return requestToPrepare;
     }

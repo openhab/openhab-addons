@@ -65,7 +65,8 @@ public class EnphaseHandlerFactory extends BaseThingHandlerFactory {
         // Note: Had to switch to using a locally generated httpClient as
         // the Envoy server went to a self-signed SSL connection and this
         // was the only way to set the client to ignore SSL errors
-        this.httpClient = new HttpClient(new SslContextFactory.Client(true));
+        this.httpClient = new HttpClient();
+        this.httpClient.setSslContextFactory(new SslContextFactory.Client(true));
         startHttpClient();
     }
 

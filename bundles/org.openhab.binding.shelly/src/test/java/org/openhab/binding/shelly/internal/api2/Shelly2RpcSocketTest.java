@@ -18,14 +18,15 @@ import static org.mockito.Mockito.*;
 
 import java.io.EOFException;
 import java.net.InetSocketAddress;
+import java.net.URI;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.eclipse.jetty.websocket.api.RemoteEndpoint;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.StatusCode;
+import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -133,7 +134,7 @@ class Shelly2RpcSocketTest {
 
         socket.onConnect(session);
 
-        verify(session).close(eq(StatusCode.SHUTDOWN), anyString());
+        verify(session).close(eq(StatusCode.SHUTDOWN), anyString(), any());
         verify(handler, never()).onConnect(any(), anyBoolean());
         verifyNoInteractions(thingTable);
         assertFalse(socket.isConnected());
@@ -202,7 +203,7 @@ class Shelly2RpcSocketTest {
         Session newSession = openSession();
         socket.onConnect(newSession);
 
-        verify(newSession.getRemote()).sendString(eq("request"), any());
+        verify(newSession).sendText(eq("request"), any());
         verify(handler, never()).onClose(anyLong(), anyBoolean(), anyInt(), anyString());
     }
 
@@ -224,7 +225,7 @@ class Shelly2RpcSocketTest {
 
         socket.onConnect(session);
 
-        verify(session).close(eq(StatusCode.SHUTDOWN), anyString());
+        verify(session).close(eq(StatusCode.SHUTDOWN), anyString(), any());
         assertFalse(socket.isConnected());
     }
 
@@ -274,8 +275,8 @@ class Shelly2RpcSocketTest {
 
         first.onConnect(late);
 
-        verify(late).close(eq(StatusCode.NORMAL), anyString());
-        verify(current, never()).close(anyInt(), anyString());
+        verify(late).close(eq(StatusCode.NORMAL), anyString(), any());
+        verify(current, never()).close(anyInt(), anyString(), any());
         verify(handler).onConnect(any(), anyBoolean());
         assertTrue(socket.isConnected());
     }
@@ -284,15 +285,14 @@ class Shelly2RpcSocketTest {
         clearInvocations(webSocketClient);
         socket.connect();
         ArgumentCaptor<Object> endpoint = ArgumentCaptor.forClass(Object.class);
-        verify(webSocketClient).connect(endpoint.capture(), any(), any());
+        verify(webSocketClient).connect(endpoint.capture(), any(URI.class), any(ClientUpgradeRequest.class));
         return (Shelly2RpcSocket.ConnectAttempt) endpoint.getValue();
     }
 
     private Session openSession() {
         Session session = mock(Session.class);
-        when(session.getRemoteAddress()).thenReturn(DEVICE_ADDRESS);
+        when(session.getRemoteSocketAddress()).thenReturn(DEVICE_ADDRESS);
         when(session.isOpen()).thenReturn(true);
-        when(session.getRemote()).thenReturn(mock(RemoteEndpoint.class));
         return session;
     }
 

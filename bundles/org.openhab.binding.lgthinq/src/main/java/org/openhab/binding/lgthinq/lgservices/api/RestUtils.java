@@ -28,21 +28,21 @@ import java.util.concurrent.TimeoutException;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
-import javax.ws.rs.core.UriBuilder;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
+import org.eclipse.jetty.client.FormRequestContent;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentProvider;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.FormContentProvider;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.util.Fields;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.openhab.core.i18n.CommunicationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import jakarta.ws.rs.core.UriBuilder;
 
 /**
  * The {@link RestUtils} rest utilities
@@ -165,7 +165,7 @@ public class RestUtils {
     @Nullable
     public static RestResult postCall(HttpClient httpClient, String encodedUrl, Map<String, String> headers,
             String jsonData) {
-        return postCall(httpClient, encodedUrl, headers, new StringContentProvider(jsonData));
+        return postCall(httpClient, encodedUrl, headers, new StringRequestContent(jsonData));
     }
 
     @Nullable
@@ -173,15 +173,15 @@ public class RestUtils {
             Map<String, String> formParams) {
         Fields fields = new Fields();
         formParams.forEach(fields::put);
-        return postCall(httpClient, encodedUrl, headers, new FormContentProvider(fields));
+        return postCall(httpClient, encodedUrl, headers, new FormRequestContent(fields));
     }
 
     @Nullable
     private static RestResult postCall(HttpClient httpClient, String encodedUrl, Map<String, String> headers,
-            ContentProvider contentProvider) {
+            Request.Content requestContent) {
 
         try {
-            return doPost(httpClient, encodedUrl, headers, contentProvider);
+            return doPost(httpClient, encodedUrl, headers, requestContent);
         } catch (TimeoutException e) {
             LOGGER.warn("Timeout reading post call result from LG API", e);
             // callers retry when no result is returned
@@ -195,7 +195,7 @@ public class RestUtils {
                         "TLS handshake failed for POST {}. Retrying once with TLS compatibility profile (TLS1.2 + RSA ciphers).",
                         safeUrlForLog(encodedUrl));
                 try {
-                    return doPost(getTlsFallbackHttpClient(), encodedUrl, headers, contentProvider);
+                    return doPost(getTlsFallbackHttpClient(), encodedUrl, headers, requestContent);
                 } catch (TimeoutException te) {
                     LOGGER.warn("Timeout on TLS fallback retry for POST {}", safeUrlForLog(encodedUrl), te);
                     return null;
@@ -221,7 +221,7 @@ public class RestUtils {
             params.forEach(request::param);
         }
         if (headers != null) {
-            headers.forEach(request::header);
+            request.headers(h -> headers.forEach(h::add));
         }
 
         if (LOGGER.isTraceEnabled()) {
@@ -236,11 +236,11 @@ public class RestUtils {
     }
 
     private static RestResult doPost(HttpClient httpClient, String encodedUrl, Map<String, String> headers,
-            ContentProvider contentProvider) throws InterruptedException, TimeoutException, ExecutionException {
-        Request request = httpClient.newRequest(encodedUrl).method("POST").content(contentProvider)
+            Request.Content requestContent) throws InterruptedException, TimeoutException, ExecutionException {
+        Request request = httpClient.newRequest(encodedUrl).method("POST").body(requestContent)
                 .timeout(REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS);
 
-        headers.forEach(request::header);
+        request.headers(h -> headers.forEach(h::add));
 
         if (LOGGER.isTraceEnabled()) {
             LOGGER.trace("POST request to URI: {}", request.getURI());
@@ -326,7 +326,8 @@ public class RestUtils {
 
             ssl.setExcludeCipherSuites(TLS_FALLBACK_EXCLUDE_CIPHERS);
 
-            final HttpClient created = new HttpClient(ssl);
+            final HttpClient created = new HttpClient();
+            created.setSslContextFactory(ssl);
             created.setConnectTimeout(10_000);
             created.start();
 

@@ -39,8 +39,8 @@
  */
 package org.openhab.binding.lametrictime.internal.api.authentication;
 
-import javax.ws.rs.client.ResponseProcessingException;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.client.ResponseProcessingException;
+import jakarta.ws.rs.core.Response;
 
 /**
  * Exception thrown by security response authentication.

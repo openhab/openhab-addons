@@ -29,13 +29,13 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+import org.eclipse.jetty.websocket.api.Callback;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.StatusCode;
-import org.eclipse.jetty.websocket.api.WebSocketPolicy;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
-import org.eclipse.jetty.websocket.api.annotations.OnWebSocketConnect;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketError;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketOpen;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import org.openhab.binding.loxone.internal.security.LxWsSecurity;
 import org.openhab.binding.loxone.internal.types.LxConfig;
@@ -135,18 +135,17 @@ public class LxWebSocket {
      * Jetty websocket methods
      */
 
-    @OnWebSocketConnect
+    @OnWebSocketOpen
     public void onConnect(Session session) {
         webSocketLock.lock();
         try {
             offlineCode = null;
             offlineReason = null;
-            WebSocketPolicy policy = session.getPolicy();
-            policy.setMaxBinaryMessageSize(maxBinMsgSize * 1024);
-            policy.setMaxTextMessageSize(maxTextMsgSize * 1024);
+            session.setMaxBinaryMessageSize(maxBinMsgSize * 1024L);
+            session.setMaxTextMessageSize(maxTextMsgSize * 1024L);
 
-            logger.debug("[{}] Websocket connected (maxBinMsgSize={}, maxTextMsgSize={})", debugId,
-                    policy.getMaxBinaryMessageSize(), policy.getMaxTextMessageSize());
+            logger.debug("[{}] Websocket connected (maxBinMsgSize={}, maxTextMsgSize={})", debugId, maxBinMsgSize,
+                    maxTextMsgSize);
             this.session = session;
 
             security = LxWsSecurity.create(securityType, fwVersion, debugId, thingHandler, this, user, password);
@@ -209,7 +208,14 @@ public class LxWebSocket {
     }
 
     @OnWebSocketMessage
-    public void onBinaryMessage(byte[] data, int msgOffset, int msgLength) {
+    public void onBinaryMessage(ByteBuffer payload, Callback callback) {
+        byte[] data = new byte[payload.remaining()];
+        payload.get(data);
+        callback.succeed();
+        onBinaryMessage(data, 0, data.length);
+    }
+
+    void onBinaryMessage(byte[] data, int msgOffset, int msgLength) {
         int offset = msgOffset;
         int length = msgLength;
         if (logger.isTraceEnabled()) {
@@ -507,7 +513,7 @@ public class LxWebSocket {
         stopResponseTimeout();
         if (session != null) {
             logger.debug("[{}] Closing session", debugId);
-            session.close(StatusCode.NORMAL, reason);
+            session.close(StatusCode.NORMAL, reason, Callback.NOOP);
             logger.debug("[{}] Session closed", debugId);
         } else {
             logger.debug("[{}] Disconnecting websocket, but no session, reason : {}", debugId, reason);
@@ -560,13 +566,8 @@ public class LxWebSocket {
                     logger.debug("[{}] Sending unencrypted string: {}", debugId, command);
                     encrypted = command;
                 }
-                try {
-                    session.getRemote().sendString(encrypted);
-                    return true;
-                } catch (IOException e) {
-                    logger.debug("[{}] Error sending command: {}, {}", debugId, command, e.getMessage());
-                    return false;
-                }
+                session.sendText(encrypted, Callback.NOOP);
+                return true;
             } else {
                 logger.debug("[{}] NOT sending command: {}", debugId, command);
                 return false;

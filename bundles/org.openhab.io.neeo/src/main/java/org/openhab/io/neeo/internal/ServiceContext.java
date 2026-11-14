@@ -27,8 +27,8 @@ import org.openhab.core.thing.type.ChannelTypeRegistry;
 import org.openhab.core.thing.type.ThingTypeRegistry;
 import org.openhab.core.util.StringUtils;
 import org.openhab.io.neeo.internal.models.NeeoThingUID;
+import org.ops4j.pax.web.service.http.HttpService;
 import org.osgi.service.component.ComponentContext;
-import org.osgi.service.http.HttpService;
 
 /**
  * Provides the services for a given context

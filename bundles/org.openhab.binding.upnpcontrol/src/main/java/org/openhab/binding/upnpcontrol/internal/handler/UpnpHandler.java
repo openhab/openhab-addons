@@ -23,6 +23,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.function.Function;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -37,6 +38,8 @@ import org.openhab.binding.upnpcontrol.internal.config.UpnpControlConfiguration;
 import org.openhab.binding.upnpcontrol.internal.queue.UpnpPlaylistsListener;
 import org.openhab.binding.upnpcontrol.internal.util.UpnpControlUtil;
 import org.openhab.core.common.ThreadPoolManager;
+import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.io.transport.upnp.UpnpIOParticipant;
 import org.openhab.core.io.transport.upnp.UpnpIOService;
 import org.openhab.core.thing.Channel;
@@ -54,6 +57,8 @@ import org.openhab.core.types.CommandOption;
 import org.openhab.core.types.StateDescription;
 import org.openhab.core.types.StateDescriptionFragmentBuilder;
 import org.openhab.core.types.StateOption;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.FrameworkUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -75,10 +80,12 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
     static final String AV_TRANSPORT_ID = "AVTransportID";
     static final String RCS_ID = "RcsID";
     static final Pattern PROTOCOL_PATTERN = Pattern.compile("(?:.*):(?:.*):(.*):(?:.*)");
+    private static final String TEXT_PREFIX = "@text/";
 
     protected UpnpIOService upnpIOService;
 
     protected volatile @Nullable RemoteDevice device;
+    private @Nullable Function<@Nullable String, @Nullable RemoteDevice> deviceLookup;
 
     // The handlers can potentially create an important number of tasks, therefore put them in a separate thread pool
     protected ScheduledExecutorService upnpScheduler = ThreadPoolManager.getScheduledPool("binding-upnpcontrol");
@@ -117,9 +124,13 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
     protected UpnpDynamicStateDescriptionProvider upnpStateDescriptionProvider;
     protected UpnpDynamicCommandDescriptionProvider upnpCommandDescriptionProvider;
 
+    private final TranslationProvider translationProvider;
+    private final LocaleProvider localeProvider;
+
     public UpnpHandler(Thing thing, UpnpIOService upnpIOService, UpnpControlBindingConfiguration configuration,
             UpnpDynamicStateDescriptionProvider upnpStateDescriptionProvider,
-            UpnpDynamicCommandDescriptionProvider upnpCommandDescriptionProvider) {
+            UpnpDynamicCommandDescriptionProvider upnpCommandDescriptionProvider,
+            TranslationProvider translationProvider, LocaleProvider localeProvider) {
         super(thing);
 
         this.upnpIOService = upnpIOService;
@@ -127,6 +138,9 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
 
         this.upnpStateDescriptionProvider = upnpStateDescriptionProvider;
         this.upnpCommandDescriptionProvider = upnpCommandDescriptionProvider;
+
+        this.translationProvider = translationProvider;
+        this.localeProvider = localeProvider;
 
         // Get this in constructor, so the UDN is immediately available from the config. The concrete classes should
         // update the config from the initialize method.
@@ -136,6 +150,14 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
     @Override
     public void initialize() {
         config = getConfigAs(UpnpControlConfiguration.class);
+
+        // e.g. after the UDN was changed in the configuration
+        RemoteDevice currentDevice = device;
+        Function<@Nullable String, @Nullable RemoteDevice> lookup = deviceLookup;
+        if (lookup != null && (currentDevice == null
+                || !currentDevice.getIdentity().getUdn().getIdentifierString().equals(config.udn))) {
+            device = lookup.apply(config.udn);
+        }
 
         upnpIOService.registerParticipant(this);
 
@@ -188,7 +210,7 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
      */
     protected void initDevice() {
         String udn = getUDN();
-        if ((udn != null) && !udn.isEmpty()) {
+        if ((udn != null) && !udn.isBlank()) {
             updateStatus(ThingStatus.UNKNOWN);
 
             if (config.refresh == 0) {
@@ -256,24 +278,42 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
     }
 
     protected void createChannel(String channelId, String label, String description, String itemType,
-            String channelType) {
+            String channelType, Object... labelArguments) {
         ChannelUID channelUID = new ChannelUID(thing.getUID(), channelId);
+        String localizedLabel = localize(label, labelArguments);
 
-        if (thing.getChannel(channelUID) != null) {
+        Channel existingChannel = thing.getChannel(channelUID);
+        if (existingChannel != null && localizedLabel.equals(existingChannel.getLabel())) {
             // channel already exists
             logger.trace("UPnP device {}, channel {} already exists", thing.getLabel(), channelId);
             return;
         }
 
         ChannelTypeUID channelTypeUID = new ChannelTypeUID(channelType);
-        Channel channel = ChannelBuilder.create(channelUID).withLabel(label).withDescription(description)
-                .withAcceptedItemType(itemType).withType(channelTypeUID).build();
+        Channel channel = ChannelBuilder.create(channelUID).withLabel(localizedLabel)
+                .withDescription(localize(description)).withAcceptedItemType(itemType).withType(channelTypeUID).build();
 
         logger.debug("UPnP device {}, created channel {}", thing.getLabel(), channelId);
 
         updatedChannels.add(channel);
         updatedChannelUIDs.add(channelUID);
         updateChannels = true;
+    }
+
+    /**
+     * Channels created at runtime are not localized by the framework, so resolve their {@code @text/key} references
+     * here.
+     */
+    protected String localize(String text, Object... arguments) {
+        if (!text.startsWith(TEXT_PREFIX)) {
+            return text;
+        }
+
+        Bundle bundle = FrameworkUtil.getBundle(UpnpHandler.class);
+        String localized = bundle == null ? null
+                : translationProvider.getText(bundle, text.substring(TEXT_PREFIX.length()), null,
+                        localeProvider.getLocale(), arguments);
+        return localized != null ? localized : text;
     }
 
     protected void updateChannels() {
@@ -556,6 +596,13 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
     @Override
     public @Nullable String getUDN() {
         return config.udn;
+    }
+
+    /**
+     * Sets the lookup used to find the device again when the UDN is changed in the configuration.
+     */
+    public void setDeviceLookup(Function<@Nullable String, @Nullable RemoteDevice> deviceLookup) {
+        this.deviceLookup = deviceLookup;
     }
 
     protected boolean checkForConnectionIds() {

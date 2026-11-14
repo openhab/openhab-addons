@@ -206,7 +206,8 @@ public class UpnpRendererHandlerTest extends UpnpHandlerTest {
 
         handler = spy(new UpnpRendererHandler(requireNonNull(thing), requireNonNull(upnpIOService),
                 requireNonNull(audioSinkReg), requireNonNull(upnpStateDescriptionProvider),
-                requireNonNull(upnpCommandDescriptionProvider), configuration));
+                requireNonNull(upnpCommandDescriptionProvider), configuration, requireNonNull(translationProvider),
+                requireNonNull(localeProvider)));
 
         initHandler(requireNonNull(handler));
 
