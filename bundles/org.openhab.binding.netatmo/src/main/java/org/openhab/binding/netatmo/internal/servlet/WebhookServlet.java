@@ -161,4 +161,8 @@ public class WebhookServlet extends NetatmoServlet {
         hooked = hookSet;
         handler.hookState(hooked);
     }
+
+    public boolean hookSet() {
+        return hooked;
+    }
 }

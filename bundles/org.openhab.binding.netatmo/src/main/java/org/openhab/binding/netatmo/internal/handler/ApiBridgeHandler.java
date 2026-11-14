@@ -90,6 +90,7 @@ import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
+import org.openhab.core.types.RefreshType;
 import org.osgi.service.http.HttpService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -176,12 +177,13 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
         freeConnectJob();
 
         ApiHandlerConfiguration configuration = getConfiguration();
+        hookState(false);
         if (!configuration.webHookUrl.isBlank() && getRestManager(WebhookApi.class) instanceof WebhookApi api) {
-            WebhookServlet servlet = this.webhookServlet;
+            WebhookServlet servlet = webhookServlet;
             if (servlet != null) {
                 servlet.dispose();
             }
-            servlet = this.webhookServlet = new WebhookServlet(this, httpService, deserializer, api,
+            servlet = webhookServlet = new WebhookServlet(this, httpService, deserializer, api,
                     configuration.webHookUrl, configuration.webHookPostfix);
             servlet.startListening();
         }
@@ -300,7 +302,10 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.debug("Netatmo Bridge is read-only and does not handle commands");
+        if (command == RefreshType.REFRESH && CHANNEL_HOOK_SET.equals(channelUID.getIdWithoutGroup())) {
+            updateState(hookSetChannelUID,
+                    webhookServlet != null ? OnOffType.from(webhookServlet.hookSet()) : OnOffType.OFF);
+        }
     }
 
     @SuppressWarnings("unchecked")

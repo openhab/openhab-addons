@@ -47,7 +47,7 @@ public class WebhookApi extends RestManager {
      * @throws NetatmoException If fail to call the API, e.g. server or deserializing error
      */
     public void dropWebhook() throws NetatmoException {
-        delete(WEBHOOKS_URI_BUILDER.clone(), ApiResponse.Ok.class);
+        delete(WEBHOOKS_URI_BUILDER.clone(), WebhooksResponse.class);
     }
 
     /**
