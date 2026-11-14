@@ -43,4 +43,5 @@ public class AmpliPiBindingConstants {
     public static final String CFG_PARAM_HOSTNAME = "hostname";
     public static final String CFG_PARAM_ID = "id";
     public static final String CFG_PARAM_VOLUME_DELTA = "volumeDelta";
+    public static final String CFG_PARAM_AUDIO_SINK = "audioSink";
 }
