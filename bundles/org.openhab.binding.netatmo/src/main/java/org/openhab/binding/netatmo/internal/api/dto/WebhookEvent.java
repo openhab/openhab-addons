@@ -77,7 +77,6 @@ public class WebhookEvent extends Event {
 
     public Set<String> getNAObjectList() {
         Set<String> result = new LinkedHashSet<>();
-        result.add(getCameraId());
         addNotBlank(result, homeId);
         addNotBlank(result, deviceId);
         addNotBlank(result, roomId);

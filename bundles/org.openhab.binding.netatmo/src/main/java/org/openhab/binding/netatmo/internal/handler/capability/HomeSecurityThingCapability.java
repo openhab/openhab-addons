@@ -66,7 +66,7 @@ public abstract class HomeSecurityThingCapability extends Capability {
 
     protected Optional<HomeCapability> getHomeCapability() {
         if (homeCapability == null) {
-            handler.getHomeCapability(HomeCapability.class).ifPresent(cap -> homeCapability = cap);
+            homeCapability = handler.getHomeCapability(HomeCapability.class).orElse(null);
         }
         return Optional.ofNullable(homeCapability);
     }

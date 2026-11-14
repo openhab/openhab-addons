@@ -25,7 +25,6 @@ import org.openhab.binding.netatmo.internal.api.dto.Event;
 import org.openhab.binding.netatmo.internal.api.dto.HomeEvent;
 import org.openhab.binding.netatmo.internal.api.dto.NAObject;
 import org.openhab.binding.netatmo.internal.utils.ChannelTypeUtils;
-import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 
@@ -67,7 +66,7 @@ public class EventChannelHelper extends ChannelHelper {
         return switch (channelId) {
             case CHANNEL_EVENT_TYPE -> toStringType(event.getEventType());
             case CHANNEL_EVENT_MESSAGE -> toStringType(event.getName());
-            case CHANNEL_EVENT_TIME -> new DateTimeType(event.getTime());
+            case CHANNEL_EVENT_TIME -> toDateTimeType(event.getTime());
             case CHANNEL_EVENT_PERSON_ID -> toStringType(event.getPersonId());
             case CHANNEL_EVENT_CAMERA_ID -> toStringType(event.getCameraId());
             case CHANNEL_EVENT_SUBTYPE ->
