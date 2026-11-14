@@ -34,49 +34,138 @@ import org.openhab.binding.dreame.internal.model.DreameStatus;
 @NonNullByDefault
 public interface DreameMowerApi {
 
-    /** Authenticates the shared cloud session. */
+    /**
+     * Authenticates the shared cloud session.
+     *
+     * @param username account user name
+     * @param password account password
+     * @param country account country code
+     * @param cloudService cloud service used for authentication
+     * @throws DreameCloudException if authentication fails
+     */
     void login(String username, String password, String country, DreameCloudService cloudService)
             throws DreameCloudException;
 
     /** Ends the shared cloud session and clears its credentials. */
     void logout();
 
-    /** Returns all devices reported by the authenticated account. */
+    /**
+     * Returns the devices associated with the authenticated account.
+     *
+     * @return account devices
+     * @throws DreameCloudException if the device list cannot be retrieved
+     */
     List<DreameDevice> getDevices() throws DreameCloudException;
 
-    /** Reads the requested mower properties without substituting missing values. */
+    /**
+     * Reads the requested mower properties. Missing properties are not substituted.
+     *
+     * @param device mower to query
+     * @param properties properties to read
+     * @return values returned for the requested properties
+     * @throws DreameCloudException if the properties cannot be retrieved
+     */
     DreameStatus getProperties(DreameDevice device, List<DreameProperty> properties) throws DreameCloudException;
 
-    /** Returns the accumulated mowing statistics. */
+    /**
+     * Returns the mower's accumulated mowing statistics.
+     *
+     * @param device mower to query
+     * @return mowing statistics
+     * @throws DreameCloudException if the statistics cannot be retrieved
+     */
     DreameMowingStatistics getMowingStatistics(DreameDevice device) throws DreameCloudException;
 
-    /** Returns maps and mowing zones available to the mower. */
+    /**
+     * Returns the maps and mowing zones available to the mower.
+     *
+     * @param device mower to query
+     * @return available maps and zones
+     * @throws DreameCloudException if the map data cannot be retrieved
+     */
     DreameMapData getMapData(DreameDevice device) throws DreameCloudException;
 
-    /** Writes a boolean mower property. */
+    /**
+     * Writes a boolean mower property.
+     *
+     * @param device mower to update
+     * @param property property to write
+     * @param value value to set
+     * @throws DreameCloudException if the property cannot be written
+     */
     void setProperty(DreameDevice device, DreameProperty property, boolean value) throws DreameCloudException;
 
-    /** Updates the mower's do-not-disturb setting if the lifecycle guard remains current. */
+    /**
+     * Updates the mower's do-not-disturb setting while the lifecycle guard remains current.
+     *
+     * @param device mower to update
+     * @param enabled whether do-not-disturb is enabled
+     * @param taskConfiguration optional task configuration used by the mower
+     * @param isCurrent returns whether the caller is still active
+     * @throws DreameCloudException if the setting cannot be written
+     */
     void setDnd(DreameDevice device, boolean enabled, @Nullable String taskConfiguration, BooleanSupplier isCurrent)
             throws DreameCloudException;
 
-    /** Invokes a mower action if the lifecycle guard remains current. */
+    /**
+     * Invokes a mower action while the lifecycle guard remains current.
+     *
+     * @param device mower to control
+     * @param action action to invoke
+     * @param isCurrent returns whether the caller is still active
+     * @throws DreameCloudException if the action cannot be invoked
+     */
     void callAction(DreameDevice device, DreameAction action, BooleanSupplier isCurrent) throws DreameCloudException;
 
-    /** Starts mowing the selected zones if the lifecycle guard remains current. */
+    /**
+     * Starts mowing the selected zones while the lifecycle guard remains current.
+     *
+     * @param device mower to control
+     * @param zoneIds identifiers of the zones to mow
+     * @param isCurrent returns whether the caller is still active
+     * @throws DreameCloudException if zone mowing cannot be started
+     */
     void startZoneMowing(DreameDevice device, List<Integer> zoneIds, BooleanSupplier isCurrent)
             throws DreameCloudException;
 
-    /** Selects a mower map if the lifecycle guard remains current. */
+    /**
+     * Selects a mower map while the lifecycle guard remains current.
+     *
+     * @param device mower to update
+     * @param mapIndex index of the map to select
+     * @param isCurrent returns whether the caller is still active
+     * @throws DreameCloudException if the map cannot be selected
+     */
     void selectMap(DreameDevice device, int mapIndex, BooleanSupplier isCurrent) throws DreameCloudException;
 
-    /** Reads the cutting height configured for a map. */
+    /**
+     * Reads the cutting height configured for a mower map.
+     *
+     * @param device mower to query
+     * @param mapIndex index of the map
+     * @return configured cutting height
+     * @throws DreameCloudException if the cutting height cannot be retrieved
+     */
     BigDecimal getCuttingHeight(DreameDevice device, int mapIndex) throws DreameCloudException;
 
-    /** Updates the cutting height for a map if the lifecycle guard remains current. */
+    /**
+     * Updates the cutting height for a mower map while the lifecycle guard remains current.
+     *
+     * @param device mower to update
+     * @param mapIndex index of the map
+     * @param height cutting height to set
+     * @param isCurrent returns whether the caller is still active
+     * @throws DreameCloudException if the cutting height cannot be written
+     */
     void setCuttingHeight(DreameDevice device, int mapIndex, BigDecimal height, BooleanSupplier isCurrent)
             throws DreameCloudException;
 
-    /** Returns short-lived MQTT connection details for the device. */
+    /**
+     * Returns short-lived MQTT connection details for a device.
+     *
+     * @param device device to connect
+     * @return MQTT connection details
+     * @throws DreameCloudException if the connection details cannot be retrieved
+     */
     DreameMqttConfiguration mqttConfiguration(DreameDevice device) throws DreameCloudException;
 }
