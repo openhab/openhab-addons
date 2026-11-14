@@ -591,9 +591,13 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
         }
 
 <<<<<<< Upstream, based on main
+<<<<<<< Upstream, based on main
         updateState(hookSetChannelUID, OnOffType.from(hooked));
 =======
         updateState(hookSetChannelUID, hooked ? OnOffType.ON : OnOffType.OFF);
 >>>>>>> 68a8c4e Take first code review in account. Add a channel to account tracking hook status.
+=======
+        updateState(hookSetChannelUID, OnOffType.from(hooked));
+>>>>>>> a1c653f Lolodomo code review
     }
 }
