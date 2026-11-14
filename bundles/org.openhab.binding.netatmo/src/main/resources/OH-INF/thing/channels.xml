@@ -70,6 +70,13 @@
 		<state readOnly="true"/>
 	</channel-type>
 
+	<channel-type id="hook-set">
+		<item-type>Switch</item-type>
+		<label>Hook Set</label>
+		<description>Hook defined in configuration is declared at Netatmo server</description>
+		<state readOnly="true"/>
+	</channel-type>
+
 	<channel-type id="heating-status">
 		<item-type>Contact</item-type>
 		<label>Heating Status</label>
