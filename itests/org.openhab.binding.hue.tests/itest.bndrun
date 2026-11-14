@@ -83,6 +83,7 @@ Fragment-Host: org.openhab.binding.hue
 	org.openhab.core.test;version='[5.3.0,5.3.1)',\
 	org.openhab.core.thing;version='[5.3.0,5.3.1)',\
 	org.openhab.core.transform;version='[5.3.0,5.3.1)',\
+	biz.aQute.tester.junit-platform;version='[7.5.0,7.5.1)',\
 	jakarta.annotation-api;version='[2.1.1,2.1.2)',\
 	org.openhab.core.semantics;version='[5.3.0,5.3.1)',\
 	org.eclipse.jdt.annotation;version='[2.4.100,2.4.101)',\
@@ -93,5 +94,4 @@ Fragment-Host: org.openhab.binding.hue
 	org.jupnp.transport.javax.servlet;version='[4.0.0,4.0.1)',\
 	tech.units.indriya;version='[2.2.4,2.2.5)',\
 	com.google.gson;version='[2.15.0,2.15.1)',\
-	javax.jmdns;version='[3.6.5,3.6.6)',\
-	biz.aQute.tester.junit-platform;version='[7.4.0,7.4.1)'
+	javax.jmdns;version='[3.6.5,3.6.6)'
