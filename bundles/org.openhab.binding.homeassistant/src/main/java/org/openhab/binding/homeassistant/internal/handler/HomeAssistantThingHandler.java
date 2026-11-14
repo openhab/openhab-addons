@@ -459,7 +459,8 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
                 var sortedComponents = haComponents.values().stream().sorted(COMPONENT_COMPARATOR).toList();
 
                 sortedComponents.stream().flatMap(c -> c.getChannelMap().values().stream()).map(c -> c.getChannelType())
-                        .filter(Objects::nonNull).forEach(channelTypeProvider::putChannelType);
+                        .filter(Objects::nonNull).map(Objects::requireNonNull)
+                        .forEach(channelTypeProvider::putChannelType);
 
                 var channelGroupTypes = sortedComponents.stream().map(c -> c.getChannelGroupType(typeID.getId()))
                         .filter(Objects::nonNull).map(Objects::requireNonNull).toList();
