@@ -17,7 +17,7 @@
 
 	<channel-type id="battery-rsoc">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Real State of Charge</label>
+		<label>Real SoC</label>
 		<description>State of charge the battery reports itself</description>
 		<tags>
 			<tag>Measurement</tag>
@@ -28,7 +28,7 @@
 
 	<channel-type id="battery-remaining-charge-power">
 		<item-type>Number:Power</item-type>
-		<label>Remaining Charge Power</label>
+		<label>Charge Power Left</label>
 		<description>Charge power still available</description>
 		<tags>
 			<tag>Measurement</tag>
@@ -39,7 +39,7 @@
 
 	<channel-type id="battery-remaining-discharge-power">
 		<item-type>Number:Power</item-type>
-		<label>Remaining Discharge Power</label>
+		<label>Discharge Power Left</label>
 		<description>Discharge power still available</description>
 		<tags>
 			<tag>Measurement</tag>
@@ -171,10 +171,9 @@
 
 	<channel-type id="battery-wallbox-discharge-to-car">
 		<item-type>Switch</item-type>
-		<label>Discharge Battery to Car</label>
+		<label>Battery to Car</label>
 		<description>The house battery may discharge into the car</description>
 		<tags>
-			<tag>Control</tag>
 			<tag>Switch</tag>
 		</tags>
 		<state/>
@@ -182,10 +181,9 @@
 
 	<channel-type id="battery-wallbox-charge-before-car">
 		<item-type>Switch</item-type>
-		<label>Charge Battery before Car</label>
+		<label>Battery First</label>
 		<description>The house battery is charged before the car</description>
 		<tags>
-			<tag>Control</tag>
 			<tag>Switch</tag>
 		</tags>
 		<state/>
@@ -204,10 +202,9 @@
 
 	<channel-type id="battery-wallbox-disable-at-mix-mode">
 		<item-type>Switch</item-type>
-		<label>Battery Off in Mix Mode</label>
+		<label>Mix Mode Lock</label>
 		<description>No battery charging while the wallbox charges in mix mode</description>
 		<tags>
-			<tag>Control</tag>
 			<tag>Switch</tag>
 		</tags>
 		<state/>

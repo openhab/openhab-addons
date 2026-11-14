@@ -140,8 +140,8 @@
 		<label>Automatic Phase Switch</label>
 		<description>Whether the wallbox changes the number of phases by itself</description>
 		<tags>
-			<tag>Control</tag>
 			<tag>Switch</tag>
+			<tag>Enabled</tag>
 		</tags>
 		<state/>
 	</channel-type>
@@ -172,7 +172,6 @@
 		<description>The connector is locked</description>
 		<tags>
 			<tag>Status</tag>
-			<tag>Lock</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -192,7 +191,6 @@
 		<label>Suspended</label>
 		<description>Charging is currently suspended</description>
 		<tags>
-			<tag>Control</tag>
 			<tag>Switch</tag>
 		</tags>
 		<state/>
@@ -203,7 +201,6 @@
 		<label>Toggle Charging</label>
 		<description>Suspends a running charging session and resumes a suspended one</description>
 		<tags>
-			<tag>Control</tag>
 			<tag>Switch</tag>
 		</tags>
 		<state/>
@@ -214,7 +211,6 @@
 		<label>Sun Mode</label>
 		<description>Charging uses surplus photovoltaic power</description>
 		<tags>
-			<tag>Control</tag>
 			<tag>Switch</tag>
 		</tags>
 		<state/>

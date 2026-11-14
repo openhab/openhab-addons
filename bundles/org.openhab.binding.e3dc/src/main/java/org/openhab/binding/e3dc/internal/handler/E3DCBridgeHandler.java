@@ -233,11 +233,11 @@ public class E3DCBridgeHandler extends BaseBridgeHandler {
             return;
         }
         if (current.host.isBlank()) {
-            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Host is not configured");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Host is not configured");
             return;
         }
         if (current.rscpPassword.isBlank()) {
-            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "RSCP password is not configured");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "RSCP password is not configured");
             return;
         }
 
@@ -273,7 +273,7 @@ public class E3DCBridgeHandler extends BaseBridgeHandler {
                 return;
             }
             logger.debug("Cannot connect to {}:{}: {}", current.host, current.port, e.getMessage());
-            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             // without a scheduled retry the bridge would stay offline until the thing is re-enabled
             scheduleReconnect();
             return;
@@ -726,7 +726,7 @@ public class E3DCBridgeHandler extends BaseBridgeHandler {
             if (E3DCContainerRequests.isProbed(tag)) {
                 continue;
             }
-            if (error == RscpError.UNKNOWN_TAG || error == RscpError.NOT_AVAILABLE || error == RscpError.NOT_HANDLED) {
+            if (isUnsupported(error)) {
                 Integer previous = tagFailures.get(tag);
                 int failures = (previous != null ? previous : 0) + 1;
                 tagFailures.put(tag, failures);
@@ -734,6 +734,9 @@ public class E3DCBridgeHandler extends BaseBridgeHandler {
                     logger.debug("The device does not provide {} ({}); it will no longer be requested",
                             RscpTag.nameOf(tag), error);
                 }
+            } else {
+                // a condition that passes, such as NOT_AVAILABLE, says nothing about the data point itself
+                tagFailures.remove(tag);
             }
         }
         loggedErrors.retainAll(errored);
@@ -742,6 +745,15 @@ public class E3DCBridgeHandler extends BaseBridgeHandler {
                 tagFailures.remove(tag);
             }
         }
+    }
+
+    /**
+     * Whether the error answer proves that the device does not implement the data point. Every other error is a
+     * condition that may pass: the inverter answers {@code NOT_AVAILABLE} for its values while it is switched off
+     * and has to be asked for them again when it returns.
+     */
+    static boolean isUnsupported(@Nullable RscpError error) {
+        return error == RscpError.UNKNOWN_TAG || error == RscpError.NOT_HANDLED;
     }
 
     private void collectErrors(RscpValue item, Set<Integer> errored) {
@@ -773,7 +785,7 @@ public class E3DCBridgeHandler extends BaseBridgeHandler {
             return;
         }
         if (isActive()) {
-            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             scheduleReconnect();
         }
     }

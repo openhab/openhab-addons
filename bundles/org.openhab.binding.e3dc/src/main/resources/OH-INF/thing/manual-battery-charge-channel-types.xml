@@ -6,23 +6,13 @@
 
 	<channel-type id="manual-battery-charge-set-manual-charge">
 		<item-type>Number:Energy</item-type>
-		<label>Set Manual Charge Energy</label>
+		<label>Start Manual Charge</label>
 		<description>Energy of a manual battery charge</description>
 		<tags>
 			<tag>Setpoint</tag>
 			<tag>Energy</tag>
 		</tags>
 		<state pattern="%.0f Wh"/>
-		<command>
-			<options>
-				<option value="500 Wh">500 Wh</option>
-				<option value="1000 Wh">1000 Wh</option>
-				<option value="1500 Wh">1500 Wh</option>
-				<option value="2000 Wh">2000 Wh</option>
-				<option value="2500 Wh">2500 Wh</option>
-				<option value="3000 Wh">3000 Wh</option>
-			</options>
-		</command>
 	</channel-type>
 
 	<channel-type id="manual-battery-charge-active">
@@ -37,7 +27,7 @@
 
 	<channel-type id="manual-battery-charge-target">
 		<item-type>Number:Energy</item-type>
-		<label>Manual Charge Target Energy</label>
+		<label>Manual Target Energy</label>
 		<description>Energy the manual battery charge started last was started with</description>
 		<tags>
 			<tag>Measurement</tag>
@@ -59,7 +49,7 @@
 
 	<channel-type id="manual-battery-charge-remaining">
 		<item-type>Number:Energy</item-type>
-		<label>Manual Charge Remaining Energy</label>
+		<label>Manual Remaining Energy</label>
 		<description>Energy the running manual battery charge still has to charge</description>
 		<tags>
 			<tag>Measurement</tag>
@@ -70,10 +60,11 @@
 
 	<channel-type id="manual-battery-charge-last-start">
 		<item-type>DateTime</item-type>
-		<label>Manual Charge Last Start</label>
+		<label>Last Manual Start</label>
 		<description>Time the last manual battery charge was started</description>
 		<tags>
 			<tag>Status</tag>
+			<tag>Timestamp</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>

@@ -18,7 +18,7 @@
 	<channel-type id="inverter-on-grid">
 		<item-type>Switch</item-type>
 		<label>On Grid</label>
-		<description>Whether the inverter is connected to the grid</description>
+		<description>Whether the PV inverter is connected to the grid</description>
 		<tags>
 			<tag>Status</tag>
 		</tags>

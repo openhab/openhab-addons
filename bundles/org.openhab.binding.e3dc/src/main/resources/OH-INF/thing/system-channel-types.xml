@@ -55,7 +55,15 @@
 		<tags>
 			<tag>Status</tag>
 		</tags>
-		<state pattern="%d" readOnly="true"/>
+		<state pattern="%s" readOnly="true">
+			<options>
+				<option value="0">Not Supported</option>
+				<option value="1">Emergency Power Active</option>
+				<option value="2">Emergency Power Inactive</option>
+				<option value="3">Emergency Power Not Available</option>
+				<option value="4">Motor Switch Not On</option>
+			</options>
+		</state>
 	</channel-type>
 
 	<channel-type id="battery-control-charging-lock">
@@ -64,7 +72,6 @@
 		<description>Battery charging is currently blocked</description>
 		<tags>
 			<tag>Status</tag>
-			<tag>Lock</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -75,14 +82,13 @@
 		<description>Battery discharging is currently blocked</description>
 		<tags>
 			<tag>Status</tag>
-			<tag>Lock</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="emergency-power-available">
 		<item-type>Switch</item-type>
-		<label>Emergency Power Available</label>
+		<label>Emergency Available</label>
 		<description>Emergency power reserve is available</description>
 		<tags>
 			<tag>Status</tag>
@@ -116,7 +122,6 @@
 		<description>Battery charging is blocked by a time window</description>
 		<tags>
 			<tag>Status</tag>
-			<tag>Lock</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -127,7 +132,6 @@
 		<description>Battery discharging is blocked by a time window</description>
 		<tags>
 			<tag>Status</tag>
-			<tag>Lock</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -137,8 +141,8 @@
 		<label>Weather Regulated Charge</label>
 		<description>Charging follows the weather forecast</description>
 		<tags>
-			<tag>Control</tag>
 			<tag>Switch</tag>
+			<tag>Enabled</tag>
 		</tags>
 		<state/>
 	</channel-type>
@@ -148,7 +152,6 @@
 		<label>Power Limits Used</label>
 		<description>Configured power limits are active</description>
 		<tags>
-			<tag>Control</tag>
 			<tag>Switch</tag>
 		</tags>
 		<state/>
@@ -160,6 +163,7 @@
 		<description>Power saving mode is active</description>
 		<tags>
 			<tag>Status</tag>
+			<tag>Enabled</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -169,7 +173,6 @@
 		<label>Block Charging</label>
 		<description>Blocks charging of the battery around the clock</description>
 		<tags>
-			<tag>Control</tag>
 			<tag>Switch</tag>
 		</tags>
 		<state readOnly="false"/>
@@ -180,7 +183,6 @@
 		<label>Block Discharging</label>
 		<description>Blocks discharging of the battery around the clock</description>
 		<tags>
-			<tag>Control</tag>
 			<tag>Switch</tag>
 		</tags>
 		<state readOnly="false"/>
@@ -212,8 +214,8 @@
 		<label>Idle Periods Enabled</label>
 		<description>Whether the device uses the configured idle periods</description>
 		<tags>
-			<tag>Control</tag>
 			<tag>Switch</tag>
+			<tag>Enabled</tag>
 		</tags>
 		<state readOnly="false"/>
 	</channel-type>

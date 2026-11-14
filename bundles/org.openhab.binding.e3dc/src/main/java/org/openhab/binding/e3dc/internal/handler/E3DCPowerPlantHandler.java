@@ -34,6 +34,8 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.e3dc.internal.E3DCBindingConstants;
 import org.openhab.binding.e3dc.internal.E3DCChannelRegistry;
 import org.openhab.binding.e3dc.internal.E3DCChannelSpec;
+import org.openhab.binding.e3dc.internal.E3DCCommandOptions;
+import org.openhab.binding.e3dc.internal.E3DCCommandOptionsProvider;
 import org.openhab.binding.e3dc.internal.E3DCCommandRegistry;
 import org.openhab.binding.e3dc.internal.E3DCCommandSpec;
 import org.openhab.binding.e3dc.internal.E3DCIdlePeriod;
@@ -52,8 +54,10 @@ import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
+import org.openhab.core.types.CommandOption;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.TimeSeries;
@@ -111,6 +115,8 @@ public class E3DCPowerPlantHandler extends E3DCThingHandler {
      */
     private final Object idleLock = new Object();
 
+    /** Guards the held power mode, which a command sets and the poll reads. */
+    private final Object heldLock = new Object();
     private @Nullable E3DCPowerMode heldMode;
     private long heldUntilMillis;
 
@@ -134,8 +140,12 @@ public class E3DCPowerPlantHandler extends E3DCThingHandler {
     private @Nullable String loggedManualCharge;
     private int trackerPolls;
 
-    public E3DCPowerPlantHandler(Thing thing) {
+    /** Offers the energies the user may write, which follow the battery the device reports. */
+    private final E3DCCommandOptionsProvider commandOptions;
+
+    public E3DCPowerPlantHandler(Thing thing, E3DCCommandOptionsProvider commandOptions) {
         super(thing);
+        this.commandOptions = commandOptions;
     }
 
     @Override
@@ -171,7 +181,8 @@ public class E3DCPowerPlantHandler extends E3DCThingHandler {
         String channelId = channelUID.getIdWithoutGroup();
         if (E3DCBindingConstants.GROUP_BATTERY_MODE.equals(groupId) && CHANNEL_SET_POWER_MODE.equals(channelId)) {
             if (!(command instanceof RefreshType)) {
-                setPowerMode(command.toString());
+                String mode = command.toString();
+                commandQueue.submit(() -> setPowerMode(mode));
             }
             return;
         }
@@ -180,7 +191,8 @@ public class E3DCPowerPlantHandler extends E3DCThingHandler {
             if (command instanceof RefreshType) {
                 super.handleCommand(channelUID, command);
             } else {
-                setPeriods(channelId, command.toString().trim());
+                String text = command.toString().trim();
+                commandQueue.submit(() -> setPeriods(channelId, text));
             }
             return;
         }
@@ -191,7 +203,8 @@ public class E3DCPowerPlantHandler extends E3DCThingHandler {
             } else if (command instanceof OnOffType) {
                 E3DCIdlePeriod.Type type = CHANNEL_BLOCK_CHARGING.equals(channelId) ? E3DCIdlePeriod.Type.CHARGE
                         : E3DCIdlePeriod.Type.DISCHARGE;
-                block(channelUID, type, OnOffType.ON.equals(command));
+                boolean on = OnOffType.ON.equals(command);
+                commandQueue.submit(() -> block(channelUID, type, on));
             } else {
                 logger.debug("Command {} is not valid for channel {}, use ON or OFF", command, channelUID);
             }
@@ -226,7 +239,7 @@ public class E3DCPowerPlantHandler extends E3DCThingHandler {
         if (!commandHandler.send(bridge, mode.toRequest())) {
             return false;
         }
-        synchronized (this) {
+        synchronized (heldLock) {
             if (mode.isHeld()) {
                 heldMode = mode;
                 heldUntilMillis = System.currentTimeMillis()
@@ -584,6 +597,7 @@ public class E3DCPowerPlantHandler extends E3DCThingHandler {
         synchronized (verifyLock) {
             cancelVerifyJob();
         }
+        commandOptions.removeOptions(getThing().getUID());
         super.dispose();
     }
 
@@ -713,8 +727,51 @@ public class E3DCPowerPlantHandler extends E3DCThingHandler {
         updateTrackers(response);
         updateBlockSwitches(response);
         updateManualChargeRemaining(response);
+        updateCommandOptions(response);
         logManualCharge(response);
         repeatHeldMode();
+    }
+
+    /**
+     * Offers the energies the user may write. The device states the highest reserve it accepts and the battery
+     * states how much energy it holds, so both choices follow the installed battery rather than fixed values.
+     */
+    private void updateCommandOptions(RscpValue response) {
+        ThingUID thingUID = getThing().getUID();
+        Double reserveMax = response.findDouble(RscpTag.SE_PARAM_EP_RESERVE_MAX_W);
+        if (reserveMax != null) {
+            offerOptions(
+                    new ChannelUID(thingUID,
+                            E3DCBindingConstants.GROUP_EMERGENCY + "#" + E3DCBindingConstants.CHANNEL_ENERGY),
+                    E3DCCommandOptions.reserve(reserveMax));
+        }
+        double usableWh = usableBatteryWh(response);
+        if (usableWh > 0) {
+            offerOptions(
+                    new ChannelUID(thingUID,
+                            E3DCBindingConstants.GROUP_MANUAL_BATTERY_CHARGE + "#" + CHANNEL_SET_MANUAL_CHARGE),
+                    E3DCCommandOptions.manualCharge(usableWh));
+        }
+    }
+
+    /** Adds a choice list, unless there was nothing to derive it from. */
+    private void offerOptions(ChannelUID channelUID, List<CommandOption> options) {
+        if (!options.isEmpty()) {
+            commandOptions.setCommandOptions(channelUID, options);
+        }
+    }
+
+    /** The energy the batteries hold when they are full, their usable capacity in Ah times their voltage in V. */
+    private static double usableBatteryWh(RscpValue response) {
+        double wattHours = 0;
+        for (RscpValue battery : response.findAll(RscpTag.BAT_DATA)) {
+            Double ampereHours = battery.findDouble(RscpTag.BAT_USABLE_CAPACITY);
+            Double volts = battery.findDouble(RscpTag.BAT_MODULE_VOLTAGE);
+            if (ampereHours != null && volts != null) {
+                wattHours += ampereHours * volts;
+            }
+        }
+        return wattHours;
     }
 
     /** The device reports one list of idle periods, so each channel renders only its own direction. */
@@ -933,7 +990,7 @@ public class E3DCPowerPlantHandler extends E3DCThingHandler {
     /** Sends the held mode again, or forgets it once its time is over. */
     private void repeatHeldMode() {
         E3DCPowerMode mode;
-        synchronized (this) {
+        synchronized (heldLock) {
             mode = heldMode;
             if (mode != null && System.currentTimeMillis() >= heldUntilMillis) {
                 heldMode = null;

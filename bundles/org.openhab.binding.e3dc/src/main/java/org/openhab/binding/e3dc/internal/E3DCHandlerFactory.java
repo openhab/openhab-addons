@@ -39,10 +39,13 @@ import org.osgi.service.component.annotations.Reference;
 public class E3DCHandlerFactory extends BaseThingHandlerFactory {
 
     private final TimeZoneProvider timeZoneProvider;
+    private final E3DCCommandOptionsProvider commandOptions;
 
     @Activate
-    public E3DCHandlerFactory(@Reference TimeZoneProvider timeZoneProvider) {
+    public E3DCHandlerFactory(@Reference TimeZoneProvider timeZoneProvider,
+            @Reference E3DCCommandOptionsProvider commandOptions) {
         this.timeZoneProvider = timeZoneProvider;
+        this.commandOptions = commandOptions;
     }
 
     @Override
@@ -57,7 +60,7 @@ public class E3DCHandlerFactory extends BaseThingHandlerFactory {
             return new E3DCBridgeHandler(bridge, timeZoneProvider);
         }
         if (E3DCBindingConstants.THING_TYPE_POWER_PLANT.equals(thingTypeUID)) {
-            return new E3DCPowerPlantHandler(thing);
+            return new E3DCPowerPlantHandler(thing, commandOptions);
         }
         if (E3DCBindingConstants.THING_TYPE_WALLBOX.equals(thingTypeUID)) {
             return new E3DCWallboxHandler(thing);
