@@ -1,7 +1,7 @@
     <div class="navigation">
         <table><tr><td>
             Device Filter&nbsp;
-            <select name="thingFilter" id="thingFilter" onchange="location = '${uri}/overview?filter='+this.options[this.selectedIndex].value;">
+            <select name="thingFilter" id="thingFilter" onchange="location = '${uri}/overview?filter='+encodeURIComponent(this.options[this.selectedIndex].value);">
                 <option value="" selected disabled>select</option>
                 <option value="*">All</option>
                 <option value="online">Online only</option>
