@@ -50,6 +50,7 @@ public class WebhookApi extends RestManager {
      */
     public void dropWebhook() throws NetatmoException {
         delete(WEBHOOKS_URI_BUILDER.clone(), WebhooksResponse.class);
+<<<<<<< Upstream, based on main
     }
 
     /**
@@ -121,6 +122,8 @@ public class WebhookApi extends RestManager {
      */
     public void dropWebhook() throws NetatmoException {
         delete(WEBHOOKS_URI_BUILDER.clone(), ApiResponse.Ok.class);
+=======
+>>>>>>> 7e96b33 lsiepel code review corrections
     }
 
     /**

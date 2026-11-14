@@ -236,10 +236,17 @@ public class WebhookServlet extends NetatmoServlet {
         handler.hookState(hooked);
     }
 <<<<<<< Upstream, based on main
+<<<<<<< Upstream, based on main
 
     public boolean hookSet() {
         return hooked;
     }
 =======
 >>>>>>> 68a8c4e Take first code review in account. Add a channel to account tracking hook status.
+=======
+
+    public boolean hookSet() {
+        return hooked;
+    }
+>>>>>>> 7e96b33 lsiepel code review corrections
 }
