@@ -18,11 +18,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -38,6 +40,7 @@ import org.openhab.binding.amplipi.internal.model.Preset;
 import org.openhab.binding.amplipi.internal.model.SourceUpdate;
 import org.openhab.binding.amplipi.internal.model.Status;
 import org.openhab.binding.amplipi.internal.model.Stream;
+import org.openhab.binding.amplipi.internal.model.Zone;
 import org.openhab.core.audio.AudioHTTPServer;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.PercentType;
@@ -75,9 +78,12 @@ public class AmpliPiHandler extends BaseBridgeHandler {
     private final Gson gson;
     private @Nullable String callbackUrl;
 
+    private final Object announcementLock = new Object();
+
     private String url = "http://amplipi";
     private List<Preset> presets = List.of();
     private List<Stream> streams = List.of();
+    private volatile Set<Integer> disabledZoneIds = Set.of();
     private List<AmpliPiStatusChangeListener> changeListeners = new ArrayList<>();
 
     private @Nullable ScheduledFuture<?> refreshJob;
@@ -152,6 +158,7 @@ public class AmpliPiHandler extends BaseBridgeHandler {
                         setInputs(currentStatus);
                         presets = currentStatus.getPresets();
                         streams = currentStatus.getStreams();
+                        disabledZoneIds = extractDisabledZoneIds(currentStatus);
                         changeListeners.forEach(l -> l.receive(currentStatus));
                     } else {
                         updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "No valid response from AmpliPi API.");
@@ -225,21 +232,61 @@ public class AmpliPiHandler extends BaseBridgeHandler {
     }
 
     public void playPA(String audioUrl, @Nullable PercentType volume, @Nullable List<Integer> zones) {
-        Announcement announcement = createAnnouncement(audioUrl, volume, zones);
-        String url = getUrl() + "/api/announce";
-        StringContentProvider contentProvider = new StringContentProvider(gson.toJson(announcement));
-        try {
-            ContentResponse response = httpClient.newRequest(url).method(HttpMethod.POST)
-                    .content(contentProvider, "application/json").send();
-            if (response.getStatus() != HttpStatus.OK_200) {
-                logger.error("AmpliPi API returned HTTP status {}.", response.getStatus());
-                logger.debug("Content: {}", response.getContentAsString());
-            } else {
-                logger.debug("PA request sent successfully.");
+        // /api/announce blocks until the announcement finished and the controller restored the previous
+        // preset via a single LAST_PRESET slot. A second concurrent announcement would share the same
+        // announcement source and overwrite that slot, leaving zones in a wrong state afterwards.
+        synchronized (announcementLock) {
+            if (zones != null) {
+                for (Integer zoneId : zones) {
+                    if (zoneId != null && isZoneDisabled(zoneId)) {
+                        logger.warn("Announcement rejected: zone {} is disabled on the AmpliPi.", zoneId);
+                        return;
+                    }
+                }
             }
-        } catch (InterruptedException | TimeoutException | ExecutionException e) {
-            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "AmpliPi request failed: " + e.getMessage());
+            Announcement announcement = createAnnouncement(audioUrl, volume, zones);
+            String url = getUrl() + "/api/announce";
+            StringContentProvider contentProvider = new StringContentProvider(gson.toJson(announcement));
+            try {
+                ContentResponse response = httpClient.newRequest(url).method(HttpMethod.POST)
+                        .content(contentProvider, "application/json").send();
+                if (response.getStatus() != HttpStatus.OK_200) {
+                    logger.error("AmpliPi API returned HTTP status {}.", response.getStatus());
+                    logger.debug("Content: {}", response.getContentAsString());
+                } else {
+                    logger.debug("PA request sent successfully.");
+                }
+            } catch (InterruptedException | TimeoutException | ExecutionException e) {
+                if (e instanceof InterruptedException) {
+                    Thread.currentThread().interrupt();
+                }
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "AmpliPi request failed: " + e.getMessage());
+            }
         }
+    }
+
+    /**
+     * Lock serializing announcements on this controller. Audio sinks hold it across serving the audio stream
+     * and submitting the announcement, so a queued announcement's served URL cannot expire while waiting.
+     *
+     * @return the lock object guarding {@link #playPA}
+     */
+    public Object getAnnouncementLock() {
+        return announcementLock;
+    }
+
+    public boolean isZoneDisabled(int zoneId) {
+        // fail open while no status has been received yet, so announcements are not blocked before the first poll
+        return disabledZoneIds.contains(zoneId);
+    }
+
+    static Set<Integer> extractDisabledZoneIds(Status status) {
+        List<Zone> zones = status.getZones();
+        if (zones == null) {
+            return Set.of();
+        }
+        return zones.stream().filter(z -> Boolean.TRUE.equals(z.getDisabled())).map(Zone::getId)
+                .filter(Objects::nonNull).collect(Collectors.toUnmodifiableSet());
     }
 
     public @Nullable String getCallbackUrl() {

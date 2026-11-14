@@ -43,10 +43,11 @@ import org.slf4j.LoggerFactory;
  *
  * <p>
  * Attached to the controller bridge, the announcement is played on all zones; attached to a zone thing (opt-in via
- * the {@code audioSink} configuration parameter), it is restricted to that zone only.
+ * the {@code audioSink} configuration parameter), it is restricted to that zone only. Announcements to disabled
+ * zones are rejected, since the controller would otherwise filter the target out and could let the announcement
+ * leak to other zones listening on the announcement source.
  *
  * @author Kai Kreuzer - Initial contribution
- *
  */
 @Component(scope = ServiceScope.PROTOTYPE, service = PAAudioSink.class)
 @NonNullByDefault
@@ -90,34 +91,49 @@ public class PAAudioSink extends AudioSinkSync implements ThingHandlerService {
             return;
         }
         AmpliPiHandler localBridgeHandler = bridgeHandler;
-        logger.debug("Received audio stream of format {}", audioStream.getFormat());
-        String callbackUrl = localBridgeHandler.getCallbackUrl();
-        String audioUrl;
-        if (audioStream instanceof URLAudioStream urlAudioStream) {
-            // it is an external URL, so we can directly pass this on.
-            audioUrl = urlAudioStream.getURL();
-            tryClose(audioStream);
-        } else if (callbackUrl != null) {
-            // we need to serve it for a while
-            StreamServed streamServed;
-            try {
-                streamServed = localBridgeHandler.getAudioHTTPServer().serve(audioStream, 10, true);
-            } catch (IOException e) {
-                tryClose(audioStream);
-                throw new UnsupportedAudioStreamException(
-                        "AmpliPi was not able to handle the audio stream (cache on disk failed).",
-                        audioStream.getClass(), e);
+        if (zones != null) {
+            for (Integer zoneId : zones) {
+                if (zoneId != null && localBridgeHandler.isZoneDisabled(zoneId)) {
+                    logger.warn("Announcement rejected: zone {} is disabled on the AmpliPi.", zoneId);
+                    volume = null;
+                    tryClose(audioStream);
+                    return;
+                }
             }
-            audioUrl = callbackUrl + streamServed.url();
-        } else {
-            logger.warn("We do not have any callback url, so AmpliPi cannot play the audio stream!");
-            tryClose(audioStream);
-            return;
         }
-        localBridgeHandler.playPA(audioUrl, volume, zones);
-        // we reset the volume value again, so that a next invocation without a volume will again use the zones
-        // defaults.
-        volume = null;
+        logger.debug("Received audio stream of format {}", audioStream.getFormat());
+        // Serialize announcements per controller until /api/announce completed. Serving the stream is held
+        // inside the same lock, so a queued announcement's served URL cannot expire before playback starts.
+        synchronized (localBridgeHandler.getAnnouncementLock()) {
+            String callbackUrl = localBridgeHandler.getCallbackUrl();
+            String audioUrl;
+            if (audioStream instanceof URLAudioStream urlAudioStream) {
+                // it is an external URL, so we can directly pass this on.
+                audioUrl = urlAudioStream.getURL();
+                tryClose(audioStream);
+            } else if (callbackUrl != null) {
+                // we need to serve it for a while
+                StreamServed streamServed;
+                try {
+                    streamServed = localBridgeHandler.getAudioHTTPServer().serve(audioStream, 10, true);
+                } catch (IOException e) {
+                    tryClose(audioStream);
+                    volume = null;
+                    throw new UnsupportedAudioStreamException(
+                            "AmpliPi was not able to handle the audio stream (cache on disk failed).",
+                            audioStream.getClass(), e);
+                }
+                audioUrl = callbackUrl + streamServed.url();
+            } else {
+                logger.warn("We do not have any callback url, so AmpliPi cannot play the audio stream!");
+                tryClose(audioStream);
+                return;
+            }
+            localBridgeHandler.playPA(audioUrl, volume, zones);
+            // we reset the volume value again, so that a next invocation without a volume will again use the zones
+            // defaults.
+            volume = null;
+        }
     }
 
     private void tryClose(@Nullable InputStream is) {
