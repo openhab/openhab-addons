@@ -88,9 +88,9 @@ class E3DCTimestampStateTest {
 
     @Test
     void aPlaceholderFarInTheFutureIsUndefined() {
-        // the device answered a charge that never started with a moment in the year 290309
+        // the device answered a charge that never started with its placeholder, 290309-12-21 20:58:50 local time
         RscpValue placeholder = RscpValue.timestamp(RscpTag.EMS_MANUAL_CHARGE_LASTSTART,
-                Instant.ofEpochSecond(9_164_000_000_000L, 224_192_000));
+                Instant.ofEpochSecond(9_099_130_622_330L, 224_192_000));
 
         assertEquals(UnDefType.UNDEF, E3DCThingHandler.timestampState(placeholder));
         assertEquals(UnDefType.UNDEF, E3DCThingHandler

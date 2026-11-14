@@ -47,6 +47,7 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
@@ -67,6 +68,9 @@ public abstract class E3DCThingHandler extends BaseThingHandler implements E3DCD
     protected final Logger logger = LoggerFactory.getLogger(getClass());
     protected final E3DCCommandHandler commandHandler = new E3DCCommandHandler();
 
+    /** Works off the writes to the device one after the other, off the thread the framework called the handler on. */
+    protected final E3DCCommandQueue commandQueue = new E3DCCommandQueue(scheduler);
+
     protected E3DCThingHandler(Thing thing) {
         super(thing);
     }
@@ -84,19 +88,33 @@ public abstract class E3DCThingHandler extends BaseThingHandler implements E3DCD
         updateStatus(ThingStatus.UNKNOWN);
         E3DCBridgeHandler bridge = getBridgeHandler();
         if (bridge == null) {
-            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE, "The bridge is not available");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED, "The bridge is not available");
             return;
         }
         bridge.registerDataListener(this);
         if (bridge.isConnected()) {
-            updateStatus(ThingStatus.ONLINE);
+            // the thing is online with its first data, which the refresh brings without waiting for the next poll
+            bridge.requestRefresh();
         } else {
-            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+        }
+    }
+
+    @Override
+    public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
+        if (bridgeStatusInfo.getStatus() == ThingStatus.ONLINE) {
+            // online follows with the first data of the bridge, not with its status
+            if (getThing().getStatusInfo().getStatusDetail() == ThingStatusDetail.BRIDGE_OFFLINE) {
+                updateStatus(ThingStatus.UNKNOWN);
+            }
+        } else if (bridgeStatusInfo.getStatus() == ThingStatus.OFFLINE) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
         }
     }
 
     @Override
     public void dispose() {
+        commandQueue.clear();
         E3DCBridgeHandler bridge = getBridgeHandler();
         if (bridge != null) {
             bridge.unregisterDataListener(this);
@@ -375,17 +393,24 @@ public abstract class E3DCThingHandler extends BaseThingHandler implements E3DCD
             return new StringType(new String(bytes, StandardCharsets.UTF_8).replace("\0", "").trim());
         }
         if (raw instanceof Number number && textChannel) {
-            double scaled = spec.scale(number.doubleValue());
-            return new StringType(scaled == Math.rint(scaled) && Math.abs(scaled) < 1e15 ? Long.toString((long) scaled)
-                    : Double.toString(scaled));
+            return new StringType(decimalState(spec.scale(number.doubleValue())).toString());
         }
         if (raw instanceof Number number) {
-            return new DecimalType(spec.scale(number.doubleValue()));
+            return decimalState(spec.scale(number.doubleValue()));
         }
         if (raw instanceof Boolean flag) {
             return flag ? OnOffType.ON : OnOffType.OFF;
         }
         return raw instanceof String string ? new StringType(string) : null;
+    }
+
+    /**
+     * A number as a state, without a decimal part it does not need. A state option of a channel is matched against
+     * the state as it is, so a whole number must not become {@code "0.0"} and lose the label of its option.
+     */
+    private static DecimalType decimalState(double scaled) {
+        return scaled == Math.rint(scaled) && Math.abs(scaled) < 1e15 ? new DecimalType((long) scaled)
+                : new DecimalType(scaled);
     }
 
     /** Publishes the channels that render a list instead of a single value. */
@@ -521,13 +546,17 @@ public abstract class E3DCThingHandler extends BaseThingHandler implements E3DCD
             logger.warn("Command {} is not valid for channel {} and was not sent", command, channelUID);
             return;
         }
-        // the channel state is only updated once the device acknowledged the write
-        if (commandHandler.execute(bridge, spec, value, index != null ? index : 0)) {
-            State state = publishesWrittenState(channelUID) ? stateFor(value, spec) : null;
-            if (state != null) {
-                updateState(channelUID, state);
+        int deviceIndex = index != null ? index : 0;
+        // the write waits for the device, so it runs off the thread the framework called this handler on
+        commandQueue.submit(() -> {
+            // the channel state is only updated once the device acknowledged the write
+            if (commandHandler.execute(bridge, spec, value, deviceIndex)) {
+                State state = publishesWrittenState(channelUID) ? stateFor(value, spec) : null;
+                if (state != null) {
+                    updateState(channelUID, state);
+                }
             }
-        }
+        });
     }
 
     /**
@@ -542,7 +571,7 @@ public abstract class E3DCThingHandler extends BaseThingHandler implements E3DCD
         if (spec.switchValue() && raw instanceof Number number) {
             return number.intValue() != 0 ? OnOffType.ON : OnOffType.OFF;
         }
-        return raw instanceof Number number ? new DecimalType(number.doubleValue()) : null;
+        return raw instanceof Number number ? decimalState(number.doubleValue()) : null;
     }
 
     /**

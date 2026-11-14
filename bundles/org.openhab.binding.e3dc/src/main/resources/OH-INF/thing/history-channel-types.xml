@@ -82,7 +82,7 @@
 
 	<channel-type id="history-week-solar">
 		<item-type>Number:Energy</item-type>
-		<label>Solar Energy This Week</label>
+		<label>Solar Energy Week</label>
 		<description>Photovoltaic energy of the last seven days</description>
 		<tags>
 			<tag>Measurement</tag>
@@ -93,7 +93,7 @@
 
 	<channel-type id="history-week-house">
 		<item-type>Number:Energy</item-type>
-		<label>House Energy This Week</label>
+		<label>House Energy Week</label>
 		<description>Household energy of the last seven days</description>
 		<tags>
 			<tag>Measurement</tag>
@@ -104,7 +104,7 @@
 
 	<channel-type id="history-week-grid-in">
 		<item-type>Number:Energy</item-type>
-		<label>Grid Supply This Week</label>
+		<label>Grid Supply Week</label>
 		<description>Energy drawn from the grid in the last seven days</description>
 		<tags>
 			<tag>Measurement</tag>
@@ -115,7 +115,7 @@
 
 	<channel-type id="history-week-grid-out">
 		<item-type>Number:Energy</item-type>
-		<label>Grid Feed This Week</label>
+		<label>Grid Feed Week</label>
 		<description>Energy fed into the grid in the last seven days</description>
 		<tags>
 			<tag>Measurement</tag>
@@ -126,7 +126,7 @@
 
 	<channel-type id="history-week-battery-in">
 		<item-type>Number:Energy</item-type>
-		<label>Battery Charge This Week</label>
+		<label>Battery Charge Week</label>
 		<description>Energy charged into the battery in the last seven days</description>
 		<tags>
 			<tag>Measurement</tag>
@@ -158,7 +158,7 @@
 
 	<channel-type id="history-month-solar">
 		<item-type>Number:Energy</item-type>
-		<label>Solar Energy This Month</label>
+		<label>Solar Energy Month</label>
 		<description>Photovoltaic energy of the current month</description>
 		<tags>
 			<tag>Measurement</tag>
@@ -169,7 +169,7 @@
 
 	<channel-type id="history-month-house">
 		<item-type>Number:Energy</item-type>
-		<label>House Energy This Month</label>
+		<label>House Energy Month</label>
 		<description>Household energy of the current month</description>
 		<tags>
 			<tag>Measurement</tag>
@@ -180,7 +180,7 @@
 
 	<channel-type id="history-month-grid-in">
 		<item-type>Number:Energy</item-type>
-		<label>Grid Supply This Month</label>
+		<label>Grid Supply Month</label>
 		<description>Energy drawn from the grid in the current month</description>
 		<tags>
 			<tag>Measurement</tag>
@@ -191,7 +191,7 @@
 
 	<channel-type id="history-month-grid-out">
 		<item-type>Number:Energy</item-type>
-		<label>Grid Feed This Month</label>
+		<label>Grid Feed Month</label>
 		<description>Energy fed into the grid in the current month</description>
 		<tags>
 			<tag>Measurement</tag>
@@ -202,7 +202,7 @@
 
 	<channel-type id="history-month-battery-in">
 		<item-type>Number:Energy</item-type>
-		<label>Battery Charge This Month</label>
+		<label>Battery Charge Month</label>
 		<description>Energy charged into the battery in the current month</description>
 		<tags>
 			<tag>Measurement</tag>
@@ -234,7 +234,7 @@
 
 	<channel-type id="history-year-solar">
 		<item-type>Number:Energy</item-type>
-		<label>Solar Energy This Year</label>
+		<label>Solar Energy Year</label>
 		<description>Photovoltaic energy of the current year</description>
 		<tags>
 			<tag>Measurement</tag>
@@ -245,7 +245,7 @@
 
 	<channel-type id="history-year-house">
 		<item-type>Number:Energy</item-type>
-		<label>House Energy This Year</label>
+		<label>House Energy Year</label>
 		<description>Household energy of the current year</description>
 		<tags>
 			<tag>Measurement</tag>
@@ -256,7 +256,7 @@
 
 	<channel-type id="history-year-grid-in">
 		<item-type>Number:Energy</item-type>
-		<label>Grid Supply This Year</label>
+		<label>Grid Supply Year</label>
 		<description>Energy drawn from the grid in the current year</description>
 		<tags>
 			<tag>Measurement</tag>
@@ -267,7 +267,7 @@
 
 	<channel-type id="history-year-grid-out">
 		<item-type>Number:Energy</item-type>
-		<label>Grid Feed This Year</label>
+		<label>Grid Feed Year</label>
 		<description>Energy fed into the grid in the current year</description>
 		<tags>
 			<tag>Measurement</tag>
@@ -278,7 +278,7 @@
 
 	<channel-type id="history-year-battery-in">
 		<item-type>Number:Energy</item-type>
-		<label>Battery Charge This Year</label>
+		<label>Battery Charge Year</label>
 		<description>Energy charged into the battery in the current year</description>
 		<tags>
 			<tag>Measurement</tag>
@@ -320,7 +320,7 @@
 
 	<channel-type id="history-week-consumed-production">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Self Consumed This Week</label>
+		<label>Self Consumed Week</label>
 		<description>Share of production used on site in the last seven days</description>
 		<tags>
 			<tag>Measurement</tag>
@@ -330,7 +330,7 @@
 
 	<channel-type id="history-month-consumed-production">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Self Consumed This Month</label>
+		<label>Self Consumed Month</label>
 		<description>Share of production used on site in the current month</description>
 		<tags>
 			<tag>Measurement</tag>
@@ -340,7 +340,7 @@
 
 	<channel-type id="history-year-consumed-production">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Self Consumed This Year</label>
+		<label>Self Consumed Year</label>
 		<description>Share of production used on site in the current year</description>
 		<tags>
 			<tag>Measurement</tag>

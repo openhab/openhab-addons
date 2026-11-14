@@ -99,7 +99,7 @@
 
 	<channel-type id="pack-usable-remaining-capacity">
 		<item-type>Number:ElectricCharge</item-type>
-		<label>Usable Remaining Capacity</label>
+		<label>Usable Capacity Left</label>
 		<description>Usable capacity left in the battery</description>
 		<tags>
 			<tag>Measurement</tag>

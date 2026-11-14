@@ -226,6 +226,48 @@ class E3DCValueLookupTest {
                 E3DCThingHandler.valueState(text, spec(E3DCBindingConstants.GROUP_IDLE_PERIODS, "charge-periods")));
     }
 
+    /**
+     * A whole number carries no decimal part, because the state options of a channel are matched against the state
+     * as it is: the active mode offers {@code "0"} for automatic, a state of {@code "0.0"} would never show the label.
+     */
+    @Test
+    void aWholeNumberCarriesNoDecimalPart() {
+        State mode = E3DCThingHandler.valueState(RscpValue.of(RscpTag.EMS_MODE, RscpType.UCHAR8, 0L),
+                spec(E3DCBindingConstants.GROUP_BATTERY_MODE, "active-mode"));
+
+        assertNotNull(mode);
+        assertEquals("0", mode.toString());
+
+        State whole = E3DCThingHandler.valueState(RscpValue.of(RscpTag.EMS_POWER_PV, RscpType.DOUBLE64, 4711.0),
+                spec(E3DCBindingConstants.GROUP_POWER, "solar-power"));
+        assertNotNull(whole);
+        assertEquals("4711", whole.toString());
+
+        State fraction = E3DCThingHandler.valueState(RscpValue.of(RscpTag.EMS_POWER_PV, RscpType.DOUBLE64, 23.5),
+                spec(E3DCBindingConstants.GROUP_POWER, "solar-power"));
+        assertNotNull(fraction);
+        assertEquals("23.5", fraction.toString());
+    }
+
+    /**
+     * The derate value is reported as a fraction of a whole, not as the percentage itself: 0.7 of the installed
+     * peak power is 70 percent.
+     */
+    @Test
+    void aFractionOfAWholeIsPublishedAsItsPercentage() {
+        E3DCChannelSpec derate = spec(E3DCBindingConstants.GROUP_GRID, "derate-at-percent");
+
+        State whole = E3DCThingHandler
+                .valueState(RscpValue.of(RscpTag.EMS_DERATE_AT_PERCENT_VALUE, RscpType.FLOAT32, 0.7f), derate);
+        State fraction = E3DCThingHandler
+                .valueState(RscpValue.of(RscpTag.EMS_DERATE_AT_PERCENT_VALUE, RscpType.FLOAT32, 0.705f), derate);
+
+        assertNotNull(whole);
+        assertNotNull(fraction);
+        assertEquals("70", whole.toString());
+        assertEquals("70.5", fraction.toString());
+    }
+
     @Test
     void textTheDeviceSendsAsBytesIsDecodedAndNumbersOnTextChannelsStayText() {
         E3DCChannelSpec text = spec(E3DCBindingConstants.GROUP_IDLE_PERIODS, "charge-periods");

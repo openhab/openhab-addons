@@ -60,6 +60,14 @@ public record E3DCChannelSpec(int tag, int container, double divisor, int bitMas
         return new E3DCChannelSpec(tag, container, divisor, 0, -1, 0, NO_INDEX, false, false);
     }
 
+    /**
+     * A value the device reports as a fraction of a whole instead of as a percentage, for example {@code 0.7} for
+     * 70 percent of the installed peak power.
+     */
+    public static E3DCChannelSpec fraction(int tag) {
+        return new E3DCChannelSpec(tag, 0, 0.01, 0, -1, 0, NO_INDEX, false, false);
+    }
+
     /** One of several occurrences of the tag, selected by position because the values carry no index. */
     public static E3DCChannelSpec indexedIn(int container, int tag, int valueIndex) {
         return new E3DCChannelSpec(tag, container, 1, 0, -1, 0, valueIndex, false, false);
@@ -118,7 +126,15 @@ public record E3DCChannelSpec(int tag, int container, double divisor, int bitMas
         if (countBits) {
             return Long.bitCount((long) raw);
         }
-        return divisor == 1 ? raw : raw / divisor;
+        if (divisor == 1) {
+            return raw;
+        }
+        if (divisor < 1) {
+            // a fraction of a whole becomes its percentage; the float the device sends carries binary noise, so
+            // the percentage is rounded instead of showing a long decimal part
+            return Math.round(raw / divisor * 100) / 100.0;
+        }
+        return raw / divisor;
     }
 
     /**
@@ -195,7 +211,7 @@ public record E3DCChannelSpec(int tag, int container, double divisor, int bitMas
         registry.group(E3DCBindingConstants.GROUP_GRID, Map.ofEntries(//
                 entry("active-phases", E3DCChannelSpec.bitCount(RscpTag.EMS_BALANCED_PHASES)), //
                 entry("limit-active", E3DCChannelSpec.bit(RscpTag.EMS_STATUS, 16)), //
-                entry("derate-at-percent", E3DCChannelSpec.of(RscpTag.EMS_DERATE_AT_PERCENT_VALUE)), //
+                entry("derate-at-percent", E3DCChannelSpec.fraction(RscpTag.EMS_DERATE_AT_PERCENT_VALUE)), //
                 entry("derate-at-power", E3DCChannelSpec.of(RscpTag.EMS_DERATE_AT_POWER_VALUE))));
 
         registry.group(E3DCBindingConstants.GROUP_INVERTER, inverterChannels());

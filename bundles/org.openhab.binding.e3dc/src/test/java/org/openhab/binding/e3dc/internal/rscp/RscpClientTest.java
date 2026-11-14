@@ -13,6 +13,7 @@
 package org.openhab.binding.e3dc.internal.rscp;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.openhab.binding.e3dc.internal.rscp.FakeRscpDevice.*;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -46,12 +47,8 @@ import org.junit.jupiter.api.Timeout;
 @Timeout(value = 20, unit = TimeUnit.SECONDS)
 class RscpClientTest {
 
-    private static final String RSCP_PASSWORD = "meinRscpPasswort";
     private static final String USER = "bernd@example.com";
     private static final String PASSWORD = "secret";
-
-    /** The access level a device grants to a user account. */
-    private static final int AUTH_LEVEL_USER = 10;
 
     /** Starts a fake device that runs the given script and returns the bound port. */
     private static int startDevice(DeviceScript script) throws IOException {
@@ -371,34 +368,6 @@ class RscpClientTest {
 
     // ------------------------------------------------------------------ helpers
 
-    private static byte[] item(int tag, int type, byte[] data) {
-        ByteBuffer header = ByteBuffer.allocate(7).order(ByteOrder.LITTLE_ENDIAN).putInt(tag).put((byte) type)
-                .putShort((short) data.length);
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        out.write(header.array(), 0, 7);
-        out.write(data, 0, data.length);
-        return out.toByteArray();
-    }
-
-    private static byte[] frame(byte[] payload) {
-        ByteBuffer buffer = ByteBuffer.allocate(RscpCodec.HEADER_LENGTH + payload.length + 4)
-                .order(ByteOrder.LITTLE_ENDIAN);
-        buffer.put(RscpCodec.MAGIC_BYTES[0]);
-        buffer.put(RscpCodec.MAGIC_BYTES[1]);
-        // the control bytes as they travel: zero, then the version with the CRC flag
-        buffer.put((byte) 0);
-        buffer.put((byte) RscpCodec.VERSION);
-        buffer.putLong(1_600_000_000L);
-        buffer.putInt(0);
-        buffer.putShort((short) payload.length);
-        buffer.put(payload);
-        byte[] bytes = buffer.array();
-        java.util.zip.CRC32 crc = new java.util.zip.CRC32();
-        crc.update(bytes, 0, bytes.length - 4);
-        ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN).putInt(bytes.length - 4, (int) crc.getValue());
-        return bytes;
-    }
-
     private static byte[] okResponse() {
         byte[] child = item(RscpTag.EMS_MAX_CHARGE_POWER, RscpType.INT32.getCode(),
                 ByteBuffer.allocate(4).order(ByteOrder.LITTLE_ENDIAN).putInt(9000).array());
@@ -413,31 +382,5 @@ class RscpClientTest {
         byte[] child = item(RscpTag.EMS_MAX_CHARGE_POWER, RscpType.INT32.getCode(),
                 ByteBuffer.allocate(4).order(ByteOrder.LITTLE_ENDIAN).putInt(9000).array());
         return frame(item(RscpTag.EMS_GET_POWER_SETTINGS, RscpType.CONTAINER.getCode(), child));
-    }
-
-    /** Reads one complete encrypted frame, mirroring what a device has to do. */
-    private static byte[] readEncryptedFrame(InputStream in, RscpCipher cipher) throws IOException {
-        int needed = Rijndael256.BLOCK;
-        ByteArrayOutputStream raw = new ByteArrayOutputStream();
-        int total = -1;
-        while (true) {
-            if (raw.size() < needed) {
-                byte[] chunk = RscpCodec.readFully(in, needed - raw.size());
-                raw.write(chunk, 0, chunk.length);
-            }
-            byte[] encrypted = raw.toByteArray();
-            if (total < 0) {
-                byte[] probe = cipher.peek(encrypted);
-                // the CRC flag sits in the second control byte, index 3
-                int ctrl = probe[3] & 0xFF;
-                int dataLength = ByteBuffer.wrap(probe, 16, 2).order(ByteOrder.LITTLE_ENDIAN).getShort() & 0xFFFF;
-                total = RscpCodec.HEADER_LENGTH + dataLength + ((ctrl & RscpCodec.CTRL_CRC) != 0 ? 4 : 0);
-                needed = ((total + Rijndael256.BLOCK - 1) / Rijndael256.BLOCK) * Rijndael256.BLOCK;
-            }
-            if (encrypted.length >= needed) {
-                break;
-            }
-        }
-        return java.util.Arrays.copyOf(cipher.decrypt(raw.toByteArray()), total);
     }
 }
