@@ -13,6 +13,7 @@
 package org.openhab.binding.netatmo.internal.api.dto;
 
 <<<<<<< Upstream, based on main
+<<<<<<< Upstream, based on main
 import java.net.URI;
 import java.util.List;
 
@@ -36,6 +37,9 @@ public class Webhook {
     public URI getUri() {
         return URI.create(url);
 =======
+=======
+import java.net.URI;
+>>>>>>> 68a8c4e Take first code review in account. Add a channel to account tracking hook status.
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -55,8 +59,13 @@ public class Webhook {
 
     private String url = "";
 
+<<<<<<< Upstream, based on main
     public String getUrl() {
         return url;
 >>>>>>> 194ac54 Use new API endpoints for webhooks
+=======
+    public URI getUri() {
+        return URI.create(url);
+>>>>>>> 68a8c4e Take first code review in account. Add a channel to account tracking hook status.
     }
 }

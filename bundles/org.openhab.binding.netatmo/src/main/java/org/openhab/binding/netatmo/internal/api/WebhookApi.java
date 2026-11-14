@@ -17,6 +17,7 @@ import static org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.PAT
 import java.net.URI;
 import java.util.List;
 <<<<<<< Upstream, based on main
+<<<<<<< Upstream, based on main
 import java.util.stream.Collectors;
 
 import javax.ws.rs.core.UriBuilder;
@@ -86,6 +87,9 @@ public class WebhookApi extends RestManager {
         put(WEBHOOKS_URI_BUILDER.clone(), WebhooksResponse.class, payload);
         return true;
 =======
+=======
+import java.util.stream.Collectors;
+>>>>>>> 68a8c4e Take first code review in account. Add a channel to account tracking hook status.
 
 import javax.ws.rs.core.UriBuilder;
 
@@ -127,7 +131,7 @@ public class WebhookApi extends RestManager {
      */
     public boolean appendWebhook(URI uri) throws NetatmoException {
         String payload = PAYLOAD_POST_WEBHOOK.formatted(uri.toString());
-        post(WEBHOOKS_URI_BUILDER.clone(), ApiResponse.Ok.class, payload);
+        post(WEBHOOKS_URI_BUILDER.clone(), WebhooksResponse.class, payload);
         return true;
     }
 
@@ -135,5 +139,12 @@ public class WebhookApi extends RestManager {
         List<Webhook> result = get(WEBHOOKS_URI_BUILDER.clone(), WebhooksResponse.class).getBody();
         return result != null ? result : List.of();
 >>>>>>> 194ac54 Use new API endpoints for webhooks
+    }
+
+    public boolean setWebhooks(List<URI> uris) throws NetatmoException {
+        String payload = "[%s]".formatted(
+                uris.stream().map(URI::toString).map(PAYLOAD_POST_WEBHOOK::formatted).collect(Collectors.joining(",")));
+        put(WEBHOOKS_URI_BUILDER.clone(), WebhooksResponse.class, payload);
+        return true;
     }
 }
