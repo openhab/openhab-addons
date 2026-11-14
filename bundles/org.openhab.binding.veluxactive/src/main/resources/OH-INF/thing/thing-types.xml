@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="veluxactive"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="account">
+		<label>VELUX ACTIVE Account</label>
+		<description>Account used to access VELUX ACTIVE with NETATMO</description>
+
+		<config-description>
+			<parameter name="username" type="text" required="true">
+				<label>Username</label>
+				<description>Email address of the VELUX ACTIVE account</description>
+			</parameter>
+			<parameter name="password" type="text" required="true">
+				<context>password</context>
+				<label>Password</label>
+				<description>Password of the VELUX ACTIVE account</description>
+			</parameter>
+			<parameter name="refreshInterval" type="integer" min="30" unit="s">
+				<label>Refresh Interval</label>
+				<description>Interval between home status requests</description>
+				<advanced>true</advanced>
+				<default>60</default>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+	<bridge-type id="gateway">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="account"/>
+		</supported-bridge-type-refs>
+
+		<label>VELUX ACTIVE Gateway</label>
+		<description>Gateway and departure mode</description>
+		<semantic-equipment-tag>NetworkAppliance</semantic-equipment-tag>
+
+		<channels>
+			<channel id="locked" typeId="locked"/>
+			<channel id="last-seen" typeId="last-seen"/>
+		</channels>
+
+		<representation-property>moduleId</representation-property>
+
+		<config-description-ref uri="thing-type:veluxactive:module"/>
+	</bridge-type>
+
+	<thing-type id="indoor-sensor">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="gateway"/>
+		</supported-bridge-type-refs>
+
+		<label>VELUX ACTIVE Indoor Climate Sensor</label>
+		<description>Indoor climate sensor with room measurements and battery diagnostics</description>
+		<semantic-equipment-tag>Sensor</semantic-equipment-tag>
+
+		<channels>
+			<channel id="temperature" typeId="system.indoor-temperature">
+				<label>Temperature</label>
+				<description>Current temperature measured by the sensor.</description>
+			</channel>
+			<channel id="humidity" typeId="system.atmospheric-humidity">
+				<label>Humidity</label>
+				<description>Current relative humidity measured by the sensor.</description>
+			</channel>
+			<channel id="co2" typeId="co2"/>
+			<channel id="illuminance" typeId="illuminance"/>
+			<channel id="battery-level" typeId="system.battery-level"/>
+			<channel id="low-battery" typeId="system.low-battery"/>
+			<channel id="signal-strength" typeId="system.signal-strength"/>
+			<channel id="last-seen" typeId="last-seen"/>
+		</channels>
+
+		<representation-property>moduleId</representation-property>
+
+		<config-description-ref uri="thing-type:veluxactive:module"/>
+	</thing-type>
+
+	<thing-type id="departure-switch">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="gateway"/>
+		</supported-bridge-type-refs>
+
+		<label>VELUX ACTIVE Departure Switch</label>
+		<description>Departure switch battery and connectivity diagnostics</description>
+		<semantic-equipment-tag>Button</semantic-equipment-tag>
+
+		<channels>
+			<channel id="battery-level" typeId="system.battery-level"/>
+			<channel id="low-battery" typeId="system.low-battery"/>
+			<channel id="signal-strength" typeId="system.signal-strength"/>
+			<channel id="last-seen" typeId="last-seen"/>
+		</channels>
+
+		<representation-property>moduleId</representation-property>
+
+		<config-description-ref uri="thing-type:veluxactive:module"/>
+	</thing-type>
+
+	<thing-type id="opening">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="gateway"/>
+		</supported-bridge-type-refs>
+
+		<label>VELUX ACTIVE Window/Cover</label>
+		<description>Roof window, blind or shutter</description>
+		<semantic-equipment-tag>Window</semantic-equipment-tag>
+
+		<channels>
+			<channel id="position" typeId="position"/>
+			<channel id="mode" typeId="operating-mode"/>
+			<channel id="battery-state" typeId="battery-state"/>
+			<channel id="last-seen" typeId="last-seen"/>
+		</channels>
+
+		<representation-property>moduleId</representation-property>
+
+		<config-description-ref uri="thing-type:veluxactive:module"/>
+	</thing-type>
+
+</thing:thing-descriptions>
