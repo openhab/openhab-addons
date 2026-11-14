@@ -131,22 +131,24 @@ public class InfluxDB3RepositoryImpl implements InfluxDBRepository {
     }
 
     @Override
-    public boolean write(List<InfluxPoint> influxPoints) {
+    public WriteResult write(List<InfluxPoint> influxPoints) {
         final OkHttpClient currentClient = this.client;
         if (currentClient == null) {
-            return false;
+            return WriteResult.retry("database is not connected");
         }
 
         String lineProtocolBody = influxPoints.stream().map(this::convertPointToLineProtocol).flatMap(Optional::stream)
                 .collect(Collectors.joining("\n"));
         if (lineProtocolBody.isEmpty()) {
-            return true;
+            return WriteResult.SUCCESS;
         }
 
         try {
+            // With accept_partial=true InfluxDB stores the valid lines and answers 400 listing the rejected ones, so
+            // dropping a rejected batch only drops the lines that can never be written.
             HttpUrl url = HttpUrl.get(configuration.getUrl()).newBuilder().addPathSegments("api/v3/write_lp")
                     .addQueryParameter("db", configuration.getDatabaseName()).addQueryParameter("precision", "ms")
-                    .addQueryParameter("accept_partial", "false").build();
+                    .addQueryParameter("accept_partial", "true").build();
             Request request = new Request.Builder().url(url)
                     .header("Authorization", "Bearer " + configuration.getToken()).post(RequestBody
                             .create(lineProtocolBody.getBytes(StandardCharsets.UTF_8), LINE_PROTOCOL_MEDIA_TYPE))
@@ -155,15 +157,18 @@ public class InfluxDB3RepositoryImpl implements InfluxDBRepository {
             try (Response response = currentClient.newCall(request).execute()) {
                 if (!response.isSuccessful()) {
                     ResponseBody body = response.body();
-                    logger.debug("Writing to database failed, HTTP status {}: {}", response.code(),
-                            body != null ? body.string() : "");
-                    return false;
+                    String message = "HTTP status " + response.code() + ": " + (body != null ? body.string() : "");
+                    logger.debug("Writing to database failed, {}", message);
+                    // InfluxDB 3 answers rejected lines, e.g. field type conflicts, with 400. A 422 means a database,
+                    // table or schema limit was hit, which raising the server limits fixes, so like other statuses
+                    // (authentication, missing database) the points are kept.
+                    return response.code() == 400 ? WriteResult.rejected(message) : WriteResult.retry(message);
                 }
-                return true;
+                return WriteResult.SUCCESS;
             }
         } catch (IOException | IllegalArgumentException e) {
             logger.debug("Writing to database failed", e);
-            return false;
+            return WriteResult.retry(String.valueOf(e.getMessage()));
         }
     }
 

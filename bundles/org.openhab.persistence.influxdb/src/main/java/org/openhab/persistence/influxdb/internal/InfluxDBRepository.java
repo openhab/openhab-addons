@@ -24,6 +24,7 @@ import org.openhab.core.persistence.FilterCriteria;
  * Manages InfluxDB server interaction maintaining client connection
  *
  * @author Joan Pujol Espinar - Initial contribution
+ * @author Eugen Freiter - Classify write results to drop rejected points
  */
 @NonNullByDefault
 public interface InfluxDBRepository {
@@ -76,9 +77,9 @@ public interface InfluxDBRepository {
      * Write points to database
      *
      * @param influxPoints {@link List<InfluxPoint>} to write
-     * @return <code>true</code> if points have been written, <code>false</code> otherwise
+     * @return the {@link WriteResult}, telling whether the points were written, should be retried or were rejected
      */
-    boolean write(List<InfluxPoint> influxPoints);
+    WriteResult write(List<InfluxPoint> influxPoints);
 
     /**
      * Execute delete query
@@ -89,5 +90,36 @@ public interface InfluxDBRepository {
     boolean remove(FilterCriteria filter);
 
     record InfluxRow(Instant time, String itemName, Object value) {
+    }
+
+    /**
+     * Result of {@link #write(List)}
+     *
+     * @param outcome what happened to the points
+     * @param message the error reported by the client or the server, empty on success
+     */
+    record WriteResult(Outcome outcome, String message) {
+
+        public static final WriteResult SUCCESS = new WriteResult(Outcome.SUCCESS, "");
+
+        public enum Outcome {
+            /** The points have been written. */
+            SUCCESS,
+            /** The write failed for a reason that may go away, e.g. a connection problem; retry the points. */
+            RETRY,
+            /**
+             * The server refused the points because of their content, e.g. a field type conflict; writing the same
+             * points again will fail again. InfluxDB still stores the valid points of a partial write.
+             */
+            REJECTED
+        }
+
+        public static WriteResult retry(String message) {
+            return new WriteResult(Outcome.RETRY, message);
+        }
+
+        public static WriteResult rejected(String message) {
+            return new WriteResult(Outcome.REJECTED, message);
+        }
     }
 }
