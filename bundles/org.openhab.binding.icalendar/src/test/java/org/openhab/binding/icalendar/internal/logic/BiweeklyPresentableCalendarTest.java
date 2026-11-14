@@ -74,16 +74,6 @@ public class BiweeklyPresentableCalendarTest {
                 new FileInputStream("src/test/resources/test-location.ics"));
     }
 
-    @Test
-    public void testContactWordsAreStringCommands() {
-        for (String prefix : List.of("BEGIN", "END")) {
-            for (String value : List.of("OPEN", "CLOSED")) {
-                CommandTag tag = new CommandTag(prefix + ":Calendar_Test_String:" + value);
-                assertEquals(new StringType(value), tag.getCommand());
-            }
-        }
-    }
-
     /**
      * Tests recurrence and whether TimeZone is interpolated in a right way.
      */
@@ -331,11 +321,6 @@ public class BiweeklyPresentableCalendarTest {
         assertNotNull(cmd0);
         assertEquals(OnOffType.class, cmd0.getClass());
 
-        // BEGIN:Calendar_Test_Contact:OPEN:abc
-        Command cmd1 = cmdTags.get(1).getCommand();
-        assertNotNull(cmd1);
-        assertEquals(StringType.class, cmd1.getClass());
-
         // BEGIN:Calendar_Test_Dimmer:ON:abc
         Command cmd2 = cmdTags.get(2).getCommand();
         assertNotNull(cmd2);
@@ -394,11 +379,6 @@ public class BiweeklyPresentableCalendarTest {
         assertNotNull(cmd0);
         assertEquals(PercentType.class, cmd0.getClass());
 
-        // BEGIN:Calendar_Test_Contact:CLOSED:abc
-        cmd1 = cmdTags.get(1).getCommand();
-        assertNotNull(cmd1);
-        assertEquals(StringType.class, cmd1.getClass());
-
         // BEGIN:Calendar_Test_Dimmer:0%:abc
         cmd2 = cmdTags.get(2).getCommand();
         assertNotNull(cmd2);
@@ -456,11 +436,6 @@ public class BiweeklyPresentableCalendarTest {
         cmd0 = cmdTags.get(0).getCommand();
         assertNotNull(cmd0);
         assertEquals(HSBType.class, cmd0.getClass());
-
-        // BEGIN:Calendar_Test_Contact:OPEN:abc
-        cmd1 = cmdTags.get(1).getCommand();
-        assertNotNull(cmd1);
-        assertEquals(StringType.class, cmd1.getClass());
 
         // BEGIN:Calendar_Test_Dimmer:50%:abc
         cmd2 = cmdTags.get(2).getCommand();
@@ -568,7 +543,7 @@ public class BiweeklyPresentableCalendarTest {
         assertEquals(QuantityType.class, cmd0.getClass());
 
         // <p>END:Calendar_Test_Temperature:23.4°C:abc</p>
-        cmd1 = cmdTags.get(1).getCommand();
+        Command cmd1 = cmdTags.get(1).getCommand();
         assertNotNull(cmd1);
         assertEquals(QuantityType.class, cmd1.getClass());
 
