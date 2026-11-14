@@ -126,7 +126,7 @@ class SSLconnection implements Closeable {
         }
         logger.trace("SSLconnection(): creating socket...");
         SSLSocket socket = this.socket = (SSLSocket) ctx.getSocketFactory().createSocket();
-        if (socket != null) {
+        try {
             VeluxBridgeConfiguration cfg = bridgeInstance.veluxBridgeConfiguration();
             readTimeoutMSecs = cfg.timeoutMsecs;
             connTimeoutMSecs = Math.max(connTimeoutMSecs, readTimeoutMSecs);
@@ -146,6 +146,13 @@ class SSLconnection implements Closeable {
                         cfg.ipAddress, cfg.tcpPort, connTimeoutMSecs, socket.getSoTimeout(),
                         socket.getKeepAlive() ? "true" : "false");
             }
+        } catch (IOException | RuntimeException e) {
+            try {
+                socket.close();
+            } catch (IOException closeException) {
+                e.addSuppressed(closeException);
+            }
+            throw e;
         }
         logger.trace("SSLconnection() finished.");
     }
@@ -206,7 +213,7 @@ class SSLconnection implements Closeable {
         if (dInX != null) {
             int availableMessages = dInX.available();
             logger.trace("available(): found {} messages ready to be read (> 0 means true).", availableMessages);
-            return availableMessages > 0;
+            return availableMessages > 0 || dInX.hasTerminated();
         }
         return false;
     }
