@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.xml.XMLConstants;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
@@ -41,6 +42,7 @@ import org.xml.sax.helpers.DefaultHandler;
  *
  * @author Mark Herwege - Initial contribution
  * @author Karel Goderis - Based on UPnP logic in Sonos binding
+ * @author Kai Kreuzer - Hardened XML parsers against XXE attacks
  */
 @NonNullByDefault
 public class UpnpXMLParser {
@@ -70,6 +72,17 @@ public class UpnpXMLParser {
         RES
     }
 
+    private static SAXParser createSecureSAXParser() throws ParserConfigurationException, SAXException {
+        SAXParserFactory factory = SAXParserFactory.newInstance();
+        factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+        factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+        factory.setFeature("http://xml.org/sax/features/external-general-entities", false);
+        factory.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+        factory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+        factory.setXIncludeAware(false);
+        return factory.newSAXParser();
+    }
+
     public static Map<String, @Nullable String> getRenderingControlFromXML(String xml) {
         if (xml.isEmpty()) {
             LOGGER.debug("Could not parse Rendering Control from empty xml");
@@ -77,11 +90,7 @@ public class UpnpXMLParser {
         }
         RenderingControlEventHandler handler = new RenderingControlEventHandler();
         try {
-            SAXParserFactory factory = SAXParserFactory.newInstance();
-            SAXParser saxParser = factory.newSAXParser();
-            factory.setFeature("http://xml.org/sax/features/external-general-entities", false);
-            saxParser.getXMLReader().setFeature("http://xml.org/sax/features/external-general-entities", false);
-            factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+            SAXParser saxParser = createSecureSAXParser();
             saxParser.parse(new InputSource(new StringReader(xml)), handler);
         } catch (IOException e) {
             // This should never happen - we're not performing I/O!
@@ -136,11 +145,7 @@ public class UpnpXMLParser {
         }
         AVTransportEventHandler handler = new AVTransportEventHandler();
         try {
-            SAXParserFactory factory = SAXParserFactory.newInstance();
-            SAXParser saxParser = factory.newSAXParser();
-            factory.setFeature("http://xml.org/sax/features/external-general-entities", false);
-            saxParser.getXMLReader().setFeature("http://xml.org/sax/features/external-general-entities", false);
-            factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+            SAXParser saxParser = createSecureSAXParser();
             saxParser.parse(new InputSource(new StringReader(xml)), handler);
         } catch (IOException e) {
             // This should never happen - we're not performing I/O!
@@ -183,11 +188,7 @@ public class UpnpXMLParser {
         }
         EntryHandler handler = new EntryHandler();
         try {
-            SAXParserFactory factory = SAXParserFactory.newInstance();
-            SAXParser saxParser = factory.newSAXParser();
-            factory.setFeature("http://xml.org/sax/features/external-general-entities", false);
-            saxParser.getXMLReader().setFeature("http://xml.org/sax/features/external-general-entities", false);
-            factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+            SAXParser saxParser = createSecureSAXParser();
             saxParser.parse(new InputSource(new StringReader(xml)), handler);
         } catch (IOException e) {
             // This should never happen - we're not performing I/O!
