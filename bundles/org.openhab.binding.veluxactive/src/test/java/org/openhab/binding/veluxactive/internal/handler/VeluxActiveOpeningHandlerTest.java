@@ -30,6 +30,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.openhab.binding.veluxactive.internal.ModuleRequestContext;
+import org.openhab.binding.veluxactive.internal.VeluxActiveBindingConstants;
 import org.openhab.binding.veluxactive.internal.api.VeluxType;
 import org.openhab.binding.veluxactive.internal.api.dto.HomeStatus;
 import org.openhab.core.config.core.Configuration;
@@ -63,7 +64,8 @@ import com.google.gson.Gson;
 class VeluxActiveOpeningHandlerTest {
     private final ThingUID bridgeUID = new ThingUID(THING_TYPE_GATEWAY, "test");
     private final Thing thing = ThingBuilder.create(THING_TYPE_OPENING, "opening").withBridge(bridgeUID)
-            .withConfiguration(new Configuration(Map.of("moduleId", "opening"))).build();
+            .withConfiguration(new Configuration(Map.of(VeluxActiveBindingConstants.PARAMETER_MODULE_ID, "opening")))
+            .build();
     private final Bridge bridge = mock(Bridge.class);
     private final VeluxActiveGatewayHandler gateway = mock(VeluxActiveGatewayHandler.class);
     private final VeluxActiveAccountHandler account = mock(VeluxActiveAccountHandler.class);

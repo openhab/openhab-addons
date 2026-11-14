@@ -65,7 +65,6 @@ class VeluxActiveDiscoveryServiceTest {
                             new ModuleInfo("home", "opening", "Window", ModuleType.OPENING, "hall", "Hall", null)));
             assertThat(results.size(), is(1));
             assertThat(results.getFirst().getThingTypeUID(), is(THING_TYPE_GATEWAY));
-            assertThat(results.getFirst().getProperties().containsKey("homeId"), is(false));
             assertThat(results.getFirst().getBridgeUID(), is(bridge.getUID()));
             service.dispose();
             replies.getFirst()

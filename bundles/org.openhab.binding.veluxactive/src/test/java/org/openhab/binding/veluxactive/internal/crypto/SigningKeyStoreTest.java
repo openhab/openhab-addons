@@ -26,6 +26,7 @@ import java.util.Map;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.openhab.binding.veluxactive.internal.VeluxActiveBindingConstants;
 import org.openhab.binding.veluxactive.internal.exception.ApiException;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.storage.Storage;
@@ -105,7 +106,8 @@ class SigningKeyStoreTest {
         ThingUID ownerUID = new ThingUID(THING_TYPE_GATEWAY, "removed");
         when(owner.getUID()).thenReturn(ownerUID);
         when(owner.getThingTypeUID()).thenReturn(THING_TYPE_GATEWAY);
-        when(owner.getConfiguration()).thenReturn(new Configuration(Map.of("moduleId", "first")));
+        when(owner.getConfiguration())
+                .thenReturn(new Configuration(Map.of(VeluxActiveBindingConstants.PARAMETER_MODULE_ID, "first")));
         when(thingRegistry.getAll()).thenReturn(List.of(owner));
         store.removeIfUnowned("first", ownerUID);
         assertThat(store.contains("first"), is(false));
@@ -119,7 +121,8 @@ class SigningKeyStoreTest {
         Thing otherGateway = mock();
         when(otherGateway.getUID()).thenReturn(new ThingUID(THING_TYPE_GATEWAY, "other"));
         when(otherGateway.getThingTypeUID()).thenReturn(THING_TYPE_GATEWAY);
-        when(otherGateway.getConfiguration()).thenReturn(new Configuration(Map.of("moduleId", "gateway")));
+        when(otherGateway.getConfiguration())
+                .thenReturn(new Configuration(Map.of(VeluxActiveBindingConstants.PARAMETER_MODULE_ID, "gateway")));
         when(thingRegistry.getAll()).thenReturn(List.of(otherGateway));
 
         store.removeIfUnowned("gateway", new ThingUID(THING_TYPE_GATEWAY, "removed"));

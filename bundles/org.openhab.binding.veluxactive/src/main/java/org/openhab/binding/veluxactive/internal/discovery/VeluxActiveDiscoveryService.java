@@ -20,6 +20,7 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.veluxactive.internal.VeluxActiveBindingConstants;
 import org.openhab.binding.veluxactive.internal.api.ModuleInfo;
 import org.openhab.binding.veluxactive.internal.api.ModuleType;
 import org.openhab.binding.veluxactive.internal.handler.VeluxActiveAccountHandler;
@@ -64,8 +65,9 @@ public class VeluxActiveDiscoveryService extends AbstractThingHandlerDiscoverySe
                 continue;
             }
             thingDiscovered(DiscoveryResultBuilder.create(new ThingUID(THING_TYPE_GATEWAY, bridgeUID, id))
-                    .withBridge(bridgeUID).withLabel(module.name()).withProperty("moduleId", module.moduleId())
-                    .withRepresentationProperty("moduleId").build());
+                    .withBridge(bridgeUID).withLabel(module.name())
+                    .withProperty(VeluxActiveBindingConstants.PARAMETER_MODULE_ID, module.moduleId())
+                    .withRepresentationProperty(VeluxActiveBindingConstants.PARAMETER_MODULE_ID).build());
         }
     }
 

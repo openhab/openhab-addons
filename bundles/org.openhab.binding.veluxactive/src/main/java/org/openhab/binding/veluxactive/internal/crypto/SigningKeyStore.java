@@ -80,7 +80,7 @@ public class SigningKeyStore {
     }
 
     private static boolean isOtherOwner(Thing thing, String gatewayId, ThingUID removingThingUID) {
-        Object configuredModuleId = thing.getConfiguration().get("moduleId");
+        Object configuredModuleId = thing.getConfiguration().get(VeluxActiveBindingConstants.PARAMETER_MODULE_ID);
         return !thing.getUID().equals(removingThingUID)
                 && VeluxActiveBindingConstants.THING_TYPE_GATEWAY.equals(thing.getThingTypeUID())
                 && gatewayId.equals(configuredModuleId);

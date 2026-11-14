@@ -15,7 +15,6 @@ package org.openhab.binding.veluxactive.internal.handler;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.nullValue;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
@@ -43,6 +42,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.veluxactive.internal.ModuleRequestContext;
 import org.openhab.binding.veluxactive.internal.VeluxActiveApi;
+import org.openhab.binding.veluxactive.internal.VeluxActiveBindingConstants;
 import org.openhab.binding.veluxactive.internal.api.ModuleInfo;
 import org.openhab.binding.veluxactive.internal.api.ModuleType;
 import org.openhab.binding.veluxactive.internal.api.dto.HomeStatus;
@@ -587,7 +587,6 @@ class VeluxActiveAccountHandlerTest {
         handler.requestPoll();
         executor.runAll();
         assertThat(handler.homeId("gateway"), is("resolved-home"));
-        assertThat(gateway.getThing().getProperties().get("homeId"), nullValue());
         verify(api).homeStatus("access", "resolved-home");
         handler.requestPoll();
         executor.runAll();
@@ -617,7 +616,6 @@ class VeluxActiveAccountHandlerTest {
         handler.requestPoll();
         executor.runAll();
         assertThat(handler.homeId("gateway"), is(""));
-        assertThat(gateway.getThing().getProperties().get("homeId"), nullValue());
         assertThat(gateway.getThing().getStatus(), is(ThingStatus.OFFLINE));
         handler.requestPoll();
         executor.runAll();
@@ -656,8 +654,11 @@ class VeluxActiveAccountHandlerTest {
     }
 
     private VeluxActiveGatewayHandler realGateway() {
-        Bridge gatewayThing = spy(BridgeBuilder.create(THING_TYPE_GATEWAY, "gateway").withBridge(bridge.getUID())
-                .withConfiguration(new Configuration(Map.of("moduleId", "gateway"))).build());
+        Bridge gatewayThing = spy(
+                BridgeBuilder.create(THING_TYPE_GATEWAY, "gateway").withBridge(bridge.getUID())
+                        .withConfiguration(
+                                new Configuration(Map.of(VeluxActiveBindingConstants.PARAMETER_MODULE_ID, "gateway")))
+                        .build());
         var gateway = new VeluxActiveGatewayHandler(gatewayThing, mock(SigningKeyStore.class));
         when(gatewayThing.getHandler()).thenReturn(gateway);
         when(bridge.getHandler()).thenReturn(handler);

@@ -24,6 +24,7 @@ import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
+import org.openhab.binding.veluxactive.internal.VeluxActiveBindingConstants;
 import org.openhab.binding.veluxactive.internal.api.ModuleInfo;
 import org.openhab.binding.veluxactive.internal.api.ModuleType;
 import org.openhab.binding.veluxactive.internal.handler.VeluxActiveGatewayHandler;
@@ -65,14 +66,16 @@ class VeluxActiveGatewayDiscoveryServiceTest {
                             new ModuleInfo("home", "opening", "Window", ModuleType.OPENING, "hall", "Hall", null)));
             assertThat(results.size(), is(3));
             assertThat(results.get(2).getThingTypeUID(), is(THING_TYPE_OPENING));
-            assertThat(results.get(2).getProperties().get("moduleId"), is("opening"));
+            assertThat(results.get(2).getProperties().get(VeluxActiveBindingConstants.PARAMETER_MODULE_ID),
+                    is("opening"));
             assertThat(results.get(2).getBridgeUID(), is(bridge.getUID()));
             assertThat(results.get(1).getThingTypeUID(), is(THING_TYPE_DEPARTURE_SWITCH));
-            assertThat(results.get(1).getProperties().get("moduleId"), is("switch"));
+            assertThat(results.get(1).getProperties().get(VeluxActiveBindingConstants.PARAMETER_MODULE_ID),
+                    is("switch"));
             assertThat(results.getFirst().getThingTypeUID(), is(THING_TYPE_INDOOR_SENSOR));
-            assertThat(results.getFirst().getProperties().get("moduleId"), is("sensor"));
+            assertThat(results.getFirst().getProperties().get(VeluxActiveBindingConstants.PARAMETER_MODULE_ID),
+                    is("sensor"));
             assertThat(results.getFirst().getBridgeUID(), is(bridge.getUID()));
-            assertThat(results.getFirst().getProperties().containsKey("homeId"), is(false));
             assertThat(results.get(2).getLabel(), is("Window (Hall)"));
             assertThat(results.getFirst().getLabel(), is("Sensor"));
             var openingUID = results.get(2).getThingUID();

@@ -21,6 +21,7 @@ import java.util.UUID;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.veluxactive.internal.VeluxActiveBindingConstants;
 import org.openhab.binding.veluxactive.internal.api.ModuleInfo;
 import org.openhab.binding.veluxactive.internal.api.ModuleType;
 import org.openhab.binding.veluxactive.internal.handler.VeluxActiveGatewayHandler;
@@ -79,8 +80,8 @@ public class VeluxActiveGatewayDiscoveryService
                     ? module.name() + " (" + roomName + ")"
                     : module.name();
             thingDiscovered(DiscoveryResultBuilder.create(new ThingUID(thingType, bridgeUID, id)).withBridge(bridgeUID)
-                    .withLabel(label).withProperty("moduleId", module.moduleId()).withRepresentationProperty("moduleId")
-                    .build());
+                    .withLabel(label).withProperty(VeluxActiveBindingConstants.PARAMETER_MODULE_ID, module.moduleId())
+                    .withRepresentationProperty(VeluxActiveBindingConstants.PARAMETER_MODULE_ID).build());
         }
     }
 
