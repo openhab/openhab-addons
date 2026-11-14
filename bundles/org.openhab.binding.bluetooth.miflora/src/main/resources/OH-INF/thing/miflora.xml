@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="bluetooth"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="miflora">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="roaming"/>
+			<bridge-type-ref id="bluez"/>
+		</supported-bridge-type-refs>
+
+		<label>Mi Flora Plant Sensor</label>
+		<description>Xiaomi Mi Flora (HHCCJCY01) plant sensor, read from its broadcasts</description>
+		<semantic-equipment-tag>SoilSensor</semantic-equipment-tag>
+		<channels>
+			<channel id="rssi" typeId="rssi"/>
+			<channel id="temperature" typeId="miflora-temperature"/>
+			<channel id="illuminance" typeId="miflora-illuminance"/>
+			<channel id="moisture" typeId="miflora-moisture"/>
+			<channel id="conductivity" typeId="miflora-conductivity"/>
+		</channels>
+
+		<representation-property>address</representation-property>
+
+		<config-description>
+			<parameter name="address" type="text" required="true">
+				<label>Address</label>
+				<description>Bluetooth address in XX:XX:XX:XX:XX:XX format</description>
+				<context>network-address</context>
+			</parameter>
+			<parameter name="dataTimeout" type="integer" min="1" unit="min">
+				<label>Data Timeout</label>
+				<description>Minutes without a reading before the thing goes offline</description>
+				<default>10</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-type id="miflora-temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="miflora-illuminance">
+		<item-type>Number:Illuminance</item-type>
+		<label>Light</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Illuminance</tag>
+		</tags>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+	<channel-type id="miflora-moisture">
+		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<label>Moisture</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Moisture</tag>
+		</tags>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+	<channel-type id="miflora-conductivity">
+		<item-type unitHint="µS/cm">Number:ElectricConductivity</item-type>
+		<label>Conductivity</label>
+		<description>Electrical conductivity of the soil, an indicator of its fertility</description>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+</thing:thing-descriptions>

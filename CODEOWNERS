@@ -57,6 +57,7 @@
 /bundles/org.openhab.binding.bluetooth.grundfosalpha/ @tisoft @jlaur
 /bundles/org.openhab.binding.bluetooth.hdpowerview/ @andrewfg
 /bundles/org.openhab.binding.bluetooth.listener/ @docbender
+/bundles/org.openhab.binding.bluetooth.miflora/ @lukasbrinias
 /bundles/org.openhab.binding.bluetooth.radoneye/ @petero-dk
 /bundles/org.openhab.binding.bluetooth.roaming/ @cpmeister
 /bundles/org.openhab.binding.bluetooth.ruuvitag/ @ssalonen
