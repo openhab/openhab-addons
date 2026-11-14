@@ -289,6 +289,9 @@
 			<channel typeId="offset" id="offset"/>
 			<channel typeId="last_updated" id="last_updated"/>
 		</channels>
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 		<representation-property>uid</representation-property>
 		<config-description-ref uri="thing-type:deconz:sensor"/>
 	</thing-type>
