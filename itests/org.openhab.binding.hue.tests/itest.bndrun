@@ -94,4 +94,4 @@ Fragment-Host: org.openhab.binding.hue
 	tech.units.indriya;version='[2.2.4,2.2.5)',\
 	com.google.gson;version='[2.15.0,2.15.1)',\
 	javax.jmdns;version='[3.6.5,3.6.6)',\
-	biz.aQute.tester.junit-platform;version='[7.4.0,7.4.1)'
+	biz.aQute.tester.junit-platform;version='[7.5.0,7.5.1)'
