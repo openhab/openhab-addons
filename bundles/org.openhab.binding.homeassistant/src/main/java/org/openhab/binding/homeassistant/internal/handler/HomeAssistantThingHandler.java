@@ -458,6 +458,10 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
             synchronized (haComponents) { // sync whenever discoverComponents is started
                 var sortedComponents = haComponents.values().stream().sorted(COMPONENT_COMPARATOR).toList();
 
+                sortedComponents.stream().flatMap(c -> c.getChannelMap().values().stream()).map(c -> c.getChannelType())
+                        .filter(Objects::nonNull).map(Objects::requireNonNull)
+                        .forEach(channelTypeProvider::putChannelType);
+
                 var channelGroupTypes = sortedComponents.stream().map(c -> c.getChannelGroupType(typeID.getId()))
                         .filter(Objects::nonNull).map(Objects::requireNonNull).toList();
                 channelTypeProvider.updateChannelGroupTypesForPrefix(typeID.getId(), channelGroupTypes);

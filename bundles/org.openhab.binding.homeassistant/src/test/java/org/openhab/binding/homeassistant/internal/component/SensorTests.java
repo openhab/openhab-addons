@@ -13,23 +13,29 @@
 package org.openhab.binding.homeassistant.internal.component;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
+import org.openhab.binding.homeassistant.internal.ComponentChannelType;
 import org.openhab.binding.mqtt.generic.values.NumberValue;
 import org.openhab.binding.mqtt.generic.values.TextValue;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.types.UnDefType;
+import org.openhab.core.types.util.UnitUtils;
 
 /**
  * Tests for {@link Sensor}
  *
  * @author Anton Kharuzhy - Initial contribution
+ * @author Cody Cutrer - Unit hint regression tests
  */
 @SuppressWarnings("null")
 @NonNullByDefault
@@ -148,6 +154,38 @@ public class SensorTests extends AbstractComponentTests {
         // @formatter:on
 
         assertChannel(component, Sensor.SENSOR_CHANNEL_ID, "zigbee2mqtt/sensor/state", "", "sensor1", TextValue.class);
+    }
+
+    @ParameterizedTest
+    @CsvSource({ "W,Power,true", "m/s,Speed,true", "mm/h,Speed,true", "mm,Length,true", "°C,Temperature,true",
+            "°F,Temperature,true", "mired,Temperature,true", "%,Dimensionless,true", "m/s,Speed,false" })
+    public void testUnitHint(String unit, String dimension, boolean enabledByDefault) {
+        var component = discoverComponent(configTopicToMqtt(CONFIG_TOPIC), """
+                {"name":"Measurement", "state_topic":"test/state", "command_topic":"test/set",
+                 "unit_of_measurement":"%s", "enabled_by_default":%s}
+                """.formatted(unit, enabledByDefault));
+        var channel = component.getChannel(Sensor.SENSOR_CHANNEL_ID);
+        var type = channel.getChannelType();
+        assertThat(type.isAdvanced(), is(!enabledByDefault));
+        assertThat(type.getConfigDescriptionURI().toString(), is("channel-type:homeassistant:channel"));
+        assertThat(type.getItemType(), is("Number:" + dimension));
+        assertThat(type.getUnitHint(), is(UnitUtils.parseUnit(unit).toString()));
+        assertThat(channel.getChannel().getAcceptedItemType(), is(type.getItemType()));
+        assertThat(channel.getChannel().getChannelTypeUID(), is(type.getUID()));
+        assertThat(channelTypeProvider.getChannelType(type.getUID(), null).getUnitHint(), is(type.getUnitHint()));
+    }
+
+    @ParameterizedTest
+    @CsvSource({ "widgets", "''" })
+    public void testUnknownUnit(String unit) {
+        var component = discoverComponent(configTopicToMqtt(CONFIG_TOPIC), """
+                {"name":"Measurement", "state_topic":"test/state", "command_topic":"test/set",
+                 "unit_of_measurement":"%s"}
+                """.formatted(unit));
+        var channel = component.getChannel(Sensor.SENSOR_CHANNEL_ID);
+        assertThat(channel.getChannelType(), is(nullValue()));
+        assertThat(channel.getChannel().getChannelTypeUID(),
+                is((unit.isEmpty() ? ComponentChannelType.STRING : ComponentChannelType.NUMBER).getChannelTypeUID()));
     }
 
     @Override
