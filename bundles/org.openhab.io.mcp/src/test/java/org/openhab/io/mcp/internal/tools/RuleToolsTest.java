@@ -1056,4 +1056,13 @@ class RuleToolsTest {
         CallToolResult result = tools().handleCreateRule(createRequest(args));
         assertErrorContains(result, "type");
     }
+
+    @Test
+    void toolAnnotationsDescribeSideEffects() {
+        RuleTools t = tools();
+        McpTestHelper.assertReadOnlyTool(t.getRulesTool());
+        McpTestHelper.assertWriteTool(t.getManageRuleTool(), true, false);
+        McpTestHelper.assertWriteTool(t.getCreateRuleTool(), false, false);
+        McpTestHelper.assertWriteTool(t.getUpdateRuleTool(), true, true);
+    }
 }

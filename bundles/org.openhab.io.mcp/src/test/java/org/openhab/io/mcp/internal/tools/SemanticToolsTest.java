@@ -127,4 +127,11 @@ class SemanticToolsTest {
         String textHidden = McpTestHelper.extractText(resultHidden);
         assertFalse(textHidden.contains("unassignedItems"), "Should not contain unassignedItems when flag is false");
     }
+
+    @Test
+    void toolAnnotationsDescribeSideEffects() {
+        McpTestHelper.assertReadOnlyTool(
+                new SemanticTools(Objects.requireNonNull(itemRegistry), metadataRegistry, jsonMapper, false)
+                        .getSemanticModelTool());
+    }
 }

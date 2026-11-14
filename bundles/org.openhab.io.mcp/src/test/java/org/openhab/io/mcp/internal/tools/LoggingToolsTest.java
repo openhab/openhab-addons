@@ -490,4 +490,11 @@ class LoggingToolsTest {
         t.cancelPendingReverts();
         verify(future).cancel(false);
     }
+
+    @Test
+    void toolAnnotationsDescribeSideEffects() {
+        LoggingTools t = tools();
+        McpTestHelper.assertReadOnlyTool(t.getReadLogsTool());
+        McpTestHelper.assertWriteTool(t.getManageLogLevelTool(), false, false);
+    }
 }

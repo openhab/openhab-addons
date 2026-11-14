@@ -90,6 +90,7 @@ public class ScriptTools {
         properties.put("timeoutMs", Map.of("type", "integer", "description",
                 "Max execution time in milliseconds (default 5000, max 30000). Script is interrupted on timeout."));
 
+        // The script can do anything the openhab-js API allows.
         return McpSchema.Tool.builder().name("execute_script").description("""
                 Run a JavaScript snippet immediately against the openHAB scripting engine and return its result. \
                 Primary use: dry-run a script before adding it as a 'script' action in a scheduled rule, so \
@@ -99,7 +100,7 @@ public class ScriptTools {
                 Console output (console.log) goes to the openHAB log, not to this response - return values \
                 explicitly to see them. Requires the openhab-automation-jsscripting add-on.""")
                 .inputSchema(new McpSchema.JsonSchema("object", properties, List.of("script"), null, null, null))
-                .build();
+                .annotations(writeAnnotations(true, false)).build();
     }
 
     /**
@@ -110,7 +111,8 @@ public class ScriptTools {
                 Get TypeScript type definitions (openhab.d.ts) for openhab-js. \
                 Useful for discovering available openhab-js APIs, types, and auto-completion when writing scripts. \
                 Requires the openhab-automation-jsscripting add-on.""")
-                .inputSchema(new McpSchema.JsonSchema("object", Map.of(), List.of(), null, null, null)).build();
+                .inputSchema(new McpSchema.JsonSchema("object", Map.of(), List.of(), null, null, null))
+                .annotations(readOnlyAnnotations()).build();
     }
 
     /**

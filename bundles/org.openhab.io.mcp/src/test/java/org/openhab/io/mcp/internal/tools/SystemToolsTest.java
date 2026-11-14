@@ -377,4 +377,11 @@ class SystemToolsTest {
         assertNotNull(parsed.get("energy"));
         assertNotNull(parsed.get("devices"));
     }
+
+    @Test
+    void toolAnnotationsDescribeSideEffects() {
+        SystemTools t = tools();
+        McpTestHelper.assertReadOnlyTool(t.getSystemInfoTool());
+        McpTestHelper.assertReadOnlyTool(t.getHomeStatusTool());
+    }
 }

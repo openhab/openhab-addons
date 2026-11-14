@@ -232,4 +232,11 @@ class WatchToolsTest {
         assertNotNull(events2);
         assertTrue(events2.isEmpty());
     }
+
+    @Test
+    void toolAnnotationsDescribeSideEffects() {
+        WatchTools t = tools();
+        McpTestHelper.assertWriteTool(t.getWatchItemsTool(), false, true);
+        McpTestHelper.assertReadOnlyTool(t.getEventsTool());
+    }
 }

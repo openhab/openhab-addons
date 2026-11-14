@@ -64,7 +64,8 @@ public class SemanticTools {
     public McpSchema.Tool getSemanticModelTool() {
         return McpSchema.Tool.builder().name("get_semantic_model").description(
                 "Retrieve the semantic model of the smart home. Returns a hierarchical view of locations (rooms/floors/buildings), the equipment in each location (lights, sensors, appliances), and the controllable points on each equipment (switches, dimmers, measurements). Call this first to understand the home layout and find the correct item names for controlling devices.")
-                .inputSchema(new McpSchema.JsonSchema("object", Map.of(), List.of(), null, null, null)).build();
+                .inputSchema(new McpSchema.JsonSchema("object", Map.of(), List.of(), null, null, null))
+                .annotations(readOnlyAnnotations()).build();
     }
 
     /**

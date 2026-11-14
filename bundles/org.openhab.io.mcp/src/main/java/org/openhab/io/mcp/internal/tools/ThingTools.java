@@ -81,7 +81,8 @@ public class ThingTools {
 
         return McpSchema.Tool.builder().name("get_things").description(
                 "List things (device connections) with their online/offline status. Filter by status or binding type. When filtering by binding, bridge things include nested child things from any binding.")
-                .inputSchema(new McpSchema.JsonSchema("object", properties, List.of(), null, null, null)).build();
+                .inputSchema(new McpSchema.JsonSchema("object", properties, List.of(), null, null, null))
+                .annotations(readOnlyAnnotations()).build();
     }
 
     /**
@@ -145,7 +146,7 @@ public class ThingTools {
                                 Map.of("type", "string", "description",
                                         "The unique identifier of the thing (e.g., 'hue:0210:bridge:lamp1')")),
                         List.of("thingUID"), null, null, null))
-                .build();
+                .annotations(readOnlyAnnotations()).build();
     }
 
     /**

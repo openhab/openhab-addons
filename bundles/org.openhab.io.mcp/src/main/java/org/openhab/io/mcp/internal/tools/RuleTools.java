@@ -96,7 +96,8 @@ public class RuleTools {
 
         return McpSchema.Tool.builder().name("get_rules").description(
                 "List automation rules with their status, triggers, and tags. Use tag='MCP' to see rules created by this agent.")
-                .inputSchema(new McpSchema.JsonSchema("object", properties, List.of(), null, null, null)).build();
+                .inputSchema(new McpSchema.JsonSchema("object", properties, List.of(), null, null, null))
+                .annotations(readOnlyAnnotations()).build();
     }
 
     /**
@@ -137,6 +138,7 @@ public class RuleTools {
      * Returns the {@code manage_rule} tool schema.
      */
     public McpSchema.Tool getManageRuleTool() {
+        // Annotated for the most impactful actions: 'remove' deletes the rule and 'trigger' runs its actions.
         return McpSchema.Tool.builder().name("manage_rule")
                 .description("Enable, disable, manually trigger, or permanently remove an automation rule.")
                 .inputSchema(new McpSchema.JsonSchema("object",
@@ -146,7 +148,7 @@ public class RuleTools {
                                         "Action to perform: 'enable', 'disable', 'trigger', or 'remove'", "enum",
                                         List.of("enable", "disable", "trigger", "remove"))),
                         List.of("ruleUID", "action"), null, null, null))
-                .build();
+                .annotations(writeAnnotations(true, false)).build();
     }
 
     /**
@@ -218,10 +220,11 @@ public class RuleTools {
         properties.put("actions", Map.of("type", "array", "description", actionsDescription(), "items",
                 Map.of("type", "object", "properties", actionProps(), "required", List.of("type"))));
 
+        // Each call adds a new rule with a freshly generated UID.
         return McpSchema.Tool.builder().name("create_rule").description(createRuleDescription())
                 .inputSchema(
                         new McpSchema.JsonSchema("object", properties, List.of("name", "actions"), null, null, null))
-                .build();
+                .annotations(writeAnnotations(false, false)).build();
     }
 
     /**
@@ -319,11 +322,13 @@ public class RuleTools {
                         "Replace all actions (omit to keep current). Same format as create_rule.", "items",
                         Map.of("type", "object", "properties", actionProps(), "required", List.of("type"))));
 
+        // Provided conditions, actions and tags replace the existing ones.
         return McpSchema.Tool.builder().name("update_rule").description("""
                 Update a rule's name, description, tags, conditions, or actions without recreating it. \
                 Only provided fields are changed; omitted fields keep their current values. \
                 To change the triggers, delete and recreate the rule instead.""")
-                .inputSchema(new McpSchema.JsonSchema("object", props, List.of("ruleUID"), null, null, null)).build();
+                .inputSchema(new McpSchema.JsonSchema("object", props, List.of("ruleUID"), null, null, null))
+                .annotations(writeAnnotations(true, true)).build();
     }
 
     /**

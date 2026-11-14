@@ -147,7 +147,8 @@ public class LoggingTools {
                 manage_log_level(action='set') on the relevant logger at DEBUG (auto-reverts in 30 min) and ask \
                 the user to reproduce; (3) call get_logs again with sinceSequence=<the lastSequence from step 1> \
                 to fetch only what's new. Entries are returned oldest-first so they read top-to-bottom like a tail.""")
-                .inputSchema(new McpSchema.JsonSchema("object", p, List.of(), null, null, null)).build();
+                .inputSchema(new McpSchema.JsonSchema("object", p, List.of(), null, null, null))
+                .annotations(readOnlyAnnotations()).build();
     }
 
     public CallToolResult handleGetLogs(McpSchema.CallToolRequest request) {
@@ -247,6 +248,8 @@ public class LoggingTools {
                         action='set' only: auto-revert to the previous level after this many seconds (default 1800 = 30 min). \
                         Pass 0 to make the change persistent (the operator will have to revert it via Main UI or another set call)."""));
 
+        // 'set' only changes a logger level, which 'DEFAULT' restores, so it is not treated as destructive. It is
+        // not idempotent: repeating a 'set' to the level already in effect cancels the pending auto-revert.
         return McpSchema.Tool.builder().name("manage_log_level").description("""
                 List current log levels or set a single logger's level. Action-dispatched: \
                 action='get' lists effective levels (optionally filtered by loggerFilter); useful before \
@@ -260,7 +263,8 @@ public class LoggingTools {
                 'org.apache.karaf.*' (Karaf runtime), 'org.apache.cxf.*' (REST stack), 'org.ops4j.pax.web.*' \
                 (HTTP whiteboard). For an add-on, scope to that add-on's package (e.g. \
                 'org.openhab.binding.<name>') — that's safe and almost always sufficient.""")
-                .inputSchema(new McpSchema.JsonSchema("object", p, List.of("action"), null, null, null)).build();
+                .inputSchema(new McpSchema.JsonSchema("object", p, List.of("action"), null, null, null))
+                .annotations(writeAnnotations(false, false)).build();
     }
 
     public CallToolResult handleManageLogLevel(McpSyncServerExchange exchange, McpSchema.CallToolRequest request) {

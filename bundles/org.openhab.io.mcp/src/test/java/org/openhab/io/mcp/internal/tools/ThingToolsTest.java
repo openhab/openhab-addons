@@ -420,4 +420,11 @@ class ThingToolsTest {
         assertEquals(true, parsed.get("isBridge"));
         assertNull(parsed.get("childThings"));
     }
+
+    @Test
+    void toolAnnotationsDescribeSideEffects() {
+        ThingTools t = tools();
+        McpTestHelper.assertReadOnlyTool(t.getThingsTool());
+        McpTestHelper.assertReadOnlyTool(t.getThingDetailsTool());
+    }
 }

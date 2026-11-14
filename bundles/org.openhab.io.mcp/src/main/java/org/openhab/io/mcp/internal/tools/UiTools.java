@@ -267,7 +267,8 @@ public class UiTools {
                 {name, label, description, category} entries. Use this for discovery, then call describe_widget(name) \
                 for full prop/slot schemas before composing pages or widgets. Filter by category if you know what \
                 kind of component you need.""")
-                .inputSchema(new McpSchema.JsonSchema("object", p, List.of(), null, null, null)).build();
+                .inputSchema(new McpSchema.JsonSchema("object", p, List.of(), null, null, null))
+                .annotations(readOnlyAnnotations()).build();
     }
 
     public CallToolResult handleListWidgets(McpSchema.CallToolRequest request) {
@@ -311,7 +312,8 @@ public class UiTools {
                 consult before authoring or modifying a widget config — it tells you exactly which keys are valid \
                 and what values they accept. If the component isn't in the catalog you'll get an error listing the \
                 closest matches.""")
-                .inputSchema(new McpSchema.JsonSchema("object", p, List.of("name"), null, null, null)).build();
+                .inputSchema(new McpSchema.JsonSchema("object", p, List.of("name"), null, null, null))
+                .annotations(readOnlyAnnotations()).build();
     }
 
     public CallToolResult handleDescribeWidget(McpSchema.CallToolRequest request) {
@@ -367,7 +369,8 @@ public class UiTools {
                 when creating a new page so you don't have to guess the right component name or slot names. The \
                 response includes 'plannedViewUrl' showing where the page will appear after you POST it via \
                 manage_ui_component(action='create').""")
-                .inputSchema(new McpSchema.JsonSchema("object", p, List.of("pageType"), null, null, null)).build();
+                .inputSchema(new McpSchema.JsonSchema("object", p, List.of("pageType"), null, null, null))
+                .annotations(readOnlyAnnotations()).build();
     }
 
     public CallToolResult handleGetPageSkeleton(McpSchema.CallToolRequest request) {
@@ -496,9 +499,10 @@ public class UiTools {
                         "action='get' only: optional projection — return just these top-level fields of the component "
                                 + "(e.g. ['uid','component','tags']). When omitted, the full body is returned."));
 
+        // Annotated for the most impactful action: 'delete' removes the component and 'update' overwrites it.
         return McpSchema.Tool.builder().name("manage_ui_component").description(manageDescription)
                 .inputSchema(new McpSchema.JsonSchema("object", p, List.of("action", "namespace"), null, null, null))
-                .build();
+                .annotations(writeAnnotations(true, false)).build();
     }
 
     public CallToolResult handleManageUiComponent(McpSyncServerExchange exchange, McpSchema.CallToolRequest request) {
@@ -847,7 +851,7 @@ public class UiTools {
                 widget references (component starting with 'widget:') and unknown components from outside the \
                 catalog produce warnings rather than errors so this tool doesn't false-positive on user-authored \
                 widgets.""").inputSchema(new McpSchema.JsonSchema("object", p, List.of("component"), null, null, null))
-                .build();
+                .annotations(readOnlyAnnotations()).build();
     }
 
     public CallToolResult handleValidateUiComponent(McpSchema.CallToolRequest request) {
