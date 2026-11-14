@@ -62,11 +62,23 @@ public class WebhookApi extends RestManager {
         return true;
     }
 
+    /**
+     * Retrieves the list of currently set webhooks
+     *
+     * @return the list of webhooks declared at the API
+     * @throws NetatmoException If fail to call the API, e.g. server or deserializing error
+     */
     public List<Webhook> getWebhooks() throws NetatmoException {
         List<Webhook> result = get(WEBHOOKS_URI_BUILDER.clone(), WebhooksResponse.class).getBody();
         return result != null ? result : List.of();
     }
 
+    /**
+     * Sets a new list of webhooks
+     *
+     * @param uris a list of URIs
+     * @throws NetatmoException If fail to call the API, e.g. server or deserializing error
+     */
     public boolean setWebhooks(List<URI> uris) throws NetatmoException {
         String payload = "[%s]".formatted(
                 uris.stream().map(URI::toString).map(PAYLOAD_POST_WEBHOOK::formatted).collect(Collectors.joining(",")));

@@ -576,6 +576,6 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
             return;
         }
 
-        updateState(hookSetChannelUID, hooked ? OnOffType.ON : OnOffType.OFF);
+        updateState(hookSetChannelUID, OnOffType.from(hooked));
     }
 }
