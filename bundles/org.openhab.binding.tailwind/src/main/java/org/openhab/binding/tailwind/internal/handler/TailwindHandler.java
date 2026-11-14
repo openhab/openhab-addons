@@ -467,6 +467,7 @@ public class TailwindHandler extends BaseThingHandler {
             logger.debug("Ignoring a status report from device {}", status.deviceId);
             return;
         }
+        logger.debug("Status report from {}: {}", sender.getHostAddress(), status.doorSummary());
         handleStatus(status);
     }
 

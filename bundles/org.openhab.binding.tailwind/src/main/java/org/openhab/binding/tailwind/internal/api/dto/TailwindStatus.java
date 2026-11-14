@@ -16,6 +16,7 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.tailwind.internal.TailwindBindingConstants;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -60,6 +61,25 @@ public class TailwindStatus {
     /**
      * Returns the door with the given index, starting at 0, or null if the controller did not report it.
      */
+    /**
+     * Returns the status of each door, such as {@code door1 open, door2 close}, for the log.
+     */
+    public String doorSummary() {
+        Map<String, @Nullable TailwindDoor> doors = data;
+        if (doors == null) {
+            return "no doors";
+        }
+        StringBuilder summary = new StringBuilder();
+        for (int index = 0; index < TailwindBindingConstants.MAX_DOORS; index++) {
+            TailwindDoor door = door(index);
+            if (door != null) {
+                summary.append(summary.isEmpty() ? "" : ", ").append("door").append(index + 1).append(' ')
+                        .append(door.status);
+            }
+        }
+        return summary.toString();
+    }
+
     public @Nullable TailwindDoor door(int index) {
         Map<String, @Nullable TailwindDoor> doors = data;
         return doors == null ? null : doors.get("door" + (index + 1));

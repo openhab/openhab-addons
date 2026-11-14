@@ -109,6 +109,7 @@ public class TailwindUdpListener {
             if (message.isEmpty()) {
                 continue;
             }
+            logger.trace("UDP message from {}: {}", packet.getAddress().getHostAddress(), message);
             try {
                 consumer.accept(packet.getAddress(), message);
             } catch (RuntimeException e) {
