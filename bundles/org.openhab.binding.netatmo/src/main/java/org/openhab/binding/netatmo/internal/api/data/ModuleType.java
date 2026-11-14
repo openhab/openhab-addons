@@ -195,7 +195,7 @@ public enum ModuleType {
     }
 
     public boolean isABridge() { // I am a bridge if any module references me as being so
-        return AS_SET.stream().anyMatch(mt -> this.equals(mt.getBridge()));
+        return AS_SET.stream().anyMatch(mt -> equals(mt.getBridge()));
     }
 
     public List<String> getExtensions() {
@@ -218,7 +218,7 @@ public enum ModuleType {
     }
 
     public ModuleType getBridge() {
-        return Objects.requireNonNullElse(this.bridgeType, UNKNOWN);
+        return Objects.requireNonNullElse(bridgeType, UNKNOWN);
     }
 
     public int getDepth() {
@@ -230,5 +230,18 @@ public enum ModuleType {
         return AS_SET.stream().filter(mt -> mt.thingTypeUID.equals(thingTypeUID)).findFirst()
                 .orElseThrow(() -> new IllegalArgumentException(
                         "No known ModuleType matched '%s'".formatted(thingTypeUID.toString())));
+    }
+
+    public Set<EventType> getMonitored() {
+        if (WEATHER_STATION.equals(this) || RAIN.equals(this)) {
+            return Set.of(EventType.UNKNOWN);
+        }
+        if (THERMOSTAT.equals(this)) {
+            return Set.of(EventType.BOILER_EVENT);
+        }
+        if (ROOM.equals(this)) {
+            return Set.of(EventType.TEMPERATURE_VARIATION_EVENT);
+        }
+        return Set.of();
     }
 }

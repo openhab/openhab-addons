@@ -61,7 +61,7 @@ public class Dashboard {
     private double pressure;
 
     @SerializedName("Rain")
-    private double rain;
+    public @Nullable Double rain;
     @SerializedName("sum_rain_1")
     private double sumRain1;
     @SerializedName("sum_rain_24")
@@ -142,10 +142,6 @@ public class Dashboard {
 
     public TrendDescription getPressureTrend() {
         return pressureTrend;
-    }
-
-    public double getRain() {
-        return rain;
     }
 
     public double getSumRain1() {
