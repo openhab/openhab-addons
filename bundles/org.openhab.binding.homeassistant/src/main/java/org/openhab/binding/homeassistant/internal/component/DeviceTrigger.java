@@ -100,6 +100,16 @@ public class DeviceTrigger extends AbstractComponent<DeviceTrigger.Configuration
     }
 
     @Override
+    public void setComponentId(String componentId) {
+        String previousId = this.componentId;
+        super.setComponentId(componentId);
+        ComponentChannel channel = channels.remove(previousId);
+        if (channel != null) {
+            channels.put(componentId, channel);
+        }
+    }
+
+    @Override
     public String getDefaultComponentId() {
         return config.getSubtype();
     }

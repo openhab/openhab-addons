@@ -41,6 +41,7 @@ import com.google.gson.Gson;
  * https://www.home-assistant.io/docs/mqtt/discovery/
  *
  * @author David Graeff - Initial contribution
+ * @author Cody Cutrer - Preserve originating discovery topics
  */
 @NonNullByDefault
 public class ComponentFactory {
@@ -83,7 +84,7 @@ public class ComponentFactory {
                     nodeId = haID.objectID;
                 }
                 HaID componentHaID = new HaID(haID.baseTopic, config.getObjectId(), nodeId, config.getComponent());
-                ComponentContext componentContext = new ComponentContext(thingUID, componentHaID,
+                ComponentContext componentContext = new ComponentContext(thingUID, componentHaID, haID,
                         channelConfigurationJSON, gson, python, updateListener, linkageChecker, tracker, scheduler,
                         unitProvider, config.getDiscoveryPayload(), false);
                 try {
@@ -97,8 +98,8 @@ public class ComponentFactory {
         }
 
         MqttComponentConfig mqttComponentConfig = mqttComponentConfigs.getFirst();
-        ComponentContext componentContext = new ComponentContext(thingUID, haID, channelConfigurationJSON, gson, python,
-                updateListener, linkageChecker, tracker, scheduler, unitProvider,
+        ComponentContext componentContext = new ComponentContext(thingUID, haID, haID, channelConfigurationJSON, gson,
+                python, updateListener, linkageChecker, tracker, scheduler, unitProvider,
                 mqttComponentConfig.getDiscoveryPayload(), true);
         return List.of(createComponent(componentContext));
     }
@@ -163,6 +164,7 @@ public class ComponentFactory {
     protected static class ComponentContext {
         private final ThingUID thingUID;
         private final HaID haID;
+        private final HaID discoveryTopic;
         private final String configJSON;
         private final ChannelStateUpdateListener updateListener;
         private final HomeAssistantChannelLinkageChecker linkageChecker;
@@ -178,16 +180,18 @@ public class ComponentFactory {
          * Provide a thingUID and HomeAssistant topic ID to determine the channel group UID and type.
          *
          * @param thingUID A ThingUID
-         * @param haID A HomeAssistant topic ID
+         * @param haID A HomeAssistant component topic ID
+         * @param discoveryTopic The original MQTT discovery topic
          * @param configJSON The configuration string
          */
-        protected ComponentContext(ThingUID thingUID, HaID haID, String configJSON, Gson gson,
+        protected ComponentContext(ThingUID thingUID, HaID haID, HaID discoveryTopic, String configJSON, Gson gson,
                 HomeAssistantPythonBridge python, ChannelStateUpdateListener updateListener,
                 HomeAssistantChannelLinkageChecker linkageChecker, AvailabilityTracker tracker,
                 ScheduledExecutorService scheduler, UnitProvider unitProvider,
                 Map<String, @Nullable Object> discoveryPayload, boolean persistChannelConfiguration) {
             this.thingUID = thingUID;
             this.haID = haID;
+            this.discoveryTopic = discoveryTopic;
             this.configJSON = configJSON;
             this.gson = gson;
             this.python = python;
@@ -202,6 +206,10 @@ public class ComponentFactory {
 
         public ThingUID getThingUID() {
             return thingUID;
+        }
+
+        public HaID getDiscoveryTopic() {
+            return discoveryTopic;
         }
 
         public HaID getHaID() {

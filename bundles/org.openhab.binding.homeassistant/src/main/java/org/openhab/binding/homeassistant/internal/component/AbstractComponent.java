@@ -29,6 +29,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.homeassistant.internal.ComponentChannel;
 import org.openhab.binding.homeassistant.internal.ComponentChannelType;
+import org.openhab.binding.homeassistant.internal.DiscoverComponents.ComponentIdentity;
 import org.openhab.binding.homeassistant.internal.HaID;
 import org.openhab.binding.homeassistant.internal.HomeAssistantBindingConstants;
 import org.openhab.binding.homeassistant.internal.HomeAssistantChannelTransformation;
@@ -424,6 +425,10 @@ public abstract class AbstractComponent<C extends AbstractComponentConfiguration
 
     public boolean hasGroup() {
         return groupId != null;
+    }
+
+    public ComponentIdentity getDiscoveryIdentity() {
+        return new ComponentIdentity(componentContext.getDiscoveryTopic(), getHaID());
     }
 
     public HaID getHaID() {
