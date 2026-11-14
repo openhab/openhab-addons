@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.homeassistant.internal.handler;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -557,37 +558,39 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
 
     // should only be called when it's safe to access haComponents
     private boolean addComponent(AbstractComponent<?> component) {
-        AbstractComponent<?> matchingId = haComponents.get(component.getComponentId());
-        AbstractComponent<?> existing = matchingId != null ? matchingId
-                : haComponents.values().stream().filter(
-                        candidate -> candidate.getDefaultComponentId().equals(component.getDefaultComponentId()))
-                        .findFirst().orElse(null);
-        if (existing != null) {
-            // Check for components that merge together
-            if (component.mergeable(existing)) {
-                MqttBrokerConnection connection = this.connection;
-                if (existing.merge(component) && connection != null) {
-                    // Make sure to re-start if this did something, and it was stopped
-                    existing.start(connection, scheduler, 0).exceptionally(e -> {
-                        logger.warn("Failed to start component {}", existing.getHaID(), e);
-                        return null;
-                    });
-                }
-                haComponentsByUniqueId.put(component.getUniqueId(), component);
-                haComponentsByHaId.put(component.getHaID(), component);
-                return false;
+        List<AbstractComponent<?>> conflicts = haComponents.values().stream()
+                .filter(candidate -> candidate.getComponentId().equals(component.getComponentId())
+                        || candidate.getDefaultComponentId().equals(component.getDefaultComponentId()))
+                .toList();
+        AbstractComponent<?> mergeTarget = conflicts.stream().filter(component::mergeable).findFirst().orElse(null);
+        if (mergeTarget != null) {
+            MqttBrokerConnection connection = this.connection;
+            if (mergeTarget.merge(component) && connection != null) {
+                mergeTarget.start(connection, scheduler, 0).exceptionally(e -> {
+                    logger.warn("Failed to start component {}", mergeTarget.getHaID(), e);
+                    return null;
+                });
             }
+            haComponentsByUniqueId.put(component.getUniqueId(), component);
+            haComponentsByHaId.put(component.getHaID(), component);
+            return false;
+        }
 
-            // rename the conflict
-            haComponents.remove(existing.getComponentId());
-            if (existing.getHaID().component.equals(component.getHaID().component)) {
-                existing.resolveDiscoveryIdConflict();
-                component.resolveDiscoveryIdConflict();
-            } else {
-                existing.resolveConflict();
-                component.resolveConflict();
+        if (!conflicts.isEmpty()) {
+            conflicts.forEach(existing -> haComponents.remove(existing.getComponentId()));
+            List<AbstractComponent<?>> allConflicts = new ArrayList<>(conflicts);
+            allConflicts.add(component);
+            for (AbstractComponent<?> conflicting : allConflicts) {
+                boolean samePlatform = allConflicts.stream()
+                        .filter(other -> other.getHaID().component.equals(conflicting.getHaID().component)).limit(2)
+                        .count() > 1;
+                if (samePlatform) {
+                    conflicting.resolveDiscoveryIdConflict();
+                } else {
+                    conflicting.resolveConflict();
+                }
             }
-            reserveComponentId(existing);
+            conflicts.forEach(this::reserveComponentId);
         }
         reserveComponentId(component);
         haComponentsByUniqueId.put(component.getUniqueId(), component);
@@ -604,15 +607,22 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
     }
 
     private void reserveComponentId(AbstractComponent<?> component) {
-        AbstractComponent<?> existing = haComponents.remove(component.getComponentId());
-        if (existing != null) {
-            // Encoded discovery topics distinguish IDs even when normalization or a platform suffix collides.
-            existing.resolveDiscoveryIdConflict();
-            component.resolveDiscoveryIdConflict();
-            reserveComponentId(existing);
-            reserveComponentId(component);
-        } else {
-            haComponents.put(component.getComponentId(), component);
+        var pending = new ArrayDeque<AbstractComponent<?>>();
+        pending.add(component);
+        while (!pending.isEmpty()) {
+            AbstractComponent<?> candidate = pending.removeFirst();
+            AbstractComponent<?> existing = haComponents.remove(candidate.getComponentId());
+            if (existing == null || (existing.getHaID().equals(candidate.getHaID())
+                    && existing.getUniqueId().equals(candidate.getUniqueId()))) {
+                haComponents.put(candidate.getComponentId(), candidate);
+            } else {
+                // Topic plus unique ID distinguishes overlapping device and individual discovery configs.
+                // An unchanged ID can only collide with a component that has not yet been disambiguated.
+                existing.resolveUniqueIdConflict();
+                candidate.resolveUniqueIdConflict();
+                pending.add(existing);
+                pending.add(candidate);
+            }
         }
     }
 

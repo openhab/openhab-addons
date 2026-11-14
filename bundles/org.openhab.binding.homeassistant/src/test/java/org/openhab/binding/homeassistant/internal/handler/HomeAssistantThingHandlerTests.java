@@ -28,6 +28,7 @@ import java.util.stream.Collectors;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -604,6 +605,97 @@ public class HomeAssistantThingHandlerTests extends AbstractHomeAssistantTests {
         assertThat(
                 nonSpyThingHandler.getThing().getChannels().stream().map(Channel::getUID).collect(Collectors.toSet()),
                 is(channels.stream().map(Channel::getUID).collect(Collectors.toSet())));
+    }
+
+    @ParameterizedTest
+    @CsvSource({ "false", "true" })
+    @Timeout(value = 30, threadMode = Timeout.ThreadMode.SEPARATE_THREAD)
+    public void testOverlappingDeviceAndIndividualDiscovery(boolean individualFirst) {
+        setupThingHandlerWithTopics(List.of("device/dev1", "sensor/dev1/temp"));
+        thingHandler.initialize();
+        String devicePayload = """
+                {"dev": {"identifiers": ["dev1"]}, "o": {"name": "repro"}, "cmps": {%s}}
+                """.formatted(deviceSensorConfig("temp", false));
+        String individualPayload = """
+                {"unique_id": "individual_temp", "state_topic": "test/individual/temp", "name": "Individual"}
+                """;
+        if (individualFirst) {
+            discoverConfig("sensor/dev1/temp", individualPayload);
+        }
+        discoverConfig("device/dev1", devicePayload);
+        if (!individualFirst) {
+            discoverConfig("sensor/dev1/temp", individualPayload);
+        }
+        var channels = nonSpyThingHandler.getThing().getChannels();
+        assertThat(channels.size(), is(2));
+        assertThat(channels.stream().map(Channel::getUID).distinct().count(), is(2L));
+        assertThat(nonSpyThingHandler.getComponents().values().stream().map(component -> component.getHaID()).distinct()
+                .count(), is(1L));
+        var channelIds = channels.stream().map(Channel::getUID).collect(Collectors.toSet());
+        discoverConfig("sensor/dev1/temp", individualPayload.replace("Individual", "Updated individual"));
+        discoverConfig("device/dev1", devicePayload.replace("Temperature", "Updated temperature"));
+        assertThat(
+                nonSpyThingHandler.getThing().getChannels().stream().map(Channel::getUID).collect(Collectors.toSet()),
+                is(channelIds));
+    }
+
+    @ParameterizedTest
+    @CsvSource({ "scene, scene", "device_automation, button" })
+    public void testEffectiveComponentIdsPreserveMerging(String platform, String channelId) {
+        setupThingHandlerWithTopics(List.of(platform + "/evening", "sensor/evening", platform + "/morning"));
+        thingHandler.initialize();
+        String payload = "scene".equals(platform) ? """
+                {"unique_id": "%s", "command_topic": "test/scene", "name": "%s"}
+                """
+                : """
+                        {"automation_type": "trigger", "device": {"identifiers": ["button"]}, "topic": "test/button", "subtype": "button", "type": "%s", "payload": "%s"}
+                        """;
+        discoverConfig(platform + "/evening", payload.formatted("evening", "evening"));
+        discoverConfig("sensor/evening", """
+                {"unique_id": "evening_sensor", "state_topic": "test/evening"}
+                """);
+        assertThat(nonSpyThingHandler.getThing().getChannel(channelId), notNullValue());
+        assertThat(nonSpyThingHandler.getThing().getChannel("evening"), notNullValue());
+        discoverConfig(platform + "/morning", payload.formatted("morning", "morning"));
+        assertThat(nonSpyThingHandler.getThing().getChannels().size(), is(2));
+        assertThat(nonSpyThingHandler.getThing().getChannel(channelId), notNullValue());
+        assertThat(nonSpyThingHandler.getThing().getChannel("evening"), notNullValue());
+    }
+
+    @ParameterizedTest
+    @CsvSource({ "false, false", "true, false", "false, true", "true, true" })
+    public void testMixedPlatformCollisionsPreserveResolvedIds(boolean reverseOrder, boolean numberFirst) {
+        setupThingHandlerWithTopics(List.of("device/dev1"));
+        thingHandler.initialize();
+        String devicePayload = """
+                {"dev": {"identifiers": ["dev1"]}, "o": {"name": "repro"}, "cmps": {%s}}
+                """;
+        String numberConfig = """
+                "temp-sensor": {"p": "number", "unique_id": "number", "command_topic": "test/number/set"}
+                """;
+        if (numberFirst) {
+            discoverConfig("device/dev1", devicePayload.formatted(numberConfig));
+        }
+        String first = deviceSensorConfig("temp.sensor", false);
+        String second = deviceSensorConfig("temp_sensor", false);
+        String sensors = (reverseOrder ? second : first) + "," + (reverseOrder ? first : second);
+        discoverConfig("device/dev1", devicePayload.formatted(sensors + (numberFirst ? "," + numberConfig : "")));
+        var sensorIds = nonSpyThingHandler.getThing().getChannels().stream()
+                .filter(channel -> !channel.getUID().getId().endsWith("_number")).map(Channel::getUID)
+                .collect(Collectors.toSet());
+        assertThat(sensorIds.size(), is(2));
+        discoverConfig("device/dev1", devicePayload.formatted(sensors + "," + numberConfig));
+        assertThat(nonSpyThingHandler.getThing().getChannels().size(), is(3));
+        for (ChannelUID id : sensorIds) {
+            assertThat(nonSpyThingHandler.getThing().getChannel(id), notNullValue());
+        }
+        assertThat(nonSpyThingHandler.getThing().getChannel("temp_sensor_number"), notNullValue());
+    }
+
+    private void discoverConfig(String topic, String payload) {
+        thingHandler.discoverComponents.processMessage(configTopicToMqtt(topic),
+                payload.getBytes(StandardCharsets.UTF_8));
+        thingHandler.delayedProcessing.forceProcessNow();
     }
 
     private static String deviceSensorConfig(String componentId, boolean grouped) {

@@ -159,6 +159,11 @@ public class Scene extends AbstractComponent<Scene.Configuration> {
     }
 
     @Override
+    public String getDefaultComponentId() {
+        return SCENE_CHANNEL_ID;
+    }
+
+    @Override
     public boolean mergeable(AbstractComponent<?> other) {
         return other instanceof Scene;
     }

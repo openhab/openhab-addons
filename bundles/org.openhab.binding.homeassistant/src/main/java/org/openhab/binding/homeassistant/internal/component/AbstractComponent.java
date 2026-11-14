@@ -226,14 +226,27 @@ public abstract class AbstractComponent<C extends AbstractComponentConfiguration
     }
 
     public void resolveConflict() {
-        setComponentId(getDefaultComponentId() + "_" + getHaID().component);
+        if (componentId.equals(getDefaultComponentId())) {
+            setComponentId(getDefaultComponentId() + "_" + getHaID().component);
+        }
     }
 
     /**
      * Distinguishes components whose IDs still collide after adding the platform.
      */
     public void resolveDiscoveryIdConflict() {
-        setComponentId(getDefaultComponentId() + "_" + UIDUtils.encode(getHaID().getTopic("config")));
+        if (componentId.equals(getDefaultComponentId())
+                || componentId.equals(getDefaultComponentId() + "_" + getHaID().component)) {
+            setComponentId(getDefaultComponentId() + "_" + UIDUtils.encode(getHaID().getTopic("config")));
+        }
+    }
+
+    /**
+     * Distinguishes device and individual discovery configs with identical component topics.
+     */
+    public void resolveUniqueIdConflict() {
+        // uniqueId is UID-encoded and cannot contain the ':' delimiter.
+        setComponentId(UIDUtils.encode(getHaID().getTopic("config") + ":" + getUniqueId()));
     }
 
     public void setComponentId(String componentId) {
