@@ -25,6 +25,7 @@ import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
+import org.openhab.core.thing.link.ItemChannelLinkRegistry;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -55,18 +56,39 @@ public class GenericBluetoothHandlerFactory extends BaseThingHandlerFactory {
      */
     private static final String DEFAULT_GATT_EXTENSIONS_FOLDER = "gatt-extensions";
 
+    /** Binding config keys for the two behaviour switches (both default ON = the fixed behaviour). */
+    private static final String CONFIG_POLL_ONLY_LINKED = "pollOnlyLinkedCharacteristics";
+    private static final String CONFIG_RECONNECT_UNRESOLVED = "reconnectOnUnresolvedServices";
+
     private final Logger logger = LoggerFactory.getLogger(GenericBluetoothHandlerFactory.class);
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set
             .of(GenericBindingConstants.THING_TYPE_GENERIC);
 
     private final CharacteristicChannelTypeProvider channelTypeProvider;
+    private final ItemChannelLinkRegistry itemChannelLinkRegistry;
+    private final boolean pollOnlyLinkedCharacteristics;
+    private final boolean reconnectOnUnresolvedServices;
 
     @Activate
     public GenericBluetoothHandlerFactory(@Reference CharacteristicChannelTypeProvider channelTypeProvider,
-            Map<String, Object> config) {
+            @Reference ItemChannelLinkRegistry itemChannelLinkRegistry, Map<String, Object> config) {
         this.channelTypeProvider = channelTypeProvider;
+        this.itemChannelLinkRegistry = itemChannelLinkRegistry;
+        this.pollOnlyLinkedCharacteristics = configBoolean(config, CONFIG_POLL_ONLY_LINKED, true);
+        this.reconnectOnUnresolvedServices = configBoolean(config, CONFIG_RECONNECT_UNRESOLVED, true);
         loadGattExtensions(config);
+    }
+
+    private static boolean configBoolean(Map<String, Object> config, String key, boolean defaultValue) {
+        Object value = config.get(key);
+        if (value instanceof Boolean b) {
+            return b;
+        }
+        if (value instanceof String s && !s.isBlank()) {
+            return Boolean.parseBoolean(s.trim());
+        }
+        return defaultValue;
     }
 
     /**
@@ -116,7 +138,8 @@ public class GenericBluetoothHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (GenericBindingConstants.THING_TYPE_GENERIC.equals(thingTypeUID)) {
-            return new GenericBluetoothHandler(thing, channelTypeProvider);
+            return new GenericBluetoothHandler(thing, channelTypeProvider, itemChannelLinkRegistry,
+                    pollOnlyLinkedCharacteristics, reconnectOnUnresolvedServices);
         }
 
         return null;
