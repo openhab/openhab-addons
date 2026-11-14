@@ -15,16 +15,21 @@ package org.openhab.binding.ddwrt.internal.api;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 
 import java.util.Objects;
+import java.util.concurrent.Callable;
+import java.util.concurrent.FutureTask;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
+import org.openhab.binding.ddwrt.internal.DDWRTDeviceConfiguration;
 import org.openhab.binding.ddwrt.internal.api.SyslogParser.SyslogEvent;
 import org.slf4j.LoggerFactory;
 
@@ -32,6 +37,7 @@ import org.slf4j.LoggerFactory;
  * Tests for {@link SyslogParser}.
  *
  * @author Lee Ballard - Initial contribution
+ * @author Leo Siepel - Test syslog process-name parsing
  */
 @NonNullByDefault
 class SyslogParserTest {
@@ -238,12 +244,47 @@ class SyslogParserTest {
         assertThat(event.firewall, is(nullValue()));
     }
 
-    @Test
-    void testProcessWithDotInName() {
-        String line = "Mar 10 12:00:00 gateway daemon.info dnsmasq-dhcp.sub[999]: test";
+    @ParameterizedTest
+    @ValueSource(strings = { "dnsmasq-dhcp.sub", "daemon..sub", ".daemon." })
+    void testProcessWithDotInName(String process) {
+        String line = "Mar 10 12:00:00 gateway daemon.info " + process + "[999]: test";
         SyslogEvent event = parser.parseLine(line, null);
         assertThat(event, is(notNullValue()));
         event = Objects.requireNonNull(event);
-        assertThat(event.process, is(not(equalTo(""))));
+        assertThat(event.process, is(equalTo(process)));
+        assertThat(event.pid, is(equalTo(999)));
+        assertThat(event.message, is(equalTo("test")));
+    }
+
+    @Test
+    void parsesDefaultDeviceProcessNameWithDots() {
+        DDWRTBaseDevice device = new DDWRTBroadcomDevice(new DDWRTDeviceConfiguration(),
+                LoggerFactory.getLogger(SyslogParserTest.class));
+        SyslogEvent event = Objects.requireNonNull(
+                parser.parseLine("Mar 10 12:00:00 gateway dnsmasq-dhcp.sub[999]: test", device.getSyslogPattern()));
+
+        assertThat(event.process, is(equalTo("dnsmasq-dhcp.sub")));
+        assertThat(event.pid, is(equalTo(999)));
+        assertThat(event.message, is(equalTo("test")));
+    }
+
+    @Test
+    void rejectsLongProcessNamesWithoutMessageSeparators() throws Exception {
+        String line = "Mar 10 12:00:00 gateway " + "!.".repeat(20000);
+        DDWRTBaseDevice device = new DDWRTBroadcomDevice(new DDWRTDeviceConfiguration(),
+                LoggerFactory.getLogger(SyslogParserTest.class));
+
+        assertThat(bounded(() -> parser.parseLine(line, null) == null), is(true));
+        assertThat(bounded(() -> parser.parseLine(line, device.getSyslogPattern()) == null), is(true));
+    }
+
+    private static <T> T bounded(Callable<T> operation) throws Exception {
+        FutureTask<T> task = new FutureTask<>(operation);
+        Thread.ofVirtual().start(task);
+        try {
+            return task.get(10, TimeUnit.SECONDS);
+        } finally {
+            task.cancel(true);
+        }
     }
 }

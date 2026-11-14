@@ -83,6 +83,9 @@ import com.google.gson.JsonObject;
 @Component(immediate = true)
 public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegistry {
 
+    static final Pattern LANGUAGE_SELECT_PATTERN = Pattern.compile("<select name=\\\"language\\\"[^>]*>(.*?)</select>",
+            Pattern.DOTALL);
+
     private final Logger logger = LoggerFactory.getLogger(SiemensHvacMetadataRegistryImpl.class);
 
     // A map contains data point config read from Api and/or WebPages
@@ -789,9 +792,7 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
                             }
                             response = lcHvacConnector.doBasicRequest(request);
 
-                            Pattern pattern5 = Pattern.compile("<select name=\\\"language\\\".*>((.*|\\n)*?)</select>",
-                                    Pattern.MULTILINE);
-                            Matcher matcher5 = pattern5.matcher(response);
+                            Matcher matcher5 = LANGUAGE_SELECT_PATTERN.matcher(response);
 
                             if (matcher5.find()) {
                                 String optionsList = matcher5.group(1);
