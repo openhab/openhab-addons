@@ -19,6 +19,7 @@ import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
+import org.openhab.binding.tr064.internal.dto.additions.PhonebookType;
 import org.openhab.binding.tr064.internal.dto.additions.PhonebooksType;
 import org.openhab.binding.tr064.internal.util.Util;
 import org.slf4j.Logger;
@@ -52,12 +53,17 @@ public class Tr064PhonebookImpl implements Phonebook {
         PhonebooksType phonebooksType = Util.getAndUnmarshalXML(httpClient, phonebookUrl, PhonebooksType.class,
                 httpTimeout);
         if (phonebooksType == null) {
+            logger.warn("Failed to get phonebooks with URL '{}'", phonebookUrl);
+            return;
+        }
+        PhonebookType phonebookType = phonebooksType.getPhonebook();
+        if (phonebookType == null) {
             logger.warn("Failed to get phonebook with URL '{}'", phonebookUrl);
             return;
         }
-        phonebookName = phonebooksType.getPhonebook().getName();
+        phonebookName = phonebookType.getName();
 
-        phonebook = phonebooksType.getPhonebook().getContact().stream().map(contact -> {
+        phonebook = phonebookType.getContact().stream().map(contact -> {
             String contactName = contact.getPerson().getRealName();
             if (contactName == null || contactName.isBlank()) {
                 return new HashMap<String, String>();
