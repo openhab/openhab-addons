@@ -179,7 +179,8 @@ public class WebSocketManager extends RestManager {
     public void onWebSocketConnect(@NonNullByDefault({}) Session wsSession) {
         this.wsSession = wsSession;
         logger.debug("Websocket connection establisehd");
-        wsSession.sendText(activeRegistration, Callback.NOOP);
+        wsSession.sendText(activeRegistration, Callback.from(() -> {
+        }, e -> logger.warn("Error registering to websocket: {}", e.getMessage())));
     }
 
     @OnWebSocketMessage

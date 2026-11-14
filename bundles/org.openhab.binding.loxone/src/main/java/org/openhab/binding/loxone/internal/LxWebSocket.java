@@ -566,7 +566,8 @@ public class LxWebSocket {
                     logger.debug("[{}] Sending unencrypted string: {}", debugId, command);
                     encrypted = command;
                 }
-                session.sendText(encrypted, Callback.NOOP);
+                session.sendText(encrypted, Callback.from(() -> {
+                }, e -> logger.debug("[{}] Error sending command: {}, {}", debugId, command, e.getMessage())));
                 return true;
             } else {
                 logger.debug("[{}] NOT sending command: {}", debugId, command);

@@ -178,7 +178,8 @@ public class HomeConnectDirectWebSocketServlet extends JettyWebSocketServlet {
         @OnWebSocketMessage
         public void onMessage(Session session, String message) {
             if (PING_MESSAGE.equals(message)) {
-                session.sendText(PONG_MESSAGE, Callback.NOOP);
+                session.sendText(PONG_MESSAGE, Callback.from(() -> {
+                }, e -> logger.debug("Could not send PONG! error={}", e.getMessage())));
             }
         }
 

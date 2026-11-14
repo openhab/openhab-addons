@@ -180,7 +180,7 @@ public class OrbitBhyveBridgeHandler extends ConfigStatusBridgeHandler {
             localSession = session;
             if (localSession != null && localSession.isOpen()) {
                 logger.debug("Sending ping");
-                localSession.sendText("{\"event\":\"ping\"}", Callback.NOOP);
+                localSession.sendText("{\"event\":\"ping\"}", onSendError("Error sending ping"));
                 updateAllStatuses();
             } else {
                 updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "Web socket creation error");
@@ -426,8 +426,18 @@ public class OrbitBhyveBridgeHandler extends ConfigStatusBridgeHandler {
             logger.debug("WebSocket connected!");
             String msg = "{\"event\":\"app_connection\",\"orbit_session_token\":\"" + sessionToken + "\"}";
             logger.trace("sending message:\n {}", msg);
-            localSession.sendText(msg, Callback.NOOP);
+            localSession.sendText(msg, onSendError("Error sending hello string"));
         }
+    }
+
+    /**
+     * Sends are asynchronous: a failure no longer surfaces as an exception at the call site, so the Thing status is
+     * updated from the callback, as it was done in the exception handlers of the previous blocking sends.
+     */
+    private Callback onSendError(String action) {
+        return Callback.from(() -> {
+        }, e -> updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
+                String.format("%s (%s: %s)", action, e.getClass().getSimpleName(), e.getMessage())));
     }
 
     private void closeSession() {
@@ -444,7 +454,7 @@ public class OrbitBhyveBridgeHandler extends ConfigStatusBridgeHandler {
         if (localSession != null && localSession.isOpen()) {
             localSession.sendText("{\"event\":\"change_mode\",\"device_id\":\"" + deviceId + "\",\"timestamp\":\""
                     + dateTime + "\",\"mode\":\"manual\",\"stations\":[{\"station\":" + zone + ",\"run_time\":" + time
-                    + "}]}", Callback.NOOP);
+                    + "}]}", onSendError("Error during zone watering execution"));
         }
     }
 
@@ -453,8 +463,10 @@ public class OrbitBhyveBridgeHandler extends ConfigStatusBridgeHandler {
         ping();
         Session localSession = session;
         if (localSession != null && localSession.isOpen()) {
-            localSession.sendText("{\"event\":\"change_mode\",\"mode\":\"manual\",\"program\":\"" + program
-                    + "\",\"device_id\":\"" + deviceId + "\",\"timestamp\":\"" + dateTime + "\"}", Callback.NOOP);
+            localSession.sendText(
+                    "{\"event\":\"change_mode\",\"mode\":\"manual\",\"program\":\"" + program + "\",\"device_id\":\""
+                            + deviceId + "\",\"timestamp\":\"" + dateTime + "\"}",
+                    onSendError("Error sending program watering execution"));
         }
     }
 
@@ -489,7 +501,7 @@ public class OrbitBhyveBridgeHandler extends ConfigStatusBridgeHandler {
         Session localSession = session;
         if (localSession != null && localSession.isOpen()) {
             localSession.sendText("{\"event\":\"rain_delay\",\"device_id\":\"" + deviceId + "\",\"delay\":" + delay
-                    + ",\"timestamp\":\"" + dateTime + "\"}", Callback.NOOP);
+                    + ",\"timestamp\":\"" + dateTime + "\"}", onSendError("Error setting rain delay"));
         }
     }
 
@@ -499,7 +511,7 @@ public class OrbitBhyveBridgeHandler extends ConfigStatusBridgeHandler {
         Session localSession = session;
         if (localSession != null && localSession.isOpen()) {
             localSession.sendText("{\"event\":\"change_mode\",\"device_id\":\"" + deviceId + "\",\"timestamp\":\""
-                    + dateTime + "\",\"mode\":\"manual\",\"stations\":[]}", Callback.NOOP);
+                    + dateTime + "\",\"mode\":\"manual\",\"stations\":[]}", onSendError("Error sending stop watering"));
         }
     }
 
@@ -531,7 +543,7 @@ public class OrbitBhyveBridgeHandler extends ConfigStatusBridgeHandler {
         Session localSession = session;
         if (localSession != null && localSession.isOpen()) {
             localSession.sendText("{\"event\":\"change_mode\",\"mode\":\"" + mode + "\",\"device_id\":\"" + deviceId
-                    + "\",\"timestamp\":\"" + dateTime + "\"}", Callback.NOOP);
+                    + "\",\"timestamp\":\"" + dateTime + "\"}", onSendError("Error setting run mode"));
         }
     }
 

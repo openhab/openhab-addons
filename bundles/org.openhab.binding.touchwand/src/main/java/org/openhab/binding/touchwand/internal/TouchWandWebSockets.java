@@ -142,7 +142,8 @@ public class TouchWandWebSockets {
             logger.debug("TouchWandWebSockets connected to {}", session.getRemoteSocketAddress().toString());
             long timestamp = System.currentTimeMillis(); // need unique id
             String controllerIdStr = String.format("{\"contId\": \"openhab%d\"}", timestamp);
-            session.sendText(controllerIdStr, Callback.NOOP);
+            session.sendText(controllerIdStr, Callback.from(() -> {
+            }, e -> logger.warn("sendString : {}", e.getMessage())));
         }
 
         @OnWebSocketMessage

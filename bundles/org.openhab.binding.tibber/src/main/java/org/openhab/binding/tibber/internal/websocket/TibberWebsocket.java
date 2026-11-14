@@ -212,7 +212,8 @@ public class TibberWebsocket {
         Session session = this.session;
         if (session != null) {
             logger.trace("Websocket send message {}", message);
-            session.sendText(message, Callback.NOOP);
+            session.sendText(message, Callback.from(() -> {
+            }, e -> logger.warn("Websocket send message {} failed - reason {}", message, e.getMessage())));
         } else {
             logger.debug("Websocket send message {} rejected - websocket offline", message);
         }

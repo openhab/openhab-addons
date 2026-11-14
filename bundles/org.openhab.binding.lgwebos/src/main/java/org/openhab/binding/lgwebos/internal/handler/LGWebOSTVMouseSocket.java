@@ -146,7 +146,8 @@ public class LGWebOSTVMouseSocket {
         try {
             if (s != null) {
                 logger.debug("Message [out]: {}", msg);
-                s.sendText(msg, Callback.NOOP);
+                s.sendText(msg, Callback.from(() -> {
+                }, e -> logger.error("Unable to send message.", e)));
             } else {
                 logger.warn("No Connection to TV, skipping [out]: {}", msg);
             }

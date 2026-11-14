@@ -398,7 +398,8 @@ public class LGWebOSTVSocket {
                 if (logger.isTraceEnabled()) {
                     logger.trace("Message [out]: {}", checkKey ? GSON.toJson(maskKeyInJson(json)) : msg);
                 }
-                s.sendText(msg, Callback.NOOP);
+                s.sendText(msg, Callback.from(() -> {
+                }, e -> logger.warn("Unable to send message.", e)));
             } else {
                 logger.warn("No Connection to TV, skipping [out]: {}",
                         checkKey ? GSON.toJson(maskKeyInJson(json)) : msg);

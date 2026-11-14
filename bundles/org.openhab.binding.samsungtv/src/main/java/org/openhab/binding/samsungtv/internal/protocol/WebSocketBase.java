@@ -195,7 +195,8 @@ public class WebSocketBase {
     void sendCommand(String cmd) {
         Session s = session;
         if (s != null && s.isOpen()) {
-            s.sendText(cmd, Callback.NOOP);
+            s.sendText(cmd, Callback.from(() -> {
+            }, e -> logger.warn("{}: {}: cannot send command: {}", host, className, e.getMessage())));
             logger.trace("{}: {}: sendCommand: {}", host, className, cmd);
         } else {
             logger.debug("{}: {} not connected: {}", host, className, cmd);

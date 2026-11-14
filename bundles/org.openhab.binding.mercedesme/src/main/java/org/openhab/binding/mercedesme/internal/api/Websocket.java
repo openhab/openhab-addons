@@ -145,7 +145,9 @@ public class Websocket extends RestApi {
             try {
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
                 message.writeTo(baos);
-                localSession.sendBinary(ByteBuffer.wrap(baos.toByteArray()), Callback.NOOP);
+                localSession.sendBinary(ByteBuffer.wrap(baos.toByteArray()), Callback.from(() -> {
+                }, e -> logger.warn("Error sending acknowledge {} : {}",
+                        Utils.maskVinsIn(message.getAllFields().toString()), e.getMessage())));
                 logger.trace("Sent acknowledge {}", message.getMsgCase());
             } catch (IOException e) {
                 logger.warn("Error sending acknowledge {} : {}", Utils.maskVinsIn(message.getAllFields().toString()),
@@ -224,7 +226,9 @@ public class Websocket extends RestApi {
                 message.writeTo(baos);
                 Session localSession = session;
                 if (localSession != null) {
-                    localSession.sendBinary(ByteBuffer.wrap(baos.toByteArray()), Callback.NOOP);
+                    localSession.sendBinary(ByteBuffer.wrap(baos.toByteArray()), Callback.from(() -> {
+                    }, e -> logger.warn("Error sending message {} : {}",
+                            Utils.maskVinsIn(message.getAllFields().toString()), e.getMessage())));
                     logger.trace("Send Message {} done", Utils.maskVinsIn(message.getAllFields().toString()));
                     return true;
                 } else {

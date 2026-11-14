@@ -124,7 +124,8 @@ public class ValloxMVWebSocket {
         public void onConnect(Session session) {
             logger.debug("Connected to: {}", session.getRemoteSocketAddress());
             ByteBuffer buf = generateRequest();
-            session.sendBinary(buf, Callback.NOOP);
+            session.sendBinary(buf, Callback.from(() -> {
+            }, e -> connectionError(e instanceof Exception ex ? ex : new Exception(e))));
         }
 
         /**

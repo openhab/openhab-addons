@@ -141,7 +141,8 @@ public class EmbyClientSocket {
                     logger.debug("Cannot send {}, session not open", methodName);
                     return;
                 }
-                s.sendText(mapper.toJson(payload), Callback.NOOP);
+                s.sendText(mapper.toJson(payload), Callback.from(() -> {
+                }, e -> logger.error("Failed sending {}: {}", methodName, e.getMessage(), e)));
                 logger.debug("Sent command: {}", payload);
             } catch (Exception e) {
                 logger.error("Failed sending {}: {}", methodName, e.getMessage(), e);
