@@ -23,6 +23,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jetty.client.CompletableResponseListener;
 import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.Request;
@@ -132,7 +133,8 @@ public class ApiHandler {
                     h.add("Accept-Language", "en-US,en;q=0.9,fr-FR;q=0.8,fr;q=0.7");
                 });
 
-                ContentResponse response = req.send();
+                ContentResponse response = new CompletableResponseListener(req, 50 * 1024 * 1024).send().get(TIMEOUT_S,
+                        TimeUnit.SECONDS);
 
                 int status = response.getStatus();
                 if (status == HttpStatus.OK_200) {
