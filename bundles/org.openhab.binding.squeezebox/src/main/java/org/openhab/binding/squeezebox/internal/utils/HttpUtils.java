@@ -68,9 +68,8 @@ public class HttpUtils {
 
         ContentResponse response;
         try {
-            response = client.newRequest(url).method(HttpMethod.POST)
-                    .body(new StringRequestContent("text/plain", postData)).timeout(TIMEOUT, TimeUnit.MILLISECONDS)
-                    .send();
+            response = client.newRequest(url).method(HttpMethod.POST).body(new StringRequestContent(postData))
+                    .timeout(TIMEOUT, TimeUnit.MILLISECONDS).send();
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
             throw new SqueezeBoxCommunicationException("Jetty http client exception: " + e.getMessage());
         }

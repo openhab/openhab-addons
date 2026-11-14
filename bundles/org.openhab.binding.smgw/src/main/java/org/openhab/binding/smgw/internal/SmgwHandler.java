@@ -150,8 +150,7 @@ public class SmgwHandler extends BaseThingHandler {
         String tkn = tknElement.val();
         String showMeterValuesForm = "tkn=" + tkn + "&action=meterform";
         CompletableFuture<SmgwResponse> future = new CompletableFuture<>();
-        httpClient.POST(uri).body(new StringRequestContent("text/plain", showMeterValuesForm))
-                .send(new ResponseListener(future));
+        httpClient.POST(uri).body(new StringRequestContent(showMeterValuesForm)).send(new ResponseListener(future));
         return future;
     }
 
@@ -170,7 +169,7 @@ public class SmgwHandler extends BaseThingHandler {
 
         CompletableFuture<SmgwResponse> future = new CompletableFuture<>();
         final String cookiesVal = response.cookies();
-        httpClient.POST(uri).body(new StringRequestContent("text/plain", showMeterValues))
+        httpClient.POST(uri).body(new StringRequestContent(showMeterValues))
                 .headers(h -> h.add(HttpHeader.COOKIE, cookiesVal)).send(new ResponseListener(future));
 
         return future;
