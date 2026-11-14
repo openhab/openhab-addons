@@ -69,7 +69,7 @@ import org.openhab.core.thing.ThingTypeUID;
 public enum ModuleType {
     UNKNOWN(FeatureArea.NONE, "", 1, "virtual", null, Set.of()),
 
-    ACCOUNT(FeatureArea.NONE, "", 1, "api_bridge", null, Set.of(),
+    ACCOUNT(FeatureArea.NONE, "", 2, "api_bridge", null, Set.of(),
             new ChannelGroup(ApiBridgeChannelHelper.class, GROUP_MONITORING)),
 
     HOME(FeatureArea.NONE, "NAHome", 1, "home", ACCOUNT,

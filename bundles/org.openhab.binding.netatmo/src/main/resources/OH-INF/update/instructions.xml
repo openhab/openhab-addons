@@ -22,4 +22,14 @@
 
 	</thing-type>
 
+	<thing-type uid="netatmo:account">
+
+		<instruction-set targetVersion="2">
+			<add-channel id="hook-set" groupIds="monitoring">
+				<type>netatmo:hook-set</type>
+			</add-channel>
+		</instruction-set>
+
+	</thing-type>
+
 </update:update-descriptions>

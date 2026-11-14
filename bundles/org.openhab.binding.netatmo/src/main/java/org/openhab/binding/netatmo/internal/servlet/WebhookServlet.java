@@ -28,6 +28,7 @@ import javax.ws.rs.core.UriBuilder;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.netatmo.internal.api.NetatmoException;
 import org.openhab.binding.netatmo.internal.api.WebhookApi;
+import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.ServiceError;
 import org.openhab.binding.netatmo.internal.api.dto.Webhook;
 import org.openhab.binding.netatmo.internal.api.dto.WebhookEvent;
 import org.openhab.binding.netatmo.internal.deserialization.NADeserializer;
@@ -50,50 +51,61 @@ public class WebhookServlet extends NetatmoServlet {
     private final Logger logger = LoggerFactory.getLogger(WebhookServlet.class);
     private final WebhookApi api;
     private final NADeserializer deserializer;
-    private final String webHookUrl;
-    private final String webHookPostfix;
+    private final URI uri;
 
-    private boolean hookSet = false;
+    private boolean hooked;
 
     public WebhookServlet(ApiBridgeHandler handler, HttpService httpService, NADeserializer deserializer,
             WebhookApi api, String webHookUrl, String webHookPostfix) {
         super(handler, httpService, "webhook");
+        this.uri = UriBuilder.fromUri(webHookUrl).path(getPath() + webHookPostfix).build();
         this.deserializer = deserializer;
         this.api = api;
-        this.webHookUrl = webHookUrl;
-        this.webHookPostfix = webHookPostfix;
     }
 
     @Override
     public void startListening() {
         super.startListening();
-        URI uri = UriBuilder.fromUri(webHookUrl).path(getPath() + webHookPostfix).build();
         try {
             logger.debug("Getting list of active webhooks");
-            String stringUri = uri.toString();
             List<Webhook> currentHooks = api.getWebhooks();
-            if (currentHooks.stream().anyMatch(url -> url.getUrl().equals(stringUri))) {
-                logger.info("The webhook {} is already present", stringUri);
-                hookSet = true;
+            if (currentHooks.stream().anyMatch(url -> url.getUri().equals(uri))) {
+                logger.info("The webhook {} is already present", uri);
+                setHooked(true);
             } else {
-                logger.info("Setting up the webhook {}", stringUri);
-                hookSet = api.appendWebhook(uri);
+                logger.info("Setting up the webhook {}", uri);
+                setHooked(api.appendWebhook(uri));
             }
         } catch (NetatmoException e) {
-            logger.info("Error setting webhook: {}", e.getMessage());
+            if (ServiceError.WEBHOOK_LIMIT_REACHED.equals(e.getStatusCode())) {
+                logger.debug("Another uri is already present, force the new one");
+                try {
+                    setHooked(api.setWebhooks(List.of(uri)));
+                } catch (NetatmoException e1) {
+                    logger.info("Error setting webhook: {}", e.getMessage());
+                }
+            } else {
+                logger.info("Error setting webhook: {}", e.getMessage());
+            }
         }
     }
 
     @Override
     public void dispose() {
-        if (hookSet) {
+        if (hooked) {
             logger.info("Releasing webhook");
             try {
-                api.dropWebhook();
-                hookSet = false;
+                List<Webhook> currentHooks = api.getWebhooks();
+                currentHooks.removeIf(url -> url.getUri().equals(uri));
+                if (currentHooks.isEmpty()) {
+                    api.dropWebhook();
+                } else {
+                    api.setWebhooks(currentHooks.stream().map(wh -> wh.getUri()).toList());
+                }
             } catch (NetatmoException e) {
                 logger.warn("Error releasing webhook: {}", e.getMessage());
             }
+            setHooked(false);
         }
         dataListeners.clear();
         super.dispose();
@@ -143,5 +155,10 @@ public class WebhookServlet extends NetatmoServlet {
 
     public void unregisterDataListener(String id) {
         dataListeners.remove(id);
+    }
+
+    private void setHooked(boolean hookSet) {
+        hooked = hookSet;
+        handler.hookState(hooked);
     }
 }

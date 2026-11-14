@@ -16,6 +16,7 @@ import static org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.PAT
 
 import java.net.URI;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.ws.rs.core.UriBuilder;
 
@@ -57,12 +58,19 @@ public class WebhookApi extends RestManager {
      */
     public boolean appendWebhook(URI uri) throws NetatmoException {
         String payload = PAYLOAD_POST_WEBHOOK.formatted(uri.toString());
-        post(WEBHOOKS_URI_BUILDER.clone(), ApiResponse.Ok.class, payload);
+        post(WEBHOOKS_URI_BUILDER.clone(), WebhooksResponse.class, payload);
         return true;
     }
 
     public List<Webhook> getWebhooks() throws NetatmoException {
         List<Webhook> result = get(WEBHOOKS_URI_BUILDER.clone(), WebhooksResponse.class).getBody();
         return result != null ? result : List.of();
+    }
+
+    public boolean setWebhooks(List<URI> uris) throws NetatmoException {
+        String payload = "[%s]".formatted(
+                uris.stream().map(URI::toString).map(PAYLOAD_POST_WEBHOOK::formatted).collect(Collectors.joining(",")));
+        put(WEBHOOKS_URI_BUILDER.clone(), WebhooksResponse.class, payload);
+        return true;
     }
 }

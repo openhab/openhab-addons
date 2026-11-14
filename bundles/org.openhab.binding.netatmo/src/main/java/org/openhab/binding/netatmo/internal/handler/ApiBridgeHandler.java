@@ -81,6 +81,7 @@ import org.openhab.core.auth.client.oauth2.OAuthException;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
 import org.openhab.core.auth.client.oauth2.OAuthResponseException;
 import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingStatus;
@@ -123,6 +124,7 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
     private final NADeserializer deserializer;
     private final HttpService httpService;
     private final ChannelUID requestCountChannelUID;
+    private final ChannelUID hookSetChannelUID;
 
     private @Nullable OAuthClientService oAuthClientService;
     private @Nullable ScheduledFuture<?> connectJob;
@@ -138,6 +140,7 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
         this.httpService = httpService;
         this.oAuthFactory = oAuthFactory;
         requestCountChannelUID = new ChannelUID(thing.getUID(), GROUP_MONITORING, CHANNEL_REQUEST_COUNT);
+        hookSetChannelUID = new ChannelUID(thing.getUID(), GROUP_MONITORING, CHANNEL_HOOK_SET);
     }
 
     @Override
@@ -566,5 +569,13 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
 
     public @Nullable Duration getIdleTime() {
         return connectJob instanceof ScheduledFuture job ? Duration.ofSeconds(job.getDelay(TimeUnit.SECONDS)) : null;
+    }
+
+    public void hookState(boolean hooked) {
+        if (!isLinked(hookSetChannelUID)) {
+            return;
+        }
+
+        updateState(hookSetChannelUID, hooked ? OnOffType.ON : OnOffType.OFF);
     }
 }

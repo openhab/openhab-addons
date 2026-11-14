@@ -158,4 +158,5 @@ public class NetatmoBindingConstants {
     public static final String CHANNEL_SETPOINT_DURATION = "setpoint-duration";
     public static final String CHANNEL_FLOODLIGHT = "floodlight";
     public static final String CHANNEL_REQUEST_COUNT = "request-count";
+    public static final String CHANNEL_HOOK_SET = "hook-set";
 }

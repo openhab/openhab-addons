@@ -55,6 +55,7 @@ The Account bridge has the following configuration elements:
 | Channel Group | Channel Id    | Item Type | Description                                                        |
 | ------------- | ------------- | --------- | ------------------------------------------------------------------ |
 | monitoring    | request-count | Number    | Number of requests transmitted to Netatmo API during the last hour |
+| monitoring    | hook-set      | Switch    | Hook defined in configuration is declared at Netatmo server        |
 
 ### Configure the Bridge
 
@@ -112,7 +113,10 @@ Your Netatmo App will be configured automatically by the bridge to the endpoint:
 http(s)://xx.yy.zz.ww:443/netatmo/webhook/<_CLIENT_ID_><webHookPostfix>
 ```
 
-Please be aware of Netatmo's own limits regarding webhook usage that lead to a 24h ban time when the webhook does not answer 5 times.
+Please be aware of Netatmo's own limits regarding webhook usage:
+
+- unanswered webhook 5 times leads to a 24h ban time
+- no more than one webhook per application
 
 NB: Allowed ports for webhooks are 80, 88, 443 and 9443.
 

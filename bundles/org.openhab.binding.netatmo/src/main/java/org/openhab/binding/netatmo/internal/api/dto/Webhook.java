@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.netatmo.internal.api.dto;
 
+import java.net.URI;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -31,7 +32,7 @@ public class Webhook {
 
     private String url = "";
 
-    public String getUrl() {
-        return url;
+    public URI getUri() {
+        return URI.create(url);
     }
 }

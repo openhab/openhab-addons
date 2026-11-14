@@ -458,7 +458,9 @@ public class NetatmoConstants {
         @SerializedName("40")
         JSON_GIVEN_HAS_AN_INVALID_ENCODING,
         @SerializedName("41")
-        DEVICE_IS_UNREACHABLE
+        DEVICE_IS_UNREACHABLE,
+        @SerializedName("WH009")
+        WEBHOOK_LIMIT_REACHED
     }
 
     public enum HomeStatusError {
