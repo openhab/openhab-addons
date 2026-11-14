@@ -120,8 +120,8 @@ public class HomekitOHItemProxy {
 
         // if hue or saturation present, send an HSBType state update. no filter applied for HUE & Saturation
         if ((hue != null) || (saturation != null)) {
-            if (baseItem instanceof ColorItem colorItem) {
-                sendHSBCommand(colorItem, hue, saturation, brightness);
+            if (baseItem instanceof ColorItem) {
+                sendHSBCommand(item, hue, saturation, brightness);
             }
         } else if ((brightness != null) && (baseItem instanceof DimmerItem)) {
             // sends brightness:
