@@ -425,6 +425,7 @@
 /bundles/org.openhab.binding.systeminfo/ @mherwege
 /bundles/org.openhab.binding.tacmi/ @twendt @Wolfgang1966 @marvkis
 /bundles/org.openhab.binding.tado/ @dfrommi @andrewfg
+/bundles/org.openhab.binding.tailwind/ @dschoepel @smitopher
 /bundles/org.openhab.binding.tankerkoenig/ @dolic @JueBag
 /bundles/org.openhab.binding.tapocontrol/ @wildcs
 /bundles/org.openhab.binding.tasmotaplug/ @mlobstein
