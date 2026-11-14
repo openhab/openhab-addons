@@ -72,7 +72,7 @@ class ItemToolsTest {
     @BeforeEach
     void setUp() {
         itemTools = new ItemTools(Objects.requireNonNull(itemRegistry), Objects.requireNonNull(itemBuilderFactory),
-                metadataRegistry, Objects.requireNonNull(eventPublisher), usernameSupplier, jsonMapper);
+                metadataRegistry, Objects.requireNonNull(eventPublisher), usernameSupplier, jsonMapper, 100);
         lenient().when(exchange.sessionId()).thenReturn("session-1");
     }
 
@@ -217,6 +217,69 @@ class ItemToolsTest {
         @SuppressWarnings("unchecked")
         List<Map<String, Object>> items = (List<Map<String, Object>>) parsed.get("items");
         assertEquals(2, items.size());
+    }
+
+    @Test
+    void searchItemsClampsNonPositiveLimitAndNegativeOffset() throws Exception {
+        Item item1 = mockSwitchItem("A_Light", "A Light", OnOffType.ON);
+        Item item2 = mockSwitchItem("B_Light", "B Light", OnOffType.OFF);
+        Item item3 = mockSwitchItem("C_Light", "C Light", OnOffType.ON);
+        when(Objects.requireNonNull(itemRegistry).getItems()).thenReturn(List.of(item1, item2, item3));
+
+        for (int requestedLimit : new int[] { 0, -5 }) {
+            Map<String, Object> parsed = searchItems(tools(), Map.of("limit", requestedLimit, "offset", -3));
+            assertEquals(3, parsed.get("total"));
+            assertEquals(0, parsed.get("offset"));
+            assertEquals(1, parsed.get("limit"));
+            assertEquals(1, ((List<?>) Objects.requireNonNull(parsed.get("items"))).size());
+        }
+    }
+
+    @Test
+    void searchItemsCapsLimitAtMaxItemsPerPage() throws Exception {
+        Item item1 = mockSwitchItem("A_Light", "A Light", OnOffType.ON);
+        Item item2 = mockSwitchItem("B_Light", "B Light", OnOffType.OFF);
+        Item item3 = mockSwitchItem("C_Light", "C Light", OnOffType.ON);
+        when(Objects.requireNonNull(itemRegistry).getItems()).thenReturn(List.of(item1, item2, item3));
+        ItemTools smallPages = new ItemTools(Objects.requireNonNull(itemRegistry),
+                Objects.requireNonNull(itemBuilderFactory), metadataRegistry, Objects.requireNonNull(eventPublisher),
+                usernameSupplier, jsonMapper, 2);
+
+        Map<String, Object> aboveMax = searchItems(smallPages, Map.of("limit", 500));
+        assertEquals(2, aboveMax.get("limit"));
+        assertEquals(2, ((List<?>) Objects.requireNonNull(aboveMax.get("items"))).size());
+
+        Map<String, Object> defaultLimit = searchItems(smallPages, Map.of());
+        assertEquals(2, defaultLimit.get("limit"));
+
+        Map<String, Object> pastEnd = searchItems(smallPages, Map.of("offset", Integer.MAX_VALUE));
+        assertEquals(3, pastEnd.get("total"));
+        assertTrue(((List<?>) Objects.requireNonNull(pastEnd.get("items"))).isEmpty());
+    }
+
+    @Test
+    void searchItemsDefaultLimitIsFiftyWhenMaxIsHigher() throws Exception {
+        when(Objects.requireNonNull(itemRegistry).getItems()).thenReturn(List.of());
+
+        assertEquals(50, searchItems(tools(), Map.of()).get("limit"));
+    }
+
+    @Test
+    void searchItemsSchemaAdvertisesPagingBounds() {
+        Map<String, Object> properties = tools().getSearchItemsTool().inputSchema().properties();
+        @SuppressWarnings("unchecked")
+        Map<String, Object> limit = (Map<String, Object>) Objects.requireNonNull(properties.get("limit"));
+        @SuppressWarnings("unchecked")
+        Map<String, Object> offset = (Map<String, Object>) Objects.requireNonNull(properties.get("offset"));
+        assertEquals(1, limit.get("minimum"));
+        assertEquals(100, limit.get("maximum"));
+        assertEquals(0, offset.get("minimum"));
+    }
+
+    private Map<String, Object> searchItems(ItemTools target, Map<String, Object> args) throws Exception {
+        CallToolResult result = target.handleSearchItems(request(new HashMap<>(args)));
+        assertSuccess(result);
+        return parseResult(result);
     }
 
     @Test
@@ -399,7 +462,7 @@ class ItemToolsTest {
         when(Objects.requireNonNull(itemRegistry).getItem("Kitchen_Light")).thenReturn(item);
         ItemTools toolsNoUser = new ItemTools(Objects.requireNonNull(itemRegistry),
                 Objects.requireNonNull(itemBuilderFactory), metadataRegistry, Objects.requireNonNull(eventPublisher),
-                sid -> null, jsonMapper);
+                sid -> null, jsonMapper, 100);
 
         toolsNoUser.handleSetItem(Objects.requireNonNull(exchange),
                 request(Map.of("action", "command", "itemName", "Kitchen_Light", "value", "ON")));

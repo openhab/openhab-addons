@@ -67,9 +67,9 @@ class RuleToolsTest {
     @BeforeEach
     void setUp() {
         ruleTools = new RuleTools(Objects.requireNonNull(ruleRegistry), Objects.requireNonNull(ruleManager), jsonMapper,
-                false);
+                false, 100);
         ruleToolsWithScripting = new RuleTools(Objects.requireNonNull(ruleRegistry),
-                Objects.requireNonNull(ruleManager), jsonMapper, true);
+                Objects.requireNonNull(ruleManager), jsonMapper, true, 100);
     }
 
     private RuleTools tools() {
@@ -133,6 +133,59 @@ class RuleToolsTest {
         @SuppressWarnings("unchecked")
         List<Map<String, Object>> rules = (List<Map<String, Object>>) parsed.get("rules");
         assertEquals(2, rules.size());
+    }
+
+    @Test
+    void getRulesClampsNonPositiveLimitAndNegativeOffset() throws Exception {
+        stubThreeRules();
+
+        for (int requestedLimit : new int[] { 0, -5 }) {
+            Map<String, Object> parsed = getRules(tools(), Map.of("limit", requestedLimit, "offset", -3));
+            assertEquals(3, parsed.get("total"));
+            assertEquals(0, parsed.get("offset"));
+            assertEquals(1, parsed.get("limit"));
+            assertEquals(1, ((List<?>) Objects.requireNonNull(parsed.get("rules"))).size());
+        }
+    }
+
+    @Test
+    void getRulesCapsLimitAtMaxItemsPerPage() throws Exception {
+        stubThreeRules();
+        RuleTools smallPages = new RuleTools(Objects.requireNonNull(ruleRegistry), Objects.requireNonNull(ruleManager),
+                jsonMapper, false, 2);
+
+        Map<String, Object> aboveMax = getRules(smallPages, Map.of("limit", 500));
+        assertEquals(2, aboveMax.get("limit"));
+        assertEquals(2, ((List<?>) Objects.requireNonNull(aboveMax.get("rules"))).size());
+
+        assertEquals(2, getRules(smallPages, Map.of()).get("limit"));
+
+        Map<String, Object> pastEnd = getRules(smallPages, Map.of("offset", Integer.MAX_VALUE));
+        assertEquals(3, pastEnd.get("total"));
+        assertTrue(((List<?>) Objects.requireNonNull(pastEnd.get("rules"))).isEmpty());
+    }
+
+    @Test
+    void getRulesDefaultLimitIsFiftyWhenMaxIsHigher() throws Exception {
+        when(Objects.requireNonNull(ruleRegistry).getAll()).thenReturn(List.of());
+
+        assertEquals(50, getRules(tools(), Map.of()).get("limit"));
+    }
+
+    private void stubThreeRules() {
+        Rule rule1 = createMockRuleWithTrigger("r1", "Rule 1", Set.of(), "timer.GenericCronTrigger");
+        Rule rule2 = createMockRuleWithTrigger("r2", "Rule 2", Set.of(), "timer.GenericCronTrigger");
+        Rule rule3 = createMockRuleWithTrigger("r3", "Rule 3", Set.of(), "timer.GenericCronTrigger");
+        RuleManager manager = Objects.requireNonNull(ruleManager);
+        when(Objects.requireNonNull(ruleRegistry).getAll()).thenReturn(List.of(rule1, rule2, rule3));
+        when(manager.getStatus(anyString())).thenReturn(RuleStatus.IDLE);
+        when(manager.isEnabled(anyString())).thenReturn(true);
+    }
+
+    private Map<String, Object> getRules(RuleTools target, Map<String, Object> args) throws Exception {
+        CallToolResult result = target.handleGetRules(createRequest(new HashMap<>(args)));
+        assertSuccess(result);
+        return parseResult(result);
     }
 
     @Test

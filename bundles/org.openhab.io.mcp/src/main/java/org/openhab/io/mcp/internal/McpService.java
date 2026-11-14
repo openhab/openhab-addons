@@ -319,11 +319,12 @@ public class McpService {
             transport.setSubscriptionManager(subscriptions);
 
             ItemTools itemTools = new ItemTools(itemRegistry, itemBuilderFactory, metadataRegistry, eventPublisher,
-                    transport::getSessionUsername, jsonMapper);
+                    transport::getSessionUsername, jsonMapper, config.maxItemsPerPage);
             SemanticTools semanticTools = new SemanticTools(itemRegistry, metadataRegistry, jsonMapper,
                     config.exposeUntaggedItems);
-            ThingTools thingTools = new ThingTools(thingRegistry, linkRegistry, jsonMapper);
-            RuleTools ruleTools = new RuleTools(ruleRegistry, ruleManager, jsonMapper, config.enableScripting);
+            ThingTools thingTools = new ThingTools(thingRegistry, linkRegistry, jsonMapper, config.maxItemsPerPage);
+            RuleTools ruleTools = new RuleTools(ruleRegistry, ruleManager, jsonMapper, config.enableScripting,
+                    config.maxItemsPerPage);
             LinkTools linkTools = new LinkTools(linkRegistry, itemRegistry, thingRegistry, jsonMapper);
             SystemTools systemTools = new SystemTools(itemRegistry, thingRegistry, ruleRegistry, jsonMapper);
             ResourceProvider resourceProvider = new ResourceProvider(itemRegistry, metadataRegistry, thingRegistry,
