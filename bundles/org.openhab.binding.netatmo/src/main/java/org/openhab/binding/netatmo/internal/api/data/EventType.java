@@ -201,12 +201,12 @@ public enum EventType {
     @SerializedName("alarm_event")
     ALARM_EVENT(ModuleType.WEATHER_STATION),
 
-    /**/
-    @SerializedName("entered") // the alarm was raised
+    /** An alarm was raised */
+    @SerializedName("entered")
     ALARM_ENTERED(ModuleType.WEATHER_STATION),
 
-    /**/
-    @SerializedName("exited") // the alarm is stopped
+    /** The alarm is stopped */
+    @SerializedName("exited")
     ALARM_EXITED(ModuleType.WEATHER_STATION),
 
     /** A manual action has been done on the thermostat */
