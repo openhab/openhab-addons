@@ -273,7 +273,7 @@ This will change the communication method and the Mi IO binding can communicate 
 
 # Mi IO Devices
 
-Currently the miio binding supports more than 610 different models.
+Currently the miio binding supports more than 620 different models.
 
 | Device                             | ThingType        | Device Model           | Supported    | Remark     |
 |------------------------------------|------------------|------------------------|--------------|------------|
@@ -298,11 +298,14 @@ Currently the miio binding supports more than 610 different models.
 | Mi Smart Power Plug v2             | miio:basic       | [chuangmi.plug.v2](#chuangmi-plug-v2) | Yes          |            |
 | MIJIA Smart  Plug Enhanced         | miio:basic       | [chuangmi.plug.v3](#chuangmi-plug-v3) | Yes          |            |
 | Mi Remote                          | miio:unsupported | chuangmi.remote.v2     | No           |            |
+| Mijia Rice cooker                  | miio:basic       | [chunmi.cooker.eh1](#chunmi-cooker-eh1) | Experimental | Cooking can only be started from the Mi Home app.<br />Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Mi IH Rice Cooker                  | miio:unsupported | chunmi.cooker.normal1  | No           |            |
 | Mi IH Rice Cooker                  | miio:unsupported | chunmi.cooker.normal2  | No           |            |
 | Mi IH Rice Cooker 4L               | miio:unsupported | chunmi.cooker.normal4  | No           |            |
 | Mi IH Pressure Rice Cooker         | miio:unsupported | chunmi.cooker.press1   | No           |            |
 | Mi IH Pressure Rice Cooker         | miio:unsupported | chunmi.cooker.press2   | No           |            |
+| Xiaomi Smart Blender               | miio:basic       | [chunmi.juicer.twa1](#chunmi-juicer-twa1) | Experimental | Programs can only be started from the Mi Home app.<br />Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Xiaomi Smart Blender               | miio:basic       | [chunmi.juicer.uka1](#chunmi-juicer-uka1) | Experimental | Programs can only be started from the Mi Home app.<br />Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Gosund Smart Plug                  | miio:basic       | [cuco.plug.cp1](#cuco-plug-cp1) | Yes          | Indicator light, child lock, power-on state and power metering follow the Mi Home plugin; they are not in the MIoT spec and may not be available on every plug. |
 | Gosund Smart Plug CP1              | miio:basic       | [cuco.plug.cp1d](#cuco-plug-cp1d) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Xiaomi Smart Plug 2 (Wi-Fi)        | miio:basic       | [cuco.plug.v2eur](#cuco-plug-v2eur) | Yes          |            |
@@ -635,9 +638,11 @@ Currently the miio binding supports more than 610 different models.
 | PTX OneKey Switch (WIFI)           | miio:basic       | [090615.switch.xswitch01](#090615-switch-xswitch01) | Yes          |            |
 | PTX Twokey switch(wifi)            | miio:basic       | [090615.switch.xswitch02](#090615-switch-xswitch02) | Yes          |            |
 | PTX ThreeKey Switch (WIFI)         | miio:basic       | [090615.switch.xswitch03](#090615-switch-xswitch03) | Yes          |            |
-| SCISHARE Smart Capsule Coffee Machine | miio:basic       | [scishare.coffee.s1102](#scishare-coffee-s1102) | Experimental | This device does not allow for regular querying for the status. Hence the status is not updated for the action channels.<br />Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
-| Xiaomi Scishare Smart Capsule Coffee Machine | miio:basic       | [scishare.coffee.s1301](#scishare-coffee-s1301) | Experimental | This device does not allow for regular querying for the status. Hence the status is not updated for the action channels.<br />Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| SCISHARE Smart Capsule Coffee Machine | miio:basic       | [scishare.coffee.s1102](#scishare-coffee-s1102) | Experimental | Drinks are made with the app's default recipe values. The machine must be on and ready (status Ready).<br />Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Xiaomi Scishare Smart Capsule Coffee Machine | miio:basic       | [scishare.coffee.s1301](#scishare-coffee-s1301) | Experimental | Drinks are made with the app's default recipe values. The machine must be on and ready (status Ready).<br />Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Soocare Electric Toothbrush        | miio:unsupported | soocare.toothbrush.x3  | No           |            |
+| TINYMU Smart Toilet                | miio:basic       | [tinymu.toiletlid.v1](#tinymu-toiletlid-v1) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Mi Smart Dishwasher (4 Dining Sets) | miio:basic       | [viomi.dishwasher.m02](#viomi-dishwasher-m02) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Viomi Internet Refrigerator iLive(French style 462L) | miio:unsupported | viomi.fridge.v3        | No           |            |
 | Viomi sweeper PRO                  | miio:basic       | [viomi.vacuum.v3](#viomi-vacuum-v3) | Yes          |            |
 | Viomi Cleaning Robot V-RVCLM21B    | miio:basic       | [viomi.vacuum.v6](#viomi-vacuum-v6) | Yes          |            |
@@ -703,6 +708,7 @@ Currently the miio binding supports more than 610 different models.
 | Mijia Smart Air Purifier MAX       | miio:basic       | [xiaomi.airp.mb6](#xiaomi-airp-mb6) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Xiaomi Smart Air Purifier Elite    | miio:basic       | [xiaomi.airp.meb1](#xiaomi-airp-meb1) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Mijia Smart Air Purifier Elite     | miio:basic       | [xiaomi.airp.meb2](#xiaomi-airp-meb2) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Xiaomi Smart Multifunctional Rice Cooker | miio:basic       | [xiaomi.cooker.cmk7](#xiaomi-cooker-cmk7) | Experimental | Cooking can only be started from the Mi Home app.<br />Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Xiaomi Smart Inverter Dehumidifier | miio:basic       | [xiaomi.derh.30kh](#xiaomi-derh-30kh) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Xiaomi Smart Inverter Dehumidifier 30L | miio:basic       | [xiaomi.derh.30l](#xiaomi-derh-30l) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Mijia Smart Inverter Purifying Dehumidifier Max | miio:basic       | [xiaomi.derh.60l](#xiaomi-derh-60l) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
@@ -724,6 +730,8 @@ Currently the miio binding supports more than 610 different models.
 | Mijia Smart Anti-bacterial Humidifier 2 | miio:basic       | [xiaomi.humidifier.jsq2g](#xiaomi-humidifier-jsq2g) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Xiaomi Smart Humidifier 2          | miio:basic       | [xiaomi.humidifier.jsq2w](#xiaomi-humidifier-jsq2w) | Yes          |            |
 | Mijia Mist-Free Humidifier 3 (400) | miio:basic       | [xiaomi.humidifier.p3](#xiaomi-humidifier-p3) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Mijia Smart Quiet Inverter Blender P1 | miio:basic       | [xiaomi.juicer.dempp1](#xiaomi-juicer-dempp1) | Experimental | Programs can only be started from the Mi Home app.<br />Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Mijia Smart Quiet Inverter Blender P1 | miio:basic       | [xiaomi.juicer.p1v2](#xiaomi-juicer-p1v2) | Experimental | Programs can only be started from the Mi Home app.<br />Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Xiaomi Smart Electric Hot Water Dispenser 5L | miio:basic       | [xiaomi.kettle.mek02](#xiaomi-kettle-mek02) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Xiaomi Smart Kettle 2 Pro          | miio:basic       | [xiaomi.kettle.v20](#xiaomi-kettle-v20) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Xiaomi Smart Kettle 2 Pro          | miio:basic       | [xiaomi.kettle.v21](#xiaomi-kettle-v21) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
@@ -1259,6 +1267,47 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | temperature                | Number:Temperature   | Temperature                              |            |
 | led                        | Switch               | Indicator Light                          |            |
 | electric_power             | Number:Power         | Active Power                             |            |
+
+### Mijia Rice cooker (<a name="chunmi-cooker-eh1">chunmi.cooker.eh1</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| status                     | Number               | Status                                   | Value mapping `["1"="Idle","2"="Cooking","3"="Keep Warm","4"="Scheduled","5"="Setting (Code 5)","6"="Setting (Code 6)","7"="Setting (Code 7)","8"="Error","9"="Finished"]` |
+| error                      | Number               | Error                                    | Value mapping `["0"="None","9"="Top Sensor Damaged","10"="Base Sensor Damaged","11"="Communication Fault"]` |
+| temperature                | Number:Temperature   | Temperature                              |            |
+| remaining_time             | Number:Time          | Remaining Time                           |            |
+| cook_time                  | Number:Time          | Cooking Time                             |            |
+| control                    | String               | Control                                  | Value mapping `["cancel"="Cancel Cooking"]` |
+
+### Xiaomi Smart Blender (<a name="chunmi-juicer-twa1">chunmi.juicer.twa1</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| status                     | Number               | Status                                   | Value mapping `["1"="Idle","2"="Working","3"="Paused","4"="Scheduled","5"="Shut Down","6"="Keeping Warm","7"="Finished","8"="Keep Warm Finished","11"="Fault"]` |
+| error                      | Number               | Error                                    | Value mapping `["0"="No Error","1"="Motor Overload","2"="No Cup","3"="High Voltage","4"="Low Voltage","5"="High Temperature","10"="Temperature Sensor Failure","11"="Communication Failure"]` |
+| remaining_time             | Number:Time          | Remaining Time                           |            |
+| schedule_time              | Number:Time          | Scheduled Time                           |            |
+| keep_warm_remaining_time   | Number:Time          | Keep Warm Remaining Time                 |            |
+| cooking_time               | Number:Time          | Cooking Time                             |            |
+| temperature                | Number:Temperature   | Temperature                              |            |
+| cup                        | Number               | Cup                                      | Value mapping `["0"="No Cup","1"="OK"]` |
+| lid_open                   | Switch               | Lid Open                                 |            |
+| control                    | String               | Control                                  | Value mapping `["pause"="Pause","resume"="Resume","cancel"="Cancel"]` |
+
+### Xiaomi Smart Blender (<a name="chunmi-juicer-uka1">chunmi.juicer.uka1</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| status                     | Number               | Status                                   | Value mapping `["1"="Idle","2"="Working","3"="Paused","4"="Scheduled","5"="Shut Down","6"="Keeping Warm","7"="Finished","8"="Keep Warm Finished","11"="Fault"]` |
+| error                      | Number               | Error                                    | Value mapping `["0"="No Error","1"="Motor Overload","2"="No Cup","3"="High Voltage","4"="Low Voltage","5"="High Temperature","10"="Temperature Sensor Failure","11"="Communication Failure"]` |
+| remaining_time             | Number:Time          | Remaining Time                           |            |
+| schedule_time              | Number:Time          | Scheduled Time                           |            |
+| keep_warm_remaining_time   | Number:Time          | Keep Warm Remaining Time                 |            |
+| cooking_time               | Number:Time          | Cooking Time                             |            |
+| temperature                | Number:Temperature   | Temperature                              |            |
+| cup                        | Number               | Cup                                      | Value mapping `["0"="No Cup","1"="OK"]` |
+| lid_open                   | Switch               | Lid Open                                 |            |
+| control                    | String               | Control                                  | Value mapping `["pause"="Pause","resume"="Resume","cancel"="Cancel"]` |
 
 ### Gosund Smart Plug (<a name="cuco-plug-cp1">cuco.plug.cp1</a>) Channels
 
@@ -7580,21 +7629,47 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 
 | Channel                    | Type                 | Description                              | Comment    |
 |----------------------------|----------------------|------------------------------------------|------------|
-| power                      | Switch               | Power                                    |            |
-| Status                     | String               | status                                   |            |
-| expresso                   | Number               | Brew Expresso                            | Value is the amount of coffee in ml. 2nd parameter in the json db is the water temperature |
-| expresso                   | Number               | Brew Americano                           | Value is the amount of coffee in ml. parameters in json are cupAmount: [set by OH], coffee: 40,water: 80, temp: 90 |
-| boil                       | Number               | Boil water                               | Value is the amount of water (ml) to heat. 2nd parameter in the json db is the water temperature |
+| power                      | Switch               | Power                                    | Write only, the machine does not report its power state; see the status channel. |
+| status                     | Number               | Status                                   | Value mapping `["1"="Off","2"="On","3"="Self-Checking","4"="Preheating","5"="Ready","6"="Descaling","7"="Standby","8"="Boiler Preheat Set","10"="Work Cancelled or Alarm","51"="Making Coffee (Code 51)","52"="Making Coffee (Code 52)","55"="Making Coffee (Code 55)","60"="Making Coffee (Code 60)","61"="Making Coffee (Code 61)","150"="Recipes Restored","151"="Espresso Recipe Restored","152"="Americano Recipe Restored","160"="Hot Water Recipe Restored","195"="Factory Settings Restored","201"="Making Coffee (Code 201)","202"="NTC Fault Alarm","203"="Water Tank Empty"]` |
+| make_espresso              | Number               | Make Espresso                            | Makes an espresso with the given amount of coffee (ml) at 85 degrees Celsius. |
+| make_americano             | Number               | Make Americano                           | Makes an americano with the given amount of water (ml) at 90 degrees Celsius and 40 ml coffee. |
+| make_hot_water             | Number               | Make Hot Water                           | Dispenses the given amount of water (ml) at 55 degrees Celsius. |
+| control                    | String               | Control                                  | Stop ends making a drink, descaling or an alarm. Continue resumes after the water tank was refilled. |
+| preheat_mode               | Number               | Boiler Preheat Mode                      | Write only. Boiler preheat temperature in degrees Celsius as in the app settings; only accepted while the machine is on. |
 
 ### Xiaomi Scishare Smart Capsule Coffee Machine (<a name="scishare-coffee-s1301">scishare.coffee.s1301</a>) Channels
 
 | Channel                    | Type                 | Description                              | Comment    |
 |----------------------------|----------------------|------------------------------------------|------------|
+| power                      | Switch               | Power                                    | Write only, the machine does not report its power state; see the status channel. |
+| status                     | Number               | Status                                   | Value mapping `["1"="Off","2"="On","3"="Self-Checking","4"="Preheating","5"="Ready","6"="Descaling","7"="Standby","8"="Boiler Preheat Set","10"="Work Cancelled or Alarm","51"="Making Coffee (Code 51)","52"="Making Coffee (Code 52)","55"="Making Coffee (Code 55)","60"="Making Coffee (Code 60)","61"="Making Coffee (Code 61)","150"="Recipes Restored","151"="Espresso Recipe Restored","152"="Americano Recipe Restored","160"="Hot Water Recipe Restored","195"="Factory Settings Restored","201"="Making Coffee (Code 201)","202"="NTC Fault Alarm","203"="Water Tank Empty"]` |
+| make_espresso              | Number               | Make Espresso                            | Makes an espresso with the given amount of coffee (ml) at 85 degrees Celsius. |
+| make_americano             | Number               | Make Americano                           | Makes an americano with the given amount of water (ml) at 90 degrees Celsius and 40 ml coffee. |
+| make_hot_water             | Number               | Make Hot Water                           | Dispenses the given amount of water (ml) at 55 degrees Celsius. |
+| control                    | String               | Control                                  | Stop ends making a drink, descaling or an alarm. Continue resumes after the water tank was refilled. |
+| preheat_mode               | Number               | Boiler Preheat Mode                      | Write only. Boiler preheat temperature in degrees Celsius as in the app settings; only accepted while the machine is on. |
+
+### TINYMU Smart Toilet (<a name="tinymu-toiletlid-v1">tinymu.toiletlid.v1</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| status                     | Number               | Status                                   | 1 is Idle, any other value means the toilet is in use. |
+| filter_days_left           | Number:Time          | Filter Days Left                         |            |
+| filter_life                | Number:Dimensionless | Filter Remaining                         |            |
+| deodorization              | Switch               | Deodorization                            | Write only. |
+
+### Mi Smart Dishwasher (4 Dining Sets) (<a name="viomi-dishwasher-m02">viomi.dishwasher.m02</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
 | power                      | Switch               | Power                                    |            |
-| Status                     | String               | status                                   |            |
-| expresso                   | Number               | Brew Expresso                            | Value is the amount of coffee in ml. 2nd parameter in the json db is the water temperature |
-| expresso                   | Number               | Brew Americano                           | Value is the amount of coffee in ml. parameters in json are cupAmount: [set by OH], coffee: 40,water: 80, temp: 90 |
-| boil                       | Number               | Boil water                               | Value is the amount of water (ml) to heat. 2nd parameter in the json db is the water temperature |
+| status                     | Number               | Status                                   | Value mapping `["0"="Off","1"="Standby","2"="Washing","3"="Paused","4"="Finished","5"="Scheduled","6"="Drying"]` |
+| program                    | Number               | Program                                  | Selecting a program starts washing, as in the app. |
+| wash_process               | Number               | Wash Step                                | Value mapping `["0"="Not Running","1"="Prewash","2"="Wash","3"="Rinse","4"="Dry"]` |
+| remaining_time             | Number:Time          | Remaining Time                           |            |
+| water_temperature          | Number:Temperature   | Water Temperature                        |            |
+| child_lock                 | Switch               | Child Lock                               |            |
+| control                    | String               | Control                                  | Value mapping `["pause"="Pause","resume"="Resume","cancel"="Cancel"]` |
 
 ### Viomi sweeper PRO (<a name="viomi-vacuum-v3">viomi.vacuum.v3</a>) Channels
 
@@ -9891,6 +9966,20 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | iic_error_count            | Number               | I2C Error Count                          |            |
 | country_code               | Number               | Country Code                             | Value mapping `["17230"="CN","17749"="EU","21843"="US","21591"="TW","19282"="KR","21835"="UK"]` |
 
+### Xiaomi Smart Multifunctional Rice Cooker (<a name="xiaomi-cooker-cmk7">xiaomi.cooker.cmk7</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| status                     | Number               | Status                                   | Value mapping `["1"="Idle","2"="Cooking","3"="Scheduled","4"="Keep Warm","5"="Error","6"="Updating","7"="Finished"]` |
+| fault                      | Number               | Fault                                    | Value mapping `["0"="No Faults","9"="Top Sensor Fault","10"="Bottom Sensor Fault","11"="Communication Error"]` |
+| cook_mode                  | Number               | Cook Mode                                | Value mapping `["1"="Fine Cook","2"="Rough Rice","3"="Cook Congee","4"="Soup","5"="Steam Rice","6"="Heat Rice","7"="Keep Warm"]` |
+| remaining_time             | Number:Time          | Remaining Time                           |            |
+| cook_time                  | Number:Time          | Cooking Time                             |            |
+| schedule_remaining_time    | Number:Time          | Schedule Remaining Time                  |            |
+| keep_warm_time             | Number:Time          | Keep Warm Time                           |            |
+| texture                    | Number               | Texture                                  | Value mapping `["0"="Soft","1"="Medium","2"="Hard"]` |
+| control                    | String               | Control                                  | Value mapping `["cancel"="Cancel Cooking"]` |
+
 ### Xiaomi Smart Inverter Dehumidifier (<a name="xiaomi-derh-30kh">xiaomi.derh.30kh</a>) Channels
 
 | Channel                    | Type                 | Description                              | Comment    |
@@ -10362,6 +10451,38 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | led_brightness             | Number               | Display Brightness                       | Value mapping `["0"="Dim","1"="Bright"]` |
 | filter_life_level          | Number:Dimensionless | Filter Life                              |            |
 | actions                    | String               | Actions                                  | The filter reset is not yet confirmed on a device; Value mapping `["reset-filter-life"="Reset Filter Life"]` |
+
+### Mijia Smart Quiet Inverter Blender P1 (<a name="xiaomi-juicer-dempp1">xiaomi.juicer.dempp1</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| status                     | Number               | Status                                   | Value mapping `["0"="None","1"="Idle","2"="Scheduled","3"="Keep Warm","4"="Cooking","5"="Cleaning","6"="Paused","7"="Disinfecting"]` |
+| fault                      | Number               | Fault                                    | Value mapping `["0"="No Faults","1"="Temperature Control Abnormal","2"="Dry Burning Protection","3"="Jug Lifted","4"="Motor Fault","5"="Lid Off"]` |
+| cook_mode                  | Number               | Cook Mode                                | Value mapping `["1"="Fast Pulp","2"="Soy Milk","3"="Corn Juice","4"="Rice Paste","5"="Congee","6"="Thick Soup","7"="Manual","8"="Juice","9"="Custom","10"="Clean"]` |
+| schedule_remaining_time    | Number:Time          | Schedule Remaining Time                  |            |
+| remaining_time             | Number:Time          | Remaining Time                           |            |
+| target_temperature         | Number:Temperature   | Target Temperature                       |            |
+| pot_lift_memory            | Switch               | Resume After Lifting the Jug             |            |
+| alarm                      | Switch               | Sound                                    |            |
+| auto_screen_on             | Switch               | Screen Always On                         |            |
+| auto_screen_on_time        | Number:Time          | Screen On Time                           |            |
+| control                    | String               | Control                                  | Value mapping `["pause"="Pause","resume"="Resume","cancel"="Cancel"]` |
+
+### Mijia Smart Quiet Inverter Blender P1 (<a name="xiaomi-juicer-p1v2">xiaomi.juicer.p1v2</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| status                     | Number               | Status                                   | Value mapping `["0"="None","1"="Idle","2"="Scheduled","3"="Keep Warm","4"="Cooking","5"="Cleaning","6"="Paused","7"="Disinfecting"]` |
+| fault                      | Number               | Fault                                    | Value mapping `["0"="No Faults","1"="Temperature Control Abnormal","2"="Dry Burning Protection","3"="Jug Lifted","4"="Motor Fault","5"="Lid Off"]` |
+| cook_mode                  | Number               | Cook Mode                                | Value mapping `["1"="Fast Pulp","2"="Soy Milk","3"="Corn Juice","4"="Rice Paste","5"="Congee","6"="Thick Soup","7"="Manual","8"="Juice","9"="Custom","10"="Clean"]` |
+| schedule_remaining_time    | Number:Time          | Schedule Remaining Time                  |            |
+| remaining_time             | Number:Time          | Remaining Time                           |            |
+| target_temperature         | Number:Temperature   | Target Temperature                       |            |
+| pot_lift_memory            | Switch               | Resume After Lifting the Jug             |            |
+| alarm                      | Switch               | Sound                                    |            |
+| auto_screen_on             | Switch               | Screen Always On                         |            |
+| auto_screen_on_time        | Number:Time          | Screen On Time                           |            |
+| control                    | String               | Control                                  | Value mapping `["pause"="Pause","resume"="Resume","cancel"="Cancel"]` |
 
 ### Xiaomi Smart Electric Hot Water Dispenser 5L (<a name="xiaomi-kettle-mek02">xiaomi.kettle.mek02</a>) Channels
 
@@ -12069,63 +12190,122 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 
 | Channel                    | Type                 | Description                              | Comment    |
 |----------------------------|----------------------|------------------------------------------|------------|
-| seat_temp                  | Number:Temperature   | Seat Temperature                         |            |
-| status_seatheat            | Number               | Seat Status                              |            |
-| water_temp_t               | Number:Temperature   | Water Temperature                        |            |
-| fan_temp                   | Number:Temperature   | Fan Temperature                          |            |
-| status_led                 | Number               | Night Light                              |            |
+| seated                     | Switch               | Seated                                   |            |
+| rear_wash                  | Switch               | Rear Wash                                | Starts with the current rear wash settings; link the rear wash level, position, moving and massage channels so their values are known. |
+| bidet                      | Switch               | Bidet                                    | Starts with the current bidet settings; link the bidet level, position, moving and massage channels so their values are known. |
+| dry                        | Switch               | Dry                                      | Starts with the dryer temperature; link the dryer temperature channel so its value is known. |
+| seat_temperature           | Number               | Seat Heating                             | Value mapping `["0"="Off","1"="Low","2"="Medium","3"="High"]` |
+| night_light                | Switch               | Night Light                              |            |
+| deodorization              | Switch               | Deodorization                            | ON starts the deodorization. |
+| self_clean                 | Switch               | Self Clean                               | ON starts the nozzle self clean; only when nobody is seated. |
+| rear_water_temperature     | Number               | Rear Wash Water Temperature              | Value mapping `["1"="Low","2"="Medium","3"="High"]` |
+| rear_water_pressure        | Number               | Rear Wash Water Pressure                 | Value mapping `["1"="Low","2"="Medium","3"="High"]` |
+| rear_wash_position         | Number               | Rear Wash Position                       | Value mapping `["1"="Position 1","2"="Position 2","3"="Position 3"]` |
+| bidet_water_temperature    | Number               | Bidet Water Temperature                  | Value mapping `["1"="Low","2"="Medium","3"="High"]` |
+| bidet_water_pressure       | Number               | Bidet Water Pressure                     | Value mapping `["1"="Low","2"="Medium","3"="High"]` |
+| bidet_position             | Number               | Bidet Position                           | Value mapping `["1"="Position 1","2"="Position 2","3"="Position 3"]` |
+| moving                     | Switch               | Moving Wash                              |            |
+| massage                    | Number               | Massage                                  | Only Normal and Continuous can be set. |
+| dryer_temperature          | Number               | Dryer Temperature                        | Value mapping `["1"="Low","2"="Medium","3"="High"]` |
+| filter_days_left           | Number:Time          | Filter Days Left                         |            |
 
 ### Uclean Smart Toilet pure (<a name="xjx-toilet-pure">xjx.toilet.pure</a>) Channels
 
 | Channel                    | Type                 | Description                              | Comment    |
 |----------------------------|----------------------|------------------------------------------|------------|
-| seat_temp                  | Number:Temperature   | Seat Temperature                         |            |
-| status_seatheat            | Number               | Seat Status                              |            |
-| water_temp_t               | Number:Temperature   | Water Temperature                        |            |
-| fan_temp                   | Number:Temperature   | Fan Temperature                          |            |
-| status_led                 | Number               | Night Light                              |            |
+| seated                     | Switch               | Seated                                   |            |
+| rear_wash                  | Switch               | Rear Wash                                |            |
+| bidet                      | Switch               | Bidet                                    |            |
+| dry                        | Switch               | Dry                                      |            |
+| seat_heating               | Switch               | Seat Heating                             |            |
+| night_light                | Switch               | Night Light                              |            |
+| seat_temperature           | Number               | Seat Temperature                         | Value mapping `["1"="Low","2"="Medium","3"="High"]` |
+| rear_water_temperature     | Number               | Rear Wash Water Temperature              | Value mapping `["1"="Low","2"="Medium","3"="High"]` |
+| rear_water_pressure        | Number               | Rear Wash Water Pressure                 | Value mapping `["1"="Low","2"="Medium","3"="High"]` |
+| bidet_water_temperature    | Number               | Bidet Water Temperature                  | Value mapping `["1"="Low","2"="Medium","3"="High"]` |
+| bidet_water_pressure       | Number               | Bidet Water Pressure                     | Value mapping `["1"="Low","2"="Medium","3"="High"]` |
+| dryer_temperature          | Number               | Dryer Temperature                        | Value mapping `["1"="Low","2"="Medium","3"="High"]` |
+| self_clean                 | Switch               | Self Clean                               | ON starts the nozzle self clean; only when nobody is seated. |
+| flush                      | Switch               | Flush                                    | ON flushes the toilet; only when nobody is seated. |
+| foam_shield                | Switch               | Foam Shield                              | ON applies the foam shield. Not available on xjx.toilet.pure. |
 
 ### Uclean Smart Toilet relax (<a name="xjx-toilet-relax">xjx.toilet.relax</a>) Channels
 
 | Channel                    | Type                 | Description                              | Comment    |
 |----------------------------|----------------------|------------------------------------------|------------|
-| seat_temp                  | Number:Temperature   | Seat Temperature                         |            |
-| status_seatheat            | Number               | Seat Status                              |            |
-| water_temp_t               | Number:Temperature   | Water Temperature                        |            |
-| fan_temp                   | Number:Temperature   | Fan Temperature                          |            |
-| status_led                 | Number               | Night Light                              |            |
+| seated                     | Switch               | Seated                                   |            |
+| rear_wash                  | Switch               | Rear Wash                                |            |
+| bidet                      | Switch               | Bidet                                    |            |
+| dry                        | Switch               | Dry                                      |            |
+| seat_heating               | Switch               | Seat Heating                             |            |
+| night_light                | Switch               | Night Light                              |            |
+| seat_temperature           | Number               | Seat Temperature                         | Value mapping `["1"="Low","2"="Medium","3"="High"]` |
+| rear_water_temperature     | Number               | Rear Wash Water Temperature              | Value mapping `["1"="Low","2"="Medium","3"="High"]` |
+| rear_water_pressure        | Number               | Rear Wash Water Pressure                 | Value mapping `["1"="Low","2"="Medium","3"="High"]` |
+| bidet_water_temperature    | Number               | Bidet Water Temperature                  | Value mapping `["1"="Low","2"="Medium","3"="High"]` |
+| bidet_water_pressure       | Number               | Bidet Water Pressure                     | Value mapping `["1"="Low","2"="Medium","3"="High"]` |
+| dryer_temperature          | Number               | Dryer Temperature                        | Value mapping `["1"="Low","2"="Medium","3"="High"]` |
+| self_clean                 | Switch               | Self Clean                               | ON starts the nozzle self clean; only when nobody is seated. |
+| flush                      | Switch               | Flush                                    | ON flushes the toilet; only when nobody is seated. |
+| foam_shield                | Switch               | Foam Shield                              | ON applies the foam shield. Not available on xjx.toilet.pure. |
 
 ### Whale Spout Smart Toilet Zero (<a name="xjx-toilet-zero">xjx.toilet.zero</a>) Channels
 
 | Channel                    | Type                 | Description                              | Comment    |
 |----------------------------|----------------------|------------------------------------------|------------|
-| seat_temp                  | Number:Temperature   | Seat Temperature                         |            |
-| status_seatheat            | Number               | Seat Status                              |            |
-| water_temp_t               | Number:Temperature   | Water Temperature                        |            |
-| fan_temp                   | Number:Temperature   | Fan Temperature                          |            |
-| status_led                 | Number               | Night Light                              |            |
+| seated                     | Switch               | Seated                                   |            |
+| rear_wash                  | Switch               | Rear Wash                                |            |
+| bidet                      | Switch               | Bidet                                    |            |
+| dry                        | Switch               | Dry                                      |            |
+| seat_heating               | Switch               | Seat Heating                             |            |
+| night_light                | Switch               | Night Light                              |            |
+| seat_temperature           | Number               | Seat Temperature                         | Value mapping `["1"="Low","2"="Medium","3"="High"]` |
+| rear_water_temperature     | Number               | Rear Wash Water Temperature              | Value mapping `["1"="Low","2"="Medium","3"="High"]` |
+| rear_water_pressure        | Number               | Rear Wash Water Pressure                 | Value mapping `["1"="Low","2"="Medium","3"="High"]` |
+| bidet_water_temperature    | Number               | Bidet Water Temperature                  | Value mapping `["1"="Low","2"="Medium","3"="High"]` |
+| bidet_water_pressure       | Number               | Bidet Water Pressure                     | Value mapping `["1"="Low","2"="Medium","3"="High"]` |
+| dryer_temperature          | Number               | Dryer Temperature                        | Value mapping `["1"="Low","2"="Medium","3"="High"]` |
+| self_clean                 | Switch               | Self Clean                               | ON starts the nozzle self clean; only when nobody is seated. |
+| flush                      | Switch               | Flush                                    | ON flushes the toilet; only when nobody is seated. |
+| foam_shield                | Switch               | Foam Shield                              | ON applies the foam shield. Not available on xjx.toilet.pure. |
 
 ### Yeelight Smart Bath Heater Pro (<a name="yeelink-bhf_light-v1">yeelink.bhf_light.v1</a>) Channels
 
 | Channel                    | Type                 | Description                              | Comment    |
 |----------------------------|----------------------|------------------------------------------|------------|
-| power                      | Switch               | Power                                    |            |
-| bh_mode                    | String               | Bath Heater mode                         |            |
-| brightness                 | Dimmer               | Brightness                               |            |
-| delayoff                   | Number:Time          | Shutdown Timer                           |            |
+| power                      | Switch               | Light                                    |            |
+| brightness                 | Dimmer               | Brightness                               | Sets the brightness of the active light mode (normal or night light). |
+| color_temperature          | Number:Temperature   | Color Temperature                        |            |
+| night_light                | Switch               | Night Light                              | Write only. ON switches the light on in night light mode, OFF switches it to the normal light. |
+| nightlight_brightness      | Number:Dimensionless | Night Light Brightness                   | Set with the brightness channel while the night light is on. |
+| light_off_timer            | Number:Time          | Light Off Timer                          |            |
+| heater_mode                | String               | Heater Mode                              | A mode keeps running until it is switched off or the heater timer ends. |
+| heater_timer               | Number:Time          | Heater Timer                             | Remaining time until the heater mode switches off. Can only be set while a mode is running; 0 cancels the timer. |
+| target_temperature         | Number:Temperature   | Target Temperature                       | Used in Heater mode. |
 | temperature                | Number:Temperature   | Temperature                              |            |
-| nightlightBrightness       | Number               | Nightlight Brightness                    |            |
+| humidity                   | Number:Dimensionless | Humidity                                 |            |
+| fan_level                  | Number               | Fan Level                                | Write only. Sets the fan level of the running mode; Turbo is only available in Air Change mode. |
+| swing                      | String               | Swing                                    | Value mapping `["swing"="Swing","stop"="Fixed"]` |
+| swing_angle                | Number:Angle         | Wind Direction                           | Fixed air outlet angle, used when swing is off. |
 
 ### Yeelight Smart Bath Heater (<a name="yeelink-bhf_light-v2">yeelink.bhf_light.v2</a>) Channels
 
 | Channel                    | Type                 | Description                              | Comment    |
 |----------------------------|----------------------|------------------------------------------|------------|
-| power                      | Switch               | Power                                    |            |
-| bh_mode                    | String               | Bath Heater mode                         |            |
-| brightness                 | Dimmer               | Brightness                               |            |
-| delayoff                   | Number:Time          | Shutdown Timer                           |            |
+| power                      | Switch               | Light                                    |            |
+| brightness                 | Dimmer               | Brightness                               | Sets the brightness of the active light mode (normal or night light). |
+| color_temperature          | Number:Temperature   | Color Temperature                        |            |
+| night_light                | Switch               | Night Light                              | Write only. ON switches the light on in night light mode, OFF switches it to the normal light. |
+| nightlight_brightness      | Number:Dimensionless | Night Light Brightness                   | Set with the brightness channel while the night light is on. |
+| light_off_timer            | Number:Time          | Light Off Timer                          |            |
+| heater_mode                | String               | Heater Mode                              | A mode keeps running until it is switched off or the heater timer ends. |
+| heater_timer               | Number:Time          | Heater Timer                             | Remaining time until the heater mode switches off. Can only be set while a mode is running; 0 cancels the timer. |
+| target_temperature         | Number:Temperature   | Target Temperature                       | Used in Heater mode. |
 | temperature                | Number:Temperature   | Temperature                              |            |
-| nightlightBrightness       | Number               | Nightlight Brightness                    |            |
+| humidity                   | Number:Dimensionless | Humidity                                 |            |
+| fan_level                  | Number               | Fan Level                                | Write only. Sets the fan level of the running mode; Turbo is only available in Air Change mode. |
+| swing                      | String               | Swing                                    | Value mapping `["swing"="Swing","stop"="Fixed"]` |
+| swing_angle                | Number:Angle         | Wind Direction                           | Fixed air outlet angle, used when swing is off. |
 
 ### Mi Bedside Lamp (<a name="yeelink-light-bslamp1">yeelink.light.bslamp1</a>) Channels
 
@@ -15217,6 +15397,56 @@ Switch usb "USB" (G_plug) {channel="miio:basic:plug:usb"}
 Number:Temperature temperature "Temperature" (G_plug) {channel="miio:basic:plug:temperature"}
 Switch led "Indicator Light" (G_plug) {channel="miio:basic:plug:led"}
 Number:Power electric_power "Active Power" (G_plug) {channel="miio:basic:plug:electric_power"}
+```
+
+### Mijia Rice cooker (chunmi.cooker.eh1) item file lines
+
+note: Autogenerated example. Replace the id (cooker) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_cooker "Mijia Rice cooker" <status>
+Number status "Status" (G_cooker) {channel="miio:basic:cooker:status"}
+Number error "Error" (G_cooker) {channel="miio:basic:cooker:error"}
+Number:Temperature temperature "Temperature" (G_cooker) {channel="miio:basic:cooker:temperature"}
+Number:Time remaining_time "Remaining Time" (G_cooker) {channel="miio:basic:cooker:remaining_time"}
+Number:Time cook_time "Cooking Time" (G_cooker) {channel="miio:basic:cooker:cook_time"}
+String control "Control" (G_cooker) {channel="miio:basic:cooker:control"}
+```
+
+### Xiaomi Smart Blender (chunmi.juicer.twa1) item file lines
+
+note: Autogenerated example. Replace the id (juicer) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_juicer "Xiaomi Smart Blender" <status>
+Number status "Status" (G_juicer) {channel="miio:basic:juicer:status"}
+Number error "Error" (G_juicer) {channel="miio:basic:juicer:error"}
+Number:Time remaining_time "Remaining Time" (G_juicer) {channel="miio:basic:juicer:remaining_time"}
+Number:Time schedule_time "Scheduled Time" (G_juicer) {channel="miio:basic:juicer:schedule_time"}
+Number:Time keep_warm_remaining_time "Keep Warm Remaining Time" (G_juicer) {channel="miio:basic:juicer:keep_warm_remaining_time"}
+Number:Time cooking_time "Cooking Time" (G_juicer) {channel="miio:basic:juicer:cooking_time"}
+Number:Temperature temperature "Temperature" (G_juicer) {channel="miio:basic:juicer:temperature"}
+Number cup "Cup" (G_juicer) {channel="miio:basic:juicer:cup"}
+Switch lid_open "Lid Open" (G_juicer) {channel="miio:basic:juicer:lid_open"}
+String control "Control" (G_juicer) {channel="miio:basic:juicer:control"}
+```
+
+### Xiaomi Smart Blender (chunmi.juicer.uka1) item file lines
+
+note: Autogenerated example. Replace the id (juicer) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_juicer "Xiaomi Smart Blender" <status>
+Number status "Status" (G_juicer) {channel="miio:basic:juicer:status"}
+Number error "Error" (G_juicer) {channel="miio:basic:juicer:error"}
+Number:Time remaining_time "Remaining Time" (G_juicer) {channel="miio:basic:juicer:remaining_time"}
+Number:Time schedule_time "Scheduled Time" (G_juicer) {channel="miio:basic:juicer:schedule_time"}
+Number:Time keep_warm_remaining_time "Keep Warm Remaining Time" (G_juicer) {channel="miio:basic:juicer:keep_warm_remaining_time"}
+Number:Time cooking_time "Cooking Time" (G_juicer) {channel="miio:basic:juicer:cooking_time"}
+Number:Temperature temperature "Temperature" (G_juicer) {channel="miio:basic:juicer:temperature"}
+Number cup "Cup" (G_juicer) {channel="miio:basic:juicer:cup"}
+Switch lid_open "Lid Open" (G_juicer) {channel="miio:basic:juicer:lid_open"}
+String control "Control" (G_juicer) {channel="miio:basic:juicer:control"}
 ```
 
 ### Gosund Smart Plug (cuco.plug.cp1) item file lines
@@ -22319,10 +22549,12 @@ note: Autogenerated example. Replace the id (coffee) in the channel with your ow
 ```java
 Group G_coffee "SCISHARE Smart Capsule Coffee Machine" <status>
 Switch power "Power" (G_coffee) {channel="miio:basic:coffee:power"}
-String Status "status" (G_coffee) {channel="miio:basic:coffee:Status"}
-Number expresso "Brew Expresso" (G_coffee) {channel="miio:basic:coffee:expresso"}
-Number expresso "Brew Americano" (G_coffee) {channel="miio:basic:coffee:expresso"}
-Number boil "Boil water" (G_coffee) {channel="miio:basic:coffee:boil"}
+Number status "Status" (G_coffee) {channel="miio:basic:coffee:status"}
+Number make_espresso "Make Espresso" (G_coffee) {channel="miio:basic:coffee:make_espresso"}
+Number make_americano "Make Americano" (G_coffee) {channel="miio:basic:coffee:make_americano"}
+Number make_hot_water "Make Hot Water" (G_coffee) {channel="miio:basic:coffee:make_hot_water"}
+String control "Control" (G_coffee) {channel="miio:basic:coffee:control"}
+Number preheat_mode "Boiler Preheat Mode" (G_coffee) {channel="miio:basic:coffee:preheat_mode"}
 ```
 
 ### Xiaomi Scishare Smart Capsule Coffee Machine (scishare.coffee.s1301) item file lines
@@ -22332,10 +22564,40 @@ note: Autogenerated example. Replace the id (coffee) in the channel with your ow
 ```java
 Group G_coffee "Xiaomi Scishare Smart Capsule Coffee Machine" <status>
 Switch power "Power" (G_coffee) {channel="miio:basic:coffee:power"}
-String Status "status" (G_coffee) {channel="miio:basic:coffee:Status"}
-Number expresso "Brew Expresso" (G_coffee) {channel="miio:basic:coffee:expresso"}
-Number expresso "Brew Americano" (G_coffee) {channel="miio:basic:coffee:expresso"}
-Number boil "Boil water" (G_coffee) {channel="miio:basic:coffee:boil"}
+Number status "Status" (G_coffee) {channel="miio:basic:coffee:status"}
+Number make_espresso "Make Espresso" (G_coffee) {channel="miio:basic:coffee:make_espresso"}
+Number make_americano "Make Americano" (G_coffee) {channel="miio:basic:coffee:make_americano"}
+Number make_hot_water "Make Hot Water" (G_coffee) {channel="miio:basic:coffee:make_hot_water"}
+String control "Control" (G_coffee) {channel="miio:basic:coffee:control"}
+Number preheat_mode "Boiler Preheat Mode" (G_coffee) {channel="miio:basic:coffee:preheat_mode"}
+```
+
+### TINYMU Smart Toilet (tinymu.toiletlid.v1) item file lines
+
+note: Autogenerated example. Replace the id (toiletlid) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_toiletlid "TINYMU Smart Toilet" <status>
+Number status "Status" (G_toiletlid) {channel="miio:basic:toiletlid:status"}
+Number:Time filter_days_left "Filter Days Left" (G_toiletlid) {channel="miio:basic:toiletlid:filter_days_left"}
+Number:Dimensionless filter_life "Filter Remaining" (G_toiletlid) {channel="miio:basic:toiletlid:filter_life"}
+Switch deodorization "Deodorization" (G_toiletlid) {channel="miio:basic:toiletlid:deodorization"}
+```
+
+### Mi Smart Dishwasher (4 Dining Sets) (viomi.dishwasher.m02) item file lines
+
+note: Autogenerated example. Replace the id (dishwasher) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_dishwasher "Mi Smart Dishwasher (4 Dining Sets)" <status>
+Switch power "Power" (G_dishwasher) {channel="miio:basic:dishwasher:power"}
+Number status "Status" (G_dishwasher) {channel="miio:basic:dishwasher:status"}
+Number program "Program" (G_dishwasher) {channel="miio:basic:dishwasher:program"}
+Number wash_process "Wash Step" (G_dishwasher) {channel="miio:basic:dishwasher:wash_process"}
+Number:Time remaining_time "Remaining Time" (G_dishwasher) {channel="miio:basic:dishwasher:remaining_time"}
+Number:Temperature water_temperature "Water Temperature" (G_dishwasher) {channel="miio:basic:dishwasher:water_temperature"}
+Switch child_lock "Child Lock" (G_dishwasher) {channel="miio:basic:dishwasher:child_lock"}
+String control "Control" (G_dishwasher) {channel="miio:basic:dishwasher:control"}
 ```
 
 ### Viomi sweeper PRO (viomi.vacuum.v3) item file lines
@@ -24825,6 +25087,23 @@ Number iic_error_count "I2C Error Count" (G_airp) {channel="miio:basic:airp:iic_
 Number country_code "Country Code" (G_airp) {channel="miio:basic:airp:country_code"}
 ```
 
+### Xiaomi Smart Multifunctional Rice Cooker (xiaomi.cooker.cmk7) item file lines
+
+note: Autogenerated example. Replace the id (cooker) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_cooker "Xiaomi Smart Multifunctional Rice Cooker" <status>
+Number status "Status" (G_cooker) {channel="miio:basic:cooker:status"}
+Number fault "Fault" (G_cooker) {channel="miio:basic:cooker:fault"}
+Number cook_mode "Cook Mode" (G_cooker) {channel="miio:basic:cooker:cook_mode"}
+Number:Time remaining_time "Remaining Time" (G_cooker) {channel="miio:basic:cooker:remaining_time"}
+Number:Time cook_time "Cooking Time" (G_cooker) {channel="miio:basic:cooker:cook_time"}
+Number:Time schedule_remaining_time "Schedule Remaining Time" (G_cooker) {channel="miio:basic:cooker:schedule_remaining_time"}
+Number:Time keep_warm_time "Keep Warm Time" (G_cooker) {channel="miio:basic:cooker:keep_warm_time"}
+Number texture "Texture" (G_cooker) {channel="miio:basic:cooker:texture"}
+String control "Control" (G_cooker) {channel="miio:basic:cooker:control"}
+```
+
 ### Xiaomi Smart Inverter Dehumidifier (xiaomi.derh.30kh) item file lines
 
 note: Autogenerated example. Replace the id (derh) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
@@ -25358,6 +25637,44 @@ Switch led "Display" (G_humidifier) {channel="miio:basic:humidifier:led"}
 Number led_brightness "Display Brightness" (G_humidifier) {channel="miio:basic:humidifier:led_brightness"}
 Number:Dimensionless filter_life_level "Filter Life" (G_humidifier) {channel="miio:basic:humidifier:filter_life_level"}
 String actions "Actions" (G_humidifier) {channel="miio:basic:humidifier:actions"}
+```
+
+### Mijia Smart Quiet Inverter Blender P1 (xiaomi.juicer.dempp1) item file lines
+
+note: Autogenerated example. Replace the id (juicer) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_juicer "Mijia Smart Quiet Inverter Blender P1" <status>
+Number status "Status" (G_juicer) {channel="miio:basic:juicer:status"}
+Number fault "Fault" (G_juicer) {channel="miio:basic:juicer:fault"}
+Number cook_mode "Cook Mode" (G_juicer) {channel="miio:basic:juicer:cook_mode"}
+Number:Time schedule_remaining_time "Schedule Remaining Time" (G_juicer) {channel="miio:basic:juicer:schedule_remaining_time"}
+Number:Time remaining_time "Remaining Time" (G_juicer) {channel="miio:basic:juicer:remaining_time"}
+Number:Temperature target_temperature "Target Temperature" (G_juicer) {channel="miio:basic:juicer:target_temperature"}
+Switch pot_lift_memory "Resume After Lifting the Jug" (G_juicer) {channel="miio:basic:juicer:pot_lift_memory"}
+Switch alarm "Sound" (G_juicer) {channel="miio:basic:juicer:alarm"}
+Switch auto_screen_on "Screen Always On" (G_juicer) {channel="miio:basic:juicer:auto_screen_on"}
+Number:Time auto_screen_on_time "Screen On Time" (G_juicer) {channel="miio:basic:juicer:auto_screen_on_time"}
+String control "Control" (G_juicer) {channel="miio:basic:juicer:control"}
+```
+
+### Mijia Smart Quiet Inverter Blender P1 (xiaomi.juicer.p1v2) item file lines
+
+note: Autogenerated example. Replace the id (juicer) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_juicer "Mijia Smart Quiet Inverter Blender P1" <status>
+Number status "Status" (G_juicer) {channel="miio:basic:juicer:status"}
+Number fault "Fault" (G_juicer) {channel="miio:basic:juicer:fault"}
+Number cook_mode "Cook Mode" (G_juicer) {channel="miio:basic:juicer:cook_mode"}
+Number:Time schedule_remaining_time "Schedule Remaining Time" (G_juicer) {channel="miio:basic:juicer:schedule_remaining_time"}
+Number:Time remaining_time "Remaining Time" (G_juicer) {channel="miio:basic:juicer:remaining_time"}
+Number:Temperature target_temperature "Target Temperature" (G_juicer) {channel="miio:basic:juicer:target_temperature"}
+Switch pot_lift_memory "Resume After Lifting the Jug" (G_juicer) {channel="miio:basic:juicer:pot_lift_memory"}
+Switch alarm "Sound" (G_juicer) {channel="miio:basic:juicer:alarm"}
+Switch auto_screen_on "Screen Always On" (G_juicer) {channel="miio:basic:juicer:auto_screen_on"}
+Number:Time auto_screen_on_time "Screen On Time" (G_juicer) {channel="miio:basic:juicer:auto_screen_on_time"}
+String control "Control" (G_juicer) {channel="miio:basic:juicer:control"}
 ```
 
 ### Xiaomi Smart Electric Hot Water Dispenser 5L (xiaomi.kettle.mek02) item file lines
@@ -27173,11 +27490,24 @@ note: Autogenerated example. Replace the id (toilet) in the channel with your ow
 
 ```java
 Group G_toilet "Uclean Smart Toilet Seat" <status>
-Number:Temperature seat_temp "Seat Temperature" (G_toilet) {channel="miio:basic:toilet:seat_temp"}
-Number status_seatheat "Seat Status" (G_toilet) {channel="miio:basic:toilet:status_seatheat"}
-Number:Temperature water_temp_t "Water Temperature" (G_toilet) {channel="miio:basic:toilet:water_temp_t"}
-Number:Temperature fan_temp "Fan Temperature" (G_toilet) {channel="miio:basic:toilet:fan_temp"}
-Number status_led "Night Light" (G_toilet) {channel="miio:basic:toilet:status_led"}
+Switch seated "Seated" (G_toilet) {channel="miio:basic:toilet:seated"}
+Switch rear_wash "Rear Wash" (G_toilet) {channel="miio:basic:toilet:rear_wash"}
+Switch bidet "Bidet" (G_toilet) {channel="miio:basic:toilet:bidet"}
+Switch dry "Dry" (G_toilet) {channel="miio:basic:toilet:dry"}
+Number seat_temperature "Seat Heating" (G_toilet) {channel="miio:basic:toilet:seat_temperature"}
+Switch night_light "Night Light" (G_toilet) {channel="miio:basic:toilet:night_light"}
+Switch deodorization "Deodorization" (G_toilet) {channel="miio:basic:toilet:deodorization"}
+Switch self_clean "Self Clean" (G_toilet) {channel="miio:basic:toilet:self_clean"}
+Number rear_water_temperature "Rear Wash Water Temperature" (G_toilet) {channel="miio:basic:toilet:rear_water_temperature"}
+Number rear_water_pressure "Rear Wash Water Pressure" (G_toilet) {channel="miio:basic:toilet:rear_water_pressure"}
+Number rear_wash_position "Rear Wash Position" (G_toilet) {channel="miio:basic:toilet:rear_wash_position"}
+Number bidet_water_temperature "Bidet Water Temperature" (G_toilet) {channel="miio:basic:toilet:bidet_water_temperature"}
+Number bidet_water_pressure "Bidet Water Pressure" (G_toilet) {channel="miio:basic:toilet:bidet_water_pressure"}
+Number bidet_position "Bidet Position" (G_toilet) {channel="miio:basic:toilet:bidet_position"}
+Switch moving "Moving Wash" (G_toilet) {channel="miio:basic:toilet:moving"}
+Number massage "Massage" (G_toilet) {channel="miio:basic:toilet:massage"}
+Number dryer_temperature "Dryer Temperature" (G_toilet) {channel="miio:basic:toilet:dryer_temperature"}
+Number:Time filter_days_left "Filter Days Left" (G_toilet) {channel="miio:basic:toilet:filter_days_left"}
 ```
 
 ### Uclean Smart Toilet pure (xjx.toilet.pure) item file lines
@@ -27186,11 +27516,21 @@ note: Autogenerated example. Replace the id (toilet) in the channel with your ow
 
 ```java
 Group G_toilet "Uclean Smart Toilet pure" <status>
-Number:Temperature seat_temp "Seat Temperature" (G_toilet) {channel="miio:basic:toilet:seat_temp"}
-Number status_seatheat "Seat Status" (G_toilet) {channel="miio:basic:toilet:status_seatheat"}
-Number:Temperature water_temp_t "Water Temperature" (G_toilet) {channel="miio:basic:toilet:water_temp_t"}
-Number:Temperature fan_temp "Fan Temperature" (G_toilet) {channel="miio:basic:toilet:fan_temp"}
-Number status_led "Night Light" (G_toilet) {channel="miio:basic:toilet:status_led"}
+Switch seated "Seated" (G_toilet) {channel="miio:basic:toilet:seated"}
+Switch rear_wash "Rear Wash" (G_toilet) {channel="miio:basic:toilet:rear_wash"}
+Switch bidet "Bidet" (G_toilet) {channel="miio:basic:toilet:bidet"}
+Switch dry "Dry" (G_toilet) {channel="miio:basic:toilet:dry"}
+Switch seat_heating "Seat Heating" (G_toilet) {channel="miio:basic:toilet:seat_heating"}
+Switch night_light "Night Light" (G_toilet) {channel="miio:basic:toilet:night_light"}
+Number seat_temperature "Seat Temperature" (G_toilet) {channel="miio:basic:toilet:seat_temperature"}
+Number rear_water_temperature "Rear Wash Water Temperature" (G_toilet) {channel="miio:basic:toilet:rear_water_temperature"}
+Number rear_water_pressure "Rear Wash Water Pressure" (G_toilet) {channel="miio:basic:toilet:rear_water_pressure"}
+Number bidet_water_temperature "Bidet Water Temperature" (G_toilet) {channel="miio:basic:toilet:bidet_water_temperature"}
+Number bidet_water_pressure "Bidet Water Pressure" (G_toilet) {channel="miio:basic:toilet:bidet_water_pressure"}
+Number dryer_temperature "Dryer Temperature" (G_toilet) {channel="miio:basic:toilet:dryer_temperature"}
+Switch self_clean "Self Clean" (G_toilet) {channel="miio:basic:toilet:self_clean"}
+Switch flush "Flush" (G_toilet) {channel="miio:basic:toilet:flush"}
+Switch foam_shield "Foam Shield" (G_toilet) {channel="miio:basic:toilet:foam_shield"}
 ```
 
 ### Uclean Smart Toilet relax (xjx.toilet.relax) item file lines
@@ -27199,11 +27539,21 @@ note: Autogenerated example. Replace the id (toilet) in the channel with your ow
 
 ```java
 Group G_toilet "Uclean Smart Toilet relax" <status>
-Number:Temperature seat_temp "Seat Temperature" (G_toilet) {channel="miio:basic:toilet:seat_temp"}
-Number status_seatheat "Seat Status" (G_toilet) {channel="miio:basic:toilet:status_seatheat"}
-Number:Temperature water_temp_t "Water Temperature" (G_toilet) {channel="miio:basic:toilet:water_temp_t"}
-Number:Temperature fan_temp "Fan Temperature" (G_toilet) {channel="miio:basic:toilet:fan_temp"}
-Number status_led "Night Light" (G_toilet) {channel="miio:basic:toilet:status_led"}
+Switch seated "Seated" (G_toilet) {channel="miio:basic:toilet:seated"}
+Switch rear_wash "Rear Wash" (G_toilet) {channel="miio:basic:toilet:rear_wash"}
+Switch bidet "Bidet" (G_toilet) {channel="miio:basic:toilet:bidet"}
+Switch dry "Dry" (G_toilet) {channel="miio:basic:toilet:dry"}
+Switch seat_heating "Seat Heating" (G_toilet) {channel="miio:basic:toilet:seat_heating"}
+Switch night_light "Night Light" (G_toilet) {channel="miio:basic:toilet:night_light"}
+Number seat_temperature "Seat Temperature" (G_toilet) {channel="miio:basic:toilet:seat_temperature"}
+Number rear_water_temperature "Rear Wash Water Temperature" (G_toilet) {channel="miio:basic:toilet:rear_water_temperature"}
+Number rear_water_pressure "Rear Wash Water Pressure" (G_toilet) {channel="miio:basic:toilet:rear_water_pressure"}
+Number bidet_water_temperature "Bidet Water Temperature" (G_toilet) {channel="miio:basic:toilet:bidet_water_temperature"}
+Number bidet_water_pressure "Bidet Water Pressure" (G_toilet) {channel="miio:basic:toilet:bidet_water_pressure"}
+Number dryer_temperature "Dryer Temperature" (G_toilet) {channel="miio:basic:toilet:dryer_temperature"}
+Switch self_clean "Self Clean" (G_toilet) {channel="miio:basic:toilet:self_clean"}
+Switch flush "Flush" (G_toilet) {channel="miio:basic:toilet:flush"}
+Switch foam_shield "Foam Shield" (G_toilet) {channel="miio:basic:toilet:foam_shield"}
 ```
 
 ### Whale Spout Smart Toilet Zero (xjx.toilet.zero) item file lines
@@ -27212,11 +27562,21 @@ note: Autogenerated example. Replace the id (toilet) in the channel with your ow
 
 ```java
 Group G_toilet "Whale Spout Smart Toilet Zero" <status>
-Number:Temperature seat_temp "Seat Temperature" (G_toilet) {channel="miio:basic:toilet:seat_temp"}
-Number status_seatheat "Seat Status" (G_toilet) {channel="miio:basic:toilet:status_seatheat"}
-Number:Temperature water_temp_t "Water Temperature" (G_toilet) {channel="miio:basic:toilet:water_temp_t"}
-Number:Temperature fan_temp "Fan Temperature" (G_toilet) {channel="miio:basic:toilet:fan_temp"}
-Number status_led "Night Light" (G_toilet) {channel="miio:basic:toilet:status_led"}
+Switch seated "Seated" (G_toilet) {channel="miio:basic:toilet:seated"}
+Switch rear_wash "Rear Wash" (G_toilet) {channel="miio:basic:toilet:rear_wash"}
+Switch bidet "Bidet" (G_toilet) {channel="miio:basic:toilet:bidet"}
+Switch dry "Dry" (G_toilet) {channel="miio:basic:toilet:dry"}
+Switch seat_heating "Seat Heating" (G_toilet) {channel="miio:basic:toilet:seat_heating"}
+Switch night_light "Night Light" (G_toilet) {channel="miio:basic:toilet:night_light"}
+Number seat_temperature "Seat Temperature" (G_toilet) {channel="miio:basic:toilet:seat_temperature"}
+Number rear_water_temperature "Rear Wash Water Temperature" (G_toilet) {channel="miio:basic:toilet:rear_water_temperature"}
+Number rear_water_pressure "Rear Wash Water Pressure" (G_toilet) {channel="miio:basic:toilet:rear_water_pressure"}
+Number bidet_water_temperature "Bidet Water Temperature" (G_toilet) {channel="miio:basic:toilet:bidet_water_temperature"}
+Number bidet_water_pressure "Bidet Water Pressure" (G_toilet) {channel="miio:basic:toilet:bidet_water_pressure"}
+Number dryer_temperature "Dryer Temperature" (G_toilet) {channel="miio:basic:toilet:dryer_temperature"}
+Switch self_clean "Self Clean" (G_toilet) {channel="miio:basic:toilet:self_clean"}
+Switch flush "Flush" (G_toilet) {channel="miio:basic:toilet:flush"}
+Switch foam_shield "Foam Shield" (G_toilet) {channel="miio:basic:toilet:foam_shield"}
 ```
 
 ### Yeelight Smart Bath Heater Pro (yeelink.bhf_light.v1) item file lines
@@ -27225,12 +27585,20 @@ note: Autogenerated example. Replace the id (bhf_light) in the channel with your
 
 ```java
 Group G_bhf_light "Yeelight Smart Bath Heater Pro" <status>
-Switch power "Power" (G_bhf_light) {channel="miio:basic:bhf_light:power"}
-String bh_mode "Bath Heater mode" (G_bhf_light) {channel="miio:basic:bhf_light:bh_mode"}
+Switch power "Light" (G_bhf_light) {channel="miio:basic:bhf_light:power"}
 Dimmer brightness "Brightness" (G_bhf_light) {channel="miio:basic:bhf_light:brightness"}
-Number:Time delayoff "Shutdown Timer" (G_bhf_light) {channel="miio:basic:bhf_light:delayoff"}
+Number:Temperature color_temperature "Color Temperature" (G_bhf_light) {channel="miio:basic:bhf_light:color_temperature"}
+Switch night_light "Night Light" (G_bhf_light) {channel="miio:basic:bhf_light:night_light"}
+Number:Dimensionless nightlight_brightness "Night Light Brightness" (G_bhf_light) {channel="miio:basic:bhf_light:nightlight_brightness"}
+Number:Time light_off_timer "Light Off Timer" (G_bhf_light) {channel="miio:basic:bhf_light:light_off_timer"}
+String heater_mode "Heater Mode" (G_bhf_light) {channel="miio:basic:bhf_light:heater_mode"}
+Number:Time heater_timer "Heater Timer" (G_bhf_light) {channel="miio:basic:bhf_light:heater_timer"}
+Number:Temperature target_temperature "Target Temperature" (G_bhf_light) {channel="miio:basic:bhf_light:target_temperature"}
 Number:Temperature temperature "Temperature" (G_bhf_light) {channel="miio:basic:bhf_light:temperature"}
-Number nightlightBrightness "Nightlight Brightness" (G_bhf_light) {channel="miio:basic:bhf_light:nightlightBrightness"}
+Number:Dimensionless humidity "Humidity" (G_bhf_light) {channel="miio:basic:bhf_light:humidity"}
+Number fan_level "Fan Level" (G_bhf_light) {channel="miio:basic:bhf_light:fan_level"}
+String swing "Swing" (G_bhf_light) {channel="miio:basic:bhf_light:swing"}
+Number:Angle swing_angle "Wind Direction" (G_bhf_light) {channel="miio:basic:bhf_light:swing_angle"}
 ```
 
 ### Yeelight Smart Bath Heater (yeelink.bhf_light.v2) item file lines
@@ -27239,12 +27607,20 @@ note: Autogenerated example. Replace the id (bhf_light) in the channel with your
 
 ```java
 Group G_bhf_light "Yeelight Smart Bath Heater" <status>
-Switch power "Power" (G_bhf_light) {channel="miio:basic:bhf_light:power"}
-String bh_mode "Bath Heater mode" (G_bhf_light) {channel="miio:basic:bhf_light:bh_mode"}
+Switch power "Light" (G_bhf_light) {channel="miio:basic:bhf_light:power"}
 Dimmer brightness "Brightness" (G_bhf_light) {channel="miio:basic:bhf_light:brightness"}
-Number:Time delayoff "Shutdown Timer" (G_bhf_light) {channel="miio:basic:bhf_light:delayoff"}
+Number:Temperature color_temperature "Color Temperature" (G_bhf_light) {channel="miio:basic:bhf_light:color_temperature"}
+Switch night_light "Night Light" (G_bhf_light) {channel="miio:basic:bhf_light:night_light"}
+Number:Dimensionless nightlight_brightness "Night Light Brightness" (G_bhf_light) {channel="miio:basic:bhf_light:nightlight_brightness"}
+Number:Time light_off_timer "Light Off Timer" (G_bhf_light) {channel="miio:basic:bhf_light:light_off_timer"}
+String heater_mode "Heater Mode" (G_bhf_light) {channel="miio:basic:bhf_light:heater_mode"}
+Number:Time heater_timer "Heater Timer" (G_bhf_light) {channel="miio:basic:bhf_light:heater_timer"}
+Number:Temperature target_temperature "Target Temperature" (G_bhf_light) {channel="miio:basic:bhf_light:target_temperature"}
 Number:Temperature temperature "Temperature" (G_bhf_light) {channel="miio:basic:bhf_light:temperature"}
-Number nightlightBrightness "Nightlight Brightness" (G_bhf_light) {channel="miio:basic:bhf_light:nightlightBrightness"}
+Number:Dimensionless humidity "Humidity" (G_bhf_light) {channel="miio:basic:bhf_light:humidity"}
+Number fan_level "Fan Level" (G_bhf_light) {channel="miio:basic:bhf_light:fan_level"}
+String swing "Swing" (G_bhf_light) {channel="miio:basic:bhf_light:swing"}
+Number:Angle swing_angle "Wind Direction" (G_bhf_light) {channel="miio:basic:bhf_light:swing_angle"}
 ```
 
 ### Mi Bedside Lamp (yeelink.light.bslamp1) item file lines
