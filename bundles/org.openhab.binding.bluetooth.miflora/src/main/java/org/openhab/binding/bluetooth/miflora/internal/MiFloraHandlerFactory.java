@@ -29,7 +29,7 @@ import org.osgi.service.component.annotations.Component;
  * @author Lukas Brinias - Initial contribution
  */
 @NonNullByDefault
-@Component(service = ThingHandlerFactory.class, configurationPid = "binding.miflora")
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.bluetooth.miflora")
 public class MiFloraHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
