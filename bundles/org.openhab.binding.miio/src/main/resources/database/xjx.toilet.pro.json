@@ -1,0 +1,618 @@
+{
+	"deviceMapping": {
+		"id": [
+			"xjx.toilet.pro"
+		],
+		"channels": [
+			{
+				"property": "seating",
+				"friendlyName": "Seated",
+				"channel": "seated",
+				"type": "Switch",
+				"stateDescription": {
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "status",
+				"tags": [
+					"Status",
+					"Presence"
+				]
+			},
+			{
+				"property": "status_tunwash",
+				"friendlyName": "Rear Wash",
+				"channel": "rear_wash",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "tun_wash_on",
+						"parameterType": "NONE",
+						"parameters": [
+							"$water_temp_t$",
+							"$water_strong_t$",
+							"$water_pos_t$",
+							"$moving$",
+							"$massage$"
+						],
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "ON",
+									"returnValue": 1
+								}
+							]
+						}
+					},
+					{
+						"command": "func_off",
+						"parameterType": "NONE",
+						"parameters": [
+							"tun_wash"
+						],
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "OFF",
+									"returnValue": "off"
+								}
+							]
+						}
+					}
+				],
+				"category": "water",
+				"tags": [
+					"Switch",
+					"Water"
+				],
+				"readmeComment": "Starts with the current rear wash settings; link the rear wash level, position, moving and massage channels so their values are known."
+			},
+			{
+				"property": "status_womenwash",
+				"friendlyName": "Bidet",
+				"channel": "bidet",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "women_wash_on",
+						"parameterType": "NONE",
+						"parameters": [
+							"$water_temp_w$",
+							"$water_strong_w$",
+							"$water_pos_w$",
+							"$moving$",
+							"$massage$"
+						],
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "ON",
+									"returnValue": 1
+								}
+							]
+						}
+					},
+					{
+						"command": "func_off",
+						"parameterType": "NONE",
+						"parameters": [
+							"women_wash"
+						],
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "OFF",
+									"returnValue": "off"
+								}
+							]
+						}
+					}
+				],
+				"category": "water",
+				"tags": [
+					"Switch",
+					"Water"
+				],
+				"readmeComment": "Starts with the current bidet settings; link the bidet level, position, moving and massage channels so their values are known."
+			},
+			{
+				"property": "status_warmdry",
+				"friendlyName": "Dry",
+				"channel": "dry",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "warm_dry_on",
+						"parameterType": "NONE",
+						"parameters": [
+							"$fan_temp$"
+						],
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "ON",
+									"returnValue": 1
+								}
+							]
+						}
+					},
+					{
+						"command": "func_off",
+						"parameterType": "NONE",
+						"parameters": [
+							"warm_dry"
+						],
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "OFF",
+									"returnValue": "off"
+								}
+							]
+						}
+					}
+				],
+				"category": "fan",
+				"tags": [
+					"Switch",
+					"Airflow"
+				],
+				"readmeComment": "Starts with the dryer temperature; link the dryer temperature channel so its value is known."
+			},
+			{
+				"property": "seat_temp",
+				"friendlyName": "Seat Heating",
+				"channel": "seat_temperature",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "Off"
+						},
+						{
+							"value": "1",
+							"label": "Low"
+						},
+						{
+							"value": "2",
+							"label": "Medium"
+						},
+						{
+							"value": "3",
+							"label": "High"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "seat_temp_on",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "heating",
+				"tags": [
+					"Setpoint",
+					"Heating"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Off\",\"1\"\u003d\"Low\",\"2\"\u003d\"Medium\",\"3\"\u003d\"High\"]`"
+			},
+			{
+				"property": "status_led",
+				"friendlyName": "Night Light",
+				"channel": "night_light",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "night_led_on",
+						"parameterType": "NONE",
+						"parameters": [],
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "ON",
+									"returnValue": 1
+								}
+							]
+						}
+					},
+					{
+						"command": "func_off",
+						"parameterType": "NONE",
+						"parameters": [
+							"night_led"
+						],
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "OFF",
+									"returnValue": "off"
+								}
+							]
+						}
+					}
+				],
+				"category": "light",
+				"tags": [
+					"Switch",
+					"Light"
+				]
+			},
+			{
+				"property": "status_airfilter",
+				"friendlyName": "Deodorization",
+				"channel": "deodorization",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "air_filter_on",
+						"parameterType": "NONE",
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "ON",
+									"returnValue": 1
+								}
+							]
+						}
+					}
+				],
+				"category": "fan",
+				"tags": [
+					"Switch",
+					"Ventilation"
+				],
+				"readmeComment": "ON starts the deodorization."
+			},
+			{
+				"property": "status_selfclean",
+				"friendlyName": "Self Clean",
+				"channel": "self_clean",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "self_clean_on",
+						"parameterType": "NONE",
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "ON",
+									"returnValue": 1
+								}
+							]
+						}
+					}
+				],
+				"category": "water",
+				"tags": [
+					"Switch"
+				],
+				"readmeComment": "ON starts the nozzle self clean; only when nobody is seated."
+			},
+			{
+				"property": "water_temp_t",
+				"friendlyName": "Rear Wash Water Temperature",
+				"channel": "rear_water_temperature",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "1",
+							"label": "Low"
+						},
+						{
+							"value": "2",
+							"label": "Medium"
+						},
+						{
+							"value": "3",
+							"label": "High"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_water_temp_t",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "temperature",
+				"tags": [
+					"Setpoint",
+					"Temperature"
+				],
+				"readmeComment": "Value mapping `[\"1\"\u003d\"Low\",\"2\"\u003d\"Medium\",\"3\"\u003d\"High\"]`"
+			},
+			{
+				"property": "water_strong_t",
+				"friendlyName": "Rear Wash Water Pressure",
+				"channel": "rear_water_pressure",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "1",
+							"label": "Low"
+						},
+						{
+							"value": "2",
+							"label": "Medium"
+						},
+						{
+							"value": "3",
+							"label": "High"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_water_strong_t",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "water",
+				"tags": [
+					"Setpoint",
+					"Water"
+				],
+				"readmeComment": "Value mapping `[\"1\"\u003d\"Low\",\"2\"\u003d\"Medium\",\"3\"\u003d\"High\"]`"
+			},
+			{
+				"property": "water_pos_t",
+				"friendlyName": "Rear Wash Position",
+				"channel": "rear_wash_position",
+				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "1",
+							"label": "Position 1"
+						},
+						{
+							"value": "2",
+							"label": "Position 2"
+						},
+						{
+							"value": "3",
+							"label": "Position 3"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "water",
+				"tags": [
+					"Status"
+				],
+				"readmeComment": "Value mapping `[\"1\"\u003d\"Position 1\",\"2\"\u003d\"Position 2\",\"3\"\u003d\"Position 3\"]`"
+			},
+			{
+				"property": "water_temp_w",
+				"friendlyName": "Bidet Water Temperature",
+				"channel": "bidet_water_temperature",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "1",
+							"label": "Low"
+						},
+						{
+							"value": "2",
+							"label": "Medium"
+						},
+						{
+							"value": "3",
+							"label": "High"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_water_temp_w",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "temperature",
+				"tags": [
+					"Setpoint",
+					"Temperature"
+				],
+				"readmeComment": "Value mapping `[\"1\"\u003d\"Low\",\"2\"\u003d\"Medium\",\"3\"\u003d\"High\"]`"
+			},
+			{
+				"property": "water_strong_w",
+				"friendlyName": "Bidet Water Pressure",
+				"channel": "bidet_water_pressure",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "1",
+							"label": "Low"
+						},
+						{
+							"value": "2",
+							"label": "Medium"
+						},
+						{
+							"value": "3",
+							"label": "High"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_water_strong_w",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "water",
+				"tags": [
+					"Setpoint",
+					"Water"
+				],
+				"readmeComment": "Value mapping `[\"1\"\u003d\"Low\",\"2\"\u003d\"Medium\",\"3\"\u003d\"High\"]`"
+			},
+			{
+				"property": "water_pos_w",
+				"friendlyName": "Bidet Position",
+				"channel": "bidet_position",
+				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "1",
+							"label": "Position 1"
+						},
+						{
+							"value": "2",
+							"label": "Position 2"
+						},
+						{
+							"value": "3",
+							"label": "Position 3"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "water",
+				"tags": [
+					"Status"
+				],
+				"readmeComment": "Value mapping `[\"1\"\u003d\"Position 1\",\"2\"\u003d\"Position 2\",\"3\"\u003d\"Position 3\"]`"
+			},
+			{
+				"property": "moving",
+				"friendlyName": "Moving Wash",
+				"channel": "moving",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_moving",
+						"parameterType": "ONOFFNUMBER"
+					}
+				],
+				"category": "water",
+				"tags": [
+					"Switch"
+				]
+			},
+			{
+				"property": "massage",
+				"friendlyName": "Massage",
+				"channel": "massage",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "Off"
+						},
+						{
+							"value": "1",
+							"label": "Normal"
+						},
+						{
+							"value": "2",
+							"label": "Continuous"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_massage",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "water",
+				"tags": [
+					"Control",
+					"Mode"
+				],
+				"readmeComment": "Only Normal and Continuous can be set."
+			},
+			{
+				"property": "fan_temp",
+				"friendlyName": "Dryer Temperature",
+				"channel": "dryer_temperature",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "1",
+							"label": "Low"
+						},
+						{
+							"value": "2",
+							"label": "Medium"
+						},
+						{
+							"value": "3",
+							"label": "High"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_fan_temp",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "temperature",
+				"tags": [
+					"Setpoint",
+					"Temperature"
+				],
+				"readmeComment": "Value mapping `[\"1\"\u003d\"Low\",\"2\"\u003d\"Medium\",\"3\"\u003d\"High\"]`"
+			},
+			{
+				"property": "left_day",
+				"friendlyName": "Filter Days Left",
+				"channel": "filter_days_left",
+				"type": "Number:Time",
+				"unit": "days",
+				"stateDescription": {
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "status",
+				"tags": [
+					"Measurement",
+					"Duration"
+				]
+			}
+		],
+		"experimental": true
+	}
+}
