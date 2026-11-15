@@ -303,7 +303,7 @@ public class HttpRequestBuilderTest {
     @SuppressWarnings("null")
     public void testARetriedRequestKeepsTheTimeout() {
         Request retriedRequest = mock(Request.class, RETURNS_SELF);
-        Result abortedResult = resultWithStatus(0, new HttpFields());
+        Result abortedResult = resultWithStatus(0, HttpFields.EMPTY);
 
         CompletableFuture<HttpResponse> httpResponse = new CompletableFuture<>();
         RequestParams params = new RequestParams(HttpMethod.GET, null, false, Map.of());
