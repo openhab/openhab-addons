@@ -30,21 +30,30 @@ public enum EventType {
     UNKNOWN(ModuleType.UNKNOWN),
 
 <<<<<<< Upstream, based on main
+<<<<<<< Upstream, based on main
     /** Module configuration changed */
 =======
     /* Module configuration changed */
 >>>>>>> 3a3e390 One more last thing is to take care of new events.
+=======
+    /** Module configuration changed */
+>>>>>>> 2b5d9f8 Take jlaur comment into account
     @SerializedName("topology_changed")
     TOPOLOGY_CHANGED(ModuleType.ACCOUNT),
 
+<<<<<<< Upstream, based on main
 <<<<<<< Upstream, based on main
     /** A user linked the webhook to their account */
 =======
     /* A user linked the webhook to their account */
 >>>>>>> 3a3e390 One more last thing is to take care of new events.
+=======
+    /** A user linked the webhook to their account */
+>>>>>>> 2b5d9f8 Take jlaur comment into account
     @SerializedName("webhook_activation")
     WEBHOOK_ACTIVATION(ModuleType.ACCOUNT),
 
+<<<<<<< Upstream, based on main
 <<<<<<< Upstream, based on main
     /** A user deleted their link to the webhook */
     @SerializedName("webhook_deletion")
@@ -53,323 +62,486 @@ public enum EventType {
     /** Indoor Camera detects a face */
 =======
     /* A user deleted their link to the webhook */
+=======
+    /** A user deleted their link to the webhook */
+>>>>>>> 2b5d9f8 Take jlaur comment into account
     @SerializedName("webhook_deletion")
     WEBHOOK_DELETION(ModuleType.ACCOUNT),
 
+<<<<<<< Upstream, based on main
     /* Indoor Camera detects a face */
 >>>>>>> 3a3e390 One more last thing is to take care of new events.
+=======
+    /** Indoor Camera detects a face */
+>>>>>>> 2b5d9f8 Take jlaur comment into account
     @SerializedName("person")
     PERSON(ModuleType.PERSON, ModuleType.WELCOME),
 
+<<<<<<< Upstream, based on main
 <<<<<<< Upstream, based on main
     /** Geofencing indicates that the person has left the home */
 =======
     /* Geofencing indicates that the person has left the home */
 >>>>>>> 3a3e390 One more last thing is to take care of new events.
+=======
+    /** Geofencing indicates that the person has left the home */
+>>>>>>> 2b5d9f8 Take jlaur comment into account
     @SerializedName("person_away")
     PERSON_AWAY(ModuleType.PERSON, ModuleType.HOME),
 
+<<<<<<< Upstream, based on main
 <<<<<<< Upstream, based on main
     /** Person is declared at home */
 =======
     /* Person is declared at home */
 >>>>>>> 3a3e390 One more last thing is to take care of new events.
+=======
+    /** Person is declared at home */
+>>>>>>> 2b5d9f8 Take jlaur comment into account
     @SerializedName("person_home")
     PERSON_HOME(ModuleType.PERSON, ModuleType.HOME),
 
+<<<<<<< Upstream, based on main
 <<<<<<< Upstream, based on main
     /** Outdoor Camera detects a human, a car or an animal */
 =======
     /* Outdoor Camera detects a human, a car or an animal */
 >>>>>>> 3a3e390 One more last thing is to take care of new events.
+=======
+    /** Outdoor Camera detects a human, a car or an animal */
+>>>>>>> 2b5d9f8 Take jlaur comment into account
     @SerializedName("outdoor")
     OUTDOOR(ModuleType.PRESENCE, ModuleType.DOORBELL),
 
+<<<<<<< Upstream, based on main
 <<<<<<< Upstream, based on main
     /** Outdoor Camera video summary of the last 24 hours is available */
 =======
     /* Outdoor Camera video summary of the last 24 hours is available */
 >>>>>>> 3a3e390 One more last thing is to take care of new events.
+=======
+    /** Outdoor Camera video summary of the last 24 hours is available */
+>>>>>>> 2b5d9f8 Take jlaur comment into account
     @SerializedName("daily_summary")
     DAILY_SUMMARY(ModuleType.PRESENCE),
 
+<<<<<<< Upstream, based on main
 <<<<<<< Upstream, based on main
     /** Outdoor Camera detects a car */
 =======
     /* Outdoor Camera detects a car */
 >>>>>>> 3a3e390 One more last thing is to take care of new events.
+=======
+    /** Outdoor Camera detects a car */
+>>>>>>> 2b5d9f8 Take jlaur comment into account
     @SerializedName("vehicle")
     VEHICLE(ModuleType.PRESENCE),
 
+<<<<<<< Upstream, based on main
 <<<<<<< Upstream, based on main
     /** Indoor Camera detects motion */
 =======
     /* Indoor Camera detects motion */
 >>>>>>> 3a3e390 One more last thing is to take care of new events.
+=======
+    /** Indoor Camera detects motion */
+>>>>>>> 2b5d9f8 Take jlaur comment into account
     @SerializedName("movement")
     MOVEMENT(ModuleType.WELCOME),
 
+<<<<<<< Upstream, based on main
 <<<<<<< Upstream, based on main
     /** Indoor Camera triggers alarm */
 =======
     /* Indoor Camera triggers alarm */
 >>>>>>> 3a3e390 One more last thing is to take care of new events.
+=======
+    /** Indoor Camera triggers alarm */
+>>>>>>> 2b5d9f8 Take jlaur comment into account
     @SerializedName("alarm_started")
     ALARM_STARTED(ModuleType.WELCOME),
 
+<<<<<<< Upstream, based on main
 <<<<<<< Upstream, based on main
     /** Camera detects human motion */
 =======
     /* Camera detects human motion */
 >>>>>>> 3a3e390 One more last thing is to take care of new events.
+=======
+    /** Camera detects human motion */
+>>>>>>> 2b5d9f8 Take jlaur comment into account
     @SerializedName("human")
     HUMAN(ModuleType.WELCOME, ModuleType.PRESENCE, ModuleType.DOORBELL),
 
+<<<<<<< Upstream, based on main
 <<<<<<< Upstream, based on main
     /** Camera detects animal motion */
 =======
     /* Camera detects animal motion */
 >>>>>>> 3a3e390 One more last thing is to take care of new events.
+=======
+    /** Camera detects animal motion */
+>>>>>>> 2b5d9f8 Take jlaur comment into account
     @SerializedName("animal")
     ANIMAL(ModuleType.WELCOME, ModuleType.PRESENCE),
 
+<<<<<<< Upstream, based on main
 <<<<<<< Upstream, based on main
     /** A new Module has been paired with the Indoor Camera */
 =======
     /* A new Module has been paired with the Indoor Camera */
 >>>>>>> 3a3e390 One more last thing is to take care of new events.
+=======
+    /** A new Module has been paired with the Indoor Camera */
+>>>>>>> 2b5d9f8 Take jlaur comment into account
     @SerializedName("new_module")
     NEW_MODULE(ModuleType.WELCOME),
 
+<<<<<<< Upstream, based on main
 <<<<<<< Upstream, based on main
     /** Module is connected with the Indoor Camera */
 =======
     /* Module is connected with the Indoor Camera */
 >>>>>>> 3a3e390 One more last thing is to take care of new events.
+=======
+    /** Module is connected with the Indoor Camera */
+>>>>>>> 2b5d9f8 Take jlaur comment into account
     @SerializedName("module_connect")
     MODULE_CONNECT(ModuleType.WELCOME),
 
+<<<<<<< Upstream, based on main
 <<<<<<< Upstream, based on main
     /** Module lost its connection with the Indoor Camera */
 =======
     /* Module lost its connection with the Indoor Camera */
 >>>>>>> 3a3e390 One more last thing is to take care of new events.
+=======
+    /** Module lost its connection with the Indoor Camera */
+>>>>>>> 2b5d9f8 Take jlaur comment into account
     @SerializedName("module_disconnect")
     MODULE_DISCONNECT(ModuleType.WELCOME),
 
+<<<<<<< Upstream, based on main
 <<<<<<< Upstream, based on main
     /** Module's battery is low */
 =======
     /* Module's battery is low */
 >>>>>>> 3a3e390 One more last thing is to take care of new events.
+=======
+    /** Module's battery is low */
+>>>>>>> 2b5d9f8 Take jlaur comment into account
     @SerializedName("module_low_battery")
     MODULE_LOW_BATTERY(ModuleType.WELCOME),
 
+<<<<<<< Upstream, based on main
 <<<<<<< Upstream, based on main
     /** Module's firmware update is over */
 =======
     /* Module's firmware update is over */
 >>>>>>> 3a3e390 One more last thing is to take care of new events.
+=======
+    /** Module's firmware update is over */
+>>>>>>> 2b5d9f8 Take jlaur comment into account
     @SerializedName("module_end_update")
     MODULE_END_UPDATE(ModuleType.WELCOME),
 
+<<<<<<< Upstream, based on main
 <<<<<<< Upstream, based on main
     /** Big move detected on Door Tag */
 =======
     /* Big move detected on Door Tag */
 >>>>>>> 3a3e390 One more last thing is to take care of new events.
+=======
+    /** Big move detected on Door Tag */
+>>>>>>> 2b5d9f8 Take jlaur comment into account
     @SerializedName("tag_big_move")
     TAG_BIG_MOVE(ModuleType.WELCOME),
 
+<<<<<<< Upstream, based on main
 <<<<<<< Upstream, based on main
     /** Tag detects door is open */
 =======
     /* Tag detects door is open */
 >>>>>>> 3a3e390 One more last thing is to take care of new events.
+=======
+    /** Tag detects door is open */
+>>>>>>> 2b5d9f8 Take jlaur comment into account
     @SerializedName("tag_open")
     TAG_OPEN(ModuleType.WELCOME),
 
+<<<<<<< Upstream, based on main
 <<<<<<< Upstream, based on main
     /** Small move detected on Door Tag */
 =======
     /* Small move detected on Door Tag */
 >>>>>>> 3a3e390 One more last thing is to take care of new events.
+=======
+    /** Small move detected on Door Tag */
+>>>>>>> 2b5d9f8 Take jlaur comment into account
     @SerializedName("tag_small_move")
     TAG_SMALL_MOVE(ModuleType.WELCOME),
 
+<<<<<<< Upstream, based on main
 <<<<<<< Upstream, based on main
     /** Camera connects to Netatmo servers */
 =======
     /* Camera connects to Netatmo servers */
 >>>>>>> 3a3e390 One more last thing is to take care of new events.
+=======
+    /** Camera connects to Netatmo servers */
+>>>>>>> 2b5d9f8 Take jlaur comment into account
     @SerializedName("connection")
     CONNECTION(ModuleType.WELCOME, ModuleType.PRESENCE),
 
+<<<<<<< Upstream, based on main
 <<<<<<< Upstream, based on main
     /** Camera loses connection with Netatmo servers */
 =======
     /* Camera loses connection with Netatmo servers */
 >>>>>>> 3a3e390 One more last thing is to take care of new events.
+=======
+    /** Camera loses connection with Netatmo servers */
+>>>>>>> 2b5d9f8 Take jlaur comment into account
     @SerializedName("disconnection")
     DISCONNECTION(ModuleType.WELCOME, ModuleType.PRESENCE),
 
+<<<<<<< Upstream, based on main
 <<<<<<< Upstream, based on main
     /** Camera Monitoring is resumed */
 =======
     /* Camera Monitoring is resumed */
 >>>>>>> 3a3e390 One more last thing is to take care of new events.
+=======
+    /** Camera Monitoring is resumed */
+>>>>>>> 2b5d9f8 Take jlaur comment into account
     @SerializedName("on")
     ON(ModuleType.WELCOME, ModuleType.PRESENCE),
 
+<<<<<<< Upstream, based on main
 <<<<<<< Upstream, based on main
     /** Camera Monitoring is turned off */
 =======
     /* Camera Monitoring is turned off */
 >>>>>>> 3a3e390 One more last thing is to take care of new events.
+=======
+    /** Camera Monitoring is turned off */
+>>>>>>> 2b5d9f8 Take jlaur comment into account
     @SerializedName("off")
     OFF(ModuleType.WELCOME, ModuleType.PRESENCE),
 
+<<<<<<< Upstream, based on main
 <<<<<<< Upstream, based on main
     /** Camera is booting */
 =======
     /* Camera is booting */
 >>>>>>> 3a3e390 One more last thing is to take care of new events.
+=======
+    /** Camera is booting */
+>>>>>>> 2b5d9f8 Take jlaur comment into account
     @SerializedName("boot")
     BOOT(ModuleType.WELCOME, ModuleType.PRESENCE),
 
+<<<<<<< Upstream, based on main
 <<<<<<< Upstream, based on main
     /** Camera SD Card status changes */
 =======
     /* Camera SD Card status changes */
 >>>>>>> 3a3e390 One more last thing is to take care of new events.
+=======
+    /** Camera SD Card status changes */
+>>>>>>> 2b5d9f8 Take jlaur comment into account
     @SerializedName("sd")
     SD(ModuleType.WELCOME, ModuleType.PRESENCE),
 
+<<<<<<< Upstream, based on main
 <<<<<<< Upstream, based on main
     /** Camera power supply status changes */
 =======
     /* Camera power supply status changes */
 >>>>>>> 3a3e390 One more last thing is to take care of new events.
+=======
+    /** Camera power supply status changes */
+>>>>>>> 2b5d9f8 Take jlaur comment into account
     @SerializedName("alim")
     ALIM(ModuleType.WELCOME, ModuleType.PRESENCE),
 
+<<<<<<< Upstream, based on main
 <<<<<<< Upstream, based on main
     /** Siren has been tampered */
 =======
     /* Siren has been tampered */
 >>>>>>> 3a3e390 One more last thing is to take care of new events.
+=======
+    /** Siren has been tampered */
+>>>>>>> 2b5d9f8 Take jlaur comment into account
     @SerializedName("siren_tampered")
     SIREN_TAMPERED(ModuleType.WELCOME),
 
+<<<<<<< Upstream, based on main
 <<<<<<< Upstream, based on main
     /** A call is incoming */
 =======
     /* A call is incoming */
 >>>>>>> 3a3e390 One more last thing is to take care of new events.
+=======
+    /** A call is incoming */
+>>>>>>> 2b5d9f8 Take jlaur comment into account
     @SerializedName("accepted_call")
     ACCEPTED_CALL(ModuleType.DOORBELL),
 
+<<<<<<< Upstream, based on main
 <<<<<<< Upstream, based on main
     /** A call as been answered by a user */
 =======
     /* A call as been answered by a user */
 >>>>>>> 3a3e390 One more last thing is to take care of new events.
+=======
+    /** A call as been answered by a user */
+>>>>>>> 2b5d9f8 Take jlaur comment into account
     @SerializedName("incoming_call")
     INCOMING_CALL(ModuleType.DOORBELL),
 
+<<<<<<< Upstream, based on main
 <<<<<<< Upstream, based on main
     /** Button pressed */
 =======
     /* Button pressed */
 >>>>>>> 3a3e390 One more last thing is to take care of new events.
+=======
+    /** Button pressed */
+>>>>>>> 2b5d9f8 Take jlaur comment into account
     @SerializedName("rtc")
     RTC(ModuleType.DOORBELL),
 
+<<<<<<< Upstream, based on main
 <<<<<<< Upstream, based on main
     /** A call has not been answered by anyone */
 =======
     /* A call has not been answered by anyone */
 >>>>>>> 3a3e390 One more last thing is to take care of new events.
+=======
+    /** A call has not been answered by anyone */
+>>>>>>> 2b5d9f8 Take jlaur comment into account
     @SerializedName("missed_call")
     MISSED_CALL(ModuleType.DOORBELL),
 
+<<<<<<< Upstream, based on main
 <<<<<<< Upstream, based on main
     /** Smoke detection is activated or deactivated */
 =======
     /* Smoke detection is activated or deactivated */
 >>>>>>> 3a3e390 One more last thing is to take care of new events.
+=======
+    /** Smoke detection is activated or deactivated */
+>>>>>>> 2b5d9f8 Take jlaur comment into account
     @SerializedName("hush")
     HUSH(ModuleType.SMOKE_DETECTOR),
 
+<<<<<<< Upstream, based on main
 <<<<<<< Upstream, based on main
     /** Smoke is detected or smoke is cleared */
 =======
     /* Smoke is detected or smoke is cleared */
 >>>>>>> 3a3e390 One more last thing is to take care of new events.
+=======
+    /** Smoke is detected or smoke is cleared */
+>>>>>>> 2b5d9f8 Take jlaur comment into account
     @SerializedName("smoke")
     SMOKE(ModuleType.SMOKE_DETECTOR),
 
+<<<<<<< Upstream, based on main
 <<<<<<< Upstream, based on main
     /** Smoke detector is ready or tampered */
 =======
     /* Smoke detector is ready or tampered */
 >>>>>>> 3a3e390 One more last thing is to take care of new events.
+=======
+    /** Smoke detector is ready or tampered */
+>>>>>>> 2b5d9f8 Take jlaur comment into account
     @SerializedName("tampered")
     TAMPERED(ModuleType.SMOKE_DETECTOR, ModuleType.CO_DETECTOR),
 
+<<<<<<< Upstream, based on main
 <<<<<<< Upstream, based on main
     /** Wifi status is updated */
 =======
     /* Wifi status is updated */
 >>>>>>> 3a3e390 One more last thing is to take care of new events.
+=======
+    /** Wifi status is updated */
+>>>>>>> 2b5d9f8 Take jlaur comment into account
     @SerializedName("wifi_status")
     WIFI_STATUS(ModuleType.SMOKE_DETECTOR, ModuleType.CO_DETECTOR),
 
+<<<<<<< Upstream, based on main
 <<<<<<< Upstream, based on main
     /** Battery status is too low */
 =======
     /* Battery status is too low */
 >>>>>>> 3a3e390 One more last thing is to take care of new events.
+=======
+    /** Battery status is too low */
+>>>>>>> 2b5d9f8 Take jlaur comment into account
     @SerializedName("battery_status")
     BATTERY_STATUS(ModuleType.SMOKE_DETECTOR, ModuleType.CO_DETECTOR),
 
+<<<<<<< Upstream, based on main
 <<<<<<< Upstream, based on main
     /** Detection chamber is dusty or clean */
 =======
     /* Detection chamber is dusty or clean */
 >>>>>>> 3a3e390 One more last thing is to take care of new events.
+=======
+    /** Detection chamber is dusty or clean */
+>>>>>>> 2b5d9f8 Take jlaur comment into account
     @SerializedName("detection_chamber_status")
     DETECTION_CHAMBER_STATUS(ModuleType.SMOKE_DETECTOR),
 
+<<<<<<< Upstream, based on main
 <<<<<<< Upstream, based on main
     /** Sound test result */
 =======
     /* Sound test result */
 >>>>>>> 3a3e390 One more last thing is to take care of new events.
+=======
+    /** Sound test result */
+>>>>>>> 2b5d9f8 Take jlaur comment into account
     @SerializedName("sound_test")
     SOUND_TEST(ModuleType.SMOKE_DETECTOR, ModuleType.CO_DETECTOR),
 
+<<<<<<< Upstream, based on main
 <<<<<<< Upstream, based on main
     /** A new device was detected */
 =======
     /* A new device was detected */
 >>>>>>> 3a3e390 One more last thing is to take care of new events.
+=======
+    /** A new device was detected */
+>>>>>>> 2b5d9f8 Take jlaur comment into account
     @SerializedName("new_device")
     NEW_DEVICE(ModuleType.HOME),
 
+<<<<<<< Upstream, based on main
 <<<<<<< Upstream, based on main
     /** CO alarm raised */
 =======
     /* CO alarm raised */
 >>>>>>> 3a3e390 One more last thing is to take care of new events.
+=======
+    /** CO alarm raised */
+>>>>>>> 2b5d9f8 Take jlaur comment into account
     @SerializedName("co_detected")
     CO_DETECTED(ModuleType.CO_DETECTOR),
 
+<<<<<<< Upstream, based on main
 <<<<<<< Upstream, based on main
     /** An alarm event arrived on a weather station module */
 =======
     /* An alarm event arrived on a weather station module */
 >>>>>>> 3a3e390 One more last thing is to take care of new events.
+=======
+    /** An alarm event arrived on a weather station module */
+>>>>>>> 2b5d9f8 Take jlaur comment into account
     @SerializedName("alarm_event")
     ALARM_EVENT(ModuleType.WEATHER_STATION),
 
@@ -392,26 +564,38 @@ public enum EventType {
     ALARM_EXITED(ModuleType.WEATHER_STATION),
 
 <<<<<<< Upstream, based on main
+<<<<<<< Upstream, based on main
     /** A manual action has been done on the thermostat */
 =======
     /* A manual action has been done on the thermostat */
 >>>>>>> 3a3e390 One more last thing is to take care of new events.
+=======
+    /** A manual action has been done on the thermostat */
+>>>>>>> 2b5d9f8 Take jlaur comment into account
     @SerializedName("display_change")
     DISPLAY_CHANGE(ModuleType.THERMOSTAT),
 
+<<<<<<< Upstream, based on main
 <<<<<<< Upstream, based on main
     /** A setpoint has been set */
 =======
     /* A setpoint has been set */
 >>>>>>> 3a3e390 One more last thing is to take care of new events.
+=======
+    /** A setpoint has been set */
+>>>>>>> 2b5d9f8 Take jlaur comment into account
     @SerializedName("set_point")
     SET_POINT(ModuleType.THERMOSTAT),
 
+<<<<<<< Upstream, based on main
 <<<<<<< Upstream, based on main
     /** Manual setpoint ended */
 =======
     /* Manual setpoint ended */
 >>>>>>> 3a3e390 One more last thing is to take care of new events.
+=======
+    /** Manual setpoint ended */
+>>>>>>> 2b5d9f8 Take jlaur comment into account
     @SerializedName("cancel_set_point")
     CANCEL_SET_POINT(ModuleType.THERMOSTAT);
 
