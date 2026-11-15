@@ -741,7 +741,6 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-dependency-plugin</artifactId>
         <version>3.11.0</version>
-        <inherited>false</inherited>
         <executions>
           <execution>
             <id>embed-dependencies</id>
@@ -779,10 +778,12 @@
           </execution>
         </executions>
       </plugin>
+      <!-- 1. Download XSD -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-antrun-plugin</artifactId>
         <version>3.2.0</version>
+        <inherited>false</inherited>
         <executions>
           <!-- 1. Download XSD -->
           <execution>
@@ -791,7 +792,6 @@
               <goal>run</goal>
             </goals>
             <phase>generate-resources</phase>
-            <inherited>false</inherited>
             <configuration>
               <target>
                 <mkdir dir="${maven.multiModuleProjectDirectory}/target/schemas"/>
@@ -799,6 +799,7 @@
               </target>
             </configuration>
           </execution>
+          
           <!-- 2. Generate catalog dynamically -->
           <execution>
             <id>generate-catalog</id>
@@ -806,7 +807,6 @@
               <goal>run</goal>
             </goals>
             <phase>generate-resources</phase>
-            <inherited>false</inherited>
             <configuration>
               <target>
                 <mkdir dir="${maven.multiModuleProjectDirectory}/target/schemas"/>
