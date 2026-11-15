@@ -52,6 +52,8 @@ public enum MiIoDevices {
     CHUNMI_COOKER_NORMAL4("chunmi.cooker.normal4", "Mi IH Rice Cooker 4L", THING_TYPE_UNSUPPORTED),
     CHUNMI_COOKER_PRESS1("chunmi.cooker.press1", "Mi IH Pressure Rice Cooker", THING_TYPE_UNSUPPORTED),
     CHUNMI_COOKER_PRESS2("chunmi.cooker.press2", "Mi IH Pressure Rice Cooker", THING_TYPE_UNSUPPORTED),
+    CHUNMI_JUICER_TWA1("chunmi.juicer.twa1", "Xiaomi Smart Blender", THING_TYPE_BASIC),
+    CHUNMI_JUICER_UKA1("chunmi.juicer.uka1", "Xiaomi Smart Blender", THING_TYPE_BASIC),
     CUCO_PLUG_CP1("cuco.plug.cp1", "Gosund Smart Plug", THING_TYPE_BASIC),
     CUCO_PLUG_CP1D("cuco.plug.cp1d", "Gosund Smart Plug CP1", THING_TYPE_BASIC),
     CUCO_PLUG_V2EUR("cuco.plug.v2eur", "Xiaomi Smart Plug 2 (Wi-Fi)", THING_TYPE_BASIC),

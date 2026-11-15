@@ -1,0 +1,340 @@
+{
+	"deviceMapping": {
+		"id": [
+			"chunmi.juicer.twa1",
+			"chunmi.juicer.uka1"
+		],
+		"propertyMethod": "get_properties",
+		"maxProperties": 1,
+		"channels": [
+			{
+				"property": "workstate",
+				"siid": 3,
+				"piid": 2,
+				"friendlyName": "Status",
+				"channel": "status",
+				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "1",
+							"label": "Idle"
+						},
+						{
+							"value": "2",
+							"label": "Working"
+						},
+						{
+							"value": "3",
+							"label": "Paused"
+						},
+						{
+							"value": "4",
+							"label": "Scheduled"
+						},
+						{
+							"value": "5",
+							"label": "Shut Down"
+						},
+						{
+							"value": "6",
+							"label": "Keeping Warm"
+						},
+						{
+							"value": "7",
+							"label": "Finished"
+						},
+						{
+							"value": "8",
+							"label": "Keep Warm Finished"
+						},
+						{
+							"value": "11",
+							"label": "Fault"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "status",
+				"tags": [
+					"Status"
+				],
+				"readmeComment": "Value mapping `[\"1\"\u003d\"Idle\",\"2\"\u003d\"Working\",\"3\"\u003d\"Paused\",\"4\"\u003d\"Scheduled\",\"5\"\u003d\"Shut Down\",\"6\"\u003d\"Keeping Warm\",\"7\"\u003d\"Finished\",\"8\"\u003d\"Keep Warm Finished\",\"11\"\u003d\"Fault\"]`"
+			},
+			{
+				"property": "error-code",
+				"siid": 3,
+				"piid": 16,
+				"friendlyName": "Error",
+				"channel": "error",
+				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "0",
+							"label": "No Error"
+						},
+						{
+							"value": "1",
+							"label": "Motor Overload"
+						},
+						{
+							"value": "2",
+							"label": "No Cup"
+						},
+						{
+							"value": "3",
+							"label": "High Voltage"
+						},
+						{
+							"value": "4",
+							"label": "Low Voltage"
+						},
+						{
+							"value": "5",
+							"label": "High Temperature"
+						},
+						{
+							"value": "10",
+							"label": "Temperature Sensor Failure"
+						},
+						{
+							"value": "11",
+							"label": "Communication Failure"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "alarm",
+				"tags": [
+					"Alarm"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"No Error\",\"1\"\u003d\"Motor Overload\",\"2\"\u003d\"No Cup\",\"3\"\u003d\"High Voltage\",\"4\"\u003d\"Low Voltage\",\"5\"\u003d\"High Temperature\",\"10\"\u003d\"Temperature Sensor Failure\",\"11\"\u003d\"Communication Failure\"]`"
+			},
+			{
+				"property": "left-time",
+				"siid": 3,
+				"piid": 5,
+				"friendlyName": "Remaining Time",
+				"channel": "remaining_time",
+				"type": "Number:Time",
+				"unit": "seconds",
+				"stateDescription": {
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "time",
+				"tags": [
+					"Status",
+					"Duration"
+				]
+			},
+			{
+				"property": "appointment-time",
+				"siid": 3,
+				"piid": 6,
+				"friendlyName": "Scheduled Time",
+				"channel": "schedule_time",
+				"type": "Number:Time",
+				"unit": "minutes",
+				"stateDescription": {
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "time",
+				"tags": [
+					"Status",
+					"Duration"
+				]
+			},
+			{
+				"property": "warm-left-time",
+				"siid": 3,
+				"piid": 8,
+				"friendlyName": "Keep Warm Remaining Time",
+				"channel": "keep_warm_remaining_time",
+				"type": "Number:Time",
+				"unit": "seconds",
+				"stateDescription": {
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "time",
+				"tags": [
+					"Status",
+					"Duration"
+				]
+			},
+			{
+				"property": "cooking-time",
+				"siid": 3,
+				"piid": 9,
+				"friendlyName": "Cooking Time",
+				"channel": "cooking_time",
+				"type": "Number:Time",
+				"unit": "seconds",
+				"stateDescription": {
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "time",
+				"tags": [
+					"Status",
+					"Duration"
+				]
+			},
+			{
+				"property": "current-temperature",
+				"siid": 3,
+				"piid": 11,
+				"friendlyName": "Temperature",
+				"channel": "temperature",
+				"type": "Number:Temperature",
+				"unit": "celsius",
+				"stateDescription": {
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "temperature",
+				"tags": [
+					"Measurement",
+					"Temperature"
+				]
+			},
+			{
+				"property": "tank-state",
+				"siid": 3,
+				"piid": 18,
+				"friendlyName": "Cup",
+				"channel": "cup",
+				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "0",
+							"label": "No Cup"
+						},
+						{
+							"value": "1",
+							"label": "OK"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "status",
+				"tags": [
+					"Status"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"No Cup\",\"1\"\u003d\"OK\"]`"
+			},
+			{
+				"property": "cuplid-state",
+				"siid": 3,
+				"piid": 19,
+				"friendlyName": "Lid Open",
+				"channel": "lid_open",
+				"type": "Switch",
+				"stateDescription": {
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "status",
+				"tags": [
+					"Status",
+					"Opening"
+				]
+			},
+			{
+				"property": "",
+				"friendlyName": "Control",
+				"channel": "control",
+				"type": "String",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "pause",
+							"label": "Pause"
+						},
+						{
+							"value": "resume",
+							"label": "Resume"
+						},
+						{
+							"value": "cancel",
+							"label": "Cancel"
+						}
+					]
+				},
+				"refresh": false,
+				"actions": [
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 3,
+						"aiid": 2,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "pause"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 3,
+						"aiid": 3,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "resume"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 3,
+						"aiid": 4,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "cancel"
+								}
+							]
+						}
+					}
+				],
+				"category": "settings",
+				"tags": [
+					"Control"
+				],
+				"readmeComment": "Value mapping `[\"pause\"\u003d\"Pause\",\"resume\"\u003d\"Resume\",\"cancel\"\u003d\"Cancel\"]`"
+			}
+		],
+		"readmeComment": "Programs can only be started from the Mi Home app.",
+		"experimental": true
+	}
+}
