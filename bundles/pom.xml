@@ -818,6 +818,28 @@
               </target>
             </configuration>
           </execution>
+
+          <!-- 3. Warn about deprecated channel <tag> elements (replaced by <point>/<property>) -->
+          <execution>
+            <id>warn-deprecated-channel-tags</id>
+            <goals>
+              <goal>run</goal>
+            </goals>
+            <phase>generate-resources</phase>
+            <configuration>
+              <target>
+                <fileset id="deprecatedTagFiles" dir="${basedir}">
+                  <include name="**/src/main/resources/OH-INF/thing/*.xml"/>
+                  <containsregexp expression="&lt;tag[\s&gt;/]"/>
+                </fileset>
+                <pathconvert pathsep=", " property="deprecatedTagFileList" refid="deprecatedTagFiles" relative="true"/>
+                <condition property="hasDeprecatedTags">
+                  <length string="${deprecatedTagFileList}" when="greater" length="0"/>
+                </condition>
+                <echo level="warning" if="hasDeprecatedTags" message="DEPRECATED: channel XML element 'tag' is deprecated; use 'point' and 'property' instead. Affected files: ${deprecatedTagFileList}"/>
+              </target>
+            </configuration>
+          </execution>
         </executions>
       </plugin>
 
