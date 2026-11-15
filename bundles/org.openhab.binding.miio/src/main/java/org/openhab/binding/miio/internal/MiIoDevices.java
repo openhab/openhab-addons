@@ -396,6 +396,7 @@ public enum MiIoDevices {
     SCISHARE_COFFEE_S1102("scishare.coffee.s1102", "SCISHARE Smart Capsule Coffee Machine", THING_TYPE_BASIC),
     SCISHARE_COFFEE_S1301("scishare.coffee.s1301", "Xiaomi Scishare Smart Capsule Coffee Machine", THING_TYPE_BASIC),
     SOOCARE_TOOTHBRUSH_X3("soocare.toothbrush.x3", "Soocare Electric Toothbrush", THING_TYPE_UNSUPPORTED),
+    TINYMU_TOILETLID_V1("tinymu.toiletlid.v1", "TINYMU Smart Toilet", THING_TYPE_BASIC),
     VIOMI_DISHWASHER_M02("viomi.dishwasher.m02", "Mi Smart Dishwasher (4 Dining Sets)", THING_TYPE_BASIC),
     VIOMI_FRIDGE_V3("viomi.fridge.v3", "Viomi Internet Refrigerator iLive(French style 462L)", THING_TYPE_UNSUPPORTED),
     VIOMI_VACUUM_V3("viomi.vacuum.v3", "Viomi sweeper PRO", THING_TYPE_BASIC),

@@ -1,0 +1,115 @@
+{
+	"deviceMapping": {
+		"id": [
+			"tinymu.toiletlid.v1"
+		],
+		"channels": [
+			{
+				"property": "work_state",
+				"friendlyName": "Status",
+				"channel": "status",
+				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "1",
+							"label": "Idle"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "status",
+				"tags": [
+					"Status"
+				],
+				"readmeComment": "1 is Idle, any other value means the toilet is in use."
+			},
+			{
+				"property": "filter_use_time",
+				"friendlyName": "Filter Days Left",
+				"channel": "filter_days_left",
+				"type": "Number:Time",
+				"unit": "days",
+				"stateDescription": {
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "status",
+				"tags": [
+					"Measurement",
+					"Duration"
+				]
+			},
+			{
+				"property": "filter_use_flux",
+				"friendlyName": "Filter Remaining",
+				"channel": "filter_life",
+				"type": "Number:Dimensionless",
+				"unit": "percentage",
+				"stateDescription": {
+					"pattern": "%.0f %%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "status",
+				"tags": [
+					"Measurement",
+					"Level"
+				]
+			},
+			{
+				"property": "",
+				"friendlyName": "Deodorization",
+				"channel": "deodorization",
+				"type": "Switch",
+				"refresh": false,
+				"actions": [
+					{
+						"command": "nozzle_clean",
+						"parameterType": "NONE",
+						"parameters": [
+							"on"
+						],
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "ON",
+									"returnValue": "on"
+								}
+							]
+						}
+					},
+					{
+						"command": "nozzle_clean",
+						"parameterType": "NONE",
+						"parameters": [
+							"off"
+						],
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "OFF",
+									"returnValue": "off"
+								}
+							]
+						}
+					}
+				],
+				"category": "fan",
+				"tags": [
+					"Switch",
+					"Ventilation"
+				],
+				"readmeComment": "Write only."
+			}
+		],
+		"experimental": true
+	}
+}
