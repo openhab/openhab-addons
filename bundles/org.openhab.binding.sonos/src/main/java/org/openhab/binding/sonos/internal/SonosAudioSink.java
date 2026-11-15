@@ -179,9 +179,12 @@ public class SonosAudioSink extends AudioSinkSync {
     }
 
     @Override
-    public PercentType getVolume() {
+    public PercentType getVolume() throws IOException {
         String volume = handler.getVolume();
-        return volume != null ? new PercentType(volume) : PercentType.ZERO;
+        if (volume == null) {
+            throw new IOException("Sonos volume is unknown.");
+        }
+        return new PercentType(volume);
     }
 
     @Override
