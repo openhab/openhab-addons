@@ -308,6 +308,32 @@ public class TailwindHandlerTest {
     }
 
     @Test
+    public void removingTheThingStopsTheStatusReports() {
+        initializeOnline();
+        String registered = controller.requestsNamed("notify_url").get(0).value().get("url").getAsString();
+
+        handler.handleRemoval();
+
+        awaitAtLeast("notify_url", 2);
+        Received last = controller.requestsNamed("notify_url").get(1);
+        assertEquals(registered, last.value().get("url").getAsString());
+        assertEquals(0, last.value().get("enable").getAsInt());
+        verifyStatus(ThingStatus.REMOVED, ThingStatusDetail.NONE);
+    }
+
+    @Test
+    public void disposingKeepsTheStatusReports() {
+        initializeOnline();
+        int requests = controller.requestsNamed("notify_url").size();
+
+        handler.dispose();
+
+        verify(callback, after(500).never()).statusUpdated(any(),
+                argThat(info -> info.getStatus() == ThingStatus.REMOVED));
+        assertEquals(requests, controller.requestsNamed("notify_url").size());
+    }
+
+    @Test
     public void controllerCommandsAreSentAndTheirStatePublished() {
         initializeOnline();
 

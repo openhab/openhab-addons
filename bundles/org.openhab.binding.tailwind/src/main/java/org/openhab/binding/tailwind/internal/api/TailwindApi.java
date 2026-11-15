@@ -84,11 +84,22 @@ public class TailwindApi {
      * @param hostAndPort the address, such as {@code 192.168.1.10:50904}
      */
     public void setNotifyUrl(String hostAndPort) throws TailwindException, InterruptedException {
+        send(VERSION_0_1, TYPE_SET, "notify_url", notifyUrl(hostAndPort, true));
+    }
+
+    /**
+     * Makes the controller stop sending status reports to the given address.
+     */
+    public void disableNotifyUrl(String hostAndPort) throws TailwindException, InterruptedException {
+        send(VERSION_0_1, TYPE_SET, "notify_url", notifyUrl(hostAndPort, false));
+    }
+
+    private static JsonObject notifyUrl(String hostAndPort, boolean enable) {
         JsonObject value = new JsonObject();
         value.addProperty("url", hostAndPort);
         value.addProperty("proto", "udp");
-        value.addProperty("enable", 1);
-        send(VERSION_0_1, TYPE_SET, "notify_url", value);
+        value.addProperty("enable", enable ? 1 : 0);
+        return value;
     }
 
     public void openDoor(int doorIndex) throws TailwindException, InterruptedException {

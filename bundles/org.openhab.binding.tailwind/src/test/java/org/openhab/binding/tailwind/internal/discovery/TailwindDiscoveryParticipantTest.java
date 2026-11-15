@@ -77,6 +77,27 @@ public class TailwindDiscoveryParticipantTest {
     }
 
     @Test
+    public void controllerWithoutProductKeyIsDiscovered() {
+        // As in the firmware 9.95 example of the Tailwind Local Control API
+        when(service.getPropertyString("product")).thenReturn(null);
+
+        DiscoveryResult result = participant.createResult(service);
+
+        assertNotNull(result);
+        assertEquals(new ThingUID("tailwind", "iq3", "246f28867d80"), result.getThingUID());
+    }
+
+    @Test
+    public void capitalizedTxtKeysAreAccepted() {
+        when(service.getPropertyString("vendor")).thenReturn(null);
+        when(service.getPropertyString("product")).thenReturn(null);
+        when(service.getPropertyString("Vendor")).thenReturn("tailwind");
+        when(service.getPropertyString("Product")).thenReturn("iQ3");
+
+        assertNotNull(participant.createResult(service));
+    }
+
+    @Test
     public void otherDevicesAreIgnored() {
         when(service.getPropertyString("vendor")).thenReturn("acme");
         assertNull(participant.getThingUID(service));

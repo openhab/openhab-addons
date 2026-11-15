@@ -56,6 +56,8 @@ The binding also asks the controller for its status every 5 minutes.
 While the controller cannot be reached, the binding tries again after 30 seconds, and then at increasing intervals of up to 5 minutes.
 With each successful status request it registers for reports again, so the reports resume after the controller restarts.
 
+When the Thing is removed, the binding tells the controller to stop sending its reports.
+
 A controller sends its reports to one address only.
 If another system, such as a second openHAB instance, also registers for them, the two take the reports from each other at every status request, and each receives door changes only part of the time.
 
