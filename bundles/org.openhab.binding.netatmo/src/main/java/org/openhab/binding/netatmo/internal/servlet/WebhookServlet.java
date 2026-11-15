@@ -28,6 +28,7 @@ import javax.ws.rs.core.UriBuilder;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.netatmo.internal.api.NetatmoException;
 import org.openhab.binding.netatmo.internal.api.WebhookApi;
+import org.openhab.binding.netatmo.internal.api.data.EventType;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.ServiceError;
 import org.openhab.binding.netatmo.internal.api.dto.Webhook;
 import org.openhab.binding.netatmo.internal.api.dto.WebhookEvent;
@@ -122,7 +123,16 @@ public class WebhookServlet extends NetatmoServlet {
             logger.debug("Event received on webhook: {}", data);
             try {
                 WebhookEvent event = deserializer.deserialize(WebhookEvent.class, data);
-                notifyListeners(event);
+                switch (event.getEventType()) {
+                    case EventType.WEBHOOK_ACTIVATION:
+                        setHooked(true);
+                        break;
+                    case EventType.WEBHOOK_DELETION:
+                        setHooked(false);
+                        break;
+                    default:
+                        notifyListeners(event);
+                }
             } catch (NetatmoException e) {
                 logger.debug("Error deserializing webhook data received: {}. {}", data, e.getMessage());
             }
