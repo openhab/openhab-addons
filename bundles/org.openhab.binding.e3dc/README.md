@@ -237,6 +237,17 @@ The inverter is a unit of its own and it disconnects when it stops producing: in
 The channel therefore switches at dawn and dusk, and it may also switch during the day when the inverter restarts.
 It says nothing about the connection of the house to the grid: the energy manager stays on the grid and the battery supplies the loads while the inverter is off.
 A rule can read the channel to tell whether the photovoltaic system is producing, but the `ac-power-l1` to `ac-power-l3` channels are the ones that tell how much it produces.
+While the inverter is off, no grid frequency is measured either, see [the `ac-frequency` channel](#the-ac-frequency-channel).
+
+#### The `ac-frequency` channel
+
+The frequency is measured by the PV inverter, not by the power meter at the grid connection.
+The inverter measures it only while it is connected to the grid and running.
+It switches off when there is no photovoltaic power and the battery neither charges nor discharges, and no grid frequency is measured then.
+The device answers such a poll neither with an error nor with zero: it keeps reporting the last value it measured, and the binding publishes what it receives.
+The channel therefore repeats one value until the inverter returns, while the other values of the group fall back to zero.
+The repeated value is a valid number, so the binding cannot tell it apart from a measurement; `on-grid` tells whether the value is current.
+In a chart the repeated value is a straight line, which looks like a gap in the persisted data, so the chart alone does not tell the two apart.
 
 ### Channel Group `system`
 
