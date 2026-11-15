@@ -14,10 +14,14 @@ package org.openhab.binding.atv.internal.handler;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.*;
 import static org.openhab.binding.atv.internal.AtvBindingConstants.*;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.net.InetAddress;
@@ -28,8 +32,10 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -45,10 +51,12 @@ import org.openhab.binding.atv.internal.client.AppleTV;
 import org.openhab.binding.atv.internal.client.capability.Audio;
 import org.openhab.binding.atv.internal.client.capability.Power;
 import org.openhab.binding.atv.internal.client.capability.RemoteControl;
+import org.openhab.binding.atv.internal.client.capability.Stream;
 import org.openhab.binding.atv.internal.client.conf.AtvConfig;
 import org.openhab.binding.atv.internal.client.conf.Service;
 import org.openhab.binding.atv.internal.client.dto.PowerState;
 import org.openhab.binding.atv.internal.client.dto.Protocol;
+import org.openhab.binding.atv.internal.client.exceptions.InvalidStateError;
 import org.openhab.binding.atv.internal.config.AtvConfiguration;
 import org.openhab.core.OpenHAB;
 import org.openhab.core.config.core.Configuration;
@@ -414,6 +422,69 @@ public class AtvHandlerTest {
         device.addService(new Service(raopId, Protocol.RAOP, 7000, Map.of()));
         device.addService(new Service(airplayId, Protocol.AirPlay, 7000, Map.of()));
         return device;
+    }
+
+    @Test
+    void stopStillWorksAfterOverlappingStreamsAreRejected() throws Exception {
+        CompletableFuture<Void> playing = new CompletableFuture<>();
+        CompletableFuture<Void> rejectedFirst = new CompletableFuture<>();
+        CompletableFuture<Void> rejectedSecond = new CompletableFuture<>();
+        streamFileReturns(playing, rejectedFirst, rejectedSecond);
+
+        Thread first = startStream();
+        Thread second = startStream();
+        Thread third = startStream();
+        // The device rejects extra streams after they have started, and the rejections can arrive in any order
+        rejectedSecond.completeExceptionally(new InvalidStateError("already streaming to device"));
+        rejectedFirst.completeExceptionally(new InvalidStateError("already streaming to device"));
+        awaitEnd(second);
+        awaitEnd(third);
+
+        handler.stopAudio();
+        verify(remoteControl).stop();
+
+        playing.completeExceptionally(new IOException("stream ended"));
+        awaitEnd(first);
+        handler.stopAudio();
+        verify(remoteControl, times(1)).stop();
+    }
+
+    @Test
+    void interruptedCallerStopsTheStream() throws Exception {
+        streamFileReturns(new CompletableFuture<>());
+
+        Thread caller = startStream();
+        caller.interrupt();
+        awaitEnd(caller);
+
+        verify(remoteControl).stop();
+    }
+
+    @SafeVarargs
+    private void streamFileReturns(CompletableFuture<Void> first, CompletableFuture<Void>... more) {
+        Stream stream = mock(Stream.class);
+        when(appleTV.stream()).thenReturn(stream);
+        when(stream.streamFile(Mockito.any(InputStream.class), Mockito.any(), anyMap())).thenReturn(first, more);
+    }
+
+    /** Starts a sink stream and returns once it is waiting for playback to end. */
+    private Thread startStream() throws InterruptedException {
+        Thread caller = new Thread(() -> handler.streamAudio(new ByteArrayInputStream(new byte[0]), 50));
+        caller.setDaemon(true);
+        caller.start();
+        long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(10);
+        while (caller.getState() != Thread.State.WAITING) {
+            if (System.nanoTime() > deadline) {
+                fail("stream did not start");
+            }
+            Thread.sleep(10);
+        }
+        return caller;
+    }
+
+    private void awaitEnd(Thread caller) throws InterruptedException {
+        caller.join(TimeUnit.SECONDS.toMillis(10));
+        assertFalse(caller.isAlive(), "stream did not end");
     }
 
     private State powerToState(PowerState state) throws Exception {

@@ -14,6 +14,7 @@ package org.openhab.binding.atv.internal.client.protocols.raop;
 
 import java.io.IOException;
 import java.net.DatagramSocket;
+import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.atv.internal.client.support.http.HttpResponse;
@@ -46,8 +47,9 @@ public interface StreamProtocol {
      *
      * @param timingServerPort local timing server port
      * @param controlClientPort local control client port
+     * @param receiverInfo the receiver's {@code /info} values
      */
-    void setup(int timingServerPort, int controlClientPort);
+    void setup(int timingServerPort, int controlClientPort, Map<String, Object> receiverInfo);
 
     /** Tears down resources allocated by setup after streaming finished. */
     void teardown();
@@ -60,7 +62,7 @@ public interface StreamProtocol {
      *
      * @param socket UDP socket connected to the receiver's audio port
      * @param rtpHeader encoded 12-byte RTP header
-     * @param audio audio payload (raw PCM frames)
+     * @param audio audio payload (big-endian PCM frames)
      * @return sequence number and full sent packet
      * @throws IOException if the datagram cannot be sent
      */

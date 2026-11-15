@@ -203,7 +203,7 @@ public final class RaopStreamClient {
         }
 
         // Set up the streaming session
-        protocol.setup(timingSrv.port(), control.port());
+        protocol.setup(timingSrv.port(), control.port(), info);
     }
 
     /**
@@ -405,6 +405,7 @@ public final class RaopStreamClient {
             }
 
             stats.tick(numSent);
+            skipStall(context, stats);
             long framesBehind = stats.framesBehind();
 
             // If we are late, send some additional frames with hopes of catching up
@@ -498,6 +499,23 @@ public final class RaopStreamClient {
     }
 
     /**
+     * Skips ahead when the source stalled for longer than the receiver buffers.
+     *
+     * <p>
+     * By then the receiver has run out of audio, and sending everything that was missed at full speed would flood
+     * it. Moving the timestamp forward plays the stall as silence. Sync packets take the current time from
+     * {@code headTs}, so it has to stay in step with the clock.
+     */
+    static void skipStall(StreamContext context, Statistics stats) {
+        long behind = stats.framesBehind();
+        if (behind > context.latency) {
+            LOGGER.debug("Audio source stalled, skipping {} frames", behind);
+            context.headTs += behind;
+            stats.skip(behind);
+        }
+    }
+
+    /**
      * Sends a specific number of packets, returning {@code [totalSentFrames,
      * hasMorePackets]} ({@code hasMorePackets} encoded as 1/0).
      */
@@ -557,6 +575,11 @@ public final class RaopStreamClient {
         void tick(int sentFrames) {
             totalFrames += sentFrames;
             intervalFrames += sentFrames;
+        }
+
+        /** Counts frames that were skipped instead of sent as on time. */
+        void skip(long frames) {
+            totalFrames += frames;
         }
 
         /** Starts a new interval, returning {@code [elapsedNanos, frames]} of the previous one. */
