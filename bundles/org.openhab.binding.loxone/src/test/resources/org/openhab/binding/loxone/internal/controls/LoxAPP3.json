@@ -326,6 +326,22 @@
                 "position": "faa30f5d-4b4f-11e2-892eb8ba17ef51ee"
             }
         },
+        "0e367c09-0161-e2c1-ffff403fb0c34b9f": {
+			"name": "Window",
+			"type": "Window",
+			"uuidAction": "0e367c09-0161-e2c1-ffff403fb0c34b9f",
+			"room": "0e368d32-014f-4604-ffff403fb0c34b9e",
+			"cat": "0b734138-033e-02d8-ffff403fb0c34b9e",
+			"defaultRating": 0,
+			"isFavorite": false,
+			"isSecured": false,
+			"states": {
+				"position": "0e367c09-0161-e2c1-ffff403fb0c34ba1",
+				"direction": "0e367c09-0161-e2c1-ffff403fb0c34ba2",
+				"lockedReason": "0e367c09-0161-e2c1-ffff403fb0c34ba3",
+				"targetPosition": "0e367c09-0161-e2c1-ffff403fb0c34ba4"
+			}
+		},
         "0e367c09-0161-e2c1-ffff403fb0c34b9e": {
 			"name": "Window Blinds",
 			"type": "Jalousie",

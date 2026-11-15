@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.openhab.binding.loxone.internal.LxServerHandlerApi;
 import org.openhab.binding.loxone.internal.types.LxCategory;
@@ -28,6 +29,7 @@ import org.openhab.binding.loxone.internal.types.LxConfig;
 import org.openhab.binding.loxone.internal.types.LxContainer;
 import org.openhab.binding.loxone.internal.types.LxState;
 import org.openhab.binding.loxone.internal.types.LxUuid;
+import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
@@ -60,6 +62,7 @@ import com.google.gson.reflect.TypeToken;
  * {@link LxCategory} category.
  *
  * @author Pawel Pieczul - initial contribution
+ * @author Robert Pollai - Added channel configuration support
  *
  */
 public class LxControl {
@@ -199,6 +202,7 @@ public class LxControl {
     final transient Set<String> tags = new HashSet<>();
     private final transient List<Channel> channels = new ArrayList<>();
     private final transient Map<ChannelUID, Callbacks> callbacks = new HashMap<>();
+    private final transient Map<ChannelUID, Configuration> channelConfigurations = new ConcurrentHashMap<>();
 
     private final transient Logger logger;
     private int numberOfChannels = 0;
@@ -670,6 +674,27 @@ public class LxControl {
      */
     ChannelUID addChannel(String itemType, ChannelTypeUID typeId, String channelLabel, String channelDescription,
             Set<String> tags, CommandCallback commandCallback, StateCallback stateCallback) {
+        return addChannel(itemType, typeId, channelLabel, channelDescription, tags, null, commandCallback,
+                stateCallback);
+    }
+
+    /**
+     * Create a new channel with an initial configuration and add it to the control. Channel ID is assigned
+     * automatically in the order of calls to this method, see (@link LxControl#getChannelId}.
+     *
+     * @param itemType item type for the channel
+     * @param typeId channel type ID for the channel
+     * @param channelLabel channel label
+     * @param channelDescription channel description
+     * @param tags tags for the channel or null if no tags needed
+     * @param configuration default configuration of the channel or null if the channel has no configuration
+     * @param commandCallback {@link LxControl} child class method that will be called when command is received
+     * @param stateCallback {@link LxControl} child class method that will be called to get state value
+     * @return channel ID of the added channel (can be used to later set state description to it)
+     */
+    ChannelUID addChannel(String itemType, ChannelTypeUID typeId, String channelLabel, String channelDescription,
+            Set<String> tags, Configuration configuration, CommandCallback commandCallback,
+            StateCallback stateCallback) {
         if (channelLabel == null || channelDescription == null) {
             logger.error("Attempt to add channel with not finalized configuration!: {}", channelLabel);
             return null;
@@ -680,11 +705,38 @@ public class LxControl {
         if (tags != null) {
             builder.withDefaultTags(tags);
         }
+        if (configuration != null) {
+            builder.withConfiguration(configuration);
+        }
         channels.add(builder.build());
+        if (configuration != null) {
+            channelConfigurations.put(channelId, configuration);
+        }
         if (commandCallback != null || stateCallback != null) {
             callbacks.put(channelId, new Callbacks(commandCallback, stateCallback));
         }
         return channelId;
+    }
+
+    /**
+     * Replace the configuration of a channel, for example after the user changed it in the framework. The change is
+     * used immediately by channel state and command handling, no new channel needs to be created for it.
+     *
+     * @param channelId channel ID
+     * @param configuration new configuration of the channel
+     */
+    public void setChannelConfiguration(ChannelUID channelId, Configuration configuration) {
+        channelConfigurations.put(channelId, configuration);
+    }
+
+    /**
+     * Get the configuration of a channel of this control.
+     *
+     * @param channelId channel ID
+     * @return channel configuration or null if the channel has no configuration or is unknown
+     */
+    Configuration getChannelConfiguration(ChannelUID channelId) {
+        return channelConfigurations.get(channelId);
     }
 
     /**
