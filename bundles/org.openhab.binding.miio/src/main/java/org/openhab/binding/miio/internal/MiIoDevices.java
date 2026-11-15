@@ -518,6 +518,8 @@ public enum MiIoDevices {
     XIAOMI_HUMIDIFIER_JSQ2G("xiaomi.humidifier.jsq2g", "Mijia Smart Anti-bacterial Humidifier 2", THING_TYPE_BASIC),
     XIAOMI_HUMIDIFIER_JSQ2W("xiaomi.humidifier.jsq2w", "Xiaomi Smart Humidifier 2", THING_TYPE_BASIC),
     XIAOMI_HUMIDIFIER_P3("xiaomi.humidifier.p3", "Mijia Mist-Free Humidifier 3 (400)", THING_TYPE_BASIC),
+    XIAOMI_JUICER_DEMPP1("xiaomi.juicer.dempp1", "Mijia Smart Quiet Inverter Blender P1", THING_TYPE_BASIC),
+    XIAOMI_JUICER_P1V2("xiaomi.juicer.p1v2", "Mijia Smart Quiet Inverter Blender P1", THING_TYPE_BASIC),
     XIAOMI_KETTLE_MEK02("xiaomi.kettle.mek02", "Xiaomi Smart Electric Hot Water Dispenser 5L", THING_TYPE_BASIC),
     XIAOMI_KETTLE_V20("xiaomi.kettle.v20", "Xiaomi Smart Kettle 2 Pro", THING_TYPE_BASIC),
     XIAOMI_KETTLE_V21("xiaomi.kettle.v21", "Xiaomi Smart Kettle 2 Pro", THING_TYPE_BASIC),
