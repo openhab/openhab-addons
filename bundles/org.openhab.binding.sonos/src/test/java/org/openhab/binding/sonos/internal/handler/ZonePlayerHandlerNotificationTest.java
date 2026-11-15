@@ -171,7 +171,7 @@ public class ZonePlayerHandlerNotificationTest {
         @Override
         public @Nullable String getTransportState() {
             String state = super.getTransportState();
-            if (Thread.currentThread() != testThread) {
+            if (!Thread.currentThread().equals(testThread)) {
                 stateReadTwice.countDown();
                 if ("PLAYING".equals(state)) {
                     playingObserved.countDown();
