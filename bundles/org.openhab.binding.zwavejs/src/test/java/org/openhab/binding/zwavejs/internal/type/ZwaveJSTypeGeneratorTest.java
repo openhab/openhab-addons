@@ -39,6 +39,7 @@ import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.semantics.model.DefaultSemanticTags.Point;
 import org.openhab.core.semantics.model.DefaultSemanticTags.Property;
 import org.openhab.core.thing.Channel;
+import org.openhab.core.thing.DefaultSystemChannelTypeProvider;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.type.ChannelType;
 import org.openhab.core.types.StateDescription;
@@ -342,6 +343,94 @@ public class ZwaveJSTypeGeneratorTest {
     }
 
     @Test
+    public void testColorSourceChannelsAreAdvanced() throws IOException {
+        Node node = DataUtil.getNodeFromStore("store_4.json", 44);
+        ZwaveJSTypeGeneratorResult results = Objects.requireNonNull(provider)
+                .generate(new ThingUID(BINDING_ID, "test-thing"), node, false);
+
+        for (String channelId : Set.of("multilevel-switch-value", "color-switch-hex-color", "color-switch-color-0",
+                "color-switch-color-2", "color-switch-color-3", "color-switch-color-4")) {
+            Channel channel = Objects.requireNonNull(results.channels.get(channelId));
+            ChannelType type = Objects.requireNonNull(
+                    channelTypeProvider.getChannelType(Objects.requireNonNull(channel.getChannelTypeUID()), null));
+            assertTrue(type.isAdvanced(), channelId);
+        }
+    }
+
+    @Test
+    public void testCompositeColorChannelsAndOtherEndpointsRemainVisible() throws IOException {
+        Node node = DataUtil.getNodeFromStore("store_4.json", 44);
+        ZwaveJSTypeGeneratorResult results = Objects.requireNonNull(provider)
+                .generate(new ThingUID(BINDING_ID, "test-thing"), node, false);
+
+        for (String channelId : Set.of("color-switch-color", "multilevel-switch-value-1", "multilevel-switch-value-2",
+                "multilevel-switch-value-3", "multilevel-switch-value-4", "multilevel-switch-value-5")) {
+            Channel channel = Objects.requireNonNull(results.channels.get(channelId));
+            ChannelType type = Objects.requireNonNull(
+                    channelTypeProvider.getChannelType(Objects.requireNonNull(channel.getChannelTypeUID()), null));
+            assertFalse(type.isAdvanced(), channelId);
+        }
+        assertEquals(DefaultSystemChannelTypeProvider.SYSTEM_COLOR_TEMPERATURE.getUID(),
+                Objects.requireNonNull(results.channels.get("color-switch-color-temperature")).getChannelTypeUID());
+    }
+
+    @Test
+    public void testHexOnlyColorChannelRemainsVisible() throws IOException {
+        Node node = DataUtil.getNodeFromStore("store_4.json", 44);
+        node.values.removeIf(value -> value.commandClass == 51 && !"hexColor".equals(value.property));
+        ZwaveJSTypeGeneratorResult results = Objects.requireNonNull(provider)
+                .generate(new ThingUID(BINDING_ID, "test-thing"), node, false);
+        Channel channel = Objects.requireNonNull(results.channels.get("color-switch-hex-color"));
+        ChannelType type = Objects.requireNonNull(
+                channelTypeProvider.getChannelType(Objects.requireNonNull(channel.getChannelTypeUID()), null));
+
+        assertFalse(results.channels.containsKey("color-switch-color"));
+        assertFalse(type.isAdvanced());
+    }
+
+    @Test
+    public void testHexRemainsVisibleWhenOtherColorChannelIsReadOnly() throws IOException {
+        Node node = DataUtil.getNodeFromStore("store_4.json", 44);
+        node.values.removeIf(
+                value -> value.commandClass == 51 && "targetColor".equals(value.property) && value.propertyKey == null);
+        ZwaveJSTypeGeneratorResult results = Objects.requireNonNull(provider)
+                .generate(new ThingUID(BINDING_ID, "test-thing"), node, false);
+        Channel channel = Objects.requireNonNull(results.channels.get("color-switch-hex-color"));
+        ChannelType type = Objects.requireNonNull(
+                channelTypeProvider.getChannelType(Objects.requireNonNull(channel.getChannelTypeUID()), null));
+
+        assertNull(Objects.requireNonNull(results.channels.get("color-switch-color")).getConfiguration()
+                .get(BindingConstants.CONFIG_CHANNEL_WRITE_PROPERTY_STR));
+        assertFalse(type.isAdvanced());
+    }
+
+    @Test
+    public void testStandaloneDimmerRemainsVisibleAfterGeneratingColorChannels() throws IOException {
+        getChannel("store_4.json", 44, "multilevel-switch-value");
+        Channel channel = getChannel("store_4.json", 7, "multilevel-switch-value-1");
+        ChannelType type = Objects.requireNonNull(
+                channelTypeProvider.getChannelType(Objects.requireNonNull(channel.getChannelTypeUID()), null));
+
+        assertFalse(type.isAdvanced());
+    }
+
+    @Test
+    public void testColorTemperatureWithoutColorKeepsDimmerVisible() throws IOException {
+        Node node = DataUtil.getNodeFromStore("store_4.json", 44);
+        node.values.removeIf(value -> value.commandClass == 51
+                && (value.propertyKey == null || value.propertyKey instanceof Number key && key.intValue() >= 2));
+        ZwaveJSTypeGeneratorResult results = Objects.requireNonNull(provider)
+                .generate(new ThingUID(BINDING_ID, "test-thing"), node, false);
+        Channel channel = Objects.requireNonNull(results.channels.get("multilevel-switch-value"));
+        ChannelType type = Objects.requireNonNull(
+                channelTypeProvider.getChannelType(Objects.requireNonNull(channel.getChannelTypeUID()), null));
+
+        assertTrue(Objects.requireNonNull(results.colorCapabilities.get(0)).colorChannels.isEmpty());
+        assertTrue(results.channels.containsKey("color-switch-color-temperature"));
+        assertFalse(type.isAdvanced());
+    }
+
+    @Test
     public void testReadOnlyColorSemanticTags() throws IOException {
         Node node = Objects.requireNonNull(DataUtil.getNodeFromStore("store_4.json", 44));
         Value colorValue = node.values.stream().filter(value -> value.metadata.type == MetadataType.COLOR).findFirst()
@@ -474,7 +563,7 @@ public class ZwaveJSTypeGeneratorTest {
             channels.putAll(results.channels);
         }
 
-        assertEquals(47, channels.values().stream().map(f -> f.getChannelTypeUID()).distinct().count());
+        assertEquals(48, channels.values().stream().map(f -> f.getChannelTypeUID()).distinct().count());
         assertTrue(channels.containsKey("color-switch-color-temperature"));
     }
 }
