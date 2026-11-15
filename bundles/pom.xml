@@ -835,10 +835,10 @@
                 <pathconvert pathsep=", " property="deprecatedTagFileList" refid="deprecatedTagFiles">
                   <map from="${basedir}" to="."/>
                 </pathconvert>
-                <condition property="hasDeprecatedTags">
+                <condition property="deprecatedTagWarning" value="DEPRECATED: channel XML element 'tag' is deprecated; use 'point' and 'property' instead. Affected files: ${deprecatedTagFileList}" else="">
                   <length string="${deprecatedTagFileList}" when="greater" length="0"/>
                 </condition>
-                <echo level="warning" if="hasDeprecatedTags" message="DEPRECATED: channel XML element 'tag' is deprecated; use 'point' and 'property' instead. Affected files: ${deprecatedTagFileList}"/>
+                <echo level="warning" message="${deprecatedTagWarning}"/>
               </target>
             </configuration>
           </execution>
