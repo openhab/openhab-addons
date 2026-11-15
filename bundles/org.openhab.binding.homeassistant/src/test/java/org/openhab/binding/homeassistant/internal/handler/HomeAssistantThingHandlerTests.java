@@ -48,6 +48,9 @@ import org.openhab.core.i18n.UnitProvider;
 import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
@@ -758,6 +761,65 @@ public class HomeAssistantThingHandlerTests extends AbstractHomeAssistantTests {
     }
 
     @ParameterizedTest
+    @ValueSource(booleans = { false, true })
+    @Timeout(value = 60, threadMode = Timeout.ThreadMode.SEPARATE_THREAD)
+    public void testResolvedIdSurvivesBrokerReconnect(boolean grouped) {
+        setupThingHandlerWithTopics(List.of("device/dev1"));
+        thingHandler.initialize();
+        nonSpyThingHandler.config = thingHandler.config;
+        var online = new ThingStatusInfo(ThingStatus.ONLINE, ThingStatusDetail.NONE, "");
+        var offline = new ThingStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "");
+        nonSpyThingHandler.bridgeStatusChanged(online);
+        String payload = """
+                {"dev": {"identifiers": ["dev1"]}, "o": {"name": "repro"}, "cmps": {%s}}
+                """;
+        String survivor = deviceSensorConfig("temp.sensor", grouped);
+        discoverConfig("device/dev1", payload.formatted(survivor + "," + deviceSensorConfig("temp_sensor", grouped)));
+        discoverConfig("device/dev1", payload.formatted(survivor));
+        var expectedIds = nonSpyThingHandler.getThing().getChannels().stream().map(Channel::getUID)
+                .collect(Collectors.toSet());
+
+        for (int reconnect = 0; reconnect < 2; reconnect++) {
+            nonSpyThingHandler.bridgeStatusChanged(offline);
+            assertThat(nonSpyThingHandler.getComponents().size(), is(0));
+            nonSpyThingHandler.bridgeStatusChanged(online);
+            discoverConfig("device/dev1", payload.formatted(survivor));
+            assertThat(nonSpyThingHandler.getThing().getChannels().stream().map(Channel::getUID)
+                    .collect(Collectors.toSet()), is(expectedIds));
+        }
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = { false, true })
+    public void testDeviceUniqueIdChangeReplacesDiscoveryMember(boolean grouped) {
+        setupThingHandlerWithTopics(List.of("device/dev1"));
+        thingHandler.initialize();
+        String payload = """
+                {"dev": {"identifiers": ["dev1"]}, "o": {"name": "repro"}, "cmps": {%s}}
+                """;
+        String original = deviceSensorConfig("temp.sensor", grouped);
+        String neighbor = deviceSensorConfig("temp_sensor", grouped);
+        discoverConfig("device/dev1", payload.formatted(original + "," + neighbor));
+        var expectedIds = nonSpyThingHandler.getThing().getChannels().stream().map(Channel::getUID)
+                .collect(Collectors.toSet());
+        for (String uniqueId : List.of("replacement", "replacement_again")) {
+            String replacement = original
+                    .replace("\"unique_id\": \"temp.sensor\"", "\"unique_id\": \"" + uniqueId + "\"")
+                    .replace("Temperature", "Replacement temperature");
+            discoverConfig("device/dev1", payload.formatted(replacement + "," + neighbor));
+            assertThat(nonSpyThingHandler.getComponents().size(), is(2));
+            var member = nonSpyThingHandler.getComponents().values().stream()
+                    .filter(component -> component.getHaID().objectID.equals("temp.sensor")).findFirst().orElseThrow();
+            assertThat(member.getConfig().getUniqueId(), is(uniqueId));
+            assertThat(member.getName(), is("Replacement temperature"));
+            assertThat(nonSpyThingHandler.getThing().getChannels().stream().map(Channel::getUID)
+                    .collect(Collectors.toSet()), is(expectedIds));
+        }
+        discoverConfig("device/dev1", "");
+        assertThat(nonSpyThingHandler.getThing().getChannels().size(), is(0));
+    }
+
+    @ParameterizedTest
     @ValueSource(strings = { "not json", "[]", "null", "{\"sensor_temp\": 23}",
             "{\"sensor_temp\": \"invalid#channel\"}" })
     public void testInvalidPersistedComponentIdsAreIgnored(String storedIds) {
@@ -826,9 +888,17 @@ public class HomeAssistantThingHandlerTests extends AbstractHomeAssistantTests {
         assertThat(nonSpyThingHandler.getThing().getChannel("scene_scene"), notNullValue());
         assertThat(sceneLabels(), is(List.of("Evening", "Daytime")));
 
+        discoverConfig("scene/morning", payload.formatted("morning_v2", "Daytime", "daytime"));
+        assertThat(nonSpyThingHandler.getThing().getChannels().size(), is(2));
+        assertThat(sceneLabels(), is(List.of("Evening", "Daytime")));
+
         discoverConfig("scene/evening", "");
         assertThat(nonSpyThingHandler.getThing().getChannel("scene_scene"), notNullValue());
         assertThat(sceneLabels(), is(List.of("Daytime")));
+
+        discoverConfig("scene/morning", "");
+        assertThat(nonSpyThingHandler.getThing().getChannels().size(), is(1));
+        assertThat(nonSpyThingHandler.getThing().getChannel("scene_sensor"), notNullValue());
     }
 
     @Test

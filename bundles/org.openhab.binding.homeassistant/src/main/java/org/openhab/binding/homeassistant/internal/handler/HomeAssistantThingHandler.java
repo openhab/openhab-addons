@@ -282,7 +282,7 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
             haComponentsByUniqueId.clear();
             haComponentsByDiscoveryId.clear();
             representativesByUniqueId.clear();
-            assignedComponentIds.clear();
+            // Assignments survive broker reconnects; initialize() reloads them for a new configuration.
             channelStates.clear();
             updateComponent = null;
             started = false;
@@ -375,15 +375,22 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
                         || typeID.getBindingId().equals(HomeAssistantBindingConstants.LEGACY_BINDING_ID)) {
                     typeID = calculateThingTypeUID(discovered);
                 }
-                AbstractComponent<?> known = haComponentsByUniqueId.get(discovered.getUniqueId());
-                if (known != null && known.getConfigHash() == discovered.getConfigHash()) {
+                AbstractComponent<?> known = haComponentsByDiscoveryId.get(discovered.getDiscoveryIdentity());
+                if (known == null) {
+                    known = haComponentsByUniqueId.get(discovered.getUniqueId());
+                }
+                boolean uniqueIdChanged = known != null && !known.getUniqueId().equals(discovered.getUniqueId());
+                if (known != null && !uniqueIdChanged && known.getConfigHash() == discovered.getConfigHash()) {
                     known.setConfigSeen();
                     continue;
                 }
                 replacements.put(discovered.getUniqueId(), discovered);
                 if (known != null) {
                     affectedIds.add(known.getComponentId());
-                    if (!known.getDefaultComponentId().equals(discovered.getDefaultComponentId())) {
+                    if (uniqueIdChanged) {
+                        removedUniqueIds.add(known.getUniqueId());
+                    }
+                    if (uniqueIdChanged || !known.getDefaultComponentId().equals(discovered.getDefaultComponentId())) {
                         assignedComponentIds.put(discovered.getUniqueId(), known.getComponentId());
                     }
                 }
