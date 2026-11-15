@@ -118,16 +118,24 @@ public class WebhookServlet extends NetatmoServlet {
                     setHooked(api.setWebhooks(List.of(uri)));
                 } catch (NetatmoException e1) {
 <<<<<<< Upstream, based on main
+<<<<<<< Upstream, based on main
                     logger.warn("Error setting webhook: {}", e1.getMessage());
                 }
             } else {
                 logger.warn("Error setting webhook: {}", e.getMessage());
 =======
                     logger.info("Error setting webhook: {}", e.getMessage());
+=======
+                    logger.warn("Error setting webhook: {}", e.getMessage());
+>>>>>>> cf4bcf7 lsiepel code review
                 }
             } else {
+<<<<<<< Upstream, based on main
                 logger.info("Error setting webhook: {}", e.getMessage());
 >>>>>>> 68a8c4e Take first code review in account. Add a channel to account tracking hook status.
+=======
+                logger.warn("Error setting webhook: {}", e.getMessage());
+>>>>>>> cf4bcf7 lsiepel code review
             }
         }
     }
