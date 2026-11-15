@@ -146,6 +146,7 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
     private static final String ACTION_GET_REMAINING_SLEEP_TIMER_DURATION = "GetRemainingSleepTimerDuration";
     private static final String ACTION_CONFIGURE_SLEEP_TIMER = "ConfigureSleepTimer";
 
+    private static final String ACTION_GET_VOLUME = "GetVolume";
     private static final String ACTION_SET_VOLUME = "SetVolume";
     private static final String ACTION_SET_MUTE = "SetMute";
     private static final String ACTION_SET_BASS = "SetBass";
@@ -1513,6 +1514,14 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
 
     public @Nullable String getVolume() {
         return stateMap.get("VolumeMaster");
+    }
+
+    /**
+     * Queries the master volume without populating the event cache, which satellites cannot keep up to date.
+     */
+    public @Nullable String getRefreshedVolume() {
+        return service.invokeAction(this, SERVICE_RENDERING_CONTROL, ACTION_GET_VOLUME,
+                Map.of("InstanceID", "0", "Channel", "Master")).get("CurrentVolume");
     }
 
     public boolean isOutputLevelFixed() {

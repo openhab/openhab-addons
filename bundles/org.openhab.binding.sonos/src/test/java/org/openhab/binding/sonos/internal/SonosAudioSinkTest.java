@@ -14,6 +14,8 @@ package org.openhab.binding.sonos.internal;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
@@ -52,6 +54,7 @@ public class SonosAudioSinkTest {
     @Test
     public void unknownVolumeIsNotReportedAsZero() {
         assertThrows(IOException.class, () -> sink.getVolume());
+        verify(handler).getRefreshedVolume();
     }
 
     @ParameterizedTest
@@ -60,6 +63,75 @@ public class SonosAudioSinkTest {
         when(handler.getVolume()).thenReturn(volume);
 
         assertEquals(new PercentType(volume), sink.getVolume());
+        verify(handler, never()).getRefreshedVolume();
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = { "0", "20", "100" })
+    public void unknownVolumeIsRetrievedFromSpeaker(String volume) throws IOException {
+        when(handler.getRefreshedVolume()).thenReturn(volume);
+
+        assertEquals(new PercentType(volume), sink.getVolume());
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = { "", "invalid", "-1", "101" })
+    public void invalidRetrievedVolumeCannotBeRestored(String volume) {
+        when(handler.getRefreshedVolume()).thenReturn(volume);
+
+        assertThrows(IOException.class, () -> sink.getVolume());
+    }
+
+    @Test
+    public void volumeCanBeRetrievedAfterAQueryFailure() throws IOException {
+        when(handler.getRefreshedVolume()).thenReturn(null, "20");
+
+        assertThrows(IOException.class, () -> sink.getVolume());
+        assertEquals(new PercentType(20), sink.getVolume());
+    }
+
+    @Test
+    public void missingVolumeEventsDoNotReuseAnEarlierQueryResult() throws IOException {
+        when(handler.getRefreshedVolume()).thenReturn("20", "30");
+
+        assertEquals(new PercentType(20), sink.getVolume());
+        assertEquals(new PercentType(30), sink.getVolume());
+    }
+
+    @Test
+    public void fixedOutputDoesNotQueryVolume() {
+        when(handler.isOutputLevelFixed()).thenReturn(true);
+
+        assertThrows(UnsupportedOperationException.class, () -> sink.getVolume());
+        verify(handler, never()).getVolume();
+        verify(handler, never()).getRefreshedVolume();
+    }
+
+    @Test
+    public void fixedOutputDoesNotSetVolume() {
+        when(handler.isOutputLevelFixed()).thenReturn(true);
+        PercentType volume = new PercentType(20);
+
+        assertThrows(UnsupportedOperationException.class, () -> sink.setVolume(volume));
+        verify(handler, never()).setVolume(volume);
+    }
+
+    @Test
+    public void volumeCanBeRetrievedAfterFixedOutputIsDisabled() throws IOException {
+        when(handler.isOutputLevelFixed()).thenReturn(true, false);
+        when(handler.getRefreshedVolume()).thenReturn("20");
+
+        assertThrows(UnsupportedOperationException.class, () -> sink.getVolume());
+        assertEquals(new PercentType(20), sink.getVolume());
+    }
+
+    @Test
+    public void variableOutputSetsVolume() {
+        PercentType volume = new PercentType(20);
+
+        sink.setVolume(volume);
+
+        verify(handler).setVolume(volume);
     }
 
     @Test

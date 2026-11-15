@@ -13,6 +13,7 @@
 package org.openhab.binding.sonos.internal.handler;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
@@ -34,6 +35,8 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.openhab.binding.sonos.internal.SonosStateDescriptionOptionProvider;
@@ -49,9 +52,10 @@ import org.openhab.core.thing.binding.ThingHandlerCallback;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
 
 /**
- * Tests the poll of a zoneplayer: the switch to the thing type of its model and the status after unanswered polls.
+ * Tests zone-player polling, model detection, and on-demand volume queries.
  *
  * @author Martin Littkovsky - Initial contribution
+ * @author Leo Siepel - Volume query tests
  */
 @ExtendWith(MockitoExtension.class)
 @NonNullByDefault
@@ -67,6 +71,47 @@ public class ZonePlayerHandlerTest {
     private final AtomicBoolean registered = new AtomicBoolean(true);
     private final AtomicInteger pollsBeforeOffline = new AtomicInteger();
     private @Nullable ZonePlayerHandler handler;
+
+    @ParameterizedTest
+    @ValueSource(strings = { "0", "20", "100" })
+    public void refreshedVolumeIsRetrievedFromSpeaker(String volume) {
+        ZonePlayerHandler player = createPlayerForVolumeQueries();
+        when(upnpIOService.invokeAction(player, "RenderingControl", "GetVolume",
+                Map.of("InstanceID", "0", "Channel", "Master"))).thenReturn(Map.of("CurrentVolume", volume));
+
+        assertEquals(volume, player.getRefreshedVolume());
+    }
+
+    @Test
+    public void failedVolumeQueryRemainsUnknown() {
+        ZonePlayerHandler player = createPlayerForVolumeQueries();
+        when(upnpIOService.invokeAction(player, "RenderingControl", "GetVolume",
+                Map.of("InstanceID", "0", "Channel", "Master"))).thenReturn(Map.of());
+
+        assertNull(player.getRefreshedVolume());
+        assertNull(player.getVolume());
+    }
+
+    @Test
+    public void volumeQueriesWithoutEventsDoNotLeaveAStaleCachedVolume() {
+        ZonePlayerHandler player = createPlayerForVolumeQueries();
+        when(upnpIOService.invokeAction(player, "RenderingControl", "GetVolume",
+                Map.of("InstanceID", "0", "Channel", "Master"))).thenReturn(Map.of("CurrentVolume", "20"))
+                .thenReturn(Map.of("CurrentVolume", "30"));
+
+        assertEquals("20", player.getRefreshedVolume());
+        assertNull(player.getVolume());
+        assertEquals("30", player.getRefreshedVolume());
+        assertNull(player.getVolume());
+    }
+
+    private ZonePlayerHandler createPlayerForVolumeQueries() {
+        Thing thing = ThingBuilder.create(ONE_THING_TYPE_UID, "test").build();
+        ZonePlayerHandler player = new ZonePlayerHandler(thingRegistry, thing, upnpIOService, null,
+                stateDescriptionProvider);
+        this.handler = player;
+        return player;
+    }
 
     @AfterEach
     public void disposeHandler() {
