@@ -310,6 +310,14 @@ Call either action with the shared settings from a rule. This Rules DSL example 
 
 ```java
 val mowerActions = getActions("robonect", "robonect:mower:automower")
+mowerActions.startJob( 60, null, null, "REMOTE_1", "AUTO")
+mowerActions.drive(100, 100, 1500)
+```
+
+OR
+
+```java
+val mowerActions = getActions("robonect", "robonect:mower:automower")
 val startJob = mowerActions.getClass().getMethod("startJob", Integer, String, String, String, String)
 startJob.invoke(mowerActions, 60, null, null, "REMOTE_1", "AUTO")
 val drive = mowerActions.getClass().getMethod("drive", Integer, Integer, Integer)

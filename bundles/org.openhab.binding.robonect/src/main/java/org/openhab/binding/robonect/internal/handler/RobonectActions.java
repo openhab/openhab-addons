@@ -122,4 +122,14 @@ public class RobonectActions implements ThingActions {
         mower.drive(new DirectCommand(left, right, timeout));
         return true;
     }
+
+    // delegation methods for "legacy" rule support
+    public static boolean drive(ThingActions actions, Integer left, Integer right, Integer timeout) {
+        return ((RobonectActions) actions).drive(left, right, timeout);
+    }
+
+    public static boolean startJob(ThingActions actions, @Nullable Integer durationMinutes, @Nullable String startTime,
+            @Nullable String endTime, @Nullable String remoteStart, @Nullable String afterMode) {
+        return ((RobonectActions) actions).startJob(durationMinutes, startTime, endTime, remoteStart, afterMode);
+    }
 }
