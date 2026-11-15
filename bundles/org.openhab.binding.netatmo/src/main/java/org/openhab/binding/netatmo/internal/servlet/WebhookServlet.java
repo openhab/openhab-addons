@@ -82,10 +82,10 @@ public class WebhookServlet extends NetatmoServlet {
                 try {
                     setHooked(api.setWebhooks(List.of(uri)));
                 } catch (NetatmoException e1) {
-                    logger.info("Error setting webhook: {}", e.getMessage());
+                    logger.warn("Error setting webhook: {}", e.getMessage());
                 }
             } else {
-                logger.info("Error setting webhook: {}", e.getMessage());
+                logger.warn("Error setting webhook: {}", e.getMessage());
             }
         }
     }
