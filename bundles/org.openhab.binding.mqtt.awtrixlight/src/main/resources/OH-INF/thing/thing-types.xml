@@ -127,13 +127,13 @@
 	</thing-type>
 
 	<channel-type id="lux">
-		<item-type>Number:Illuminance</item-type>
+		<item-type unitHint="lx">Number:Illuminance</item-type>
 		<label>Lux</label>
 		<description>Brightness in lux</description>
 		<category>sun</category>
 		<tags>
 			<tag>Measurement</tag>
-			<tag>Light</tag>
+			<tag>Illuminance</tag>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>

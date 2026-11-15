@@ -80,12 +80,12 @@
 	</channel-type>
 
 	<channel-type id="illumination">
-		<item-type>Number:Illuminance</item-type>
+		<item-type unitHint="lx">Number:Illuminance</item-type>
 		<label>Illumination</label>
 		<category>Sun</category>
 		<tags>
 			<tag>Measurement</tag>
-			<tag>Light</tag>
+			<tag>Illuminance</tag>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>

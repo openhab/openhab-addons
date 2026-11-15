@@ -416,13 +416,13 @@
 	</channel-type>
 
 	<channel-type id="illuminance">
-		<item-type>Number:Illuminance</item-type>
+		<item-type unitHint="lx">Number:Illuminance</item-type>
 		<label>Illuminance</label>
 		<description>The current illuminance in lux.</description>
 		<category>Sun</category>
 		<tags>
 			<tag>Measurement</tag>
-			<tag>Light</tag>
+			<tag>Illuminance</tag>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
