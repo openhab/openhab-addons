@@ -13,19 +13,27 @@
 package org.openhab.io.yamlcomposer.internal;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.times;
 
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.TimeUnit;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
+import org.mockito.MockedStatic;
+import org.openhab.io.yamlcomposer.internal.StringInterpolator.SubstitutionPattern;
+import org.openhab.io.yamlcomposer.internal.core.EvaluationContext;
+import org.openhab.io.yamlcomposer.internal.expression.ExpressionEvaluator;
 
 /**
  * Tests substitution boundaries and resistance to repeated ambiguous segments.
@@ -35,14 +43,21 @@ import org.junit.jupiter.params.provider.MethodSource;
 @NonNullByDefault
 class StringInterpolatorTest {
 
+    private final EvaluationContext context = new EvaluationContext(name -> {
+    }, name -> null);
+    private final LogSession logSession = new LogSession();
+
     @ParameterizedTest
     @MethodSource("substitutions")
     void preservesSubstitutionContent(String begin, String end, String content) {
-        Pattern pattern = StringInterpolator.compileSubstitutionPattern(begin, end);
-        Matcher matcher = pattern.matcher(begin + content + end);
+        SubstitutionPattern pattern = StringInterpolator.compileSubstitutionPattern(begin, end);
+        try (MockedStatic<ExpressionEvaluator> evaluator = mockStatic(ExpressionEvaluator.class)) {
+            evaluator.when(() -> ExpressionEvaluator.renderObject(content, context, logSession, "test"))
+                    .thenReturn(content);
 
-        assertTrue(matcher.matches());
-        assertEquals(content, matcher.group("content"));
+            assertEquals(content, interpolate(begin + content + end, pattern));
+            evaluator.verify(() -> ExpressionEvaluator.renderObject(content, context, logSession, "test"));
+        }
     }
 
     private static Stream<Arguments> substitutions() {
@@ -51,28 +66,87 @@ class StringInterpolatorTest {
                 Arguments.of("${", "}", "{'key': 42}"), Arguments.of("${", "}", "'"), Arguments.of("${", "}", "\""),
                 Arguments.of("${", "}", "'\""), Arguments.of("${", "}", "\"'"), Arguments.of("${", "}", "${}"),
                 Arguments.of("${", "}", "${"), Arguments.of("$[[", "]]", "name|default(']]')"),
-                Arguments.of("$((", "))", "\"))\""), Arguments.of("@[", "]", "{'key': ']'}"));
+                Arguments.of("$((", "))", "\"))\""), Arguments.of("@[", "]", "{'key': ']'}"),
+                Arguments.of("${", "}", "\"a\\\"}b\""), Arguments.of("${", "}", "'a\\'}b'"),
+                Arguments.of("$[[", "]]", "\"a\\\"]]b\""), Arguments.of("@[", "]", "'a\\']b'"),
+                Arguments.of("${", "}", "\"a\\\\\""), Arguments.of("${", "}", "\"a\\\\\\\"}b\""));
     }
 
     @Test
     void findsMultiplePlaceholdersWithQuotedClosingDelimiters() {
-        Matcher matcher = StringInterpolator.compileSubstitutionPattern("$[[", "]]")
-                .matcher("before $[[name|default(']]')]] between $[[other]] after");
+        context.scope().put("other", "$\\other");
 
-        assertTrue(matcher.find());
-        assertEquals("name|default(']]')", matcher.group("content"));
-        assertTrue(matcher.find());
-        assertEquals("other", matcher.group("content"));
-        assertFalse(matcher.find());
+        assertEquals("before ]] between $\\other after",
+                interpolate("before $[[name|default(']]')]] between $[[other]] after",
+                        StringInterpolator.compileSubstitutionPattern("$[[", "]]")));
+    }
+
+    @ParameterizedTest
+    @MethodSource("escapedQuotes")
+    void interpolatesEscapedQuotes(String begin, String end, String expression, String expected) {
+        SubstitutionPattern pattern = StringInterpolator.compileSubstitutionPattern(begin, end);
+
+        assertEquals(expected, interpolate(begin + expression + end, pattern));
+        assertEquals("before " + expected + " after",
+                interpolate("before " + begin + expression + end + " after", pattern));
+        assertTrue(logSession.getTrackedWarnings().isEmpty());
+    }
+
+    private static Stream<Arguments> escapedQuotes() {
+        return Stream.of(Arguments.of("${", "}", "\"a\\\"}b\"", "a\"}b"), Arguments.of("${", "}", "'a\\'}b'", "a'}b"),
+                Arguments.of("$[[", "]]", "\"a\\\"]]b\"", "a\"]]b"), Arguments.of("@[", "]", "'a\\']b'", "a']b"),
+                Arguments.of("${", "}", "\"a\\\\\"", "a\\"));
     }
 
     @Test
-    void rejectsRepeatedBracedSegmentsWithoutBacktrackingThroughTheirPartitions() throws Exception {
-        String content = "{\n\n    " + "\n        {{\n    \n        {{}} ".repeat(2000) + "!";
+    void retainsNativeTypesAndRendersEmbeddedNulls() {
+        List<Integer> list = List.of(1, 2);
+        Map<String, Integer> map = Map.of("key", 42);
+        context.scope().put("list", list);
+        context.scope().put("map", map);
+        context.scope().put("nothing", null);
 
-        assertFalse(bounded(() -> StringInterpolator.DEFAULT_SUBSTITUTION_PATTERN.matcher("${" + content).matches()));
-        assertFalse(bounded(
-                () -> StringInterpolator.compileSubstitutionPattern("$[[", "]]").matcher("$[[" + content).find()));
+        assertEquals(list, interpolate("${list}", StringInterpolator.DEFAULT_SUBSTITUTION_PATTERN));
+        assertEquals(map, interpolate("${map}", StringInterpolator.DEFAULT_SUBSTITUTION_PATTERN));
+        assertNull(interpolate("${nothing}", StringInterpolator.DEFAULT_SUBSTITUTION_PATTERN));
+        assertEquals("before  after",
+                interpolate("before ${nothing} after", StringInterpolator.DEFAULT_SUBSTITUTION_PATTERN));
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = { "${", "$[[" })
+    void leavesUnterminatedExpressionsUnchangedWithinBoundedTime(String begin) throws Exception {
+        SubstitutionPattern pattern = StringInterpolator.compileSubstitutionPattern(begin,
+                "${".equals(begin) ? "}" : "]]");
+        String braces = begin + "{".repeat(100000) + "!";
+        String openings = begin.repeat(100000) + "!";
+        String segments = begin + "{\n\n    " + "\n        {{\n    \n        {{}} ".repeat(2000) + "!";
+
+        assertEquals(braces, bounded(() -> interpolate(braces, pattern)));
+        assertEquals(openings, bounded(() -> interpolate(openings, pattern)));
+        if (!"${".equals(begin)) {
+            assertEquals(segments, bounded(() -> interpolate(segments, pattern)));
+        }
+        assertTrue(logSession.getTrackedWarnings().isEmpty());
+    }
+
+    @Test
+    void doesNotRescanSuffixesWhenQuotedDelimitersRequireFallback() throws Exception {
+        String value = "$[[ ']]' ".repeat(20000);
+        SubstitutionPattern pattern = StringInterpolator.compileSubstitutionPattern("$[[", "]]");
+        // Resolve deliberately malformed expressions without involving the expression parser's own limits.
+        assertEquals("' ".repeat(20000), bounded(() -> {
+            try (MockedStatic<ExpressionEvaluator> evaluator = mockStatic(ExpressionEvaluator.class)) {
+                Object interpolated = interpolate(value, pattern);
+                evaluator.verify(() -> ExpressionEvaluator.renderObject(" '", context, logSession, "test"),
+                        times(20000));
+                return interpolated;
+            }
+        }));
+    }
+
+    private @Nullable Object interpolate(String value, SubstitutionPattern pattern) {
+        return StringInterpolator.interpolate(value, pattern, context, logSession, "test");
     }
 
     private static <T> T bounded(Callable<T> operation) throws Exception {

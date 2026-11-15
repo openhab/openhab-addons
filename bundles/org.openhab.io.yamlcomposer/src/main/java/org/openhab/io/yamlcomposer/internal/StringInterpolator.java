@@ -12,10 +12,6 @@
  */
 package org.openhab.io.yamlcomposer.internal;
 
-import java.util.Objects;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.io.yamlcomposer.internal.core.EvaluationContext;
@@ -45,46 +41,44 @@ public class StringInterpolator {
      * - ${ name|default('value') } : Use default if variable is not set
      * - ${ name|upper } : Convert to uppercase
      */
-    public static final Pattern DEFAULT_SUBSTITUTION_PATTERN = createSubstitutionPattern(DEFAULT_BEGIN, DEFAULT_END);
+    public static final SubstitutionPattern DEFAULT_SUBSTITUTION_PATTERN = new SubstitutionPattern(DEFAULT_BEGIN,
+            DEFAULT_END);
+
+    /** Literal delimiters used to locate substitution expressions. */
+    public record SubstitutionPattern(String begin, String end) {
+        public SubstitutionPattern {
+            if (begin.isEmpty() || end.isEmpty()) {
+                throw new IllegalArgumentException("Substitution delimiters must not be empty");
+            }
+        }
+    }
 
     private StringInterpolator() {
         // Utility class, no instances
     }
 
     /**
-     * Compiles a substitution pattern from begin and end delimiters.
+     * Creates a substitution pattern from literal begin and end delimiters.
      *
      * @param begin the opening delimiter (e.g., "${")
      * @param end the closing delimiter (e.g., "}")
-     * @return the compiled pattern
+     * @return the substitution pattern
      */
-    public static Pattern compileSubstitutionPattern(String begin, String end) {
+    public static SubstitutionPattern compileSubstitutionPattern(String begin, String end) {
         if (DEFAULT_BEGIN.equals(begin) && DEFAULT_END.equals(end)) {
             return DEFAULT_SUBSTITUTION_PATTERN;
         }
-        return createSubstitutionPattern(begin, end);
-    }
-
-    private static Pattern createSubstitutionPattern(String begin, String end) {
-        String quotedBegin = Pattern.quote(begin);
-        String quotedEnd = Pattern.quote(end);
-        String literal = "(?:(?!" + quotedEnd + ").)";
-        String segments = "\"[^\"]*+\"|'[^']*+'|\\{[^}]*+\\}|" + literal;
-        // Commit to quoted/braced segments instead of retrying every partition of the content.
-        // The literal fallback still passes malformed expressions to the evaluator for diagnostics.
-        String regex = quotedBegin + "(?<content>(?:(?!" + quotedEnd + ")(?:" + segments + "))*+|" + literal + "*+)"
-                + quotedEnd;
-        return Pattern.compile(regex, Pattern.DOTALL);
+        return new SubstitutionPattern(begin, end);
     }
 
     /**
-     * Compiles a substitution pattern from a pattern specification string with format
+     * Parses a substitution pattern from a pattern specification string with format
      * {@code <begin>..<end>}.
      *
      * @param patternSpec the pattern specification, e.g. {@code $[[..]]}
-     * @return the compiled pattern, or {@code null} when the specification is invalid
+     * @return the substitution pattern, or {@code null} when the specification is invalid
      */
-    public static @Nullable Pattern compilePatternSpec(String patternSpec) {
+    public static @Nullable SubstitutionPattern compilePatternSpec(String patternSpec) {
         int separator = patternSpec.indexOf("..");
         if (separator <= 0 || separator >= patternSpec.length() - 2) {
             return null;
@@ -111,30 +105,80 @@ public class StringInterpolator {
      * @param sourceLocation description of the source location for logging
      * @return the evaluated value
      */
-    public static @Nullable Object interpolate(String value, Pattern pattern, EvaluationContext context,
+    public static @Nullable Object interpolate(String value, SubstitutionPattern pattern, EvaluationContext context,
             LogSession logSession, String sourceLocation) {
-        Matcher matcher = pattern.matcher(value);
-        if (!matcher.find()) {
+        int start = value.indexOf(pattern.begin());
+        if (start < 0 || value.indexOf(pattern.end(), start + pattern.begin().length()) < 0) {
             return value;
         }
 
-        // If the whole value is exactly one ${...}, evaluate it and return the native object.
-        // This preserves non-string types (maps, lists, numbers, booleans)
-        // when the value is a plain placeholder.
-        if (matcher.matches()) {
-            String content = Objects.requireNonNull(matcher.group("content"));
-            return evaluateExpression(content, context, logSession, sourceLocation);
-        }
+        int[] closingPositions = closingPositions(value, pattern.end(), start + pattern.begin().length());
+        StringBuilder interpolated = new StringBuilder(value.length());
+        int previousEnd = 0;
+        while (start >= 0) {
+            int contentStart = start + pattern.begin().length();
+            int closing = closingPositions[contentStart];
+            if (closing < 0) {
+                // Preserve diagnostics for malformed expressions, including unclosed quotes or braces.
+                closing = value.indexOf(pattern.end(), contentStart);
+            }
+            if (closing < 0) {
+                break;
+            }
 
-        // Evaluate the expressions inside the ${...} patterns and replace them in the string.
-        String interpolated = matcher.replaceAll(match -> {
-            String content = Objects.requireNonNull(match.group("content"));
+            String content = value.substring(contentStart, closing);
             Object result = evaluateExpression(content, context, logSession, sourceLocation);
-            String rendered = result != null ? result.toString() : "";
-            return Matcher.quoteReplacement(rendered);
-        });
+            int end = closing + pattern.end().length();
+            // A single placeholder retains its native type (including null, maps and lists).
+            if (start == 0 && end == value.length()) {
+                return result;
+            }
+            interpolated.append(value, previousEnd, start);
+            if (result != null) {
+                interpolated.append(result);
+            }
+            previousEnd = end;
+            start = value.indexOf(pattern.begin(), end);
+        }
+        return interpolated.append(value, previousEnd, value.length()).toString();
+    }
 
-        return interpolated;
+    private static int[] closingPositions(String value, String end, int from) {
+        int[] positions = new int[value.length() + 1];
+        positions[value.length()] = -1;
+        int singleQuote = -1;
+        int doubleQuote = -1;
+        int brace = -1;
+        // Resolve each suffix once, so failed quoted/braced segments and later opening delimiters
+        // cannot repeatedly rescan the remaining input. Complete segments skip their contents.
+        for (int i = value.length() - 1; i >= from; i--) {
+            char ch = value.charAt(i);
+            int segmentEnd = switch (ch) {
+                case '\'' -> singleQuote;
+                case '"' -> doubleQuote;
+                case '{' -> brace;
+                default -> -1;
+            };
+            positions[i] = value.startsWith(end, i) ? i : positions[segmentEnd < 0 ? i + 1 : segmentEnd + 1];
+            if (ch == '}') {
+                brace = i;
+            } else if ((ch == '\'' || ch == '"') && !isEscaped(value, i)) {
+                if (ch == '\'') {
+                    singleQuote = i;
+                } else {
+                    doubleQuote = i;
+                }
+            }
+        }
+        return positions;
+    }
+
+    private static boolean isEscaped(String value, int index) {
+        int backslashes = 0;
+        for (int i = index - 1; i >= 0 && value.charAt(i) == '\\'; i--) {
+            backslashes++;
+        }
+        return backslashes % 2 != 0;
     }
 
     /**
