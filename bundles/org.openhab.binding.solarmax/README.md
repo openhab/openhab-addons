@@ -52,6 +52,42 @@ Each inverter requires the following configuration parameters:
 | acPhase2Voltage          | Number:ElectricPotential | AC Phase 2 voltage in V                      |
 | acPhase3Voltage          | Number:ElectricPotential | AC Phase 3 voltage in V                      |
 | heatSinkTemperature      | Number:Temperature       | Heat sink temperature in degrees Celsius     |
+| operatingState           | Number                   | Operating state code (see below)             |
+| alarmCode                | Number                   | Alarm code, a bit mask (see below)           |
+| dcInput1Voltage          | Number:ElectricPotential | DC voltage of input (MPP tracker) 1 in V     |
+| dcInput2Voltage          | Number:ElectricPotential | DC voltage of input (MPP tracker) 2 in V     |
+| dcInput1Current          | Number:ElectricCurrent   | DC current of input (MPP tracker) 1 in A     |
+| dcInput2Current          | Number:ElectricCurrent   | DC current of input (MPP tracker) 2 in A     |
+| dcInput1Power            | Number:Power             | DC power of input (MPP tracker) 1 in W       |
+| dcInput2Power            | Number:Power             | DC power of input (MPP tracker) 2 in W       |
+| dcPower                  | Number:Power             | Total DC power of all inputs in W            |
+
+Channels whose values are not supported by a device model are not updated.
+
+### Operating State and Alarm Codes
+
+SolarMax does not publish the meaning of the operating state (`SYS`) and alarm (`SAL`) codes in its MaxComm protocol description.
+The labels of the `operatingState` channel are therefore taken from open source projects which read SolarMax inverters, and from texts of the SolarMax MaxTalk software.
+Codes without a label are shown as plain numbers.
+Typical values during normal operation are `20002` (irradiance too low), `20003` (startup) and `20008` (mains operation).
+Codes from `20100` upwards indicate an error, e.g. `20115` (no mains), `20116`/`20117` (mains frequency too high/low) or `20122`/`20123` (mains voltage too high/low).
+
+The `alarmCode` channel is a bit mask, `0` means no alarm.
+If several bits are set, several alarms are active at the same time:
+
+| bit value | alarm                            |
+| --------- | -------------------------------- |
+| 1         | External fault 1                 |
+| 2         | Insulation fault DC side         |
+| 4         | Earth fault current too high     |
+| 8         | Fuse failure midpoint earth      |
+| 16        | External alarm 2                 |
+| 32        | Long-term temperature limitation |
+| 64        | Error AC supply                  |
+| 128       | External alarm 4                 |
+| 256       | Fan failure                      |
+| 512       | Fuse failure                     |
+| 1024      | Failure temperature sensor       |
 
 ### Full Example
 
@@ -109,6 +145,6 @@ Number:Temperature heatSinkTemperature "Heat sink temperature in degrees Celsius
 During the implementation the SolarMax device was sent all possible 3 character commands and a number of 4 character commands, to see what it responded to.
 The most interesting, identifiable and useful commands were implemented as channels above.
 
-Here is a list of other commands, which are known to return some kind of value: ADR (Device Address), AMM, CID, CPG, CPL, CP1, CP2, CP3, CP4, CP5, CYC, DIN, DMO, ETH, FH2, FQR, FWV, IAA, IED, IEE, IEM, ILM, IP4, ISL, ITS, KFS, KHS, KTS, LAN (Language), MAC (MAC Address), PAE, PAM, PDA, PDC, PFA, PIN (Power Installed), PLR, PPC, PRL (AC Power Percent, PSF, PSR, PSS, QAC, QMO, QUC, RA1, RA2, RB1, RB2, REL, RH1, RH2, RPR, RSD, SAC, SAL, SAM, SCH, SNM (IP Broadcast Address??), SPS, SRD, SRS, SYS (Operating State), TCP (probably port number - 12345), TI1, TL1, TL3, TND, TNH, TNL, TP1, TP2, TP3, TV0, TV1, TYP (Type?), UA2, UB2, UGD, UI1, UI2, UI3, ULH, ULL, UMX, UM1, UM2, UM3, UPD, UZK, VCM
+Here is a list of other commands, which are known to return some kind of value: ADR (Device Address), AMM, CID, CPG, CPL, CP1, CP2, CP3, CP4, CP5, CYC, DIN, DMO, ETH, FH2, FQR, FWV, IAA, IED, IEE, IEM, ILM, IP4, ISL, ITS, KFS, KHS, KTS, LAN (Language), MAC (MAC Address), PAE, PAM, PDA, PFA, PIN (Power Installed), PLR, PPC, PRL (AC Power Percent, PSF, PSR, PSS, QAC, QMO, QUC, RA1, RA2, RB1, RB2, REL, RH1, RH2, RPR, RSD, SAC, SAM, SCH, SNM (IP Broadcast Address??), SPS, SRD, SRS, TCP (probably port number - 12345), TI1, TL1, TL3, TND, TNH, TNL, TP1, TP2, TP3, TV0, TV1, TYP (Type?), UA2, UB2, UGD, UI1, UI2, UI3, ULH, ULL, UMX, UM1, UM2, UM3, UPD, UZK, VCM
 
 Valid commands which returned a null/empty value during testing: FFK, FRT, GCP, ITN, PLD, PLE, PLF, PLS, PPO, TV2, VLE, VLI, VLO

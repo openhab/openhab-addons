@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<update:update-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:update="https://openhab.org/schemas/update-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/update-description/v1.0.0 https://openhab.org/schemas/update-description-1.0.0.xsd">
+
+	<thing-type uid="solarmax:inverter">
+		<instruction-set targetVersion="1">
+			<add-channel id="operatingState">
+				<type>solarmax:operatingState</type>
+			</add-channel>
+			<add-channel id="alarmCode">
+				<type>solarmax:alarmCode</type>
+			</add-channel>
+			<add-channel id="dcInput1Voltage">
+				<type>solarmax:dcVoltage</type>
+				<label>DC Input 1 Voltage</label>
+				<description>DC voltage of input (MPP tracker) 1</description>
+			</add-channel>
+			<add-channel id="dcInput2Voltage">
+				<type>solarmax:dcVoltage</type>
+				<label>DC Input 2 Voltage</label>
+				<description>DC voltage of input (MPP tracker) 2</description>
+			</add-channel>
+			<add-channel id="dcInput1Current">
+				<type>solarmax:dcCurrent</type>
+				<label>DC Input 1 Current</label>
+				<description>DC current of input (MPP tracker) 1</description>
+			</add-channel>
+			<add-channel id="dcInput2Current">
+				<type>solarmax:dcCurrent</type>
+				<label>DC Input 2 Current</label>
+				<description>DC current of input (MPP tracker) 2</description>
+			</add-channel>
+			<add-channel id="dcInput1Power">
+				<type>solarmax:dcPower</type>
+				<label>DC Input 1 Power</label>
+				<description>DC power of input (MPP tracker) 1</description>
+			</add-channel>
+			<add-channel id="dcInput2Power">
+				<type>solarmax:dcPower</type>
+				<label>DC Input 2 Power</label>
+				<description>DC power of input (MPP tracker) 2</description>
+			</add-channel>
+			<add-channel id="dcPower">
+				<type>solarmax:dcPower</type>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+
+</update:update-descriptions>

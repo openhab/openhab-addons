@@ -65,6 +65,11 @@ public class SolarMaxHandler extends BaseThingHandler {
     public void initialize() {
         config = getConfigAs(SolarMaxConfiguration.class);
 
+        if (config.refreshInterval <= 0) {
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "The refresh interval must be greater than 0");
+            return;
+        }
+        updateStatus(ThingStatus.UNKNOWN);
         configurePolling(); // Setup the scheduler
     }
 
@@ -74,18 +79,18 @@ public class SolarMaxHandler extends BaseThingHandler {
     private void configurePolling() {
         logger.debug("Polling data from {} at {}:{} (Device Address {}) every {} seconds ", getThing().getUID(),
                 this.config.host, this.config.portNumber, this.config.deviceAddress, this.config.refreshInterval);
-        if (this.config.refreshInterval > 0) {
-            if (pollingJob == null || pollingJob.isCancelled()) {
-                pollingJob = scheduler.scheduleWithFixedDelay(pollingRunnable, 0, this.config.refreshInterval,
-                        TimeUnit.SECONDS);
-            }
+        ScheduledFuture<?> job = pollingJob;
+        if (job == null || job.isCancelled()) {
+            pollingJob = scheduler.scheduleWithFixedDelay(pollingRunnable, 0, this.config.refreshInterval,
+                    TimeUnit.SECONDS);
         }
     }
 
     @Override
     public void dispose() {
-        if (pollingJob != null && !pollingJob.isCancelled()) {
-            pollingJob.cancel(true);
+        ScheduledFuture<?> job = pollingJob;
+        if (job != null) {
+            job.cancel(true);
         }
         pollingJob = null;
     }
@@ -111,9 +116,15 @@ public class SolarMaxHandler extends BaseThingHandler {
                 updateChannels(solarMaxData);
                 return;
             }
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "The device did not return any values");
         } catch (SolarMaxException e) {
             updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                     "Communication error with the device: " + e.getMessage());
+        } catch (RuntimeException e) {
+            // an exception escaping from a job scheduled with scheduleWithFixedDelay would silently stop all further
+            // polling, so catch everything here
+            logger.warn("Unexpected error while updating {}: {}", getThing().getUID(), e.getMessage(), e);
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "Unexpected error: " + e.getMessage());
         }
     }
 
@@ -129,19 +140,22 @@ public class SolarMaxHandler extends BaseThingHandler {
             if (channelId.equals(SolarMaxChannel.CHANNEL_LAST_UPDATED.getChannelId())) {
                 // CHANNEL_LAST_UPDATED shows when the device was last read and does not come from the device, so handle
                 // it specially
-                State state = solarMaxData.getDataDateTime();
-                logger.debug("Update channel state: {} - {}", channelId, state);
-                updateState(channel.getUID(), state);
+                if (channel != null) {
+                    State state = solarMaxData.getDataDateTime();
+                    logger.debug("Update channel state: {} - {}", channelId, state);
+                    updateState(channel.getUID(), state);
+                }
             } else {
                 // must be somthing to collect from the device, so...
                 if (solarMaxData.has(SolarMaxCommandKey.valueOf(channelId))) {
                     if (channel == null) {
-                        logger.error("No channel found with id: {}", channelId);
+                        logger.debug("No channel found with id: {}", channelId);
+                        continue;
                     }
-                    State state = convertValueToState(solarMaxData.get(SolarMaxCommandKey.valueOf(channelId)),
-                            solarMaxChannel.getUnit());
+                    Number value = solarMaxData.get(SolarMaxCommandKey.valueOf(channelId));
+                    State state = (value == null) ? null : convertValueToState(value, solarMaxChannel.getUnit());
 
-                    if (channel != null && state != null) {
+                    if (state != null) {
                         logger.debug("Update channel state: {} - {}", channelId, state);
                         updateState(channel.getUID(), state);
                     } else {
@@ -154,7 +168,8 @@ public class SolarMaxHandler extends BaseThingHandler {
 
     private @Nullable State convertValueToState(Number value, @Nullable Unit<?> unit) {
         if (unit == null) {
-            return new DecimalType(value.floatValue());
+            // keeps integer values (e.g. operating state codes) integral, so they match the state options
+            return new DecimalType(value);
         }
         return new QuantityType<>(value, unit);
     }

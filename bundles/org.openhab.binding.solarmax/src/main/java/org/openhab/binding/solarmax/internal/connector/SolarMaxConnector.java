@@ -18,6 +18,7 @@ import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.nio.charset.StandardCharsets;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -78,20 +79,22 @@ public class SolarMaxConnector {
 
         SolarMaxData solarMaxData = new SolarMaxData();
 
-        // get the data from the SolarMax device. If we didn't get as many values back as we asked for, there were
-        // communications problems, so set communicationSuccessful appropriately
+        // get the data from the SolarMax device. Not every model supports every command (unsupported commands are
+        // silently left out of the response, see MaxComm protocol description), so the communication is considered
+        // successful as soon as the device returned any value at all.
 
         Map<SolarMaxCommandKey, @Nullable String> valuesFromSolarMax = getValuesFromSolarMax(host, portNumber,
                 deviceAddress, commandList);
-        boolean allCommandsAnswered = true;
-        for (SolarMaxCommandKey solarMaxCommandKey : commandList) {
-            if (!valuesFromSolarMax.containsKey(solarMaxCommandKey)) {
-                allCommandsAnswered = false;
-                break;
+        if (LOGGER.isDebugEnabled()) {
+            for (SolarMaxCommandKey solarMaxCommandKey : commandList) {
+                if (!valuesFromSolarMax.containsKey(solarMaxCommandKey)) {
+                    LOGGER.debug("    Command {} ({}) was not answered by the device", solarMaxCommandKey,
+                            solarMaxCommandKey.getCommandKey());
+                }
             }
         }
         solarMaxData.setDataDateTime(ZonedDateTime.now());
-        solarMaxData.setCommunicationSuccessful(allCommandsAnswered);
+        solarMaxData.setCommunicationSuccessful(!valuesFromSolarMax.isEmpty());
         solarMaxData.setData(valuesFromSolarMax);
 
         return solarMaxData;
@@ -195,7 +198,7 @@ public class SolarMaxConnector {
         try {
             LOGGER.trace("    ==>: {}", request);
 
-            outputStream.write(request.getBytes());
+            outputStream.write(request.getBytes(StandardCharsets.US_ASCII));
 
             String response = "";
             byte[] responseByte = new byte[1];
@@ -211,7 +214,7 @@ public class SolarMaxConnector {
                 }
 
                 // add the received byte to the response
-                final String responseString = new String(responseByte);
+                final String responseString = new String(responseByte, StandardCharsets.US_ASCII);
                 response = response + responseString;
 
                 // if it was the final expected character "}", break
@@ -244,7 +247,7 @@ public class SolarMaxConnector {
         final Map<SolarMaxCommandKey, @Nullable String> responseMap = new HashMap<>();
 
         // in case there is no response
-        if (response.indexOf("|") == -1) {
+        if (response.indexOf("|") == response.lastIndexOf("|")) {
             LOGGER.warn("Response doesn't contain data. Response: {}", response);
             return responseMap;
         }
@@ -261,11 +264,14 @@ public class SolarMaxConnector {
         for (String entry : entries) {
 
             if (entry.length() != 0) {
-                // could be split on "=" instead of fixed length or made to respect length of command, but they're all 3
-                // characters long (then plus "=")
-                String str = entry.substring(0, 3);
+                // commands are 3 or 4 characters long (e.g. "PAC", "UD01"). A command without "=" means the device
+                // knows the command but it is not applicable at the moment, so there is no value.
+                int separatorIndex = entry.indexOf("=");
+                String str = (separatorIndex == -1) ? entry : entry.substring(0, separatorIndex);
 
-                String responseValue = (entry.length() >= 5) ? entry.substring(4) : null;
+                String responseValue = (separatorIndex != -1 && separatorIndex + 1 < entry.length())
+                        ? entry.substring(separatorIndex + 1)
+                        : null;
 
                 SolarMaxCommandKey key = SolarMaxCommandKey.getKeyFromString(str);
                 if (key != SolarMaxCommandKey.UNKNOWN) {
@@ -357,7 +363,7 @@ public class SolarMaxConnector {
      * calculates the "checksum16" of the given string argument
      */
     static String calculateChecksum16(String str) {
-        byte[] bytes = str.getBytes();
+        byte[] bytes = str.getBytes(StandardCharsets.US_ASCII);
         int sum = 0;
 
         // loop through each of the bytes and add them together
@@ -372,9 +378,33 @@ public class SolarMaxConnector {
         return String.format("%04X", sum);
     }
 
-    static boolean validateResponse(final String header) {
-        // probably should implement a patter matcher with a patternString like "/\\{([0-9A-F]{2});FB;([0-9A-F]{2})/",
-        // but for now...
-        return true;
+    /**
+     * checks the frame of a response, e.g. "{01;FB;34|64:PAC=28C;SYS=4E28,0;UL1=90F;TKK=1F|0BA8}": the length field
+     * has to match the length of the whole response (including the braces) and the checksum has to match the sum of
+     * all characters from the source address up to and including the "|" in front of the checksum
+     */
+    static boolean validateResponse(final String response) {
+        if (!response.startsWith("{") || !response.endsWith("}")) {
+            return false;
+        }
+        int firstPipe = response.indexOf("|");
+        int lastPipe = response.lastIndexOf("|");
+        // the checksum is always 4 characters long and followed by "}"
+        if (firstPipe == -1 || firstPipe == lastPipe || lastPipe != response.length() - 6) {
+            return false;
+        }
+        String[] header = response.substring(1, firstPipe).split(";");
+        if (header.length != 3) {
+            return false;
+        }
+        try {
+            if (Integer.parseInt(header[2], 16) != response.length()) {
+                return false;
+            }
+        } catch (NumberFormatException e) {
+            return false;
+        }
+        String checksum = response.substring(lastPipe + 1, response.length() - 1);
+        return checksum.equals(calculateChecksum16(response.substring(1, lastPipe + 1)));
     }
 }

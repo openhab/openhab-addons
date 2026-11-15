@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.solarmax.internal.connector;
 
+import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.Map;
@@ -107,6 +108,33 @@ public class SolarMaxData {
 
             case heatSinkTemperature:
                 return getHeatSinkTemperature();
+
+            case operatingState:
+                return getOperatingState();
+
+            case alarmCode:
+                return getAlarmCode();
+
+            case dcInput1Voltage:
+                return getDcInput1Voltage();
+
+            case dcInput2Voltage:
+                return getDcInput2Voltage();
+
+            case dcInput1Current:
+                return getDcInput1Current();
+
+            case dcInput2Current:
+                return getDcInput2Current();
+
+            case dcInput1Power:
+                return getDcInput1Power();
+
+            case dcInput2Power:
+                return getDcInput2Power();
+
+            case dcPower:
+                return getDcPower();
 
             default:
                 return null;
@@ -205,14 +233,79 @@ public class SolarMaxData {
         return getIntegerValueFrom(SolarMaxCommandKey.heatSinkTemperature);
     }
 
+    /**
+     * The device answers SYS with two comma separated values, e.g. "4E28,0". The first one is the operating state
+     * code (0x4E28 = 20008 = mains operation), the meaning of the second one is unknown and therefore ignored.
+     */
+    public Number getOperatingState() {
+        String valueString = this.data.get(SolarMaxCommandKey.operatingState);
+        if (valueString == null) {
+            return null;
+        }
+        int separatorIndex = valueString.indexOf(",");
+        return parseHexValue(separatorIndex == -1 ? valueString : valueString.substring(0, separatorIndex));
+    }
+
+    public Number getAlarmCode() {
+        return getIntegerValueFrom(SolarMaxCommandKey.alarmCode);
+    }
+
+    public Number getDcInput1Voltage() {
+        return getDecimalValueFrom(SolarMaxCommandKey.dcInput1Voltage, 0.1);
+    }
+
+    public Number getDcInput2Voltage() {
+        return getDecimalValueFrom(SolarMaxCommandKey.dcInput2Voltage, 0.1);
+    }
+
+    public Number getDcInput1Current() {
+        return getDecimalValueFrom(SolarMaxCommandKey.dcInput1Current, 0.01);
+    }
+
+    public Number getDcInput2Current() {
+        return getDecimalValueFrom(SolarMaxCommandKey.dcInput2Current, 0.01);
+    }
+
+    public Number getDcInput1Power() {
+        return getDecimalValueFrom(SolarMaxCommandKey.dcInput1Power, 0.5);
+    }
+
+    public Number getDcInput2Power() {
+        return getDecimalValueFrom(SolarMaxCommandKey.dcInput2Power, 0.5);
+    }
+
+    public Number getDcPower() {
+        return getDecimalValueFrom(SolarMaxCommandKey.dcPower, 0.5);
+    }
+
+    /**
+     * Parses a hexadecimal value as returned by the device. Returns null instead of throwing if the value can't be
+     * parsed, so a single unexpected value doesn't abort the update of all other channels.
+     */
+    @Nullable
+    private static Integer parseHexValue(String valueString) {
+        try {
+            return Integer.parseInt(valueString, 16);
+        } catch (NumberFormatException e) {
+            return null;
+        }
+    }
+
     @Nullable
     private Number getDecimalValueFrom(SolarMaxCommandKey solarMaxCommandKey, double multiplyByFactor) {
         if (this.data.containsKey(solarMaxCommandKey)) {
             String valueString = this.data.get(solarMaxCommandKey);
 
             if (valueString != null) {
-                int valueInt = Integer.parseInt(valueString, 16);
-                return (float) valueInt * multiplyByFactor;
+                Integer valueInt = parseHexValue(valueString);
+                if (valueInt == null) {
+                    return null;
+                }
+                // calculate decimal values exactly, binary floating point would turn e.g. 0x902 * 0.1 into
+                // 230.60000000000002 instead of 230.6
+                BigDecimal value = BigDecimal.valueOf(valueInt).multiply(BigDecimal.valueOf(multiplyByFactor))
+                        .stripTrailingZeros();
+                return value.scale() < 0 ? value.setScale(0) : value;
             }
             return null;
         }
@@ -225,8 +318,8 @@ public class SolarMaxData {
             String valueString = this.data.get(solarMaxCommandKey);
 
             if (valueString != null) {
-                int valueInt = Integer.parseInt(valueString, 16);
-                return (int) (valueInt * multiplyByFactor);
+                Integer valueInt = parseHexValue(valueString);
+                return valueInt == null ? null : (int) (valueInt * multiplyByFactor);
             }
             return null;
         }
@@ -238,7 +331,7 @@ public class SolarMaxData {
         if (this.data.containsKey(solarMaxCommandKey)) {
             String valueString = this.data.get(solarMaxCommandKey);
             if (valueString != null) {
-                return Integer.parseInt(valueString, 16);
+                return parseHexValue(valueString);
             }
             return null;
         }
