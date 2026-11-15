@@ -246,7 +246,7 @@ public class HttpRequestBuilderTest {
 
         requestBuilderFor(request).get(REQUEST_URI.toString()).send();
 
-        verify(request).timeout(30, TimeUnit.SECONDS);
+        verify(request).timeout(10, TimeUnit.SECONDS);
     }
 
     @Test
@@ -260,7 +260,7 @@ public class HttpRequestBuilderTest {
         requestBuilderFor(retriedRequest).new HttpResponseListener(httpResponse, params, false, FailMode.RETRY)
                 .onComplete(abortedResult);
 
-        verify(retriedRequest).timeout(30, TimeUnit.SECONDS);
+        verify(retriedRequest).timeout(10, TimeUnit.SECONDS);
         verify(retriedRequest).send(any(Response.CompleteListener.class));
         assertThat(httpResponse.isDone(), is(false));
     }
