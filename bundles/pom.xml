@@ -741,6 +741,7 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-dependency-plugin</artifactId>
         <version>3.11.0</version>
+        <inherited>false</inherited>
         <executions>
           <execution>
             <id>embed-dependencies</id>
@@ -778,12 +779,10 @@
           </execution>
         </executions>
       </plugin>
-      <!-- 1. Download XSD -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-antrun-plugin</artifactId>
         <version>3.2.0</version>
-        <inherited>false</inherited>
         <executions>
           <!-- 1. Download XSD -->
           <execution>
@@ -792,6 +791,7 @@
               <goal>run</goal>
             </goals>
             <phase>generate-resources</phase>
+            <inherited>false</inherited>
             <configuration>
               <target>
                 <mkdir dir="${maven.multiModuleProjectDirectory}/target/schemas"/>
@@ -799,7 +799,6 @@
               </target>
             </configuration>
           </execution>
-
           <!-- 2. Generate catalog dynamically -->
           <execution>
             <id>generate-catalog</id>
@@ -807,6 +806,7 @@
               <goal>run</goal>
             </goals>
             <phase>generate-resources</phase>
+            <inherited>false</inherited>
             <configuration>
               <target>
                 <mkdir dir="${maven.multiModuleProjectDirectory}/target/schemas"/>
@@ -815,30 +815,6 @@
     <uri name="https://openhab.org/schemas/thing-description-1.0.0.xsd"
          uri="file:///${maven.multiModuleProjectDirectory}/target/schemas/thing-description-1.0.0.xsd"/>
 </catalog>]]></echo>
-              </target>
-            </configuration>
-          </execution>
-
-          <!-- 3. Warn about deprecated channel <tag> elements (replaced by <point>/<property>) -->
-          <execution>
-            <id>warn-deprecated-channel-tags</id>
-            <goals>
-              <goal>run</goal>
-            </goals>
-            <phase>generate-resources</phase>
-            <configuration>
-              <target>
-                <fileset id="deprecatedTagFiles" dir="${basedir}">
-                  <include name="**/src/main/resources/OH-INF/thing/*.xml"/>
-                  <containsregexp expression="&lt;tag[\s&gt;/]"/>
-                </fileset>
-                <pathconvert pathsep=", " property="deprecatedTagFileList" refid="deprecatedTagFiles">
-                  <map from="${basedir}" to="."/>
-                </pathconvert>
-                <condition property="deprecatedTagWarning" value="DEPRECATED: channel XML element 'tag' is deprecated; use 'point' and 'property' instead. Affected files: ${deprecatedTagFileList}" else="">
-                  <length string="${deprecatedTagFileList}" when="greater" length="0"/>
-                </condition>
-                <echo level="warning" message="${deprecatedTagWarning}"/>
               </target>
             </configuration>
           </execution>
@@ -866,6 +842,45 @@
             <goals>
               <goal>validate</goal>
             </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <!-- Warn on deprecated channel XML 'tag' element -->
+      <plugin>
+        <groupId>org.codehaus.gmavenplus</groupId>
+        <artifactId>gmavenplus-plugin</artifactId>
+        <version>4.1.1</version>
+        <dependencies>
+          <dependency>
+            <groupId>org.apache.groovy</groupId>
+            <artifactId>groovy</artifactId>
+            <version>4.0.22</version>
+          </dependency>
+          <dependency>
+            <groupId>org.apache.groovy</groupId>
+            <artifactId>groovy-ant</artifactId>
+            <version>4.0.22</version>
+          </dependency>
+        </dependencies>
+        <executions>
+          <execution>
+            <id>warn-deprecated-channel-tags</id>
+            <goals>
+              <goal>execute</goal>
+            </goals>
+            <phase>generate-resources</phase>
+            <configuration>
+              <scripts>
+                <script><![CDATA[
+                  def files = new File(project.basedir, 'src/main/resources/OH-INF/thing')
+                    .listFiles({ f -> f.name.endsWith('.xml') } as FileFilter)
+                    ?.findAll { it.text =~ /<tag[\s>\/]/ } ?: []
+                  if (!files.isEmpty()) {
+                    log.warn("DEPRECATED: channel XML element 'tag' is deprecated; use 'point' and 'property' instead. Affected files: " + files.collect { project.basedir.toPath().relativize(it.toPath()) }.join(', '))
+                  }
+                ]]></script>
+              </scripts>
+            </configuration>
           </execution>
         </executions>
       </plugin>
