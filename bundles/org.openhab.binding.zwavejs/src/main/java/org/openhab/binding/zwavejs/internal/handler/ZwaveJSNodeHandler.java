@@ -320,6 +320,24 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
         }
 
         ColorCapability colorCap = colorCapabilities.get(channelConfig.endpoint);
+        if (colorCap != null && colorCap.colorChannels.contains(channelUID)
+                && colorCap.dimmerChannel instanceof ChannelUID dimmerChannel) {
+            if (command instanceof HSBType colorCommand) {
+                HSBType cachedColor = colorCap.cachedColor;
+                // Resending full RGB values for dimming or OFF can turn the light back on.
+                if (PercentType.ZERO.equals(colorCommand.getBrightness())
+                        || (cachedColor.getHue().equals(colorCommand.getHue())
+                                && cachedColor.getSaturation().equals(colorCommand.getSaturation()))) {
+                    colorCap.cachedColor = new HSBType(cachedColor.getHue(), cachedColor.getSaturation(),
+                            colorCommand.getBrightness());
+                    handleCommand(dimmerChannel, colorCommand.getBrightness());
+                    return;
+                }
+            } else if (command instanceof OnOffType || command instanceof PercentType) {
+                handleCommand(dimmerChannel, command);
+                return;
+            }
+        }
 
         if (command instanceof OnOffType onOffCommand) {
             zwaveCommand.value = handleOnOffTypeCommand(channelConfig.inverted, channel, colorCap, onOffCommand);
@@ -606,7 +624,9 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
                         || channelId.equals(rollerShutterCapability.upChannel.getId())
                         || channelId.equals(rollerShutterCapability.downChannel.getId())));
 
-        if (!isRollerShutterRelatedCommand && !isLinked(channelId)) {
+        ColorCapability colorCap = colorCapabilities.get(channelConfig.endpoint);
+        if (!isRollerShutterRelatedCommand && !isLinked(channelId)
+                && !isColorRelatedChannel(channel.getUID(), colorCap)) {
             return true;
         }
 
@@ -618,7 +638,6 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
         }
 
         // Handle color and color temperature state updates
-        ColorCapability colorCap = colorCapabilities.get(channelConfig.endpoint);
         if (colorCap != null) {
             state = handleColorUpdate(colorCap, state, channel, channelConfig);
             state = handleColorTemperatureUpdate(colorCap, state, channel, channelConfig);
@@ -668,6 +687,13 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
         }
 
         return true;
+    }
+
+    private boolean isColorRelatedChannel(ChannelUID channelUID, @Nullable ColorCapability colorCapability) {
+        return colorCapability != null && (colorCapability.colorChannels.contains(channelUID)
+                || channelUID.equals(colorCapability.dimmerChannel)
+                || channelUID.equals(colorCapability.warmWhiteChannel)
+                || channelUID.equals(colorCapability.coldWhiteChannel));
     }
 
     /**
@@ -1099,24 +1125,26 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
     }
 
     private void initializeChannelAndConfigState(Node node, ZwaveJSTypeGeneratorResult result) {
-        // Set initial state for linked channels
+        // Initialize light source channels even when only their composite channels are linked.
         for (Channel channel : thing.getChannels()) {
             String channelId = channel.getUID().getId();
-            if (result.values.containsKey(channelId) && isLinked(channel.getUID())) {
+            if (result.values.containsKey(channelId)) {
+                ZwaveJSChannelConfiguration channelConfig = getChannelConfiguration(channel);
+                ColorCapability colorCap = colorCapabilities.get(channelConfig.endpoint);
+                if (!isLinked(channel.getUID()) && !isColorRelatedChannel(channel.getUID(), colorCap)) {
+                    continue;
+                }
                 ChannelMetadata metadata = result.channelMetadata.get(channelId);
                 if (metadata == null) {
                     logger.debug("Node {}. Channel {} has a value but no metadata, skipping initial state", node.nodeId,
                             channelId);
                     continue;
                 }
-                ZwaveJSChannelConfiguration channelConfig = channel.getConfiguration()
-                        .as(ZwaveJSChannelConfiguration.class);
                 State state = metadata.setState(Objects.requireNonNull(result.values.get(channelId)),
                         Objects.requireNonNull(channel.getAcceptedItemType()), channelConfig.incomingUnit,
                         channelConfig.inverted, channelConfig.factor);
                 if (state != null) {
                     // Initialize color and color temperature channels
-                    ColorCapability colorCap = colorCapabilities.get(channelConfig.endpoint);
                     state = handleColorUpdate(colorCap, state, channel, channelConfig);
                     state = handleColorTemperatureUpdate(colorCap, state, channel, channelConfig);
                     try {
