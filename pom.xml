@@ -95,9 +95,8 @@
     <slf4j.version>2.0.19</slf4j.version>
     <!-- WireMock testing framework currently uses the wiremock-standalone artifact; investigate wiremock-jetty12 after Jetty migration -->
     <wiremock.version>3.13.2</wiremock.version>
-    <spotless.version>2.44.3</spotless.version>
-    <!-- Eclipse Java formatter version 4.26+ does not check test files -->
-    <spotless.eclipse.version>4.25</spotless.eclipse.version>
+    <spotless.version>3.11.0</spotless.version>
+    <spotless.eclipse.version>4.41</spotless.eclipse.version>
     <spotless.eclipse.wtp.version>4.21.0</spotless.eclipse.wtp.version>
 
     <bnd.importpackage/>

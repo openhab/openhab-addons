@@ -274,7 +274,8 @@ public class LightEntity implements EntityType {
         };
     }
 
-    private Optional<ServiceCall> handlePrimaryCommand(String entityId, Command command, @Nullable EntityState entityState) {
+    private Optional<ServiceCall> handlePrimaryCommand(String entityId, Command command,
+            @Nullable EntityState entityState) {
 
         return switch (command) {
             case OnOffType onOff -> CommandMapper.onOff(onOff, "light", entityId);

@@ -38,38 +38,38 @@ import org.openhab.io.yamlcomposer.internal.placeholders.VarPlaceholder;
 @NonNullByDefault
 public enum ProcessingPhase {
 
-    SUBSTITUTION(Set.of( //
-            SubstitutionPlaceholder.class //
+    SUBSTITUTION(Set.of(//
+            SubstitutionPlaceholder.class//
     )),
 
-    INCLUDES(Set.of( //
-            IncludePlaceholder.class //
+    INCLUDES(Set.of(//
+            IncludePlaceholder.class//
     )),
 
-    DIRECTIVES(Set.of( //
+    DIRECTIVES(Set.of(//
             IfPlaceholder.class, //
             ElseIfPlaceholder.class, //
             ElsePlaceholder.class, //
             ForPlaceholder.class, //
-            VarPlaceholder.class //
+            VarPlaceholder.class//
     )),
 
-    DIRECTIVES_WITH_SUBSTITUTIONS(combine( //
+    DIRECTIVES_WITH_SUBSTITUTIONS(combine(//
             DIRECTIVES, //
-            SubstitutionPlaceholder.class //
+            SubstitutionPlaceholder.class//
     )),
 
     STANDARD(combine(DIRECTIVES_WITH_SUBSTITUTIONS, //
             IncludePlaceholder.class, //
-            InsertPlaceholder.class //
+            InsertPlaceholder.class//
     )),
 
     MERGE(STANDARD.getPlaceholders()),
 
-    FINALIZATION(Set.of( //
+    FINALIZATION(Set.of(//
             DefaultPlaceholder.class, //
             RemovePlaceholder.class, //
-            FreezePlaceholder.class //
+            FreezePlaceholder.class//
     )),
 
     NONE(Set.of()),

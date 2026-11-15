@@ -55,7 +55,7 @@ import org.slf4j.LoggerFactory;
  *
  * A typical scan response looks as follows
  *
- * <pre>{@code
+ * <pre>
  * {
  *   "msg":{
  *     "cmd":"scan",
@@ -69,7 +69,6 @@ import org.slf4j.LoggerFactory;
  *       "wifiVersionSoft":"1.02.03"
  *     }
  *   }
- * }
  * }
  * </pre>
  *
