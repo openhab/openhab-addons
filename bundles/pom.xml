@@ -832,7 +832,9 @@
                   <include name="**/src/main/resources/OH-INF/thing/*.xml"/>
                   <containsregexp expression="&lt;tag[\s&gt;/]"/>
                 </fileset>
-                <pathconvert pathsep=", " property="deprecatedTagFileList" refid="deprecatedTagFiles" relative="true"/>
+                <pathconvert pathsep=", " property="deprecatedTagFileList" refid="deprecatedTagFiles">
+                  <map from="${basedir}" to="."/>
+                </pathconvert>
                 <condition property="hasDeprecatedTags">
                   <length string="${deprecatedTagFileList}" when="greater" length="0"/>
                 </condition>
