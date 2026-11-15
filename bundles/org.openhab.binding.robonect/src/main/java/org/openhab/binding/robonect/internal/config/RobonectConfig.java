@@ -151,7 +151,7 @@ public class RobonectConfig {
      *
      * @return {@code true} if unofficial operations are enabled
      */
-    public boolean isUseWebApi() {
+    public boolean isWebApiEnabled() {
         return useWebApi;
     }
 }

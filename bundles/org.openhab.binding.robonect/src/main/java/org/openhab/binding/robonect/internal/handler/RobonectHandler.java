@@ -730,7 +730,7 @@ public class RobonectHandler extends BaseThingHandler {
         updateState(CHANNEL_PUSH_PASSWORD, UnDefType.UNDEF);
         RobonectConfig robonectConfig = getConfigAs(RobonectConfig.class);
         configureAjaxChannels(robonectConfig.isAjaxApiEnabled());
-        configureUnofficialChannels(robonectConfig.isUseWebApi());
+        configureUnofficialChannels(robonectConfig.isWebApiEnabled());
         RobonectEndpoint endpoint = new RobonectEndpoint(robonectConfig.getHost(), robonectConfig.getUser(),
                 robonectConfig.getPassword());
 
@@ -937,7 +937,6 @@ public class RobonectHandler extends BaseThingHandler {
 
     private static class PollingSession {
         private final long offlineTriggerDelay;
-        private final boolean detailedPollingEnabled;
         private boolean pollDriveDiagnosticsWhileMowing;
         private long offlineSince = -1;
         private boolean offlineTimeoutTriggered;
@@ -950,7 +949,6 @@ public class RobonectHandler extends BaseThingHandler {
          */
         private PollingSession(RobonectConfig config) {
             offlineTriggerDelay = TimeUnit.SECONDS.toMillis(config.getOfflineTimeout());
-            detailedPollingEnabled = config.getPollIntervalExtended() > 0;
         }
     }
 
@@ -973,7 +971,7 @@ public class RobonectHandler extends BaseThingHandler {
             }, () -> {
                 session.pollDriveDiagnosticsWhileMowing = false;
                 MowerStatus status = requireHandler(mowerHandler).refreshMowerInfo();
-                session.pollDriveDiagnosticsWhileMowing = session.detailedPollingEnabled && switch (status) {
+                session.pollDriveDiagnosticsWhileMowing = switch (status) {
                     case MOWING, SEARCH_CHARGING_STATION, SEARCHING -> true;
                     case null, default -> false;
                 };
@@ -1061,18 +1059,12 @@ public class RobonectHandler extends BaseThingHandler {
      * @return the ordered endpoint refresh operations for detailed polling
      */
     private List<Runnable> createDetailedRefreshes(PollingSession session) {
-        List<Runnable> updates = new ArrayList<>();
-        if (useWebApi) {
-            updates.add(() -> requireHandler(pushHandler).refreshPushMode());
-        }
-
-        updates.addAll(List.<Runnable> of(() -> {
+        return List.of(() -> {
             if (!session.pollDriveDiagnosticsWhileMowing) {
                 refreshDriveDiagnostics();
             }
         }, () -> requireHandler(diagnosticsHandler).refreshHourInfo(),
-                () -> requireHandler(remoteStartHandler).refreshRemoteInfo()));
-        return updates;
+                () -> requireHandler(remoteStartHandler).refreshRemoteInfo());
     }
 
     private static <T> T requireHandler(@Nullable T handler) {
@@ -1112,7 +1104,8 @@ public class RobonectHandler extends BaseThingHandler {
                             () -> requireHandler(diagnosticsHandler).refreshPortalInfo(),
                             () -> requireHandler(timerHandler).refreshTimersInfo(),
                             () -> requireHandler(pushHandler).refreshExtensionInfo(),
-                            () -> requireHandler(pushHandler).refreshPushInfo()));
+                            () -> requireHandler(pushHandler).refreshPushInfo(),
+                            () -> requireHandler(pushHandler).refreshPushMode()));
         }
     }
 }

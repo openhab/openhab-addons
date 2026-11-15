@@ -337,7 +337,7 @@ public class RobonectHandlerTest {
                 weatherApiMock);
 
         pollers.getLast().run();
-        verify(pushApiMock, times(unofficialApi ? 1 : 0)).getPushModeViaWebInterface();
+        verify(pushApiMock, never()).getPushModeViaWebInterface();
         verify(diagnosticsApiMock).getBatteryInfo();
         verify(diagnosticsApiMock).getMotorInfo();
         verify(diagnosticsApiMock).getHourInfo();
@@ -363,7 +363,7 @@ public class RobonectHandlerTest {
 
     @Test
     public void shouldPollConfigurationAtItsOwnIntervalAndCancelOnDispose() {
-        List<Runnable> pollers = initializePolling(Map.of("pollIntervalConfig", 90));
+        List<Runnable> pollers = initializePolling(Map.of("pollIntervalConfig", 90, "useWebApi", true));
         assertEquals(2, pollers.size());
         verify(commandScheduler).scheduleWithFixedDelay(any(Runnable.class), eq(0L), eq(90L), eq(TimeUnit.SECONDS));
         pollers.getLast().run();
@@ -372,6 +372,7 @@ public class RobonectHandlerTest {
         verify(timerApiMock).getTimersInfo();
         verify(pushApiMock).getExtInfo();
         verify(pushApiMock).getPushInfo();
+        verify(pushApiMock).getPushModeViaWebInterface();
         verify(mowerApiMock, never()).getMowerInfo(anyBoolean());
         subject.dispose();
         verify(detailedPollingJob).cancel(true);
@@ -434,9 +435,11 @@ public class RobonectHandlerTest {
         verify(mowerApiMock, times(3)).getDoorInfo();
     }
 
-    /** Checks that enabling the unofficial API leaves the zero detailed polling interval disabled. */
+    /**
+     * Checks that zero detailed polling disables its schedule while active-mowing diagnostics still refresh normally.
+     */
     @Test
-    public void shouldNotScheduleDetailedPollingWhenIntervalIsZeroEvenWithUnofficialApiEnabled() {
+    public void shouldNotScheduleDetailedPollingWhenIntervalIsZeroButRefreshActiveDriveDiagnostics() {
         List<Runnable> pollers = initializePolling(Map.of("pollIntervalExtended", 0, "useWebApi", true));
         assertEquals(1, pollers.size());
         verify(commandScheduler, times(1)).scheduleWithFixedDelay(any(Runnable.class), eq(0L), anyLong(),
@@ -448,9 +451,10 @@ public class RobonectHandlerTest {
         when(mowerApiMock.getMowerInfo(anyBoolean())).thenReturn(active);
         pollers.getFirst().run();
         verify(weatherApiMock).getWeatherInfo();
-        verify(diagnosticsApiMock, never()).getBatteryInfo();
-        verify(diagnosticsApiMock, never()).getMotorInfo();
-        verify(diagnosticsApiMock, never()).getWireInfo();
+        verify(diagnosticsApiMock).getBatteryInfo();
+        verify(diagnosticsApiMock).getMotorInfo();
+        verify(diagnosticsApiMock).getWireInfo();
+        verify(pushApiMock, never()).getPushModeViaWebInterface();
     }
 
     /** Invokes captured polling tasks after disposal to verify that they no longer access the mower. */

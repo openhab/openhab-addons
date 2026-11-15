@@ -50,93 +50,93 @@
 				<label>WLAN Signal Strength</label>
 				<description>Received WLAN signal strength in dBm.</description>
 			</channel>
-			<channel id="wlan-enabled" typeId="readOnlySwitchType">
+			<channel id="wlan-enabled" typeId="readOnlySwitchAdvancedType">
 				<label>WLAN Enabled</label>
 				<description>Whether Robonect is configured to connect to the WLAN.</description>
 			</channel>
-			<channel id="wlan-ssid" typeId="readOnlyStringType">
+			<channel id="wlan-ssid" typeId="readOnlyStringAdvancedType">
 				<label>WLAN SSID</label>
 				<description>Network name of the WLAN configured in Robonect.</description>
 			</channel>
-			<channel id="wlan-ip" typeId="readOnlyStringType">
+			<channel id="wlan-ip" typeId="readOnlyStringAdvancedType">
 				<label>WLAN IP Address</label>
 				<description>IP address of the Robonect WLAN interface.</description>
 			</channel>
-			<channel id="wlan-mac" typeId="readOnlyStringType">
+			<channel id="wlan-mac" typeId="readOnlyStringAdvancedType">
 				<label>WLAN MAC Address</label>
 				<description>MAC address of the Robonect WLAN interface.</description>
 			</channel>
-			<channel id="wlan-dhcp" typeId="readOnlySwitchType">
+			<channel id="wlan-dhcp" typeId="readOnlySwitchAdvancedType">
 				<label>WLAN DHCP Client</label>
 				<description>Whether the WLAN interface obtains its IP configuration through DHCP.</description>
 			</channel>
-			<channel id="wlan-ping" typeId="readOnlySwitchType">
+			<channel id="wlan-ping" typeId="readOnlySwitchAdvancedType">
 				<label>Gateway Ping Monitoring</label>
 				<description>Whether gateway connection monitoring is enabled. Robonect pings the gateway every 30 seconds and
 					reconnects the WLAN after three consecutive missed replies.</description>
 			</channel>
-			<channel id="wlan-ping-time" typeId="readOnlyStringType">
+			<channel id="wlan-ping-time" typeId="readOnlyStringAdvancedType">
 				<label>Gateway Ping Time</label>
 				<description>Gateway ping response time as text, including the unit supplied by Robonect.</description>
 			</channel>
-			<channel id="wlan-netmask" typeId="readOnlyStringType">
+			<channel id="wlan-netmask" typeId="readOnlyStringAdvancedType">
 				<label>WLAN Netmask</label>
 				<description>Subnet mask of the Robonect WLAN interface.</description>
 			</channel>
-			<channel id="wlan-gateway" typeId="readOnlyStringType">
+			<channel id="wlan-gateway" typeId="readOnlyStringAdvancedType">
 				<label>WLAN Gateway</label>
 				<description>Gateway address used by the Robonect WLAN interface.</description>
 			</channel>
-			<channel id="wlan-ap-enabled" typeId="readOnlySwitchType">
+			<channel id="wlan-ap-enabled" typeId="readOnlySwitchAdvancedType">
 				<label>Access Point Enabled</label>
 				<description>Whether the Robonect access point is enabled.</description>
 			</channel>
-			<channel id="wlan-ap-ssid" typeId="readOnlyStringType">
+			<channel id="wlan-ap-ssid" typeId="readOnlyStringAdvancedType">
 				<label>Access Point SSID</label>
 				<description>Network name broadcast by the Robonect access point.</description>
 			</channel>
-			<channel id="wlan-ap-mac" typeId="readOnlyStringType">
+			<channel id="wlan-ap-mac" typeId="readOnlyStringAdvancedType">
 				<label>Access Point MAC Address</label>
 				<description>MAC address of the Robonect access-point interface.</description>
 			</channel>
-			<channel id="wlan-ap-hidden" typeId="readOnlySwitchType">
+			<channel id="wlan-ap-hidden" typeId="readOnlySwitchAdvancedType">
 				<label>Access Point Hidden</label>
 				<description>Whether the access-point network name is hidden from WLAN scans.</description>
 			</channel>
-			<channel id="wlan-ap-channel" typeId="readOnlyNumberType">
+			<channel id="wlan-ap-channel" typeId="readOnlyNumberAdvancedType">
 				<label>Access Point Radio Channel</label>
 				<description>Radio channel configured for the access point. The setting applies only while Robonect is not connected
 					to a WLAN.</description>
 			</channel>
-			<channel id="wlan-ap-encryption" typeId="readOnlyStringType">
+			<channel id="wlan-ap-encryption" typeId="readOnlyStringAdvancedType">
 				<label>Access Point Encryption</label>
 				<description>Authentication and encryption mode reported for the access point.</description>
 			</channel>
-			<channel id="wlan-ap-max-connections" typeId="readOnlyNumberType">
+			<channel id="wlan-ap-max-connections" typeId="readOnlyNumberAdvancedType">
 				<label>Access Point Client Limit</label>
 				<description>Maximum number of clients allowed to connect to the access point.</description>
 			</channel>
-			<channel id="wlan-ap-ip" typeId="readOnlyStringType">
+			<channel id="wlan-ap-ip" typeId="readOnlyStringAdvancedType">
 				<label>Access Point IP Address</label>
 				<description>IP address of the Robonect access-point interface.</description>
 			</channel>
-			<channel id="wlan-ap-netmask" typeId="readOnlyStringType">
+			<channel id="wlan-ap-netmask" typeId="readOnlyStringAdvancedType">
 				<label>Access Point Netmask</label>
 				<description>Subnet mask of the Robonect access-point interface.</description>
 			</channel>
-			<channel id="wlan-ap-gateway" typeId="readOnlyStringType">
+			<channel id="wlan-ap-gateway" typeId="readOnlyStringAdvancedType">
 				<label>Access Point Gateway</label>
 				<description>Gateway address configured for the Robonect access-point interface.</description>
 			</channel>
-			<channel id="wlan-ap-dhcp" typeId="readOnlySwitchType">
+			<channel id="wlan-ap-dhcp" typeId="readOnlySwitchAdvancedType">
 				<label>Access Point DHCP Server</label>
 				<description>Whether the access point assigns IP addresses to connected clients through DHCP.</description>
 			</channel>
-			<channel id="wlan-ap-dhcp-start" typeId="readOnlyStringType">
+			<channel id="wlan-ap-dhcp-start" typeId="readOnlyStringAdvancedType">
 				<label>Access Point DHCP Range Start</label>
 				<description>First IP address in the access-point DHCP address pool.</description>
 			</channel>
-			<channel id="wlan-ap-dhcp-end" typeId="readOnlyStringType">
+			<channel id="wlan-ap-dhcp-end" typeId="readOnlyStringAdvancedType">
 				<label>Access Point DHCP Range End</label>
 				<description>Last IP address in the access-point DHCP address pool.</description>
 			</channel>
@@ -146,7 +146,7 @@
 			<channel id="left-drive-speed" typeId="driveMotorSpeedType">
 				<label>Left Drive Speed</label>
 			</channel>
-			<channel id="left-drive-current" typeId="driveMotorCurrentType">
+			<channel id="left-drive-current" typeId="motorCurrentType">
 				<label>Left Drive Current</label>
 			</channel>
 			<channel id="right-drive-power" typeId="driveMotorPowerType">
@@ -155,7 +155,7 @@
 			<channel id="right-drive-speed" typeId="driveMotorSpeedType">
 				<label>Right Drive Speed</label>
 			</channel>
-			<channel id="right-drive-current" typeId="driveMotorCurrentType">
+			<channel id="right-drive-current" typeId="motorCurrentType">
 				<label>Right Drive Current</label>
 			</channel>
 			<channel id="blade-motor-average" typeId="readOnlyNumberAdvancedType">
@@ -166,7 +166,7 @@
 				<label>Blade Motor Speed</label>
 				<description>Rotational speed of the blade motor.</description>
 			</channel>
-			<channel id="blade-motor-current" typeId="driveMotorCurrentType">
+			<channel id="blade-motor-current" typeId="motorCurrentType">
 				<label>Blade Motor Current</label>
 				<description>Electric current drawn by the blade motor.</description>
 			</channel>
@@ -329,12 +329,12 @@
 				<label>Weather Mowing Pause</label>
 				<description>Whether the weather service is currently preventing mowing.</description>
 			</channel>
-			<channel id="weather-rain" typeId="driveMotorPowerType">
+			<channel id="weather-rain" typeId="weatherRainType">
 				<label>Weather Rain Intensity</label>
 				<description>Current rain intensity reported by the weather service, as a percentage.</description>
 			</channel>
 			<channel id="weather-temperature" typeId="weatherTemperatureAdvancedType">
-				<label>Weather Temperature</label>
+				<label>Temperature</label>
 				<description>Current outdoor temperature reported by the weather service.</description>
 			</channel>
 			<channel id="weather-humidity" typeId="weatherHumidityAdvancedType">
@@ -345,35 +345,35 @@
 				<label>Weather Daylight</label>
 				<description>Whether the weather service currently reports daytime.</description>
 			</channel>
-			<channel id="weather-city" typeId="readOnlyStringAdvancedType">
+			<channel id="weather-city" typeId="readOnlyStringType">
 				<label>Weather City</label>
 				<description>City name resolved by the weather service.</description>
 			</channel>
-			<channel id="weather-location-cityid" typeId="remotePathType">
+			<channel id="weather-location-cityid" typeId="weatherLocationCityIdType">
 				<label>Weather City ID</label>
 				<description>City identifier used to select the weather-service location. Accepts a non-negative integer.</description>
 			</channel>
-			<channel id="weather-location-zip" typeId="textSettingAdvancedType">
+			<channel id="weather-location-zip" typeId="textSettingType">
 				<label>Weather Postal Code</label>
 				<description>Postal code used to select the weather-service location. Sent as text to preserve leading zeroes.</description>
 			</channel>
-			<channel id="weather-location-country" typeId="readOnlyStringAdvancedType">
+			<channel id="weather-location-country" typeId="readOnlyStringType">
 				<label>Weather Country</label>
 				<description>Country returned for the weather-service location.</description>
 			</channel>
-			<channel id="weather-sunrise" typeId="dateTimeAdvancedType">
+			<channel id="weather-sunrise" typeId="dateTimeType">
 				<label>Weather Sunrise</label>
 				<description>Sunrise time returned by the weather service.</description>
 			</channel>
-			<channel id="weather-sunset" typeId="dateTimeAdvancedType">
+			<channel id="weather-sunset" typeId="dateTimeType">
 				<label>Weather Sunset</label>
 				<description>Sunset time returned by the weather service.</description>
 			</channel>
-			<channel id="weather-icon" typeId="readOnlyStringAdvancedType">
+			<channel id="weather-icon" typeId="readOnlyStringType">
 				<label>Weather Icon URL</label>
 				<description>Weather icon URL or URL template returned by the service, including any %s placeholder.</description>
 			</channel>
-			<channel id="weather-timestamp" typeId="dateTimeAdvancedType">
+			<channel id="weather-timestamp" typeId="dateTimeType">
 				<label>Weather Observation Time</label>
 				<description>Time of the weather data.</description>
 			</channel>
@@ -405,11 +405,11 @@
 				<label>Nighttime Restriction Active</label>
 				<description>Whether the weather service reports an active nighttime mowing restriction.</description>
 			</channel>
-			<channel id="weather-remaining" typeId="statisticsDurationAdvancedType">
+			<channel id="weather-remaining" typeId="durationMinuteType">
 				<label>Weather Pause Remaining</label>
 				<description>Remaining waiting time before mowing may resume after a weather event.</description>
 			</channel>
-			<channel id="weather-service-enabled" typeId="switchCommandAdvancedType">
+			<channel id="weather-service-enabled" typeId="weatherSettingSwitchType">
 				<label>Weather Service: Enabled</label>
 				<description>Enable or disable the weather service used by Robonect.</description>
 			</channel>
@@ -437,11 +437,11 @@
 				<label>Weather Config: Maximum Mowing Humidity</label>
 				<description>Maximum relative air humidity allowed for mowing.</description>
 			</channel>
-			<channel id="weather-config-skip-day" typeId="switchCommandAdvancedType">
+			<channel id="weather-config-skip-day" typeId="weatherSettingSwitchType">
 				<label>Weather Config: Prevent Daytime Mowing</label>
 				<description>Prevent mowing during daytime as determined by the weather service.</description>
 			</channel>
-			<channel id="weather-config-skip-night" typeId="switchCommandAdvancedType">
+			<channel id="weather-config-skip-night" typeId="weatherSettingSwitchType">
 				<label>Weather Config: Prevent Nighttime Mowing</label>
 				<description>Prevent mowing during nighttime as determined by the weather service.</description>
 			</channel>
@@ -525,7 +525,7 @@
 				<label>Mower at Charging Station</label>
 				<description>Whether the mower reports that it is at home in the charging station.</description>
 			</channel>
-			<channel id="status-duration" typeId="statisticsDurationType">
+			<channel id="status-duration" typeId="durationMinuteType">
 				<label>Current Status Duration</label>
 				<description>Time spent in the current mower status.</description>
 			</channel>
@@ -582,11 +582,11 @@
 				<label>Last Recorded Error Time</label>
 				<description>Date and time of the latest error in the mower's error history.</description>
 			</channel>
-			<channel id="health-temperature" typeId="weatherTemperatureType">
+			<channel id="health-temperature" typeId="temperatureType">
 				<label>Robonect Internal Temperature</label>
 				<description>Temperature measured inside the Robonect module.</description>
 			</channel>
-			<channel id="health-humidity" typeId="weatherHumidityType">
+			<channel id="health-humidity" typeId="humidityType">
 				<label>Robonect Internal Humidity</label>
 				<description>Relative humidity measured inside the Robonect module.</description>
 			</channel>
@@ -660,8 +660,7 @@
 				<default>0</default>
 				<description>The interval in seconds to poll extended mower status. This will wake up the mower.
 					Set to 0 to disable
-					extended polling.
-					Also controls push-service mode polling when the Web API is enabled.</description>
+					extended polling.</description>
 			</parameter>
 			<parameter name="pollIntervalConfig" type="integer" required="false" min="0" unit="s">
 				<label>Configuration Polling Interval</label>
@@ -724,6 +723,32 @@
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
+	<channel-type id="readOnlySwitchAdvancedType" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Status Flag</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="weatherRainType">
+		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<label>Weather Rain Intensity</label>
+		<description>Current rain intensity reported by the weather service, as a percentage.</description>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="weatherLocationCityIdType">
+		<item-type>Number</item-type>
+		<label>Weather City ID</label>
+		<description>City identifier used to select the weather-service location.</description>
+		<state readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="weatherSettingSwitchType">
+		<item-type>Switch</item-type>
+		<label>Weather Setting</label>
+		<state readOnly="false"/>
+	</channel-type>
+
 	<channel-type id="driveMotorPowerType" advanced="true">
 		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Percentage</label>
@@ -738,9 +763,9 @@
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
-	<channel-type id="driveMotorCurrentType" advanced="true">
+	<channel-type id="motorCurrentType" advanced="true">
 		<item-type unitHint="mA">Number:ElectricCurrent</item-type>
-		<label>Drive Motor Current</label>
+		<label>Motor Current</label>
 		<description>Electric current drawn by the motor.</description>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
@@ -764,9 +789,9 @@
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="statisticsDurationType">
+	<channel-type id="durationMinuteType">
 		<item-type unitHint="min">Number:Time</item-type>
-		<label>Recent Duration Statistic</label>
+		<label>Duration</label>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -848,13 +873,13 @@
 		<state readOnly="false"/>
 	</channel-type>
 
-	<channel-type id="weatherSwitchType" advanced="true">
+	<channel-type id="weatherSwitchType">
 		<item-type>Switch</item-type>
 		<label>Weather Status</label>
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="weatherTemperatureType">
+	<channel-type id="temperatureType">
 		<item-type unitHint="°C">Number:Temperature</item-type>
 		<label>Weather Temperature</label>
 		<tags>
@@ -864,9 +889,9 @@
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
-	<channel-type id="weatherHumidityType">
+	<channel-type id="humidityType">
 		<item-type unitHint="%">Number:Dimensionless</item-type>
-		<label>Weather Humidity</label>
+		<label>Humidity</label>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Humidity</tag>
@@ -880,13 +905,13 @@
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="weatherIntervalType" advanced="true">
+	<channel-type id="weatherIntervalType">
 		<item-type unitHint="min">Number:Time</item-type>
 		<label>Weather Service: Update Interval</label>
 		<state readOnly="false" pattern="%d %unit%"/>
 	</channel-type>
 
-	<channel-type id="serviceOperationType">
+	<channel-type id="serviceOperationType" advanced="true">
 		<item-type>String</item-type>
 		<label>Service Operation</label>
 		<description>Choose a Robonect service operation.</description>
@@ -911,7 +936,7 @@
 		<state readOnly="false" pattern="%d %unit%"/>
 	</channel-type>
 
-	<channel-type id="pushPasswordType">
+	<channel-type id="pushPasswordType" advanced="true">
 		<item-type>String</item-type>
 		<label>Push Service Password</label>
 		<state readOnly="false"/>
@@ -925,7 +950,7 @@
 		<state readOnly="false"/>
 	</channel-type>
 
-	<channel-type id="pushModeType">
+	<channel-type id="pushModeType" advanced="true">
 		<item-type>Number</item-type>
 		<label>Push Service Mode</label>
 		<state readOnly="false" pattern="%d">
@@ -961,7 +986,7 @@
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
-	<channel-type id="switchCommandType">
+	<channel-type id="switchCommandType" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Switch Command</label>
 		<state readOnly="false"/>
@@ -1004,13 +1029,13 @@
 		<state min="0" max="100" step="1" readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
-	<channel-type id="doorSwitchType" advanced="true">
+	<channel-type id="doorSwitchType">
 		<item-type>Switch</item-type>
 		<label>Door Status</label>
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="doorStateType" advanced="true">
+	<channel-type id="doorStateType">
 		<item-type>Rollershutter</item-type>
 		<label>Door State</label>
 		<state readOnly="false"/>
@@ -1033,7 +1058,7 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="directType">
+	<channel-type id="directType" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Direct Wheel Control</label>
 		<description>Send ON to drive the wheels using the configured values and timeout.</description>
@@ -1050,7 +1075,7 @@
 		<config-description-ref uri="channel-type:robonect:jobType"/>
 	</channel-type>
 
-	<channel-type id="jobTimeType">
+	<channel-type id="jobTimeType" advanced="true">
 		<item-type>DateTime</item-type>
 		<label>Job Time</label>
 		<description>Start or end time of the active mowing job, estimated from the accepted command or read from the web
@@ -1104,7 +1129,7 @@
 		<state readOnly="false"/>
 	</channel-type>
 
-	<channel-type id="offlineTriggerType">
+	<channel-type id="offlineTriggerType" advanced="true">
 		<kind>trigger</kind>
 		<label>Offline Trigger</label>
 		<event>
@@ -1130,13 +1155,13 @@
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="weatherTemperatureSettingType" advanced="true">
+	<channel-type id="weatherTemperatureSettingType">
 		<item-type unitHint="°C">Number:Temperature</item-type>
 		<label>Weather Temperature Threshold</label>
 		<state readOnly="false" pattern="%d %unit%"/>
 	</channel-type>
 
-	<channel-type id="weatherPercentageSettingType" advanced="true">
+	<channel-type id="weatherPercentageSettingType">
 		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Weather Percentage Threshold</label>
 		<state readOnly="false" pattern="%d %unit%"/>
@@ -1193,7 +1218,7 @@
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
-	<channel-type id="weatherTemperatureAdvancedType" advanced="true">
+	<channel-type id="weatherTemperatureAdvancedType">
 		<item-type unitHint="°C">Number:Temperature</item-type>
 		<label>Weather Temperature</label>
 		<tags>
@@ -1203,7 +1228,7 @@
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
-	<channel-type id="weatherHumidityAdvancedType" advanced="true">
+	<channel-type id="weatherHumidityAdvancedType">
 		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Weather Humidity</label>
 		<tags>

@@ -199,7 +199,7 @@
 				<label>Left Drive Speed</label>
 			</add-channel>
 			<add-channel id="left-drive-current">
-				<type>robonect:driveMotorCurrentType</type>
+				<type>robonect:motorCurrentType</type>
 				<label>Left Drive Current</label>
 			</add-channel>
 			<add-channel id="right-drive-power">
@@ -211,7 +211,7 @@
 				<label>Right Drive Speed</label>
 			</add-channel>
 			<add-channel id="right-drive-current">
-				<type>robonect:driveMotorCurrentType</type>
+				<type>robonect:motorCurrentType</type>
 				<label>Right Drive Current</label>
 			</add-channel>
 			<add-channel id="blade-motor-average">
@@ -225,7 +225,7 @@
 				<description>Rotational speed of the blade motor.</description>
 			</add-channel>
 			<add-channel id="blade-motor-current">
-				<type>robonect:driveMotorCurrentType</type>
+				<type>robonect:motorCurrentType</type>
 				<label>Blade Motor Current</label>
 				<description>Electric current drawn by the blade motor.</description>
 			</add-channel>
@@ -660,7 +660,7 @@
 				<description>Whether the mower reports that it is at home in the charging station.</description>
 			</add-channel>
 			<update-channel id="status-duration">
-				<type>robonect:statisticsDurationType</type>
+				<type>robonect:durationMinuteType</type>
 				<label>Current Status Duration</label>
 				<description>Time spent in the current mower status.</description>
 			</update-channel>
@@ -738,7 +738,7 @@
 				<description>Date and time of the latest error in the mower's error history.</description>
 			</update-channel>
 			<update-channel id="health-temperature">
-				<type>robonect:weatherTemperatureType</type>
+				<type>robonect:temperatureType</type>
 				<label>Robonect Internal Temperature</label>
 				<description>Temperature measured inside the Robonect module.</description>
 				<tags>
@@ -747,7 +747,7 @@
 				</tags>
 			</update-channel>
 			<update-channel id="health-humidity">
-				<type>robonect:weatherHumidityType</type>
+				<type>robonect:humidityType</type>
 				<label>Robonect Internal Humidity</label>
 				<description>Relative humidity measured inside the Robonect module.</description>
 				<tags>
