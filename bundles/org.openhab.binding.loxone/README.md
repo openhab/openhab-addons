@@ -204,8 +204,7 @@ When it is enabled, `0` means fully closed and `100` means fully open.
 State updates and commands always use the selected convention.
 Positions in between are sent to the Miniserver using its native `moveToPosition` command.
 
-The `STOP` command and the window target position require Miniserver 11.3 or newer.
-Older Miniservers ignore the command.
+The `STOP` command requires Miniserver 11.3 or newer.
 
 ## Advanced Parameters
 

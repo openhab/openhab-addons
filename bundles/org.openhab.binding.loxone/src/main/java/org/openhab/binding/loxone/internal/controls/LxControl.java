@@ -680,7 +680,7 @@ public class LxControl {
 
     /**
      * Create a new channel with an initial configuration and add it to the control. Channel ID is assigned
-     * automatically in the order of calls to this method, see (@link LxControl#getChannelId}.
+     * automatically in the order of calls to this method, see {@link #getChannelId(int)}.
      *
      * @param itemType item type for the channel
      * @param typeId channel type ID for the channel

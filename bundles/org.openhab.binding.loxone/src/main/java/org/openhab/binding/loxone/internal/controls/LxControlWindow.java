@@ -43,7 +43,7 @@ import org.openhab.core.types.State;
  * by default, i.e. 0% is fully open and 100% is fully closed, while Loxone uses the opposite one. The channel's
  * {@code inverted} configuration reverses that mapping for installations that prefer Loxone's own convention.
  * <p>
- * The {@code stop} command requires Miniserver 11.3 or newer. Older firmware ignores it.
+ * The {@code stop} command requires Miniserver 11.3 or newer.
  *
  * @author Robert Pollai - Initial contribution
  *
@@ -68,25 +68,16 @@ class LxControlWindow extends LxControl {
      * Window fully open = 1
      */
     private static final String STATE_POSITION = "position";
-    /**
-     * Command string used to open the window completely
-     */
     private static final String CMD_FULL_OPEN = "fullopen";
-    /**
-     * Command string used to close the window completely
-     */
     private static final String CMD_FULL_CLOSE = "fullclose";
     /**
-     * Command string used to stop the window movement, available since Miniserver 11.3
+     * Stop command, available since Miniserver 11.3
      */
     private static final String CMD_STOP = "stop";
     /**
-     * Command string used to move the window to a position from 0 (closed) to 100 (open)
+     * Command used to move the window to a position from 0 (closed) to 100 (open)
      */
     private static final String CMD_MOVE_TO_POSITION = "moveToPosition/";
-    /**
-     * Channel configuration parameter switching the percentage convention
-     */
     private static final String CONFIG_INVERTED = "inverted";
 
     private ChannelUID positionChannelId;
