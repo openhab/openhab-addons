@@ -95,6 +95,10 @@ public class TailwindApiTest {
         assertEquals("identify", controller.requests.get(3).name());
         assertFalse(controller.requests.get(3).body().getAsJsonObject("data").has("value"));
         assertEquals("reboot", controller.requests.get(4).name());
+
+        api.disableNotifyUrl("192.168.1.10:50904");
+        assertEquals("{\"url\":\"192.168.1.10:50904\",\"proto\":\"udp\",\"enable\":0}",
+                controller.requests.get(5).value().toString());
     }
 
     @Test
@@ -118,6 +122,11 @@ public class TailwindApiTest {
         TailwindException e = assertThrows(TailwindException.class, () -> api.openDoor(0));
         assertFalse(e instanceof TailwindCommunicationException);
         assertTrue(String.valueOf(e.getMessage()).contains("door_idx out of range"));
+
+        // Some failure answers in the API document spell the key with a capital letter
+        controller.answerAllWith(200, "{\"result\":\"Fail\",\"Info\":\"door is locked\"}");
+        e = assertThrows(TailwindException.class, () -> api.openDoor(0));
+        assertTrue(String.valueOf(e.getMessage()).contains("door is locked"));
     }
 
     @Test

@@ -55,11 +55,16 @@ public class TailwindDiscoveryParticipant implements MDNSDiscoveryParticipant {
 
     @Override
     public @Nullable ThingUID getThingUID(ServiceInfo service) {
-        if (!MDNS_VENDOR.equals(service.getPropertyString("vendor"))
-                || !PRODUCT_IQ3.equalsIgnoreCase(service.getPropertyString("product"))) {
+        if (!MDNS_VENDOR.equalsIgnoreCase(txt(service, "vendor"))) {
             return null;
         }
-        String mac = TailwindDeviceId.toMacAddress(service.getPropertyString("device_id"));
+        // Early firmware, such as the 9.95 example in the Tailwind Local Control API, has no product key. Other
+        // TailWind products, such as the Light controller, name themselves.
+        String product = txt(service, "product");
+        if (product != null && !PRODUCT_IQ3.equalsIgnoreCase(product)) {
+            return null;
+        }
+        String mac = TailwindDeviceId.toMacAddress(txt(service, "device_id"));
         return mac == null ? null : new ThingUID(THING_TYPE_IQ3, mac);
     }
 
@@ -80,16 +85,28 @@ public class TailwindDiscoveryParticipant implements MDNSDiscoveryParticipant {
             // Used when the openHAB server cannot resolve the .local host name
             properties.put(PROPERTY_IP_ADDRESS, addresses[0].getHostAddress());
         }
-        String firmwareVersion = service.getPropertyString("SW ver");
+        String firmwareVersion = txt(service, "SW ver");
         if (firmwareVersion != null) {
             properties.put(Thing.PROPERTY_FIRMWARE_VERSION, firmwareVersion);
         }
-        String hardwareVersion = service.getPropertyString("HW ver");
+        String hardwareVersion = txt(service, "HW ver");
         if (hardwareVersion != null) {
             properties.put(Thing.PROPERTY_HARDWARE_VERSION, hardwareVersion);
         }
         return DiscoveryResultBuilder.create(thingUID).withProperties(properties)
                 .withRepresentationProperty(Thing.PROPERTY_MAC_ADDRESS).withLabel(VENDOR + " " + PRODUCT_IQ3).build();
+    }
+
+    /**
+     * Returns a TXT record value. The Tailwind Local Control API spells some keys with a capital first letter, such as
+     * {@code Vendor} and {@code Product}, while controllers send them in lower case.
+     */
+    private static @Nullable String txt(ServiceInfo service, String key) {
+        String value = service.getPropertyString(key);
+        if (value == null) {
+            value = service.getPropertyString(Character.toUpperCase(key.charAt(0)) + key.substring(1));
+        }
+        return value;
     }
 
     /**

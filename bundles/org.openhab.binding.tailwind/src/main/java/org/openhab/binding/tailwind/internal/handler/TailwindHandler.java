@@ -88,6 +88,8 @@ public class TailwindHandler extends BaseThingHandler {
     private volatile @Nullable TailwindStatus lastStatus;
     // The controller's addresses, the only senders whose status reports are accepted
     private volatile Set<InetAddress> controllerAddresses = Set.of();
+    // The address the controller was last told to send its status reports to
+    private volatile @Nullable String notifyAddress;
     private @Nullable ScheduledFuture<?> pollJob;
     // Changes whenever a status request is scheduled, or the handler is disposed. A request of an older generation
     // does not schedule the next one, so there is never more than one chain of requests.
@@ -137,6 +139,28 @@ public class TailwindHandler extends BaseThingHandler {
             retryDelaySeconds = RETRY_MIN_SECONDS;
             schedulePoll(0);
         }
+    }
+
+    /**
+     * Tells the controller to stop sending status reports to openHAB, which no longer listens for them. This is only
+     * done when the Thing is removed: after a restart, the next status request registers again.
+     */
+    @Override
+    public void handleRemoval() {
+        TailwindApi currentApi = api;
+        String registered = notifyAddress;
+        if (currentApi != null && registered != null) {
+            scheduler.execute(() -> {
+                try {
+                    currentApi.disableNotifyUrl(registered);
+                } catch (TailwindException e) {
+                    logger.debug("Could not stop the status reports of {}: {}", thing.getUID(), e.getMessage());
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+            });
+        }
+        super.handleRemoval();
     }
 
     @Override
@@ -399,7 +423,9 @@ public class TailwindHandler extends BaseThingHandler {
         } catch (UnknownHostException e) {
             throw new TailwindCommunicationException("Cannot resolve " + host + ": " + e.getMessage(), e);
         }
-        currentApi.setNotifyUrl(address + ":" + port);
+        String hostAndPort = address + ":" + port;
+        currentApi.setNotifyUrl(hostAndPort);
+        notifyAddress = hostAndPort;
         logger.debug("{} sends its status reports to {}:{}", thing.getUID(), address, port);
     }
 

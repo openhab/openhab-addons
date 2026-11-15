@@ -34,6 +34,8 @@ public class TailwindStatus {
     public static final String RESULT_OK = "OK";
 
     public @Nullable String result;
+    // The Tailwind Local Control API spells it Info in some failure answers
+    @SerializedName(value = "info", alternate = "Info")
     public @Nullable String info;
     public @Nullable String product;
     @SerializedName("dev_id")
