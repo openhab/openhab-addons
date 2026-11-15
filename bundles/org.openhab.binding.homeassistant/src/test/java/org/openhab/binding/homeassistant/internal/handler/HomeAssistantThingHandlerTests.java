@@ -40,6 +40,7 @@ import org.openhab.binding.homeassistant.internal.ComponentChannelType;
 import org.openhab.binding.homeassistant.internal.HaID;
 import org.openhab.binding.homeassistant.internal.HandlerConfiguration;
 import org.openhab.binding.homeassistant.internal.component.Climate;
+import org.openhab.binding.homeassistant.internal.component.Scene;
 import org.openhab.binding.homeassistant.internal.component.Sensor;
 import org.openhab.binding.homeassistant.internal.component.Switch;
 import org.openhab.core.config.core.Configuration;
@@ -590,6 +591,8 @@ public class HomeAssistantThingHandlerTests extends AbstractHomeAssistantTests {
         thingHandler.discoverComponents.processMessage(configTopic,
                 payload.replace("Temperature", "Updated temperature").getBytes(StandardCharsets.UTF_8));
         thingHandler.delayedProcessing.forceProcessNow();
+        nonSpyThingHandler.getComponents().values()
+                .forEach(component -> assertThat(component.getName(), is("Updated temperature")));
         assertThat(
                 nonSpyThingHandler.getThing().getChannels().stream().map(Channel::getUID).collect(Collectors.toSet()),
                 is(channels.stream().map(Channel::getUID).collect(Collectors.toSet())));
@@ -768,6 +771,125 @@ public class HomeAssistantThingHandlerTests extends AbstractHomeAssistantTests {
                 """.formatted(deviceSensorConfig("temp", false)));
         assertThat(nonSpyThingHandler.getThing().getChannels().size(), is(1));
         assertThat(nonSpyThingHandler.getThing().getChannel("temp"), notNullValue());
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = { false, true })
+    public void testMergedSceneIdSurvivesReorderingAndRestart(boolean removeRepresentative) {
+        setupThingHandlerWithTopics(List.of("device/dev1"));
+        thingHandler.initialize();
+        String evening = "\"evening\": {\"p\": \"scene\", \"unique_id\": \"evening\", \"name\": \"Evening\", \"command_topic\": \"test/evening\"}";
+        String morning = "\"morning\": {\"p\": \"scene\", \"unique_id\": \"morning\", \"name\": \"Morning\", \"command_topic\": \"test/morning\"}";
+        String payload = "{\"dev\": {\"identifiers\": [\"dev1\"]}, \"o\": {\"name\": \"repro\"}, \"cmps\": {%s}}";
+        discoverConfig("device/dev1",
+                payload.formatted(evening + "," + deviceSensorConfig("scene", false) + "," + morning));
+        assertThat(nonSpyThingHandler.getThing().getChannel("scene_scene"), notNullValue());
+
+        discoverConfig("device/dev1", payload.formatted(morning + "," + evening));
+        assertThat(nonSpyThingHandler.getThing().getChannels().size(), is(1));
+        assertThat(sceneLabels(), is(List.of("Evening", "Morning")));
+        if (removeRepresentative) {
+            discoverConfig("device/dev1", payload.formatted(evening));
+            assertThat(sceneLabels(), is(List.of("Evening")));
+        }
+        assertThat(nonSpyThingHandler.getThing().getChannel("scene_scene"), notNullValue());
+
+        String cache = thingHandler.config.deviceConfig;
+        Map<String, String> properties = Map.copyOf(nonSpyThingHandler.getThing().getProperties());
+        nonSpyThingHandler.dispose();
+        Configuration configuration = new Configuration();
+        configuration.put(HandlerConfiguration.PROPERTY_BASETOPIC, HandlerConfiguration.DEFAULT_BASETOPIC);
+        configuration.put(HandlerConfiguration.PROPERTY_TOPICS, List.of("device/dev1"));
+        configuration.put(HandlerConfiguration.PROPERTY_DEVICE_CONFIG, cache);
+        haThing = ThingBuilder.create(HA_TYPE_UID, HA_UID).withBridge(BRIDGE_UID).withConfiguration(configuration)
+                .withProperties(properties).build();
+        setupThingHandler();
+        thingHandler.initialize();
+        thingHandler.delayedProcessing.forceProcessNow();
+        assertThat(nonSpyThingHandler.getThing().getChannels().size(), is(1));
+        assertThat(nonSpyThingHandler.getThing().getChannel("scene_scene"), notNullValue());
+        assertThat(sceneLabels(), is(removeRepresentative ? List.of("Evening") : List.of("Evening", "Morning")));
+    }
+
+    @Test
+    public void testMergedSceneMemberReplacementPreservesOtherMembers() {
+        setupThingHandlerWithTopics(List.of("scene/evening", "scene/morning", "sensor/scene"));
+        thingHandler.initialize();
+        String payload = "{\"unique_id\": \"%s\", \"name\": \"%s\", \"command_topic\": \"test/%s\"}";
+        discoverConfig("scene/evening", payload.formatted("evening", "Evening", "evening"));
+        discoverConfig("scene/morning", payload.formatted("morning", "Morning", "morning"));
+        discoverConfig("sensor/scene", "{\"unique_id\": \"sensor\", \"state_topic\": \"test/state\"}");
+        assertThat(sceneLabels(), is(List.of("Evening", "Morning")));
+
+        discoverConfig("scene/morning", payload.formatted("morning", "Daytime", "daytime"));
+        assertThat(nonSpyThingHandler.getThing().getChannels().size(), is(2));
+        assertThat(nonSpyThingHandler.getThing().getChannel("scene_scene"), notNullValue());
+        assertThat(sceneLabels(), is(List.of("Evening", "Daytime")));
+
+        discoverConfig("scene/evening", "");
+        assertThat(nonSpyThingHandler.getThing().getChannel("scene_scene"), notNullValue());
+        assertThat(sceneLabels(), is(List.of("Daytime")));
+    }
+
+    @Test
+    public void testLatestDeviceActionWinsWithinBatch() {
+        setupThingHandlerWithTopics(List.of("device/dev1"));
+        thingHandler.initialize();
+        nonSpyThingHandler.config.topics = thingHandler.config.topics;
+        String payload = """
+                {"dev": {"identifiers": ["dev1"]}, "o": {"name": "repro"}, "cmps": {%s}}
+                """.formatted(deviceSensorConfig("temp", false));
+        discoverConfig("device/dev1", payload);
+        String topic = configTopicToMqtt("device/dev1");
+        byte[] transientConfig = payload.replace("Temperature", "Transient").getBytes(StandardCharsets.UTF_8);
+        thingHandler.discoverComponents.processMessage(topic, transientConfig);
+        thingHandler.discoverComponents.processMessage(topic, payload.getBytes(StandardCharsets.UTF_8));
+        thingHandler.delayedProcessing.forceProcessNow();
+        assertThat(Objects.requireNonNull(nonSpyThingHandler.getComponents().get("temp")).getName(), is("Temperature"));
+
+        thingHandler.discoverComponents.processMessage(topic, new byte[0]);
+        thingHandler.discoverComponents.processMessage(topic,
+                payload.replace("Temperature", "Latest").getBytes(StandardCharsets.UTF_8));
+        thingHandler.delayedProcessing.forceProcessNow();
+        assertThat(Objects.requireNonNull(nonSpyThingHandler.getComponents().get("temp")).getName(), is("Latest"));
+        assertThat(nonSpyThingHandler.config.topics, is(List.of("device/dev1")));
+
+        thingHandler.discoverComponents.processMessage(topic, transientConfig);
+        thingHandler.discoverComponents.processMessage(topic, new byte[0]);
+        thingHandler.delayedProcessing.forceProcessNow();
+        assertThat(nonSpyThingHandler.getThing().getChannels().size(), is(0));
+    }
+
+    @Test
+    public void testMigrationWithinBatchPreservesAssignedId() {
+        setupThingHandlerWithTopics(List.of("sensor/dev1/temp", "number/dev1/temp", "device/dev1"));
+        thingHandler.initialize();
+        nonSpyThingHandler.config.topics = thingHandler.config.topics;
+        discoverConfig("sensor/dev1/temp", "{\"unique_id\": \"temp\", \"state_topic\": \"test/temp\"}");
+        discoverConfig("number/dev1/temp", "{\"unique_id\": \"number\", \"command_topic\": \"test/number/set\"}");
+        assertThat(nonSpyThingHandler.getThing().getChannel("temp_sensor"), notNullValue());
+
+        thingHandler.discoverComponents.processMessage(configTopicToMqtt("sensor/dev1/temp"),
+                "{\"migrate_discovery\": true}".getBytes(StandardCharsets.UTF_8));
+        thingHandler.discoverComponents.processMessage(configTopicToMqtt("device/dev1"), """
+                {"dev": {"identifiers": ["dev1"]}, "o": {"name": "repro"}, "cmps": {%s}}
+                """.formatted(deviceSensorConfig("temp", false)).getBytes(StandardCharsets.UTF_8));
+        thingHandler.delayedProcessing.forceProcessNow();
+        assertThat(nonSpyThingHandler.getThing().getChannels().size(), is(2));
+        assertThat(nonSpyThingHandler.getThing().getChannel("temp_sensor"), notNullValue());
+        assertThat(nonSpyThingHandler.config.topics.contains("sensor/dev1/temp"), is(false));
+        assertThat(nonSpyThingHandler.config.topics.contains("device/dev1"), is(true));
+        discoverConfig("device/dev1", "");
+        assertThat(nonSpyThingHandler.getThing().getChannels().size(), is(1));
+        assertThat(nonSpyThingHandler.getThing().getChannel("temp_number"), notNullValue());
+    }
+
+    private List<String> sceneLabels() {
+        var scene = nonSpyThingHandler.getComponents().values().stream().filter(Scene.class::isInstance).findFirst()
+                .orElseThrow();
+        var channel = Objects.requireNonNull(scene.getChannel(scene.getComponentId()));
+        return channel.getState().getCache().createCommandDescription().build().getCommandOptions().stream()
+                .map(option -> Objects.requireNonNull(option.getLabel())).toList();
     }
 
     private void discoverConfig(String topic, String payload) {

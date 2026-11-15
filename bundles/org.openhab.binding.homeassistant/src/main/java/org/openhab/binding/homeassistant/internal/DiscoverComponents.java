@@ -152,10 +152,8 @@ public class DiscoverComponents implements MqttMessageSubscriber {
                                 .map(AbstractComponent::getDiscoveryIdentity).collect(Collectors.toSet());
                         knownDeviceComponents.stream().filter(component -> !currentComponents.contains(component))
                                 .forEach(discoveredListener::componentRemoved);
-                        components.stream()
-                                .filter(component -> !knownDeviceComponents.contains(component.getDiscoveryIdentity()))
-                                .forEach(component -> discoveredListener.componentDiscovered(component.getHaID(),
-                                        component));
+                        components.forEach(
+                                component -> discoveredListener.componentDiscovered(component.getHaID(), component));
                         knownDeviceComponents.clear();
                         knownDeviceComponents.addAll(currentComponents);
                     } else {

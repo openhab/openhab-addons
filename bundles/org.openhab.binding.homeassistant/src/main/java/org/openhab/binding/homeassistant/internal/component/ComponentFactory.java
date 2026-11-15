@@ -104,6 +104,13 @@ public class ComponentFactory {
         return List.of(createComponent(componentContext));
     }
 
+    /**
+     * Creates a fresh member from its original configuration when rebuilding a merged channel.
+     */
+    public static AbstractComponent<?> recreateComponent(AbstractComponent<?> component) {
+        return createComponent(component.componentContext);
+    }
+
     private static AbstractComponent<?> createComponent(ComponentContext componentContext)
             throws ConfigurationException {
         switch (componentContext.getHaID().component) {
