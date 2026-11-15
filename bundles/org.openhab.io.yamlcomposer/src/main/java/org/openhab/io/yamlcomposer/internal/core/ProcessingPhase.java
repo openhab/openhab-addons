@@ -47,28 +47,28 @@ public enum ProcessingPhase {
     )),
 
     DIRECTIVES(Set.of(//
-            IfPlaceholder.class, //
-            ElseIfPlaceholder.class, //
-            ElsePlaceholder.class, //
-            ForPlaceholder.class, //
+            IfPlaceholder.class,//
+            ElseIfPlaceholder.class,//
+            ElsePlaceholder.class,//
+            ForPlaceholder.class,//
             VarPlaceholder.class//
     )),
 
     DIRECTIVES_WITH_SUBSTITUTIONS(combine(//
-            DIRECTIVES, //
+            DIRECTIVES,//
             SubstitutionPlaceholder.class//
     )),
 
-    STANDARD(combine(DIRECTIVES_WITH_SUBSTITUTIONS, //
-            IncludePlaceholder.class, //
+    STANDARD(combine(DIRECTIVES_WITH_SUBSTITUTIONS,//
+            IncludePlaceholder.class,//
             InsertPlaceholder.class//
     )),
 
     MERGE(STANDARD.getPlaceholders()),
 
     FINALIZATION(Set.of(//
-            DefaultPlaceholder.class, //
-            RemovePlaceholder.class, //
+            DefaultPlaceholder.class,//
+            RemovePlaceholder.class,//
             FreezePlaceholder.class//
     )),
 
