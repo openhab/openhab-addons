@@ -323,8 +323,8 @@ public final class HttpConnection implements AutoCloseable {
 
         return pending.future.orTimeout(timeout.toNanos(), TimeUnit.NANOSECONDS).handle((response, error) -> {
             if (error != null) {
-                // If request failed and is still in the request queue, remove it
-                removePending(pending);
+                // A timed-out request keeps its place in the queue. Its reply can still arrive, and responses are
+                // matched to requests by order, so removing it would hand that late reply to the next request.
                 Throwable cause = error instanceof CompletionException && error.getCause() != null ? error.getCause()
                         : error;
                 if (cause instanceof TimeoutException) {
@@ -370,12 +370,6 @@ public final class HttpConnection implements AutoCloseable {
         synchronized (lock) {
             out.write(sendProcessor.apply(plaintext));
             out.flush();
-        }
-    }
-
-    private void removePending(PendingRequest pending) {
-        synchronized (lock) {
-            requests.remove(pending);
         }
     }
 
@@ -456,7 +450,10 @@ public final class HttpConnection implements AutoCloseable {
             pending = requests.pollFirst();
         }
         if (pending != null) {
-            pending.future.complete(response);
+            if (!pending.future.complete(response)) {
+                LOGGER.debug("Dropping late response to a timed-out request: {} {}", response.code(),
+                        response.message());
+            }
         } else {
             LOGGER.warn("Got response without having a request: {}", response);
         }
