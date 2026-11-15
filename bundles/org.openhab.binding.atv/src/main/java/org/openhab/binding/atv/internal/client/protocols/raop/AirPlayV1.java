@@ -98,7 +98,7 @@ public final class AirPlayV1 implements StreamProtocol {
     }
 
     @Override
-    public void setup(int timingServerPort, int controlClientPort) {
+    public void setup(int timingServerPort, int controlClientPort, Map<String, Object> receiverInfo) {
         RaopFutures.await(AirPlayAuth.pairVerify(context.credentials, rtsp.connection()).verifyCredentials());
 
         RaopFutures

@@ -101,7 +101,7 @@ public class AtvAudioSink extends AudioSinkSync {
             return;
         }
         try {
-            handler.streamAudio(audioStream, getVolume().doubleValue());
+            handler.streamAudio(new SmallReadInputStream(audioStream), getVolume().doubleValue());
         } finally {
             try {
                 audioStream.close();

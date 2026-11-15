@@ -64,6 +64,10 @@ public final class AirPlayV2 implements StreamProtocol {
 
     private static final int EVENT_CHANNEL_CONNECT_RETRIES = 5;
 
+    /** Bit numbers of the {@code audioFormat} mask, also used in the receiver's supported format lists. */
+    private static final int PCM_44100_16_2 = 11;
+    private static final int ALAC_44100_16_2 = 18;
+
     private static final Map<String, String> PLAY_HEADERS = Map.of("User-Agent", "AirPlay/550.10", "Content-Type",
             "application/x-apple-binary-plist", "X-Apple-ProtocolVersion", "1", "X-Apple-Session-ID",
             UUID.randomUUID().toString().toLowerCase(Locale.ROOT), "X-Apple-Stream-ID", "1");
@@ -76,6 +80,7 @@ public final class AirPlayV2 implements StreamProtocol {
     private @Nullable RaopEventChannel eventChannel;
     private @Nullable AirPlayPairVerifyProcedure verifier;
     private @Nullable Chacha20Cipher cipher;
+    private boolean alac;
     private volatile @Nullable Thread feedbackThread;
 
     /**
@@ -149,7 +154,11 @@ public final class AirPlayV2 implements StreamProtocol {
     }
 
     @Override
-    public void setup(int timingServerPort, int controlClientPort) {
+    public void setup(int timingServerPort, int controlClientPort, Map<String, Object> receiverInfo) {
+        // AlacFrames only packs 44100 Hz 16-bit stereo
+        alac = context.sampleRate == 44100 && context.channels == 2 && context.bytesPerChannel == 2
+                && needsAlac(receiverInfo);
+        LOGGER.debug("Sending audio as {}", alac ? "ALAC" : "PCM");
         setupBase(timingServerPort);
         setupAudioStream(controlClientPort);
     }
@@ -168,10 +177,10 @@ public final class AirPlayV2 implements StreamProtocol {
         byte[] sharedSecret = Arrays.copyOf(keys.outputKey(), 32);
 
         Map<String, Object> stream = new LinkedHashMap<>();
-        stream.put("audioFormat", 0x800); // PCM 44100/16/2
+        stream.put("audioFormat", 1 << (alac ? ALAC_44100_16_2 : PCM_44100_16_2));
         stream.put("audioMode", "default");
         stream.put("controlPort", controlClientPort);
-        stream.put("ct", 1); // Raw PCM
+        stream.put("ct", alac ? 2 : 1); // Compression type: 1 raw PCM, 2 ALAC
         stream.put("isMedia", true);
         stream.put("latencyMax", 88200);
         stream.put("latencyMin", 11025);
@@ -238,10 +247,27 @@ public final class AirPlayV2 implements StreamProtocol {
         LOGGER.debug("Feedback task finished");
     }
 
+    /**
+     * Returns whether to send ALAC instead of raw PCM. Apple devices take PCM without listing it. Some other
+     * receivers, such as Denon AV receivers, list the formats they accept for real-time audio and play silence when
+     * sent PCM that is not on the list. Receivers that list neither format get PCM, as before.
+     */
+    static boolean needsAlac(Map<String, Object> receiverInfo) {
+        if (!(receiverInfo.get("supportedAudioFormatsExtended") instanceof Map<?, ?> formats
+                && formats.get("audioStream") instanceof List<?> audioStream)) {
+            return false;
+        }
+        return !listsFormat(audioStream, PCM_44100_16_2) && listsFormat(audioStream, ALAC_44100_16_2);
+    }
+
+    private static boolean listsFormat(List<?> formats, int bit) {
+        return formats.stream().anyMatch(f -> f instanceof Number n && n.intValue() == bit);
+    }
+
     @Override
     public SentAudioPacket sendAudioPacket(DatagramSocket socket, byte[] rtpHeader, byte[] audio) throws IOException {
         byte[] nonce = new byte[0];
-        byte[] payload = audio;
+        byte[] payload = alac ? AlacFrames.wrap(audio) : audio;
         if (cipher != null) {
             // Save the nonce that will be used by the next encrypt call as it is included
             // in the audio packet.
@@ -250,7 +276,7 @@ public final class AirPlayV2 implements StreamProtocol {
 
             // Do _not_ pass an explicit nonce here as that would not increase the internal
             // counter of outgoing messages.
-            payload = cipher.encrypt(audio, null, aad);
+            payload = cipher.encrypt(payload, null, aad);
 
             // Only the eight low bytes of the twelve byte nonce go on the wire
             nonce = Arrays.copyOfRange(fullNonce, fullNonce.length - 8, fullNonce.length);

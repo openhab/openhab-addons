@@ -26,8 +26,10 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.RejectedExecutionException;
@@ -159,8 +161,9 @@ public class AtvHandler extends BaseThingHandler {
     private volatile @Nullable ScheduledFuture<?> positionJob;
     private volatile @Nullable ScheduledFuture<?> healthJob;
     private volatile @Nullable ScheduledFuture<?> refreshJob;
-    // In-flight audio-sink playback, so a sink stop request can end it.
-    private final AtomicReference<@Nullable CompletableFuture<Void>> playback = new AtomicReference<>();
+    // In-flight audio-sink streams, so a sink stop request can end them. A rejected stream is only known to
+    // have failed once its future completes, so every call is tracked until then.
+    private final Set<CompletableFuture<Void>> playbacks = ConcurrentHashMap.newKeySet();
     // Guards the position ticker, which now-playing updates start and stop from several threads.
     private final Object positionLock = new Object();
     private volatile @Nullable String lastArtworkId;
@@ -419,21 +422,27 @@ public class AtvHandler extends BaseThingHandler {
             return;
         }
         activeStreams.incrementAndGet();
+        @Nullable
+        CompletableFuture<Void> future = null;
         try {
-            CompletableFuture<Void> future = atv.stream().streamFile(stream, null,
+            future = atv.stream().streamFile(stream, null,
                     Map.<String, Object> of(Stream.OPTION_VOLUME, volumePercent));
-            playback.set(future);
+            playbacks.add(future);
             // No timeout: RAOP paces the audio in real time, so this call lasts as long as the clip, and a
             // sink stream can be an endless radio stream. A timeout would cut playback short.
             future.get();
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
+            // The caller gave up waiting, so end the stream rather than leave it playing where nothing can stop it
+            stopAudio();
         } catch (ExecutionException e) {
             logger.debug("Failed to stream audio to {}", config.deviceId, e);
         } catch (BlockedStateError e) {
             logger.debug("Cannot stream audio to {}: connection closed", config.deviceId);
         } finally {
-            playback.set(null);
+            if (future != null) {
+                playbacks.remove(future);
+            }
             activeStreams.decrementAndGet();
         }
     }
@@ -512,7 +521,7 @@ public class AtvHandler extends BaseThingHandler {
      */
     public void stopAudio() {
         AppleTV atv = appleTV.get();
-        if (atv == null || playback.get() == null) {
+        if (atv == null || playbacks.stream().allMatch(CompletableFuture::isDone)) {
             return;
         }
         try {
