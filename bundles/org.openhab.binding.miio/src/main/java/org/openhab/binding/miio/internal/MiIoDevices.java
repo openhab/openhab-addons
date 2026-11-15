@@ -46,6 +46,7 @@ public enum MiIoDevices {
     CHUANGMI_PLUG_V2("chuangmi.plug.v2", "Mi Smart Power Plug v2", THING_TYPE_BASIC),
     CHUANGMI_PLUG_V3("chuangmi.plug.v3", "MIJIA Smart  Plug Enhanced", THING_TYPE_BASIC),
     CHUANGMI_REMOTE_V2("chuangmi.remote.v2", "Mi Remote", THING_TYPE_UNSUPPORTED),
+    CHUNMI_COOKER_EH1("chunmi.cooker.eh1", "Mijia Rice cooker", THING_TYPE_BASIC),
     CHUNMI_COOKER_NORMAL1("chunmi.cooker.normal1", "Mi IH Rice Cooker", THING_TYPE_UNSUPPORTED),
     CHUNMI_COOKER_NORMAL2("chunmi.cooker.normal2", "Mi IH Rice Cooker", THING_TYPE_UNSUPPORTED),
     CHUNMI_COOKER_NORMAL4("chunmi.cooker.normal4", "Mi IH Rice Cooker 4L", THING_TYPE_UNSUPPORTED),
