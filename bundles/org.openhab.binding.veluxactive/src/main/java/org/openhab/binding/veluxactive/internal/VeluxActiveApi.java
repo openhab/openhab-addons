@@ -26,10 +26,10 @@ import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
@@ -197,10 +197,10 @@ public class VeluxActiveApi {
     private ApiResponse request(String token, String path, String payload, boolean json)
             throws ApiException, InterruptedException {
         Request request = httpClient.newRequest(BASE_URL + path).method(HttpMethod.POST)
-                .header(HttpHeader.AUTHORIZATION, "Bearer " + token).followRedirects(false)
+                .headers(h -> h.put(HttpHeader.AUTHORIZATION, "Bearer " + token)).followRedirects(false)
                 .timeout(10, TimeUnit.SECONDS)
-                .content(new StringContentProvider(json ? "application/json" : "application/x-www-form-urlencoded",
-                        payload, StandardCharsets.UTF_8));
+                .body(new StringRequestContent(json ? "application/json" : "application/x-www-form-urlencoded", payload,
+                        StandardCharsets.UTF_8));
         ContentResponse response;
         try {
             if (logger.isTraceEnabled()) {

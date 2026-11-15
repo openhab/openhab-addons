@@ -24,10 +24,10 @@ import java.util.Objects;
 import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentProvider;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.io.Content;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.dreame.internal.model.DreameDevice;
 import org.openhab.binding.dreame.internal.model.DreameVacuumAction;
@@ -49,12 +49,10 @@ class DreameVacuumCommandTest {
         Fixture f = new Fixture();
         List<String> bodies = new ArrayList<>();
         doAnswer(invocation -> {
-            ContentProvider content = invocation.getArgument(0);
-            StringBuilder body = new StringBuilder();
-            content.forEach(buffer -> body.append(StandardCharsets.UTF_8.decode(buffer.duplicate())));
-            bodies.add(body.toString());
+            Request.Content content = invocation.getArgument(0);
+            bodies.add(Content.Source.asString(content, StandardCharsets.UTF_8));
             return f.request;
-        }).when(f.request).content(any(ContentProvider.class));
+        }).when(f.request).body(any(Request.Content.class));
         doReturn(response("{\"code\":0,\"data\":{\"result\":[{\"siid\":4,\"piid\":23,\"code\":0,\"value\":5120}]}}"),
                 response("{\"code\":0,\"data\":{\"result\":[{\"siid\":4,\"piid\":23,\"code\":0}]}}")).when(f.request)
                 .send();
@@ -72,12 +70,10 @@ class DreameVacuumCommandTest {
         Fixture f = new Fixture();
         List<String> bodies = new ArrayList<>();
         doAnswer(invocation -> {
-            ContentProvider content = invocation.getArgument(0);
-            StringBuilder body = new StringBuilder();
-            content.forEach(buffer -> body.append(StandardCharsets.UTF_8.decode(buffer.duplicate())));
-            bodies.add(body.toString());
+            Request.Content content = invocation.getArgument(0);
+            bodies.add(Content.Source.asString(content, StandardCharsets.UTF_8));
             return f.request;
-        }).when(f.request).content(any(ContentProvider.class));
+        }).when(f.request).body(any(Request.Content.class));
         doReturn(response("{\"code\":0,\"data\":{\"result\":[{\"siid\":4,\"piid\":23,\"code\":0,\"value\":2}]}}"),
                 response("{\"code\":0,\"data\":{\"result\":[{\"siid\":4,\"piid\":23,\"code\":0}]}}")).when(f.request)
                 .send();
@@ -96,12 +92,10 @@ class DreameVacuumCommandTest {
         Fixture f = new Fixture();
         List<String> bodies = new ArrayList<>();
         doAnswer(invocation -> {
-            ContentProvider content = invocation.getArgument(0);
-            StringBuilder body = new StringBuilder();
-            content.forEach(buffer -> body.append(StandardCharsets.UTF_8.decode(buffer.duplicate())));
-            bodies.add(body.toString());
+            Request.Content content = invocation.getArgument(0);
+            bodies.add(Content.Source.asString(content, StandardCharsets.UTF_8));
             return f.request;
-        }).when(f.request).content(any(ContentProvider.class));
+        }).when(f.request).body(any(Request.Content.class));
         doReturn(response("{\"code\":0,\"data\":{\"result\":{\"code\":0}}}")).when(f.request).send();
 
         f.client.cleanVacuumRooms(device("dreame.vacuum.r9445d"), List.of(3, 7), 2, 1, () -> true);
@@ -121,12 +115,10 @@ class DreameVacuumCommandTest {
         Fixture f = new Fixture();
         List<String> bodies = new ArrayList<>();
         doAnswer(invocation -> {
-            ContentProvider content = invocation.getArgument(0);
-            StringBuilder body = new StringBuilder();
-            content.forEach(buffer -> body.append(StandardCharsets.UTF_8.decode(buffer.duplicate())));
-            bodies.add(body.toString());
+            Request.Content content = invocation.getArgument(0);
+            bodies.add(Content.Source.asString(content, StandardCharsets.UTF_8));
             return f.request;
-        }).when(f.request).content(any(ContentProvider.class));
+        }).when(f.request).body(any(Request.Content.class));
         doReturn(response("{\"code\":0,\"data\":{\"result\":[{\"did\":\"test\",\"siid\":4,\"piid\":4,\"code\":0}]}}"))
                 .when(f.request).send();
 
@@ -146,12 +138,10 @@ class DreameVacuumCommandTest {
         Fixture f = new Fixture();
         List<String> bodies = new ArrayList<>();
         doAnswer(invocation -> {
-            ContentProvider content = invocation.getArgument(0);
-            StringBuilder body = new StringBuilder();
-            content.forEach(buffer -> body.append(StandardCharsets.UTF_8.decode(buffer.duplicate())));
-            bodies.add(body.toString());
+            Request.Content content = invocation.getArgument(0);
+            bodies.add(Content.Source.asString(content, StandardCharsets.UTF_8));
             return f.request;
-        }).when(f.request).content(any(ContentProvider.class));
+        }).when(f.request).body(any(Request.Content.class));
         doReturn(response("{\"code\":0,\"data\":{\"result\":[{\"code\":0}]}}")).when(f.request).send();
 
         f.client.setVacuumSetting(device("dreame.vacuum.r9445d"), DreameVacuumSetting.DRYING_TIME, 3, () -> true);
@@ -174,12 +164,10 @@ class DreameVacuumCommandTest {
         Fixture f = new Fixture();
         List<String> bodies = new ArrayList<>();
         doAnswer(invocation -> {
-            ContentProvider content = invocation.getArgument(0);
-            StringBuilder body = new StringBuilder();
-            content.forEach(buffer -> body.append(StandardCharsets.UTF_8.decode(buffer.duplicate())));
-            bodies.add(body.toString());
+            Request.Content content = invocation.getArgument(0);
+            bodies.add(Content.Source.asString(content, StandardCharsets.UTF_8));
             return f.request;
-        }).when(f.request).content(any(ContentProvider.class));
+        }).when(f.request).body(any(Request.Content.class));
         doReturn(response("{\"code\":0,\"data\":{\"result\":{\"code\":0}}}")).when(f.request).send();
         int[][] expected = { { 2, 1 }, { 2, 2 }, { 3, 1 }, { 4, 2 }, { 7, 1 }, { 15, 1 }, { 4, 4 }, { 4, 4 }, { 4, 4 },
                 { 4, 4 } };
@@ -236,12 +224,10 @@ class DreameVacuumCommandTest {
         Fixture f = new Fixture();
         List<String> bodies = new ArrayList<>();
         doAnswer(invocation -> {
-            ContentProvider content = invocation.getArgument(0);
-            StringBuilder body = new StringBuilder();
-            content.forEach(buffer -> body.append(StandardCharsets.UTF_8.decode(buffer.duplicate())));
-            bodies.add(body.toString());
+            Request.Content content = invocation.getArgument(0);
+            bodies.add(Content.Source.asString(content, StandardCharsets.UTF_8));
             return f.request;
-        }).when(f.request).content(any(ContentProvider.class));
+        }).when(f.request).body(any(Request.Content.class));
         doReturn(response(
                 "{\"code\":0,\"data\":{\"result\":{\"code\":0,\"out\":[{\"piid\":1,\"value\":\"map-data\"}]}}}"))
                 .when(f.request).send();
@@ -270,12 +256,10 @@ class DreameVacuumCommandTest {
             return f.request;
         });
         doAnswer(invocation -> {
-            ContentProvider content = invocation.getArgument(0);
-            StringBuilder body = new StringBuilder();
-            content.forEach(buffer -> body.append(StandardCharsets.UTF_8.decode(buffer.duplicate())));
-            bodies.add(body.toString());
+            Request.Content content = invocation.getArgument(0);
+            bodies.add(Content.Source.asString(content, StandardCharsets.UTF_8));
             return f.request;
-        }).when(f.request).content(any(ContentProvider.class));
+        }).when(f.request).body(any(Request.Content.class));
         doReturn(response(
                 "{\"code\":0,\"data\":{\"result\":{\"code\":0,\"out\":[{\"piid\":3,\"value\":\"ali_dreame/LN997047/2089995067/1\"}]}}}"),
                 response(
@@ -365,12 +349,10 @@ class DreameVacuumCommandTest {
         Fixture f = new Fixture();
         List<String> bodies = new ArrayList<>();
         doAnswer(invocation -> {
-            ContentProvider content = invocation.getArgument(0);
-            StringBuilder body = new StringBuilder();
-            content.forEach(buffer -> body.append(StandardCharsets.UTF_8.decode(buffer.duplicate())));
-            bodies.add(body.toString());
+            Request.Content content = invocation.getArgument(0);
+            bodies.add(Content.Source.asString(content, StandardCharsets.UTF_8));
             return f.request;
-        }).when(f.request).content(any(ContentProvider.class));
+        }).when(f.request).body(any(Request.Content.class));
         doReturn(response("""
                 {"code":0,"data":{"result":[
                 {"siid":3,"piid":1,"code":0,"value":99},
@@ -406,12 +388,10 @@ class DreameVacuumCommandTest {
         Fixture f = new Fixture();
         List<String> bodies = new ArrayList<>();
         doAnswer(invocation -> {
-            ContentProvider content = invocation.getArgument(0);
-            StringBuilder body = new StringBuilder();
-            content.forEach(buffer -> body.append(StandardCharsets.UTF_8.decode(buffer.duplicate())));
-            bodies.add(body.toString());
+            Request.Content content = invocation.getArgument(0);
+            bodies.add(Content.Source.asString(content, StandardCharsets.UTF_8));
             return f.request;
-        }).when(f.request).content(any(ContentProvider.class));
+        }).when(f.request).body(any(Request.Content.class));
         doReturn(response("""
                 {"code":0,"data":{"result":[{"siid":6,"piid":8,"code":0,
                 "value":"{\\"object_name\\":\\"ali_dreame/device/map-list\\",\\"md5\\":\\"private\\"}"}]}}
