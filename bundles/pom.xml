@@ -799,6 +799,7 @@
               </target>
             </configuration>
           </execution>
+
           <!-- 2. Generate catalog dynamically -->
           <execution>
             <id>generate-catalog</id>
@@ -844,6 +845,7 @@
           </execution>
         </executions>
       </plugin>
+
       <!-- Warn on deprecated channel XML 'tag' element -->
       <plugin>
         <groupId>org.codehaus.gmavenplus</groupId>
