@@ -122,6 +122,9 @@ public class WebhookServlet extends NetatmoServlet {
                 } catch (NetatmoException e1) {
 <<<<<<< Upstream, based on main
 <<<<<<< Upstream, based on main
+<<<<<<< Upstream, based on main
+=======
+>>>>>>> e66a9a7 Code review adressed
                     logger.warn("Error setting webhook: {}", e1.getMessage());
                 }
             } else {

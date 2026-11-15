@@ -546,14 +546,20 @@ public enum EventType {
     ALARM_EVENT(ModuleType.WEATHER_STATION),
 
 <<<<<<< Upstream, based on main
+<<<<<<< Upstream, based on main
     /** An alarm was raised */
     @SerializedName("entered")
 =======
     /**/
     @SerializedName("entered") // the alarm was raised
 >>>>>>> 3a3e390 One more last thing is to take care of new events.
+=======
+    /** An alarm was raised */
+    @SerializedName("entered")
+>>>>>>> e66a9a7 Code review adressed
     ALARM_ENTERED(ModuleType.WEATHER_STATION),
 
+<<<<<<< Upstream, based on main
 <<<<<<< Upstream, based on main
     /** The alarm is stopped */
     @SerializedName("exited")
@@ -561,6 +567,10 @@ public enum EventType {
     /**/
     @SerializedName("exited") // the alarm is stopped
 >>>>>>> 3a3e390 One more last thing is to take care of new events.
+=======
+    /** The alarm is stopped */
+    @SerializedName("exited")
+>>>>>>> e66a9a7 Code review adressed
     ALARM_EXITED(ModuleType.WEATHER_STATION),
 
 <<<<<<< Upstream, based on main
