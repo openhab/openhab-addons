@@ -29,195 +29,389 @@ import com.google.gson.annotations.SerializedName;
 public enum EventType {
     UNKNOWN(ModuleType.UNKNOWN),
 
+<<<<<<< Upstream, based on main
     /** Module configuration changed */
+=======
+    /* Module configuration changed */
+>>>>>>> 3a3e390 One more last thing is to take care of new events.
     @SerializedName("topology_changed")
     TOPOLOGY_CHANGED(ModuleType.ACCOUNT),
 
+<<<<<<< Upstream, based on main
     /** A user linked the webhook to their account */
+=======
+    /* A user linked the webhook to their account */
+>>>>>>> 3a3e390 One more last thing is to take care of new events.
     @SerializedName("webhook_activation")
     WEBHOOK_ACTIVATION(ModuleType.ACCOUNT),
 
+<<<<<<< Upstream, based on main
     /** A user deleted their link to the webhook */
     @SerializedName("webhook_deletion")
     WEBHOOK_DELETION(ModuleType.ACCOUNT),
 
     /** Indoor Camera detects a face */
+=======
+    /* A user deleted their link to the webhook */
+    @SerializedName("webhook_deletion")
+    WEBHOOK_DELETION(ModuleType.ACCOUNT),
+
+    /* Indoor Camera detects a face */
+>>>>>>> 3a3e390 One more last thing is to take care of new events.
     @SerializedName("person")
     PERSON(ModuleType.PERSON, ModuleType.WELCOME),
 
+<<<<<<< Upstream, based on main
     /** Geofencing indicates that the person has left the home */
+=======
+    /* Geofencing indicates that the person has left the home */
+>>>>>>> 3a3e390 One more last thing is to take care of new events.
     @SerializedName("person_away")
     PERSON_AWAY(ModuleType.PERSON, ModuleType.HOME),
 
+<<<<<<< Upstream, based on main
     /** Person is declared at home */
+=======
+    /* Person is declared at home */
+>>>>>>> 3a3e390 One more last thing is to take care of new events.
     @SerializedName("person_home")
     PERSON_HOME(ModuleType.PERSON, ModuleType.HOME),
 
+<<<<<<< Upstream, based on main
     /** Outdoor Camera detects a human, a car or an animal */
+=======
+    /* Outdoor Camera detects a human, a car or an animal */
+>>>>>>> 3a3e390 One more last thing is to take care of new events.
     @SerializedName("outdoor")
     OUTDOOR(ModuleType.PRESENCE, ModuleType.DOORBELL),
 
+<<<<<<< Upstream, based on main
     /** Outdoor Camera video summary of the last 24 hours is available */
+=======
+    /* Outdoor Camera video summary of the last 24 hours is available */
+>>>>>>> 3a3e390 One more last thing is to take care of new events.
     @SerializedName("daily_summary")
     DAILY_SUMMARY(ModuleType.PRESENCE),
 
+<<<<<<< Upstream, based on main
     /** Outdoor Camera detects a car */
+=======
+    /* Outdoor Camera detects a car */
+>>>>>>> 3a3e390 One more last thing is to take care of new events.
     @SerializedName("vehicle")
     VEHICLE(ModuleType.PRESENCE),
 
+<<<<<<< Upstream, based on main
     /** Indoor Camera detects motion */
+=======
+    /* Indoor Camera detects motion */
+>>>>>>> 3a3e390 One more last thing is to take care of new events.
     @SerializedName("movement")
     MOVEMENT(ModuleType.WELCOME),
 
+<<<<<<< Upstream, based on main
     /** Indoor Camera triggers alarm */
+=======
+    /* Indoor Camera triggers alarm */
+>>>>>>> 3a3e390 One more last thing is to take care of new events.
     @SerializedName("alarm_started")
     ALARM_STARTED(ModuleType.WELCOME),
 
+<<<<<<< Upstream, based on main
     /** Camera detects human motion */
+=======
+    /* Camera detects human motion */
+>>>>>>> 3a3e390 One more last thing is to take care of new events.
     @SerializedName("human")
     HUMAN(ModuleType.WELCOME, ModuleType.PRESENCE, ModuleType.DOORBELL),
 
+<<<<<<< Upstream, based on main
     /** Camera detects animal motion */
+=======
+    /* Camera detects animal motion */
+>>>>>>> 3a3e390 One more last thing is to take care of new events.
     @SerializedName("animal")
     ANIMAL(ModuleType.WELCOME, ModuleType.PRESENCE),
 
+<<<<<<< Upstream, based on main
     /** A new Module has been paired with the Indoor Camera */
+=======
+    /* A new Module has been paired with the Indoor Camera */
+>>>>>>> 3a3e390 One more last thing is to take care of new events.
     @SerializedName("new_module")
     NEW_MODULE(ModuleType.WELCOME),
 
+<<<<<<< Upstream, based on main
     /** Module is connected with the Indoor Camera */
+=======
+    /* Module is connected with the Indoor Camera */
+>>>>>>> 3a3e390 One more last thing is to take care of new events.
     @SerializedName("module_connect")
     MODULE_CONNECT(ModuleType.WELCOME),
 
+<<<<<<< Upstream, based on main
     /** Module lost its connection with the Indoor Camera */
+=======
+    /* Module lost its connection with the Indoor Camera */
+>>>>>>> 3a3e390 One more last thing is to take care of new events.
     @SerializedName("module_disconnect")
     MODULE_DISCONNECT(ModuleType.WELCOME),
 
+<<<<<<< Upstream, based on main
     /** Module's battery is low */
+=======
+    /* Module's battery is low */
+>>>>>>> 3a3e390 One more last thing is to take care of new events.
     @SerializedName("module_low_battery")
     MODULE_LOW_BATTERY(ModuleType.WELCOME),
 
+<<<<<<< Upstream, based on main
     /** Module's firmware update is over */
+=======
+    /* Module's firmware update is over */
+>>>>>>> 3a3e390 One more last thing is to take care of new events.
     @SerializedName("module_end_update")
     MODULE_END_UPDATE(ModuleType.WELCOME),
 
+<<<<<<< Upstream, based on main
     /** Big move detected on Door Tag */
+=======
+    /* Big move detected on Door Tag */
+>>>>>>> 3a3e390 One more last thing is to take care of new events.
     @SerializedName("tag_big_move")
     TAG_BIG_MOVE(ModuleType.WELCOME),
 
+<<<<<<< Upstream, based on main
     /** Tag detects door is open */
+=======
+    /* Tag detects door is open */
+>>>>>>> 3a3e390 One more last thing is to take care of new events.
     @SerializedName("tag_open")
     TAG_OPEN(ModuleType.WELCOME),
 
+<<<<<<< Upstream, based on main
     /** Small move detected on Door Tag */
+=======
+    /* Small move detected on Door Tag */
+>>>>>>> 3a3e390 One more last thing is to take care of new events.
     @SerializedName("tag_small_move")
     TAG_SMALL_MOVE(ModuleType.WELCOME),
 
+<<<<<<< Upstream, based on main
     /** Camera connects to Netatmo servers */
+=======
+    /* Camera connects to Netatmo servers */
+>>>>>>> 3a3e390 One more last thing is to take care of new events.
     @SerializedName("connection")
     CONNECTION(ModuleType.WELCOME, ModuleType.PRESENCE),
 
+<<<<<<< Upstream, based on main
     /** Camera loses connection with Netatmo servers */
+=======
+    /* Camera loses connection with Netatmo servers */
+>>>>>>> 3a3e390 One more last thing is to take care of new events.
     @SerializedName("disconnection")
     DISCONNECTION(ModuleType.WELCOME, ModuleType.PRESENCE),
 
+<<<<<<< Upstream, based on main
     /** Camera Monitoring is resumed */
+=======
+    /* Camera Monitoring is resumed */
+>>>>>>> 3a3e390 One more last thing is to take care of new events.
     @SerializedName("on")
     ON(ModuleType.WELCOME, ModuleType.PRESENCE),
 
+<<<<<<< Upstream, based on main
     /** Camera Monitoring is turned off */
+=======
+    /* Camera Monitoring is turned off */
+>>>>>>> 3a3e390 One more last thing is to take care of new events.
     @SerializedName("off")
     OFF(ModuleType.WELCOME, ModuleType.PRESENCE),
 
+<<<<<<< Upstream, based on main
     /** Camera is booting */
+=======
+    /* Camera is booting */
+>>>>>>> 3a3e390 One more last thing is to take care of new events.
     @SerializedName("boot")
     BOOT(ModuleType.WELCOME, ModuleType.PRESENCE),
 
+<<<<<<< Upstream, based on main
     /** Camera SD Card status changes */
+=======
+    /* Camera SD Card status changes */
+>>>>>>> 3a3e390 One more last thing is to take care of new events.
     @SerializedName("sd")
     SD(ModuleType.WELCOME, ModuleType.PRESENCE),
 
+<<<<<<< Upstream, based on main
     /** Camera power supply status changes */
+=======
+    /* Camera power supply status changes */
+>>>>>>> 3a3e390 One more last thing is to take care of new events.
     @SerializedName("alim")
     ALIM(ModuleType.WELCOME, ModuleType.PRESENCE),
 
+<<<<<<< Upstream, based on main
     /** Siren has been tampered */
+=======
+    /* Siren has been tampered */
+>>>>>>> 3a3e390 One more last thing is to take care of new events.
     @SerializedName("siren_tampered")
     SIREN_TAMPERED(ModuleType.WELCOME),
 
+<<<<<<< Upstream, based on main
     /** A call is incoming */
+=======
+    /* A call is incoming */
+>>>>>>> 3a3e390 One more last thing is to take care of new events.
     @SerializedName("accepted_call")
     ACCEPTED_CALL(ModuleType.DOORBELL),
 
+<<<<<<< Upstream, based on main
     /** A call as been answered by a user */
+=======
+    /* A call as been answered by a user */
+>>>>>>> 3a3e390 One more last thing is to take care of new events.
     @SerializedName("incoming_call")
     INCOMING_CALL(ModuleType.DOORBELL),
 
+<<<<<<< Upstream, based on main
     /** Button pressed */
+=======
+    /* Button pressed */
+>>>>>>> 3a3e390 One more last thing is to take care of new events.
     @SerializedName("rtc")
     RTC(ModuleType.DOORBELL),
 
+<<<<<<< Upstream, based on main
     /** A call has not been answered by anyone */
+=======
+    /* A call has not been answered by anyone */
+>>>>>>> 3a3e390 One more last thing is to take care of new events.
     @SerializedName("missed_call")
     MISSED_CALL(ModuleType.DOORBELL),
 
+<<<<<<< Upstream, based on main
     /** Smoke detection is activated or deactivated */
+=======
+    /* Smoke detection is activated or deactivated */
+>>>>>>> 3a3e390 One more last thing is to take care of new events.
     @SerializedName("hush")
     HUSH(ModuleType.SMOKE_DETECTOR),
 
+<<<<<<< Upstream, based on main
     /** Smoke is detected or smoke is cleared */
+=======
+    /* Smoke is detected or smoke is cleared */
+>>>>>>> 3a3e390 One more last thing is to take care of new events.
     @SerializedName("smoke")
     SMOKE(ModuleType.SMOKE_DETECTOR),
 
+<<<<<<< Upstream, based on main
     /** Smoke detector is ready or tampered */
+=======
+    /* Smoke detector is ready or tampered */
+>>>>>>> 3a3e390 One more last thing is to take care of new events.
     @SerializedName("tampered")
     TAMPERED(ModuleType.SMOKE_DETECTOR, ModuleType.CO_DETECTOR),
 
+<<<<<<< Upstream, based on main
     /** Wifi status is updated */
+=======
+    /* Wifi status is updated */
+>>>>>>> 3a3e390 One more last thing is to take care of new events.
     @SerializedName("wifi_status")
     WIFI_STATUS(ModuleType.SMOKE_DETECTOR, ModuleType.CO_DETECTOR),
 
+<<<<<<< Upstream, based on main
     /** Battery status is too low */
+=======
+    /* Battery status is too low */
+>>>>>>> 3a3e390 One more last thing is to take care of new events.
     @SerializedName("battery_status")
     BATTERY_STATUS(ModuleType.SMOKE_DETECTOR, ModuleType.CO_DETECTOR),
 
+<<<<<<< Upstream, based on main
     /** Detection chamber is dusty or clean */
+=======
+    /* Detection chamber is dusty or clean */
+>>>>>>> 3a3e390 One more last thing is to take care of new events.
     @SerializedName("detection_chamber_status")
     DETECTION_CHAMBER_STATUS(ModuleType.SMOKE_DETECTOR),
 
+<<<<<<< Upstream, based on main
     /** Sound test result */
+=======
+    /* Sound test result */
+>>>>>>> 3a3e390 One more last thing is to take care of new events.
     @SerializedName("sound_test")
     SOUND_TEST(ModuleType.SMOKE_DETECTOR, ModuleType.CO_DETECTOR),
 
+<<<<<<< Upstream, based on main
     /** A new device was detected */
+=======
+    /* A new device was detected */
+>>>>>>> 3a3e390 One more last thing is to take care of new events.
     @SerializedName("new_device")
     NEW_DEVICE(ModuleType.HOME),
 
+<<<<<<< Upstream, based on main
     /** CO alarm raised */
+=======
+    /* CO alarm raised */
+>>>>>>> 3a3e390 One more last thing is to take care of new events.
     @SerializedName("co_detected")
     CO_DETECTED(ModuleType.CO_DETECTOR),
 
+<<<<<<< Upstream, based on main
     /** An alarm event arrived on a weather station module */
+=======
+    /* An alarm event arrived on a weather station module */
+>>>>>>> 3a3e390 One more last thing is to take care of new events.
     @SerializedName("alarm_event")
     ALARM_EVENT(ModuleType.WEATHER_STATION),
 
+<<<<<<< Upstream, based on main
     /** An alarm was raised */
     @SerializedName("entered")
+=======
+    /**/
+    @SerializedName("entered") // the alarm was raised
+>>>>>>> 3a3e390 One more last thing is to take care of new events.
     ALARM_ENTERED(ModuleType.WEATHER_STATION),
 
+<<<<<<< Upstream, based on main
     /** The alarm is stopped */
     @SerializedName("exited")
+=======
+    /**/
+    @SerializedName("exited") // the alarm is stopped
+>>>>>>> 3a3e390 One more last thing is to take care of new events.
     ALARM_EXITED(ModuleType.WEATHER_STATION),
 
+<<<<<<< Upstream, based on main
     /** A manual action has been done on the thermostat */
+=======
+    /* A manual action has been done on the thermostat */
+>>>>>>> 3a3e390 One more last thing is to take care of new events.
     @SerializedName("display_change")
     DISPLAY_CHANGE(ModuleType.THERMOSTAT),
 
+<<<<<<< Upstream, based on main
     /** A setpoint has been set */
+=======
+    /* A setpoint has been set */
+>>>>>>> 3a3e390 One more last thing is to take care of new events.
     @SerializedName("set_point")
     SET_POINT(ModuleType.THERMOSTAT),
 
+<<<<<<< Upstream, based on main
     /** Manual setpoint ended */
+=======
+    /* Manual setpoint ended */
+>>>>>>> 3a3e390 One more last thing is to take care of new events.
     @SerializedName("cancel_set_point")
     CANCEL_SET_POINT(ModuleType.THERMOSTAT);
 
