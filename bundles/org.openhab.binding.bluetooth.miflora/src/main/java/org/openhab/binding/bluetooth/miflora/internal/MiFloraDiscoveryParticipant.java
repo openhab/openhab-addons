@@ -60,6 +60,6 @@ public class MiFloraDiscoveryParticipant implements BluetoothDiscoveryParticipan
         return DiscoveryResultBuilder.create(thingUID)
                 .withProperties(Map.of(BluetoothBindingConstants.CONFIGURATION_ADDRESS, device.getAddress().toString()))
                 .withRepresentationProperty(BluetoothBindingConstants.CONFIGURATION_ADDRESS)
-                .withBridge(device.getAdapter().getUID()).withLabel("Mi Flora Plant Sensor").build();
+                .withBridge(device.getAdapter().getUID()).withLabel("@text/discovery.miflora.label").build();
     }
 }
