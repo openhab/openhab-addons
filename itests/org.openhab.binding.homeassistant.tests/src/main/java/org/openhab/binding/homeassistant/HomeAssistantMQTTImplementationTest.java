@@ -41,6 +41,7 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import org.openhab.binding.homeassistant.internal.DiscoverComponents;
 import org.openhab.binding.homeassistant.internal.DiscoverComponents.ComponentDiscovered;
+import org.openhab.binding.homeassistant.internal.DiscoverComponents.ComponentIdentity;
 import org.openhab.binding.homeassistant.internal.HaID;
 import org.openhab.binding.homeassistant.internal.HomeAssistantChannelLinkageChecker;
 import org.openhab.binding.homeassistant.internal.HomeAssistantPythonBridge;
@@ -156,7 +157,7 @@ public class HomeAssistantMQTTImplementationTest extends MqttOSGiTest {
         }
 
         @Override
-        public void componentRemoved(HaID homeAssistantTopicID) {
+        public void componentRemoved(ComponentIdentity identity) {
         }
 
         @Override
