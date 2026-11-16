@@ -12,6 +12,6 @@
 
   <artifactId>org.openhab.binding.bydbatterybox</artifactId>
 
-  <name>openHAB Add-ons :: Bundles :: BydBatteryBox Binding</name>
+  <name>openHAB Add-ons :: Bundles :: BYD Battery-Box Binding</name>
 
 </project>
