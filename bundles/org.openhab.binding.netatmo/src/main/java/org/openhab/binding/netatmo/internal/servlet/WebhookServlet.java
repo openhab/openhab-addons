@@ -65,7 +65,7 @@ public class WebhookServlet extends NetatmoServlet {
     private final URI uri;
 
     private boolean hooked;
-    private final ScheduledExecutorService scheduler = ThreadPoolManager.getScheduledPool("blbalalal");
+    private final ScheduledExecutorService scheduler = ThreadPoolManager.getScheduledPool("blbalala");
 
     public WebhookServlet(ApiBridgeHandler handler, HttpService httpService, NADeserializer deserializer,
             WebhookApi api, String webHookUrl, String webHookPostfix) {
