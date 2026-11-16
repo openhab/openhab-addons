@@ -7,7 +7,7 @@ It decodes the readings the sensor broadcasts and never connects to it, so it ne
 
 | Thing Type ID | Description                                       |
 |---------------|---------------------------------------------------|
-| miflora       | Mi Flora plant sensor (HHCCJCY01, product 0x0098) |
+| hhccjcy01     | Mi Flora plant sensor (HHCCJCY01, product 0x0098) |
 
 The sensor broadcasts its readings in unencrypted Xiaomi "MiBeacon" service data (UUID `0xFE95`).
 Only the BlueZ bridge passes service data on, so the thing works with a `bluez` bridge, or a `roaming` bridge over BlueZ adapters.
@@ -42,15 +42,15 @@ miflora.things:
 
 ```java
 Bridge bluetooth:bluez:hci0 [ address="00:11:22:33:44:55" ] {
-    Thing miflora basil "Basil" [ address="C4:7C:8D:12:34:56" ]
+    Thing hhccjcy01 basil "Basil" [ address="C4:7C:8D:12:34:56" ]
 }
 ```
 
 miflora.items:
 
 ```java
-Number:Temperature          Basil_Temperature  "Temperature [%.1f %unit%]"  { channel="bluetooth:miflora:hci0:basil:temperature" }
-Number:Illuminance          Basil_Light        "Light [%.0f %unit%]"        { channel="bluetooth:miflora:hci0:basil:illuminance" }
-Number:Dimensionless        Basil_Moisture     "Moisture [%.0f %unit%]"     { channel="bluetooth:miflora:hci0:basil:moisture", unit="%" }
-Number:ElectricConductivity Basil_Conductivity "Conductivity [%.0f %unit%]" { channel="bluetooth:miflora:hci0:basil:conductivity", unit="µS/cm" }
+Number:Temperature          Basil_Temperature  "Temperature [%.1f %unit%]"  { channel="bluetooth:hhccjcy01:hci0:basil:temperature" }
+Number:Illuminance          Basil_Light        "Light [%.0f %unit%]"        { channel="bluetooth:hhccjcy01:hci0:basil:illuminance" }
+Number:Dimensionless        Basil_Moisture     "Moisture [%.0f %unit%]"     { channel="bluetooth:hhccjcy01:hci0:basil:moisture", unit="%" }
+Number:ElectricConductivity Basil_Conductivity "Conductivity [%.0f %unit%]" { channel="bluetooth:hhccjcy01:hci0:basil:conductivity", unit="µS/cm" }
 ```
