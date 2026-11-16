@@ -14,6 +14,8 @@ package org.openhab.binding.loxone.internal.controls;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.io.IOException;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -23,6 +25,7 @@ import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.StopMoveType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.types.UpDownType;
+import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.UnDefType;
 
@@ -176,5 +179,48 @@ class LxControlGateTest extends LxControlTest {
         testChannelState(PARTIALLY_OPEN_CHANNEL, OnOffType.OFF);
         testChannelState(new PercentType(80));
         testAction(null);
+    }
+
+    @Test
+    void testPartiallyOpenOnPublishesOffWithoutFeedback() {
+        ChannelUID channel = getChannelUid(PARTIALLY_OPEN_CHANNEL);
+        changeLoxoneState("position", 0.4);
+        handler.channelStates.clear();
+
+        executeCommand(PARTIALLY_OPEN_CHANNEL, OnOffType.ON);
+
+        testAction("PartiallyOpen");
+        assertEquals(1, handler.channelStates.size());
+        assertEquals(OnOffType.OFF, handler.channelStates.get(channel));
+    }
+
+    @Test
+    void testPartiallyOpenOffPublishesOffWithoutAction() {
+        ChannelUID channel = getChannelUid(PARTIALLY_OPEN_CHANNEL);
+        changeLoxoneState("position", 0.4);
+        handler.channelStates.clear();
+
+        executeCommand(PARTIALLY_OPEN_CHANNEL, OnOffType.OFF);
+
+        testAction(null);
+        assertEquals(1, handler.channelStates.size());
+        assertEquals(OnOffType.OFF, handler.channelStates.get(channel));
+    }
+
+    @Test
+    void testPartiallyOpenPublishesOffWhenCommandFails() {
+        LxControl gate = handler.controls.get(controlUuid);
+        assertNotNull(gate);
+        ChannelUID channel = getChannelUid(PARTIALLY_OPEN_CHANNEL);
+        handler.channelStates.clear();
+        handler.failActions = true;
+        try {
+            assertThrows(IOException.class, () -> gate.handleCommand(channel, OnOffType.ON));
+        } finally {
+            handler.failActions = false;
+        }
+
+        testAction(null);
+        assertEquals(OnOffType.OFF, handler.channelStates.get(channel));
     }
 }

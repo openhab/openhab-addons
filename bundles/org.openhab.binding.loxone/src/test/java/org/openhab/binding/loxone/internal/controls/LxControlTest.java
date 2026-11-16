@@ -31,6 +31,7 @@ import org.openhab.binding.loxone.internal.types.LxState;
 import org.openhab.binding.loxone.internal.types.LxUuid;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.thing.Channel;
+import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.type.ChannelKind;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
@@ -174,6 +175,14 @@ class LxControlTest {
     State getChannelState(String namePostFix) {
         LxControl ctrl = getControl(controlUuid);
         return getChannelState(ctrl, namePostFix);
+    }
+
+    ChannelUID getChannelUid(String namePostFix) {
+        LxControl ctrl = getControl(controlUuid);
+        assertNotNull(ctrl);
+        Channel c = getChannel(getExpectedName(ctrl.getLabel(), ctrl.getRoom().getName(), namePostFix), ctrl);
+        assertNotNull(c);
+        return c.getUID();
     }
 
     void testChannelState(LxControl ctrl, String namePostFix, State expectedValue) {

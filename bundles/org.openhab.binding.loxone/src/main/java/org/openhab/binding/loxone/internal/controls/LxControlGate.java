@@ -25,6 +25,7 @@ import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.StopMoveType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.types.UpDownType;
+import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
@@ -65,6 +66,8 @@ class LxControlGate extends LxControl {
 
     private final Logger logger = LoggerFactory.getLogger(LxControlGate.class);
 
+    private @Nullable ChannelUID partiallyOpenChannelId;
+
     private LxControlGate(LxUuid uuid) {
         super(uuid);
     }
@@ -82,7 +85,8 @@ class LxControlGate extends LxControl {
         addChannel("Switch", new ChannelTypeUID(BINDING_ID, MINISERVER_CHANNEL_TYPE_RO_SWITCH),
                 defaultChannelLabel + " / Closing Prevented", "Garage/Gate closing prevented", tags, null,
                 () -> getPreventionState(STATE_PREVENT_CLOSE));
-        addChannel("Switch", new ChannelTypeUID(BINDING_ID, MINISERVER_CHANNEL_TYPE_GATE_PARTIALLY_OPEN),
+        partiallyOpenChannelId = addChannel("Switch",
+                new ChannelTypeUID(BINDING_ID, MINISERVER_CHANNEL_TYPE_GATE_PARTIALLY_OPEN),
                 defaultChannelLabel + " / Partially Open", "Move Garage/Gate to its Loxone partial-open position", tags,
                 this::handlePartiallyOpenCommands, () -> OnOffType.OFF);
     }
@@ -106,8 +110,19 @@ class LxControlGate extends LxControl {
     }
 
     private void handlePartiallyOpenCommands(Command command) throws IOException {
-        if (command == OnOffType.ON) {
-            sendAction(CMD_PARTIALLY_OPEN);
+        if (command != OnOffType.ON && command != OnOffType.OFF) {
+            return;
+        }
+        try {
+            if (command == OnOffType.ON) {
+                sendAction(CMD_PARTIALLY_OPEN);
+            }
+        } finally {
+            ChannelUID channelId = partiallyOpenChannelId;
+            if (channelId != null) {
+                // Momentary action: release the switch immediately, independent of any Miniserver feedback.
+                setChannelState(channelId, OnOffType.OFF);
+            }
         }
     }
 
