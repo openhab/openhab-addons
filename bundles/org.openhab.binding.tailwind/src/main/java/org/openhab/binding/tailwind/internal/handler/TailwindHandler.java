@@ -63,9 +63,8 @@ import org.slf4j.LoggerFactory;
 /**
  * The {@link TailwindHandler} connects a TailWind controller Thing to the controller.
  *
- * The controller sends a status report as a UDP message whenever a door changes. The handler also asks for the
- * status regularly, which shows whether the controller can still be reached and picks up changes that have no
- * report, such as the LED brightness.
+ * The controller reports door changes over UDP. The status is also requested regularly, because other changes, such
+ * as the LED brightness, are not reported.
  *
  * @author Dave J. Schoepel - Initial contribution
  * @author Christopher Smith - Reworked lifecycle, channels and status handling
@@ -82,25 +81,17 @@ public class TailwindHandler extends BaseThingHandler {
     private final TailwindUdpReceiver udpReceiver;
 
     private TailwindConfiguration config = new TailwindConfiguration();
-    // Set by initialize() and cleared by dispose(). Work that started with another instance is stale and must not
-    // publish anything or schedule more work.
+    // A new instance for each initialization: work holding an older one is stale
     private volatile @Nullable TailwindApi api;
     private volatile @Nullable TailwindStatus lastStatus;
-    // The controller's addresses, the only senders whose status reports are accepted
     private volatile Set<InetAddress> controllerAddresses = Set.of();
-    // The address the controller was last told to send its status reports to
     private volatile @Nullable String notifyAddress;
     private @Nullable ScheduledFuture<?> pollJob;
-    // Changes whenever a status request is scheduled, or the handler is disposed. A request of an older generation
-    // does not schedule the next one, so there is never more than one chain of requests.
+    // A status request of an older generation does not schedule the next one
     private int pollGeneration;
     private @Nullable Registration registration;
-    // The host name or address from the configuration, without URL parts
     private String hostname = "";
-    // True while the host name cannot be resolved and the last known address is used instead
     private boolean usingLastKnownAddress;
-    // True after warning that the status reports cannot be registered, so that the warning is not repeated at every
-    // status request
     private boolean reportsWarned;
     private int retryDelaySeconds = RETRY_MIN_SECONDS;
 
@@ -115,9 +106,13 @@ public class TailwindHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         config = getConfigAs(TailwindConfiguration.class);
-        String hostname = TailwindConfiguration.normalizeHostname(config.hostname);
+        String hostname = config.hostname.trim();
         if (hostname.isEmpty()) {
             updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.conf-error.no-hostname");
+            return;
+        }
+        if (!TailwindConfiguration.isValidHostname(hostname)) {
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.conf-error.invalid-hostname");
             return;
         }
         if (config.token.isBlank()) {
@@ -141,10 +136,7 @@ public class TailwindHandler extends BaseThingHandler {
         }
     }
 
-    /**
-     * Tells the controller to stop sending status reports to openHAB, which no longer listens for them. This is only
-     * done when the Thing is removed: after a restart, the next status request registers again.
-     */
+    // Only on removal, not on dispose: after a restart, the next status request registers again
     @Override
     public void handleRemoval() {
         TailwindApi currentApi = api;
@@ -194,20 +186,18 @@ public class TailwindHandler extends BaseThingHandler {
         }
         TailwindApi currentApi = api;
         if (currentApi != null) {
-            // Not on the caller's thread, because the request waits for the controller
             scheduler.execute(() -> sendCommand(currentApi, channelUID, command));
         }
     }
 
-    /**
-     * Returns whether the given API is the one of the current initialization, and not one that was disposed since.
-     */
     private boolean isCurrent(TailwindApi currentApi) {
-        // TailwindApi has no equals(), so this compares the instances
         return currentApi.equals(api);
     }
 
     private void sendCommand(TailwindApi currentApi, ChannelUID channelUID, Command command) {
+        if (!isCurrent(currentApi)) {
+            return;
+        }
         String group = channelUID.getGroupId();
         String channel = channelUID.getIdWithoutGroup();
         try {
@@ -222,10 +212,8 @@ public class TailwindHandler extends BaseThingHandler {
                 pollSoon();
             }
         } catch (InterruptedException e) {
-            // The handler is being disposed
             Thread.currentThread().interrupt();
         } catch (TailwindException e) {
-            // For example a command for a door that is disabled
             logger.debug("Command {} for {} failed: {}", command, channelUID, e.getMessage());
         }
     }
@@ -279,9 +267,7 @@ public class TailwindHandler extends BaseThingHandler {
         }
     }
 
-    /**
-     * Asks the controller for its status now and schedules the next request. Package-private for tests.
-     */
+    // Package-private for tests
     void poll() {
         int generation;
         synchronized (this) {
@@ -301,7 +287,6 @@ public class TailwindHandler extends BaseThingHandler {
             currentApi.setHost(host);
             String address = networkAddressService.getPrimaryIpv4HostAddress();
             if (address == null) {
-                // No primary address in the network settings: use the address the controller can reach
                 address = localAddressTowards(host);
             }
             if (address == null) {
@@ -315,8 +300,7 @@ public class TailwindHandler extends BaseThingHandler {
                     handleStatus(status);
                     online = true;
                 }
-                // After publishing the status, so that it cannot replace a newer report. Without reports, door
-                // changes still show at the next status request.
+                // After publishing the status, so that it cannot replace a newer report
                 try {
                     registerNotifications(currentApi, host, address);
                     reportsWarned = false;
@@ -335,7 +319,6 @@ public class TailwindHandler extends BaseThingHandler {
                 setOffline(e);
             }
         } catch (InterruptedException e) {
-            // The handler is being disposed, so no further request is scheduled
             Thread.currentThread().interrupt();
             return;
         } catch (RuntimeException e) {
@@ -367,9 +350,6 @@ public class TailwindHandler extends BaseThingHandler {
         schedulePoll(delay);
     }
 
-    /**
-     * Replaces the scheduled status request with one after the given delay.
-     */
     private synchronized void schedulePoll(int delaySeconds) {
         ScheduledFuture<?> job = pollJob;
         if (job != null) {
@@ -379,20 +359,13 @@ public class TailwindHandler extends BaseThingHandler {
         pollJob = scheduler.schedule(() -> poll(generation), delaySeconds, TimeUnit.SECONDS);
     }
 
-    /**
-     * Brings the next status request forward, to find out sooner when the controller can be reached again.
-     */
     private synchronized void pollSoon() {
         if (api != null) {
             schedulePoll(RETRY_MIN_SECONDS);
         }
     }
 
-    /**
-     * Starts the listener for status reports if it is not running, and tells the controller where to send them.
-     * This is repeated at every status request, so the controller gets the address back after it lost it, for example
-     * when it rebooted.
-     */
+    // Repeated at every status request, because the controller forgets the address when it reboots
     private void registerNotifications(TailwindApi currentApi, String host, String address)
             throws TailwindException, InterruptedException {
         int port;
@@ -402,7 +375,6 @@ public class TailwindHandler extends BaseThingHandler {
             }
             Registration currentRegistration = registration;
             if (currentRegistration != null && currentRegistration.getPort() == -1) {
-                // The listener stopped after an error
                 currentRegistration.close();
                 currentRegistration = null;
             }
@@ -429,10 +401,7 @@ public class TailwindHandler extends BaseThingHandler {
         logger.debug("{} sends its status reports to {}:{}", thing.getUID(), address, port);
     }
 
-    /**
-     * Returns the host to send requests to. That is the configured host name, unless it cannot be resolved and an
-     * address of the controller is known. Some systems cannot resolve .local names, for example some Docker setups.
-     */
+    // Some systems, such as some Docker setups, cannot resolve .local names
     private String resolveHost() {
         String configured = hostname;
         try {
@@ -459,10 +428,7 @@ public class TailwindHandler extends BaseThingHandler {
         }
     }
 
-    /**
-     * Returns the local IPv4 address that the given host is reached from, or null if it cannot be found.
-     * No packet is sent: connecting a UDP socket only chooses the route.
-     */
+    // No packet is sent: connecting a UDP socket only chooses the route
     private static @Nullable String localAddressTowards(String host) {
         try (DatagramSocket socket = new DatagramSocket()) {
             socket.connect(InetAddress.getByName(host), 80);
@@ -509,9 +475,6 @@ public class TailwindHandler extends BaseThingHandler {
         updateChannels(status);
     }
 
-    /**
-     * Makes the Thing have the channels of exactly the doors that are connected to the controller.
-     */
     private void updateDoorGroups(int doorCount) {
         ThingHandlerCallback callback = getCallback();
         if (callback == null || doorCount < 1 || doorCount > MAX_DOORS) {
@@ -576,9 +539,6 @@ public class TailwindHandler extends BaseThingHandler {
         }
     }
 
-    /**
-     * Publishes a flag that the controller reports as 1 for on and 0 for off.
-     */
     private void updateFlag(ChannelUID channelUID, @Nullable Integer flag) {
         if (flag != null) {
             updateState(channelUID, OnOffType.from(flag == 1));

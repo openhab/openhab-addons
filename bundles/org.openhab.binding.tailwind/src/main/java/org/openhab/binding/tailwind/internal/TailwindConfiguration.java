@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.tailwind.internal;
 
-import java.util.Locale;
+import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
@@ -25,6 +25,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class TailwindConfiguration {
     private static final double DEFAULT_PARTIAL_OPEN_TIME = 2.5;
     public static final int DEFAULT_UDP_PORT = 50904;
+    // A host name or IPv4 address, without scheme, port or path
+    private static final Pattern HOSTNAME = Pattern
+            .compile("[A-Za-z0-9]([A-Za-z0-9-]*[A-Za-z0-9])?(\\.[A-Za-z0-9]([A-Za-z0-9-]*[A-Za-z0-9])?)*\\.?");
 
     public String hostname = "";
     public String token = "";
@@ -33,32 +36,11 @@ public class TailwindConfiguration {
     public double door2PartialOpenTime = DEFAULT_PARTIAL_OPEN_TIME;
     public double door3PartialOpenTime = DEFAULT_PARTIAL_OPEN_TIME;
 
-    /**
-     * Returns the host name of the controller without the parts users often copy along with it, such as
-     * {@code http://tailwind-30aea4801880.local/json}.
-     */
-    public static String normalizeHostname(String hostname) {
-        String host = hostname.trim();
-        String lower = host.toLowerCase(Locale.ROOT);
-        if (lower.startsWith("http://")) {
-            host = host.substring("http://".length());
-        } else if (lower.startsWith("https://")) {
-            host = host.substring("https://".length());
-        }
-        if (host.toLowerCase(Locale.ROOT).endsWith("/json")) {
-            host = host.substring(0, host.length() - "/json".length());
-        }
-        while (host.endsWith("/")) {
-            host = host.substring(0, host.length() - 1);
-        }
-        return host.trim();
+    public static boolean isValidHostname(String hostname) {
+        return HOSTNAME.matcher(hostname).matches();
     }
 
-    /**
-     * Returns the time in milliseconds that a door runs when it is opened partially.
-     *
-     * @param doorIndex index of the door, starting at 0
-     */
+    // doorIndex starts at 0
     public long partialOpenTimeMillis(int doorIndex) {
         double seconds = switch (doorIndex) {
             case 0 -> door1PartialOpenTime;

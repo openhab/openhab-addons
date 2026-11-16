@@ -109,12 +109,7 @@ public class TailwindDiscoveryParticipant implements MDNSDiscoveryParticipant {
         return value;
     }
 
-    /**
-     * Returns the .local host name of the controller, or its IPv4 address if the service has no host name.
-     *
-     * The host name is preferred, because it stays the same when the router gives the controller another address.
-     * The Tailwind Local Control API uses it in all its examples.
-     */
+    // The .local name is preferred, because it stays the same when the router gives the controller another address
     private static @Nullable String hostname(ServiceInfo service) {
         String server = service.getServer();
         if (server != null && !server.isBlank()) {

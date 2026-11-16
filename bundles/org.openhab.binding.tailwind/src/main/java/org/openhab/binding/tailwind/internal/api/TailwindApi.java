@@ -67,9 +67,6 @@ public class TailwindApi {
         this.token = token;
     }
 
-    /**
-     * Sends the next requests to another host name or address of the same controller.
-     */
     public void setHost(String hostname) {
         url = "http://" + hostname + "/json";
     }
@@ -78,18 +75,10 @@ public class TailwindApi {
         return send(VERSION_0_1, TYPE_GET, "dev_st", null);
     }
 
-    /**
-     * Makes the controller send its status reports as UDP messages to the given address.
-     *
-     * @param hostAndPort the address, such as {@code 192.168.1.10:50904}
-     */
     public void setNotifyUrl(String hostAndPort) throws TailwindException, InterruptedException {
         send(VERSION_0_1, TYPE_SET, "notify_url", notifyUrl(hostAndPort, true));
     }
 
-    /**
-     * Makes the controller stop sending status reports to the given address.
-     */
     public void disableNotifyUrl(String hostAndPort) throws TailwindException, InterruptedException {
         send(VERSION_0_1, TYPE_SET, "notify_url", notifyUrl(hostAndPort, false));
     }
@@ -106,11 +95,6 @@ public class TailwindApi {
         send(VERSION_0_1, TYPE_SET, "door_op", doorOperation(doorIndex, TailwindBindingConstants.DOOR_OPEN));
     }
 
-    /**
-     * Opens a door partially.
-     *
-     * @param partialTimeMillis the time the door runs, in milliseconds
-     */
     public void openDoorPartially(int doorIndex, long partialTimeMillis)
             throws TailwindException, InterruptedException {
         JsonObject value = doorOperation(doorIndex, TailwindBindingConstants.DOOR_OPEN);
@@ -122,9 +106,6 @@ public class TailwindApi {
         send(VERSION_0_1, TYPE_SET, "door_op", doorOperation(doorIndex, TailwindBindingConstants.DOOR_CLOSE));
     }
 
-    /**
-     * @param brightness the brightness of the status LED, from 0 to 100
-     */
     public void setLedBrightness(int brightness) throws TailwindException, InterruptedException {
         JsonObject value = new JsonObject();
         value.addProperty("brightness", brightness);
@@ -218,11 +199,6 @@ public class TailwindApi {
         return url.substring("http://".length(), url.length() - "/json".length());
     }
 
-    /**
-     * Parses an answer or a status report of a controller.
-     *
-     * @return the status, or {@code null} when the content is not a valid status
-     */
     public static @Nullable TailwindStatus parse(@Nullable String content) {
         try {
             return GSON.fromJson(content, TailwindStatus.class);

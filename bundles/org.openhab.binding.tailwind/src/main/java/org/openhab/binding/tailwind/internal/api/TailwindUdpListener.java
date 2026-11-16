@@ -34,58 +34,60 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class TailwindUdpListener {
     private static final int MAX_PACKET_SIZE = 2048;
+    private static final long STOP_TIMEOUT_MS = 2000;
 
     private final Logger logger = LoggerFactory.getLogger(TailwindUdpListener.class);
     private final String threadName;
     private final BiConsumer<InetAddress, String> consumer;
     private @Nullable DatagramSocket socket;
+    private @Nullable Thread thread;
 
-    /**
-     * @param threadName name of the thread that receives the messages
-     * @param consumer called on that thread with the sender and the text of each message
-     */
     public TailwindUdpListener(String threadName, BiConsumer<InetAddress, String> consumer) {
         this.threadName = threadName;
         this.consumer = consumer;
     }
 
-    /**
-     * Starts listening on a free port.
-     *
-     * @return the port
-     */
     public int start() throws SocketException {
         return start(0);
     }
 
-    /**
-     * Starts listening on the given port, or on a free port if it is 0.
-     *
-     * @return the port
-     */
-    public synchronized int start(int port) throws SocketException {
+    // Port 0 picks a free port; returns the port in use
+    public int start(int port) throws SocketException {
         stop();
-        DatagramSocket newSocket = port > 0 ? new DatagramSocket(port) : new DatagramSocket();
-        socket = newSocket;
-        // A thread of its own, because receiving blocks for as long as the listener runs
-        Thread thread = new Thread(() -> receive(newSocket), threadName);
-        thread.setDaemon(true);
-        thread.start();
-        return newSocket.getLocalPort();
-    }
-
-    public synchronized void stop() {
-        DatagramSocket oldSocket = socket;
-        socket = null;
-        if (oldSocket != null) {
-            // Closing the socket ends the blocking receive, and with it the thread
-            oldSocket.close();
+        synchronized (this) {
+            DatagramSocket newSocket = port > 0 ? new DatagramSocket(port) : new DatagramSocket();
+            socket = newSocket;
+            Thread newThread = new Thread(() -> receive(newSocket), threadName);
+            newThread.setDaemon(true);
+            thread = newThread;
+            newThread.start();
+            return newSocket.getLocalPort();
         }
     }
 
-    /**
-     * Returns the port the listener receives on, or -1 if it is not running.
-     */
+    // Closing the socket ends the blocking receive. Waiting for the thread means no message is delivered after
+    // stop() returns.
+    public void stop() {
+        Thread oldThread;
+        synchronized (this) {
+            DatagramSocket oldSocket = socket;
+            socket = null;
+            oldThread = thread;
+            thread = null;
+            if (oldSocket != null) {
+                oldSocket.close();
+            }
+        }
+        if (oldThread != null && !oldThread.equals(Thread.currentThread())) {
+            try {
+                oldThread.join(STOP_TIMEOUT_MS);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+        }
+    }
+
+    // -1 if the listener is not running
     public synchronized int getPort() {
         DatagramSocket currentSocket = socket;
         return currentSocket == null || currentSocket.isClosed() ? -1 : currentSocket.getLocalPort();

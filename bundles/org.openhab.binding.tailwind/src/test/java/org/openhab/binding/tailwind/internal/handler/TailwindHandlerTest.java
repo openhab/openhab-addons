@@ -37,6 +37,9 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -47,6 +50,7 @@ import org.openhab.binding.tailwind.internal.FakeController;
 import org.openhab.binding.tailwind.internal.FakeController.Answer;
 import org.openhab.binding.tailwind.internal.FakeController.Received;
 import org.openhab.binding.tailwind.internal.api.TailwindUdpReceiver;
+import org.openhab.core.common.ThreadPoolManager;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
@@ -273,12 +277,14 @@ public class TailwindHandlerTest {
     }
 
     @Test
-    public void hostnameWithUrlPartsIsUsedWithoutThem() {
+    public void hostnameWithUrlPartsIsAConfigurationError() {
         handler = newHandler(Map.of("hostname", "http://192.168.1.50/json", "token", "123456"));
 
-        initializeOnline();
+        handler.initialize();
 
-        assertEquals("http://192.168.1.50/json", controller.requests.get(0).url());
+        verifyStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
+        assertEquals("@text/offline.conf-error.invalid-hostname", handler.getThing().getStatusInfo().getDescription());
+        assertTrue(controller.requests.isEmpty());
     }
 
     @Test
@@ -418,6 +424,40 @@ public class TailwindHandlerTest {
         handler.handleCommand(channel("door1", "control"), new StringType("open"));
 
         verifyStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+    }
+
+    @Test
+    public void commandQueuedBeforeDisposeIsNotSent() throws Exception {
+        initializeOnline();
+        // Occupy every thread of the handlers' pool, so that the command waits in the queue
+        ScheduledExecutorService pool = ThreadPoolManager.getScheduledPool("thingHandler");
+        int threads = ((ThreadPoolExecutor) pool).getCorePoolSize();
+        CountDownLatch busy = new CountDownLatch(threads);
+        CountDownLatch release = new CountDownLatch(1);
+        for (int i = 0; i < threads; i++) {
+            pool.execute(() -> {
+                busy.countDown();
+                try {
+                    release.await(WAIT_MS, TimeUnit.MILLISECONDS);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+            });
+        }
+        try {
+            assertTrue(busy.await(WAIT_MS, TimeUnit.MILLISECONDS));
+            clearInvocations(callback);
+            handler.handleCommand(channel("door1", "control"), new StringType("open"));
+            handler.dispose();
+        } finally {
+            release.countDown();
+        }
+        CountDownLatch drained = new CountDownLatch(1);
+        pool.execute(drained::countDown);
+        assertTrue(drained.await(WAIT_MS, TimeUnit.MILLISECONDS));
+
+        verify(callback, after(500).never()).stateUpdated(any(), any());
+        assertTrue(controller.requestsNamed("door_op").isEmpty());
     }
 
     @Test

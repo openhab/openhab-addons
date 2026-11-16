@@ -13,7 +13,9 @@
 package org.openhab.binding.tailwind.internal.api;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -75,6 +77,21 @@ public class TailwindUdpListenerTest {
         assertNotEquals(-1, newPort);
         send(newPort, "again".getBytes(StandardCharsets.UTF_8));
         assertEquals("again", messages.poll(WAIT_SECONDS, TimeUnit.SECONDS));
+    }
+
+    @Test
+    public void stopEndsTheReceivingThread() throws Exception {
+        listener.start();
+        assertTrue(receivingThreadIsAlive());
+
+        listener.stop();
+
+        assertFalse(receivingThreadIsAlive());
+    }
+
+    private static boolean receivingThreadIsAlive() {
+        return Thread.getAllStackTraces().keySet().stream()
+                .anyMatch(thread -> "tailwind-test-udp".equals(thread.getName()) && thread.isAlive());
     }
 
     @Test

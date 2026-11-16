@@ -34,10 +34,7 @@ public final class TailwindDeviceId {
     private TailwindDeviceId() {
     }
 
-    /**
-     * Returns the MAC address as 12 lower-case hexadecimal digits, such as {@code 08d1f91202ec}, or null if the device
-     * id is not one.
-     */
+    // Returns 12 lower-case hexadecimal digits, such as 08d1f91202ec
     public static @Nullable String toMacAddress(@Nullable String deviceId) {
         if (deviceId == null) {
             return null;
