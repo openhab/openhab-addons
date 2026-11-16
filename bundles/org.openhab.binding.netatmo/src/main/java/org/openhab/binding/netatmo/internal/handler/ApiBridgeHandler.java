@@ -406,8 +406,7 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
             try {
                 ApiError apiError = deserializer.deserialize(ApiError.class, responseBody);
                 if (ServiceError.UNKNOWN.equals(apiError.getCode())) {
-                    // HttpStatus.getCode() returns null for non-standard status codes (e.g.
-                    // 520-527), so pass
+                    // HttpStatus.getCode() returns null for non-standard status codes (e.g. 520-527), so pass
                     // response.getStatus() rather than statusCode
                     exception = new NetatmoException(apiError, response.getStatus(), extractRawErrorCode(responseBody));
                 } else {
@@ -457,8 +456,7 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
     }
 
     /**
-     * Recovers the raw error code that {@link ApiError} discards when classifying
-     * it into a {@link ServiceError}.
+     * Recovers the raw error code that {@link ApiError} discards when classifying it into a {@link ServiceError}.
      */
     static @Nullable String extractRawErrorCode(String responseBody) {
         try {
@@ -550,8 +548,7 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
                 });
             }
             HomeApi homeApi = getRestManager(HomeApi.class);
-            if (homeApi != null) { // Search those depending from a home that has modules + not only weather
-                                   // modules
+            if (homeApi != null) { // Search those depending from a home that has modules + not only weather modules
                 homeApi.getHomesData(null, null).stream()
                         .filter(h -> !(h.getFeatures().isEmpty()
                                 || h.getFeatures().contains(FeatureArea.WEATHER) && h.getFeatures().size() == 1))
