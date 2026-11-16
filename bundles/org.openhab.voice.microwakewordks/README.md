@@ -37,7 +37,7 @@ After installing, you will be able to access the service settings through Main U
 - **Probability Cutoff** - Average probability above which the wake word counts as detected. Lower values detect the wake word more easily but cause more false detections.
   Leave empty to use the cutoff of the model, which its author tuned.
 
-For file based configurations, create a new file in `$OPENHAB_ROOT/conf/services` named `microwakewordks.cfg`.
+For file based configurations, create a new file in `$OPENHAB_CONF/services` named `microwakewordks.cfg`.
 
 ```ini
 org.openhab.voice.microwakewordks:probabilityCutoff=0.9
@@ -53,7 +53,7 @@ You can set up your preferred default keyword spotter and default magic word in 
 - Set the **Magic Word** to one of the supported wake words, for example "Hey openHAB".
 - Optionally, choose a **Listening Switch** item, which is switched ON while the dialog processor listens for a command after spotting the wake word.
 
-In case you would like to set up these settings via a text file, you can edit the file `runtime.cfg` in `$OPENHAB_ROOT/conf/services` and set the following entries:
+In case you would like to set up these settings via a text file, you can edit the file `runtime.cfg` in `$OPENHAB_CONF/services` and set the following entries:
 
 ```ini
 org.openhab.voice:defaultKS=microwakewordks

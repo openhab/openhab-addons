@@ -19,6 +19,7 @@ import java.io.InterruptedIOException;
 import java.net.SocketTimeoutException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.nio.ShortBuffer;
 import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
@@ -199,9 +200,11 @@ public class MicroWakeWordKSService implements KSService {
                 AudioWaveUtils.removeFMT(audioStream);
             }
             byte[] bytes = new byte[MicroWakeWord.FRAME_SIZE * 2];
+            ShortBuffer samples = ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN).asShortBuffer();
             short[] frame = new short[MicroWakeWord.FRAME_SIZE];
             MicroWakeWord detector = null;
-            while (!aborted.get()) {
+            // also checks the interrupt, so shutdownNow() stops a task that started after deactivate() set the flags
+            while (!aborted.get() && !Thread.currentThread().isInterrupted()) {
                 if (audioStream.readNBytes(bytes, 0, bytes.length) < bytes.length) {
                     break;
                 }
@@ -209,7 +212,7 @@ public class MicroWakeWordKSService implements KSService {
                 if (detector == null || detector.getProbabilityCutoff() != cutoff) {
                     detector = new MicroWakeWord(model, cutoff);
                 }
-                ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN).asShortBuffer().get(frame);
+                samples.clear().get(frame);
                 if (detector.process(frame) && !aborted.get()) {
                     Duration audioAfterWakeWord = FRAME_DURATION.multipliedBy(detector.getFramesAfterWakeWord());
                     logger.debug("Spotted '{}' with probability {}, about {} ms after it ended", model.getWakeWord(),
