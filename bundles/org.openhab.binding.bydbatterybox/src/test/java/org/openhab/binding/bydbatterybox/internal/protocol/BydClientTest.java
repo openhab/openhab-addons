@@ -24,6 +24,7 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
+import org.openhab.binding.bydbatterybox.internal.FakeBattery;
 import org.openhab.binding.bydbatterybox.internal.Fixtures;
 import org.openhab.binding.bydbatterybox.internal.dto.EventRecord;
 import org.openhab.binding.bydbatterybox.internal.dto.SystemInfo;

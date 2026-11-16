@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -70,6 +71,7 @@ import org.openhab.core.thing.binding.ThingHandlerCallback;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.type.ChannelGroupTypeUID;
 import org.openhab.core.types.Command;
+import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 import org.osgi.framework.Bundle;
@@ -102,6 +104,8 @@ public class BydBatteryBoxHandler extends BaseThingHandler {
     /** Incremented on every (re)initialization and on dispose; a job of an older generation must not publish. */
     private final AtomicInteger generation = new AtomicInteger();
     private @Nullable ScheduledFuture<?> pollJob;
+    /** Last published state per channel, to answer REFRESH commands without contacting the battery. */
+    private final Map<ChannelUID, State> lastStates = new ConcurrentHashMap<>();
     /** Connection of the running cycle, closed by {@link #dispose()} to abort blocking reads. */
     private final AtomicReference<@Nullable BydConnection> activeConnection = new AtomicReference<>();
 
@@ -149,6 +153,7 @@ public class BydBatteryBoxHandler extends BaseThingHandler {
             return;
         }
         updateStatus(ThingStatus.UNKNOWN);
+        lastStates.clear();
         PollContext context = new PollContext(generation.incrementAndGet(), config);
         pollJob = executor.scheduleWithFixedDelay(() -> poll(context), INITIAL_DELAY_SECONDS, config.refreshInterval,
                 TimeUnit.SECONDS);
@@ -171,7 +176,14 @@ public class BydBatteryBoxHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        // all channels are read-only; a REFRESH is served by the next polling cycle
+        // all channels are read-only; a REFRESH (e.g. for a newly linked item) gets the last published state, the
+        // battery itself is only read by the polling job
+        if (command instanceof RefreshType) {
+            State state = lastStates.get(channelUID);
+            if (state != null) {
+                updateState(channelUID, state);
+            }
+        }
     }
 
     private boolean isCurrent(PollContext context) {
@@ -283,8 +295,7 @@ public class BydBatteryBoxHandler extends BaseThingHandler {
             }
             publishTower(data, info);
         }
-        updateState(new ChannelUID(thing.getUID(), GROUP_DIAGNOSTICS, CHANNEL_LAST_DETAIL_UPDATE),
-                new DateTimeType(Instant.now()));
+        update(GROUP_DIAGNOSTICS, CHANNEL_LAST_DETAIL_UPDATE, new DateTimeType(Instant.now()));
         return true;
     }
 
@@ -552,7 +563,9 @@ public class BydBatteryBoxHandler extends BaseThingHandler {
     // ------------------------------------------------------------------------------------------ helpers
 
     private void update(String group, String channel, State state) {
-        updateState(new ChannelUID(thing.getUID(), group, channel), state);
+        ChannelUID channelUID = new ChannelUID(thing.getUID(), group, channel);
+        lastStates.put(channelUID, state);
+        updateState(channelUID, state);
     }
 
     private String text(String key, String defaultText, Object... arguments) {
