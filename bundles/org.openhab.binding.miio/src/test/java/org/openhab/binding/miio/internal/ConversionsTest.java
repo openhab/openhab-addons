@@ -82,6 +82,21 @@ public class ConversionsTest {
     }
 
     @Test
+    public void decodeUnicodeTest() {
+        Map<String, Object> deviceVariables = Collections.emptyMap();
+        assertEquals(new JsonPrimitive("demo"),
+                Conversions.execute("decodeUnicode", new JsonPrimitive("u0064u0065u006du006f"), deviceVariables));
+        assertEquals(new JsonPrimitive("薯条 1"),
+                Conversions.execute("decodeUnicode", new JsonPrimitive("u85afu6761u0020U0031"), deviceVariables));
+        assertEquals(new JsonPrimitive("$1 \\x"),
+                Conversions.execute("decodeUnicode", new JsonPrimitive("u0024u0031 \\x"), deviceVariables));
+        assertEquals(new JsonPrimitive(""),
+                Conversions.execute("decodeUnicode", new JsonPrimitive(""), deviceVariables));
+        assertEquals(new JsonPrimitive(12),
+                Conversions.execute("decodeUnicode", new JsonPrimitive(12), deviceVariables));
+    }
+
+    @Test
     public void getJsonElementTest() {
         Map<String, Object> deviceVariables = Collections.emptyMap();
 

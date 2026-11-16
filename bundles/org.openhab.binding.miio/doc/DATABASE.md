@@ -227,6 +227,7 @@ There is no reverse conversion when writing.
 | `deviceDataTab`         | Cloud response of `/v2/user/getuserdevicedatatab` to a list of the `value` entries           | `lumi.lock.json`                 |
 | `getJsonElement-<name>` | Member `<name>` (case sensitive) of a JSON object, or a JSON path, see below                 | `chuangmi.plug.212a01-miot.json` |
 | `getDiDElement`         | Member of a JSON object named after the device id of the thing                               | `chuangmi.plug.212a01-miot.json` |
+| `decodeUnicode`         | Text with each character as `u` plus 4 hex digits, like `u0064u0065u006du006f`, to `demo`    | `careli.fryer.maf05a-miot.json`  |
 
 #### Selecting Parts of a JSON Response
 

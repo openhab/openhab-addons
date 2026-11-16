@@ -38,11 +38,13 @@ import com.google.gson.JsonPrimitive;
  *
  * @author Marcel Verpaalen - Initial contribution
  * @author Marcel Verpaalen - Add path and member selection to getJsonElement
+ * @author Marcel Verpaalen - Add decodeUnicode
  */
 @NonNullByDefault
 public class Conversions {
     private static final Logger LOGGER = LoggerFactory.getLogger(Conversions.class);
     private static final Pattern PATH_SEGMENT = Pattern.compile("([^\\[\\]{}]*)(?:\\[(\\*|\\d{1,9})\\])?");
+    private static final Pattern UNICODE_CHAR = Pattern.compile("[uU]([0-9a-fA-F]{4})");
 
     /**
      * Converts a RGB+brightness input to a HSV value.
@@ -164,6 +166,18 @@ public class Conversions {
             double value = value12.getAsDouble();
             return new JsonPrimitive(value / 1.2);
         }
+    }
+
+    /**
+     * Decodes text in which characters are written as {@code u} plus 4 hex digits, like {@code u0064u0065u006du006f}
+     * for {@code demo}, as some devices (e.g. Careli fryers) store recipe names. Same rule as the Mi Home plugin.
+     */
+    private static JsonElement decodeUnicode(JsonElement value) {
+        if (!value.isJsonPrimitive() || !value.getAsJsonPrimitive().isString()) {
+            return value;
+        }
+        return new JsonPrimitive(UNICODE_CHAR.matcher(value.getAsString())
+                .replaceAll(m -> Matcher.quoteReplacement(String.valueOf((char) Integer.parseInt(m.group(1), 16)))));
     }
 
     /**
@@ -386,6 +400,8 @@ public class Conversions {
                     return deviceDataTab(value, deviceVariables);
                 case "GETDIDELEMENT":
                     return getDidElement(value, deviceVariables);
+                case "DECODEUNICODE":
+                    return decodeUnicode(value);
                 default:
                     LOGGER.debug("Transformation {} not found. Returning '{}'", transformation, value.toString());
                     return value;
