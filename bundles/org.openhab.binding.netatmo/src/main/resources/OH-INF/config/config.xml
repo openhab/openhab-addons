@@ -27,6 +27,12 @@
 			<description>String appended to the generated webhook address (should start with `/`).</description>
 		</parameter>
 
+		<parameter name="useCloudWebhook" type="boolean" required="false">
+			<label>Use openHAB Cloud Webhook</label>
+			<description>Publish the webhook through openHAB Cloud when no Webhook Address is configured.</description>
+			<default>false</default>
+		</parameter>
+
 		<parameter name="reconnectInterval" type="integer" unit="s">
 			<label>Reconnect Interval</label>
 			<description>The reconnection interval to Netatmo API (in s).</description>

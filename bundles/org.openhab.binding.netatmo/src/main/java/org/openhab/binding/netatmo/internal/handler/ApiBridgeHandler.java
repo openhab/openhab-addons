@@ -36,6 +36,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.function.BiFunction;
+import java.util.function.Supplier;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriBuilder;
@@ -80,6 +81,7 @@ import org.openhab.core.auth.client.oauth2.OAuthClientService;
 import org.openhab.core.auth.client.oauth2.OAuthException;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
 import org.openhab.core.auth.client.oauth2.OAuthResponseException;
+import org.openhab.core.io.rest.WebhookService;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.Bridge;
@@ -116,6 +118,7 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(ApiBridgeHandler.class);
     private final AuthenticationApi connectApi = new AuthenticationApi(this);
+    private final WebhookApi webhookApi = new WebhookApi(this);
     private final Map<Class<? extends RestManager>, RestManager> managers = new HashMap<>();
     private final Deque<Instant> requestsTimestamps = new ArrayDeque<>(200);
     private final Deque<Long> requestsWindowInNanos = new ArrayDeque<>(MAX_REQUESTS_PER_SECOND);
@@ -124,6 +127,7 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
     private final OAuthFactory oAuthFactory;
     private final NADeserializer deserializer;
     private final HttpService httpService;
+    private final Supplier<@Nullable WebhookService> webhookServiceSupplier;
     private final ChannelUID requestCountChannelUID;
     private final ChannelUID hookSetChannelUID;
     private final GrantServlet grantServlet;
@@ -133,7 +137,8 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
     private @Nullable WebhookServlet webhookServlet;
 
     public ApiBridgeHandler(Bridge bridge, HttpClient httpClient, NADeserializer deserializer,
-            BindingConfiguration configuration, HttpService httpService, OAuthFactory oAuthFactory) {
+            BindingConfiguration configuration, HttpService httpService, OAuthFactory oAuthFactory,
+            Supplier<@Nullable WebhookService> webhookServiceSupplier) {
         super(bridge);
         this.bindingConf = configuration;
         this.httpClient = httpClient;
@@ -142,6 +147,7 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
         this.oAuthFactory = oAuthFactory;
         this.grantServlet = new GrantServlet(this, httpService);
 
+        this.webhookServiceSupplier = webhookServiceSupplier;
         requestCountChannelUID = new ChannelUID(thing.getUID(), GROUP_MONITORING, CHANNEL_REQUEST_COUNT);
         hookSetChannelUID = new ChannelUID(thing.getUID(), GROUP_MONITORING, CHANNEL_HOOK_SET);
     }
@@ -181,32 +187,34 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
 
         ApiHandlerConfiguration configuration = getConfiguration();
 <<<<<<< Upstream, based on main
-<<<<<<< Upstream, based on main
         hookState(false);
+<<<<<<< Upstream, based on main
         if (configuration.getWebhookUrlPattern() instanceof String urlPattern
                 && getRestManager(WebhookApi.class) instanceof WebhookApi api) {
             WebhookServlet servlet = webhookServlet;
-=======
-=======
-        hookState(false);
->>>>>>> 7e96b33 lsiepel code review corrections
         if (!configuration.webHookUrl.isBlank() && getRestManager(WebhookApi.class) instanceof WebhookApi api) {
-<<<<<<< Upstream, based on main
             WebhookServlet servlet = this.webhookServlet;
 >>>>>>> 194ac54 Use new API endpoints for webhooks
-=======
-            WebhookServlet servlet = webhookServlet;
->>>>>>> 7e96b33 lsiepel code review corrections
             if (servlet != null) {
                 servlet.dispose();
+=======
+        WebhookServlet previousServlet = webhookServlet;
+        if (previousServlet != null) {
+            previousServlet.dispose();
+            webhookServlet = null;
+        }
+
+        WebhookService cloudWebhookService = null;
+        if (configuration.useCloudWebhook) {
+            cloudWebhookService = webhookServiceSupplier.get();
+            if (cloudWebhookService == null) {
+                logger.warn("openHAB Cloud WebhookService is unavailable; Netatmo webhook is disabled");
+>>>>>>> 65536d3 Initial commit
             }
 <<<<<<< Upstream, based on main
 <<<<<<< Upstream, based on main
 <<<<<<< Upstream, based on main
             servlet = webhookServlet = new WebhookServlet(this, httpService, deserializer, api,
-=======
-            servlet = this.webhookServlet = new WebhookServlet(this, httpService, deserializer, api,
->>>>>>> 194ac54 Use new API endpoints for webhooks
 =======
             servlet = webhookServlet = new WebhookServlet(this, httpService, deserializer, api,
 >>>>>>> 7e96b33 lsiepel code review corrections
@@ -214,6 +222,15 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
 =======
             servlet = webhookServlet = new WebhookServlet(this, httpService, deserializer, api, urlPattern);
 >>>>>>> 643b017 Initial commit
+=======
+        }
+
+        String urlPattern = configuration.getWebhookUrlPattern();
+        if (urlPattern != null || cloudWebhookService != null) {
+            WebhookServlet servlet = new WebhookServlet(this, httpService, deserializer, webhookApi, urlPattern,
+                    cloudWebhookService, scheduler);
+            webhookServlet = servlet;
+>>>>>>> 65536d3 Initial commit
             servlet.startListening();
         }
 
@@ -382,7 +399,8 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
             try {
                 ApiError apiError = deserializer.deserialize(ApiError.class, responseBody);
                 if (ServiceError.UNKNOWN.equals(apiError.getCode())) {
-                    // HttpStatus.getCode() returns null for non-standard status codes (e.g. 520-527), so pass
+                    // HttpStatus.getCode() returns null for non-standard status codes (e.g.
+                    // 520-527), so pass
                     // response.getStatus() rather than statusCode
                     exception = new NetatmoException(apiError, response.getStatus(), extractRawErrorCode(responseBody));
                 } else {
@@ -432,7 +450,8 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
     }
 
     /**
-     * Recovers the raw error code that {@link ApiError} discards when classifying it into a {@link ServiceError}.
+     * Recovers the raw error code that {@link ApiError} discards when classifying
+     * it into a {@link ServiceError}.
      */
     static @Nullable String extractRawErrorCode(String responseBody) {
         try {
@@ -524,7 +543,8 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
                 });
             }
             HomeApi homeApi = getRestManager(HomeApi.class);
-            if (homeApi != null) { // Search those depending from a home that has modules + not only weather modules
+            if (homeApi != null) { // Search those depending from a home that has modules + not only weather
+                                   // modules
                 homeApi.getHomesData(null, null).stream()
                         .filter(h -> !(h.getFeatures().isEmpty()
                                 || h.getFeatures().contains(FeatureArea.WEATHER) && h.getFeatures().size() == 1))
@@ -599,11 +619,7 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
         }
 
 <<<<<<< Upstream, based on main
-<<<<<<< Upstream, based on main
         updateState(hookSetChannelUID, OnOffType.from(hooked));
-=======
-        updateState(hookSetChannelUID, hooked ? OnOffType.ON : OnOffType.OFF);
->>>>>>> 68a8c4e Take first code review in account. Add a channel to account tracking hook status.
 =======
         updateState(hookSetChannelUID, OnOffType.from(hooked));
 >>>>>>> a1c653f Lolodomo code review
