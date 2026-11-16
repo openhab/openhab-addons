@@ -56,7 +56,6 @@ public class TailwindUdpReceiver {
         }
     }
 
-    /** A Thing's use of a listener. */
     public class Registration {
         private final Shared shared;
         private final BiConsumer<InetAddress, String> consumer;
@@ -66,7 +65,7 @@ public class TailwindUdpReceiver {
             this.consumer = consumer;
         }
 
-        /** Returns the port the reports are received on, or -1 if the listener stopped. */
+        // -1 if the listener stopped
         public int getPort() {
             return shared.listener.getPort();
         }
@@ -76,9 +75,7 @@ public class TailwindUdpReceiver {
         }
     }
 
-    /**
-     * Starts receiving the status reports sent to the given port, or to a free port if it is 0.
-     */
+    // Port 0 picks a free port
     public synchronized Registration register(int requestedPort, BiConsumer<InetAddress, String> consumer)
             throws SocketException {
         Shared shared = listeners.get(requestedPort);
@@ -124,7 +121,6 @@ public class TailwindUdpReceiver {
         }
     }
 
-    /** Stops all listeners. */
     public synchronized void stop() {
         listeners.values().forEach(shared -> shared.listener.stop());
         listeners.clear();

@@ -60,12 +60,6 @@ public class TailwindStatus {
         return RESULT_OK.equals(result);
     }
 
-    /**
-     * Returns the door with the given index, starting at 0, or null if the controller did not report it.
-     */
-    /**
-     * Returns the status of each door, such as {@code door1 open, door2 close}, for the log.
-     */
     public String doorSummary() {
         Map<String, @Nullable TailwindDoor> doors = data;
         if (doors == null) {
@@ -82,6 +76,7 @@ public class TailwindStatus {
         return summary.toString();
     }
 
+    // index starts at 0
     public @Nullable TailwindDoor door(int index) {
         Map<String, @Nullable TailwindDoor> doors = data;
         return doors == null ? null : doors.get("door" + (index + 1));

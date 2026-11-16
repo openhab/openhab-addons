@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.tailwind.internal;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
@@ -26,24 +26,26 @@ import org.junit.jupiter.api.Test;
 public class TailwindConfigurationTest {
 
     @Test
-    public void plainHostNamesAndAddressesAreKept() {
-        assertEquals("tailwind-30aea4801880.local",
-                TailwindConfiguration.normalizeHostname("tailwind-30aea4801880.local"));
-        assertEquals("192.168.1.50", TailwindConfiguration.normalizeHostname(" 192.168.1.50 "));
+    public void hostNamesAndAddressesAreValid() {
+        assertTrue(TailwindConfiguration.isValidHostname("tailwind-30aea4801880.local"));
+        assertTrue(TailwindConfiguration.isValidHostname("tailwind-30aea4801880.local."));
+        assertTrue(TailwindConfiguration.isValidHostname("192.168.1.50"));
     }
 
     @Test
-    public void urlPartsAreRemoved() {
-        assertEquals("tailwind-30aea4801880.local",
-                TailwindConfiguration.normalizeHostname("http://tailwind-30aea4801880.local"));
-        assertEquals("tailwind-30aea4801880.local",
-                TailwindConfiguration.normalizeHostname("HTTPS://tailwind-30aea4801880.local/"));
-        assertEquals("192.168.1.50", TailwindConfiguration.normalizeHostname("http://192.168.1.50/json"));
+    public void urlsAreNotValid() {
+        assertFalse(TailwindConfiguration.isValidHostname("http://tailwind-30aea4801880.local"));
+        assertFalse(TailwindConfiguration.isValidHostname("192.168.1.50/json"));
+        assertFalse(TailwindConfiguration.isValidHostname("192.168.1.50:80"));
+        assertFalse(TailwindConfiguration.isValidHostname("tailwind .local"));
+        assertFalse(TailwindConfiguration.isValidHostname("-tailwind.local"));
     }
 
     @Test
-    public void blankStaysBlank() {
-        assertEquals("", TailwindConfiguration.normalizeHostname("  "));
-        assertEquals("", TailwindConfiguration.normalizeHostname("http://"));
+    public void partialOpenTimeIsInMilliseconds() {
+        TailwindConfiguration config = new TailwindConfiguration();
+        config.door2PartialOpenTime = 4.5;
+        assertEquals(2500, config.partialOpenTimeMillis(0));
+        assertEquals(4500, config.partialOpenTimeMillis(1));
     }
 }

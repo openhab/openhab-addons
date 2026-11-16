@@ -16,7 +16,6 @@ import static org.openhab.binding.tailwind.internal.TailwindBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.tailwind.internal.api.TailwindUdpReceiver;
 import org.openhab.binding.tailwind.internal.handler.TailwindHandler;
 import org.openhab.core.io.net.http.HttpClientFactory;
@@ -40,14 +39,14 @@ import org.osgi.service.component.annotations.Reference;
 @NonNullByDefault
 @Component(configurationPid = "binding.tailwind", service = ThingHandlerFactory.class)
 public class TailwindHandlerFactory extends BaseThingHandlerFactory {
-    private final HttpClient httpClient;
+    private final HttpClientFactory httpClientFactory;
     private final NetworkAddressService networkAddressService;
     private final TailwindUdpReceiver udpReceiver = new TailwindUdpReceiver();
 
     @Activate
     public TailwindHandlerFactory(@Reference HttpClientFactory httpClientFactory,
             @Reference NetworkAddressService networkAddressService) {
-        this.httpClient = httpClientFactory.getCommonHttpClient();
+        this.httpClientFactory = httpClientFactory;
         this.networkAddressService = networkAddressService;
     }
 
@@ -64,7 +63,8 @@ public class TailwindHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
         if (THING_TYPE_IQ3.equals(thing.getThingTypeUID())) {
-            return new TailwindHandler(thing, httpClient, networkAddressService, udpReceiver);
+            return new TailwindHandler(thing, httpClientFactory.getCommonHttpClient(), networkAddressService,
+                    udpReceiver);
         }
         return null;
     }
