@@ -4,7 +4,9 @@
 	xsi:schemaLocation="https://openhab.org/schemas/addon/v1.0.0 https://openhab.org/schemas/addon-1.0.0.xsd">
 
 	<type>binding</type>
-	<name>BydBatteryBox Binding</name>
-	<description>This is the binding for BydBatteryBox.</description>
+	<name>BYD Battery-Box Binding</name>
+	<description>This is the binding for the BYD Battery-Box Premium HVS/HVM home batteries. It reads status, cell
+		voltages, cell temperatures and event logs over the local network interface.</description>
+	<connection>local</connection>
 
 </addon:addon>

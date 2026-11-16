@@ -22,10 +22,16 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class BydBatteryBoxConfiguration {
 
-    /**
-     * Sample configuration parameters. Replace with your own.
-     */
+    public static final int MIN_REFRESH_INTERVAL = 30;
+
     public String hostname = "";
-    public String password = "";
-    public int refreshInterval = 600;
+    public int port = 8080;
+    /** Status interval in seconds. */
+    public int refreshInterval = 60;
+    /** Cell detail interval in seconds, 0 = disabled. */
+    public int detailInterval = 600;
+    /** Event log interval in seconds, 0 = disabled. */
+    public int eventLogInterval = 600;
+    /** Connect and reply timeout in seconds. */
+    public int connectionTimeout = 5;
 }
