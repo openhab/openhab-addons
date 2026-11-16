@@ -31,6 +31,7 @@ public class ApiHandlerConfiguration {
     public String clientSecret = "";
     private String webHookUrl = "";
     private String webHookPostfix = "";
+    public boolean useCloudWebhook;
     private int reconnectInterval = 300;
 
     public ConfigurationLevel check() {
