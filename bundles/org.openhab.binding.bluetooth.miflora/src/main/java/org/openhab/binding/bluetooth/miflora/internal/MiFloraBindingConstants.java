@@ -25,7 +25,8 @@ import org.openhab.core.thing.ThingTypeUID;
 @NonNullByDefault
 public class MiFloraBindingConstants {
 
-    public static final ThingTypeUID THING_TYPE_HHCCJCY01 = new ThingTypeUID(BluetoothBindingConstants.BINDING_ID, "hhccjcy01");
+    public static final ThingTypeUID THING_TYPE_HHCCJCY01 = new ThingTypeUID(BluetoothBindingConstants.BINDING_ID,
+            "hhccjcy01");
 
     // The name the sensor advertises in its scan response
     public static final String ADVERTISED_NAME = "Flower care";
