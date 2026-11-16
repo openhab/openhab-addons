@@ -187,7 +187,11 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
 
         ApiHandlerConfiguration configuration = getConfiguration();
 <<<<<<< Upstream, based on main
+<<<<<<< Upstream, based on main
+=======
+>>>>>>> 7601187 Rebased after merge of 22187_2
         hookState(false);
+<<<<<<< Upstream, based on main
 <<<<<<< Upstream, based on main
         if (configuration.getWebhookUrlPattern() instanceof String urlPattern
                 && getRestManager(WebhookApi.class) instanceof WebhookApi api) {
@@ -198,6 +202,8 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
             if (servlet != null) {
                 servlet.dispose();
 =======
+=======
+>>>>>>> 7601187 Rebased after merge of 22187_2
         WebhookServlet previousServlet = webhookServlet;
         if (previousServlet != null) {
             previousServlet.dispose();
@@ -209,8 +215,8 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
             cloudWebhookService = webhookServiceSupplier.get();
             if (cloudWebhookService == null) {
                 logger.warn("openHAB Cloud WebhookService is unavailable; Netatmo webhook is disabled");
->>>>>>> 65536d3 Initial commit
             }
+<<<<<<< Upstream, based on main
 <<<<<<< Upstream, based on main
 <<<<<<< Upstream, based on main
 <<<<<<< Upstream, based on main
@@ -223,6 +229,8 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
             servlet = webhookServlet = new WebhookServlet(this, httpService, deserializer, api, urlPattern);
 >>>>>>> 643b017 Initial commit
 =======
+=======
+>>>>>>> 7601187 Rebased after merge of 22187_2
         }
 
         String urlPattern = configuration.getWebhookUrlPattern();
@@ -230,7 +238,6 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
             WebhookServlet servlet = new WebhookServlet(this, httpService, deserializer, webhookApi, urlPattern,
                     cloudWebhookService, scheduler);
             webhookServlet = servlet;
->>>>>>> 65536d3 Initial commit
             servlet.startListening();
         }
 
@@ -619,9 +626,15 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
         }
 
 <<<<<<< Upstream, based on main
+<<<<<<< Upstream, based on main
+=======
+>>>>>>> 7601187 Rebased after merge of 22187_2
         updateState(hookSetChannelUID, OnOffType.from(hooked));
+<<<<<<< Upstream, based on main
 =======
         updateState(hookSetChannelUID, OnOffType.from(hooked));
 >>>>>>> a1c653f Lolodomo code review
+=======
+>>>>>>> 7601187 Rebased after merge of 22187_2
     }
 }
