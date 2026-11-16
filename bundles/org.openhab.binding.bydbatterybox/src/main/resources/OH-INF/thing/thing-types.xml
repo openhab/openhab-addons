@@ -4,45 +4,60 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<!-- Sample Thing Type -->
-	<thing-type id="sample">
-		<!-- Comment this in for Things which need a Bridge to function.
-			<supported-bridge-type-refs>
-			<bridge-type-ref id="BydBatteryBoxBridge" />
-			</supported-bridge-type-refs>
-		-->
+	<thing-type id="battery">
+		<label>BYD Battery-Box Premium</label>
+		<description>BYD Battery-Box Premium HVS/HVM, read over its local network interface. Tower and module channel groups
+			are created from the topology the battery reports.</description>
+		<semantic-equipment-tag>Battery</semantic-equipment-tag>
 
-		<label>BydBatteryBox Binding Thing</label>
-		<description>Sample thing for BydBatteryBox Binding</description>
+		<channel-groups>
+			<channel-group id="status" typeId="status"/>
+			<channel-group id="events" typeId="events"/>
+			<channel-group id="diagnostics" typeId="diagnostics"/>
+		</channel-groups>
 
-		<channels>
-			<channel id="channel1" typeId="sample-channel"/>
-		</channels>
+		<properties>
+			<property name="vendor">BYD</property>
+		</properties>
+
+		<representation-property>serialNumber</representation-property>
 
 		<config-description>
 			<parameter name="hostname" type="text" required="true">
 				<context>network-address</context>
 				<label>Hostname</label>
-				<description>Hostname or IP address of the device</description>
+				<description>Hostname or IP address of the battery, or of a TCP forwarder in front of it.</description>
 			</parameter>
-			<parameter name="password" type="text" required="true">
-				<context>password</context>
-				<label>Password</label>
-				<description>Password to access the device</description>
+			<parameter name="port" type="integer" min="1" max="65535">
+				<label>Port</label>
+				<description>TCP port of the battery.</description>
+				<default>8080</default>
+				<advanced>true</advanced>
 			</parameter>
-			<parameter name="refreshInterval" type="integer" unit="s" min="1">
+			<parameter name="refreshInterval" type="integer" unit="s" min="30">
 				<label>Refresh Interval</label>
-				<description>Interval the device is polled in sec.</description>
+				<description>Interval for reading the system status.</description>
+				<default>60</default>
+			</parameter>
+			<parameter name="detailInterval" type="integer" unit="s" min="0">
+				<label>Cell Detail Interval</label>
+				<description>Interval for measuring and reading the cell voltages and temperatures. 0 disables cell details. Rounded
+					up to a multiple of the refresh interval.</description>
 				<default>600</default>
+			</parameter>
+			<parameter name="eventLogInterval" type="integer" unit="s" min="0">
+				<label>Event Log Interval</label>
+				<description>Interval for reading the event logs. 0 disables the event log. Rounded up to a multiple of the refresh
+					interval.</description>
+				<default>600</default>
+			</parameter>
+			<parameter name="connectionTimeout" type="integer" unit="s" min="1" max="30">
+				<label>Connection Timeout</label>
+				<description>Timeout for establishing the connection and for each reply.</description>
+				<default>5</default>
 				<advanced>true</advanced>
 			</parameter>
 		</config-description>
 	</thing-type>
 
-	<!-- Sample Channel Type -->
-	<channel-type id="sample-channel">
-		<item-type>Number:Temperature</item-type>
-		<label>Example Temperature</label><!-- Use uppercase words, except prepositions. 2-3 words, max 25 chars -->
-		<description>Sample channel for BydBatteryBox Binding</description>
-	</channel-type>
 </thing:thing-descriptions>
