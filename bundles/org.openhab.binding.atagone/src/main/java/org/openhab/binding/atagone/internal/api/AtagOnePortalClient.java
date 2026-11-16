@@ -199,6 +199,13 @@ public class AtagOnePortalClient implements AtagOneConnection {
             runInSession(() -> setVacation(duration));
         } else if (noConfig && control.size() == 1 && DURATION_FIELDS.containsAll(control)) {
             runInSession(() -> writeDuration(control.iterator().next(), controlUpdate));
+        } else if (configUpdate != null && !config.isEmpty() && !config.contains("start_vacation") && mode != null
+                && mode == CH_MODE_HOLIDAY && control.equals(Set.of("ch_mode", "ch_mode_duration", "ch_mode_temp"))
+                && setpoint != null && duration != null && duration == 0) {
+            runInSession(() -> {
+                writeConfig(null, configUpdate);
+                setHolidayTemperature(setpoint);
+            });
         } else if (configUpdate != null && !config.isEmpty() && !config.contains("start_vacation")
                 && (control.isEmpty() || control.equals(Set.of("ch_control_mode")))) {
             Integer controlMode = controlUpdate.ch_control_mode;
@@ -234,6 +241,16 @@ public class AtagOnePortalClient implements AtagOneConnection {
         };
         if (confirmed != seconds) {
             throw new AtagOneCommunicationException("Portal did not store " + field);
+        }
+    }
+
+    // The web pages cannot change a running holiday's temperature; the update route takes the local API's fields.
+    private void setHolidayTemperature(double temperature) throws AtagOneCommunicationException {
+        sendUpdate("control", Map.of("ch_mode", Integer.toString(CH_MODE_HOLIDAY), "ch_mode_duration", "0",
+                "ch_mode_temp", plain(temperature)));
+        ControlDTO stored = fetchState().control;
+        if (stored.ch_mode != CH_MODE_HOLIDAY || Math.abs(stored.ch_mode_temp - temperature) > 0.01) {
+            throw new AtagOneCommunicationException("Portal did not store the holiday temperature");
         }
     }
 

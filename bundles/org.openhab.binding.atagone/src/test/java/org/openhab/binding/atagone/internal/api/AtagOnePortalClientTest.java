@@ -13,11 +13,16 @@
 package org.openhab.binding.atagone.internal.api;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import static org.openhab.binding.atagone.internal.AtagOneBindingConstants.*;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.math.BigDecimal;
 import java.net.InetSocketAddress;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
@@ -27,6 +32,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
@@ -36,6 +42,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -44,12 +51,27 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.openhab.binding.atagone.internal.AtagOneHandler;
+import org.openhab.binding.atagone.internal.AtagOneStateDescriptionProvider;
 import org.openhab.binding.atagone.internal.dto.ControlUpdateDTO;
+import org.openhab.binding.atagone.internal.dto.DeviceConfigDTO;
 import org.openhab.binding.atagone.internal.dto.DeviceConfigUpdateDTO;
 import org.openhab.binding.atagone.internal.dto.RetrieveReplyDTO;
 import org.openhab.binding.atagone.internal.dto.ScheduleDTO;
+import org.openhab.core.io.net.http.HttpClientFactory;
+import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.SIUnits;
+import org.openhab.core.library.unit.Units;
+import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingUID;
+import org.openhab.core.types.Command;
+import org.openhab.core.types.State;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
@@ -232,9 +254,9 @@ class AtagOnePortalClientTest {
                 configuration.addProperty(setting.group(1), Double.valueOf(setting.group(2)));
             }
             com.google.gson.JsonObject control = root.getAsJsonObject("retrieve_reply").getAsJsonObject("control");
-            Matcher duration = Pattern.compile("update_message\\[control\\]\\[(\\w+)\\]=([0-9]+)").matcher(body);
+            Matcher duration = Pattern.compile("update_message\\[control\\]\\[(\\w+)\\]=([0-9.]+)").matcher(body);
             while (duration.find()) {
-                control.addProperty(duration.group(1), Long.valueOf(duration.group(2)));
+                control.addProperty(duration.group(1), new BigDecimal(duration.group(2)));
             }
             retrieveReply = new com.google.gson.Gson().toJson(root.toString());
         } catch (IOException e) {
@@ -863,5 +885,105 @@ class AtagOnePortalClientTest {
         assertThrows(AtagOneCommunicationException.class, () -> portal.updateControl(vacation, null));
         assertThrows(AtagOneCommunicationException.class, () -> portal.updateControl(autoWithTemp, null));
         assertEquals("", lastSetpointRequest);
+    }
+
+    @Test
+    void changesTheHolidayTemperatureWhileTheHolidayRuns() throws Exception {
+        AtagOnePortalClient portal = client(PASSWORD);
+        DeviceConfigDTO configuration = portal.retrieve().configuration;
+
+        writeFromHandler(portal, configuration, "holiday", CHANNEL_VACATION_TEMPERATURE,
+                new QuantityType<>(15.0, SIUnits.CELSIUS));
+
+        assertTrue(lastSetpointRequest.contains("vacation_mode_temp=15"), lastSetpointRequest);
+        assertTrue(lastUpdateRequest.contains("update_message[control][ch_mode]=3"), lastUpdateRequest);
+        assertTrue(lastUpdateRequest.contains("update_message[control][ch_mode_duration]=0"), lastUpdateRequest);
+        assertTrue(lastUpdateRequest.contains("update_message[control][ch_mode_temp]=15"), lastUpdateRequest);
+        assertFalse(lastUpdateRequest.contains("vacation_duration"), "the running holiday keeps its duration");
+        assertFalse(lastUpdateRequest.contains("start_vacation"), "the running holiday is not restarted");
+        assertEquals(15.0, portal.retrieve().control.ch_mode_temp, 0.001);
+    }
+
+    @Test
+    void failsWhenThePortalDoesNotStoreTheHolidayTemperature() throws Exception {
+        AtagOnePortalClient portal = client(PASSWORD);
+        DeviceConfigDTO configuration = portal.retrieve().configuration;
+        ignoreUpdates = true;
+
+        assertThrows(AtagOneCommunicationException.class, () -> writeFromHandler(portal, configuration, "holiday",
+                CHANNEL_VACATION_TEMPERATURE, new QuantityType<>(15.0, SIUnits.CELSIUS)));
+    }
+
+    static Stream<Arguments> everyWriteTheHandlerBuilds() {
+        QuantityType<?> celsius = new QuantityType<>(19.5, SIUnits.CELSIUS);
+        return Stream.of(Arguments.of("auto", CHANNEL_TARGET_TEMPERATURE, celsius),
+                Arguments.of("auto", CHANNEL_CH_CONTROL_MODE, new StringType("weather-dependent")),
+                Arguments.of("auto", CHANNEL_VACATION_DURATION, new QuantityType<>(86400, Units.SECOND)),
+                Arguments.of("auto", CHANNEL_EXTEND_DURATION, new QuantityType<>(900, Units.SECOND)),
+                Arguments.of("auto", CHANNEL_FIREPLACE_DURATION, new QuantityType<>(7200, Units.SECOND)),
+                Arguments.of("auto", CHANNEL_PRESET_MODE, new StringType("manual")),
+                Arguments.of("auto", CHANNEL_PRESET_MODE, new StringType("auto")),
+                Arguments.of("auto", CHANNEL_PRESET_MODE, new StringType("extend")),
+                Arguments.of("auto", CHANNEL_PRESET_MODE, new StringType("holiday")),
+                Arguments.of("auto", CHANNEL_PRESET_MODE, new StringType("fireplace")),
+                Arguments.of("holiday", CHANNEL_PRESET_MODE, new StringType("auto")),
+                Arguments.of("auto", CHANNEL_VACATION_TEMPERATURE, celsius),
+                Arguments.of("holiday", CHANNEL_VACATION_TEMPERATURE, celsius),
+                Arguments.of("holiday", CHANNEL_TARGET_TEMPERATURE, celsius),
+                Arguments.of("auto", CHANNEL_FROST_PROTECTION, new StringType("inside")),
+                Arguments.of("auto", CHANNEL_FROST_PROTECTION_TEMPERATURE_ROOM, celsius),
+                Arguments.of("auto", CHANNEL_FROST_PROTECTION_TEMPERATURE_OUTSIDE, celsius),
+                Arguments.of("auto", CHANNEL_SUMMER_ECO_MODE, OnOffType.ON),
+                Arguments.of("auto", CHANNEL_SUMMER_ECO_TEMPERATURE, celsius),
+                Arguments.of("auto", CHANNEL_HEATING_TYPE, new StringType("convector")),
+                Arguments.of("auto", CHANNEL_INSULATION, new StringType("good")),
+                Arguments.of("auto", CHANNEL_TIME_ZONE, new StringType("amsterdam")),
+                Arguments.of("auto", CHANNEL_LANGUAGE, new StringType("dutch")),
+                Arguments.of("auto", CHANNEL_BUILDING_SIZE, new StringType("large")),
+                Arguments.of("auto", CHANNEL_WDR_TEMPERATURE_INFLUENCE, new StringType("less")),
+                Arguments.of("auto", CHANNEL_CLIMATE_ZONE, new QuantityType<>(-8.0, SIUnits.CELSIUS)),
+                Arguments.of("auto", CHANNEL_MAX_PREHEAT, new StringType("2h")),
+                Arguments.of("auto", CHANNEL_LEGIONELLA_PROTECTION, OnOffType.ON),
+                Arguments.of("auto", CHANNEL_LEGIONELLA_PROTECTION_DAY, new StringType("friday")),
+                Arguments.of("auto", CHANNEL_LEGIONELLA_PROTECTION_TIME, new StringType("03:30")),
+                Arguments.of("auto", CHANNEL_DISPLAY_BRIGHTNESS, new QuantityType<>(60, Units.PERCENT)));
+    }
+
+    @ParameterizedTest
+    @MethodSource("everyWriteTheHandlerBuilds")
+    void acceptsEveryWriteTheHandlerBuilds(String preset, String channel, Command command) throws Exception {
+        AtagOnePortalClient portal = client(PASSWORD);
+        DeviceConfigDTO configuration = portal.retrieve().configuration;
+        setpointReply = "\"{\\\"ch_mode_temp\\\":19.5}\"";
+
+        writeFromHandler(portal, configuration, preset, channel, command);
+    }
+
+    @SuppressWarnings("unchecked")
+    private static void writeFromHandler(AtagOnePortalClient portal, DeviceConfigDTO configuration, String preset,
+            String channel, Command command) throws Exception {
+        Thing thing = mock(Thing.class);
+        when(thing.getUID()).thenReturn(new ThingUID(THING_TYPE_THERMOSTAT, "test"));
+        AtagOneHandler handler = new AtagOneHandler(thing, mock(HttpClient.class), mock(HttpClientFactory.class),
+                new AtagOneStateDescriptionProvider());
+        try {
+            Field config = AtagOneHandler.class.getDeclaredField("lastConfiguration");
+            config.setAccessible(true);
+            config.set(handler, configuration);
+            Field states = AtagOneHandler.class.getDeclaredField("stateMap");
+            states.setAccessible(true);
+            ((Map<String, State>) Objects.requireNonNull(states.get(handler))).put(CHANNEL_PRESET_MODE,
+                    new StringType(preset));
+            ControlUpdateDTO control = new ControlUpdateDTO();
+            DeviceConfigUpdateDTO update = new DeviceConfigUpdateDTO();
+            Method build = AtagOneHandler.class.getDeclaredMethod("buildControlUpdate", String.class, Command.class,
+                    ControlUpdateDTO.class, DeviceConfigUpdateDTO.class);
+            build.setAccessible(true);
+            assertEquals(Boolean.TRUE, build.invoke(handler, channel, command, control, update),
+                    "the handler builds no write for " + channel);
+            portal.updateControl(control, update.hasChanges() ? update : null);
+        } finally {
+            handler.dispose();
+        }
     }
 }
