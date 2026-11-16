@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.bydbatterybox.internal.protocol;
+package org.openhab.binding.bydbatterybox.internal;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -35,10 +35,10 @@ import org.eclipse.jdt.annotation.Nullable;
  * @author Michael Weger - Initial contribution
  */
 @NonNullByDefault
-class FakeBattery implements AutoCloseable {
+public class FakeBattery implements AutoCloseable {
 
-    static final byte[] CLOSE = new byte[0];
-    static final byte[] SILENCE = new byte[] { 0 };
+    public static final byte[] CLOSE = new byte[0];
+    public static final byte[] SILENCE = new byte[] { 0 };
 
     private final ServerSocket server;
     private final BlockingQueue<byte[]> replies = new LinkedBlockingQueue<>();
@@ -59,17 +59,17 @@ class FakeBattery implements AutoCloseable {
      * @param segmentSize replies are written in pieces of this size to exercise frame reassembly
      * @param replies the replies, in the order of the expected requests
      */
-    static FakeBattery start(int segmentSize, byte[]... replies) throws IOException {
+    public static FakeBattery start(int segmentSize, byte[]... replies) throws IOException {
         FakeBattery battery = new FakeBattery(segmentSize);
         battery.replies.addAll(Arrays.asList(replies));
         return battery;
     }
 
-    int port() {
+    public int port() {
         return server.getLocalPort();
     }
 
-    List<byte[]> requests() {
+    public List<byte[]> requests() {
         return List.copyOf(requests);
     }
 
