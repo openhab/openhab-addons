@@ -50,12 +50,14 @@ public class ServletConstants {
     public static final String CONTENT_TYPE_HTML_UTF8 = "text/html; charset=UTF-8";
     public static final String CONTENT_TYPE_HTML = "text/html";
     public static final String HEADER_CONTENT_DISPOSITION = "Content-Disposition";
+    public static final String HEADER_CONTENT_SECURITY_POLICY = "Content-Security-Policy";
     public static final String HEADER_X_FRAME_OPTIONS = "X-Frame-Options";
     public static final String HEADER_PREFER = "Prefer";
 
     public static final String PROFILE_DOWNLOAD_FILENAME_TEMPLATE = BINDING_ID + "-%s-%s-%s-%s_%s.zip";
     public static final String LOG_DOWNLOAD_FILENAME_TEMPLATE = "log-" + BINDING_ID + "-%s-%s-%s_%s_%s.zip.log";
     public static final String CONTENT_DISPOSITION_VALUE_TEMPLATE = "attachment; filename=\"%s\"";
+    public static final String CONTENT_SECURITY_POLICY = "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data:;";
     public static final String UNAUTHORIZED = "Unauthorized";
     public static final String NOT_FOUND = "Not Found";
     public static final String SAME_ORIGIN = "SAMEORIGIN";
