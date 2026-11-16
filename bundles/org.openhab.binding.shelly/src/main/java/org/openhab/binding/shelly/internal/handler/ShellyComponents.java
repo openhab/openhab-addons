@@ -107,6 +107,7 @@ public class ShellyComponents {
             reconcileLoraChannels(thingHandler, profile);
 
             updateDeviceUtilization(thingHandler, status);
+            updateRestartRequired(thingHandler, status);
         }
 
         thingHandler.updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_FIRMWARE, getStringType(profile.fwVersion));
@@ -170,8 +171,20 @@ public class ShellyComponents {
                 toQuantityType(status.fsSize.doubleValue(), Units.BYTE));
         thingHandler.updateChannel(CHANNEL_GROUP_DIAG, CHANNEL_DIAG_FREEFS,
                 toQuantityType(status.fsFree.doubleValue(), Units.BYTE));
-        thingHandler.updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_RESTARTREQ,
-                getOnOff(status.restartRequired));
+    }
+
+    /**
+     * Publish the restart-required flag of the device (Gen2+ only). A NotifyStatus delta can report it on its own, so
+     * it is handled independently of the utilization values.
+     *
+     * @param thingHandler Thing Handler instance
+     * @param status Status message
+     */
+    public static void updateRestartRequired(ShellyThingInterface thingHandler, ShellySettingsStatus status) {
+        if (status.restartRequired != null) {
+            thingHandler.updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_RESTARTREQ,
+                    getOnOff(status.restartRequired));
+        }
     }
 
     /**
@@ -203,7 +216,9 @@ public class ShellyComponents {
 
         int maxTemp = stats.maxInternalTemp.get();
         thingHandler.updateChannel(CHANNEL_GROUP_DIAG, CHANNEL_DIAG_MAXITEMP,
-                maxTemp > 0 ? toQuantityType((double) maxTemp, DIGITS_TEMP, SIUnits.CELSIUS) : UnDefType.UNDEF);
+                maxTemp != ShellyDeviceStats.MAX_INTERNAL_TEMP_UNSET
+                        ? toQuantityType((double) maxTemp, DIGITS_TEMP, SIUnits.CELSIUS)
+                        : UnDefType.UNDEF);
     }
 
     public static boolean updateRelay(ShellyBaseHandler thingHandler, ShellySettingsStatus status, int id) {

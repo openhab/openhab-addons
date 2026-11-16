@@ -616,9 +616,12 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
                     logger.warn("{}: Device requires restart to activate changes", thingName);
                 }
                 status.uptime = params.sys.uptime;
+                if (params.sys.restartRequired != null) {
+                    status.restartRequired = params.sys.restartRequired;
+                    ShellyComponents.updateRestartRequired(getThing(), status);
+                }
                 if (params.sys.ramSize != null) {
                     // NotifyFullStatus only, a NotifyStatus delta must not clear the known values
-                    status.restartRequired = params.sys.restartRequired;
                     status.ramTotal = params.sys.ramSize;
                     status.ramFree = params.sys.ramFree;
                     status.fsSize = params.sys.fsSize;

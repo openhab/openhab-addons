@@ -95,18 +95,26 @@ public class ShellyDiagnosticsChannelsTest {
     }
 
     @Test
-    void createDiagnosticsChannelsAddsOnlyReportedFields() {
+    void createDiagnosticsChannelsAddsUtilizationWhenReported() {
         ShellySettingsStatus status = new ShellySettingsStatus();
         status.ramTotal = 50000L;
-        status.fsFree = 400000L;
 
         Map<String, Channel> channels = ShellyChannelDefinitions.createDiagnosticsChannels(thing(),
                 new ShellyDeviceProfile(THING_TYPE_SHELLYPLUS1), status);
 
         assertThat(channels.keySet(),
-                containsInAnyOrder(diag(CHANNEL_DIAG_TOTALMEM), diag(CHANNEL_DIAG_FREEFS), diag(CHANNEL_DIAG_RESTARTS),
-                        diag(CHANNEL_DIAG_TIMEOUTERRORS), diag(CHANNEL_DIAG_ALARMS), diag(CHANNEL_DIAG_LASTALARM),
-                        diag(CHANNEL_DIAG_PROTOCOLERRORS)));
+                containsInAnyOrder(diag(CHANNEL_DIAG_TOTALMEM), diag(CHANNEL_DIAG_FREEMEM), diag(CHANNEL_DIAG_TOTALFS),
+                        diag(CHANNEL_DIAG_FREEFS), diag(CHANNEL_DIAG_RESTARTS), diag(CHANNEL_DIAG_TIMEOUTERRORS),
+                        diag(CHANNEL_DIAG_ALARMS), diag(CHANNEL_DIAG_LASTALARM), diag(CHANNEL_DIAG_PROTOCOLERRORS)));
+    }
+
+    @Test
+    void createDiagnosticsChannelsSkipsUtilizationWhenNotReported() {
+        Map<String, Channel> channels = ShellyChannelDefinitions.createDiagnosticsChannels(thing(),
+                new ShellyDeviceProfile(THING_TYPE_SHELLYPLUS1), new ShellySettingsStatus());
+
+        assertThat(channels.keySet(), containsInAnyOrder(diag(CHANNEL_DIAG_RESTARTS), diag(CHANNEL_DIAG_TIMEOUTERRORS),
+                diag(CHANNEL_DIAG_ALARMS), diag(CHANNEL_DIAG_LASTALARM), diag(CHANNEL_DIAG_PROTOCOLERRORS)));
     }
 
     @Test
@@ -159,6 +167,17 @@ public class ShellyDiagnosticsChannelsTest {
         verifyQuantity(handler, CHANNEL_DIAG_MAXITEMP, 55);
         verify(handler).updateChannel(eq(CHANNEL_GROUP_DIAG), eq(CHANNEL_DIAG_LASTALARM),
                 argThat(s -> s instanceof StringType && s.toString().startsWith("OVERTEMP")));
+    }
+
+    @Test
+    void updateDiagnosticsStatsPublishesMaxTempBelowZero() {
+        ShellyThingInterface handler = handler(THING_TYPE_SHELLYPLUS1);
+        ShellyDeviceStats stats = new ShellyDeviceStats();
+        stats.maxInternalTemp.accumulateAndGet(-5, Math::max);
+
+        ShellyComponents.updateDiagnosticsStats(handler, stats);
+
+        verifyQuantity(handler, CHANNEL_DIAG_MAXITEMP, -5);
     }
 
     @Test

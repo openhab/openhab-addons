@@ -135,6 +135,21 @@ public class Shelly2ApiRpcNotifyStatusSleepDeviceTest {
     }
 
     @Test
+    void restartRequiredOnlyDeltaUpdatesChannel() throws ShellyApiException {
+        Fixture f = build(THING_TYPE_SHELLYPLUS1PM, true, ThingStatusDetail.NONE);
+        f.profile.status.ramTotal = 50000L;
+
+        f.rpc.onNotifyStatus(message("""
+                {"src":"test","method":"NotifyStatus","params":{"ts":1.0,"sys":{"restart_required":true}}}
+                """));
+
+        assertThat(f.profile.status.restartRequired, is(equalTo(true)));
+        assertThat(f.profile.status.ramTotal, is(equalTo(50000L)));
+        verify(f.thing).updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_RESTARTREQ, OnOffType.ON);
+        verify(f.thing, never()).updateChannel(eq(CHANNEL_GROUP_DIAG), eq(CHANNEL_DIAG_FREEMEM), any());
+    }
+
+    @Test
     void statusDeltaKeepsKnownUtilizationValues() throws ShellyApiException {
         Fixture f = build(THING_TYPE_SHELLYPLUSHT, true, ThingStatusDetail.NONE);
         f.profile.status.ramTotal = 50000L;

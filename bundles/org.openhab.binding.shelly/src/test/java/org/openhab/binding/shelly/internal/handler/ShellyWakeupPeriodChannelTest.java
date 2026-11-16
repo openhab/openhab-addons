@@ -72,6 +72,28 @@ public class ShellyWakeupPeriodChannelTest {
     }
 
     @Test
+    void assumedWakeupPeriodDrivesWatchdogButNotChannel() {
+        String thingTypeId = "shellyplusht";
+        ShellySensorSleepMode sleepMode = new ShellySensorSleepMode();
+        sleepMode.unit = "m";
+        sleepMode.period = 720;
+        ShellyDeviceProfile profile = new ShellyDeviceProfile(new ThingTypeUID(BINDING_ID, thingTypeId));
+        profile.settings.sleepMode = sleepMode;
+        profile.wakeupPeriodAssumed = true;
+
+        profile.updateWatchdogPeriod();
+
+        assertThat(profile.wakeupPeriod, is(0));
+        assertThat(profile.updatePeriod, is((int) Math.round(43200 * 1.1) + 60));
+        assertThat(hasChannel(thingTypeId, profile), is(false));
+
+        profile.updateWakeupPeriod(120);
+
+        assertThat(profile.wakeupPeriod, is(7200));
+        assertThat(hasChannel(thingTypeId, profile), is(true));
+    }
+
+    @Test
     void channelGoesUndefWhenWakeupPeriodIsGone() {
         ShellyThingInterface handler = mock(ShellyThingInterface.class);
         when(handler.getProfile()).thenReturn(new ShellyDeviceProfile(new ThingTypeUID(BINDING_ID, "shellyplusht")));

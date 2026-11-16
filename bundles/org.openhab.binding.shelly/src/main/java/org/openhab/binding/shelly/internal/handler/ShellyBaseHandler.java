@@ -1053,10 +1053,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         }
         State internalTemp = getChannelValue(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_ITEMP);
         if (internalTemp instanceof Number number) {
-            int temp = number.intValue();
-            if (temp > stats.maxInternalTemp.get()) {
-                stats.maxInternalTemp.set(temp);
-            }
+            stats.maxInternalTemp.accumulateAndGet(number.intValue(), Math::max);
         }
 
         if (status.uptime != null) {

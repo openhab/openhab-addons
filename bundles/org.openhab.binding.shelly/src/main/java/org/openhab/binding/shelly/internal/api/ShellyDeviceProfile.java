@@ -137,6 +137,7 @@ public class ShellyDeviceProfile {
 
     public static final int MAX_WAKEUP_PERIOD_SECONDS = 24 * 3600; // longest configurable sleep period of a device
     public int wakeupPeriod = 0; // wakeup period configured on the device in seconds, 0 if it has none
+    public boolean wakeupPeriodAssumed = false; // true while the period is a default the device did not report
     public int learnedWakeupPeriod = 0; // longest wakeup period observed to exceed the configured one, in seconds
     private int reportedWakeupPeriod = 0; // last wakeup period reported in a status update, in minutes
     public int updatePeriod = 2 * UPDATE_SETTINGS_INTERVAL_SECONDS + 10;
@@ -341,10 +342,11 @@ public class ShellyDeviceProfile {
         wakeupPeriod = 0;
         if (settings.sleepMode != null && !isTRV) {
             // Sensor, usually 12h, H&T in USB mode 10min
-            wakeupPeriod = "m".equalsIgnoreCase(getString(settings.sleepMode.unit)) //
+            int period = "m".equalsIgnoreCase(getString(settings.sleepMode.unit)) //
                     ? settings.sleepMode.period * 60 // minutes
                     : settings.sleepMode.period * 3600; // hours
-            applyWakeupPeriod(wakeupPeriod);
+            wakeupPeriod = wakeupPeriodAssumed ? 0 : period;
+            applyWakeupPeriod(period);
         } else if (!alwaysOn && !isTRV) {
             // Sleeping device with unknown wakeup period
             applyWakeupPeriod(MAX_WAKEUP_PERIOD_SECONDS);
@@ -398,6 +400,7 @@ public class ShellyDeviceProfile {
             learnedWakeupPeriod = 0;
         }
         sleepMode.period = periodMinutes;
+        wakeupPeriodAssumed = false;
         updateWatchdogPeriod();
     }
 

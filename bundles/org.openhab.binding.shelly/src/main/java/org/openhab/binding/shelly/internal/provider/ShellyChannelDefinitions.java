@@ -580,10 +580,12 @@ public class ShellyChannelDefinitions {
             return add;
         }
 
-        addChannel(thing, add, status.ramTotal != null, CHGR_DIAG, CHANNEL_DIAG_TOTALMEM);
-        addChannel(thing, add, status.ramFree != null, CHGR_DIAG, CHANNEL_DIAG_FREEMEM);
-        addChannel(thing, add, status.fsSize != null, CHGR_DIAG, CHANNEL_DIAG_TOTALFS);
-        addChannel(thing, add, status.fsFree != null, CHGR_DIAG, CHANNEL_DIAG_FREEFS);
+        // The device reports all utilization values together
+        boolean hasUtilization = status.ramTotal != null;
+        addChannel(thing, add, hasUtilization, CHGR_DIAG, CHANNEL_DIAG_TOTALMEM);
+        addChannel(thing, add, hasUtilization, CHGR_DIAG, CHANNEL_DIAG_FREEMEM);
+        addChannel(thing, add, hasUtilization, CHGR_DIAG, CHANNEL_DIAG_TOTALFS);
+        addChannel(thing, add, hasUtilization, CHGR_DIAG, CHANNEL_DIAG_FREEFS);
 
         // Binding-computed health stats, always tracked once a Gen2+ Thing is initialized
         addChannel(thing, add, true, CHGR_DIAG, CHANNEL_DIAG_RESTARTS);
