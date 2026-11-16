@@ -68,7 +68,7 @@ public class MicroWakeWordKSServiceTest {
     private static final int FRAME_BYTES = MicroWakeWord.FRAME_SIZE * 2;
     private static final Duration FRAME_DURATION = Duration.ofMillis(10);
 
-    private @TempDir Path modelFolder = Path.of("");
+    private @TempDir @NonNullByDefault({}) Path modelFolder;
     private @NonNullByDefault({}) MicroWakeWordKSService service;
     private final EventRecorder listener = new EventRecorder();
 

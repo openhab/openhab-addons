@@ -5,7 +5,8 @@ This voice service spots wake words with [microWakeWord](https://github.com/OHF-
 microWakeWord uses small neural networks, each trained to detect a single wake word phrase.
 The models run in pure Java through the [micro-wakeword4j](https://github.com/jvoice-project/micro-wakeword4j) library.
 
-Important: No voice data listened by this service will be uploaded to the Cloud. The voice data is processed offline, locally on your openHAB server by this binding.
+Important: No voice data listened by this service will be uploaded to the cloud.
+The voice data is processed offline, locally on your openHAB server by this add-on.
 
 ## Supported Wake Words
 
@@ -31,9 +32,10 @@ A model in this folder takes precedence over an included model with the same nam
 
 ## Configuration
 
-After installing, you will be able to access the service options through the openHAB configuration page in UI (**Settings / Other Services - microWakeWord Keyword Spotter**) to edit them:
+After installing, you will be able to access the service settings through Main UI (**Settings / Add-on Settings - microWakeWord Keyword Spotter**) to edit them:
 
-- **Probability Cutoff** - Average probability above which the wake word counts as detected. Lower values detect the wake word more easily but cause more false detections. Leave empty to use the cutoff of the model, which its author tuned.
+- **Probability Cutoff** - Average probability above which the wake word counts as detected. Lower values detect the wake word more easily but cause more false detections.
+  Leave empty to use the cutoff of the model, which its author tuned.
 
 For file based configurations, create a new file in `$OPENHAB_ROOT/conf/services` named `microwakewordks.cfg`.
 

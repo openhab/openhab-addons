@@ -245,11 +245,6 @@ public class MicroWakeWordKSService implements KSService {
     }
 
     private static boolean isSupported(AudioFormat format) {
-        Integer channels = format.getChannels();
-        return AudioFormat.CODEC_PCM_SIGNED.equals(format.getCodec())
-                && (AudioFormat.CONTAINER_NONE.equals(format.getContainer())
-                        || AudioFormat.CONTAINER_WAVE.equals(format.getContainer()))
-                && !Boolean.TRUE.equals(format.isBigEndian()) && Integer.valueOf(16).equals(format.getBitDepth())
-                && Long.valueOf(SAMPLE_RATE).equals(format.getFrequency()) && (channels == null || channels == 1);
+        return FORMAT.isCompatible(format) || WAVE_FORMAT.isCompatible(format);
     }
 }
