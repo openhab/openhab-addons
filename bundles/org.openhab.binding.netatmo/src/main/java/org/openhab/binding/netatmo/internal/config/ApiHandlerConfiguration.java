@@ -15,6 +15,7 @@ package org.openhab.binding.netatmo.internal.config;
 import java.time.Duration;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * The {@link ApiHandlerConfiguration} is responsible for holding configuration
@@ -28,8 +29,8 @@ public class ApiHandlerConfiguration {
 
     public String clientId = "";
     public String clientSecret = "";
-    public String webHookUrl = "";
-    public String webHookPostfix = "";
+    private String webHookUrl = "";
+    private String webHookPostfix = "";
     private int reconnectInterval = 300;
 
     public ConfigurationLevel check() {
@@ -43,5 +44,9 @@ public class ApiHandlerConfiguration {
 
     public Duration getReconnectInterval() {
         return Duration.ofSeconds(reconnectInterval);
+    }
+
+    public @Nullable String getWebhookUrlPattern() {
+        return webHookUrl.isBlank() ? null : webHookUrl + "%s" + webHookPostfix;
     }
 }
