@@ -39,13 +39,13 @@ public class MiFloraDiscoveryParticipant implements BluetoothDiscoveryParticipan
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
-        return Set.of(THING_TYPE_MIFLORA);
+        return Set.of(THING_TYPE_HHCCJCY01);
     }
 
     @Override
     public @Nullable ThingUID getThingUID(BluetoothDiscoveryDevice device) {
         if (ADVERTISED_NAME.equalsIgnoreCase(device.getName())) {
-            return new ThingUID(THING_TYPE_MIFLORA, device.getAdapter().getUID(),
+            return new ThingUID(THING_TYPE_HHCCJCY01, device.getAdapter().getUID(),
                     device.getAddress().toString().toLowerCase().replace(":", ""));
         }
         return null;
