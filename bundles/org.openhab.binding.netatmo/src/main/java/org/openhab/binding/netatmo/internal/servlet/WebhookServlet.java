@@ -67,9 +67,9 @@ public class WebhookServlet extends NetatmoServlet {
     private boolean hooked;
 
     public WebhookServlet(ApiBridgeHandler handler, HttpService httpService, NADeserializer deserializer,
-            WebhookApi api, String webHookUrl, String webHookPostfix) {
+            WebhookApi api, String urlPattern) {
         super(handler, httpService, "webhook");
-        this.uri = UriBuilder.fromUri(webHookUrl).path(getPath() + webHookPostfix).build();
+        this.uri = UriBuilder.fromPath(urlPattern.formatted(getPath())).build();
         this.deserializer = deserializer;
         this.api = api;
 <<<<<<< Upstream, based on main
@@ -252,7 +252,7 @@ public class WebhookServlet extends NetatmoServlet {
 <<<<<<< Upstream, based on main
 <<<<<<< Upstream, based on main
 
-    public boolean hookSet() {
+    public boolean hookInstalled() {
         return hooked;
     }
 =======

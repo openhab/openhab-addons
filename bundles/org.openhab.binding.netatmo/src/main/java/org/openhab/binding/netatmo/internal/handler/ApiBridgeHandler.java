@@ -180,7 +180,8 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
 <<<<<<< Upstream, based on main
 <<<<<<< Upstream, based on main
         hookState(false);
-        if (!configuration.webHookUrl.isBlank() && getRestManager(WebhookApi.class) instanceof WebhookApi api) {
+        if (configuration.getWebhookUrlPattern() instanceof String urlPattern
+                && getRestManager(WebhookApi.class) instanceof WebhookApi api) {
             WebhookServlet servlet = webhookServlet;
 =======
 =======
@@ -198,6 +199,7 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
             }
 <<<<<<< Upstream, based on main
 <<<<<<< Upstream, based on main
+<<<<<<< Upstream, based on main
             servlet = webhookServlet = new WebhookServlet(this, httpService, deserializer, api,
 =======
             servlet = this.webhookServlet = new WebhookServlet(this, httpService, deserializer, api,
@@ -206,6 +208,9 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
             servlet = webhookServlet = new WebhookServlet(this, httpService, deserializer, api,
 >>>>>>> 7e96b33 lsiepel code review corrections
                     configuration.webHookUrl, configuration.webHookPostfix);
+=======
+            servlet = webhookServlet = new WebhookServlet(this, httpService, deserializer, api, urlPattern);
+>>>>>>> 643b017 Initial commit
             servlet.startListening();
         }
 
@@ -325,7 +330,7 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command == RefreshType.REFRESH && CHANNEL_HOOK_SET.equals(channelUID.getIdWithoutGroup())) {
             updateState(hookSetChannelUID,
-                    webhookServlet != null ? OnOffType.from(webhookServlet.hookSet()) : OnOffType.OFF);
+                    webhookServlet != null ? OnOffType.from(webhookServlet.hookInstalled()) : OnOffType.OFF);
         }
     }
 
