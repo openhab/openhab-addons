@@ -26,9 +26,9 @@ import org.openhab.core.types.State;
  */
 @NonNullByDefault
 public interface IArgoCommandableElement {
-    /////////
+
     // TYPES
-    /////////
+
     /**
      * Specialized interface for individual HMI elements, implementing low-level manipulation on their values
      *

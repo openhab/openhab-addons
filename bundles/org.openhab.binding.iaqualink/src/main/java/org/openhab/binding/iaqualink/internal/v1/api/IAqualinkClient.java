@@ -382,8 +382,6 @@ public class IAqualinkClient {
         }
     }
 
-    /////////////// .........Here be dragons...../////////////////////////
-
     class HomeDeserializer implements JsonDeserializer<Home> {
         @Override
         public @Nullable Home deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)

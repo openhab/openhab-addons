@@ -35,6 +35,7 @@ import org.w3c.dom.Node;
 public record DavResponse(List<Resource> resources, String token, boolean truncated) {
 
     public static final int MAX_RESOURCES = 5000;
+
     public record Resource(String href, int status, String etag, String data) {
     }
 

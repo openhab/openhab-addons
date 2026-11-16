@@ -138,7 +138,7 @@ public class HueEmulationService implements EventHandler {
     private final Logger logger = LoggerFactory.getLogger(HueEmulationService.class);
     private final LogAccessInterceptor accessInterceptor = new LogAccessInterceptor();
 
-    //// Required services ////
+    // Required services
     // Don't fail the service if the upnp server does not come up
     // That part is required for discovery only but does not affect already configured hue applications
     @Reference(cardinality = ReferenceCardinality.OPTIONAL, policyOption = ReferencePolicyOption.GREEDY)
