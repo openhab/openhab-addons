@@ -125,9 +125,10 @@
 		</channels>
 	</channel-group-type>
 
-	<channel-group-type id="hvs-module">
-		<label>HVS Module</label>
-		<description>Cell voltages and temperatures of one HVS module (32 cells, 12 sensors).</description>
+	<channel-group-type id="module">
+		<label>Module</label>
+		<description>Cell voltages and temperatures of one module. HVS modules use 32 cells and 12 sensors, HVM modules the
+			first 16 cells and 8 sensors.</description>
 		<channels>
 			<channel id="voltage" typeId="voltage-calculated">
 				<label>Module Voltage</label>
@@ -277,102 +278,6 @@
 			</channel>
 			<channel id="cell-temperature-12" typeId="temperature">
 				<label>Sensor 12 Temperature</label>
-			</channel>
-		</channels>
-	</channel-group-type>
-
-	<channel-group-type id="hvm-module">
-		<label>HVM Module</label>
-		<description>Cell voltages and temperatures of one HVM module (16 cells, 8 sensors).</description>
-		<channels>
-			<channel id="voltage" typeId="voltage-calculated">
-				<label>Module Voltage</label>
-				<description>Sum of the cell voltages of the module.</description>
-			</channel>
-			<channel id="max-cell-voltage" typeId="cell-voltage">
-				<label>Max Cell Voltage</label>
-			</channel>
-			<channel id="min-cell-voltage" typeId="cell-voltage">
-				<label>Min Cell Voltage</label>
-			</channel>
-			<channel id="average-cell-voltage" typeId="cell-voltage-calculated">
-				<label>Average Cell Voltage</label>
-			</channel>
-			<channel id="cell-voltage-spread" typeId="cell-voltage-calculated">
-				<label>Cell Voltage Spread</label>
-				<description>Difference between highest and lowest cell voltage.</description>
-			</channel>
-			<channel id="cell-voltage-01" typeId="cell-voltage">
-				<label>Cell 01 Voltage</label>
-			</channel>
-			<channel id="cell-voltage-02" typeId="cell-voltage">
-				<label>Cell 02 Voltage</label>
-			</channel>
-			<channel id="cell-voltage-03" typeId="cell-voltage">
-				<label>Cell 03 Voltage</label>
-			</channel>
-			<channel id="cell-voltage-04" typeId="cell-voltage">
-				<label>Cell 04 Voltage</label>
-			</channel>
-			<channel id="cell-voltage-05" typeId="cell-voltage">
-				<label>Cell 05 Voltage</label>
-			</channel>
-			<channel id="cell-voltage-06" typeId="cell-voltage">
-				<label>Cell 06 Voltage</label>
-			</channel>
-			<channel id="cell-voltage-07" typeId="cell-voltage">
-				<label>Cell 07 Voltage</label>
-			</channel>
-			<channel id="cell-voltage-08" typeId="cell-voltage">
-				<label>Cell 08 Voltage</label>
-			</channel>
-			<channel id="cell-voltage-09" typeId="cell-voltage">
-				<label>Cell 09 Voltage</label>
-			</channel>
-			<channel id="cell-voltage-10" typeId="cell-voltage">
-				<label>Cell 10 Voltage</label>
-			</channel>
-			<channel id="cell-voltage-11" typeId="cell-voltage">
-				<label>Cell 11 Voltage</label>
-			</channel>
-			<channel id="cell-voltage-12" typeId="cell-voltage">
-				<label>Cell 12 Voltage</label>
-			</channel>
-			<channel id="cell-voltage-13" typeId="cell-voltage">
-				<label>Cell 13 Voltage</label>
-			</channel>
-			<channel id="cell-voltage-14" typeId="cell-voltage">
-				<label>Cell 14 Voltage</label>
-			</channel>
-			<channel id="cell-voltage-15" typeId="cell-voltage">
-				<label>Cell 15 Voltage</label>
-			</channel>
-			<channel id="cell-voltage-16" typeId="cell-voltage">
-				<label>Cell 16 Voltage</label>
-			</channel>
-			<channel id="cell-temperature-01" typeId="temperature">
-				<label>Sensor 01 Temperature</label>
-			</channel>
-			<channel id="cell-temperature-02" typeId="temperature">
-				<label>Sensor 02 Temperature</label>
-			</channel>
-			<channel id="cell-temperature-03" typeId="temperature">
-				<label>Sensor 03 Temperature</label>
-			</channel>
-			<channel id="cell-temperature-04" typeId="temperature">
-				<label>Sensor 04 Temperature</label>
-			</channel>
-			<channel id="cell-temperature-05" typeId="temperature">
-				<label>Sensor 05 Temperature</label>
-			</channel>
-			<channel id="cell-temperature-06" typeId="temperature">
-				<label>Sensor 06 Temperature</label>
-			</channel>
-			<channel id="cell-temperature-07" typeId="temperature">
-				<label>Sensor 07 Temperature</label>
-			</channel>
-			<channel id="cell-temperature-08" typeId="temperature">
-				<label>Sensor 08 Temperature</label>
 			</channel>
 		</channels>
 	</channel-group-type>

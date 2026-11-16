@@ -17,8 +17,12 @@ import static org.mockito.Mockito.*;
 import static org.openhab.binding.bydbatterybox.internal.BydBatteryBoxBindingConstants.*;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -37,10 +41,14 @@ import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
+import org.openhab.core.thing.Channel;
+import org.openhab.core.thing.ChannelGroupUID;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
+import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.types.RefreshType;
 import org.osgi.framework.Bundle;
@@ -79,11 +87,16 @@ class BydBatteryBoxHandlerTest {
     }
 
     private BydBatteryBoxHandler createHandler(int port) {
+        return createHandler(port, List.of());
+    }
+
+    private BydBatteryBoxHandler createHandler(int port, List<Channel> channels) {
         // only the status cycle: cell details and event logs are covered by the protocol tests
         Configuration configuration = new Configuration(Map.of("hostname", "127.0.0.1", "port",
                 BigDecimal.valueOf(port), "refreshInterval", BigDecimal.valueOf(30), "detailInterval", BigDecimal.ZERO,
                 "eventLogInterval", BigDecimal.ZERO, "connectionTimeout", BigDecimal.valueOf(2)));
-        Thing thing = ThingBuilder.create(THING_TYPE_BATTERY, "test").withConfiguration(configuration).build();
+        Thing thing = ThingBuilder.create(THING_TYPE_BATTERY, "test").withConfiguration(configuration)
+                .withChannels(channels).build();
         BydBatteryBoxHandler localHandler = new BydBatteryBoxHandler(thing, i18nProvider, localeProvider, bundle);
         localHandler.setCallback(callback);
         handler = localHandler;
@@ -106,6 +119,36 @@ class BydBatteryBoxHandlerTest {
 
         localHandler.handleCommand(stateOfCharge, RefreshType.REFRESH);
         verify(callback, times(2)).stateUpdated(stateOfCharge, expected);
+    }
+
+    @Test
+    void channelsAreReducedToTheReportedTopology() throws Exception {
+        FakeBattery localBattery = FakeBattery.start(64, Fixtures.frame("identity"), Fixtures.frame("status"));
+        battery = localBattery;
+        ThingUID thingUID = new ThingUID(THING_TYPE_BATTERY, "test");
+        List<Channel> channels = Stream
+                .of("status#voltage", "tower-1#voltage", "tower-2#voltage", "tower-1-module-3#cell-voltage-32",
+                        "tower-1-module-4#cell-voltage-01")
+                .map(id -> ChannelBuilder.create(new ChannelUID(thingUID, id)).build()).toList();
+        // the framework would create all channels of a group; one channel per group is enough to show what is
+        // added: a missing channel of module 1 and a missing status channel (e.g. lost by an earlier version)
+        when(callback.createChannelBuilders(any(), any())).thenAnswer(invocation -> {
+            ChannelGroupUID group = invocation.getArgument(0);
+            return switch (group.getId()) {
+                case "tower-1-module-1" -> List.of(ChannelBuilder.create(new ChannelUID(group, "cell-voltage-01")));
+                case "status" -> List.of(ChannelBuilder.create(new ChannelUID(group, "state-of-charge")),
+                        ChannelBuilder.create(new ChannelUID(group, "voltage")));
+                default -> List.of();
+            };
+        });
+        BydBatteryBoxHandler localHandler = createHandler(localBattery.port(), channels);
+
+        localHandler.initialize();
+
+        Set<String> expected = Set.of("status#voltage", "status#state-of-charge", "tower-1#voltage",
+                "tower-1-module-3#cell-voltage-32", "tower-1-module-1#cell-voltage-01");
+        verify(callback, timeout(FIRST_CYCLE_TIMEOUT_MILLIS).atLeastOnce()).thingUpdated(argThat(thing -> expected
+                .equals(thing.getChannels().stream().map(c -> c.getUID().getId()).collect(Collectors.toSet()))));
     }
 
     @Test

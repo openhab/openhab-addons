@@ -6,12 +6,93 @@
 
 	<thing-type id="battery">
 		<label>BYD Battery-Box Premium</label>
-		<description>BYD Battery-Box Premium HVS/HVM, read over its local network interface. Tower and module channel groups
-			are created from the topology the battery reports.</description>
+		<description>BYD Battery-Box Premium HVS/HVM, read over its local network interface. Only the tower and module channel
+			groups the battery reports are kept.</description>
 		<semantic-equipment-tag>Battery</semantic-equipment-tag>
 
 		<channel-groups>
 			<channel-group id="status" typeId="status"/>
+			<channel-group id="tower-1" typeId="tower">
+				<label>Tower 1</label>
+			</channel-group>
+			<channel-group id="tower-1-module-1" typeId="module">
+				<label>Tower 1 Module 1</label>
+			</channel-group>
+			<channel-group id="tower-1-module-2" typeId="module">
+				<label>Tower 1 Module 2</label>
+			</channel-group>
+			<channel-group id="tower-1-module-3" typeId="module">
+				<label>Tower 1 Module 3</label>
+			</channel-group>
+			<channel-group id="tower-1-module-4" typeId="module">
+				<label>Tower 1 Module 4</label>
+			</channel-group>
+			<channel-group id="tower-1-module-5" typeId="module">
+				<label>Tower 1 Module 5</label>
+			</channel-group>
+			<channel-group id="tower-1-module-6" typeId="module">
+				<label>Tower 1 Module 6</label>
+			</channel-group>
+			<channel-group id="tower-1-module-7" typeId="module">
+				<label>Tower 1 Module 7</label>
+			</channel-group>
+			<channel-group id="tower-1-module-8" typeId="module">
+				<label>Tower 1 Module 8</label>
+			</channel-group>
+			<channel-group id="tower-2" typeId="tower">
+				<label>Tower 2</label>
+			</channel-group>
+			<channel-group id="tower-2-module-1" typeId="module">
+				<label>Tower 2 Module 1</label>
+			</channel-group>
+			<channel-group id="tower-2-module-2" typeId="module">
+				<label>Tower 2 Module 2</label>
+			</channel-group>
+			<channel-group id="tower-2-module-3" typeId="module">
+				<label>Tower 2 Module 3</label>
+			</channel-group>
+			<channel-group id="tower-2-module-4" typeId="module">
+				<label>Tower 2 Module 4</label>
+			</channel-group>
+			<channel-group id="tower-2-module-5" typeId="module">
+				<label>Tower 2 Module 5</label>
+			</channel-group>
+			<channel-group id="tower-2-module-6" typeId="module">
+				<label>Tower 2 Module 6</label>
+			</channel-group>
+			<channel-group id="tower-2-module-7" typeId="module">
+				<label>Tower 2 Module 7</label>
+			</channel-group>
+			<channel-group id="tower-2-module-8" typeId="module">
+				<label>Tower 2 Module 8</label>
+			</channel-group>
+			<channel-group id="tower-3" typeId="tower">
+				<label>Tower 3</label>
+			</channel-group>
+			<channel-group id="tower-3-module-1" typeId="module">
+				<label>Tower 3 Module 1</label>
+			</channel-group>
+			<channel-group id="tower-3-module-2" typeId="module">
+				<label>Tower 3 Module 2</label>
+			</channel-group>
+			<channel-group id="tower-3-module-3" typeId="module">
+				<label>Tower 3 Module 3</label>
+			</channel-group>
+			<channel-group id="tower-3-module-4" typeId="module">
+				<label>Tower 3 Module 4</label>
+			</channel-group>
+			<channel-group id="tower-3-module-5" typeId="module">
+				<label>Tower 3 Module 5</label>
+			</channel-group>
+			<channel-group id="tower-3-module-6" typeId="module">
+				<label>Tower 3 Module 6</label>
+			</channel-group>
+			<channel-group id="tower-3-module-7" typeId="module">
+				<label>Tower 3 Module 7</label>
+			</channel-group>
+			<channel-group id="tower-3-module-8" typeId="module">
+				<label>Tower 3 Module 8</label>
+			</channel-group>
 			<channel-group id="events" typeId="events"/>
 			<channel-group id="diagnostics" typeId="diagnostics"/>
 		</channel-groups>
