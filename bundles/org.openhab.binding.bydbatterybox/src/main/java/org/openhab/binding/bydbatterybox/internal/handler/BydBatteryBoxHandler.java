@@ -24,9 +24,9 @@ import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledExecutorService;
@@ -69,6 +69,7 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
+import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.thing.type.ChannelGroupTypeUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
@@ -300,7 +301,7 @@ public class BydBatteryBoxHandler extends BaseThingHandler {
     }
 
     private void publishTower(TowerData data, SystemInfo info) {
-        String group = towerGroup(data.tower());
+        String group = ChannelLayout.towerGroup(data.tower());
         update(group, CHANNEL_STATE_OF_CHARGE, new QuantityType<>(data.stateOfCharge(), Units.PERCENT));
         update(group, CHANNEL_STATE_OF_HEALTH, new QuantityType<>(data.stateOfHealth(), Units.PERCENT));
         update(group, CHANNEL_VOLTAGE, new QuantityType<>(data.voltage(), Units.VOLT));
@@ -336,7 +337,7 @@ public class BydBatteryBoxHandler extends BaseThingHandler {
         int cellsPerModule = info.batteryType().getCellsPerModule();
         int sensorsPerModule = info.batteryType().getTemperatureSensorsPerModule();
         for (int module = 1; module <= info.modulesPerTower(); module++) {
-            String moduleGroup = moduleGroup(data.tower(), module);
+            String moduleGroup = ChannelLayout.moduleGroup(data.tower(), module);
             int firstCell = (module - 1) * cellsPerModule;
             CellStatistics moduleStats = CellStatistics.of(cells, firstCell, firstCell + cellsPerModule);
             publishCellStatistics(moduleGroup, moduleStats);
@@ -445,7 +446,7 @@ public class BydBatteryBoxHandler extends BaseThingHandler {
         String topology = info.batteryType() + "/" + info.towers() + "/" + info.modulesPerTower();
         if (!topology.equals(context.topology)) {
             context.topology = topology;
-            updateDynamicChannels(info);
+            reconcileChannels(info);
         }
 
         LocalDateTime clock = info.clock();
@@ -459,69 +460,51 @@ public class BydBatteryBoxHandler extends BaseThingHandler {
     }
 
     /**
-     * Creates the tower and module channel groups for the reported topology. Idempotent: the Thing is only updated if
-     * the set of dynamic channels differs.
+     * Removes the channels of towers, modules, cells and sensors that do not exist, and adds back missing channels of
+     * the static groups and of the reported topology (e.g. after a module was added). Idempotent: the Thing is only
+     * updated if channels need to be removed or added.
      */
-    private void updateDynamicChannels(SystemInfo info) {
+    private void reconcileChannels(SystemInfo info) {
         ThingHandlerCallback callback = getCallback();
         if (callback == null) {
             return;
         }
-        List<Channel> desired = new ArrayList<>();
-        @Nullable
-        ChannelGroupTypeUID moduleType = switch (info.batteryType()) {
-            case HVS -> GROUP_TYPE_HVS_MODULE;
-            case HVM -> GROUP_TYPE_HVM_MODULE;
-            case UNSUPPORTED -> null;
-        };
-        if (moduleType != null) {
-            boolean multipleTowers = info.towers() > 1;
-            for (int tower = 1; tower <= info.towers(); tower++) {
-                String towerLabel = text("label.tower", "Tower {0}", tower);
-                desired.addAll(buildGroup(callback, towerGroup(tower), GROUP_TYPE_TOWER, towerLabel));
-                for (int module = 1; module <= info.modulesPerTower(); module++) {
-                    String moduleLabel = multipleTowers
-                            ? text("label.tower-module", "Tower {0} Module {1}", tower, module)
-                            : text("label.module", "Module {0}", module);
-                    desired.addAll(buildGroup(callback, moduleGroup(tower, module), moduleType, moduleLabel));
+        List<Channel> obsolete = thing.getChannels().stream().filter(c -> !exists(c.getUID(), info)).toList();
+        Set<ChannelUID> present = new HashSet<>();
+        thing.getChannels().forEach(c -> present.add(c.getUID()));
+        List<Channel> missing = new ArrayList<>();
+        Map<String, ChannelGroupTypeUID> groups = new LinkedHashMap<>();
+        groups.put(GROUP_STATUS, GROUP_TYPE_STATUS);
+        groups.put(GROUP_EVENTS, GROUP_TYPE_EVENTS);
+        groups.put(GROUP_DIAGNOSTICS, GROUP_TYPE_DIAGNOSTICS);
+        for (String group : ChannelLayout.groups(info)) {
+            groups.put(group, group.contains(GROUP_MODULE_INFIX) ? GROUP_TYPE_MODULE : GROUP_TYPE_TOWER);
+        }
+        for (Map.Entry<String, ChannelGroupTypeUID> entry : groups.entrySet()) {
+            String group = entry.getKey();
+            ChannelGroupTypeUID groupType = entry.getValue();
+            for (ChannelBuilder builder : callback.createChannelBuilders(new ChannelGroupUID(thing.getUID(), group),
+                    groupType)) {
+                Channel channel = builder.build();
+                if (!present.contains(channel.getUID()) && exists(channel.getUID(), info)) {
+                    missing.add(channel);
                 }
             }
         }
-        List<Channel> existing = thing.getChannels().stream().filter(c -> isDynamicGroup(c.getUID())).toList();
-        Set<ChannelUID> existingUids = new HashSet<>();
-        existing.forEach(c -> existingUids.add(c.getUID()));
-        Set<ChannelUID> desiredUids = new HashSet<>();
-        desired.forEach(c -> desiredUids.add(c.getUID()));
-        if (!existingUids.equals(desiredUids)) {
-            logger.debug("Updating dynamic channels of {}: {} -> {} channels", thing.getUID(), existing.size(),
-                    desired.size());
-            updateThing(editThing().withoutChannels(existing).withChannels(desired).build());
+        if (!obsolete.isEmpty() || !missing.isEmpty()) {
+            logger.debug("Adapting channels of {} to {} tower(s) with {} {} module(s): removing {}, adding {}",
+                    thing.getUID(), info.towers(), info.modulesPerTower(), info.batteryType(), obsolete.size(),
+                    missing.size());
+            // ThingBuilder.withChannels() would replace all channels; add the missing ones individually
+            ThingBuilder builder = editThing().withoutChannels(obsolete);
+            missing.forEach(builder::withChannel);
+            updateThing(builder.build());
         }
     }
 
-    private List<Channel> buildGroup(ThingHandlerCallback callback, String groupId, ChannelGroupTypeUID groupType,
-            String groupLabel) {
-        List<Channel> channels = new ArrayList<>();
-        for (ChannelBuilder builder : callback.createChannelBuilders(new ChannelGroupUID(thing.getUID(), groupId),
-                groupType)) {
-            Channel channel = builder.build();
-            String label = Objects.requireNonNullElse(channel.getLabel(), channel.getUID().getIdWithoutGroup());
-            channels.add(ChannelBuilder.create(channel).withLabel(groupLabel + ": " + label).build());
-        }
-        return channels;
-    }
-
-    private static boolean isDynamicGroup(ChannelUID uid) {
+    private static boolean exists(ChannelUID uid, SystemInfo info) {
         String group = uid.getGroupId();
-        return group != null && group.startsWith(GROUP_TOWER_PREFIX);
-    }
-
-    private static String towerGroup(int tower) {
-        return GROUP_TOWER_PREFIX + tower;
-    }
-
-    private static String moduleGroup(int tower, int module) {
-        return GROUP_TOWER_PREFIX + tower + GROUP_MODULE_INFIX + module;
+        return group == null || ChannelLayout.exists(group, uid.getIdWithoutGroup(), info);
     }
 
     private static String twoDigits(int number) {

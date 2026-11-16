@@ -32,13 +32,15 @@ public class BydBatteryBoxBindingConstants {
     public static final String GROUP_STATUS = "status";
     public static final String GROUP_EVENTS = "events";
     public static final String GROUP_DIAGNOSTICS = "diagnostics";
+    public static final ChannelGroupTypeUID GROUP_TYPE_STATUS = new ChannelGroupTypeUID(BINDING_ID, "status");
+    public static final ChannelGroupTypeUID GROUP_TYPE_EVENTS = new ChannelGroupTypeUID(BINDING_ID, "events");
+    public static final ChannelGroupTypeUID GROUP_TYPE_DIAGNOSTICS = new ChannelGroupTypeUID(BINDING_ID, "diagnostics");
 
-    // dynamic channel groups, numbered per tower and module
+    // tower and module channel groups, declared for the largest topology and reduced to the reported one
     public static final String GROUP_TOWER_PREFIX = "tower-";
     public static final String GROUP_MODULE_INFIX = "-module-";
     public static final ChannelGroupTypeUID GROUP_TYPE_TOWER = new ChannelGroupTypeUID(BINDING_ID, "tower");
-    public static final ChannelGroupTypeUID GROUP_TYPE_HVS_MODULE = new ChannelGroupTypeUID(BINDING_ID, "hvs-module");
-    public static final ChannelGroupTypeUID GROUP_TYPE_HVM_MODULE = new ChannelGroupTypeUID(BINDING_ID, "hvm-module");
+    public static final ChannelGroupTypeUID GROUP_TYPE_MODULE = new ChannelGroupTypeUID(BINDING_ID, "module");
 
     // status, tower and module channels
     public static final String CHANNEL_STATE_OF_CHARGE = "state-of-charge";

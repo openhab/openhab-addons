@@ -14,8 +14,9 @@ The BYD configuration tool sends the same commands.
 |------------|--------------------------------------------------------------------------------------|
 | `battery`  | One BYD Battery-Box Premium system, addressed through its BMU (battery control unit) |
 
-Towers and modules are not separate Things.
-The binding creates their channel groups from the configuration the battery reports.
+Towers and modules are not separate Things, but channel groups of the `battery` Thing.
+Channel groups are defined for up to 3 towers with up to 8 modules each.
+After the first reading, the binding removes the channels of towers and modules the battery does not have.
 
 | Battery                                   | Status                                                                                              |
 |-------------------------------------------|-----------------------------------------------------------------------------------------------------|
@@ -154,6 +155,7 @@ Minimum, maximum, average and spread are calculated from all cells of the tower;
 
 One group per module, read every `detailInterval`.
 Module m holds cells `(m-1) × 32 + 1` to `m × 32` of the tower for HVS (16 cells per module for HVM), in the order the battery reports them.
+HVM modules only have the channels `cell-voltage-01` … `cell-voltage-16` and `cell-temperature-01` … `cell-temperature-08`.
 
 | Channel                                       | Type                     | Description                                     |
 |-----------------------------------------------|--------------------------|-------------------------------------------------|
