@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.bluetooth.miflora.internal;
 
-import static org.openhab.binding.bluetooth.miflora.internal.MiFloraBindingConstants.THING_TYPE_MIFLORA;
+import static org.openhab.binding.bluetooth.miflora.internal.MiFloraBindingConstants.THING_TYPE_HHCCJCY01;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -34,12 +34,12 @@ public class MiFloraHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
-        return THING_TYPE_MIFLORA.equals(thingTypeUID);
+        return THING_TYPE_HHCCJCY01.equals(thingTypeUID);
     }
 
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
-        if (THING_TYPE_MIFLORA.equals(thing.getThingTypeUID())) {
+        if (THING_TYPE_HHCCJCY01.equals(thing.getThingTypeUID())) {
             return new MiFloraHandler(thing);
         }
         return null;
