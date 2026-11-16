@@ -34,6 +34,8 @@ public class LxBindingConstants {
     public static final String MINISERVER_CHANNEL_TYPE_RADIO_BUTTON = "radioButtonTypeId";
     public static final String MINISERVER_CHANNEL_TYPE_ROLLERSHUTTER = "rollerShutterTypeId";
     public static final String MINISERVER_CHANNEL_TYPE_WINDOW_POSITION = "windowPositionTypeId";
+    public static final String MINISERVER_CHANNEL_TYPE_GATE_POSITION = "gatePositionTypeId";
+    public static final String MINISERVER_CHANNEL_TYPE_GATE_PARTIALLY_OPEN = "gatePartiallyOpenTypeId";
     public static final String MINISERVER_CHANNEL_TYPE_DIMMER = "dimmerTypeId";
     public static final String MINISERVER_CHANNEL_TYPE_NUMBER = "numberTypeId";
     public static final String MINISERVER_CHANNEL_TYPE_COLORPICKER = "colorPickerTypeId";
@@ -42,6 +44,7 @@ public class LxBindingConstants {
     public static final String MINISERVER_CHANNEL_TYPE_IROOM_V2_PREPARE_STATE = "iRoomV2PrepareStateTypeId";
     public static final String MINISERVER_CHANNEL_TYPE_IROOM_V2_COMFORT_TOLERANCE = "iRoomV2ComfortToleranceTypeId";
     // Channel Type IDs - read only
+    public static final String MINISERVER_CHANNEL_TYPE_GATE_MOVEMENT = "gateMovementTypeId";
     public static final String MINISERVER_CHANNEL_TYPE_RO_TEXT = "roTextTypeId";
     public static final String MINISERVER_CHANNEL_TYPE_RO_SWITCH = "roSwitchTypeId";
     public static final String MINISERVER_CHANNEL_TYPE_RO_ANALOG = "roAnalogTypeId";

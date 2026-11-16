@@ -183,6 +183,47 @@
 		</config-description>
 	</channel-type>
 
+	<channel-type id="gatePositionTypeId">
+		<item-type>Rollershutter</item-type>
+		<label>Loxone Garage/Gate Position</label>
+		<description>Garage/Gate position: 0% fully open, 100% fully closed. Only endpoint positions can be commanded.
+			Opening
+			and closing require Miniserver 12.1 or newer.</description>
+		<category>garagedoor</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>OpenLevel</tag>
+		</tags>
+		<state min="0" max="100" pattern="%d %%"/>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+
+	<channel-type id="gateMovementTypeId">
+		<item-type>String</item-type>
+		<label>Loxone Garage/Gate Movement</label>
+		<description>Current direction of Garage/Gate movement.</description>
+		<state readOnly="true">
+			<options>
+				<option value="OPENING">Opening</option>
+				<option value="STOPPED">Stopped</option>
+				<option value="CLOSING">Closing</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="gatePartiallyOpenTypeId">
+		<item-type>Switch</item-type>
+		<label>Loxone Garage/Gate Partially Open</label>
+		<description>One-shot action to move the Garage/Gate to the partial-open position configured in Loxone (PoPos).
+			Requires Miniserver 14.2 or newer.</description>
+		<command>
+			<options>
+				<option value="ON">Partially open</option>
+			</options>
+		</command>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+
 	<channel-type id="roTextTypeId">
 		<item-type>String</item-type>
 		<label>Loxone State Read-only Information</label>

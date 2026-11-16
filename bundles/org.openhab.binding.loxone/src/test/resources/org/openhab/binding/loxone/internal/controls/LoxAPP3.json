@@ -369,6 +369,23 @@
 				"autoState": "131b0b1e-022c-06e2-ffff504f9410790f"
 			}
 		},
+		"0e367c09-0161-e2c2-ffff403fb0c34b9e": {
+			"name": "Garage Door",
+			"type": "Gate",
+			"uuidAction": "0e367c09-0161-e2c2-ffff403fb0c34b9e",
+			"room": "0e368d32-014f-4604-ffff403fb0c34b9e",
+			"cat": "0b734138-033e-02d8-ffff403fb0c34b9e",
+			"isSecured": false,
+			"details": {
+				"animation": 0
+			},
+			"states": {
+				"position": "0e367c09-0161-e2c2-ffff403fb0c34ba1",
+				"active": "0e367c09-0161-e2c2-ffff403fb0c34ba2",
+				"preventOpen": "0e367c09-0161-e2c2-ffff403fb0c34ba3",
+				"preventClose": "0e367c09-0161-e2c2-ffff403fb0c34ba4"
+			}
+		},
 		"4255054f-0355-af47-ffff403fb0c34b9e": {
 			"name": "Sprinkler 1",
 			"type": "Radio",
