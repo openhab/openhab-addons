@@ -14,6 +14,9 @@ package org.openhab.binding.netatmo.internal.config;
 
 import java.time.Duration;
 
+import javax.ws.rs.core.UriBuilder;
+import javax.ws.rs.core.UriBuilderException;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
@@ -39,6 +42,12 @@ public class ApiHandlerConfiguration {
             return ConfigurationLevel.EMPTY_CLIENT_ID;
         } else if (clientSecret.isBlank()) {
             return ConfigurationLevel.EMPTY_CLIENT_SECRET;
+        } else if (!webHookUrl.isBlank()) {
+            try {
+                UriBuilder.fromPath(webHookUrl);
+            } catch (IllegalArgumentException | UriBuilderException e) {
+                return ConfigurationLevel.WEBHOOK_URL_SYNTAX_ERROR;
+            }
         }
         return ConfigurationLevel.COMPLETED;
     }

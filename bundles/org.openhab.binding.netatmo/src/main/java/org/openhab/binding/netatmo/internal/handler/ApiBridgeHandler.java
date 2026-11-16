@@ -183,27 +183,7 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
         freeConnectJob();
 
         ApiHandlerConfiguration configuration = getConfiguration();
-<<<<<<< Upstream, based on main
-<<<<<<< Upstream, based on main
         hookState(false);
-<<<<<<< Upstream, based on main
-        if (configuration.getWebhookUrlPattern() instanceof String urlPattern
-                && getRestManager(WebhookApi.class) instanceof WebhookApi api) {
-            WebhookServlet servlet = webhookServlet;
-=======
-=======
-        hookState(false);
->>>>>>> 7e96b33 lsiepel code review corrections
-        if (!configuration.webHookUrl.isBlank() && getRestManager(WebhookApi.class) instanceof WebhookApi api) {
-<<<<<<< Upstream, based on main
-            WebhookServlet servlet = this.webhookServlet;
->>>>>>> 194ac54 Use new API endpoints for webhooks
-=======
-            WebhookServlet servlet = webhookServlet;
->>>>>>> 7e96b33 lsiepel code review corrections
-            if (servlet != null) {
-                servlet.dispose();
-=======
         WebhookServlet previousServlet = webhookServlet;
         if (previousServlet != null) {
             previousServlet.dispose();
@@ -215,24 +195,7 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
             cloudWebhookService = webhookServiceSupplier.get();
             if (cloudWebhookService == null) {
                 logger.warn("openHAB Cloud WebhookService is unavailable; Netatmo webhook is disabled");
->>>>>>> 65536d3 Initial commit
             }
-<<<<<<< Upstream, based on main
-<<<<<<< Upstream, based on main
-<<<<<<< Upstream, based on main
-<<<<<<< Upstream, based on main
-            servlet = webhookServlet = new WebhookServlet(this, httpService, deserializer, api,
-=======
-            servlet = this.webhookServlet = new WebhookServlet(this, httpService, deserializer, api,
->>>>>>> 194ac54 Use new API endpoints for webhooks
-=======
-            servlet = webhookServlet = new WebhookServlet(this, httpService, deserializer, api,
->>>>>>> 7e96b33 lsiepel code review corrections
-                    configuration.webHookUrl, configuration.webHookPostfix);
-=======
-            servlet = webhookServlet = new WebhookServlet(this, httpService, deserializer, api, urlPattern);
->>>>>>> 643b017 Initial commit
-=======
         }
 
         String urlPattern = configuration.getWebhookUrlPattern();
@@ -240,7 +203,6 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
             WebhookServlet servlet = new WebhookServlet(this, httpService, deserializer, webhookApi, urlPattern,
                     cloudWebhookService, scheduler);
             webhookServlet = servlet;
->>>>>>> 65536d3 Initial commit
             servlet.startListening();
         }
 
@@ -640,14 +602,6 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
             return;
         }
 
-<<<<<<< Upstream, based on main
-<<<<<<< Upstream, based on main
         updateState(hookSetChannelUID, OnOffType.from(hooked));
-=======
-        updateState(hookSetChannelUID, hooked ? OnOffType.ON : OnOffType.OFF);
->>>>>>> 68a8c4e Take first code review in account. Add a channel to account tracking hook status.
-=======
-        updateState(hookSetChannelUID, OnOffType.from(hooked));
->>>>>>> a1c653f Lolodomo code review
     }
 }

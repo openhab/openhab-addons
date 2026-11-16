@@ -41,18 +41,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.NetatmoException;
 import org.openhab.binding.netatmo.internal.api.WebhookApi;
-<<<<<<< Upstream, based on main
-<<<<<<< Upstream, based on main
-<<<<<<< Upstream, based on main
-=======
->>>>>>> 3a3e390 One more last thing is to take care of new events.
 import org.openhab.binding.netatmo.internal.api.data.EventType;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.ServiceError;
-=======
->>>>>>> 194ac54 Use new API endpoints for webhooks
-=======
-import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.ServiceError;
->>>>>>> 68a8c4e Take first code review in account. Add a channel to account tracking hook status.
 import org.openhab.binding.netatmo.internal.api.dto.Webhook;
 import org.openhab.binding.netatmo.internal.api.dto.WebhookEvent;
 import org.openhab.binding.netatmo.internal.deserialization.NADeserializer;
@@ -95,16 +85,6 @@ public class WebhookServlet extends NetatmoServlet {
         super(handler, httpService, "webhook");
         this.deserializer = deserializer;
         this.api = api;
-<<<<<<< Upstream, based on main
-<<<<<<< Upstream, based on main
-<<<<<<< Upstream, based on main
-=======
-        this.webHookUrl = webHookUrl;
-        this.webHookPostfix = webHookPostfix;
->>>>>>> 194ac54 Use new API endpoints for webhooks
-=======
->>>>>>> 68a8c4e Take first code review in account. Add a channel to account tracking hook status.
-=======
         this.urlPattern = urlPattern;
         this.cloudWebhookService = cloudWebhookService;
         this.scheduler = scheduler;
@@ -112,7 +92,6 @@ public class WebhookServlet extends NetatmoServlet {
             throw new IllegalArgumentException(
                     "WebhookServlet can not be instanciated without either cloud service, either local url.");
         }
->>>>>>> 65536d3 Initial commit
     }
 
     @Override
@@ -167,6 +146,20 @@ public class WebhookServlet extends NetatmoServlet {
         }
     }
 
+    private synchronized void scheduleCloudWebhookRefresh(Instant expiresAt) {
+        cancelCloudWebhookRefresh();
+        long delaySeconds = Math.max(60,
+                Duration.between(Instant.now(), expiresAt.minus(CLOUD_WEBHOOK_REFRESH_SAFETY_WINDOW)).getSeconds());
+        scheduleCloudWebhookTask(delaySeconds);
+    }
+
+    private synchronized void scheduleCloudWebhookRetry() {
+        if (!disposed) {
+            cancelCloudWebhookRefresh();
+            scheduleCloudWebhookTask(CLOUD_WEBHOOK_RETRY_DELAY_SECONDS);
+        }
+    }
+
     private void removeAndReschedule(WebhookService cloudService, String path) {
         removeCloudWebhook(cloudService, path);
         scheduleCloudWebhookRetry();
@@ -209,8 +202,6 @@ public class WebhookServlet extends NetatmoServlet {
     private boolean registerWebhook(URI uri) {
         try {
             logger.debug("Getting list of active webhooks");
-<<<<<<< Upstream, based on main
-<<<<<<< Upstream, based on main
             List<Webhook> currentHooks = api.getWebhooks();
             if (currentHooks.stream().anyMatch(url -> url.getUri().equals(uri))) {
                 logger.info("The webhook {} is already present", uri);
@@ -219,33 +210,12 @@ public class WebhookServlet extends NetatmoServlet {
                 return true;
             } else {
                 logger.info("Setting up the webhook {}", uri);
-<<<<<<< Upstream, based on main
-                setHooked(api.appendWebhook(uri));
-=======
-            String stringUri = uri.toString();
-=======
->>>>>>> 68a8c4e Take first code review in account. Add a channel to account tracking hook status.
-            List<Webhook> currentHooks = api.getWebhooks();
-            if (currentHooks.stream().anyMatch(url -> url.getUri().equals(uri))) {
-                logger.info("The webhook {} is already present", uri);
-                setHooked(true);
-            } else {
-<<<<<<< Upstream, based on main
-                logger.info("Setting up the webhook {}", stringUri);
-                hookSet = api.appendWebhook(uri);
->>>>>>> 194ac54 Use new API endpoints for webhooks
-=======
-                logger.info("Setting up the webhook {}", uri);
-                setHooked(api.appendWebhook(uri));
->>>>>>> 68a8c4e Take first code review in account. Add a channel to account tracking hook status.
-=======
                 boolean registered = api.appendWebhook(uri);
                 if (registered) {
                     currentUri = uri;
                 }
                 setHooked(registered);
                 return registered;
->>>>>>> 65536d3 Initial commit
             }
         } catch (NetatmoException e) {
             if (ServiceError.WEBHOOK_LIMIT_REACHED.equals(e.getStatusCode())) {
@@ -258,87 +228,13 @@ public class WebhookServlet extends NetatmoServlet {
                     setHooked(registered);
                     return registered;
                 } catch (NetatmoException e1) {
-<<<<<<< Upstream, based on main
-<<<<<<< Upstream, based on main
-<<<<<<< Upstream, based on main
-=======
->>>>>>> e66a9a7 Code review adressed
                     logger.warn("Error setting webhook: {}", e1.getMessage());
                 }
             } else {
                 logger.warn("Error setting webhook: {}", e.getMessage());
-=======
-                    logger.info("Error setting webhook: {}", e.getMessage());
-=======
-                    logger.warn("Error setting webhook: {}", e.getMessage());
->>>>>>> cf4bcf7 lsiepel code review
-                }
-            } else {
-<<<<<<< Upstream, based on main
-                logger.info("Error setting webhook: {}", e.getMessage());
->>>>>>> 68a8c4e Take first code review in account. Add a channel to account tracking hook status.
-=======
-                logger.warn("Error setting webhook: {}", e.getMessage());
->>>>>>> cf4bcf7 lsiepel code review
             }
         }
         return false;
-    }
-
-<<<<<<< Upstream, based on main
-    @Override
-    public void dispose() {
-<<<<<<< Upstream, based on main
-<<<<<<< Upstream, based on main
-        if (hooked) {
-=======
-        if (hookSet) {
->>>>>>> 194ac54 Use new API endpoints for webhooks
-=======
-        if (hooked) {
->>>>>>> 68a8c4e Take first code review in account. Add a channel to account tracking hook status.
-            logger.info("Releasing webhook");
-            try {
-<<<<<<< Upstream, based on main
-<<<<<<< Upstream, based on main
-                List<Webhook> currentHooks = api.getWebhooks();
-                currentHooks.removeIf(url -> url.getUri().equals(uri));
-                if (currentHooks.isEmpty()) {
-                    api.dropWebhook();
-                } else {
-                    api.setWebhooks(currentHooks.stream().map(wh -> wh.getUri()).toList());
-                }
-=======
-                api.dropWebhook();
-                hookSet = false;
->>>>>>> 194ac54 Use new API endpoints for webhooks
-=======
-                List<Webhook> currentHooks = api.getWebhooks();
-                currentHooks.removeIf(url -> url.getUri().equals(uri));
-                if (currentHooks.isEmpty()) {
-                    api.dropWebhook();
-                } else {
-                    api.setWebhooks(currentHooks.stream().map(wh -> wh.getUri()).toList());
-                }
->>>>>>> 68a8c4e Take first code review in account. Add a channel to account tracking hook status.
-            } catch (NetatmoException e) {
-                logger.warn("Error releasing webhook: {}", e.getMessage());
-            }
-            setHooked(false);
-=======
-    private synchronized void scheduleCloudWebhookRefresh(Instant expiresAt) {
-        cancelCloudWebhookRefresh();
-        long delaySeconds = Math.max(60,
-                Duration.between(Instant.now(), expiresAt.minus(CLOUD_WEBHOOK_REFRESH_SAFETY_WINDOW)).getSeconds());
-        scheduleCloudWebhookTask(delaySeconds);
-    }
-
-    private synchronized void scheduleCloudWebhookRetry() {
-        if (!disposed) {
-            cancelCloudWebhookRefresh();
-            scheduleCloudWebhookTask(CLOUD_WEBHOOK_RETRY_DELAY_SECONDS);
->>>>>>> 65536d3 Initial commit
-        }
     }
 
     private void scheduleCloudWebhookTask(long delaySeconds) {
@@ -422,18 +318,8 @@ public class WebhookServlet extends NetatmoServlet {
             handler.hookState(hooked);
         }
     }
-<<<<<<< Upstream, based on main
-<<<<<<< Upstream, based on main
 
     public boolean hookInstalled() {
         return hooked;
     }
-=======
->>>>>>> 68a8c4e Take first code review in account. Add a channel to account tracking hook status.
-=======
-
-    public boolean hookSet() {
-        return hooked;
-    }
->>>>>>> 7e96b33 lsiepel code review corrections
 }
