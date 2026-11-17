@@ -414,6 +414,10 @@ public class VerisureSession {
         String content = response.getContentAsString();
         logTraceWithPattern(response.getStatus(), content);
 
+        if (response.getStatus() != HttpStatus.OK_200) {
+            logger.debug("HTTP GET {} returned status {}, ignoring response", url, response.getStatus());
+            return null;
+        }
         return gson.fromJson(content, jsonClass);
     }
 
@@ -1008,7 +1012,7 @@ public class VerisureSession {
                                 dThing.setBatteryStatus(batteryStatus);
                             }
                         } catch (ExecutionException | InterruptedException | TimeoutException | JsonSyntaxException e) {
-                            logger.warn("Failed to query for door&window status: {}", e.getMessage());
+                            logger.debug("Failed to query for battery status: {}", e.getMessage());
                         }
                         // Set location
                         dThing.setLocation(doorWindow.getDevice().getArea());
