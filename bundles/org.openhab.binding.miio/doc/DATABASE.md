@@ -312,6 +312,7 @@ For each action:
 | `NONE`            | any       | Value only available for the `condition`, not placed in the `parameters`.                                                       |
 | `UNKNOWN`         | any       | No value for ON/OFF and text. Used by generated placeholder actions that never send.                                            |
 | `CUSTOMSTRING`    | text      | Replaces only the `$value$` token inside its entry (`"color,$value$"` gives `"color,red"`). Otherwise like `STRING`.            |
+| `JSON`            | text      | MIoT actions only: the text as JSON list is the complete `in` list (`["C7795",11,180]`). Other text is not sent.                |
 
 - A number or percent command always results in the number, except for `COLOR` and `EMPTY`; ON/OFF are only converted by `ONOFF...` and `COLOR`.
   So a `Switch` or `String` channel with `NUMBER` sends nothing unless a `matchValue` `returnValue` supplies the value.

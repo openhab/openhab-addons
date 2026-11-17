@@ -48,9 +48,10 @@ import com.google.gson.Gson;
 import com.google.gson.JsonParser;
 
 /**
- * Tests the commands sent for actions with the STRING and CUSTOMSTRING parameter types.
+ * Tests the commands sent for actions with the STRING, CUSTOMSTRING and JSON parameter types.
  *
  * @author Marcel Verpaalen - Initial contribution
+ * @author Marcel Verpaalen - Add JSON parameter type
  */
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -190,6 +191,29 @@ public class MiIoBasicHandlerCustomStringTest {
                 handler.send("[{\"command\": \"set_x\", \"parameterType\": \"STRING\"" + condition + "]", "ON"));
         assertEquals(List.of("set_x[\"auto\"]"), handler
                 .send("[{\"command\": \"set_x\", \"parameterType\": \"CUSTOMSTRING\"" + condition + "]", "Auto"));
+    }
+
+    private static final String JSON_ACTION = "[{\"command\": \"action\", \"parameterType\": \"JSON\", \"siid\": 3, \"aiid\": 1}]";
+
+    @Test
+    public void jsonListIsSentAsActionInput() {
+        assertEquals(
+                List.of("action{\"did\":\"test\",\"siid\":3,\"aiid\":1,\"in\":[\"C7795\",\"u0064\",11,180,0,0,2]}"),
+                handler.send(JSON_ACTION, "[\"C7795\", \"u0064\", 11, 180, 0, 0, 2]"));
+        assertEquals(List.of("action{\"did\":\"test\",\"siid\":3,\"aiid\":1,\"in\":[]}"),
+                handler.send(JSON_ACTION, "[]"));
+    }
+
+    @Test
+    public void jsonOtherThanListIsNotSent() {
+        assertEquals(List.of(), handler.send(JSON_ACTION, "C7795"));
+        assertEquals(List.of(), handler.send(JSON_ACTION, "{\"a\": 1}"));
+        assertEquals(List.of(), handler.send(JSON_ACTION, "[\"C7795\", 11"));
+    }
+
+    @Test
+    public void jsonIsNotSentForLegacyCommand() {
+        assertEquals(List.of(), handler.send("[{\"command\": \"set_x\", \"parameterType\": \"JSON\"}]", "[1, 2]"));
     }
 
     @Test

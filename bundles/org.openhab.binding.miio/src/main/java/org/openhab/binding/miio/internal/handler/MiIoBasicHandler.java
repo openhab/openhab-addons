@@ -96,6 +96,7 @@ import com.google.gson.JsonSyntaxException;
  * sent to one of the channels.
  *
  * @author Marcel Verpaalen - Initial contribution
+ * @author Marcel Verpaalen - Add JSON parameter type
  */
 @NonNullByDefault
 public class MiIoBasicHandler extends MiIoAbstractHandler {
@@ -271,6 +272,8 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
                                 }
                             }
                             value = new JsonPrimitive(text);
+                        } else if (paramType == CommandParameterType.JSON) {
+                            value = parseActionInput(action, command.toString());
                         }
                     } else {
                         value = new JsonPrimitive(command.toString().toLowerCase());
@@ -546,6 +549,28 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
             }
         }
         return element;
+    }
+
+    /**
+     * Parses the command text as the complete input list of a MIoT action, e.g. {@code ["C7795", 11, 180]}.
+     *
+     * @return the list, or null when the action is no MIoT action or the text is no JSON list
+     */
+    private @Nullable JsonElement parseActionInput(MiIoDeviceAction action, String text) {
+        if (!action.isMiOtAction()) {
+            logger.debug("Parameter type JSON is only supported for MIoT actions, command '{}' not send", text);
+            return null;
+        }
+        try {
+            JsonElement input = JsonParser.parseString(text);
+            if (input.isJsonArray()) {
+                return input;
+            }
+        } catch (JsonSyntaxException e) {
+            // handled below
+        }
+        logger.debug("Command '{}' is no JSON list, not send", text);
+        return null;
     }
 
     protected void forceStatusUpdate() {
