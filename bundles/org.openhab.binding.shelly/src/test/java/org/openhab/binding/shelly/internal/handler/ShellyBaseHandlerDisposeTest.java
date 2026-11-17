@@ -152,6 +152,7 @@ class ShellyBaseHandlerDisposeTest {
     void initializeAfterDisposeOfTheSameInstanceIsNotStopping() throws Exception {
         ShellyBaseHandler handler = mock(ShellyBaseHandler.class, CALLS_REAL_METHODS);
         setField(handler, "scheduler", mock(ScheduledExecutorService.class));
+        setField(handler, "api", mock(ShellyApiInterface.class));
         setField(handler, "stopping", true);
 
         handler.initialize();
