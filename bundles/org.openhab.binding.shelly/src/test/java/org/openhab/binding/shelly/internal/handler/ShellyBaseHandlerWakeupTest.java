@@ -28,10 +28,12 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.http.HttpStatus;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
+import org.mockito.InOrder;
 import org.openhab.binding.shelly.internal.api.ShellyApiException;
 import org.openhab.binding.shelly.internal.api.ShellyApiInterface;
 import org.openhab.binding.shelly.internal.api.ShellyApiResult;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
+import org.openhab.binding.shelly.internal.util.ShellyChannelCache;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
@@ -99,6 +101,98 @@ class ShellyBaseHandlerWakeupTest {
     @Test
     void onDeviceWakeupIgnoresBluThing() throws Exception {
         assertWakeupIgnored(THING_TYPE_SHELLYBLUHT, ThingStatus.ONLINE, ThingStatusDetail.CONFIGURATION_PENDING);
+    }
+
+    @Test
+    void onDeviceWakeupPollsSleepingDeviceThatWentOffline() throws Exception {
+        ShellyApiInterface api = mock(ShellyApiInterface.class);
+        when(api.getStatus()).thenThrow(new ShellyApiException("timeout"));
+        ScheduledExecutorService scheduler = mock(ScheduledExecutorService.class);
+        ShellyBaseHandler handler = buildSleepingHandler(api, true, ThingStatus.OFFLINE,
+                ThingStatusDetail.COMMUNICATION_ERROR, scheduler);
+
+        runWakeup(handler, scheduler);
+
+        verify(handler).initializeThing();
+        verify(api).getStatus();
+        verify(handler, never()).restartWatchdog();
+        assertEquals(0, handler.scheduledUpdates);
+    }
+
+    @Test
+    void onDeviceWakeupInitializesThingWithPendingConfiguration() throws Exception {
+        ShellyApiInterface api = mock(ShellyApiInterface.class);
+        when(api.getStatus()).thenThrow(new ShellyApiException("timeout"));
+        ScheduledExecutorService scheduler = mock(ScheduledExecutorService.class);
+        ShellyBaseHandler handler = buildSleepingHandler(api, false, ThingStatus.ONLINE,
+                ThingStatusDetail.CONFIGURATION_PENDING, scheduler);
+
+        runWakeup(handler, scheduler);
+
+        InOrder order = inOrder(handler, api);
+        order.verify(handler).initializeThing();
+        order.verify(api).getStatus();
+    }
+
+    @Test
+    void periodicCycleSkipsPollOfSleepingDeviceWithoutWakeup() throws Exception {
+        ShellyApiInterface api = mock(ShellyApiInterface.class);
+        ShellyBaseHandler handler = buildSleepingHandler(api, true, ThingStatus.ONLINE, ThingStatusDetail.NONE,
+                mock(ScheduledExecutorService.class));
+
+        handler.refreshStatus();
+
+        verify(handler, never()).initializeThing();
+        verify(api, never()).getStatus();
+    }
+
+    @Test
+    void onDeviceWakeupDuringRunningCycleKeepsUpdateForNextCycle() throws Exception {
+        ShellyApiInterface api = mock(ShellyApiInterface.class);
+        when(api.getStatus()).thenThrow(new ShellyApiException("timeout"));
+        ScheduledExecutorService scheduler = mock(ScheduledExecutorService.class);
+        ShellyBaseHandler handler = buildSleepingHandler(api, true, ThingStatus.OFFLINE,
+                ThingStatusDetail.COMMUNICATION_ERROR, scheduler);
+        AtomicBoolean running = new AtomicBoolean(true);
+        setField(handler, "statusRefreshRunning", running);
+
+        runWakeup(handler, scheduler);
+
+        verify(api, never()).getStatus();
+        assertEquals(1, handler.scheduledUpdates);
+
+        running.set(false);
+        handler.refreshStatus();
+
+        verify(api).getStatus();
+        assertEquals(0, handler.scheduledUpdates);
+    }
+
+    private static void runWakeup(ShellyBaseHandler handler, ScheduledExecutorService scheduler) {
+        handler.onDeviceWakeup();
+        ArgumentCaptor<Runnable> job = ArgumentCaptor.forClass(Runnable.class);
+        verify(scheduler).execute(job.capture());
+        job.getValue().run();
+    }
+
+    private ShellyBaseHandler buildSleepingHandler(ShellyApiInterface api, boolean initialized, ThingStatus status,
+            ThingStatusDetail detail, ScheduledExecutorService scheduler) throws Exception {
+        ShellyBaseHandler handler = buildHandler(api);
+        handler.profile = new ShellyDeviceProfile(THING_TYPE_SHELLYPLUSSMOKE);
+        handler.profile.initialized = initialized;
+        Thing thing = mock(Thing.class);
+        when(thing.getThingTypeUID()).thenReturn(THING_TYPE_SHELLYPLUSSMOKE);
+        when(thing.getStatus()).thenReturn(status);
+        when(thing.getStatusInfo()).thenReturn(new ThingStatusInfo(status, detail, null));
+        setField(handler, "thing", thing);
+        setField(handler, "scheduler", scheduler);
+        ShellyChannelCache cache = mock(ShellyChannelCache.class);
+        when(cache.isEnabled()).thenReturn(true);
+        setField(handler, "cache", cache);
+        doNothing().when(handler).startUpdateJob();
+        doNothing().when(handler).restartWatchdog();
+        doReturn(true).when(handler).initializeThing();
+        return handler;
     }
 
     private void assertWakeupRunsUpdate(boolean initialized) throws Exception {

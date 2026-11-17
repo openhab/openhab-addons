@@ -69,6 +69,18 @@ public class ShellyMDNSDiscoveryParticipantTest {
     }
 
     @Test
+    void createResultNotifiesThingAnnouncedAtOtherIpAddress() throws Exception {
+        ShellyThingTable thingTable = mock(ShellyThingTable.class);
+        ShellyThingInterface thing = mock(ShellyThingInterface.class);
+        when(thing.checkRepresentation(IP_ADDRESS)).thenReturn(false);
+        when(thingTable.findAnnouncedThing(SERVICE_NAME, IP_ADDRESS)).thenReturn(thing);
+
+        createParticipant(thingTable, mock(DiscoveryResult.class)).createResult(mockService());
+
+        verify(thing).onDeviceWakeup();
+    }
+
+    @Test
     void createResultIgnoresAnnouncementWhenDeviceDoesNotAnswer() throws Exception {
         ShellyThingTable thingTable = mock(ShellyThingTable.class);
         ShellyThingInterface thing = mock(ShellyThingInterface.class);

@@ -88,6 +88,26 @@ public class ShellyThingTableTest {
     }
 
     @Test
+    void findAnnouncedThingMatchesHostnameIgnoringCase() {
+        ShellyThingInterface thing = namedThing("", "ShellyPlusSmoke-666EDFE225ED");
+
+        ShellyThingTable table = new ShellyThingTable();
+        table.addThing("thing", thing);
+
+        assertThat(table.findAnnouncedThing("shellyplussmoke-666edfe225ed", ANNOUNCED_IP), is(thing));
+    }
+
+    @Test
+    void findAnnouncedThingReturnsNullForUnknownDevice() {
+        ShellyThingInterface thing = namedThing("shellyplussmoke-aabbccddeeff", "shellyplussmoke-aabbccddeeff");
+
+        ShellyThingTable table = new ShellyThingTable();
+        table.addThing("thing", thing);
+
+        assertThat(table.findAnnouncedThing("shellyplussmoke-666edfe225ed", ANNOUNCED_IP), is(nullValue()));
+    }
+
+    @Test
     void findAnnouncedThingIgnoresThingOfOtherDeviceAtSameIpAddress() {
         ShellyThingInterface thing = namedThing("shellyplussmoke-aabbccddeeff", "shellyplussmoke-aabbccddeeff");
         when(thing.checkRepresentation(ANNOUNCED_IP)).thenReturn(true);
