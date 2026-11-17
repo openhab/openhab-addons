@@ -245,8 +245,8 @@ public class VerisureSession {
 
     public @Nullable String getCsrfToken() throws ExecutionException, InterruptedException, TimeoutException {
         String html = null;
-        HttpCookieStore originalCookieStore = httpClient.getHttpCookieStore();
-        httpClient.setHttpCookieStore(new HttpCookieStore.Default());
+        HttpCookieStore originalCookieStore = cookieStore().getDelegate();
+        cookieStore().setDelegate(new HttpCookieStore.Empty());
 
         ContentResponse response = httpClient.newRequest(LOGIN).method(HttpMethod.GET).send();
         html = response.getContentAsString();
@@ -259,7 +259,7 @@ public class VerisureSession {
             Throwable cause = e.getCause();
             logger.debug("Invalid URI: {}", cause != null ? cause.getMessage() : e.getMessage());
         }
-        httpClient.setHttpCookieStore(originalCookieStore);
+        cookieStore().setDelegate(originalCookieStore);
 
         Document htmlDocument = Jsoup.parse(html);
         Element nameInput = htmlDocument.select("input[name=_csrf]").first();
@@ -369,7 +369,7 @@ public class VerisureSession {
     }
 
     private boolean refreshTokens() {
-        HttpCookieStore originalCookieStore = httpClient.getHttpCookieStore();
+        HttpCookieStore originalCookieStore = cookieStore().getDelegate();
 
         if (vsRefresh.isEmpty()) {
             logger.debug("No refresh token available, need full login");
@@ -384,7 +384,7 @@ public class VerisureSession {
             }
             HttpCookie vsRefreshCookie = HttpCookie.build(VS_RESFRESH, vsRefresh).build();
             tempCookieStore.add(authUri, vsRefreshCookie);
-            httpClient.setHttpCookieStore(tempCookieStore);
+            cookieStore().setDelegate(tempCookieStore);
         } catch (URISyntaxException e) {
             Throwable cause = e.getCause();
             logger.debug("Invalid URI: {}", cause != null ? cause.getMessage() : e.getMessage());
@@ -1346,6 +1346,52 @@ public class VerisureSession {
 
         public PostToAPIException(String message) {
             super(message);
+        }
+    }
+
+    private SwitchableCookieStore cookieStore() {
+        return (SwitchableCookieStore) httpClient.getHttpCookieStore();
+    }
+
+    /**
+     * Jetty 12 cannot replace the cookie store of a started client, so {@link VerisureHandlerFactory} installs this
+     * store before starting the client and the session switches the store it delegates to.
+     */
+    @NonNullByDefault({})
+    static class SwitchableCookieStore implements HttpCookieStore {
+        private volatile HttpCookieStore delegate = new HttpCookieStore.Default();
+
+        HttpCookieStore getDelegate() {
+            return delegate;
+        }
+
+        void setDelegate(HttpCookieStore delegate) {
+            this.delegate = delegate;
+        }
+
+        @Override
+        public boolean add(URI uri, HttpCookie cookie) {
+            return delegate.add(uri, cookie);
+        }
+
+        @Override
+        public List<HttpCookie> all() {
+            return delegate.all();
+        }
+
+        @Override
+        public List<HttpCookie> match(URI uri) {
+            return delegate.match(uri);
+        }
+
+        @Override
+        public boolean remove(URI uri, HttpCookie cookie) {
+            return delegate.remove(uri, cookie);
+        }
+
+        @Override
+        public boolean clear() {
+            return delegate.clear();
         }
     }
 }

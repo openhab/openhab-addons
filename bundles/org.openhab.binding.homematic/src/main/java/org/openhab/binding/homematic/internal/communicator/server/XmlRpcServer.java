@@ -14,12 +14,13 @@ package org.openhab.binding.homematic.internal.communicator.server;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.io.Content;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Response;
@@ -118,7 +119,7 @@ public class XmlRpcServer implements RpcServer {
      * @author Martin Herbst
      */
     @NonNullByDefault({})
-    private class ResponseHandler extends Handler.Abstract.NonBlocking {
+    private class ResponseHandler extends Handler.Abstract {
         @Override
         public boolean handle(Request request, Response response, Callback callback) {
             response.setStatus(200);
@@ -138,7 +139,10 @@ public class XmlRpcServer implements RpcServer {
                 logger.error("{}", ex.getMessage(), ex);
                 returnValue = XML_EMPTY_STRING;
             }
-            Content.Sink.write(response, true, returnValue + System.lineSeparator(), callback);
+            // Content.Sink.write(..., String, ...) would encode UTF-8, the declared charset is ISO-8859-1
+            response.write(true,
+                    ByteBuffer.wrap((returnValue + System.lineSeparator()).getBytes(StandardCharsets.ISO_8859_1)),
+                    callback);
             return true;
         }
     }
