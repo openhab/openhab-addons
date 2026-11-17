@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<KNX xmlns="http://knx.org/xml/project/20" CreatedBy="ETS5" ToolVersion="5.7.2002.3">
+  <Project Id="P-1C2D">
+    <ProjectInformation Name="Appartement Vijf" GroupAddressStyle="TwoLevel" LastModified="2021-06-07T08:09:10.111Z" ProjectStart="2021-01-01T00:00:00.000Z" Comment="" CompletionStatus="Undefined" Guid="00000000-1111-2222-3333-444444444444">
+      <ProjectTraces>
+        <ProjectTrace Date="2021-06-07T08:09:10.111Z" UserName="MADEUP-USER-FIVE" Comment="Opened" />
+      </ProjectTraces>
+    </ProjectInformation>
+    <UserFiles>
+      <UserFile Filename="schema.pdf" Comment="" />
+    </UserFiles>
+  </Project>
+</KNX>

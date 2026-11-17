@@ -30,6 +30,10 @@ import java.util.concurrent.Future;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.Test;
+import org.openhab.binding.knx.internal.dpt.ValueEncoder;
+import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.PercentType;
+import org.openhab.core.types.Type;
 
 import io.calimero.DataUnitBuilder;
 import io.calimero.GroupAddress;
@@ -38,6 +42,7 @@ import io.calimero.KNXAddress;
 import io.calimero.KNXTimeoutException;
 import io.calimero.Priority;
 import io.calimero.cemi.CEMILData;
+import io.calimero.datapoint.CommandDP;
 import io.calimero.device.ProcessCommunicationResponder;
 import io.calimero.link.medium.KNXMediumSettings;
 import io.calimero.mgmt.TransportLayerImpl;
@@ -97,6 +102,43 @@ class DataSecureTest {
         }
 
         assertEquals(GROUP_RESPONSE, DataUnitBuilder.getAPDUService(decrypt(link.lastApdu())));
+    }
+
+    @Test
+    void aSecuredOneByteValueBelow64KeepsTheLongForm() throws Exception {
+        // a value below 64 fits the six bits of the short form; a secured telegram has to carry it from byte 2 on
+        for (int percent : new int[] { 0, 5, 20, 24 }) {
+            byte[] plain = decryptedWrite("5.001", new PercentType(percent));
+
+            assertEquals(3, plain.length, percent + " %");
+            assertEquals(GROUP_WRITE, DataUnitBuilder.getAPDUService(plain));
+            assertEquals(0, plain[1] & 0x3f, percent + " %: the six bits of byte 1 are empty");
+            assertEquals(Math.round(percent * 255 / 100.0), plain[2] & 0xff, percent + " %");
+        }
+    }
+
+    @Test
+    void aSecuredSceneNumberBelow64KeepsTheLongForm() throws Exception {
+        for (int scene : new int[] { 0, 1, 63 }) {
+            byte[] plain = decryptedWrite("17.001", new DecimalType(scene));
+
+            assertEquals(3, plain.length, "scene " + scene);
+            assertEquals(GROUP_WRITE, DataUnitBuilder.getAPDUService(plain));
+            assertEquals(0, plain[1] & 0x3f, "scene " + scene + ": the six bits of byte 1 are empty");
+            assertEquals(scene, plain[2] & 0xff, "scene " + scene);
+        }
+    }
+
+    /** Sends the way the client does, an encoded value with a datapoint, and decrypts what went out. */
+    private static byte[] decryptedWrite(String dpt, Type value) throws Exception {
+        CapturingLink link = new CapturingLink(OPENHAB);
+        ProcessCommunicator communicator = AbstractKNXClient.newProcessCommunicator(link, newSal(link));
+        String encoded = ValueEncoder.encode(value, dpt);
+        assertNotNull(encoded);
+
+        communicator.write(new CommandDP(SECURE_GROUP, "test", 0, dpt), encoded);
+
+        return decrypt(link.lastApdu());
     }
 
     @Test

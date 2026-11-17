@@ -48,7 +48,11 @@ public class KNXProfileAdvisor implements ProfileAdvisor {
         return getSuggestedProfileTypeUID(channelType.getUID());
     }
 
-    private ProfileTypeUID getSuggestedProfileTypeUID(ChannelTypeUID channelTypeUID) {
+    private @Nullable ProfileTypeUID getSuggestedProfileTypeUID(ChannelTypeUID channelTypeUID) {
+        if (CHANNEL_TELEGRAM_TRIGGER.equals(channelTypeUID.getId())) {
+            // no state to follow or to send: the framework's own suggestion for trigger channels applies
+            return null;
+        }
         if (isControl(channelTypeUID)) {
             if (CHANNEL_CONTACT_CONTROL.equals(channelTypeUID.getId())) {
                 // Special handling for contact-control, as contact items do not send to bus:

@@ -36,6 +36,7 @@ import org.openhab.core.library.types.UpDownType;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.Type;
+import org.openhab.core.types.util.UnitUtils;
 import org.openhab.core.util.ColorUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,6 +67,52 @@ public class ValueEncoder {
 
     private ValueEncoder() {
         // prevent instantiation
+    }
+
+    /** {@return whether the library has a translator for the DPT id, so that a value of it can be encoded at all} */
+    public static boolean isEncodable(String dptId) {
+        Matcher m = DPTUtil.DPT_PATTERN.matcher(dptId);
+        if (!m.matches()) {
+            return false;
+        }
+        try {
+            TranslatorTypes.createTranslator(Integer.parseInt(m.group("main")),
+                    NORMALIZED_DPT.getOrDefault(dptId, dptId));
+            return true;
+        } catch (KNXException | RuntimeException e) {
+            return false;
+        }
+    }
+
+    /** {@return whether the library takes the text, as {@link #encode} gives it, as a value of the DPT id} */
+    public static boolean accepts(String dptId, String encoded) {
+        Matcher m = DPTUtil.DPT_PATTERN.matcher(dptId);
+        if (!m.matches()) {
+            return false;
+        }
+        try {
+            TranslatorTypes
+                    .createTranslator(Integer.parseInt(m.group("main")), NORMALIZED_DPT.getOrDefault(dptId, dptId))
+                    .setValue(encoded);
+            return true;
+        } catch (KNXException | RuntimeException e) {
+            return false;
+        }
+    }
+
+    /** {@return whether {@link #encode} can bring the quantity to the unit of the DPT id, if that has one} */
+    public static boolean hasUnitOf(QuantityType<?> value, String dptId) {
+        InDptUnit result = inDptUnit(dptId, value);
+        String unit = result.unit();
+        if (unit == null) {
+            return true;
+        }
+        if (result.converted() == null) {
+            return false;
+        }
+        // a temperature difference in °F was rescaled on the text "°F" alone: the unit as a whole must fit too.
+        // Compared, not converted: a conversion between products of °F throws.
+        return !result.rescaled() || value.getUnit().equals(UnitUtils.parseUnit(unit.replace("K", "°F")));
     }
 
     /**
@@ -182,70 +229,75 @@ public class ValueEncoder {
         }
     }
 
+    private record InDptUnit(QuantityType<?> value, @Nullable String unit, @Nullable QuantityType<?> converted,
+            boolean rescaled) {
+    }
+
+    private static InDptUnit inDptUnit(String dptId, QuantityType<?> quantity) {
+        QuantityType<?> value = quantity;
+        boolean rescaled = false;
+        String unit = DPTUnits.getUnitForDpt(dptId);
+
+        // exception for DPT using temperature differences
+        // - conversion °C or °F to K is wrong for differences,
+        // - stick to the unit given, fix the scaling for °F
+        // 9.002 DPT_Value_Tempd
+        // 9.003 DPT_Value_Tempa
+        // 9.023 DPT_KelvinPerPercent
+        if (DPTXlator2ByteFloat.DPT_TEMPERATURE_DIFFERENCE.getID().equals(dptId)
+                || DPTXlator2ByteFloat.DPT_TEMPERATURE_GRADIENT.getID().equals(dptId)
+                || DPTXlator2ByteFloat.DPT_KELVIN_PER_PERCENT.getID().equals(dptId)) {
+            // match Unicode character or °C
+            if (value.toString().contains(SIUnits.CELSIUS.getSymbol()) || value.toString().contains("°C")) {
+                if (unit != null) {
+                    unit = unit.replace("K", "°C");
+                }
+            } else if (value.toString().contains("°F")) {
+                // A new approach to handle temperature differences was introduced to core
+                // after 4.0, stripping the unit and creating a new QuantityType works
+                // both with core release 4.0 and current snapshot
+                boolean perPercent = value.toString().contains("/%");
+                value = new QuantityType<>(value.doubleValue() * 5.0 / 9.0, Units.KELVIN);
+                rescaled = true;
+                // PercentType needs to be adapted
+                if (perPercent) {
+                    value = value.multiply(BigDecimal.valueOf(100));
+                }
+            }
+        } else if (DPTXlator4ByteFloat.DPT_LIGHT_QUANTITY.getID().equals(dptId)) {
+            if (!value.toString().contains("J")) {
+                if (unit != null) {
+                    unit = unit.replace("J", "lm*s");
+                }
+            }
+        } else if (DPTXlator4ByteFloat.DPT_ELECTRIC_FLUX.getID().equals(dptId)) {
+            // use alternate definition of flux
+            if (value.toString().contains("C")) {
+                unit = "C";
+            }
+        }
+
+        QuantityType<?> converted = null;
+        if (unit != null) {
+            // workaround for color temperatures given in MIRED, required as long as toUnit does
+            // not convert MIRED to Kelvin
+            converted = "K".equals(unit) || "°C".equals(unit) ? value.toInvertibleUnit(unit) : value.toUnit(unit);
+        }
+        return new InDptUnit(value, unit, converted, rescaled);
+    }
+
     private static String handleNumericTypes(String dptId, String mainNumber, DPT dpt, Type value) {
         BigDecimal bigDecimal;
         if (value instanceof DecimalType decimalType) {
             bigDecimal = decimalType.toBigDecimal();
         } else {
-            String unit = DPTUnits.getUnitForDpt(dptId);
-
-            // exception for DPT using temperature differences
-            // - conversion °C or °F to K is wrong for differences,
-            // - stick to the unit given, fix the scaling for °F
-            // 9.002 DPT_Value_Tempd
-            // 9.003 DPT_Value_Tempa
-            // 9.023 DPT_KelvinPerPercent
-            if (DPTXlator2ByteFloat.DPT_TEMPERATURE_DIFFERENCE.getID().equals(dptId)
-                    || DPTXlator2ByteFloat.DPT_TEMPERATURE_GRADIENT.getID().equals(dptId)
-                    || DPTXlator2ByteFloat.DPT_KELVIN_PER_PERCENT.getID().equals(dptId)) {
-                // match Unicode character or °C
-                if (value.toString().contains(SIUnits.CELSIUS.getSymbol()) || value.toString().contains("°C")) {
-                    if (unit != null) {
-                        unit = unit.replace("K", "°C");
-                    }
-                } else if (value.toString().contains("°F")) {
-                    // A new approach to handle temperature differences was introduced to core
-                    // after 4.0, stripping the unit and creating a new QuantityType works
-                    // both with core release 4.0 and current snapshot
-                    boolean perPercent = value.toString().contains("/%");
-                    value = new QuantityType<>(((QuantityType<?>) value).doubleValue() * 5.0 / 9.0, Units.KELVIN);
-                    // PercentType needs to be adapted
-                    if (perPercent) {
-                        value = ((QuantityType<?>) value).multiply(BigDecimal.valueOf(100));
-                    }
-                }
-            } else if (DPTXlator4ByteFloat.DPT_LIGHT_QUANTITY.getID().equals(dptId)) {
-                if (!value.toString().contains("J")) {
-                    if (unit != null) {
-                        unit = unit.replace("J", "lm*s");
-                    }
-                }
-            } else if (DPTXlator4ByteFloat.DPT_ELECTRIC_FLUX.getID().equals(dptId)) {
-                // use alternate definition of flux
-                if (value.toString().contains("C")) {
-                    unit = "C";
-                }
+            InDptUnit result = inDptUnit(dptId, (QuantityType<?>) value);
+            QuantityType<?> converted = result.converted();
+            if (result.unit() != null && converted == null) {
+                LOGGER.warn("Could not convert {} to unit {}, stripping unit only. Check your configuration.",
+                        result.value(), result.unit());
             }
-
-            if (unit != null) {
-                QuantityType<?> converted = null;
-                if ("K".equals(unit) || "°C".equals(unit)) {
-                    // workaround for color temperatures given in MIRED, required as long as toUnit does
-                    // not convert MIRED to Kelvin
-                    converted = ((QuantityType<?>) value).toInvertibleUnit(unit);
-                } else {
-                    converted = ((QuantityType<?>) value).toUnit(unit);
-                }
-                if (converted == null) {
-                    LOGGER.warn("Could not convert {} to unit {}, stripping unit only. Check your configuration.",
-                            value, unit);
-                    bigDecimal = ((QuantityType<?>) value).toBigDecimal();
-                } else {
-                    bigDecimal = converted.toBigDecimal();
-                }
-            } else {
-                bigDecimal = ((QuantityType<?>) value).toBigDecimal();
-            }
+            bigDecimal = (converted != null ? converted : result.value()).toBigDecimal();
         }
         switch (mainNumber) {
             case "1":

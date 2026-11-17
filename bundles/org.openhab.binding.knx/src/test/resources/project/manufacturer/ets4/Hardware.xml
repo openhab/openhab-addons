@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<KNX xmlns="http://knx.org/xml/project/11" CreatedBy="ETS4" ToolVersion="4.2.1001.7">
+  <ManufacturerData>
+    <Manufacturer RefId="M-00FA">
+      <Hardware>
+        <Hardware Id="M-00FA_H-0011-1" Name="Made-up switch" SerialNumber="MADEUP-HW-SERIAL-FOUR" VersionNumber="1" BusCurrent="10" HasIndividualAddress="true" HasApplicationProgram="true">
+          <Products>
+            <Product Id="M-00FA_H-0011-1_P-1234.5" Text="Made-up switch actuator" OrderNumber="MU 1234.5" IsRailMounted="true" DefaultLanguage="de-DE" />
+          </Products>
+          <Hardware2Programs>
+            <Hardware2Program Id="M-00FA_H-0011-1_HP-0022-33-4455" MediumTypes="MT-0">
+              <ApplicationProgramRef RefId="M-00FA_A-0022-33-4455" />
+            </Hardware2Program>
+          </Hardware2Programs>
+        </Hardware>
+        <Hardware Id="M-00FA_H-0012-1" Name="Made-up button" SerialNumber="MADEUP-HW-SERIAL-FIVE" VersionNumber="1" BusCurrent="10" HasIndividualAddress="true" HasApplicationProgram="true">
+          <Products>
+            <Product Id="M-00FA_H-0012-1_P-1234.6" Text="Made-up push button" OrderNumber="MU 1234.6" IsRailMounted="false" DefaultLanguage="de-DE" />
+          </Products>
+          <Hardware2Programs>
+            <Hardware2Program Id="M-00FA_H-0012-1_HP-0023-10-AB01" MediumTypes="MT-0">
+              <ApplicationProgramRef RefId="M-00FA_A-0023-10-AB01" />
+            </Hardware2Program>
+          </Hardware2Programs>
+        </Hardware>
+      </Hardware>
+    </Manufacturer>
+  </ManufacturerData>
+</KNX>

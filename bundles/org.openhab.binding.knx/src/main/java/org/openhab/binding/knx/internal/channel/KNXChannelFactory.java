@@ -38,7 +38,8 @@ public final class KNXChannelFactory {
             Map.entry(TypeNumber.SUPPORTED_CHANNEL_TYPES, TypeNumber::new), //
             Map.entry(TypeRollershutter.SUPPORTED_CHANNEL_TYPES, TypeRollershutter::new), //
             Map.entry(TypeString.SUPPORTED_CHANNEL_TYPES, TypeString::new), //
-            Map.entry(TypeSwitch.SUPPORTED_CHANNEL_TYPES, TypeSwitch::new));
+            Map.entry(TypeSwitch.SUPPORTED_CHANNEL_TYPES, TypeSwitch::new), //
+            Map.entry(TypeTelegramTrigger.SUPPORTED_CHANNEL_TYPES, TypeTelegramTrigger::new));
 
     private KNXChannelFactory() {
         // prevent instantiation

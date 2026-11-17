@@ -21,6 +21,8 @@ import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.knx.internal.handler.KNXBridgeBaseThingHandler.CommandExtensionData;
+import org.openhab.binding.knx.internal.monitor.ConnectionKind;
+import org.openhab.binding.knx.internal.monitor.TelegramMonitor;
 import org.openhab.core.io.transport.serial.SerialPortIdentifier;
 import org.openhab.core.io.transport.serial.SerialPortManager;
 import org.openhab.core.thing.ThingUID;
@@ -55,13 +57,18 @@ public class SerialClient extends AbstractKNXClient {
 
     public SerialClient(int autoReconnectPeriod, ThingUID thingUID, int responseTimeout, int readingPause,
             int readRetriesLimit, ScheduledExecutorService knxScheduler, String serialPort, boolean useCemi,
-            SerialPortManager serialPortManager, CommandExtensionData commandExtensionData, Security openhabSecurity,
-            StatusUpdateCallback statusUpdateCallback) {
+            SerialPortManager serialPortManager, CommandExtensionData commandExtensionData,
+            TelegramMonitor telegramMonitor, Security openhabSecurity, StatusUpdateCallback statusUpdateCallback) {
         super(autoReconnectPeriod, thingUID, responseTimeout, readingPause, readRetriesLimit, knxScheduler,
-                commandExtensionData, openhabSecurity, statusUpdateCallback);
+                commandExtensionData, telegramMonitor, openhabSecurity, () -> null, statusUpdateCallback);
         this.serialPortManager = serialPortManager;
         this.serialPort = serialPort;
         this.useCemi = useCemi;
+    }
+
+    @Override
+    protected ConnectionKind connectionKind() {
+        return ConnectionKind.SERIAL;
     }
 
     /**

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<KNX xmlns="http://knx.org/xml/project/23" CreatedBy="ETS6" ToolVersion="6.4.7890.0">
+  <Project Id="P-5A6B">
+    <ProjectInformation Name="Modulair voorbeeld" GroupAddressStyle="ThreeLevel" LastModified="2026-02-03T04:05:06.789Z" CompletionStatus="Editing" />
+  </Project>
+</KNX>

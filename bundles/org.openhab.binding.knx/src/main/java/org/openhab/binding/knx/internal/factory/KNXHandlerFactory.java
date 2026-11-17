@@ -27,6 +27,7 @@ import org.openhab.binding.knx.internal.handler.IPBridgeThingHandler;
 import org.openhab.binding.knx.internal.handler.KNXBridgeBaseThingHandler;
 import org.openhab.binding.knx.internal.handler.SerialBridgeThingHandler;
 import org.openhab.binding.knx.internal.i18n.KNXTranslationProvider;
+import org.openhab.binding.knx.internal.projectstore.KnxProjectStore;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TranslationProvider;
@@ -60,15 +61,17 @@ public class KNXHandlerFactory extends BaseThingHandlerFactory {
     @Nullable
     private final NetworkAddressService networkAddressService;
     private final SerialPortManager serialPortManager;
+    private final KnxProjectStore projectStore;
     private final Map<ThingUID, KNXBridgeBaseThingHandler> bridges = new ConcurrentHashMap<>();
 
     @Activate
     public KNXHandlerFactory(final @Reference NetworkAddressService networkAddressService, Map<String, Object> config,
             final @Reference TranslationProvider translationProvider, final @Reference LocaleProvider localeProvider,
-            final @Reference SerialPortManager serialPortManager) {
+            final @Reference SerialPortManager serialPortManager, final @Reference KnxProjectStore projectStore) {
         KNXTranslationProvider.I18N.setProvider(localeProvider, translationProvider);
         this.networkAddressService = networkAddressService;
         this.serialPortManager = serialPortManager;
+        this.projectStore = projectStore;
         SerialTransportAdapter.setSerialPortManager(serialPortManager);
         modified(config);
     }
@@ -105,10 +108,12 @@ public class KNXHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         if (thingTypeUID.equals(THING_TYPE_IP_BRIDGE)) {
             KNXBridgeBaseThingHandler bridgeHandler = new IPBridgeThingHandler((Bridge) thing, networkAddressService);
+            bridgeHandler.getTelegramMonitor().useProject(projectStore.lookup(thing.getUID()));
             bridges.put(thing.getUID(), bridgeHandler);
             return bridgeHandler;
         } else if (thingTypeUID.equals(THING_TYPE_SERIAL_BRIDGE)) {
             KNXBridgeBaseThingHandler bridgeHandler = new SerialBridgeThingHandler((Bridge) thing, serialPortManager);
+            bridgeHandler.getTelegramMonitor().useProject(projectStore.lookup(thing.getUID()));
             bridges.put(thing.getUID(), bridgeHandler);
             return bridgeHandler;
         } else if (thingTypeUID.equals(THING_TYPE_DEVICE)) {

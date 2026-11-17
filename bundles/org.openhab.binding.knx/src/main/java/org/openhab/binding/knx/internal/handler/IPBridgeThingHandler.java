@@ -24,6 +24,7 @@ import org.openhab.binding.knx.internal.client.KNXClient;
 import org.openhab.binding.knx.internal.client.NoOpClient;
 import org.openhab.binding.knx.internal.config.IPBridgeConfiguration;
 import org.openhab.binding.knx.internal.i18n.KNXTranslationProvider;
+import org.openhab.binding.knx.internal.security.SecureSetupException;
 import org.openhab.core.net.NetworkAddressService;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ThingStatus;
@@ -65,6 +66,7 @@ public class IPBridgeThingHandler extends KNXBridgeBaseThingHandler {
         // initialization would take too long and show a warning during binding startup
         // KNX secure is adding serious delay
         updateStatus(ThingStatus.UNKNOWN);
+        applyMonitorBufferSize(getConfigAs(IPBridgeConfiguration.class).getMonitorBufferSize());
         initJob = scheduler.submit(this::initializeLater);
     }
 
@@ -102,7 +104,8 @@ public class IPBridgeThingHandler extends KNXBridgeBaseThingHandler {
                 cause = e;
             }
             updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
-                    KNXTranslationProvider.I18N.getLocalizedException(cause));
+                    e instanceof SecureSetupException setup ? setup.statusText()
+                            : KNXTranslationProvider.I18N.getLocalizedException(cause));
             return;
         }
 
@@ -131,6 +134,13 @@ public class IPBridgeThingHandler extends KNXBridgeBaseThingHandler {
             if (!securityAvailable) {
                 logger.warn("Bridge {} missing security configuration for secure tunnel", thing.getUID());
                 updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.knx-secure-tunnel-config-missing");
+                return;
+            }
+            if (keyring != null && config.getTunnelSourceAddress().isBlank() && config.getTunnelUserId().isBlank()
+                    && config.getTunnelUserPassword().isBlank() && config.getTunnelDeviceAuthentication().isBlank()) {
+                logger.warn("Bridge {} has a keyring for secure tunnel, but no tunnelSourceAddress", thing.getUID());
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
+                        "@text/error.knx-secure-tunnel-source-address-missing");
                 return;
             }
             boolean tunnelOk = ((secureTunnel.user > 0) && (secureTunnel.devKey.length == 16)
@@ -194,7 +204,7 @@ public class IPBridgeThingHandler extends KNXBridgeBaseThingHandler {
                 secureRouting.backboneGroupKey, secureRouting.latencyToleranceMs, secureTunnel.devKey,
                 secureTunnel.user, secureTunnel.userKey, thing.getUID(), config.getResponseTimeout(),
                 config.getReadingPause(), config.getReadRetriesLimit(), getScheduler(), getCommandExtensionData(),
-                openhabSecurity, this);
+                getTelegramMonitor(), openhabSecurity, this::getKeyringFacts, this);
 
         IPClient tmpClient = client;
         if (tmpClient != null) {

@@ -62,6 +62,8 @@ At its base, the _ip_ bridge accepts the following configuration parameters:
 | responseTimeout     | No           | Timeout in seconds to wait for a response from the KNX bus                                                                       | 10                                                        |
 | readRetriesLimit    | No           | Limits the read retries while initialization from the KNX bus                                                                    | 3                                                         |
 | autoReconnectPeriod | No           | Seconds between connect retries when KNX link has been lost (0 means never).                                                     | 0                                                         |
+| monitorBufferSize   | No           | Number of telegrams kept for the console command `openhab:knx monitor` (0 keeps none, a negative value counts as 0, at most 100000).                          | 2000                                                      |
+| groupMonitorSend    | No           | Lets an administrator read or write group addresses from the Group Monitor of the add-on's page and with `POST /rest/knx/bridges/{b}/group-telegram`. | false                                                     |
 | routerBackboneKey   | No           | KNX secure: Backbone key for secure router mode                                                                                  | -                                                         |
 | tunnelUserId        | No           | KNX secure: Tunnel user id for secure tunnel mode (if specified, it must be a number >0)                                         | -                                                         |
 | tunnelUserPassword  | No           | KNX secure: Tunnel user key for secure tunnel mode                                                                               | -                                                         |
@@ -81,6 +83,8 @@ The _serial_ bridge accepts the following configuration parameters:
 | responseTimeout     | N        | Timeout in seconds to wait for a response from the KNX bus                                                                       | 10            |
 | readRetriesLimit    | N        | Limits the read retries while initialization from the KNX bus                                                                    | 3             |
 | autoReconnectPeriod | N        | Seconds between connect retries when KNX link has been lost, 0 means never retry                                                 | 0             |
+| monitorBufferSize   | N        | Number of telegrams kept for the console command `openhab:knx monitor` (0 keeps none, a negative value counts as 0, at most 100000)                           | 2000          |
+| groupMonitorSend    | N        | Lets an administrator read or write group addresses from the Group Monitor of the add-on's page and with `POST /rest/knx/bridges/{b}/group-telegram`.          | false         |
 | useCemi             | N        | Use newer CEMI message format, useful for newer devices like KNX RF sticks, kBerry, etc.                                         | false         |
 | keyringFile         | N        | KNX secure: Keyring file exported from ETS and placed in openHAB config/misc folder. Mandatory to decode secure group addresses. | -             |
 | keyringPassword     | N        | KNX secure: Keyring file password (set during export from ETS)                                                                   | -             |
@@ -258,6 +262,31 @@ For UoM support, see the explanations of the `number` channel.
 | Parameter | Description   | Default DPT |
 |-----------|---------------|-------------|
 | ga        | Group address | 19.001      |
+
+#### Trigger Channel Type
+
+##### Channel Type "telegram-trigger"
+
+A trigger channel fires an event for every `GroupValueWrite` telegram that arrives on one of its group addresses, so a rule can react to chosen telegrams without an item.
+The event is the value as text, e.g. `21.5 °C` or `ON`, decoded with the data type given in the configuration; without one, or if the value does not fit the data type, the event is the raw bytes in hex, e.g. `0C33`.
+It does not fire for `GroupValueResponse` or `GroupValueRead` telegrams or for what openHAB sends itself.
+The channel never reads and never sends: a `<` in front of an address is ignored, and a command sent to it does nothing.
+There can be several addresses, separated by `+`; each of them fires the channel.
+
+| Parameter | Description   | Default DPT |
+|-----------|---------------|-------------|
+| ga        | Group address | none (raw)  |
+
+Every event is a line in `events.log` (`ChannelTriggeredEvent`), so use this channel for chosen addresses only, not for a busy line.
+
+```java
+rule "Window sensor telegram"
+when
+    Channel "knx:device:bridge:generic:telegrams" triggered
+then
+    logInfo("knx", "Telegram value: " + receivedEvent)
+end
+```
 
 #### Group Address Notation
 
@@ -475,6 +504,7 @@ It can be provided to openHAB in two different ways:
 - All necessary information is included in ETS keyring export (ETS, project settings, export keyring).
  The keyring file is configured using `keyringFile` (put it in `config\misc` folder of the openHAB installation) and `keyringPassword`.
  In addition, `tunnelSourceAddress` needs to be set to uniquely identify the tunnel in use.
+ Once the keyring file is saved on the bridge, MainUI suggests the tunnels of the keyring for `tunnelSourceAddress` (and the other interfaces for `localSourceAddr`), each with the number of secure group addresses ETS linked to it. Any address can still be typed.
 
 ### KNX Data Secure
 
@@ -491,6 +521,10 @@ openHAB reads and writes secure group addresses and answers read requests on the
 KNX devices only accept secure telegrams from senders they know.
 Before exporting the keyring, link every secure group address openHAB uses to the tunnel openHAB connects through in ETS, or in router mode to a dummy device with the address set in `localSourceAddr`.
 Outgoing secure telegrams are numbered from the system clock, so the openHAB host needs the correct time.
+
+If ETS has not linked the address openHAB sends from to a secure group address, devices ignore the telegram although it goes out.
+openHAB then keeps the bridge ONLINE and shows a warning in its status text, once when the connection is made if the address is not linked to any secure group address, and once for every secure group address openHAB sends to that it is not linked to.
+The warning is gone after the bridge is restarted with a keyring that no longer has the problem.
 
 ## Examples
 
@@ -651,6 +685,166 @@ Dimmer        demoDimmer         "Dimmer [%d %%]"           <light>          { c
 
 The KNX binding provides additional functionality which can be triggered from the openHAB console.
 Type `openhab:knx` on the openHAB console for further information.
+
+`openhab:knx keyring [<bridge>]` checks the ETS keyring of a bridge, or of every bridge that has one.
+It shows the keyring file, whether its signature matches the configured `keyringPassword`, whether it holds a backbone key, the number of secure group addresses, and one line per interface with its address, type, host, user id and the number of secure group addresses ETS linked to it.
+The interface openHAB sends from is marked.
+Keys, passwords and hashes are never shown.
+This is the quickest way to find out why a secured device ignores openHAB: its interface shows 0 links, or the signature is not valid.
+
+`openhab:knx monitor [<bridge>] [filters]` shows the last telegrams of a bridge, or of every bridge: time, direction, read / write / response, source, group address, whether the telegram was secured, data type and value, and for telegrams openHAB sent whether they went out.
+The value is decoded with the data type of the channel that uses the group address; without one the raw bytes are shown.
+Filters are `src=`, `dst=`, `type=` (`write`, `read`, `response`), `dir=` (`in`, `out`), `dpt=` (`9` or `9.001`), `from=` and `to=` (`-10m`, `14:05:30`, `2026-11-14T14:05`), `context=<ms>` (adds the telegrams around each match) and `limit=<n>` (default 50, the newest are kept); several values inside one filter are separated by commas.
+A plain telegram to a group address that has a group key in the keyring is marked `plain on secured address` and counted in the header; openHAB still takes its value, as before.
+A secured telegram that could not be decrypted is shown as `not decrypted` with the reason, without a value, and counted per reason in the header: `NO_KEY` (no group key for the address), `SENDER_NOT_LISTED` (the secure layer has a sender list for the address and the sender is not on it), `INVALID_CONTROL_FIELD`, `SEQUENCE_NUMBER` (the sequence number is not above the last one accepted from that sender), `AUTHENTICATION` (the check value does not match) and `ACCESS` (tool access on a group address).
+The counters start again at every connect; the shown telegrams do not.
+For an address a channel uses, the log gets one warning per address and reason and connection, as the usual cause is a device that ETS did not update.
+The bridge shows the address it sends from as property `ownAddress`.
+`openhab:knx monitor [<bridge>] clear` forgets the kept telegrams.
+How many telegrams a bridge keeps is set by its parameter `monitorBufferSize`; they are kept in memory only.
+A write that openHAB sent is shown when the library call has ended, so a status telegram that a device sends while the write waits for the tunnel's confirmation can show above the write that caused it.
+
+### The ETS Project in openHAB
+
+An ETS project file (`.knxproj`) can be imported once per bridge.
+openHAB keeps the names and data types the project gives, and uses them in the commands below and in the group monitor.
+Nothing is created from it: no Things, no channels, no Items.
+The commands only show what the project says; you copy what you want into a channel yourself.
+
+`openhab:knx project import <bridge> <file>` reads the file once.
+`<file>` is an absolute path, or the name of a file in `conf/misc` (a name without a folder part).
+Nothing else is read: a relative path with a folder in it, or the name `..`, is refused.
+An absolute path is read wherever it points, so the user of the console decides what it reads.
+The file itself is not kept, so it can be deleted afterwards, and a new import replaces the earlier project of that bridge.
+The names of objects are taken in the language of openHAB's regional setting at the time of the import; to change the language, import again.
+
+```text
+openhab:knx project import knx:ip:home house.knxproj
+Imported "house.knxproj" for KNX bridge "Home" (knx:ip:home): 350 group addresses, 39 devices, 709 group objects.
+The file was read once and is not kept.
+```
+
+If the project is protected with a password (ETS 6), the console asks for it on the next line and hides what you type.
+The password is never given in the command, so it does not end up in the command history; it is not shown, logged or stored, and the array the binding copies it into is overwritten as soon as the import is over.
+There is one try; a wrong password imports nothing.
+A console that cannot ask for a hidden line (a script, for example) says so and imports nothing.
+A project without a password never asks, so it can be imported from a script.
+Other kinds of protection are refused with a message.
+
+What is kept is written to `userdata/knx/project-knx_ip_home.json` (the UID of the bridge, with `_` in place of `:`): the project name, the group addresses with their names and data types, the devices, the group objects of the devices and what links them, the building structure, and the products.
+Never kept are the project file, its password, any key or device password in it, and the values of device parameters.
+There is one project per bridge.
+A stored project stays when its bridge is removed; `openhab:knx project info` lists it as the project of a bridge that is not running, which is also what it says for a disabled bridge, and `project remove` takes it away.
+A stored file that is damaged, or was written by a newer version of the binding, is not used; the log says so once, and the commands tell you to import the project again.
+
+`openhab:knx project info [<bridge>]` shows the project of a bridge, or of every bridge: its name, when and from which file it was imported, the language of the texts, the number of group addresses (and how many are secured), devices, group objects, spaces and functions, and the tool that wrote it.
+
+```text
+openhab:knx project info home
+KNX bridge "Home" (knx:ip:home): project "Made-up house", imported 2026-11-14 12:34 from "house.knxproj", texts: de-DE
+  350 group addresses (12 secured), 39 devices, 709 group objects, 41 spaces, 18 functions
+  written by ETS6 6.4.7777.0, last change 2026-03-04T05:06:07.000Z
+```
+
+`openhab:knx project addresses <bridge> [<filter>] [limit=<n>]` lists the group addresses of the project, and `openhab:knx project devices <bridge> [<filter>] [limit=<n>]` its devices.
+A filter that starts with a digit is the start of an address (`31/7` or `7.7`), anything else is searched in the name, ignoring case.
+`limit` takes 1 to 10000, 50 is the default; when rows are left out, the last line says how many.
+The first line shows how many rows match out of how many there are.
+
+```text
+openhab:knx project addresses home 31/7/ limit=2
+KNX bridge "Home" (knx:ip:home): 6 of 350 group addresses
+31/7/1  1.001  secure  "Made-up light"
+31/7/2  9.001  -  "Made-up temperature"
+4 more. Narrow the filter or use limit=<n>.
+```
+
+`openhab:knx project remove <bridge>` deletes the stored project of a bridge.
+For a project whose bridge no longer exists, give its UID.
+
+`openhab:knx channels [<bridge>] <device>` prints, for a device of the project such as `7.7.1`, one line per linked group object in the form you can copy into a channel of a device Thing: the channel type, the channel configuration (`ga="1.001:31/7/1"` or the key that fits the type), and the name of the group object.
+A note below a line says what the project could not tell, for example that the objects linked to an address disagree on the type.
+It creates nothing.
+
+```text
+openhab:knx channels home 7.7.1
+7.7.1 "Made-up switch actuator": 3 channel lines
+  switch  ga="1.001:31/7/1+31/7/4"  — "1 – Switch – Made-up output"
+  number  ga="9.001:<31/7/2"  — "2 – Temperature – Made-up sensor"
+  rollershutter  upDown="1.008:31/7/5"  — "3 – Blind 7 – Made-up blind"
+Nothing was created. Copy the lines you want into a channel of a device Thing.
+```
+
+`openhab:knx check-project [<bridge>]` compares the group addresses of the channels of the bridge's device Things with the project and lists what differs: an address that is not in the project (`ADDRESS_NOT_IN_PROJECT`), one that no device object uses (`ADDRESS_WITHOUT_OBJECT`), a different data type (`DATAPOINT_TYPE_DIFFERS`), and a channel that reads an address on which no object answers a read (`READ_WITHOUT_READ_FLAG`).
+Where only the sub number of the data type differs (9.001 against 9.002), the line starts with `note:` and is counted as a note, not as a difference.
+Device Things that are not initialised cannot be checked; their number is shown.
+
+```text
+openhab:knx check-project home
+KNX bridge "Home" (knx:ip:home): 5 configured addresses checked, 1 differences, 1 notes
+  DATAPOINT_TYPE_DIFFERS  31/7/2  Made-up temperature channel  configured 5.001, project 9.001
+  note: DATAPOINT_TYPE_DIFFERS  31/7/1  Made-up light channel  configured 1.002, project 1.001
+```
+
+`openhab:knx list-unknown-ga` shows the name the project gives to an address after the count, in quotes.
+With a project imported, `openhab:knx monitor` shows the names of group addresses and devices, and decodes the value of an address no channel uses with the data type of the project.
+The bridge argument of `channels` and `check-project` can be left out when only one bridge has a project.
+A project text that is long or holds control characters is shortened and cleaned to one line of at most 60 characters.
+
+## REST
+
+Everything the console shows about monitors, keyrings and projects is also available as JSON under `/rest/knx`, for pages and scripts.
+Every call needs the token of an administrator in a header, `Authorization: Bearer <token>` or `X-OPENHAB-TOKEN: <token>`; there is nothing for other users and nothing without login.
+`{b}` is the UID of a bridge (`knx:ip:home`), `{device}` an individual address (`7.7.1`) or the device's project id.
+Nothing here creates or changes a Thing, a channel or an Item.
+Only `POST …/group-telegram` sends to the bus, and only when the bridge's setting `groupMonitorSend` is on.
+
+| Method and path | What |
+|---|---|
+| `GET /bridges` | the bridges, then stored projects whose bridge is gone |
+| `GET /bridges/{b}` | one bridge |
+| `GET /bridges/{b}/monitor` | the monitor's counters, its `lastNumber` and `monitorId` |
+| `GET /bridges/{b}/telegrams` | rows of the monitor; `src dst type dir dpt from to context` as on the console, `limit` (default 200, at most 5000), `after` (a row number) and `monitor` (a `monitorId`) to read on |
+| `DELETE /bridges/{b}/telegrams` | forgets the rows, as `monitor <bridge> clear` |
+| `GET /bridges/{b}/last-values` | the last telegram per group address |
+| `POST /bridges/{b}/group-telegram` | sends one group telegram: `{"address": "1/2/3", "action": "read"}` or `{"address": "1/2/3", "action": "write", "dpt": "1.001", "value": "ON"}`, the value written as a channel takes a command. Only with the bridge setting `groupMonitorSend` (off by default, else `403 send-not-allowed`); at most 5 telegrams in 10 seconds per bridge (`429 too-many-telegrams`) |
+| `GET /bridges/{b}/keyring` | what the keyring says, as `keyring <bridge>` |
+| `PUT /bridges/{b}/keyring` | uploads a keyring |
+| `GET /bridges/{b}/project` | the state of the stored project |
+| `PUT /bridges/{b}/project` | uploads a project; `language` (`de-DE`) and `name` (the name to keep as its source) |
+| `DELETE /bridges/{b}/project` | removes the stored project, also of a bridge that is gone |
+| `GET /bridges/{b}/project/group-addresses` | the group addresses; `offset`, `limit` (default 1000, at most 10000) |
+| `GET /bridges/{b}/project/group-address?address=1/2/3` | one group address; `usedBy` lists the channels of the bridge's Things that hold it (Thing, channel, type, role `main`, `status` or `listening`) and the Items linked to each |
+| `GET /bridges/{b}/project/devices` | the devices; `offset`, `limit` |
+| `GET /bridges/{b}/project/devices/{device}` | a device with its group objects |
+| `GET /bridges/{b}/project/devices/{device}/channels` | the channel lines of `channels` |
+| `POST /bridges/{b}/project/channels` | the channel lines for `{"groupAddresses": ["31/7/1"]}`, at most 2000; changes nothing |
+| `GET /bridges/{b}/project/topology` | areas, lines and devices |
+| `GET /bridges/{b}/project/locations` | the building structure |
+| `GET /bridges/{b}/project/check` | the differences of `check-project` |
+| `GET /bridges/{b}/telegrams/stream` | live telegrams as server-sent events; `src dst type dir dpt after monitor` |
+
+Every parameter is read as text by the binding, so a value it cannot read is answered with its own error body; a query parameter given twice counts with its first value.
+Every failure is answered with `{"code": "...", "text": "..."}` and a fixed English text, such as `400 bad-input`, `404 unknown-bridge`, `404 no-project`, `409 busy` or `413 too-large`.
+One exception: a body of `POST …/project/channels` that is not JSON at all is refused by openHAB before the binding sees it, with openHAB's own answer.
+Texts are not made safe for HTML.
+
+Uploads send the file itself as the body (`Content-Type: application/octet-stream`).
+A password goes in the header `X-KNX-Password` as Base64 of its UTF-8 bytes, never in the address; without TLS it can be read on the network, as the token can.
+It is not logged or stored, and the binding overwrites its copy when the upload is over.
+One upload runs at a time; a second one gets `409 busy`.
+A project may have 200 MB, a keyring 1 MB; a larger body is refused, also when it was announced smaller.
+The project file lies in its own folder under `userdata/knx/upload` only while it is read and is deleted afterwards.
+An uploaded keyring is stored unchanged as `userdata/knx/keyring/knx_ip_home.knxkeys` (the bridge UID, with `_` in place of `:`); the answer's `fileName` is that name.
+The bridge does not switch to it by itself: set its parameter `keyringFile` to that name and save the bridge.
+A bridge looks for `keyringFile` in `conf/misc` first, as before, and in `userdata/knx/keyring` only when `conf/misc` has no file of that name; the answer says `shadowedByConfigFolder` when such a file is in the way.
+With the password header the answer says whether the keyring's signature matches it; the keyring password itself goes into the bridge parameter `keyringPassword` as before.
+
+The stream always answers with status 200.
+Its first event is `open` with `lastNumber` and `monitorId` (and `reset: true` when the numbers given belong to another monitor or lie ahead, so the rows start again from the beginning of the buffer).
+Then come `telegram` (one row), `outcome` (how an own send ended whose row came as `PENDING`), `lost` (how many rows left the buffer before they could be sent), and `alive` every 10 seconds with the number to read on after.
+The last event is `end` with a code, such as `unknown-bridge`, `monitor-off`, `bad-input`, `too-many-streams` (8 streams in all), `slow-client` (a reader that took nothing for about 10 to 20 seconds while 256 events waited for it), `bridge-gone` or `shutdown`.
+To read on without a hole, open the stream again with `after=<last number>&monitor=<monitorId>`; a row may come twice.
 
 ## Troubleshooting
 
