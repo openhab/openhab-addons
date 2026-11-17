@@ -141,9 +141,9 @@ Import-Package: \
 	org.objectweb.asm.tree;version='[9.11.1,9.11.2)',\
 	org.objectweb.asm.tree.analysis;version='[9.11.1,9.11.2)',\
 	org.objectweb.asm.util;version='[9.11.1,9.11.2)',\
-	bcpkix;version='[1.86.0,1.86.1)',\
-	bcprov;version='[1.86.0,1.86.1)',\
-	bcutil;version='[1.86.0,1.86.1)',\
+	bcpkix;version='[1.87.0,1.87.1)',\
+	bcprov;version='[1.87.0,1.87.1)',\
+	bcutil;version='[1.87.0,1.87.1)',\
 	com.sun.jna;version='[5.19.1,5.19.2)',\
 	org.apache.commons.commons-codec;version='[1.22.1,1.22.2)',\
 	ch.qos.logback.classic;version='[1.6.5,1.6.6)',\

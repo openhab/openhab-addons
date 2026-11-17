@@ -72,7 +72,7 @@
     <ohc.version>5.3.0-SNAPSHOT</ohc.version>
     <asm.version>9.11.1</asm.version>
     <bnd.version>7.5.0</bnd.version>
-    <bouncycastle.version>1.86</bouncycastle.version>
+    <bouncycastle.version>1.87</bouncycastle.version>
     <commons.codec.version>1.22.1</commons.codec.version>
     <commons.net.version>3.13.0</commons.net.version>
     <eea.version>2.4.0</eea.version>
