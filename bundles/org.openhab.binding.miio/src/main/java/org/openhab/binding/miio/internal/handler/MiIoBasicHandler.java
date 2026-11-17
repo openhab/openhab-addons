@@ -16,6 +16,7 @@ import static org.openhab.binding.miio.internal.MiIoBindingConstants.*;
 
 import java.awt.Color;
 import java.io.IOException;
+import java.io.StringReader;
 import java.net.URL;
 import java.time.Duration;
 import java.time.Instant;
@@ -87,9 +88,13 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonIOException;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSyntaxException;
+import com.google.gson.Strictness;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonToken;
 
 /**
  * The {@link MiIoBasicHandler} is responsible for handling commands, which are
@@ -561,12 +566,13 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
             logger.debug("Parameter type JSON is only supported for MIoT actions, command '{}' not send", text);
             return null;
         }
-        try {
-            JsonElement input = JsonParser.parseString(text);
-            if (input.isJsonArray()) {
+        try (JsonReader reader = new JsonReader(new StringReader(text))) {
+            reader.setStrictness(Strictness.STRICT);
+            JsonElement input = JsonParser.parseReader(reader);
+            if (input.isJsonArray() && reader.peek() == JsonToken.END_DOCUMENT) {
                 return input;
             }
-        } catch (JsonSyntaxException e) {
+        } catch (JsonParseException | IOException e) {
             // handled below
         }
         logger.debug("Command '{}' is no JSON list, not send", text);
