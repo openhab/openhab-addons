@@ -42,6 +42,15 @@
 				<type>radiothermostat:fan-status</type>
 			</update-channel>
 		</instruction-set>
+
+		<instruction-set targetVersion="4">
+			<update-channel id="status">
+				<type>radiothermostat:status</type>
+			</update-channel>
+			<update-channel id="fan_status">
+				<type>radiothermostat:fan-status</type>
+			</update-channel>
+		</instruction-set>
 	</thing-type>
 
 </update:update-descriptions>
