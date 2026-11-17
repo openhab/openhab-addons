@@ -511,6 +511,11 @@ Disposal cancels pending confirmation tasks and closes the transaction connectio
 No additional Modbus requests are introduced; ordinary confirmed single-phase commands still use eight FC03 requests and one FC16 request.
 This interval may allow delayed device application to settle, but its benefit on a specific inverter requires hardware observation.
 
+V5 exchanges can skip up to three valid 14-byte logger heartbeats (`0x4710`) while waiting for the original Modbus response.
+The complete V5 response, including any heartbeats and TCP fragments, shares a 10-second receive deadline.
+This does not resend requests or acknowledge heartbeats; response identity and checksum validation remain unchanged.
+If no valid response follows, the exchange still fails. Hardware recovery depends on whether the logger subsequently sends the requested response.
+
 Rejected V5 responses identify the failed field: frame size, start/end marker, control code, echoed request sequence, logger serial, declared length or checksum.
 Messages include expected/received values and read/write function/register context.
 Advanced command failure WARN entries also identify the stage (`pre-read`, `write`, `readback` or `retry-pre-read`).
