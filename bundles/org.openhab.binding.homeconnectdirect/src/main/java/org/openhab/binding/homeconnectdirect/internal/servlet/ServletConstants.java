@@ -57,7 +57,7 @@ public class ServletConstants {
     public static final String PROFILE_DOWNLOAD_FILENAME_TEMPLATE = BINDING_ID + "-%s-%s-%s-%s_%s.zip";
     public static final String LOG_DOWNLOAD_FILENAME_TEMPLATE = "log-" + BINDING_ID + "-%s-%s-%s_%s_%s.zip.log";
     public static final String CONTENT_DISPOSITION_VALUE_TEMPLATE = "attachment; filename=\"%s\"";
-    public static final String CONTENT_SECURITY_POLICY = "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data:;";
+    public static final String CONTENT_SECURITY_POLICY = "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; object-src 'none'; base-uri 'self'; frame-ancestors 'self';";
     public static final String UNAUTHORIZED = "Unauthorized";
     public static final String NOT_FOUND = "Not Found";
     public static final String SAME_ORIGIN = "SAMEORIGIN";
