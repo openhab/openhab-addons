@@ -67,8 +67,8 @@ class ShellyBaseHandlerWakeupTest {
     }
 
     @Test
-    void onDeviceWakeupUpdatesOfflineThingWithConfigurationError() throws Exception {
-        assertWakeupRunsUpdate(true, ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
+    void onDeviceWakeupIgnoresOfflineThingWithConfigurationError() throws Exception {
+        assertWakeupIgnored(THING_TYPE_SHELLYPLUSSMOKE, ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
     }
 
     @Test
@@ -115,6 +115,7 @@ class ShellyBaseHandlerWakeupTest {
 
         verify(handler, never()).restartWatchdog();
         verify(handler).requestUpdates(1, false);
+        verify(handler).startUpdateJob();
         ArgumentCaptor<Runnable> job = ArgumentCaptor.forClass(Runnable.class);
         verify(scheduler).execute(job.capture());
         job.getValue().run();
@@ -130,6 +131,7 @@ class ShellyBaseHandlerWakeupTest {
 
         verify(handler, never()).restartWatchdog();
         verify(handler, never()).requestUpdates(anyInt(), anyBoolean());
+        verify(handler, never()).startUpdateJob();
         verifyNoInteractions(scheduler);
     }
 
@@ -146,6 +148,7 @@ class ShellyBaseHandlerWakeupTest {
         doReturn(detail).when(handler).getThingStatusDetail();
         doReturn(true).when(handler).requestUpdates(1, false);
         doNothing().when(handler).refreshStatus();
+        doNothing().when(handler).startUpdateJob();
         return handler;
     }
 

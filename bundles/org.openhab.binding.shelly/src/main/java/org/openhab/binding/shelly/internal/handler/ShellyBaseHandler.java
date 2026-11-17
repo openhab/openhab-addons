@@ -1524,7 +1524,8 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
      * while. A Thing that still waits for its device is updated right away, the next cycle of the status job may come
      * too late. That is a Thing that is ONLINE/CONFIGURATION_PENDING, or OFFLINE for a reason that can clear once the
      * device is reachable again. Once initialized and online, the device reports its status itself, so such a Thing
-     * needs no poll.
+     * needs no poll. A Thing with a configuration error is left to the user, as retrying a wrong password on every
+     * wake-up could lock the device.
      * <p>
      * The announcement doesn't restart the watchdog, as it doesn't prove that status reporting works. A successful
      * update does.
@@ -1537,6 +1538,8 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         if (!profile.alwaysOn && !profile.isBlu && isWaitingForDevice()) {
             logger.debug("{}: Device woke up, requesting update", thingName);
             requestUpdates(1, false);
+            // An initialization that failed without retry left the Thing without status job
+            startUpdateJob();
             scheduler.execute(this::refreshStatus);
         }
     }
@@ -1545,8 +1548,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         ThingStatusDetail detail = getThingStatusDetail();
         return switch (getThingStatus()) {
             case ONLINE -> detail == ThingStatusDetail.CONFIGURATION_PENDING;
-            case OFFLINE -> detail == ThingStatusDetail.COMMUNICATION_ERROR
-                    || detail == ThingStatusDetail.CONFIGURATION_ERROR || detail == ThingStatusDetail.DUTY_CYCLE;
+            case OFFLINE -> detail == ThingStatusDetail.COMMUNICATION_ERROR || detail == ThingStatusDetail.DUTY_CYCLE;
             default -> false;
         };
     }

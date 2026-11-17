@@ -202,7 +202,7 @@ public class ShellyMDNSDiscoveryParticipant implements MDNSDiscoveryParticipant 
 
         if (!thing.checkRepresentation(address)) {
             // Polls go to the configured address, which may no longer reach the device
-            logger.info("{}: Device announced a different IP address {}, check the Thing configuration",
+            logger.debug("{}: Device announced IP address {}, which differs from the Thing configuration",
                     thing.getThingName(), address);
         }
 
