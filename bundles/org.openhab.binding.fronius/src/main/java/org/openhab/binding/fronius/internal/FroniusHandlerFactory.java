@@ -24,6 +24,7 @@ import org.openhab.binding.fronius.internal.handler.FroniusBridgeHandler;
 import org.openhab.binding.fronius.internal.handler.FroniusMeterHandler;
 import org.openhab.binding.fronius.internal.handler.FroniusOhmpilotHandler;
 import org.openhab.binding.fronius.internal.handler.FroniusSymoInverterHandler;
+import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
@@ -62,10 +63,13 @@ public class FroniusHandlerFactory extends BaseThingHandlerFactory {
     };
 
     private final HttpClientFactory httpClientFactory;
+    private final TimeZoneProvider timeZoneProvider;
 
     @Activate
-    public FroniusHandlerFactory(@Reference HttpClientFactory httpClientFactory) {
+    public FroniusHandlerFactory(@Reference HttpClientFactory httpClientFactory,
+            @Reference TimeZoneProvider timeZoneProvider) {
         this.httpClientFactory = httpClientFactory;
+        this.timeZoneProvider = timeZoneProvider;
     }
 
     @Override
@@ -86,7 +90,7 @@ public class FroniusHandlerFactory extends BaseThingHandlerFactory {
         } else if (thingTypeUID.equals(THING_TYPE_OHMPILOT)) {
             return new FroniusOhmpilotHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_BATTERY)) {
-            return new FroniusBatteryHandler(thing);
+            return new FroniusBatteryHandler(thing, timeZoneProvider);
         }
         return null;
     }
