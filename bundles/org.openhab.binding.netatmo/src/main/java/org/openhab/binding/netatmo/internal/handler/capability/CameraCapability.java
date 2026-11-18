@@ -27,7 +27,6 @@ import org.openhab.binding.netatmo.internal.api.dto.HomeDataPerson;
 import org.openhab.binding.netatmo.internal.api.dto.HomeEvent;
 import org.openhab.binding.netatmo.internal.api.dto.HomeStatusModule;
 import org.openhab.binding.netatmo.internal.api.dto.NAObject;
-import org.openhab.binding.netatmo.internal.api.dto.WebhookEvent;
 import org.openhab.binding.netatmo.internal.deserialization.NAObjectMap;
 import org.openhab.binding.netatmo.internal.handler.CommonInterface;
 import org.openhab.binding.netatmo.internal.handler.channelhelper.CameraChannelHelper;
@@ -73,36 +72,26 @@ public class CameraCapability extends HomeSecurityThingCapability {
     }
 
     @Override
-    public void updateHomeStatusModule(HomeStatusModule newData) {
-        super.updateHomeStatusModule(newData);
-        // Per documentation vpn_url expires every 3 hours and on camera reboot. So useless to reping it if not changed
-        String newVpnUrl = newData.getVpnUrl();
-        if (newVpnUrl != null && !newVpnUrl.equals(vpnUrl)) {
-            // This will also decrease the number of requests emitted toward Netatmo API.
-            localUrl = newData.isLocal() ? ping(newVpnUrl) : null;
-            logger.debug("localUrl set to {} for camera {}", localUrl, thingUID);
-            cameraHelper.setUrls(newVpnUrl, localUrl);
-            eventHelper.setUrls(newVpnUrl, localUrl);
+    protected void internalSetNewData(Object newData) {
+        super.internalSetNewData(newData);
+        if (newData instanceof HomeStatusModule homeStatus) {
+            // Per documentation vpn_url expires every 3 hours and on camera reboot. So useless to reping it if not
+            // changed
+            String newVpnUrl = homeStatus.getVpnUrl();
+            if (newVpnUrl != null && !newVpnUrl.equals(vpnUrl)) {
+                // This will also decrease the number of requests emitted toward Netatmo API.
+                localUrl = homeStatus.isLocal() ? ping(newVpnUrl) : null;
+                logger.debug("localUrl set to {} for camera {}", localUrl, thingUID);
+                cameraHelper.setUrls(newVpnUrl, localUrl);
+                eventHelper.setUrls(newVpnUrl, localUrl);
+            }
+            vpnUrl = newVpnUrl;
+            if (!SdCardStatus.SD_CARD_WORKING.equals(homeStatus.getSdStatus())) {
+                statusReason = homeStatus.getSdStatus().toString();
+            } else if (!AlimentationStatus.ALIM_CORRECT_POWER.equals(homeStatus.getAlimStatus())) {
+                statusReason = homeStatus.getAlimStatus().toString();
+            }
         }
-        vpnUrl = newVpnUrl;
-        if (!SdCardStatus.SD_CARD_WORKING.equals(newData.getSdStatus())) {
-            statusReason = newData.getSdStatus().toString();
-        } else if (!AlimentationStatus.ALIM_CORRECT_POWER.equals(newData.getAlimStatus())) {
-            statusReason = newData.getAlimStatus().toString();
-        }
-    }
-
-    @Override
-    protected void afterNewData(Object newData) {
-        // The channel should get triggered at last (after super and sub methods), because this allows rules to access
-        // the new updated data from the other channels.
-        if (newData instanceof WebhookEvent event) {
-            String eventType = event.getEventType().name();
-            handler.recurseUpToHomeHandler(handler).ifPresent(
-                    homeHandler -> homeHandler.triggerChannel(GROUP_SECURITY_EVENT, CHANNEL_HOME_EVENT, eventType));
-            handler.triggerChannel(GROUP_SECURITY_EVENT, CHANNEL_HOME_EVENT, eventType);
-        }
-        super.afterNewData(newData);
     }
 
     @Override

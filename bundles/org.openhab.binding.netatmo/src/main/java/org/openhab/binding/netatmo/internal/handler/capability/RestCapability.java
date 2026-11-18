@@ -43,15 +43,17 @@ public abstract class RestCapability<T extends RestManager> extends Capability {
     }
 
     @Override
-    protected void updateNADevice(Device newData) {
-        super.updateNADevice(newData);
-        NAObjectMap<Module> modules = newData.getModules();
-        handler.getActiveChildren().forEach(child -> {
-            Module childData = modules.get(child.getId());
-            if (childData != null) {
-                child.setNewData(childData);
-            }
-        });
+    protected void internalSetNewData(Object newData) {
+        super.internalSetNewData(newData);
+        if (newData instanceof Device device) {
+            NAObjectMap<Module> modules = device.getModules();
+            handler.getActiveChildren().forEach(child -> {
+                Module childData = modules.get(child.getId());
+                if (childData != null) {
+                    child.setNewData(childData);
+                }
+            });
+        }
     }
 
     @Override

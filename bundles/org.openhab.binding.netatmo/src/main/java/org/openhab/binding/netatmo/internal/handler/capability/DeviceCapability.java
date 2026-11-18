@@ -33,16 +33,20 @@ public class DeviceCapability extends Capability {
     }
 
     @Override
-    protected void updateNAMain(NAMain newData) {
-        if (firstLaunch) {
-            newData.getPlace().ifPresent(place -> {
-                place.getCity().map(city -> properties.put(PROPERTY_CITY, city));
-                place.getCountry().map(country -> properties.put(PROPERTY_COUNTRY, country));
-                place.getTimezone().map(tz -> properties.put(PROPERTY_TIMEZONE, tz));
-            });
-        }
-        if (!newData.hasFreshData(DATA_AGE_LIMIT_S)) {
-            statusReason = "@text/data-over-limit";
+    protected void internalSetNewData(Object newData) {
+        super.internalSetNewData(newData);
+        if (newData instanceof NAMain naMain) {
+            if (firstLaunch) {
+                naMain.getPlace().ifPresent(place -> {
+                    place.getCity().map(city -> properties.put(PROPERTY_CITY, city));
+                    place.getCountry().map(country -> properties.put(PROPERTY_COUNTRY, country));
+                    place.getTimezone().map(tz -> properties.put(PROPERTY_TIMEZONE, tz));
+                });
+            }
+
+            if (!naMain.hasFreshData(DATA_AGE_LIMIT_S)) {
+                statusReason = "@text/data-over-limit";
+            }
         }
     }
 }

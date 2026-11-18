@@ -73,8 +73,9 @@ public class HomeCapability extends CacheCapability<HomeApi> {
     }
 
     @Override
-    protected void updateHomeData(HomeData home) {
-        if (firstLaunch) {
+    protected void internalSetNewData(Object newData) {
+        super.internalSetNewData(newData);
+        if (newData instanceof HomeData home && firstLaunch) {
             if (featureAreas.contains(FeatureArea.SECURITY)) {
                 handler.getCapabilities().put(new SecurityCapability(handler));
             } else {
