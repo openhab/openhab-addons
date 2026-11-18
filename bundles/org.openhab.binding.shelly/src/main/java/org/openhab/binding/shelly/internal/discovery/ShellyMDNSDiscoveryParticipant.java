@@ -167,7 +167,8 @@ public class ShellyMDNSDiscoveryParticipant implements MDNSDiscoveryParticipant 
             String gen = getString(service.getPropertyString("gen"));
             boolean gen2 = "2".equals(gen) || "3".equals(gen) || "4".equals(gen)
                     || ShellyDeviceProfile.isGeneration2(serviceName);
-            result = discoverDevice(gen2, serviceName, address, cfg);
+            result = ShellyBasicDiscoveryService.createResult(gen2, serviceName, address, cfg, httpClient, messages,
+                    thingTable);
         } catch (IOException e) {
             logger.debug("{}: Exception on processing serviceInfo '{}'", serviceName, service.getNiceTextString(), e);
             return null;
@@ -184,12 +185,6 @@ public class ShellyMDNSDiscoveryParticipant implements MDNSDiscoveryParticipant 
         return result;
     }
 
-    protected @Nullable DiscoveryResult discoverDevice(boolean gen2, String serviceName, String address,
-            ShellyBindingRuntimeConfig cfg) {
-        return ShellyBasicDiscoveryService.createResult(gen2, serviceName, address, cfg, httpClient, messages,
-                thingTable);
-    }
-
     /**
      * A sleeping battery device announces itself each time it wakes up, the Thing of the device decides whether to
      * use this short window for an update.
@@ -200,7 +195,7 @@ public class ShellyMDNSDiscoveryParticipant implements MDNSDiscoveryParticipant 
             return;
         }
 
-        if (!thing.checkRepresentation(address)) {
+        if (!thing.isIdentifiedBy(address)) {
             // Polls go to the configured address, which may no longer reach the device
             logger.debug("{}: Device announced IP address {}, which differs from the Thing configuration",
                     thing.getThingName(), address);

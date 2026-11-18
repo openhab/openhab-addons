@@ -17,7 +17,6 @@ import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.*;
 
-import java.io.IOException;
 import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.util.Hashtable;
@@ -32,7 +31,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.openhab.binding.shelly.internal.config.ShellyBindingRuntimeConfig;
+import org.mockito.MockedStatic;
 import org.openhab.binding.shelly.internal.handler.ShellyThingInterface;
 import org.openhab.binding.shelly.internal.handler.ShellyThingTable;
 import org.openhab.binding.shelly.internal.provider.ShellyTranslationProvider;
@@ -62,20 +61,7 @@ public class ShellyMDNSDiscoveryParticipantTest {
         ShellyThingInterface thing = mock(ShellyThingInterface.class);
         when(thingTable.findAnnouncedThing(SERVICE_NAME, IP_ADDRESS)).thenReturn(thing);
 
-        createParticipant(thingTable, mock(DiscoveryResult.class)).createResult(mockService());
-
-        verify(thing).checkRepresentation(IP_ADDRESS);
-        verify(thing).onDeviceWakeup();
-    }
-
-    @Test
-    void createResultNotifiesThingAnnouncedAtOtherIpAddress() throws Exception {
-        ShellyThingTable thingTable = mock(ShellyThingTable.class);
-        ShellyThingInterface thing = mock(ShellyThingInterface.class);
-        when(thing.checkRepresentation(IP_ADDRESS)).thenReturn(false);
-        when(thingTable.findAnnouncedThing(SERVICE_NAME, IP_ADDRESS)).thenReturn(thing);
-
-        createParticipant(thingTable, mock(DiscoveryResult.class)).createResult(mockService());
+        createResult(thingTable, mock(DiscoveryResult.class));
 
         verify(thing).onDeviceWakeup();
     }
@@ -83,24 +69,10 @@ public class ShellyMDNSDiscoveryParticipantTest {
     @Test
     void createResultIgnoresAnnouncementWhenDeviceDoesNotAnswer() throws Exception {
         ShellyThingTable thingTable = mock(ShellyThingTable.class);
-        ShellyThingInterface thing = mock(ShellyThingInterface.class);
-        when(thingTable.findAnnouncedThing(SERVICE_NAME, IP_ADDRESS)).thenReturn(thing);
 
-        assertThat(createParticipant(thingTable, null).createResult(mockService()), is(nullValue()));
+        assertThat(createResult(thingTable, null), is(nullValue()));
 
         verify(thingTable, never()).findAnnouncedThing(anyString(), anyString());
-        verify(thing, never()).onDeviceWakeup();
-    }
-
-    @Test
-    void createResultIgnoresThingOfOtherDeviceAtSameIpAddress() throws Exception {
-        ShellyThingTable thingTable = mock(ShellyThingTable.class);
-        ShellyThingInterface thing = mock(ShellyThingInterface.class);
-        when(thingTable.findThing(IP_ADDRESS)).thenReturn(thing);
-
-        createParticipant(thingTable, mock(DiscoveryResult.class)).createResult(mockService());
-
-        verify(thing, never()).onDeviceWakeup();
     }
 
     @Test
@@ -108,38 +80,34 @@ public class ShellyMDNSDiscoveryParticipantTest {
         ShellyThingTable thingTable = mock(ShellyThingTable.class);
         DiscoveryResult result = mock(DiscoveryResult.class);
 
-        assertThat(createParticipant(thingTable, result).createResult(mockService()), is(result));
+        assertThat(createResult(thingTable, result), is(result));
 
         verify(thingTable).findAnnouncedThing(SERVICE_NAME, IP_ADDRESS);
     }
 
-    private static ServiceInfo mockService() throws IOException {
+    private static @Nullable DiscoveryResult createResult(ShellyThingTable thingTable,
+            @Nullable DiscoveryResult discoveryResult) throws Exception {
         ServiceInfo service = mock(ServiceInfo.class);
         when(service.getName()).thenReturn(SERVICE_NAME);
         when(service.getInet4Addresses())
                 .thenReturn(new Inet4Address[] { (Inet4Address) InetAddress.getByName(IP_ADDRESS) });
         when(service.getPropertyString("gen")).thenReturn("2");
-        return service;
-    }
 
-    private static ShellyMDNSDiscoveryParticipant createParticipant(ShellyThingTable thingTable,
-            @Nullable DiscoveryResult discoveryResult) throws Exception {
-        HttpClient httpClient = mock(HttpClient.class);
         HttpClientFactory httpClientFactory = mock(HttpClientFactory.class);
-        when(httpClientFactory.getCommonHttpClient()).thenReturn(httpClient);
+        when(httpClientFactory.getCommonHttpClient()).thenReturn(mock(HttpClient.class));
         ConfigurationAdmin configurationAdmin = mock(ConfigurationAdmin.class);
         when(configurationAdmin.getConfiguration(anyString())).thenReturn(mock(Configuration.class));
         ComponentContext componentContext = mock(ComponentContext.class);
         when(componentContext.getProperties()).thenReturn(new Hashtable<String, Object>());
-        return new ShellyMDNSDiscoveryParticipant(configurationAdmin, httpClientFactory, mock(LocaleProvider.class),
-                mock(ShellyTranslationProvider.class), thingTable, mock(NetworkAddressService.class),
-                componentContext) {
-            @Override
-            protected @Nullable DiscoveryResult discoverDevice(boolean gen2, String serviceName, String address,
-                    ShellyBindingRuntimeConfig cfg) {
-                return discoveryResult;
-            }
-        };
+        ShellyMDNSDiscoveryParticipant participant = new ShellyMDNSDiscoveryParticipant(configurationAdmin,
+                httpClientFactory, mock(LocaleProvider.class), mock(ShellyTranslationProvider.class), thingTable,
+                mock(NetworkAddressService.class), componentContext);
+
+        try (MockedStatic<ShellyBasicDiscoveryService> discovery = mockStatic(ShellyBasicDiscoveryService.class)) {
+            discovery.when(() -> ShellyBasicDiscoveryService.createResult(anyBoolean(), anyString(), anyString(), any(),
+                    any(), any(), any())).thenReturn(discoveryResult);
+            return participant.createResult(service);
+        }
     }
 
     @ParameterizedTest

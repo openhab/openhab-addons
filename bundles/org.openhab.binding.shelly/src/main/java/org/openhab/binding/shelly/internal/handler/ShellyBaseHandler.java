@@ -215,7 +215,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
     }
 
     @Override
-    public boolean checkRepresentation(String key) {
+    public boolean isIdentifiedBy(String key) {
         InetAddress ipAddr;
         return key.equalsIgnoreCase(getUID()) || key.equalsIgnoreCase(apiConfig.getBdAddr())
                 || ((ipAddr = apiConfig.getDeviceIpAddress()) != null && key.equalsIgnoreCase(ipAddr.getHostAddress()))

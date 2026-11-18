@@ -128,7 +128,11 @@ public interface ShellyThingInterface {
 
     void fillDeviceStatus(ShellySettingsStatus status, boolean updated);
 
-    boolean checkRepresentation(String key);
+    /**
+     * Check whether the key identifies this Thing: its UID, Thing name, service name (realm), configured IP address
+     * or host, or Bluetooth address.
+     */
+    boolean isIdentifiedBy(String key);
 
     void incProtMessages();
 
