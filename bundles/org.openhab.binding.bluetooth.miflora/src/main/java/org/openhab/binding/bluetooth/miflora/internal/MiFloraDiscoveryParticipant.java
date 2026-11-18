@@ -24,9 +24,13 @@ import org.openhab.binding.bluetooth.discovery.BluetoothDiscoveryDevice;
 import org.openhab.binding.bluetooth.discovery.BluetoothDiscoveryParticipant;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
+import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
+import org.osgi.framework.FrameworkUtil;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * Recognizes Mi Flora sensors by the name they advertise.
@@ -36,6 +40,13 @@ import org.osgi.service.component.annotations.Component;
 @NonNullByDefault
 @Component
 public class MiFloraDiscoveryParticipant implements BluetoothDiscoveryParticipant {
+
+    private final TranslationProvider translationProvider;
+
+    @Activate
+    public MiFloraDiscoveryParticipant(final @Reference TranslationProvider translationProvider) {
+        this.translationProvider = translationProvider;
+    }
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
@@ -57,9 +68,12 @@ public class MiFloraDiscoveryParticipant implements BluetoothDiscoveryParticipan
         if (thingUID == null) {
             return null;
         }
+        // The Bluetooth discovery service resolves "@text/" against its own bundle, not this one
+        String label = translationProvider.getText(FrameworkUtil.getBundle(getClass()), "discovery.miflora.label", null,
+                null);
         return DiscoveryResultBuilder.create(thingUID)
                 .withProperties(Map.of(BluetoothBindingConstants.CONFIGURATION_ADDRESS, device.getAddress().toString()))
                 .withRepresentationProperty(BluetoothBindingConstants.CONFIGURATION_ADDRESS)
-                .withBridge(device.getAdapter().getUID()).withLabel("@text/discovery.miflora.label").build();
+                .withBridge(device.getAdapter().getUID()).withLabel(label).build();
     }
 }
