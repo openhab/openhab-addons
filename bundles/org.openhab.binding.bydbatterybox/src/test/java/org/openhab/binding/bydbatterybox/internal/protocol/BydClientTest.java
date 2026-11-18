@@ -17,7 +17,9 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HexFormat;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -60,7 +62,8 @@ class BydClientTest {
                 Fixtures.frame("measurement-state-pending"), Fixtures.frame("measurement-state-ready"),
                 Fixtures.frame("measurement-1"), Fixtures.frame("measurement-2"), Fixtures.frame("measurement-3"),
                 Fixtures.frame("measurement-4")); BydConnection connection = open(battery)) {
-            TowerData tower = new BydClient(connection, NO_SLEEP).readTower(1, identity());
+            // with 96 cells, there is no second pass even if requested
+            TowerData tower = new BydClient(connection, NO_SLEEP).readTower(1, identity(), true);
 
             assertEquals(96, tower.cellVoltages().size());
             assertEquals(3098, tower.cellVoltages().get(4));
@@ -80,11 +83,68 @@ class BydClientTest {
         replies[0] = Fixtures.frame("measurement-start-echo");
         try (FakeBattery battery = FakeBattery.start(64, replies); BydConnection connection = open(battery)) {
             BydCommunicationException e = assertThrows(BydCommunicationException.class,
-                    () -> new BydClient(connection, NO_SLEEP).readTower(1, identity()));
+                    () -> new BydClient(connection, NO_SLEEP).readTower(1, identity(), false));
             assertEquals(Reason.NOT_READY, e.getReason());
             // first check after 1 s, then every 0.5 s up to 10 s
             assertEquals(1 + 19, battery.requests().size());
         }
+    }
+
+    @Test
+    void secondPassReadsTheCellsBeyond128() throws Exception {
+        try (FakeBattery battery = FakeBattery.start(64,
+                secondTowerReplies(Fixtures.frame("second-pass-echo"), Fixtures.frame("measurement-start-echo"),
+                        Fixtures.frame("measurement-state-pending"), Fixtures.frame("measurement-state-ready"),
+                        Fixtures.frame("hvs2x5-t2-second-pass-1"), Fixtures.frame("hvs2x5-t2-second-pass-2")));
+                BydConnection connection = open(battery)) {
+            TowerData tower = new BydClient(connection, NO_SLEEP).readTower(2, twoTowerIdentity(), true);
+
+            assertEquals(160, tower.cellVoltages().size());
+            List<byte[]> requests = battery.requests();
+            assertEquals(6 + 6, requests.size());
+            assertArrayEquals(ModbusFrame.writeMultipleRegisters(0x0550, 2, 0x8100), requests.get(0));
+            assertArrayEquals(HexFormat.of().parseHex("01100100000306444542554700176f"), requests.get(6));
+            assertArrayEquals(ModbusFrame.writeMultipleRegisters(0x0550, 2, 0x8100), requests.get(7));
+            assertArrayEquals(ModbusFrame.readHoldingRegisters(0x0558, 0x41), requests.get(11));
+        }
+    }
+
+    @Test
+    void secondPassIsOnlyReadIfEnabled() throws Exception {
+        try (FakeBattery battery = FakeBattery.start(64, secondTowerReplies());
+                BydConnection connection = open(battery)) {
+            TowerData tower = new BydClient(connection, NO_SLEEP).readTower(2, twoTowerIdentity(), false);
+
+            assertEquals(128, tower.cellVoltages().size());
+            assertEquals(6, battery.requests().size());
+        }
+    }
+
+    @Test
+    void unmarkedSecondPassKeepsTheFirstPass() throws Exception {
+        // the battery returns a first-pass buffer, as if it had ignored the second-pass command
+        try (FakeBattery battery = FakeBattery.start(64,
+                secondTowerReplies(Fixtures.frame("second-pass-echo"), Fixtures.frame("measurement-start-echo"),
+                        Fixtures.frame("measurement-state-ready"), Fixtures.frame("hvs2x5-t2-measurement-1"),
+                        Fixtures.frame("hvs2x5-t2-measurement-2")));
+                BydConnection connection = open(battery)) {
+            TowerData tower = new BydClient(connection, NO_SLEEP).readTower(2, twoTowerIdentity(), true);
+
+            assertEquals(128, tower.cellVoltages().size());
+            assertEquals(6 + 5, battery.requests().size());
+        }
+    }
+
+    /**
+     * @return the replies of the first pass of tower 2 of the 2-tower system, followed by {@code more}
+     */
+    private static byte[][] secondTowerReplies(byte[]... more) {
+        List<byte[]> replies = new ArrayList<>(
+                List.of(Fixtures.frame("measurement-start-echo"), Fixtures.frame("measurement-state-ready"),
+                        Fixtures.frame("hvs2x5-t2-measurement-1"), Fixtures.frame("hvs2x5-t2-measurement-2"),
+                        Fixtures.frame("hvs2x5-t2-measurement-3"), Fixtures.frame("hvs2x5-t2-measurement-4")));
+        replies.addAll(List.of(more));
+        return replies.toArray(byte[][]::new);
     }
 
     @Test
@@ -93,7 +153,7 @@ class BydClientTest {
                 Fixtures.frame("measurement-state-ready"), Fixtures.frame("exception-not-ready"));
                 BydConnection connection = open(battery)) {
             BydCommunicationException e = assertThrows(BydCommunicationException.class,
-                    () -> new BydClient(connection, NO_SLEEP).readTower(1, identity()));
+                    () -> new BydClient(connection, NO_SLEEP).readTower(1, identity(), false));
             assertEquals(Reason.NOT_READY, e.getReason());
         }
     }
@@ -167,6 +227,10 @@ class BydClientTest {
 
     private static SystemInfo identity() throws BydCommunicationException {
         return BydDecoder.decodeIdentity(Fixtures.frame("identity"));
+    }
+
+    private static SystemInfo twoTowerIdentity() throws BydCommunicationException {
+        return BydDecoder.decodeIdentity(Fixtures.frame("hvs2x5-identity"));
     }
 
     private static byte[] withCrc(byte[] body) {

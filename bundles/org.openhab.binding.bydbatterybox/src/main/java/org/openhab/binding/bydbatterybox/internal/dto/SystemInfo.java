@@ -41,8 +41,10 @@ public record SystemInfo(String serialNumber, String bmuFirmwareA, String bmuFir
         String bmsFirmware, char activeBmsSection, int inverterType, int towers, int modulesPerTower,
         BatteryType batteryType, int batteryTypeCode, int application, @Nullable LocalDateTime clock) {
 
-    /** Cell voltages that can be read per tower without the second measurement pass (which is not used). */
-    public static final int MAX_READABLE_CELLS = 128;
+    /** Cell voltages of a tower that the first measurement pass returns. */
+    public static final int FIRST_PASS_CELLS = 128;
+    /** Cell voltages of a tower that the first and second measurement pass return together. */
+    public static final int MAX_CELLS = 160;
     public static final int MAX_TEMPERATURE_SENSORS = 64;
 
     public String activeBmuFirmware() {
@@ -53,8 +55,15 @@ public record SystemInfo(String serialNumber, String bmuFirmwareA, String bmuFir
         return modulesPerTower * batteryType.getCellsPerModule();
     }
 
-    public int readableCellsPerTower() {
-        return Math.min(MAX_READABLE_CELLS, cellsPerTower());
+    public int firstPassCellsPerTower() {
+        return Math.min(FIRST_PASS_CELLS, cellsPerTower());
+    }
+
+    /**
+     * @return the cells only the second measurement pass returns (cells 129-160 of an HVS tower with 5 modules)
+     */
+    public int secondPassCellsPerTower() {
+        return Math.min(MAX_CELLS, cellsPerTower()) - firstPassCellsPerTower();
     }
 
     public int temperatureSensorsPerTower() {

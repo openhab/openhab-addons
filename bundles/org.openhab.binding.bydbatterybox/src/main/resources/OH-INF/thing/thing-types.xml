@@ -132,6 +132,14 @@
 					interval.</description>
 				<default>600</default>
 			</parameter>
+			<parameter name="readExtendedCells" type="boolean">
+				<label>Read Cells Beyond 128</label>
+				<description>Also reads cells 129-160 of HVS towers with 5 modules. This needs a second measurement per tower, which
+					is requested by writing the text DEBUG to a battery register, as other integrations do. Without it, these cells are
+					reported as undefined.</description>
+				<default>false</default>
+				<advanced>true</advanced>
+			</parameter>
 			<parameter name="connectionTimeout" type="integer" unit="s" min="1" max="30">
 				<label>Connection Timeout</label>
 				<description>Timeout for establishing the connection and for each reply.</description>

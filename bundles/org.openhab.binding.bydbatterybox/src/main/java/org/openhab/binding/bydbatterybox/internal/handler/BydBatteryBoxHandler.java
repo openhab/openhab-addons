@@ -100,6 +100,7 @@ public class BydBatteryBoxHandler extends BaseThingHandler {
     private final TranslationProvider i18nProvider;
     private final LocaleProvider localeProvider;
     private final Bundle bundle;
+    private final BydClient.Sleeper sleeper;
     private final BydTexts texts;
 
     /** Incremented on every (re)initialization and on dispose; a job of an older generation must not publish. */
@@ -134,10 +135,16 @@ public class BydBatteryBoxHandler extends BaseThingHandler {
 
     public BydBatteryBoxHandler(Thing thing, TranslationProvider i18nProvider, LocaleProvider localeProvider,
             Bundle bundle) {
+        this(thing, i18nProvider, localeProvider, bundle, Thread::sleep);
+    }
+
+    BydBatteryBoxHandler(Thing thing, TranslationProvider i18nProvider, LocaleProvider localeProvider, Bundle bundle,
+            BydClient.Sleeper sleeper) {
         super(thing);
         this.i18nProvider = i18nProvider;
         this.localeProvider = localeProvider;
         this.bundle = bundle;
+        this.sleeper = sleeper;
         this.texts = new BydTexts(this::text);
     }
 
@@ -212,7 +219,7 @@ public class BydBatteryBoxHandler extends BaseThingHandler {
             if (!isCurrent(context)) {
                 return;
             }
-            BydClient client = new BydClient(connection);
+            BydClient client = new BydClient(connection, sleeper);
             SystemInfo info = client.readIdentity();
             SystemStatus status = client.readStatus();
             if (!isCurrent(context)) {
@@ -283,7 +290,7 @@ public class BydBatteryBoxHandler extends BaseThingHandler {
         for (int tower = 1; tower <= info.towers(); tower++) {
             TowerData data;
             try {
-                data = client.readTower(tower, info);
+                data = client.readTower(tower, info, context.config.readExtendedCells);
             } catch (BydCommunicationException e) {
                 if (e.getReason() != BydCommunicationException.Reason.NOT_READY) {
                     throw e;

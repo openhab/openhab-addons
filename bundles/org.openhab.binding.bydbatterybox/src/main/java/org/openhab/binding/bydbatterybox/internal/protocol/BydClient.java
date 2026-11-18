@@ -20,6 +20,8 @@ import org.openhab.binding.bydbatterybox.internal.dto.SystemInfo;
 import org.openhab.binding.bydbatterybox.internal.dto.SystemStatus;
 import org.openhab.binding.bydbatterybox.internal.dto.TowerData;
 import org.openhab.binding.bydbatterybox.internal.protocol.BydCommunicationException.Reason;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The request sequences of the battery protocol, executed on one open {@link BydConnection}.
@@ -28,6 +30,10 @@ import org.openhab.binding.bydbatterybox.internal.protocol.BydCommunicationExcep
  * sets the following register to {@code 0x88xx} once the data is ready; reading the data earlier is answered with
  * exception 0x04. The data is fetched by reading the same register block repeatedly; each read returns the next
  * 130-byte chunk, whose first register holds the payload length (128).
+ * <p>
+ * A measurement returns at most 128 cell voltages. Writing the text {@code DEBUG} to register 0x0100 makes the next
+ * measurement of a tower a second pass that returns the cells beyond 128; the following measurement is a normal
+ * first pass again.
  *
  * @author Michael Weger - Initial contribution
  */
@@ -52,9 +58,14 @@ public class BydClient {
     private static final int REG_EVENT_COMMAND = 0x05A0;
     private static final int REG_EVENT_STATE = 0x05A1;
     private static final int REG_EVENT_DATA = 0x05A8;
+    private static final int REG_SECOND_PASS_COMMAND = 0x0100;
     private static final int CHUNK_REGISTER_COUNT = 0x41;
     private static final int MEASUREMENT_CHUNKS = 4;
+    /** The second pass holds data only in the first two chunks. */
+    private static final int SECOND_PASS_CHUNKS = 2;
     private static final int EVENT_LOG_CHUNKS = 5;
+    /** ASCII {@code "DEBUG\0"}. */
+    private static final int[] SECOND_PASS_COMMAND = { 0x4445, 0x4255, 0x4700 };
 
     private static final int COMMAND_START = 0x8100;
     private static final int STATE_READY_MASK = 0xFF00;
@@ -65,11 +76,15 @@ public class BydClient {
      * compared to a cycle.
      */
     private static final long INTER_FRAME_DELAY_MILLIS = 200;
-    /** A measurement of 96 cells was observed to complete after 0.8 to 1.3 s. */
+    /**
+     * A measurement was observed to complete after 0.8 to 1.3 s; the second pass of a tower with 160 cells after 1 to
+     * 2 s.
+     */
     private static final long READY_FIRST_CHECK_MILLIS = 1000;
     private static final long READY_POLL_MILLIS = 500;
     private static final long READY_TIMEOUT_MILLIS = 10_000;
 
+    private final Logger logger = LoggerFactory.getLogger(BydClient.class);
     private final BydConnection connection;
     private final Sleeper sleeper;
 
@@ -77,7 +92,7 @@ public class BydClient {
         this(connection, Thread::sleep);
     }
 
-    BydClient(BydConnection connection, Sleeper sleeper) {
+    public BydClient(BydConnection connection, Sleeper sleeper) {
         this.connection = connection;
         this.sleeper = sleeper;
     }
@@ -92,12 +107,30 @@ public class BydClient {
 
     /**
      * Triggers a cell measurement of one tower, waits for it to complete and reads the result.
+     *
+     * @param extendedCells also read the cells beyond 128 in a second pass, if the tower has any
      */
-    public TowerData readTower(int tower, SystemInfo info) throws BydCommunicationException, InterruptedException {
+    public TowerData readTower(int tower, SystemInfo info, boolean extendedCells)
+            throws BydCommunicationException, InterruptedException {
+        TowerData data = BydDecoder.decodeMeasurement(tower, measure(tower, MEASUREMENT_CHUNKS), info);
+        if (!extendedCells || info.secondPassCellsPerTower() == 0) {
+            return data;
+        }
+        transact(ModbusFrame.writeMultipleRegisters(REG_SECOND_PASS_COMMAND, SECOND_PASS_COMMAND));
+        byte[] buffer = measure(tower, SECOND_PASS_CHUNKS);
+        try {
+            return BydDecoder.decodeSecondPass(data, buffer, info);
+        } catch (BydCommunicationException e) {
+            // keep the first pass: the cells beyond 128 are reported as unknown, the other values are valid
+            logger.debug("Ignoring the second measurement of tower {}: {}", tower, e.getMessage());
+            return data;
+        }
+    }
+
+    private byte[] measure(int tower, int chunks) throws BydCommunicationException, InterruptedException {
         transact(ModbusFrame.writeMultipleRegisters(REG_MEASUREMENT_COMMAND, tower, COMMAND_START));
         awaitReady(REG_MEASUREMENT_STATE);
-        byte[] buffer = readChunks(REG_MEASUREMENT_DATA, MEASUREMENT_CHUNKS);
-        return BydDecoder.decodeMeasurement(tower, buffer, info);
+        return readChunks(REG_MEASUREMENT_DATA, chunks);
     }
 
     /**

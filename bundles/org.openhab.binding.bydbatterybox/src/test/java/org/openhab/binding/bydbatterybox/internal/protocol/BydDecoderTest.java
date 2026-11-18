@@ -16,6 +16,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -29,8 +30,9 @@ import org.openhab.binding.bydbatterybox.internal.dto.SystemStatus;
 import org.openhab.binding.bydbatterybox.internal.dto.TowerData;
 
 /**
- * Tests {@link BydDecoder} with frames captured from an HVS 7.7. The expected values were cross-checked against the
- * BYD-Logger tool at the time of capture.
+ * Tests {@link BydDecoder} with frames captured from an HVS 7.7 (1 tower, 3 modules) and from an HVS with 2 towers of 5
+ * modules each. The expected values of the HVS 7.7 were cross-checked against the BYD-Logger tool at the time of
+ * capture.
  *
  * @author Michael Weger - Initial contribution
  */
@@ -54,7 +56,7 @@ class BydDecoderTest {
         assertEquals(0, info.inverterType());
         assertEquals(0, info.application());
         assertEquals(LocalDateTime.of(2026, 11, 16, 18, 37, 8), info.clock());
-        assertEquals(96, info.readableCellsPerTower());
+        assertEquals(96, info.firstPassCellsPerTower());
         assertEquals(36, info.temperatureSensorsPerTower());
     }
 
@@ -70,19 +72,99 @@ class BydDecoderTest {
         assertEquals(5, info.modulesPerTower());
         assertEquals(BatteryType.UNSUPPORTED, info.batteryType());
         assertEquals(7, info.batteryTypeCode());
-        assertEquals(0, info.readableCellsPerTower());
+        assertEquals(0, info.firstPassCellsPerTower());
         assertNull(info.clock());
     }
 
     @Test
-    void fiveHvsModulesAreLimitedToTheFirstPass() throws BydCommunicationException {
-        byte[] frame = Fixtures.frame("identity");
-        frame[36] = 0x15;
-        SystemInfo info = BydDecoder.decodeIdentity(frame);
+    void identityOfTwoTowersWithFiveModules() throws BydCommunicationException {
+        SystemInfo info = BydDecoder.decodeIdentity(Fixtures.frame("hvs2x5-identity"));
 
+        assertEquals("P03XXXXXXXXXXXXXXXXXXXXX", info.serialNumber());
+        assertEquals("3.27-B", info.activeBmuFirmware());
+        assertEquals("3.32", info.bmsFirmware());
+        assertEquals(2, info.towers());
+        assertEquals(5, info.modulesPerTower());
+        assertEquals(BatteryType.HVS, info.batteryType());
+        assertEquals(19, info.inverterType());
+        assertEquals(1, info.application());
         assertEquals(160, info.cellsPerTower());
-        assertEquals(128, info.readableCellsPerTower());
+        assertEquals(128, info.firstPassCellsPerTower());
+        assertEquals(32, info.secondPassCellsPerTower());
         assertEquals(60, info.temperatureSensorsPerTower());
+    }
+
+    @Test
+    void secondTowerMeasurement() throws BydCommunicationException {
+        SystemInfo info = BydDecoder.decodeIdentity(Fixtures.frame("hvs2x5-identity"));
+        TowerData tower = BydDecoder.decodeMeasurement(2, Fixtures.chunkPayloads("hvs2x5-t2-measurement", 4), info);
+
+        assertEquals(2, tower.tower());
+        assertDecimal("15.8", tower.stateOfCharge());
+        assertEquals(98, tower.stateOfHealth());
+        assertDecimal("512.6", tower.voltage());
+        assertDecimal("513.3", tower.outputVoltage());
+        assertEquals(1_829_495, tower.chargedEnergyWh());
+        assertEquals(1_628_405, tower.dischargedEnergyWh());
+        assertEquals("3.32", tower.bmsFirmwareA());
+        assertEquals("3.31", tower.bmsFirmwareB());
+        assertEquals("P03XXXXXXXXXXXXXXXXXXXXX", tower.serialNumber());
+
+        List<Integer> cells = tower.cellVoltages();
+        assertEquals(128, cells.size());
+        assertEquals(3205, cells.getFirst());
+        assertEquals(3205, cells.getLast());
+        // all 60 sensors of the 5 modules are in the first pass
+        assertEquals(60, tower.temperatures().size());
+        assertEquals(15, tower.temperatures().getFirst());
+        assertEquals(14, tower.temperatures().getLast());
+    }
+
+    @Test
+    void secondPassAddsTheCellsBeyond128() throws BydCommunicationException {
+        SystemInfo info = BydDecoder.decodeIdentity(Fixtures.frame("hvs2x5-identity"));
+        for (int tower = 1; tower <= 2; tower++) {
+            TowerData firstPass = BydDecoder.decodeMeasurement(tower,
+                    Fixtures.chunkPayloads("hvs2x5-t" + tower + "-measurement", 4), info);
+            TowerData data = BydDecoder.decodeSecondPass(firstPass,
+                    Fixtures.chunkPayloads("hvs2x5-t" + tower + "-second-pass", 2), info);
+
+            List<Integer> cells = data.cellVoltages();
+            assertEquals(160, cells.size());
+            assertEquals(firstPass.cellVoltages(), cells.subList(0, 128));
+            assertEquals(firstPass.temperatures(), data.temperatures());
+            assertEquals(firstPass.serialNumber(), data.serialNumber());
+            assertEquals(0, data.balancingCells());
+            CellStatistics module5 = CellStatistics.of(cells, 128, 160);
+            assertNotNull(module5);
+            assertTrue(module5.min() >= 3202 && module5.max() <= 3206, () -> "module 5: " + cells.subList(128, 160));
+        }
+    }
+
+    @Test
+    void secondPassBalancingFlagsAreCountedForTheExtraCellsOnly() throws BydCommunicationException {
+        SystemInfo info = BydDecoder.decodeIdentity(Fixtures.frame("hvs2x5-identity"));
+        byte[] firstPassBuffer = Fixtures.chunkPayloads("hvs2x5-t1-measurement", 4);
+        firstPassBuffer[12] = 0x01;
+        TowerData firstPass = BydDecoder.decodeMeasurement(1, firstPassBuffer, info);
+        byte[] buffer = Fixtures.chunkPayloads("hvs2x5-t1-second-pass", 2);
+        buffer[12] = (byte) 0x81;
+        buffer[15] = 0x10;
+        // beyond the flags of cells 129-160
+        buffer[16] = (byte) 0xFF;
+
+        assertEquals(1 + 3, BydDecoder.decodeSecondPass(firstPass, buffer, info).balancingCells());
+    }
+
+    @Test
+    void firstPassBufferIsRejectedAsSecondPass() throws BydCommunicationException {
+        SystemInfo info = BydDecoder.decodeIdentity(Fixtures.frame("hvs2x5-identity"));
+        byte[] firstPassBuffer = Fixtures.chunkPayloads("hvs2x5-t1-measurement", 4);
+        TowerData firstPass = BydDecoder.decodeMeasurement(1, firstPassBuffer, info);
+
+        BydCommunicationException e = assertThrows(BydCommunicationException.class, () -> BydDecoder
+                .decodeSecondPass(firstPass, Arrays.copyOf(firstPassBuffer, BydDecoder.SECOND_PASS_LENGTH), info));
+        assertEquals(BydCommunicationException.Reason.PROTOCOL, e.getReason());
     }
 
     @Test

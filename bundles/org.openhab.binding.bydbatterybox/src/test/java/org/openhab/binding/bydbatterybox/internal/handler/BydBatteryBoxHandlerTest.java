@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.bydbatterybox.internal.handler;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 import static org.openhab.binding.bydbatterybox.internal.BydBatteryBoxBindingConstants.*;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -92,15 +95,88 @@ class BydBatteryBoxHandlerTest {
 
     private BydBatteryBoxHandler createHandler(int port, List<Channel> channels) {
         // only the status cycle: cell details and event logs are covered by the protocol tests
-        Configuration configuration = new Configuration(Map.of("hostname", "127.0.0.1", "port",
-                BigDecimal.valueOf(port), "refreshInterval", BigDecimal.valueOf(30), "detailInterval", BigDecimal.ZERO,
-                "eventLogInterval", BigDecimal.ZERO, "connectionTimeout", BigDecimal.valueOf(2)));
-        Thing thing = ThingBuilder.create(THING_TYPE_BATTERY, "test").withConfiguration(configuration)
+        return createHandler(port, channels, Map.of("detailInterval", BigDecimal.ZERO));
+    }
+
+    private BydBatteryBoxHandler createHandler(int port, List<Channel> channels, Map<String, Object> parameters) {
+        Map<String, Object> properties = new HashMap<>(Map.of("hostname", "127.0.0.1", "port", BigDecimal.valueOf(port),
+                "refreshInterval", BigDecimal.valueOf(30), "eventLogInterval", BigDecimal.ZERO, "connectionTimeout",
+                BigDecimal.valueOf(2)));
+        properties.putAll(parameters);
+        Thing thing = ThingBuilder.create(THING_TYPE_BATTERY, "test").withConfiguration(new Configuration(properties))
                 .withChannels(channels).build();
-        BydBatteryBoxHandler localHandler = new BydBatteryBoxHandler(thing, i18nProvider, localeProvider, bundle);
+        // the handler waits for real only for its first cycle, not between requests
+        BydBatteryBoxHandler localHandler = new BydBatteryBoxHandler(thing, i18nProvider, localeProvider, bundle,
+                millis -> {
+                });
         localHandler.setCallback(callback);
         handler = localHandler;
         return localHandler;
+    }
+
+    /**
+     * Identity and status, then the cell details of both towers of the HVS with 2 towers of 5 modules each. The status
+     * reply is the one of the HVS 7.7, because it was not captured on the 2-tower system.
+     */
+    private static byte[][] twoTowerDetailReplies(boolean secondPass) {
+        List<byte[]> replies = new ArrayList<>(List.of(Fixtures.frame("hvs2x5-identity"), Fixtures.frame("status")));
+        for (int tower = 1; tower <= 2; tower++) {
+            String prefix = "hvs2x5-t" + tower;
+            replies.addAll(List.of(Fixtures.frame("measurement-start-echo"), Fixtures.frame("measurement-state-ready"),
+                    Fixtures.frame(prefix + "-measurement-1"), Fixtures.frame(prefix + "-measurement-2"),
+                    Fixtures.frame(prefix + "-measurement-3"), Fixtures.frame(prefix + "-measurement-4")));
+            if (secondPass) {
+                replies.addAll(List.of(Fixtures.frame("second-pass-echo"), Fixtures.frame("measurement-start-echo"),
+                        Fixtures.frame("measurement-state-ready"), Fixtures.frame(prefix + "-second-pass-1"),
+                        Fixtures.frame(prefix + "-second-pass-2")));
+            }
+        }
+        return replies.toArray(byte[][]::new);
+    }
+
+    private void verifyState(ChannelUID channel, String expected) {
+        verify(callback, timeout(FIRST_CYCLE_TIMEOUT_MILLIS)).stateUpdated(eq(channel),
+                argThat(state -> expected.equals(state.toString())));
+    }
+
+    @Test
+    void detailCycleOfTwoTowersWithExtendedCells() throws Exception {
+        FakeBattery localBattery = FakeBattery.start(64, twoTowerDetailReplies(true));
+        battery = localBattery;
+        BydBatteryBoxHandler localHandler = createHandler(localBattery.port(), List.of(),
+                Map.of("detailInterval", BigDecimal.valueOf(600), "readExtendedCells", true));
+        ThingUID thingUID = localHandler.getThing().getUID();
+
+        localHandler.initialize();
+
+        verify(callback, timeout(FIRST_CYCLE_TIMEOUT_MILLIS))
+                .stateUpdated(eq(new ChannelUID(thingUID, GROUP_DIAGNOSTICS, CHANNEL_LAST_DETAIL_UPDATE)), any());
+        verifyState(new ChannelUID(thingUID, "tower-1-module-1", "cell-voltage-01"), "3207 mV");
+        verifyState(new ChannelUID(thingUID, "tower-1-module-5", "cell-voltage-01"), "3203 mV");
+        verifyState(new ChannelUID(thingUID, "tower-2-module-5", "cell-voltage-32"), "3205 mV");
+        verifyState(new ChannelUID(thingUID, "tower-2-module-5", "cell-temperature-12"), "14 °C");
+        verifyState(new ChannelUID(thingUID, "tower-2", "state-of-charge"), "15.8 %");
+        assertEquals(2 + 2 * 11, localBattery.requests().size());
+    }
+
+    @Test
+    void detailCycleOfTwoTowersWithoutExtendedCells() throws Exception {
+        FakeBattery localBattery = FakeBattery.start(64, twoTowerDetailReplies(false));
+        battery = localBattery;
+        BydBatteryBoxHandler localHandler = createHandler(localBattery.port(), List.of(),
+                Map.of("detailInterval", BigDecimal.valueOf(600)));
+        ThingUID thingUID = localHandler.getThing().getUID();
+
+        localHandler.initialize();
+
+        verify(callback, timeout(FIRST_CYCLE_TIMEOUT_MILLIS))
+                .stateUpdated(eq(new ChannelUID(thingUID, GROUP_DIAGNOSTICS, CHANNEL_LAST_DETAIL_UPDATE)), any());
+        verifyState(new ChannelUID(thingUID, "tower-2-module-4", "cell-voltage-32"), "3205 mV");
+        verifyState(new ChannelUID(thingUID, "tower-2-module-5", "cell-voltage-01"), "UNDEF");
+        verifyState(new ChannelUID(thingUID, "tower-2-module-5", "voltage"), "UNDEF");
+        // the temperatures of module 5 are part of the first pass
+        verifyState(new ChannelUID(thingUID, "tower-2-module-5", "cell-temperature-12"), "14 °C");
+        assertEquals(2 + 2 * 6, localBattery.requests().size());
     }
 
     @Test
