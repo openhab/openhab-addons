@@ -24,12 +24,19 @@ import javax.servlet.http.HttpServletRequest;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.api.ContentResponse;
+import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.http.HttpMethod;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.openhab.core.auth.Authentication;
 import org.openhab.core.auth.AuthenticationException;
+import org.openhab.core.auth.Role;
 import org.openhab.core.auth.UserApiTokenCredentials;
 import org.openhab.core.auth.UserRegistry;
 
@@ -41,6 +48,8 @@ import org.openhab.core.auth.UserRegistry;
 @NonNullByDefault
 @ExtendWith(MockitoExtension.class)
 class McpAuthenticatorTest {
+
+    private static final String ADMIN_PROBE_URL = "http://localhost:8080/rest/logging/";
 
     @Mock
     private @Nullable UserRegistry userRegistry;
@@ -63,6 +72,34 @@ class McpAuthenticatorTest {
         McpAuthenticator a = authenticator;
         assertNotNull(a);
         return a;
+    }
+
+    private HttpServletRequest ohTokenRequest() {
+        return requestWithBearer("oh.validtoken12345678");
+    }
+
+    private HttpServletRequest jwtRequest() {
+        return requestWithBearer("eyJhbGciOiJSUzI1NiJ9.jwt.sig");
+    }
+
+    private HttpServletRequest requestWithBearer(String token) {
+        HttpServletRequest req = Objects.requireNonNull(request);
+        when(req.getHeader("Authorization")).thenReturn("Bearer " + token);
+        lenient().when(req.getMethod()).thenReturn("POST");
+        lenient().when(req.getRequestURI()).thenReturn("/mcp");
+        return req;
+    }
+
+    private void stubProbe(int status) throws Exception {
+        Request jettyRequest = mock(Request.class);
+        ContentResponse response = mock(ContentResponse.class);
+        when(Objects.requireNonNull(httpClient).newRequest(ADMIN_PROBE_URL)).thenReturn(jettyRequest);
+        when(jettyRequest.method(any(HttpMethod.class))).thenReturn(jettyRequest);
+        when(jettyRequest.header(anyString(), anyString())).thenReturn(jettyRequest);
+        when(jettyRequest.timeout(anyLong(), any(TimeUnit.class))).thenReturn(jettyRequest);
+        when(jettyRequest.send()).thenReturn(response);
+        when(response.getStatus()).thenReturn(status);
+        lenient().when(response.getContentAsString()).thenReturn("{}");
     }
 
     @Test
@@ -103,18 +140,23 @@ class McpAuthenticatorTest {
     }
 
     @Test
-    void testAuthenticateOhTokenSuccess() throws Exception {
-        HttpServletRequest req = Objects.requireNonNull(request);
-        when(req.getHeader("Authorization")).thenReturn("Bearer oh.validtoken12345678");
-        lenient().when(req.getMethod()).thenReturn("POST");
-        lenient().when(req.getRequestURI()).thenReturn("/mcp");
-        org.openhab.core.auth.Authentication authResult = mock(org.openhab.core.auth.Authentication.class);
-        lenient().when(authResult.getUsername()).thenReturn("alice");
+    void testAuthenticateOhTokenAdmin() throws Exception {
+        HttpServletRequest req = ohTokenRequest();
         when(Objects.requireNonNull(userRegistry).authenticate(any(UserApiTokenCredentials.class)))
-                .thenReturn(authResult);
+                .thenReturn(new Authentication("alice", Role.ADMIN, Role.USER));
 
-        assertEquals("alice", auth().authenticate(req));
+        assertEquals(new McpUser("alice", true), auth().authenticate(req));
         verify(Objects.requireNonNull(userRegistry)).authenticate(any(UserApiTokenCredentials.class));
+        verifyNoInteractions(Objects.requireNonNull(httpClient));
+    }
+
+    @Test
+    void testAuthenticateOhTokenNonAdmin() throws Exception {
+        HttpServletRequest req = ohTokenRequest();
+        when(Objects.requireNonNull(userRegistry).authenticate(any(UserApiTokenCredentials.class)))
+                .thenReturn(new Authentication("bob", Role.USER));
+
+        assertEquals(new McpUser("bob", false), auth().authenticate(req));
     }
 
     @Test
@@ -131,47 +173,48 @@ class McpAuthenticatorTest {
     }
 
     @Test
-    void testAuthenticateJwtViaRestProbeSuccess() throws Exception {
-        HttpServletRequest req = Objects.requireNonNull(request);
-        when(req.getHeader("Authorization")).thenReturn("Bearer eyJhbGciOiJSUzI1NiJ9.jwt.sig");
-        lenient().when(req.getMethod()).thenReturn("POST");
-        lenient().when(req.getRequestURI()).thenReturn("/mcp");
+    void testAuthenticateJwtAdmin() throws Exception {
+        HttpServletRequest req = jwtRequest();
+        stubProbe(200);
 
-        org.eclipse.jetty.client.api.Request jettyRequest = mock(org.eclipse.jetty.client.api.Request.class);
-        org.eclipse.jetty.client.api.ContentResponse response = mock(
-                org.eclipse.jetty.client.api.ContentResponse.class);
-
-        when(Objects.requireNonNull(httpClient).newRequest(anyString())).thenReturn(jettyRequest);
-        when(jettyRequest.method(any(org.eclipse.jetty.http.HttpMethod.class))).thenReturn(jettyRequest);
-        when(jettyRequest.header(anyString(), anyString())).thenReturn(jettyRequest);
-        when(jettyRequest.timeout(anyLong(), any(TimeUnit.class))).thenReturn(jettyRequest);
-        when(jettyRequest.send()).thenReturn(response);
-        when(response.getStatus()).thenReturn(200);
-
-        assertNotNull(auth().authenticate(req));
+        assertEquals(new McpUser("", true), auth().authenticate(req));
     }
 
     @Test
-    void testAuthenticateJwtViaRestProbeFailure() throws Exception {
+    void testAuthenticateJwtNonAdmin() throws Exception {
+        HttpServletRequest req = jwtRequest();
+        stubProbe(403);
+
+        assertEquals(new McpUser("", false), auth().authenticate(req));
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = { 401, 404, 500 })
+    void testAuthenticateJwtRejectedOnOtherStatus(int status) throws Exception {
+        HttpServletRequest req = jwtRequest();
+        stubProbe(status);
+
+        assertNull(auth().authenticate(req));
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = { "Bearer a b", "Bearer ", "Bearer a\tb" })
+    void testTokenWithWhitespaceIsRejectedWithoutProbing(String header) {
         HttpServletRequest req = Objects.requireNonNull(request);
-        when(req.getHeader("Authorization")).thenReturn("Bearer eyJhbGciOiJSUzI1NiJ9.jwt.sig");
+        when(req.getHeader("Authorization")).thenReturn(header);
         lenient().when(req.getMethod()).thenReturn("POST");
         lenient().when(req.getRequestURI()).thenReturn("/mcp");
 
-        org.eclipse.jetty.client.api.Request jettyRequest = mock(org.eclipse.jetty.client.api.Request.class);
-        org.eclipse.jetty.client.api.ContentResponse response = mock(
-                org.eclipse.jetty.client.api.ContentResponse.class);
-
-        when(Objects.requireNonNull(httpClient).newRequest(anyString())).thenReturn(jettyRequest);
-        when(jettyRequest.method(any(org.eclipse.jetty.http.HttpMethod.class))).thenReturn(jettyRequest);
-        when(jettyRequest.header(anyString(), anyString())).thenReturn(jettyRequest);
-        when(jettyRequest.timeout(anyLong(), any(TimeUnit.class))).thenReturn(jettyRequest);
-        when(jettyRequest.send()).thenReturn(response);
-        when(response.getStatus()).thenReturn(401);
-        lenient().when(response.getReason()).thenReturn("Unauthorized");
-        lenient().when(response.getContentAsString()).thenReturn("{}");
-
         assertNull(auth().authenticate(req));
+        verifyNoInteractions(Objects.requireNonNull(httpClient), Objects.requireNonNull(userRegistry));
+    }
+
+    @Test
+    void testAltHeaderWithWhitespaceIsRejected() {
+        HttpServletRequest req = Objects.requireNonNull(request);
+        when(req.getHeader("Authorization")).thenReturn(null);
+        when(req.getHeader("X-OPENHAB-TOKEN")).thenReturn("a b");
+        assertNull(McpAuthenticator.extractToken(req));
     }
 
     @Test
@@ -185,6 +228,7 @@ class McpAuthenticatorTest {
                 .thenThrow(new RuntimeException("connection refused"));
 
         assertNull(auth().authenticate(req));
+        verify(Objects.requireNonNull(httpClient), times(1)).newRequest(anyString());
     }
 
     @Test

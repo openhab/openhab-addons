@@ -44,9 +44,8 @@ public class McpConfiguration {
     /**
      * When true, exposes diagnostic logging tools ({@code get_logs} and {@code manage_log_level}
      * with actions {@code get}/{@code set}) so an agent can read recent log entries and adjust
-     * logger verbosity to troubleshoot bindings and rules. Level changes are sent through the
-     * openHAB REST API and require the caller's bearer token to have ADMIN scope; reads are
-     * gated by this flag alone. Off by default.
+     * logger verbosity to troubleshoot bindings and rules. Both require an ADMIN-scoped token.
+     * Off by default.
      */
     public boolean enableLoggingAccess = false;
     /**
@@ -64,8 +63,7 @@ public class McpConfiguration {
      * delete files in {@code $OPENHAB_CONF/html} (the folder served at {@code /static/*} and
      * used for plan-page backgrounds, custom widget icons, and CSS overrides). The tool writes
      * directly to disk (there is no REST gate to forward to), so the bundle enforces
-     * administrator scope itself by probing an admin-gated REST endpoint with the session's
-     * bearer token before each call (HTTP 200 means admin). Filenames are sanitized against
+     * administrator scope itself. Filenames are sanitized against
      * path traversal (including symlinks pointing outside the root), extensions are whitelisted,
      * and per-call uploads are capped at 10 MB. Off by default.
      */

@@ -17,17 +17,23 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
+import java.util.function.BiFunction;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.items.GroupItem;
 import org.openhab.core.items.Item;
+import org.openhab.io.mcp.internal.auth.McpUser;
 import org.openhab.io.mcp.internal.util.ItemStateFormatter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.modelcontextprotocol.json.McpJsonMapper;
+import io.modelcontextprotocol.server.McpServerFeatures.SyncToolSpecification;
+import io.modelcontextprotocol.server.McpSyncServerExchange;
 import io.modelcontextprotocol.spec.McpSchema;
+import io.modelcontextprotocol.spec.McpSchema.CallToolRequest;
 import io.modelcontextprotocol.spec.McpSchema.CallToolResult;
 
 /**
@@ -74,6 +80,25 @@ public class McpToolUtils {
      */
     public static CallToolResult errorResult(String message) {
         return CallToolResult.builder().content(List.of(new McpSchema.TextContent(message))).isError(true).build();
+    }
+
+    /**
+     * Restricts every tool not named in {@code userTools} to admins.
+     */
+    public static List<SyncToolSpecification> adminByDefault(List<SyncToolSpecification> tools, Set<String> userTools) {
+        return tools.stream().map(t -> userTools.contains(t.tool().name()) ? t
+                : new SyncToolSpecification(t.tool(), adminOnly(t.callHandler()))).toList();
+    }
+
+    static BiFunction<McpSyncServerExchange, CallToolRequest, CallToolResult> adminOnly(
+            BiFunction<McpSyncServerExchange, CallToolRequest, CallToolResult> handler) {
+        return (exchange, request) -> McpUser.isAdmin(exchange) ? handler.apply(exchange, request)
+                : adminRequiredResult("'" + request.name() + "'");
+    }
+
+    static CallToolResult adminRequiredResult(String what) {
+        return errorResult(what + " requires an openHAB administrator. "
+                + "Connect with a token from a user that has the administrator role.");
     }
 
     /**
