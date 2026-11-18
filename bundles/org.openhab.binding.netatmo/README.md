@@ -51,6 +51,8 @@ The Account bridge has the following configuration elements:
 | reconnectInterval | Number  | No       | The reconnection interval to Netatmo API (in s)                                                                     |
 | useCloudWebhook   | Boolean | No       | Request the public webhook URL from openHAB Cloud Connector                                                         |
 
+openHAB Cloud webhook publication will be prioritized over local webhook.
+
 **Supported channels for the Account bridge Thing:**
 
 | Channel Group | Channel Id    | Item Type | Description                                                        |

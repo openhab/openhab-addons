@@ -388,8 +388,7 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
             try {
                 ApiError apiError = deserializer.deserialize(ApiError.class, responseBody);
                 if (ServiceError.UNKNOWN.equals(apiError.getCode())) {
-                    // HttpStatus.getCode() returns null for non-standard status codes (e.g.
-                    // 520-527), so pass
+                    // HttpStatus.getCode() returns null for non-standard status codes (e.g. 520-527), so pass
                     // response.getStatus() rather than statusCode
                     exception = new NetatmoException(apiError, response.getStatus(), extractRawErrorCode(responseBody));
                 } else {
