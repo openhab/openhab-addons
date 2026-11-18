@@ -305,10 +305,12 @@ The channel expects values on the corresponding MQTT topic to be in this format 
 - **off**: An optional string (like "Close") that is sent for the `DOWN` command.
 - **stop**: An optional string (like "Stop") that is sent for the `STOP` command.
 - **stopCommandTopic**: An optional topic to send `STOP` commands to. If not set, `STOP` commands are sent to the main **commandTopic**.
-
 - **upDownCommandTopic**: An optional topic to send the **on** and **off** strings (`UP`/`DOWN` commands) to. If not set, they are sent to the main **commandTopic**.
   Only effective if **on**/**off** are set; otherwise `UP`/`DOWN` are sent as 0/100 to the main **commandTopic**.
   This allows e.g. percentage positions on `.../set/position` and `UP`/`DOWN`/`STOP` on `.../set/state`.
+- **transformExtentsToString**: If enabled, a `0%` or `100%` command is sent as the **on** (`UP`) or **off** (`DOWN`) string instead of a number, provided the respective string is set. Defaults to `false`.
+  Useful if your device can only open or close completely, but front ends (like HomeKit) or rules send percentage commands.
+  The transformed strings are sent to **upDownCommandTopic** if it is set, other positions are still sent to **commandTopic**.
 
 If **on**, **off**, or **stop** are not defined, an explicit 0 or 100 will be sent for `UP` and `DOWN` respectively. `STOP` commands will be ignored entirely.
 Note that **formatBeforePublish** is applied to numeric positions (including the 0 or 100 sent for `UP` and `DOWN` without **on**/**off**), but not to the configured **on**, **off** and **stop** strings, in case your device uses a vastly different format for these special commands than it does for number values.
