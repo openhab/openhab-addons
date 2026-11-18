@@ -13,12 +13,13 @@
 package org.openhab.voice.openaitts.internal;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
@@ -28,20 +29,16 @@ import javax.sound.sampled.AudioSystem;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentProvider;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.http.HttpStatus;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
 import org.openhab.core.audio.AudioFormat;
 import org.openhab.core.audio.AudioStream;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.voice.tts.TTSCache;
 
-import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.sun.net.httpserver.HttpServer;
 
 /**
  * Tests for {@link OpenAITTSService}.
@@ -55,37 +52,61 @@ public class OpenAITTSServiceTest {
     private static final AudioFormat WAV_44K = new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_SIGNED,
             false, 16, 705600, 44100L, 1);
 
-    private final Request request = mock(Request.class, RETURNS_SELF);
-    private final ContentResponse response = mock(ContentResponse.class);
+    private final HttpClient httpClient = new HttpClient();
+    private @NonNullByDefault({}) HttpServer server;
     private @NonNullByDefault({}) OpenAITTSService service;
+    private volatile byte[] responseBody = new byte[0];
+    private volatile String requestBody = "";
 
     @BeforeEach
     public void setUp() throws Exception {
-        HttpClient httpClient = mock(HttpClient.class);
+        server = HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
+        server.createContext("/", exchange -> {
+            requestBody = new String(exchange.getRequestBody().readAllBytes(), StandardCharsets.UTF_8);
+            exchange.sendResponseHeaders(200, responseBody.length);
+            try (OutputStream out = exchange.getResponseBody()) {
+                out.write(responseBody);
+            }
+        });
+        server.start();
+        httpClient.start();
+
         HttpClientFactory httpClientFactory = mock(HttpClientFactory.class);
         when(httpClientFactory.getCommonHttpClient()).thenReturn(httpClient);
-        when(httpClient.newRequest(anyString())).thenReturn(request);
-        when(request.send()).thenReturn(response);
-        when(response.getStatus()).thenReturn(HttpStatus.OK_200);
-
         service = new OpenAITTSService(httpClientFactory, mock(TTSCache.class), Map.of());
-        service.activate(Map.of());
+        service.activate(Map.of("apiUrl", "http://127.0.0.1:" + server.getAddress().getPort() + "/v1/audio/speech"));
+    }
+
+    @AfterEach
+    public void tearDown() throws Exception {
+        httpClient.stop();
+        server.stop(0);
     }
 
     @Test
     public void wavRequestAsksForWavAndReturnsActualFormat() throws Exception {
-        when(response.getContent()).thenReturn(wav(24000));
+        responseBody = wav(24000, 100);
 
         AudioStream stream = service.synthesizeForCache("hello", new OpenAITTSVoice("nova"), WAV_44K);
 
-        assertEquals("wav", requestBody().get("response_format").getAsString());
+        assertEquals("wav", requestedFormat());
         assertEquals(AudioFormat.CONTAINER_WAVE, stream.getFormat().getContainer());
         assertEquals(24000L, stream.getFormat().getFrequency());
     }
 
     @Test
+    public void wavResponseLargerThanJettyDefaultBufferIsReturned() throws Exception {
+        responseBody = wav(24000, 50_000);
+        assertTrue(responseBody.length > 2 * 1024 * 1024);
+
+        AudioStream stream = service.synthesizeForCache("hello", new OpenAITTSVoice("nova"), WAV_44K);
+
+        assertEquals(responseBody.length, stream.readAllBytes().length);
+    }
+
+    @Test
     public void wavRequestWithNonWavResponseReturnsMp3() throws Exception {
-        when(response.getContent()).thenReturn(new byte[] { 'I', 'D', '3', 4, 0 });
+        responseBody = new byte[] { 'I', 'D', '3', 4, 0 };
 
         AudioStream stream = service.synthesizeForCache("hello", new OpenAITTSVoice("nova"), WAV_44K);
 
@@ -94,24 +115,20 @@ public class OpenAITTSServiceTest {
 
     @Test
     public void mp3RequestAsksForMp3() throws Exception {
-        when(response.getContent()).thenReturn(new byte[] { 1, 2, 3 });
+        responseBody = new byte[] { 1, 2, 3 };
 
         AudioStream stream = service.synthesizeForCache("hello", new OpenAITTSVoice("nova"), MP3);
 
-        assertEquals("mp3", requestBody().get("response_format").getAsString());
+        assertEquals("mp3", requestedFormat());
         assertEquals(MP3, stream.getFormat());
     }
 
-    private JsonObject requestBody() {
-        ArgumentCaptor<ContentProvider> content = ArgumentCaptor.forClass(ContentProvider.class);
-        verify(request).content(content.capture());
-        StringBuilder body = new StringBuilder();
-        content.getValue().forEach(buffer -> body.append(StandardCharsets.UTF_8.decode(buffer)));
-        return JsonParser.parseString(body.toString()).getAsJsonObject();
+    private String requestedFormat() {
+        return JsonParser.parseString(requestBody).getAsJsonObject().get("response_format").getAsString();
     }
 
-    private static byte[] wav(int sampleRate) throws IOException {
-        byte[] pcm = new byte[sampleRate / 10 * 2];
+    private static byte[] wav(int sampleRate, int durationMs) throws IOException {
+        byte[] pcm = new byte[sampleRate / 1000 * durationMs * 2];
         javax.sound.sampled.AudioFormat format = new javax.sound.sampled.AudioFormat(sampleRate, 16, 1, true, false);
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         AudioSystem.write(new AudioInputStream(new ByteArrayInputStream(pcm), format, pcm.length / 2),

@@ -32,6 +32,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
+import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.util.FutureResponseListener;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
@@ -71,6 +73,8 @@ import com.google.gson.JsonObject;
 public class OpenAITTSService extends AbstractCachedTTSService {
 
     private static final int REQUEST_TIMEOUT_MS = 10_000;
+    // Jetty's default 2 MiB buffer holds only about 43 seconds of 24 kHz WAV
+    private static final int MAX_RESPONSE_BYTES = 32 * 1024 * 1024;
     private static final AudioFormat MP3_FORMAT = new AudioFormat(AudioFormat.CONTAINER_NONE, AudioFormat.CODEC_MP3,
             null, 16, 64000, 44100L);
     // the sample rate comes from the WAV header of the response
@@ -150,10 +154,13 @@ public class OpenAITTSService extends AbstractCachedTTSService {
         logger.trace("Send query: {}", queryJson);
 
         try {
-            ContentResponse response = httpClient.newRequest(config.apiUrl).method(HttpMethod.POST)
+            Request request = httpClient.newRequest(config.apiUrl).method(HttpMethod.POST)
                     .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS)
                     .header("Authorization", "Bearer " + config.apiKey).header("Content-Type", "application/json")
-                    .content(new StringContentProvider(queryJson)).send();
+                    .content(new StringContentProvider(queryJson));
+            FutureResponseListener listener = new FutureResponseListener(request, MAX_RESPONSE_BYTES);
+            request.send(listener);
+            ContentResponse response = listener.get(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS);
 
             if (response.getStatus() == HttpStatus.OK_200) {
                 byte[] audio = response.getContent();
