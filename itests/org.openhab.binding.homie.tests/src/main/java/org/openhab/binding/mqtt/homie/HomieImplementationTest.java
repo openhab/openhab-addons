@@ -301,7 +301,7 @@ public class HomieImplementationTest extends MqttOSGiTest {
         // The device->node->property tree is ready. Now subscribe to property values.
         device.startChannels(homieConnection, scheduler, 50, handler).get();
         assertThat(propertyBell.getChannelState().isStateful(), is(false));
-        assertThat(propertyBell.getChannelState().getCache().getChannelState(), is(UnDefType.UNDEF));
+        assertThat(propertyBell.getChannelState().getCache().getChannelState(), is(UnDefType.NULL));
         Property temperatureProperty = property;
         waitForAssert(() -> assertThat(temperatureProperty.getChannelState().getCache().getChannelState(),
                 is(new QuantityType<>(10, SIUnits.CELSIUS))));
