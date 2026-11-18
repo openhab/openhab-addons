@@ -260,6 +260,55 @@ public class ChannelStateTests {
     }
 
     @Test
+    public void publishUpDownWithoutSeparateTopicTest() throws Exception {
+        // upDownCommandTopic not set: UP/DOWN strings and transformed 0%/100% use the command topic
+        ChannelConfig config = ChannelConfigBuilder.create("state", "position").build();
+        RollershutterValue value = new RollershutterValue("UP", "DOWN", "STOP", "UP", "DOWN", false, true);
+        ChannelState c = spy(new ChannelState(config, channelUIDMock, value, channelStateUpdateListenerMock));
+
+        c.start(connectionMock, scheduler, 0).get(50, TimeUnit.MILLISECONDS);
+
+        c.publishValue(UpDownType.UP).get();
+        c.publishValue(PercentType.ZERO).get();
+        verify(connectionMock, times(2)).publish(eq("position"),
+                argThat(p -> Arrays.equals(p, "UP".getBytes(StandardCharsets.UTF_8))), anyInt(), eq(false));
+
+        c.publishValue(UpDownType.DOWN).get();
+        c.publishValue(PercentType.HUNDRED).get();
+        verify(connectionMock, times(2)).publish(eq("position"),
+                argThat(p -> Arrays.equals(p, "DOWN".getBytes(StandardCharsets.UTF_8))), anyInt(), eq(false));
+
+        c.publishValue(new PercentType(42)).get();
+        verify(connectionMock).publish(eq("position"),
+                argThat(p -> Arrays.equals(p, "42".getBytes(StandardCharsets.UTF_8))), anyInt(), eq(false));
+
+        c.stop().get();
+    }
+
+    @Test
+    public void publishUpDownNumericWithoutCommandStringsTest() throws Exception {
+        // upDownCommandTopic set, but no on/off strings: UP/DOWN are numeric and stay on the command topic
+        ChannelConfig config = ChannelConfigBuilder.create("state", "position").withUpDownCommandTopic("upDown")
+                .build();
+        RollershutterValue value = new RollershutterValue(null, null, null, null, null, false, true);
+        ChannelState c = spy(new ChannelState(config, channelUIDMock, value, channelStateUpdateListenerMock));
+
+        c.start(connectionMock, scheduler, 0).get(50, TimeUnit.MILLISECONDS);
+
+        c.publishValue(UpDownType.UP).get();
+        verify(connectionMock).publish(eq("position"),
+                argThat(p -> Arrays.equals(p, "0".getBytes(StandardCharsets.UTF_8))), anyInt(), eq(false));
+
+        c.publishValue(UpDownType.DOWN).get();
+        verify(connectionMock).publish(eq("position"),
+                argThat(p -> Arrays.equals(p, "100".getBytes(StandardCharsets.UTF_8))), anyInt(), eq(false));
+
+        verify(connectionMock, never()).publish(eq("upDown"), any(), anyInt(), anyBoolean());
+
+        c.stop().get();
+    }
+
+    @Test
     public void receiveWildcardTest() throws Exception {
         ChannelState c = spy(new ChannelState(ChannelConfigBuilder.create("state/+/topic", "command").build(),
                 channelUIDMock, textValue, channelStateUpdateListenerMock));
