@@ -118,14 +118,18 @@ public class ElectricalPowerMeasurementConverter extends GenericConverter<Electr
     }
 
     private QuantityType<Power> activePowerToWatts(Number number) {
-        return new QuantityType<Power>(new BigDecimal(number.intValue() / 1000), Units.WATT);
+        return new QuantityType<Power>(milliToUnit(number), Units.WATT);
     }
 
     private QuantityType<ElectricCurrent> activeCurrentToAmps(Number number) {
-        return new QuantityType<ElectricCurrent>(new BigDecimal(number.intValue() / 1000), Units.AMPERE);
+        return new QuantityType<ElectricCurrent>(milliToUnit(number), Units.AMPERE);
     }
 
     private QuantityType<ElectricPotential> milliVoltsToVolts(Number number) {
-        return new QuantityType<ElectricPotential>(new BigDecimal(number.intValue() / 1000), Units.VOLT);
+        return new QuantityType<ElectricPotential>(milliToUnit(number), Units.VOLT);
+    }
+
+    private BigDecimal milliToUnit(Number number) {
+        return new BigDecimal(number.toString()).movePointLeft(3);
     }
 }
