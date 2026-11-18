@@ -274,7 +274,9 @@ class ItemToolsTest {
         @SuppressWarnings("unchecked")
         Map<String, Object> offset = (Map<String, Object>) Objects.requireNonNull(properties.get("offset"));
         assertEquals(1, limit.get("minimum"));
-        assertEquals(100, limit.get("maximum"));
+        // No JSON-schema maximum: strict clients would reject over-limit calls instead of letting the server clamp.
+        assertFalse(limit.containsKey("maximum"));
+        assertTrue(String.valueOf(limit.get("description")).contains("max: 100"));
         assertEquals(0, offset.get("minimum"));
     }
 

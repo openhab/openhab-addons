@@ -243,6 +243,7 @@ class ThingToolsTest {
         assertEquals(2, ((List<?>) Objects.requireNonNull(aboveMax.get("things"))).size());
 
         assertEquals(2, getThings(smallPages, Map.of()).get("limit"));
+        assertEquals(2, getThings(smallPages, Map.of("limit", (1L << 32) + 1)).get("limit"));
 
         Map<String, Object> pastEnd = getThings(smallPages, Map.of("offset", Integer.MAX_VALUE));
         assertEquals(3, pastEnd.get("total"));
@@ -264,7 +265,9 @@ class ThingToolsTest {
     }
 
     private Map<String, Object> getThings(ThingTools target, Map<String, Object> args) throws Exception {
-        return parseResult(target.handleGetThings(createRequest(new HashMap<>(args))));
+        CallToolResult result = target.handleGetThings(createRequest(new HashMap<>(args)));
+        assertSuccess(result);
+        return parseResult(result);
     }
 
     @Test

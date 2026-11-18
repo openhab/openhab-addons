@@ -67,8 +67,7 @@ public class ItemTools {
     private final EventPublisher eventPublisher;
     private final McpJsonMapper jsonMapper;
     private final FuzzyItemMatcher fuzzyMatcher;
-    private final int maxItemsPerPage;
-    private final int defaultPageLimit;
+    private final Paging paging;
 
     /**
      * Constructs a new {@code ItemTools} instance with the required openHAB services.
@@ -89,8 +88,7 @@ public class ItemTools {
         this.eventPublisher = eventPublisher;
         this.jsonMapper = jsonMapper;
         this.fuzzyMatcher = new FuzzyItemMatcher(metadataRegistry);
-        this.maxItemsPerPage = Math.max(1, maxItemsPerPage);
-        this.defaultPageLimit = Math.min(DEFAULT_PAGE_LIMIT, this.maxItemsPerPage);
+        this.paging = Paging.of(maxItemsPerPage);
     }
 
     /**
@@ -168,10 +166,7 @@ public class ItemTools {
         properties.put("group", Map.of("type", "string", "description", "Filter items that are members of this group"));
         properties.put("recursive", Map.of("type", "boolean", "description",
                 "When filtering by group, include items in nested subgroups (default: true)"));
-        properties.put("limit", Map.of("type", "integer", "minimum", 1, "maximum", maxItemsPerPage, "description",
-                "Maximum results to return (default: " + defaultPageLimit + ", max: " + maxItemsPerPage + ")"));
-        properties.put("offset",
-                Map.of("type", "integer", "minimum", 0, "description", "Number of results to skip (default: 0)"));
+        paging.addSchemaProperties(properties);
 
         return McpSchema.Tool.builder().name("search_items").description(
                 "Search for items by name, label, synonyms, type, tags, or group membership. Returns matching items ranked by relevance with their current state. Use this when you need to find specific items or don't know the exact item name.")
@@ -194,8 +189,6 @@ public class ItemTools {
         List<String> tags = getStringListArg(args, "tags");
         String group = getStringArg(args, "group");
         boolean recursive = getBooleanArg(args, "recursive", true);
-        int limit = Math.max(1, Math.min(maxItemsPerPage, getIntArg(args, "limit", defaultPageLimit)));
-        int offset = Math.max(0, getIntArg(args, "offset", 0));
 
         Iterable<Item> source;
         if (group != null) {
@@ -242,20 +235,15 @@ public class ItemTools {
             matchingItems.add(si.item);
         }
 
-        int total = matchingItems.size();
-        int start = Math.min(offset, total);
-        List<Item> page = matchingItems.subList(start, Math.min(start + limit, total));
+        Map<String, Object> response = new HashMap<>();
+        List<Item> page = paging.page(matchingItems, args, response);
 
         List<Map<String, Object>> items = new ArrayList<>();
         for (Item item : page) {
             items.add(buildItemSummary(item));
         }
 
-        Map<String, Object> response = new HashMap<>();
         response.put("items", items);
-        response.put("total", total);
-        response.put("offset", offset);
-        response.put("limit", limit);
         return textResult(jsonMapper, response);
     }
 

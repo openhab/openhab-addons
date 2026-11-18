@@ -135,6 +135,14 @@ class McpToolUtilsTest {
     }
 
     @Test
+    void testGetIntArgSaturatesOutOfRangeNumbers() {
+        // Plain intValue() would wrap 2^32 + 1 around to 1.
+        assertEquals(Integer.MAX_VALUE, McpToolUtils.getIntArg(Map.of("key", (1L << 32) + 1), "key", 0));
+        assertEquals(Integer.MIN_VALUE, McpToolUtils.getIntArg(Map.of("key", -(1L << 32) - 1), "key", 0));
+        assertEquals(Integer.MAX_VALUE, McpToolUtils.getIntArg(Map.of("key", 1e20), "key", 0));
+    }
+
+    @Test
     void testGetIntArgReturnsDefaultForNonNumber() {
         assertEquals(10, McpToolUtils.getIntArg(Map.of("key", "not a number"), "key", 10));
     }

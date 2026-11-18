@@ -50,8 +50,7 @@ public class ThingTools {
     private final ThingRegistry thingRegistry;
     private final ItemChannelLinkRegistry linkRegistry;
     private final McpJsonMapper jsonMapper;
-    private final int maxItemsPerPage;
-    private final int defaultPageLimit;
+    private final Paging paging;
 
     /**
      * Creates a new {@code ThingTools} instance.
@@ -67,8 +66,7 @@ public class ThingTools {
         this.thingRegistry = thingRegistry;
         this.linkRegistry = linkRegistry;
         this.jsonMapper = jsonMapper;
-        this.maxItemsPerPage = Math.max(1, maxItemsPerPage);
-        this.defaultPageLimit = Math.min(DEFAULT_PAGE_LIMIT, this.maxItemsPerPage);
+        this.paging = Paging.of(maxItemsPerPage);
     }
 
     /**
@@ -83,10 +81,7 @@ public class ThingTools {
                 Map.of("type", "string", "description", "Filter by status: ONLINE, OFFLINE, UNKNOWN, INITIALIZING"));
         properties.put("bindingId",
                 Map.of("type", "string", "description", "Filter by binding ID (e.g., 'hue', 'zwave', 'mqtt')"));
-        properties.put("limit", Map.of("type", "integer", "minimum", 1, "maximum", maxItemsPerPage, "description",
-                "Maximum results to return (default: " + defaultPageLimit + ", max: " + maxItemsPerPage + ")"));
-        properties.put("offset",
-                Map.of("type", "integer", "minimum", 0, "description", "Number of results to skip (default: 0)"));
+        paging.addSchemaProperties(properties);
 
         return McpSchema.Tool.builder().name("get_things").description(
                 "List things (device connections) with their online/offline status. Filter by status or binding type. When filtering by binding, bridge things include nested child things from any binding.")
@@ -105,8 +100,6 @@ public class ThingTools {
         Map<String, Object> args = request.arguments();
         String statusFilter = getStringArg(args, "status");
         String bindingFilter = getStringArg(args, "bindingId");
-        int limit = Math.max(1, Math.min(maxItemsPerPage, getIntArg(args, "limit", defaultPageLimit)));
-        int offset = Math.max(0, getIntArg(args, "offset", 0));
 
         Set<ThingUID> listed = new HashSet<>();
         List<Map<String, Object>> things = new ArrayList<>();
@@ -129,15 +122,9 @@ public class ThingTools {
             things.add(summary);
         }
 
-        int total = things.size();
-        int start = Math.min(offset, total);
-        List<Map<String, Object>> page = things.subList(start, Math.min(start + limit, total));
-
         Map<String, Object> response = new HashMap<>();
+        List<Map<String, Object>> page = paging.page(things, args, response);
         response.put("things", page);
-        response.put("total", total);
-        response.put("offset", offset);
-        response.put("limit", limit);
         return textResult(jsonMapper, response);
     }
 
