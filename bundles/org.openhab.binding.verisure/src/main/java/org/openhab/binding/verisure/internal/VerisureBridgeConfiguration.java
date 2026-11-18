@@ -26,5 +26,6 @@ public class VerisureBridgeConfiguration {
     public String username = "";
     public String password = "";
     public int refresh = 600;
+    public int climateRefresh = 0;
     public @Nullable String pin;
 }

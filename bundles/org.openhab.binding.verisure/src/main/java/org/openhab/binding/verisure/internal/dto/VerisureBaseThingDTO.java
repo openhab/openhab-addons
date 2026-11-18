@@ -15,11 +15,13 @@ package org.openhab.binding.verisure.internal.dto;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.verisure.internal.VerisureThingConfiguration;
 import org.openhab.binding.verisure.internal.dto.VerisureAlarmsDTO.ArmState;
+import org.openhab.binding.verisure.internal.dto.VerisureBatteryStatusDTO.Battery;
 import org.openhab.binding.verisure.internal.dto.VerisureBroadbandConnectionsDTO.Broadband;
 import org.openhab.binding.verisure.internal.dto.VerisureClimatesDTO.Climate;
 import org.openhab.binding.verisure.internal.dto.VerisureDoorWindowsDTO.DoorWindow;
@@ -49,6 +51,21 @@ public abstract class VerisureBaseThingDTO implements VerisureThingDTO {
     protected @Nullable String siteName;
     protected BigDecimal siteId = BigDecimal.ZERO;
     protected Data data = new Data();
+    protected @Nullable String batteryStatus;
+    protected @Nullable Integer batteryLevel;
+
+    public @Nullable String getBatteryStatus() {
+        return batteryStatus;
+    }
+
+    public @Nullable Integer getBatteryLevel() {
+        return batteryLevel;
+    }
+
+    public void setBattery(@Nullable Battery battery) {
+        batteryStatus = battery != null ? battery.status() : null;
+        batteryLevel = battery != null ? battery.level() : null;
+    }
 
     public @Nullable String getStatus() {
         return status;
@@ -132,6 +149,7 @@ public abstract class VerisureBaseThingDTO implements VerisureThingDTO {
         result = prime * result + ((localSiteName == null) ? 0 : localSiteName.hashCode());
         String localStatus = status;
         result = prime * result + ((localStatus == null) ? 0 : localStatus.hashCode());
+        result = prime * result + Objects.hash(batteryStatus, batteryLevel);
         return result;
     }
 
@@ -147,6 +165,9 @@ public abstract class VerisureBaseThingDTO implements VerisureThingDTO {
             return false;
         }
         VerisureBaseThingDTO other = (VerisureBaseThingDTO) obj;
+        if (!Objects.equals(batteryStatus, other.batteryStatus) || !Objects.equals(batteryLevel, other.batteryLevel)) {
+            return false;
+        }
         if (!data.equals(other.data)) {
             return false;
         }

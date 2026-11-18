@@ -36,8 +36,8 @@ public class VerisureBatteryStatusDTO {
     /**
      * @return battery status per device label
      */
-    public Map<String, String> getStatusByDeviceLabel() {
-        Map<String, String> result = new HashMap<>();
+    public Map<String, Battery> getBatteryByDeviceLabel() {
+        Map<String, Battery> result = new HashMap<>();
         Data localData = data;
         Installation installation = localData != null ? localData.installation : null;
         DeviceBatteryLifeCycle lifeCycle = installation != null ? installation.deviceBatteryLifeCycle : null;
@@ -47,8 +47,11 @@ public class VerisureBatteryStatusDTO {
                 Device device = batteryDevice.device;
                 String deviceLabel = device != null ? device.deviceLabel : null;
                 String status = batteryDevice.status;
-                if (deviceLabel != null && status != null) {
-                    result.put(deviceLabel, status);
+                if (deviceLabel != null) {
+                    PredictionData predictionData = batteryDevice.predictionData;
+                    Integer level = predictionData != null ? predictionData.estimatedBatteryPercentage : null;
+                    // The API reports -1 when it has no estimate
+                    result.put(deviceLabel, new Battery(status, level != null && level >= 0 ? level : null));
                 }
             }
         }
@@ -57,6 +60,9 @@ public class VerisureBatteryStatusDTO {
 
     public static boolean isLowBattery(@Nullable String status) {
         return status != null && !STATUS_GOOD.equals(status) && !STATUS_UNAVAILABLE.equals(status);
+    }
+
+    public record Battery(@Nullable String status, @Nullable Integer level) {
     }
 
     private static class Data {
@@ -74,6 +80,11 @@ public class VerisureBatteryStatusDTO {
     private static class BatteryDevice {
         private @Nullable Device device;
         private @Nullable String status;
+        private @Nullable PredictionData predictionData;
+    }
+
+    private static class PredictionData {
+        private @Nullable Integer estimatedBatteryPercentage;
     }
 
     private static class Device {

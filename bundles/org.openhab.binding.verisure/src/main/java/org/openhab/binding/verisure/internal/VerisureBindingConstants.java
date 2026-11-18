@@ -105,6 +105,9 @@ public class VerisureBindingConstants {
     public static final String CHANNEL_DOOR_WINDOW_TRIGGER_CHANNEL = "doorWindowTriggerChannel";
     public static final String CHANNEL_GATEWAY_TRIGGER_CHANNEL = "gatewayTriggerChannel";
     public static final String CHANNEL_BATTERY_STATUS = "lowBattery";
+    public static final String CHANNEL_BATTERY_LEVEL = "batteryLevel";
+    public static final String CHANNEL_SYSTEM_HEALTH = "systemHealth";
+    public static final String CHANNEL_SYSTEM_HEALTH_ALERTS = "systemHealthAlerts";
 
     // Trigger channel events
     public static final String TRIGGER_EVENT_LOCK = "LOCK";

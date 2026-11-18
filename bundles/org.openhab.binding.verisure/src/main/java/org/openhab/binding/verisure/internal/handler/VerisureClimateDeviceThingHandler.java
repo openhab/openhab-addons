@@ -22,6 +22,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.verisure.internal.dto.VerisureBatteryStatusDTO;
 import org.openhab.binding.verisure.internal.dto.VerisureClimatesDTO;
 import org.openhab.binding.verisure.internal.dto.VerisureClimatesDTO.Climate;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
@@ -107,6 +108,9 @@ public class VerisureClimateDeviceThingHandler extends VerisureThingHandler<Veri
                 return location != null ? new StringType(location) : UnDefType.NULL;
             case CHANNEL_BATTERY_STATUS:
                 return OnOffType.from(VerisureBatteryStatusDTO.isLowBattery(climateJSON.getBatteryStatus()));
+            case CHANNEL_BATTERY_LEVEL:
+                Integer batteryLevel = climateJSON.getBatteryLevel();
+                return batteryLevel != null ? new DecimalType(batteryLevel) : UnDefType.UNDEF;
         }
         return UnDefType.UNDEF;
     }
