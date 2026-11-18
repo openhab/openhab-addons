@@ -348,7 +348,7 @@ public class GenericThingHandlerTests {
         thingHandler.handleCommand(TEXT_CHANNEL_UID, updateValue);
         verify(value).parseCommand(eq(updateValue));
         // It didn't update the cached state
-        assertThat(value.getChannelState(), is(UnDefType.UNDEF));
+        assertThat(value.getChannelState(), is(UnDefType.NULL));
     }
 
     @Test
