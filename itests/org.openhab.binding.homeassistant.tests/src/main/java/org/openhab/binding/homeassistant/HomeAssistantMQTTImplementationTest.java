@@ -204,7 +204,7 @@ public class HomeAssistantMQTTImplementationTest extends MqttOSGiTest {
         String channelId = Switch.SWITCH_CHANNEL_ID;
 
         State value = haComponents.get(componentId).getChannel(channelId).getState().getCache().getChannelState();
-        assertThat(value, is(UnDefType.UNDEF));
+        assertThat(value, is(UnDefType.NULL));
 
         haComponents.values().stream().map(e -> e.start(haConnection, scheduler, 100))
                 .reduce(CompletableFuture.completedFuture(null), (a, v) -> a.thenCompose(b -> v)).exceptionally(e -> {
