@@ -47,9 +47,8 @@
 			<label>Enable Diagnostic Logging Tools</label>
 			<description><![CDATA[When enabled, the agent gains two tools (<code>get_logs</code> and
 				<code>manage_log_level</code> with actions <code>get</code>/<code>set</code>) for reading recent log
-				entries and adjusting logger verbosity to troubleshoot bindings, rules, or things. Log level changes
-				are sent through the openHAB REST API and require the caller's bearer token to have
-				<strong>administrator</strong> scope; log reads only require this flag to be on. Verbosity bumps
+				entries and adjusting logger verbosity to troubleshoot bindings, rules, or things. Both tools require
+				the caller's bearer token to have <strong>administrator</strong> scope. Verbosity bumps
 				auto-revert after 30 minutes by default so DEBUG won't be left on by accident.]]></description>
 			<default>false</default>
 		</parameter>
@@ -72,8 +71,7 @@
 				<code>/static/*</code> and used for SVG icons, images, CSS overrides, and other static files the UI
 				references by URL). Useful alongside <code>enableUiDesign</code> so the agent can author an SVG icon or
 				upload an image and then reference it from a page or widget in the same conversation. Writes go directly to disk &mdash; there is no REST API
-				to gate this &mdash; so the bundle enforces <strong>administrator</strong> scope itself by probing an
-				admin-gated REST endpoint with the session's bearer token before each call. Filenames are sanitized
+				to gate this &mdash; so the bundle enforces <strong>administrator</strong> scope itself. Filenames are sanitized
 				(including symlinks pointing outside the root), extensions are whitelisted, and uploads are capped at
 				10 MB per call. Note that <code>.html</code>, <code>.htm</code>, <code>.svg</code>, and <code>.js</code>
 				files served from <code>/static/</code> execute in the browser, so an agent that writes those becomes an

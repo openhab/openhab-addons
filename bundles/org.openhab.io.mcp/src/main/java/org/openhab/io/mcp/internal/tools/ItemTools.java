@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
-import java.util.function.Function;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -39,6 +38,7 @@ import org.openhab.core.items.events.ItemEventFactory;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
 import org.openhab.core.types.TypeParser;
+import org.openhab.io.mcp.internal.auth.McpUser;
 import org.openhab.io.mcp.internal.util.FuzzyItemMatcher;
 import org.openhab.io.mcp.internal.util.ItemStateFormatter;
 import org.slf4j.Logger;
@@ -67,7 +67,6 @@ public class ItemTools {
     private final EventPublisher eventPublisher;
     private final McpJsonMapper jsonMapper;
     private final FuzzyItemMatcher fuzzyMatcher;
-    private final Function<String, @Nullable String> usernameForSession;
 
     /**
      * Constructs a new {@code ItemTools} instance with the required openHAB services.
@@ -76,17 +75,13 @@ public class ItemTools {
      * @param itemBuilderFactory factory for creating new item builders
      * @param metadataRegistry the metadata registry used for fuzzy matching, may be {@code null}
      * @param eventPublisher the event publisher for sending commands and state updates
-     * @param usernameForSession resolves the authenticated username for an MCP session id, used as the
-     *            actor in the source string of published events
      * @param jsonMapper the JSON mapper for serializing tool results
      */
     public ItemTools(ItemRegistry itemRegistry, ItemBuilderFactory itemBuilderFactory,
-            @Nullable MetadataRegistry metadataRegistry, EventPublisher eventPublisher,
-            Function<String, @Nullable String> usernameForSession, McpJsonMapper jsonMapper) {
+            @Nullable MetadataRegistry metadataRegistry, EventPublisher eventPublisher, McpJsonMapper jsonMapper) {
         this.itemRegistry = itemRegistry;
         this.itemBuilderFactory = itemBuilderFactory;
         this.eventPublisher = eventPublisher;
-        this.usernameForSession = usernameForSession;
         this.jsonMapper = jsonMapper;
         this.fuzzyMatcher = new FuzzyItemMatcher(metadataRegistry);
     }
@@ -353,7 +348,7 @@ public class ItemTools {
         }
 
         String previousState = ItemStateFormatter.formatState(item.getState());
-        String source = AbstractEvent.buildSource(MCP_EVENT_SOURCE, usernameForSession.apply(exchange.sessionId()));
+        String source = eventSource(exchange);
         eventPublisher.post(ItemEventFactory.createCommandEvent(itemName, command, source));
         logger.debug("Sent command '{}' to item '{}' (source={})", command, itemName, source);
 
@@ -380,7 +375,7 @@ public class ItemTools {
         }
 
         String previousState = ItemStateFormatter.formatState(item.getState());
-        String source = AbstractEvent.buildSource(MCP_EVENT_SOURCE, usernameForSession.apply(exchange.sessionId()));
+        String source = eventSource(exchange);
         eventPublisher.post(ItemEventFactory.createStateEvent(itemName, state, source));
 
         Map<String, Object> result = new HashMap<>();
@@ -590,6 +585,11 @@ public class ItemTools {
             }
         }
         return true;
+    }
+
+    private static String eventSource(McpSyncServerExchange exchange) {
+        McpUser user = McpUser.of(exchange);
+        return AbstractEvent.buildSource(MCP_EVENT_SOURCE, user != null ? user.name() : null);
     }
 
     private void appendSuggestions(StringBuilder msg, List<String> missingNames) {

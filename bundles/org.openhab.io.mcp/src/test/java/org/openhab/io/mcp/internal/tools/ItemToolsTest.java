@@ -43,7 +43,9 @@ import org.openhab.core.library.types.PercentType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 import org.openhab.io.mcp.internal.McpTestHelper;
+import org.openhab.io.mcp.internal.auth.McpUser;
 
+import io.modelcontextprotocol.common.McpTransportContext;
 import io.modelcontextprotocol.json.McpJsonMapper;
 import io.modelcontextprotocol.server.McpSyncServerExchange;
 import io.modelcontextprotocol.spec.McpSchema;
@@ -66,14 +68,14 @@ class ItemToolsTest {
 
     private @Nullable ItemTools itemTools;
     private final McpJsonMapper jsonMapper = McpTestHelper.newJsonMapper();
-    /** Returns the same fake username for any session id; tests assert that this lands in the event source. */
-    private final java.util.function.Function<String, @Nullable String> usernameSupplier = sid -> "alice";
 
     @BeforeEach
     void setUp() {
         itemTools = new ItemTools(Objects.requireNonNull(itemRegistry), Objects.requireNonNull(itemBuilderFactory),
-                metadataRegistry, Objects.requireNonNull(eventPublisher), usernameSupplier, jsonMapper);
+                metadataRegistry, Objects.requireNonNull(eventPublisher), jsonMapper);
         lenient().when(exchange.sessionId()).thenReturn("session-1");
+        lenient().when(Objects.requireNonNull(exchange).transportContext())
+                .thenReturn(McpTransportContext.create(Map.of(McpUser.CONTEXT_KEY, new McpUser("alice", true))));
     }
 
     private ItemTools tools() {
@@ -388,7 +390,6 @@ class ItemToolsTest {
         tools().handleSetItem(Objects.requireNonNull(exchange),
                 request(Map.of("action", "command", "itemName", "Kitchen_Light", "value", "ON")));
 
-        // usernameSupplier returns "alice" → expected source is "org.openhab.io.mcp$alice".
         verify(Objects.requireNonNull(eventPublisher))
                 .post(argThat(event -> "org.openhab.io.mcp$alice".equals(event.getSource())));
     }
@@ -397,11 +398,9 @@ class ItemToolsTest {
     void sendCommandFallsBackToBundleOnlyWhenUserUnknown() throws Exception {
         Item item = mockSwitchItem("Kitchen_Light", "Kitchen Light", OnOffType.OFF);
         when(Objects.requireNonNull(itemRegistry).getItem("Kitchen_Light")).thenReturn(item);
-        ItemTools toolsNoUser = new ItemTools(Objects.requireNonNull(itemRegistry),
-                Objects.requireNonNull(itemBuilderFactory), metadataRegistry, Objects.requireNonNull(eventPublisher),
-                sid -> null, jsonMapper);
+        when(Objects.requireNonNull(exchange).transportContext()).thenReturn(McpTransportContext.EMPTY);
 
-        toolsNoUser.handleSetItem(Objects.requireNonNull(exchange),
+        tools().handleSetItem(Objects.requireNonNull(exchange),
                 request(Map.of("action", "command", "itemName", "Kitchen_Light", "value", "ON")));
 
         // Null username → just the bundle, no actor suffix.

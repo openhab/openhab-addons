@@ -152,15 +152,18 @@ public class RuleTools {
     }
 
     /**
-     * Handles a {@code manage_rule} call.
+     * Handles a {@code manage_rule} call. Like REST, non-admins may only trigger a rule.
      */
-    public CallToolResult handleManageRule(McpSchema.CallToolRequest request) {
+    public CallToolResult handleManageRule(McpSchema.CallToolRequest request, boolean admin) {
         Map<String, Object> args = request.arguments();
         String ruleUID = getStringArg(args, "ruleUID");
         String action = getStringArg(args, "action");
 
         if (ruleUID == null || action == null) {
             return errorResult("Both 'ruleUID' and 'action' are required.");
+        }
+        if (!admin && !"trigger".equalsIgnoreCase(action)) {
+            return adminRequiredResult("'manage_rule' action '" + action + "'");
         }
 
         Rule rule = ruleRegistry.get(ruleUID);

@@ -26,6 +26,7 @@ import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.core.auth.Authentication;
 import org.openhab.core.auth.AuthenticationException;
+import org.openhab.core.auth.Role;
 import org.openhab.core.auth.UserApiTokenCredentials;
 import org.openhab.core.auth.UserRegistry;
 import org.openhab.io.mcp.internal.tools.McpToolUtils;
@@ -33,12 +34,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Validates bearer tokens presented to the MCP server. Supports two token families:
+ * Validates bearer tokens presented to the MCP server and checks whether the user is an admin.
+ * Supports two token families:
  * <ul>
  * <li><b>{@code oh.*} API tokens</b> — validated directly via {@link UserRegistry}
  * (fast path, no HTTP round-trip).</li>
- * <li><b>openHAB-issued JWTs</b> — validated by proxying a cheap authenticated REST
- * request to openHAB core. A 200 means core's own auth stack accepted the token.
+ * <li><b>openHAB-issued JWTs</b> — checked with an admin-only REST request to openHAB core.
  * This keeps us a pure resource server and avoids linking against core's internal
  * {@code JwtHelper}.</li>
  * </ul>
@@ -52,15 +53,10 @@ public class McpAuthenticator {
     private static final String AUTH_ALT_HEADER = "X-OPENHAB-TOKEN";
     private static final String BEARER_PREFIX = "Bearer ";
     private static final String OH_TOKEN_PREFIX = "oh.";
-    /**
-     * Tiny auth-gated endpoint used to delegate bearer-token validation to openHAB
-     * core. {@code /rest/} returns a small JSON root response ({@code locale},
-     * {@code version}, {@code links}) — auth-protected, typically a few hundred
-     * bytes, so it fits in Jetty's default 2 MB response buffer even on instances
-     * with very large item registries.
-     */
-    private static final String PROBE_PATH = "/rest/";
+    /** Admin-only. Returns 200 for an admin, 403 for other users, 401 for a bad token. */
+    private static final String ADMIN_PROBE_PATH = "/rest/logging/";
     private static final long PROBE_TIMEOUT_SECONDS = 5;
+    private static final int PROBE_FAILED = -1;
 
     private final Logger logger = LoggerFactory.getLogger(McpAuthenticator.class);
 
@@ -75,12 +71,9 @@ public class McpAuthenticator {
     }
 
     /**
-     * Validates the bearer token on the incoming request and resolves the authenticated user when possible.
-     *
-     * @return the authenticated user's name on success (empty string when the token was accepted but no
-     *         username could be resolved — currently the JWT path), or {@code null} on failure.
+     * @return the user, or {@code null} if the token is missing or rejected
      */
-    public @Nullable String authenticate(HttpServletRequest request) {
+    public @Nullable McpUser authenticate(HttpServletRequest request) {
         String path = request.getRequestURI();
         String token = extractToken(request);
         if (token == null) {
@@ -91,46 +84,51 @@ public class McpAuthenticator {
         if (token.startsWith(OH_TOKEN_PREFIX)) {
             try {
                 Authentication auth = userRegistry.authenticate(new UserApiTokenCredentials(token));
-                String username = auth.getUsername();
-                logger.debug("Auth accept: {} {} — oh.* token {} (user={})", request.getMethod(), path, tokenShape,
-                        username);
-                return username;
+                McpUser user = new McpUser(auth.getUsername(), auth.getRoles().contains(Role.ADMIN));
+                logger.debug("Auth accept: {} {} — oh.* token {} (user={}, admin={})", request.getMethod(), path,
+                        tokenShape, user.name(), user.admin());
+                return user;
             } catch (AuthenticationException e) {
                 logger.debug("Auth reject: {} {} — oh.* token {} rejected by UserRegistry: {}", request.getMethod(),
                         path, tokenShape, e.getMessage());
                 return null;
             }
         }
-        boolean ok = verifyViaRest(token);
-        logger.debug("Auth {}: {} {} — JWT {} via REST probe", ok ? "accept" : "reject", request.getMethod(), path,
-                tokenShape);
-        // JWT path: core accepted the token but we don't have the username locally. Return empty string to
-        // signal "authenticated, user unknown" so callers can distinguish from "rejected" (null).
-        return ok ? "" : null;
+        McpUser user = verifyViaRest(token);
+        logger.debug("Auth {}: {} {} — JWT {} via REST probe (admin={})", user != null ? "accept" : "reject",
+                request.getMethod(), path, tokenShape, user != null && user.admin());
+        return user;
+    }
+
+    /** The username isn't known on this path, so it's left empty. */
+    private @Nullable McpUser verifyViaRest(String token) {
+        return switch (probe(token)) {
+            case HttpStatus.OK_200 -> new McpUser("", true);
+            case HttpStatus.FORBIDDEN_403 -> new McpUser("", false);
+            default -> null;
+        };
     }
 
     /**
-     * Proxies the bearer token to openHAB core's REST auth filter. A 200 response
-     * means core accepted the token (whether it's a JWT or any other format core
-     * supports now or in the future).
+     * @return the HTTP status, or {@link #PROBE_FAILED} if the request failed
      */
-    private boolean verifyViaRest(String token) {
+    private int probe(String token) {
         try {
-            ContentResponse resp = httpClient.newRequest(coreBaseUrl + PROBE_PATH).method(HttpMethod.GET)
+            ContentResponse resp = httpClient.newRequest(coreBaseUrl + ADMIN_PROBE_PATH).method(HttpMethod.GET)
                     .header(AUTH_HEADER, BEARER_PREFIX + token).timeout(PROBE_TIMEOUT_SECONDS, TimeUnit.SECONDS).send();
-            boolean ok = resp.getStatus() == HttpStatus.OK_200;
-            if (!ok) {
-                logger.debug("REST probe to {}{} returned {} {} (body prefix: {})", coreBaseUrl, PROBE_PATH,
-                        resp.getStatus(), resp.getReason(), truncate(resp.getContentAsString(), 200));
+            int status = resp.getStatus();
+            if (status != HttpStatus.OK_200) {
+                logger.debug("REST probe to {}{} returned {} {} (body prefix: {})", coreBaseUrl, ADMIN_PROBE_PATH,
+                        status, resp.getReason(), truncate(resp.getContentAsString(), 200));
             }
-            return ok;
+            return status;
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             logger.debug("REST probe interrupted for JWT validation");
-            return false;
+            return PROBE_FAILED;
         } catch (TimeoutException | ExecutionException | RuntimeException e) {
             logger.debug("REST probe failed for JWT validation: {}", e.getMessage(), e);
-            return false;
+            return PROBE_FAILED;
         }
     }
 
@@ -140,13 +138,16 @@ public class McpAuthenticator {
 
     public static @Nullable String extractToken(HttpServletRequest request) {
         String auth = request.getHeader(AUTH_HEADER);
+        String token = null;
         if (auth != null && auth.startsWith(BEARER_PREFIX)) {
-            return auth.substring(BEARER_PREFIX.length()).trim();
+            token = auth.substring(BEARER_PREFIX.length()).trim();
+        } else {
+            String alt = request.getHeader(AUTH_ALT_HEADER);
+            if (alt != null) {
+                token = alt.trim();
+            }
         }
-        String alt = request.getHeader(AUTH_ALT_HEADER);
-        if (alt != null && !alt.isBlank()) {
-            return alt.trim();
-        }
-        return null;
+        // Core treats a token with spaces as no token at all, so the request would pass as anonymous.
+        return token != null && !token.isEmpty() && token.chars().noneMatch(Character::isWhitespace) ? token : null;
     }
 }

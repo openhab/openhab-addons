@@ -28,6 +28,8 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -197,7 +199,7 @@ class RuleToolsTest {
         Map<String, Object> args = new HashMap<>();
         args.put("ruleUID", "r1");
         args.put("action", "enable");
-        CallToolResult result = tools().handleManageRule(createRequest(args));
+        CallToolResult result = tools().handleManageRule(createRequest(args), true);
         assertSuccess(result);
         verify(ruleManager).setEnabled("r1", true);
         Map<String, Object> parsed = parseResult(result);
@@ -214,7 +216,7 @@ class RuleToolsTest {
         Map<String, Object> args = new HashMap<>();
         args.put("ruleUID", "r1");
         args.put("action", "disable");
-        CallToolResult result = tools().handleManageRule(createRequest(args));
+        CallToolResult result = tools().handleManageRule(createRequest(args), true);
         assertSuccess(result);
         verify(ruleManager).setEnabled("r1", false);
     }
@@ -228,7 +230,7 @@ class RuleToolsTest {
         Map<String, Object> args = new HashMap<>();
         args.put("ruleUID", "r1");
         args.put("action", "trigger");
-        CallToolResult result = tools().handleManageRule(createRequest(args));
+        CallToolResult result = tools().handleManageRule(createRequest(args), true);
         assertSuccess(result);
         verify(ruleManager).runNow("r1");
     }
@@ -241,7 +243,7 @@ class RuleToolsTest {
         Map<String, Object> args = new HashMap<>();
         args.put("ruleUID", "r1");
         args.put("action", "remove");
-        CallToolResult result = tools().handleManageRule(createRequest(args));
+        CallToolResult result = tools().handleManageRule(createRequest(args), true);
         assertSuccess(result);
         verify(ruleRegistry).remove("r1");
         Map<String, Object> parsed = parseResult(result);
@@ -255,7 +257,7 @@ class RuleToolsTest {
         Map<String, Object> args = new HashMap<>();
         args.put("ruleUID", "missing");
         args.put("action", "enable");
-        CallToolResult result = tools().handleManageRule(createRequest(args));
+        CallToolResult result = tools().handleManageRule(createRequest(args), true);
         assertErrorContains(result, "not found");
     }
 
@@ -267,14 +269,35 @@ class RuleToolsTest {
         Map<String, Object> args = new HashMap<>();
         args.put("ruleUID", "r1");
         args.put("action", "explode");
-        CallToolResult result = tools().handleManageRule(createRequest(args));
+        CallToolResult result = tools().handleManageRule(createRequest(args), true);
         assertErrorContains(result, "Unknown action");
     }
 
     @Test
     void manageRuleMissingParams() {
-        CallToolResult result = tools().handleManageRule(createRequest(Map.of()));
+        CallToolResult result = tools().handleManageRule(createRequest(Map.of()), true);
         assertErrorContains(result, "required");
+    }
+
+    @Test
+    void manageRuleTriggerAllowedForNonAdmin() throws Exception {
+        Rule rule = createMockRule("r1", "Rule 1", "", Set.of());
+        when(ruleRegistry.get("r1")).thenReturn(rule);
+        when(ruleManager.getStatus("r1")).thenReturn(RuleStatus.RUNNING);
+
+        CallToolResult result = tools().handleManageRule(createRequest(Map.of("ruleUID", "r1", "action", "trigger")),
+                false);
+        assertSuccess(result);
+        verify(ruleManager).runNow("r1");
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = { "enable", "disable", "remove", "REMOVE" })
+    void manageRuleRefusesNonAdmin(String action) {
+        CallToolResult result = tools().handleManageRule(createRequest(Map.of("ruleUID", "r1", "action", action)),
+                false);
+        assertErrorContains(result, "administrator");
+        verifyNoInteractions(ruleRegistry, ruleManager);
     }
 
     // ========== handleCreateRule ==========
