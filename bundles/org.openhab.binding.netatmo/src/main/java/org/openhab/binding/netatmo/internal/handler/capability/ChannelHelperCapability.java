@@ -19,7 +19,7 @@ import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.netatmo.internal.api.dto.NAError;
-import org.openhab.binding.netatmo.internal.api.dto.NAMain;
+import org.openhab.binding.netatmo.internal.api.dto.NAThing;
 import org.openhab.binding.netatmo.internal.api.dto.WebhookEvent;
 import org.openhab.binding.netatmo.internal.handler.CommonInterface;
 import org.openhab.binding.netatmo.internal.handler.channelhelper.ChannelHelper;
@@ -84,9 +84,9 @@ public class ChannelHelperCapability extends Capability {
     @Override
     protected void internalSetNewData(Object newData) {
         super.internalSetNewData(newData);
-        if (newData instanceof NAMain naMain) {
-            naMain.getFirmware().map(fw -> properties.put(PROPERTY_FIRMWARE_VERSION, fw));
-            if (!naMain.isReachable()) {
+        if (newData instanceof NAThing naThing) {
+            naThing.getFirmware().map(fw -> properties.put(PROPERTY_FIRMWARE_VERSION, fw));
+            if (!naThing.isReachable()) {
                 statusReason = "@text/device-not-connected";
             }
         }
