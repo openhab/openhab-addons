@@ -82,7 +82,7 @@ public class ColorValue extends Value {
      */
     @Override
     public HSBType parseCommand(Command command) throws IllegalArgumentException {
-        HSBType oldvalue = (state == UnDefType.UNDEF) ? new HSBType() : (HSBType) state;
+        HSBType oldvalue = (state instanceof UnDefType) ? new HSBType() : (HSBType) state;
         if (command instanceof HSBType hsbCommand) {
             return hsbCommand;
         } else if (command instanceof OnOffType onOffCommand) {
