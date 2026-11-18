@@ -29,6 +29,7 @@ import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
@@ -133,8 +134,12 @@ public class BrokerHandlerTest extends JavaTest {
     public void clientCertificateNotRefusedWithHostnameValidationOrPinning() {
         MqttBrokerConnection mockedConnection = mock(MqttBrokerConnection.class);
         // Not refused by the verification check: loading the (missing) keystore fails instead
+        BrokerHandlerConfig certificatePinned = clientCertConfig(true, false, true, false);
+        certificatePinned.certificate = PIN_HASH;
+        BrokerHandlerConfig publicKeyPinned = clientCertConfig(true, false, false, true);
+        publicKeyPinned.publickey = PIN_HASH;
         for (BrokerHandlerConfig config : new BrokerHandlerConfig[] { clientCertConfig(true, true, false, false),
-                clientCertConfig(true, false, true, false), clientCertConfig(true, false, false, true) }) {
+                certificatePinned, publicKeyPinned }) {
             IllegalArgumentException e = assertThrows(IllegalArgumentException.class,
                     () -> handler.assignClientCertificate(config, mockedConnection));
             assertTrue(e.getMessage().startsWith("Unable to load client keystore"));
@@ -142,6 +147,7 @@ public class BrokerHandlerTest extends JavaTest {
     }
 
     private static final char[] KEYSTORE_PASSWORD = "changeit".toCharArray();
+    private static final String PIN_HASH = "SHA-256:00";
 
     /** Creates a keystore with a fresh self-signed certificate for localhost (not trusted by any CA). */
     private Path createSelfSignedKeystore(Path dir) throws IOException, InterruptedException {
@@ -150,9 +156,13 @@ public class BrokerHandlerTest extends JavaTest {
         Process process = new ProcessBuilder(keytool, "-genkeypair", "-alias", "test", "-keyalg", "RSA", "-keysize",
                 "2048", "-validity", "30", "-dname", "CN=localhost", "-ext", "san=dns:localhost", "-storetype",
                 "PKCS12", "-keystore", keystore.toString(), "-storepass", new String(KEYSTORE_PASSWORD))
-                .redirectErrorStream(true).start();
-        process.getInputStream().readAllBytes();
-        assertThat(process.waitFor(), is(0));
+                .redirectErrorStream(true).redirectOutput(ProcessBuilder.Redirect.DISCARD).start();
+        try {
+            assertTrue(process.waitFor(60, TimeUnit.SECONDS), "keytool did not finish within 60 seconds");
+            assertThat(process.exitValue(), is(0));
+        } finally {
+            process.destroyForcibly();
+        }
         return keystore;
     }
 
@@ -194,10 +204,43 @@ public class BrokerHandlerTest extends JavaTest {
         Path keystore = createSelfSignedKeystore(dir);
         MqttBrokerConnection mockedConnection = mock(MqttBrokerConnection.class);
 
-        handler.assignClientCertificate(realKeystoreConfig(keystore, true, true), mockedConnection);
+        BrokerHandlerConfig config = realKeystoreConfig(keystore, true, true);
+        config.certificate = PIN_HASH;
+
+        handler.assignClientCertificate(config, mockedConnection);
 
         verify(mockedConnection).setKeyManagerFactory(any());
         verify(mockedConnection, never()).setTrustManagers(any());
+    }
+
+    @Test
+    public void clientCertificateWithLearningPinUsesCaValidation(@TempDir Path dir) throws Exception {
+        Path keystore = createSelfSignedKeystore(dir);
+        MqttBrokerConnection mockedConnection = mock(MqttBrokerConnection.class);
+
+        // Pinning without a configured hash only learns the first certificate: CA validation must stay in place
+        handler.assignClientCertificate(realKeystoreConfig(keystore, true, true), mockedConnection);
+
+        verify(mockedConnection).setKeyManagerFactory(any());
+        ArgumentCaptor<TrustManager[]> captor = ArgumentCaptor.forClass(TrustManager[].class);
+        verify(mockedConnection).setTrustManagers(captor.capture());
+        X509Certificate[] selfSignedChain = loadChain(keystore);
+        for (TrustManager trustManager : captor.getValue()) {
+            X509TrustManager x509TrustManager = (X509TrustManager) trustManager;
+            assertThrows(CertificateException.class, () -> x509TrustManager.checkServerTrusted(selfSignedChain, "RSA"));
+        }
+    }
+
+    @Test
+    public void clientCertificateRefusedWithLearningPinWithoutHostnameValidation() {
+        MqttBrokerConnection mockedConnection = mock(MqttBrokerConnection.class);
+        for (BrokerHandlerConfig config : new BrokerHandlerConfig[] { clientCertConfig(true, false, true, false),
+                clientCertConfig(true, false, false, true) }) {
+            IllegalArgumentException e = assertThrows(IllegalArgumentException.class,
+                    () -> handler.assignClientCertificate(config, mockedConnection));
+            assertTrue(e.getMessage().contains("requires hostname validation"));
+        }
+        verify(mockedConnection, never()).setKeyManagerFactory(any());
     }
 
     @Test
