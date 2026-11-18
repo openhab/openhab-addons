@@ -88,14 +88,6 @@ import com.google.gson.reflect.TypeToken;
 public class UniFiProtectPublicClient implements Closeable {
     private final Logger logger = LoggerFactory.getLogger(UniFiProtectPublicClient.class);
     private final HttpClient httpClient;
-    // Dedicated HttpClient for Integration API calls, kept separate from the shared httpClient used
-    // for the Private API's cookie/CSRF session. The Integration API authenticates purely via
-    // X-API-KEY and must never receive cookies from that unrelated session — Jetty's HttpClient
-    // keeps one CookieStore per client instance, scoped by host/path rather than by which logical
-    // API client made the request, and (unlike newer Jetty releases) 9.4's Request has no
-    // per-request cookie store override, so a shared client would leak the Private API's session
-    // cookies onto every Integration API request too. Reuses the shared client's SslContextFactory
-    // for consistent TLS trust.
     private final HttpClient apiHttpClient;
     private final WebSocketClient wsClient;
     private final Gson gson;
