@@ -19,6 +19,7 @@ import java.math.RoundingMode;
 import java.util.concurrent.ScheduledExecutorService;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.denonmarantz.internal.DenonMarantzBindingConstants;
 import org.openhab.binding.denonmarantz.internal.DenonMarantzState;
 import org.openhab.binding.denonmarantz.internal.UnsupportedCommandTypeException;
 import org.openhab.binding.denonmarantz.internal.config.DenonMarantzConfiguration;
@@ -100,6 +101,63 @@ public abstract class DenonMarantzConnector {
         } else {
             throw new UnsupportedCommandTypeException();
         }
+        internalSendCommand(cmd);
+    }
+
+    public void sendAllZoneStereoCommand(Command command) throws UnsupportedCommandTypeException {
+        String cmd = "MNZST ";
+        if (command == OnOffType.ON) {
+            cmd += "ON";
+        } else if (command == OnOffType.OFF) {
+            cmd += "OFF";
+        } else if (command instanceof RefreshType) {
+            cmd += "?";
+        } else {
+            throw new UnsupportedCommandTypeException();
+        }
+        internalSendCommand(cmd);
+    }
+
+    public void sendSpeakerPresetCommand(Command command) throws UnsupportedCommandTypeException {
+        String cmd = "SPPR ";
+        if (command instanceof DecimalType decimalCommand) {
+            int preset = decimalCommand.toBigDecimal().intValue();
+            if (preset != 1 && preset != 2) {
+                throw new UnsupportedCommandTypeException();
+            }
+            cmd += preset;
+        } else if (command instanceof RefreshType) {
+            cmd += "?";
+        } else {
+            throw new UnsupportedCommandTypeException();
+        }
+        internalSendCommand(cmd);
+    }
+
+    public void sendChannelVolumeCommand(Command command, String channel) throws UnsupportedCommandTypeException {
+        String cmd = channel;
+        if (command instanceof RefreshType) {
+            cmd += " ?";
+        } else if (command == IncreaseDecreaseType.INCREASE) {
+            cmd += " UP";
+        } else if (command == IncreaseDecreaseType.DECREASE) {
+            cmd += " DOWN";
+        } else if (command instanceof DecimalType decimalCommand) {
+            BigDecimal value = decimalCommand.toBigDecimal().add(DenonMarantzBindingConstants.CHANNEL_VOLUME_DB_OFFSET);
+            cmd += " " + value.intValue();
+        } else if (command instanceof QuantityType<?> quantityCommand) {
+            QuantityType<?> decibelCommand = quantityCommand.toUnit(Units.DECIBEL);
+            if (decibelCommand != null) {
+                BigDecimal value = decibelCommand.toBigDecimal()
+                        .add(DenonMarantzBindingConstants.CHANNEL_VOLUME_DB_OFFSET);
+                cmd += " " + value.intValue();
+            } else {
+                throw new UnsupportedCommandTypeException();
+            }
+        } else {
+            throw new UnsupportedCommandTypeException();
+        }
+
         internalSendCommand(cmd);
     }
 
