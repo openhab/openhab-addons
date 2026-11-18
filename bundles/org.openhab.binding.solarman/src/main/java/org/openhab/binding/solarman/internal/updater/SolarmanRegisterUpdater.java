@@ -204,13 +204,13 @@ public class SolarmanRegisterUpdater {
             return true;
         }
 
-        final Integer min = validation.getMin();
-        final Integer max = validation.getMax();
+        final BigDecimal min = validation.getMin();
+        final BigDecimal max = validation.getMax();
         final BigDecimal decimal = value.toBigDecimal();
-        if ((min != null && decimal.compareTo(BigDecimal.valueOf(min)) < 0)
-                || (max != null && decimal.compareTo(BigDecimal.valueOf(max)) > 0)) {
+        if ((min != null && decimal.compareTo(min) < 0) || (max != null && decimal.compareTo(max) > 0)) {
             logger.warn("Value {} for channel '{}' is outside the allowed range [{}, {}], not writing",
-                    decimal.toPlainString(), channelUID, min != null ? min : "-", max != null ? max : "-");
+                    decimal.toPlainString(), channelUID, min != null ? min.toPlainString() : "-",
+                    max != null ? max.toPlainString() : "-");
             return false;
         }
         return true;

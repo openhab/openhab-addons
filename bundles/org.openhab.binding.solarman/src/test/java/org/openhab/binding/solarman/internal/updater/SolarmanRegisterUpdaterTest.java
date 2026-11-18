@@ -20,6 +20,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
@@ -56,6 +57,8 @@ class SolarmanRegisterUpdaterTest {
     private static final ChannelUID SOC_CHANNEL = new ChannelUID("solarman:logger:test:tou:soc1");
     private static final int UNBOUNDED_REGISTER = 0x00F0;
     private static final ChannelUID UNBOUNDED_CHANNEL = new ChannelUID("solarman:logger:test:static:power");
+    private static final int POWER_REGISTER = 0x0098;
+    private static final ChannelUID POWER_CHANNEL = new ChannelUID("solarman:logger:test:tou:power1");
     private static final int MODE_REGISTER = 0x00AC;
     private static final ChannelUID MODE_CHANNEL = new ChannelUID("solarman:logger:test:tou:mode1");
 
@@ -117,6 +120,22 @@ class SolarmanRegisterUpdaterTest {
     }
 
     @ParameterizedTest
+    @CsvSource({ "0, 0", "3000, 300", "12000, 1200" })
+    void scaledValueIsValidatedInChannelUnits(int watts, int raw) throws SolarmanException {
+        updater.updateLoggerRegisters(POWER_CHANNEL, new DecimalType(watts));
+
+        verify(protocol).writeRegisters(eq(connection), eq(POWER_REGISTER), eq(toBytes(raw)));
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = { 12010, 20000 })
+    void scaledValueOutsideValidationIsRejected(int watts) throws SolarmanException {
+        updater.updateLoggerRegisters(POWER_CHANNEL, new DecimalType(watts));
+
+        verify(protocol, never()).writeRegisters(any(), anyInt(), any());
+    }
+
+    @ParameterizedTest
     @ValueSource(strings = { "0", "5000", "65535" })
     void emptyValidationDoesNotLimitValue(String value) throws SolarmanException {
         updater.updateLoggerRegisters(UNBOUNDED_CHANNEL, new DecimalType(value));
@@ -149,12 +168,14 @@ class SolarmanRegisterUpdaterTest {
         ParameterItem soc = createItem("SOC 1", 1, SOC_REGISTER, createValidation(0, 100));
         // Static channels are built with an empty Validation, which must not restrict writes
         ParameterItem unbounded = createItem("Power", 1, UNBOUNDED_REGISTER, new Validation());
+        // Validation is expressed in channel units (W), the register holds W / 10
+        ParameterItem power = createItem("Power 1", 1, POWER_REGISTER, createValidation(0, 12000));
+        power.setScale(BigDecimal.TEN);
         ParameterItem mode = createItem("Mode 1", 1, MODE_REGISTER, createValidation(0, 1));
         mode.setLookup(List.of(createLookup(0, "Charge disabled"), createLookup(1, "Grid charge"),
                 createLookup(2, "Generator charge")));
-        return new SolarmanRegisterUpdater(
-                Map.of(time, TIME_CHANNEL, soc, SOC_CHANNEL, unbounded, UNBOUNDED_CHANNEL, mode, MODE_CHANNEL),
-                connector, protocol);
+        return new SolarmanRegisterUpdater(Map.of(time, TIME_CHANNEL, soc, SOC_CHANNEL, unbounded, UNBOUNDED_CHANNEL,
+                power, POWER_CHANNEL, mode, MODE_CHANNEL), connector, protocol);
     }
 
     private static ParameterItem createItem(String name, int rule, int register, @Nullable Validation validation) {
@@ -171,8 +192,8 @@ class SolarmanRegisterUpdaterTest {
 
     private static Validation createValidation(int min, int max) {
         Validation validation = new Validation();
-        validation.setMin(min);
-        validation.setMax(max);
+        validation.setMin(BigDecimal.valueOf(min));
+        validation.setMax(BigDecimal.valueOf(max));
         return validation;
     }
 
