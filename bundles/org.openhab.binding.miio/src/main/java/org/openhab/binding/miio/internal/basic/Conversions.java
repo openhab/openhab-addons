@@ -15,6 +15,7 @@ package org.openhab.binding.miio.internal.basic;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -372,14 +373,14 @@ public class Conversions {
 
     public static JsonElement execute(String transformation, JsonElement value, Map<String, Object> deviceVariables) {
         try {
-            if (transformation.toUpperCase().startsWith("GETJSONELEMENT")) {
+            if (transformation.toUpperCase(Locale.ROOT).startsWith("GETJSONELEMENT")) {
                 if (transformation.length() > 15) {
                     return getJsonElement(transformation.substring(15), value);
                 } else {
                     LOGGER.info("Transformation {} missing element. Returning '{}'", transformation, value.toString());
                 }
             }
-            switch (transformation.toUpperCase()) {
+            switch (transformation.toUpperCase(Locale.ROOT)) {
                 case "YEELIGHTSCENEID":
                     return yeelightSceneConversion(value);
                 case "SECONDSTOHOURS":

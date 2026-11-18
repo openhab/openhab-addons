@@ -105,7 +105,7 @@
 						"aiid": 1
 					}
 				],
-				"readmeComment": "Starts cooking with a JSON list of 6 values: recipe id, time (minutes), temperature (degrees Celsius), scheduled start time (minutes, 0 starts now), food quantity (0-4), preheat (1 off, 2 on). The recipe id is `M0` for manual cooking, `M1` to `M10` for the device presets or `C` plus the recipeID of a cloud recipe. Example manual cooking 15 minutes at 180 degrees: `[\"M0\",15,180,0,0,1]`."
+				"readmeComment": "Starts cooking with a JSON list of 6 values: recipe id, time (minutes), temperature (degrees Celsius), scheduled start time (minutes, 0 starts now), food quantity (0-4), preheat (1 off, 2 on). The recipe id is `M0` for manual cooking, `M1` to `M8` for the device presets or `A` plus the recipeID of a cloud recipe. Example manual cooking 15 minutes at 180 degrees: `[\"M0\",15,180,0,0,1]`."
 			},
 			{
 				"property": "status",

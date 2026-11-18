@@ -319,6 +319,7 @@ For each action:
   Other commands (UP, DOWN, STOP, ...) are sent as lower case text.
 - Text is sent exactly as typed (`Auto` stays `Auto`); add the `LowerCase` condition for devices that only accept lower case.
 - A missing `parameterType` is `EMPTY`, which ignores the command value.
+- `JSON` text containing `$` is not supported, as `$...$` is substituted with device variables when sending.
 
 ### Parameters and `$value$`
 

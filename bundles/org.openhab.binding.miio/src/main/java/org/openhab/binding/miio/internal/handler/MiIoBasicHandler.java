@@ -234,7 +234,13 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
                             command = new DecimalType(((QuantityType<?>) command).toBigDecimal());
                         }
                     }
-                    if (paramType == CommandParameterType.COLOR) {
+                    if (paramType == CommandParameterType.JSON) {
+                        if (command instanceof StringType) {
+                            value = parseActionInput(action, command.toString());
+                        } else {
+                            logger.debug("Parameter type JSON only accepts text, command '{}' not send", command);
+                        }
+                    } else if (paramType == CommandParameterType.COLOR) {
                         if (command instanceof HSBType) {
                             HSBType hsb = (HSBType) command;
                             Color color = Color.getHSBColor(hsb.getHue().floatValue() / 360,
@@ -277,8 +283,6 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
                                 }
                             }
                             value = new JsonPrimitive(text);
-                        } else if (paramType == CommandParameterType.JSON) {
-                            value = parseActionInput(action, command.toString());
                         }
                     } else {
                         value = new JsonPrimitive(command.toString().toLowerCase());
@@ -559,7 +563,7 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
     /**
      * Parses the command text as the complete input list of a MIoT action, e.g. {@code ["C7795", 11, 180]}.
      *
-     * @return the list, or null when the action is no MIoT action or the text is no JSON list
+     * @return the list, or null when the action is no MIoT action or the text is no JSON list of numbers and texts
      */
     private @Nullable JsonElement parseActionInput(MiIoDeviceAction action, String text) {
         if (!action.isMiOtAction()) {
@@ -569,7 +573,8 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
         try (JsonReader reader = new JsonReader(new StringReader(text))) {
             reader.setStrictness(Strictness.STRICT);
             JsonElement input = JsonParser.parseReader(reader);
-            if (input.isJsonArray() && reader.peek() == JsonToken.END_DOCUMENT) {
+            if (input.isJsonArray() && reader.peek() == JsonToken.END_DOCUMENT && input.getAsJsonArray().asList()
+                    .stream().allMatch(e -> e.isJsonPrimitive() && !e.getAsJsonPrimitive().isBoolean())) {
                 return input;
             }
         } catch (JsonParseException | IOException e) {
@@ -1148,7 +1153,7 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
                                 Utils.sanitizeForLog(response.getResult()));
                         final MiIoBasicChannel ch = getCustomRefreshChannel(channel);
                         boolean updated = false;
-                        if (ch != null && hasValue(response.getResult())) {
+                        if (ch != null && response.getResponse().has("result") && hasValue(response.getResult())) {
                             if (response.getResult().isJsonArray()) {
                                 JsonArray cmdResponse = response.getResult().getAsJsonArray();
                                 final String transformation = ch.getTransformation();
