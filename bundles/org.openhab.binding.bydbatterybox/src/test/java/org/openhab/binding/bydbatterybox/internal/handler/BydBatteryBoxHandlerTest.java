@@ -17,12 +17,17 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 import static org.openhab.binding.bydbatterybox.internal.BydBatteryBoxBindingConstants.*;
 
+import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.math.BigDecimal;
+import java.net.InetAddress;
+import java.net.ServerSocket;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -39,6 +44,7 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import org.openhab.binding.bydbatterybox.internal.FakeBattery;
 import org.openhab.binding.bydbatterybox.internal.Fixtures;
+import org.openhab.binding.bydbatterybox.internal.protocol.BydClient;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TranslationProvider;
@@ -99,16 +105,21 @@ class BydBatteryBoxHandlerTest {
     }
 
     private BydBatteryBoxHandler createHandler(int port, List<Channel> channels, Map<String, Object> parameters) {
+        // the handler waits for real only for its first cycle, not between requests or before a retry
+        return createHandler(port, channels, parameters, millis -> {
+        });
+    }
+
+    private BydBatteryBoxHandler createHandler(int port, List<Channel> channels, Map<String, Object> parameters,
+            BydClient.Sleeper sleeper) {
         Map<String, Object> properties = new HashMap<>(Map.of("hostname", "127.0.0.1", "port", BigDecimal.valueOf(port),
                 "refreshInterval", BigDecimal.valueOf(30), "eventLogInterval", BigDecimal.ZERO, "connectionTimeout",
                 BigDecimal.valueOf(2)));
         properties.putAll(parameters);
         Thing thing = ThingBuilder.create(THING_TYPE_BATTERY, "test").withConfiguration(new Configuration(properties))
                 .withChannels(channels).build();
-        // the handler waits for real only for its first cycle, not between requests
         BydBatteryBoxHandler localHandler = new BydBatteryBoxHandler(thing, i18nProvider, localeProvider, bundle,
-                millis -> {
-                });
+                sleeper);
         localHandler.setCallback(callback);
         handler = localHandler;
         return localHandler;
@@ -248,5 +259,54 @@ class BydBatteryBoxHandlerTest {
 
         verify(callback, timeout(FIRST_CYCLE_TIMEOUT_MILLIS)).statusUpdated(any(), argThat(
                 info -> info.getStatus() == ThingStatus.OFFLINE && "@text/offline.busy".equals(info.getDescription())));
+    }
+
+    @Test
+    void shortOutageIsBridgedByOneRetry() throws Exception {
+        int port = freePort();
+        List<Long> sleeps = new CopyOnWriteArrayList<>();
+        // the battery is unreachable at first and answers again when the handler retries
+        BydBatteryBoxHandler localHandler = createHandler(port, List.of(), Map.of("detailInterval", BigDecimal.ZERO),
+                millis -> {
+                    // the client also waits between requests
+                    if (millis != BydBatteryBoxHandler.RETRY_DELAY_MILLIS) {
+                        return;
+                    }
+                    sleeps.add(millis);
+                    try {
+                        battery = FakeBattery.startOnPort(port, 64, Fixtures.frame("identity"),
+                                Fixtures.frame("status"));
+                    } catch (IOException e) {
+                        throw new UncheckedIOException(e);
+                    }
+                });
+
+        localHandler.initialize();
+
+        verify(callback, timeout(FIRST_CYCLE_TIMEOUT_MILLIS)).statusUpdated(any(),
+                argThat(info -> info.getStatus() == ThingStatus.ONLINE));
+        verify(callback, never()).statusUpdated(any(), argThat(info -> info.getStatus() == ThingStatus.OFFLINE));
+        assertEquals(List.of(BydBatteryBoxHandler.RETRY_DELAY_MILLIS), sleeps);
+    }
+
+    @Test
+    void unreachableBatteryGoesOfflineAfterOneRetry() throws Exception {
+        int port = freePort();
+        List<Long> sleeps = new CopyOnWriteArrayList<>();
+        BydBatteryBoxHandler localHandler = createHandler(port, List.of(), Map.of("detailInterval", BigDecimal.ZERO),
+                sleeps::add);
+
+        localHandler.initialize();
+
+        verify(callback, timeout(FIRST_CYCLE_TIMEOUT_MILLIS)).statusUpdated(any(),
+                argThat(info -> info.getStatus() == ThingStatus.OFFLINE
+                        && "@text/offline.unreachable".equals(info.getDescription())));
+        assertEquals(List.of(BydBatteryBoxHandler.RETRY_DELAY_MILLIS), sleeps);
+    }
+
+    private static int freePort() throws IOException {
+        try (ServerSocket socket = new ServerSocket(0, 1, InetAddress.getLoopbackAddress())) {
+            return socket.getLocalPort();
+        }
     }
 }

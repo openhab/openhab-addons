@@ -270,7 +270,17 @@ Compare values taken at a similar state of charge, or use a lower threshold in t
 | The battery cannot be reached        | Wrong hostname or port, the battery or the forwarding host is offline, or the Wi-Fi connection is down. |
 | The battery did not answer in time   | The connection is slow or interrupted; increase `connectionTimeout` if this happens regularly.          |
 
+If the battery cannot be reached or does not answer, the binding tries once more 20 seconds later, before it reports the Thing as `OFFLINE`.
+After that, it retries at the next readings, waiting longer after each failed attempt.
+
 Enable `TRACE` logging for `org.openhab.binding.bydbatterybox` to see every frame sent and received.
+
+### Short Outages Without Internet Access
+
+A battery that is blocked from the internet, for example by a router or firewall rule, was seen to stop answering on the network for about 15 seconds every 100 seconds, even to ping.
+The retry after 20 seconds bridges such an outage.
+If the Thing still changes between `OFFLINE` and `ONLINE` regularly with the message that the battery cannot be reached, check whether the battery is blocked from the internet: a `ping` to the battery that runs for a few minutes shows the outages.
+Allowing the battery to access the internet made the outages disappear.
 
 ## Credits
 
