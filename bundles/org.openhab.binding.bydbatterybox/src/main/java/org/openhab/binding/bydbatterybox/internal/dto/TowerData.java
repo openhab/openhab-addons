@@ -30,7 +30,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * @param dischargedEnergyWh lifetime discharged energy of the tower in Wh
  * @param stateBits tower warning bitmap
  * @param balancingCells number of cells currently balancing
- * @param cellVoltages cell voltages in mV, index 0 = cell 1; only the readable cells
+ * @param cellVoltages cell voltages in mV, index 0 = cell 1; only the cells that were read
  * @param temperatures sensor temperatures in °C, index 0 = sensor 1
  * @param bmsFirmwareA BMS firmware of section A
  * @param bmsFirmwareB BMS firmware of section B
@@ -47,5 +47,14 @@ public record TowerData(int tower, BigDecimal stateOfCharge, int stateOfHealth, 
     public TowerData {
         cellVoltages = List.copyOf(cellVoltages);
         temperatures = List.copyOf(temperatures);
+    }
+
+    /**
+     * @return this measurement with the cell voltages and the balancing cell count replaced
+     */
+    public TowerData withCells(List<Integer> cellVoltages, int balancingCells) {
+        return new TowerData(tower, stateOfCharge, stateOfHealth, voltage, outputVoltage, current, chargedEnergyWh,
+                dischargedEnergyWh, stateBits, balancingCells, cellVoltages, temperatures, bmsFirmwareA, bmsFirmwareB,
+                serialNumber);
     }
 }

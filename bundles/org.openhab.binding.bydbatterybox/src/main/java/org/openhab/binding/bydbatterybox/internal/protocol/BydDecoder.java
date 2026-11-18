@@ -41,6 +41,7 @@ public final class BydDecoder {
     static final int IDENTITY_FRAME_LENGTH = 209;
     static final int STATUS_FRAME_LENGTH = 55;
     static final int MEASUREMENT_LENGTH = 4 * BydClient.CHUNK_PAYLOAD_LENGTH;
+    static final int SECOND_PASS_LENGTH = 2 * BydClient.CHUNK_PAYLOAD_LENGTH;
     static final int EVENT_LOG_LENGTH = 5 * BydClient.CHUNK_PAYLOAD_LENGTH;
 
     static final int EVENT_RECORDS = 20;
@@ -60,6 +61,8 @@ public final class BydDecoder {
     private static final int MEAS_STATE_BITS = 54;
     private static final int MEAS_BMS_FIRMWARE_A = 60;
     private static final int MEAS_BMS_FIRMWARE_B = 62;
+    /** 0 in the first and 1 in the second measurement pass. */
+    private static final int MEAS_PASS = 65;
     private static final int MEAS_SERIAL_NUMBER = 66;
     private static final int MEAS_CELL_VOLTAGES = 96;
     private static final int MEAS_TEMPERATURES = 354;
@@ -97,7 +100,7 @@ public final class BydDecoder {
             throws BydCommunicationException {
         requireLength(buffer, MEASUREMENT_LENGTH, "measurement buffer");
         List<Integer> cells = new ArrayList<>();
-        for (int i = 0; i < info.readableCellsPerTower(); i++) {
+        for (int i = 0; i < info.firstPassCellsPerTower(); i++) {
             cells.add(s16(buffer, MEAS_CELL_VOLTAGES + 2 * i));
         }
         // temperatures are unsigned bytes in all known implementations; negative values cannot occur in that format
@@ -105,10 +108,7 @@ public final class BydDecoder {
         for (int i = 0; i < info.temperatureSensorsPerTower(); i++) {
             temperatures.add(u8(buffer, MEAS_TEMPERATURES + i));
         }
-        int balancing = 0;
-        for (int i = 0; i < MEAS_BALANCING_FLAGS_LENGTH; i++) {
-            balancing += Integer.bitCount(u8(buffer, MEAS_BALANCING_FLAGS + i));
-        }
+        int balancing = bitCount(buffer, MEAS_BALANCING_FLAGS, MEAS_BALANCING_FLAGS_LENGTH);
         // firmware versions are stored as (minor, major)
         return new TowerData(tower, BigDecimal.valueOf(s16(buffer, MEAS_STATE_OF_CHARGE), 1),
                 s16(buffer, MEAS_STATE_OF_HEALTH), BigDecimal.valueOf(s16(buffer, MEAS_VOLTAGE), 1),
@@ -118,6 +118,32 @@ public final class BydDecoder {
                 temperatures, version(u8(buffer, MEAS_BMS_FIRMWARE_A + 1), u8(buffer, MEAS_BMS_FIRMWARE_A)),
                 version(u8(buffer, MEAS_BMS_FIRMWARE_B + 1), u8(buffer, MEAS_BMS_FIRMWARE_B)),
                 ascii(buffer, MEAS_SERIAL_NUMBER, SERIAL_NUMBER_LENGTH));
+    }
+
+    /**
+     * Adds the cells beyond 128 from the first two chunks of the second measurement pass, which has the layout of the
+     * first pass.
+     * <p>
+     * The balancing flags of these cells are assumed to start at the position of the first-pass flags; this is not
+     * verified yet. Under both bit orders discussed for the first pass, the flags of cells 129-160 are in the first 4
+     * bytes, and only their number is used.
+     *
+     * @throws BydCommunicationException if the buffer is not marked as second pass
+     */
+    public static TowerData decodeSecondPass(TowerData firstPass, byte[] buffer, SystemInfo info)
+            throws BydCommunicationException {
+        requireLength(buffer, SECOND_PASS_LENGTH, "second measurement buffer");
+        if (u8(buffer, MEAS_PASS) != 1) {
+            throw new BydCommunicationException(BydCommunicationException.Reason.PROTOCOL,
+                    "measurement buffer is not marked as second pass (" + u8(buffer, MEAS_PASS) + ")");
+        }
+        int count = info.secondPassCellsPerTower();
+        List<Integer> cells = new ArrayList<>(firstPass.cellVoltages());
+        for (int i = 0; i < count; i++) {
+            cells.add(s16(buffer, MEAS_CELL_VOLTAGES + 2 * i));
+        }
+        int balancing = firstPass.balancingCells() + bitCount(buffer, MEAS_BALANCING_FLAGS, (count + 7) / 8);
+        return firstPass.withCells(cells, balancing);
     }
 
     /**
@@ -153,6 +179,14 @@ public final class BydDecoder {
         } catch (DateTimeException e) {
             return null;
         }
+    }
+
+    private static int bitCount(byte[] b, int offset, int length) {
+        int count = 0;
+        for (int i = 0; i < length; i++) {
+            count += Integer.bitCount(u8(b, offset + i));
+        }
+        return count;
     }
 
     private static String version(int major, int minor) {

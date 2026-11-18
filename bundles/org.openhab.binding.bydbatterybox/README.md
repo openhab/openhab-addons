@@ -7,6 +7,7 @@ All values can be persisted and used in rules, for example to be alerted when th
 The binding is read-only: it does not change any setting of the battery.
 It reads data, and sends only the two commands that make the battery measure its cells and load its event log.
 The BYD configuration tool sends the same commands.
+For towers with more than 128 cells, a third command can be enabled, see [Cells Beyond 128](#cells-beyond-128).
 
 ## Supported Things
 
@@ -18,14 +19,14 @@ Towers and modules are not separate Things, but channel groups of the `battery` 
 Channel groups are defined for up to 3 towers with up to 8 modules each.
 After the first reading, the binding removes the channels of towers and modules the battery does not have.
 
-| Battery                                   | Status                                                                                              |
-|-------------------------------------------|-----------------------------------------------------------------------------------------------------|
-| Battery-Box Premium HVS, BMU firmware 3.x | Tested (HVS 7.7, 1 tower with 3 modules)                                                            |
-| Battery-Box Premium HVS with 5 modules    | Untested. Only cells 1–128 per tower can be read; the cell voltages of the 5th module stay `UNDEF`. |
-| Battery-Box Premium HVM                   | Untested. Supported by the protocol (16 cells and 8 temperature sensors per module).                |
-| Several towers in parallel                | Untested                                                                                            |
-| Battery-Box Premium LVS, HVL              | Not supported. Status values may work, cell details are not available.                              |
-| Battery-Box HVB / BCU 2.0                 | Not supported                                                                                       |
+| Battery                                   | Status                                                                                               |
+|-------------------------------------------|------------------------------------------------------------------------------------------------------|
+| Battery-Box Premium HVS, BMU firmware 3.x | Tested (HVS 7.7, 1 tower with 3 modules)                                                             |
+| Battery-Box Premium HVS with 5 modules    | Tested with recorded data of 2 towers with 5 modules each; see [Cells Beyond 128](#cells-beyond-128) |
+| Battery-Box Premium HVM                   | Untested. Supported by the protocol (16 cells and 8 temperature sensors per module).                 |
+| Several towers in parallel                | Tested with recorded data of 2 towers                                                                |
+| Battery-Box Premium LVS, HVL              | Not supported. Status values may work, cell details are not available.                               |
+| Battery-Box HVB / BCU 2.0                 | Not supported                                                                                        |
 
 ## Prerequisites
 
@@ -63,17 +64,31 @@ Add the Thing manually with its hostname.
 
 ### `battery` Thing Configuration
 
-| Name                | Type    | Description                                                                           | Default | Required | Advanced |
-|---------------------|---------|---------------------------------------------------------------------------------------|---------|----------|----------|
-| `hostname`          | text    | Hostname or IP address of the battery, or of a forwarding host                        | N/A     | yes      | no       |
-| `port`              | integer | TCP port                                                                              | 8080    | no       | yes      |
-| `refreshInterval`   | integer | Interval in seconds for reading the status (minimum 30)                               | 60      | no       | no       |
-| `detailInterval`    | integer | Interval in seconds for measuring the cell voltages and temperatures, `0` disables it | 600     | no       | no       |
-| `eventLogInterval`  | integer | Interval in seconds for reading the event logs, `0` disables it                       | 600     | no       | no       |
-| `connectionTimeout` | integer | Timeout in seconds for connecting and for each reply                                  | 5       | no       | yes      |
+| Name                | Type    | Description                                                                                     | Default | Required | Advanced |
+|---------------------|---------|-------------------------------------------------------------------------------------------------|---------|----------|----------|
+| `hostname`          | text    | Hostname or IP address of the battery, or of a forwarding host                                  | N/A     | yes      | no       |
+| `port`              | integer | TCP port                                                                                        | 8080    | no       | yes      |
+| `refreshInterval`   | integer | Interval in seconds for reading the status (minimum 30)                                         | 60      | no       | no       |
+| `detailInterval`    | integer | Interval in seconds for measuring the cell voltages and temperatures, `0` disables it           | 600     | no       | no       |
+| `eventLogInterval`  | integer | Interval in seconds for reading the event logs, `0` disables it                                 | 600     | no       | no       |
+| `readExtendedCells` | boolean | Also read cells 129–160 of HVS towers with 5 modules, see [Cells Beyond 128](#cells-beyond-128) | false   | no       | yes      |
+| `connectionTimeout` | integer | Timeout in seconds for connecting and for each reply                                            | 5       | no       | yes      |
 
 Cell details and event logs are read in the same connection as the status, so their intervals are rounded up to a multiple of `refreshInterval`.
 A cell measurement keeps the connection busy for about 2–3 seconds per tower.
+
+### Cells Beyond 128
+
+A cell measurement returns at most 128 cell voltages per tower.
+An HVS tower with 5 modules has 160 cells, so the voltages of its 5th module are missing; its temperatures are always read.
+With `readExtendedCells` enabled, the binding measures such a tower a second time to read cells 129–160.
+To request this second measurement, it writes the text `DEBUG` to a battery register before it, as other integrations (ioBroker, Home Assistant, smarthomeNG) do.
+On the tested system, this write affected only the following measurement; the next regular measurement was normal again.
+The second measurement adds about 3 seconds per tower.
+
+Without the option, the cell voltages and the module voltage of the 5th module are `UNDEF`.
+The number of balancing cells includes cells 129–160 only with the option enabled; where their balancing flags are stored is assumed, not yet verified.
+Towers with at most 128 cells are never measured a second time, even with the option enabled.
 
 ### Properties
 
