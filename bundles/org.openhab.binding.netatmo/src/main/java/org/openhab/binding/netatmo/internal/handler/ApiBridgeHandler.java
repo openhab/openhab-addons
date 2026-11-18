@@ -74,7 +74,9 @@ import org.openhab.binding.netatmo.internal.config.ConfigurationLevel;
 import org.openhab.binding.netatmo.internal.deserialization.AccessTokenResponseDeserializer;
 import org.openhab.binding.netatmo.internal.deserialization.NADeserializer;
 import org.openhab.binding.netatmo.internal.discovery.NetatmoDiscoveryService;
+import org.openhab.binding.netatmo.internal.servlet.CloudWebhookServlet;
 import org.openhab.binding.netatmo.internal.servlet.GrantServlet;
+import org.openhab.binding.netatmo.internal.servlet.LocalWebhookServlet;
 import org.openhab.binding.netatmo.internal.servlet.WebhookServlet;
 import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
 import org.openhab.core.auth.client.oauth2.OAuthClientService;
@@ -235,8 +237,11 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
 
         String urlPattern = configuration.getWebhookUrlPattern();
         if (urlPattern != null || cloudWebhookService != null) {
-            WebhookServlet servlet = new WebhookServlet(this, httpService, deserializer, webhookApi, urlPattern,
-                    cloudWebhookService, scheduler);
+            WebhookServlet servlet = cloudWebhookService != null
+                    ? new CloudWebhookServlet(this, httpService, deserializer, webhookApi, cloudWebhookService,
+                            scheduler)
+                    : new LocalWebhookServlet(this, httpService, deserializer, webhookApi,
+                            Objects.requireNonNull(urlPattern));
             webhookServlet = servlet;
             servlet.startListening();
         }
@@ -406,7 +411,8 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
             try {
                 ApiError apiError = deserializer.deserialize(ApiError.class, responseBody);
                 if (ServiceError.UNKNOWN.equals(apiError.getCode())) {
-                    // HttpStatus.getCode() returns null for non-standard status codes (e.g. 520-527), so pass
+                    // HttpStatus.getCode() returns null for non-standard status codes (e.g.
+                    // 520-527), so pass
                     // response.getStatus() rather than statusCode
                     exception = new NetatmoException(apiError, response.getStatus(), extractRawErrorCode(responseBody));
                 } else {
