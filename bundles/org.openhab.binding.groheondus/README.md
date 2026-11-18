@@ -47,31 +47,44 @@ Once the account bridge is configured, the appliances in your account will be di
 | pollingInterval          | Retrieved from API,      | Interval in seconds to get new data from the API      |
 |                          | usually 900              | The `sense` thing uses 900 by default.                |
 
+The name of the appliance, as set in the GROHE ONDUS app, is available as the Thing property `applianceName`.
+
 #### Channels
 
 ##### senseguard
 
 | Channel                         | Type               | Description                                      |
 |---------------------------------|--------------------|--------------------------------------------------|
-| name                            | String             | The name of the appliance                        |
 | pressure                        | Number:Pressure    | The pressure of your water supply                |
 | temperature_guard               | Number:Temperature | The ambient temperature of the appliance         |
 | pause                           | Number:Time        | Pause the appliance for a duration in minutes    |
 | valve_open                      | Switch             | Valve switch                                     |
 | waterconsumption                | Number:Volume      | The amount of water used in a specific timeframe |
 | waterconsumption_since_midnight | Number:Volume      | The amount of water used since midnight          |
+| last_update                     | DateTime           | When the appliance last sent data to the cloud   |
 
 ##### sense
 
 | Channel                  | Type                     | Description                                           |
 |--------------------------|--------------------------|-------------------------------------------------------|
-| name                     | String                   | The name of the appliance                             |
 | humidity                 | Number:Dimensionless     | The humidity measured by the appliance                |
 | temperature              | Number:Temperature       | The ambient temperature of the appliance              |
 | battery                  | Number                   | The battery level of the appliance                    |
 | pause                    | Number:Time              | Pause the appliance for a duration in minutes         |
+| last_update              | DateTime                 | When the appliance last sent data to the cloud        |
 
 Note: Be aware that the Sense reports data once a day (at most), and that the value posted in the channel - however the latest - may be up to 48 hours old.
+
+All measurements reported by the device (`temperature`, `humidity`, `pressure` and `temperature_guard`) are requested in hourly resolution and sent to persistence as a time series with their original timestamps, so the full history uploaded by the device is stored, not just the latest value.
+The channel state itself always reflects the most recent measurement.
+
+The `waterconsumption` channel has a `timeframe` parameter (1-90, default 1): the number of full days before today to include, in addition to today.
+With `timeframe=3` the channel sums the three previous days and today so far.
+The Sense Guard also fetches pressure and temperature history for the same period, so a long timeframe sends a large backfill to persistence on the first poll.
+
+The binding checks whether each device is still reporting to the GROHE ONDUS cloud.
+A Sense that has sent no data for 48 hours, a Sense Guard that has sent no data for 6 hours, or a device the cloud reports as disconnected is set to OFFLINE with the time of its last report.
+The battery level of a silent Sense is set to `UNDEF`, since the cloud keeps reporting the last known value.
 
 The `pause` channel accepts a duration between 0 and 240 minutes. A positive duration activates the pause, while `0 min` cancels it.
 
@@ -80,26 +93,27 @@ The `pause` channel accepts a duration between 0 and 240 minutes. A positive dur
 Things file:
 
 ```java
-Bridge groheondus:account:account1 [ username="user@example.com", password="YourStrongPasswordHere!" ] {
-    groheondus:senseguard:550e8400-e29b-11d4-a716-446655440000 [ applianceId="550e8400-e29b-11d4-a716-446655440000", roomId=456, locationId=123 ] {
+Bridge groheondus:account:account1 "GROHE ONDUS account" [ username="user@example.com", password="YourStrongPasswordHere!" ] {
+    senseguard mainvalve "Sense Guard" [ applianceId="550e8400-e29b-11d4-a716-446655440000", roomId=456, locationId=123 ] {
         Channels:
-            Type number : waterconsumption [
-               timeframe=3
-            ]
+            Type waterconsumption : waterconsumption [ timeframe=3 ]
     }
-    groheondus:sense:550e8400-e29b-11d4-a716-446655440000 [ applianceId="444e8400-e29b-11d4-a716-446655440000", roomId=456, locationId=123 ]
+    sense kitchen "Sense" [ applianceId="444e8400-e29b-11d4-a716-446655440000", roomId=456, locationId=123 ]
 }
 ```
 
 Items file:
 
 ```java
-String Name_Sense_Guard "Appliance Name" {channel="groheondus:senseguard:groheondus:appliance:550e8400-e29b-11d4-a716-446655440000:name"}
-Number:Pressure Pressure_Sense_Guard "Pressure [%.1f %unit%]" {channel="groheondus:senseguard:groheondus:appliance:550e8400-e29b-11d4-a716-446655440000:pressure"}
-Number:Temperature Temperature_Sense_Guard "Temperature [%.1f %unit%]" {channel="groheondus:senseguard:groheondus:appliance:550e8400-e29b-11d4-a716-446655440000:temperature_guard"}
-Number:Volume Water_Usage_Since_Midnight_Sense_Guard "Water usage since midnight [%.1f %unit%]" {channel="groheondus:senseguard:groheondus:appliance:550e8400-e29b-11d4-a716-446655440000:waterconsumption_since_midnight"}
+Number:Pressure Pressure_Sense_Guard "Pressure [%.1f %unit%]" {channel="groheondus:senseguard:account1:mainvalve:pressure"}
+Number:Temperature Temperature_Sense_Guard "Temperature [%.1f %unit%]" {channel="groheondus:senseguard:account1:mainvalve:temperature_guard"}
+Number:Volume Water_Usage_Sense_Guard "Water usage 3 days + today [%.1f %unit%]" {channel="groheondus:senseguard:account1:mainvalve:waterconsumption"}
+Number:Volume Water_Usage_Since_Midnight_Sense_Guard "Water usage since midnight [%.1f %unit%]" {channel="groheondus:senseguard:account1:mainvalve:waterconsumption_since_midnight"}
+Switch Valve_Sense_Guard "Valve open" {channel="groheondus:senseguard:account1:mainvalve:valve_open"}
+DateTime Last_Update_Sense_Guard "Last update [%1$tY-%1$tm-%1$td %1$tH:%1$tM]" {channel="groheondus:senseguard:account1:mainvalve:last_update"}
 
-String Name_Sense "Temperature [%.1f %unit%]" {channel="groheondus:sense:groheondus:appliance:444e8400-e29b-11d4-a716-446655440000:name"}
-Number:Temperature Temperature_Sense "Temperature [%.1f %unit%]" {channel="groheondus:sense:groheondus:appliance:444e8400-e29b-11d4-a716-446655440000:temperature"}
-Number Humidity_Sense "Humidity [%.1f %unit%]" {channel="groheondus:sense:groheondus:appliance:444e8400-e29b-11d4-a716-446655440000:humidity"}
+Number:Temperature Temperature_Sense "Temperature [%.1f %unit%]" {channel="groheondus:sense:account1:kitchen:temperature"}
+Number:Dimensionless Humidity_Sense "Humidity [%.0f %unit%]" {channel="groheondus:sense:account1:kitchen:humidity", unit="%"}
+Number Battery_Sense "Battery [%d %%]" {channel="groheondus:sense:account1:kitchen:battery"}
+DateTime Last_Update_Sense "Last update [%1$tY-%1$tm-%1$td %1$tH:%1$tM]" {channel="groheondus:sense:account1:kitchen:last_update"}
 ```

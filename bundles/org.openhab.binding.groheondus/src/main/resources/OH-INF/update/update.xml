@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<update:update-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:update="https://openhab.org/schemas/update-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/update-description/v1.0.0 https://openhab.org/schemas/update-description-1.0.0.xsd">
+
+	<thing-type uid="groheondus:sense">
+		<instruction-set targetVersion="1">
+			<add-channel id="last_update">
+				<type>groheondus:last_update</type>
+			</add-channel>
+			<remove-channel id="name"/>
+		</instruction-set>
+	</thing-type>
+
+	<thing-type uid="groheondus:senseguard">
+		<instruction-set targetVersion="1">
+			<add-channel id="last_update">
+				<type>groheondus:last_update</type>
+			</add-channel>
+			<remove-channel id="name"/>
+		</instruction-set>
+	</thing-type>
+
+</update:update-descriptions>
