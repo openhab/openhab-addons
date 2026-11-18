@@ -59,8 +59,8 @@ class ShellyBaseHandlerWakeupTest {
     }
 
     @Test
-    void onDeviceWakeupIgnoresOnlineThing() throws Exception {
-        assertWakeupIgnored(THING_TYPE_SHELLYPLUSSMOKE, ThingStatus.ONLINE, ThingStatusDetail.NONE);
+    void onDeviceWakeupOnlyStartsStatusJobOfOnlineThing() throws Exception {
+        assertWakeupOnlyStartsStatusJob(ThingStatus.ONLINE, ThingStatusDetail.NONE);
     }
 
     @Test
@@ -79,18 +79,18 @@ class ShellyBaseHandlerWakeupTest {
     }
 
     @Test
-    void onDeviceWakeupIgnoresThingWhileFirmwareIsUpdating() throws Exception {
-        assertWakeupIgnored(THING_TYPE_SHELLYPLUSSMOKE, ThingStatus.OFFLINE, ThingStatusDetail.FIRMWARE_UPDATING);
+    void onDeviceWakeupOnlyStartsStatusJobWhileFirmwareIsUpdating() throws Exception {
+        assertWakeupOnlyStartsStatusJob(ThingStatus.OFFLINE, ThingStatusDetail.FIRMWARE_UPDATING);
     }
 
     @Test
-    void onDeviceWakeupIgnoresGoneThing() throws Exception {
-        assertWakeupIgnored(THING_TYPE_SHELLYPLUSSMOKE, ThingStatus.OFFLINE, ThingStatusDetail.GONE);
+    void onDeviceWakeupOnlyStartsStatusJobOfGoneThing() throws Exception {
+        assertWakeupOnlyStartsStatusJob(ThingStatus.OFFLINE, ThingStatusDetail.GONE);
     }
 
     @Test
-    void onDeviceWakeupIgnoresOfflineThingWithPendingConfiguration() throws Exception {
-        assertWakeupIgnored(THING_TYPE_SHELLYPLUSSMOKE, ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING);
+    void onDeviceWakeupOnlyStartsStatusJobOfOfflineThingWithPendingConfiguration() throws Exception {
+        assertWakeupOnlyStartsStatusJob(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING);
     }
 
     @Test
@@ -226,6 +226,18 @@ class ShellyBaseHandlerWakeupTest {
         verify(handler, never()).restartWatchdog();
         verify(handler, never()).requestUpdates(anyInt(), anyBoolean());
         verify(handler, never()).startUpdateJob();
+        verifyNoInteractions(scheduler);
+    }
+
+    private void assertWakeupOnlyStartsStatusJob(ThingStatus status, ThingStatusDetail detail) throws Exception {
+        ScheduledExecutorService scheduler = mock(ScheduledExecutorService.class);
+        ShellyBaseHandler handler = buildWakeupHandler(THING_TYPE_SHELLYPLUSSMOKE, true, status, detail, scheduler);
+
+        handler.onDeviceWakeup();
+
+        verify(handler).startUpdateJob();
+        verify(handler, never()).restartWatchdog();
+        verify(handler, never()).requestUpdates(anyInt(), anyBoolean());
         verifyNoInteractions(scheduler);
     }
 

@@ -1535,11 +1535,16 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
      */
     @Override
     public void onDeviceWakeup() {
-        if (!profile.alwaysOn && !profile.isBlu && isWaitingForDevice()) {
-            logger.debug("{}: Device woke up, requesting update", thingName);
-            requestUpdates(1, false);
+        if (profile.alwaysOn || profile.isBlu) {
+            return;
+        }
+        if (getThingStatusDetail() != ThingStatusDetail.CONFIGURATION_ERROR) {
             // An initialization that failed without retry left the Thing without status job
             startUpdateJob();
+        }
+        if (isWaitingForDevice()) {
+            logger.debug("{}: Device woke up, requesting update", thingName);
+            requestUpdates(1, false);
             scheduler.execute(this::refreshStatus);
         }
     }
