@@ -48,7 +48,7 @@ import com.google.gson.JsonParser;
  * @author Florian Lettner - Initial contribution
  */
 @NonNullByDefault
-public class AtagOneApiClient {
+public class AtagOneApiClient implements AtagOneConnection {
 
     // wifi_scan(32) excluded: triggers an AP scan, delaying the device's response by several seconds
     private static final int INFO_BITMASK = 95;
@@ -63,9 +63,15 @@ public class AtagOneApiClient {
     private final String clientId;
     private final Gson gson = new GsonBuilder().create();
 
+    private final int maxRetries;
     private long lastRequestMs = 0;
 
     public AtagOneApiClient(HttpClient httpClient, String hostname, int port, String clientId) {
+        this(httpClient, hostname, port, clientId, MAX_RETRIES);
+    }
+
+    public AtagOneApiClient(HttpClient httpClient, String hostname, int port, String clientId, int maxRetries) {
+        this.maxRetries = maxRetries;
         this.httpClient = httpClient;
         this.baseUrl = "http://" + hostname + ":" + port;
         this.clientId = clientId;
@@ -99,6 +105,7 @@ public class AtagOneApiClient {
         return dto.acc_status;
     }
 
+    @Override
     public RetrieveReplyDTO retrieve() throws AtagOneCommunicationException {
         JsonObject auth = new JsonObject();
         auth.addProperty("user_account", "");
@@ -157,6 +164,7 @@ public class AtagOneApiClient {
         updateControl(controlUpdate, null);
     }
 
+    @Override
     public void updateControl(ControlUpdateDTO controlUpdate, @Nullable DeviceConfigUpdateDTO configUpdate)
             throws AtagOneCommunicationException {
         JsonObject auth = new JsonObject();
@@ -183,10 +191,12 @@ public class AtagOneApiClient {
         logger.debug("updateControl() succeeded");
     }
 
+    @Override
     public void updateChSchedule(ScheduleDTO chSchedule) throws AtagOneCommunicationException {
         updateSchedule("ch_schedule", chSchedule);
     }
 
+    @Override
     public void updateDhwSchedule(ScheduleDTO dhwSchedule) throws AtagOneCommunicationException {
         updateSchedule("dhw_schedule", dhwSchedule);
     }
@@ -254,7 +264,7 @@ public class AtagOneApiClient {
         // HTTP/1.0 device: Jetty may reuse a stale pooled connection, producing an EOFException on first attempt.
         boolean staleCorrectionUsed = false;
         Exception lastException = new AtagOneCommunicationException("Unreachable");
-        for (int attempt = 0; attempt <= MAX_RETRIES; attempt++) {
+        for (int attempt = 0; attempt <= maxRetries; attempt++) {
             try {
                 lastRequestMs = System.currentTimeMillis();
                 String url = baseUrl + path;
@@ -278,7 +288,7 @@ public class AtagOneApiClient {
                 if (cause instanceof EOFException && !staleCorrectionUsed) {
                     staleCorrectionUsed = true;
                     logger.trace("Stale pooled connection on {} — retrying on fresh connection", path);
-                    attempt--; // don't count this against MAX_RETRIES
+                    attempt--; // not counted against maxRetries
                 } else if (cause instanceof EOFException || cause instanceof SocketTimeoutException) {
                     lastException = e;
                     logger.debug("Transient error on {} (attempt {}): {}", path, attempt + 1, e.getMessage());
@@ -287,7 +297,7 @@ public class AtagOneApiClient {
                 }
             }
         }
-        throw new AtagOneCommunicationException("Request to " + path + " failed after " + MAX_RETRIES + " retries",
+        throw new AtagOneCommunicationException("Request to " + path + " failed after " + maxRetries + " retries",
                 lastException);
     }
 }
