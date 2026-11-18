@@ -71,6 +71,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSyntaxException;
 
 /**
@@ -548,6 +553,11 @@ public class VerisureSession {
                         }
                     } else {
                         logTraceWithPattern(httpStatus, content);
+                        String error = urlString.startsWith(START_GRAPHQL) ? getGraphQLError(content) : null;
+                        if (error != null) {
+                            logger.warn("Command rejected by the API: {}", error);
+                            return HttpStatus.BAD_REQUEST_400;
+                        }
                         return httpStatus;
                     }
                 } else if (httpStatus == HttpStatus.BAD_REQUEST_400) {
@@ -569,6 +579,29 @@ public class VerisureSession {
             }
         }
         return HttpStatus.SERVICE_UNAVAILABLE_503;
+    }
+
+    /**
+     * The API reports a failed GraphQL operation as HTTP 200 with an errors array.
+     */
+    private @Nullable String getGraphQLError(String content) {
+        try {
+            JsonElement root = JsonParser.parseString(content);
+            if (root.isJsonArray() && !root.getAsJsonArray().isEmpty()) {
+                root = root.getAsJsonArray().get(0);
+            }
+            if (!root.isJsonObject() || !(root.getAsJsonObject().get("errors") instanceof JsonArray errors)
+                    || errors.isEmpty() || !errors.get(0).isJsonObject()) {
+                return null;
+            }
+            JsonObject error = errors.get(0).getAsJsonObject();
+            if (error.get("data") instanceof JsonObject data && data.get("errorMessage") instanceof JsonPrimitive msg) {
+                return msg.getAsString();
+            }
+            return error.get("message") instanceof JsonPrimitive msg ? msg.getAsString() : error.toString();
+        } catch (JsonSyntaxException e) {
+            return null;
+        }
     }
 
     private int setSessionCookieAuthLogin() throws ExecutionException, InterruptedException, TimeoutException {
