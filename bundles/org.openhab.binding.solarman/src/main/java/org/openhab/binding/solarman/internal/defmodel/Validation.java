@@ -13,6 +13,7 @@
 package org.openhab.binding.solarman.internal.defmodel;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -23,12 +24,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @NonNullByDefault
 public class Validation {
-    private Integer max = 0;
+    private @Nullable Integer max;
     @JsonProperty("invalidate_all")
     private Object invalidateAll = new Object();
-    private Integer min = 0;
+    private @Nullable Integer min;
 
-    public Integer getMax() {
+    public @Nullable Integer getMax() {
         return max;
     }
 
@@ -44,7 +45,7 @@ public class Validation {
         this.invalidateAll = invalidateAll;
     }
 
-    public Integer getMin() {
+    public @Nullable Integer getMin() {
         return min;
     }
 

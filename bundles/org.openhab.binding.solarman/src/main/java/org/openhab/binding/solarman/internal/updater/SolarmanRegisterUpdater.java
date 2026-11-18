@@ -27,6 +27,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.solarman.internal.defmodel.Lookup;
 import org.openhab.binding.solarman.internal.defmodel.ParameterItem;
+import org.openhab.binding.solarman.internal.defmodel.Validation;
 import org.openhab.binding.solarman.internal.enums.IntegerValueType;
 import org.openhab.binding.solarman.internal.modbus.SolarmanLoggerConnection;
 import org.openhab.binding.solarman.internal.modbus.SolarmanLoggerConnector;
@@ -138,7 +139,7 @@ public class SolarmanRegisterUpdater {
             }
         };
 
-        if (decimalValue != null) {
+        if (decimalValue != null && isWithinValidation(channelUID, channelToUpdate, decimalValue)) {
             long value = convertNumericValue(decimalValue, channelToUpdate.getOffset(), channelToUpdate.getScale())
                     .longValue();
             if (IntegerValueType.UNSIGNED == integerValueType) {
@@ -195,6 +196,24 @@ public class SolarmanRegisterUpdater {
         } else {
             logUnexpectedCommand(channelUID, command);
         }
+    }
+
+    private boolean isWithinValidation(ChannelUID channelUID, ParameterItem channelToUpdate, DecimalType value) {
+        final Validation validation = channelToUpdate.getValidation();
+        if (validation == null) {
+            return true;
+        }
+
+        final Integer min = validation.getMin();
+        final Integer max = validation.getMax();
+        final BigDecimal decimal = value.toBigDecimal();
+        if ((min != null && decimal.compareTo(BigDecimal.valueOf(min)) < 0)
+                || (max != null && decimal.compareTo(BigDecimal.valueOf(max)) > 0)) {
+            logger.warn("Value {} for channel '{}' is outside the allowed range [{}, {}], not writing",
+                    decimal.toPlainString(), channelUID, min != null ? min : "-", max != null ? max : "-");
+            return false;
+        }
+        return true;
     }
 
     private BigDecimal convertNumericValue(DecimalType decimal, @Nullable BigDecimal offset,
