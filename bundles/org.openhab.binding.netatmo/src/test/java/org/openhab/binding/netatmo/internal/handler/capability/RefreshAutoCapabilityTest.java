@@ -103,7 +103,7 @@ class RefreshAutoCapabilityTest {
         refresh.delayFrom(OUTSIDE_BUSY_WINDOW);
         refresh.delayFrom(OUTSIDE_BUSY_WINDOW);
 
-        refresh.updateNAThing(station);
+        refresh.setNewData(station);
         assertEquals(Duration.ofSeconds(315), refresh.delayFrom(OUTSIDE_BUSY_WINDOW));
 
         assertEquals(Duration.ofSeconds(30), refresh.delayFrom(OUTSIDE_BUSY_WINDOW.plusSeconds(400)));
@@ -144,7 +144,7 @@ class RefreshAutoCapabilityTest {
         Instant now = ROUND_TEN_MINUTES.minusSeconds(305);
         when(station.getLastSeen()).thenReturn(ZonedDateTime.ofInstant(now.minusSeconds(300), ZoneOffset.UTC));
         refresh.setInterval(Duration.ofMinutes(10));
-        refresh.updateNAThing(station);
+        refresh.setNewData(station);
 
         assertEquals(Duration.ofSeconds(315), refresh.delayFrom(now));
         assertEquals(Duration.ofSeconds(30), refresh.delayFrom(ROUND_TEN_MINUTES.plusSeconds(600 * 2 - 20)));
@@ -219,7 +219,7 @@ class RefreshAutoCapabilityTest {
     void newDataEndsAFailureStreak() {
         refresh.fetchFailed(BUSY);
 
-        refresh.updateNAThing(new NAThing());
+        refresh.setNewData(new NAThing());
 
         assertFalse(refresh.isRetrying());
     }
