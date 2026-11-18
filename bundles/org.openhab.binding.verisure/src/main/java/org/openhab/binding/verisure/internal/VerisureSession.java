@@ -154,7 +154,7 @@ public class VerisureSession {
             int httpResultCode = setSessionCookieAuthLogin();
             if (httpResultCode == HttpStatus.OK_200) {
                 configureInstallationInstance(installationId);
-                return postVerisureAPI(url, data);
+                return postVerisureAPI(url, data, GraphQLErrors.FAIL);
             } else {
                 return httpResultCode;
             }
@@ -527,7 +527,16 @@ public class VerisureSession {
         throw new PostToAPIException("Failed to POST to API");
     }
 
+    private enum GraphQLErrors {
+        IGNORE,
+        FAIL
+    }
+
     private int postVerisureAPI(String urlString, String data) {
+        return postVerisureAPI(urlString, data, GraphQLErrors.IGNORE);
+    }
+
+    private int postVerisureAPI(String urlString, String data, GraphQLErrors graphQLErrors) {
         String url;
         if (urlString.contains("https://mypages.verisure.com")) {
             url = urlString;
@@ -553,7 +562,7 @@ public class VerisureSession {
                         }
                     } else {
                         logTraceWithPattern(httpStatus, content);
-                        String error = urlString.startsWith(START_GRAPHQL) ? getGraphQLError(content) : null;
+                        String error = graphQLErrors == GraphQLErrors.FAIL ? getGraphQLError(content) : null;
                         if (error != null) {
                             logger.warn("Command rejected by the API: {}", error);
                             return HttpStatus.BAD_REQUEST_400;
