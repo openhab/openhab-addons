@@ -48,9 +48,10 @@ public class WeatherCapability extends CacheCapability<WeatherApi> {
     }
 
     @Override
-    protected void updateNAMain(NAMain newData) {
-        if (firstLaunch) {
-            owned = !newData.isReadOnly();
+    protected void internalSetNewData(Object newData) {
+        super.internalSetNewData(newData);
+        if (newData instanceof NAMain naMain && firstLaunch) {
+            owned = !naMain.isReadOnly();
         }
     }
 

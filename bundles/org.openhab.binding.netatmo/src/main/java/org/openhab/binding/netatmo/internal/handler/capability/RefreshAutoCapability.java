@@ -150,13 +150,15 @@ public class RefreshAutoCapability extends RefreshCapability {
     }
 
     @Override
-    protected void updateNAThing(NAThing newData) {
-        super.updateNAThing(newData);
-        if (consecutiveFailures > 0) {
-            logger.debug("{} recovered after {} failed polls", thingUID, consecutiveFailures);
-            consecutiveFailures = 0;
+    protected void internalSetNewData(Object newData) {
+        super.internalSetNewData(newData);
+        if (newData instanceof NAThing naThing) {
+            if (consecutiveFailures > 0) {
+                logger.debug("{} recovered after {} failed polls", thingUID, consecutiveFailures);
+                consecutiveFailures = 0;
+            }
+            dataTimestamp = naThing.getLastSeen() instanceof ZonedDateTime ls ? ls.toInstant() : null;
         }
-        dataTimestamp = newData.getLastSeen() instanceof ZonedDateTime ls ? ls.toInstant() : null;
     }
 
     @Override

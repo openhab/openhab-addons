@@ -12,14 +12,15 @@
  */
 package org.openhab.binding.netatmo.internal.handler.capability;
 
-import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.VENDOR;
+import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 import static org.openhab.core.thing.Thing.*;
 
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.netatmo.internal.api.dto.NAError;
-import org.openhab.binding.netatmo.internal.api.dto.NAThing;
+import org.openhab.binding.netatmo.internal.api.dto.NAMain;
+import org.openhab.binding.netatmo.internal.api.dto.WebhookEvent;
 import org.openhab.binding.netatmo.internal.handler.CommonInterface;
 import org.openhab.binding.netatmo.internal.handler.channelhelper.ChannelHelper;
 import org.openhab.core.config.core.Configuration;
@@ -67,14 +68,27 @@ public class ChannelHelperCapability extends Capability {
                 }
             }
         });
+
+        // The channel should get triggered at last (after super and sub methods), because this allows rules to access
+        // the new updated data from the other channels.
+        if (newData instanceof WebhookEvent event) {
+            String eventType = event.getEventType().name();
+            handler.recurseUpToHomeHandler(handler).ifPresent(
+                    homeHandler -> homeHandler.triggerChannel(GROUP_SECURITY_EVENT, CHANNEL_HOME_EVENT, eventType));
+            handler.triggerChannel(GROUP_SECURITY_EVENT, CHANNEL_HOME_EVENT, eventType);
+        }
+
         super.afterNewData(newData);
     }
 
     @Override
-    protected void updateNAThing(NAThing newData) {
-        newData.getFirmware().map(fw -> properties.put(PROPERTY_FIRMWARE_VERSION, fw));
-        if (!newData.isReachable()) {
-            statusReason = "@text/device-not-connected";
+    protected void internalSetNewData(Object newData) {
+        super.internalSetNewData(newData);
+        if (newData instanceof NAMain naMain) {
+            naMain.getFirmware().map(fw -> properties.put(PROPERTY_FIRMWARE_VERSION, fw));
+            if (!naMain.isReachable()) {
+                statusReason = "@text/device-not-connected";
+            }
         }
     }
 
