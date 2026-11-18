@@ -58,7 +58,7 @@ public class RoomCapability extends Capability {
         if (CHANNEL_SETPOINT_MODE.equals(channelName)) {
             try {
                 SetpointMode targetMode = SetpointMode.valueOf(command.toString());
-                if (targetMode == SetpointMode.MANUAL) {
+                if (SetpointMode.MANUAL.equals(targetMode)) {
                     logger.info("Switch to 'Manual' mode is done by setting a setpoint temp, command ignored");
                 } else {
                     getEnergyCapability().ifPresent(cap -> cap.setRoomThermMode(handler.getId(), targetMode));
