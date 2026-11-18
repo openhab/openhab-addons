@@ -84,14 +84,7 @@ public class VerisureDoorWindowThingHandler extends VerisureThingHandler<Verisur
                 String location = doorWindow.getDevice().getArea();
                 return location != null ? new StringType(location) : UnDefType.UNDEF;
             case CHANNEL_BATTERY_STATUS:
-                VerisureBatteryStatusDTO batteryStatus = doorWindowJSON.getBatteryStatus();
-                if (batteryStatus != null) {
-                    String status = batteryStatus.getStatus();
-                    if ("CRITICAL".equals(status)) {
-                        return OnOffType.from(true);
-                    }
-                }
-                return OnOffType.from(false);
+                return OnOffType.from(VerisureBatteryStatusDTO.isLowBattery(doorWindowJSON.getBatteryStatus()));
         }
         return UnDefType.UNDEF;
     }

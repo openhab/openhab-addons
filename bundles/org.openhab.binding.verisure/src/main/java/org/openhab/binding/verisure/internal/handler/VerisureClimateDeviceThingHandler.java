@@ -106,14 +106,7 @@ public class VerisureClimateDeviceThingHandler extends VerisureThingHandler<Veri
                 String location = climateJSON.getLocation();
                 return location != null ? new StringType(location) : UnDefType.NULL;
             case CHANNEL_BATTERY_STATUS:
-                VerisureBatteryStatusDTO batteryStatus = climateJSON.getBatteryStatus();
-                if (batteryStatus != null) {
-                    String status = batteryStatus.getStatus();
-                    if ("CRITICAL".equals(status)) {
-                        return OnOffType.from(true);
-                    }
-                }
-                return OnOffType.from(false);
+                return OnOffType.from(VerisureBatteryStatusDTO.isLowBattery(climateJSON.getBatteryStatus()));
         }
         return UnDefType.UNDEF;
     }
