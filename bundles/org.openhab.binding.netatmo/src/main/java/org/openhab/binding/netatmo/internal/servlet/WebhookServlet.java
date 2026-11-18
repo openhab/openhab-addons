@@ -14,28 +14,16 @@ package org.openhab.binding.netatmo.internal.servlet;
 
 import java.io.IOException;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
-import java.time.Duration;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
-import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.HttpMethod;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.UriBuilder;
-import javax.ws.rs.core.UriBuilderException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -48,7 +36,6 @@ import org.openhab.binding.netatmo.internal.api.dto.WebhookEvent;
 import org.openhab.binding.netatmo.internal.deserialization.NADeserializer;
 import org.openhab.binding.netatmo.internal.handler.ApiBridgeHandler;
 import org.openhab.binding.netatmo.internal.handler.capability.Capability;
-import org.openhab.core.io.rest.WebhookService;
 import org.osgi.service.http.HttpService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,116 +46,40 @@ import org.slf4j.LoggerFactory;
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
-public class WebhookServlet extends NetatmoServlet {
+public abstract class WebhookServlet extends NetatmoServlet {
     private static final long serialVersionUID = -354583910860541214L;
-    private static final int CLOUD_WEBHOOK_RETRY_DELAY_SECONDS = 30;
-    private static final int REQUEST_TIMEOUT_SECONDS = 30;
-    private static final Duration CLOUD_WEBHOOK_REFRESH_SAFETY_WINDOW = Duration.ofHours(1);
 
     private final Map<String, Capability> dataListeners = new ConcurrentHashMap<>();
     private final Logger logger = LoggerFactory.getLogger(WebhookServlet.class);
     private final WebhookApi api;
     private final NADeserializer deserializer;
-    private final @Nullable String urlPattern;
-    private final @Nullable WebhookService cloudWebhookService;
-    private final ScheduledExecutorService scheduler;
     private @Nullable URI currentUri;
-    private @Nullable String cloudWebhookPath;
-    private @Nullable ScheduledFuture<?> cloudWebhookRefreshJob;
-    private volatile boolean disposed;
 
     private boolean hooked;
 
-    public WebhookServlet(ApiBridgeHandler handler, HttpService httpService, NADeserializer deserializer,
-            WebhookApi api, @Nullable String urlPattern, @Nullable WebhookService cloudWebhookService,
-            ScheduledExecutorService scheduler) {
+    protected WebhookServlet(ApiBridgeHandler handler, HttpService httpService, NADeserializer deserializer,
+            WebhookApi api) {
         super(handler, httpService, "webhook");
         this.deserializer = deserializer;
         this.api = api;
-        this.urlPattern = urlPattern;
-        this.cloudWebhookService = cloudWebhookService;
-        this.scheduler = scheduler;
-        if (urlPattern == null && cloudWebhookService == null) {
-            throw new IllegalArgumentException(
-                    "WebhookServlet can not be instanciated without either cloud service, either local url.");
-        }
     }
 
     @Override
     public void startListening() {
         super.startListening();
-        if (cloudWebhookService != null) {
-            registerCloudWebhook();
-        } else {
-            registerLocalWebhook();
-        }
+        registerEndpoint();
     }
 
-    private void registerLocalWebhook() {
-        String configuredPattern = Objects.requireNonNull(urlPattern);
-        try {
-            URI uri = UriBuilder.fromUri(configuredPattern.formatted(getPath())).build();
-            registerWebhook(uri);
-        } catch (UriBuilderException e) {
-            logger.warn("Invalid webhook URL pattern: {}", e.getMessage());
-            return;
-        }
-    }
+    protected abstract void registerEndpoint();
 
-    private synchronized void registerCloudWebhook() {
-        WebhookService cloudService = Objects.requireNonNull(cloudWebhookService);
+    protected abstract String publishedPath();
 
-        if (cloudWebhookPath instanceof String oldPath) {
-            removeCloudWebhook(cloudService, oldPath);
-        }
-
-        String path = getPath() + "/" + UUID.randomUUID();
-        try {
-            org.openhab.core.io.rest.Webhook webhook = cloudService.requestWebhook(path).get(REQUEST_TIMEOUT_SECONDS,
-                    TimeUnit.SECONDS);
-            URI uri = webhook.url().toURI();
-            if (!registerWebhook(uri)) {
-                removeAndReschedule(cloudService, path);
-                return;
-            }
-
-            scheduleCloudWebhookRefresh(webhook.expiresAt());
-            cloudWebhookPath = path;
-
-            logger.info("Registered Netatmo webhook through openHAB Cloud at {}", uri);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            logger.warn("Interrupted while requesting openHAB Cloud webhook URL");
-            removeAndReschedule(cloudService, path);
-        } catch (ExecutionException | TimeoutException | URISyntaxException e) {
-            logger.warn("Unable to register Netatmo webhook through openHAB Cloud: {}", e.getMessage());
-            removeAndReschedule(cloudService, path);
-        }
-    }
-
-    private synchronized void scheduleCloudWebhookRefresh(Instant expiresAt) {
-        cancelCloudWebhookRefresh();
-        long delaySeconds = Math.max(60,
-                Duration.between(Instant.now(), expiresAt.minus(CLOUD_WEBHOOK_REFRESH_SAFETY_WINDOW)).getSeconds());
-        scheduleCloudWebhookTask(delaySeconds);
-    }
-
-    private synchronized void scheduleCloudWebhookRetry() {
-        if (!disposed) {
-            cancelCloudWebhookRefresh();
-            scheduleCloudWebhookTask(CLOUD_WEBHOOK_RETRY_DELAY_SECONDS);
-        }
-    }
-
-    private void removeAndReschedule(WebhookService cloudService, String path) {
-        removeCloudWebhook(cloudService, path);
-        scheduleCloudWebhookRetry();
+    protected void disposeEndpoint() {
     }
 
     @Override
     public synchronized void dispose() {
-        disposed = true;
-        cancelCloudWebhookRefresh();
+        disposeEndpoint();
         if (hooked) {
             logger.info("Releasing webhook");
             try {
@@ -189,17 +100,11 @@ public class WebhookServlet extends NetatmoServlet {
             }
             setHooked(false);
         }
-        String cloudPath = cloudWebhookPath;
-        WebhookService cloudService = cloudWebhookService;
-        if (cloudPath != null && cloudService != null) {
-            removeCloudWebhook(cloudService, cloudPath);
-            cloudWebhookPath = null;
-        }
         dataListeners.clear();
         super.dispose();
     }
 
-    private boolean registerWebhook(URI uri) {
+    protected final boolean registerWebhook(URI uri) {
         try {
             logger.debug("Getting list of active webhooks");
             List<Webhook> currentHooks = api.getWebhooks();
@@ -235,26 +140,6 @@ public class WebhookServlet extends NetatmoServlet {
             }
         }
         return false;
-    }
-
-    private void scheduleCloudWebhookTask(long delaySeconds) {
-        cloudWebhookRefreshJob = scheduler.schedule(this::registerCloudWebhook, delaySeconds, TimeUnit.SECONDS);
-    }
-
-    private synchronized void cancelCloudWebhookRefresh() {
-        ScheduledFuture<?> refreshJob = cloudWebhookRefreshJob;
-        if (refreshJob != null) {
-            refreshJob.cancel(false);
-            cloudWebhookRefreshJob = null;
-        }
-    }
-
-    private void removeCloudWebhook(WebhookService cloudService, String path) {
-        cloudService.removeWebhook(path).whenComplete((ignored, error) -> {
-            if (error != null) {
-                logger.debug("Error removing openHAB Cloud webhook", error);
-            }
-        });
     }
 
     @Override
