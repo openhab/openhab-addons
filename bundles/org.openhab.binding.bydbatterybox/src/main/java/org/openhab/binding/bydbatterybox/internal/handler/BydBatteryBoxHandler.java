@@ -48,6 +48,7 @@ import org.openhab.binding.bydbatterybox.internal.dto.SystemStatus;
 import org.openhab.binding.bydbatterybox.internal.dto.TowerData;
 import org.openhab.binding.bydbatterybox.internal.protocol.BydClient;
 import org.openhab.binding.bydbatterybox.internal.protocol.BydCommunicationException;
+import org.openhab.binding.bydbatterybox.internal.protocol.BydCommunicationException.Reason;
 import org.openhab.binding.bydbatterybox.internal.protocol.BydConnection;
 import org.openhab.core.common.ThreadPoolManager;
 import org.openhab.core.i18n.LocaleProvider;
@@ -94,6 +95,7 @@ public class BydBatteryBoxHandler extends BaseThingHandler {
     private static final Unit<?> MILLIVOLT = MetricPrefix.MILLI(Units.VOLT);
     private static final long MAX_BACKOFF_SECONDS = 15 * 60;
     private static final long INITIAL_DELAY_SECONDS = 2;
+    static final long RETRY_DELAY_MILLIS = 20_000;
 
     private final Logger logger = LoggerFactory.getLogger(BydBatteryBoxHandler.class);
     private final ScheduledExecutorService executor = ThreadPoolManager.getScheduledPool(BINDING_ID);
@@ -203,17 +205,42 @@ public class BydBatteryBoxHandler extends BaseThingHandler {
             context.skipCycles--;
             return;
         }
+        try {
+            try {
+                readBattery(context);
+            } catch (BydCommunicationException e) {
+                if (context.failures > 0 || !isTransient(e)) {
+                    throw e;
+                }
+                // a battery without internet access stops answering for about 15 s every 100 s; retry once after
+                // such an outage instead of going offline (this is the binding's own pool, so blocking is acceptable)
+                logger.debug("Polling {} failed ({}): {}; retrying in {} s", getThing().getUID(), e.getReason(),
+                        e.getMessage(), RETRY_DELAY_MILLIS / 1000);
+                sleeper.sleep(RETRY_DELAY_MILLIS);
+                if (isCurrent(context)) {
+                    readBattery(context);
+                }
+            }
+        } catch (BydCommunicationException e) {
+            handleFailure(context, e);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        } catch (RuntimeException e) {
+            // keep the scheduled job alive; an unexpected error must not stop polling
+            logger.warn("Unexpected error while polling {}", getThing().getUID(), e);
+        }
+    }
+
+    private static boolean isTransient(BydCommunicationException e) {
+        return e.getReason() == Reason.UNREACHABLE || e.getReason() == Reason.TIMEOUT;
+    }
+
+    private void readBattery(PollContext context) throws BydCommunicationException, InterruptedException {
         Instant now = Instant.now();
         BydBatteryBoxConfiguration config = context.config;
         boolean detailDue = isDue(context.lastDetail, config.detailInterval, config.refreshInterval, now);
         boolean eventsDue = isDue(context.lastEventLog, config.eventLogInterval, config.refreshInterval, now);
-        BydConnection connection;
-        try {
-            connection = BydConnection.open(config.hostname, config.port, config.connectionTimeout * 1000);
-        } catch (BydCommunicationException e) {
-            handleFailure(context, e);
-            return;
-        }
+        BydConnection connection = BydConnection.open(config.hostname, config.port, config.connectionTimeout * 1000);
         activeConnection.set(connection);
         try (connection) {
             if (!isCurrent(context)) {
@@ -236,13 +263,6 @@ public class BydBatteryBoxHandler extends BaseThingHandler {
             if (eventsDue && readEventLogs(context, client, info)) {
                 context.lastEventLog = now;
             }
-        } catch (BydCommunicationException e) {
-            handleFailure(context, e);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        } catch (RuntimeException e) {
-            // keep the scheduled job alive; an unexpected error must not stop polling
-            logger.warn("Unexpected error while polling {}", getThing().getUID(), e);
         } finally {
             // a newer cycle may already have registered its own connection
             activeConnection.compareAndSet(connection, null);

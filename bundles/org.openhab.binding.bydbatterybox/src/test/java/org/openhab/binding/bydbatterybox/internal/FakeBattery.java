@@ -47,9 +47,9 @@ public class FakeBattery implements AutoCloseable {
     private final Thread thread;
     private volatile @Nullable Socket client;
 
-    private FakeBattery(int segmentSize) throws IOException {
+    private FakeBattery(int port, int segmentSize) throws IOException {
         this.segmentSize = segmentSize;
-        server = new ServerSocket(0, 1, InetAddress.getLoopbackAddress());
+        server = new ServerSocket(port, 1, InetAddress.getLoopbackAddress());
         thread = new Thread(this::serve, "fake-battery");
         thread.setDaemon(true);
         thread.start();
@@ -60,7 +60,16 @@ public class FakeBattery implements AutoCloseable {
      * @param replies the replies, in the order of the expected requests
      */
     public static FakeBattery start(int segmentSize, byte[]... replies) throws IOException {
-        FakeBattery battery = new FakeBattery(segmentSize);
+        return startOnPort(0, segmentSize, replies);
+    }
+
+    /**
+     * Starts the fake battery on a given port, e.g. one a client has already failed to connect to.
+     *
+     * @param port the port, or 0 for any free port
+     */
+    public static FakeBattery startOnPort(int port, int segmentSize, byte[]... replies) throws IOException {
+        FakeBattery battery = new FakeBattery(port, segmentSize);
         battery.replies.addAll(Arrays.asList(replies));
         return battery;
     }
