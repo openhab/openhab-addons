@@ -139,6 +139,7 @@ public enum MiIoDevices {
     HUAYI_LIGHT_VIR063("huayi.light.vir063", "HUIZUO VIRGO For Bedroom", THING_TYPE_BASIC),
     HUAYI_LIGHT_VIRGO("huayi.light.virgo", "HUIZUO VIRGO For Living Room", THING_TYPE_BASIC),
     HUAYI_LIGHT_WY("huayi.light.wy", "HUIZUO Ceiling Light", THING_TYPE_BASIC),
+    HUAYI_LIGHT_WY002("huayi.light.wy002", "HUAYI LIGHTING COMMON CEILING LIGHT", THING_TYPE_BASIC),
     HUAYI_LIGHT_WY200("huayi.light.wy200", "HUIZUO LIANGCHEN(BLE Mesh)", THING_TYPE_BASIC),
     HUAYI_LIGHT_WY201("huayi.light.wy201", "HUIZUO SAG Downlight (BLE Mesh)", THING_TYPE_BASIC),
     HUAYI_LIGHT_WY202("huayi.light.wy202", "HUIZUO Bulb (BLE Mesh)", THING_TYPE_BASIC),
