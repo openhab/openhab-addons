@@ -18,9 +18,7 @@ import static org.openhab.core.thing.Thing.*;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.dto.NAError;
-import org.openhab.binding.netatmo.internal.api.dto.NAObject;
 import org.openhab.binding.netatmo.internal.api.dto.NAThing;
 import org.openhab.binding.netatmo.internal.handler.CommonInterface;
 import org.openhab.binding.netatmo.internal.handler.channelhelper.ChannelHelper;
@@ -54,7 +52,7 @@ public class ChannelHelperCapability extends Capability {
     }
 
     @Override
-    public void afterNewData(@Nullable NAObject newData) {
+    public void afterNewData(Object newData) {
         channelHelpers.forEach(helper -> helper.setNewData(newData));
         handler.getActiveChannels().forEach(channel -> {
             ChannelUID channelUID = channel.getUID();

@@ -30,6 +30,7 @@ Variables needed for the setup of the binding are:
 
 - `<CLIENT_ID>` Your client ID taken from your App at <https://dev.netatmo.com/apps>
 - `<CLIENT_SECRET>` A token provided along with the `<CLIENT_ID>`.
+
 The binding has the following configuration options:
 
 | Parameter   | Type    | Description                                                  |
