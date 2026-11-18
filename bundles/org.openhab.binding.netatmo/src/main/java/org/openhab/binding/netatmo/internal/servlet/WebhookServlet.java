@@ -161,7 +161,7 @@ public class WebhookServlet extends NetatmoServlet {
 
     public void registerDataListener(CommonInterface handler) {
         String id = handler.getId();
-        logger.debug("Registering webhook listener '{}' with capability {}'", id, handler.getClass().getSimpleName());
+        logger.debug("Registering webhook listener '{}' for module {}'", id, handler.getModuleType());
         dataListeners.put(id, handler);
     }
 
