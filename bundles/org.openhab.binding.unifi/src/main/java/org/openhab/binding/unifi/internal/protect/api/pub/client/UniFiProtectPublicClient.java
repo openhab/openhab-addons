@@ -36,6 +36,7 @@ import java.util.function.Consumer;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.WWWAuthenticationProtocolHandler;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.BytesContentProvider;
@@ -87,7 +88,6 @@ import com.google.gson.reflect.TypeToken;
 @NonNullByDefault
 public class UniFiProtectPublicClient implements Closeable {
     private final Logger logger = LoggerFactory.getLogger(UniFiProtectPublicClient.class);
-    private final HttpClient httpClient;
     private final HttpClient apiHttpClient;
     private final WebSocketClient wsClient;
     private final Gson gson;
@@ -102,20 +102,34 @@ public class UniFiProtectPublicClient implements Closeable {
 
     public UniFiProtectPublicClient(HttpClient httpClient, String host, int port, Gson gson, String token,
             ScheduledExecutorService executorService) {
-        this.httpClient = httpClient;
         this.apiHttpClient = new HttpClient(httpClient.getSslContextFactory());
+        // Reuse the shared client's executor/scheduler instead of a new default pool per bridge.
+        this.apiHttpClient.setExecutor(httpClient.getExecutor());
+        this.apiHttpClient.setScheduler(httpClient.getScheduler());
         this.apiHttpClient.setCookieStore(new HttpCookieStore.Empty());
         this.baseUri = URI.create("https://" + host + ":" + port + "/proxy/protect/integration/");
         this.gson = gson;
         this.defaultHeaders = Map.of("X-API-KEY", token, "Accept", "application/json");
-        this.wsClient = new WebSocketClient(httpClient);
-        // Prevent wsClient.stop() from stopping the shared HttpClient instance
-        this.wsClient.unmanage(this.httpClient);
+        this.wsClient = new WebSocketClient(this.apiHttpClient);
+        // Explicitly managed: as an AUTO bean it would be unmanaged once started below, and wsClient.stop()
+        // would no longer stop it.
+        this.wsClient.manage(this.apiHttpClient);
         this.executorService = executorService;
         try {
             this.apiHttpClient.start();
+        } catch (Exception e) {
+            throw new IllegalStateException("Failed to start Jetty clients", e);
+        }
+        // UniFi sends 401s without WWW-Authenticate (see UniFiControllerBridgeHandler). Must run after start().
+        this.apiHttpClient.getProtocolHandlers().remove(WWWAuthenticationProtocolHandler.NAME);
+        try {
             this.wsClient.start();
         } catch (Exception e) {
+            try {
+                this.apiHttpClient.stop();
+            } catch (Exception stopException) {
+                e.addSuppressed(stopException);
+            }
             throw new IllegalStateException("Failed to start Jetty clients", e);
         }
     }
@@ -124,15 +138,10 @@ public class UniFiProtectPublicClient implements Closeable {
     public void close() throws IOException {
         logger.debug("Closing UniFiProtectApiClient");
         try {
-            apiHttpClient.stop();
+            // Also stops apiHttpClient, which wsClient owns (see constructor).
+            wsClient.stop();
         } catch (Exception e) {
-            throw new IOException("Failed to stop API HTTP client", e);
-        } finally {
-            try {
-                wsClient.stop();
-            } catch (Exception e) {
-                throw new IOException("Failed to stop WebSocket client", e);
-            }
+            throw new IOException("Failed to stop WebSocket client", e);
         }
     }
 
