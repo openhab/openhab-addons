@@ -52,7 +52,7 @@ import org.slf4j.LoggerFactory;
 public class SolarmanRegisterUpdater {
     private static final Logger logger = LoggerFactory.getLogger(SolarmanRegisterUpdater.class);
 
-    private static final Pattern TIME_PATTERN = Pattern.compile("^([0-1][0-9])|(2[0-3]):[0-5][0-9]");
+    private static final Pattern TIME_PATTERN = Pattern.compile("^([01][0-9]|2[0-3]):([0-5][0-9])$");
 
     private final SolarmanLoggerConnector solarmanLoggerConnector;
     private final SolarmanProtocol solarmanProtocol;
@@ -184,8 +184,8 @@ public class SolarmanRegisterUpdater {
             String timeString = string.toString();
             final Matcher timeMatcher = TIME_PATTERN.matcher(timeString);
             if (timeMatcher.matches()) {
-                final int hour = Integer.parseInt(timeString.substring(0, 2));
-                final int minute = Integer.parseInt(timeString.substring(3, 5));
+                final int hour = Integer.parseInt(timeMatcher.group(1));
+                final int minute = Integer.parseInt(timeMatcher.group(2));
                 final short value = (short) (hour * 100 + minute);
                 byte[] data = ByteBuffer.allocate(2).putShort(value).array();
                 writeRegisters(channelToUpdate.getRegisters().getFirst(), 1, data);
