@@ -210,11 +210,12 @@ public class BrokerHandler extends AbstractBrokerHandler implements PinnedCallba
      * {@link MqttBrokerConnection}, enabling TLS client authentication (mutual TLS).
      * Does nothing if no keystore is configured or the connection is not secure.
      * <p>
-     * A client certificate only authenticates the client. To avoid talking to an unverified broker, a client
-     * certificate is refused if the broker is neither verified by hostname validation nor by certificate or public key
-     * pinning. If only hostname validation is enabled, the {@link PinTrustManager} (which does not validate the
-     * certificate chain without pins) is replaced by the platform's default trust managers, so that the broker
-     * certificate has to be issued by a trusted CA in addition to matching the hostname.
+     * A client certificate only authenticates the client. To avoid sending it to an unverified broker, the broker
+     * has to be verified by an existing pin (a configured certificate/public key hash, no learning pin) or by
+     * hostname validation. A pin without a configured hash only learns the first presented certificate and does
+     * not count as verification. Without an existing pin, the {@link PinTrustManager} (which would accept any
+     * certificate chain) is replaced by the platform's default trust managers, so that the broker certificate has
+     * to be issued by a trusted CA in addition to matching the hostname.
      *
      * @throws IllegalArgumentException if the keystore cannot be loaded or the broker would not be verified
      */
@@ -223,12 +224,15 @@ public class BrokerHandler extends AbstractBrokerHandler implements PinnedCallba
         if (!config.secure || config.clientKeystore.isBlank()) {
             return;
         }
-        if (!config.hostnameValidated && !config.certificatepin && !config.publickeypin) {
+        final boolean learningPin = (config.certificatepin && config.certificate.isBlank())
+                || (config.publickeypin && config.publickey.isBlank());
+        final boolean pinned = (config.certificatepin || config.publickeypin) && !learningPin;
+        if (!config.hostnameValidated && !pinned) {
             logger.warn(
-                    "Broker '{}' is configured with a TLS client certificate, but neither hostname validation nor certificate/public key pinning is enabled. Refusing to connect to an unverified broker.",
+                    "Broker '{}' is configured with a TLS client certificate, but neither hostname validation nor a certificate/public key pin with a configured hash is enabled. Refusing to connect to an unverified broker.",
                     thing.getUID());
             throw new IllegalArgumentException(
-                    "A client certificate requires hostname validation or certificate/public key pinning");
+                    "A client certificate requires hostname validation or a certificate/public key pin with a configured hash");
         }
         final char[] keystorePassword = config.clientKeystorePassword.toCharArray();
         try (InputStream in = Files.newInputStream(Path.of(config.clientKeystore))) {
@@ -238,8 +242,9 @@ public class BrokerHandler extends AbstractBrokerHandler implements PinnedCallba
                     .getInstance(KeyManagerFactory.getDefaultAlgorithm());
             keyManagerFactory.init(keyStore, keystorePassword);
             connection.setKeyManagerFactory(keyManagerFactory);
-            if (!config.certificatepin && !config.publickeypin) {
-                // Hostname validation only: the PinTrustManager would accept any certificate chain, use CA validation
+            if (!pinned) {
+                // No pin or only a learning pin: the PinTrustManager would accept any certificate chain, use CA
+                // validation
                 connection.setTrustManagers(createCaTrustManagers());
             }
         } catch (GeneralSecurityException | IOException e) {
