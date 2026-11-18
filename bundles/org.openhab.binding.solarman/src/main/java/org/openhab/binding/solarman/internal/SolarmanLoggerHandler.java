@@ -62,7 +62,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class SolarmanLoggerHandler extends BaseThingHandler {
-    // Delay between a write command and the read-back poll; restarted by each further command
     private static final Duration WRITE_REFRESH_DELAY = Duration.ofSeconds(2);
 
     private final Logger logger = LoggerFactory.getLogger(SolarmanLoggerHandler.class);
@@ -94,8 +93,6 @@ public class SolarmanLoggerHandler extends BaseThingHandler {
             return;
         }
 
-        // Read the inverter back soon after a write, so the channel shows the value the inverter actually holds
-        // (also when the write was rejected or ignored) instead of the auto-updated one until the next poll.
         DebouncedTask writeRefresh = this.writeRefresh;
         if (!(command instanceof RefreshType) && writeRefresh != null) {
             writeRefresh.trigger();
@@ -151,7 +148,6 @@ public class SolarmanLoggerHandler extends BaseThingHandler {
     private void queryLoggerAndUpdateState(SolarmanLoggerConnector solarmanLoggerConnector,
             SolarmanProtocol solarmanProtocol, List<Request> mergedRequests,
             Map<ParameterItem, ChannelUID> paramToChannelMapping, SolarmanChannelUpdater solarmanChannelUpdater) {
-        // The scheduled poll and the read-back after a write must not query the logger at the same time
         synchronized (pollLock) {
             queryLogger(solarmanLoggerConnector, solarmanProtocol, mergedRequests, paramToChannelMapping,
                     solarmanChannelUpdater);
