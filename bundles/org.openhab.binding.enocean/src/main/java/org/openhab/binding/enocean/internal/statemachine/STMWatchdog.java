@@ -27,5 +27,5 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * @author Sven Schad - Initial contribution
  */
 @NonNullByDefault
-public record STMWatchdog<A extends Enum<A>, S extends Enum<S>> (Set<S> states, A timeoutAction, long timeoutMs) {
+public record STMWatchdog<A extends Enum<A>, S extends Enum<S>>(Set<S> states, A timeoutAction, long timeoutMs) {
 }
