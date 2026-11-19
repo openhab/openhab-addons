@@ -1112,8 +1112,10 @@
 				<option value="5">Searching</option>
 				<option value="6">Unknown Status 6</option>
 				<option value="7">Error Status</option>
+				<option value="8">Lost Signal</option>
 				<option value="16">Off</option>
 				<option value="17">Sleeping</option>
+				<option value="18">Door Delay</option>
 				<option value="99">Unknown</option>
 			</options>
 		</state>

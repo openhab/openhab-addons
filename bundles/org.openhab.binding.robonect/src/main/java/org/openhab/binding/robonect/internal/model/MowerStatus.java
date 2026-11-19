@@ -54,12 +54,17 @@ public enum MowerStatus {
     SEARCHING(5),
 
     /**
+     * Unknown status with code 6.
+     */
+    UNKNOWN_STATUS_6(6),
+
+    /**
      * Mower is in error state.
      */
     ERROR_STATUS(7),
 
     /**
-     * Mower lost WLAN signal.
+     * Mower lost wire signal.
      */
     LOST_SIGNAL(8),
 
