@@ -29,4 +29,13 @@ public class Contact {
 
         return result;
     }
+
+    public static Contact convertFromGeneralData(GeneralData generalData) {
+        Contact result = new Contact();
+
+        result.phone = "";
+        result.email = "";
+
+        return result;
+    }
 }
