@@ -26,10 +26,13 @@ package org.openhab.binding.pleos.internal.handler;
 
 import static org.openhab.binding.pleos.internal.PleosBindingConstants.*;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.measure.Unit;
 
@@ -70,6 +73,7 @@ import org.openhab.binding.pleos.internal.api.model.PleosVehicleModels.VehiclesR
 import org.openhab.binding.pleos.internal.api.model.PleosVehicleModels.VehiclesResponse.VehiclesData;
 import org.openhab.binding.pleos.internal.config.PleosVehicleConfiguration;
 import org.openhab.binding.pleos.internal.model.VehicleType;
+import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -81,11 +85,16 @@ import org.openhab.core.library.unit.MetricPrefix;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.BaseThingHandler;
+import org.openhab.core.thing.binding.builder.ChannelBuilder;
+import org.openhab.core.thing.binding.builder.ThingBuilder;
+import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
@@ -100,6 +109,7 @@ import com.google.gson.JsonElement;
  * {@link PleosApiClient} and updates the openHAB channels.
  *
  * @author Stephan Sandmann - Initial contribution
+ * @author Marcus Better - Idea for createDynamicChannels and channelBuilder
  */
 @NonNullByDefault
 public class PleosVehicleHandler extends BaseThingHandler {
@@ -125,6 +135,9 @@ public class PleosVehicleHandler extends BaseThingHandler {
         }
         this.vin = configuredVin.trim();
         this.vehicleType = VehicleType.fromApiValue(getThing().getProperties().get("vehicleType"));
+        if (this.vehicleType != VehicleType.UNKNOWN) {
+            createDynamicChannels();
+        }
 
         PleosAccountHandler accountHandler = getAccountHandler();
         if (accountHandler == null) {
@@ -169,8 +182,6 @@ public class PleosVehicleHandler extends BaseThingHandler {
             // 1. Battery and charging (only applicable if the car is not a pure internal combustion engine vehicle)
             if (vehicleType.supportsCharging()) {
                 updateBatteryStatus(apiClient.getBatteryStatus(vin));
-            } else {
-                setAllBatteryChannelsToUndef();
             }
 
             // 2. Powertrain & Range
@@ -244,12 +255,93 @@ public class PleosVehicleHandler extends BaseThingHandler {
                         props.put("modelCode", modelCode.trim());
                     }
                     updateProperties(props);
+                    createDynamicChannels();
                     break;
                 }
             }
         } catch (PleosApiException e) {
             logger.debug("Could not reload vehicle metadata for {}: {}", vin, e.getMessage());
         }
+    }
+
+    private void createDynamicChannels() {
+        if (vehicleType == VehicleType.UNKNOWN) {
+            return;
+        }
+
+        final Thing thing = getThing();
+        final ThingUID thingUID = thing.getUID();
+        final Set<ChannelUID> existingChannels = thing.getChannels().stream().map(Channel::getUID)
+                .collect(Collectors.toUnmodifiableSet());
+
+        final List<ChannelBuilder> channelsToAdd = new ArrayList<>();
+        final List<ChannelUID> channelsToRemove = new ArrayList<>();
+
+        // Clean up obsolete channels from the "vehicle" group if they were defined in previous versions
+        final List<String> obsoleteVehicleChannelIds = List.of(CHANNEL_SOC, CHANNEL_CAPACITY, CHANNEL_CHARGING,
+                CHANNEL_PLUGIN, CHANNEL_CHARGE_STATUS, CHANNEL_REMAIN_TIME, CHANNEL_TARGET_SOC_STANDARD,
+                CHANNEL_TARGET_SOC_QUICK, CHANNEL_FUEL_LEVEL);
+        for (String chId : obsoleteVehicleChannelIds) {
+            ChannelUID oldUID = new ChannelUID(thingUID, GROUP_VEHICLE, chId);
+            if (existingChannels.contains(oldUID)) {
+                channelsToRemove.add(oldUID);
+            }
+        }
+
+        // 1. Charging channels (EV & Plug-in Hybrid)
+        if (vehicleType.supportsCharging()) {
+            final List<ChannelBuilder> chargingChannels = List.of(
+                    buildChannel(GROUP_CHARGING, CHANNEL_SOC, CoreItemFactory.NUMBER + ":Dimensionless",
+                            CHANNEL_TYPE_SOC),
+                    buildChannel(GROUP_CHARGING, CHANNEL_CAPACITY, CoreItemFactory.NUMBER + ":Energy",
+                            CHANNEL_TYPE_BATTERY_CAPACITY),
+                    buildChannel(GROUP_CHARGING, CHANNEL_CHARGING, CoreItemFactory.SWITCH,
+                            CHANNEL_TYPE_CHARGING_BOOLEAN),
+                    buildChannel(GROUP_CHARGING, CHANNEL_PLUGIN, CoreItemFactory.STRING,
+                            CHANNEL_TYPE_CHARGE_PLUGIN_ENUM),
+                    buildChannel(GROUP_CHARGING, CHANNEL_CHARGE_STATUS, CoreItemFactory.STRING,
+                            CHANNEL_TYPE_CHARGE_STATUS_ENUM),
+                    buildChannel(GROUP_CHARGING, CHANNEL_REMAIN_TIME, CoreItemFactory.NUMBER + ":Time",
+                            CHANNEL_TYPE_REMAIN_TIME),
+                    buildChannel(GROUP_CHARGING, CHANNEL_TARGET_SOC_STANDARD, CoreItemFactory.NUMBER + ":Dimensionless",
+                            CHANNEL_TYPE_TARGET_SOC_STANDARD),
+                    buildChannel(GROUP_CHARGING, CHANNEL_TARGET_SOC_QUICK, CoreItemFactory.NUMBER + ":Dimensionless",
+                            CHANNEL_TYPE_TARGET_SOC_QUICK));
+
+            for (ChannelBuilder cb : chargingChannels) {
+                Channel ch = cb.build();
+                if (!existingChannels.contains(ch.getUID())) {
+                    channelsToAdd.add(cb);
+                }
+            }
+        } else {
+            thing.getChannelsOfGroup(GROUP_CHARGING).stream().map(Channel::getUID).forEach(channelsToRemove::add);
+        }
+
+        // 2. Fuel channels (Combustion, Hybrid, Plug-in Hybrid, Fuel Cell)
+        if (vehicleType.supportsFuel()) {
+            ChannelBuilder fuelChannel = buildChannel(GROUP_FUEL, CHANNEL_FUEL_LEVEL,
+                    CoreItemFactory.NUMBER + ":Dimensionless", CHANNEL_TYPE_FUEL_LEVEL);
+            Channel ch = fuelChannel.build();
+            if (!existingChannels.contains(ch.getUID())) {
+                channelsToAdd.add(fuelChannel);
+            }
+        } else {
+            thing.getChannelsOfGroup(GROUP_FUEL).stream().map(Channel::getUID).forEach(channelsToRemove::add);
+        }
+
+        if (!channelsToAdd.isEmpty() || !channelsToRemove.isEmpty()) {
+            final ThingBuilder thingBuilder = editThing();
+            channelsToRemove.forEach(thingBuilder::withoutChannel);
+            channelsToAdd.stream().map(ChannelBuilder::build).forEach(thingBuilder::withChannel);
+            updateThing(thingBuilder.build());
+        }
+    }
+
+    private ChannelBuilder buildChannel(String group, String channelId, String itemType, String channelTypeId) {
+        ChannelUID channelUID = new ChannelUID(getThing().getUID(), group, channelId);
+        ChannelTypeUID channelTypeUID = new ChannelTypeUID(BINDING_ID, channelTypeId);
+        return ChannelBuilder.create(channelUID, itemType).withType(channelTypeUID);
     }
     // =========================================================================
     // MAPPING METHODS (Records -> openHAB Channels)
@@ -263,10 +355,10 @@ public class PleosVehicleHandler extends BaseThingHandler {
             return;
         }
 
-        updateChannel(GROUP_VEHICLE, "soc", parseQuantityOrUndef(charge.stateOfCharge(), Units.PERCENT));
+        updateChannel(GROUP_CHARGING, CHANNEL_SOC, parseQuantityOrUndef(charge.stateOfCharge(), Units.PERCENT));
 
         Boolean charging = charge.charging();
-        updateChannel(GROUP_VEHICLE, "charging", charging != null ? OnOffType.from(charging) : UnDefType.UNDEF);
+        updateChannel(GROUP_CHARGING, CHANNEL_CHARGING, charging != null ? OnOffType.from(charging) : UnDefType.UNDEF);
 
         String pluginRaw = charge.plugin();
         if (pluginRaw != null) {
@@ -275,9 +367,9 @@ public class PleosVehicleHandler extends BaseThingHandler {
                 case "invalid" -> "INVALID";
                 default -> "UNPLUGGED";
             };
-            updateChannel(GROUP_VEHICLE, "plugin", new StringType(mappedPlugin));
+            updateChannel(GROUP_CHARGING, CHANNEL_PLUGIN, new StringType(mappedPlugin));
         } else {
-            updateChannel(GROUP_VEHICLE, "plugin", UnDefType.UNDEF);
+            updateChannel(GROUP_CHARGING, CHANNEL_PLUGIN, UnDefType.UNDEF);
         }
 
         String statusRaw = charge.status();
@@ -289,18 +381,19 @@ public class PleosVehicleHandler extends BaseThingHandler {
                 case "reservedcharging" -> "WAITING_SCHEDULE";
                 default -> "NOT_CHARGING";
             };
-            updateChannel(GROUP_VEHICLE, "charge-status", new StringType(mappedStatus));
+            updateChannel(GROUP_CHARGING, CHANNEL_CHARGE_STATUS, new StringType(mappedStatus));
         } else {
-            updateChannel(GROUP_VEHICLE, "charge-status", UnDefType.UNDEF);
+            updateChannel(GROUP_CHARGING, CHANNEL_CHARGE_STATUS, UnDefType.UNDEF);
         }
 
-        updateChannel(GROUP_VEHICLE, "remain-time", parseQuantityOrUndef(charge.remainTime(), Units.MINUTE));
-        updateChannel(GROUP_VEHICLE, "capacity", parseQuantityOrUndef(charge.batteryCapacity(), Units.WATT_HOUR));
+        updateChannel(GROUP_CHARGING, CHANNEL_REMAIN_TIME, parseQuantityOrUndef(charge.remainTime(), Units.MINUTE));
+        updateChannel(GROUP_CHARGING, CHANNEL_CAPACITY,
+                parseQuantityOrUndef(charge.batteryCapacity(), Units.WATT_HOUR));
 
         TargetSoC target = charge.targetStateOfCharge();
-        updateChannel(GROUP_VEHICLE, "target-soc-standard",
+        updateChannel(GROUP_CHARGING, CHANNEL_TARGET_SOC_STANDARD,
                 target != null ? parseQuantityOrUndef(target.standard(), Units.PERCENT) : UnDefType.UNDEF);
-        updateChannel(GROUP_VEHICLE, "target-soc-quick",
+        updateChannel(GROUP_CHARGING, CHANNEL_TARGET_SOC_QUICK,
                 target != null ? parseQuantityOrUndef(target.quick(), Units.PERCENT) : UnDefType.UNDEF);
     }
 
@@ -312,9 +405,7 @@ public class PleosVehicleHandler extends BaseThingHandler {
 
         EngineInfo engine = data.engine();
         if (vehicleType.supportsFuel() && engine != null) {
-            updateChannel(GROUP_VEHICLE, "fuel-level", parseQuantityOrUndef(engine.fuelLevel(), Units.PERCENT));
-        } else {
-            updateChannel(GROUP_VEHICLE, "fuel-level", UnDefType.UNDEF);
+            updateChannel(GROUP_FUEL, CHANNEL_FUEL_LEVEL, parseQuantityOrUndef(engine.fuelLevel(), Units.PERCENT));
         }
 
         List<DistanceInfo> distances = data.distanceToEmpties();
@@ -670,14 +761,14 @@ public class PleosVehicleHandler extends BaseThingHandler {
     }
 
     private void setAllBatteryChannelsToUndef() {
-        updateChannel(GROUP_VEHICLE, "soc", UnDefType.UNDEF);
-        updateChannel(GROUP_VEHICLE, "charging", UnDefType.UNDEF);
-        updateChannel(GROUP_VEHICLE, "plugin", UnDefType.UNDEF);
-        updateChannel(GROUP_VEHICLE, "charge-status", UnDefType.UNDEF);
-        updateChannel(GROUP_VEHICLE, "remain-time", UnDefType.UNDEF);
-        updateChannel(GROUP_VEHICLE, "target-soc-standard", UnDefType.UNDEF);
-        updateChannel(GROUP_VEHICLE, "target-soc-quick", UnDefType.UNDEF);
-        updateChannel(GROUP_VEHICLE, "capacity", UnDefType.UNDEF);
+        updateChannel(GROUP_CHARGING, CHANNEL_SOC, UnDefType.UNDEF);
+        updateChannel(GROUP_CHARGING, CHANNEL_CHARGING, UnDefType.UNDEF);
+        updateChannel(GROUP_CHARGING, CHANNEL_PLUGIN, UnDefType.UNDEF);
+        updateChannel(GROUP_CHARGING, CHANNEL_CHARGE_STATUS, UnDefType.UNDEF);
+        updateChannel(GROUP_CHARGING, CHANNEL_REMAIN_TIME, UnDefType.UNDEF);
+        updateChannel(GROUP_CHARGING, CHANNEL_TARGET_SOC_STANDARD, UnDefType.UNDEF);
+        updateChannel(GROUP_CHARGING, CHANNEL_TARGET_SOC_QUICK, UnDefType.UNDEF);
+        updateChannel(GROUP_CHARGING, CHANNEL_CAPACITY, UnDefType.UNDEF);
     }
 
     private void setAllLocationChannelsToUndef() {
