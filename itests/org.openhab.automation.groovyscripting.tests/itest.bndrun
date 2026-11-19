@@ -3,6 +3,12 @@
 Bundle-SymbolicName: ${project.artifactId}
 Fragment-Host: org.openhab.automation.groovyscripting
 
+# Use Maven's local repository so @Grab can resolve the test dependency offline.
+-runvm.grape: \
+	-Dgrape.config=classpath:grape-test.xml,\
+	"-Dgrape.root=${.}/target/grape",\
+	"-Dgroovy.test.mavenRepository=${fileuri;${settings.localRepository}}"
+
 -runrequires: \
 	bnd.identity;id='org.openhab.automation.groovyscripting.tests',\
 	bnd.identity;id='org.openhab.core',\
