@@ -138,12 +138,13 @@ public class McpToolUtils {
      * @param args the arguments map from the tool call request
      * @param key the argument name to look up
      * @param defaultValue value to return if the key is absent or not a number
-     * @return the integer value, or {@code defaultValue} if missing
+     * @return the integer value, saturated to the {@code int} range so out-of-range numbers cannot wrap
+     *         around, or {@code defaultValue} if missing
      */
     public static int getIntArg(Map<String, Object> args, String key, int defaultValue) {
         Object val = args.get(key);
         if (val instanceof Number n) {
-            return n.intValue();
+            return Math.clamp(n.longValue(), Integer.MIN_VALUE, Integer.MAX_VALUE);
         }
         return defaultValue;
     }
