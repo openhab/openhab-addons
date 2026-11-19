@@ -72,7 +72,16 @@ public class STMTransitionConfiguration<A extends Enum<A>, S extends Enum<S>> {
                                 BlindState.INVALID),
                         new STMTransition<>(BlindState.MOVEMENT_CALIBRATION_DOWN, BlindAction.INVALID_REQUEST,
                                 BlindState.INVALID),
-                        new STMTransition<>(BlindState.MOVEMENT_SLATS, BlindAction.INVALID_REQUEST,
+                        new STMTransition<>(BlindState.MOVEMENT_SLATS, BlindAction.INVALID_REQUEST, BlindState.INVALID),
+                        new STMTransition<>(BlindState.MOVEMENT_POSITION_UP, BlindAction.MOVEMENT_TIMEOUT,
+                                BlindState.INVALID),
+                        new STMTransition<>(BlindState.MOVEMENT_POSITION_DOWN, BlindAction.MOVEMENT_TIMEOUT,
+                                BlindState.INVALID),
+                        new STMTransition<>(BlindState.MOVEMENT_SLATS, BlindAction.MOVEMENT_TIMEOUT,
+                                BlindState.INVALID),
+                        new STMTransition<>(BlindState.MOVEMENT_CALIBRATION_UP, BlindAction.MOVEMENT_TIMEOUT,
+                                BlindState.INVALID),
+                        new STMTransition<>(BlindState.MOVEMENT_CALIBRATION_DOWN, BlindAction.MOVEMENT_TIMEOUT,
                                 BlindState.INVALID)));
 
         public static final STMTransitionConfiguration<BlindAction, BlindState> FSB14_ROLLERSHUTTER = new STMTransitionConfiguration<>(
@@ -96,6 +105,14 @@ public class STMTransitionConfiguration<A extends Enum<A>, S extends Enum<S>> {
                         new STMTransition<>(BlindState.MOVEMENT_CALIBRATION_UP, BlindAction.INVALID_REQUEST,
                                 BlindState.INVALID),
                         new STMTransition<>(BlindState.MOVEMENT_CALIBRATION_DOWN, BlindAction.INVALID_REQUEST,
+                                BlindState.INVALID),
+                        new STMTransition<>(BlindState.MOVEMENT_POSITION_UP, BlindAction.MOVEMENT_TIMEOUT,
+                                BlindState.INVALID),
+                        new STMTransition<>(BlindState.MOVEMENT_POSITION_DOWN, BlindAction.MOVEMENT_TIMEOUT,
+                                BlindState.INVALID),
+                        new STMTransition<>(BlindState.MOVEMENT_CALIBRATION_UP, BlindAction.MOVEMENT_TIMEOUT,
+                                BlindState.INVALID),
+                        new STMTransition<>(BlindState.MOVEMENT_CALIBRATION_DOWN, BlindAction.MOVEMENT_TIMEOUT,
                                 BlindState.INVALID)));
 
         private BlindTransitions() {
