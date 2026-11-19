@@ -227,6 +227,7 @@ There is no reverse conversion when writing.
 | `deviceDataTab`         | Cloud response of `/v2/user/getuserdevicedatatab` to a list of the `value` entries           | `lumi.lock.json`                 |
 | `getJsonElement-<name>` | Member `<name>` (case sensitive) of a JSON object, or a JSON path, see below                 | `chuangmi.plug.212a01-miot.json` |
 | `getDiDElement`         | Member of a JSON object named after the device id of the thing                               | `chuangmi.plug.212a01-miot.json` |
+| `decodeUnicode`         | Text with each character as `u` plus 4 hex digits, like `u0064u0065u006du006f`, to `demo`    | `careli.fryer.maf05a-miot.json`  |
 
 #### Selecting Parts of a JSON Response
 
@@ -311,12 +312,14 @@ For each action:
 | `NONE`            | any       | Value only available for the `condition`, not placed in the `parameters`.                                                       |
 | `UNKNOWN`         | any       | No value for ON/OFF and text. Used by generated placeholder actions that never send.                                            |
 | `CUSTOMSTRING`    | text      | Replaces only the `$value$` token inside its entry (`"color,$value$"` gives `"color,red"`). Otherwise like `STRING`.            |
+| `JSON`            | text      | MIoT actions only: the text as JSON list is the complete `in` list (`["C7795",11,180]`). Other text is not sent.                |
 
 - A number or percent command always results in the number, except for `COLOR` and `EMPTY`; ON/OFF are only converted by `ONOFF...` and `COLOR`.
   So a `Switch` or `String` channel with `NUMBER` sends nothing unless a `matchValue` `returnValue` supplies the value.
   Other commands (UP, DOWN, STOP, ...) are sent as lower case text.
 - Text is sent exactly as typed (`Auto` stays `Auto`); add the `LowerCase` condition for devices that only accept lower case.
 - A missing `parameterType` is `EMPTY`, which ignores the command value.
+- `JSON` text containing `$` is not supported, as `$...$` is substituted with device variables when sending.
 
 ### Parameters and `$value$`
 

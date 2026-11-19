@@ -16,6 +16,7 @@ import static org.openhab.binding.miio.internal.MiIoBindingConstants.*;
 
 import java.awt.Color;
 import java.io.IOException;
+import java.io.StringReader;
 import java.net.URL;
 import java.time.Duration;
 import java.time.Instant;
@@ -87,15 +88,20 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonIOException;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSyntaxException;
+import com.google.gson.Strictness;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonToken;
 
 /**
  * The {@link MiIoBasicHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
  * @author Marcel Verpaalen - Initial contribution
+ * @author Marcel Verpaalen - Add JSON parameter type
  */
 @NonNullByDefault
 public class MiIoBasicHandler extends MiIoAbstractHandler {
@@ -228,7 +234,13 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
                             command = new DecimalType(((QuantityType<?>) command).toBigDecimal());
                         }
                     }
-                    if (paramType == CommandParameterType.COLOR) {
+                    if (paramType == CommandParameterType.JSON) {
+                        if (command instanceof StringType) {
+                            value = parseActionInput(action, command.toString());
+                        } else {
+                            logger.debug("Parameter type JSON only accepts text, command '{}' not send", command);
+                        }
+                    } else if (paramType == CommandParameterType.COLOR) {
                         if (command instanceof HSBType) {
                             HSBType hsb = (HSBType) command;
                             Color color = Color.getHSBColor(hsb.getHue().floatValue() / 360,
@@ -546,6 +558,30 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
             }
         }
         return element;
+    }
+
+    /**
+     * Parses the command text as the complete input list of a MIoT action, e.g. {@code ["C7795", 11, 180]}.
+     *
+     * @return the list, or null when the action is no MIoT action or the text is no JSON list of numbers and texts
+     */
+    private @Nullable JsonElement parseActionInput(MiIoDeviceAction action, String text) {
+        if (!action.isMiOtAction()) {
+            logger.debug("Parameter type JSON is only supported for MIoT actions, command '{}' not send", text);
+            return null;
+        }
+        try (JsonReader reader = new JsonReader(new StringReader(text))) {
+            reader.setStrictness(Strictness.STRICT);
+            JsonElement input = JsonParser.parseReader(reader);
+            if (input.isJsonArray() && reader.peek() == JsonToken.END_DOCUMENT && input.getAsJsonArray().asList()
+                    .stream().allMatch(e -> e.isJsonPrimitive() && !e.getAsJsonPrimitive().isBoolean())) {
+                return input;
+            }
+        } catch (JsonParseException | IOException e) {
+            // handled below
+        }
+        logger.debug("Command '{}' is no JSON list, not send", text);
+        return null;
     }
 
     protected void forceStatusUpdate() {
@@ -1117,7 +1153,7 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
                                 Utils.sanitizeForLog(response.getResult()));
                         final MiIoBasicChannel ch = getCustomRefreshChannel(channel);
                         boolean updated = false;
-                        if (ch != null && hasValue(response.getResult())) {
+                        if (ch != null && response.getResponse().has("result") && hasValue(response.getResult())) {
                             if (response.getResult().isJsonArray()) {
                                 JsonArray cmdResponse = response.getResult().getAsJsonArray();
                                 final String transformation = ch.getTransformation();

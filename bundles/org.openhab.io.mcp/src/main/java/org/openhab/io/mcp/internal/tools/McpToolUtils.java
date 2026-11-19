@@ -17,17 +17,23 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
+import java.util.function.BiFunction;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.items.GroupItem;
 import org.openhab.core.items.Item;
+import org.openhab.io.mcp.internal.auth.McpUser;
 import org.openhab.io.mcp.internal.util.ItemStateFormatter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.modelcontextprotocol.json.McpJsonMapper;
+import io.modelcontextprotocol.server.McpServerFeatures.SyncToolSpecification;
+import io.modelcontextprotocol.server.McpSyncServerExchange;
 import io.modelcontextprotocol.spec.McpSchema;
+import io.modelcontextprotocol.spec.McpSchema.CallToolRequest;
 import io.modelcontextprotocol.spec.McpSchema.CallToolResult;
 
 /**
@@ -96,6 +102,25 @@ public class McpToolUtils {
     }
 
     /**
+     * Restricts every tool not named in {@code userTools} to admins.
+     */
+    public static List<SyncToolSpecification> adminByDefault(List<SyncToolSpecification> tools, Set<String> userTools) {
+        return tools.stream().map(t -> userTools.contains(t.tool().name()) ? t
+                : new SyncToolSpecification(t.tool(), adminOnly(t.callHandler()))).toList();
+    }
+
+    static BiFunction<McpSyncServerExchange, CallToolRequest, CallToolResult> adminOnly(
+            BiFunction<McpSyncServerExchange, CallToolRequest, CallToolResult> handler) {
+        return (exchange, request) -> McpUser.isAdmin(exchange) ? handler.apply(exchange, request)
+                : adminRequiredResult("'" + request.name() + "'");
+    }
+
+    static CallToolResult adminRequiredResult(String what) {
+        return errorResult(what + " requires an openHAB administrator. "
+                + "Connect with a token from a user that has the administrator role.");
+    }
+
+    /**
      * Extracts a string argument from the tool call arguments map.
      *
      * @param args the arguments map from the tool call request
@@ -113,12 +138,13 @@ public class McpToolUtils {
      * @param args the arguments map from the tool call request
      * @param key the argument name to look up
      * @param defaultValue value to return if the key is absent or not a number
-     * @return the integer value, or {@code defaultValue} if missing
+     * @return the integer value, saturated to the {@code int} range so out-of-range numbers cannot wrap
+     *         around, or {@code defaultValue} if missing
      */
     public static int getIntArg(Map<String, Object> args, String key, int defaultValue) {
         Object val = args.get(key);
         if (val instanceof Number n) {
-            return n.intValue();
+            return Math.clamp(n.longValue(), Integer.MIN_VALUE, Integer.MAX_VALUE);
         }
         return defaultValue;
     }

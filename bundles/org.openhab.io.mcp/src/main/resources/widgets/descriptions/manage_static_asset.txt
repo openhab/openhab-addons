@@ -5,9 +5,7 @@ asset that a Main UI component references by URL — and to discover or
 clean up what's already there.
 
 This tool is action-dispatched: pass `action` plus the args that action
-needs. Every call requires an administrator-scoped bearer token; the
-bundle verifies this by probing an admin-gated REST endpoint with the
-session token before touching the filesystem.
+needs. Every call requires an administrator-scoped bearer token.
 
 ACTIONS
 

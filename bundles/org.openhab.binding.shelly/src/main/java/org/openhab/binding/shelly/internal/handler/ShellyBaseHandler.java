@@ -29,6 +29,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -140,6 +141,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
     private volatile double watchdog = now();
     private volatile double lastReport = 0;
     protected volatile int scheduledUpdates = 0;
+    private final AtomicBoolean statusRefreshRunning = new AtomicBoolean();
     private volatile boolean throttleRetryPending = false;
     private int skipCount = UPDATE_SKIP_COUNT;
     private int skipUpdate = 0;
@@ -213,7 +215,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
     }
 
     @Override
-    public boolean checkRepresentation(String key) {
+    public boolean isIdentifiedBy(String key) {
         InetAddress ipAddr;
         return key.equalsIgnoreCase(getUID()) || key.equalsIgnoreCase(apiConfig.getBdAddr())
                 || ((ipAddr = apiConfig.getDeviceIpAddress()) != null && key.equalsIgnoreCase(ipAddr.getHostAddress()))
@@ -681,6 +683,19 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
      * Update device status and channels
      */
     protected void refreshStatus() {
+        // A wakeup runs this outside the status job. A cycle overlapping a running one returns before anything else,
+        // so it doesn't consume a pending update
+        if (!statusRefreshRunning.compareAndSet(false, true)) {
+            return;
+        }
+        try {
+            refreshStatusSerialized();
+        } finally {
+            statusRefreshRunning.set(false);
+        }
+    }
+
+    private void refreshStatusSerialized() {
         if (stopping) {
             // cancel(true) only interrupts the job, a cycle which is already running has to bail out itself
             return;
@@ -1503,6 +1518,45 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
             return true;
         }
         return false;
+    }
+
+    /**
+     * A sleeping battery device announces itself via mDNS each time it wakes up, and is reachable only for a short
+     * while. A Thing that still waits for its device is updated right away, the next cycle of the status job may come
+     * too late. That is a Thing that is ONLINE/CONFIGURATION_PENDING, or OFFLINE for a reason that can clear once the
+     * device is reachable again. Once initialized and online, the device reports its status itself, so such a Thing
+     * needs no poll. A Thing with a configuration error is left to the user, as retrying a wrong password on every
+     * wake-up could lock the device.
+     * <p>
+     * The announcement doesn't restart the watchdog, as it doesn't prove that status reporting works. A successful
+     * update does.
+     * <p>
+     * Always-on devices report their status event driven and BLU devices can't be polled, both are left out. These
+     * flags are derived from the Thing type, so they are valid before the device was initialized.
+     */
+    @Override
+    public void onDeviceWakeup() {
+        if (profile.alwaysOn || profile.isBlu) {
+            return;
+        }
+        if (getThingStatusDetail() != ThingStatusDetail.CONFIGURATION_ERROR) {
+            // An initialization that failed without retry left the Thing without status job
+            startUpdateJob();
+        }
+        if (isWaitingForDevice()) {
+            logger.debug("{}: Device woke up, requesting update", thingName);
+            requestUpdates(1, false);
+            scheduler.execute(this::refreshStatus);
+        }
+    }
+
+    private boolean isWaitingForDevice() {
+        ThingStatusDetail detail = getThingStatusDetail();
+        return switch (getThingStatus()) {
+            case ONLINE -> detail == ThingStatusDetail.CONFIGURATION_PENDING;
+            case OFFLINE -> detail == ThingStatusDetail.COMMUNICATION_ERROR || detail == ThingStatusDetail.DUTY_CYCLE;
+            default -> false;
+        };
     }
 
     /**

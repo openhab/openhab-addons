@@ -6,11 +6,8 @@
  */
 
 let ALLTERCO_DEVICE_NAME_PREFIX = ["SBBT", "SBDW", "SBMO", "SBHT", "SBDI", "SBRC", "SBWS"];
-let ALLTERCO_MFD_ID_STR = "0ba9";
 let BTHOME_SVC_ID_STR = "fcd2";
 
-let ALLTERCO_MFD_ID = JSON.parse("0x" + ALLTERCO_MFD_ID_STR);
-let BTHOME_SVC_ID = JSON.parse("0x" + BTHOME_SVC_ID_STR);
 let SCAN_DURATION = BLE.Scanner.INFINITE_SCAN;
 
 // Bump together with BTHomeDecoder.SCRIPT_DATA_VERSION in the binding

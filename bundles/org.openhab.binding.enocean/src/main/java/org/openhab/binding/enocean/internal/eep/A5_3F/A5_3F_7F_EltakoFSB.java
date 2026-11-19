@@ -14,6 +14,7 @@ package org.openhab.binding.enocean.internal.eep.A5_3F;
 
 import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.*;
 
+import java.util.EnumSet;
 import java.util.Set;
 import java.util.function.Function;
 
@@ -29,6 +30,7 @@ import org.openhab.binding.enocean.internal.statemachine.BlindAction;
 import org.openhab.binding.enocean.internal.statemachine.BlindState;
 import org.openhab.binding.enocean.internal.statemachine.STMStateMachine;
 import org.openhab.binding.enocean.internal.statemachine.STMTransitionConfiguration;
+import org.openhab.binding.enocean.internal.statemachine.STMWatchdog;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.PercentType;
@@ -59,6 +61,9 @@ public class A5_3F_7F_EltakoFSB extends _4BSMessage implements StateMachineProvi
     static final byte DOWN = 0x50;
 
     static final byte CMD_100MSEC = 0x0A;
+
+    // The FAM14 forwards feedback in its polling cycle (about 5.7 s observed), so allow for more than two cycles.
+    static final long FEEDBACK_MARGIN_MS = 15000;
 
     public A5_3F_7F_EltakoFSB() {
     }
@@ -234,6 +239,8 @@ public class A5_3F_7F_EltakoFSB extends _4BSMessage implements StateMachineProvi
         if (stm != null) {
             if (stopMoveCommand == StopMoveType.STOP) {
                 setData(ZERO, (byte) 0xFF, STOP, TEACHIN_BIT);
+                // a request that waited for the calibration must not run after a later calibration
+                stm.clearStoredCommand();
                 stm.apply(BlindAction.INVALID_REQUEST);
             } else if (stopMoveCommand == StopMoveType.MOVE) {
                 if (stm.getState() == BlindState.POSITION_REACHED) {
@@ -248,6 +255,11 @@ public class A5_3F_7F_EltakoFSB extends _4BSMessage implements StateMachineProvi
                         } else {
                             convertDimmerImpl(currentDimmer.intValue(), PercentType.HUNDRED.intValue(), config, stm);
                         }
+                    } else {
+                        logger.warn(
+                                "Cannot adjust slats of {}: the dimmer channel is not linked or has no value. Skipping slat adjustment.",
+                                thing.getUID());
+                        stm.apply(BlindAction.SLATS_POS_DONE);
                     }
                 }
             }
@@ -424,10 +436,26 @@ public class A5_3F_7F_EltakoFSB extends _4BSMessage implements StateMachineProvi
 
     @Override
     public @Nullable BlindState getStateOnStartup(@Nullable BlindState persistedState) {
-        if (persistedState == BlindState.MOVEMENT_POSITION_UP || persistedState == BlindState.MOVEMENT_POSITION_DOWN) {
-            return BlindState.INVALID;
+        // a movement or adjustment that was running at shutdown cannot be completed any more
+        if (persistedState == null || persistedState == BlindState.IDLE || persistedState == BlindState.INVALID) {
+            return persistedState;
         }
-        return persistedState;
+        return BlindState.INVALID;
+    }
+
+    @Override
+    public @Nullable STMWatchdog<BlindAction, BlindState> getWatchdog(Thing thing) {
+        Channel channel = thing.getChannel(CHANNEL_ROLLERSHUTTER);
+        ConfigMode mode = getConfigMode(thing);
+        if (channel == null || mode == null || mode == ConfigMode.LEGACY) {
+            return null;
+        }
+        EnOceanChannelRollershutterConfig c = channel.getConfiguration().as(EnOceanChannelRollershutterConfig.class);
+        long slatsTimeMs = mode == ConfigMode.BLINDS ? Math.max(0, c.swapTime) * 100L : 0;
+        long timeoutMs = Math.max(0, c.shutTime) * 1000L + slatsTimeMs + FEEDBACK_MARGIN_MS;
+        return new STMWatchdog<>(EnumSet.of(BlindState.MOVEMENT_POSITION_UP, BlindState.MOVEMENT_POSITION_DOWN,
+                BlindState.MOVEMENT_SLATS, BlindState.MOVEMENT_CALIBRATION_UP, BlindState.MOVEMENT_CALIBRATION_DOWN),
+                BlindAction.MOVEMENT_TIMEOUT, timeoutMs);
     }
 
     @Override

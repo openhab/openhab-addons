@@ -159,7 +159,7 @@ public class BinarySensorTests extends AbstractComponentTests {
         publishMessage("zigbee2mqtt/sensor/state", "{ \"state\": \"OFF_\" }");
         assertState(component, BinarySensor.SENSOR_CHANNEL_ID, OnOffType.OFF);
 
-        waitForAssert(() -> assertState(component, BinarySensor.SENSOR_CHANNEL_ID, UnDefType.UNDEF), 10000, 200);
+        waitForAssert(() -> assertState(component, BinarySensor.SENSOR_CHANNEL_ID, UnDefType.NULL), 10000, 200);
     }
 
     @Override

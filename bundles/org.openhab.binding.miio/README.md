@@ -273,7 +273,7 @@ This will change the communication method and the Mi IO binding can communicate 
 
 # Mi IO Devices
 
-Currently the miio binding supports more than 610 different models.
+Currently the miio binding supports more than 620 different models.
 
 | Device                             | ThingType        | Device Model           | Supported    | Remark     |
 |------------------------------------|------------------|------------------------|--------------|------------|
@@ -281,6 +281,7 @@ Currently the miio binding supports more than 610 different models.
 | Mi Air Frying Pan                  | miio:basic       | [careli.fryer.maf01](#careli-fryer-maf01) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Mi Smart Air Fryer (3.5L)          | miio:basic       | [careli.fryer.maf02](#careli-fryer-maf02) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Mi Air Frying Pan                  | miio:basic       | [careli.fryer.maf03](#careli-fryer-maf03) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Xiaomi Smart Air Fryer Pro 4L      | miio:basic       | [careli.fryer.maf05a](#careli-fryer-maf05a) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Xiaomi Smart Air Fryer 6.5L        | miio:basic       | [careli.fryer.maf10a](#careli-fryer-maf10a) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Qingping Air Monitor Lite          | miio:basic       | [cgllc.airm.cgd1st](#cgllc-airm-cgd1st) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Qingping Air Monitor Lite          | miio:basic       | [cgllc.airm.cgdn1](#cgllc-airm-cgdn1) | Yes          |            |
@@ -298,11 +299,14 @@ Currently the miio binding supports more than 610 different models.
 | Mi Smart Power Plug v2             | miio:basic       | [chuangmi.plug.v2](#chuangmi-plug-v2) | Yes          |            |
 | MIJIA Smart  Plug Enhanced         | miio:basic       | [chuangmi.plug.v3](#chuangmi-plug-v3) | Yes          |            |
 | Mi Remote                          | miio:unsupported | chuangmi.remote.v2     | No           |            |
+| Mijia Rice cooker                  | miio:basic       | [chunmi.cooker.eh1](#chunmi-cooker-eh1) | Experimental | Cooking can only be started from the Mi Home app.<br />Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Mi IH Rice Cooker                  | miio:unsupported | chunmi.cooker.normal1  | No           |            |
 | Mi IH Rice Cooker                  | miio:unsupported | chunmi.cooker.normal2  | No           |            |
 | Mi IH Rice Cooker 4L               | miio:unsupported | chunmi.cooker.normal4  | No           |            |
 | Mi IH Pressure Rice Cooker         | miio:unsupported | chunmi.cooker.press1   | No           |            |
 | Mi IH Pressure Rice Cooker         | miio:unsupported | chunmi.cooker.press2   | No           |            |
+| Xiaomi Smart Blender               | miio:basic       | [chunmi.juicer.twa1](#chunmi-juicer-twa1) | Experimental | Programs can only be started from the Mi Home app.<br />Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Xiaomi Smart Blender               | miio:basic       | [chunmi.juicer.uka1](#chunmi-juicer-uka1) | Experimental | Programs can only be started from the Mi Home app.<br />Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Gosund Smart Plug                  | miio:basic       | [cuco.plug.cp1](#cuco-plug-cp1) | Yes          | Indicator light, child lock, power-on state and power metering follow the Mi Home plugin; they are not in the MIoT spec and may not be available on every plug. |
 | Gosund Smart Plug CP1              | miio:basic       | [cuco.plug.cp1d](#cuco-plug-cp1d) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Xiaomi Smart Plug 2 (Wi-Fi)        | miio:basic       | [cuco.plug.v2eur](#cuco-plug-v2eur) | Yes          |            |
@@ -380,7 +384,7 @@ Currently the miio binding supports more than 610 different models.
 | HUIZUO ARIES For Bedroom           | miio:basic       | [huayi.light.ari013](#huayi-light-ari013) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | HUIZUO ARIES For Living Room       | miio:basic       | [huayi.light.aries](#huayi-light-aries) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | HUIZUO Fan Light                   | miio:basic       | [huayi.light.fanwy](#huayi-light-fanwy) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
-| HUIZUO Fan Light(2020)             | miio:basic       | [huayi.light.fanwy2](#huayi-light-fanwy2) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| HUIZUO Fan Light(2020)             | miio:basic       | [huayi.light.fanwy2](#huayi-light-fanwy2) | Experimental | Preset: when enabled, the light and fan start with the preset brightness, color temperature and fan speed.<br />Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | HUIZUO PEGASUS For Living Room     | miio:basic       | [huayi.light.peg091](#huayi-light-peg091) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | HUIZUO PEGASUS For Bedroom         | miio:basic       | [huayi.light.peg093](#huayi-light-peg093) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | HUIZUO PISCES For Bedroom          | miio:basic       | [huayi.light.pis123](#huayi-light-pis123) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
@@ -390,6 +394,7 @@ Currently the miio binding supports more than 610 different models.
 | HUIZUO VIRGO For Bedroom           | miio:basic       | [huayi.light.vir063](#huayi-light-vir063) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | HUIZUO VIRGO For Living Room       | miio:basic       | [huayi.light.virgo](#huayi-light-virgo) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | HUIZUO Ceiling Light               | miio:basic       | [huayi.light.wy](#huayi-light-wy) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| HUAYI LIGHTING COMMON CEILING LIGHT | miio:basic       | [huayi.light.wy002](#huayi-light-wy002) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | HUIZUO LIANGCHEN(BLE Mesh)         | miio:basic       | [huayi.light.wy200](#huayi-light-wy200) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | HUIZUO SAG Downlight (BLE Mesh)    | miio:basic       | [huayi.light.wy201](#huayi-light-wy201) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | HUIZUO Bulb (BLE Mesh)             | miio:basic       | [huayi.light.wy202](#huayi-light-wy202) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
@@ -635,9 +640,11 @@ Currently the miio binding supports more than 610 different models.
 | PTX OneKey Switch (WIFI)           | miio:basic       | [090615.switch.xswitch01](#090615-switch-xswitch01) | Yes          |            |
 | PTX Twokey switch(wifi)            | miio:basic       | [090615.switch.xswitch02](#090615-switch-xswitch02) | Yes          |            |
 | PTX ThreeKey Switch (WIFI)         | miio:basic       | [090615.switch.xswitch03](#090615-switch-xswitch03) | Yes          |            |
-| SCISHARE Smart Capsule Coffee Machine | miio:basic       | [scishare.coffee.s1102](#scishare-coffee-s1102) | Experimental | This device does not allow for regular querying for the status. Hence the status is not updated for the action channels.<br />Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
-| Xiaomi Scishare Smart Capsule Coffee Machine | miio:basic       | [scishare.coffee.s1301](#scishare-coffee-s1301) | Experimental | This device does not allow for regular querying for the status. Hence the status is not updated for the action channels.<br />Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| SCISHARE Smart Capsule Coffee Machine | miio:basic       | [scishare.coffee.s1102](#scishare-coffee-s1102) | Experimental | Drinks are made with the app's default recipe values. The machine must be on and ready (status Ready).<br />Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Xiaomi Scishare Smart Capsule Coffee Machine | miio:basic       | [scishare.coffee.s1301](#scishare-coffee-s1301) | Experimental | Drinks are made with the app's default recipe values. The machine must be on and ready (status Ready).<br />Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Soocare Electric Toothbrush        | miio:unsupported | soocare.toothbrush.x3  | No           |            |
+| TINYMU Smart Toilet                | miio:basic       | [tinymu.toiletlid.v1](#tinymu-toiletlid-v1) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Mi Smart Dishwasher (4 Dining Sets) | miio:basic       | [viomi.dishwasher.m02](#viomi-dishwasher-m02) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Viomi Internet Refrigerator iLive(French style 462L) | miio:unsupported | viomi.fridge.v3        | No           |            |
 | Viomi sweeper PRO                  | miio:basic       | [viomi.vacuum.v3](#viomi-vacuum-v3) | Yes          |            |
 | Viomi Cleaning Robot V-RVCLM21B    | miio:basic       | [viomi.vacuum.v6](#viomi-vacuum-v6) | Yes          |            |
@@ -703,6 +710,7 @@ Currently the miio binding supports more than 610 different models.
 | Mijia Smart Air Purifier MAX       | miio:basic       | [xiaomi.airp.mb6](#xiaomi-airp-mb6) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Xiaomi Smart Air Purifier Elite    | miio:basic       | [xiaomi.airp.meb1](#xiaomi-airp-meb1) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Mijia Smart Air Purifier Elite     | miio:basic       | [xiaomi.airp.meb2](#xiaomi-airp-meb2) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Xiaomi Smart Multifunctional Rice Cooker | miio:basic       | [xiaomi.cooker.cmk7](#xiaomi-cooker-cmk7) | Experimental | Cooking can only be started from the Mi Home app.<br />Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Xiaomi Smart Inverter Dehumidifier | miio:basic       | [xiaomi.derh.30kh](#xiaomi-derh-30kh) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Xiaomi Smart Inverter Dehumidifier 30L | miio:basic       | [xiaomi.derh.30l](#xiaomi-derh-30l) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Mijia Smart Inverter Purifying Dehumidifier Max | miio:basic       | [xiaomi.derh.60l](#xiaomi-derh-60l) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
@@ -724,6 +732,8 @@ Currently the miio binding supports more than 610 different models.
 | Mijia Smart Anti-bacterial Humidifier 2 | miio:basic       | [xiaomi.humidifier.jsq2g](#xiaomi-humidifier-jsq2g) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Xiaomi Smart Humidifier 2          | miio:basic       | [xiaomi.humidifier.jsq2w](#xiaomi-humidifier-jsq2w) | Yes          |            |
 | Mijia Mist-Free Humidifier 3 (400) | miio:basic       | [xiaomi.humidifier.p3](#xiaomi-humidifier-p3) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Mijia Smart Quiet Inverter Blender P1 | miio:basic       | [xiaomi.juicer.dempp1](#xiaomi-juicer-dempp1) | Experimental | Programs can only be started from the Mi Home app.<br />Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Mijia Smart Quiet Inverter Blender P1 | miio:basic       | [xiaomi.juicer.p1v2](#xiaomi-juicer-p1v2) | Experimental | Programs can only be started from the Mi Home app.<br />Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Xiaomi Smart Electric Hot Water Dispenser 5L | miio:basic       | [xiaomi.kettle.mek02](#xiaomi-kettle-mek02) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Xiaomi Smart Kettle 2 Pro          | miio:basic       | [xiaomi.kettle.v20](#xiaomi-kettle-v20) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Xiaomi Smart Kettle 2 Pro          | miio:basic       | [xiaomi.kettle.v21](#xiaomi-kettle-v21) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
@@ -886,6 +896,7 @@ Currently the miio binding supports more than 610 different models.
 | Mi Air Purifier 3C                 | miio:basic       | [zhimi.airpurifier.mb4](#zhimi-airpurifier-mb4) | Yes          |            |
 | Mi Air Purifier 2S                 | miio:basic       | [zhimi.airpurifier.mc1](#zhimi-airpurifier-mc1) | Yes          |            |
 | Mi Air Purifier 2H                 | miio:basic       | [zhimi.airpurifier.mc2](#zhimi-airpurifier-mc2) | Yes          |            |
+| Xiaomi Smart Air Purifier 4 Lite   | miio:basic       | [zhimi.airpurifier.rma1](#zhimi-airpurifier-rma1) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Mi Air Purifier Super              | miio:basic       | [zhimi.airpurifier.sa1](#zhimi-airpurifier-sa1) | Yes          |            |
 | Mi Air Purifier MAX / MAX Pro      | miio:basic       | [zhimi.airpurifier.sa2](#zhimi-airpurifier-sa2) | Yes          |            |
 | Mi Air Purifier v1                 | miio:basic       | [zhimi.airpurifier.v1](#zhimi-airpurifier-v1) | Yes          |            |
@@ -894,6 +905,7 @@ Currently the miio binding supports more than 610 different models.
 | Mi Air Purifier v5                 | miio:basic       | [zhimi.airpurifier.v5](#zhimi-airpurifier-v5) | Yes          |            |
 | Mi Air Purifier Pro v6             | miio:basic       | [zhimi.airpurifier.v6](#zhimi-airpurifier-v6) | Yes          |            |
 | Mi Air Purifier Pro v7             | miio:basic       | [zhimi.airpurifier.v7](#zhimi-airpurifier-v7) | Yes          |            |
+| Mi Air Purifier Pro H              | miio:basic       | [zhimi.airpurifier.va1](#zhimi-airpurifier-va1) | Yes          |            |
 | Mi Air Purifier Pro H              | miio:basic       | [zhimi.airpurifier.vb2](#zhimi-airpurifier-vb2) | Yes          |            |
 | Mi Air Purifier virtual            | miio:unsupported | zhimi.airpurifier.virtual | No           |            |
 | Mi Air Purifier 2(Virtual)         | miio:unsupported | zhimi.airpurifier.vtl_m1 | No           |            |
@@ -1021,20 +1033,22 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 
 | Channel                    | Type                 | Description                              | Comment    |
 |----------------------------|----------------------|------------------------------------------|------------|
-| actions                    | String               | Actions                                  | Value mapping `["air-fryer-start-cook"="Air Fryer Start Cook","air-fryer-cancel-cooking"="Air Fryer Cancel Cooking","air-fryer-pause"="Air Fryer Pause","custom-start-custom-cook"="Custom Start Custom Cook","custom-resume-cooking"="Custom Resume Cooking"]` |
-| status                     | Number               | Air Fryer - Status                       | Value mapping `["0"="Shutdown","1"="Standby","2"="Pause","3"="Appointment","4"="Cooking","5"="Preheat ","6"="Cooked","7"="Preheat Finish","8"="Preheat Pause","9"="Pause2"]` |
+| actions                    | String               | Actions                                  | Value mapping `["air-fryer-start-cook"="Start Cooking","air-fryer-cancel-cooking"="Cancel Cooking","air-fryer-pause"="Pause Cooking","custom-resume-cooking"="Resume Cooking"]` |
+| start_cook                 | String               | Start Cooking With Settings              | Starts cooking with a JSON list of 6 values: recipe id, time (minutes), temperature (degrees Celsius), scheduled start time (minutes, 0 starts now), food quantity (0-4), preheat (1 off, 2 on). The recipe id is `M0` for manual cooking, `M1` to `M8` for the device presets or `A` plus the recipeID of a cloud recipe. Example manual cooking 15 minutes at 180 degrees: `["M0",15,180,0,0,1]`. |
+| status                     | Number               | Air Fryer - Status                       | Value mapping `["0"="Off","1"="Standby","2"="Paused","3"="Scheduled","4"="Cooking","5"="Preheating","6"="Cooking Completed","7"="Preheat Completed","8"="Preheat Paused","9"="Paused (Basket Removed)"]` |
 | fault                      | Number               | Air Fryer - Device Fault                 | Value mapping `["0"="No Faults","1"="E1","2"="E2"]` |
 | target_time                | Number:Time          | Air Fryer - Target Time                  |            |
 | target_temperature         | Number:Temperature   | Air Fryer - Target Temperature           |            |
 | left_time                  | Number:Time          | Air Fryer - Left Time                    |            |
 | recipe_id                  | String               | Custom - Recipe Id                       |            |
-| work_time                  | Number:Time          | Custom - Work Time                       |            |
-| work_temp                  | Number:Temperature   | Custom - Work Temp                       |            |
-| appoint_time               | Number:Time          | Custom - Appoint Time                    |            |
-| food_quantity              | Number               | Custom - Food Quantity                   | Value mapping `["0"="Null","1"="Single","2"="Double","3"="Half","4"="Full"]` |
-| preheat_switch             | Number               | Custom - Preheat Switch                  | Value mapping `["0"="Null","1"="Off","2"="On"]` |
-| appoint_time_left          | Number:Time          | Custom - Appoint Time Left               |            |
-| turn_pot                   | Number               | Custom - Turn Pot                        | Value mapping `["1"="Switch Off","0"="Not Turn Pot","2"="Turn Pot"]` |
+| work_time                  | Number:Time          | Custom - Cooking Time                    |            |
+| work_temp                  | Number:Temperature   | Custom - Cooking Temperature             |            |
+| appoint_time               | Number:Time          | Custom - Scheduled Start Time            |            |
+| food_quantity              | Number               | Custom - Food Quantity                   | Value mapping `["0"="None","1"="Single Layer","2"="Double Layer","3"="Half Pot","4"="Full Pot"]` |
+| preheat_switch             | Number               | Custom - Preheat Switch                  | Value mapping `["0"="Not Set","1"="Off","2"="On"]` |
+| appoint_time_left          | Number:Time          | Custom - Scheduled Start Time Left       |            |
+| turn_pot                   | Number               | Custom - Turn Food Reminder              | Value mapping `["0"="Reminder On","1"="Reminder Off","2"="Turn Food Now"]` |
+| recipes                    | String               | Recipes                                  | List of the Mi Home cloud recipes as JSON, with for each recipe the recipeID, recipeName, time (minutes), temperature (degrees Celsius), preHeat and capacity. Requires the cloud server to be set. The list is read once, send a refresh command to read it again. |
 
 ### Mi Air Frying Pan (<a name="careli-fryer-maf03">careli.fryer.maf03</a>) Channels
 
@@ -1056,6 +1070,30 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | appoint_time_left          | Number:Time          | Custom - Appoint Time Left               |            |
 | recipe_sync                | String               | Custom - Recipe Sync                     |            |
 | turn_pot                   | Number               | Custom - Turn Pot                        | Value mapping `["1"="Switch Off","0"="Not Turn Pot","2"="Turn Pot"]` |
+
+### Xiaomi Smart Air Fryer Pro 4L (<a name="careli-fryer-maf05a">careli.fryer.maf05a</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| actions                    | String               | Actions                                  | Value mapping `["air-fryer-start-cook"="Start Cooking","air-fryer-cancel-cooking"="Cancel Cooking","air-fryer-pause"="Pause Cooking","custom-resume-cook"="Resume Cooking"]` |
+| start_cook                 | String               | Start Cooking With Settings              | Starts cooking with a JSON list of 7 values: recipe id, recipe name, time (minutes), temperature (degrees Celsius), scheduled start time (minutes, 0 starts now), food quantity (0-4), preheat (1 off, 2 on). The recipe id is `M0` for manual cooking, `M1` to `M10` for the device presets or `C` plus the recipeID of a cloud recipe. The recipe name is sent as given, it is not encoded by the binding. Example manual cooking 15 minutes at 180 degrees: `["M0","u0064u0065u006du006f",15,180,0,0,1]`. |
+| status                     | Number               | Air Fryer - Status                       | Value mapping `["0"="Off","1"="Standby","2"="Paused","3"="Scheduled","4"="Cooking","5"="Preheating","6"="Cooking Completed","7"="Preheat Completed","8"="Preheat Paused","9"="Paused (Basket Removed)"]` |
+| fault                      | Number               | Air Fryer - Device Fault                 | Value mapping `["0"="No Faults","1"="E1","2"="E2"]` |
+| target_time                | Number:Time          | Air Fryer - Target Time                  |            |
+| target_temperature         | Number:Temperature   | Air Fryer - Target Temperature           |            |
+| left_time                  | Number:Time          | Air Fryer - Left Time                    |            |
+| recipe_id                  | String               | Custom - Recipe Id                       |            |
+| recipe_name                | String               | Custom - Recipe Name                     |            |
+| work_time                  | Number:Time          | Custom - Cooking Time                    |            |
+| work_temp                  | Number:Temperature   | Custom - Cooking Temperature             |            |
+| appoint_time               | Number:Time          | Custom - Scheduled Start Time            |            |
+| food_quantity              | Number               | Custom - Food Quantity                   | Value mapping `["0"="None","1"="Single Layer","2"="Double Layer","3"="Half Pot","4"="Full Pot"]` |
+| preheat_switch             | Number               | Custom - Preheat Switch                  | Value mapping `["1"="Off","2"="On"]` |
+| appoint_time_left          | Number:Time          | Custom - Scheduled Start Time Left       |            |
+| recipe_sync                | String               | Custom - Recipe Sync                     |            |
+| turn_pot                   | Number               | Custom - Turn Food                       | Value mapping `["0"="No Action","2"="Turn Food Now"]` |
+| turn_pot_cfg               | Number               | Custom - Turn Food Reminder              | Value mapping `["0"="Off","1"="On"]` |
+| recipes                    | String               | Recipes                                  | List of the Mi Home cloud recipes as JSON, with for each recipe the recipeID, recipeName, time (minutes), temperature (degrees Celsius), preHeat and capacity. Requires the cloud server to be set. The list is read once, send a refresh command to read it again. |
 
 ### Xiaomi Smart Air Fryer 6.5L (<a name="careli-fryer-maf10a">careli.fryer.maf10a</a>) Channels
 
@@ -1259,6 +1297,47 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | temperature                | Number:Temperature   | Temperature                              |            |
 | led                        | Switch               | Indicator Light                          |            |
 | electric_power             | Number:Power         | Active Power                             |            |
+
+### Mijia Rice cooker (<a name="chunmi-cooker-eh1">chunmi.cooker.eh1</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| status                     | Number               | Status                                   | Value mapping `["1"="Idle","2"="Cooking","3"="Keep Warm","4"="Scheduled","5"="Setting (Code 5)","6"="Setting (Code 6)","7"="Setting (Code 7)","8"="Error","9"="Finished"]` |
+| error                      | Number               | Error                                    | Value mapping `["0"="None","9"="Top Sensor Damaged","10"="Base Sensor Damaged","11"="Communication Fault"]` |
+| temperature                | Number:Temperature   | Temperature                              |            |
+| remaining_time             | Number:Time          | Remaining Time                           |            |
+| cook_time                  | Number:Time          | Cooking Time                             |            |
+| control                    | String               | Control                                  | Value mapping `["cancel"="Cancel Cooking"]` |
+
+### Xiaomi Smart Blender (<a name="chunmi-juicer-twa1">chunmi.juicer.twa1</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| status                     | Number               | Status                                   | Value mapping `["1"="Idle","2"="Working","3"="Paused","4"="Scheduled","5"="Shut Down","6"="Keeping Warm","7"="Finished","8"="Keep Warm Finished","11"="Fault"]` |
+| error                      | Number               | Error                                    | Value mapping `["0"="No Error","1"="Motor Overload","2"="No Cup","3"="High Voltage","4"="Low Voltage","5"="High Temperature","10"="Temperature Sensor Failure","11"="Communication Failure"]` |
+| remaining_time             | Number:Time          | Remaining Time                           |            |
+| schedule_time              | Number:Time          | Scheduled Time                           |            |
+| keep_warm_remaining_time   | Number:Time          | Keep Warm Remaining Time                 |            |
+| cooking_time               | Number:Time          | Cooking Time                             |            |
+| temperature                | Number:Temperature   | Temperature                              |            |
+| cup                        | Number               | Cup                                      | Value mapping `["0"="No Cup","1"="OK"]` |
+| lid_open                   | Switch               | Lid Open                                 |            |
+| control                    | String               | Control                                  | Value mapping `["pause"="Pause","resume"="Resume","cancel"="Cancel"]` |
+
+### Xiaomi Smart Blender (<a name="chunmi-juicer-uka1">chunmi.juicer.uka1</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| status                     | Number               | Status                                   | Value mapping `["1"="Idle","2"="Working","3"="Paused","4"="Scheduled","5"="Shut Down","6"="Keeping Warm","7"="Finished","8"="Keep Warm Finished","11"="Fault"]` |
+| error                      | Number               | Error                                    | Value mapping `["0"="No Error","1"="Motor Overload","2"="No Cup","3"="High Voltage","4"="Low Voltage","5"="High Temperature","10"="Temperature Sensor Failure","11"="Communication Failure"]` |
+| remaining_time             | Number:Time          | Remaining Time                           |            |
+| schedule_time              | Number:Time          | Scheduled Time                           |            |
+| keep_warm_remaining_time   | Number:Time          | Keep Warm Remaining Time                 |            |
+| cooking_time               | Number:Time          | Cooking Time                             |            |
+| temperature                | Number:Temperature   | Temperature                              |            |
+| cup                        | Number               | Cup                                      | Value mapping `["0"="No Cup","1"="OK"]` |
+| lid_open                   | Switch               | Lid Open                                 |            |
+| control                    | String               | Control                                  | Value mapping `["pause"="Pause","resume"="Resume","cancel"="Cancel"]` |
 
 ### Gosund Smart Plug (<a name="cuco-plug-cp1">cuco.plug.cp1</a>) Channels
 
@@ -4368,17 +4447,17 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 
 | Channel                    | Type                 | Description                              | Comment    |
 |----------------------------|----------------------|------------------------------------------|------------|
-| on                         | Switch               | Light - Power                            |            |
-| brightness                 | Dimmer               | Light - Brightness                       |            |
-| color-temperature          | Number:Temperature   | Light - Color Temperature                |            |
+| on                         | Switch               | Power                                    |            |
+| brightness                 | Dimmer               | Brightness                               |            |
+| color_temperature          | Number:Temperature   | Color Temperature                        |            |
 
 ### HUIZUO ARIES For Living Room (<a name="huayi-light-aries">huayi.light.aries</a>) Channels
 
 | Channel                    | Type                 | Description                              | Comment    |
 |----------------------------|----------------------|------------------------------------------|------------|
-| on                         | Switch               | Light - Power                            |            |
-| brightness                 | Dimmer               | Light - Brightness                       |            |
-| color-temperature          | Number:Temperature   | Light - Color Temperature                |            |
+| on                         | Switch               | Power                                    |            |
+| brightness                 | Dimmer               | Brightness                               |            |
+| color_temperature          | Number:Temperature   | Color Temperature                        |            |
 
 ### HUIZUO Fan Light (<a name="huayi-light-fanwy">huayi.light.fanwy</a>) Channels
 
@@ -4386,10 +4465,10 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 |----------------------------|----------------------|------------------------------------------|------------|
 | on                         | Switch               | Light - Power                            |            |
 | brightness                 | Dimmer               | Light - Brightness                       |            |
-| color-temperature          | Number:Temperature   | Light - Color Temperature                |            |
+| color_temperature          | Number:Temperature   | Light - Color Temperature                |            |
 | on1                        | Switch               | Fan - Power                              |            |
-| fan-level                  | Number:Dimensionless | Fan - Fan Level                          |            |
-| motor-reverse              | Switch               | Fan - Motor Reverse                      |            |
+| fan_level                  | Number               | Fan - Speed                              |            |
+| fan_reverse                | Switch               | Fan - Reverse                            |            |
 | mode                       | Number               | Fan - Mode                               | Value mapping `["1"="Normal Wind","2"="Natural Wind"]` |
 
 ### HUIZUO Fan Light(2020) (<a name="huayi-light-fanwy2">huayi.light.fanwy2</a>) Channels
@@ -4398,129 +4477,136 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 |----------------------------|----------------------|------------------------------------------|------------|
 | on                         | Switch               | Light - Power                            |            |
 | brightness                 | Dimmer               | Light - Brightness                       |            |
-| color-temperature          | Number:Temperature   | Light - Color Temperature                |            |
+| color_temperature          | Number:Temperature   | Light - Color Temperature                |            |
 | on1                        | Switch               | Fan - Power                              |            |
-| fan-level                  | Number:Dimensionless | Fan - Fan Level                          |            |
-| mode                       | Number               | Fan - Mode                               | Value mapping `["0"="Basic","1"="Natural Wind"]` |
-| time-off                   | Number:Time          | Presets - Time Off                       |            |
-| pre-colortemp              | Number:Temperature   | Presets - Pre Colortemp                  |            |
-| pre-brightness             | Dimmer               | Presets - Pre Brightness                 |            |
-| pre-speed                  | Number:Dimensionless | Presets - Pre Speed                      |            |
-| reversal                   | Number               | Presets - Reversal                       | Value mapping `["0"="Postitive","1"="Reverse"]` |
-| pre-custom                 | Number               | Presets - Pre Custom                     | Value mapping `["0"="Switch Off","1"="Open"]` |
-| flabellum                  | Switch               | Presets - Flabellum                      |            |
+| fan_level                  | Number               | Fan - Speed                              |            |
+| mode                       | Number               | Fan - Mode                               | Value mapping `["0"="Normal Wind","1"="Natural Wind"]` |
+| preset_color_temperature   | Number:Temperature   | Preset - Color Temperature               |            |
+| preset_brightness          | Number:Dimensionless | Preset - Brightness                      |            |
+| preset_fan_level           | Number               | Preset - Fan Speed                       |            |
+| fan_direction              | Number               | Fan - Direction                          | Value mapping `["0"="Forward","1"="Reverse"]` |
+| preset                     | Switch               | Preset                                   |            |
+| swing                      | Switch               | Fan - Swing                              |            |
 
 ### HUIZUO PEGASUS For Living Room (<a name="huayi-light-peg091">huayi.light.peg091</a>) Channels
 
 | Channel                    | Type                 | Description                              | Comment    |
 |----------------------------|----------------------|------------------------------------------|------------|
-| on                         | Switch               | Light - Power                            |            |
-| brightness                 | Dimmer               | Light - Brightness                       |            |
-| color-temperature          | Number:Temperature   | Light - Color Temperature                |            |
+| on                         | Switch               | Power                                    |            |
+| brightness                 | Dimmer               | Brightness                               |            |
+| color_temperature          | Number:Temperature   | Color Temperature                        |            |
 
 ### HUIZUO PEGASUS For Bedroom (<a name="huayi-light-peg093">huayi.light.peg093</a>) Channels
 
 | Channel                    | Type                 | Description                              | Comment    |
 |----------------------------|----------------------|------------------------------------------|------------|
-| on                         | Switch               | Light - Power                            |            |
-| brightness                 | Dimmer               | Light - Brightness                       |            |
-| color-temperature          | Number:Temperature   | Light - Color Temperature                |            |
+| on                         | Switch               | Power                                    |            |
+| brightness                 | Dimmer               | Brightness                               |            |
+| color_temperature          | Number:Temperature   | Color Temperature                        |            |
 
 ### HUIZUO PISCES For Bedroom (<a name="huayi-light-pis123">huayi.light.pis123</a>) Channels
 
 | Channel                    | Type                 | Description                              | Comment    |
 |----------------------------|----------------------|------------------------------------------|------------|
-| on                         | Switch               | Light - Power                            |            |
-| brightness                 | Dimmer               | Light - Brightness                       |            |
-| color-temperature          | Number:Temperature   | Light - Color Temperature                |            |
+| on                         | Switch               | Power                                    |            |
+| brightness                 | Dimmer               | Brightness                               |            |
+| color_temperature          | Number:Temperature   | Color Temperature                        |            |
 
 ### HUIZUO PISCES For Living Room (<a name="huayi-light-pisces">huayi.light.pisces</a>) Channels
 
 | Channel                    | Type                 | Description                              | Comment    |
 |----------------------------|----------------------|------------------------------------------|------------|
-| on                         | Switch               | Light - Power                            |            |
-| brightness                 | Dimmer               | Light - Brightness                       |            |
-| color-temperature          | Number:Temperature   | Light - Color Temperature                |            |
+| on                         | Switch               | Power                                    |            |
+| brightness                 | Dimmer               | Brightness                               |            |
+| color_temperature          | Number:Temperature   | Color Temperature                        |            |
 
 ### HUIZUO TAURUS For Bedroom (<a name="huayi-light-tau023">huayi.light.tau023</a>) Channels
 
 | Channel                    | Type                 | Description                              | Comment    |
 |----------------------------|----------------------|------------------------------------------|------------|
-| on                         | Switch               | Light - Power                            |            |
-| brightness                 | Dimmer               | Light - Brightness                       |            |
-| color-temperature          | Number:Temperature   | Light - Color Temperature                |            |
+| on                         | Switch               | Power                                    |            |
+| brightness                 | Dimmer               | Brightness                               |            |
+| color_temperature          | Number:Temperature   | Color Temperature                        |            |
 
 ### HUIZUO TAURUS For Living Room (<a name="huayi-light-taurus">huayi.light.taurus</a>) Channels
 
 | Channel                    | Type                 | Description                              | Comment    |
 |----------------------------|----------------------|------------------------------------------|------------|
-| on                         | Switch               | Light - Power                            |            |
-| brightness                 | Dimmer               | Light - Brightness                       |            |
-| color-temperature          | Number:Temperature   | Light - Color Temperature                |            |
+| on                         | Switch               | Power                                    |            |
+| brightness                 | Dimmer               | Brightness                               |            |
+| color_temperature          | Number:Temperature   | Color Temperature                        |            |
 
 ### HUIZUO VIRGO For Bedroom (<a name="huayi-light-vir063">huayi.light.vir063</a>) Channels
 
 | Channel                    | Type                 | Description                              | Comment    |
 |----------------------------|----------------------|------------------------------------------|------------|
-| on                         | Switch               | Light - Power                            |            |
-| brightness                 | Dimmer               | Light - Brightness                       |            |
-| color-temperature          | Number:Temperature   | Light - Color Temperature                |            |
+| on                         | Switch               | Power                                    |            |
+| brightness                 | Dimmer               | Brightness                               |            |
+| color_temperature          | Number:Temperature   | Color Temperature                        |            |
 
 ### HUIZUO VIRGO For Living Room (<a name="huayi-light-virgo">huayi.light.virgo</a>) Channels
 
 | Channel                    | Type                 | Description                              | Comment    |
 |----------------------------|----------------------|------------------------------------------|------------|
-| on                         | Switch               | Light - Power                            |            |
-| brightness                 | Dimmer               | Light - Brightness                       |            |
-| color-temperature          | Number:Temperature   | Light - Color Temperature                |            |
+| on                         | Switch               | Power                                    |            |
+| brightness                 | Dimmer               | Brightness                               |            |
+| color_temperature          | Number:Temperature   | Color Temperature                        |            |
 
 ### HUIZUO Ceiling Light (<a name="huayi-light-wy">huayi.light.wy</a>) Channels
 
 | Channel                    | Type                 | Description                              | Comment    |
 |----------------------------|----------------------|------------------------------------------|------------|
-| on                         | Switch               | Light - Power                            |            |
-| brightness                 | Dimmer               | Light - Brightness                       |            |
-| color-temperature          | Number:Temperature   | Light - Color Temperature                |            |
+| on                         | Switch               | Power                                    |            |
+| brightness                 | Dimmer               | Brightness                               |            |
+| color_temperature          | Number:Temperature   | Color Temperature                        |            |
+
+### HUAYI LIGHTING COMMON CEILING LIGHT (<a name="huayi-light-wy002">huayi.light.wy002</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| on                         | Switch               | Power                                    |            |
+| brightness                 | Dimmer               | Brightness                               |            |
+| color_temperature          | Number:Temperature   | Color Temperature                        |            |
 
 ### HUIZUO LIANGCHEN(BLE Mesh) (<a name="huayi-light-wy200">huayi.light.wy200</a>) Channels
 
 | Channel                    | Type                 | Description                              | Comment    |
 |----------------------------|----------------------|------------------------------------------|------------|
-| on                         | Switch               | Light - Power                            |            |
-| brightness                 | Dimmer               | Light - Brightness                       |            |
-| color-temperature          | Number:Temperature   | Light - Color Temperature                |            |
+| on                         | Switch               | Power                                    |            |
+| brightness                 | Dimmer               | Brightness                               |            |
+| color_temperature          | Number:Temperature   | Color Temperature                        |            |
 
 ### HUIZUO SAG Downlight (BLE Mesh) (<a name="huayi-light-wy201">huayi.light.wy201</a>) Channels
 
 | Channel                    | Type                 | Description                              | Comment    |
 |----------------------------|----------------------|------------------------------------------|------------|
-| on                         | Switch               | Light - Power                            |            |
-| brightness                 | Dimmer               | Light - Brightness                       |            |
-| color-temperature          | Number:Temperature   | Light - Color Temperature                |            |
+| on                         | Switch               | Power                                    |            |
+| brightness                 | Dimmer               | Brightness                               |            |
+| color_temperature          | Number:Temperature   | Color Temperature                        |            |
 
 ### HUIZUO Bulb (BLE Mesh) (<a name="huayi-light-wy202">huayi.light.wy202</a>) Channels
 
 | Channel                    | Type                 | Description                              | Comment    |
 |----------------------------|----------------------|------------------------------------------|------------|
-| on                         | Switch               | Light - Power                            |            |
-| brightness                 | Dimmer               | Light - Brightness                       |            |
-| color-temperature          | Number:Temperature   | Light - Color Temperature                |            |
+| on                         | Switch               | Power                                    |            |
+| brightness                 | Dimmer               | Brightness                               |            |
+| color_temperature          | Number:Temperature   | Color Temperature                        |            |
 
 ### HUIZUO YONG Downlight (BLE Mesh) (<a name="huayi-light-wy203">huayi.light.wy203</a>) Channels
 
 | Channel                    | Type                 | Description                              | Comment    |
 |----------------------------|----------------------|------------------------------------------|------------|
-| on                         | Switch               | Light - Power                            |            |
-| brightness                 | Dimmer               | Light - Brightness                       |            |
-| color-temperature          | Number:Temperature   | Light - Color Temperature                |            |
+| on                         | Switch               | Power                                    |            |
+| brightness                 | Dimmer               | Brightness                               |            |
+| color_temperature          | Number:Temperature   | Color Temperature                        |            |
 
 ### huayi.light.wy204 (<a name="huayi-light-wy204">huayi.light.wy204</a>) Channels
 
 | Channel                    | Type                 | Description                              | Comment    |
 |----------------------------|----------------------|------------------------------------------|------------|
-| on                         | Switch               | Light - Power                            |            |
-| brightness                 | Dimmer               | Light - Brightness                       |            |
-| color-temperature          | Number:Temperature   | Light - Color Temperature                |            |
+| on                         | Switch               | Power                                    |            |
+| brightness                 | Dimmer               | Brightness                               |            |
+| color_temperature          | Number:Temperature   | Color Temperature                        |            |
 
 ### HUIZUO Heating Lamp (<a name="huayi-light-wyheat">huayi.light.wyheat</a>) Channels
 
@@ -4528,19 +4614,18 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 |----------------------------|----------------------|------------------------------------------|------------|
 | on                         | Switch               | Light - Power                            |            |
 | brightness                 | Dimmer               | Light - Brightness                       |            |
-| color-temperature          | Number:Temperature   | Light - Color Temperature                |            |
-| on1                        | Switch               | Heater - Power                           |            |
-| fault                      | Number               | Heater - Device Fault                    | Value mapping `["0"="No Faults"]` |
-| heat-level                 | Number               | Heater - Heat Level                      |            |
-| screenshow                 | Switch               | Other - Screenshow                       |            |
+| color_temperature          | Number:Temperature   | Light - Color Temperature                |            |
+| on1                        | Switch               | Heater - Power                           | The heater has no time limit of its own; it runs until it is switched off. |
+| heat_level                 | Number               | Heater - Level                           | Value mapping `["1"="Low","2"="Middle","3"="High"]` |
+| screen_light               | Switch               | Device Screen Light                      |            |
 
 ### HUIZUO ZIWEI Ceiling Lamp (<a name="huayi-light-zw131">huayi.light.zw131</a>) Channels
 
 | Channel                    | Type                 | Description                              | Comment    |
 |----------------------------|----------------------|------------------------------------------|------------|
-| on                         | Switch               | Light - Power                            |            |
-| brightness                 | Dimmer               | Light - Brightness                       |            |
-| color-temperature          | Number:Temperature   | Light - Color Temperature                |            |
+| on                         | Switch               | Power                                    |            |
+| brightness                 | Dimmer               | Brightness                               |            |
+| color_temperature          | Number:Temperature   | Color Temperature                        |            |
 
 ### Mi Robot Vacuum-Mop Pro (<a name="ijai-vacuum-v1">ijai.vacuum.v1</a>) Channels
 
@@ -7580,21 +7665,47 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 
 | Channel                    | Type                 | Description                              | Comment    |
 |----------------------------|----------------------|------------------------------------------|------------|
-| power                      | Switch               | Power                                    |            |
-| Status                     | String               | status                                   |            |
-| expresso                   | Number               | Brew Expresso                            | Value is the amount of coffee in ml. 2nd parameter in the json db is the water temperature |
-| expresso                   | Number               | Brew Americano                           | Value is the amount of coffee in ml. parameters in json are cupAmount: [set by OH], coffee: 40,water: 80, temp: 90 |
-| boil                       | Number               | Boil water                               | Value is the amount of water (ml) to heat. 2nd parameter in the json db is the water temperature |
+| power                      | Switch               | Power                                    | Write only, the machine does not report its power state; see the status channel. |
+| status                     | Number               | Status                                   | Value mapping `["1"="Off","2"="On","3"="Self-Checking","4"="Preheating","5"="Ready","6"="Descaling","7"="Standby","8"="Boiler Preheat Set","10"="Work Cancelled or Alarm","51"="Making Coffee (Code 51)","52"="Making Coffee (Code 52)","55"="Making Coffee (Code 55)","60"="Making Coffee (Code 60)","61"="Making Coffee (Code 61)","150"="Recipes Restored","151"="Espresso Recipe Restored","152"="Americano Recipe Restored","160"="Hot Water Recipe Restored","195"="Factory Settings Restored","201"="Making Coffee (Code 201)","202"="NTC Fault Alarm","203"="Water Tank Empty"]` |
+| make_espresso              | Number               | Make Espresso                            | Makes an espresso with the given amount of coffee (ml) at 85 degrees Celsius. |
+| make_americano             | Number               | Make Americano                           | Makes an americano with the given amount of water (ml) at 90 degrees Celsius and 40 ml coffee. |
+| make_hot_water             | Number               | Make Hot Water                           | Dispenses the given amount of water (ml) at 55 degrees Celsius. |
+| control                    | String               | Control                                  | Stop ends making a drink, descaling or an alarm. Continue resumes after the water tank was refilled. |
+| preheat_mode               | Number               | Boiler Preheat Mode                      | Write only. Boiler preheat temperature in degrees Celsius as in the app settings; only accepted while the machine is on. |
 
 ### Xiaomi Scishare Smart Capsule Coffee Machine (<a name="scishare-coffee-s1301">scishare.coffee.s1301</a>) Channels
 
 | Channel                    | Type                 | Description                              | Comment    |
 |----------------------------|----------------------|------------------------------------------|------------|
+| power                      | Switch               | Power                                    | Write only, the machine does not report its power state; see the status channel. |
+| status                     | Number               | Status                                   | Value mapping `["1"="Off","2"="On","3"="Self-Checking","4"="Preheating","5"="Ready","6"="Descaling","7"="Standby","8"="Boiler Preheat Set","10"="Work Cancelled or Alarm","51"="Making Coffee (Code 51)","52"="Making Coffee (Code 52)","55"="Making Coffee (Code 55)","60"="Making Coffee (Code 60)","61"="Making Coffee (Code 61)","150"="Recipes Restored","151"="Espresso Recipe Restored","152"="Americano Recipe Restored","160"="Hot Water Recipe Restored","195"="Factory Settings Restored","201"="Making Coffee (Code 201)","202"="NTC Fault Alarm","203"="Water Tank Empty"]` |
+| make_espresso              | Number               | Make Espresso                            | Makes an espresso with the given amount of coffee (ml) at 85 degrees Celsius. |
+| make_americano             | Number               | Make Americano                           | Makes an americano with the given amount of water (ml) at 90 degrees Celsius and 40 ml coffee. |
+| make_hot_water             | Number               | Make Hot Water                           | Dispenses the given amount of water (ml) at 55 degrees Celsius. |
+| control                    | String               | Control                                  | Stop ends making a drink, descaling or an alarm. Continue resumes after the water tank was refilled. |
+| preheat_mode               | Number               | Boiler Preheat Mode                      | Write only. Boiler preheat temperature in degrees Celsius as in the app settings; only accepted while the machine is on. |
+
+### TINYMU Smart Toilet (<a name="tinymu-toiletlid-v1">tinymu.toiletlid.v1</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| status                     | Number               | Status                                   | 1 is Idle, any other value means the toilet is in use. |
+| filter_days_left           | Number:Time          | Filter Days Left                         |            |
+| filter_life                | Number:Dimensionless | Filter Remaining                         |            |
+| deodorization              | Switch               | Deodorization                            | Write only. |
+
+### Mi Smart Dishwasher (4 Dining Sets) (<a name="viomi-dishwasher-m02">viomi.dishwasher.m02</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
 | power                      | Switch               | Power                                    |            |
-| Status                     | String               | status                                   |            |
-| expresso                   | Number               | Brew Expresso                            | Value is the amount of coffee in ml. 2nd parameter in the json db is the water temperature |
-| expresso                   | Number               | Brew Americano                           | Value is the amount of coffee in ml. parameters in json are cupAmount: [set by OH], coffee: 40,water: 80, temp: 90 |
-| boil                       | Number               | Boil water                               | Value is the amount of water (ml) to heat. 2nd parameter in the json db is the water temperature |
+| status                     | Number               | Status                                   | Value mapping `["0"="Off","1"="Standby","2"="Washing","3"="Paused","4"="Finished","5"="Scheduled","6"="Drying"]` |
+| program                    | Number               | Program                                  | Selecting a program starts washing, as in the app. |
+| wash_process               | Number               | Wash Step                                | Value mapping `["0"="Not Running","1"="Prewash","2"="Wash","3"="Rinse","4"="Dry"]` |
+| remaining_time             | Number:Time          | Remaining Time                           |            |
+| water_temperature          | Number:Temperature   | Water Temperature                        |            |
+| child_lock                 | Switch               | Child Lock                               |            |
+| control                    | String               | Control                                  | Value mapping `["pause"="Pause","resume"="Resume","cancel"="Cancel"]` |
 
 ### Viomi sweeper PRO (<a name="viomi-vacuum-v3">viomi.vacuum.v3</a>) Channels
 
@@ -9891,6 +10002,20 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | iic_error_count            | Number               | I2C Error Count                          |            |
 | country_code               | Number               | Country Code                             | Value mapping `["17230"="CN","17749"="EU","21843"="US","21591"="TW","19282"="KR","21835"="UK"]` |
 
+### Xiaomi Smart Multifunctional Rice Cooker (<a name="xiaomi-cooker-cmk7">xiaomi.cooker.cmk7</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| status                     | Number               | Status                                   | Value mapping `["1"="Idle","2"="Cooking","3"="Scheduled","4"="Keep Warm","5"="Error","6"="Updating","7"="Finished"]` |
+| fault                      | Number               | Fault                                    | Value mapping `["0"="No Faults","9"="Top Sensor Fault","10"="Bottom Sensor Fault","11"="Communication Error"]` |
+| cook_mode                  | Number               | Cook Mode                                | Value mapping `["1"="Fine Cook","2"="Rough Rice","3"="Cook Congee","4"="Soup","5"="Steam Rice","6"="Heat Rice","7"="Keep Warm"]` |
+| remaining_time             | Number:Time          | Remaining Time                           |            |
+| cook_time                  | Number:Time          | Cooking Time                             |            |
+| schedule_remaining_time    | Number:Time          | Schedule Remaining Time                  |            |
+| keep_warm_time             | Number:Time          | Keep Warm Time                           |            |
+| texture                    | Number               | Texture                                  | Value mapping `["0"="Soft","1"="Medium","2"="Hard"]` |
+| control                    | String               | Control                                  | Value mapping `["cancel"="Cancel Cooking"]` |
+
 ### Xiaomi Smart Inverter Dehumidifier (<a name="xiaomi-derh-30kh">xiaomi.derh.30kh</a>) Channels
 
 | Channel                    | Type                 | Description                              | Comment    |
@@ -10363,6 +10488,38 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | filter_life_level          | Number:Dimensionless | Filter Life                              |            |
 | actions                    | String               | Actions                                  | The filter reset is not yet confirmed on a device; Value mapping `["reset-filter-life"="Reset Filter Life"]` |
 
+### Mijia Smart Quiet Inverter Blender P1 (<a name="xiaomi-juicer-dempp1">xiaomi.juicer.dempp1</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| status                     | Number               | Status                                   | Value mapping `["0"="None","1"="Idle","2"="Scheduled","3"="Keep Warm","4"="Cooking","5"="Cleaning","6"="Paused","7"="Disinfecting"]` |
+| fault                      | Number               | Fault                                    | Value mapping `["0"="No Faults","1"="Temperature Control Abnormal","2"="Dry Burning Protection","3"="Jug Lifted","4"="Motor Fault","5"="Lid Off"]` |
+| cook_mode                  | Number               | Cook Mode                                | Value mapping `["1"="Fast Pulp","2"="Soy Milk","3"="Corn Juice","4"="Rice Paste","5"="Congee","6"="Thick Soup","7"="Manual","8"="Juice","9"="Custom","10"="Clean"]` |
+| schedule_remaining_time    | Number:Time          | Schedule Remaining Time                  |            |
+| remaining_time             | Number:Time          | Remaining Time                           |            |
+| target_temperature         | Number:Temperature   | Target Temperature                       |            |
+| pot_lift_memory            | Switch               | Resume After Lifting the Jug             |            |
+| alarm                      | Switch               | Sound                                    |            |
+| auto_screen_on             | Switch               | Screen Always On                         |            |
+| auto_screen_on_time        | Number:Time          | Screen On Time                           |            |
+| control                    | String               | Control                                  | Value mapping `["pause"="Pause","resume"="Resume","cancel"="Cancel"]` |
+
+### Mijia Smart Quiet Inverter Blender P1 (<a name="xiaomi-juicer-p1v2">xiaomi.juicer.p1v2</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| status                     | Number               | Status                                   | Value mapping `["0"="None","1"="Idle","2"="Scheduled","3"="Keep Warm","4"="Cooking","5"="Cleaning","6"="Paused","7"="Disinfecting"]` |
+| fault                      | Number               | Fault                                    | Value mapping `["0"="No Faults","1"="Temperature Control Abnormal","2"="Dry Burning Protection","3"="Jug Lifted","4"="Motor Fault","5"="Lid Off"]` |
+| cook_mode                  | Number               | Cook Mode                                | Value mapping `["1"="Fast Pulp","2"="Soy Milk","3"="Corn Juice","4"="Rice Paste","5"="Congee","6"="Thick Soup","7"="Manual","8"="Juice","9"="Custom","10"="Clean"]` |
+| schedule_remaining_time    | Number:Time          | Schedule Remaining Time                  |            |
+| remaining_time             | Number:Time          | Remaining Time                           |            |
+| target_temperature         | Number:Temperature   | Target Temperature                       |            |
+| pot_lift_memory            | Switch               | Resume After Lifting the Jug             |            |
+| alarm                      | Switch               | Sound                                    |            |
+| auto_screen_on             | Switch               | Screen Always On                         |            |
+| auto_screen_on_time        | Number:Time          | Screen On Time                           |            |
+| control                    | String               | Control                                  | Value mapping `["pause"="Pause","resume"="Resume","cancel"="Cancel"]` |
+
 ### Xiaomi Smart Electric Hot Water Dispenser 5L (<a name="xiaomi-kettle-mek02">xiaomi.kettle.mek02</a>) Channels
 
 | Channel                    | Type                 | Description                              | Comment    |
@@ -10477,7 +10634,7 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | Channel                    | Type                 | Description                              | Comment    |
 |----------------------------|----------------------|------------------------------------------|------------|
 | actions                    | String               | Actions                                  | Value mapping `["vacuum-start-sweep"="Start Cleaning","vacuum-stop-sweeping"="Stop Cleaning","vacuum-start-only-sweep"="Start Vacuuming Only","vacuum-start-sweep-mop"="Start Vacuuming And Mopping","vacuum-start-mop"="Start Mopping Only","battery-start-charge"="Go Charging"]` |
-| status                     | Number               | Robot Cleaner - Status                   | Value mapping `["0"="Sleep","1"="Idle","2"="Paused","3"="Go Charging","4"="Charging","5"="Sweeping","6"="Mopping","7"="Sweeping and Mopping","8"="Upgrade"]` |
+| status                     | Number               | Robot Cleaner - Status                   | The MIoT specification lists 6 as Mopping and 7 as Sweeping and Mopping; the Mi Home app uses 6 for sweeping and mopping and 7 for mopping. Value mapping `["0"="Sleep","1"="Idle","2"="Paused","3"="Go Charging","4"="Charging","5"="Sweeping","6"="Sweeping and Mopping","7"="Mopping","8"="Upgrade"]` |
 | fault                      | Number               | Robot Cleaner - Device Fault             |            |
 | mode                       | Number               | Robot Cleaner - Mode                     | Value mapping `["0"="Sweep","1"="Sweep And Mop","2"="Mop"]` |
 | sweep_type                 | Number               | Robot Cleaner - Sweep Type               | Value mapping `["0"="Global","1"="Mop","2"="Edge","3"="Area","4"="Point","5"="Remote Control","6"="Explore","7"="Room","8"="Floor Type"]` |
@@ -10487,9 +10644,9 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | repeat_state               | Switch               | Sweep - Clean Twice                      |            |
 | door_state                 | Number               | Sweep - Installed Box                    | Value mapping `["0"="None","1"="Dust Box","2"="Water Box","3"="2-in-1 Box"]` |
 | cloth_state                | Switch               | Sweep - Mop Attached                     |            |
-| suction_state              | Number               | Sweep - Suction Level                    | Value mapping `["0"="Silent","1"="Standard","2"="Medium","3"="Turbo"]` |
+| suction_state              | Number               | Sweep - Suction Level                    | Value mapping `["0"="Silent","1"="Standard","2"="Strong","3"="Turbo"]` |
 | water_state                | Number               | Sweep - Water Level                      | Value mapping `["0"="Low","1"="Medium","2"="High"]` |
-| mop_route                  | Number               | Sweep - Mop Route                        | Value mapping `["0"="S-Shape","1"="Y-Shape"]` |
+| mop_route                  | Number               | Sweep - Mop Route                        | Value mapping `["0"="Standard (S-Shape)","1"="Professional (Y-Shape)"]` |
 | side_brush_life            | Number:Dimensionless | Sweep - Side Brush Life                  |            |
 | side_brush_hours           | Number:Time          | Sweep - Side Brush Time Left             |            |
 | main_brush_life            | Number:Dimensionless | Sweep - Main Brush Life                  |            |
@@ -10520,7 +10677,7 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | Channel                    | Type                 | Description                              | Comment    |
 |----------------------------|----------------------|------------------------------------------|------------|
 | actions                    | String               | Actions                                  | Value mapping `["vacuum-start-sweep"="Start Cleaning","vacuum-stop-sweeping"="Stop Cleaning","vacuum-start-only-sweep"="Start Vacuuming Only","vacuum-start-sweep-mop"="Start Vacuuming And Mopping","vacuum-start-mop"="Start Mopping Only","battery-start-charge"="Go Charging"]` |
-| status                     | Number               | Robot Cleaner - Status                   | Value mapping `["0"="Sleep","1"="Idle","2"="Paused","3"="Go Charging","4"="Charging","5"="Sweeping","6"="Mopping","7"="Sweeping and Mopping","8"="Upgrade"]` |
+| status                     | Number               | Robot Cleaner - Status                   | The MIoT specification lists 6 as Mopping and 7 as Sweeping and Mopping; the Mi Home app uses 6 for sweeping and mopping and 7 for mopping. Value mapping `["0"="Sleep","1"="Idle","2"="Paused","3"="Go Charging","4"="Charging","5"="Sweeping","6"="Sweeping and Mopping","7"="Mopping","8"="Upgrade"]` |
 | fault                      | Number               | Robot Cleaner - Device Fault             |            |
 | mode                       | Number               | Robot Cleaner - Mode                     | Value mapping `["0"="Sweep","1"="Sweep And Mop","2"="Mop"]` |
 | sweep_type                 | Number               | Robot Cleaner - Sweep Type               | Value mapping `["0"="Global","1"="Mop","2"="Edge","3"="Area","4"="Point","5"="Remote Control","6"="Explore","7"="Room","8"="Floor Type"]` |
@@ -10530,9 +10687,9 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | repeat_state               | Switch               | Sweep - Clean Twice                      |            |
 | door_state                 | Number               | Sweep - Installed Box                    | Value mapping `["0"="None","1"="Dust Box","2"="Water Box","3"="2-in-1 Box"]` |
 | cloth_state                | Switch               | Sweep - Mop Attached                     |            |
-| suction_state              | Number               | Sweep - Suction Level                    | Value mapping `["0"="Silent","1"="Standard","2"="Medium","3"="Turbo"]` |
+| suction_state              | Number               | Sweep - Suction Level                    | Value mapping `["0"="Silent","1"="Standard","2"="Strong","3"="Turbo"]` |
 | water_state                | Number               | Sweep - Water Level                      | Value mapping `["0"="Low","1"="Medium","2"="High"]` |
-| mop_route                  | Number               | Sweep - Mop Route                        | Value mapping `["0"="S-Shape","1"="Y-Shape"]` |
+| mop_route                  | Number               | Sweep - Mop Route                        | Value mapping `["0"="Standard (S-Shape)","1"="Professional (Y-Shape)"]` |
 | side_brush_life            | Number:Dimensionless | Sweep - Side Brush Life                  |            |
 | side_brush_hours           | Number:Time          | Sweep - Side Brush Time Left             |            |
 | main_brush_life            | Number:Dimensionless | Sweep - Main Brush Life                  |            |
@@ -10570,7 +10727,7 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | cleaning_area              | Number:Area          | Robot Cleaner - Cleaning Area            |            |
 | cleaning_time              | Number:Time          | Robot Cleaner - Cleaning Time            |            |
 | clean_times                | Number               | Robot Cleaner - Clean Times              | Value mapping `["1"="Once","2"="Twice"]` |
-| suction_level              | Number               | Robot Cleaner - Suction Level            | Value mapping `["1"="Silent","2"="Basic","3"="Strong","4"="Full Speed"]` |
+| suction_level              | Number               | Robot Cleaner - Suction Level            | Value mapping `["1"="Silent","2"="Standard","3"="Strong","4"="Turbo"]` |
 | mop_water_output_level     | Number               | Robot Cleaner - Mop Water Output Level   | Value mapping `["0"="Off","1"="Level 1","2"="Level 2","3"="Level 3"]` |
 | zone_ids                   | String               | Robot Cleaner - Zone IDs                 |            |
 | mode                       | Number               | Robot Cleaner - Mode                     | Not used by the Mi Home app, which sets the suction level with `suction_level`. Value mapping `["1"="Silent","2"="Basic","3"="Strong"]` |
@@ -10741,7 +10898,7 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | cleaning_time              | Number:Time          | Vacuum Extend - Cleaning Time            |            |
 | cleaning_area              | Number:Area          | Vacuum Extend - Cleaning Area            |            |
 | cleaning_mode              | Number               | Vacuum Extend - Suction Level            | Value mapping `["0"="Silent","1"="Standard","2"="Strong","3"="Turbo"]` |
-| mop_mode                   | Number               | Vacuum Extend - Mop Water Level          | Value mapping `["1"="Low","2"="Medium","3"="High"]` |
+| mop_mode                   | Number               | Vacuum Extend - Mop Water Level          | Not written by the Mi Home app of this model, which sets the mop water level in `clean_setting`. Value mapping `["1"="Low","2"="Medium","3"="High"]` |
 | waterbox_status            | Switch               | Vacuum Extend - Mop Installed            |            |
 | task_status                | Number               | Vacuum Extend - Task Status              | Value mapping `["0"="Completed","1"="Auto Cleaning","2"="Zone Cleaning","3"="Room Cleaning","4"="Spot Cleaning","5"="Fast Mapping","6"="Auto Cleaning Paused","7"="Zone Cleaning Paused","8"="Room Cleaning Paused","9"="Spot Cleaning Paused","10"="Map Cleaning Paused","11"="Charging Paused","12"="Back Washing Paused","13"="Room Back Washing Paused","14"="Zone Back Washing Paused","15"="Auto Back Washing Paused","16"="Auto Charging Paused","17"="Selected Charging Paused","18"="Zone Charging Paused","19"="Spot Charging Paused","27"="Station Self Cleaning","28"="Station Self Cleaning Waiting To Return","29"="Station Self Cleaning Going To Charge","31"="Auto Clean Wash Paused","32"="Room Clean Wash Paused","33"="Zone Clean Wash Paused"]` |
 | break_point_restart        | Switch               | Vacuum Extend - Resume After Charging    |            |
@@ -10752,9 +10909,15 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | faults                     | String               | Vacuum Extend - Faults                   |            |
 | nation_matched             | String               | Vacuum Extend - Nation Matched           |            |
 | relocation_status          | Number               | Vacuum Extend - Relocation Status        |            |
+| clean_setting              | Number               | Vacuum Extend - Clean Setting            | Packed setting that the Mi Home app writes for the cleaning type, the mop pad washing frequency and the mop water level: cleaning type in bits 0 and 1 (0 vacuuming and mopping, 1 mopping, 2 vacuuming, 3 vacuuming before mopping), the area in square meters after which the mop pad is washed in bits 8 to 15 (0 washes per room, otherwise a multiple of 5) and the mop water level (1 to 3, `mop_mode`) from bit 16. The value is the cleaning type plus 256 times the area plus 65536 times the water level. To change one part, send the complete value with the other parts unchanged |
 | wash_station               | Number               | Vacuum Extend - Wash Station             | Value mapping `["0"="Idle","1"="Washing","2"="Drying","3"="Go Washing","4"="Paused","5"="Washing And Refilling Water","6"="Refilling Water"]` |
 | child_lock                 | Switch               | Vacuum Extend - Child Lock               |            |
 | clean_cancel               | Number               | Vacuum Extend - Clean Cancel             |            |
+| carpet_recognition         | Number               | Vacuum Extend - Carpet Recognition       | Values 2, 4, 5 and 6 are reported while the ultrasonic sensor has an error; the Mi Home app then refuses to switch it on. Value mapping `["0"="Off","1"="On"]` |
+| smart_wash_switch          | Switch               | Vacuum Extend - Auto Mop Pad Washing     | Off keeps the robot from returning to the station to wash the mop pads during a cleaning task |
+| carpet_escape              | Number               | Vacuum Extend - Carpet Cleanup Method    | Used by the Mi Home app only while `carpet_recognition` is on. Value mapping `["1"="Avoid Carpets","2"="Vacuum Only On Carpets"]` |
+| drying_time                | Number:Time          | Vacuum Extend - Mop Pad Drying Time      | Duration of the mop pad drying in the station, 2 to 4 hours as offered by the Mi Home app |
+| mop_wash_mode              | Number               | Vacuum Extend - Mop Pad Washing Mode     | The Mi Home app of this model only offers Daily and Deep. Value mapping `["0"="Water Saving","1"="Daily","2"="Deep"]` |
 | enable                     | Switch               | Do Not Disturb - Enable                  |            |
 | start_time                 | String               | Do Not Disturb - Start Time              | Time of day in 24-hour format `HH:MM`, for example `22:00` |
 | end_time                   | String               | Do Not Disturb - End Time                | Time of day in 24-hour format `HH:MM`, for example `08:00` |
@@ -12069,63 +12232,122 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 
 | Channel                    | Type                 | Description                              | Comment    |
 |----------------------------|----------------------|------------------------------------------|------------|
-| seat_temp                  | Number:Temperature   | Seat Temperature                         |            |
-| status_seatheat            | Number               | Seat Status                              |            |
-| water_temp_t               | Number:Temperature   | Water Temperature                        |            |
-| fan_temp                   | Number:Temperature   | Fan Temperature                          |            |
-| status_led                 | Number               | Night Light                              |            |
+| seated                     | Switch               | Seated                                   |            |
+| rear_wash                  | Switch               | Rear Wash                                | Starts with the current rear wash settings; link the rear wash level, position, moving and massage channels so their values are known. |
+| bidet                      | Switch               | Bidet                                    | Starts with the current bidet settings; link the bidet level, position, moving and massage channels so their values are known. |
+| dry                        | Switch               | Dry                                      | Starts with the dryer temperature; link the dryer temperature channel so its value is known. |
+| seat_temperature           | Number               | Seat Heating                             | Value mapping `["0"="Off","1"="Low","2"="Medium","3"="High"]` |
+| night_light                | Switch               | Night Light                              |            |
+| deodorization              | Switch               | Deodorization                            | ON starts the deodorization. |
+| self_clean                 | Switch               | Self Clean                               | ON starts the nozzle self clean; only when nobody is seated. |
+| rear_water_temperature     | Number               | Rear Wash Water Temperature              | Value mapping `["1"="Low","2"="Medium","3"="High"]` |
+| rear_water_pressure        | Number               | Rear Wash Water Pressure                 | Value mapping `["1"="Low","2"="Medium","3"="High"]` |
+| rear_wash_position         | Number               | Rear Wash Position                       | Value mapping `["1"="Position 1","2"="Position 2","3"="Position 3"]` |
+| bidet_water_temperature    | Number               | Bidet Water Temperature                  | Value mapping `["1"="Low","2"="Medium","3"="High"]` |
+| bidet_water_pressure       | Number               | Bidet Water Pressure                     | Value mapping `["1"="Low","2"="Medium","3"="High"]` |
+| bidet_position             | Number               | Bidet Position                           | Value mapping `["1"="Position 1","2"="Position 2","3"="Position 3"]` |
+| moving                     | Switch               | Moving Wash                              |            |
+| massage                    | Number               | Massage                                  | Only Normal and Continuous can be set. |
+| dryer_temperature          | Number               | Dryer Temperature                        | Value mapping `["1"="Low","2"="Medium","3"="High"]` |
+| filter_days_left           | Number:Time          | Filter Days Left                         |            |
 
 ### Uclean Smart Toilet pure (<a name="xjx-toilet-pure">xjx.toilet.pure</a>) Channels
 
 | Channel                    | Type                 | Description                              | Comment    |
 |----------------------------|----------------------|------------------------------------------|------------|
-| seat_temp                  | Number:Temperature   | Seat Temperature                         |            |
-| status_seatheat            | Number               | Seat Status                              |            |
-| water_temp_t               | Number:Temperature   | Water Temperature                        |            |
-| fan_temp                   | Number:Temperature   | Fan Temperature                          |            |
-| status_led                 | Number               | Night Light                              |            |
+| seated                     | Switch               | Seated                                   |            |
+| rear_wash                  | Switch               | Rear Wash                                |            |
+| bidet                      | Switch               | Bidet                                    |            |
+| dry                        | Switch               | Dry                                      |            |
+| seat_heating               | Switch               | Seat Heating                             |            |
+| night_light                | Switch               | Night Light                              |            |
+| seat_temperature           | Number               | Seat Temperature                         | Value mapping `["1"="Low","2"="Medium","3"="High"]` |
+| rear_water_temperature     | Number               | Rear Wash Water Temperature              | Value mapping `["1"="Low","2"="Medium","3"="High"]` |
+| rear_water_pressure        | Number               | Rear Wash Water Pressure                 | Value mapping `["1"="Low","2"="Medium","3"="High"]` |
+| bidet_water_temperature    | Number               | Bidet Water Temperature                  | Value mapping `["1"="Low","2"="Medium","3"="High"]` |
+| bidet_water_pressure       | Number               | Bidet Water Pressure                     | Value mapping `["1"="Low","2"="Medium","3"="High"]` |
+| dryer_temperature          | Number               | Dryer Temperature                        | Value mapping `["1"="Low","2"="Medium","3"="High"]` |
+| self_clean                 | Switch               | Self Clean                               | ON starts the nozzle self clean; only when nobody is seated. |
+| flush                      | Switch               | Flush                                    | ON flushes the toilet; only when nobody is seated. |
+| foam_shield                | Switch               | Foam Shield                              | ON applies the foam shield. Not available on xjx.toilet.pure. |
 
 ### Uclean Smart Toilet relax (<a name="xjx-toilet-relax">xjx.toilet.relax</a>) Channels
 
 | Channel                    | Type                 | Description                              | Comment    |
 |----------------------------|----------------------|------------------------------------------|------------|
-| seat_temp                  | Number:Temperature   | Seat Temperature                         |            |
-| status_seatheat            | Number               | Seat Status                              |            |
-| water_temp_t               | Number:Temperature   | Water Temperature                        |            |
-| fan_temp                   | Number:Temperature   | Fan Temperature                          |            |
-| status_led                 | Number               | Night Light                              |            |
+| seated                     | Switch               | Seated                                   |            |
+| rear_wash                  | Switch               | Rear Wash                                |            |
+| bidet                      | Switch               | Bidet                                    |            |
+| dry                        | Switch               | Dry                                      |            |
+| seat_heating               | Switch               | Seat Heating                             |            |
+| night_light                | Switch               | Night Light                              |            |
+| seat_temperature           | Number               | Seat Temperature                         | Value mapping `["1"="Low","2"="Medium","3"="High"]` |
+| rear_water_temperature     | Number               | Rear Wash Water Temperature              | Value mapping `["1"="Low","2"="Medium","3"="High"]` |
+| rear_water_pressure        | Number               | Rear Wash Water Pressure                 | Value mapping `["1"="Low","2"="Medium","3"="High"]` |
+| bidet_water_temperature    | Number               | Bidet Water Temperature                  | Value mapping `["1"="Low","2"="Medium","3"="High"]` |
+| bidet_water_pressure       | Number               | Bidet Water Pressure                     | Value mapping `["1"="Low","2"="Medium","3"="High"]` |
+| dryer_temperature          | Number               | Dryer Temperature                        | Value mapping `["1"="Low","2"="Medium","3"="High"]` |
+| self_clean                 | Switch               | Self Clean                               | ON starts the nozzle self clean; only when nobody is seated. |
+| flush                      | Switch               | Flush                                    | ON flushes the toilet; only when nobody is seated. |
+| foam_shield                | Switch               | Foam Shield                              | ON applies the foam shield. Not available on xjx.toilet.pure. |
 
 ### Whale Spout Smart Toilet Zero (<a name="xjx-toilet-zero">xjx.toilet.zero</a>) Channels
 
 | Channel                    | Type                 | Description                              | Comment    |
 |----------------------------|----------------------|------------------------------------------|------------|
-| seat_temp                  | Number:Temperature   | Seat Temperature                         |            |
-| status_seatheat            | Number               | Seat Status                              |            |
-| water_temp_t               | Number:Temperature   | Water Temperature                        |            |
-| fan_temp                   | Number:Temperature   | Fan Temperature                          |            |
-| status_led                 | Number               | Night Light                              |            |
+| seated                     | Switch               | Seated                                   |            |
+| rear_wash                  | Switch               | Rear Wash                                |            |
+| bidet                      | Switch               | Bidet                                    |            |
+| dry                        | Switch               | Dry                                      |            |
+| seat_heating               | Switch               | Seat Heating                             |            |
+| night_light                | Switch               | Night Light                              |            |
+| seat_temperature           | Number               | Seat Temperature                         | Value mapping `["1"="Low","2"="Medium","3"="High"]` |
+| rear_water_temperature     | Number               | Rear Wash Water Temperature              | Value mapping `["1"="Low","2"="Medium","3"="High"]` |
+| rear_water_pressure        | Number               | Rear Wash Water Pressure                 | Value mapping `["1"="Low","2"="Medium","3"="High"]` |
+| bidet_water_temperature    | Number               | Bidet Water Temperature                  | Value mapping `["1"="Low","2"="Medium","3"="High"]` |
+| bidet_water_pressure       | Number               | Bidet Water Pressure                     | Value mapping `["1"="Low","2"="Medium","3"="High"]` |
+| dryer_temperature          | Number               | Dryer Temperature                        | Value mapping `["1"="Low","2"="Medium","3"="High"]` |
+| self_clean                 | Switch               | Self Clean                               | ON starts the nozzle self clean; only when nobody is seated. |
+| flush                      | Switch               | Flush                                    | ON flushes the toilet; only when nobody is seated. |
+| foam_shield                | Switch               | Foam Shield                              | ON applies the foam shield. Not available on xjx.toilet.pure. |
 
 ### Yeelight Smart Bath Heater Pro (<a name="yeelink-bhf_light-v1">yeelink.bhf_light.v1</a>) Channels
 
 | Channel                    | Type                 | Description                              | Comment    |
 |----------------------------|----------------------|------------------------------------------|------------|
-| power                      | Switch               | Power                                    |            |
-| bh_mode                    | String               | Bath Heater mode                         |            |
-| brightness                 | Dimmer               | Brightness                               |            |
-| delayoff                   | Number:Time          | Shutdown Timer                           |            |
+| power                      | Switch               | Light                                    |            |
+| brightness                 | Dimmer               | Brightness                               | Sets the brightness of the active light mode (normal or night light). |
+| color_temperature          | Number:Temperature   | Color Temperature                        |            |
+| night_light                | Switch               | Night Light                              | Write only. ON switches the light on in night light mode, OFF switches it to the normal light. |
+| nightlight_brightness      | Number:Dimensionless | Night Light Brightness                   | Set with the brightness channel while the night light is on. |
+| light_off_timer            | Number:Time          | Light Off Timer                          |            |
+| heater_mode                | String               | Heater Mode                              | A mode keeps running until it is switched off or the heater timer ends. |
+| heater_timer               | Number:Time          | Heater Timer                             | Remaining time until the heater mode switches off. Can only be set while a mode is running; 0 cancels the timer. |
+| target_temperature         | Number:Temperature   | Target Temperature                       | Used in Heater mode. |
 | temperature                | Number:Temperature   | Temperature                              |            |
-| nightlightBrightness       | Number               | Nightlight Brightness                    |            |
+| humidity                   | Number:Dimensionless | Humidity                                 |            |
+| fan_level                  | Number               | Fan Level                                | Write only. Sets the fan level of the running mode; Turbo is only available in Air Change mode. |
+| swing                      | String               | Swing                                    | Value mapping `["swing"="Swing","stop"="Fixed"]` |
+| swing_angle                | Number:Angle         | Wind Direction                           | Fixed air outlet angle, used when swing is off. |
 
 ### Yeelight Smart Bath Heater (<a name="yeelink-bhf_light-v2">yeelink.bhf_light.v2</a>) Channels
 
 | Channel                    | Type                 | Description                              | Comment    |
 |----------------------------|----------------------|------------------------------------------|------------|
-| power                      | Switch               | Power                                    |            |
-| bh_mode                    | String               | Bath Heater mode                         |            |
-| brightness                 | Dimmer               | Brightness                               |            |
-| delayoff                   | Number:Time          | Shutdown Timer                           |            |
+| power                      | Switch               | Light                                    |            |
+| brightness                 | Dimmer               | Brightness                               | Sets the brightness of the active light mode (normal or night light). |
+| color_temperature          | Number:Temperature   | Color Temperature                        |            |
+| night_light                | Switch               | Night Light                              | Write only. ON switches the light on in night light mode, OFF switches it to the normal light. |
+| nightlight_brightness      | Number:Dimensionless | Night Light Brightness                   | Set with the brightness channel while the night light is on. |
+| light_off_timer            | Number:Time          | Light Off Timer                          |            |
+| heater_mode                | String               | Heater Mode                              | A mode keeps running until it is switched off or the heater timer ends. |
+| heater_timer               | Number:Time          | Heater Timer                             | Remaining time until the heater mode switches off. Can only be set while a mode is running; 0 cancels the timer. |
+| target_temperature         | Number:Temperature   | Target Temperature                       | Used in Heater mode. |
 | temperature                | Number:Temperature   | Temperature                              |            |
-| nightlightBrightness       | Number               | Nightlight Brightness                    |            |
+| humidity                   | Number:Dimensionless | Humidity                                 |            |
+| fan_level                  | Number               | Fan Level                                | Write only. Sets the fan level of the running mode; Turbo is only available in Air Change mode. |
+| swing                      | String               | Swing                                    | Value mapping `["swing"="Swing","stop"="Fixed"]` |
+| swing_angle                | Number:Angle         | Wind Direction                           | Fixed air outlet angle, used when swing is off. |
 
 ### Mi Bedside Lamp (<a name="yeelink-light-bslamp1">yeelink.light.bslamp1</a>) Channels
 
@@ -13660,7 +13882,7 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | fault                      | Number               | Fault                                    | Value mapping `["0"="No Faults","1"="Motor Run Error","2"="Motor Stuck","3"="No Sensor","4"="Humidity Sensor Error","5"="Temperature Sensor Error"]` |
 | on                         | Switch               | Power                                    |            |
 | fan_level                  | Number               | Fan Level                                | Value mapping `["1"="Level1","2"="Level2","3"="Level3"]` |
-| mode                       | Number               | Mode                                     | Value mapping `["0"="Auto","1"="Sleep","2"="Favorite"]` |
+| mode                       | Number               | Mode                                     | Value mapping `["0"="Auto","1"="Night","2"="Manual","3"="Fan Level"]` |
 | pm2_5_density              | Number:Density       | PM2.5 Density                            |            |
 | relative_humidity          | Number:Dimensionless | Relative Humidity                        |            |
 | temperature                | Number:Temperature   | Temperature                              |            |
@@ -14002,56 +14224,32 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 
 | Channel                    | Type                 | Description                              | Comment    |
 |----------------------------|----------------------|------------------------------------------|------------|
-| fault                      | Number               | Air Purifier - Device Fault              | Value mapping `["0"="No faults","1"="m1_run","2"="m1_stuck","3"="no_sensor","4"="error_hum","5"="error_temp"]` |
-| on                         | Switch               | Air Purifier - Switch Status             |            |
-| fan-level                  | Number               | Air Purifier - Fan Level                 | Value mapping `["1"="Level1","2"="Level2","3"="Level3"]` |
-| mode                       | Number               | Air Purifier - Mode                      | Value mapping `["0"="Auto","1"="Sleep","2"="Favorite","3"="None"]` |
-| pm2_5-density              | Number               | Environment - Pm2.5 Density              |            |
-| relative-humidity          | Number:Dimensionless | Environment - Relative Humidity          |            |
-| temperature                | Number:Temperature   | Environment - Temperature                |            |
-| filter-life-level          | Number:Dimensionless | Filter - Filter Life Level               |            |
-| filter-used-time           | Number:Time          | Filter - Filter Used Time                |            |
-| alarm                      | Switch               | Alarm - Alarm                            |            |
-| brightness                 | Number:Dimensionless | Indicator Light - Brightness             | Value mapping `["0"="brightest","1"="glimmer","2"="led_closed"]` |
-| on1                        | Switch               | Indicator Light - Switch Status          |            |
-| physical-controls-locked   | Switch               | Physical Control Locked - Physical Control Locked |            |
-| button-pressed             | String               | Button - Button_pressed                  |            |
-| filter-max-time            | Number:Time          | Filter Time - Filter Max Time            |            |
-| filter-hour-used-debug     | Number               | Filter Time - Filter Hour Used Debug     |            |
-| m1-strong                  | Number               | Motor Speed - M1 Strong                  |            |
-| m1-high                    | Number               | Motor Speed - M1 High                    |            |
-| m1-med                     | Number               | Motor Speed - M1 Med                     |            |
-| m1-med-l                   | Number               | Motor Speed - M1 Med L                   |            |
-| m1-low                     | Number               | Motor Speed - M1 Low                     |            |
-| m1-silent                  | Number               | Motor Speed - M1 Silent                  |            |
-| m1-favorite                | Number               | Motor Speed - M1 Favorite                |            |
-| motor1-speed               | Number               | Motor Speed - Motor1 Speed               |            |
-| motor1-set-speed           | Number               | Motor Speed - Motor1 Set Speed           |            |
-| favorite-fan-level         | Number               | Motor Speed - Favorite Fan Level         |            |
-| use-time                   | Number:Time          | Use Time - Use Time                      |            |
-| purify-volume              | Number:Volume        | Aqi - Purify Volume                      |            |
-| average-aqi                | Number               | Aqi - Average Aqi                        |            |
-| average-aqi-cnt            | Number               | Aqi - Average Aqi Cnt                    |            |
-| aqi-zone                   | String               | Aqi - Aqi Zone                           |            |
-| sensor-state               | String               | Aqi - Sensor State                       |            |
-| aqi-goodh                  | Number               | Aqi - Aqi Goodh                          |            |
-| aqi-runstate               | Number               | Aqi - Aqi Runstate                       | Value mapping `["0"="continue","1"="hold","2"="sleep"]` |
-| aqi-state                  | Number               | Aqi - Aqi State                          | Value mapping `["0"="AQI_GOOD_L","1"="AQI_GOOD_H","2"="AQI_MID_L","3"="AQI_MID_H","4"="AQI_BAD_L","5"="AQI_BAD_H"]` |
-| aqi-updata-heartbeat       | Number               | Aqi - Aqi Updata Heartbeat               |            |
-| rfid-tag                   | String               | Rfid - Rfid Tag                          |            |
-| rfid-factory-id            | String               | Rfid - Rfid Factory Id                   |            |
-| rfid-product-id            | String               | Rfid - Rfid Product Id                   |            |
-| rfid-time                  | String               | Rfid - Rfid Time                         |            |
-| rfid-serial-num            | String               | Rfid - Rfid Serial Num                   |            |
-| app-extra                  | Number               | Others - App Extra                       |            |
-| main-channel               | Number               | Others - Main Channel                    |            |
-| slave-channel              | Number               | Others - Slave Channel                   |            |
-| cola                       | String               | Others - Cola                            |            |
-| buttom-door                | Switch               | Others - Buttom Door                     |            |
-| reboot-cause               | Number               | Others - Reboot_cause                    | Value mapping `["0"="REASON_HW_BOOT","1"="REASON_USER_REBOOT","2"="REASON_UPDATE","3"="REASON_WDT"]` |
-| hw-version                 | Number               | Others - Hw Version                      |            |
-| i2c-error-count            | Number               | Others - I2c Error Count                 |            |
-| manual-level               | Number               | Others - Manual Level                    | Value mapping `["1"="Level1","2"="Level2","3"="Level3"]` |
+| actions                    | String               | Actions                                  | Value mapping `["button-toggle"="Toggle Power","button-toggle-mode"="Toggle Mode"]` |
+| fault                      | Number               | Fault                                    | Value mapping `["0"="No Faults","1"="Motor Run Error","2"="Motor Stuck","3"="No Sensor","4"="Humidity Sensor Error","5"="Temperature Sensor Error"]` |
+| on                         | Switch               | Power                                    |            |
+| fan_level                  | Number               | Fan Level                                | Value mapping `["1"="Level1","2"="Level2","3"="Level3"]` |
+| mode                       | Number               | Mode                                     | Value mapping `["0"="Auto","1"="Night","2"="Manual","3"="Fan Level"]` |
+| pm2_5_density              | Number:Density       | PM2.5 Density                            |            |
+| relative_humidity          | Number:Dimensionless | Relative Humidity                        |            |
+| temperature                | Number:Temperature   | Temperature                              |            |
+| filter_life_level          | Number:Dimensionless | Filter Life Level                        |            |
+| filter_used_time           | Number:Time          | Filter Used Time                         |            |
+| filter_max_time            | Number:Time          | Filter Maximum Life                      |            |
+| alarm                      | Switch               | Notification Sound                       |            |
+| brightness                 | Number               | LED Brightness                           | Value mapping `["0"="Bright","1"="Dim","2"="Off"]` |
+| physical_controls_locked   | Switch               | Child Lock                               |            |
+| motor_speed_rpm            | Number               | Motor Speed                              |            |
+| motor_set_speed            | Number               | Motor Target Speed                       |            |
+| favorite_speed             | Number               | Favorite Mode Motor Speed                |            |
+| favorite_level             | Number               | Favorite Mode Level                      | Favorite mode speed level 0-14 |
+| use_time                   | Number:Time          | Device Use Time                          |            |
+| purify_volume              | Number:Volume        | Purify Volume                            |            |
+| average_aqi                | Number               | Average AQI                              |            |
+| aqi_state                  | Number               | AQI State                                | Value mapping `["0"="Best","1"="Good","2"="Normal","3"="Bad","4"="Worse","5"="Unhealthy"]` |
+| bottom_door                | Switch               | Bottom Door                              |            |
+| reboot_cause               | Number               | Reboot Cause                             | Value mapping `["0"="Hardware Boot","1"="User Reboot","2"="Update","3"="Watchdog Timer"]` |
+| iic_error_count            | Number               | I2C Error Count                          |            |
+| manual_level               | Number               | Manual Mode Level                        | Value mapping `["1"="Level 1","2"="Level 2","3"="Level 3"]` |
 
 ### Mi Air Purifier 2S (<a name="zhimi-airpurifier-mb1">zhimi.airpurifier.mb1</a>) Channels
 
@@ -14078,75 +14276,51 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 
 | Channel                    | Type                 | Description                              | Comment    |
 |----------------------------|----------------------|------------------------------------------|------------|
-| fault                      | Number               | Air Purifier - Fault                     | Value mapping `["0"="No faults","1"="m1_run","2"="m1_stuck","3"="no_sensor","4"="error_hum","5"="error_temp"]` |
-| on                         | Switch               | Air Purifier - Switch Status             |            |
-| fan-level                  | Number               | Air Purifier - Fan Level                 | Value mapping `["1"="Level1","2"="Level2","3"="Level3"]` |
-| mode                       | Number               | Air Purifier - Mode                      | Value mapping `["0"="Auto","1"="Sleep","2"="Favorite","3"="None"]` |
-| pm2_5-density              | Number               | Environment - Pm2.5 density              |            |
-| relative-humidity          | Number:Dimensionless | Environment - Relative Humidity          |            |
-| temperature                | Number:Temperature   | Environment - Temperature                |            |
-| filter-life-level          | Number:Dimensionless | Filter - Filter Life Level               |            |
-| filter-used-time           | Number:Time          | Filter - Filter Used Time                |            |
-| alarm                      | Switch               | Alarm - Alarm                            |            |
-| brightness                 | Number:Dimensionless | Indicator Light - Brightness             | Value mapping `["0"="Brightest","1"="Glimmer","2"="Led Closed"]` |
-| on1                        | Switch               | Indicator Light - Switch Status          |            |
-| physical-controls-locked   | Switch               | Physical Control Locked - Physical Control Locked |            |
-| button-pressed             | String               | Button - Button Pressed                  |            |
-| filter-max-time            | Number               | Filter Time - Filter Max Time            |            |
-| filter-hour-debug          | Number               | Filter Time - Filter Hour Debug          |            |
-| motor-strong               | Number               | Motor Speed - Motor Strong               |            |
-| motor-high                 | Number               | Motor Speed - Motor High                 |            |
-| motor-med                  | Number               | Motor Speed - Motor Med                  |            |
-| motor-med-l                | Number               | Motor Speed - Motor Med L                |            |
-| motor-low                  | Number               | Motor Speed - Motor Low                  |            |
-| motor-silent               | Number               | Motor Speed - Motor Silent               |            |
-| motor-favorite             | Number               | Motor Speed - Motor Favorite             |            |
-| motor-speed                | Number               | Motor Speed - Motor Speed                |            |
-| motor-set-speed            | Number               | Motor Speed - Motor Set Speed            |            |
-| favorite-fan-level         | Number               | Motor Speed - Favorite Fan Level         |            |
-| use-time                   | Number:Time          | Use Time - Use Time                      |            |
-| purify-volume              | Number:Volume        | Aqi - Purify Volume                      |            |
-| average-aqi                | Number               | Aqi - Average Aqi                        |            |
-| average-aqi-cnt            | Number               | Aqi - Average Aqi Cnt                    |            |
-| aqi-zone                   | String               | Aqi - Aqi Zone                           |            |
-| sensor-state               | String               | Aqi - Sensor State                       |            |
-| aqi-goodh                  | Number               | Aqi - Aqi Goodh                          |            |
-| aqi-runstate               | Number               | Aqi - Aqi Runstate                       | Value mapping `["0"="continuous sampling","1"="preparing sampling","2"="stop sampling"]` |
-| aqi-state                  | Number               | Aqi - Aqi State                          | Value mapping `["0"="best","1"="good","2"="normal","3"="bad","4"="worse","5"="unhealthy"]` |
-| aqi-updata-heartbeat       | Number               | Aqi - Aqi Updata Heartbeat               |            |
-| rfid-tag                   | String               | Rfid - Rfid Tag                          |            |
-| rfid-factory-id            | String               | Rfid - Rfid Factory Id                   |            |
-| rfid-product-id            | String               | Rfid - Rfid Product Id                   |            |
-| rfid-time                  | String               | Rfid - Rfid Time                         |            |
-| rfid-serial-num            | String               | Rfid - Rfid Serial Num                   |            |
-| app-extra                  | Number               | Others - App Extra                       |            |
-| main-channel               | Number               | Others - Main Channel                    |            |
-| slave-channel              | Number               | Others - Slave Channel                   |            |
-| cola                       | String               | Others - Cola                            |            |
-| buttom-door                | Switch               | Others - Buttom Door                     |            |
-| reboot-cause               | Number               | Others - Reboot Cause                    | Value mapping `["0"="hardware reboot","1"="software reboot","2"="update reboot","3"="dog reboot"]` |
-| hw-version                 | Number               | Others - Hw Version                      |            |
-| iic-error-count            | Number               | Others - Iic Error Count                 |            |
-| manual-level               | Number               | Others - Manual Level                    | Value mapping `["1"="Level1","2"="Level2","3"="Level3"]` |
-| country-code               | Number               | Others - National Code                   | Value mapping `["91"="India","44"="UK","852"="Hong Kong","886"="Taiwan","82"="Korea"]` |
+| actions                    | String               | Actions                                  | Value mapping `["button-toggle"="Toggle Power","button-toggle-mode"="Toggle Mode"]` |
+| fault                      | Number               | Fault                                    | Value mapping `["0"="No Faults","1"="Motor Run Error","2"="Motor Stuck","3"="No Sensor","4"="Humidity Sensor Error","5"="Temperature Sensor Error"]` |
+| on                         | Switch               | Power                                    |            |
+| fan_level                  | Number               | Fan Level                                | Value mapping `["1"="Level1","2"="Level2","3"="Level3"]` |
+| mode                       | Number               | Mode                                     | Value mapping `["0"="Auto","1"="Night","2"="Manual","3"="Fan Level"]` |
+| pm2_5_density              | Number:Density       | PM2.5 Density                            |            |
+| relative_humidity          | Number:Dimensionless | Relative Humidity                        |            |
+| temperature                | Number:Temperature   | Temperature                              |            |
+| filter_life_level          | Number:Dimensionless | Filter Life Level                        |            |
+| filter_used_time           | Number:Time          | Filter Used Time                         |            |
+| filter_max_time            | Number:Time          | Filter Maximum Life                      |            |
+| alarm                      | Switch               | Notification Sound                       |            |
+| brightness                 | Number               | LED Brightness                           | Value mapping `["0"="Bright","1"="Dim","2"="Off"]` |
+| physical_controls_locked   | Switch               | Child Lock                               |            |
+| motor_speed_rpm            | Number               | Motor Speed                              |            |
+| motor_set_speed            | Number               | Motor Target Speed                       |            |
+| favorite_speed             | Number               | Favorite Mode Motor Speed                |            |
+| favorite_level             | Number               | Favorite Mode Level                      | Favorite mode speed level 0-14 |
+| use_time                   | Number:Time          | Device Use Time                          |            |
+| purify_volume              | Number:Volume        | Purify Volume                            |            |
+| average_aqi                | Number               | Average AQI                              |            |
+| aqi_state                  | Number               | AQI State                                | Value mapping `["0"="Best","1"="Good","2"="Normal","3"="Bad","4"="Worse","5"="Unhealthy"]` |
+| bottom_door                | Switch               | Bottom Door                              |            |
+| reboot_cause               | Number               | Reboot Cause                             | Value mapping `["0"="Hardware Boot","1"="User Reboot","2"="Update","3"="Watchdog Timer"]` |
+| iic_error_count            | Number               | I2C Error Count                          |            |
+| manual_level               | Number               | Manual Mode Level                        | Value mapping `["1"="Level 1","2"="Level 2","3"="Level 3"]` |
+| country_code               | Number               | Country Code                             | Value mapping `["91"="IN","44"="EU","852"="HK","886"="TW","82"="KR"]` |
+| temperature_display_unit   | Number               | Temperature Display Unit                 | Value mapping `["0"="Celsius","1"="Fahrenheit"]` |
 
 ### Mi Air Purifier 3C (<a name="zhimi-airpurifier-mb4">zhimi.airpurifier.mb4</a>) Channels
 
 | Channel                    | Type                 | Description                              | Comment    |
 |----------------------------|----------------------|------------------------------------------|------------|
 | on                         | Switch               | Power                                    |            |
-| fault                      | String               | Air Purifier - Device Fault              |            |
-| mode                       | Number               | Mode                                     | Value mapping `["0"="Auto","1"="Sleep","2"="Favorite"]` |
-| pm2_5_density              | Number               | Environment - Pm2 5 Density              |            |
-| filter_life_level          | Number:Dimensionless | Filter - Filter Life Level               |            |
-| filter_used_time           | Number:Time          | Filter - Filter Used Time                |            |
-| alarm                      | Switch               | Alarm - Alarm                            |            |
-| brightness                 | Number               | Screen - Brightness                      |            |
-| physical_controls_locked   | Switch               | Physical Control Locked - Physical Control Locked |            |
-| moto_speed_rpm             | Number               | Custom Service - Moto Speed Rpm          |            |
-| miio_lib_version           | String               | Custom Service - Miio Lib Version        |            |
-| favorite_speed             | Number               | Custom Service - Favorite Speed          |            |
-| aqi_updata_heartbeat       | Number:Time          | Custom Service - Aqi Updata Heartbeat    |            |
+| fault                      | String               | Fault                                    |            |
+| mode                       | Number               | Mode                                     | Value mapping `["0"="Auto","1"="Night","2"="Manual"]` |
+| pm2_5_density              | Number:Density       | PM2.5 Density                            |            |
+| filter_life_level          | Number:Dimensionless | Filter Life Level                        |            |
+| filter_used_time           | Number:Time          | Filter Used Time                         |            |
+| alarm                      | Switch               | Notification Sound                       |            |
+| brightness                 | Number               | Screen Brightness                        | Value mapping `["8"="Bright","3"="Dim","0"="Off"]` |
+| physical_controls_locked   | Switch               | Child Lock                               |            |
+| motor_speed_rpm            | Number               | Motor Speed                              |            |
+| miio_lib_version           | String               | MIIO Library Version                     |            |
+| favorite_speed             | Number               | Favorite Mode Motor Speed                | The 15 favorite mode levels of the app, sent as motor speed |
 
 ### Mi Air Purifier 2S (<a name="zhimi-airpurifier-mc1">zhimi.airpurifier.mc1</a>) Channels
 
@@ -14189,6 +14363,26 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | temperature                | Number:Temperature   | Temperature                              |            |
 | purifyvolume               | Number:Volume        | Purified Volume                          |            |
 | childlock                  | Switch               | Child Lock                               |            |
+
+### Xiaomi Smart Air Purifier 4 Lite (<a name="zhimi-airpurifier-rma1">zhimi.airpurifier.rma1</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| actions                    | String               | Actions                                  | Value mapping `["air-purifier-toggle"="Toggle Power","custom-service-toggle-mode"="Toggle Mode"]` |
+| on                         | Switch               | Power                                    |            |
+| fault                      | Number               | Fault                                    | Value mapping `["0"="No Faults","1"="Motor Speed Error","2"="Motor Blocked","3"="Particle Sensor Error"]` |
+| mode                       | Number               | Mode                                     | Value mapping `["0"="Auto","1"="Sleep","2"="Manual"]` |
+| relative_humidity          | Number:Dimensionless | Relative Humidity                        |            |
+| pm2_5_density              | Number:Density       | PM2.5 Density                            |            |
+| temperature                | Number:Temperature   | Temperature                              |            |
+| filter_life_level          | Number:Dimensionless | Filter Life Level                        |            |
+| filter_used_time           | Number:Time          | Filter Used Time                         |            |
+| filter_left_time           | Number:Time          | Filter Left Time                         |            |
+| alarm                      | Switch               | Notification Sound                       |            |
+| physical_controls_locked   | Switch               | Child Lock                               |            |
+| brightness                 | Number               | Screen Brightness                        | Value mapping `["0"="Off","1"="Dim","2"="Bright"]` |
+| motor_speed_rpm            | Number               | Motor Speed                              |            |
+| favorite_level             | Number               | Favorite Mode Level                      | Favorite mode speed level 0-14; the Mi Home app shows the recommended room coverage from 3-4 m2 (level 0) to 27-46 m2 (level 14) |
 
 ### Mi Air Purifier Super (<a name="zhimi-airpurifier-sa1">zhimi.airpurifier.sa1</a>) Channels
 
@@ -14352,98 +14546,91 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | temperature                | Number:Temperature   | Temperature                              |            |
 | childlock                  | Switch               | Child Lock                               |            |
 
+### Mi Air Purifier Pro H (<a name="zhimi-airpurifier-va1">zhimi.airpurifier.va1</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| actions                    | String               | Actions                                  | Value mapping `["button-toggle"="Toggle Power","button-toggle-mode"="Toggle Mode"]` |
+| fault                      | Number               | Fault                                    | Value mapping `["0"="No Faults","1"="Motor Run Error","2"="Motor Stuck","3"="No Sensor","4"="Humidity Sensor Error","5"="Temperature Sensor Error","6"="Timer Error 1","7"="Timer Error 2"]` |
+| on                         | Switch               | Power                                    |            |
+| fan_level                  | Number               | Fan Level                                | Value mapping `["1"="Level1","2"="Level2","3"="Level3"]` |
+| mode                       | Number               | Mode                                     | Value mapping `["0"="Auto","1"="Night","2"="Manual","3"="Fan Level"]` |
+| pm2_5_density              | Number:Density       | PM2.5 Density                            |            |
+| relative_humidity          | Number:Dimensionless | Relative Humidity                        |            |
+| temperature                | Number:Temperature   | Temperature                              |            |
+| filter_life_level          | Number:Dimensionless | Filter Life Level                        |            |
+| filter_used_time           | Number:Time          | Filter Used Time                         |            |
+| filter_max_time            | Number:Time          | Filter Maximum Life                      |            |
+| alarm                      | Switch               | Notification Sound                       | Sets the volume to 50 (on) or 0 (off), as the app does |
+| brightness                 | Number               | LED Brightness                           | Value mapping `["0"="Bright","1"="Dim","2"="Off"]` |
+| physical_controls_locked   | Switch               | Child Lock                               |            |
+| motor_speed_rpm            | Number               | Motor Speed                              |            |
+| motor_set_speed            | Number               | Motor Target Speed                       |            |
+| favorite_speed             | Number               | Favorite Mode Motor Speed                |            |
+| favorite_level             | Number               | Favorite Mode Level                      | Favorite mode speed level 0-9 |
+| use_time                   | Number:Time          | Device Use Time                          |            |
+| purify_volume              | Number:Volume        | Purify Volume                            |            |
+| average_aqi                | Number               | Average AQI                              |            |
+| aqi_state                  | Number               | AQI State                                | Value mapping `["0"="Best","1"="Good","2"="Normal","3"="Bad","4"="Worse","5"="Unhealthy"]` |
+| bottom_door                | Switch               | Bottom Door                              |            |
+| reboot_cause               | Number               | Reboot Cause                             | Value mapping `["0"="Hardware Boot","1"="User Reboot","2"="Update","3"="Watchdog Timer"]` |
+| manual_level               | Number               | Manual Mode Level                        | Value mapping `["1"="Level 1","2"="Level 2","3"="Level 3"]` |
+
 ### Mi Air Purifier Pro H (<a name="zhimi-airpurifier-vb2">zhimi.airpurifier.vb2</a>) Channels
 
 | Channel                    | Type                 | Description                              | Comment    |
 |----------------------------|----------------------|------------------------------------------|------------|
-| actions                    | String               | Actions                                  | Value mapping `["button-toggle"="Toggle","button-toggle-mode"="Toggle Mode"]` |
-| fault                      | Number               | Air Purifier - Device Fault              | Value mapping `["0"="No faults","1"="m1_run","2"="m1_stuck","3"="no_sensor","4"="error_hum","5"="error_temp","6"="timer_error1","7"="timer_error2"]` |
-| on                         | Switch               | Air Purifier - Power                     |            |
-| fan_level                  | Number               | Air Purifier - Fan Level                 | Value mapping `["1"="Level1","2"="Level2","3"="Level3","0"="Sleep"]` |
-| mode                       | Number               | Air Purifier - Mode                      | Value mapping `["0"="Auto","1"="Night","2"="Favourite","3"="Manual"]` |
-| pm2_5_density              | Number               | Environment - PM2 5 Density              |            |
-| relative_humidity          | Number:Dimensionless | Environment - Relative Humidity          |            |
-| temperature                | Number:Temperature   | Environment - Temperature                |            |
-| filter_life_level          | Number:Dimensionless | Filter - Filter Life Level               |            |
-| filter_used_time           | Number:Time          | Filter - Filter Used Time                |            |
-| alarm                      | Switch               | Alarm - Alarm                            |            |
-| volume                     | Number:Dimensionless | Alarm - Volume                           |            |
-| brightness                 | Number               | Indicator Light - Brightness             | Value mapping `["0"="brightest","1"="glimmer","2"="not bright"]` |
-| on1                        | Switch               | Indicator Light - Switch Status          |            |
-| physical_controls_locked   | Switch               | Physical Control Locked - Physical Control Locked |            |
-| button_pressed             | String               | Button - Button_pressed                  |            |
-| filter_max_time            | Number:Time          | Filter Time - Filter Max Time            |            |
-| filter_hour_used_debug     | Number:Time          | Filter Time - Filter Hour Used Debug     |            |
-| m1_strong                  | Number               | Motor Speed - M1 Strong                  |            |
-| m1_high                    | Number               | Motor Speed - M1 High                    |            |
-| m1_med                     | Number               | Motor Speed - M1 Med                     |            |
-| m1_med_l                   | Number               | Motor Speed - M1 Med L                   |            |
-| m1_low                     | Number               | Motor Speed - M1 Low                     |            |
-| m1_silent                  | Number               | Motor Speed - M1 Silent                  |            |
-| m1_favorite                | Number               | Motor Speed - M1 Favorite                |            |
-| motor1_speed               | Number               | Motor Speed - Motor1 Speed               |            |
-| motor1_set_speed           | Number               | Motor Speed - Motor1 Set Speed           |            |
-| favorite_level             | Number               | Motor Speed - Favorite Level             |            |
-| use_time                   | Number:Time          | Use Time - Use Time                      |            |
-| purify_volume              | Number               | Aqi - Purify Volume                      |            |
-| average_aqi                | Number               | Aqi - Average Aqi                        |            |
-| average_aqi_cnt            | Number               | Aqi - Average_aqi Read Times             |            |
-| aqi_zone                   | String               | Aqi - Aqi Zone                           |            |
-| sensor_state               | Number               | Aqi - Sensor State                       | Value mapping `["0"="waiting","1"="ready"]` |
-| aqi_goodh                  | Number               | Aqi - Aqi Goodh                          |            |
-| aqi_runstate               | Number               | Aqi - Runstate                           | Value mapping `["0"="continue","1"="hold","2"="sleep"]` |
-| aqi_state                  | Number               | Aqi - Aqi State                          | Value mapping `["0"="AQI_GOOD_L","1"="AQI_GOOD_H","2"="AQI_MID_L","3"="AQI_MID_H","4"="AQI_BAD_L","5"="AQI_BAD_H"]` |
-| rfid_tag                   | String               | Rfid - Rfid Tag                          |            |
-| rfid_factory_id            | String               | Rfid - Rfid Factory Id                   |            |
-| rfid_product_id            | String               | Rfid - Rfid Product Id                   |            |
-| rfid_time                  | String               | Rfid - Rfid Time                         |            |
-| rfid_serial_num            | String               | Rfid - Rfid Serial Num                   |            |
-| app_extra                  | Number               | Others - App Extra                       |            |
-| main_channel               | Number               | Others - Main Channel                    |            |
-| slave_channel              | Number               | Others - Slave Channel                   |            |
-| cola                       | String               | Others - Cola                            |            |
-| buttom_door                | String               | Others - Buttom Door                     |            |
-| reboot_cause               | Number               | Others - Reboot_cause                    | Value mapping `["0"="REASON_HW_BOOT","1"="REASON_USER_REBOOT","2"="REASON_UPDATE","3"="REASON_WDT"]` |
-| manual_level               | Number               | Others - Manual Level                    | Value mapping `["1"="level1","2"="level2","3"="level3"]` |
-| powertime                  | Number:Time          | Others - Powertime                       |            |
-| country_code               | Number               | Others - Country Code                    | Value mapping `["91"="India","44"="UK","852"="Hong Kong","886"="Taiwan","82"="Korea"]` |
+| actions                    | String               | Actions                                  | Value mapping `["button-toggle"="Toggle Power","button-toggle-mode"="Toggle Mode"]` |
+| fault                      | Number               | Fault                                    | Value mapping `["0"="No Faults","1"="Motor Run Error","2"="Motor Stuck","3"="No Sensor","4"="Humidity Sensor Error","5"="Temperature Sensor Error","6"="Timer Error 1","7"="Timer Error 2"]` |
+| on                         | Switch               | Power                                    |            |
+| fan_level                  | Number               | Fan Level                                | Value mapping `["1"="Level1","2"="Level2","3"="Level3"]` |
+| mode                       | Number               | Mode                                     | Value mapping `["0"="Auto","1"="Night","2"="Manual","3"="Fan Level"]` |
+| pm2_5_density              | Number:Density       | PM2.5 Density                            |            |
+| relative_humidity          | Number:Dimensionless | Relative Humidity                        |            |
+| temperature                | Number:Temperature   | Temperature                              |            |
+| filter_life_level          | Number:Dimensionless | Filter Life Level                        |            |
+| filter_used_time           | Number:Time          | Filter Used Time                         |            |
+| filter_max_time            | Number:Time          | Filter Maximum Life                      |            |
+| alarm                      | Switch               | Notification Sound                       | Sets the volume to 50 (on) or 0 (off), as the app does |
+| brightness                 | Number               | LED Brightness                           | Value mapping `["0"="Bright","1"="Dim","2"="Off"]` |
+| physical_controls_locked   | Switch               | Child Lock                               |            |
+| motor_speed_rpm            | Number               | Motor Speed                              |            |
+| motor_set_speed            | Number               | Motor Target Speed                       |            |
+| favorite_speed             | Number               | Favorite Mode Motor Speed                |            |
+| favorite_level             | Number               | Favorite Mode Level                      | Favorite mode speed level 0-9 |
+| use_time                   | Number:Time          | Device Use Time                          |            |
+| purify_volume              | Number:Volume        | Purify Volume                            |            |
+| average_aqi                | Number               | Average AQI                              |            |
+| aqi_state                  | Number               | AQI State                                | Value mapping `["0"="Best","1"="Good","2"="Normal","3"="Bad","4"="Worse","5"="Unhealthy"]` |
+| bottom_door                | Switch               | Bottom Door                              |            |
+| reboot_cause               | Number               | Reboot Cause                             | Value mapping `["0"="Hardware Boot","1"="User Reboot","2"="Update","3"="Watchdog Timer"]` |
+| manual_level               | Number               | Manual Mode Level                        | Value mapping `["1"="Level 1","2"="Level 2","3"="Level 3"]` |
 
 ### Smartmi Air Purifier (<a name="zhimi-airpurifier-za1">zhimi.airpurifier.za1</a>) Channels
 
 | Channel                    | Type                 | Description                              | Comment    |
 |----------------------------|----------------------|------------------------------------------|------------|
-| on                         | Switch               | Air Purifier - Switch Status             |            |
-| fault                      | Number               | Air Purifier - Fault                     | Value mapping `["0"="No faults","1"="m1_run","2"="m1_stuck","3"="no_sensor","4"="error_hum","5"="error_temp","6"="timer_error1","7"="timer_error2"]` |
-| mode                       | Number               | Air Purifier - Mode                      | Value mapping `["0"="Auto","1"="Sleep","2"="Favorite"]` |
-| air_quality                | Number               | Environment - Air Quality                |            |
-| pm2_5_density              | Number               | Environment - PM2 5 Density              |            |
-| relative_humidity          | Number:Dimensionless | Environment - Relative Humidity          |            |
-| temperature                | Number:Temperature   | Environment - Temperature                |            |
-| filter_life_level          | Number:Dimensionless | Filter - Filter Life Level               |            |
-| filter_used_time           | Number:Time          | Filter - Filter Used Time                |            |
-| alarm                      | Switch               | Alarm - Alarm                            |            |
-| brightness                 | Number               | Indicator Light - Brightness             | Value mapping `["0"="Bright","1"="Light","2"="Off"]` |
-| physical_controls_locked   | Switch               | Physical Control Locked - Physical Control Locked |            |
-| filter_max_time            | Number:Time          | Filter Time - Filter Max Time            |            |
-| favorite_fan_level         | Number               | Motor Speed - Favorite Fan Level         |            |
-| motor_speed                | Number               | Motor Speed - Motor Speed                |            |
-| use_time                   | Number:Time          | Use Time - Use Time                      |            |
-| purify_volume              | Number               | Aqi - Purify Volume                      |            |
-| average_aqi                | Number               | Aqi - Average Aqi                        |            |
-| aqi_zone                   | String               | Aqi - Aqi Zone                           |            |
-| sensor_state               | Number               | Aqi - Sensor State                       | Value mapping `["0"="waiting","1"="ready"]` |
-| rfid_tag                   | String               | Rfid - Rfid Tag                          |            |
-| rfid_factory_id            | String               | Rfid - Rfid Factory Id                   |            |
-| rfid_product_id            | String               | Rfid - Rfid Product Id                   |            |
-| rfid_time                  | String               | Rfid - Rfid Time                         |            |
-| rfid_serial_num            | String               | Rfid - Rfid Serial Num                   |            |
-| reboot_cause               | Number               | Others - Reboot Cause                    | Value mapping `["0"="hardware","1"="human","2"="upgrade","3"="watchdog"]` |
-| hw_version                 | Number               | Others - Hw Version                      |            |
-| sgp_ethanol                | Number               | Others - Sgp Ethanol                     |            |
-| sgp_serial                 | Number               | Others - Sgp Serial                      |            |
-| sgp_version                | String               | Others - Sgp Version                     |            |
-| country_code               | Number               | Others - Country Code                    | Value mapping `["1"="America","2"="Canada","3"="Singapore","4"="Europe","5"="Australian","6"="Korea","7"="China","8"="France","9"="Japanese","10"="Taiwan"]` |
-| gesture_status             | Switch               | Others - Gesture Status                  |            |
+| on                         | Switch               | Power                                    |            |
+| fault                      | Number               | Fault                                    | Value mapping `["0"="No Faults","1"="Motor Run Error","2"="Motor Stuck","3"="No Sensor","4"="Humidity Sensor Error","5"="Temperature Sensor Error"]` |
+| mode                       | Number               | Mode                                     | Value mapping `["0"="Auto","1"="Night","2"="Manual"]` |
+| air_quality                | Number               | TVOC Air Quality                         |            |
+| pm2_5_density              | Number:Density       | PM2.5 Density                            |            |
+| relative_humidity          | Number:Dimensionless | Relative Humidity                        |            |
+| temperature                | Number:Temperature   | Temperature                              |            |
+| filter_life_level          | Number:Dimensionless | Filter Life Level                        |            |
+| filter_used_time           | Number:Time          | Filter Used Time                         |            |
+| filter_max_time            | Number:Time          | Filter Maximum Life                      |            |
+| alarm                      | Switch               | Notification Sound                       |            |
+| brightness                 | Number               | LED Brightness                           | Value mapping `["0"="Bright","1"="Dim","2"="Off"]` |
+| physical_controls_locked   | Switch               | Child Lock                               |            |
+| motor_speed_rpm            | Number               | Motor Speed                              |            |
+| favorite_level             | Number               | Favorite Mode Level                      | Favorite mode speed level 0-14 |
+| use_time                   | Number:Time          | Device Use Time                          |            |
+| purify_volume              | Number:Volume        | Purify Volume                            |            |
+| average_aqi                | Number               | Average AQI                              |            |
+| reboot_cause               | Number               | Reboot Cause                             | Value mapping `["0"="Hardware Boot","1"="User Reboot","2"="Update","3"="Watchdog Timer"]` |
+| country_code               | Number               | Country Code                             | Value mapping `["1"="US","2"="CA","3"="SG","4"="EU","5"="AU","6"="KR","7"="CN","8"="FR","9"="JP","10"="TW"]` |
+| gesture_status             | Switch               | Gesture Recognition                      |            |
 
 ### Mi Standing Fan (<a name="zhimi-fan-sa1">zhimi.fan.sa1</a>) Channels
 
@@ -14932,19 +15119,21 @@ note: Autogenerated example. Replace the id (fryer) in the channel with your own
 ```java
 Group G_fryer "Mi Smart Air Fryer (3.5L)" <status>
 String actions "Actions" (G_fryer) {channel="miio:basic:fryer:actions"}
+String start_cook "Start Cooking With Settings" (G_fryer) {channel="miio:basic:fryer:start_cook"}
 Number status "Air Fryer - Status" (G_fryer) {channel="miio:basic:fryer:status"}
 Number fault "Air Fryer - Device Fault" (G_fryer) {channel="miio:basic:fryer:fault"}
 Number:Time target_time "Air Fryer - Target Time" (G_fryer) {channel="miio:basic:fryer:target_time"}
 Number:Temperature target_temperature "Air Fryer - Target Temperature" (G_fryer) {channel="miio:basic:fryer:target_temperature"}
 Number:Time left_time "Air Fryer - Left Time" (G_fryer) {channel="miio:basic:fryer:left_time"}
 String recipe_id "Custom - Recipe Id" (G_fryer) {channel="miio:basic:fryer:recipe_id"}
-Number:Time work_time "Custom - Work Time" (G_fryer) {channel="miio:basic:fryer:work_time"}
-Number:Temperature work_temp "Custom - Work Temp" (G_fryer) {channel="miio:basic:fryer:work_temp"}
-Number:Time appoint_time "Custom - Appoint Time" (G_fryer) {channel="miio:basic:fryer:appoint_time"}
+Number:Time work_time "Custom - Cooking Time" (G_fryer) {channel="miio:basic:fryer:work_time"}
+Number:Temperature work_temp "Custom - Cooking Temperature" (G_fryer) {channel="miio:basic:fryer:work_temp"}
+Number:Time appoint_time "Custom - Scheduled Start Time" (G_fryer) {channel="miio:basic:fryer:appoint_time"}
 Number food_quantity "Custom - Food Quantity" (G_fryer) {channel="miio:basic:fryer:food_quantity"}
 Number preheat_switch "Custom - Preheat Switch" (G_fryer) {channel="miio:basic:fryer:preheat_switch"}
-Number:Time appoint_time_left "Custom - Appoint Time Left" (G_fryer) {channel="miio:basic:fryer:appoint_time_left"}
-Number turn_pot "Custom - Turn Pot" (G_fryer) {channel="miio:basic:fryer:turn_pot"}
+Number:Time appoint_time_left "Custom - Scheduled Start Time Left" (G_fryer) {channel="miio:basic:fryer:appoint_time_left"}
+Number turn_pot "Custom - Turn Food Reminder" (G_fryer) {channel="miio:basic:fryer:turn_pot"}
+String recipes "Recipes" (G_fryer) {channel="miio:basic:fryer:recipes"}
 ```
 
 ### Mi Air Frying Pan (careli.fryer.maf03) item file lines
@@ -14969,6 +15158,33 @@ Number preheat_switch "Custom - Preheat Switch" (G_fryer) {channel="miio:basic:f
 Number:Time appoint_time_left "Custom - Appoint Time Left" (G_fryer) {channel="miio:basic:fryer:appoint_time_left"}
 String recipe_sync "Custom - Recipe Sync" (G_fryer) {channel="miio:basic:fryer:recipe_sync"}
 Number turn_pot "Custom - Turn Pot" (G_fryer) {channel="miio:basic:fryer:turn_pot"}
+```
+
+### Xiaomi Smart Air Fryer Pro 4L (careli.fryer.maf05a) item file lines
+
+note: Autogenerated example. Replace the id (fryer) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_fryer "Xiaomi Smart Air Fryer Pro 4L" <status>
+String actions "Actions" (G_fryer) {channel="miio:basic:fryer:actions"}
+String start_cook "Start Cooking With Settings" (G_fryer) {channel="miio:basic:fryer:start_cook"}
+Number status "Air Fryer - Status" (G_fryer) {channel="miio:basic:fryer:status"}
+Number fault "Air Fryer - Device Fault" (G_fryer) {channel="miio:basic:fryer:fault"}
+Number:Time target_time "Air Fryer - Target Time" (G_fryer) {channel="miio:basic:fryer:target_time"}
+Number:Temperature target_temperature "Air Fryer - Target Temperature" (G_fryer) {channel="miio:basic:fryer:target_temperature"}
+Number:Time left_time "Air Fryer - Left Time" (G_fryer) {channel="miio:basic:fryer:left_time"}
+String recipe_id "Custom - Recipe Id" (G_fryer) {channel="miio:basic:fryer:recipe_id"}
+String recipe_name "Custom - Recipe Name" (G_fryer) {channel="miio:basic:fryer:recipe_name"}
+Number:Time work_time "Custom - Cooking Time" (G_fryer) {channel="miio:basic:fryer:work_time"}
+Number:Temperature work_temp "Custom - Cooking Temperature" (G_fryer) {channel="miio:basic:fryer:work_temp"}
+Number:Time appoint_time "Custom - Scheduled Start Time" (G_fryer) {channel="miio:basic:fryer:appoint_time"}
+Number food_quantity "Custom - Food Quantity" (G_fryer) {channel="miio:basic:fryer:food_quantity"}
+Number preheat_switch "Custom - Preheat Switch" (G_fryer) {channel="miio:basic:fryer:preheat_switch"}
+Number:Time appoint_time_left "Custom - Scheduled Start Time Left" (G_fryer) {channel="miio:basic:fryer:appoint_time_left"}
+String recipe_sync "Custom - Recipe Sync" (G_fryer) {channel="miio:basic:fryer:recipe_sync"}
+Number turn_pot "Custom - Turn Food" (G_fryer) {channel="miio:basic:fryer:turn_pot"}
+Number turn_pot_cfg "Custom - Turn Food Reminder" (G_fryer) {channel="miio:basic:fryer:turn_pot_cfg"}
+String recipes "Recipes" (G_fryer) {channel="miio:basic:fryer:recipes"}
 ```
 
 ### Xiaomi Smart Air Fryer 6.5L (careli.fryer.maf10a) item file lines
@@ -15217,6 +15433,56 @@ Switch usb "USB" (G_plug) {channel="miio:basic:plug:usb"}
 Number:Temperature temperature "Temperature" (G_plug) {channel="miio:basic:plug:temperature"}
 Switch led "Indicator Light" (G_plug) {channel="miio:basic:plug:led"}
 Number:Power electric_power "Active Power" (G_plug) {channel="miio:basic:plug:electric_power"}
+```
+
+### Mijia Rice cooker (chunmi.cooker.eh1) item file lines
+
+note: Autogenerated example. Replace the id (cooker) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_cooker "Mijia Rice cooker" <status>
+Number status "Status" (G_cooker) {channel="miio:basic:cooker:status"}
+Number error "Error" (G_cooker) {channel="miio:basic:cooker:error"}
+Number:Temperature temperature "Temperature" (G_cooker) {channel="miio:basic:cooker:temperature"}
+Number:Time remaining_time "Remaining Time" (G_cooker) {channel="miio:basic:cooker:remaining_time"}
+Number:Time cook_time "Cooking Time" (G_cooker) {channel="miio:basic:cooker:cook_time"}
+String control "Control" (G_cooker) {channel="miio:basic:cooker:control"}
+```
+
+### Xiaomi Smart Blender (chunmi.juicer.twa1) item file lines
+
+note: Autogenerated example. Replace the id (juicer) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_juicer "Xiaomi Smart Blender" <status>
+Number status "Status" (G_juicer) {channel="miio:basic:juicer:status"}
+Number error "Error" (G_juicer) {channel="miio:basic:juicer:error"}
+Number:Time remaining_time "Remaining Time" (G_juicer) {channel="miio:basic:juicer:remaining_time"}
+Number:Time schedule_time "Scheduled Time" (G_juicer) {channel="miio:basic:juicer:schedule_time"}
+Number:Time keep_warm_remaining_time "Keep Warm Remaining Time" (G_juicer) {channel="miio:basic:juicer:keep_warm_remaining_time"}
+Number:Time cooking_time "Cooking Time" (G_juicer) {channel="miio:basic:juicer:cooking_time"}
+Number:Temperature temperature "Temperature" (G_juicer) {channel="miio:basic:juicer:temperature"}
+Number cup "Cup" (G_juicer) {channel="miio:basic:juicer:cup"}
+Switch lid_open "Lid Open" (G_juicer) {channel="miio:basic:juicer:lid_open"}
+String control "Control" (G_juicer) {channel="miio:basic:juicer:control"}
+```
+
+### Xiaomi Smart Blender (chunmi.juicer.uka1) item file lines
+
+note: Autogenerated example. Replace the id (juicer) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_juicer "Xiaomi Smart Blender" <status>
+Number status "Status" (G_juicer) {channel="miio:basic:juicer:status"}
+Number error "Error" (G_juicer) {channel="miio:basic:juicer:error"}
+Number:Time remaining_time "Remaining Time" (G_juicer) {channel="miio:basic:juicer:remaining_time"}
+Number:Time schedule_time "Scheduled Time" (G_juicer) {channel="miio:basic:juicer:schedule_time"}
+Number:Time keep_warm_remaining_time "Keep Warm Remaining Time" (G_juicer) {channel="miio:basic:juicer:keep_warm_remaining_time"}
+Number:Time cooking_time "Cooking Time" (G_juicer) {channel="miio:basic:juicer:cooking_time"}
+Number:Temperature temperature "Temperature" (G_juicer) {channel="miio:basic:juicer:temperature"}
+Number cup "Cup" (G_juicer) {channel="miio:basic:juicer:cup"}
+Switch lid_open "Lid Open" (G_juicer) {channel="miio:basic:juicer:lid_open"}
+String control "Control" (G_juicer) {channel="miio:basic:juicer:control"}
 ```
 
 ### Gosund Smart Plug (cuco.plug.cp1) item file lines
@@ -18551,9 +18817,9 @@ note: Autogenerated example. Replace the id (light) in the channel with your own
 
 ```java
 Group G_light "HUIZUO ARIES For Bedroom" <status>
-Switch on "Light - Power" (G_light) {channel="miio:basic:light:on"}
-Dimmer brightness "Light - Brightness" (G_light) {channel="miio:basic:light:brightness"}
-Number:Temperature color_temperature "Light - Color Temperature" (G_light) {channel="miio:basic:light:color-temperature"}
+Switch on "Power" (G_light) {channel="miio:basic:light:on"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number:Temperature color_temperature "Color Temperature" (G_light) {channel="miio:basic:light:color_temperature"}
 ```
 
 ### HUIZUO ARIES For Living Room (huayi.light.aries) item file lines
@@ -18562,9 +18828,9 @@ note: Autogenerated example. Replace the id (light) in the channel with your own
 
 ```java
 Group G_light "HUIZUO ARIES For Living Room" <status>
-Switch on "Light - Power" (G_light) {channel="miio:basic:light:on"}
-Dimmer brightness "Light - Brightness" (G_light) {channel="miio:basic:light:brightness"}
-Number:Temperature color_temperature "Light - Color Temperature" (G_light) {channel="miio:basic:light:color-temperature"}
+Switch on "Power" (G_light) {channel="miio:basic:light:on"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number:Temperature color_temperature "Color Temperature" (G_light) {channel="miio:basic:light:color_temperature"}
 ```
 
 ### HUIZUO Fan Light (huayi.light.fanwy) item file lines
@@ -18575,10 +18841,10 @@ note: Autogenerated example. Replace the id (light) in the channel with your own
 Group G_light "HUIZUO Fan Light" <status>
 Switch on "Light - Power" (G_light) {channel="miio:basic:light:on"}
 Dimmer brightness "Light - Brightness" (G_light) {channel="miio:basic:light:brightness"}
-Number:Temperature color_temperature "Light - Color Temperature" (G_light) {channel="miio:basic:light:color-temperature"}
+Number:Temperature color_temperature "Light - Color Temperature" (G_light) {channel="miio:basic:light:color_temperature"}
 Switch on1 "Fan - Power" (G_light) {channel="miio:basic:light:on1"}
-Number:Dimensionless fan_level "Fan - Fan Level" (G_light) {channel="miio:basic:light:fan-level"}
-Switch motor_reverse "Fan - Motor Reverse" (G_light) {channel="miio:basic:light:motor-reverse"}
+Number fan_level "Fan - Speed" (G_light) {channel="miio:basic:light:fan_level"}
+Switch fan_reverse "Fan - Reverse" (G_light) {channel="miio:basic:light:fan_reverse"}
 Number mode "Fan - Mode" (G_light) {channel="miio:basic:light:mode"}
 ```
 
@@ -18590,17 +18856,16 @@ note: Autogenerated example. Replace the id (light) in the channel with your own
 Group G_light "HUIZUO Fan Light(2020)" <status>
 Switch on "Light - Power" (G_light) {channel="miio:basic:light:on"}
 Dimmer brightness "Light - Brightness" (G_light) {channel="miio:basic:light:brightness"}
-Number:Temperature color_temperature "Light - Color Temperature" (G_light) {channel="miio:basic:light:color-temperature"}
+Number:Temperature color_temperature "Light - Color Temperature" (G_light) {channel="miio:basic:light:color_temperature"}
 Switch on1 "Fan - Power" (G_light) {channel="miio:basic:light:on1"}
-Number:Dimensionless fan_level "Fan - Fan Level" (G_light) {channel="miio:basic:light:fan-level"}
+Number fan_level "Fan - Speed" (G_light) {channel="miio:basic:light:fan_level"}
 Number mode "Fan - Mode" (G_light) {channel="miio:basic:light:mode"}
-Number:Time time_off "Presets - Time Off" (G_light) {channel="miio:basic:light:time-off"}
-Number:Temperature pre_colortemp "Presets - Pre Colortemp" (G_light) {channel="miio:basic:light:pre-colortemp"}
-Dimmer pre_brightness "Presets - Pre Brightness" (G_light) {channel="miio:basic:light:pre-brightness"}
-Number:Dimensionless pre_speed "Presets - Pre Speed" (G_light) {channel="miio:basic:light:pre-speed"}
-Number reversal "Presets - Reversal" (G_light) {channel="miio:basic:light:reversal"}
-Number pre_custom "Presets - Pre Custom" (G_light) {channel="miio:basic:light:pre-custom"}
-Switch flabellum "Presets - Flabellum" (G_light) {channel="miio:basic:light:flabellum"}
+Number:Temperature preset_color_temperature "Preset - Color Temperature" (G_light) {channel="miio:basic:light:preset_color_temperature"}
+Number:Dimensionless preset_brightness "Preset - Brightness" (G_light) {channel="miio:basic:light:preset_brightness"}
+Number preset_fan_level "Preset - Fan Speed" (G_light) {channel="miio:basic:light:preset_fan_level"}
+Number fan_direction "Fan - Direction" (G_light) {channel="miio:basic:light:fan_direction"}
+Switch preset "Preset" (G_light) {channel="miio:basic:light:preset"}
+Switch swing "Fan - Swing" (G_light) {channel="miio:basic:light:swing"}
 ```
 
 ### HUIZUO PEGASUS For Living Room (huayi.light.peg091) item file lines
@@ -18609,9 +18874,9 @@ note: Autogenerated example. Replace the id (light) in the channel with your own
 
 ```java
 Group G_light "HUIZUO PEGASUS For Living Room" <status>
-Switch on "Light - Power" (G_light) {channel="miio:basic:light:on"}
-Dimmer brightness "Light - Brightness" (G_light) {channel="miio:basic:light:brightness"}
-Number:Temperature color_temperature "Light - Color Temperature" (G_light) {channel="miio:basic:light:color-temperature"}
+Switch on "Power" (G_light) {channel="miio:basic:light:on"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number:Temperature color_temperature "Color Temperature" (G_light) {channel="miio:basic:light:color_temperature"}
 ```
 
 ### HUIZUO PEGASUS For Bedroom (huayi.light.peg093) item file lines
@@ -18620,9 +18885,9 @@ note: Autogenerated example. Replace the id (light) in the channel with your own
 
 ```java
 Group G_light "HUIZUO PEGASUS For Bedroom" <status>
-Switch on "Light - Power" (G_light) {channel="miio:basic:light:on"}
-Dimmer brightness "Light - Brightness" (G_light) {channel="miio:basic:light:brightness"}
-Number:Temperature color_temperature "Light - Color Temperature" (G_light) {channel="miio:basic:light:color-temperature"}
+Switch on "Power" (G_light) {channel="miio:basic:light:on"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number:Temperature color_temperature "Color Temperature" (G_light) {channel="miio:basic:light:color_temperature"}
 ```
 
 ### HUIZUO PISCES For Bedroom (huayi.light.pis123) item file lines
@@ -18631,9 +18896,9 @@ note: Autogenerated example. Replace the id (light) in the channel with your own
 
 ```java
 Group G_light "HUIZUO PISCES For Bedroom" <status>
-Switch on "Light - Power" (G_light) {channel="miio:basic:light:on"}
-Dimmer brightness "Light - Brightness" (G_light) {channel="miio:basic:light:brightness"}
-Number:Temperature color_temperature "Light - Color Temperature" (G_light) {channel="miio:basic:light:color-temperature"}
+Switch on "Power" (G_light) {channel="miio:basic:light:on"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number:Temperature color_temperature "Color Temperature" (G_light) {channel="miio:basic:light:color_temperature"}
 ```
 
 ### HUIZUO PISCES For Living Room (huayi.light.pisces) item file lines
@@ -18642,9 +18907,9 @@ note: Autogenerated example. Replace the id (light) in the channel with your own
 
 ```java
 Group G_light "HUIZUO PISCES For Living Room" <status>
-Switch on "Light - Power" (G_light) {channel="miio:basic:light:on"}
-Dimmer brightness "Light - Brightness" (G_light) {channel="miio:basic:light:brightness"}
-Number:Temperature color_temperature "Light - Color Temperature" (G_light) {channel="miio:basic:light:color-temperature"}
+Switch on "Power" (G_light) {channel="miio:basic:light:on"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number:Temperature color_temperature "Color Temperature" (G_light) {channel="miio:basic:light:color_temperature"}
 ```
 
 ### HUIZUO TAURUS For Bedroom (huayi.light.tau023) item file lines
@@ -18653,9 +18918,9 @@ note: Autogenerated example. Replace the id (light) in the channel with your own
 
 ```java
 Group G_light "HUIZUO TAURUS For Bedroom" <status>
-Switch on "Light - Power" (G_light) {channel="miio:basic:light:on"}
-Dimmer brightness "Light - Brightness" (G_light) {channel="miio:basic:light:brightness"}
-Number:Temperature color_temperature "Light - Color Temperature" (G_light) {channel="miio:basic:light:color-temperature"}
+Switch on "Power" (G_light) {channel="miio:basic:light:on"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number:Temperature color_temperature "Color Temperature" (G_light) {channel="miio:basic:light:color_temperature"}
 ```
 
 ### HUIZUO TAURUS For Living Room (huayi.light.taurus) item file lines
@@ -18664,9 +18929,9 @@ note: Autogenerated example. Replace the id (light) in the channel with your own
 
 ```java
 Group G_light "HUIZUO TAURUS For Living Room" <status>
-Switch on "Light - Power" (G_light) {channel="miio:basic:light:on"}
-Dimmer brightness "Light - Brightness" (G_light) {channel="miio:basic:light:brightness"}
-Number:Temperature color_temperature "Light - Color Temperature" (G_light) {channel="miio:basic:light:color-temperature"}
+Switch on "Power" (G_light) {channel="miio:basic:light:on"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number:Temperature color_temperature "Color Temperature" (G_light) {channel="miio:basic:light:color_temperature"}
 ```
 
 ### HUIZUO VIRGO For Bedroom (huayi.light.vir063) item file lines
@@ -18675,9 +18940,9 @@ note: Autogenerated example. Replace the id (light) in the channel with your own
 
 ```java
 Group G_light "HUIZUO VIRGO For Bedroom" <status>
-Switch on "Light - Power" (G_light) {channel="miio:basic:light:on"}
-Dimmer brightness "Light - Brightness" (G_light) {channel="miio:basic:light:brightness"}
-Number:Temperature color_temperature "Light - Color Temperature" (G_light) {channel="miio:basic:light:color-temperature"}
+Switch on "Power" (G_light) {channel="miio:basic:light:on"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number:Temperature color_temperature "Color Temperature" (G_light) {channel="miio:basic:light:color_temperature"}
 ```
 
 ### HUIZUO VIRGO For Living Room (huayi.light.virgo) item file lines
@@ -18686,9 +18951,9 @@ note: Autogenerated example. Replace the id (light) in the channel with your own
 
 ```java
 Group G_light "HUIZUO VIRGO For Living Room" <status>
-Switch on "Light - Power" (G_light) {channel="miio:basic:light:on"}
-Dimmer brightness "Light - Brightness" (G_light) {channel="miio:basic:light:brightness"}
-Number:Temperature color_temperature "Light - Color Temperature" (G_light) {channel="miio:basic:light:color-temperature"}
+Switch on "Power" (G_light) {channel="miio:basic:light:on"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number:Temperature color_temperature "Color Temperature" (G_light) {channel="miio:basic:light:color_temperature"}
 ```
 
 ### HUIZUO Ceiling Light (huayi.light.wy) item file lines
@@ -18697,9 +18962,20 @@ note: Autogenerated example. Replace the id (light) in the channel with your own
 
 ```java
 Group G_light "HUIZUO Ceiling Light" <status>
-Switch on "Light - Power" (G_light) {channel="miio:basic:light:on"}
-Dimmer brightness "Light - Brightness" (G_light) {channel="miio:basic:light:brightness"}
-Number:Temperature color_temperature "Light - Color Temperature" (G_light) {channel="miio:basic:light:color-temperature"}
+Switch on "Power" (G_light) {channel="miio:basic:light:on"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number:Temperature color_temperature "Color Temperature" (G_light) {channel="miio:basic:light:color_temperature"}
+```
+
+### HUAYI LIGHTING COMMON CEILING LIGHT (huayi.light.wy002) item file lines
+
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_light "HUAYI LIGHTING COMMON CEILING LIGHT" <status>
+Switch on "Power" (G_light) {channel="miio:basic:light:on"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number:Temperature color_temperature "Color Temperature" (G_light) {channel="miio:basic:light:color_temperature"}
 ```
 
 ### HUIZUO LIANGCHEN(BLE Mesh) (huayi.light.wy200) item file lines
@@ -18708,9 +18984,9 @@ note: Autogenerated example. Replace the id (light) in the channel with your own
 
 ```java
 Group G_light "HUIZUO LIANGCHEN(BLE Mesh)" <status>
-Switch on "Light - Power" (G_light) {channel="miio:basic:light:on"}
-Dimmer brightness "Light - Brightness" (G_light) {channel="miio:basic:light:brightness"}
-Number:Temperature color_temperature "Light - Color Temperature" (G_light) {channel="miio:basic:light:color-temperature"}
+Switch on "Power" (G_light) {channel="miio:basic:light:on"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number:Temperature color_temperature "Color Temperature" (G_light) {channel="miio:basic:light:color_temperature"}
 ```
 
 ### HUIZUO SAG Downlight (BLE Mesh) (huayi.light.wy201) item file lines
@@ -18719,9 +18995,9 @@ note: Autogenerated example. Replace the id (light) in the channel with your own
 
 ```java
 Group G_light "HUIZUO SAG Downlight (BLE Mesh)" <status>
-Switch on "Light - Power" (G_light) {channel="miio:basic:light:on"}
-Dimmer brightness "Light - Brightness" (G_light) {channel="miio:basic:light:brightness"}
-Number:Temperature color_temperature "Light - Color Temperature" (G_light) {channel="miio:basic:light:color-temperature"}
+Switch on "Power" (G_light) {channel="miio:basic:light:on"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number:Temperature color_temperature "Color Temperature" (G_light) {channel="miio:basic:light:color_temperature"}
 ```
 
 ### HUIZUO Bulb (BLE Mesh) (huayi.light.wy202) item file lines
@@ -18730,9 +19006,9 @@ note: Autogenerated example. Replace the id (light) in the channel with your own
 
 ```java
 Group G_light "HUIZUO Bulb (BLE Mesh)" <status>
-Switch on "Light - Power" (G_light) {channel="miio:basic:light:on"}
-Dimmer brightness "Light - Brightness" (G_light) {channel="miio:basic:light:brightness"}
-Number:Temperature color_temperature "Light - Color Temperature" (G_light) {channel="miio:basic:light:color-temperature"}
+Switch on "Power" (G_light) {channel="miio:basic:light:on"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number:Temperature color_temperature "Color Temperature" (G_light) {channel="miio:basic:light:color_temperature"}
 ```
 
 ### HUIZUO YONG Downlight (BLE Mesh) (huayi.light.wy203) item file lines
@@ -18741,9 +19017,9 @@ note: Autogenerated example. Replace the id (light) in the channel with your own
 
 ```java
 Group G_light "HUIZUO YONG Downlight (BLE Mesh)" <status>
-Switch on "Light - Power" (G_light) {channel="miio:basic:light:on"}
-Dimmer brightness "Light - Brightness" (G_light) {channel="miio:basic:light:brightness"}
-Number:Temperature color_temperature "Light - Color Temperature" (G_light) {channel="miio:basic:light:color-temperature"}
+Switch on "Power" (G_light) {channel="miio:basic:light:on"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number:Temperature color_temperature "Color Temperature" (G_light) {channel="miio:basic:light:color_temperature"}
 ```
 
 ### huayi.light.wy204 (huayi.light.wy204) item file lines
@@ -18752,9 +19028,9 @@ note: Autogenerated example. Replace the id (light) in the channel with your own
 
 ```java
 Group G_light "huayi.light.wy204" <status>
-Switch on "Light - Power" (G_light) {channel="miio:basic:light:on"}
-Dimmer brightness "Light - Brightness" (G_light) {channel="miio:basic:light:brightness"}
-Number:Temperature color_temperature "Light - Color Temperature" (G_light) {channel="miio:basic:light:color-temperature"}
+Switch on "Power" (G_light) {channel="miio:basic:light:on"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number:Temperature color_temperature "Color Temperature" (G_light) {channel="miio:basic:light:color_temperature"}
 ```
 
 ### HUIZUO Heating Lamp (huayi.light.wyheat) item file lines
@@ -18765,11 +19041,10 @@ note: Autogenerated example. Replace the id (light) in the channel with your own
 Group G_light "HUIZUO Heating Lamp" <status>
 Switch on "Light - Power" (G_light) {channel="miio:basic:light:on"}
 Dimmer brightness "Light - Brightness" (G_light) {channel="miio:basic:light:brightness"}
-Number:Temperature color_temperature "Light - Color Temperature" (G_light) {channel="miio:basic:light:color-temperature"}
+Number:Temperature color_temperature "Light - Color Temperature" (G_light) {channel="miio:basic:light:color_temperature"}
 Switch on1 "Heater - Power" (G_light) {channel="miio:basic:light:on1"}
-Number fault "Heater - Device Fault" (G_light) {channel="miio:basic:light:fault"}
-Number heat_level "Heater - Heat Level" (G_light) {channel="miio:basic:light:heat-level"}
-Switch screenshow "Other - Screenshow" (G_light) {channel="miio:basic:light:screenshow"}
+Number heat_level "Heater - Level" (G_light) {channel="miio:basic:light:heat_level"}
+Switch screen_light "Device Screen Light" (G_light) {channel="miio:basic:light:screen_light"}
 ```
 
 ### HUIZUO ZIWEI Ceiling Lamp (huayi.light.zw131) item file lines
@@ -18778,9 +19053,9 @@ note: Autogenerated example. Replace the id (light) in the channel with your own
 
 ```java
 Group G_light "HUIZUO ZIWEI Ceiling Lamp" <status>
-Switch on "Light - Power" (G_light) {channel="miio:basic:light:on"}
-Dimmer brightness "Light - Brightness" (G_light) {channel="miio:basic:light:brightness"}
-Number:Temperature color_temperature "Light - Color Temperature" (G_light) {channel="miio:basic:light:color-temperature"}
+Switch on "Power" (G_light) {channel="miio:basic:light:on"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number:Temperature color_temperature "Color Temperature" (G_light) {channel="miio:basic:light:color_temperature"}
 ```
 
 ### Mi Robot Vacuum-Mop Pro (ijai.vacuum.v1) item file lines
@@ -22319,10 +22594,12 @@ note: Autogenerated example. Replace the id (coffee) in the channel with your ow
 ```java
 Group G_coffee "SCISHARE Smart Capsule Coffee Machine" <status>
 Switch power "Power" (G_coffee) {channel="miio:basic:coffee:power"}
-String Status "status" (G_coffee) {channel="miio:basic:coffee:Status"}
-Number expresso "Brew Expresso" (G_coffee) {channel="miio:basic:coffee:expresso"}
-Number expresso "Brew Americano" (G_coffee) {channel="miio:basic:coffee:expresso"}
-Number boil "Boil water" (G_coffee) {channel="miio:basic:coffee:boil"}
+Number status "Status" (G_coffee) {channel="miio:basic:coffee:status"}
+Number make_espresso "Make Espresso" (G_coffee) {channel="miio:basic:coffee:make_espresso"}
+Number make_americano "Make Americano" (G_coffee) {channel="miio:basic:coffee:make_americano"}
+Number make_hot_water "Make Hot Water" (G_coffee) {channel="miio:basic:coffee:make_hot_water"}
+String control "Control" (G_coffee) {channel="miio:basic:coffee:control"}
+Number preheat_mode "Boiler Preheat Mode" (G_coffee) {channel="miio:basic:coffee:preheat_mode"}
 ```
 
 ### Xiaomi Scishare Smart Capsule Coffee Machine (scishare.coffee.s1301) item file lines
@@ -22332,10 +22609,40 @@ note: Autogenerated example. Replace the id (coffee) in the channel with your ow
 ```java
 Group G_coffee "Xiaomi Scishare Smart Capsule Coffee Machine" <status>
 Switch power "Power" (G_coffee) {channel="miio:basic:coffee:power"}
-String Status "status" (G_coffee) {channel="miio:basic:coffee:Status"}
-Number expresso "Brew Expresso" (G_coffee) {channel="miio:basic:coffee:expresso"}
-Number expresso "Brew Americano" (G_coffee) {channel="miio:basic:coffee:expresso"}
-Number boil "Boil water" (G_coffee) {channel="miio:basic:coffee:boil"}
+Number status "Status" (G_coffee) {channel="miio:basic:coffee:status"}
+Number make_espresso "Make Espresso" (G_coffee) {channel="miio:basic:coffee:make_espresso"}
+Number make_americano "Make Americano" (G_coffee) {channel="miio:basic:coffee:make_americano"}
+Number make_hot_water "Make Hot Water" (G_coffee) {channel="miio:basic:coffee:make_hot_water"}
+String control "Control" (G_coffee) {channel="miio:basic:coffee:control"}
+Number preheat_mode "Boiler Preheat Mode" (G_coffee) {channel="miio:basic:coffee:preheat_mode"}
+```
+
+### TINYMU Smart Toilet (tinymu.toiletlid.v1) item file lines
+
+note: Autogenerated example. Replace the id (toiletlid) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_toiletlid "TINYMU Smart Toilet" <status>
+Number status "Status" (G_toiletlid) {channel="miio:basic:toiletlid:status"}
+Number:Time filter_days_left "Filter Days Left" (G_toiletlid) {channel="miio:basic:toiletlid:filter_days_left"}
+Number:Dimensionless filter_life "Filter Remaining" (G_toiletlid) {channel="miio:basic:toiletlid:filter_life"}
+Switch deodorization "Deodorization" (G_toiletlid) {channel="miio:basic:toiletlid:deodorization"}
+```
+
+### Mi Smart Dishwasher (4 Dining Sets) (viomi.dishwasher.m02) item file lines
+
+note: Autogenerated example. Replace the id (dishwasher) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_dishwasher "Mi Smart Dishwasher (4 Dining Sets)" <status>
+Switch power "Power" (G_dishwasher) {channel="miio:basic:dishwasher:power"}
+Number status "Status" (G_dishwasher) {channel="miio:basic:dishwasher:status"}
+Number program "Program" (G_dishwasher) {channel="miio:basic:dishwasher:program"}
+Number wash_process "Wash Step" (G_dishwasher) {channel="miio:basic:dishwasher:wash_process"}
+Number:Time remaining_time "Remaining Time" (G_dishwasher) {channel="miio:basic:dishwasher:remaining_time"}
+Number:Temperature water_temperature "Water Temperature" (G_dishwasher) {channel="miio:basic:dishwasher:water_temperature"}
+Switch child_lock "Child Lock" (G_dishwasher) {channel="miio:basic:dishwasher:child_lock"}
+String control "Control" (G_dishwasher) {channel="miio:basic:dishwasher:control"}
 ```
 
 ### Viomi sweeper PRO (viomi.vacuum.v3) item file lines
@@ -24825,6 +25132,23 @@ Number iic_error_count "I2C Error Count" (G_airp) {channel="miio:basic:airp:iic_
 Number country_code "Country Code" (G_airp) {channel="miio:basic:airp:country_code"}
 ```
 
+### Xiaomi Smart Multifunctional Rice Cooker (xiaomi.cooker.cmk7) item file lines
+
+note: Autogenerated example. Replace the id (cooker) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_cooker "Xiaomi Smart Multifunctional Rice Cooker" <status>
+Number status "Status" (G_cooker) {channel="miio:basic:cooker:status"}
+Number fault "Fault" (G_cooker) {channel="miio:basic:cooker:fault"}
+Number cook_mode "Cook Mode" (G_cooker) {channel="miio:basic:cooker:cook_mode"}
+Number:Time remaining_time "Remaining Time" (G_cooker) {channel="miio:basic:cooker:remaining_time"}
+Number:Time cook_time "Cooking Time" (G_cooker) {channel="miio:basic:cooker:cook_time"}
+Number:Time schedule_remaining_time "Schedule Remaining Time" (G_cooker) {channel="miio:basic:cooker:schedule_remaining_time"}
+Number:Time keep_warm_time "Keep Warm Time" (G_cooker) {channel="miio:basic:cooker:keep_warm_time"}
+Number texture "Texture" (G_cooker) {channel="miio:basic:cooker:texture"}
+String control "Control" (G_cooker) {channel="miio:basic:cooker:control"}
+```
+
 ### Xiaomi Smart Inverter Dehumidifier (xiaomi.derh.30kh) item file lines
 
 note: Autogenerated example. Replace the id (derh) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
@@ -25360,6 +25684,44 @@ Number:Dimensionless filter_life_level "Filter Life" (G_humidifier) {channel="mi
 String actions "Actions" (G_humidifier) {channel="miio:basic:humidifier:actions"}
 ```
 
+### Mijia Smart Quiet Inverter Blender P1 (xiaomi.juicer.dempp1) item file lines
+
+note: Autogenerated example. Replace the id (juicer) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_juicer "Mijia Smart Quiet Inverter Blender P1" <status>
+Number status "Status" (G_juicer) {channel="miio:basic:juicer:status"}
+Number fault "Fault" (G_juicer) {channel="miio:basic:juicer:fault"}
+Number cook_mode "Cook Mode" (G_juicer) {channel="miio:basic:juicer:cook_mode"}
+Number:Time schedule_remaining_time "Schedule Remaining Time" (G_juicer) {channel="miio:basic:juicer:schedule_remaining_time"}
+Number:Time remaining_time "Remaining Time" (G_juicer) {channel="miio:basic:juicer:remaining_time"}
+Number:Temperature target_temperature "Target Temperature" (G_juicer) {channel="miio:basic:juicer:target_temperature"}
+Switch pot_lift_memory "Resume After Lifting the Jug" (G_juicer) {channel="miio:basic:juicer:pot_lift_memory"}
+Switch alarm "Sound" (G_juicer) {channel="miio:basic:juicer:alarm"}
+Switch auto_screen_on "Screen Always On" (G_juicer) {channel="miio:basic:juicer:auto_screen_on"}
+Number:Time auto_screen_on_time "Screen On Time" (G_juicer) {channel="miio:basic:juicer:auto_screen_on_time"}
+String control "Control" (G_juicer) {channel="miio:basic:juicer:control"}
+```
+
+### Mijia Smart Quiet Inverter Blender P1 (xiaomi.juicer.p1v2) item file lines
+
+note: Autogenerated example. Replace the id (juicer) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_juicer "Mijia Smart Quiet Inverter Blender P1" <status>
+Number status "Status" (G_juicer) {channel="miio:basic:juicer:status"}
+Number fault "Fault" (G_juicer) {channel="miio:basic:juicer:fault"}
+Number cook_mode "Cook Mode" (G_juicer) {channel="miio:basic:juicer:cook_mode"}
+Number:Time schedule_remaining_time "Schedule Remaining Time" (G_juicer) {channel="miio:basic:juicer:schedule_remaining_time"}
+Number:Time remaining_time "Remaining Time" (G_juicer) {channel="miio:basic:juicer:remaining_time"}
+Number:Temperature target_temperature "Target Temperature" (G_juicer) {channel="miio:basic:juicer:target_temperature"}
+Switch pot_lift_memory "Resume After Lifting the Jug" (G_juicer) {channel="miio:basic:juicer:pot_lift_memory"}
+Switch alarm "Sound" (G_juicer) {channel="miio:basic:juicer:alarm"}
+Switch auto_screen_on "Screen Always On" (G_juicer) {channel="miio:basic:juicer:auto_screen_on"}
+Number:Time auto_screen_on_time "Screen On Time" (G_juicer) {channel="miio:basic:juicer:auto_screen_on_time"}
+String control "Control" (G_juicer) {channel="miio:basic:juicer:control"}
+```
+
 ### Xiaomi Smart Electric Hot Water Dispenser 5L (xiaomi.kettle.mek02) item file lines
 
 note: Autogenerated example. Replace the id (kettle) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
@@ -25784,9 +26146,15 @@ Number:Time keep_sweeper_time "Vacuum Extend - Keep Sweeper Time" (G_vacuum) {ch
 String faults "Vacuum Extend - Faults" (G_vacuum) {channel="miio:basic:vacuum:faults"}
 String nation_matched "Vacuum Extend - Nation Matched" (G_vacuum) {channel="miio:basic:vacuum:nation_matched"}
 Number relocation_status "Vacuum Extend - Relocation Status" (G_vacuum) {channel="miio:basic:vacuum:relocation_status"}
+Number clean_setting "Vacuum Extend - Clean Setting" (G_vacuum) {channel="miio:basic:vacuum:clean_setting"}
 Number wash_station "Vacuum Extend - Wash Station" (G_vacuum) {channel="miio:basic:vacuum:wash_station"}
 Switch child_lock "Vacuum Extend - Child Lock" (G_vacuum) {channel="miio:basic:vacuum:child_lock"}
 Number clean_cancel "Vacuum Extend - Clean Cancel" (G_vacuum) {channel="miio:basic:vacuum:clean_cancel"}
+Number carpet_recognition "Vacuum Extend - Carpet Recognition" (G_vacuum) {channel="miio:basic:vacuum:carpet_recognition"}
+Switch smart_wash_switch "Vacuum Extend - Auto Mop Pad Washing" (G_vacuum) {channel="miio:basic:vacuum:smart_wash_switch"}
+Number carpet_escape "Vacuum Extend - Carpet Cleanup Method" (G_vacuum) {channel="miio:basic:vacuum:carpet_escape"}
+Number:Time drying_time "Vacuum Extend - Mop Pad Drying Time" (G_vacuum) {channel="miio:basic:vacuum:drying_time"}
+Number mop_wash_mode "Vacuum Extend - Mop Pad Washing Mode" (G_vacuum) {channel="miio:basic:vacuum:mop_wash_mode"}
 Switch enable "Do Not Disturb - Enable" (G_vacuum) {channel="miio:basic:vacuum:enable"}
 String start_time "Do Not Disturb - Start Time" (G_vacuum) {channel="miio:basic:vacuum:start_time"}
 String end_time "Do Not Disturb - End Time" (G_vacuum) {channel="miio:basic:vacuum:end_time"}
@@ -27173,11 +27541,24 @@ note: Autogenerated example. Replace the id (toilet) in the channel with your ow
 
 ```java
 Group G_toilet "Uclean Smart Toilet Seat" <status>
-Number:Temperature seat_temp "Seat Temperature" (G_toilet) {channel="miio:basic:toilet:seat_temp"}
-Number status_seatheat "Seat Status" (G_toilet) {channel="miio:basic:toilet:status_seatheat"}
-Number:Temperature water_temp_t "Water Temperature" (G_toilet) {channel="miio:basic:toilet:water_temp_t"}
-Number:Temperature fan_temp "Fan Temperature" (G_toilet) {channel="miio:basic:toilet:fan_temp"}
-Number status_led "Night Light" (G_toilet) {channel="miio:basic:toilet:status_led"}
+Switch seated "Seated" (G_toilet) {channel="miio:basic:toilet:seated"}
+Switch rear_wash "Rear Wash" (G_toilet) {channel="miio:basic:toilet:rear_wash"}
+Switch bidet "Bidet" (G_toilet) {channel="miio:basic:toilet:bidet"}
+Switch dry "Dry" (G_toilet) {channel="miio:basic:toilet:dry"}
+Number seat_temperature "Seat Heating" (G_toilet) {channel="miio:basic:toilet:seat_temperature"}
+Switch night_light "Night Light" (G_toilet) {channel="miio:basic:toilet:night_light"}
+Switch deodorization "Deodorization" (G_toilet) {channel="miio:basic:toilet:deodorization"}
+Switch self_clean "Self Clean" (G_toilet) {channel="miio:basic:toilet:self_clean"}
+Number rear_water_temperature "Rear Wash Water Temperature" (G_toilet) {channel="miio:basic:toilet:rear_water_temperature"}
+Number rear_water_pressure "Rear Wash Water Pressure" (G_toilet) {channel="miio:basic:toilet:rear_water_pressure"}
+Number rear_wash_position "Rear Wash Position" (G_toilet) {channel="miio:basic:toilet:rear_wash_position"}
+Number bidet_water_temperature "Bidet Water Temperature" (G_toilet) {channel="miio:basic:toilet:bidet_water_temperature"}
+Number bidet_water_pressure "Bidet Water Pressure" (G_toilet) {channel="miio:basic:toilet:bidet_water_pressure"}
+Number bidet_position "Bidet Position" (G_toilet) {channel="miio:basic:toilet:bidet_position"}
+Switch moving "Moving Wash" (G_toilet) {channel="miio:basic:toilet:moving"}
+Number massage "Massage" (G_toilet) {channel="miio:basic:toilet:massage"}
+Number dryer_temperature "Dryer Temperature" (G_toilet) {channel="miio:basic:toilet:dryer_temperature"}
+Number:Time filter_days_left "Filter Days Left" (G_toilet) {channel="miio:basic:toilet:filter_days_left"}
 ```
 
 ### Uclean Smart Toilet pure (xjx.toilet.pure) item file lines
@@ -27186,11 +27567,21 @@ note: Autogenerated example. Replace the id (toilet) in the channel with your ow
 
 ```java
 Group G_toilet "Uclean Smart Toilet pure" <status>
-Number:Temperature seat_temp "Seat Temperature" (G_toilet) {channel="miio:basic:toilet:seat_temp"}
-Number status_seatheat "Seat Status" (G_toilet) {channel="miio:basic:toilet:status_seatheat"}
-Number:Temperature water_temp_t "Water Temperature" (G_toilet) {channel="miio:basic:toilet:water_temp_t"}
-Number:Temperature fan_temp "Fan Temperature" (G_toilet) {channel="miio:basic:toilet:fan_temp"}
-Number status_led "Night Light" (G_toilet) {channel="miio:basic:toilet:status_led"}
+Switch seated "Seated" (G_toilet) {channel="miio:basic:toilet:seated"}
+Switch rear_wash "Rear Wash" (G_toilet) {channel="miio:basic:toilet:rear_wash"}
+Switch bidet "Bidet" (G_toilet) {channel="miio:basic:toilet:bidet"}
+Switch dry "Dry" (G_toilet) {channel="miio:basic:toilet:dry"}
+Switch seat_heating "Seat Heating" (G_toilet) {channel="miio:basic:toilet:seat_heating"}
+Switch night_light "Night Light" (G_toilet) {channel="miio:basic:toilet:night_light"}
+Number seat_temperature "Seat Temperature" (G_toilet) {channel="miio:basic:toilet:seat_temperature"}
+Number rear_water_temperature "Rear Wash Water Temperature" (G_toilet) {channel="miio:basic:toilet:rear_water_temperature"}
+Number rear_water_pressure "Rear Wash Water Pressure" (G_toilet) {channel="miio:basic:toilet:rear_water_pressure"}
+Number bidet_water_temperature "Bidet Water Temperature" (G_toilet) {channel="miio:basic:toilet:bidet_water_temperature"}
+Number bidet_water_pressure "Bidet Water Pressure" (G_toilet) {channel="miio:basic:toilet:bidet_water_pressure"}
+Number dryer_temperature "Dryer Temperature" (G_toilet) {channel="miio:basic:toilet:dryer_temperature"}
+Switch self_clean "Self Clean" (G_toilet) {channel="miio:basic:toilet:self_clean"}
+Switch flush "Flush" (G_toilet) {channel="miio:basic:toilet:flush"}
+Switch foam_shield "Foam Shield" (G_toilet) {channel="miio:basic:toilet:foam_shield"}
 ```
 
 ### Uclean Smart Toilet relax (xjx.toilet.relax) item file lines
@@ -27199,11 +27590,21 @@ note: Autogenerated example. Replace the id (toilet) in the channel with your ow
 
 ```java
 Group G_toilet "Uclean Smart Toilet relax" <status>
-Number:Temperature seat_temp "Seat Temperature" (G_toilet) {channel="miio:basic:toilet:seat_temp"}
-Number status_seatheat "Seat Status" (G_toilet) {channel="miio:basic:toilet:status_seatheat"}
-Number:Temperature water_temp_t "Water Temperature" (G_toilet) {channel="miio:basic:toilet:water_temp_t"}
-Number:Temperature fan_temp "Fan Temperature" (G_toilet) {channel="miio:basic:toilet:fan_temp"}
-Number status_led "Night Light" (G_toilet) {channel="miio:basic:toilet:status_led"}
+Switch seated "Seated" (G_toilet) {channel="miio:basic:toilet:seated"}
+Switch rear_wash "Rear Wash" (G_toilet) {channel="miio:basic:toilet:rear_wash"}
+Switch bidet "Bidet" (G_toilet) {channel="miio:basic:toilet:bidet"}
+Switch dry "Dry" (G_toilet) {channel="miio:basic:toilet:dry"}
+Switch seat_heating "Seat Heating" (G_toilet) {channel="miio:basic:toilet:seat_heating"}
+Switch night_light "Night Light" (G_toilet) {channel="miio:basic:toilet:night_light"}
+Number seat_temperature "Seat Temperature" (G_toilet) {channel="miio:basic:toilet:seat_temperature"}
+Number rear_water_temperature "Rear Wash Water Temperature" (G_toilet) {channel="miio:basic:toilet:rear_water_temperature"}
+Number rear_water_pressure "Rear Wash Water Pressure" (G_toilet) {channel="miio:basic:toilet:rear_water_pressure"}
+Number bidet_water_temperature "Bidet Water Temperature" (G_toilet) {channel="miio:basic:toilet:bidet_water_temperature"}
+Number bidet_water_pressure "Bidet Water Pressure" (G_toilet) {channel="miio:basic:toilet:bidet_water_pressure"}
+Number dryer_temperature "Dryer Temperature" (G_toilet) {channel="miio:basic:toilet:dryer_temperature"}
+Switch self_clean "Self Clean" (G_toilet) {channel="miio:basic:toilet:self_clean"}
+Switch flush "Flush" (G_toilet) {channel="miio:basic:toilet:flush"}
+Switch foam_shield "Foam Shield" (G_toilet) {channel="miio:basic:toilet:foam_shield"}
 ```
 
 ### Whale Spout Smart Toilet Zero (xjx.toilet.zero) item file lines
@@ -27212,11 +27613,21 @@ note: Autogenerated example. Replace the id (toilet) in the channel with your ow
 
 ```java
 Group G_toilet "Whale Spout Smart Toilet Zero" <status>
-Number:Temperature seat_temp "Seat Temperature" (G_toilet) {channel="miio:basic:toilet:seat_temp"}
-Number status_seatheat "Seat Status" (G_toilet) {channel="miio:basic:toilet:status_seatheat"}
-Number:Temperature water_temp_t "Water Temperature" (G_toilet) {channel="miio:basic:toilet:water_temp_t"}
-Number:Temperature fan_temp "Fan Temperature" (G_toilet) {channel="miio:basic:toilet:fan_temp"}
-Number status_led "Night Light" (G_toilet) {channel="miio:basic:toilet:status_led"}
+Switch seated "Seated" (G_toilet) {channel="miio:basic:toilet:seated"}
+Switch rear_wash "Rear Wash" (G_toilet) {channel="miio:basic:toilet:rear_wash"}
+Switch bidet "Bidet" (G_toilet) {channel="miio:basic:toilet:bidet"}
+Switch dry "Dry" (G_toilet) {channel="miio:basic:toilet:dry"}
+Switch seat_heating "Seat Heating" (G_toilet) {channel="miio:basic:toilet:seat_heating"}
+Switch night_light "Night Light" (G_toilet) {channel="miio:basic:toilet:night_light"}
+Number seat_temperature "Seat Temperature" (G_toilet) {channel="miio:basic:toilet:seat_temperature"}
+Number rear_water_temperature "Rear Wash Water Temperature" (G_toilet) {channel="miio:basic:toilet:rear_water_temperature"}
+Number rear_water_pressure "Rear Wash Water Pressure" (G_toilet) {channel="miio:basic:toilet:rear_water_pressure"}
+Number bidet_water_temperature "Bidet Water Temperature" (G_toilet) {channel="miio:basic:toilet:bidet_water_temperature"}
+Number bidet_water_pressure "Bidet Water Pressure" (G_toilet) {channel="miio:basic:toilet:bidet_water_pressure"}
+Number dryer_temperature "Dryer Temperature" (G_toilet) {channel="miio:basic:toilet:dryer_temperature"}
+Switch self_clean "Self Clean" (G_toilet) {channel="miio:basic:toilet:self_clean"}
+Switch flush "Flush" (G_toilet) {channel="miio:basic:toilet:flush"}
+Switch foam_shield "Foam Shield" (G_toilet) {channel="miio:basic:toilet:foam_shield"}
 ```
 
 ### Yeelight Smart Bath Heater Pro (yeelink.bhf_light.v1) item file lines
@@ -27225,12 +27636,20 @@ note: Autogenerated example. Replace the id (bhf_light) in the channel with your
 
 ```java
 Group G_bhf_light "Yeelight Smart Bath Heater Pro" <status>
-Switch power "Power" (G_bhf_light) {channel="miio:basic:bhf_light:power"}
-String bh_mode "Bath Heater mode" (G_bhf_light) {channel="miio:basic:bhf_light:bh_mode"}
+Switch power "Light" (G_bhf_light) {channel="miio:basic:bhf_light:power"}
 Dimmer brightness "Brightness" (G_bhf_light) {channel="miio:basic:bhf_light:brightness"}
-Number:Time delayoff "Shutdown Timer" (G_bhf_light) {channel="miio:basic:bhf_light:delayoff"}
+Number:Temperature color_temperature "Color Temperature" (G_bhf_light) {channel="miio:basic:bhf_light:color_temperature"}
+Switch night_light "Night Light" (G_bhf_light) {channel="miio:basic:bhf_light:night_light"}
+Number:Dimensionless nightlight_brightness "Night Light Brightness" (G_bhf_light) {channel="miio:basic:bhf_light:nightlight_brightness"}
+Number:Time light_off_timer "Light Off Timer" (G_bhf_light) {channel="miio:basic:bhf_light:light_off_timer"}
+String heater_mode "Heater Mode" (G_bhf_light) {channel="miio:basic:bhf_light:heater_mode"}
+Number:Time heater_timer "Heater Timer" (G_bhf_light) {channel="miio:basic:bhf_light:heater_timer"}
+Number:Temperature target_temperature "Target Temperature" (G_bhf_light) {channel="miio:basic:bhf_light:target_temperature"}
 Number:Temperature temperature "Temperature" (G_bhf_light) {channel="miio:basic:bhf_light:temperature"}
-Number nightlightBrightness "Nightlight Brightness" (G_bhf_light) {channel="miio:basic:bhf_light:nightlightBrightness"}
+Number:Dimensionless humidity "Humidity" (G_bhf_light) {channel="miio:basic:bhf_light:humidity"}
+Number fan_level "Fan Level" (G_bhf_light) {channel="miio:basic:bhf_light:fan_level"}
+String swing "Swing" (G_bhf_light) {channel="miio:basic:bhf_light:swing"}
+Number:Angle swing_angle "Wind Direction" (G_bhf_light) {channel="miio:basic:bhf_light:swing_angle"}
 ```
 
 ### Yeelight Smart Bath Heater (yeelink.bhf_light.v2) item file lines
@@ -27239,12 +27658,20 @@ note: Autogenerated example. Replace the id (bhf_light) in the channel with your
 
 ```java
 Group G_bhf_light "Yeelight Smart Bath Heater" <status>
-Switch power "Power" (G_bhf_light) {channel="miio:basic:bhf_light:power"}
-String bh_mode "Bath Heater mode" (G_bhf_light) {channel="miio:basic:bhf_light:bh_mode"}
+Switch power "Light" (G_bhf_light) {channel="miio:basic:bhf_light:power"}
 Dimmer brightness "Brightness" (G_bhf_light) {channel="miio:basic:bhf_light:brightness"}
-Number:Time delayoff "Shutdown Timer" (G_bhf_light) {channel="miio:basic:bhf_light:delayoff"}
+Number:Temperature color_temperature "Color Temperature" (G_bhf_light) {channel="miio:basic:bhf_light:color_temperature"}
+Switch night_light "Night Light" (G_bhf_light) {channel="miio:basic:bhf_light:night_light"}
+Number:Dimensionless nightlight_brightness "Night Light Brightness" (G_bhf_light) {channel="miio:basic:bhf_light:nightlight_brightness"}
+Number:Time light_off_timer "Light Off Timer" (G_bhf_light) {channel="miio:basic:bhf_light:light_off_timer"}
+String heater_mode "Heater Mode" (G_bhf_light) {channel="miio:basic:bhf_light:heater_mode"}
+Number:Time heater_timer "Heater Timer" (G_bhf_light) {channel="miio:basic:bhf_light:heater_timer"}
+Number:Temperature target_temperature "Target Temperature" (G_bhf_light) {channel="miio:basic:bhf_light:target_temperature"}
 Number:Temperature temperature "Temperature" (G_bhf_light) {channel="miio:basic:bhf_light:temperature"}
-Number nightlightBrightness "Nightlight Brightness" (G_bhf_light) {channel="miio:basic:bhf_light:nightlightBrightness"}
+Number:Dimensionless humidity "Humidity" (G_bhf_light) {channel="miio:basic:bhf_light:humidity"}
+Number fan_level "Fan Level" (G_bhf_light) {channel="miio:basic:bhf_light:fan_level"}
+String swing "Swing" (G_bhf_light) {channel="miio:basic:bhf_light:swing"}
+Number:Angle swing_angle "Wind Direction" (G_bhf_light) {channel="miio:basic:bhf_light:swing_angle"}
 ```
 
 ### Mi Bedside Lamp (yeelink.light.bslamp1) item file lines
@@ -29457,56 +29884,32 @@ note: Autogenerated example. Replace the id (airpurifier) in the channel with yo
 
 ```java
 Group G_airpurifier "Mi Air Purifier 3" <status>
-Number fault "Air Purifier - Device Fault" (G_airpurifier) {channel="miio:basic:airpurifier:fault"}
-Switch on "Air Purifier - Switch Status" (G_airpurifier) {channel="miio:basic:airpurifier:on"}
-Number fan_level "Air Purifier - Fan Level" (G_airpurifier) {channel="miio:basic:airpurifier:fan-level"}
-Number mode "Air Purifier - Mode" (G_airpurifier) {channel="miio:basic:airpurifier:mode"}
-Number pm2_5_density "Environment - Pm2.5 Density" (G_airpurifier) {channel="miio:basic:airpurifier:pm2_5-density"}
-Number:Dimensionless relative_humidity "Environment - Relative Humidity" (G_airpurifier) {channel="miio:basic:airpurifier:relative-humidity"}
-Number:Temperature temperature "Environment - Temperature" (G_airpurifier) {channel="miio:basic:airpurifier:temperature"}
-Number:Dimensionless filter_life_level "Filter - Filter Life Level" (G_airpurifier) {channel="miio:basic:airpurifier:filter-life-level"}
-Number:Time filter_used_time "Filter - Filter Used Time" (G_airpurifier) {channel="miio:basic:airpurifier:filter-used-time"}
-Switch alarm "Alarm - Alarm" (G_airpurifier) {channel="miio:basic:airpurifier:alarm"}
-Number:Dimensionless brightness "Indicator Light - Brightness" (G_airpurifier) {channel="miio:basic:airpurifier:brightness"}
-Switch on1 "Indicator Light - Switch Status" (G_airpurifier) {channel="miio:basic:airpurifier:on1"}
-Switch physical_controls_locked "Physical Control Locked - Physical Control Locked" (G_airpurifier) {channel="miio:basic:airpurifier:physical-controls-locked"}
-String button_pressed "Button - Button_pressed" (G_airpurifier) {channel="miio:basic:airpurifier:button-pressed"}
-Number:Time filter_max_time "Filter Time - Filter Max Time" (G_airpurifier) {channel="miio:basic:airpurifier:filter-max-time"}
-Number filter_hour_used_debug "Filter Time - Filter Hour Used Debug" (G_airpurifier) {channel="miio:basic:airpurifier:filter-hour-used-debug"}
-Number m1_strong "Motor Speed - M1 Strong" (G_airpurifier) {channel="miio:basic:airpurifier:m1-strong"}
-Number m1_high "Motor Speed - M1 High" (G_airpurifier) {channel="miio:basic:airpurifier:m1-high"}
-Number m1_med "Motor Speed - M1 Med" (G_airpurifier) {channel="miio:basic:airpurifier:m1-med"}
-Number m1_med_l "Motor Speed - M1 Med L" (G_airpurifier) {channel="miio:basic:airpurifier:m1-med-l"}
-Number m1_low "Motor Speed - M1 Low" (G_airpurifier) {channel="miio:basic:airpurifier:m1-low"}
-Number m1_silent "Motor Speed - M1 Silent" (G_airpurifier) {channel="miio:basic:airpurifier:m1-silent"}
-Number m1_favorite "Motor Speed - M1 Favorite" (G_airpurifier) {channel="miio:basic:airpurifier:m1-favorite"}
-Number motor1_speed "Motor Speed - Motor1 Speed" (G_airpurifier) {channel="miio:basic:airpurifier:motor1-speed"}
-Number motor1_set_speed "Motor Speed - Motor1 Set Speed" (G_airpurifier) {channel="miio:basic:airpurifier:motor1-set-speed"}
-Number favorite_fan_level "Motor Speed - Favorite Fan Level" (G_airpurifier) {channel="miio:basic:airpurifier:favorite-fan-level"}
-Number:Time use_time "Use Time - Use Time" (G_airpurifier) {channel="miio:basic:airpurifier:use-time"}
-Number:Volume purify_volume "Aqi - Purify Volume" (G_airpurifier) {channel="miio:basic:airpurifier:purify-volume"}
-Number average_aqi "Aqi - Average Aqi" (G_airpurifier) {channel="miio:basic:airpurifier:average-aqi"}
-Number average_aqi_cnt "Aqi - Average Aqi Cnt" (G_airpurifier) {channel="miio:basic:airpurifier:average-aqi-cnt"}
-String aqi_zone "Aqi - Aqi Zone" (G_airpurifier) {channel="miio:basic:airpurifier:aqi-zone"}
-String sensor_state "Aqi - Sensor State" (G_airpurifier) {channel="miio:basic:airpurifier:sensor-state"}
-Number aqi_goodh "Aqi - Aqi Goodh" (G_airpurifier) {channel="miio:basic:airpurifier:aqi-goodh"}
-Number aqi_runstate "Aqi - Aqi Runstate" (G_airpurifier) {channel="miio:basic:airpurifier:aqi-runstate"}
-Number aqi_state "Aqi - Aqi State" (G_airpurifier) {channel="miio:basic:airpurifier:aqi-state"}
-Number aqi_updata_heartbeat "Aqi - Aqi Updata Heartbeat" (G_airpurifier) {channel="miio:basic:airpurifier:aqi-updata-heartbeat"}
-String rfid_tag "Rfid - Rfid Tag" (G_airpurifier) {channel="miio:basic:airpurifier:rfid-tag"}
-String rfid_factory_id "Rfid - Rfid Factory Id" (G_airpurifier) {channel="miio:basic:airpurifier:rfid-factory-id"}
-String rfid_product_id "Rfid - Rfid Product Id" (G_airpurifier) {channel="miio:basic:airpurifier:rfid-product-id"}
-String rfid_time "Rfid - Rfid Time" (G_airpurifier) {channel="miio:basic:airpurifier:rfid-time"}
-String rfid_serial_num "Rfid - Rfid Serial Num" (G_airpurifier) {channel="miio:basic:airpurifier:rfid-serial-num"}
-Number app_extra "Others - App Extra" (G_airpurifier) {channel="miio:basic:airpurifier:app-extra"}
-Number main_channel "Others - Main Channel" (G_airpurifier) {channel="miio:basic:airpurifier:main-channel"}
-Number slave_channel "Others - Slave Channel" (G_airpurifier) {channel="miio:basic:airpurifier:slave-channel"}
-String cola "Others - Cola" (G_airpurifier) {channel="miio:basic:airpurifier:cola"}
-Switch buttom_door "Others - Buttom Door" (G_airpurifier) {channel="miio:basic:airpurifier:buttom-door"}
-Number reboot_cause "Others - Reboot_cause" (G_airpurifier) {channel="miio:basic:airpurifier:reboot-cause"}
-Number hw_version "Others - Hw Version" (G_airpurifier) {channel="miio:basic:airpurifier:hw-version"}
-Number i2c_error_count "Others - I2c Error Count" (G_airpurifier) {channel="miio:basic:airpurifier:i2c-error-count"}
-Number manual_level "Others - Manual Level" (G_airpurifier) {channel="miio:basic:airpurifier:manual-level"}
+String actions "Actions" (G_airpurifier) {channel="miio:basic:airpurifier:actions"}
+Number fault "Fault" (G_airpurifier) {channel="miio:basic:airpurifier:fault"}
+Switch on "Power" (G_airpurifier) {channel="miio:basic:airpurifier:on"}
+Number fan_level "Fan Level" (G_airpurifier) {channel="miio:basic:airpurifier:fan_level"}
+Number mode "Mode" (G_airpurifier) {channel="miio:basic:airpurifier:mode"}
+Number:Density pm2_5_density "PM2.5 Density" (G_airpurifier) {channel="miio:basic:airpurifier:pm2_5_density"}
+Number:Dimensionless relative_humidity "Relative Humidity" (G_airpurifier) {channel="miio:basic:airpurifier:relative_humidity"}
+Number:Temperature temperature "Temperature" (G_airpurifier) {channel="miio:basic:airpurifier:temperature"}
+Number:Dimensionless filter_life_level "Filter Life Level" (G_airpurifier) {channel="miio:basic:airpurifier:filter_life_level"}
+Number:Time filter_used_time "Filter Used Time" (G_airpurifier) {channel="miio:basic:airpurifier:filter_used_time"}
+Number:Time filter_max_time "Filter Maximum Life" (G_airpurifier) {channel="miio:basic:airpurifier:filter_max_time"}
+Switch alarm "Notification Sound" (G_airpurifier) {channel="miio:basic:airpurifier:alarm"}
+Number brightness "LED Brightness" (G_airpurifier) {channel="miio:basic:airpurifier:brightness"}
+Switch physical_controls_locked "Child Lock" (G_airpurifier) {channel="miio:basic:airpurifier:physical_controls_locked"}
+Number motor_speed_rpm "Motor Speed" (G_airpurifier) {channel="miio:basic:airpurifier:motor_speed_rpm"}
+Number motor_set_speed "Motor Target Speed" (G_airpurifier) {channel="miio:basic:airpurifier:motor_set_speed"}
+Number favorite_speed "Favorite Mode Motor Speed" (G_airpurifier) {channel="miio:basic:airpurifier:favorite_speed"}
+Number favorite_level "Favorite Mode Level" (G_airpurifier) {channel="miio:basic:airpurifier:favorite_level"}
+Number:Time use_time "Device Use Time" (G_airpurifier) {channel="miio:basic:airpurifier:use_time"}
+Number:Volume purify_volume "Purify Volume" (G_airpurifier) {channel="miio:basic:airpurifier:purify_volume"}
+Number average_aqi "Average AQI" (G_airpurifier) {channel="miio:basic:airpurifier:average_aqi"}
+Number aqi_state "AQI State" (G_airpurifier) {channel="miio:basic:airpurifier:aqi_state"}
+Switch bottom_door "Bottom Door" (G_airpurifier) {channel="miio:basic:airpurifier:bottom_door"}
+Number reboot_cause "Reboot Cause" (G_airpurifier) {channel="miio:basic:airpurifier:reboot_cause"}
+Number iic_error_count "I2C Error Count" (G_airpurifier) {channel="miio:basic:airpurifier:iic_error_count"}
+Number manual_level "Manual Mode Level" (G_airpurifier) {channel="miio:basic:airpurifier:manual_level"}
 ```
 
 ### Mi Air Purifier 2S (zhimi.airpurifier.mb1) item file lines
@@ -29539,57 +29942,34 @@ note: Autogenerated example. Replace the id (airpurifier) in the channel with yo
 
 ```java
 Group G_airpurifier "Mi Air Purifier 3/3H" <status>
-Number fault "Air Purifier - Fault" (G_airpurifier) {channel="miio:basic:airpurifier:fault"}
-Switch on "Air Purifier - Switch Status" (G_airpurifier) {channel="miio:basic:airpurifier:on"}
-Number fan_level "Air Purifier - Fan Level" (G_airpurifier) {channel="miio:basic:airpurifier:fan-level"}
-Number mode "Air Purifier - Mode" (G_airpurifier) {channel="miio:basic:airpurifier:mode"}
-Number pm2_5_density "Environment - Pm2.5 density" (G_airpurifier) {channel="miio:basic:airpurifier:pm2_5-density"}
-Number:Dimensionless relative_humidity "Environment - Relative Humidity" (G_airpurifier) {channel="miio:basic:airpurifier:relative-humidity"}
-Number:Temperature temperature "Environment - Temperature" (G_airpurifier) {channel="miio:basic:airpurifier:temperature"}
-Number:Dimensionless filter_life_level "Filter - Filter Life Level" (G_airpurifier) {channel="miio:basic:airpurifier:filter-life-level"}
-Number:Time filter_used_time "Filter - Filter Used Time" (G_airpurifier) {channel="miio:basic:airpurifier:filter-used-time"}
-Switch alarm "Alarm - Alarm" (G_airpurifier) {channel="miio:basic:airpurifier:alarm"}
-Number:Dimensionless brightness "Indicator Light - Brightness" (G_airpurifier) {channel="miio:basic:airpurifier:brightness"}
-Switch on1 "Indicator Light - Switch Status" (G_airpurifier) {channel="miio:basic:airpurifier:on1"}
-Switch physical_controls_locked "Physical Control Locked - Physical Control Locked" (G_airpurifier) {channel="miio:basic:airpurifier:physical-controls-locked"}
-String button_pressed "Button - Button Pressed" (G_airpurifier) {channel="miio:basic:airpurifier:button-pressed"}
-Number filter_max_time "Filter Time - Filter Max Time" (G_airpurifier) {channel="miio:basic:airpurifier:filter-max-time"}
-Number filter_hour_debug "Filter Time - Filter Hour Debug" (G_airpurifier) {channel="miio:basic:airpurifier:filter-hour-debug"}
-Number motor_strong "Motor Speed - Motor Strong" (G_airpurifier) {channel="miio:basic:airpurifier:motor-strong"}
-Number motor_high "Motor Speed - Motor High" (G_airpurifier) {channel="miio:basic:airpurifier:motor-high"}
-Number motor_med "Motor Speed - Motor Med" (G_airpurifier) {channel="miio:basic:airpurifier:motor-med"}
-Number motor_med_l "Motor Speed - Motor Med L" (G_airpurifier) {channel="miio:basic:airpurifier:motor-med-l"}
-Number motor_low "Motor Speed - Motor Low" (G_airpurifier) {channel="miio:basic:airpurifier:motor-low"}
-Number motor_silent "Motor Speed - Motor Silent" (G_airpurifier) {channel="miio:basic:airpurifier:motor-silent"}
-Number motor_favorite "Motor Speed - Motor Favorite" (G_airpurifier) {channel="miio:basic:airpurifier:motor-favorite"}
-Number motor_speed "Motor Speed - Motor Speed" (G_airpurifier) {channel="miio:basic:airpurifier:motor-speed"}
-Number motor_set_speed "Motor Speed - Motor Set Speed" (G_airpurifier) {channel="miio:basic:airpurifier:motor-set-speed"}
-Number favorite_fan_level "Motor Speed - Favorite Fan Level" (G_airpurifier) {channel="miio:basic:airpurifier:favorite-fan-level"}
-Number:Time use_time "Use Time - Use Time" (G_airpurifier) {channel="miio:basic:airpurifier:use-time"}
-Number:Volume purify_volume "Aqi - Purify Volume" (G_airpurifier) {channel="miio:basic:airpurifier:purify-volume"}
-Number average_aqi "Aqi - Average Aqi" (G_airpurifier) {channel="miio:basic:airpurifier:average-aqi"}
-Number average_aqi_cnt "Aqi - Average Aqi Cnt" (G_airpurifier) {channel="miio:basic:airpurifier:average-aqi-cnt"}
-String aqi_zone "Aqi - Aqi Zone" (G_airpurifier) {channel="miio:basic:airpurifier:aqi-zone"}
-String sensor_state "Aqi - Sensor State" (G_airpurifier) {channel="miio:basic:airpurifier:sensor-state"}
-Number aqi_goodh "Aqi - Aqi Goodh" (G_airpurifier) {channel="miio:basic:airpurifier:aqi-goodh"}
-Number aqi_runstate "Aqi - Aqi Runstate" (G_airpurifier) {channel="miio:basic:airpurifier:aqi-runstate"}
-Number aqi_state "Aqi - Aqi State" (G_airpurifier) {channel="miio:basic:airpurifier:aqi-state"}
-Number aqi_updata_heartbeat "Aqi - Aqi Updata Heartbeat" (G_airpurifier) {channel="miio:basic:airpurifier:aqi-updata-heartbeat"}
-String rfid_tag "Rfid - Rfid Tag" (G_airpurifier) {channel="miio:basic:airpurifier:rfid-tag"}
-String rfid_factory_id "Rfid - Rfid Factory Id" (G_airpurifier) {channel="miio:basic:airpurifier:rfid-factory-id"}
-String rfid_product_id "Rfid - Rfid Product Id" (G_airpurifier) {channel="miio:basic:airpurifier:rfid-product-id"}
-String rfid_time "Rfid - Rfid Time" (G_airpurifier) {channel="miio:basic:airpurifier:rfid-time"}
-String rfid_serial_num "Rfid - Rfid Serial Num" (G_airpurifier) {channel="miio:basic:airpurifier:rfid-serial-num"}
-Number app_extra "Others - App Extra" (G_airpurifier) {channel="miio:basic:airpurifier:app-extra"}
-Number main_channel "Others - Main Channel" (G_airpurifier) {channel="miio:basic:airpurifier:main-channel"}
-Number slave_channel "Others - Slave Channel" (G_airpurifier) {channel="miio:basic:airpurifier:slave-channel"}
-String cola "Others - Cola" (G_airpurifier) {channel="miio:basic:airpurifier:cola"}
-Switch buttom_door "Others - Buttom Door" (G_airpurifier) {channel="miio:basic:airpurifier:buttom-door"}
-Number reboot_cause "Others - Reboot Cause" (G_airpurifier) {channel="miio:basic:airpurifier:reboot-cause"}
-Number hw_version "Others - Hw Version" (G_airpurifier) {channel="miio:basic:airpurifier:hw-version"}
-Number iic_error_count "Others - Iic Error Count" (G_airpurifier) {channel="miio:basic:airpurifier:iic-error-count"}
-Number manual_level "Others - Manual Level" (G_airpurifier) {channel="miio:basic:airpurifier:manual-level"}
-Number country_code "Others - National Code" (G_airpurifier) {channel="miio:basic:airpurifier:country-code"}
+String actions "Actions" (G_airpurifier) {channel="miio:basic:airpurifier:actions"}
+Number fault "Fault" (G_airpurifier) {channel="miio:basic:airpurifier:fault"}
+Switch on "Power" (G_airpurifier) {channel="miio:basic:airpurifier:on"}
+Number fan_level "Fan Level" (G_airpurifier) {channel="miio:basic:airpurifier:fan_level"}
+Number mode "Mode" (G_airpurifier) {channel="miio:basic:airpurifier:mode"}
+Number:Density pm2_5_density "PM2.5 Density" (G_airpurifier) {channel="miio:basic:airpurifier:pm2_5_density"}
+Number:Dimensionless relative_humidity "Relative Humidity" (G_airpurifier) {channel="miio:basic:airpurifier:relative_humidity"}
+Number:Temperature temperature "Temperature" (G_airpurifier) {channel="miio:basic:airpurifier:temperature"}
+Number:Dimensionless filter_life_level "Filter Life Level" (G_airpurifier) {channel="miio:basic:airpurifier:filter_life_level"}
+Number:Time filter_used_time "Filter Used Time" (G_airpurifier) {channel="miio:basic:airpurifier:filter_used_time"}
+Number:Time filter_max_time "Filter Maximum Life" (G_airpurifier) {channel="miio:basic:airpurifier:filter_max_time"}
+Switch alarm "Notification Sound" (G_airpurifier) {channel="miio:basic:airpurifier:alarm"}
+Number brightness "LED Brightness" (G_airpurifier) {channel="miio:basic:airpurifier:brightness"}
+Switch physical_controls_locked "Child Lock" (G_airpurifier) {channel="miio:basic:airpurifier:physical_controls_locked"}
+Number motor_speed_rpm "Motor Speed" (G_airpurifier) {channel="miio:basic:airpurifier:motor_speed_rpm"}
+Number motor_set_speed "Motor Target Speed" (G_airpurifier) {channel="miio:basic:airpurifier:motor_set_speed"}
+Number favorite_speed "Favorite Mode Motor Speed" (G_airpurifier) {channel="miio:basic:airpurifier:favorite_speed"}
+Number favorite_level "Favorite Mode Level" (G_airpurifier) {channel="miio:basic:airpurifier:favorite_level"}
+Number:Time use_time "Device Use Time" (G_airpurifier) {channel="miio:basic:airpurifier:use_time"}
+Number:Volume purify_volume "Purify Volume" (G_airpurifier) {channel="miio:basic:airpurifier:purify_volume"}
+Number average_aqi "Average AQI" (G_airpurifier) {channel="miio:basic:airpurifier:average_aqi"}
+Number aqi_state "AQI State" (G_airpurifier) {channel="miio:basic:airpurifier:aqi_state"}
+Switch bottom_door "Bottom Door" (G_airpurifier) {channel="miio:basic:airpurifier:bottom_door"}
+Number reboot_cause "Reboot Cause" (G_airpurifier) {channel="miio:basic:airpurifier:reboot_cause"}
+Number iic_error_count "I2C Error Count" (G_airpurifier) {channel="miio:basic:airpurifier:iic_error_count"}
+Number manual_level "Manual Mode Level" (G_airpurifier) {channel="miio:basic:airpurifier:manual_level"}
+Number country_code "Country Code" (G_airpurifier) {channel="miio:basic:airpurifier:country_code"}
+Number temperature_display_unit "Temperature Display Unit" (G_airpurifier) {channel="miio:basic:airpurifier:temperature_display_unit"}
 ```
 
 ### Mi Air Purifier 3C (zhimi.airpurifier.mb4) item file lines
@@ -29599,18 +29979,17 @@ note: Autogenerated example. Replace the id (airpurifier) in the channel with yo
 ```java
 Group G_airpurifier "Mi Air Purifier 3C" <status>
 Switch on "Power" (G_airpurifier) {channel="miio:basic:airpurifier:on"}
-String fault "Air Purifier - Device Fault" (G_airpurifier) {channel="miio:basic:airpurifier:fault"}
+String fault "Fault" (G_airpurifier) {channel="miio:basic:airpurifier:fault"}
 Number mode "Mode" (G_airpurifier) {channel="miio:basic:airpurifier:mode"}
-Number pm2_5_density "Environment - Pm2 5 Density" (G_airpurifier) {channel="miio:basic:airpurifier:pm2_5_density"}
-Number:Dimensionless filter_life_level "Filter - Filter Life Level" (G_airpurifier) {channel="miio:basic:airpurifier:filter_life_level"}
-Number:Time filter_used_time "Filter - Filter Used Time" (G_airpurifier) {channel="miio:basic:airpurifier:filter_used_time"}
-Switch alarm "Alarm - Alarm" (G_airpurifier) {channel="miio:basic:airpurifier:alarm"}
-Number brightness "Screen - Brightness" (G_airpurifier) {channel="miio:basic:airpurifier:brightness"}
-Switch physical_controls_locked "Physical Control Locked - Physical Control Locked" (G_airpurifier) {channel="miio:basic:airpurifier:physical_controls_locked"}
-Number moto_speed_rpm "Custom Service - Moto Speed Rpm" (G_airpurifier) {channel="miio:basic:airpurifier:moto_speed_rpm"}
-String miio_lib_version "Custom Service - Miio Lib Version" (G_airpurifier) {channel="miio:basic:airpurifier:miio_lib_version"}
-Number favorite_speed "Custom Service - Favorite Speed" (G_airpurifier) {channel="miio:basic:airpurifier:favorite_speed"}
-Number:Time aqi_updata_heartbeat "Custom Service - Aqi Updata Heartbeat" (G_airpurifier) {channel="miio:basic:airpurifier:aqi_updata_heartbeat"}
+Number:Density pm2_5_density "PM2.5 Density" (G_airpurifier) {channel="miio:basic:airpurifier:pm2_5_density"}
+Number:Dimensionless filter_life_level "Filter Life Level" (G_airpurifier) {channel="miio:basic:airpurifier:filter_life_level"}
+Number:Time filter_used_time "Filter Used Time" (G_airpurifier) {channel="miio:basic:airpurifier:filter_used_time"}
+Switch alarm "Notification Sound" (G_airpurifier) {channel="miio:basic:airpurifier:alarm"}
+Number brightness "Screen Brightness" (G_airpurifier) {channel="miio:basic:airpurifier:brightness"}
+Switch physical_controls_locked "Child Lock" (G_airpurifier) {channel="miio:basic:airpurifier:physical_controls_locked"}
+Number motor_speed_rpm "Motor Speed" (G_airpurifier) {channel="miio:basic:airpurifier:motor_speed_rpm"}
+String miio_lib_version "MIIO Library Version" (G_airpurifier) {channel="miio:basic:airpurifier:miio_lib_version"}
+Number favorite_speed "Favorite Mode Motor Speed" (G_airpurifier) {channel="miio:basic:airpurifier:favorite_speed"}
 ```
 
 ### Mi Air Purifier 2S (zhimi.airpurifier.mc1) item file lines
@@ -29659,6 +30038,29 @@ Number favoritelevel "Favorite Level" (G_airpurifier) {channel="miio:basic:airpu
 Number:Temperature temperature "Temperature" (G_airpurifier) {channel="miio:basic:airpurifier:temperature"}
 Number:Volume purifyvolume "Purified Volume" (G_airpurifier) {channel="miio:basic:airpurifier:purifyvolume"}
 Switch childlock "Child Lock" (G_airpurifier) {channel="miio:basic:airpurifier:childlock"}
+```
+
+### Xiaomi Smart Air Purifier 4 Lite (zhimi.airpurifier.rma1) item file lines
+
+note: Autogenerated example. Replace the id (airpurifier) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_airpurifier "Xiaomi Smart Air Purifier 4 Lite" <status>
+String actions "Actions" (G_airpurifier) {channel="miio:basic:airpurifier:actions"}
+Switch on "Power" (G_airpurifier) {channel="miio:basic:airpurifier:on"}
+Number fault "Fault" (G_airpurifier) {channel="miio:basic:airpurifier:fault"}
+Number mode "Mode" (G_airpurifier) {channel="miio:basic:airpurifier:mode"}
+Number:Dimensionless relative_humidity "Relative Humidity" (G_airpurifier) {channel="miio:basic:airpurifier:relative_humidity"}
+Number:Density pm2_5_density "PM2.5 Density" (G_airpurifier) {channel="miio:basic:airpurifier:pm2_5_density"}
+Number:Temperature temperature "Temperature" (G_airpurifier) {channel="miio:basic:airpurifier:temperature"}
+Number:Dimensionless filter_life_level "Filter Life Level" (G_airpurifier) {channel="miio:basic:airpurifier:filter_life_level"}
+Number:Time filter_used_time "Filter Used Time" (G_airpurifier) {channel="miio:basic:airpurifier:filter_used_time"}
+Number:Time filter_left_time "Filter Left Time" (G_airpurifier) {channel="miio:basic:airpurifier:filter_left_time"}
+Switch alarm "Notification Sound" (G_airpurifier) {channel="miio:basic:airpurifier:alarm"}
+Switch physical_controls_locked "Child Lock" (G_airpurifier) {channel="miio:basic:airpurifier:physical_controls_locked"}
+Number brightness "Screen Brightness" (G_airpurifier) {channel="miio:basic:airpurifier:brightness"}
+Number motor_speed_rpm "Motor Speed" (G_airpurifier) {channel="miio:basic:airpurifier:motor_speed_rpm"}
+Number favorite_level "Favorite Mode Level" (G_airpurifier) {channel="miio:basic:airpurifier:favorite_level"}
 ```
 
 ### Mi Air Purifier Super (zhimi.airpurifier.sa1) item file lines
@@ -29847,6 +30249,39 @@ Number:Temperature temperature "Temperature" (G_airpurifier) {channel="miio:basi
 Switch childlock "Child Lock" (G_airpurifier) {channel="miio:basic:airpurifier:childlock"}
 ```
 
+### Mi Air Purifier Pro H (zhimi.airpurifier.va1) item file lines
+
+note: Autogenerated example. Replace the id (airpurifier) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_airpurifier "Mi Air Purifier Pro H" <status>
+String actions "Actions" (G_airpurifier) {channel="miio:basic:airpurifier:actions"}
+Number fault "Fault" (G_airpurifier) {channel="miio:basic:airpurifier:fault"}
+Switch on "Power" (G_airpurifier) {channel="miio:basic:airpurifier:on"}
+Number fan_level "Fan Level" (G_airpurifier) {channel="miio:basic:airpurifier:fan_level"}
+Number mode "Mode" (G_airpurifier) {channel="miio:basic:airpurifier:mode"}
+Number:Density pm2_5_density "PM2.5 Density" (G_airpurifier) {channel="miio:basic:airpurifier:pm2_5_density"}
+Number:Dimensionless relative_humidity "Relative Humidity" (G_airpurifier) {channel="miio:basic:airpurifier:relative_humidity"}
+Number:Temperature temperature "Temperature" (G_airpurifier) {channel="miio:basic:airpurifier:temperature"}
+Number:Dimensionless filter_life_level "Filter Life Level" (G_airpurifier) {channel="miio:basic:airpurifier:filter_life_level"}
+Number:Time filter_used_time "Filter Used Time" (G_airpurifier) {channel="miio:basic:airpurifier:filter_used_time"}
+Number:Time filter_max_time "Filter Maximum Life" (G_airpurifier) {channel="miio:basic:airpurifier:filter_max_time"}
+Switch alarm "Notification Sound" (G_airpurifier) {channel="miio:basic:airpurifier:alarm"}
+Number brightness "LED Brightness" (G_airpurifier) {channel="miio:basic:airpurifier:brightness"}
+Switch physical_controls_locked "Child Lock" (G_airpurifier) {channel="miio:basic:airpurifier:physical_controls_locked"}
+Number motor_speed_rpm "Motor Speed" (G_airpurifier) {channel="miio:basic:airpurifier:motor_speed_rpm"}
+Number motor_set_speed "Motor Target Speed" (G_airpurifier) {channel="miio:basic:airpurifier:motor_set_speed"}
+Number favorite_speed "Favorite Mode Motor Speed" (G_airpurifier) {channel="miio:basic:airpurifier:favorite_speed"}
+Number favorite_level "Favorite Mode Level" (G_airpurifier) {channel="miio:basic:airpurifier:favorite_level"}
+Number:Time use_time "Device Use Time" (G_airpurifier) {channel="miio:basic:airpurifier:use_time"}
+Number:Volume purify_volume "Purify Volume" (G_airpurifier) {channel="miio:basic:airpurifier:purify_volume"}
+Number average_aqi "Average AQI" (G_airpurifier) {channel="miio:basic:airpurifier:average_aqi"}
+Number aqi_state "AQI State" (G_airpurifier) {channel="miio:basic:airpurifier:aqi_state"}
+Switch bottom_door "Bottom Door" (G_airpurifier) {channel="miio:basic:airpurifier:bottom_door"}
+Number reboot_cause "Reboot Cause" (G_airpurifier) {channel="miio:basic:airpurifier:reboot_cause"}
+Number manual_level "Manual Mode Level" (G_airpurifier) {channel="miio:basic:airpurifier:manual_level"}
+```
+
 ### Mi Air Purifier Pro H (zhimi.airpurifier.vb2) item file lines
 
 note: Autogenerated example. Replace the id (airpurifier) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
@@ -29854,56 +30289,30 @@ note: Autogenerated example. Replace the id (airpurifier) in the channel with yo
 ```java
 Group G_airpurifier "Mi Air Purifier Pro H" <status>
 String actions "Actions" (G_airpurifier) {channel="miio:basic:airpurifier:actions"}
-Number fault "Air Purifier - Device Fault" (G_airpurifier) {channel="miio:basic:airpurifier:fault"}
-Switch on "Air Purifier - Power" (G_airpurifier) {channel="miio:basic:airpurifier:on"}
-Number fan_level "Air Purifier - Fan Level" (G_airpurifier) {channel="miio:basic:airpurifier:fan_level"}
-Number mode "Air Purifier - Mode" (G_airpurifier) {channel="miio:basic:airpurifier:mode"}
-Number pm2_5_density "Environment - PM2 5 Density" (G_airpurifier) {channel="miio:basic:airpurifier:pm2_5_density"}
-Number:Dimensionless relative_humidity "Environment - Relative Humidity" (G_airpurifier) {channel="miio:basic:airpurifier:relative_humidity"}
-Number:Temperature temperature "Environment - Temperature" (G_airpurifier) {channel="miio:basic:airpurifier:temperature"}
-Number:Dimensionless filter_life_level "Filter - Filter Life Level" (G_airpurifier) {channel="miio:basic:airpurifier:filter_life_level"}
-Number:Time filter_used_time "Filter - Filter Used Time" (G_airpurifier) {channel="miio:basic:airpurifier:filter_used_time"}
-Switch alarm "Alarm - Alarm" (G_airpurifier) {channel="miio:basic:airpurifier:alarm"}
-Number:Dimensionless volume "Alarm - Volume" (G_airpurifier) {channel="miio:basic:airpurifier:volume"}
-Number brightness "Indicator Light - Brightness" (G_airpurifier) {channel="miio:basic:airpurifier:brightness"}
-Switch on1 "Indicator Light - Switch Status" (G_airpurifier) {channel="miio:basic:airpurifier:on1"}
-Switch physical_controls_locked "Physical Control Locked - Physical Control Locked" (G_airpurifier) {channel="miio:basic:airpurifier:physical_controls_locked"}
-String button_pressed "Button - Button_pressed" (G_airpurifier) {channel="miio:basic:airpurifier:button_pressed"}
-Number:Time filter_max_time "Filter Time - Filter Max Time" (G_airpurifier) {channel="miio:basic:airpurifier:filter_max_time"}
-Number:Time filter_hour_used_debug "Filter Time - Filter Hour Used Debug" (G_airpurifier) {channel="miio:basic:airpurifier:filter_hour_used_debug"}
-Number m1_strong "Motor Speed - M1 Strong" (G_airpurifier) {channel="miio:basic:airpurifier:m1_strong"}
-Number m1_high "Motor Speed - M1 High" (G_airpurifier) {channel="miio:basic:airpurifier:m1_high"}
-Number m1_med "Motor Speed - M1 Med" (G_airpurifier) {channel="miio:basic:airpurifier:m1_med"}
-Number m1_med_l "Motor Speed - M1 Med L" (G_airpurifier) {channel="miio:basic:airpurifier:m1_med_l"}
-Number m1_low "Motor Speed - M1 Low" (G_airpurifier) {channel="miio:basic:airpurifier:m1_low"}
-Number m1_silent "Motor Speed - M1 Silent" (G_airpurifier) {channel="miio:basic:airpurifier:m1_silent"}
-Number m1_favorite "Motor Speed - M1 Favorite" (G_airpurifier) {channel="miio:basic:airpurifier:m1_favorite"}
-Number motor1_speed "Motor Speed - Motor1 Speed" (G_airpurifier) {channel="miio:basic:airpurifier:motor1_speed"}
-Number motor1_set_speed "Motor Speed - Motor1 Set Speed" (G_airpurifier) {channel="miio:basic:airpurifier:motor1_set_speed"}
-Number favorite_level "Motor Speed - Favorite Level" (G_airpurifier) {channel="miio:basic:airpurifier:favorite_level"}
-Number:Time use_time "Use Time - Use Time" (G_airpurifier) {channel="miio:basic:airpurifier:use_time"}
-Number purify_volume "Aqi - Purify Volume" (G_airpurifier) {channel="miio:basic:airpurifier:purify_volume"}
-Number average_aqi "Aqi - Average Aqi" (G_airpurifier) {channel="miio:basic:airpurifier:average_aqi"}
-Number average_aqi_cnt "Aqi - Average_aqi Read Times" (G_airpurifier) {channel="miio:basic:airpurifier:average_aqi_cnt"}
-String aqi_zone "Aqi - Aqi Zone" (G_airpurifier) {channel="miio:basic:airpurifier:aqi_zone"}
-Number sensor_state "Aqi - Sensor State" (G_airpurifier) {channel="miio:basic:airpurifier:sensor_state"}
-Number aqi_goodh "Aqi - Aqi Goodh" (G_airpurifier) {channel="miio:basic:airpurifier:aqi_goodh"}
-Number aqi_runstate "Aqi - Runstate" (G_airpurifier) {channel="miio:basic:airpurifier:aqi_runstate"}
-Number aqi_state "Aqi - Aqi State" (G_airpurifier) {channel="miio:basic:airpurifier:aqi_state"}
-String rfid_tag "Rfid - Rfid Tag" (G_airpurifier) {channel="miio:basic:airpurifier:rfid_tag"}
-String rfid_factory_id "Rfid - Rfid Factory Id" (G_airpurifier) {channel="miio:basic:airpurifier:rfid_factory_id"}
-String rfid_product_id "Rfid - Rfid Product Id" (G_airpurifier) {channel="miio:basic:airpurifier:rfid_product_id"}
-String rfid_time "Rfid - Rfid Time" (G_airpurifier) {channel="miio:basic:airpurifier:rfid_time"}
-String rfid_serial_num "Rfid - Rfid Serial Num" (G_airpurifier) {channel="miio:basic:airpurifier:rfid_serial_num"}
-Number app_extra "Others - App Extra" (G_airpurifier) {channel="miio:basic:airpurifier:app_extra"}
-Number main_channel "Others - Main Channel" (G_airpurifier) {channel="miio:basic:airpurifier:main_channel"}
-Number slave_channel "Others - Slave Channel" (G_airpurifier) {channel="miio:basic:airpurifier:slave_channel"}
-String cola "Others - Cola" (G_airpurifier) {channel="miio:basic:airpurifier:cola"}
-String buttom_door "Others - Buttom Door" (G_airpurifier) {channel="miio:basic:airpurifier:buttom_door"}
-Number reboot_cause "Others - Reboot_cause" (G_airpurifier) {channel="miio:basic:airpurifier:reboot_cause"}
-Number manual_level "Others - Manual Level" (G_airpurifier) {channel="miio:basic:airpurifier:manual_level"}
-Number:Time powertime "Others - Powertime" (G_airpurifier) {channel="miio:basic:airpurifier:powertime"}
-Number country_code "Others - Country Code" (G_airpurifier) {channel="miio:basic:airpurifier:country_code"}
+Number fault "Fault" (G_airpurifier) {channel="miio:basic:airpurifier:fault"}
+Switch on "Power" (G_airpurifier) {channel="miio:basic:airpurifier:on"}
+Number fan_level "Fan Level" (G_airpurifier) {channel="miio:basic:airpurifier:fan_level"}
+Number mode "Mode" (G_airpurifier) {channel="miio:basic:airpurifier:mode"}
+Number:Density pm2_5_density "PM2.5 Density" (G_airpurifier) {channel="miio:basic:airpurifier:pm2_5_density"}
+Number:Dimensionless relative_humidity "Relative Humidity" (G_airpurifier) {channel="miio:basic:airpurifier:relative_humidity"}
+Number:Temperature temperature "Temperature" (G_airpurifier) {channel="miio:basic:airpurifier:temperature"}
+Number:Dimensionless filter_life_level "Filter Life Level" (G_airpurifier) {channel="miio:basic:airpurifier:filter_life_level"}
+Number:Time filter_used_time "Filter Used Time" (G_airpurifier) {channel="miio:basic:airpurifier:filter_used_time"}
+Number:Time filter_max_time "Filter Maximum Life" (G_airpurifier) {channel="miio:basic:airpurifier:filter_max_time"}
+Switch alarm "Notification Sound" (G_airpurifier) {channel="miio:basic:airpurifier:alarm"}
+Number brightness "LED Brightness" (G_airpurifier) {channel="miio:basic:airpurifier:brightness"}
+Switch physical_controls_locked "Child Lock" (G_airpurifier) {channel="miio:basic:airpurifier:physical_controls_locked"}
+Number motor_speed_rpm "Motor Speed" (G_airpurifier) {channel="miio:basic:airpurifier:motor_speed_rpm"}
+Number motor_set_speed "Motor Target Speed" (G_airpurifier) {channel="miio:basic:airpurifier:motor_set_speed"}
+Number favorite_speed "Favorite Mode Motor Speed" (G_airpurifier) {channel="miio:basic:airpurifier:favorite_speed"}
+Number favorite_level "Favorite Mode Level" (G_airpurifier) {channel="miio:basic:airpurifier:favorite_level"}
+Number:Time use_time "Device Use Time" (G_airpurifier) {channel="miio:basic:airpurifier:use_time"}
+Number:Volume purify_volume "Purify Volume" (G_airpurifier) {channel="miio:basic:airpurifier:purify_volume"}
+Number average_aqi "Average AQI" (G_airpurifier) {channel="miio:basic:airpurifier:average_aqi"}
+Number aqi_state "AQI State" (G_airpurifier) {channel="miio:basic:airpurifier:aqi_state"}
+Switch bottom_door "Bottom Door" (G_airpurifier) {channel="miio:basic:airpurifier:bottom_door"}
+Number reboot_cause "Reboot Cause" (G_airpurifier) {channel="miio:basic:airpurifier:reboot_cause"}
+Number manual_level "Manual Mode Level" (G_airpurifier) {channel="miio:basic:airpurifier:manual_level"}
 ```
 
 ### Smartmi Air Purifier (zhimi.airpurifier.za1) item file lines
@@ -29912,38 +30321,27 @@ note: Autogenerated example. Replace the id (airpurifier) in the channel with yo
 
 ```java
 Group G_airpurifier "Smartmi Air Purifier" <status>
-Switch on "Air Purifier - Switch Status" (G_airpurifier) {channel="miio:basic:airpurifier:on"}
-Number fault "Air Purifier - Fault" (G_airpurifier) {channel="miio:basic:airpurifier:fault"}
-Number mode "Air Purifier - Mode" (G_airpurifier) {channel="miio:basic:airpurifier:mode"}
-Number air_quality "Environment - Air Quality" (G_airpurifier) {channel="miio:basic:airpurifier:air_quality"}
-Number pm2_5_density "Environment - PM2 5 Density" (G_airpurifier) {channel="miio:basic:airpurifier:pm2_5_density"}
-Number:Dimensionless relative_humidity "Environment - Relative Humidity" (G_airpurifier) {channel="miio:basic:airpurifier:relative_humidity"}
-Number:Temperature temperature "Environment - Temperature" (G_airpurifier) {channel="miio:basic:airpurifier:temperature"}
-Number:Dimensionless filter_life_level "Filter - Filter Life Level" (G_airpurifier) {channel="miio:basic:airpurifier:filter_life_level"}
-Number:Time filter_used_time "Filter - Filter Used Time" (G_airpurifier) {channel="miio:basic:airpurifier:filter_used_time"}
-Switch alarm "Alarm - Alarm" (G_airpurifier) {channel="miio:basic:airpurifier:alarm"}
-Number brightness "Indicator Light - Brightness" (G_airpurifier) {channel="miio:basic:airpurifier:brightness"}
-Switch physical_controls_locked "Physical Control Locked - Physical Control Locked" (G_airpurifier) {channel="miio:basic:airpurifier:physical_controls_locked"}
-Number:Time filter_max_time "Filter Time - Filter Max Time" (G_airpurifier) {channel="miio:basic:airpurifier:filter_max_time"}
-Number favorite_fan_level "Motor Speed - Favorite Fan Level" (G_airpurifier) {channel="miio:basic:airpurifier:favorite_fan_level"}
-Number motor_speed "Motor Speed - Motor Speed" (G_airpurifier) {channel="miio:basic:airpurifier:motor_speed"}
-Number:Time use_time "Use Time - Use Time" (G_airpurifier) {channel="miio:basic:airpurifier:use_time"}
-Number purify_volume "Aqi - Purify Volume" (G_airpurifier) {channel="miio:basic:airpurifier:purify_volume"}
-Number average_aqi "Aqi - Average Aqi" (G_airpurifier) {channel="miio:basic:airpurifier:average_aqi"}
-String aqi_zone "Aqi - Aqi Zone" (G_airpurifier) {channel="miio:basic:airpurifier:aqi_zone"}
-Number sensor_state "Aqi - Sensor State" (G_airpurifier) {channel="miio:basic:airpurifier:sensor_state"}
-String rfid_tag "Rfid - Rfid Tag" (G_airpurifier) {channel="miio:basic:airpurifier:rfid_tag"}
-String rfid_factory_id "Rfid - Rfid Factory Id" (G_airpurifier) {channel="miio:basic:airpurifier:rfid_factory_id"}
-String rfid_product_id "Rfid - Rfid Product Id" (G_airpurifier) {channel="miio:basic:airpurifier:rfid_product_id"}
-String rfid_time "Rfid - Rfid Time" (G_airpurifier) {channel="miio:basic:airpurifier:rfid_time"}
-String rfid_serial_num "Rfid - Rfid Serial Num" (G_airpurifier) {channel="miio:basic:airpurifier:rfid_serial_num"}
-Number reboot_cause "Others - Reboot Cause" (G_airpurifier) {channel="miio:basic:airpurifier:reboot_cause"}
-Number hw_version "Others - Hw Version" (G_airpurifier) {channel="miio:basic:airpurifier:hw_version"}
-Number sgp_ethanol "Others - Sgp Ethanol" (G_airpurifier) {channel="miio:basic:airpurifier:sgp_ethanol"}
-Number sgp_serial "Others - Sgp Serial" (G_airpurifier) {channel="miio:basic:airpurifier:sgp_serial"}
-String sgp_version "Others - Sgp Version" (G_airpurifier) {channel="miio:basic:airpurifier:sgp_version"}
-Number country_code "Others - Country Code" (G_airpurifier) {channel="miio:basic:airpurifier:country_code"}
-Switch gesture_status "Others - Gesture Status" (G_airpurifier) {channel="miio:basic:airpurifier:gesture_status"}
+Switch on "Power" (G_airpurifier) {channel="miio:basic:airpurifier:on"}
+Number fault "Fault" (G_airpurifier) {channel="miio:basic:airpurifier:fault"}
+Number mode "Mode" (G_airpurifier) {channel="miio:basic:airpurifier:mode"}
+Number air_quality "TVOC Air Quality" (G_airpurifier) {channel="miio:basic:airpurifier:air_quality"}
+Number:Density pm2_5_density "PM2.5 Density" (G_airpurifier) {channel="miio:basic:airpurifier:pm2_5_density"}
+Number:Dimensionless relative_humidity "Relative Humidity" (G_airpurifier) {channel="miio:basic:airpurifier:relative_humidity"}
+Number:Temperature temperature "Temperature" (G_airpurifier) {channel="miio:basic:airpurifier:temperature"}
+Number:Dimensionless filter_life_level "Filter Life Level" (G_airpurifier) {channel="miio:basic:airpurifier:filter_life_level"}
+Number:Time filter_used_time "Filter Used Time" (G_airpurifier) {channel="miio:basic:airpurifier:filter_used_time"}
+Number:Time filter_max_time "Filter Maximum Life" (G_airpurifier) {channel="miio:basic:airpurifier:filter_max_time"}
+Switch alarm "Notification Sound" (G_airpurifier) {channel="miio:basic:airpurifier:alarm"}
+Number brightness "LED Brightness" (G_airpurifier) {channel="miio:basic:airpurifier:brightness"}
+Switch physical_controls_locked "Child Lock" (G_airpurifier) {channel="miio:basic:airpurifier:physical_controls_locked"}
+Number motor_speed_rpm "Motor Speed" (G_airpurifier) {channel="miio:basic:airpurifier:motor_speed_rpm"}
+Number favorite_level "Favorite Mode Level" (G_airpurifier) {channel="miio:basic:airpurifier:favorite_level"}
+Number:Time use_time "Device Use Time" (G_airpurifier) {channel="miio:basic:airpurifier:use_time"}
+Number:Volume purify_volume "Purify Volume" (G_airpurifier) {channel="miio:basic:airpurifier:purify_volume"}
+Number average_aqi "Average AQI" (G_airpurifier) {channel="miio:basic:airpurifier:average_aqi"}
+Number reboot_cause "Reboot Cause" (G_airpurifier) {channel="miio:basic:airpurifier:reboot_cause"}
+Number country_code "Country Code" (G_airpurifier) {channel="miio:basic:airpurifier:country_code"}
+Switch gesture_status "Gesture Recognition" (G_airpurifier) {channel="miio:basic:airpurifier:gesture_status"}
 ```
 
 ### Mi Standing Fan (zhimi.fan.sa1) item file lines

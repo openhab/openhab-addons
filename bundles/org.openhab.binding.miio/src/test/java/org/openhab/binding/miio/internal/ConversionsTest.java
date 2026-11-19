@@ -17,6 +17,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -79,6 +80,36 @@ public class ConversionsTest {
         transformedResponse = Conversions.execute(transformation, value, deviceVariables);
         assertNotNull(transformedResponse);
         assertEquals(value, transformedResponse);
+    }
+
+    @Test
+    public void decodeUnicodeTest() {
+        Map<String, Object> deviceVariables = Collections.emptyMap();
+        assertEquals(new JsonPrimitive("demo"),
+                Conversions.execute("decodeUnicode", new JsonPrimitive("u0064u0065u006du006f"), deviceVariables));
+        assertEquals(new JsonPrimitive("薯条 1"),
+                Conversions.execute("decodeUnicode", new JsonPrimitive("u85afu6761u0020U0031"), deviceVariables));
+        assertEquals(new JsonPrimitive("$1 \\x"),
+                Conversions.execute("decodeUnicode", new JsonPrimitive("u0024u0031 \\x"), deviceVariables));
+        assertEquals(new JsonPrimitive(""),
+                Conversions.execute("decodeUnicode", new JsonPrimitive(""), deviceVariables));
+        assertEquals(new JsonPrimitive(12),
+                Conversions.execute("decodeUnicode", new JsonPrimitive(12), deviceVariables));
+    }
+
+    @Test
+    @SuppressWarnings("PMD.SetDefaultLocale")
+    public void transformationNameIgnoresDefaultLocale() {
+        Locale defaultLocale = Locale.getDefault();
+        try {
+            Locale.setDefault(Locale.forLanguageTag("tr"));
+            assertEquals(new JsonPrimitive("demo"), Conversions.execute("decodeUnicode",
+                    new JsonPrimitive("u0064u0065u006du006f"), Collections.emptyMap()));
+            assertEquals(new JsonPrimitive("Fries"), Conversions.execute("getJsonElement-recipeName",
+                    JsonParser.parseString("{\"recipeName\":\"Fries\"}"), Collections.emptyMap()));
+        } finally {
+            Locale.setDefault(defaultLocale);
+        }
     }
 
     @Test

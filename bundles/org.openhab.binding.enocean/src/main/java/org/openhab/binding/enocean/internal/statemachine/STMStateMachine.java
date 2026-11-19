@@ -49,6 +49,11 @@ public class STMStateMachine<A extends Enum<A>, S extends Enum<S>> {
     private @Nullable String storedChannel;
     private @Nullable Command storedCommand;
 
+    private @Nullable STMWatchdog<A, S> watchdog;
+    private @Nullable Consumer<S> watchdogTimeoutCallback;
+    private @Nullable ScheduledFuture<?> watchdogFuture;
+    private long stateGeneration;
+
     protected @Nullable ScheduledFuture<?> responseFuture = null;
 
     protected Logger logger = LoggerFactory.getLogger(STMStateMachine.class);
@@ -91,6 +96,27 @@ public class STMStateMachine<A extends Enum<A>, S extends Enum<S>> {
     }
 
     /**
+     * Registers a watchdog that applies a timeout action when a supervised state is not left in time.
+     *
+     * @param watchdog the supervised states, the timeout action and the timeout
+     * @param onTimeout invoked right before the timeout action is applied, with the state that timed out
+     * @return this state machine for fluent configuration
+     */
+    public synchronized STMStateMachine<A, S> registerWatchdog(STMWatchdog<A, S> watchdog, Consumer<S> onTimeout) {
+        this.watchdog = watchdog;
+        this.watchdogTimeoutCallback = onTimeout;
+        return this;
+    }
+
+    /**
+     * Cancels a pending watchdog. The state machine must not be used afterwards.
+     */
+    public synchronized void dispose() {
+        this.watchdog = null;
+        cancelWatchdog();
+    }
+
+    /**
      * Gets the current state.
      *
      * @return current state
@@ -119,6 +145,7 @@ public class STMStateMachine<A extends Enum<A>, S extends Enum<S>> {
     public synchronized void restoreState(S restoredState) {
         this.prevState = this.state;
         this.state = restoredState;
+        armWatchdog();
         logger.debug("STM: State restored to {}", restoredState);
     }
 
@@ -141,6 +168,7 @@ public class STMStateMachine<A extends Enum<A>, S extends Enum<S>> {
                         action, prevState);
                 prevState = state;
                 state = transition.getTo();
+                armWatchdog();
 
                 // Execute action-specific callback if registered
                 Runnable actionCallback = callbackActions.get(action);
@@ -159,6 +187,41 @@ public class STMStateMachine<A extends Enum<A>, S extends Enum<S>> {
         }
 
         return this;
+    }
+
+    private void cancelWatchdog() {
+        ScheduledFuture<?> future = watchdogFuture;
+        if (future != null) {
+            future.cancel(false);
+            watchdogFuture = null;
+        }
+    }
+
+    private void armWatchdog() {
+        cancelWatchdog();
+        stateGeneration++;
+        STMWatchdog<A, S> localWatchdog = watchdog;
+        if (localWatchdog != null && localWatchdog.states().contains(state)) {
+            S watchedState = state;
+            long generation = stateGeneration;
+            watchdogFuture = scheduler.schedule(() -> watchdogExpired(watchedState, generation),
+                    localWatchdog.timeoutMs(), TimeUnit.MILLISECONDS);
+        }
+    }
+
+    private synchronized void watchdogExpired(S watchedState, long generation) {
+        STMWatchdog<A, S> localWatchdog = watchdog;
+        // a timer that fired while the state was being left must not reset the new state
+        if (localWatchdog == null || state != watchedState || generation != stateGeneration) {
+            return;
+        }
+        Consumer<S> callback = watchdogTimeoutCallback;
+        if (callback != null) {
+            callback.accept(watchedState);
+        }
+        // the abandoned movement must not leave a request that a later calibration would execute
+        clearStoredCommand();
+        apply(localWatchdog.timeoutAction());
     }
 
     /**

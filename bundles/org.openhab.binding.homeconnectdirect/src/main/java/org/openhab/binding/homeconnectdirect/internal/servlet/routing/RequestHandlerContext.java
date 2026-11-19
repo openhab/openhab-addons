@@ -108,6 +108,7 @@ public class RequestHandlerContext {
         response.setContentType(CONTENT_TYPE_HTML_UTF8);
         response.setCharacterEncoding(UTF_8.name());
         response.setHeader(HEADER_X_FRAME_OPTIONS, SAME_ORIGIN);
+        response.setHeader(HEADER_CONTENT_SECURITY_POLICY, CONTENT_SECURITY_POLICY);
 
         try {
             response.getWriter().write(content);
