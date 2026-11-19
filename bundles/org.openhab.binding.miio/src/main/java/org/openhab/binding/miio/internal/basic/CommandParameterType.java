@@ -42,6 +42,7 @@ public enum CommandParameterType {
     CUSTOMSTRING("customstring"),
     NUMBER("number"),
     COLOR("color"),
+    JSON("json"),
     UNKNOWN("unknown");
 
     private String text;

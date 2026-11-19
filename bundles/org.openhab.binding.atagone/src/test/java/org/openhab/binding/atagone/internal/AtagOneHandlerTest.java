@@ -32,6 +32,7 @@ import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -46,11 +47,14 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.openhab.binding.atagone.internal.api.AtagOneApiClient;
 import org.openhab.binding.atagone.internal.api.AtagOneCommunicationException;
+import org.openhab.binding.atagone.internal.api.AtagOneConnection;
+import org.openhab.binding.atagone.internal.api.AtagOneLoginException;
 import org.openhab.binding.atagone.internal.dto.ControlUpdateDTO;
 import org.openhab.binding.atagone.internal.dto.DeviceConfigDTO;
 import org.openhab.binding.atagone.internal.dto.DeviceConfigUpdateDTO;
 import org.openhab.binding.atagone.internal.dto.RetrieveReplyDTO;
 import org.openhab.binding.atagone.internal.dto.ScheduleDTO;
+import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -61,9 +65,12 @@ import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
 import org.openhab.core.types.State;
+import org.openhab.core.types.UnDefType;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -82,14 +89,16 @@ class AtagOneHandlerTest {
 
     private @Mock @NonNullByDefault({}) Thing thing;
     private @Mock @NonNullByDefault({}) HttpClient httpClient;
+    private @Mock @NonNullByDefault({}) HttpClientFactory httpClientFactory;
     private @Mock @NonNullByDefault({}) AtagOneApiClient apiClient;
+    private @Mock @NonNullByDefault({}) AtagOneConnection connection;
     private @Mock @NonNullByDefault({}) ThingHandlerCallback callback;
     private @NonNullByDefault({}) AtagOneHandler handler;
 
     @BeforeEach
     void setUp() {
         lenient().when(thing.getUID()).thenReturn(new ThingUID(THING_TYPE_THERMOSTAT, "test"));
-        handler = new AtagOneHandler(thing, httpClient, new AtagOneStateDescriptionProvider());
+        handler = new AtagOneHandler(thing, httpClient, httpClientFactory, new AtagOneStateDescriptionProvider());
     }
 
     @AfterEach
@@ -97,7 +106,7 @@ class AtagOneHandlerTest {
         handler.dispose();
     }
 
-    private void seedApiClient(AtagOneApiClient client) throws ReflectiveOperationException {
+    private void seedApiClient(AtagOneConnection client) throws ReflectiveOperationException {
         Field field = AtagOneHandler.class.getDeclaredField("apiClient");
         field.setAccessible(true);
         field.set(handler, client);
@@ -180,6 +189,36 @@ class AtagOneHandlerTest {
     }
 
     @SuppressWarnings("unchecked")
+    @Test
+    void rejectedLoginStopsPollingAndReportsConfigurationError() throws Exception {
+        handler.setCallback(callback);
+        seedApiClient(connection);
+        setGeneration(5L);
+        invokeStartPollJob(3600, 5L);
+        when(connection.retrieve()).thenThrow(new AtagOneLoginException("Invalid login attempt."));
+
+        invokePoll(5L);
+
+        ArgumentCaptor<ThingStatusInfo> status = ArgumentCaptor.forClass(ThingStatusInfo.class);
+        verify(callback).statusUpdated(eq(thing), status.capture());
+        assertEquals(ThingStatus.OFFLINE, status.getValue().getStatus());
+        assertEquals(ThingStatusDetail.CONFIGURATION_ERROR, status.getValue().getStatusDetail());
+        assertEquals("@text/offline.conf-error.login-rejected [\"Invalid login attempt.\"]",
+                status.getValue().getDescription());
+        assertNull(getPollJob());
+    }
+
+    @Test
+    void publishesChannelsTheConnectionCannotSupplyAsUndef() throws Exception {
+        seedApiClient(connection);
+        when(connection.unsupportedChannels()).thenReturn(Set.of(CHANNEL_MODULATION_LEVEL));
+
+        invokeUpdateChannels(loadRetrieveReply());
+
+        assertEquals(UnDefType.UNDEF, readState(CHANNEL_MODULATION_LEVEL));
+        assertNotEquals(UnDefType.UNDEF, readState(CHANNEL_ROOM_TEMPERATURE));
+    }
+
     private void seedState(String channelId, State state) throws ReflectiveOperationException {
         Field field = AtagOneHandler.class.getDeclaredField("stateMap");
         field.setAccessible(true);

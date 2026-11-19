@@ -13,10 +13,11 @@
 package org.openhab.binding.lutron.internal.hw;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.lutron.internal.LutronHandlerFactory;
 import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
@@ -34,13 +35,14 @@ import org.slf4j.LoggerFactory;
  *
  * @author Andrew Shilliday - Initial contribution
  */
-public class HwDiscoveryService extends AbstractThingHandlerDiscoveryService<@NonNull HwSerialBridgeHandler> {
+@NonNullByDefault
+public class HwDiscoveryService extends AbstractThingHandlerDiscoveryService<HwBridgeHandler> {
     private Logger logger = LoggerFactory.getLogger(HwDiscoveryService.class);
 
     private final AtomicBoolean isScanning = new AtomicBoolean(false);
 
     public HwDiscoveryService() {
-        super(HwSerialBridgeHandler.class, LutronHandlerFactory.HW_DISCOVERABLE_DEVICE_TYPES_UIDS, 10);
+        super(HwBridgeHandler.class, LutronHandlerFactory.HW_DISCOVERABLE_DEVICE_TYPES_UIDS, 10);
     }
 
     @Override
@@ -57,7 +59,7 @@ public class HwDiscoveryService extends AbstractThingHandlerDiscoveryService<@No
                     logger.debug("Starting scan for HW Dimmers");
                     for (int m = 1; m <= 8; m++) { // Modules
                         for (int o = 1; o <= 4; o++) { // Outputs
-                            String address = String.format("[01:01:00:%02d:%02d]", m, o);
+                            String address = String.format(Locale.ROOT, "[01:01:00:%02d:%02d]", m, o);
                             thingHandler.sendCommand("RDL, " + address);
                             Thread.sleep(5);
                         }
@@ -75,10 +77,6 @@ public class HwDiscoveryService extends AbstractThingHandlerDiscoveryService<@No
      * Called by the bridge when it receives a status update for a dimmer that is not registered.
      */
     public void declareUnknownDimmer(String address) {
-        if (address == null) {
-            logger.info("Discovered HomeWorks dimmer with no address or thing handler");
-            return;
-        }
         String addressUid = address.replaceAll("[\\[\\]]", "").replace(":", "-");
         ThingUID bridgeUID = thingHandler.getThing().getUID();
         ThingUID uid = new ThingUID(HwConstants.THING_TYPE_HWDIMMER, bridgeUID, addressUid);

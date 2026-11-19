@@ -106,6 +106,7 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
     private final SecureRandom secureRandom = new SecureRandom();
     private String mqttUser = "";
     protected final Map<String, RoborockVacuumHandler> childDevices = new ConcurrentHashMap<>();
+    private final Set<String> ignoredDestinations = ConcurrentHashMap.newKeySet();
     private final ExpiringCache<Home> homeCache = new ExpiringCache<>(Duration.ofMinutes(10), this::refreshHome);
     private final ExpiringCache<HomeData> homeDataCache = new ExpiringCache<>(Duration.ofMinutes(10),
             this::refreshHomeData);
@@ -285,6 +286,7 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
             String routingKey = buildRoutingKey(childThing.getConfiguration().get(THING_CONFIG_DUID),
                     childThing.getUID().getId());
             childDevices.put(routingKey, vacuumHandler);
+            ignoredDestinations.remove(routingKey);
             if (!routingKey.equals(childThing.getUID().getId())) {
                 childDevices.put(childThing.getUID().getId(), vacuumHandler);
             }
@@ -454,6 +456,7 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
         mqttConnectTask.cancel();
         mqttWatchdogTask.cancel();
         disconnectMqttClient();
+        ignoredDestinations.clear();
     }
 
     private void establishMQTTConnection() {
@@ -630,7 +633,13 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
         if (handler != null) {
             handler.handleMessage(payload);
         } else {
-            logger.warn("Received MQTT message for unknown device destination: {}", destination);
+            // The subscription covers all devices on the account; devices without a Thing are expected
+            if (ignoredDestinations.add(destination)) {
+                logger.debug("Ignoring MQTT messages for device {}: no Thing configured for it on this account",
+                        destination);
+            } else {
+                logger.trace("Ignoring MQTT message for unconfigured device {}", destination);
+            }
         }
     }
 

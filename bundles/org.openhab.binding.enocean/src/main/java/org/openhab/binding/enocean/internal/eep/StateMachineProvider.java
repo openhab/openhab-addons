@@ -17,6 +17,7 @@ import java.util.Set;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.enocean.internal.statemachine.STMTransitionConfiguration;
+import org.openhab.binding.enocean.internal.statemachine.STMWatchdog;
 import org.openhab.core.thing.Thing;
 
 /**
@@ -79,4 +80,14 @@ public interface StateMachineProvider<A extends Enum<A>, S extends Enum<S>> {
      */
     @Nullable
     S getStateOnStartup(@Nullable S persistedState);
+
+    /**
+     * Gets the watchdog that supervises states in which the state machine waits for feedback from the device.
+     *
+     * @param thing the Thing to read configuration from
+     * @return the watchdog, or null if no state needs supervision
+     */
+    default @Nullable STMWatchdog<A, S> getWatchdog(Thing thing) {
+        return null;
+    }
 }

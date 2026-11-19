@@ -5,6 +5,8 @@ The advantage of this service over others is that one selected voice can speak d
 This is useful, for example, in conjunction with ChatGPT binding, which will help in learning foreign languages.
 You can find the price for this service here - <https://openai.com/api/pricing/>
 
+The service sends WAV audio when the audio sink supports it, and MP3 otherwise.
+
 ## Configuration
 
 To configure the OpenAI TTS, **Settings / Other Services - OpenAI Text-to-Speech** and set:

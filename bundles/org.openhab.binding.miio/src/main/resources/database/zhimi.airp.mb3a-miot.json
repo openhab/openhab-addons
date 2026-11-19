@@ -172,11 +172,15 @@
 						},
 						{
 							"value": "1",
-							"label": "Sleep"
+							"label": "Night"
 						},
 						{
 							"value": "2",
-							"label": "Favorite"
+							"label": "Manual"
+						},
+						{
+							"value": "3",
+							"label": "Fan Level"
 						}
 					]
 				},
@@ -192,7 +196,7 @@
 					"Control",
 					"Mode"
 				],
-				"readmeComment": "Value mapping `[\"0\"\u003d\"Auto\",\"1\"\u003d\"Sleep\",\"2\"\u003d\"Favorite\"]`"
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Auto\",\"1\"\u003d\"Night\",\"2\"\u003d\"Manual\",\"3\"\u003d\"Fan Level\"]`"
 			},
 			{
 				"property": "pm2.5-density",

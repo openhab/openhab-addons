@@ -17,6 +17,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Map;
 
@@ -83,6 +84,48 @@ class ElectricalEnergyMeasurementConverterTest extends BaseMatterConverterTest {
         verify(mockHandler, times(1)).updateState(eq(1),
                 eq("electricalenergymeasurement-cumulativeenergyimported-energy"),
                 eq(new QuantityType<>(1.0, Units.WATT_HOUR)));
+    }
+
+    @Test
+    void testOnEventWithEnergyLargerThanInt() {
+        AttributeChangedMessage message = new AttributeChangedMessage();
+        message.path = new Path();
+        message.path.attributeName = "cumulativeEnergyImported";
+        message.value = new EnergyMeasurementStruct(new BigInteger("190989472000"), null, null, null, null, null, null);
+
+        converter.onEvent(message);
+        verify(mockHandler, times(1)).updateState(eq(1),
+                eq("electricalenergymeasurement-cumulativeenergyimported-energy"),
+                eq(new QuantityType<>(new BigDecimal("190989472"), Units.WATT_HOUR)));
+    }
+
+    @Test
+    void testInitStateKeepsImportedAndExportedSeparate() {
+        mockCluster.cumulativeEnergyImported = new EnergyMeasurementStruct(new BigInteger("190989472000"), null, null,
+                null, null, null, null);
+        mockCluster.cumulativeEnergyExported = new EnergyMeasurementStruct(BigInteger.ZERO, null, null, null, null,
+                null, null);
+
+        converter.initState();
+
+        verify(mockHandler, times(1)).updateState(eq(1),
+                eq("electricalenergymeasurement-cumulativeenergyimported-energy"),
+                eq(new QuantityType<>(new BigDecimal("190989472"), Units.WATT_HOUR)));
+        verify(mockHandler, times(1)).updateState(eq(1),
+                eq("electricalenergymeasurement-cumulativeenergyexported-energy"),
+                eq(new QuantityType<>(BigDecimal.ZERO, Units.WATT_HOUR)));
+    }
+
+    @Test
+    void testInitStateKeepsFractionalWattHours() {
+        mockCluster.cumulativeEnergyImported = new EnergyMeasurementStruct(BigInteger.valueOf(1500), null, null, null,
+                null, null, null);
+
+        converter.initState();
+
+        verify(mockHandler, times(1)).updateState(eq(1),
+                eq("electricalenergymeasurement-cumulativeenergyimported-energy"),
+                eq(new QuantityType<>(new BigDecimal("1.5"), Units.WATT_HOUR)));
     }
 
     @Test
