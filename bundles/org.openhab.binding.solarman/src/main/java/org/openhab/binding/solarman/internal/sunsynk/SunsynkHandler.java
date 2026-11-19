@@ -14,6 +14,7 @@ package org.openhab.binding.solarman.internal.sunsynk;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.solarman.internal.SolarmanLoggerHandler;
+import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.thing.Thing;
 
 /**
@@ -23,7 +24,7 @@ import org.openhab.core.thing.Thing;
  */
 @NonNullByDefault
 public class SunsynkHandler extends SolarmanLoggerHandler {
-    public SunsynkHandler(Thing thing) {
-        super(thing);
+    public SunsynkHandler(Thing thing, TimeZoneProvider timeZoneProvider) {
+        super(thing, timeZoneProvider);
     }
 }

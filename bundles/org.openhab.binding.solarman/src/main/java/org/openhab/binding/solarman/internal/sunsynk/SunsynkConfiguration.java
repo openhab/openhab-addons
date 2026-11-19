@@ -12,9 +12,8 @@
  */
 package org.openhab.binding.solarman.internal.sunsynk;
 
-import java.time.ZoneId;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.solarman.internal.SolarmanLoggerConfiguration;
 
 /**
@@ -24,5 +23,5 @@ import org.openhab.binding.solarman.internal.SolarmanLoggerConfiguration;
  */
 @NonNullByDefault
 public class SunsynkConfiguration extends SolarmanLoggerConfiguration {
-    public String timeZone = ZoneId.systemDefault().getId();
+    public @Nullable String timeZone;
 }

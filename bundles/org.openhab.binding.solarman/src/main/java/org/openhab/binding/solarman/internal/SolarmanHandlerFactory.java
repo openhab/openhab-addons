@@ -17,12 +17,15 @@ import java.util.Set;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.solarman.internal.sunsynk.SunsynkHandler;
+import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * The {@link SolarmanHandlerFactory} is responsible for creating things and thing
@@ -37,6 +40,13 @@ public class SolarmanHandlerFactory extends BaseThingHandlerFactory {
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set
             .of(SolarmanBindingConstants.THING_TYPE_SOLARMAN_LOGGER);
 
+    private final TimeZoneProvider timeZoneProvider;
+
+    @Activate
+    public SolarmanHandlerFactory(@Reference TimeZoneProvider timeZoneProvider) {
+        this.timeZoneProvider = timeZoneProvider;
+    }
+
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
         return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)
@@ -48,11 +58,11 @@ public class SolarmanHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (SolarmanBindingConstants.THING_TYPE_SOLARMAN_LOGGER.equals(thingTypeUID)) {
-            return new SolarmanLoggerHandler(thing);
+            return new SolarmanLoggerHandler(thing, timeZoneProvider);
         }
 
         if (SolarmanBindingConstants.SUNSYNK_PROFILES.containsKey(thingTypeUID)) {
-            return new SunsynkHandler(thing);
+            return new SunsynkHandler(thing, timeZoneProvider);
         }
 
         return null;

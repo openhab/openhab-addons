@@ -27,6 +27,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -58,6 +59,7 @@ import org.openhab.binding.solarman.internal.updater.SolarmanRegisterUpdater;
 import org.openhab.binding.solarman.internal.util.ModbusReadPlan;
 import org.openhab.binding.solarman.internal.util.ParserUtils;
 import org.openhab.binding.solarman.internal.util.SolarmanWorkQueue;
+import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -90,6 +92,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class SolarmanLoggerHandler extends BaseThingHandler {
     private final Logger logger;
+    private final TimeZoneProvider timeZoneProvider;
 
     private final DefinitionParser definitionParser;
     private final SolarmanChannelManager solarmanChannelManager;
@@ -104,13 +107,14 @@ public class SolarmanLoggerHandler extends BaseThingHandler {
     private Map<String, SunsynkSensor> channels = Map.of();
     private @Nullable CommandWriter writer;
 
-    public SolarmanLoggerHandler(Thing thing) {
-        this(thing, LoggerFactory.getLogger(SolarmanLoggerHandler.class));
+    public SolarmanLoggerHandler(Thing thing, TimeZoneProvider timeZoneProvider) {
+        this(thing, timeZoneProvider, LoggerFactory.getLogger(SolarmanLoggerHandler.class));
     }
 
-    SolarmanLoggerHandler(Thing thing, Logger logger) {
+    SolarmanLoggerHandler(Thing thing, TimeZoneProvider timeZoneProvider, Logger logger) {
         super(thing);
         this.logger = logger;
+        this.timeZoneProvider = timeZoneProvider;
         this.definitionParser = new DefinitionParser();
         this.solarmanChannelManager = new SolarmanChannelManager();
     }
@@ -264,7 +268,7 @@ public class SolarmanLoggerHandler extends BaseThingHandler {
                             .anyMatch(channel -> !channel.getProperties().containsKey(DYNAMIC_CHANNEL))) {
                 throw new IllegalArgumentException("Custom channels require a legacy inverter profile");
             }
-            ZoneId zone = ZoneId.of(configuration.timeZone);
+            Supplier<ZoneId> zone = timeZone(configuration);
             if (!Objects.requireNonNullElse(configuration.additionalRequests, "").isBlank()) {
                 throw new IllegalArgumentException(
                         "Additional requests are supported only by legacy inverter profiles");
@@ -281,7 +285,7 @@ public class SolarmanLoggerHandler extends BaseThingHandler {
                     : new SolarmanV5Protocol(configuration, true);
             SolarmanLoggerConnector currentConnector = new SolarmanLoggerConnector(configuration);
             CommandWriter commandWriter = (sensor, command) -> new AdvancedWriteTransaction(currentConnector, protocol,
-                    plan, profile, sensor, command, zone, currentGeneration);
+                    plan, profile, sensor, command, zone.get(), currentGeneration);
             synchronized (lifecycleLock) {
                 if (disposed || generation != currentGeneration) {
                     currentConnector.close();
@@ -299,7 +303,7 @@ public class SolarmanLoggerHandler extends BaseThingHandler {
                 writer = commandWriter;
                 workQueue = createWorkQueue(() -> {
                     try (SolarmanLoggerConnection connection = currentConnector.createConnection()) {
-                        publish(profile, readSnapshot(connection, protocol, plan), zone, currentGeneration);
+                        publish(profile, readSnapshot(connection, protocol, plan), zone.get(), currentGeneration);
                     } catch (SolarmanException e) {
                         reportError(e, currentGeneration);
                     }
@@ -313,6 +317,15 @@ public class SolarmanLoggerHandler extends BaseThingHandler {
                 }
             }
         }
+    }
+
+    private Supplier<ZoneId> timeZone(SunsynkConfiguration configuration) {
+        String configured = Objects.requireNonNullElse(configuration.timeZone, "");
+        if (configured.isBlank()) {
+            return timeZoneProvider::getTimeZone;
+        }
+        ZoneId zone = ZoneId.of(configured);
+        return () -> zone;
     }
 
     private class AdvancedWriteTransaction implements SolarmanWorkQueue.Transaction {

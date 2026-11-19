@@ -18,6 +18,7 @@ import static org.mockito.Mockito.*;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -275,7 +276,7 @@ class SolarmanLegacyBaselineTest {
         Runnable poll = () -> fail("The handler did not prepare its poll");
 
         TestHandler(Thing thing) {
-            super(thing);
+            super(thing, () -> ZoneOffset.UTC);
             ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
             doAnswer(invocation -> {
                 setThing(invocation.getArgument(0));

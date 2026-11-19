@@ -136,15 +136,15 @@ When reporting results, include the selected profile, inverter model, firmware, 
 
 ### Advanced Profile Configuration
 
-| Parameter          | Required | Default             | Description                                                           |
-| ------------------ | -------- | ------------------- | --------------------------------------------------------------------- |
-| hostname           | Yes      |                     | Logger IP address or hostname                                         |
-| serialNumber       | Yes      |                     | Unsigned 32-bit logger serial, not the inverter serial                |
-| port               | No       | 8899                | Logger TCP port                                                       |
-| refreshInterval    | No       | 60                  | Seconds between periodic polls; at least 5 for advanced profiles      |
-| solarmanLoggerMode | No       | V5MODBUS            | V5MODBUS for V5 Wi-Fi loggers or RAWMODBUS for compatible LAN loggers |
-| timeZone           | No       | JVM system zone     | IANA zone used to interpret and set the inverter clock                |
-| slaveId            | No       | 1                   | Modbus unit address, from 1 to 247                                    |
+| Parameter          | Required | Default                 | Description                                                           |
+| ------------------ | -------- | ----------------------- | --------------------------------------------------------------------- |
+| hostname           | Yes      |                         | Logger IP address or hostname                                         |
+| serialNumber       | Yes      |                         | Unsigned 32-bit logger serial, not the inverter serial                |
+| port               | No       | 8899                    | Logger TCP port                                                       |
+| refreshInterval    | No       | 60                      | Seconds between periodic polls; at least 5 for advanced profiles      |
+| solarmanLoggerMode | No       | V5MODBUS                | V5MODBUS for V5 Wi-Fi loggers or RAWMODBUS for compatible LAN loggers |
+| timeZone           | No       | openHAB configured zone | IANA zone used to interpret and set the inverter clock                |
+| slaveId            | No       | 1                       | Modbus unit address, from 1 to 247                                    |
 
 `refreshInterval` controls periodic reading, not a delay before every command.
 For example, `refreshInterval=30` requests a periodic read every 30 seconds; busy commands and communication time can affect the observed cadence.
@@ -183,7 +183,9 @@ Only one active Thing should communicate with a physical logger.
 
 Advanced profiles do not support `additionalRequests` or manually added custom channels; initialization reports a configuration error instead of ignoring them.
 Those facilities remain available for legacy profiles.
-The advanced timeZone setting applies to advanced clock commands; legacy definitions continue using the system time zone.
+When the advanced timeZone setting is omitted or blank, clock readings and commands use the time zone configured in openHAB.
+An explicit IANA time zone takes precedence; an invalid explicit zone is a configuration error.
+Legacy definitions continue using the JVM system time zone.
 The common logger metadata defaults to 60 seconds and accepts at least 1 second for legacy selections; advanced selections enforce at least 5 seconds at initialization.
 Hidden advanced compatibility types retain their separate 30-second default.
 

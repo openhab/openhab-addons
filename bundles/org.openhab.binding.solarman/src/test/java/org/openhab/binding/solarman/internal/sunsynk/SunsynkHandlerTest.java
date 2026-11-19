@@ -17,6 +17,7 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import java.io.IOException;
+import java.time.ZoneOffset;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.FutureTask;
@@ -50,7 +51,7 @@ class SunsynkHandlerTest {
         CountDownLatch entered = new CountDownLatch(1);
         CountDownLatch release = new CountDownLatch(1);
         AtomicInteger scheduled = new AtomicInteger();
-        SunsynkHandler handler = new SunsynkHandler(thing()) {
+        SunsynkHandler handler = new SunsynkHandler(thing(), () -> ZoneOffset.UTC) {
             @Override
             protected SunsynkProfile loadProfile(String name) throws IOException {
                 entered.countDown();
@@ -101,7 +102,7 @@ class SunsynkHandlerTest {
         ScheduledFuture<?> future = mock(ScheduledFuture.class);
         doReturn(future).when(testScheduler).scheduleWithFixedDelay(any(Runnable.class), anyLong(), anyLong(),
                 any(TimeUnit.class));
-        SunsynkHandler handler = new SunsynkHandler(thing()) {
+        SunsynkHandler handler = new SunsynkHandler(thing(), () -> ZoneOffset.UTC) {
             @Override
             protected SolarmanWorkQueue createWorkQueue(Runnable poll, int interval, Consumer<Exception> errors) {
                 return new SolarmanWorkQueue(testScheduler, poll, interval, errors);
