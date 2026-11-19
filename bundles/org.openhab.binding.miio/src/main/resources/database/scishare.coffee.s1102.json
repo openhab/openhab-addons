@@ -13,30 +13,170 @@
 				"refresh": false,
 				"actions": [
 					{
-						"command": "Machine_*",
-						"parameterType": "ONOFFPARA"
+						"command": "Machine_ON",
+						"parameterType": "NONE",
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "ON",
+									"returnValue": "on"
+								}
+							]
+						}
+					},
+					{
+						"command": "Machine_OFF",
+						"parameterType": "NONE",
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "OFF",
+									"returnValue": "off"
+								}
+							]
+						}
 					}
-				]
+				],
+				"category": "switch",
+				"tags": [
+					"Switch",
+					"Power"
+				],
+				"readmeComment": "Write only, the machine does not report its power state; see the status channel."
 			},
 			{
-				"property": "Query_Machine_Status",
-				"friendlyName": "status",
-				"channel": "Status",
-				"type": "String",
+				"property": "status",
+				"friendlyName": "Status",
+				"channel": "status",
+				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "1",
+							"label": "Off"
+						},
+						{
+							"value": "2",
+							"label": "On"
+						},
+						{
+							"value": "3",
+							"label": "Self-Checking"
+						},
+						{
+							"value": "4",
+							"label": "Preheating"
+						},
+						{
+							"value": "5",
+							"label": "Ready"
+						},
+						{
+							"value": "6",
+							"label": "Descaling"
+						},
+						{
+							"value": "7",
+							"label": "Standby"
+						},
+						{
+							"value": "8",
+							"label": "Boiler Preheat Set"
+						},
+						{
+							"value": "10",
+							"label": "Work Cancelled or Alarm"
+						},
+						{
+							"value": "51",
+							"label": "Making Coffee (Code 51)"
+						},
+						{
+							"value": "52",
+							"label": "Making Coffee (Code 52)"
+						},
+						{
+							"value": "55",
+							"label": "Making Coffee (Code 55)"
+						},
+						{
+							"value": "60",
+							"label": "Making Coffee (Code 60)"
+						},
+						{
+							"value": "61",
+							"label": "Making Coffee (Code 61)"
+						},
+						{
+							"value": "150",
+							"label": "Recipes Restored"
+						},
+						{
+							"value": "151",
+							"label": "Espresso Recipe Restored"
+						},
+						{
+							"value": "152",
+							"label": "Americano Recipe Restored"
+						},
+						{
+							"value": "160",
+							"label": "Hot Water Recipe Restored"
+						},
+						{
+							"value": "195",
+							"label": "Factory Settings Restored"
+						},
+						{
+							"value": "201",
+							"label": "Making Coffee (Code 201)"
+						},
+						{
+							"value": "202",
+							"label": "NTC Fault Alarm"
+						},
+						{
+							"value": "203",
+							"label": "Water Tank Empty"
+						}
+					]
+				},
 				"refresh": true,
-				"customRefreshCommand": "true",
-				"ChannelGroup": "actions",
-				"actions": []
+				"customRefreshCommand": "Query_Machine_Status",
+				"transformation": "getJsonElement-[1]",
+				"actions": [],
+				"category": "status",
+				"tags": [
+					"Status"
+				],
+				"readmeComment": "Value mapping `[\"1\"\u003d\"Off\",\"2\"\u003d\"On\",\"3\"\u003d\"Self-Checking\",\"4\"\u003d\"Preheating\",\"5\"\u003d\"Ready\",\"6\"\u003d\"Descaling\",\"7\"\u003d\"Standby\",\"8\"\u003d\"Boiler Preheat Set\",\"10\"\u003d\"Work Cancelled or Alarm\",\"51\"\u003d\"Making Coffee (Code 51)\",\"52\"\u003d\"Making Coffee (Code 52)\",\"55\"\u003d\"Making Coffee (Code 55)\",\"60\"\u003d\"Making Coffee (Code 60)\",\"61\"\u003d\"Making Coffee (Code 61)\",\"150\"\u003d\"Recipes Restored\",\"151\"\u003d\"Espresso Recipe Restored\",\"152\"\u003d\"Americano Recipe Restored\",\"160\"\u003d\"Hot Water Recipe Restored\",\"195\"\u003d\"Factory Settings Restored\",\"201\"\u003d\"Making Coffee (Code 201)\",\"202\"\u003d\"NTC Fault Alarm\",\"203\"\u003d\"Water Tank Empty\"]`"
 			},
 			{
 				"property": "",
-				"friendlyName": "Brew Expresso",
-				"channel": "expresso",
+				"friendlyName": "Make Espresso",
+				"channel": "make_espresso",
 				"type": "Number",
-				"refresh": true,
+				"stateDescription": {
+					"minimum": 15,
+					"maximum": 110,
+					"step": 5,
+					"pattern": "%.0f ml"
+				},
+				"refresh": false,
 				"actions": [
 					{
-						"command": "Espresso_Coffee_Set",
+						"command": "Buzzer_Frequency_Time",
+						"parameterType": "NONE",
+						"parameters": [
+							1,
+							100
+						]
+					},
+					{
+						"command": "Espresso_Coffee",
 						"parameterType": "NUMBER",
 						"parameters": [
 							"$value$",
@@ -44,35 +184,71 @@
 						]
 					}
 				],
-				"readmeComment": "Value is the amount of coffee in ml. 2nd parameter in the json db is the water temperature"
+				"category": "settings",
+				"tags": [
+					"Control"
+				],
+				"readmeComment": "Makes an espresso with the given amount of coffee (ml) at 85 degrees Celsius."
 			},
 			{
 				"property": "",
-				"friendlyName": "Brew Americano",
-				"channel": "expresso",
+				"friendlyName": "Make Americano",
+				"channel": "make_americano",
 				"type": "Number",
-				"refresh": true,
+				"stateDescription": {
+					"minimum": 80,
+					"maximum": 200,
+					"step": 10,
+					"pattern": "%.0f ml"
+				},
+				"refresh": false,
 				"actions": [
 					{
-						"command": "Americano_Coffee_Set",
+						"command": "Buzzer_Frequency_Time",
+						"parameterType": "NONE",
+						"parameters": [
+							1,
+							100
+						]
+					},
+					{
+						"command": "Americano_Coffee",
 						"parameterType": "NUMBER",
 						"parameters": [
 							"$value$",
+							90,
 							40,
-							80,
-							90
+							85
 						]
 					}
 				],
-				"readmeComment": "Value is the amount of coffee in ml. parameters in json are cupAmount: [set by OH], coffee: 40,water: 80, temp: 90"
+				"category": "settings",
+				"tags": [
+					"Control"
+				],
+				"readmeComment": "Makes an americano with the given amount of water (ml) at 90 degrees Celsius and 40 ml coffee."
 			},
 			{
 				"property": "",
-				"friendlyName": "Boil water",
-				"channel": "boil",
+				"friendlyName": "Make Hot Water",
+				"channel": "make_hot_water",
 				"type": "Number",
-				"refresh": true,
+				"stateDescription": {
+					"minimum": 60,
+					"maximum": 300,
+					"step": 10,
+					"pattern": "%.0f ml"
+				},
+				"refresh": false,
 				"actions": [
+					{
+						"command": "Buzzer_Frequency_Time",
+						"parameterType": "NONE",
+						"parameters": [
+							1,
+							100
+						]
+					},
 					{
 						"command": "Hot_Wate",
 						"parameterType": "NUMBER",
@@ -82,10 +258,144 @@
 						]
 					}
 				],
-				"readmeComment": "Value is the amount of water (ml) to heat. 2nd parameter in the json db is the water temperature"
+				"category": "settings",
+				"tags": [
+					"Control",
+					"Water"
+				],
+				"readmeComment": "Dispenses the given amount of water (ml) at 55 degrees Celsius."
+			},
+			{
+				"property": "",
+				"friendlyName": "Control",
+				"channel": "control",
+				"type": "String",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "stop",
+							"label": "Stop"
+						},
+						{
+							"value": "stop_preheat",
+							"label": "Stop Preheating"
+						},
+						{
+							"value": "continue",
+							"label": "Continue"
+						}
+					]
+				},
+				"refresh": false,
+				"actions": [
+					{
+						"command": "Buzzer_Frequency_Time",
+						"parameterType": "NONE",
+						"parameters": [
+							1,
+							100
+						],
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "stop|stop_preheat|continue",
+									"returnValue": 1
+								}
+							]
+						}
+					},
+					{
+						"command": "Cancel_Work_Alarm",
+						"parameterType": "NONE",
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "stop",
+									"returnValue": 1
+								}
+							]
+						}
+					},
+					{
+						"command": "Stop_Boiler_Preheat",
+						"parameterType": "NONE",
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "stop_preheat",
+									"returnValue": 1
+								}
+							]
+						}
+					},
+					{
+						"command": "Continue_Operation",
+						"parameterType": "NONE",
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "continue",
+									"returnValue": 1
+								}
+							]
+						}
+					}
+				],
+				"category": "settings",
+				"tags": [
+					"Control"
+				],
+				"readmeComment": "Stop ends making a drink, descaling or an alarm. Continue resumes after the water tank was refilled."
+			},
+			{
+				"property": "",
+				"friendlyName": "Boiler Preheat Mode",
+				"channel": "preheat_mode",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "Normal Temperature"
+						},
+						{
+							"value": "55",
+							"label": "General"
+						},
+						{
+							"value": "85",
+							"label": "Default"
+						}
+					]
+				},
+				"refresh": false,
+				"actions": [
+					{
+						"command": "Buzzer_Frequency_Time",
+						"parameterType": "NONE",
+						"parameters": [
+							1,
+							100
+						]
+					},
+					{
+						"command": "Boiler_Preheating_Set",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "heating",
+				"tags": [
+					"Control",
+					"Heating"
+				],
+				"readmeComment": "Write only. Boiler preheat temperature in degrees Celsius as in the app settings; only accepted while the machine is on."
 			}
 		],
-		"readmeComment": "This device does not allow for regular querying for the status. Hence the status is not updated for the action channels.",
+		"readmeComment": "Drinks are made with the app\u0027s default recipe values. The machine must be on and ready (status Ready).",
 		"experimental": true
 	}
 }

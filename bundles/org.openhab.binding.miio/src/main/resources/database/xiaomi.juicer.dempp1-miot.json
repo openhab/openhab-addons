@@ -1,0 +1,387 @@
+{
+	"deviceMapping": {
+		"id": [
+			"xiaomi.juicer.dempp1",
+			"xiaomi.juicer.p1v2"
+		],
+		"propertyMethod": "get_properties",
+		"maxProperties": 1,
+		"channels": [
+			{
+				"property": "status",
+				"siid": 2,
+				"piid": 1,
+				"friendlyName": "Status",
+				"channel": "status",
+				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "0",
+							"label": "None"
+						},
+						{
+							"value": "1",
+							"label": "Idle"
+						},
+						{
+							"value": "2",
+							"label": "Scheduled"
+						},
+						{
+							"value": "3",
+							"label": "Keep Warm"
+						},
+						{
+							"value": "4",
+							"label": "Cooking"
+						},
+						{
+							"value": "5",
+							"label": "Cleaning"
+						},
+						{
+							"value": "6",
+							"label": "Paused"
+						},
+						{
+							"value": "7",
+							"label": "Disinfecting"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "status",
+				"tags": [
+					"Status"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"None\",\"1\"\u003d\"Idle\",\"2\"\u003d\"Scheduled\",\"3\"\u003d\"Keep Warm\",\"4\"\u003d\"Cooking\",\"5\"\u003d\"Cleaning\",\"6\"\u003d\"Paused\",\"7\"\u003d\"Disinfecting\"]`"
+			},
+			{
+				"property": "fault",
+				"siid": 2,
+				"piid": 2,
+				"friendlyName": "Fault",
+				"channel": "fault",
+				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "0",
+							"label": "No Faults"
+						},
+						{
+							"value": "1",
+							"label": "Temperature Control Abnormal"
+						},
+						{
+							"value": "2",
+							"label": "Dry Burning Protection"
+						},
+						{
+							"value": "3",
+							"label": "Jug Lifted"
+						},
+						{
+							"value": "4",
+							"label": "Motor Fault"
+						},
+						{
+							"value": "5",
+							"label": "Lid Off"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "alarm",
+				"tags": [
+					"Alarm"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"No Faults\",\"1\"\u003d\"Temperature Control Abnormal\",\"2\"\u003d\"Dry Burning Protection\",\"3\"\u003d\"Jug Lifted\",\"4\"\u003d\"Motor Fault\",\"5\"\u003d\"Lid Off\"]`"
+			},
+			{
+				"property": "cook-mode",
+				"siid": 2,
+				"piid": 3,
+				"friendlyName": "Cook Mode",
+				"channel": "cook_mode",
+				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "1",
+							"label": "Fast Pulp"
+						},
+						{
+							"value": "2",
+							"label": "Soy Milk"
+						},
+						{
+							"value": "3",
+							"label": "Corn Juice"
+						},
+						{
+							"value": "4",
+							"label": "Rice Paste"
+						},
+						{
+							"value": "5",
+							"label": "Congee"
+						},
+						{
+							"value": "6",
+							"label": "Thick Soup"
+						},
+						{
+							"value": "7",
+							"label": "Manual"
+						},
+						{
+							"value": "8",
+							"label": "Juice"
+						},
+						{
+							"value": "9",
+							"label": "Custom"
+						},
+						{
+							"value": "10",
+							"label": "Clean"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "settings",
+				"tags": [
+					"Status",
+					"Mode"
+				],
+				"readmeComment": "Value mapping `[\"1\"\u003d\"Fast Pulp\",\"2\"\u003d\"Soy Milk\",\"3\"\u003d\"Corn Juice\",\"4\"\u003d\"Rice Paste\",\"5\"\u003d\"Congee\",\"6\"\u003d\"Thick Soup\",\"7\"\u003d\"Manual\",\"8\"\u003d\"Juice\",\"9\"\u003d\"Custom\",\"10\"\u003d\"Clean\"]`"
+			},
+			{
+				"property": "reservation-left-time",
+				"siid": 2,
+				"piid": 4,
+				"friendlyName": "Schedule Remaining Time",
+				"channel": "schedule_remaining_time",
+				"type": "Number:Time",
+				"unit": "minutes",
+				"stateDescription": {
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "time",
+				"tags": [
+					"Status",
+					"Duration"
+				]
+			},
+			{
+				"property": "left-time",
+				"siid": 2,
+				"piid": 11,
+				"friendlyName": "Remaining Time",
+				"channel": "remaining_time",
+				"type": "Number:Time",
+				"unit": "minutes",
+				"stateDescription": {
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "time",
+				"tags": [
+					"Status",
+					"Duration"
+				]
+			},
+			{
+				"property": "target-temperature",
+				"siid": 2,
+				"piid": 12,
+				"friendlyName": "Target Temperature",
+				"channel": "target_temperature",
+				"type": "Number:Temperature",
+				"unit": "celsius",
+				"stateDescription": {
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "temperature",
+				"tags": [
+					"Status",
+					"Temperature"
+				]
+			},
+			{
+				"property": "pot-lift-memory",
+				"siid": 2,
+				"piid": 10,
+				"friendlyName": "Resume After Lifting the Jug",
+				"channel": "pot_lift_memory",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch"
+				]
+			},
+			{
+				"property": "alarm",
+				"siid": 3,
+				"piid": 1,
+				"friendlyName": "Sound",
+				"channel": "alarm",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch"
+				]
+			},
+			{
+				"property": "auto-screen-on",
+				"siid": 5,
+				"piid": 1,
+				"friendlyName": "Screen Always On",
+				"channel": "auto_screen_on",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch"
+				]
+			},
+			{
+				"property": "auto-screen-on-time",
+				"siid": 5,
+				"piid": 3,
+				"friendlyName": "Screen On Time",
+				"channel": "auto_screen_on_time",
+				"type": "Number:Time",
+				"unit": "minutes",
+				"stateDescription": {
+					"minimum": 1,
+					"maximum": 30,
+					"step": 1,
+					"pattern": "%.0f %unit%"
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "time",
+				"tags": [
+					"Setpoint",
+					"Duration"
+				]
+			},
+			{
+				"property": "",
+				"friendlyName": "Control",
+				"channel": "control",
+				"type": "String",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "pause",
+							"label": "Pause"
+						},
+						{
+							"value": "resume",
+							"label": "Resume"
+						},
+						{
+							"value": "cancel",
+							"label": "Cancel"
+						}
+					]
+				},
+				"refresh": false,
+				"actions": [
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 2,
+						"aiid": 5,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "pause"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 2,
+						"aiid": 3,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "resume"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 2,
+						"aiid": 2,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "cancel"
+								}
+							]
+						}
+					}
+				],
+				"category": "settings",
+				"tags": [
+					"Control"
+				],
+				"readmeComment": "Value mapping `[\"pause\"\u003d\"Pause\",\"resume\"\u003d\"Resume\",\"cancel\"\u003d\"Cancel\"]`"
+			}
+		],
+		"readmeComment": "Programs can only be started from the Mi Home app.",
+		"experimental": true
+	}
+}

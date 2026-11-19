@@ -1,0 +1,188 @@
+{
+	"deviceMapping": {
+		"id": [
+			"chunmi.cooker.eh1"
+		],
+		"channels": [
+			{
+				"property": "status",
+				"friendlyName": "Status",
+				"channel": "status",
+				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "1",
+							"label": "Idle"
+						},
+						{
+							"value": "2",
+							"label": "Cooking"
+						},
+						{
+							"value": "3",
+							"label": "Keep Warm"
+						},
+						{
+							"value": "4",
+							"label": "Scheduled"
+						},
+						{
+							"value": "5",
+							"label": "Setting (Code 5)"
+						},
+						{
+							"value": "6",
+							"label": "Setting (Code 6)"
+						},
+						{
+							"value": "7",
+							"label": "Setting (Code 7)"
+						},
+						{
+							"value": "8",
+							"label": "Error"
+						},
+						{
+							"value": "9",
+							"label": "Finished"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "status",
+				"tags": [
+					"Status"
+				],
+				"readmeComment": "Value mapping `[\"1\"\u003d\"Idle\",\"2\"\u003d\"Cooking\",\"3\"\u003d\"Keep Warm\",\"4\"\u003d\"Scheduled\",\"5\"\u003d\"Setting (Code 5)\",\"6\"\u003d\"Setting (Code 6)\",\"7\"\u003d\"Setting (Code 7)\",\"8\"\u003d\"Error\",\"9\"\u003d\"Finished\"]`"
+			},
+			{
+				"property": "code",
+				"friendlyName": "Error",
+				"channel": "error",
+				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "0",
+							"label": "None"
+						},
+						{
+							"value": "9",
+							"label": "Top Sensor Damaged"
+						},
+						{
+							"value": "10",
+							"label": "Base Sensor Damaged"
+						},
+						{
+							"value": "11",
+							"label": "Communication Fault"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "alarm",
+				"tags": [
+					"Alarm"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"None\",\"9\"\u003d\"Top Sensor Damaged\",\"10\"\u003d\"Base Sensor Damaged\",\"11\"\u003d\"Communication Fault\"]`"
+			},
+			{
+				"property": "temp",
+				"friendlyName": "Temperature",
+				"channel": "temperature",
+				"type": "Number:Temperature",
+				"unit": "celsius",
+				"stateDescription": {
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "temperature",
+				"tags": [
+					"Measurement",
+					"Temperature"
+				]
+			},
+			{
+				"property": "t_left",
+				"friendlyName": "Remaining Time",
+				"channel": "remaining_time",
+				"type": "Number:Time",
+				"unit": "seconds",
+				"stateDescription": {
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "time",
+				"tags": [
+					"Status",
+					"Duration"
+				]
+			},
+			{
+				"property": "t_cook",
+				"friendlyName": "Cooking Time",
+				"channel": "cook_time",
+				"type": "Number:Time",
+				"unit": "minutes",
+				"stateDescription": {
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "time",
+				"tags": [
+					"Status",
+					"Duration"
+				]
+			},
+			{
+				"property": "",
+				"friendlyName": "Control",
+				"channel": "control",
+				"type": "String",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "cancel",
+							"label": "Cancel Cooking"
+						}
+					]
+				},
+				"refresh": false,
+				"actions": [
+					{
+						"command": "cancel_cooking",
+						"parameterType": "NONE",
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "cancel",
+									"returnValue": 1
+								}
+							]
+						}
+					}
+				],
+				"category": "settings",
+				"tags": [
+					"Control"
+				],
+				"readmeComment": "Value mapping `[\"cancel\"\u003d\"Cancel Cooking\"]`"
+			}
+		],
+		"readmeComment": "Cooking can only be started from the Mi Home app.",
+		"experimental": true
+	}
+}
