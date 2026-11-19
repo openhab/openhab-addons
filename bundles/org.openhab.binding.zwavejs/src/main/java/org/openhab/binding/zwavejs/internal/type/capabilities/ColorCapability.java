@@ -12,7 +12,9 @@
  */
 package org.openhab.binding.zwavejs.internal.type.capabilities;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -23,13 +25,17 @@ import org.openhab.core.library.types.PercentType;
 import org.openhab.core.thing.ChannelUID;
 
 /**
- * A class encapsulating the color capability of a light endpoint
+ * A class encapsulating the color capability of a light endpoint.
+ * Mutable light state is guarded by this instance.
  *
  * @author Andrew Fiddian-Green - Initial contribution
+ * @author Leo Siepel - Track reported colors per channel
  */
 @NonNullByDefault
 public class ColorCapability {
-    public HSBType cachedColor = new HSBType(DecimalType.ZERO, PercentType.ZERO, PercentType.HUNDRED);
+    public final Map<ChannelUID, HSBType> cachedColors = new HashMap<>();
+    public final Set<ChannelUID> confirmedRgbChannels = new HashSet<>();
+    public PercentType cachedBrightness = PercentType.HUNDRED;
     public Number cachedWarmWhite = DecimalType.ZERO;
     public Number cachedColdWhite = DecimalType.ZERO;
     public Set<ChannelUID> colorChannels = new HashSet<>();
@@ -39,10 +45,10 @@ public class ColorCapability {
     public @Nullable ChannelUID coldWhiteChannel = null;
 
     @Override
-    public String toString() {
-        return "ColorCapability [cachedColor=" + cachedColor + ", cachedWarmWhite=" + cachedWarmWhite
-                + ", cachedColdWhite=" + cachedColdWhite + ", colorChannels=" + colorChannels + ", dimmerChannel="
-                + dimmerChannel + ", colorTempChannel=" + colorTempChannel + ", warmWhiteChannel=" + warmWhiteChannel
-                + ", coldWhiteChannel=" + coldWhiteChannel + "]";
+    public synchronized String toString() {
+        return "ColorCapability [cachedColors=" + cachedColors + ", cachedBrightness=" + cachedBrightness
+                + ", cachedWarmWhite=" + cachedWarmWhite + ", cachedColdWhite=" + cachedColdWhite + ", colorChannels="
+                + colorChannels + ", dimmerChannel=" + dimmerChannel + ", colorTempChannel=" + colorTempChannel
+                + ", warmWhiteChannel=" + warmWhiteChannel + ", coldWhiteChannel=" + coldWhiteChannel + "]";
     }
 }

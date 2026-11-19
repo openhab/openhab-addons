@@ -386,6 +386,11 @@ public class ZwaveJSTypeGeneratorTest {
 
         assertFalse(results.channels.containsKey("color-switch-color"));
         assertFalse(type.isAdvanced());
+        Channel dimmer = Objects.requireNonNull(results.channels.get("multilevel-switch-value"));
+        assertFalse(Objects
+                .requireNonNull(
+                        channelTypeProvider.getChannelType(Objects.requireNonNull(dimmer.getChannelTypeUID()), null))
+                .isAdvanced());
     }
 
     @Test
@@ -402,6 +407,11 @@ public class ZwaveJSTypeGeneratorTest {
         assertNull(Objects.requireNonNull(results.channels.get("color-switch-color")).getConfiguration()
                 .get(BindingConstants.CONFIG_CHANNEL_WRITE_PROPERTY_STR));
         assertFalse(type.isAdvanced());
+        Channel dimmer = Objects.requireNonNull(results.channels.get("multilevel-switch-value"));
+        assertFalse(Objects
+                .requireNonNull(
+                        channelTypeProvider.getChannelType(Objects.requireNonNull(dimmer.getChannelTypeUID()), null))
+                .isAdvanced());
     }
 
     @Test
