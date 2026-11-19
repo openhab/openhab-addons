@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ivysettings>
+	<settings defaultResolver="downloadGrapes"/>
+	<caches lockStrategy="artifact-lock-nio"/>
+	<resolvers>
+		<chain name="downloadGrapes" returnFirst="true">
+			<ibiblio name="testMavenRepository" root="${groovy.test.mavenRepository}" m2compatible="true"/>
+		</chain>
+	</resolvers>
+</ivysettings>
