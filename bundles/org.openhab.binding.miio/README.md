@@ -10513,7 +10513,7 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | Channel                    | Type                 | Description                              | Comment    |
 |----------------------------|----------------------|------------------------------------------|------------|
 | actions                    | String               | Actions                                  | Value mapping `["vacuum-start-sweep"="Start Cleaning","vacuum-stop-sweeping"="Stop Cleaning","vacuum-start-only-sweep"="Start Vacuuming Only","vacuum-start-sweep-mop"="Start Vacuuming And Mopping","vacuum-start-mop"="Start Mopping Only","battery-start-charge"="Go Charging"]` |
-| status                     | Number               | Robot Cleaner - Status                   | Value mapping `["0"="Sleep","1"="Idle","2"="Paused","3"="Go Charging","4"="Charging","5"="Sweeping","6"="Mopping","7"="Sweeping and Mopping","8"="Upgrade"]` |
+| status                     | Number               | Robot Cleaner - Status                   | The MIoT specification lists 6 as Mopping and 7 as Sweeping and Mopping; the Mi Home app uses 6 for sweeping and mopping and 7 for mopping. Value mapping `["0"="Sleep","1"="Idle","2"="Paused","3"="Go Charging","4"="Charging","5"="Sweeping","6"="Sweeping and Mopping","7"="Mopping","8"="Upgrade"]` |
 | fault                      | Number               | Robot Cleaner - Device Fault             |            |
 | mode                       | Number               | Robot Cleaner - Mode                     | Value mapping `["0"="Sweep","1"="Sweep And Mop","2"="Mop"]` |
 | sweep_type                 | Number               | Robot Cleaner - Sweep Type               | Value mapping `["0"="Global","1"="Mop","2"="Edge","3"="Area","4"="Point","5"="Remote Control","6"="Explore","7"="Room","8"="Floor Type"]` |
@@ -10523,9 +10523,9 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | repeat_state               | Switch               | Sweep - Clean Twice                      |            |
 | door_state                 | Number               | Sweep - Installed Box                    | Value mapping `["0"="None","1"="Dust Box","2"="Water Box","3"="2-in-1 Box"]` |
 | cloth_state                | Switch               | Sweep - Mop Attached                     |            |
-| suction_state              | Number               | Sweep - Suction Level                    | Value mapping `["0"="Silent","1"="Standard","2"="Medium","3"="Turbo"]` |
+| suction_state              | Number               | Sweep - Suction Level                    | Value mapping `["0"="Silent","1"="Standard","2"="Strong","3"="Turbo"]` |
 | water_state                | Number               | Sweep - Water Level                      | Value mapping `["0"="Low","1"="Medium","2"="High"]` |
-| mop_route                  | Number               | Sweep - Mop Route                        | Value mapping `["0"="S-Shape","1"="Y-Shape"]` |
+| mop_route                  | Number               | Sweep - Mop Route                        | Value mapping `["0"="Standard (S-Shape)","1"="Professional (Y-Shape)"]` |
 | side_brush_life            | Number:Dimensionless | Sweep - Side Brush Life                  |            |
 | side_brush_hours           | Number:Time          | Sweep - Side Brush Time Left             |            |
 | main_brush_life            | Number:Dimensionless | Sweep - Main Brush Life                  |            |
@@ -10556,7 +10556,7 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | Channel                    | Type                 | Description                              | Comment    |
 |----------------------------|----------------------|------------------------------------------|------------|
 | actions                    | String               | Actions                                  | Value mapping `["vacuum-start-sweep"="Start Cleaning","vacuum-stop-sweeping"="Stop Cleaning","vacuum-start-only-sweep"="Start Vacuuming Only","vacuum-start-sweep-mop"="Start Vacuuming And Mopping","vacuum-start-mop"="Start Mopping Only","battery-start-charge"="Go Charging"]` |
-| status                     | Number               | Robot Cleaner - Status                   | Value mapping `["0"="Sleep","1"="Idle","2"="Paused","3"="Go Charging","4"="Charging","5"="Sweeping","6"="Mopping","7"="Sweeping and Mopping","8"="Upgrade"]` |
+| status                     | Number               | Robot Cleaner - Status                   | The MIoT specification lists 6 as Mopping and 7 as Sweeping and Mopping; the Mi Home app uses 6 for sweeping and mopping and 7 for mopping. Value mapping `["0"="Sleep","1"="Idle","2"="Paused","3"="Go Charging","4"="Charging","5"="Sweeping","6"="Sweeping and Mopping","7"="Mopping","8"="Upgrade"]` |
 | fault                      | Number               | Robot Cleaner - Device Fault             |            |
 | mode                       | Number               | Robot Cleaner - Mode                     | Value mapping `["0"="Sweep","1"="Sweep And Mop","2"="Mop"]` |
 | sweep_type                 | Number               | Robot Cleaner - Sweep Type               | Value mapping `["0"="Global","1"="Mop","2"="Edge","3"="Area","4"="Point","5"="Remote Control","6"="Explore","7"="Room","8"="Floor Type"]` |
@@ -10566,9 +10566,9 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | repeat_state               | Switch               | Sweep - Clean Twice                      |            |
 | door_state                 | Number               | Sweep - Installed Box                    | Value mapping `["0"="None","1"="Dust Box","2"="Water Box","3"="2-in-1 Box"]` |
 | cloth_state                | Switch               | Sweep - Mop Attached                     |            |
-| suction_state              | Number               | Sweep - Suction Level                    | Value mapping `["0"="Silent","1"="Standard","2"="Medium","3"="Turbo"]` |
+| suction_state              | Number               | Sweep - Suction Level                    | Value mapping `["0"="Silent","1"="Standard","2"="Strong","3"="Turbo"]` |
 | water_state                | Number               | Sweep - Water Level                      | Value mapping `["0"="Low","1"="Medium","2"="High"]` |
-| mop_route                  | Number               | Sweep - Mop Route                        | Value mapping `["0"="S-Shape","1"="Y-Shape"]` |
+| mop_route                  | Number               | Sweep - Mop Route                        | Value mapping `["0"="Standard (S-Shape)","1"="Professional (Y-Shape)"]` |
 | side_brush_life            | Number:Dimensionless | Sweep - Side Brush Life                  |            |
 | side_brush_hours           | Number:Time          | Sweep - Side Brush Time Left             |            |
 | main_brush_life            | Number:Dimensionless | Sweep - Main Brush Life                  |            |
@@ -10606,7 +10606,7 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | cleaning_area              | Number:Area          | Robot Cleaner - Cleaning Area            |            |
 | cleaning_time              | Number:Time          | Robot Cleaner - Cleaning Time            |            |
 | clean_times                | Number               | Robot Cleaner - Clean Times              | Value mapping `["1"="Once","2"="Twice"]` |
-| suction_level              | Number               | Robot Cleaner - Suction Level            | Value mapping `["1"="Silent","2"="Basic","3"="Strong","4"="Full Speed"]` |
+| suction_level              | Number               | Robot Cleaner - Suction Level            | Value mapping `["1"="Silent","2"="Standard","3"="Strong","4"="Turbo"]` |
 | mop_water_output_level     | Number               | Robot Cleaner - Mop Water Output Level   | Value mapping `["0"="Off","1"="Level 1","2"="Level 2","3"="Level 3"]` |
 | zone_ids                   | String               | Robot Cleaner - Zone IDs                 |            |
 | mode                       | Number               | Robot Cleaner - Mode                     | Not used by the Mi Home app, which sets the suction level with `suction_level`. Value mapping `["1"="Silent","2"="Basic","3"="Strong"]` |
@@ -10777,7 +10777,7 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | cleaning_time              | Number:Time          | Vacuum Extend - Cleaning Time            |            |
 | cleaning_area              | Number:Area          | Vacuum Extend - Cleaning Area            |            |
 | cleaning_mode              | Number               | Vacuum Extend - Suction Level            | Value mapping `["0"="Silent","1"="Standard","2"="Strong","3"="Turbo"]` |
-| mop_mode                   | Number               | Vacuum Extend - Mop Water Level          | Value mapping `["1"="Low","2"="Medium","3"="High"]` |
+| mop_mode                   | Number               | Vacuum Extend - Mop Water Level          | Not written by the Mi Home app of this model, which sets the mop water level in `clean_setting`. Value mapping `["1"="Low","2"="Medium","3"="High"]` |
 | waterbox_status            | Switch               | Vacuum Extend - Mop Installed            |            |
 | task_status                | Number               | Vacuum Extend - Task Status              | Value mapping `["0"="Completed","1"="Auto Cleaning","2"="Zone Cleaning","3"="Room Cleaning","4"="Spot Cleaning","5"="Fast Mapping","6"="Auto Cleaning Paused","7"="Zone Cleaning Paused","8"="Room Cleaning Paused","9"="Spot Cleaning Paused","10"="Map Cleaning Paused","11"="Charging Paused","12"="Back Washing Paused","13"="Room Back Washing Paused","14"="Zone Back Washing Paused","15"="Auto Back Washing Paused","16"="Auto Charging Paused","17"="Selected Charging Paused","18"="Zone Charging Paused","19"="Spot Charging Paused","27"="Station Self Cleaning","28"="Station Self Cleaning Waiting To Return","29"="Station Self Cleaning Going To Charge","31"="Auto Clean Wash Paused","32"="Room Clean Wash Paused","33"="Zone Clean Wash Paused"]` |
 | break_point_restart        | Switch               | Vacuum Extend - Resume After Charging    |            |
@@ -10788,9 +10788,15 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | faults                     | String               | Vacuum Extend - Faults                   |            |
 | nation_matched             | String               | Vacuum Extend - Nation Matched           |            |
 | relocation_status          | Number               | Vacuum Extend - Relocation Status        |            |
+| clean_setting              | Number               | Vacuum Extend - Clean Setting            | Packed setting that the Mi Home app writes for the cleaning type, the mop pad washing frequency and the mop water level: cleaning type in bits 0 and 1 (0 vacuuming and mopping, 1 mopping, 2 vacuuming, 3 vacuuming before mopping), the area in square meters after which the mop pad is washed in bits 8 to 15 (0 washes per room, otherwise a multiple of 5) and the mop water level (1 to 3, `mop_mode`) from bit 16. The value is the cleaning type plus 256 times the area plus 65536 times the water level. To change one part, send the complete value with the other parts unchanged |
 | wash_station               | Number               | Vacuum Extend - Wash Station             | Value mapping `["0"="Idle","1"="Washing","2"="Drying","3"="Go Washing","4"="Paused","5"="Washing And Refilling Water","6"="Refilling Water"]` |
 | child_lock                 | Switch               | Vacuum Extend - Child Lock               |            |
 | clean_cancel               | Number               | Vacuum Extend - Clean Cancel             |            |
+| carpet_recognition         | Number               | Vacuum Extend - Carpet Recognition       | Values 2, 4, 5 and 6 are reported while the ultrasonic sensor has an error; the Mi Home app then refuses to switch it on. Value mapping `["0"="Off","1"="On"]` |
+| smart_wash_switch          | Switch               | Vacuum Extend - Auto Mop Pad Washing     | Off keeps the robot from returning to the station to wash the mop pads during a cleaning task |
+| carpet_escape              | Number               | Vacuum Extend - Carpet Cleanup Method    | Used by the Mi Home app only while `carpet_recognition` is on. Value mapping `["1"="Avoid Carpets","2"="Vacuum Only On Carpets"]` |
+| drying_time                | Number:Time          | Vacuum Extend - Mop Pad Drying Time      | Duration of the mop pad drying in the station, 2 to 4 hours as offered by the Mi Home app |
+| mop_wash_mode              | Number               | Vacuum Extend - Mop Pad Washing Mode     | The Mi Home app of this model only offers Daily and Deep. Value mapping `["0"="Water Saving","1"="Daily","2"="Deep"]` |
 | enable                     | Switch               | Do Not Disturb - Enable                  |            |
 | start_time                 | String               | Do Not Disturb - Start Time              | Time of day in 24-hour format `HH:MM`, for example `22:00` |
 | end_time                   | String               | Do Not Disturb - End Time                | Time of day in 24-hour format `HH:MM`, for example `08:00` |
@@ -25823,9 +25829,15 @@ Number:Time keep_sweeper_time "Vacuum Extend - Keep Sweeper Time" (G_vacuum) {ch
 String faults "Vacuum Extend - Faults" (G_vacuum) {channel="miio:basic:vacuum:faults"}
 String nation_matched "Vacuum Extend - Nation Matched" (G_vacuum) {channel="miio:basic:vacuum:nation_matched"}
 Number relocation_status "Vacuum Extend - Relocation Status" (G_vacuum) {channel="miio:basic:vacuum:relocation_status"}
+Number clean_setting "Vacuum Extend - Clean Setting" (G_vacuum) {channel="miio:basic:vacuum:clean_setting"}
 Number wash_station "Vacuum Extend - Wash Station" (G_vacuum) {channel="miio:basic:vacuum:wash_station"}
 Switch child_lock "Vacuum Extend - Child Lock" (G_vacuum) {channel="miio:basic:vacuum:child_lock"}
 Number clean_cancel "Vacuum Extend - Clean Cancel" (G_vacuum) {channel="miio:basic:vacuum:clean_cancel"}
+Number carpet_recognition "Vacuum Extend - Carpet Recognition" (G_vacuum) {channel="miio:basic:vacuum:carpet_recognition"}
+Switch smart_wash_switch "Vacuum Extend - Auto Mop Pad Washing" (G_vacuum) {channel="miio:basic:vacuum:smart_wash_switch"}
+Number carpet_escape "Vacuum Extend - Carpet Cleanup Method" (G_vacuum) {channel="miio:basic:vacuum:carpet_escape"}
+Number:Time drying_time "Vacuum Extend - Mop Pad Drying Time" (G_vacuum) {channel="miio:basic:vacuum:drying_time"}
+Number mop_wash_mode "Vacuum Extend - Mop Pad Washing Mode" (G_vacuum) {channel="miio:basic:vacuum:mop_wash_mode"}
 Switch enable "Do Not Disturb - Enable" (G_vacuum) {channel="miio:basic:vacuum:enable"}
 String start_time "Do Not Disturb - Start Time" (G_vacuum) {channel="miio:basic:vacuum:start_time"}
 String end_time "Do Not Disturb - End Time" (G_vacuum) {channel="miio:basic:vacuum:end_time"}
