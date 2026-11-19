@@ -61,6 +61,8 @@
 
 		<channel-groups>
 			<channel-group id="vehicle" typeId="vehicle-status"/>
+			<channel-group id="charging" typeId="charging"/>
+			<channel-group id="fuel" typeId="fuel"/>
 			<channel-group id="doors" typeId="doors-status"/>
 			<channel-group id="tires" typeId="tires-status"/>
 			<channel-group id="climate" typeId="climate-status"/>
@@ -81,29 +83,27 @@
 
 	<!-- ==================== CHANNEL GROUP TYPES ==================== -->
 
-	<!-- 1. Base Vehicle Status (Battery, Powertrain, Location, Driving Operation) -->
+	<!-- Charging Channel Group -->
+	<channel-group-type id="charging">
+		<label>Charging</label>
+		<description>High-voltage battery and charging parameters</description>
+		<category>Battery</category>
+	</channel-group-type>
+
+	<!-- Fuel Channel Group -->
+	<channel-group-type id="fuel">
+		<label>Fuel</label>
+		<description>Fuel tank and combustion engine parameters</description>
+		<category>Oil</category>
+	</channel-group-type>
+
+	<!-- 1. Base Vehicle Status (Powertrain, Location, Driving Operation) -->
 	<channel-group-type id="vehicle-status">
 		<label>Vehicle Status</label>
-		<description>Base telematics, battery, powertrain, GPS position, and operational state</description>
+		<description>Base telematics, powertrain, GPS position, and operational state</description>
 		<category>Vehicle</category>
 		<channels>
-			<!-- Battery & Charging -->
-			<channel id="soc" typeId="soc"/>
-			<channel id="capacity" typeId="battery-capacity"/>
-			<channel id="charging" typeId="charging-boolean"/>
-			<channel id="plugin" typeId="charge-plugin-enum"/>
-			<channel id="charge-status" typeId="charge-status-enum"/>
-			<channel id="remain-time" typeId="remain-time"/>
-			<channel id="target-soc-standard" typeId="soc-limit">
-				<label>Charge Limit AC (Standard)</label>
-				<description>Target state of charge for AC standard charging</description>
-			</channel>
-			<channel id="target-soc-quick" typeId="soc-limit">
-				<label>Charge Limit DC (Fast)</label>
-				<description>Target state of charge for DC fast charging</description>
-			</channel>
 			<!-- Powertrain -->
-			<channel id="fuel-level" typeId="fuel-level"/>
 			<channel id="distance-to-empty" typeId="distance-to-empty"/>
 			<channel id="distance-type" typeId="distance-type-enum"/>
 			<!-- Location -->
@@ -384,6 +384,30 @@
 		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Charge Limit</label>
 		<description>Configured maximum state of charge limit</description>
+		<category>Battery</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Energy</tag>
+		</tags>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+
+	<channel-type id="target-soc-standard">
+		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<label>Charge Limit AC (Standard)</label>
+		<description>Target state of charge for AC standard charging</description>
+		<category>Battery</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Energy</tag>
+		</tags>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+
+	<channel-type id="target-soc-quick">
+		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<label>Charge Limit DC (Fast)</label>
+		<description>Target state of charge for DC fast charging</description>
 		<category>Battery</category>
 		<tags>
 			<tag>Status</tag>

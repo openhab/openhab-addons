@@ -50,10 +50,36 @@ public class PleosBindingConstants {
 
     // Channel group IDs
     public static final String GROUP_VEHICLE = "vehicle";
+    public static final String GROUP_CHARGING = "charging";
+    public static final String GROUP_FUEL = "fuel";
     public static final String GROUP_DOORS = "doors";
     public static final String GROUP_TIRES = "tires";
     public static final String GROUP_CLIMATE = "climate";
     public static final String GROUP_SEATS = "seats";
     public static final String GROUP_WARNINGS = "warnings";
     public static final String GROUP_FREEZER = "freezer";
+
+    // Dynamic Channel Type IDs
+    public static final String CHANNEL_TYPE_SOC = "soc";
+    public static final String CHANNEL_TYPE_BATTERY_CAPACITY = "battery-capacity";
+    public static final String CHANNEL_TYPE_CHARGING_BOOLEAN = "charging-boolean";
+    public static final String CHANNEL_TYPE_CHARGE_PLUGIN_ENUM = "charge-plugin-enum";
+    public static final String CHANNEL_TYPE_CHARGE_STATUS_ENUM = "charge-status-enum";
+    public static final String CHANNEL_TYPE_REMAIN_TIME = "remain-time";
+    public static final String CHANNEL_TYPE_TARGET_SOC_STANDARD = "target-soc-standard";
+    public static final String CHANNEL_TYPE_TARGET_SOC_QUICK = "target-soc-quick";
+    public static final String CHANNEL_TYPE_FUEL_LEVEL = "fuel-level";
+
+    // Dynamic Channel IDs - Charging
+    public static final String CHANNEL_SOC = "soc";
+    public static final String CHANNEL_CAPACITY = "capacity";
+    public static final String CHANNEL_CHARGING = "charging";
+    public static final String CHANNEL_PLUGIN = "plugin";
+    public static final String CHANNEL_CHARGE_STATUS = "charge-status";
+    public static final String CHANNEL_REMAIN_TIME = "remain-time";
+    public static final String CHANNEL_TARGET_SOC_STANDARD = "target-soc-standard";
+    public static final String CHANNEL_TARGET_SOC_QUICK = "target-soc-quick";
+
+    // Dynamic Channel IDs - Fuel
+    public static final String CHANNEL_FUEL_LEVEL = "fuel-level";
 }
