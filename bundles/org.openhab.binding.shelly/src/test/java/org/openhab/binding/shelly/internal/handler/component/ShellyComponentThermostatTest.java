@@ -246,7 +246,7 @@ public class ShellyComponentThermostatTest {
     }
 
     @Test
-    void failedProfileReadStillPublishesStateAndIsRetried() throws Exception {
+    void failedProfileReadOffersActiveProfileAndIsNotRepeated() throws Exception {
         Shelly2ApiRpc api = mock(Shelly2ApiRpc.class);
         when(api.apiRequest(any(Shelly2RpcRequest.class), eq(Shelly2ThermostatProfiles.class)))
                 .thenThrow(new ShellyApiException("timeout"));
@@ -257,10 +257,27 @@ public class ShellyComponentThermostatTest {
         ShellyComponentThermostat.updateChannels(handler, status);
         ShellyComponentThermostat.updateChannels(handler, status);
 
-        verify(api, times(2)).apiRequest(any(Shelly2RpcRequest.class), eq(Shelly2ThermostatProfiles.class));
-        verify(handler, never()).updateStateOptions(any(), any(), any());
+        verify(api, times(1)).apiRequest(any(Shelly2RpcRequest.class), eq(Shelly2ThermostatProfiles.class));
+        verify(handler).updateStateOptions(CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_PROFILE, Map.of("2", "Away"));
         verify(handler, times(2)).updateChannel(CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_SCHEDULE, OnOffType.OFF);
         verify(handler, times(2)).updateChannel(CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_PROFILE, new StringType("2"));
+    }
+
+    @Test
+    void profilesAreReadAgainAfterReinitialization() throws Exception {
+        Shelly2ApiRpc api = mock(Shelly2ApiRpc.class);
+        when(api.apiRequest(any(Shelly2RpcRequest.class), eq(Shelly2ThermostatProfiles.class)))
+                .thenReturn(profiles(0, "Winter")).thenReturn(profiles(0, "Holiday"));
+        ShellyThingInterface handler = newHandler(THING_TYPE_SHELLYPLUSWALLDISPLAY);
+        when(handler.getApi()).thenReturn(api);
+        ShellySettingsStatus status = statusWithSchedule(true, 0, "Winter");
+
+        ShellyComponentThermostat.updateChannels(handler, status);
+        handler.getProfile().initFromThingType(THING_TYPE_SHELLYPLUSWALLDISPLAY);
+        ShellyComponentThermostat.updateChannels(handler, status);
+
+        verify(api, times(2)).apiRequest(any(Shelly2RpcRequest.class), eq(Shelly2ThermostatProfiles.class));
+        verify(handler).updateStateOptions(CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_PROFILE, Map.of("0", "Holiday"));
     }
 
     @Test

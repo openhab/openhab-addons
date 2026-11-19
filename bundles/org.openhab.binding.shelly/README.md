@@ -2734,15 +2734,12 @@ Its `thermostatEnable` and `targetTemp` channels are only available while the th
 The thermostat's current temperature and controlled output are shown by the existing `sensors#temperature` and `relay#output` channels.
 Enabling or disabling the thermostat in the Shelly app adds or removes these channels with the next status update, so the Thing doesn't need to be re-created.
 
-The `schedule` and `selectedProfile` channels are available when the
-thermostat reports a schedule.
+The `schedule` and `selectedProfile` channels are available when the thermostat reports a schedule.
 `selectedProfile` accepts the id or the name of a profile.
-The ids and names of the profiles configured in the Shelly app are offered as
-options (for a Selection widget). Profiles and schedule rules themselves can
-only be edited in the Shelly app.
-The list of profiles is read when the Thing is initialized, and again when the
-device reports a profile that is not in the list yet.
-Renamed profiles are picked up when the Thing is initialized again.
+The ids and names of the profiles configured in the Shelly app are offered as options (for a Selection widget).
+Profiles and schedule rules themselves can only be edited in the Shelly app.
+The list of profiles is read when the Thing is initialized, and again when the device reports a profile that is not in the list yet.
+Renamed profiles are picked up when the Thing is initialized again, e.g. after a device restart.
 
 The `sensors` group's `batteryLevel` and `lowBattery` channels are only available while a battery-operated sensor is attached to the Wall Display.
 Pairing a sensor after the Thing was created adds them with the next status update, unpairing the sensor removes them again.

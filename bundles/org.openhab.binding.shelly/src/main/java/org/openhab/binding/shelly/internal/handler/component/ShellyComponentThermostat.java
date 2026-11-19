@@ -175,7 +175,6 @@ public class ShellyComponentThermostat {
             }
         } catch (ShellyApiException e) {
             LOGGER.debug("{}: Unable to read thermostat profiles: {}", thingHandler.getThingName(), e.getMessage());
-            return;
         }
         // keep the active profile visible even if the device doesn't list it
         if (activeId != null && !loaded.containsKey(activeId)) {

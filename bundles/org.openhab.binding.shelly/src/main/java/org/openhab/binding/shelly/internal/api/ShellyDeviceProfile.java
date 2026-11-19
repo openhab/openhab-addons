@@ -227,6 +227,7 @@ public class ShellyDeviceProfile {
     public void initFromThingType(ThingTypeUID thingTypeUID) {
         isBlu = isBluSeries(thingTypeUID); // e.g. SBBT for BLU Button
         isGen2 = isGeneration2(thingTypeUID);
+        thermostatProfilesLoaded = false;
 
         isDimmer = GROUP_DIMMER_THING_TYPES.contains(thingTypeUID);
         isBulb = THING_TYPE_SHELLYBULB.equals(thingTypeUID);
