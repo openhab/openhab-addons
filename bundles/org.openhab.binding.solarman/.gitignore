@@ -1,3 +1,0 @@
-﻿# Python is used only by profile/fixture generation tools.
-__pycache__/
-*.pyc

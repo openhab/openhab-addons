@@ -17,6 +17,7 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import java.io.IOException;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -95,7 +96,7 @@ class SolarmanProfileSelectionTest {
         assertTrue(names.containsAll(SolarmanBindingConstants.SUNSYNK_INVERTER_TYPES.keySet()));
         assertEquals(new java.util.HashSet<>(SolarmanBindingConstants.SUNSYNK_PROFILES.values()),
                 new java.util.HashSet<>(SolarmanBindingConstants.SUNSYNK_INVERTER_TYPES.values()));
-        SolarmanHandlerFactory factory = new SolarmanHandlerFactory();
+        SolarmanHandlerFactory factory = new SolarmanHandlerFactory(() -> ZoneOffset.UTC);
         for (String name : names) {
             assertInstanceOf(SolarmanLoggerHandler.class, factory.createHandler(thing(name)));
         }
@@ -321,7 +322,7 @@ class SolarmanProfileSelectionTest {
         final ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
 
         TestHandler(Thing thing) {
-            super(thing);
+            super(thing, () -> ZoneOffset.UTC);
             doAnswer(invocation -> {
                 setThing(invocation.getArgument(0));
                 return null;

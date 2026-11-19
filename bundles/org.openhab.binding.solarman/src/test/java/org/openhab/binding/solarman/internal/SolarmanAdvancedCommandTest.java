@@ -17,6 +17,10 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import java.net.SocketTimeoutException;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -33,6 +37,7 @@ import java.util.function.Consumer;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.openhab.binding.solarman.internal.modbus.SolarmanLoggerConnection;
 import org.openhab.binding.solarman.internal.modbus.SolarmanLoggerConnector;
@@ -41,6 +46,7 @@ import org.openhab.binding.solarman.internal.modbus.exception.SolarmanConnection
 import org.openhab.binding.solarman.internal.modbus.exception.SolarmanProtocolException;
 import org.openhab.binding.solarman.internal.util.SolarmanWorkQueue;
 import org.openhab.core.config.core.Configuration;
+import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -50,6 +56,9 @@ import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
@@ -65,6 +74,119 @@ import org.slf4j.Logger;
  */
 @NonNullByDefault
 class SolarmanAdvancedCommandTest {
+    @ParameterizedTest
+    @CsvSource({ "false,unset", "true,unset", "false,empty", "true,empty", "false,blank", "true,blank",
+            "false,explicit", "true,explicit" })
+    void advancedClockUsesOpenhabZoneUnlessExplicitlyConfigured(boolean compatibility, String setting)
+            throws Exception {
+        Instant commandTime = Instant.parse("2026-07-01T00:00:00Z");
+        ZoneId initialZone = ZoneId.of("Pacific/Kiritimati");
+        if (initialZone.getRules().getOffset(commandTime)
+                .equals(ZoneId.systemDefault().getRules().getOffset(commandTime))) {
+            initialZone = ZoneOffset.UTC;
+        }
+        assertNotEquals(ZoneId.systemDefault().getRules().getOffset(commandTime),
+                initialZone.getRules().getOffset(commandTime));
+        AtomicReference<ZoneId> openhabZone = new AtomicReference<>(initialZone);
+        TimeZoneProvider provider = () -> Objects.requireNonNull(openhabZone.get());
+        Map<String, Object> config = new HashMap<>(
+                Map.of("hostname", "127.0.0.1", "serialNumber", "1234567890", "inverterType", "sunsynk_single_phase"));
+        switch (setting) {
+            case "empty" -> config.put("timeZone", "");
+            case "blank" -> config.put("timeZone", " \t ");
+            case "explicit" -> config.put("timeZone", "Europe/Paris");
+            case "unset" -> {
+            }
+            default -> throw new IllegalArgumentException(setting);
+        }
+        Map<Integer, byte[]> registers = new HashMap<>();
+        registers.put(22, new byte[] { 26, 7 });
+        registers.put(23, new byte[] { 1, 12 });
+        registers.put(24, new byte[] { 34, 56 });
+        SolarmanLoggerConnection connection = mock(SolarmanLoggerConnection.class);
+        when(connection.isConnected()).thenReturn(true);
+        try (var connectorScope = mockConstruction(SolarmanLoggerConnector.class,
+                (connector, context) -> when(connector.createConnection()).thenReturn(connection));
+                var protocolScope = mockConstruction(SolarmanV5Protocol.class, (protocol, context) -> {
+                    when(protocol.readRegisters(any(), anyByte(), anyInt(), anyInt())).thenAnswer(invocation -> {
+                        int first = invocation.getArgument(2);
+                        int last = invocation.getArgument(3);
+                        Map<Integer, byte[]> snapshot = new HashMap<>();
+                        for (int address = first; address <= last; address++) {
+                            snapshot.put(address, registers.getOrDefault(address, new byte[] { 0, 0 }).clone());
+                        }
+                        return snapshot;
+                    });
+                    when(protocol.writeRegisters(any(), anyInt(), any())).thenAnswer(invocation -> {
+                        int first = invocation.getArgument(1);
+                        byte[] data = invocation.getArgument(2);
+                        for (int index = 0; index < data.length / 2; index++) {
+                            registers.put(first + index, Arrays.copyOfRange(data, index * 2, index * 2 + 2));
+                        }
+                        return true;
+                    });
+                })) {
+            Thing thing = clockThing(compatibility, config);
+            WorkerHandler handler = new WorkerHandler(thing, provider);
+            ChannelUID clock = new ChannelUID(thing.getUID(), "date-time");
+            try {
+                handler.initialize();
+                assertEquals(1, connectorScope.constructed().size());
+                Objects.requireNonNull(handler.tick.get()).run();
+                ZoneId expected = "explicit".equals(setting) ? ZoneId.of("Europe/Paris") : initialZone;
+                verify(handler.callback).stateUpdated(clock,
+                        new DateTimeType(ZonedDateTime.of(2026, 7, 1, 12, 34, 56, 0, expected)));
+
+                clearInvocations(handler.callback);
+                openhabZone.set(ZoneId.of("America/New_York"));
+                handler.handleCommand(clock, RefreshType.REFRESH);
+                Objects.requireNonNull(handler.tick.get()).run();
+                expected = "explicit".equals(setting) ? ZoneId.of("Europe/Paris") : ZoneId.of("America/New_York");
+                verify(handler.callback).stateUpdated(clock,
+                        new DateTimeType(ZonedDateTime.of(2026, 7, 1, 12, 34, 56, 0, expected)));
+
+                handler.handleCommand(clock, new DateTimeType(commandTime.atZone(ZoneOffset.UTC)));
+                Objects.requireNonNull(handler.tick.get()).run();
+                ZonedDateTime deviceTime = commandTime.atZone(expected);
+                byte[] expectedWords = { 26, (byte) deviceTime.getMonthValue(), (byte) deviceTime.getDayOfMonth(),
+                        (byte) deviceTime.getHour(), 0, 0 };
+                verify(protocolScope.constructed().getFirst()).writeRegisters(same(connection), eq(22),
+                        org.mockito.AdditionalMatchers.aryEq(expectedWords));
+                assertTrue(handler.errors.isEmpty(), handler.errors::toString);
+            } finally {
+                handler.dispose();
+            }
+        }
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = { false, true })
+    void invalidExplicitClockZoneIsConfigurationError(boolean compatibility) {
+        Thing thing = clockThing(compatibility, Map.of("hostname", "127.0.0.1", "serialNumber", "1234567890",
+                "inverterType", "sunsynk_single_phase", "timeZone", "Invalid/Zone"));
+        WorkerHandler handler = new WorkerHandler(thing, () -> ZoneOffset.UTC);
+        try {
+            handler.initialize();
+            var status = org.mockito.ArgumentCaptor.forClass(ThingStatusInfo.class);
+            verify(handler.callback).statusUpdated(any(), status.capture());
+            assertEquals(ThingStatus.OFFLINE, status.getValue().getStatus());
+            assertEquals(ThingStatusDetail.CONFIGURATION_ERROR, status.getValue().getStatusDetail());
+            verify(handler.testScheduler, never()).scheduleWithFixedDelay(any(Runnable.class), anyLong(), anyLong(),
+                    any(TimeUnit.class));
+        } finally {
+            handler.dispose();
+        }
+    }
+
+    private static Thing clockThing(boolean compatibility, Map<String, Object> configuration) {
+        var type = compatibility
+                ? SolarmanBindingConstants.SUNSYNK_PROFILES.entrySet().stream()
+                        .filter(entry -> "single_phase".equals(entry.getValue())).findFirst().orElseThrow().getKey()
+                : SolarmanBindingConstants.THING_TYPE_SOLARMAN_LOGGER;
+        return ThingBuilder.create(type, new ThingUID(type, "clock"))
+                .withConfiguration(new Configuration(configuration)).build();
+    }
+
     @ParameterizedTest
     @ValueSource(strings = { "quantity", "decimal", "percent", "six-periods", "unchanged", "partial-block",
             "partial-word", "refresh" })
@@ -482,7 +604,15 @@ class SolarmanAdvancedCommandTest {
         }
 
         WorkerHandler(Thing thing, Logger auditLogger) {
-            super(thing, auditLogger);
+            this(thing, () -> ZoneOffset.UTC, auditLogger);
+        }
+
+        WorkerHandler(Thing thing, TimeZoneProvider timeZoneProvider) {
+            this(thing, timeZoneProvider, mock(Logger.class));
+        }
+
+        WorkerHandler(Thing thing, TimeZoneProvider timeZoneProvider, Logger auditLogger) {
+            super(thing, timeZoneProvider, auditLogger);
             this.auditLogger = auditLogger;
             doAnswer(invocation -> {
                 setThing(invocation.getArgument(0));
