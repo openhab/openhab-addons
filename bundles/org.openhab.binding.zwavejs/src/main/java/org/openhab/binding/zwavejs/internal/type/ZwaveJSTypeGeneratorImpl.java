@@ -165,13 +165,13 @@ public class ZwaveJSTypeGeneratorImpl implements ZwaveJSTypeGenerator {
         // cross link the ColorCapability dimmer channels to Dimmer type channels withing the same endpoint
         mapDimmerChannelsToColorCapabilities(result);
         result.colorCapabilities.values().forEach(cap -> {
-            if (!cap.colorChannels.isEmpty() && cap.dimmerChannel instanceof ChannelUID dimmerChannel) {
-                result.channels.computeIfPresent(dimmerChannel.getId(), (id, channel) -> markAdvanced(channel));
-            }
             boolean hasWritableColorChannel = cap.colorChannels.stream().filter(c -> !c.getId().contains(HEX))
                     .map(c -> Objects.requireNonNull(result.channels.get(c.getId())))
                     .anyMatch(c -> c.getConfiguration().get(CONFIG_CHANNEL_WRITE_PROPERTY_STR) != null);
             if (hasWritableColorChannel) {
+                if (cap.dimmerChannel instanceof ChannelUID dimmerChannel) {
+                    result.channels.computeIfPresent(dimmerChannel.getId(), (id, channel) -> markAdvanced(channel));
+                }
                 cap.colorChannels.stream().filter(c -> c.getId().contains(HEX)).forEach(
                         c -> result.channels.computeIfPresent(c.getId(), (id, channel) -> markAdvanced(channel)));
             }

@@ -17,10 +17,13 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
+import java.util.Set;
+import java.util.concurrent.Future;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -32,6 +35,7 @@ import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.ArgumentCaptor;
+import org.mockito.MockedStatic;
 import org.openhab.binding.zwavejs.internal.DataUtil;
 import org.openhab.binding.zwavejs.internal.api.dto.Args;
 import org.openhab.binding.zwavejs.internal.api.dto.Event;
@@ -40,6 +44,7 @@ import org.openhab.binding.zwavejs.internal.api.dto.Value;
 import org.openhab.binding.zwavejs.internal.api.dto.commands.BaseCommand;
 import org.openhab.binding.zwavejs.internal.api.dto.commands.NodeSetValueCommand;
 import org.openhab.binding.zwavejs.internal.handler.mock.ZwaveJSNodeHandlerMock;
+import org.openhab.core.common.ThreadPoolManager;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
@@ -48,6 +53,7 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
+import org.openhab.core.util.ColorUtil;
 
 /**
  * @author Leo Siepel - Initial contribution
@@ -95,7 +101,7 @@ public class ZwaveJSNodeHandlerColorStateTest {
     }
 
     @Test
-    public void testUnlinkedColorUpdatesCachedHueAndSaturation() throws IOException {
+    public void testUnlinkedColorUpdatePreservesOtherRepresentation() throws IOException {
         ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
         ZwaveJSNodeHandlerMock handler = createHandler(callback, colorNode(), "color-switch-hex-color");
         try {
@@ -107,7 +113,7 @@ public class ZwaveJSNodeHandlerColorStateTest {
             handler.onNodeStateChanged(valueEvent(38, "Multilevel Switch", "currentValue", null, 20));
 
             verify(callback).stateUpdated(eq(new ChannelUID(handler.getThing().getUID(), "color-switch-hex-color")),
-                    eq(new HSBType("240,50,20")));
+                    eq(new HSBType("120,100,20")));
         } finally {
             handler.dispose();
         }
@@ -231,47 +237,257 @@ public class ZwaveJSNodeHandlerColorStateTest {
     }
 
     @Test
-    public void testHueChangeStillSendsColorAndBrightness() throws IOException, InterruptedException {
+    public void testHueChangeSendsColorBeforeBrightness() throws IOException {
         ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
         ZwaveJSNodeHandlerMock handler = createHandler(callback, colorNode(), "color-switch-color");
         try {
             handler.initialize();
-            ZwaveJSBridgeHandler bridgeHandler = Objects.requireNonNull(handler.getBridgeHandler());
-            clearInvocations(bridgeHandler);
-            CountDownLatch sent = new CountDownLatch(2);
-            doAnswer(invocation -> {
-                sent.countDown();
-                return null;
-            }).when(bridgeHandler).sendCommand(any(BaseCommand.class));
+            ZwaveJSBridgeHandler bridge = Objects.requireNonNull(handler.getBridgeHandler());
+            clearInvocations(bridge);
 
             handler.handleCommand(new ChannelUID(handler.getThing().getUID(), "color-switch-color"),
                     new HSBType("0,100,20"));
 
-            assertTrue(sent.await(5, TimeUnit.SECONDS));
-            ArgumentCaptor<BaseCommand> commands = ArgumentCaptor.forClass(BaseCommand.class);
-            verify(bridgeHandler, times(2)).sendCommand(commands.capture());
-            assertTrue(commands.getAllValues().stream()
-                    .anyMatch(command -> command instanceof NodeSetValueCommand set
-                            && Integer.valueOf(51).equals(set.valueId.commandClass)
-                            && "targetColor".equals(set.valueId.property)
-                            && Map.of("red", 255, "green", 0, "blue", 0, "warmWhite", 0).equals(set.value)));
-            assertTrue(commands.getAllValues().stream()
-                    .anyMatch(command -> command instanceof NodeSetValueCommand set
-                            && Integer.valueOf(38).equals(set.valueId.commandClass)
-                            && "targetValue".equals(set.valueId.property) && Integer.valueOf(20).equals(set.value)));
+            List<NodeSetValueCommand> commands = sentValueCommands(bridge);
+            assertEquals(2, commands.size());
+            assertEquals(51, commands.getFirst().valueId.commandClass);
+            assertEquals("targetColor", commands.getFirst().valueId.property);
+            assertEquals(Map.of("red", 255, "green", 0, "blue", 0, "warmWhite", 0), commands.getFirst().value);
+            assertEquals(38, commands.getLast().valueId.commandClass);
+            assertEquals("targetValue", commands.getLast().valueId.property);
+            assertEquals(20, commands.getLast().value);
         } finally {
             handler.dispose();
         }
     }
 
-    private ZwaveJSNodeHandlerMock createHandler(ThingHandlerCallback callback, Node node, String linkedChannelId) {
+    @Test
+    public void testPendingBrightnessCannotUndoOff() throws IOException {
+        ScheduledExecutorService scheduler = mock(ScheduledExecutorService.class);
+        List<Runnable> pending = new ArrayList<>();
+        doAnswer(invocation -> {
+            pending.add(invocation.getArgument(0));
+            return mock(Future.class);
+        }).when(scheduler).submit(any(Runnable.class));
+        try (MockedStatic<ThreadPoolManager> pools = mockStatic(ThreadPoolManager.class, CALLS_REAL_METHODS)) {
+            pools.when(() -> ThreadPoolManager.getScheduledPool(anyString())).thenReturn(scheduler);
+            ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
+            ZwaveJSNodeHandlerMock handler = createHandler(callback, colorNode(), "color-switch-color");
+            try {
+                handler.initialize();
+                ZwaveJSBridgeHandler bridge = Objects.requireNonNull(handler.getBridgeHandler());
+                clearInvocations(bridge);
+                ChannelUID uid = new ChannelUID(handler.getThing().getUID(), "color-switch-color");
+
+                handler.handleCommand(uid, new HSBType("0,100,20"));
+                handler.handleCommand(uid, OnOffType.OFF);
+                pending.forEach(Runnable::run);
+
+                List<NodeSetValueCommand> commands = sentValueCommands(bridge);
+                NodeSetValueCommand lastCommand = commands.getLast();
+                assertEquals(38, lastCommand.valueId.commandClass);
+                assertEquals(0, lastCommand.value);
+            } finally {
+                handler.dispose();
+            }
+        }
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = { "color-switch-color", "color-switch-hex-color" })
+    public void testRgbQuantizationDoesNotTurnDimmingIntoColorChange(String channelId) throws IOException {
+        ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
+        ZwaveJSNodeHandlerMock handler = createHandler(callback, colorNode(), channelId);
+        try {
+            handler.initialize();
+            handler.onNodeStateChanged(valueEvent(51, "Color Switch", "currentColor", null,
+                    Map.of("red", 255, "green", 128, "blue", 0, "warmWhite", 0)));
+            handler.onNodeStateChanged(valueEvent(51, "Color Switch", "hexColor", null, "FF8000"));
+            ZwaveJSBridgeHandler bridge = Objects.requireNonNull(handler.getBridgeHandler());
+            clearInvocations(bridge);
+
+            handler.handleCommand(new ChannelUID(handler.getThing().getUID(), channelId), new HSBType("30,100,20"));
+
+            List<NodeSetValueCommand> commands = sentValueCommands(bridge);
+            assertEquals(1, commands.size());
+            assertEquals(38, commands.getFirst().valueId.commandClass);
+            assertEquals(20, commands.getFirst().value);
+        } finally {
+            handler.dispose();
+        }
+    }
+
+    @Test
+    public void testUnconfirmedColorChangeIsRetried() throws IOException {
+        ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
+        ZwaveJSNodeHandlerMock handler = createHandler(callback, colorNode(), "color-switch-color");
+        try {
+            handler.initialize();
+            ZwaveJSBridgeHandler bridge = Objects.requireNonNull(handler.getBridgeHandler());
+            clearInvocations(bridge);
+            ChannelUID uid = new ChannelUID(handler.getThing().getUID(), "color-switch-color");
+
+            handler.handleCommand(uid, new HSBType("0,100,20"));
+            handler.handleCommand(uid, new HSBType("0,100,20"));
+
+            assertEquals(2, sentValueCommands(bridge).stream()
+                    .filter(command -> Integer.valueOf(51).equals(command.valueId.commandClass)).count());
+        } finally {
+            handler.dispose();
+        }
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = { "color-switch-color", "color-switch-hex-color" })
+    public void testReportedBlackDoesNotConfirmWhite(String channelId) throws IOException {
+        Node node = colorNode();
+        setReportedColor(node, Map.of("red", 0, "green", 0, "blue", 0, "warmWhite", 0), "000000");
+        ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
+        ZwaveJSNodeHandlerMock handler = createHandler(callback, node, channelId);
+        try {
+            handler.initialize();
+            ZwaveJSBridgeHandler bridge = Objects.requireNonNull(handler.getBridgeHandler());
+            clearInvocations(bridge);
+
+            handler.handleCommand(new ChannelUID(handler.getThing().getUID(), channelId), new HSBType("0,0,20"));
+
+            assertTrue(sentValueCommands(bridge).stream()
+                    .anyMatch(command -> Integer.valueOf(51).equals(command.valueId.commandClass)));
+        } finally {
+            handler.dispose();
+        }
+    }
+
+    @Test
+    public void testUnknownReportInvalidatesConfirmedColor() throws IOException {
+        ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
+        ZwaveJSNodeHandlerMock handler = createHandler(callback, colorNode(), "color-switch-color");
+        try {
+            handler.initialize();
+            handler.onNodeStateChanged(valueEvent(51, "Color Switch", "currentColor", null, null));
+            ZwaveJSBridgeHandler bridge = Objects.requireNonNull(handler.getBridgeHandler());
+            clearInvocations(bridge);
+
+            handler.handleCommand(new ChannelUID(handler.getThing().getUID(), "color-switch-color"),
+                    new HSBType("120,100,20"));
+
+            assertTrue(sentValueCommands(bridge).stream()
+                    .anyMatch(command -> Integer.valueOf(51).equals(command.valueId.commandClass)));
+        } finally {
+            handler.dispose();
+        }
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = { 0, 255 })
+    public void testWhiteComponentReportDoesNotConfirmRgb(int red) throws IOException {
+        Node node = colorNode();
+        setReportedColor(node, Map.of("red", red, "green", 0, "blue", 0, "warmWhite", 255), "000000");
+        ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
+        ZwaveJSNodeHandlerMock handler = createHandler(callback, node, "color-switch-color");
+        try {
+            handler.initialize();
+            ZwaveJSBridgeHandler bridge = Objects.requireNonNull(handler.getBridgeHandler());
+            clearInvocations(bridge);
+            HSBType white = ColorUtil.xyToHsb(ColorUtil.kelvinToXY(2500));
+
+            handler.handleCommand(new ChannelUID(handler.getThing().getUID(), "color-switch-color"),
+                    new HSBType(white.getHue(), white.getSaturation(), new PercentType(20)));
+
+            assertTrue(sentValueCommands(bridge).stream()
+                    .anyMatch(command -> Integer.valueOf(51).equals(command.valueId.commandClass)));
+        } finally {
+            handler.dispose();
+        }
+    }
+
+    @ParameterizedTest
+    @CsvSource({ "OFF, 99", "ON, 0" })
+    public void testColorSwitchingHonorsDimmerInversion(String command, int expectedValue) throws IOException {
+        ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
+        ZwaveJSNodeHandlerMock handler = createHandler(callback, colorNode(), "color-switch-color");
+        try {
+            handler.initialize();
+            Objects.requireNonNull(handler.getThing().getChannel("multilevel-switch-value")).getConfiguration()
+                    .put("inverted", true);
+            ZwaveJSBridgeHandler bridge = Objects.requireNonNull(handler.getBridgeHandler());
+            clearInvocations(bridge);
+
+            handler.handleCommand(new ChannelUID(handler.getThing().getUID(), "color-switch-color"),
+                    OnOffType.valueOf(command));
+
+            List<NodeSetValueCommand> commands = sentValueCommands(bridge);
+            assertEquals(1, commands.size());
+            assertEquals(expectedValue, commands.getFirst().value);
+        } finally {
+            handler.dispose();
+        }
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = { true, false })
+    public void testAggregateAndHexKeepTheirOwnReportedColor(boolean hexFirst) throws IOException {
+        Node node = colorNode();
+        Map<String, Integer> warmWhite = Map.of("red", 0, "green", 0, "blue", 0, "warmWhite", 255);
+        setReportedColor(node, warmWhite, "000000");
+        ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
+        ZwaveJSNodeHandlerMock handler = createHandler(callback, node, "color-switch-color", "color-switch-hex-color");
+        try {
+            handler.initialize();
+            assertWhiteRepresentations(callback, handler, 42);
+            clearInvocations(callback);
+            Event aggregateEvent = valueEvent(51, "Color Switch", "currentColor", null, warmWhite);
+            Event hexEvent = valueEvent(51, "Color Switch", "hexColor", null, "000000");
+            handler.onNodeStateChanged(hexFirst ? hexEvent : aggregateEvent);
+            handler.onNodeStateChanged(hexFirst ? aggregateEvent : hexEvent);
+            clearInvocations(callback);
+
+            handler.onNodeStateChanged(valueEvent(38, "Multilevel Switch", "currentValue", null, 17));
+
+            assertWhiteRepresentations(callback, handler, 17);
+        } finally {
+            handler.dispose();
+        }
+    }
+
+    private void assertWhiteRepresentations(ThingHandlerCallback callback, ZwaveJSNodeHandlerMock handler,
+            int brightness) {
+        HSBType white = ColorUtil.xyToHsb(ColorUtil.kelvinToXY(2500));
+        ArgumentCaptor<State> aggregateStates = ArgumentCaptor.forClass(State.class);
+        verify(callback, atLeastOnce()).stateUpdated(
+                eq(new ChannelUID(handler.getThing().getUID(), "color-switch-color")), aggregateStates.capture());
+        assertEquals(new HSBType(white.getHue(), white.getSaturation(), new PercentType(brightness)),
+                aggregateStates.getValue());
+        ArgumentCaptor<State> hexStates = ArgumentCaptor.forClass(State.class);
+        verify(callback, atLeastOnce()).stateUpdated(
+                eq(new ChannelUID(handler.getThing().getUID(), "color-switch-hex-color")), hexStates.capture());
+        assertEquals(new HSBType("0,0," + brightness), hexStates.getValue());
+    }
+
+    private void setReportedColor(Node node, Map<String, Integer> color, String hexColor) {
+        for (Value value : node.values) {
+            if (value.commandClass == 51 && "currentColor".equals(value.property) && value.propertyKey == null) {
+                value.value = color;
+            } else if (value.commandClass == 51 && "hexColor".equals(value.property)) {
+                value.value = hexColor;
+            }
+        }
+    }
+
+    private List<NodeSetValueCommand> sentValueCommands(ZwaveJSBridgeHandler bridge) {
+        ArgumentCaptor<BaseCommand> commands = ArgumentCaptor.forClass(BaseCommand.class);
+        verify(bridge, atLeastOnce()).sendCommand(commands.capture());
+        return commands.getAllValues().stream().filter(NodeSetValueCommand.class::isInstance)
+                .map(NodeSetValueCommand.class::cast).toList();
+    }
+
+    private ZwaveJSNodeHandlerMock createHandler(ThingHandlerCallback callback, Node node, String... linkedChannelIds) {
         Thing thing = ZwaveJSNodeHandlerMock.mockThing(node.nodeId);
         ZwaveJSNodeHandlerMock handler = ZwaveJSNodeHandlerMock.createHandler(callback, thing, "store_4.json", false);
-        ChannelUID linkedChannelUID = new ChannelUID(thing.getUID(), linkedChannelId);
-        doReturn(false).when(handler).isLinked(anyString());
-        doReturn(false).when(handler).isLinked(any(ChannelUID.class));
-        doReturn(true).when(handler).isLinked(linkedChannelId);
-        doReturn(true).when(handler).isLinked(linkedChannelUID);
+        Set<String> linkedChannels = Set.of(linkedChannelIds);
+        doAnswer(invocation -> linkedChannels.contains(invocation.getArgument(0))).when(handler).isLinked(anyString());
+        doAnswer(invocation -> linkedChannels.contains(((ChannelUID) invocation.getArgument(0)).getId())).when(handler)
+                .isLinked(any(ChannelUID.class));
         ZwaveJSBridgeHandler bridgeHandler = Objects.requireNonNull(handler.getBridgeHandler());
         doReturn(bridgeHandler).when(handler).getBridgeHandler();
         doReturn(node).when(bridgeHandler).requestNodeDetails(node.nodeId);
@@ -312,7 +528,7 @@ public class ZwaveJSNodeHandlerColorStateTest {
     }
 
     private Event valueEvent(int commandClass, String commandClassName, String property, @Nullable Integer propertyKey,
-            Object newValue) {
+            @Nullable Object newValue) {
         Event event = new Event();
         event.nodeId = 44;
         event.args = new Args();
