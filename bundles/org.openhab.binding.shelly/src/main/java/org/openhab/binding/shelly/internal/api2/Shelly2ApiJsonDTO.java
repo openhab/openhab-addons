@@ -117,6 +117,8 @@ public class Shelly2ApiJsonDTO {
     public static final String SHELLYRPC_METHOD_MEDIA_SETVOLUME = "Media.SetVolume";
     public static final String SHELLYRPC_METHOD_MEDIA_RADIO_PLAYFAVOURITE = "Media.Radio.PlayFavourite";
     public static final String SHELLYRPC_METHOD_THERMOSTAT_SETCONFIG = "Thermostat.SetConfig";
+    public static final String SHELLYRPC_METHOD_THERMOSTAT_SCHEDULE_SETCONFIG = "Thermostat.Schedule.SetConfig";
+    public static final String SHELLYRPC_METHOD_THERMOSTAT_SCHEDULE_LISTPROFILES = "Thermostat.Schedule.ListProfiles";
 
     public static final String SHELLYRPC_METHOD_NOTIFYSTATUS = "NotifyStatus"; // inbound status
     public static final String SHELLYRPC_METHOD_NOTIFYFULLSTATUS = "NotifyFullStatus"; // inbound status from bat device
@@ -1231,9 +1233,11 @@ public class Shelly2ApiJsonDTO {
         @SerializedName("report_holdoff")
         public @Nullable Integer reportHoldoff;
 
-        // Thermostat.SetConfig
+        // Thermostat.SetConfig, Thermostat.Schedule.SetConfig
         @SerializedName("target_C")
         public @Nullable Double targetC;
+        @SerializedName("profile_id")
+        public @Nullable Integer profileId;
     }
 
     public static class Shelly2RpcRequest {
