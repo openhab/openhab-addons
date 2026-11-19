@@ -25,6 +25,7 @@ import java.util.Arrays;
 import java.util.Base64;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -60,7 +61,7 @@ import org.openhab.binding.verisure.internal.dto.VerisureGatewayDTO.Communicatio
 import org.openhab.binding.verisure.internal.dto.VerisureInstallationsDTO;
 import org.openhab.binding.verisure.internal.dto.VerisureInstallationsDTO.Owainstallation;
 import org.openhab.binding.verisure.internal.dto.VerisureMiceDetectionDTO;
-import org.openhab.binding.verisure.internal.dto.VerisureSmartLockDTO;
+import org.openhab.binding.verisure.internal.dto.VerisureSmartLockConfigurationDTO;
 import org.openhab.binding.verisure.internal.dto.VerisureSmartLocksDTO;
 import org.openhab.binding.verisure.internal.dto.VerisureSmartPlugsDTO;
 import org.openhab.binding.verisure.internal.dto.VerisureThingDTO;
@@ -70,6 +71,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSyntaxException;
 
 /**
@@ -148,7 +154,7 @@ public class VerisureSession {
             int httpResultCode = setSessionCookieAuthLogin();
             if (httpResultCode == HttpStatus.OK_200) {
                 configureInstallationInstance(installationId);
-                return postVerisureAPI(url, data);
+                return postVerisureAPI(url, data, GraphQLErrors.FAIL);
             } else {
                 return httpResultCode;
             }
@@ -406,21 +412,6 @@ public class VerisureSession {
         }
     }
 
-    private <T> @Nullable T getJSONVerisureAPI(String url, Class<T> jsonClass)
-            throws ExecutionException, InterruptedException, TimeoutException, JsonSyntaxException {
-        logger.debug("HTTP GET: {}", BASE_URL + url);
-
-        ContentResponse response = httpClient.GET(BASE_URL + url + "?_=" + System.currentTimeMillis());
-        String content = response.getContentAsString();
-        logTraceWithPattern(response.getStatus(), content);
-
-        if (response.getStatus() != HttpStatus.OK_200) {
-            logger.debug("HTTP GET {} returned status {}, ignoring response", url, response.getStatus());
-            return null;
-        }
-        return gson.fromJson(content, jsonClass);
-    }
-
     private ContentResponse postVerisureAPI(String url, String data, boolean isJSON)
             throws ExecutionException, InterruptedException, TimeoutException {
         logger.debug("postVerisureAPI URL: {} Data:{}", url, data);
@@ -456,6 +447,11 @@ public class VerisureSession {
             // Add Bearer Token for GraphQL and other API calls
             if (vsAccess != null && !vsAccess.isEmpty()) {
                 request.header(HttpHeader.AUTHORIZATION, "Bearer " + vsAccess);
+            }
+
+            // The schema served by this endpoint depends on the application id
+            if (url.endsWith(START_GRAPHQL_MYPAGES)) {
+                request.header("APPLICATION_ID", "MyPages_Login");
             }
 
             // Handle Legacy Login Headers for j_spring_security_check
@@ -531,7 +527,16 @@ public class VerisureSession {
         throw new PostToAPIException("Failed to POST to API");
     }
 
+    private enum GraphQLErrors {
+        IGNORE,
+        FAIL
+    }
+
     private int postVerisureAPI(String urlString, String data) {
+        return postVerisureAPI(urlString, data, GraphQLErrors.IGNORE);
+    }
+
+    private int postVerisureAPI(String urlString, String data, GraphQLErrors graphQLErrors) {
         String url;
         if (urlString.contains("https://mypages.verisure.com")) {
             url = urlString;
@@ -557,6 +562,11 @@ public class VerisureSession {
                         }
                     } else {
                         logTraceWithPattern(httpStatus, content);
+                        String error = graphQLErrors == GraphQLErrors.FAIL ? getGraphQLError(content) : null;
+                        if (error != null) {
+                            logger.warn("Command rejected by the API: {}", error);
+                            return HttpStatus.BAD_REQUEST_400;
+                        }
                         return httpStatus;
                     }
                 } else if (httpStatus == HttpStatus.BAD_REQUEST_400) {
@@ -578,6 +588,29 @@ public class VerisureSession {
             }
         }
         return HttpStatus.SERVICE_UNAVAILABLE_503;
+    }
+
+    /**
+     * The API reports a failed GraphQL operation as HTTP 200 with an errors array.
+     */
+    private @Nullable String getGraphQLError(String content) {
+        try {
+            JsonElement root = JsonParser.parseString(content);
+            if (root.isJsonArray() && !root.getAsJsonArray().isEmpty()) {
+                root = root.getAsJsonArray().get(0);
+            }
+            if (!root.isJsonObject() || !(root.getAsJsonObject().get("errors") instanceof JsonArray errors)
+                    || errors.isEmpty() || !errors.get(0).isJsonObject()) {
+                return null;
+            }
+            JsonObject error = errors.get(0).getAsJsonObject();
+            if (error.get("data") instanceof JsonObject data && data.get("errorMessage") instanceof JsonPrimitive msg) {
+                return msg.getAsString();
+            }
+            return error.get("message") instanceof JsonPrimitive msg ? msg.getAsString() : error.toString();
+        } catch (JsonSyntaxException e) {
+            return null;
+        }
     }
 
     private int setSessionCookieAuthLogin() throws ExecutionException, InterruptedException, TimeoutException {
@@ -759,8 +792,9 @@ public class VerisureSession {
                 updateAlarmStatus(installation);
                 updateSmartLockStatus(installation);
                 updateMiceDetectionStatus(installation);
-                updateClimateStatus(installation);
-                updateDoorWindowStatus(installation);
+                Map<String, String> batteryStatus = getBatteryStatus(installation);
+                updateClimateStatus(installation, batteryStatus);
+                updateDoorWindowStatus(installation, batteryStatus);
                 updateUserPresenceStatus(installation);
                 updateSmartPlugStatus(installation);
                 updateBroadbandConnectionStatus(installation);
@@ -820,7 +854,8 @@ public class VerisureSession {
             VerisureSmartLocksDTO thing = postJSONVerisureAPI(url, queryQLSmartLock, VerisureSmartLocksDTO.class);
             logger.debug("REST Response ({})", thing);
             List<VerisureSmartLocksDTO.Doorlock> doorLockList = thing.getData().getInstallation().getDoorlocks();
-            if (doorLockList != null) {
+            if (doorLockList != null && !doorLockList.isEmpty()) {
+                VerisureSmartLockConfigurationDTO configuration = getSmartLockConfiguration(installation);
                 doorLockList.forEach(doorLock -> {
                     VerisureSmartLocksDTO slThing = new VerisureSmartLocksDTO();
                     VerisureSmartLocksDTO.Installation inst = new VerisureSmartLocksDTO.Installation();
@@ -834,15 +869,8 @@ public class VerisureSession {
                         // Set location
                         slThing.setLocation(doorLock.getDevice().getArea());
                         slThing.setDeviceId(deviceId);
-
-                        // Fetch more info from old endpoint
-                        try {
-                            VerisureSmartLockDTO smartLockThing = getJSONVerisureAPI(
-                                    SMARTLOCK_PATH + slThing.getDeviceId(), VerisureSmartLockDTO.class);
-                            logger.debug("REST Response ({})", smartLockThing);
-                            slThing.setSmartLockJSON(smartLockThing);
-                        } catch (ExecutionException | InterruptedException | TimeoutException | JsonSyntaxException e) {
-                            logger.warn("Failed to query for smartlock status: {}", e.getMessage());
+                        if (configuration != null) {
+                            slThing.setConfiguration(configuration.getConfiguration(deviceId));
                         }
                         notifyListenersIfChanged(slThing, installation, deviceId);
                     }
@@ -892,20 +920,53 @@ public class VerisureSession {
         }
     }
 
-    private @Nullable VerisureBatteryStatusDTO getBatteryStatus(String deviceId,
-            VerisureBatteryStatusDTO @Nullable [] batteryStatus) {
-        if (batteryStatus != null) {
-            for (VerisureBatteryStatusDTO verisureBatteryStatusDTO : batteryStatus) {
-                String id = verisureBatteryStatusDTO.getId();
-                if (id != null && id.equals(deviceId)) {
-                    return verisureBatteryStatusDTO;
-                }
-            }
+    private @Nullable VerisureSmartLockConfigurationDTO getSmartLockConfiguration(VerisureInstallation installation) {
+        String operation = "DoorLockConfiguration";
+        String query = "query " + operation
+                + "($giid: String!) {\n installation(giid: $giid) {\n smartLocks {\n device {\n deviceLabel\n __typename\n }\n configuration {\n ... on YaleLockConfiguration {\n autoLockEnabled\n voiceLevel\n volume\n __typename\n }\n __typename\n }\n __typename\n }\n __typename\n }\n}\n";
+        VariablesDTO variables = new VariablesDTO();
+        variables.setGiid(installation.getInstallationId().toString());
+        logger.debug("Querying API for smart lock configuration");
+
+        try {
+            return postJSONVerisureAPI(START_GRAPHQL, createOperationJSON(operation, variables, query),
+                    VerisureSmartLockConfigurationDTO.class);
+        } catch (ExecutionException | InterruptedException | TimeoutException | JsonSyntaxException
+                | PostToAPIException e) {
+            logger.debug("Failed to query for smart lock configuration: {}", e.getMessage());
+            return null;
         }
-        return null;
     }
 
-    private synchronized void updateClimateStatus(VerisureInstallation installation) {
+    private Map<String, String> getBatteryStatus(VerisureInstallation installation) {
+        String operation = "BatteryStatus";
+        String query = "query " + operation
+                + "($giid: String!) {\n installation(giid: $giid) {\n deviceBatteryLifeCycle {\n devices {\n device {\n deviceLabel\n __typename\n }\n status\n __typename\n }\n __typename\n }\n __typename\n }\n}\n";
+        VariablesDTO variables = new VariablesDTO();
+        variables.setGiid(installation.getInstallationId().toString());
+        OperationDTO operationJSON = new OperationDTO();
+        operationJSON.setOperationName(operation);
+        operationJSON.setVariables(variables);
+        operationJSON.setQuery(query);
+        logger.debug("Querying API for battery status");
+
+        try {
+            // This endpoint answers a list with a list, so send a single operation
+            VerisureBatteryStatusDTO batteryStatus = postJSONVerisureAPI(START_GRAPHQL_MYPAGES,
+                    gson.toJson(operationJSON), VerisureBatteryStatusDTO.class);
+            Map<String, String> result = new HashMap<>();
+            batteryStatus.getStatusByDeviceLabel().forEach((deviceLabel, status) -> result
+                    .put(VerisureThingConfiguration.normalizeDeviceId(deviceLabel), status));
+            return result;
+        } catch (ExecutionException | InterruptedException | TimeoutException | JsonSyntaxException
+                | PostToAPIException e) {
+            logger.debug("Failed to query for battery status: {}", e.getMessage());
+            return Map.of();
+        }
+    }
+
+    private synchronized void updateClimateStatus(VerisureInstallation installation,
+            Map<String, String> batteryStatus) {
         BigDecimal installationId = installation.getInstallationId();
         String url = START_GRAPHQL;
         VariablesDTO variables = new VariablesDTO();
@@ -951,18 +1012,8 @@ public class VerisureSession {
                     // Set unique deviceID
                     String deviceId = climate.getDevice().getDeviceLabel();
                     if (deviceId != null) {
-                        try {
-                            VerisureBatteryStatusDTO[] batteryStatusThingArray = getJSONVerisureAPI(BATTERY_STATUS,
-                                    VerisureBatteryStatusDTO[].class);
-                            VerisureBatteryStatusDTO batteryStatus = getBatteryStatus(deviceId,
-                                    batteryStatusThingArray);
-                            if (batteryStatus != null) {
-                                logger.debug("REST Response ({})", batteryStatus);
-                                cThing.setBatteryStatus(batteryStatus);
-                            }
-                        } catch (ExecutionException | InterruptedException | TimeoutException | JsonSyntaxException e) {
-                            logger.debug("Failed to query for battery status: {}", e.getMessage());
-                        }
+                        cThing.setBatteryStatus(
+                                batteryStatus.get(VerisureThingConfiguration.normalizeDeviceId(deviceId)));
                         // Set location
                         cThing.setLocation(climate.getDevice().getArea());
                         notifyListenersIfChanged(cThing, installation, deviceId);
@@ -975,7 +1026,8 @@ public class VerisureSession {
         }
     }
 
-    private synchronized void updateDoorWindowStatus(VerisureInstallation installation) {
+    private synchronized void updateDoorWindowStatus(VerisureInstallation installation,
+            Map<String, String> batteryStatus) {
         BigDecimal installationId = installation.getInstallationId();
         String url = START_GRAPHQL;
         String operation = "DoorWindow";
@@ -1002,18 +1054,8 @@ public class VerisureSession {
                     // Set unique deviceID
                     String deviceId = doorWindow.getDevice().getDeviceLabel();
                     if (deviceId != null) {
-                        try {
-                            VerisureBatteryStatusDTO[] batteryStatusThingArray = getJSONVerisureAPI(BATTERY_STATUS,
-                                    VerisureBatteryStatusDTO[].class);
-                            VerisureBatteryStatusDTO batteryStatus = getBatteryStatus(deviceId,
-                                    batteryStatusThingArray);
-                            if (batteryStatus != null) {
-                                logger.debug("REST Response ({})", batteryStatus);
-                                dThing.setBatteryStatus(batteryStatus);
-                            }
-                        } catch (ExecutionException | InterruptedException | TimeoutException | JsonSyntaxException e) {
-                            logger.debug("Failed to query for battery status: {}", e.getMessage());
-                        }
+                        dThing.setBatteryStatus(
+                                batteryStatus.get(VerisureThingConfiguration.normalizeDeviceId(deviceId)));
                         // Set location
                         dThing.setLocation(doorWindow.getDevice().getArea());
                         notifyListenersIfChanged(dThing, installation, deviceId);

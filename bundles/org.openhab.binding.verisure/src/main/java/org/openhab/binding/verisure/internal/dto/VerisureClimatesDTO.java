@@ -29,13 +29,13 @@ import com.google.gson.annotations.SerializedName;
 @NonNullByDefault
 public class VerisureClimatesDTO extends VerisureBaseThingDTO {
 
-    private @Nullable VerisureBatteryStatusDTO batteryStatus;
+    private @Nullable String batteryStatus;
 
-    public @Nullable VerisureBatteryStatusDTO getBatteryStatus() {
+    public @Nullable String getBatteryStatus() {
         return batteryStatus;
     }
 
-    public void setBatteryStatus(@Nullable VerisureBatteryStatusDTO batteryStatus) {
+    public void setBatteryStatus(@Nullable String batteryStatus) {
         this.batteryStatus = batteryStatus;
     }
 
@@ -76,7 +76,7 @@ public class VerisureClimatesDTO extends VerisureBaseThingDTO {
             return false;
         }
         VerisureClimatesDTO other = (VerisureClimatesDTO) obj;
-        VerisureBatteryStatusDTO localBatteryStatusJSON = batteryStatus;
+        String localBatteryStatusJSON = batteryStatus;
         if (localBatteryStatusJSON == null) {
             if (other.batteryStatus != null) {
                 return false;
