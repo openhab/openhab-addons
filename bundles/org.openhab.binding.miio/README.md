@@ -381,7 +381,7 @@ Currently the miio binding supports more than 620 different models.
 | HUIZUO ARIES For Bedroom           | miio:basic       | [huayi.light.ari013](#huayi-light-ari013) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | HUIZUO ARIES For Living Room       | miio:basic       | [huayi.light.aries](#huayi-light-aries) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | HUIZUO Fan Light                   | miio:basic       | [huayi.light.fanwy](#huayi-light-fanwy) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
-| HUIZUO Fan Light(2020)             | miio:basic       | [huayi.light.fanwy2](#huayi-light-fanwy2) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| HUIZUO Fan Light(2020)             | miio:basic       | [huayi.light.fanwy2](#huayi-light-fanwy2) | Experimental | Preset: when enabled, the light and fan start with the preset brightness, color temperature and fan speed.<br />Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | HUIZUO PEGASUS For Living Room     | miio:basic       | [huayi.light.peg091](#huayi-light-peg091) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | HUIZUO PEGASUS For Bedroom         | miio:basic       | [huayi.light.peg093](#huayi-light-peg093) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | HUIZUO PISCES For Bedroom          | miio:basic       | [huayi.light.pis123](#huayi-light-pis123) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
@@ -391,6 +391,7 @@ Currently the miio binding supports more than 620 different models.
 | HUIZUO VIRGO For Bedroom           | miio:basic       | [huayi.light.vir063](#huayi-light-vir063) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | HUIZUO VIRGO For Living Room       | miio:basic       | [huayi.light.virgo](#huayi-light-virgo) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | HUIZUO Ceiling Light               | miio:basic       | [huayi.light.wy](#huayi-light-wy) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| HUAYI LIGHTING COMMON CEILING LIGHT | miio:basic       | [huayi.light.wy002](#huayi-light-wy002) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | HUIZUO LIANGCHEN(BLE Mesh)         | miio:basic       | [huayi.light.wy200](#huayi-light-wy200) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | HUIZUO SAG Downlight (BLE Mesh)    | miio:basic       | [huayi.light.wy201](#huayi-light-wy201) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | HUIZUO Bulb (BLE Mesh)             | miio:basic       | [huayi.light.wy202](#huayi-light-wy202) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
@@ -4397,17 +4398,17 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 
 | Channel                    | Type                 | Description                              | Comment    |
 |----------------------------|----------------------|------------------------------------------|------------|
-| on                         | Switch               | Light - Power                            |            |
-| brightness                 | Dimmer               | Light - Brightness                       |            |
-| color-temperature          | Number:Temperature   | Light - Color Temperature                |            |
+| on                         | Switch               | Power                                    |            |
+| brightness                 | Dimmer               | Brightness                               |            |
+| color_temperature          | Number:Temperature   | Color Temperature                        |            |
 
 ### HUIZUO ARIES For Living Room (<a name="huayi-light-aries">huayi.light.aries</a>) Channels
 
 | Channel                    | Type                 | Description                              | Comment    |
 |----------------------------|----------------------|------------------------------------------|------------|
-| on                         | Switch               | Light - Power                            |            |
-| brightness                 | Dimmer               | Light - Brightness                       |            |
-| color-temperature          | Number:Temperature   | Light - Color Temperature                |            |
+| on                         | Switch               | Power                                    |            |
+| brightness                 | Dimmer               | Brightness                               |            |
+| color_temperature          | Number:Temperature   | Color Temperature                        |            |
 
 ### HUIZUO Fan Light (<a name="huayi-light-fanwy">huayi.light.fanwy</a>) Channels
 
@@ -4415,10 +4416,10 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 |----------------------------|----------------------|------------------------------------------|------------|
 | on                         | Switch               | Light - Power                            |            |
 | brightness                 | Dimmer               | Light - Brightness                       |            |
-| color-temperature          | Number:Temperature   | Light - Color Temperature                |            |
+| color_temperature          | Number:Temperature   | Light - Color Temperature                |            |
 | on1                        | Switch               | Fan - Power                              |            |
-| fan-level                  | Number:Dimensionless | Fan - Fan Level                          |            |
-| motor-reverse              | Switch               | Fan - Motor Reverse                      |            |
+| fan_level                  | Number               | Fan - Speed                              |            |
+| fan_reverse                | Switch               | Fan - Reverse                            |            |
 | mode                       | Number               | Fan - Mode                               | Value mapping `["1"="Normal Wind","2"="Natural Wind"]` |
 
 ### HUIZUO Fan Light(2020) (<a name="huayi-light-fanwy2">huayi.light.fanwy2</a>) Channels
@@ -4427,129 +4428,136 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 |----------------------------|----------------------|------------------------------------------|------------|
 | on                         | Switch               | Light - Power                            |            |
 | brightness                 | Dimmer               | Light - Brightness                       |            |
-| color-temperature          | Number:Temperature   | Light - Color Temperature                |            |
+| color_temperature          | Number:Temperature   | Light - Color Temperature                |            |
 | on1                        | Switch               | Fan - Power                              |            |
-| fan-level                  | Number:Dimensionless | Fan - Fan Level                          |            |
-| mode                       | Number               | Fan - Mode                               | Value mapping `["0"="Basic","1"="Natural Wind"]` |
-| time-off                   | Number:Time          | Presets - Time Off                       |            |
-| pre-colortemp              | Number:Temperature   | Presets - Pre Colortemp                  |            |
-| pre-brightness             | Dimmer               | Presets - Pre Brightness                 |            |
-| pre-speed                  | Number:Dimensionless | Presets - Pre Speed                      |            |
-| reversal                   | Number               | Presets - Reversal                       | Value mapping `["0"="Postitive","1"="Reverse"]` |
-| pre-custom                 | Number               | Presets - Pre Custom                     | Value mapping `["0"="Switch Off","1"="Open"]` |
-| flabellum                  | Switch               | Presets - Flabellum                      |            |
+| fan_level                  | Number               | Fan - Speed                              |            |
+| mode                       | Number               | Fan - Mode                               | Value mapping `["0"="Normal Wind","1"="Natural Wind"]` |
+| preset_color_temperature   | Number:Temperature   | Preset - Color Temperature               |            |
+| preset_brightness          | Number:Dimensionless | Preset - Brightness                      |            |
+| preset_fan_level           | Number               | Preset - Fan Speed                       |            |
+| fan_direction              | Number               | Fan - Direction                          | Value mapping `["0"="Forward","1"="Reverse"]` |
+| preset                     | Switch               | Preset                                   |            |
+| swing                      | Switch               | Fan - Swing                              |            |
 
 ### HUIZUO PEGASUS For Living Room (<a name="huayi-light-peg091">huayi.light.peg091</a>) Channels
 
 | Channel                    | Type                 | Description                              | Comment    |
 |----------------------------|----------------------|------------------------------------------|------------|
-| on                         | Switch               | Light - Power                            |            |
-| brightness                 | Dimmer               | Light - Brightness                       |            |
-| color-temperature          | Number:Temperature   | Light - Color Temperature                |            |
+| on                         | Switch               | Power                                    |            |
+| brightness                 | Dimmer               | Brightness                               |            |
+| color_temperature          | Number:Temperature   | Color Temperature                        |            |
 
 ### HUIZUO PEGASUS For Bedroom (<a name="huayi-light-peg093">huayi.light.peg093</a>) Channels
 
 | Channel                    | Type                 | Description                              | Comment    |
 |----------------------------|----------------------|------------------------------------------|------------|
-| on                         | Switch               | Light - Power                            |            |
-| brightness                 | Dimmer               | Light - Brightness                       |            |
-| color-temperature          | Number:Temperature   | Light - Color Temperature                |            |
+| on                         | Switch               | Power                                    |            |
+| brightness                 | Dimmer               | Brightness                               |            |
+| color_temperature          | Number:Temperature   | Color Temperature                        |            |
 
 ### HUIZUO PISCES For Bedroom (<a name="huayi-light-pis123">huayi.light.pis123</a>) Channels
 
 | Channel                    | Type                 | Description                              | Comment    |
 |----------------------------|----------------------|------------------------------------------|------------|
-| on                         | Switch               | Light - Power                            |            |
-| brightness                 | Dimmer               | Light - Brightness                       |            |
-| color-temperature          | Number:Temperature   | Light - Color Temperature                |            |
+| on                         | Switch               | Power                                    |            |
+| brightness                 | Dimmer               | Brightness                               |            |
+| color_temperature          | Number:Temperature   | Color Temperature                        |            |
 
 ### HUIZUO PISCES For Living Room (<a name="huayi-light-pisces">huayi.light.pisces</a>) Channels
 
 | Channel                    | Type                 | Description                              | Comment    |
 |----------------------------|----------------------|------------------------------------------|------------|
-| on                         | Switch               | Light - Power                            |            |
-| brightness                 | Dimmer               | Light - Brightness                       |            |
-| color-temperature          | Number:Temperature   | Light - Color Temperature                |            |
+| on                         | Switch               | Power                                    |            |
+| brightness                 | Dimmer               | Brightness                               |            |
+| color_temperature          | Number:Temperature   | Color Temperature                        |            |
 
 ### HUIZUO TAURUS For Bedroom (<a name="huayi-light-tau023">huayi.light.tau023</a>) Channels
 
 | Channel                    | Type                 | Description                              | Comment    |
 |----------------------------|----------------------|------------------------------------------|------------|
-| on                         | Switch               | Light - Power                            |            |
-| brightness                 | Dimmer               | Light - Brightness                       |            |
-| color-temperature          | Number:Temperature   | Light - Color Temperature                |            |
+| on                         | Switch               | Power                                    |            |
+| brightness                 | Dimmer               | Brightness                               |            |
+| color_temperature          | Number:Temperature   | Color Temperature                        |            |
 
 ### HUIZUO TAURUS For Living Room (<a name="huayi-light-taurus">huayi.light.taurus</a>) Channels
 
 | Channel                    | Type                 | Description                              | Comment    |
 |----------------------------|----------------------|------------------------------------------|------------|
-| on                         | Switch               | Light - Power                            |            |
-| brightness                 | Dimmer               | Light - Brightness                       |            |
-| color-temperature          | Number:Temperature   | Light - Color Temperature                |            |
+| on                         | Switch               | Power                                    |            |
+| brightness                 | Dimmer               | Brightness                               |            |
+| color_temperature          | Number:Temperature   | Color Temperature                        |            |
 
 ### HUIZUO VIRGO For Bedroom (<a name="huayi-light-vir063">huayi.light.vir063</a>) Channels
 
 | Channel                    | Type                 | Description                              | Comment    |
 |----------------------------|----------------------|------------------------------------------|------------|
-| on                         | Switch               | Light - Power                            |            |
-| brightness                 | Dimmer               | Light - Brightness                       |            |
-| color-temperature          | Number:Temperature   | Light - Color Temperature                |            |
+| on                         | Switch               | Power                                    |            |
+| brightness                 | Dimmer               | Brightness                               |            |
+| color_temperature          | Number:Temperature   | Color Temperature                        |            |
 
 ### HUIZUO VIRGO For Living Room (<a name="huayi-light-virgo">huayi.light.virgo</a>) Channels
 
 | Channel                    | Type                 | Description                              | Comment    |
 |----------------------------|----------------------|------------------------------------------|------------|
-| on                         | Switch               | Light - Power                            |            |
-| brightness                 | Dimmer               | Light - Brightness                       |            |
-| color-temperature          | Number:Temperature   | Light - Color Temperature                |            |
+| on                         | Switch               | Power                                    |            |
+| brightness                 | Dimmer               | Brightness                               |            |
+| color_temperature          | Number:Temperature   | Color Temperature                        |            |
 
 ### HUIZUO Ceiling Light (<a name="huayi-light-wy">huayi.light.wy</a>) Channels
 
 | Channel                    | Type                 | Description                              | Comment    |
 |----------------------------|----------------------|------------------------------------------|------------|
-| on                         | Switch               | Light - Power                            |            |
-| brightness                 | Dimmer               | Light - Brightness                       |            |
-| color-temperature          | Number:Temperature   | Light - Color Temperature                |            |
+| on                         | Switch               | Power                                    |            |
+| brightness                 | Dimmer               | Brightness                               |            |
+| color_temperature          | Number:Temperature   | Color Temperature                        |            |
+
+### HUAYI LIGHTING COMMON CEILING LIGHT (<a name="huayi-light-wy002">huayi.light.wy002</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| on                         | Switch               | Power                                    |            |
+| brightness                 | Dimmer               | Brightness                               |            |
+| color_temperature          | Number:Temperature   | Color Temperature                        |            |
 
 ### HUIZUO LIANGCHEN(BLE Mesh) (<a name="huayi-light-wy200">huayi.light.wy200</a>) Channels
 
 | Channel                    | Type                 | Description                              | Comment    |
 |----------------------------|----------------------|------------------------------------------|------------|
-| on                         | Switch               | Light - Power                            |            |
-| brightness                 | Dimmer               | Light - Brightness                       |            |
-| color-temperature          | Number:Temperature   | Light - Color Temperature                |            |
+| on                         | Switch               | Power                                    |            |
+| brightness                 | Dimmer               | Brightness                               |            |
+| color_temperature          | Number:Temperature   | Color Temperature                        |            |
 
 ### HUIZUO SAG Downlight (BLE Mesh) (<a name="huayi-light-wy201">huayi.light.wy201</a>) Channels
 
 | Channel                    | Type                 | Description                              | Comment    |
 |----------------------------|----------------------|------------------------------------------|------------|
-| on                         | Switch               | Light - Power                            |            |
-| brightness                 | Dimmer               | Light - Brightness                       |            |
-| color-temperature          | Number:Temperature   | Light - Color Temperature                |            |
+| on                         | Switch               | Power                                    |            |
+| brightness                 | Dimmer               | Brightness                               |            |
+| color_temperature          | Number:Temperature   | Color Temperature                        |            |
 
 ### HUIZUO Bulb (BLE Mesh) (<a name="huayi-light-wy202">huayi.light.wy202</a>) Channels
 
 | Channel                    | Type                 | Description                              | Comment    |
 |----------------------------|----------------------|------------------------------------------|------------|
-| on                         | Switch               | Light - Power                            |            |
-| brightness                 | Dimmer               | Light - Brightness                       |            |
-| color-temperature          | Number:Temperature   | Light - Color Temperature                |            |
+| on                         | Switch               | Power                                    |            |
+| brightness                 | Dimmer               | Brightness                               |            |
+| color_temperature          | Number:Temperature   | Color Temperature                        |            |
 
 ### HUIZUO YONG Downlight (BLE Mesh) (<a name="huayi-light-wy203">huayi.light.wy203</a>) Channels
 
 | Channel                    | Type                 | Description                              | Comment    |
 |----------------------------|----------------------|------------------------------------------|------------|
-| on                         | Switch               | Light - Power                            |            |
-| brightness                 | Dimmer               | Light - Brightness                       |            |
-| color-temperature          | Number:Temperature   | Light - Color Temperature                |            |
+| on                         | Switch               | Power                                    |            |
+| brightness                 | Dimmer               | Brightness                               |            |
+| color_temperature          | Number:Temperature   | Color Temperature                        |            |
 
 ### huayi.light.wy204 (<a name="huayi-light-wy204">huayi.light.wy204</a>) Channels
 
 | Channel                    | Type                 | Description                              | Comment    |
 |----------------------------|----------------------|------------------------------------------|------------|
-| on                         | Switch               | Light - Power                            |            |
-| brightness                 | Dimmer               | Light - Brightness                       |            |
-| color-temperature          | Number:Temperature   | Light - Color Temperature                |            |
+| on                         | Switch               | Power                                    |            |
+| brightness                 | Dimmer               | Brightness                               |            |
+| color_temperature          | Number:Temperature   | Color Temperature                        |            |
 
 ### HUIZUO Heating Lamp (<a name="huayi-light-wyheat">huayi.light.wyheat</a>) Channels
 
@@ -4557,19 +4565,18 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 |----------------------------|----------------------|------------------------------------------|------------|
 | on                         | Switch               | Light - Power                            |            |
 | brightness                 | Dimmer               | Light - Brightness                       |            |
-| color-temperature          | Number:Temperature   | Light - Color Temperature                |            |
-| on1                        | Switch               | Heater - Power                           |            |
-| fault                      | Number               | Heater - Device Fault                    | Value mapping `["0"="No Faults"]` |
-| heat-level                 | Number               | Heater - Heat Level                      |            |
-| screenshow                 | Switch               | Other - Screenshow                       |            |
+| color_temperature          | Number:Temperature   | Light - Color Temperature                |            |
+| on1                        | Switch               | Heater - Power                           | The heater has no time limit of its own; it runs until it is switched off. |
+| heat_level                 | Number               | Heater - Level                           | Value mapping `["1"="Low","2"="Middle","3"="High"]` |
+| screen_light               | Switch               | Device Screen Light                      |            |
 
 ### HUIZUO ZIWEI Ceiling Lamp (<a name="huayi-light-zw131">huayi.light.zw131</a>) Channels
 
 | Channel                    | Type                 | Description                              | Comment    |
 |----------------------------|----------------------|------------------------------------------|------------|
-| on                         | Switch               | Light - Power                            |            |
-| brightness                 | Dimmer               | Light - Brightness                       |            |
-| color-temperature          | Number:Temperature   | Light - Color Temperature                |            |
+| on                         | Switch               | Power                                    |            |
+| brightness                 | Dimmer               | Brightness                               |            |
+| color_temperature          | Number:Temperature   | Color Temperature                        |            |
 
 ### Mi Robot Vacuum-Mop Pro (<a name="ijai-vacuum-v1">ijai.vacuum.v1</a>) Channels
 
@@ -18574,9 +18581,9 @@ note: Autogenerated example. Replace the id (light) in the channel with your own
 
 ```java
 Group G_light "HUIZUO ARIES For Bedroom" <status>
-Switch on "Light - Power" (G_light) {channel="miio:basic:light:on"}
-Dimmer brightness "Light - Brightness" (G_light) {channel="miio:basic:light:brightness"}
-Number:Temperature color_temperature "Light - Color Temperature" (G_light) {channel="miio:basic:light:color-temperature"}
+Switch on "Power" (G_light) {channel="miio:basic:light:on"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number:Temperature color_temperature "Color Temperature" (G_light) {channel="miio:basic:light:color_temperature"}
 ```
 
 ### HUIZUO ARIES For Living Room (huayi.light.aries) item file lines
@@ -18585,9 +18592,9 @@ note: Autogenerated example. Replace the id (light) in the channel with your own
 
 ```java
 Group G_light "HUIZUO ARIES For Living Room" <status>
-Switch on "Light - Power" (G_light) {channel="miio:basic:light:on"}
-Dimmer brightness "Light - Brightness" (G_light) {channel="miio:basic:light:brightness"}
-Number:Temperature color_temperature "Light - Color Temperature" (G_light) {channel="miio:basic:light:color-temperature"}
+Switch on "Power" (G_light) {channel="miio:basic:light:on"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number:Temperature color_temperature "Color Temperature" (G_light) {channel="miio:basic:light:color_temperature"}
 ```
 
 ### HUIZUO Fan Light (huayi.light.fanwy) item file lines
@@ -18598,10 +18605,10 @@ note: Autogenerated example. Replace the id (light) in the channel with your own
 Group G_light "HUIZUO Fan Light" <status>
 Switch on "Light - Power" (G_light) {channel="miio:basic:light:on"}
 Dimmer brightness "Light - Brightness" (G_light) {channel="miio:basic:light:brightness"}
-Number:Temperature color_temperature "Light - Color Temperature" (G_light) {channel="miio:basic:light:color-temperature"}
+Number:Temperature color_temperature "Light - Color Temperature" (G_light) {channel="miio:basic:light:color_temperature"}
 Switch on1 "Fan - Power" (G_light) {channel="miio:basic:light:on1"}
-Number:Dimensionless fan_level "Fan - Fan Level" (G_light) {channel="miio:basic:light:fan-level"}
-Switch motor_reverse "Fan - Motor Reverse" (G_light) {channel="miio:basic:light:motor-reverse"}
+Number fan_level "Fan - Speed" (G_light) {channel="miio:basic:light:fan_level"}
+Switch fan_reverse "Fan - Reverse" (G_light) {channel="miio:basic:light:fan_reverse"}
 Number mode "Fan - Mode" (G_light) {channel="miio:basic:light:mode"}
 ```
 
@@ -18613,17 +18620,16 @@ note: Autogenerated example. Replace the id (light) in the channel with your own
 Group G_light "HUIZUO Fan Light(2020)" <status>
 Switch on "Light - Power" (G_light) {channel="miio:basic:light:on"}
 Dimmer brightness "Light - Brightness" (G_light) {channel="miio:basic:light:brightness"}
-Number:Temperature color_temperature "Light - Color Temperature" (G_light) {channel="miio:basic:light:color-temperature"}
+Number:Temperature color_temperature "Light - Color Temperature" (G_light) {channel="miio:basic:light:color_temperature"}
 Switch on1 "Fan - Power" (G_light) {channel="miio:basic:light:on1"}
-Number:Dimensionless fan_level "Fan - Fan Level" (G_light) {channel="miio:basic:light:fan-level"}
+Number fan_level "Fan - Speed" (G_light) {channel="miio:basic:light:fan_level"}
 Number mode "Fan - Mode" (G_light) {channel="miio:basic:light:mode"}
-Number:Time time_off "Presets - Time Off" (G_light) {channel="miio:basic:light:time-off"}
-Number:Temperature pre_colortemp "Presets - Pre Colortemp" (G_light) {channel="miio:basic:light:pre-colortemp"}
-Dimmer pre_brightness "Presets - Pre Brightness" (G_light) {channel="miio:basic:light:pre-brightness"}
-Number:Dimensionless pre_speed "Presets - Pre Speed" (G_light) {channel="miio:basic:light:pre-speed"}
-Number reversal "Presets - Reversal" (G_light) {channel="miio:basic:light:reversal"}
-Number pre_custom "Presets - Pre Custom" (G_light) {channel="miio:basic:light:pre-custom"}
-Switch flabellum "Presets - Flabellum" (G_light) {channel="miio:basic:light:flabellum"}
+Number:Temperature preset_color_temperature "Preset - Color Temperature" (G_light) {channel="miio:basic:light:preset_color_temperature"}
+Number:Dimensionless preset_brightness "Preset - Brightness" (G_light) {channel="miio:basic:light:preset_brightness"}
+Number preset_fan_level "Preset - Fan Speed" (G_light) {channel="miio:basic:light:preset_fan_level"}
+Number fan_direction "Fan - Direction" (G_light) {channel="miio:basic:light:fan_direction"}
+Switch preset "Preset" (G_light) {channel="miio:basic:light:preset"}
+Switch swing "Fan - Swing" (G_light) {channel="miio:basic:light:swing"}
 ```
 
 ### HUIZUO PEGASUS For Living Room (huayi.light.peg091) item file lines
@@ -18632,9 +18638,9 @@ note: Autogenerated example. Replace the id (light) in the channel with your own
 
 ```java
 Group G_light "HUIZUO PEGASUS For Living Room" <status>
-Switch on "Light - Power" (G_light) {channel="miio:basic:light:on"}
-Dimmer brightness "Light - Brightness" (G_light) {channel="miio:basic:light:brightness"}
-Number:Temperature color_temperature "Light - Color Temperature" (G_light) {channel="miio:basic:light:color-temperature"}
+Switch on "Power" (G_light) {channel="miio:basic:light:on"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number:Temperature color_temperature "Color Temperature" (G_light) {channel="miio:basic:light:color_temperature"}
 ```
 
 ### HUIZUO PEGASUS For Bedroom (huayi.light.peg093) item file lines
@@ -18643,9 +18649,9 @@ note: Autogenerated example. Replace the id (light) in the channel with your own
 
 ```java
 Group G_light "HUIZUO PEGASUS For Bedroom" <status>
-Switch on "Light - Power" (G_light) {channel="miio:basic:light:on"}
-Dimmer brightness "Light - Brightness" (G_light) {channel="miio:basic:light:brightness"}
-Number:Temperature color_temperature "Light - Color Temperature" (G_light) {channel="miio:basic:light:color-temperature"}
+Switch on "Power" (G_light) {channel="miio:basic:light:on"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number:Temperature color_temperature "Color Temperature" (G_light) {channel="miio:basic:light:color_temperature"}
 ```
 
 ### HUIZUO PISCES For Bedroom (huayi.light.pis123) item file lines
@@ -18654,9 +18660,9 @@ note: Autogenerated example. Replace the id (light) in the channel with your own
 
 ```java
 Group G_light "HUIZUO PISCES For Bedroom" <status>
-Switch on "Light - Power" (G_light) {channel="miio:basic:light:on"}
-Dimmer brightness "Light - Brightness" (G_light) {channel="miio:basic:light:brightness"}
-Number:Temperature color_temperature "Light - Color Temperature" (G_light) {channel="miio:basic:light:color-temperature"}
+Switch on "Power" (G_light) {channel="miio:basic:light:on"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number:Temperature color_temperature "Color Temperature" (G_light) {channel="miio:basic:light:color_temperature"}
 ```
 
 ### HUIZUO PISCES For Living Room (huayi.light.pisces) item file lines
@@ -18665,9 +18671,9 @@ note: Autogenerated example. Replace the id (light) in the channel with your own
 
 ```java
 Group G_light "HUIZUO PISCES For Living Room" <status>
-Switch on "Light - Power" (G_light) {channel="miio:basic:light:on"}
-Dimmer brightness "Light - Brightness" (G_light) {channel="miio:basic:light:brightness"}
-Number:Temperature color_temperature "Light - Color Temperature" (G_light) {channel="miio:basic:light:color-temperature"}
+Switch on "Power" (G_light) {channel="miio:basic:light:on"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number:Temperature color_temperature "Color Temperature" (G_light) {channel="miio:basic:light:color_temperature"}
 ```
 
 ### HUIZUO TAURUS For Bedroom (huayi.light.tau023) item file lines
@@ -18676,9 +18682,9 @@ note: Autogenerated example. Replace the id (light) in the channel with your own
 
 ```java
 Group G_light "HUIZUO TAURUS For Bedroom" <status>
-Switch on "Light - Power" (G_light) {channel="miio:basic:light:on"}
-Dimmer brightness "Light - Brightness" (G_light) {channel="miio:basic:light:brightness"}
-Number:Temperature color_temperature "Light - Color Temperature" (G_light) {channel="miio:basic:light:color-temperature"}
+Switch on "Power" (G_light) {channel="miio:basic:light:on"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number:Temperature color_temperature "Color Temperature" (G_light) {channel="miio:basic:light:color_temperature"}
 ```
 
 ### HUIZUO TAURUS For Living Room (huayi.light.taurus) item file lines
@@ -18687,9 +18693,9 @@ note: Autogenerated example. Replace the id (light) in the channel with your own
 
 ```java
 Group G_light "HUIZUO TAURUS For Living Room" <status>
-Switch on "Light - Power" (G_light) {channel="miio:basic:light:on"}
-Dimmer brightness "Light - Brightness" (G_light) {channel="miio:basic:light:brightness"}
-Number:Temperature color_temperature "Light - Color Temperature" (G_light) {channel="miio:basic:light:color-temperature"}
+Switch on "Power" (G_light) {channel="miio:basic:light:on"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number:Temperature color_temperature "Color Temperature" (G_light) {channel="miio:basic:light:color_temperature"}
 ```
 
 ### HUIZUO VIRGO For Bedroom (huayi.light.vir063) item file lines
@@ -18698,9 +18704,9 @@ note: Autogenerated example. Replace the id (light) in the channel with your own
 
 ```java
 Group G_light "HUIZUO VIRGO For Bedroom" <status>
-Switch on "Light - Power" (G_light) {channel="miio:basic:light:on"}
-Dimmer brightness "Light - Brightness" (G_light) {channel="miio:basic:light:brightness"}
-Number:Temperature color_temperature "Light - Color Temperature" (G_light) {channel="miio:basic:light:color-temperature"}
+Switch on "Power" (G_light) {channel="miio:basic:light:on"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number:Temperature color_temperature "Color Temperature" (G_light) {channel="miio:basic:light:color_temperature"}
 ```
 
 ### HUIZUO VIRGO For Living Room (huayi.light.virgo) item file lines
@@ -18709,9 +18715,9 @@ note: Autogenerated example. Replace the id (light) in the channel with your own
 
 ```java
 Group G_light "HUIZUO VIRGO For Living Room" <status>
-Switch on "Light - Power" (G_light) {channel="miio:basic:light:on"}
-Dimmer brightness "Light - Brightness" (G_light) {channel="miio:basic:light:brightness"}
-Number:Temperature color_temperature "Light - Color Temperature" (G_light) {channel="miio:basic:light:color-temperature"}
+Switch on "Power" (G_light) {channel="miio:basic:light:on"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number:Temperature color_temperature "Color Temperature" (G_light) {channel="miio:basic:light:color_temperature"}
 ```
 
 ### HUIZUO Ceiling Light (huayi.light.wy) item file lines
@@ -18720,9 +18726,20 @@ note: Autogenerated example. Replace the id (light) in the channel with your own
 
 ```java
 Group G_light "HUIZUO Ceiling Light" <status>
-Switch on "Light - Power" (G_light) {channel="miio:basic:light:on"}
-Dimmer brightness "Light - Brightness" (G_light) {channel="miio:basic:light:brightness"}
-Number:Temperature color_temperature "Light - Color Temperature" (G_light) {channel="miio:basic:light:color-temperature"}
+Switch on "Power" (G_light) {channel="miio:basic:light:on"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number:Temperature color_temperature "Color Temperature" (G_light) {channel="miio:basic:light:color_temperature"}
+```
+
+### HUAYI LIGHTING COMMON CEILING LIGHT (huayi.light.wy002) item file lines
+
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_light "HUAYI LIGHTING COMMON CEILING LIGHT" <status>
+Switch on "Power" (G_light) {channel="miio:basic:light:on"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number:Temperature color_temperature "Color Temperature" (G_light) {channel="miio:basic:light:color_temperature"}
 ```
 
 ### HUIZUO LIANGCHEN(BLE Mesh) (huayi.light.wy200) item file lines
@@ -18731,9 +18748,9 @@ note: Autogenerated example. Replace the id (light) in the channel with your own
 
 ```java
 Group G_light "HUIZUO LIANGCHEN(BLE Mesh)" <status>
-Switch on "Light - Power" (G_light) {channel="miio:basic:light:on"}
-Dimmer brightness "Light - Brightness" (G_light) {channel="miio:basic:light:brightness"}
-Number:Temperature color_temperature "Light - Color Temperature" (G_light) {channel="miio:basic:light:color-temperature"}
+Switch on "Power" (G_light) {channel="miio:basic:light:on"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number:Temperature color_temperature "Color Temperature" (G_light) {channel="miio:basic:light:color_temperature"}
 ```
 
 ### HUIZUO SAG Downlight (BLE Mesh) (huayi.light.wy201) item file lines
@@ -18742,9 +18759,9 @@ note: Autogenerated example. Replace the id (light) in the channel with your own
 
 ```java
 Group G_light "HUIZUO SAG Downlight (BLE Mesh)" <status>
-Switch on "Light - Power" (G_light) {channel="miio:basic:light:on"}
-Dimmer brightness "Light - Brightness" (G_light) {channel="miio:basic:light:brightness"}
-Number:Temperature color_temperature "Light - Color Temperature" (G_light) {channel="miio:basic:light:color-temperature"}
+Switch on "Power" (G_light) {channel="miio:basic:light:on"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number:Temperature color_temperature "Color Temperature" (G_light) {channel="miio:basic:light:color_temperature"}
 ```
 
 ### HUIZUO Bulb (BLE Mesh) (huayi.light.wy202) item file lines
@@ -18753,9 +18770,9 @@ note: Autogenerated example. Replace the id (light) in the channel with your own
 
 ```java
 Group G_light "HUIZUO Bulb (BLE Mesh)" <status>
-Switch on "Light - Power" (G_light) {channel="miio:basic:light:on"}
-Dimmer brightness "Light - Brightness" (G_light) {channel="miio:basic:light:brightness"}
-Number:Temperature color_temperature "Light - Color Temperature" (G_light) {channel="miio:basic:light:color-temperature"}
+Switch on "Power" (G_light) {channel="miio:basic:light:on"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number:Temperature color_temperature "Color Temperature" (G_light) {channel="miio:basic:light:color_temperature"}
 ```
 
 ### HUIZUO YONG Downlight (BLE Mesh) (huayi.light.wy203) item file lines
@@ -18764,9 +18781,9 @@ note: Autogenerated example. Replace the id (light) in the channel with your own
 
 ```java
 Group G_light "HUIZUO YONG Downlight (BLE Mesh)" <status>
-Switch on "Light - Power" (G_light) {channel="miio:basic:light:on"}
-Dimmer brightness "Light - Brightness" (G_light) {channel="miio:basic:light:brightness"}
-Number:Temperature color_temperature "Light - Color Temperature" (G_light) {channel="miio:basic:light:color-temperature"}
+Switch on "Power" (G_light) {channel="miio:basic:light:on"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number:Temperature color_temperature "Color Temperature" (G_light) {channel="miio:basic:light:color_temperature"}
 ```
 
 ### huayi.light.wy204 (huayi.light.wy204) item file lines
@@ -18775,9 +18792,9 @@ note: Autogenerated example. Replace the id (light) in the channel with your own
 
 ```java
 Group G_light "huayi.light.wy204" <status>
-Switch on "Light - Power" (G_light) {channel="miio:basic:light:on"}
-Dimmer brightness "Light - Brightness" (G_light) {channel="miio:basic:light:brightness"}
-Number:Temperature color_temperature "Light - Color Temperature" (G_light) {channel="miio:basic:light:color-temperature"}
+Switch on "Power" (G_light) {channel="miio:basic:light:on"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number:Temperature color_temperature "Color Temperature" (G_light) {channel="miio:basic:light:color_temperature"}
 ```
 
 ### HUIZUO Heating Lamp (huayi.light.wyheat) item file lines
@@ -18788,11 +18805,10 @@ note: Autogenerated example. Replace the id (light) in the channel with your own
 Group G_light "HUIZUO Heating Lamp" <status>
 Switch on "Light - Power" (G_light) {channel="miio:basic:light:on"}
 Dimmer brightness "Light - Brightness" (G_light) {channel="miio:basic:light:brightness"}
-Number:Temperature color_temperature "Light - Color Temperature" (G_light) {channel="miio:basic:light:color-temperature"}
+Number:Temperature color_temperature "Light - Color Temperature" (G_light) {channel="miio:basic:light:color_temperature"}
 Switch on1 "Heater - Power" (G_light) {channel="miio:basic:light:on1"}
-Number fault "Heater - Device Fault" (G_light) {channel="miio:basic:light:fault"}
-Number heat_level "Heater - Heat Level" (G_light) {channel="miio:basic:light:heat-level"}
-Switch screenshow "Other - Screenshow" (G_light) {channel="miio:basic:light:screenshow"}
+Number heat_level "Heater - Level" (G_light) {channel="miio:basic:light:heat_level"}
+Switch screen_light "Device Screen Light" (G_light) {channel="miio:basic:light:screen_light"}
 ```
 
 ### HUIZUO ZIWEI Ceiling Lamp (huayi.light.zw131) item file lines
@@ -18801,9 +18817,9 @@ note: Autogenerated example. Replace the id (light) in the channel with your own
 
 ```java
 Group G_light "HUIZUO ZIWEI Ceiling Lamp" <status>
-Switch on "Light - Power" (G_light) {channel="miio:basic:light:on"}
-Dimmer brightness "Light - Brightness" (G_light) {channel="miio:basic:light:brightness"}
-Number:Temperature color_temperature "Light - Color Temperature" (G_light) {channel="miio:basic:light:color-temperature"}
+Switch on "Power" (G_light) {channel="miio:basic:light:on"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number:Temperature color_temperature "Color Temperature" (G_light) {channel="miio:basic:light:color_temperature"}
 ```
 
 ### Mi Robot Vacuum-Mop Pro (ijai.vacuum.v1) item file lines

@@ -20,10 +20,7 @@
 						"parameterType": "ONOFFBOOL"
 					}
 				],
-				"category": "light",
-				"tags": [
-					"Switch"
-				]
+				"category": "switch"
 			},
 			{
 				"property": "brightness",
@@ -32,11 +29,60 @@
 				"friendlyName": "Light - Brightness",
 				"channel": "brightness",
 				"type": "Dimmer",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER",
+						"condition": {
+							"name": "BrightnessExisting"
+						}
+					},
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL",
+						"parameters": [
+							{
+								"did": "on",
+								"siid": 2,
+								"piid": 1,
+								"value": "$value$"
+							}
+						],
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "OFF|(.*,)?0(\\.0*)?",
+									"returnValue": false
+								},
+								{
+									"matchValue": "ON|[0-9.,]+",
+									"returnValue": true
+								}
+							]
+						}
+					}
+				],
+				"category": "light",
+				"tags": [
+					"Control",
+					"Brightness"
+				]
+			},
+			{
+				"property": "color-temperature",
+				"siid": 2,
+				"piid": 3,
+				"friendlyName": "Light - Color Temperature",
+				"channel": "color_temperature",
+				"type": "Number:Temperature",
+				"unit": "kelvin",
 				"stateDescription": {
-					"minimum": 1,
-					"maximum": 100,
+					"minimum": 3000,
+					"maximum": 6400,
 					"step": 1,
-					"pattern": "%.0f %unit%"
+					"pattern": "%.0f K"
 				},
 				"refresh": true,
 				"actions": [
@@ -45,33 +91,7 @@
 						"parameterType": "NUMBER"
 					}
 				],
-				"category": "light",
-				"tags": [
-					"Setpoint",
-					"Light"
-				]
-			},
-			{
-				"property": "color-temperature",
-				"siid": 2,
-				"piid": 3,
-				"friendlyName": "Light - Color Temperature",
-				"channel": "color-temperature",
-				"type": "Number:Temperature",
-				"unit": "kelvin",
-				"stateDescription": {
-					"minimum": 3000,
-					"maximum": 6400,
-					"step": 1,
-					"pattern": "%.1f %unit%"
-				},
-				"refresh": true,
-				"actions": [
-					{
-						"command": "set_properties",
-						"parameterType": "STRING"
-					}
-				]
+				"category": "colorlight"
 			},
 			{
 				"property": "on1",
@@ -89,22 +109,22 @@
 				],
 				"category": "fan",
 				"tags": [
-					"Switch"
+					"Switch",
+					"Power"
 				]
 			},
 			{
 				"property": "fan-level",
 				"siid": 3,
 				"piid": 2,
-				"friendlyName": "Fan - Fan Level",
-				"channel": "fan-level",
-				"type": "Number:Dimensionless",
-				"unit": "percentage",
+				"friendlyName": "Fan - Speed",
+				"channel": "fan_level",
+				"type": "Number",
 				"stateDescription": {
-					"minimum": 1.0,
-					"maximum": 100.0,
-					"step": 1.0,
-					"pattern": "%.0f %unit%"
+					"minimum": 1,
+					"maximum": 100,
+					"step": 1,
+					"pattern": "%.0f"
 				},
 				"refresh": true,
 				"actions": [
@@ -112,14 +132,19 @@
 						"command": "set_properties",
 						"parameterType": "NUMBER"
 					}
+				],
+				"category": "fan",
+				"tags": [
+					"Control",
+					"Speed"
 				]
 			},
 			{
 				"property": "motor-reverse",
 				"siid": 3,
 				"piid": 3,
-				"friendlyName": "Fan - Motor Reverse",
-				"channel": "motor-reverse",
+				"friendlyName": "Fan - Reverse",
+				"channel": "fan_reverse",
 				"type": "Switch",
 				"refresh": true,
 				"actions": [
@@ -127,6 +152,11 @@
 						"command": "set_properties",
 						"parameterType": "ONOFFBOOL"
 					}
+				],
+				"category": "fan",
+				"tags": [
+					"Switch",
+					"Airflow"
 				]
 			},
 			{
@@ -157,7 +187,8 @@
 				],
 				"category": "fan",
 				"tags": [
-					"Control"
+					"Control",
+					"Mode"
 				],
 				"readmeComment": "Value mapping `[\"1\"\u003d\"Normal Wind\",\"2\"\u003d\"Natural Wind\"]`"
 			}
