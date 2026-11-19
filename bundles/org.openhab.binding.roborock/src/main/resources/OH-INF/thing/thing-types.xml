@@ -42,7 +42,7 @@
 		</channel-groups>
 
 		<properties>
-			<property name="thingTypeVersion">1</property>
+			<property name="thingTypeVersion">2</property>
 		</properties>
 
 		<representation-property>duid</representation-property>
@@ -214,8 +214,6 @@
 		<label>Info</label>
 		<channels>
 			<channel id="multi-maps-list" typeId="multi-maps-list"/>
-			<channel id="room-mapping" typeId="room-mapping"/>
-			<channel id="routine-mapping" typeId="routine-mapping"/>
 			<channel id="customize-clean-mode" typeId="customize-clean-mode"/>
 			<channel id="carpet-mode" typeId="carpet-mode"/>
 		</channels>
@@ -671,17 +669,19 @@
 			<tag>Power</tag>
 		</tags>
 	</channel-type>
-	<channel-type id="segment" advanced="true">
+	<channel-type id="segment">
 		<item-type>String</item-type>
-		<label>Vacuum Specific Room(s) [room#]</label>
+		<label>Clean Room</label>
+		<description>Select a room to clean. A comma-separated list of room segment ids is also accepted.</description>
 		<tags>
 			<tag>Status</tag>
 			<tag>Info</tag>
 		</tags>
 	</channel-type>
-	<channel-type id="routine" advanced="true">
+	<channel-type id="routine">
 		<item-type>String</item-type>
-		<label>Start Vacuum Routine [routine#]</label>
+		<label>Start Routine</label>
+		<description>Select a routine to start.</description>
 		<tags>
 			<tag>Status</tag>
 			<tag>Info</tag>
@@ -901,24 +901,6 @@
 	</channel-type>
 
 	<!-- Info channels -->
-	<channel-type id="room-mapping" advanced="true">
-		<item-type>String</item-type>
-		<label>Room Mapping</label>
-		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
-		</tags>
-		<state readOnly="true"/>
-	</channel-type>
-	<channel-type id="routine-mapping" advanced="true">
-		<item-type>String</item-type>
-		<label>Routine Mapping</label>
-		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
-		</tags>
-		<state readOnly="true"/>
-	</channel-type>
 	<channel-type id="multi-maps-list" advanced="true">
 		<item-type>String</item-type>
 		<label>Multi Map List</label>
