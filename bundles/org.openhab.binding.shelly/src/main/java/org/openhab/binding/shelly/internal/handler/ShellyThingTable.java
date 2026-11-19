@@ -61,7 +61,33 @@ public class ShellyThingTable {
             values = List.copyOf(table.values());
         }
         for (ShellyThingInterface thingInterface : values) {
-            if (thingInterface.checkRepresentation(key)) {
+            if (thingInterface.isIdentifiedBy(key)) {
+                return thingInterface;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Find the Thing of a device that announced itself via mDNS by its service name, which equals the device's
+     * hostname and the realm of the Thing.
+     * <p>
+     * A Thing defined in a .things file learns its service name only on its first initialization, and a sleeping
+     * device can be initialized only while it is awake. Such a Thing is found by its configured IP address instead.
+     * A Thing that knows its device is never matched by IP address, as that address may have belonged to another
+     * device before.
+     */
+    public @Nullable ShellyThingInterface findAnnouncedThing(String serviceName, String ipAddress) {
+        ShellyThingInterface thing = findThing(serviceName);
+        if (thing != null) {
+            return thing;
+        }
+        List<ShellyThingInterface> values;
+        synchronized (this) {
+            values = List.copyOf(table.values());
+        }
+        for (ShellyThingInterface thingInterface : values) {
+            if (thingInterface.getApiConfig().getRealm().isEmpty() && thingInterface.isIdentifiedBy(ipAddress)) {
                 return thingInterface;
             }
         }
