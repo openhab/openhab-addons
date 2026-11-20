@@ -27,24 +27,24 @@ import com.google.gson.annotations.SerializedName;
 public class ShellyMeterJsonDTO {
 
     public static class Shelly2DevConfigVoltmeter {
-        public Integer id;
-        public String name;
+        public @Nullable Integer id;
+        public @Nullable String name;
     }
 
     public static class Shelly2DevConfigEm {
-        public Integer id;
-        public String name;
+        public @Nullable Integer id;
+        public @Nullable String name;
         @SerializedName("blink_mode_selector")
-        public String blinkModeSelector;
+        public @Nullable String blinkModeSelector;
         @SerializedName("phase_selector")
-        public String phaseSelector;
+        public @Nullable String phaseSelector;
         @SerializedName("monitor_phase_sequence")
-        public Boolean monitorPhaseSequence;
+        public @Nullable Boolean monitorPhaseSequence;
     }
 
     public static class Shelly2DevConfigPm1 {
-        public Integer id;
-        public String name;
+        public @Nullable Integer id;
+        public @Nullable String name;
     }
 
     public static class Shelly2DeviceStatusVoltage {
@@ -151,13 +151,13 @@ public class ShellyMeterJsonDTO {
     }
 
     public static class Shelly2Pm1Status {
-        public Integer id;
-        public String source;
-        public Boolean output;
+        public @Nullable Integer id;
+        public @Nullable String source;
+        public @Nullable Boolean output;
         @SerializedName("timer_started_at")
-        public Double timerStartetAt;
+        public @Nullable Double timerStartetAt;
         @SerializedName("timer_duration")
-        public Double timerDuration;
+        public @Nullable Double timerDuration;
         public @Nullable Double apower;
         public @Nullable Double voltage;
         public @Nullable Double current;
