@@ -78,6 +78,7 @@ import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.ShellyScriptLi
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.ShellyScriptPutCodeParams;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.ShellyScriptResponse;
 import org.openhab.binding.shelly.internal.api2.dto.Shelly2ConfigJsonDTO.Shelly2APClientList;
+import org.openhab.binding.shelly.internal.api2.dto.Shelly2ConfigJsonDTO.Shelly2APClientList.Shelly2APClient;
 import org.openhab.binding.shelly.internal.api2.dto.Shelly2ConfigJsonDTO.Shelly2ConfigParms;
 import org.openhab.binding.shelly.internal.api2.dto.Shelly2ConfigJsonDTO.Shelly2DevConfigBle.Shelly2DevConfigBleObserver;
 import org.openhab.binding.shelly.internal.api2.dto.Shelly2ConfigJsonDTO.Shelly2DeviceConfig.Shelly2GetConfigResult;
@@ -230,13 +231,16 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
 
         profile.initialized = true;
 
-        if (profile.capDebugLog && dc.sys.debug != null && dc.sys.debug.websocket != null
-                && getBool(dc.sys.debug.websocket.enable)) {
+        var sys = dc.sys;
+        var debug = sys != null ? sys.debug : null;
+        var debugWs = debug != null ? debug.websocket : null;
+        if (profile.capDebugLog && debugWs != null && getBool(debugWs.enable)) {
             debugLog.resume();
         }
 
         try {
-            if (alwaysOn && dc.ble != null) {
+            var ble = dc.ble;
+            if (alwaysOn && ble != null) {
                 boolean enableBluGateway = config.getEnableBluGateway();
                 logger.debug("{}: BLU Gateway support is {} for this device", thingName,
                         enableBluGateway ? "enabled" : "disabled");
@@ -253,8 +257,9 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
                             // script starts, so calling setBluetooth() here would only get rejected by the device
                             installScript(SHELLY2_BLU_GWSCRIPT, true);
                         } else {
-                            boolean bluetooth = getBool(dc.ble.enable);
-                            boolean observer = dc.ble.observer != null && getBool(dc.ble.observer.enable);
+                            boolean bluetooth = getBool(ble.enable);
+                            Shelly2DevConfigBleObserver bleObserver = ble.observer;
+                            boolean observer = bleObserver != null && getBool(bleObserver.enable);
                             if (!bluetooth) {
                                 logger.debug("{}: Bluetooth will be enabled to activate BLU Gateway mode", thingName);
                             }
@@ -957,10 +962,12 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
         if (getBool(profile.settings.rangeExtender)) {
             try {
                 // Get List of AP clients
-                profile.status.rangeExtender = apiRequest(SHELLYRPC_METHOD_WIFILISTAPCLIENTS, null,
+                Shelly2APClientList apClientList = apiRequest(SHELLYRPC_METHOD_WIFILISTAPCLIENTS, null,
                         Shelly2APClientList.class);
+                profile.status.rangeExtender = apClientList;
+                List<Shelly2APClient> apClients = apClientList.apClients;
                 logger.debug("{}: Range extender is enabled, {} clients connected", thingName,
-                        profile.status.rangeExtender.apClients.size());
+                        apClients != null ? apClients.size() : 0);
             } catch (ShellyApiException e) {
                 logger.debug("{}: Range extender is enabled, but unable to read AP client list", thingName, e);
                 profile.settings.rangeExtender = false;

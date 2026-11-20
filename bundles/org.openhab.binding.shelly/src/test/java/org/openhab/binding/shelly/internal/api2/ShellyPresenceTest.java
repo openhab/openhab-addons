@@ -80,7 +80,8 @@ public class ShellyPresenceTest {
         var presence = Objects.requireNonNull(dc.presence);
         assertThat(presence.enable, is(true));
         assertThat(presence.mainZone, is("presencezone:200"));
-        assertThat(dc.sys.device.name, is("mydevice"));
+        var sys = Objects.requireNonNull(dc.sys);
+        assertThat(Objects.requireNonNull(sys.device).name, is("mydevice"));
     }
 
     @Test

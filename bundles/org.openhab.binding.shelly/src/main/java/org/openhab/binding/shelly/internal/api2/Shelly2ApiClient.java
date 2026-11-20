@@ -265,21 +265,30 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
         Shelly2GetConfigResult dc = apiRequest(SHELLYRPC_METHOD_GETCONFIG, null, Shelly2GetConfigResult.class);
         profile.settingsJson = gson.toJson(dc);
         profile.thingName = thingName;
-        profile.settings.name = profile.status.name = dc.sys.device.name;
+        var sys = dc.sys;
+        var sysDevice = sys != null ? sys.device : null;
+        var location = sys != null ? sys.location : null;
+        profile.settings.name = profile.status.name = sysDevice != null ? sysDevice.name : null;
         profile.name = getString(profile.settings.name);
-        profile.settings.timezone = getString(dc.sys.location.tz);
-        profile.settings.discoverable = getBool(dc.sys.device.discoverable);
-        if (dc.wifi != null && dc.wifi.ap != null && dc.wifi.ap.rangeExtender != null) {
-            profile.settings.wifiAp.rangeExtender = getBool(dc.wifi.ap.rangeExtender.enable);
+        profile.settings.timezone = location != null ? getString(location.tz) : "";
+        profile.settings.discoverable = sysDevice != null && getBool(sysDevice.discoverable);
+        var wifi = dc.wifi;
+        var wifiAp = wifi != null ? wifi.ap : null;
+        var rangeExtender = wifiAp != null ? wifiAp.rangeExtender : null;
+        if (rangeExtender != null) {
+            profile.settings.wifiAp.rangeExtender = getBool(rangeExtender.enable);
         }
-        if (dc.cloud != null) {
-            profile.settings.cloud.enabled = getBool(dc.cloud.enable);
+        var cloud = dc.cloud;
+        if (cloud != null) {
+            profile.settings.cloud.enabled = getBool(cloud.enable);
         }
-        if (dc.mqtt != null) {
-            profile.settings.mqtt.enable = getBool(dc.mqtt.enable);
+        var mqtt = dc.mqtt;
+        if (mqtt != null) {
+            profile.settings.mqtt.enable = getBool(mqtt.enable);
         }
-        if (dc.sys.sntp != null) {
-            profile.settings.sntp.server = dc.sys.sntp.server;
+        var sntp = sys != null ? sys.sntp : null;
+        if (sntp != null) {
+            profile.settings.sntp.server = sntp.server;
         }
 
         profile.isRoller = dc.cover0 != null;
@@ -325,19 +334,23 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
             profile.status.update.hasUpdate = false;
         }
 
-        if (dc.eth != null) {
-            profile.settings.ethernet = getBool(dc.eth.enable);
+        var eth = dc.eth;
+        if (eth != null) {
+            profile.settings.ethernet = getBool(eth.enable);
         }
-        if (dc.ble != null) {
-            profile.settings.bluetooth = getBool(dc.ble.enable);
+        var ble = dc.ble;
+        if (ble != null) {
+            profile.settings.bluetooth = getBool(ble.enable);
         }
 
         profile.settings.wifiSta = new ShellySettingsWiFiNetwork();
         profile.settings.wifiSta1 = new ShellySettingsWiFiNetwork();
-        fillWiFiSta(dc.wifi.sta, profile.settings.wifiSta);
-        fillWiFiSta(dc.wifi.sta1, profile.settings.wifiSta1);
-        if (dc.wifi.ap != null && dc.wifi.ap.rangeExtender != null) {
-            profile.settings.rangeExtender = getBool(dc.wifi.ap.rangeExtender.enable);
+        if (wifi != null) {
+            fillWiFiSta(wifi.sta, profile.settings.wifiSta);
+            fillWiFiSta(wifi.sta1, profile.settings.wifiSta1);
+        }
+        if (rangeExtender != null) {
+            profile.settings.rangeExtender = getBool(rangeExtender.enable);
         }
 
         if (profile.hasRelays) {
@@ -454,8 +467,10 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
         if (profile.hasBattery) {
             profile.settings.sleepMode = new ShellySensorSleepMode();
             profile.settings.sleepMode.unit = "m";
-            profile.settings.sleepMode.period = dc.sys.sleep != null ? dc.sys.sleep.wakeupPeriod / 60 : 720;
-            profile.wakeupPeriodAssumed = dc.sys.sleep == null;
+            var sleep = sys != null ? sys.sleep : null;
+            Integer wakeupPeriod = sleep != null ? sleep.wakeupPeriod : null;
+            profile.settings.sleepMode.period = wakeupPeriod != null ? wakeupPeriod / 60 : 720;
+            profile.wakeupPeriodAssumed = sleep == null;
         }
 
         if (profile.isFlood) {
@@ -467,18 +482,20 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
             }
         }
 
-        if (dc.led != null) {
-            profile.settings.ledStatusDisable = !getBool(dc.led.sysLedEnable);
-            profile.settings.ledPowerDisable = "off".equals(getString(dc.led.powerLed));
+        var led = dc.led;
+        if (led != null) {
+            profile.settings.ledStatusDisable = !getBool(led.sysLedEnable);
+            profile.settings.ledPowerDisable = "off".equals(getString(led.powerLed));
         }
 
         // lora100 is present only while the add-on is installed; re-evaluated on every config refresh.
         // rx_enable is optional and defaults to enabled
-        if (dc.lora100 != null) {
+        var lora100 = dc.lora100;
+        if (lora100 != null) {
             profile.settings.loraDetected = true;
-            profile.settings.loraRxEnabled = !Boolean.FALSE.equals(dc.lora100.rxEnabled);
+            profile.settings.loraRxEnabled = !Boolean.FALSE.equals(lora100.rxEnabled);
             profile.settings.loraComponentIds = new Integer[1];
-            Integer loraId = dc.lora100.id;
+            Integer loraId = lora100.id;
             profile.settings.loraComponentIds[0] = loraId != null ? loraId : 100;
         } else {
             profile.settings.loraDetected = false;
@@ -620,8 +637,8 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
         rsettings.id = cs.id;
         rsettings.isValid = cs.id != null;
         rsettings.name = cs.name;
-        rsettings.autoOn = getBool(cs.autoOn) ? cs.autoOnDelay : 0;
-        rsettings.autoOff = getBool(cs.autoOff) ? cs.autoOffDelay : 0;
+        rsettings.autoOn = getBool(cs.autoOn) ? getDouble(cs.autoOnDelay) : 0;
+        rsettings.autoOff = getBool(cs.autoOff) ? getDouble(cs.autoOffDelay) : 0;
         rsettings.hasTimer = false;
         rsettings.btnType = mapValue(MAP_INMODE_BTNTYPE, getString(cs.mode).toLowerCase(Locale.ROOT));
         relays.add(rsettings);
@@ -1148,8 +1165,11 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
     }
 
     private void fillRollerFavorites(ShellyDeviceProfile profile, Shelly2GetConfigResult dc) {
-        if (dc.sys.uiData.cover != null && !dc.sys.uiData.cover.isEmpty()) {
-            String[] favorites = dc.sys.uiData.cover.split(",");
+        var sys = dc.sys;
+        var uiData = sys != null ? sys.uiData : null;
+        String cover = uiData != null ? uiData.cover : null;
+        if (cover != null && !cover.isEmpty()) {
+            String[] favorites = cover.split(",");
             profile.settings.favorites = new ArrayList<>();
             for (int i = 0; i < favorites.length; i++) {
                 ShellyFavPos fav = new ShellyFavPos();

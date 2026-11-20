@@ -968,10 +968,8 @@ public class Shelly2GetDeviceProfileTest {
         Gson gson = new Gson();
         Shelly2GetConfigResult config = parseConfig(gson, "{\"sys\":{\"device\":{},\"location\":{}},\"wifi\":{},"
                 + "\"lora:100\":{\"id\":100,\"band_plan\":\"US915\",\"rx_enable\":false}}");
-        assertThat(config.lora100 != null, is(true));
-        if (config.lora100 != null) {
-            assertThat(config.lora100.bandPlan, is("US915"));
-        }
+        var lora100 = Objects.requireNonNull(config.lora100);
+        assertThat(lora100.bandPlan, is("US915"));
     }
 
     @ParameterizedTest(name = "{0} → isDimmer+hasRelays=true")
