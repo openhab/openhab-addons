@@ -57,37 +57,56 @@ If `secretCreationDate` is configured on the `account` bridge, the binding autom
 ## Channels
 
 All channels provided by the `vehicle` thing are read-only and organized into logical channel groups.
+Channels specific to a powertrain type (such as high-voltage battery charging or fuel tank level) are added dynamically based on the detected vehicle type:
+
+- **Electric vehicles (`EV`) and Plug-in Hybrids (`PE`)** provide the channels in the `charging` group.
+- **Internal combustion engines (`GN`), Hybrids (`HV`), Plug-in Hybrids (`PE`), and Fuel Cell vehicles (`FV`)** provide the channels in the `fuel` group.
+- If a vehicle does not support a specific powertrain feature, the corresponding channel group and its channels are not created on the Thing.
 
 ### Group `vehicle` (Vehicle Status)
 
-| Channel ID | Item Type | Description |
-| :--- | :--- | :--- |
-| `vehicle#soc` | `Number:Dimensionless` | Current high-voltage battery state of charge (%). |
-| `vehicle#capacity` | `Number:Energy` | Maximum high-voltage battery capacity (Wh). |
-| `vehicle#charging` | `Switch` | Indicates whether charging is currently active (`ON`/`OFF`). |
-| `vehicle#plugin` | `String` | Charge cable connection status (`UNPLUGGED`, `PLUGGED`, `INVALID`). |
-| `vehicle#charge-status` | `String` | Current charging mode (`NOT_CHARGING`, `CHARGING_AC`, `CHARGING_DC`, `FINISHED`, `WAITING_SCHEDULE`, `ERROR`). |
-| `vehicle#remain-time` | `Number:Time` | Estimated remaining charging time (minutes). |
-| `vehicle#target-soc-standard` | `Number:Dimensionless` | Configured target state of charge for AC standard charging (%). |
-| `vehicle#target-soc-quick` | `Number:Dimensionless` | Configured target state of charge for DC fast charging (%). |
-| `vehicle#fuel-level` | `Number:Dimensionless` | Current fuel tank level for combustion/hybrid vehicles (%). |
-| `vehicle#distance-to-empty` | `Number:Length` | Estimated driving range on current charge or fuel. |
-| `vehicle#distance-type` | `String` | Powertrain range estimation basis (`EV`, `GASOLINE`, `DIESEL`, `PHEV`, `HEV`). |
-| `vehicle#location` | `Location` | Current geographical GPS position (`latitude,longitude,altitude`). |
-| `vehicle#latitude` | `Number` | Current GPS latitude of the vehicle. |
-| `vehicle#longitude` | `Number` | Current GPS longitude of the vehicle. |
-| `vehicle#altitude` | `Number:Length` | Altitude above sea level (m). |
-| `vehicle#location-last-update` | `DateTime` | Timestamp when the GPS position was recorded. |
-| `vehicle#speed` | `Number:Speed` | Vehicle ground speed (km/h). |
-| `vehicle#heading` | `Number:Angle` | Driving direction heading angle (°). |
-| `vehicle#odometer` | `Number:Length` | Cumulative vehicle mileage. |
-| `vehicle#ignition` | `String` | Primary ignition power state (`OFF`, `ACC`, `ON`, `START`). |
-| `vehicle#ignition-acc` | `Switch` | Indicates if the accessory circuit (infotainment/radio) is active. |
-| `vehicle#ignition-ign1` | `Switch` | Indicates if the vehicle electronics circuit is active. |
-| `vehicle#ignition-ign3` | `Switch` | Indicates if the high-voltage / drive-ready circuit is active. |
-| `vehicle#sleep-mode` | `String` | Power-saving sleep mode status (`OFF`, `ON`, `INVALID`). |
-| `vehicle#parking-position` | `Switch` | Indicates whether the automatic transmission is in Park (`P`). |
-| `vehicle#last-update` | `DateTime` | Timestamp of the last data transmission from the vehicle. |
+| Channel ID                     | Item Type       | Description                                                             |
+| :----------------------------- | :-------------- | :---------------------------------------------------------------------- |
+| `vehicle#distance-to-empty`    | `Number:Length` | Estimated driving range on current charge or fuel.                      |
+| `vehicle#distance-type`        | `String`        | Powertrain range estimation basis (`EV`, `GASOLINE`, `DIESEL`, `PHEV`). |
+| `vehicle#location`             | `Location`      | Current geographical GPS position (`latitude,longitude,altitude`).     |
+| `vehicle#latitude`             | `Number`        | Current GPS latitude of the vehicle.                                    |
+| `vehicle#longitude`            | `Number`        | Current GPS longitude of the vehicle.                                   |
+| `vehicle#altitude`             | `Number:Length` | Altitude above sea level (m).                                           |
+| `vehicle#location-last-update` | `DateTime`      | Timestamp when the GPS position was recorded.                           |
+| `vehicle#speed`                | `Number:Speed`  | Vehicle ground speed (km/h).                                            |
+| `vehicle#heading`              | `Number:Angle`  | Driving direction heading angle (°).                                    |
+| `vehicle#odometer`             | `Number:Length` | Cumulative vehicle mileage.                                             |
+| `vehicle#ignition`             | `String`        | Primary ignition power state (`OFF`, `ACC`, `ON`, `START`).             |
+| `vehicle#ignition-acc`         | `Switch`        | Indicates if the accessory circuit (infotainment/radio) is active.      |
+| `vehicle#ignition-ign1`        | `Switch`        | Indicates if the vehicle electronics circuit is active.                 |
+| `vehicle#ignition-ign3`        | `Switch`        | Indicates if the high-voltage / drive-ready circuit is active.          |
+| `vehicle#sleep-mode`           | `String`        | Power-saving sleep mode status (`OFF`, `ON`, `INVALID`).                |
+| `vehicle#parking-position`     | `Switch`        | Indicates whether the automatic transmission is in Park (`P`).          |
+| `vehicle#last-update`          | `DateTime`      | Timestamp of the last data transmission from the vehicle.               |
+
+### Group `charging` (High-Voltage Battery & Charging)
+
+> These channels are created dynamically and are only present for vehicles that support high-voltage charging (`EV`, `PE`).
+
+| Channel ID                    | Item Type              | Description                                                                                          |
+| :---------------------------- | :--------------------- | :--------------------------------------------------------------------------------------------------- |
+| `charging#soc`                 | `Number:Dimensionless` | Current high-voltage battery state of charge (%).                                                    |
+| `charging#capacity`            | `Number:Energy`        | Maximum high-voltage battery capacity (Wh).                                                          |
+| `charging#charging`            | `Switch`               | Indicates whether charging is currently active (`ON`/`OFF`).                                         |
+| `charging#plugin`              | `String`               | Charge cable connection status (`UNPLUGGED`, `PLUGGED`, `INVALID`).                                  |
+| `charging#charge-status`       | `String`               | Current charging mode (`NOT_CHARGING`, `CHARGING_AC`, `CHARGING_DC`, `FINISHED`, `WAITING_SCHEDULE`). |
+| `charging#remain-time`         | `Number:Time`          | Estimated remaining charging time (minutes).                                                         |
+| `charging#target-soc-standard` | `Number:Dimensionless` | Configured target state of charge for AC standard charging (%).                                      |
+| `charging#target-soc-quick`    | `Number:Dimensionless` | Configured target state of charge for DC fast charging (%).                                          |
+
+### Group `fuel` (Fuel & Tank Level)
+
+> This channel is created dynamically and is only present for vehicles with a combustion engine or fuel tank (`GN`, `HV`, `PE`, `FV`).
+
+| Channel ID        | Item Type              | Description                                                 |
+| :---------------- | :--------------------- | :---------------------------------------------------------- |
+| `fuel#fuel-level` | `Number:Dimensionless` | Current fuel tank level for combustion/hybrid vehicles (%). |
 
 ### Group `doors` (Doors & Closures)
 
@@ -193,10 +212,10 @@ Number:Time Pleos_SecretRemaining "Remaining Key Validity [%.0f d]" <time> { cha
 Switch Pleos_SecretWarning "Key Expiry Warning" <alarm> { channel="pleos:account:myaccount:secret-expiry-warning" }
 
 // Battery & Charging
-Number:Dimensionless Ioniq5_SoC "Battery Level [%.0f %%]" <battery> (gIoniq5) ["Measurement", "Level"] { channel="pleos:vehicle:myaccount:ioniq5:vehicle#soc" }
-Switch Ioniq5_Charging "Charging Active" <battery> (gIoniq5) ["Status", "Level"] { channel="pleos:vehicle:myaccount:ioniq5:vehicle#charging" }
-String Ioniq5_ChargeStatus "Charging Mode [%s]" <battery> (gIoniq5) ["Status", "Info"] { channel="pleos:vehicle:myaccount:ioniq5:vehicle#charge-status" }
-Number:Time Ioniq5_RemainTime "Remaining Charge Time [%.0f min]" <time> (gIoniq5) ["Forecast", "Duration"] { channel="pleos:vehicle:myaccount:ioniq5:vehicle#remain-time" }
+Number:Dimensionless Ioniq5_SoC "Battery Level [%.0f %%]" <battery> (gIoniq5) ["Measurement", "Level"] { channel="pleos:vehicle:myaccount:ioniq5:charging#soc" }
+Switch Ioniq5_Charging "Charging Active" <battery> (gIoniq5) ["Status", "Level"] { channel="pleos:vehicle:myaccount:ioniq5:charging#charging" }
+String Ioniq5_ChargeStatus "Charging Mode [%s]" <battery> (gIoniq5) ["Status", "Info"] { channel="pleos:vehicle:myaccount:ioniq5:charging#charge-status" }
+Number:Time Ioniq5_RemainTime "Remaining Charge Time [%.0f min]" <time> (gIoniq5) ["Forecast", "Duration"] { channel="pleos:vehicle:myaccount:ioniq5:charging#remain-time" }
 
 // Range & Location
 Number:Length Ioniq5_Range "Estimated Range [%.0f km]" <motion> (gIoniq5) ["Forecast"] { channel="pleos:vehicle:myaccount:ioniq5:vehicle#distance-to-empty" }
