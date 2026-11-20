@@ -19,11 +19,13 @@ import org.openhab.binding.shelly.internal.api.ShellyApiException;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DevConfigBle.Shelly2DevConfigBleObserver;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DevConfigBle.Shelly2DevConfigBleRpc;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult;
-import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusSysAvlUpdate;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2RpcBaseMessage.Shelly2RpcMessageError;
 import org.openhab.binding.shelly.internal.api2.ShellyBluJsonDTO.Shelly2NotifyBluEventData;
 import org.openhab.binding.shelly.internal.api2.dto.ShellyCoverJsonDTO.Shelly2CoverStatus;
 import org.openhab.binding.shelly.internal.api2.dto.ShellyCoverJsonDTO.Shelly2DevConfigCover;
+import org.openhab.binding.shelly.internal.api2.dto.ShellyLoraJsonDTO.Shelly2DeviceConfigLora;
+import org.openhab.binding.shelly.internal.api2.dto.ShellyLoraJsonDTO.Shelly2DeviceStatusLora;
+import org.openhab.binding.shelly.internal.api2.dto.ShellyLoraJsonDTO.Shelly2NotifyEventLoraInfo;
 import org.openhab.binding.shelly.internal.api2.dto.ShellyMediaJsonDTO.Shelly2DeviceStatusMedia;
 import org.openhab.binding.shelly.internal.api2.dto.ShellyPresenceJsonDTO.Shelly2DevConfigPresence;
 import org.openhab.binding.shelly.internal.api2.dto.ShellyThermostatJsonDTO.Shelly2DeviceStatusThermostat;
@@ -500,20 +502,6 @@ public class Shelly2ApiJsonDTO {
             public Boolean sysLedEnable;
             @SerializedName("power_led")
             public String powerLed;
-        }
-
-        public class Shelly2DeviceConfigLora {
-            public @Nullable Integer id;
-            @SerializedName("band_plan")
-            public @Nullable String bandPlan;
-            public @Nullable Long freq;
-            public @Nullable Integer bw;
-            public @Nullable Integer dr;
-            public @Nullable Integer cr;
-            public @Nullable Integer plen;
-            public @Nullable Integer txp;
-            @SerializedName("rx_enable")
-            public @Nullable Boolean rxEnabled;
         }
 
         public static class Shelly2GetConfigResult {
@@ -1384,24 +1372,6 @@ public class Shelly2ApiJsonDTO {
         public Shelly2RpcMessageError error;
     }
 
-    public static class Shelly2DeviceStatusLora {
-        public @Nullable Integer id;
-        @SerializedName("bytes_recd")
-        public @Nullable Long rxBytes;
-        @SerializedName("bytes_sent")
-        public @Nullable Long txBytes;
-        @SerializedName("send_fails")
-        public @Nullable Long txErrors;
-        @SerializedName("air_time_hr_ms")
-        public @Nullable Long airtime;
-        @SerializedName("fw_version")
-        public @Nullable String fw;
-        @SerializedName("available_updates")
-        public @Nullable Shelly2DeviceStatusSysAvlUpdate availableUpdates;
-        public @Nullable ArrayList<String> errors;
-        public @Nullable ArrayList<String> flags;
-    }
-
     public static class Shelly2RpcNotifyStatus {
         public static class Shelly2NotifyStatus extends Shelly2DeviceStatusResult {
             public Double ts;
@@ -1470,14 +1440,6 @@ public class Shelly2ApiJsonDTO {
 
         // LoRa: the "lora" event nests its payload under "info" rather than the generic "data" member
         public @Nullable Shelly2NotifyEventLoraInfo info;
-    }
-
-    public static class Shelly2NotifyEventLoraInfo {
-        public @Nullable String data;
-        public @Nullable String sender; // user_rx only
-        public @Nullable Double rssi;
-        public @Nullable Double snr;
-        public @Nullable Long tsu;
     }
 
     public class Shelly2NotifyEventData {

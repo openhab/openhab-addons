@@ -76,7 +76,6 @@ import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceS
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusSysAvlUpdate;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2NotifyEvent;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2NotifyEventData;
-import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2NotifyEventLoraInfo;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2RpcBaseMessage;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2RpcNotifyEvent;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2RpcNotifyStatus;
@@ -89,6 +88,7 @@ import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.ShellyScriptLi
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.ShellyScriptListResponse.ShellyScriptListEntry;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.ShellyScriptPutCodeParams;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.ShellyScriptResponse;
+import org.openhab.binding.shelly.internal.api2.dto.ShellyLoraJsonDTO.Shelly2NotifyEventLoraInfo;
 import org.openhab.binding.shelly.internal.api2.dto.ShellyPresenceJsonDTO.Shelly2StatusPresence;
 import org.openhab.binding.shelly.internal.config.ShellyApiConfiguration;
 import org.openhab.binding.shelly.internal.handler.ShellyComponents;
