@@ -15,6 +15,8 @@ package org.openhab.binding.energycharts.internal.api;
 import static org.eclipse.jetty.http.HttpMethod.GET;
 import static org.eclipse.jetty.http.HttpStatus.OK_200;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -131,22 +133,23 @@ public class EnergyChartsApi {
             if (marketPrice == null) {
                 continue;
             }
-            long start = apiData.unixSeconds.get(index) * 1000L;
-            long end = getIntervalEnd(apiData, index, start);
+            Instant start = Instant.ofEpochSecond(apiData.unixSeconds.get(index));
+            Instant end = getIntervalEnd(apiData, index, start);
             result.add(toPrice(marketPrice, new TimeRange(start, end)));
         }
         return result;
     }
 
-    private long getIntervalEnd(EnergyChartsApiData apiData, int index, long start) throws EnergyChartsApiException {
-        long end;
+    private Instant getIntervalEnd(EnergyChartsApiData apiData, int index, Instant start)
+            throws EnergyChartsApiException {
+        Instant end;
         if (index + 1 < apiData.unixSeconds.size()) {
-            end = apiData.unixSeconds.get(index + 1) * 1000L;
+            end = Instant.ofEpochSecond(apiData.unixSeconds.get(index + 1));
         } else {
-            long previousStart = apiData.unixSeconds.get(index - 1) * 1000L;
-            end = start + (start - previousStart);
+            Instant previousStart = Instant.ofEpochSecond(apiData.unixSeconds.get(index - 1));
+            end = start.plus(Duration.between(previousStart, start));
         }
-        if (end <= start) {
+        if (!end.isAfter(start)) {
             throw new EnergyChartsApiException("@text/error.json");
         }
         return end;

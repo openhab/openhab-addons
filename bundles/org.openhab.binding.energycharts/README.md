@@ -24,12 +24,12 @@ Auto discovery is not supported.
 | ----------- | --------------------------- | -------- |
 | biddingZone | The bidding zone, see below | yes      |
 
-Supported bidding zones: `AT` (Austria), `BE` (Belgium), `CH` (Switzerland), `CZ` (Czech Republic), `DE-LU` (Germany, Luxembourg), `DK1` and `DK2` (Denmark), `FR` (France), `HU` (Hungary), `IT-North` (Italy North), `NL` (Netherlands), `NO2` (Norway 2), `PL` (Poland), `SE4` (Sweden 4) and `SI` (Slovenia).
+Bidding zones in the list: `AT` (Austria), `BE` (Belgium), `CH` (Switzerland), `CZ` (Czech Republic), `DE-LU` (Germany, Luxembourg), `DK1` and `DK2` (Denmark), `FR` (France), `HU` (Hungary), `IT-North` (Italy North), `NL` (Netherlands), `NO2` (Norway 2), `PL` (Poland), `SE4` (Sweden 4) and `SI` (Slovenia).
 
 Energy-Charts publishes these zones under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) with data from Bundesnetzagentur | SMARD.de.
-Prices of other bidding zones are not offered by this binding, because their license only allows private use.
+Other zone codes of Energy-Charts can be entered as well, but check their license first, most of them only allow private use.
 
-Prices for the next day are published around 13:00.
+Prices for the next day are published around 13:00 CET.
 The binding requests prices when it starts and then after 13:00 at most once per hour, until the prices for the next day are available.
 
 ## Channels

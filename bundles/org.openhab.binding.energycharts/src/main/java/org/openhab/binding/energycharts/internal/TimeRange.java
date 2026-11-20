@@ -12,33 +12,35 @@
  */
 package org.openhab.binding.energycharts.internal;
 
+import java.time.Instant;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link TimeRange} defines a time range (defined by two timestamps)
+ * The {@link TimeRange} defines a time range (defined by two instants)
  *
  * @author Jan N. Klug - Initial contribution
  */
 @NonNullByDefault
-public record TimeRange(long start, long end) implements Comparable<TimeRange> {
+public record TimeRange(Instant start, Instant end) implements Comparable<TimeRange> {
     /**
-     * Check if a given timestamp is in this time range
+     * Check if a given instant is in this time range
      *
-     * @param timestamp the timestamp
-     * @return {@code true} if the timestamp is equal to or greater than {@link #start} and less than {@link #end}
+     * @param instant the instant
+     * @return {@code true} if the instant is equal to or after {@link #start} and before {@link #end}
      */
-    public boolean contains(long timestamp) {
-        return timestamp >= start && timestamp < end;
+    public boolean contains(Instant instant) {
+        return !instant.isBefore(start) && instant.isBefore(end);
     }
 
     /**
      * Compare two time ranges by their start timestamp
      *
      * @param o the object to be compared
-     * @return the result of {@link Long#compare(long, long)} for the {@link #start} timestamps
+     * @return the result of {@link Instant#compareTo(Instant)} for the {@link #start} instants
      */
     @Override
     public int compareTo(TimeRange o) {
-        return Long.compare(start, o.start);
+        return start.compareTo(o.start);
     }
 }

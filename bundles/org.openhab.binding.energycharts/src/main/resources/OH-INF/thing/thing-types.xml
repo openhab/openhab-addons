@@ -37,7 +37,7 @@
 					<option value="SE4">Sweden 4 (South)</option>
 					<option value="SI">Slovenia</option>
 				</options>
-				<limitToOptions>true</limitToOptions>
+				<limitToOptions>false</limitToOptions>
 			</parameter>
 		</config-description>
 	</thing-type>
@@ -47,7 +47,7 @@
 		<label>Price</label>
 		<category>Price</category>
 		<tags>
-			<tag>Forecast</tag>
+			<tag>Status</tag>
 			<tag>Price</tag>
 		</tags>
 		<state readOnly="true" pattern="%.3f %unit%"/>

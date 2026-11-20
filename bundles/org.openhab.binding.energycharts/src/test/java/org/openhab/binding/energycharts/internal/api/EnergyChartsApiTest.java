@@ -20,6 +20,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.time.Instant;
 import java.time.LocalDate;
 import java.util.SortedSet;
 import java.util.concurrent.TimeUnit;
@@ -78,9 +79,9 @@ class EnergyChartsApiTest extends JavaTest {
         // the interval without a price is dropped
         assertThat(prices.size(), is(3));
         MarketPrice first = prices.first();
-        assertThat(first.timerange().start(), is(1718400000000L));
-        assertThat(first.timerange().end(), is(1718400900000L));
-        assertThat(prices.last().timerange().end(), is(1718405400000L));
+        assertThat(first.timerange().start(), is(Instant.ofEpochMilli(1718400000000L)));
+        assertThat(first.timerange().end(), is(Instant.ofEpochMilli(1718400900000L)));
+        assertThat(prices.last().timerange().end(), is(Instant.ofEpochMilli(1718405400000L)));
         // 100 EUR/MWh = 0.1 EUR/kWh
         assertThat(first.price(), is(closeTo(0.1, 1e-12)));
     }

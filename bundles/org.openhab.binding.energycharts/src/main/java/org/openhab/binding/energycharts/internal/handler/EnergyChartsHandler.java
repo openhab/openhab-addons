@@ -93,9 +93,8 @@ public class EnergyChartsHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         EnergyChartsConfiguration config = getConfigAs(EnergyChartsConfiguration.class);
-        if (!BIDDING_ZONES.contains(config.biddingZone)) {
-            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/error.unsupported.zone [\"" + config.biddingZone + "\"]");
+        if (config.biddingZone.isBlank()) {
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.missing.zone");
             return;
         }
 
@@ -202,13 +201,14 @@ public class EnergyChartsHandler extends BaseThingHandler {
             return true;
         }
 
-        long nowMillis = now.toInstant().toEpochMilli();
-        if (prices.first().timerange().start() > nowMillis || prices.last().timerange().end() <= nowMillis) {
+        Instant nowInstant = now.toInstant();
+        if (prices.first().timerange().start().isAfter(nowInstant)
+                || !prices.last().timerange().end().isAfter(nowInstant)) {
             return true;
         }
 
-        long endOfNextDay = now.toLocalDate().plusDays(2).atStartOfDay(now.getZone()).toInstant().toEpochMilli();
-        if (prices.last().timerange().end() >= endOfNextDay) {
+        Instant endOfNextDay = now.toLocalDate().plusDays(2).atStartOfDay(now.getZone()).toInstant();
+        if (!prices.last().timerange().end().isBefore(endOfNextDay)) {
             return false;
         }
 
@@ -233,7 +233,7 @@ public class EnergyChartsHandler extends BaseThingHandler {
     }
 
     private @Nullable MarketPrice findCurrentPrice(SortedSet<MarketPrice> localPrices) {
-        long now = clock.millis();
+        Instant now = clock.instant();
         return localPrices.stream().filter(p -> p.timerange().contains(now)).findFirst().orElse(null);
     }
 
@@ -243,7 +243,7 @@ public class EnergyChartsHandler extends BaseThingHandler {
 
     private void sendTimeSeries(SortedSet<MarketPrice> localPrices) {
         TimeSeries timeSeries = new TimeSeries(TimeSeries.Policy.REPLACE);
-        localPrices.forEach(p -> timeSeries.add(Instant.ofEpochMilli(p.timerange().start()), toState(p)));
+        localPrices.forEach(p -> timeSeries.add(p.timerange().start(), toState(p)));
         sendTimeSeries(CHANNEL_SPOT_PRICE, timeSeries);
     }
 }

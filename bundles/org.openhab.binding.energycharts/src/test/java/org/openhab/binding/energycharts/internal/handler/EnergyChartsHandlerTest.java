@@ -43,8 +43,8 @@ class EnergyChartsHandlerTest {
         ZonedDateTime start = TODAY.atStartOfDay(ZONE);
         ZonedDateTime end = start.plusDays(days);
         for (ZonedDateTime t = start; t.isBefore(end); t = t.plusMinutes(15)) {
-            long s = t.toInstant().toEpochMilli();
-            prices.add(new MarketPrice(0.1, new TimeRange(s, s + Duration.ofMinutes(15).toMillis())));
+            Instant s = t.toInstant();
+            prices.add(new MarketPrice(0.1, new TimeRange(s, s.plus(Duration.ofMinutes(15)))));
         }
         return prices;
     }

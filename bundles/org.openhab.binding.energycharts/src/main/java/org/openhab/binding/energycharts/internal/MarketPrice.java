@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.energycharts.internal;
 
+import java.time.ZoneId;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
@@ -28,7 +30,8 @@ public record MarketPrice(double price, TimeRange timerange) implements Comparab
 
     @Override
     public String toString() {
-        return String.format("(%1$tF %1$tR - %2$tR: %3$.5f)", timerange.start(), timerange.end(), price);
+        return String.format("(%1$tF %1$tR - %2$tR: %3$.5f)", timerange.start().atZone(ZoneId.systemDefault()),
+                timerange.end().atZone(ZoneId.systemDefault()), price);
     }
 
     @Override

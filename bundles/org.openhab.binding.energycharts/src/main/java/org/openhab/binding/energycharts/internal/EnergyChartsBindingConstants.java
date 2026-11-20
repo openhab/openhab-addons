@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.energycharts.internal;
 
-import java.util.Set;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
 
@@ -29,10 +27,4 @@ public class EnergyChartsBindingConstants {
     public static final ThingTypeUID THING_TYPE_PRICES = new ThingTypeUID(BINDING_ID, "prices");
 
     public static final String CHANNEL_SPOT_PRICE = "spot-price";
-
-    /**
-     * Bidding zones whose prices Energy-Charts publishes under CC BY 4.0.
-     */
-    public static final Set<String> BIDDING_ZONES = Set.of("AT", "BE", "CH", "CZ", "DE-LU", "DK1", "DK2", "FR", "HU",
-            "IT-North", "NL", "NO2", "PL", "SE4", "SI");
 }
