@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.lutron.internal.hw;
 
+import static org.openhab.binding.lutron.internal.LutronBindingConstants.BINDING_ID;
 import static org.openhab.binding.lutron.internal.hw.HwConstants.CHANNEL_PRESS;
 
 import java.util.List;
@@ -51,9 +52,9 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class HwKeypadHandler extends BaseThingHandler {
-    private static final ChannelTypeUID BUTTON_CHANNEL_TYPE = new ChannelTypeUID("lutron", "buttonTrigger");
-    private static final ChannelTypeUID LED_CHANNEL_TYPE = new ChannelTypeUID("lutron", "hwLedState");
-    private static final ChannelTypeUID PRESS_CHANNEL_TYPE = new ChannelTypeUID("lutron", "hwKeypadPress");
+    private static final ChannelTypeUID BUTTON_CHANNEL_TYPE = new ChannelTypeUID(BINDING_ID, "buttonTrigger");
+    private static final ChannelTypeUID LED_CHANNEL_TYPE = new ChannelTypeUID(BINDING_ID, "hwLedState");
+    private static final ChannelTypeUID PRESS_CHANNEL_TYPE = new ChannelTypeUID(BINDING_ID, "hwKeypadPress");
 
     // The index of a state is the digit used for it by KLS and SETLED
     private static final List<String> LED_STATES = List.of("OFF", "ON", "FLASH1", "FLASH2");
@@ -99,6 +100,8 @@ public class HwKeypadHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
+        // Until the new configuration is valid, the bridge must not deliver messages for the old address
+        address = null;
         HwKeypadConfig config = getConfigAs(HwKeypadConfig.class);
 
         if (config.address.isBlank()) {
@@ -124,6 +127,11 @@ public class HwKeypadHandler extends BaseThingHandler {
         }
         updateStatus(ThingStatus.ONLINE);
         queryLeds();
+    }
+
+    @Override
+    public void dispose() {
+        address = null;
     }
 
     @Override

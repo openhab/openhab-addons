@@ -225,8 +225,8 @@ public class HwBridgeHandlerTest {
         handler.receive("DBP, [01:01:03:06:01], 1");
         handler.receive("DBDT, [01:01:03:06:01], 1");
 
-        verify(dimmerHandler).handleTap("KBP");
-        verify(dimmerHandler).handleTap("KBDT");
+        verify(dimmerHandler).handleTap("DBP");
+        verify(dimmerHandler).handleTap("DBDT");
         verify(discoveryService, never()).declareUnknownKeypad(org.mockito.ArgumentMatchers.anyString());
     }
 

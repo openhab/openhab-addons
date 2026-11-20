@@ -143,14 +143,14 @@ public class HwDimmerHandler extends BaseThingHandler {
     /**
      * Passes a tap on the dimmer's switch on to the {@code tap} channel.
      *
-     * @param action the matching keypad message name: KBP, KBR, KBH or KBDT
+     * @param action the message name: DBP, DBR, DBH or DBDT
      */
     void handleTap(String action) {
         String event = switch (action) {
-            case "KBP" -> CommonTriggerEvents.PRESSED;
-            case "KBR" -> CommonTriggerEvents.RELEASED;
-            case "KBH" -> CommonTriggerEvents.LONG_PRESSED;
-            case "KBDT" -> CommonTriggerEvents.DOUBLE_PRESSED;
+            case "DBP" -> CommonTriggerEvents.PRESSED;
+            case "DBR" -> CommonTriggerEvents.RELEASED;
+            case "DBH" -> CommonTriggerEvents.LONG_PRESSED;
+            case "DBDT" -> CommonTriggerEvents.DOUBLE_PRESSED;
             default -> null;
         };
         if (event != null && thing.getChannel(CHANNEL_TAP) != null) {

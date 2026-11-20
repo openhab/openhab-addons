@@ -170,7 +170,7 @@ public abstract class HwBridgeHandler extends BaseBridgeHandler {
         String address = HwAddress.normalize(data[1]);
         HwDimmerHandler handler = findHandler(HwDimmerHandler.class, address, HwDimmerHandler::getAddress);
         if (handler != null) {
-            handler.handleTap(data[0].replace("DB", "KB"));
+            handler.handleTap(data[0]);
         }
     }
 

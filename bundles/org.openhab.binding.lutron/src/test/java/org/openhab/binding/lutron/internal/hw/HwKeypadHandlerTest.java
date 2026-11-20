@@ -177,6 +177,26 @@ public class HwKeypadHandlerTest {
     }
 
     @Test
+    public void invalidConfigurationUpdateForgetsTheOldAddress() {
+        handler.initialize();
+
+        handler.handleConfigurationUpdate(Map.of("address", ADDRESS, "model", "NOSUCHMODEL"));
+        handler.bridgeStatusChanged(new ThingStatusInfo(ThingStatus.ONLINE, ThingStatusDetail.NONE, null));
+
+        org.junit.jupiter.api.Assertions.assertNull(handler.getAddress());
+        verify(bridgeHandler, times(1)).sendCommand("RKLS, " + ADDRESS);
+    }
+
+    @Test
+    public void disposedKeypadHasNoAddress() {
+        handler.initialize();
+
+        handler.dispose();
+
+        org.junit.jupiter.api.Assertions.assertNull(handler.getAddress());
+    }
+
+    @Test
     public void buttonMessagesFireTriggerEvents() {
         handler.initialize();
 

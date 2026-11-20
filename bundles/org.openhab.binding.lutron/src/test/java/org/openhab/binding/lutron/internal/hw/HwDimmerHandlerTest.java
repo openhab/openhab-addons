@@ -139,16 +139,16 @@ public class HwDimmerHandlerTest {
     @Test
     public void tapMessagesFireTriggerEventsOnlyWhenTheThingHasTheChannel() {
         org.openhab.core.thing.ChannelUID tap = new org.openhab.core.thing.ChannelUID(THING_UID, "tap");
-        handler.handleTap("KBP");
+        handler.handleTap("DBP");
         verify(callback, never()).channelTriggered(org.mockito.ArgumentMatchers.any(),
                 org.mockito.ArgumentMatchers.any(), org.mockito.ArgumentMatchers.any());
 
         when(thing.getChannel("tap")).thenReturn(org.openhab.core.thing.binding.builder.ChannelBuilder.create(tap)
                 .withKind(org.openhab.core.thing.type.ChannelKind.TRIGGER).build());
-        handler.handleTap("KBP");
-        handler.handleTap("KBR");
-        handler.handleTap("KBH");
-        handler.handleTap("KBDT");
+        handler.handleTap("DBP");
+        handler.handleTap("DBR");
+        handler.handleTap("DBH");
+        handler.handleTap("DBDT");
 
         verify(callback).channelTriggered(thing, tap, "PRESSED");
         verify(callback).channelTriggered(thing, tap, "RELEASED");

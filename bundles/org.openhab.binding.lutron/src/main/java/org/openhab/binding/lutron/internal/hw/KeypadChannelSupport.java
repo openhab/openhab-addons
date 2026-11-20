@@ -12,9 +12,11 @@
  */
 package org.openhab.binding.lutron.internal.hw;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -60,8 +62,9 @@ final class KeypadChannelSupport {
     private final ChannelTypeUID ledChannelType;
     private final String ledItemType;
 
-    private final Map<Integer, ChannelUID> componentChannels = new HashMap<>();
-    private final Map<ChannelUID, Integer> channelComponents = new HashMap<>();
+    // Replaced as a whole by configure(), because they are read on the bridge's reader thread
+    private volatile Map<Integer, ChannelUID> componentChannels = Map.of();
+    private volatile Map<ChannelUID, Integer> channelComponents = Map.of();
 
     KeypadChannelSupport(Host host, ChannelTypeUID buttonChannelType, ChannelTypeUID ledChannelType,
             String ledItemType) {
@@ -77,9 +80,9 @@ final class KeypadChannelSupport {
      */
     void configure(List<KeypadComponent> components, List<Channel> extraChannels) {
         Thing thing = host.getThing();
-        List<Channel> channels = new java.util.ArrayList<>();
-        componentChannels.clear();
-        channelComponents.clear();
+        List<Channel> channels = new ArrayList<>();
+        Map<Integer, ChannelUID> newComponentChannels = new HashMap<>();
+        Map<ChannelUID, Integer> newChannelComponents = new HashMap<>();
 
         for (KeypadComponent component : components) {
             ChannelUID channelUID = new ChannelUID(thing.getUID(), component.channel());
@@ -93,10 +96,12 @@ final class KeypadChannelSupport {
             } else {
                 continue;
             }
-            componentChannels.put(component.id(), channelUID);
-            channelComponents.put(channelUID, component.id());
+            newComponentChannels.put(component.id(), channelUID);
+            newChannelComponents.put(channelUID, component.id());
         }
         channels.addAll(extraChannels);
+        componentChannels = Map.copyOf(newComponentChannels);
+        channelComponents = Map.copyOf(newChannelComponents);
 
         if (!sameChannels(thing.getChannels(), channels)) {
             host.updateThing(host.editThing().withChannels(channels).build());
@@ -113,7 +118,7 @@ final class KeypadChannelSupport {
         }
         for (Channel channel : wanted) {
             if (!types.containsKey(channel.getUID())
-                    || !java.util.Objects.equals(types.get(channel.getUID()), channel.getChannelTypeUID())) {
+                    || !Objects.equals(types.get(channel.getUID()), channel.getChannelTypeUID())) {
                 return false;
             }
         }
