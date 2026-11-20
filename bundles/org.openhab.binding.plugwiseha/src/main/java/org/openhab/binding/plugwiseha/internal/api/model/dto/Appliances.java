@@ -53,6 +53,10 @@ public class Appliances extends PlugwiseHACollection<Appliance> {
                     }
 
                     this.put(id, applianceToMerge);
+                } else if (originalAppliance != null) {
+                    originalAppliance.getPointLogs().merge(applianceToMerge.getPointLogs());
+                    originalAppliance.getCumulativeLogs().merge(applianceToMerge.getCumulativeLogs());
+                    originalAppliance.getActuatorFunctionalities().merge(applianceToMerge.getActuatorFunctionalities());
                 }
             }
         }
