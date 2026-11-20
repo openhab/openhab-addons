@@ -25,7 +25,7 @@ import static org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.SHELLYR
 import static org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.SHELLYRPC_METHOD_SCRIPT_SETCONFIG;
 import static org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.SHELLYRPC_METHOD_SCRIPT_START;
 import static org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.SHELLYRPC_METHOD_SCRIPT_STOP;
-import static org.openhab.binding.shelly.internal.api2.ShellyBluJsonDTO.SHELLY2_BLU_GWSCRIPT;
+import static org.openhab.binding.shelly.internal.api2.dto.ShellyBluJsonDTO.SHELLY2_BLU_GWSCRIPT;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
