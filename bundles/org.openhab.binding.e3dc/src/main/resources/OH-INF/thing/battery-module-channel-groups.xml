@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="e3dc"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-group-type id="module">
+		<label>Module</label>
+		<description>Values of one battery cell module</description>
+		<channels>
+			<channel id="soc" typeId="module-soc"/>
+			<channel id="soh" typeId="module-soh"/>
+			<channel id="voltage" typeId="module-voltage"/>
+			<channel id="voltage-avg-30s" typeId="module-voltage-avg-30s"/>
+			<channel id="current" typeId="module-current"/>
+			<channel id="current-avg-30s" typeId="module-current-avg-30s"/>
+			<channel id="remaining-capacity" typeId="module-remaining-capacity"/>
+			<channel id="full-charge-capacity" typeId="module-full-charge-capacity"/>
+			<channel id="design-capacity" typeId="module-design-capacity"/>
+			<channel id="remaining-energy" typeId="module-remaining-energy"/>
+			<channel id="full-charge-energy" typeId="module-full-charge-energy"/>
+			<channel id="design-energy" typeId="module-design-energy"/>
+			<channel id="charge-high-temperature" typeId="module-charge-high-temperature"/>
+			<channel id="charge-low-temperature" typeId="module-charge-low-temperature"/>
+			<channel id="cycles" typeId="module-cycles"/>
+			<channel id="status" typeId="module-status"/>
+			<channel id="warning" typeId="module-warning"/>
+			<channel id="alarm" typeId="module-alarm"/>
+			<channel id="error" typeId="module-error"/>
+		</channels>
+	</channel-group-type>
+
+</thing:thing-descriptions>

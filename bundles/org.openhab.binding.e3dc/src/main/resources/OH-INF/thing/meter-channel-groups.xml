@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="e3dc"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-group-type id="meter">
+		<label>Power Meter</label>
+		<channels>
+			<channel id="power-l1" typeId="meter-power-l1"/>
+			<channel id="power-l2" typeId="meter-power-l2"/>
+			<channel id="power-l3" typeId="meter-power-l3"/>
+			<channel id="voltage-l1" typeId="meter-voltage-l1"/>
+			<channel id="voltage-l2" typeId="meter-voltage-l2"/>
+			<channel id="voltage-l3" typeId="meter-voltage-l3"/>
+			<channel id="active-phases" typeId="meter-active-phases"/>
+			<channel id="energy-l1" typeId="meter-energy-l1"/>
+			<channel id="energy-l2" typeId="meter-energy-l2"/>
+			<channel id="energy-l3" typeId="meter-energy-l3"/>
+			<channel id="max-phase-power" typeId="meter-max-phase-power"/>
+		</channels>
+	</channel-group-type>
+
+</thing:thing-descriptions>

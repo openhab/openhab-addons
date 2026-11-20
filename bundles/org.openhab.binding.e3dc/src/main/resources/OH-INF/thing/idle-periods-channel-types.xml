@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="e3dc"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-type id="idle-periods-charge">
+		<item-type>String</item-type>
+		<label>Charge Idle Periods</label>
+		<description>Periods in which charging is locked</description>
+		<tags>
+			<tag>Setpoint</tag>
+		</tags>
+		<state readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="idle-periods-discharge">
+		<item-type>String</item-type>
+		<label>Discharge Idle Periods</label>
+		<description>Periods in which discharging is locked</description>
+		<tags>
+			<tag>Setpoint</tag>
+		</tags>
+		<state readOnly="false"/>
+	</channel-type>
+
+</thing:thing-descriptions>

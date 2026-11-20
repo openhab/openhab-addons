@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="e3dc"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-type id="system-mode">
+		<item-type>Number</item-type>
+		<label>Active Mode</label>
+		<description>Operating mode of the energy management system</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
+		<state pattern="%s" readOnly="true">
+			<options>
+				<option value="0">Automatic</option>
+				<option value="1">Idle</option>
+				<option value="2">Discharge</option>
+				<option value="3">Charge</option>
+				<option value="4">Grid Charge</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="battery-control-set-power-mode">
+		<item-type>String</item-type>
+		<label>Set Power Mode</label>
+		<description>Forced battery mode for a number of poll cycles</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
+		<command>
+			<options>
+				<option value="auto">Automatic</option>
+				<option value="idle:60">Idle</option>
+				<option value="charge:1000:60">Charge 1000 W</option>
+				<option value="charge:2000:60">Charge 2000 W</option>
+				<option value="charge:3000:60">Charge 3000 W</option>
+				<option value="discharge:1000:60">Discharge 1000 W</option>
+				<option value="discharge:2000:60">Discharge 2000 W</option>
+				<option value="discharge:3000:60">Discharge 3000 W</option>
+				<option value="grid_charge:1000:60">Grid Charge 1000 W</option>
+				<option value="grid_charge:2000:60">Grid Charge 2000 W</option>
+				<option value="grid_charge:3000:60">Grid Charge 3000 W</option>
+			</options>
+		</command>
+	</channel-type>
+
+	<channel-type id="emergency-power-status">
+		<item-type>Number</item-type>
+		<label>Emergency Power Status</label>
+		<description>State of the emergency power supply</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state pattern="%s" readOnly="true">
+			<options>
+				<option value="0">Not Supported</option>
+				<option value="1">Emergency Power Active</option>
+				<option value="2">Emergency Power Inactive</option>
+				<option value="3">Emergency Power Not Available</option>
+				<option value="4">Motor Switch Not On</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="battery-control-charging-lock">
+		<item-type>Switch</item-type>
+		<label>Charging Lock</label>
+		<description>Battery charging is currently blocked</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="battery-control-discharging-lock">
+		<item-type>Switch</item-type>
+		<label>Discharging Lock</label>
+		<description>Battery discharging is currently blocked</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="emergency-power-available">
+		<item-type>Switch</item-type>
+		<label>Emergency Available</label>
+		<description>Emergency power reserve is available</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="battery-control-charging-throttled">
+		<item-type>Switch</item-type>
+		<label>Charging Throttled</label>
+		<description>Battery charging is currently limited</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="system-grid-in-limit">
+		<item-type>Switch</item-type>
+		<label>Grid Limit Active</label>
+		<description>Grid consumption is currently limited</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="battery-control-charging-time-lock">
+		<item-type>Switch</item-type>
+		<label>Charging Time Lock</label>
+		<description>Battery charging is blocked by a time window</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="battery-control-discharging-time-lock">
+		<item-type>Switch</item-type>
+		<label>Discharging Time Lock</label>
+		<description>Battery discharging is blocked by a time window</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="battery-control-weather-regulated-charge">
+		<item-type>Switch</item-type>
+		<label>Weather Regulated Charge</label>
+		<description>Charging follows the weather forecast</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Enabled</tag>
+		</tags>
+		<state/>
+	</channel-type>
+
+	<channel-type id="battery-control-power-limits-used">
+		<item-type>Switch</item-type>
+		<label>Power Limits Used</label>
+		<description>Configured power limits are active</description>
+		<tags>
+			<tag>Switch</tag>
+		</tags>
+		<state/>
+	</channel-type>
+
+	<channel-type id="system-powersave">
+		<item-type>Switch</item-type>
+		<label>Power Save</label>
+		<description>Power saving mode is active</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Enabled</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="battery-control-block-charging">
+		<item-type>Switch</item-type>
+		<label>Block Charging</label>
+		<description>Blocks charging of the battery around the clock</description>
+		<tags>
+			<tag>Switch</tag>
+		</tags>
+		<state readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="battery-control-block-discharging">
+		<item-type>Switch</item-type>
+		<label>Block Discharging</label>
+		<description>Blocks discharging of the battery around the clock</description>
+		<tags>
+			<tag>Switch</tag>
+		</tags>
+		<state readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="system-derate-at-percent">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Derate at Percent</label>
+		<description>Share of the installed peak power at which the feed in is reduced</description>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
+		<state pattern="%.0f %%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="system-derate-at-power">
+		<item-type>Number:Power</item-type>
+		<label>Derate at Power</label>
+		<description>Power at which the feed in is reduced</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="battery-control-idle-periods-enabled">
+		<item-type>Switch</item-type>
+		<label>Idle Periods Enabled</label>
+		<description>Whether the device uses the configured idle periods</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Enabled</tag>
+		</tags>
+		<state readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="system-has-messages">
+		<item-type>Switch</item-type>
+		<label>Has Messages</label>
+		<description>The energy manager holds at least one message</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="system-messages">
+		<item-type>String</item-type>
+		<label>Messages</label>
+		<description>Messages of the energy manager as a JSON array</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+</thing:thing-descriptions>

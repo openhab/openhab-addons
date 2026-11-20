@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="e3dc"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-type id="module-soc">
+		<item-type>Number:Dimensionless</item-type>
+		<label>State of Charge</label>
+		<description>State of Charge of the battery cell module</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>StateOfCharge</tag>
+		</tags>
+		<state pattern="%.1f %%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="module-soh">
+		<item-type>Number:Dimensionless</item-type>
+		<label>State of Health</label>
+		<description>State of Health of the battery cell module</description>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
+		<state pattern="%.1f %%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="module-voltage">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Voltage</label>
+		<description>Voltage of the battery cell module</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Voltage</tag>
+		</tags>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="module-voltage-avg-30s">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Voltage 30s Average</label>
+		<description>Voltage 30s Average of the battery cell module</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Voltage</tag>
+		</tags>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="module-current">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>Current</label>
+		<description>Current of the battery cell module</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Current</tag>
+		</tags>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="module-current-avg-30s">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>Current 30s Average</label>
+		<description>Current 30s Average of the battery cell module</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Current</tag>
+		</tags>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="module-remaining-capacity">
+		<item-type>Number:ElectricCharge</item-type>
+		<label>Remaining Capacity</label>
+		<description>Remaining Capacity of the battery cell module</description>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="module-full-charge-capacity">
+		<item-type>Number:ElectricCharge</item-type>
+		<label>Full Charge Capacity</label>
+		<description>Full Charge Capacity of the battery cell module</description>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="module-design-capacity">
+		<item-type>Number:ElectricCharge</item-type>
+		<label>Design Capacity</label>
+		<description>Design Capacity of the battery cell module</description>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="module-charge-high-temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Charge High Temperature</label>
+		<description>Charge High Temperature of the battery cell module</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="module-charge-low-temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Charge Low Temperature</label>
+		<description>Charge Low Temperature of the battery cell module</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="module-cycles">
+		<item-type>Number</item-type>
+		<label>Charge Cycles</label>
+		<description>Charge Cycles of the battery cell module</description>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
+		<state pattern="%d" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="module-status">
+		<item-type>Number</item-type>
+		<label>Status Code</label>
+		<description>Status Code of the battery cell module</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state pattern="%d" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="module-warning">
+		<item-type>Number</item-type>
+		<label>Warning Code</label>
+		<description>Warning Code of the battery cell module</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state pattern="%d" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="module-alarm">
+		<item-type>Number</item-type>
+		<label>Alarm Code</label>
+		<description>Alarm Code of the battery cell module</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state pattern="%d" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="module-error">
+		<item-type>Number</item-type>
+		<label>Error Code</label>
+		<description>Error Code of the battery cell module</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state pattern="%d" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="module-remaining-energy">
+		<item-type>Number:Energy</item-type>
+		<label>Remaining Energy</label>
+		<description>Remaining energy of the battery module</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="module-full-charge-energy">
+		<item-type>Number:Energy</item-type>
+		<label>Full Charge Energy</label>
+		<description>Energy of the battery module at full charge</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="module-design-energy">
+		<item-type>Number:Energy</item-type>
+		<label>Design Energy</label>
+		<description>Design energy of the battery module</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+
+</thing:thing-descriptions>
