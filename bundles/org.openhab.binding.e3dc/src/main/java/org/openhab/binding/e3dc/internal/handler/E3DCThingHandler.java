@@ -87,6 +87,8 @@ public abstract class E3DCThingHandler extends BaseThingHandler implements E3DCD
     public void initialize() {
         updateStatus(ThingStatus.UNKNOWN);
         E3DCBridgeHandler bridge = getBridgeHandler();
+        // the status detail overloads are deprecated since openHAB 5.3, but are the only ones in 5.2, which the
+        // binding still supports
         if (bridge == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED, "The bridge is not available");
             return;
