@@ -232,6 +232,8 @@ public class E3DCBridgeHandler extends BaseBridgeHandler {
         if (current == null) {
             return;
         }
+        // the updateStatus overloads with a status detail are deprecated since openHAB 5.3, but they are the only
+        // ones openHAB 5.2 offers; keeping them lets the binding run on both versions
         if (current.host.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Host is not configured");
             return;
