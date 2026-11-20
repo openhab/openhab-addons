@@ -43,7 +43,8 @@ import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettings
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsRgbwLight;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsStatus;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyShortLightStatus;
-import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult;
+import org.openhab.binding.shelly.internal.api2.dto.Shelly2StatusJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult;
+import org.openhab.binding.shelly.internal.api2.dto.Shelly2StatusJsonDTO.Shelly2DeviceStatusTemp;
 import org.openhab.binding.shelly.internal.api2.dto.ShellyLightJsonDTO.Shelly2DaliScanStatus;
 import org.openhab.binding.shelly.internal.api2.dto.ShellyLightJsonDTO.Shelly2DaliStatus;
 import org.openhab.binding.shelly.internal.api2.dto.ShellyLightJsonDTO.Shelly2DeviceStatusLight;

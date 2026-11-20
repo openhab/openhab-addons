@@ -15,7 +15,7 @@ package org.openhab.binding.shelly.internal.api2.dto;
 import java.util.ArrayList;
 
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatusTemp;
+import org.openhab.binding.shelly.internal.api2.dto.Shelly2StatusJsonDTO.Shelly2DeviceStatusTemp;
 
 import com.google.gson.annotations.SerializedName;
 
