@@ -79,11 +79,12 @@ public class CloudWebhookServlet extends WebhookServlet {
             cloudWebhookPath = path;
 
             logger.info("Registered Netatmo webhook through openHAB Cloud at {}", uri);
+        } catch (URISyntaxException e) {
+            logger.warn("Error in the path used to register Netatmo webhook: {}", e.getMessage());
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             logger.warn("Interrupted while requesting openHAB Cloud webhook URL");
-            removeAndReschedule(path);
-        } catch (ExecutionException | TimeoutException | URISyntaxException e) {
+        } catch (ExecutionException | TimeoutException e) {
             logger.warn("Unable to register Netatmo webhook through openHAB Cloud: {}", e.getMessage());
             removeAndReschedule(path);
         }
