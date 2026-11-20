@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="myvaillant"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="device">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="system"/>
+		</supported-bridge-type-refs>
+
+		<label>myVAILLANT Device</label>
+		<description>A device of the system, e.g. the heat pump or the backup heater. Channels with today's energy values are
+			added for each value the device reports.</description>
+
+		<channels>
+			<channel id="current-power" typeId="power"/>
+			<channel id="operation-time" typeId="operation-time"/>
+			<channel id="on-off-cycles" typeId="on-off-cycles"/>
+			<channel id="water-pressure" typeId="pressure">
+				<label>Water Pressure</label>
+			</channel>
+			<channel id="heating-energy-efficiency" typeId="efficiency">
+				<label>Heating Efficiency Today</label>
+				<description>Heat generated per consumed electrical energy for heating today</description>
+			</channel>
+		</channels>
+
+		<representation-property>deviceUuid</representation-property>
+
+		<config-description>
+			<parameter name="deviceUuid" type="text" required="true">
+				<label>Device UUID</label>
+				<description>ID of the device in the myVAILLANT cloud</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+</thing:thing-descriptions>

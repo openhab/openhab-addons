@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="myvaillant"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="dhw">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="system"/>
+		</supported-bridge-type-refs>
+
+		<label>myVAILLANT Hot Water</label>
+		<description>Domestic hot water of the system</description>
+
+		<channels>
+			<channel id="current-temperature" typeId="temperature">
+				<label>Current Temperature</label>
+			</channel>
+			<channel id="tapping-setpoint" typeId="dhw-setpoint"/>
+			<channel id="operation-mode" typeId="operation-mode">
+				<label>Operation Mode</label>
+			</channel>
+			<channel id="current-special-function" typeId="dhw-special-function"/>
+			<channel id="boost" typeId="switch">
+				<label>Boost</label>
+				<description>Heats the cylinder once now</description>
+			</channel>
+		</channels>
+
+		<representation-property>componentId</representation-property>
+
+		<config-description>
+			<parameter name="index" type="integer" min="0" required="true">
+				<label>Hot Water Index</label>
+				<description>Index of the hot water in the system, usually 255</description>
+				<default>255</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+</thing:thing-descriptions>

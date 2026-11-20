@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="myvaillant"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="system">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="account"/>
+		</supported-bridge-type-refs>
+
+		<label>myVAILLANT System</label>
+		<description>A heating system (a home in the myVAILLANT app) with a sensoCOMFORT controller. Its zones, circuits, hot
+			water and devices are Things of this bridge.</description>
+
+		<channels>
+			<channel id="outdoor-temperature" typeId="temperature">
+				<label>Outdoor Temperature</label>
+			</channel>
+			<channel id="outdoor-temperature-average-24h" typeId="temperature">
+				<label>Outdoor Temperature 24 h Average</label>
+			</channel>
+			<channel id="water-pressure" typeId="pressure">
+				<label>Water Pressure</label>
+			</channel>
+			<channel id="system-flow-temperature" typeId="temperature">
+				<label>System Flow Temperature</label>
+			</channel>
+			<channel id="cylinder-temperature-top-dhw" typeId="temperature">
+				<label>Top Hot Water Cylinder Temperature</label>
+			</channel>
+			<channel id="cylinder-temperature-bottom-dhw" typeId="temperature">
+				<label>Bottom Hot Water Cylinder Temperature</label>
+			</channel>
+			<channel id="cylinder-temperature-top-ch" typeId="temperature">
+				<label>Top Heating Buffer Temperature</label>
+				<description>Top temperature of the central heating cylinder (buffer)</description>
+			</channel>
+			<channel id="cylinder-temperature-bottom-ch" typeId="temperature">
+				<label>Bottom Heating Buffer Temperature</label>
+				<description>Bottom temperature of the central heating cylinder (buffer)</description>
+			</channel>
+			<channel id="energy-manager-state" typeId="energy-manager-state"/>
+			<channel id="system-off" typeId="status">
+				<label>System Off</label>
+			</channel>
+			<channel id="holiday" typeId="switch">
+				<label>Away Mode</label>
+				<description>Holiday / away mode of the system, ON starts it now for the configured holiday duration</description>
+			</channel>
+			<channel id="holiday-start" typeId="datetime-setting">
+				<label>Away Mode Start</label>
+			</channel>
+			<channel id="holiday-end" typeId="datetime-setting">
+				<label>Away Mode End</label>
+			</channel>
+			<channel id="manual-cooling" typeId="switch">
+				<label>Manual Cooling</label>
+				<description>Cooling for days, ON starts it now for the configured duration</description>
+			</channel>
+			<channel id="manual-cooling-start" typeId="datetime">
+				<label>Manual Cooling Start</label>
+			</channel>
+			<channel id="manual-cooling-end" typeId="datetime-setting">
+				<label>Manual Cooling End</label>
+			</channel>
+			<channel id="ventilation-boost" typeId="switch">
+				<label>Ventilation Boost</label>
+			</channel>
+			<channel id="heating-energy-efficiency" typeId="efficiency">
+				<label>Heating Efficiency Today</label>
+				<description>Heat generated per consumed electrical energy for heating today, over all devices</description>
+			</channel>
+			<channel id="firmware-update-required" typeId="status">
+				<label>Firmware Update Required</label>
+			</channel>
+			<channel id="online" typeId="status">
+				<label>Online</label>
+				<description>Whether the system is connected to the cloud (needs "Fetch Connection Status")</description>
+			</channel>
+			<channel id="trouble-codes" typeId="text">
+				<label>Trouble Codes</label>
+				<description>Diagnostic trouble codes of the devices (needs "Fetch Trouble Codes")</description>
+			</channel>
+			<channel id="has-trouble-codes" typeId="problem">
+				<label>Has Trouble Codes</label>
+			</channel>
+			<channel id="last-update" typeId="last-update"/>
+		</channels>
+
+		<representation-property>systemId</representation-property>
+
+		<config-description>
+			<parameter name="systemId" type="text" required="true">
+				<label>System ID</label>
+				<description>ID of the system in the myVAILLANT cloud</description>
+			</parameter>
+		</config-description>
+	</bridge-type>
+</thing:thing-descriptions>
