@@ -118,6 +118,11 @@
                                     <xsl:text>relay</xsl:text>
                                 </xsl:element>
                             </xsl:when>
+                            <xsl:when test="local-name()='thermostat_functionality'">
+                                <xsl:element name="type">
+                                    <xsl:text>thermostat</xsl:text>
+                                </xsl:element>
+                            </xsl:when>
                             <xsl:otherwise>
                                 <xsl:element name="type">
                                     <xsl:value-of select="local-name()"/>

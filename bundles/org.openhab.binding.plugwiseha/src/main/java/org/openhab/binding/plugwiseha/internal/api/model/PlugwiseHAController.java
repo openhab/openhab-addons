@@ -461,6 +461,7 @@ public class PlugwiseHAController {
         } else if (localDomainObjects != null && updatedDomainObjects == null) {
             return localDomainObjects;
         } else if (localDomainObjects != null && updatedDomainObjects != null) {
+            localDomainObjects.mergeGatewayInfo(updatedDomainObjects.getGatewayInfo());
             Appliances appliances = updatedDomainObjects.getAppliances();
             Locations locations = updatedDomainObjects.getLocations();
 
