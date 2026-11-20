@@ -477,6 +477,7 @@
     <module>org.openhab.binding.teslascope</module>
     <module>org.openhab.binding.threedprinter</module>
     <module>org.openhab.binding.tibber</module>
+    <module>org.openhab.binding.tibberpulselocal</module>
     <module>org.openhab.binding.tivo</module>
     <module>org.openhab.binding.touchwand</module>
     <module>org.openhab.binding.tplinkrouter</module>
