@@ -80,10 +80,8 @@ public class TailwindUdpReceiver {
             throws SocketException {
         Shared shared = listeners.get(requestedPort);
         if (shared == null || shared.listener.getPort() == -1 || requestedPort == 0) {
-            if (shared != null && requestedPort != 0) {
-                // The socket of the old listener closed after an error, so open it again for all its Things
-                shared.listener.stop();
-            } else {
+            // A listener whose socket closed after an error is started again for all its Things
+            if (shared == null || requestedPort == 0) {
                 shared = new Shared(requestedPort);
             }
             start(shared);
