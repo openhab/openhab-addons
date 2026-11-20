@@ -70,6 +70,12 @@
 				<default>0</default>
 				<advanced>true</advanced>
 			</parameter>
+			<parameter name="userAgent" type="text">
+				<label>User Agent</label>
+				<description>The User-Agent header sent with requests to the Alexa API. If left empty, the built-in default is used.
+					Set it only if Amazon starts to refuse requests with the default.</description>
+				<advanced>true</advanced>
+			</parameter>
 		</config-description>
 	</bridge-type>
 	<thing-type id="echo">

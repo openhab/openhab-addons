@@ -46,6 +46,11 @@ public interface ShellyThingInterface {
     @Nullable
     List<StateOption> getStateOptions(ChannelTypeUID uid);
 
+    /**
+     * Replace the state options (value to label) offered by a channel and tell the framework about the change.
+     */
+    void updateStateOptions(String group, String channel, Map<String, String> options);
+
     double getChannelDouble(String group, String channel);
 
     boolean updateChannel(String group, String channel, State value);

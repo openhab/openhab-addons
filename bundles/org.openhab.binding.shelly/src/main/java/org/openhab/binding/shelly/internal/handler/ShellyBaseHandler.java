@@ -544,9 +544,15 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
                                 command == OnOffType.ON ? "Enable" : "Disable");
                         api.setValveProfile(0,
                                 command == OnOffType.OFF ? 0 : profile.status.thermostats.get(0).profile);
+                    } else {
+                        ShellyComponentThermostat.handleCommand(this, CHANNEL_CONTROL_SCHEDULE, command);
                     }
                     break;
                 case CHANNEL_CONTROL_PROFILE:
+                    if (!profile.isTRV) {
+                        ShellyComponentThermostat.handleCommand(this, CHANNEL_CONTROL_PROFILE, command);
+                        break;
+                    }
                     logger.debug("{}: Select profile {}", thingName, command);
                     int id = -1;
                     if (command instanceof Number) {
@@ -1959,6 +1965,17 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
             return options;
         }
         return null;
+    }
+
+    @Override
+    public void updateStateOptions(String group, String channel, Map<String, String> options) {
+        String channelId = mkChannelId(group, channel);
+        channelDefinitions.clearStateOptions(channelId);
+        options.forEach((value, label) -> channelDefinitions.addStateOption(channelId, value, label));
+        Channel ch = thing.getChannel(channelId);
+        if (ch != null) {
+            stateDescriptionProvider.notifyStateDescriptionUpdated(ch);
+        }
     }
 
     protected ShellyDeviceProfile getDeviceProfile() {
