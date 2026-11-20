@@ -139,7 +139,7 @@ public class CameraCapability extends HomeSecurityThingCapability {
                     apiLocalUri = builder.build();
                     if (apiLocalUri.getHost().startsWith("169.254.")) {
                         logger.warn("Suspicious local IP address received: {}", apiLocalUri);
-                        Configuration config = handler.getThing().getConfiguration();
+                        Configuration config = getThing().getConfiguration();
                         if (config.containsKey(IP_ADDRESS)) {
                             String provided = (String) config.get(IP_ADDRESS);
                             apiLocalUri = builder.host(provided).build();
