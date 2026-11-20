@@ -20,6 +20,7 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.time.Duration;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -138,6 +139,7 @@ public class Shelly2DebugLogSocket {
             session.close(StatusCode.NORMAL, "Socket closed", Callback.NOOP);
             return;
         }
+        session.setIdleTimeout(Duration.ofMillis(Shelly2RpcSocket.MAX_IDLE_TIME_MS));
         if (logger.isDebugEnabled()) {
             logger.debug("{}: Debug Log WebSocket connected {}<-{}", thingName, session.getLocalSocketAddress(),
                     session.getRemoteSocketAddress());

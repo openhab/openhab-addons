@@ -725,7 +725,9 @@ public class Shelly2RpcSocket implements Callback {
                     logger.trace("Sending WebSocket ping to {}",
                             remoteAddr != null ? remoteAddr.getHostString() : "unknown");
                 }
-                session.sendPing(ByteBuffer.allocate(0), Callback.NOOP);
+                session.sendPing(ByteBuffer.allocate(0), Callback.from(() -> {
+                }, e -> logger.debug("Failed to send WebSocket ping to {}: {}",
+                        remoteAddr != null ? remoteAddr.getHostString() : "unknown", e.getMessage())));
             }
         }
     }

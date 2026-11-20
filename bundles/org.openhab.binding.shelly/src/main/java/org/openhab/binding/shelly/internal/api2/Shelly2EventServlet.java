@@ -122,7 +122,7 @@ public class Shelly2EventServlet extends JettyWebSocketServlet {
      * WebSocket: register Shelly2RpcSocket class
      */
     @Override
-    @org.eclipse.jdt.annotation.NonNullByDefault({})
+    @NonNullByDefault({})
     public void configure(JettyWebSocketServletFactory factory) {
         factory.addMapping("/*", new Shelly2WebSocketCreator(thingTable, webSocketClient));
     }
