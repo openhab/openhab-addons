@@ -34,7 +34,7 @@
 			<parameter name="token" type="text" required="true">
 				<context>password</context>
 				<label>Local Control Key</label>
-				<description>The 6-digit Local Control Key of the controller, from the TailWind web dashboard</description>
+				<description>The 6-digit Global key from the Local Control Key page of the TailWind web dashboard</description>
 			</parameter>
 			<parameter name="udpPort" type="integer" min="0" max="65535">
 				<label>Status Report Port</label>
