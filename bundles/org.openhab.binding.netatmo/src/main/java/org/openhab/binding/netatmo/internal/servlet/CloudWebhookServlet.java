@@ -61,6 +61,10 @@ public class CloudWebhookServlet extends WebhookServlet {
 
     @Override
     protected synchronized void registerEndpoint() {
+        if (disposed) {
+            return;
+        }
+
         if (cloudWebhookPath instanceof String oldPath) {
             removeCloudWebhook(oldPath);
         }
