@@ -19,7 +19,7 @@ import static org.openhab.binding.shelly.internal.ShellyDevices.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
-import org.openhab.binding.shelly.internal.api2.ShellyBluJsonDTO.Shelly2NotifyBluEventData;
+import org.openhab.binding.shelly.internal.api2.dto.ShellyBluJsonDTO.Shelly2NotifyBluEventData;
 import org.openhab.core.thing.ThingTypeUID;
 
 import com.google.gson.Gson;
