@@ -1,0 +1,31 @@
+{
+  "system_type": "HEATPUMP",
+  "has_emf_capable_devices": true,
+  "primary_heat_generator": {
+    "device_uuid": "hp-uuid",
+    "ebus_id": "HMU06",
+    "article_number": "0010021120",
+    "emfValid": true,
+    "device_serial_number": "serial-hp",
+    "device_type": "HEATPUMP",
+    "first_data": "2024-10-24T10:00:00Z",
+    "last_data": "2026-11-20T10:00:00Z",
+    "data": [
+      { "operation_mode": "HEATING", "value_type": "CONSUMED_ELECTRICAL_ENERGY", "calculated": false },
+      { "operation_mode": "HEATING", "value_type": "HEAT_GENERATED", "calculated": false },
+      { "operation_mode": "HEATING", "value_type": "EARNED_ENVIRONMENT_ENERGY", "calculated": true },
+      { "operation_mode": "COOLING", "value_type": "CONSUMED_ELECTRICAL_ENERGY", "calculated": false }
+    ],
+    "product_name": "aroTHERM plus"
+  },
+  "secondary_heat_generators": [],
+  "electric_backup_heater": {
+    "device_uuid": "backup-uuid",
+    "device_type": "ELECTRIC_AUXILIARY_HEATER",
+    "data": [{ "operation_mode": "HEATING", "value_type": "CONSUMED_ELECTRICAL_ENERGY", "calculated": false }],
+    "product_name": "hydraulic station"
+  },
+  "solar_station": null,
+  "ventilation": null,
+  "gateway": null
+}

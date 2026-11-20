@@ -1,0 +1,6 @@
+{
+  "devices": [
+    { "deviceId": "hp-uuid", "currentPower": 850 },
+    { "deviceId": "backup-uuid", "currentPower": 0 }
+  ]
+}
