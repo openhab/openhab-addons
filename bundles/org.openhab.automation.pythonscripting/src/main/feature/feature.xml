@@ -4,25 +4,10 @@
 
 	<feature name="openhab-automation-pythonscripting" description="Python Scripting" version="${project.version}">
 		<feature>openhab-runtime-base</feature>
-		<bundle dependency="true">mvn:org.openhab.osgiify/org.graalvm.sdk.collections/${graalvm.version}</bundle>
-		<bundle dependency="true">mvn:org.openhab.osgiify/org.graalvm.sdk.jniutils/${graalvm.version}</bundle>
-		<bundle dependency="true">mvn:org.openhab.osgiify/org.graalvm.sdk.nativeimage/${graalvm.version}</bundle>
-		<bundle dependency="true">mvn:org.openhab.osgiify/org.graalvm.sdk.word/${graalvm.version}</bundle>
-		<bundle dependency="true">mvn:org.openhab.osgiify/org.graalvm.shadowed.icu4j/${graalvm.version}</bundle>
-		<bundle dependency="true">mvn:org.openhab.osgiify/org.graalvm.llvm.llvm-api/${graalvm.version}</bundle>
-		<bundle dependency="true">mvn:org.openhab.osgiify/org.graalvm.shadowed.json/${graalvm.version}</bundle>
-		<bundle dependency="true">mvn:org.openhab.osgiify/org.graalvm.shadowed.xz/${graalvm.version}</bundle>
-		<bundle dependency="true">mvn:org.openhab.osgiify/org.graalvm.polyglot.polyglot/${graalvm.version}</bundle>
-		<bundle dependency="true">mvn:org.openhab.osgiify/org.graalvm.truffle.truffle-runtime/${graalvm.version}</bundle>
-		<bundle dependency="true">mvn:org.openhab.osgiify/org.graalvm.truffle.truffle-compiler/${graalvm.version}</bundle>
-		<bundle dependency="true" start-level="78">mvn:org.openhab.osgiify/org.graalvm.regex.regex/${graalvm.version}</bundle>
-		<bundle dependency="true" start-level="78">mvn:org.openhab.osgiify/org.graalvm.tools.chromeinspector-tool/${graalvm.version}</bundle>
-		<bundle dependency="true" start-level="78">mvn:org.openhab.osgiify/org.graalvm.tools.profiler-tool/${graalvm.version}</bundle>
-		<bundle dependency="true" start-level="78">mvn:org.openhab.osgiify/org.graalvm.python.python-resources/${graalvm.version}</bundle>
-		<bundle dependency="true" start-level="78">mvn:org.openhab.osgiify/org.graalvm.python.python-language/${graalvm.version}</bundle>
-		<bundle dependency="true" start-level="78">mvn:org.openhab.osgiify/org.graalvm.truffle.truffle-nfi/${graalvm.version}</bundle>
-		<bundle dependency="true" start-level="78">mvn:org.openhab.osgiify/org.graalvm.truffle.truffle-nfi-libffi/${graalvm.version}</bundle>
-		<bundle dependency="true" start-level="79">mvn:org.openhab.osgiify/org.graalvm.truffle.truffle-api/${graalvm.version}</bundle>
+
+		<requirement>openhab.tp;filter:="(feature=graal-python)"</requirement>
+		<feature dependency="true">openhab.tp-graal-python</feature>
+
 		<bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.automation.pythonscripting/${project.version}</bundle>
 	</feature>
 </features>
