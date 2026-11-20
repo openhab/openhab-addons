@@ -1450,7 +1450,7 @@ public class LivisiDeviceHandlerTest {
 
         LivisiDeviceHandler deviceHandler = createDeviceHandler(device);
 
-        deviceHandler.handleCommand(channelMock, OpenClosedType.OPEN);
+        deviceHandler.handleCommand(channelMock, new StringType("OPEN"));
 
         verify(bridgeHandlerMock, never()).commandSetRollerShutterLevel(any(), anyInt());
         verify(bridgeHandlerMock, never()).commandSwitchDevice(any(), anyBoolean());
