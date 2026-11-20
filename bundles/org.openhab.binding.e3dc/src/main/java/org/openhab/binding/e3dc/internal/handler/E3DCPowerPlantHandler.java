@@ -458,7 +458,10 @@ public class E3DCPowerPlantHandler extends E3DCThingHandler {
                 RscpValue value = findValue(response, spec, null);
                 State state = value != null ? valueState(value, spec) : null;
                 if (state != null) {
-                    states.put(channel.getKey(), state);
+                    State published = withChannelUnit(channel.getKey(), state, spec);
+                    if (published != null) {
+                        states.put(channel.getKey(), published);
+                    }
                 }
             }
             if (states.values().stream().anyMatch(E3DCPowerPlantHandler::isNonZero)) {
@@ -485,6 +488,16 @@ public class E3DCPowerPlantHandler extends E3DCThingHandler {
         }
         logger.debug("History fetched for {} periods", delivered);
         return delivered;
+    }
+
+    /**
+     * The state of a fetched history value with the unit of its channel, as the poll publishes it. The values of a
+     * time series are stored by persistence as they are, so the unit has to be part of them.
+     */
+    private @Nullable State withChannelUnit(String channelId, State state, E3DCChannelSpec spec) {
+        Channel channel = getThing()
+                .getChannel(new ChannelUID(getThing().getUID(), E3DCBindingConstants.GROUP_HISTORY + "#" + channelId));
+        return withUnit(state, channel != null ? channel.getAcceptedItemType() : null, spec);
     }
 
     /** Whether the state is a number other than zero; the device may answer a year without data with zeros. */
