@@ -405,10 +405,12 @@ public class Shelly2RpcSocket implements WriteCallback {
                 if (thingName.isEmpty()) {
                     thingName = getString(message.src);
                 }
-                if (message.method == null) {
-                    message.method = SHELLYRPC_METHOD_NOTIFYFULLSTATUS;
+                String method = message.method;
+                if (method == null) {
+                    method = SHELLYRPC_METHOD_NOTIFYFULLSTATUS;
+                    message.method = method;
                 }
-                switch (message.method) {
+                switch (method) {
                     case SHELLYRPC_METHOD_NOTIFYSTATUS:
                     case SHELLYRPC_METHOD_NOTIFYFULLSTATUS:
                         Shelly2RpcNotifyStatus status = fromJson(gson, receivedMessage, Shelly2RpcNotifyStatus.class);

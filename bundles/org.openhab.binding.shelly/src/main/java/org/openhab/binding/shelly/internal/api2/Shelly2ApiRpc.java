@@ -301,7 +301,8 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
             request.params.config = wsConfig;
             Shelly2WsConfigResponse response = apiRequest(SHELLYRPC_METHOD_WSSETCONFIG, request.params,
                     Shelly2WsConfigResponse.class);
-            if (response.result != null && response.result.restartRequired) {
+            Shelly2WsConfigResult result = response.result;
+            if (result != null && getBool(result.restartRequired)) {
                 logger.info("{}: WebSocket callback was updated, device is restarting", thingName);
                 getThing().getApi().deviceReboot();
                 getThing().reinitializeThing();
@@ -327,17 +328,18 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
         try {
             ShellyScriptListResponse scriptList = apiRequest(
                     new Shelly2RpcRequest().withMethod(SHELLYRPC_METHOD_SCRIPT_LIST), ShellyScriptListResponse.class);
-            Integer ourId = -1;
+            int ourId = -1;
             String code = "";
 
             if (install) {
                 logger.debug("{}: Install or restart script {} on Shelly Device", thingName, script);
             }
             boolean running = false, upload = false;
-            for (ShellyScriptListEntry s : scriptList.scripts) {
-                if (s.name.startsWith(script)) {
-                    ourId = s.id;
-                    running = s.running;
+            for (ShellyScriptListEntry s : scriptEntries(scriptList)) {
+                Integer id = s.id;
+                if (id != null && getString(s.name).startsWith(script)) {
+                    ourId = id;
+                    running = getBool(s.running);
                     logger.debug("{}: Script {} is already installed, id={}", thingName, script, ourId);
                     break;
                 }
@@ -390,7 +392,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
                     ShellyScriptResponse rsp = apiRequest(
                             new Shelly2RpcRequest().withMethod(SHELLYRPC_METHOD_SCRIPT_GETCODE).withId(ourId),
                             ShellyScriptResponse.class);
-                    if (!rsp.data.trim().equals(code.trim())) {
+                    if (!getString(rsp.data).trim().equals(code.trim())) {
                         logger.debug("{}: A newer script version was found, updating", thingName);
                         upload = true;
                     } else if (running) {
@@ -448,7 +450,11 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
                     ShellyScriptResponse rsp = apiRequest(new Shelly2RpcRequest()
                             .withMethod(SHELLYRPC_METHOD_SCRIPT_CREATE).withId(ourId).withName(script),
                             ShellyScriptResponse.class);
-                    ourId = rsp.id;
+                    Integer createdId = rsp.id;
+                    if (createdId == null) {
+                        throw new ShellyApiException("Script.Create returned no script id");
+                    }
+                    ourId = createdId;
                     logger.debug("{}: Script has been created, id={}", thingName, ourId);
                 } else {
                     logger.warn("{}: Too many scripts installed on this device, cannot install {}", thingName, script);
@@ -491,12 +497,18 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     }
 
     private boolean testScriptId(ShellyScriptListResponse scriptList, int id) {
-        for (ShellyScriptListEntry s : scriptList.scripts) {
-            if (s.id == id) {
+        for (ShellyScriptListEntry s : scriptEntries(scriptList)) {
+            Integer scriptId = s.id;
+            if (scriptId != null && scriptId == id) {
                 return true;
             }
         }
         return false;
+    }
+
+    private static List<ShellyScriptListEntry> scriptEntries(ShellyScriptListResponse scriptList) {
+        List<ShellyScriptListEntry> scripts = scriptList.scripts;
+        return scripts != null ? scripts : List.of();
     }
 
     private boolean startScript(int ourId, boolean start) {
@@ -514,10 +526,12 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
 
     private boolean enableScript(String script, int scriptId, boolean enable) {
         try {
-            Shelly2RpcRequestParams params = new Shelly2RpcRequestParams().withConfig();
+            Shelly2RpcRequestParams params = new Shelly2RpcRequestParams();
+            Shelly2ConfigParms config = new Shelly2ConfigParms();
+            params.config = config;
             params.id = scriptId;
-            params.config.name = script;
-            params.config.enable = enable;
+            config.name = script;
+            config.enable = enable;
             apiRequest(SHELLYRPC_METHOD_SCRIPT_SETCONFIG, params, String.class);
             return true;
         } catch (ShellyApiException e) {
@@ -584,20 +598,21 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
         }
 
         getThing().incProtMessages();
-        if (message.error != null) {
-            if (message.error.code == HttpStatus.UNAUTHORIZED_401 && !getString(message.error.message).isEmpty()) {
+        var error = message.error;
+        if (error != null) {
+            String errorMessage = getString(error.message);
+            if (getInteger(error.code) == HttpStatus.UNAUTHORIZED_401 && !errorMessage.isEmpty()) {
                 // WebSocket requests are fire-and-forget, so the rejected one has to be resent with auth
-                Shelly2AuthChallenge auth = fromJson(gson, message.error.message, Shelly2AuthChallenge.class, false);
+                Shelly2AuthChallenge auth = fromJson(gson, errorMessage, Shelly2AuthChallenge.class, false);
                 if (auth != null) {
-                    logger.debug("{}: Authentication requested on WebSocket channel: {}", thingName,
-                            message.error.message);
+                    logger.debug("{}: Authentication requested on WebSocket channel: {}", thingName, errorMessage);
                     synchronized (authLock) {
                         authInfo = auth;
                     }
                     retryPendingAsyncRequest(auth);
                 }
             } else {
-                logger.debug("{}: Error status received - {} {}", thingName, message.error.code, message.error.message);
+                logger.debug("{}: Error status received - {} {}", thingName, error.code, errorMessage);
                 incProtErrors();
             }
         }
@@ -634,7 +649,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
                 }
             }
             status.temperature = SHELLY_API_INVTEMP; // mark invalid
-            updated |= fillDeviceStatus(status, message.params, true);
+            updated |= fillDeviceStatus(status, params, true);
             if (getDouble(status.temperature) == SHELLY_API_INVTEMP) {
                 // no device temp available
                 status.temperature = null;
@@ -1189,27 +1204,30 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
         ShellyDeviceProfile profile = getProfile();
         AutoTimerTarget target = autoTimerTarget(profile, index);
         Shelly2RpcRequest req = new Shelly2RpcRequest().withMethod(target.method()).withId(target.componentId());
-        req.params.withConfig();
+        Shelly2ConfigParms config = new Shelly2ConfigParms();
+        req.params.config = config;
         // name is intentionally left unset - this call only changes the auto-timer, and the flat
         // settings.lights index used elsewhere in this method does not match the on-device component id
         if (timerName.equals(SHELLY_TIMER_AUTOON)) {
-            req.params.config.autoOn = value > 0;
-            req.params.config.autoOnDelay = value;
+            config.autoOn = value > 0;
+            config.autoOnDelay = value;
         } else {
-            req.params.config.autoOff = value > 0;
-            req.params.config.autoOffDelay = value;
+            config.autoOff = value > 0;
+            config.autoOffDelay = value;
         }
         apiRequest(req);
     }
 
     @Override
     public void setLedStatus(String ledName, boolean value) throws ShellyApiException {
-        Shelly2RpcRequestParams params = new Shelly2RpcRequestParams().withConfig();
+        Shelly2RpcRequestParams params = new Shelly2RpcRequestParams();
+        Shelly2ConfigParms config = new Shelly2ConfigParms();
+        params.config = config;
         params.id = 0;
         if (ledName.equals(SHELLY_LED_STATUS_DISABLE)) {
-            params.config.sysLedEnable = value;
+            config.sysLedEnable = value;
         } else if (ledName.equals(SHELLY_LED_POWER_DISABLE)) {
-            params.config.powerLed = value ? SHELLY2_POWERLED_OFF : SHELLY2_POWERLED_MATCH;
+            config.powerLed = value ? SHELLY2_POWERLED_OFF : SHELLY2_POWERLED_MATCH;
         } else {
             throw new ShellyApiException("API call not implemented for this LED type");
         }
@@ -1296,32 +1314,39 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
 
     @Override
     public boolean setWiFiRangeExtender(boolean enable) throws ShellyApiException {
-        Shelly2RpcRequestParams params = new Shelly2RpcRequestParams().withConfig();
-        params.config.ap = new Shelly2DeviceConfigAp();
-        params.config.ap.rangeExtender = new Shelly2DeviceConfigApRE();
-        params.config.ap.rangeExtender.enable = enable;
-        Shelly2WsConfigResult res = apiRequest(SHELLYRPC_METHOD_WIFISETCONG, params, Shelly2WsConfigResult.class);
-        return res.restartRequired;
+        Shelly2DeviceConfigApRE rangeExtender = new Shelly2DeviceConfigApRE();
+        rangeExtender.enable = enable;
+        Shelly2DeviceConfigAp ap = new Shelly2DeviceConfigAp();
+        ap.rangeExtender = rangeExtender;
+        Shelly2ConfigParms config = new Shelly2ConfigParms();
+        config.ap = ap;
+        return setConfig(SHELLYRPC_METHOD_WIFISETCONG, config);
     }
 
     @Override
     public boolean setEthernet(boolean enable) throws ShellyApiException {
-        Shelly2RpcRequestParams params = new Shelly2RpcRequestParams().withConfig();
-        params.config.enable = enable;
-        Shelly2WsConfigResult res = apiRequest(SHELLYRPC_METHOD_ETHSETCONG, params, Shelly2WsConfigResult.class);
-        return res.restartRequired;
+        Shelly2ConfigParms config = new Shelly2ConfigParms();
+        config.enable = enable;
+        return setConfig(SHELLYRPC_METHOD_ETHSETCONG, config);
     }
 
     @Override
     public boolean setBluetooth(boolean enable) throws ShellyApiException {
-        Shelly2RpcRequestParams params = new Shelly2RpcRequestParams().withConfig();
-        params.config.enable = enable;
+        Shelly2ConfigParms config = new Shelly2ConfigParms();
+        config.enable = enable;
         if (enable) {
-            params.config.observer = new Shelly2DevConfigBleObserver();
-            params.config.observer.enable = false;
+            Shelly2DevConfigBleObserver observer = new Shelly2DevConfigBleObserver();
+            observer.enable = false;
+            config.observer = observer;
         }
-        Shelly2WsConfigResult res = apiRequest(SHELLYRPC_METHOD_BLESETCONG, params, Shelly2WsConfigResult.class);
-        return res.restartRequired;
+        return setConfig(SHELLYRPC_METHOD_BLESETCONG, config);
+    }
+
+    private boolean setConfig(String method, Shelly2ConfigParms config) throws ShellyApiException {
+        Shelly2RpcRequestParams params = new Shelly2RpcRequestParams();
+        params.config = config;
+        Shelly2WsConfigResult res = apiRequest(method, params, Shelly2WsConfigResult.class);
+        return getBool(res.restartRequired);
     }
 
     @Override
@@ -1362,10 +1387,9 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
 
     @Override
     public String setCloud(boolean enable) throws ShellyApiException {
-        Shelly2RpcRequestParams params = new Shelly2RpcRequestParams().withConfig();
-        params.config.enable = enable;
-        Shelly2WsConfigResult res = apiRequest(SHELLYRPC_METHOD_CLOUDSET, params, Shelly2WsConfigResult.class);
-        return res.restartRequired ? "restart required" : "ok";
+        Shelly2ConfigParms config = new Shelly2ConfigParms();
+        config.enable = enable;
+        return setConfig(SHELLYRPC_METHOD_CLOUDSET, config) ? "restart required" : "ok";
     }
 
     @Override
@@ -1700,11 +1724,11 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     }
 
     public <T> T apiRequest(Shelly2RpcRequest request, Class<T> classOfT) throws ShellyApiException {
-        return apiRequest(request.method, request.params, classOfT);
+        return apiRequest(getString(request.method), request.params, classOfT);
     }
 
     public void apiRequest(Shelly2RpcRequest request) throws ShellyApiException {
-        apiRequest(request.method, request.params, Shelly2RpcBaseMessage.class);
+        apiRequest(getString(request.method), request.params, Shelly2RpcBaseMessage.class);
     }
 
     private String rpcPost(Shelly2RpcBaseMessage request) throws ShellyApiException {
