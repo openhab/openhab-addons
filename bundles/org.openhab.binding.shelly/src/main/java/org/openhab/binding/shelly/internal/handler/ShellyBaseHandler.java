@@ -859,8 +859,9 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
     }
 
     private void checkRangeExtender(ShellyDeviceProfile prf) {
-        if (getBool(prf.settings.rangeExtender) && apiConfig.getEnableRangeExtender()
-                && prf.status.rangeExtender != null && prf.status.rangeExtender.apClients != null) {
+        var apClientList = prf.status.rangeExtender;
+        List<Shelly2APClient> apClients = apClientList != null ? apClientList.apClients : null;
+        if (getBool(prf.settings.rangeExtender) && apiConfig.getEnableRangeExtender() && apClients != null) {
             InetAddress inetAddr = apiConfig.getDeviceIpAddress();
             if (inetAddr == null) {
                 if (logger.isDebugEnabled()) {
@@ -868,9 +869,14 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
                 }
             } else {
                 String ipAddr = inetAddr.getHostAddress();
-                for (Shelly2APClient client : prf.status.rangeExtender.apClients) {
-                    String secondaryIp = ipAddr + ":" + client.mport.toString();
-                    String name = SERVICE_NAME_SHELLYPLUSRANGE_PREFIX + "-" + client.mac.replaceAll(":", "");
+                for (Shelly2APClient client : apClients) {
+                    Integer mport = client.mport;
+                    String mac = client.mac;
+                    if (mport == null || mac == null) {
+                        continue;
+                    }
+                    String secondaryIp = ipAddr + ":" + mport;
+                    String name = SERVICE_NAME_SHELLYPLUSRANGE_PREFIX + "-" + mac.replaceAll(":", "");
                     DiscoveryResult result = ShellyBasicDiscoveryService.createResult(true, name, secondaryIp,
                             bindingConfig, httpClient, messages, thingTable);
                     if (result != null) {
