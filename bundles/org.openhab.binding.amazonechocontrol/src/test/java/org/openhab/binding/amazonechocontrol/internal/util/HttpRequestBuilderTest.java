@@ -69,6 +69,7 @@ public class HttpRequestBuilderTest {
     private static final URI REQUEST_URI = URI.create("https://alexa.amazon.de/api/notifications");
     private static final String BROWSER_USER_AGENT = "Mozilla/5.0 (iPhone; CPU iPhone OS 16_6 like Mac OS X) "
             + "AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.6 Mobile/15E148 Safari/604.1";
+    private static final String CONFIGURED_USER_AGENT = "AmazonWebView/Amazon Alexa/2.2.556530.0/iOS/17.0/iPhone";
 
     @Test
     public void testMissingErrorTypeHeaderIsNotThrottled() {
@@ -235,8 +236,45 @@ public class HttpRequestBuilderTest {
 
         requestBuilderFor(request).get(REQUEST_URI.toString()).send();
 
-        verify(request).agent(contains("AmazonWebView"));
+        verify(request).agent(contains("PitanguiBridge"));
         verify(request).header(HttpHeader.ACCEPT_LANGUAGE, "en-US");
+    }
+
+    @Test
+    @SuppressWarnings("null")
+    public void testAConfiguredUserAgentReplacesTheDefault() {
+        Request request = mock(Request.class, RETURNS_SELF);
+        HttpRequestBuilder requestBuilder = requestBuilderFor(request);
+
+        requestBuilder.setUserAgent(" " + CONFIGURED_USER_AGENT + " ");
+        requestBuilder.get(REQUEST_URI.toString()).send();
+
+        verify(request).agent(CONFIGURED_USER_AGENT);
+    }
+
+    @Test
+    @SuppressWarnings("null")
+    public void testABlankConfiguredUserAgentKeepsTheDefault() {
+        Request request = mock(Request.class, RETURNS_SELF);
+        HttpRequestBuilder requestBuilder = requestBuilderFor(request);
+
+        requestBuilder.setUserAgent(" ");
+        requestBuilder.get(REQUEST_URI.toString()).send();
+
+        verify(request).agent(contains("PitanguiBridge"));
+    }
+
+    @Test
+    @SuppressWarnings("null")
+    public void testTheUserAgentOfARequestWinsOverTheConfiguredOne() {
+        Request request = mock(Request.class, RETURNS_SELF);
+        HttpRequestBuilder requestBuilder = requestBuilderFor(request);
+
+        requestBuilder.setUserAgent(CONFIGURED_USER_AGENT);
+        requestBuilder.get(REQUEST_URI.toString()).withHeader("User-Agent", BROWSER_USER_AGENT).send();
+
+        verify(request).agent(BROWSER_USER_AGENT);
+        verify(request, never()).agent(CONFIGURED_USER_AGENT);
     }
 
     @Test
