@@ -765,7 +765,7 @@ public class Shelly2GetDeviceProfileTest {
         Shelly2DeviceStatusResult result = Objects
                 .requireNonNull(gson.fromJson(reserialised, Shelly2DeviceStatusResult.class));
         Shelly2DeviceStatusEmData emdata0 = result.emdata0;
-        assertThat(emdata0, is(notNullValue()));
+        assertNotNull(emdata0);
         assertThat(emdata0.totalActiveReturnedEnergySum, is(1.5));
     }
 

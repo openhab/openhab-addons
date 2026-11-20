@@ -739,10 +739,12 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
         ShellyDeviceProfile profile = getProfile();
 
         ShellySettingsRelay rstatus;
-        if (rs.id == null) { // firmware 1.6.1 returns id = null!
-            rs.id = id >= 10 ? id - 10 : id; // ids start at 10
+        Integer relayId = rs.id;
+        if (relayId == null) { // firmware 1.6.1 returns id = null!
+            relayId = id >= 10 ? id - 10 : id; // ids start at 10
+            rs.id = relayId;
         }
-        int rIdx = getRelayIdx(profile, rs.id);
+        int rIdx = getRelayIdx(profile, relayId);
         if (profile.hasRelays) {
             if (rIdx == -1) {
                 throw new IllegalArgumentException("Update for invalid relay index");
@@ -750,7 +752,7 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
             rstatus = status.relays.get(rIdx);
         } else {
             rstatus = new ShellySettingsRelay();
-            rIdx = rs.id;
+            rIdx = relayId;
         }
 
         rstatus.isValid = true;
@@ -818,10 +820,12 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
         ShellyDeviceProfile profile = getProfile();
 
         ShellySettingsRelay rstatus;
-        if (bs.id == null) { // invalid for fw 1.6.1
-            bs.id = id;
+        Integer breakerId = bs.id;
+        if (breakerId == null) { // invalid for fw 1.6.1
+            breakerId = id;
+            bs.id = breakerId;
         }
-        int rIdx = getRelayIdx(profile, bs.id);
+        int rIdx = getRelayIdx(profile, breakerId);
         if (profile.hasRelays) {
             if (rIdx == -1) {
                 throw new IllegalArgumentException("Update for invalid relay index");
@@ -829,7 +833,7 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
             rstatus = status.relays.get(rIdx);
         } else {
             rstatus = new ShellySettingsRelay();
-            rIdx = bs.id;
+            rIdx = breakerId;
         }
 
         rstatus.isValid = true;
@@ -1696,15 +1700,16 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
                 }
             }
         }
-        if (ds.input100 != null) {
-            if (hasReadError(ds.input100.errors)) {
+        Shelly2InputStatus input100 = ds.input100;
+        if (input100 != null) {
+            if (hasReadError(input100.errors)) {
                 logger.debug("{}: Addon input:100 sensor read error, skipping update", thingName);
                 status.extDigitalInput = null;
                 status.extAnalogInput = null;
-            } else if (ds.input100.state != null) {
-                status.extDigitalInput = new ShellyExtDigitalInput(getBool(ds.input100.state));
-            } else if (ds.input100.percent != null) {
-                status.extAnalogInput = new ShellyExtAnalogInput(getDouble(ds.input100.percent));
+            } else if (input100.state != null) {
+                status.extDigitalInput = new ShellyExtDigitalInput(getBool(input100.state));
+            } else if (input100.percent != null) {
+                status.extAnalogInput = new ShellyExtAnalogInput(getDouble(input100.percent));
             }
         }
     }
@@ -1835,12 +1840,15 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
             sdata.bat = new ShellySensorBat();
         }
 
-        if (value.battery != null) {
-            sdata.bat.voltage = getDouble(value.battery.volt);
-            sdata.bat.value = getDouble(value.battery.percent);
+        var battery = value.battery;
+        if (battery != null) {
+            sdata.bat.voltage = getDouble(battery.volt);
+            sdata.bat.value = getDouble(battery.percent);
         }
-        if (value.external != null && value.external.present != null) {
-            sdata.charger = value.external.present;
+        var external = value.external;
+        Boolean charger = external != null ? external.present : null;
+        if (charger != null) {
+            sdata.charger = charger;
         }
     }
 
@@ -1907,26 +1915,28 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
         if (is == null) {
             return false;
         }
-        if (is.id == null) {
-            is.id = id;
+        Integer inputIdx = is.id;
+        if (inputIdx == null) {
+            inputIdx = id;
+            is.id = inputIdx;
         }
         ShellyDeviceProfile profile = getProfile();
 
         List<@Nullable ShellyInputState> inputs = status.inputs;
-        if (inputs == null || is.id == null || is.id >= profile.numInputs || is.id >= inputs.size()) {
-            logger.debug("{}: Invalid input id: {}", thingName, is.id);
+        if (inputs == null || inputIdx >= profile.numInputs || inputIdx >= inputs.size()) {
+            logger.debug("{}: Invalid input id: {}", thingName, inputIdx);
             return false;
         }
 
-        String group = profile.getInputGroup(is.id);
-        ShellyInputState input = inputs.get(is.id);
+        String group = profile.getInputGroup(inputIdx);
+        ShellyInputState input = inputs.get(inputIdx);
         if (input == null) {
-            input = new ShellyInputState(is.id);
-            inputs.set(is.id, input);
+            input = new ShellyInputState(inputIdx);
+            inputs.set(inputIdx, input);
         }
         boolean updated = false;
         input.input = getBool(is.state) ? 1 : 0; // old format Integer, new one Boolean
-        if (input.event == null && profile.inButtonMode(is.id)) {
+        if (input.event == null && profile.inButtonMode(inputIdx)) {
             input.event = "";
             input.eventCount = 0;
         }
@@ -1934,7 +1944,8 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
             status.extAnalogInput = new ShellyExtAnalogInput(getDouble(is.percent));
         }
         if (updateChannels) {
-            updated |= updateChannel(group, CHANNEL_INPUT + profile.getInputSuffix(is.id), getOnOff(getBool(is.state)));
+            updated |= updateChannel(group, CHANNEL_INPUT + profile.getInputSuffix(inputIdx),
+                    getOnOff(getBool(is.state)));
         }
         return updated;
     }

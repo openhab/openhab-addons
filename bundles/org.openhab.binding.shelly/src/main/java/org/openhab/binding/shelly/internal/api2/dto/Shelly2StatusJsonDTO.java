@@ -49,25 +49,25 @@ public class Shelly2StatusJsonDTO {
         }
 
         public class Shelly2InputCounts {
-            public Integer total;
+            public @Nullable Integer total;
             @SerializedName("by_minute")
-            public Double[] byMinute;
-            public Double xtotal;
+            public Double @Nullable [] byMinute;
+            public @Nullable Double xtotal;
             @SerializedName("xby_minute")
-            public Double[] xbyMinute;
+            public Double @Nullable [] xbyMinute;
             @SerializedName("minute_ts")
-            public Integer minuteTS;
+            public @Nullable Integer minuteTS;
         }
 
         public class Shelly2InputStatus {
-            public Integer id;
-            public Boolean state;
-            public Double percent; // analog input only
+            public @Nullable Integer id;
+            public @Nullable Boolean state;
+            public @Nullable Double percent; // analog input only
             public @Nullable ArrayList<String> errors;
-            public Double xpercent;
-            public Shelly2InputCounts counts;
-            public Double freq;
-            public Double xfreq;
+            public @Nullable Double xpercent;
+            public @Nullable Shelly2InputCounts counts;
+            public @Nullable Double freq;
+            public @Nullable Double xfreq;
         }
 
         public static class Shelly2DeviceStatusResult {
@@ -76,11 +76,11 @@ public class Shelly2StatusJsonDTO {
             }
 
             public class Shelly2DeviceStatusCloud {
-                public Boolean connected;
+                public @Nullable Boolean connected;
             }
 
             public class Shelly2DeviceStatusMqqt {
-                public Boolean connected;
+                public @Nullable Boolean connected;
             }
 
             public class Shelly2DeviceStatusHumidity {
@@ -90,9 +90,9 @@ public class Shelly2StatusJsonDTO {
             }
 
             public class Shelly2DeviceStatusIlluminance {
-                public Integer id;
-                public Double lux;
-                public String illumination;
+                public @Nullable Integer id;
+                public @Nullable Double lux;
+                public @Nullable String illumination;
             }
 
             public class Shelly2DeviceStatusTempId extends Shelly2DeviceStatusTemp {
@@ -102,23 +102,23 @@ public class Shelly2StatusJsonDTO {
             public static class Shelly2DeviceStatusPower {
                 public static class Shelly2DeviceStatusBattery {
                     @SerializedName("V")
-                    public Double volt;
-                    public Double percent;
+                    public @Nullable Double volt;
+                    public @Nullable Double percent;
                 }
 
                 public static class Shelly2DeviceStatusCharger {
-                    public Boolean present;
+                    public @Nullable Boolean present;
                 }
 
-                public Integer id;
-                public Shelly2DeviceStatusBattery battery;
-                public Shelly2DeviceStatusCharger external;
+                public @Nullable Integer id;
+                public @Nullable Shelly2DeviceStatusBattery battery;
+                public @Nullable Shelly2DeviceStatusCharger external;
             }
 
             public class Shelly2DeviceStatusSmoke {
-                public Integer id;
-                public Boolean alarm;
-                public Boolean mute;
+                public @Nullable Integer id;
+                public @Nullable Boolean alarm;
+                public @Nullable Boolean mute;
             }
 
             public class Shelly2DeviceStatusFlood {
@@ -128,68 +128,69 @@ public class Shelly2StatusJsonDTO {
                 public @Nullable String[] errors;
             }
 
-            public Shelly2DeviceStatusBle ble;
-            public Shelly2DeviceStatusCloud cloud;
-            public Shelly2DeviceStatusMqqt mqtt;
-            public Shelly2DeviceStatusSys sys;
-            public Shelly2DeviceStatusSysWiFi wifi;
+            public @Nullable Shelly2DeviceStatusBle ble;
+            public @Nullable Shelly2DeviceStatusCloud cloud;
+            public @Nullable Shelly2DeviceStatusMqqt mqtt;
+            public @Nullable Shelly2DeviceStatusSys sys;
+            public @Nullable Shelly2DeviceStatusSysWiFi wifi;
 
             @SerializedName("input:0")
-            public Shelly2InputStatus input0;
+            public @Nullable Shelly2InputStatus input0;
             @SerializedName("input:1")
-            public Shelly2InputStatus input1;
+            public @Nullable Shelly2InputStatus input1;
             @SerializedName("input:2")
-            public Shelly2InputStatus input2;
+            public @Nullable Shelly2InputStatus input2;
             @SerializedName("input:3")
-            public Shelly2InputStatus input3;
+            public @Nullable Shelly2InputStatus input3;
             @SerializedName("input:4")
-            public Shelly2InputStatus input4;
+            public @Nullable Shelly2InputStatus input4;
             @SerializedName("input:100")
-            public Shelly2InputStatus input100; // Digital Input from Add-On
+            public @Nullable Shelly2InputStatus input100; // Digital Input from Add-On
 
             @SerializedName("rgbw:0")
             public @Nullable Shelly2RGBWStatus rgbw0;
 
             @SerializedName("switch:0")
-            public Shelly2RelayStatus switch0;
+            public @Nullable Shelly2RelayStatus switch0;
             @SerializedName("switch:1")
-            public Shelly2RelayStatus switch1;
+            public @Nullable Shelly2RelayStatus switch1;
             @SerializedName("switch:2")
-            public Shelly2RelayStatus switch2;
+            public @Nullable Shelly2RelayStatus switch2;
             @SerializedName("switch:3")
-            public Shelly2RelayStatus switch3;
+            public @Nullable Shelly2RelayStatus switch3;
             @SerializedName("switch:100")
-            public Shelly2RelayStatus switch100; // Pro 3EM Add-On
+            public @Nullable Shelly2RelayStatus switch100; // Pro 3EM Add-On
 
             @SerializedName("cb:0")
-            public Shelly2CBStatus cb0;
+            public @Nullable Shelly2CBStatus cb0;
 
             @SerializedName("pm1:0")
-            public Shelly2RelayStatus pm10;
+            public @Nullable Shelly2RelayStatus pm10;
 
             @SerializedName("em:0")
-            public Shelly2DeviceStatusEm em0; // 3-phase status (phases A/B/C) or Gen3 per-phase channel 0 (phase A)
+            public @Nullable Shelly2DeviceStatusEm em0; // 3-phase status (phases A/B/C) or Gen3 per-phase channel 0
+                                                        // (phase A)
             @SerializedName("em:1")
             public @Nullable Shelly2DeviceStatusEm emCh1; // Gen3: per-phase channel 1 (phase B)
             @SerializedName("em:2")
             public @Nullable Shelly2DeviceStatusEm emCh2; // Gen3: per-phase channel 2 (phase C)
             @SerializedName("emdata:0")
-            public Shelly2DeviceStatusEmData emdata0;
+            public @Nullable Shelly2DeviceStatusEmData emdata0;
             @SerializedName("em1:0")
-            public Shelly2StatusEm1 em10; // single-phase clamp 0 (EM Mini, Pro EM-50, Pro 3EM monophase)
+            public @Nullable Shelly2StatusEm1 em10; // single-phase clamp 0 (EM Mini, Pro EM-50, Pro 3EM monophase)
             @SerializedName("em1:1")
-            public Shelly2StatusEm1 em11; // single-phase clamp 1
+            public @Nullable Shelly2StatusEm1 em11; // single-phase clamp 1
             @SerializedName("em1:2")
             public @Nullable Shelly2StatusEm1 em12; // Pro 3EM monophase profile: 3rd clamp
             @SerializedName("em1data:0")
-            public Shelly2DeviceStatusEmData em1data0; // accumulated energy of clamp 0
+            public @Nullable Shelly2DeviceStatusEmData em1data0; // accumulated energy of clamp 0
             @SerializedName("em1data:1")
             public @Nullable Shelly2DeviceStatusEmData em1data1; // accumulated energy of clamp 1
             @SerializedName("em1data:2")
             public @Nullable Shelly2DeviceStatusEmData em1data2; // Pro 3EM monophase profile: 3rd clamp
 
             @SerializedName("cover:0")
-            public Shelly2CoverStatus cover0;
+            public @Nullable Shelly2CoverStatus cover0;
 
             @SerializedName("light:0")
             public @Nullable Shelly2DeviceStatusLight light0;
@@ -230,10 +231,10 @@ public class Shelly2StatusJsonDTO {
             public @Nullable Shelly2DeviceStatusHumidity humidity100;
 
             @SerializedName("illuminance:0")
-            public Shelly2DeviceStatusIlluminance illuminance0;
+            public @Nullable Shelly2DeviceStatusIlluminance illuminance0;
 
             @SerializedName("smoke:0")
-            public Shelly2DeviceStatusSmoke smoke0;
+            public @Nullable Shelly2DeviceStatusSmoke smoke0;
 
             @SerializedName("flood:0")
             public @Nullable Shelly2DeviceStatusFlood flood0;
@@ -248,12 +249,12 @@ public class Shelly2StatusJsonDTO {
             public @Nullable Shelly2DeviceStatusVoltage voltmeter100;
 
             @SerializedName("devicepower:0")
-            public Shelly2DeviceStatusPower devicepower0;
+            public @Nullable Shelly2DeviceStatusPower devicepower0;
             @SerializedName("devicepower:1")
             public @Nullable Shelly2DeviceStatusPower devicepower1;
 
             @SerializedName("lora:100")
-            public Shelly2DeviceStatusLora lora100;
+            public @Nullable Shelly2DeviceStatusLora lora100;
 
             @SerializedName("dali")
             public @Nullable Shelly2DaliStatus dali;
@@ -268,34 +269,34 @@ public class Shelly2StatusJsonDTO {
 
         public class Shelly2DeviceStatusSys {
             public class Shelly2DeviceStatusWakeup {
-                public String boot;
-                public String cause;
+                public @Nullable String boot;
+                public @Nullable String cause;
             }
 
-            public String mac;
+            public @Nullable String mac;
             @SerializedName("restart_required")
-            public Boolean restartRequired;
-            public String time;
-            public Long unixtime;
-            public Long uptime;
+            public @Nullable Boolean restartRequired;
+            public @Nullable String time;
+            public @Nullable Long unixtime;
+            public @Nullable Long uptime;
             @SerializedName("ram_size")
-            public Long ramSize;
+            public @Nullable Long ramSize;
             @SerializedName("ram_free")
-            public Long ramFree;
+            public @Nullable Long ramFree;
             @SerializedName("fs_size")
-            public Long fsSize;
+            public @Nullable Long fsSize;
             @SerializedName("fs_free")
-            public Long fsFree;
+            public @Nullable Long fsFree;
             @SerializedName("cfg_rev")
-            public Integer cfgRev;
+            public @Nullable Integer cfgRev;
             @SerializedName("available_updates")
             public @Nullable Shelly2DeviceStatusSysAvlUpdate availableUpdates;
             @SerializedName("webhook_rev")
-            public Integer webHookRev;
+            public @Nullable Integer webHookRev;
             @SerializedName("wakeup_reason")
-            public Shelly2DeviceStatusWakeup wakeUpReason;
+            public @Nullable Shelly2DeviceStatusWakeup wakeUpReason;
             @SerializedName("wakeup_period")
-            public Integer wakeupPeriod;
+            public @Nullable Integer wakeupPeriod;
 
             // Wall Display: reported inside sys, not as a top level component
             @SerializedName("relay_in_thermostat")
@@ -306,27 +307,27 @@ public class Shelly2StatusJsonDTO {
 
         public class Shelly2DeviceStatusSysWiFi {
             @SerializedName("sta_ip")
-            public String staIP;
-            public String status;
-            public String ssid;
-            public Integer rssi;
+            public @Nullable String staIP;
+            public @Nullable String status;
+            public @Nullable String ssid;
+            public @Nullable Integer rssi;
             @SerializedName("ap_client_count")
-            public Integer apClientCount;
+            public @Nullable Integer apClientCount;
         }
 
-        public String id;
-        public String src;
-        public Shelly2DeviceStatusResult result;
+        public @Nullable String id;
+        public @Nullable String src;
+        public @Nullable Shelly2DeviceStatusResult result;
     }
 
     public static class Shelly2RelayStatus {
-        public Integer id;
-        public String source;
-        public Boolean output;
+        public @Nullable Integer id;
+        public @Nullable String source;
+        public @Nullable Boolean output;
         @SerializedName("timer_started_at")
-        public Double timerStartetAt;
+        public @Nullable Double timerStartetAt;
         @SerializedName("timer_duration")
-        public Double timerDuration;
+        public @Nullable Double timerDuration;
         public @Nullable Double apower;
         public @Nullable Double voltage;
         public @Nullable Double current;
@@ -339,13 +340,13 @@ public class Shelly2StatusJsonDTO {
     }
 
     public static class Shelly2CBStatus {
-        public Integer id;
-        public Boolean output;
-        public String source;
+        public @Nullable Integer id;
+        public @Nullable Boolean output;
+        public @Nullable String source;
         @SerializedName("total_cycles")
-        public Integer totalCycles;
-        public Boolean safety;
-        public Shelly2DeviceStatusTemp temperature;
+        public @Nullable Integer totalCycles;
+        public @Nullable Boolean safety;
+        public @Nullable Shelly2DeviceStatusTemp temperature;
     }
 
     public static class Shelly2DeviceStatusTemp {

@@ -626,25 +626,28 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
             boolean updated = false;
             ShellyDeviceProfile profile = getProfile();
             ShellySettingsStatus status = profile.status;
-            if (params.sys != null) {
-                if (getBool(params.sys.restartRequired)) {
+            var sys = params.sys;
+            if (sys != null) {
+                Boolean restartRequired = sys.restartRequired;
+                if (getBool(restartRequired)) {
                     logger.warn("{}: Device requires restart to activate changes", thingName);
                 }
-                status.uptime = params.sys.uptime;
-                if (params.sys.restartRequired != null) {
-                    status.restartRequired = params.sys.restartRequired;
+                status.uptime = sys.uptime;
+                if (restartRequired != null) {
+                    status.restartRequired = restartRequired;
                     ShellyComponents.updateRestartRequired(getThing(), status);
                 }
-                if (params.sys.ramSize != null) {
+                if (sys.ramSize != null) {
                     // NotifyFullStatus only, a NotifyStatus delta must not clear the known values
-                    status.ramTotal = params.sys.ramSize;
-                    status.ramFree = params.sys.ramFree;
-                    status.fsSize = params.sys.fsSize;
-                    status.fsFree = params.sys.fsFree;
+                    status.ramTotal = sys.ramSize;
+                    status.ramFree = sys.ramFree;
+                    status.fsSize = sys.fsSize;
+                    status.fsFree = sys.fsFree;
                     ShellyComponents.updateDeviceUtilization(getThing(), status);
                 }
-                if (params.sys.wakeupPeriod != null) {
-                    profile.updateWakeupPeriod(params.sys.wakeupPeriod / 60);
+                Integer wakeupPeriod = sys.wakeupPeriod;
+                if (wakeupPeriod != null) {
+                    profile.updateWakeupPeriod(wakeupPeriod / 60);
                     ShellyComponents.updateWakeupPeriod(getThing());
                 }
             }
@@ -885,26 +888,32 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
         ShellyDeviceProfile profile = getProfile();
         ShellySettingsStatus status = profile.status;
         Shelly2DeviceStatusResult ds = apiRequest(SHELLYRPC_METHOD_GETSTATUS, null, Shelly2DeviceStatusResult.class);
-        status.time = ds.sys.time;
-        status.uptime = ds.sys.uptime;
-        status.cloud.connected = getBool(ds.cloud.connected);
-        status.mqtt.connected = getBool(ds.mqtt.connected);
-        status.wifiSta.ssid = getString(ds.wifi.ssid);
+        var sys = ds.sys;
+        if (sys != null) {
+            status.time = sys.time;
+            status.uptime = sys.uptime;
+            status.fsFree = sys.fsFree;
+            status.fsSize = sys.fsSize;
+            status.ramTotal = sys.ramSize;
+            status.ramFree = sys.ramFree;
+            status.restartRequired = sys.restartRequired;
+            Integer wakeupPeriod = sys.wakeupPeriod;
+            if (wakeupPeriod != null) {
+                profile.updateWakeupPeriod(wakeupPeriod / 60);
+            }
+        }
+        var cloud = ds.cloud;
+        status.cloud.connected = cloud != null && getBool(cloud.connected);
+        var mqtt = ds.mqtt;
+        status.mqtt.connected = mqtt != null && getBool(mqtt.connected);
+        var wifi = ds.wifi;
+        status.wifiSta.ssid = wifi != null ? getString(wifi.ssid) : "";
         status.wifiSta.enabled = !status.wifiSta.ssid.isEmpty();
-        status.wifiSta.ip = getString(ds.wifi.staIP);
-        status.wifiSta.rssi = getInteger(ds.wifi.rssi);
-        status.fsFree = ds.sys.fsFree;
-        status.fsSize = ds.sys.fsSize;
-        status.ramTotal = ds.sys.ramSize;
-        status.ramFree = ds.sys.ramFree;
-        status.restartRequired = ds.sys.restartRequired;
+        status.wifiSta.ip = wifi != null ? getString(wifi.staIP) : "";
+        status.wifiSta.rssi = wifi != null ? getInteger(wifi.rssi) : 0;
         status.discoverable = getBool(profile.settings.discoverable);
 
-        if (ds.sys.wakeupPeriod != null) {
-            profile.updateWakeupPeriod(ds.sys.wakeupPeriod / 60);
-        }
-
-        Shelly2DeviceStatusSysAvlUpdate avlUpdate = ds.sys.availableUpdates;
+        Shelly2DeviceStatusSysAvlUpdate avlUpdate = sys != null ? sys.availableUpdates : null;
         status.update.oldVersion = profile.fwVersion;
         status.update.newVersion = "";
         status.update.betaVersion = "";
@@ -927,18 +936,17 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
             }
         }
 
-        if (ds.sys.wakeUpReason != null && ds.sys.wakeUpReason.boot != null)
-
-        {
+        var wakeUpReason = sys != null ? sys.wakeUpReason : null;
+        String boot = wakeUpReason != null ? wakeUpReason.boot : null;
+        if (wakeUpReason != null && boot != null) {
             List<Object> values = new ArrayList<>();
-            String boot = getString(ds.sys.wakeUpReason.boot);
-            String cause = getString(ds.sys.wakeUpReason.cause);
+            String cause = getString(wakeUpReason.cause);
 
             // Index 0 is aggregated status, 1 boot, 2 cause
             String reason = boot.equals(SHELLY2_WAKEUPO_BOOT_RESTART) ? ALARM_TYPE_RESTARTED : cause;
             values.add(reason);
-            values.add(ds.sys.wakeUpReason.boot);
-            values.add(ds.sys.wakeUpReason.cause);
+            values.add(boot);
+            values.add(cause);
             getThing().updateWakeupReason(values);
         }
 
