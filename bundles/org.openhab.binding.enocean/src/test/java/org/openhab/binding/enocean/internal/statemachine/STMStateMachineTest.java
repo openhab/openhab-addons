@@ -101,6 +101,67 @@ public class STMStateMachineTest {
     }
 
     @Test
+    void slatMovementIsRepeatedOnceAndThenGivenUpWithoutRecalibration() {
+        List<String> repeated = new ArrayList<>();
+        STMStateMachine<BlindAction, BlindState> stm = STMStateMachine
+                .build(STMTransitionConfiguration.BlindTransitions.FSB14_BLINDS, BlindState.IDLE, scheduler, null)
+                .registerWatchdog(
+                        new STMWatchdog<>(EnumSet.of(BlindState.MOVEMENT_SLATS), BlindAction.SLATS_TIMEOUT, 1000, true),
+                        timedOutStates::add)
+                .registerWatchdog(new STMWatchdog<>(EnumSet.of(BlindState.MOVEMENT_SLATS_RETRY),
+                        BlindAction.SLATS_RETRY_TIMEOUT, 1000, true), timedOutStates::add)
+                .register(BlindAction.SLATS_TIMEOUT, () -> repeated.add("retry"));
+        stm.apply(BlindAction.SLATS_POS_REQUEST);
+        stm.storeCommand("rollershutter", PercentType.valueOf("30"));
+
+        scheduledTasks.get(0).run();
+
+        assertThat(stm.getState(), is(BlindState.MOVEMENT_SLATS_RETRY));
+        assertThat(repeated, hasSize(1));
+        assertThat(stm.getStoredCommand(), is(PercentType.valueOf("30")));
+
+        scheduledTasks.get(1).run();
+
+        assertThat(stm.getState(), is(BlindState.IDLE));
+        assertThat(repeated, hasSize(1));
+        assertThat(stm.getStoredCommand(), is(PercentType.valueOf("30")));
+        assertThat(timedOutStates, contains(BlindState.MOVEMENT_SLATS, BlindState.MOVEMENT_SLATS_RETRY));
+    }
+
+    @Test
+    void feedbackAfterTheRepeatedSlatTelegramReturnsToIdle() {
+        STMStateMachine<BlindAction, BlindState> stm = STMStateMachine.build(
+                STMTransitionConfiguration.BlindTransitions.FSB14_BLINDS, BlindState.MOVEMENT_SLATS_RETRY, scheduler,
+                null);
+
+        stm.apply(BlindAction.SLATS_POS_DONE);
+
+        assertThat(stm.getState(), is(BlindState.IDLE));
+    }
+
+    @Test
+    void stopDuringTheRepeatedSlatTelegramInvalidatesTheStateMachine() {
+        STMStateMachine<BlindAction, BlindState> stm = STMStateMachine.build(
+                STMTransitionConfiguration.BlindTransitions.FSB14_BLINDS, BlindState.MOVEMENT_SLATS_RETRY, scheduler,
+                null);
+
+        stm.apply(BlindAction.INVALID_REQUEST);
+
+        assertThat(stm.getState(), is(BlindState.INVALID));
+    }
+
+    @Test
+    void retryCommandIsRemembered() {
+        STMStateMachine<BlindAction, BlindState> stm = STMStateMachine
+                .build(STMTransitionConfiguration.BlindTransitions.FSB14_BLINDS, BlindState.IDLE, scheduler, null);
+
+        stm.setRetryCommand("dimmer", PercentType.valueOf("20"));
+
+        assertThat(stm.getRetryChannel(), is("dimmer"));
+        assertThat(stm.getRetryCommand(), is(PercentType.valueOf("20")));
+    }
+
+    @Test
     void leavingSupervisedStateCancelsWatchdog() {
         STMStateMachine<BlindAction, BlindState> stm = build(STMTransitionConfiguration.BlindTransitions.FSB14_BLINDS,
                 BlindState.IDLE);

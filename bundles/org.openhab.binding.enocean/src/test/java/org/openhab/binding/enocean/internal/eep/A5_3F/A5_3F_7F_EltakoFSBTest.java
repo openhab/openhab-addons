@@ -22,6 +22,7 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ScheduledExecutorService;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -43,6 +44,7 @@ import org.openhab.binding.enocean.internal.statemachine.STMWatchdog;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.StopMoveType;
+import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.types.UpDownType;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -95,13 +97,97 @@ public class A5_3F_7F_EltakoFSBTest {
     void watchdogsSuperviseMovementStatesWithMarginForFeedbackDelay() {
         List<STMWatchdog<BlindAction, BlindState>> watchdogs = eep.getWatchdogs(thing);
 
-        assertThat(watchdogs, hasSize(2));
+        assertThat(watchdogs, hasSize(4));
         STMWatchdog<BlindAction, BlindState> requested = watchdogs.get(0);
         assertThat(requested.timeoutAction(), is(BlindAction.MOVEMENT_TIMEOUT));
         assertThat(requested.states(), is(EnumSet.of(BlindState.MOVEMENT_POSITION_UP, BlindState.MOVEMENT_POSITION_DOWN,
-                BlindState.MOVEMENT_SLATS, BlindState.MOVEMENT_CALIBRATION_UP, BlindState.MOVEMENT_CALIBRATION_DOWN)));
+                BlindState.MOVEMENT_CALIBRATION_UP, BlindState.MOVEMENT_CALIBRATION_DOWN)));
         // 27 s travel + 1.4 s slats + feedback margin
         assertThat(requested.timeoutMs(), is(27000L + 1400L + A5_3F_7F_EltakoFSB.FEEDBACK_MARGIN_MS));
+        assertThat(requested.keepsStoredCommand(), is(false));
+    }
+
+    @Test
+    void slatMovementIsRepeatedOnceBeforeItIsGivenUp() {
+        List<STMWatchdog<BlindAction, BlindState>> watchdogs = eep.getWatchdogs(thing);
+
+        STMWatchdog<BlindAction, BlindState> first = watchdogs.get(2);
+        assertThat(first.states(), is(EnumSet.of(BlindState.MOVEMENT_SLATS)));
+        assertThat(first.timeoutAction(), is(BlindAction.SLATS_TIMEOUT));
+        assertThat(first.timeoutMs(), is(1400L + A5_3F_7F_EltakoFSB.FEEDBACK_MARGIN_MS));
+        assertThat(first.keepsStoredCommand(), is(true));
+
+        STMWatchdog<BlindAction, BlindState> second = watchdogs.get(3);
+        assertThat(second.states(), is(EnumSet.of(BlindState.MOVEMENT_SLATS_RETRY)));
+        assertThat(second.timeoutAction(), is(BlindAction.SLATS_RETRY_TIMEOUT));
+        assertThat(second.timeoutMs(), is(1400L + A5_3F_7F_EltakoFSB.FEEDBACK_MARGIN_MS));
+        assertThat(second.keepsStoredCommand(), is(true));
+
+        assertThat(eep.getRetryActions(thing), is(Set.of(BlindAction.SLATS_TIMEOUT)));
+        assertThat(eep.getRequiredCallbackActions(thing), hasItem(BlindAction.SLATS_RETRY_TIMEOUT));
+    }
+
+    @Test
+    void slatMovementIsNotSupervisedInRollershutterMode() {
+        when(rollershutterChannel.getConfiguration())
+                .thenReturn(new Configuration(Map.of("shutTime", 27, "swapTime", 14, "configMode", "rollershutter")));
+
+        assertThat(eep.getWatchdogs(thing), hasSize(2));
+        assertThat(eep.getRetryActions(thing), is(empty()));
+    }
+
+    @Test
+    void slatTelegramIsRememberedForARetry() {
+        STMStateMachine<BlindAction, BlindState> stm = build(BlindState.IDLE);
+
+        eep.processChannelDimmer(thing, new PercentType(60), new Configuration(BLINDS_CONFIG), id -> state(id, 0, 0),
+                stm);
+
+        assertThat(stm.getState(), is(BlindState.MOVEMENT_SLATS));
+        assertThat(stm.getRetryChannel(), is(CHANNEL_DIMMER));
+        // 60 % of 1.4 s = 8 tenths of a second, down, 100 ms units
+        assertThat(stm.getRetryCommand(), is(new StringType("0008020A")));
+    }
+
+    @Test
+    void retryCommandSendsTheSlatTelegramAgain() {
+        STMStateMachine<BlindAction, BlindState> stm = build(BlindState.MOVEMENT_SLATS_RETRY);
+
+        eep.processChannelDimmer(thing, new StringType("0008020A"), new Configuration(BLINDS_CONFIG),
+                id -> state(id, 0, 60), stm);
+
+        assertThat(eep.hasData(), is(true));
+        assertThat(stm.getState(), is(BlindState.MOVEMENT_SLATS_RETRY));
+    }
+
+    @Test
+    void retryCommandIsIgnoredOutsideOfTheRetry() {
+        STMStateMachine<BlindAction, BlindState> stm = build(BlindState.IDLE);
+
+        eep.processChannelDimmer(thing, new StringType("0008020A"), new Configuration(BLINDS_CONFIG),
+                id -> state(id, 0, 60), stm);
+
+        assertThat(eep.hasData(), is(false));
+    }
+
+    @Test
+    void positionRequestDuringRetryIsStoredForLater() {
+        STMStateMachine<BlindAction, BlindState> stm = build(BlindState.MOVEMENT_SLATS_RETRY);
+
+        eep.processCmdAsPercentType(thing, new PercentType(30), new Configuration(BLINDS_CONFIG), id -> state(id, 0, 0),
+                stm);
+
+        assertThat(stm.getStoredCommand(), is(new PercentType(30)));
+    }
+
+    @Test
+    void feedbackEndsTheRetryOfTheSlatMovement() {
+        STMStateMachine<BlindAction, BlindState> stm = build(BlindState.MOVEMENT_SLATS_RETRY);
+
+        feedback("A50008020A000000DE20").convertToStateImpl(CHANNEL_ROLLERSHUTTER, "", id -> state(id, 40, 60),
+                new Configuration(BLINDS_CONFIG), stm);
+
+        assertThat(stm.getState(), is(BlindState.IDLE));
     }
 
     @Test

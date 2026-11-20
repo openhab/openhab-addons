@@ -14,6 +14,7 @@ package org.openhab.binding.enocean.internal.eep.A5_3F;
 
 import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.*;
 
+import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
@@ -36,6 +37,7 @@ import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.StopMoveType;
+import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.types.UpDownType;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -43,6 +45,7 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
+import org.openhab.core.util.HexUtils;
 
 /**
  *
@@ -91,6 +94,9 @@ public class A5_3F_7F_EltakoFSB extends _4BSMessage implements StateMachineProvi
 
         if (duration != 0) {
             setData(duration_msb, duration_lsb, direction, CMD_100MSEC);
+            // the gateway sometimes drops a telegram, the watchdog of the slat movement sends it once more
+            stm.setRetryCommand(CHANNEL_DIMMER, new StringType(
+                    HexUtils.bytesToHex(new byte[] { duration_msb, duration_lsb, direction, CMD_100MSEC })));
             stm.apply(BlindAction.SLATS_POS_REQUEST);
             return;
         } else {
@@ -172,7 +178,7 @@ public class A5_3F_7F_EltakoFSB extends _4BSMessage implements StateMachineProvi
                     }
                     stm.storeCommand(CHANNEL_ROLLERSHUTTER, percentCommand);
                     break;
-                case MOVEMENT_SLATS, POSITION_REACHED:
+                case MOVEMENT_SLATS, MOVEMENT_SLATS_RETRY, POSITION_REACHED:
                     // the slat adjustment finishes first, the position follows and the dimmer value is the target
                     stm.storeCommand(CHANNEL_ROLLERSHUTTER, percentCommand);
                     break;
@@ -368,6 +374,10 @@ public class A5_3F_7F_EltakoFSB extends _4BSMessage implements StateMachineProvi
                     default:
                 }
             }
+        } else if (command instanceof StringType retryTelegram && stm != null
+                && stm.getState() == BlindState.MOVEMENT_SLATS_RETRY) {
+            // the first slat telegram got no reaction: send the same data again
+            setData(HexUtils.hexToBytes(retryTelegram.toString()));
         }
     }
 
@@ -467,7 +477,7 @@ public class A5_3F_7F_EltakoFSB extends _4BSMessage implements StateMachineProvi
                                     blindStm.apply(BlindAction.MANUAL_DONE);
                                     return trackMovement(blindStm, c, getCurrentStateFunc, current, runtime,
                                             direction > 0);
-                                case MOVEMENT_SLATS:
+                                case MOVEMENT_SLATS, MOVEMENT_SLATS_RETRY:
                                     blindStm.apply(BlindAction.SLATS_POS_DONE);
                                     return new PercentType(current.intValue()); // do not change the position
                                 default:
@@ -595,12 +605,27 @@ public class A5_3F_7F_EltakoFSB extends _4BSMessage implements StateMachineProvi
         EnOceanChannelRollershutterConfig c = channel.getConfiguration().as(EnOceanChannelRollershutterConfig.class);
         long slatsTimeMs = mode == ConfigMode.BLINDS ? Math.max(0, c.swapTime) * 100L : 0;
         long timeoutMs = Math.max(0, c.shutTime) * 1000L + slatsTimeMs + FEEDBACK_MARGIN_MS;
-        return List.of(
-                new STMWatchdog<>(EnumSet.of(BlindState.MOVEMENT_POSITION_UP, BlindState.MOVEMENT_POSITION_DOWN,
-                        BlindState.MOVEMENT_SLATS, BlindState.MOVEMENT_CALIBRATION_UP,
-                        BlindState.MOVEMENT_CALIBRATION_DOWN), BlindAction.MOVEMENT_TIMEOUT, timeoutMs),
-                new STMWatchdog<>(EnumSet.of(BlindState.MOVEMENT_MANUAL_UP, BlindState.MOVEMENT_MANUAL_DOWN),
-                        BlindAction.MOVEMENT_TIMEOUT, MANUAL_MOVEMENT_TIMEOUT_MS));
+        List<STMWatchdog<BlindAction, BlindState>> watchdogs = new ArrayList<>();
+        watchdogs.add(new STMWatchdog<>(
+                EnumSet.of(BlindState.MOVEMENT_POSITION_UP, BlindState.MOVEMENT_POSITION_DOWN,
+                        BlindState.MOVEMENT_CALIBRATION_UP, BlindState.MOVEMENT_CALIBRATION_DOWN),
+                BlindAction.MOVEMENT_TIMEOUT, timeoutMs));
+        watchdogs.add(new STMWatchdog<>(EnumSet.of(BlindState.MOVEMENT_MANUAL_UP, BlindState.MOVEMENT_MANUAL_DOWN),
+                BlindAction.MOVEMENT_TIMEOUT, MANUAL_MOVEMENT_TIMEOUT_MS));
+        if (mode == ConfigMode.BLINDS) {
+            // a slat adjustment does not change the position: repeat it once, then give up without recalibration
+            long slatsTimeoutMs = slatsTimeMs + FEEDBACK_MARGIN_MS;
+            watchdogs.add(new STMWatchdog<>(EnumSet.of(BlindState.MOVEMENT_SLATS), BlindAction.SLATS_TIMEOUT,
+                    slatsTimeoutMs, true));
+            watchdogs.add(new STMWatchdog<>(EnumSet.of(BlindState.MOVEMENT_SLATS_RETRY),
+                    BlindAction.SLATS_RETRY_TIMEOUT, slatsTimeoutMs, true));
+        }
+        return watchdogs;
+    }
+
+    @Override
+    public Set<BlindAction> getRetryActions(Thing thing) {
+        return getConfigMode(thing) == ConfigMode.BLINDS ? Set.of(BlindAction.SLATS_TIMEOUT) : Set.of();
     }
 
     @Override
@@ -612,7 +637,8 @@ public class A5_3F_7F_EltakoFSB extends _4BSMessage implements StateMachineProvi
         return switch (mode) {
             case LEGACY -> Set.of();
             case ROLLERSHUTTER -> Set.of(BlindAction.CALIBRATION_DONE);
-            case BLINDS -> Set.of(BlindAction.CALIBRATION_DONE, BlindAction.POSITION_DONE, BlindAction.SLATS_POS_DONE);
+            case BLINDS -> Set.of(BlindAction.CALIBRATION_DONE, BlindAction.POSITION_DONE, BlindAction.SLATS_POS_DONE,
+                    BlindAction.SLATS_RETRY_TIMEOUT);
         };
     }
 
