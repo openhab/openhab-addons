@@ -21,6 +21,7 @@ import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
@@ -86,6 +87,8 @@ public class TailwindHandler extends BaseThingHandler {
     private volatile @Nullable TailwindStatus lastStatus;
     private volatile Set<InetAddress> controllerAddresses = Set.of();
     private volatile @Nullable String notifyAddress;
+    // While false, the status request decides when the controller counts as reachable again
+    private volatile boolean reachable;
     private @Nullable ScheduledFuture<?> pollJob;
     // A status request of an older generation does not schedule the next one
     private int pollGeneration;
@@ -123,9 +126,11 @@ public class TailwindHandler extends BaseThingHandler {
             updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.conf-error.invalid-udp-port");
             return;
         }
+        reachable = false;
         updateStatus(ThingStatus.UNKNOWN);
         lastStatus = null;
         controllerAddresses = Set.of();
+        notifyAddress = null;
         synchronized (this) {
             this.hostname = hostname;
             usingLastKnownAddress = false;
@@ -173,6 +178,8 @@ public class TailwindHandler extends BaseThingHandler {
             oldRegistration.close();
         }
         lastStatus = null;
+        notifyAddress = null;
+        reachable = false;
     }
 
     @Override
@@ -250,13 +257,13 @@ public class TailwindHandler extends BaseThingHandler {
 
     private void sendDoorCommand(TailwindApi currentApi, String group, Command command)
             throws TailwindException, InterruptedException {
-        int doorIndex = -1;
-        for (int index = 0; index < MAX_DOORS; index++) {
-            if ((GROUP_DOOR_PREFIX + (index + 1)).equals(group)) {
-                doorIndex = index;
-            }
+        int doorIndex;
+        try {
+            doorIndex = Integer.parseInt(group.substring(GROUP_DOOR_PREFIX.length())) - 1;
+        } catch (NumberFormatException e) {
+            return;
         }
-        if (doorIndex < 0) {
+        if (doorIndex < 0 || doorIndex >= MAX_DOORS) {
             return;
         }
         switch (command.toString().toLowerCase(Locale.ROOT)) {
@@ -283,26 +290,27 @@ public class TailwindHandler extends BaseThingHandler {
         }
         boolean online = false;
         try {
-            String host = resolveHost();
-            currentApi.setHost(host);
-            String address = networkAddressService.getPrimaryIpv4HostAddress();
-            if (address == null) {
-                address = localAddressTowards(host);
+            ResolvedHost resolved = resolveHost();
+            currentApi.setHost(resolved.host());
+            TailwindStatus status = currentApi.getStatus();
+            if (!isCurrent(currentApi)) {
+                return;
             }
-            if (address == null) {
-                if (isCurrent(currentApi)) {
-                    updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.conf-error.no-primary-address");
-                }
+            String reportedMac = TailwindDeviceId.toMacAddress(status.deviceId);
+            String mac = thing.getProperties().get(Thing.PROPERTY_MAC_ADDRESS);
+            if (reportedMac != null && mac != null && !mac.equals(reportedMac)) {
+                // For example after the router gave the last known address of the controller to another one
+                reachable = false;
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
+                        "@text/offline.comm-error.other-controller [\"" + reportedMac + "\"]");
             } else {
-                TailwindStatus status = currentApi.getStatus();
-                if (isCurrent(currentApi)) {
-                    updateStatus(ThingStatus.ONLINE);
-                    handleStatus(status);
-                    online = true;
-                }
+                reachable = true;
+                updateStatus(ThingStatus.ONLINE);
+                handleStatus(status);
+                online = true;
                 // After publishing the status, so that it cannot replace a newer report
                 try {
-                    registerNotifications(currentApi, host, address);
+                    registerNotifications(currentApi, resolved);
                     reportsWarned = false;
                 } catch (TailwindException e) {
                     if (reportsWarned) {
@@ -328,6 +336,7 @@ public class TailwindHandler extends BaseThingHandler {
     }
 
     private void setOffline(TailwindException e) {
+        reachable = false;
         if (e instanceof TailwindUnauthorizedException) {
             updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.conf-error.token-rejected");
         } else {
@@ -366,72 +375,102 @@ public class TailwindHandler extends BaseThingHandler {
     }
 
     // Repeated at every status request, because the controller forgets the address when it reboots
-    private void registerNotifications(TailwindApi currentApi, String host, String address)
+    // The receiver is called without holding this handler's lock, which its receive thread needs for updateState()
+    private void registerNotifications(TailwindApi currentApi, ResolvedHost resolved)
             throws TailwindException, InterruptedException {
-        int port;
+        if (resolved.addresses().isEmpty()) {
+            throw new TailwindCommunicationException("Cannot resolve " + resolved.host());
+        }
+        String address = networkAddressService.getPrimaryIpv4HostAddress();
+        if (address == null) {
+            address = localAddressTowards(resolved.addresses().iterator().next());
+        }
+        if (address == null) {
+            throw new TailwindCommunicationException(
+                    "No IPv4 address of openHAB found to receive them. Set the primary address in Settings, Network Settings.");
+        }
+        Registration currentRegistration;
         synchronized (this) {
             if (!isCurrent(currentApi)) {
                 return;
             }
-            Registration currentRegistration = registration;
+            currentRegistration = registration;
             if (currentRegistration != null && currentRegistration.getPort() == -1) {
-                currentRegistration.close();
-                currentRegistration = null;
+                registration = null;
             }
-            if (currentRegistration == null) {
-                try {
-                    currentRegistration = udpReceiver.register(config.udpPort, this::handleNotification);
-                } catch (SocketException e) {
-                    registration = null;
-                    throw new TailwindCommunicationException(
-                            "Cannot open a UDP port for status reports: " + e.getMessage(), e);
+        }
+        if (currentRegistration != null && currentRegistration.getPort() == -1) {
+            currentRegistration.close();
+            currentRegistration = null;
+        }
+        if (currentRegistration == null) {
+            Registration newRegistration;
+            try {
+                newRegistration = udpReceiver.register(config.udpPort, this::handleNotification);
+            } catch (SocketException e) {
+                throw new TailwindCommunicationException("Cannot open a UDP port for status reports: " + e.getMessage(),
+                        e);
+            }
+            boolean kept;
+            synchronized (this) {
+                kept = isCurrent(currentApi) && registration == null;
+                if (kept) {
+                    registration = newRegistration;
                 }
-                registration = currentRegistration;
             }
-            port = currentRegistration.getPort();
+            if (!kept) {
+                newRegistration.close();
+                return;
+            }
+            currentRegistration = newRegistration;
         }
-        try {
-            controllerAddresses = Set.of(InetAddress.getAllByName(host));
-        } catch (UnknownHostException e) {
-            throw new TailwindCommunicationException("Cannot resolve " + host + ": " + e.getMessage(), e);
-        }
+        int port = currentRegistration.getPort();
+        controllerAddresses = resolved.addresses();
         String hostAndPort = address + ":" + port;
         currentApi.setNotifyUrl(hostAndPort);
         notifyAddress = hostAndPort;
         logger.debug("{} sends its status reports to {}:{}", thing.getUID(), address, port);
     }
 
+    private record ResolvedHost(String host, Set<InetAddress> addresses) {
+    }
+
     // Some systems, such as some Docker setups, cannot resolve .local names
-    private String resolveHost() {
+    private ResolvedHost resolveHost() {
         String configured = hostname;
         try {
-            InetAddress address = InetAddress.getByName(configured);
-            if (address instanceof Inet4Address && !configured.equals(address.getHostAddress())) {
-                updateProperty(PROPERTY_IP_ADDRESS, address.getHostAddress());
-            }
+            Set<InetAddress> addresses = Set.copyOf(Arrays.asList(InetAddress.getAllByName(configured)));
+            addresses.stream().filter(Inet4Address.class::isInstance).findFirst()
+                    .filter(address -> !configured.equals(address.getHostAddress()))
+                    .ifPresent(address -> updateProperty(PROPERTY_IP_ADDRESS, address.getHostAddress()));
             if (usingLastKnownAddress) {
                 usingLastKnownAddress = false;
                 logger.debug("{} can resolve {} again", thing.getUID(), configured);
             }
-            return configured;
+            return new ResolvedHost(configured, addresses);
         } catch (UnknownHostException e) {
             String lastKnown = thing.getProperties().get(PROPERTY_IP_ADDRESS);
             if (lastKnown == null || lastKnown.isBlank()) {
-                return configured;
+                return new ResolvedHost(configured, Set.of());
             }
             if (!usingLastKnownAddress) {
                 usingLastKnownAddress = true;
                 logger.debug("{} cannot resolve {}, so it uses the last known address {} of the controller",
                         thing.getUID(), configured, lastKnown);
             }
-            return lastKnown;
+            try {
+                // An address literal, so this does not look anything up
+                return new ResolvedHost(lastKnown, Set.of(InetAddress.getByName(lastKnown)));
+            } catch (UnknownHostException invalid) {
+                return new ResolvedHost(lastKnown, Set.of());
+            }
         }
     }
 
     // No packet is sent: connecting a UDP socket only chooses the route
-    private static @Nullable String localAddressTowards(String host) {
+    private static @Nullable String localAddressTowards(InetAddress controller) {
         try (DatagramSocket socket = new DatagramSocket()) {
-            socket.connect(InetAddress.getByName(host), 80);
+            socket.connect(controller, 80);
             InetAddress local = socket.getLocalAddress();
             return local instanceof Inet4Address && !local.isAnyLocalAddress() ? local.getHostAddress() : null;
         } catch (IOException | RuntimeException e) {
@@ -440,7 +479,7 @@ public class TailwindHandler extends BaseThingHandler {
     }
 
     private void handleNotification(InetAddress sender, String message) {
-        if (api == null) {
+        if (api == null || !reachable) {
             return;
         }
         if (!controllerAddresses.contains(sender)) {

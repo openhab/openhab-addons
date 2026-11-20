@@ -47,10 +47,6 @@ public class TailwindUdpListener {
         this.consumer = consumer;
     }
 
-    public int start() throws SocketException {
-        return start(0);
-    }
-
     // Port 0 picks a free port; returns the port in use
     public int start(int port) throws SocketException {
         stop();

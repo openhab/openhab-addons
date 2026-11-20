@@ -55,7 +55,7 @@ public class TailwindUdpListenerTest {
 
     @Test
     public void messagesAreDeliveredWithoutTrailingNulOrLineEnding() throws Exception {
-        int port = listener.start();
+        int port = listener.start(0);
 
         send(port, "{\"result\":\"OK\"}\0".getBytes(StandardCharsets.UTF_8));
         send(port, "{\"door_num\":1}\r\n".getBytes(StandardCharsets.UTF_8));
@@ -68,12 +68,12 @@ public class TailwindUdpListenerTest {
     public void stoppedListenerHasNoPortAndCanStartAgain() throws Exception {
         assertEquals(-1, listener.getPort());
 
-        int port = listener.start();
+        int port = listener.start(0);
         assertEquals(port, listener.getPort());
         listener.stop();
         assertEquals(-1, listener.getPort());
 
-        int newPort = listener.start();
+        int newPort = listener.start(0);
         assertNotEquals(-1, newPort);
         send(newPort, "again".getBytes(StandardCharsets.UTF_8));
         assertEquals("again", messages.poll(WAIT_SECONDS, TimeUnit.SECONDS));
@@ -81,7 +81,7 @@ public class TailwindUdpListenerTest {
 
     @Test
     public void stopEndsTheReceivingThread() throws Exception {
-        listener.start();
+        listener.start(0);
         assertTrue(receivingThreadIsAlive());
 
         listener.stop();

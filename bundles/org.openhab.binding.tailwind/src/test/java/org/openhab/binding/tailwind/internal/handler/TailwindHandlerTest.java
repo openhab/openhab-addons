@@ -461,6 +461,50 @@ public class TailwindHandlerTest {
     }
 
     @Test
+    public void anotherControllerAtTheAddressIsNotUsed() {
+        handler = newHandler(Map.of("hostname", "127.0.0.1", "token", "123456"),
+                Map.of(Thing.PROPERTY_MAC_ADDRESS, "aabbccddeeff"));
+
+        handler.initialize();
+
+        verifyStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+        assertEquals("@text/offline.comm-error.other-controller [\"30aea4801880\"]",
+                handler.getThing().getStatusInfo().getDescription());
+        assertEquals("aabbccddeeff", handler.getThing().getProperties().get(Thing.PROPERTY_MAC_ADDRESS));
+        assertTrue(controller.requestsNamed("notify_url").isEmpty());
+        verify(callback, never()).stateUpdated(any(), any());
+    }
+
+    @Test
+    public void statusReportsAreIgnoredWhileOffline() throws Exception {
+        initializeOnline();
+        int port = notificationPort();
+        controller.setUnreachable(true);
+        handler.poll();
+        verifyStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+
+        sendReport(port, FakeController.STATUS.replace("\"status\":\"open\"", "\"status\":\"close\""));
+
+        verify(callback, after(1000).never()).stateUpdated(channel("door1", "status"), new StringType("close"));
+    }
+
+    @Test
+    public void removalAfterReconfigurationDoesNotStopReportsOfTheOldRegistration() {
+        initializeOnline();
+        handler.dispose();
+        controller.answerWith(received -> new Answer(500, "{}"));
+        handler.initialize();
+        verifyStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+
+        handler.handleRemoval();
+
+        verify(callback, timeout(WAIT_MS)).statusUpdated(any(),
+                argThat(info -> info.getStatus() == ThingStatus.REMOVED));
+        verify(callback, after(500).atLeastOnce()).statusUpdated(any(), any());
+        assertEquals(1, controller.requestsNamed("notify_url").size());
+    }
+
+    @Test
     public void disposedHandlerPublishesNothing() throws Exception {
         initializeOnline();
         int port = notificationPort();

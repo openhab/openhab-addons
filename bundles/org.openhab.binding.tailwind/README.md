@@ -109,11 +109,12 @@ An item in an `.items` file needs `unit="dBm"`, as in the [Full Example](#full-e
 
 ## Troubleshooting
 
-| Problem                                                       | Cause and solution                                                                                                                           |
-|---------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------|
-| The Thing is offline with a configuration error about the key | The Local Control Key is wrong. Copy it again from the TailWind web dashboard.                                                               |
-| The Thing is offline with a communication error               | The controller cannot be reached at `hostname`. Check the address, and use the IP address if `.local` names cannot be resolved.              |
-| Door changes appear only after several minutes                | The status reports do not arrive. Check the firewall and Docker setup in Status Reports, and that no other system registers for the reports. |
+| Problem                                                       | Cause and solution                                                                                                                                                                  |
+|---------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| The Thing is offline with a configuration error about the key | The Local Control Key is wrong. Copy it again from the TailWind web dashboard.                                                                                                      |
+| The Thing is offline with a communication error               | The controller cannot be reached at `hostname`. Check the address, and use the IP address if `.local` names cannot be resolved.                                                     |
+| The Thing is offline because another controller answers       | The address now belongs to another TailWind controller, for example after the router gave it a new address. Set `hostname` to the controller's `.local` name or its new IP address. |
+| Door changes appear only after several minutes                | The status reports do not arrive. Check the firewall and Docker setup in Status Reports, and that no other system registers for the reports.                                        |
 
 For more detail in the log, run `log:set DEBUG org.openhab.binding.tailwind` in the openHAB console.
 
