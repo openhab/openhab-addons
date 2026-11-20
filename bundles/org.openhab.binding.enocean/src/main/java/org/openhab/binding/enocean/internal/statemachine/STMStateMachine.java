@@ -51,6 +51,8 @@ public class STMStateMachine<A extends Enum<A>, S extends Enum<S>> {
     private S prevState;
     private @Nullable String storedChannel;
     private @Nullable Command storedCommand;
+    private @Nullable String retryChannel;
+    private @Nullable Command retryCommand;
     private int expectedRuntime;
     private boolean stopRequested;
 
@@ -238,15 +240,14 @@ public class STMStateMachine<A extends Enum<A>, S extends Enum<S>> {
             if (candidate.states().contains(state)) {
                 S watchedState = state;
                 long generation = stateGeneration;
-                watchdogFuture = scheduler.schedule(
-                        () -> watchdogExpired(watchedState, generation, candidate.timeoutAction()),
+                watchdogFuture = scheduler.schedule(() -> watchdogExpired(watchedState, generation, candidate),
                         candidate.timeoutMs(), TimeUnit.MILLISECONDS);
                 return;
             }
         }
     }
 
-    private synchronized void watchdogExpired(S watchedState, long generation, A timeoutAction) {
+    private synchronized void watchdogExpired(S watchedState, long generation, STMWatchdog<A, S> watchdog) {
         // a timer that fired while the state was being left must not reset the new state
         if (disposed || state != watchedState || generation != stateGeneration) {
             return;
@@ -255,9 +256,11 @@ public class STMStateMachine<A extends Enum<A>, S extends Enum<S>> {
         if (callback != null) {
             callback.accept(watchedState);
         }
-        // the abandoned movement must not leave a request that a later calibration would execute
-        clearStoredCommand();
-        apply(timeoutAction);
+        if (!watchdog.keepsStoredCommand()) {
+            // the abandoned movement must not leave a request that a later calibration would execute
+            clearStoredCommand();
+        }
+        apply(watchdog.timeoutAction());
     }
 
     /**
@@ -314,6 +317,26 @@ public class STMStateMachine<A extends Enum<A>, S extends Enum<S>> {
     public synchronized void clearStoredCommand() {
         this.storedChannel = null;
         this.storedCommand = null;
+    }
+
+    /**
+     * Remembers the command that was sent to the device, so that it can be sent again if the device did not react.
+     * An earlier retry command is replaced.
+     *
+     * @param channel the channel ID for the command
+     * @param command the command to send again
+     */
+    public synchronized void setRetryCommand(String channel, Command command) {
+        this.retryChannel = channel;
+        this.retryCommand = command;
+    }
+
+    public synchronized @Nullable String getRetryChannel() {
+        return retryChannel;
+    }
+
+    public synchronized @Nullable Command getRetryCommand() {
+        return retryCommand;
     }
 
     /**

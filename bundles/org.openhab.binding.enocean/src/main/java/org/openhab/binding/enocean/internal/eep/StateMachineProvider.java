@@ -91,4 +91,15 @@ public interface StateMachineProvider<A extends Enum<A>, S extends Enum<S>> {
     default List<STMWatchdog<A, S>> getWatchdogs(Thing thing) {
         return List.of();
     }
+
+    /**
+     * Gets the actions after which the command remembered with {@code STMStateMachine.setRetryCommand} is sent again,
+     * e.g. when a watchdog found that the device did not react.
+     *
+     * @param thing the Thing to read configuration from
+     * @return the actions, empty if nothing is sent again
+     */
+    default Set<A> getRetryActions(Thing thing) {
+        return Set.of();
+    }
 }

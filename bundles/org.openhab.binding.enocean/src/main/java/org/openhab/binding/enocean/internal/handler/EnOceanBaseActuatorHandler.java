@@ -454,16 +454,39 @@ public class EnOceanBaseActuatorHandler extends EnOceanBaseSensorHandler {
         for (Object watchdog : smProvider.getWatchdogs(getThing())) {
             stm.registerWatchdog((STMWatchdog) watchdog, this::onWatchdogTimeout);
         }
+        for (Object action : smProvider.getRetryActions(getThing())) {
+            stm.register((Enum) action, this::resendRetryCommand);
+        }
         BiConsumer<String, State> channelUpdater = this::updateState;
         stm.registerChannelUpdater(channelUpdater);
         return stm;
     }
 
     private void onWatchdogTimeout(Object timedOutState) {
-        logger.warn("{}: No feedback from the actuator while in state {}. Resetting the state machine to INVALID. "
+        logger.warn("{}: No feedback from the actuator while in state {}. "
                 + "Make sure the actuator reports its movements, e.g. for an Eltako FSB14 it must be in the "
                 + "feedback list of the FAM14 and the FAM14 must send its confirmation telegrams to the "
                 + "network of the gateway (see the binding documentation).", thing.getUID(), timedOutState);
+    }
+
+    /**
+     * Sends the command again that the state machine remembered for a retry.
+     */
+    private void resendRetryCommand() {
+        STMStateMachine<?, ?> stateMachine = stm;
+        if (stateMachine == null) {
+            return;
+        }
+        String channel = stateMachine.getRetryChannel();
+        Command command = stateMachine.getRetryCommand();
+        if (channel != null && command != null) {
+            logger.debug("{}: Sending {} for channel {} again", thing.getUID(), command, channel);
+            try {
+                sendMessage(new ChannelUID(thing.getUID(), channel), command);
+            } catch (IllegalArgumentException e) {
+                logger.warn("Exception while sending telegram!", e);
+            }
+        }
     }
 
     /**

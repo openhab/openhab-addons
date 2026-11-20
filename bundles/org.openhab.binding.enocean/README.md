@@ -627,4 +627,8 @@ The state machine waits for the feedback of the FSB14 during every movement star
 The feedback reaches openHAB with a delay of up to one polling cycle of the FAM14 (about 6 seconds, longer with many actuators).
 If no feedback arrives within the configured `shutTime` (plus `swapTime` in mode `blinds`) plus 15 seconds, the binding logs a warning and sets the state machine to INVALID.
 The next UP or DOWN command then calibrates the state machine again.
+A slat adjustment in mode `blinds` is supervised separately, because it does not change the position and the gateway sometimes drops a telegram.
+If no feedback arrives within the `swapTime` plus 15 seconds, the binding sends the telegram once more.
+If there is still no feedback after another `swapTime` plus 15 seconds, the binding logs a warning and the state machine returns to IDLE without a new calibration.
+A position request that arrived during the slat adjustment is executed afterwards.
 If this warning appears, check that the FSB14 is in the feedback list of the FAM14 (if the FAM14 is operated with a device list) and that the FAM14 sends the telegrams to the network of the gateway, see [Hardware Requirements](#hardware-requirements).
