@@ -19,6 +19,8 @@ import java.util.function.Function;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.enocean.internal.config.EnOceanChannelContactConfig;
+import org.openhab.binding.enocean.internal.config.EnOceanChannelRollershutterConfig;
+import org.openhab.binding.enocean.internal.config.EnOceanChannelRollershutterConfig.ConfigMode;
 import org.openhab.binding.enocean.internal.messages.ERP1Message;
 import org.openhab.binding.enocean.internal.statemachine.BlindAction;
 import org.openhab.binding.enocean.internal.statemachine.BlindState;
@@ -46,6 +48,9 @@ public class PTM200Message extends _RPSMessage {
     static final byte SWITCH_OFF = 0x50;
     static final byte UP = 0x70;
     static final byte DOWN = 0x50;
+    // sent by the FSB14 when its relay starts, independent of who triggered the movement
+    static final byte START_UP = 0x01;
+    static final byte START_DOWN = 0x02;
     static final byte OPEN = (byte) 0xE0;
     static final byte CLOSED = (byte) 0xF0;
 
@@ -59,6 +64,15 @@ public class PTM200Message extends _RPSMessage {
     @Override
     protected void convertFromCommandImpl(Thing thing, ChannelUID channelUID, Command command,
             Function<String, State> getCurrentStateFunc, @Nullable STMStateMachine<?, ?> stm) {
+    }
+
+    private void updateEndAngle(STMStateMachine<BlindAction, BlindState> stm, Configuration config, PercentType angle) {
+        // a position request that waited for a calibration moves the blind again and sets the slats afterwards
+        if (config.as(EnOceanChannelRollershutterConfig.class).getConfigMode() == ConfigMode.BLINDS
+                && !(CHANNEL_ROLLERSHUTTER.equals(stm.getStoredChannel())
+                        && stm.getStoredCommand() instanceof PercentType)) {
+            stm.updateChannel(CHANNEL_DIMMER, angle);
+        }
     }
 
     // TODO: Architectural improvement - Feedback processing should be in Handler
@@ -84,10 +98,19 @@ public class PTM200Message extends _RPSMessage {
                                     // can be used for pushing stm into calibrated state
                                     blindStm.storeCommand(CHANNEL_ROLLERSHUTTER, StopMoveType.MOVE);
                                     blindStm.apply(BlindAction.CALIBRATION_REQUEST_UP);
+                                    updateEndAngle(blindStm, config, PercentType.ZERO);
+                                    break;
+                                case MOVEMENT_CALIBRATION_UP:
+                                    updateEndAngle(blindStm, config, PercentType.ZERO);
                                     break;
                                 case MOVEMENT_POSITION_UP:
                                     // StopMoveType.MOVE is used as command for adjustment of slats
                                     blindStm.storeCommand(CHANNEL_ROLLERSHUTTER, StopMoveType.MOVE);
+                                    break;
+                                case MOVEMENT_MANUAL_UP:
+                                    blindStm.apply(BlindAction.MANUAL_DONE);
+                                    // the slats opened before the blind moved up
+                                    updateEndAngle(blindStm, config, PercentType.ZERO);
                                     break;
                                 default:
                                     break;
@@ -106,10 +129,19 @@ public class PTM200Message extends _RPSMessage {
                                     // can be used for pushing stm into calibrated state
                                     blindStm.storeCommand(CHANNEL_ROLLERSHUTTER, StopMoveType.MOVE);
                                     blindStm.apply(BlindAction.CALIBRATION_REQUEST_DOWN);
+                                    updateEndAngle(blindStm, config, PercentType.HUNDRED);
+                                    break;
+                                case MOVEMENT_CALIBRATION_DOWN:
+                                    updateEndAngle(blindStm, config, PercentType.HUNDRED);
                                     break;
                                 case MOVEMENT_POSITION_DOWN:
                                     // StopMoveType.MOVE is used as command for adjustment of slats
                                     blindStm.storeCommand(CHANNEL_ROLLERSHUTTER, StopMoveType.MOVE);
+                                    break;
+                                case MOVEMENT_MANUAL_DOWN:
+                                    blindStm.apply(BlindAction.MANUAL_DONE);
+                                    // the slats closed before the blind moved down
+                                    updateEndAngle(blindStm, config, PercentType.HUNDRED);
                                     break;
                                 default:
                                     break;
@@ -118,6 +150,16 @@ public class PTM200Message extends _RPSMessage {
                             blindStm.apply(BlindAction.POSITION_DONE);
                         }
                         return PercentType.HUNDRED;
+                    case START_UP:
+                    case START_DOWN:
+                        if (stm != null) {
+                            @SuppressWarnings("unchecked")
+                            STMStateMachine<BlindAction, BlindState> blindStm = (STMStateMachine<BlindAction, BlindState>) stm;
+                            // only has an effect when idle: movements requested by openHAB are already tracked
+                            blindStm.apply(
+                                    bytes[0] == START_UP ? BlindAction.MANUAL_START_UP : BlindAction.MANUAL_START_DOWN);
+                        }
+                        return UnDefType.UNDEF;
                     default:
                         return UnDefType.UNDEF;
                 }
