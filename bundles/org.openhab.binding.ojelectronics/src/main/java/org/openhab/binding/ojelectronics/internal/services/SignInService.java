@@ -106,7 +106,8 @@ public class SignInService {
     }
 
     private RequestModelBase getPostSignInQueryModel() {
-        return new PostSignInQueryModel().withClientSWVersion(config.softwareVersion).withCustomerId(config.customerId)
-                .withUserName(config.userName).withPassword(config.password).withApiKey(config.apiKey);
+        return new PostSignInQueryModel().withClientSWVersion(config.softwareVersion)
+                .withCustomerId(config.getCustomerId()).withUserName(config.userName).withPassword(config.password)
+                .withApiKey(config.apiKey);
     }
 }
