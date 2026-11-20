@@ -230,53 +230,48 @@ public class Shelly2ApiJsonDTO {
 
     public static class Shelly2RpcRequest {
         public Integer id = 0;
-        public String method;
+        public @Nullable String method;
 
         public static class Shelly2RpcRequestParams {
             public Integer id = 1;
 
             // Cover
-            public Integer pos;
-            public Boolean on;
-            public Boolean output;
+            public @Nullable Integer pos;
+            public @Nullable Boolean on;
+            public @Nullable Boolean output;
 
             // Dimmer / Light
-            public Integer brightness;
-            public Integer ct; // color temperature in Kelvin (Light.Set / CCT.Set / RGBCCT.Set)
+            public @Nullable Integer brightness;
+            public @Nullable Integer ct; // color temperature in Kelvin (Light.Set / CCT.Set / RGBCCT.Set)
             @SerializedName("toggle_after")
-            public Integer toggleAfter;
-            public Integer white;
-            public Integer[] rgb;
-            public String mode; // for RGBCCT mode switching: "rgb" or "cct"
+            public @Nullable Integer toggleAfter;
+            public @Nullable Integer white;
+            public Integer @Nullable [] rgb;
+            public @Nullable String mode; // for RGBCCT mode switching: "rgb" or "cct"
 
             // Presence.SetSensor / generic enable
-            public Boolean enable;
+            public @Nullable Boolean enable;
 
             // Shelly.SetAuth
-            public String user;
-            public String realm;
-            public String ha1;
+            public @Nullable String user;
+            public @Nullable String realm;
+            public @Nullable String ha1;
 
             // Shelly.Update
-            public String stage;
-            public String url;
+            public @Nullable String stage;
+            public @Nullable String url;
 
             // Cloud.SetConfig
-            public Shelly2ConfigParms config;
+            public @Nullable Shelly2ConfigParms config;
 
             // Script
-            public String name;
+            public @Nullable String name;
 
             // LoRa.SendBytes
-            public String data;
+            public @Nullable String data;
 
             // Media
-            public Integer volume;
-
-            public Shelly2RpcRequestParams withConfig() {
-                config = new Shelly2ConfigParms();
-                return this;
-            }
+            public @Nullable Integer volume;
         }
 
         public Shelly2RpcRequestParams params = new Shelly2RpcRequestParams();
@@ -316,74 +311,74 @@ public class Shelly2ApiJsonDTO {
     }
 
     public static class Shelly2WsConfigResponse {
-        public Integer id;
-        public String src;
+        public @Nullable Integer id;
+        public @Nullable String src;
 
         public static class Shelly2WsConfigResult {
             @SerializedName("restart_required")
-            public Boolean restartRequired;
+            public @Nullable Boolean restartRequired;
         }
 
-        public Shelly2WsConfigResult result;
+        public @Nullable Shelly2WsConfigResult result;
     }
 
     public static class ShellyScriptListResponse {
         public static class ShellyScriptListEntry {
-            public Integer id;
-            public String name;
-            public Boolean enable;
-            public Boolean running;
+            public @Nullable Integer id;
+            public @Nullable String name;
+            public @Nullable Boolean enable;
+            public @Nullable Boolean running;
         }
 
-        public ArrayList<ShellyScriptListEntry> scripts;
+        public @Nullable ArrayList<ShellyScriptListEntry> scripts;
     }
 
     public static class ShellyScriptResponse {
-        public Integer id;
-        public Boolean running;
-        public Integer len;
-        public String data;
+        public @Nullable Integer id;
+        public @Nullable Boolean running;
+        public @Nullable Integer len;
+        public @Nullable String data;
     }
 
     public static class ShellyScriptPutCodeParams {
-        public Integer id;
-        public String code;
-        public Boolean append;
+        public @Nullable Integer id;
+        public @Nullable String code;
+        public @Nullable Boolean append;
     }
 
     public static class Shelly2RpcBaseMessage {
         // Basic message format, e.g.
         // {"id":1,"src":"localweb528","method":"Shelly.GetConfig"}
         public class Shelly2RpcMessageError {
-            public Integer code;
-            public String message;
+            public @Nullable Integer code;
+            public @Nullable String message;
         }
 
         public @Nullable String jsonrpc;
-        public Integer id;
-        public String src;
-        public String dst;
-        public String component;
-        public String method;
-        public Object params;
-        public String event;
-        public Object result;
-        public Shelly2AuthRsp auth;
-        public Shelly2RpcMessageError error;
+        public @Nullable Integer id;
+        public @Nullable String src;
+        public @Nullable String dst;
+        public @Nullable String component;
+        public @Nullable String method;
+        public @Nullable Object params;
+        public @Nullable String event;
+        public @Nullable Object result;
+        public @Nullable Shelly2AuthRsp auth;
+        public @Nullable Shelly2RpcMessageError error;
     }
 
     public static class Shelly2RpcNotifyStatus {
         public static class Shelly2NotifyStatus extends Shelly2DeviceStatusResult {
-            public Double ts;
+            public @Nullable Double ts;
         }
 
-        public Integer id;
-        public String src;
-        public String dst;
-        public String method;
-        public Shelly2NotifyStatus params;
-        public Shelly2NotifyStatus result;
-        public Shelly2RpcMessageError error;
+        public @Nullable Integer id;
+        public @Nullable String src;
+        public @Nullable String dst;
+        public @Nullable String method;
+        public @Nullable Shelly2NotifyStatus params;
+        public @Nullable Shelly2NotifyStatus result;
+        public @Nullable Shelly2RpcMessageError error;
     }
 
     public static final String SHELLY2_AUTHDEF_USER = "admin";
@@ -395,22 +390,22 @@ public class Shelly2ApiJsonDTO {
 
     public static class Shelly2AuthChallenge { // on 401 message contains the auth info
         @SerializedName("auth_type")
-        public String authType;
-        public String nonce;
-        public String realm;
-        public String algorithm;
+        public @Nullable String authType;
+        public @Nullable String nonce;
+        public @Nullable String realm;
+        public @Nullable String algorithm;
     }
 
     public static class Shelly2AuthRsp {
-        public String username;
-        public String nonce;
-        public String cnonce;
-        public String nc;
-        public String realm;
-        public String algorithm;
-        public String response;
+        public @Nullable String username;
+        public @Nullable String nonce;
+        public @Nullable String cnonce;
+        public @Nullable String nc;
+        public @Nullable String realm;
+        public @Nullable String algorithm;
+        public @Nullable String response;
         @SerializedName("auth_type")
-        public String authType;
+        public @Nullable String authType;
     }
 
     public class Shelly2NotifyEvent {

@@ -23,6 +23,7 @@ import static org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ScheduledExecutorService;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -37,6 +38,7 @@ import org.openhab.binding.shelly.internal.api.ShellyApiException;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsRgbwLight;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2RpcRequest.Shelly2RpcRequestParams;
+import org.openhab.binding.shelly.internal.api2.dto.Shelly2ConfigJsonDTO.Shelly2ConfigParms;
 import org.openhab.binding.shelly.internal.api2.dto.ShellyLightJsonDTO.Shelly2DeviceStatusLight;
 import org.openhab.binding.shelly.internal.config.ShellyApiConfiguration;
 import org.openhab.binding.shelly.internal.config.ShellyBindingConfiguration;
@@ -100,6 +102,10 @@ public class Shelly2ApiRpcLightDispatchTest {
 
         Shelly2RpcRequestParams lastParams() {
             return calledParams.get(calledParams.size() - 1);
+        }
+
+        Shelly2ConfigParms lastConfig() {
+            return Objects.requireNonNull(lastParams().config);
         }
     }
 
@@ -339,8 +345,8 @@ public class Shelly2ApiRpcLightDispatchTest {
         rpc.setAutoTimer(0, SHELLY_TIMER_AUTOON, 30);
 
         assertThat(rpc.lastMethod(), is(SHELLYRPC_METHOD_RGBW_SETCONFIG));
-        assertThat(rpc.lastParams().config.autoOn, is(true));
-        assertThat(rpc.lastParams().config.autoOnDelay, is(30.0));
+        assertThat(rpc.lastConfig().autoOn, is(true));
+        assertThat(rpc.lastConfig().autoOnDelay, is(30.0));
     }
 
     @Test
@@ -349,8 +355,8 @@ public class Shelly2ApiRpcLightDispatchTest {
         rpc.setAutoTimer(0, SHELLY_TIMER_AUTOOFF, 15);
 
         assertThat(rpc.lastMethod(), is(SHELLYRPC_METHOD_RGB_SETCONFIG));
-        assertThat(rpc.lastParams().config.autoOff, is(true));
-        assertThat(rpc.lastParams().config.autoOffDelay, is(15.0));
+        assertThat(rpc.lastConfig().autoOff, is(true));
+        assertThat(rpc.lastConfig().autoOffDelay, is(15.0));
     }
 
     @Test
@@ -359,7 +365,7 @@ public class Shelly2ApiRpcLightDispatchTest {
         rpc.setAutoTimer(2, SHELLY_TIMER_AUTOON, 10);
 
         assertThat(rpc.lastMethod(), is(SHELLYRPC_METHOD_LIGHT_SETCONFIG));
-        assertThat(rpc.lastParams().config.autoOn, is(true));
+        assertThat(rpc.lastConfig().autoOn, is(true));
     }
 
     @Test
@@ -369,7 +375,7 @@ public class Shelly2ApiRpcLightDispatchTest {
 
         assertThat(rpc.lastMethod(), is(SHELLYRPC_METHOD_SWITCH_SETCONFIG));
         assertThat(rpc.lastParams().id, is(0));
-        assertThat(rpc.lastParams().config.autoOn, is(true));
+        assertThat(rpc.lastConfig().autoOn, is(true));
     }
 
     @Test

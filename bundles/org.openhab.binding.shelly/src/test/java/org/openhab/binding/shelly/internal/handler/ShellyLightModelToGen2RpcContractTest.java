@@ -420,8 +420,8 @@ class ShellyLightModelToGen2RpcContractTest {
         assertFieldNullUnlessAllowed(params, "output", params.output, allowed);
     }
 
-    private static void assertFieldNullUnlessAllowed(Shelly2RpcRequestParams params, String fieldName, Object value,
-            List<String> allowed) {
+    private static void assertFieldNullUnlessAllowed(Shelly2RpcRequestParams params, String fieldName,
+            @Nullable Object value, List<String> allowed) {
         if (!allowed.contains(fieldName)) {
             assertNull(value, "expected params." + fieldName + " to be null");
         }

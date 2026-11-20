@@ -24,6 +24,7 @@ import static org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ScheduledExecutorService;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -38,6 +39,7 @@ import org.openhab.binding.shelly.internal.api.ShellyApiException;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsLight;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2RpcRequest.Shelly2RpcRequestParams;
+import org.openhab.binding.shelly.internal.api2.dto.Shelly2ConfigJsonDTO.Shelly2ConfigParms;
 import org.openhab.binding.shelly.internal.api2.dto.ShellyLightJsonDTO.Shelly2DeviceStatusLight;
 import org.openhab.binding.shelly.internal.api2.dto.ShellyLightJsonDTO.Shelly2RGBCCTStatus;
 import org.openhab.binding.shelly.internal.config.ShellyApiConfiguration;
@@ -104,6 +106,10 @@ public class Shelly2ApiRpcDuoBulbDispatchTest {
 
         Shelly2RpcRequestParams lastParams() {
             return calledParams.get(calledParams.size() - 1);
+        }
+
+        Shelly2ConfigParms lastConfig() {
+            return Objects.requireNonNull(lastParams().config);
         }
     }
 
@@ -213,8 +219,8 @@ public class Shelly2ApiRpcDuoBulbDispatchTest {
         StubApiRpc rpc = newRpc(duoBulbProfile());
         rpc.setAutoTimer(0, SHELLY_TIMER_AUTOON, 30);
         assertThat(rpc.firstMethod(), is(SHELLYRPC_METHOD_CCT_SETCONFIG));
-        assertThat(rpc.lastParams().config.autoOn, is(true));
-        assertThat(rpc.lastParams().config.autoOnDelay, is(30.0));
+        assertThat(rpc.lastConfig().autoOn, is(true));
+        assertThat(rpc.lastConfig().autoOnDelay, is(30.0));
     }
 
     @Test
@@ -222,8 +228,8 @@ public class Shelly2ApiRpcDuoBulbDispatchTest {
         StubApiRpc rpc = newRpc(multicolorBulbProfile(true));
         rpc.setAutoTimer(0, SHELLY_TIMER_AUTOOFF, 15);
         assertThat(rpc.firstMethod(), is(SHELLYRPC_METHOD_RGBCCT_SETCONFIG));
-        assertThat(rpc.lastParams().config.autoOff, is(true));
-        assertThat(rpc.lastParams().config.autoOffDelay, is(15.0));
+        assertThat(rpc.lastConfig().autoOff, is(true));
+        assertThat(rpc.lastConfig().autoOffDelay, is(15.0));
     }
 
     @Test
