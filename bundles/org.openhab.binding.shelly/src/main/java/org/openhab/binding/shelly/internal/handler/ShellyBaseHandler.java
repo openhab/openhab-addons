@@ -868,7 +868,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
                 }
             } else {
                 String ipAddr = inetAddr.getHostAddress();
-                for (Shelly2APClient client : profile.status.rangeExtender.apClients) {
+                for (Shelly2APClient client : prf.status.rangeExtender.apClients) {
                     String secondaryIp = ipAddr + ":" + client.mport.toString();
                     String name = SERVICE_NAME_SHELLYPLUSRANGE_PREFIX + "-" + client.mac.replaceAll(":", "");
                     DiscoveryResult result = ShellyBasicDiscoveryService.createResult(true, name, secondaryIp,
