@@ -65,7 +65,6 @@ public class SolarmanLoggerHandler extends BaseThingHandler {
     private static final Duration WRITE_REFRESH_DELAY = Duration.ofSeconds(2);
 
     private final Logger logger = LoggerFactory.getLogger(SolarmanLoggerHandler.class);
-    private final Object pollLock = new Object();
 
     private final DefinitionParser definitionParser;
     private final SolarmanChannelManager solarmanChannelManager;
@@ -139,24 +138,15 @@ public class SolarmanLoggerHandler extends BaseThingHandler {
                 solarmanProtocol);
         SolarmanChannelUpdater solarmanChannelUpdater = new SolarmanChannelUpdater(this::updateState);
 
-        Runnable poll = () -> queryLoggerAndUpdateState(solarmanLoggerConnector, solarmanProtocol, mergedRequests,
+        Runnable poll = () -> queryLogger(solarmanLoggerConnector, solarmanProtocol, mergedRequests,
                 paramToChannelMapping, solarmanChannelUpdater);
         writeRefresh = new DebouncedTask(scheduler, poll, WRITE_REFRESH_DELAY);
         scheduledFuture = scheduler.scheduleWithFixedDelay(poll, 0, config.refreshInterval, TimeUnit.SECONDS);
     }
 
-    private void queryLoggerAndUpdateState(SolarmanLoggerConnector solarmanLoggerConnector,
+    private synchronized void queryLogger(SolarmanLoggerConnector solarmanLoggerConnector,
             SolarmanProtocol solarmanProtocol, List<Request> mergedRequests,
             Map<ParameterItem, ChannelUID> paramToChannelMapping, SolarmanChannelUpdater solarmanChannelUpdater) {
-        synchronized (pollLock) {
-            queryLogger(solarmanLoggerConnector, solarmanProtocol, mergedRequests, paramToChannelMapping,
-                    solarmanChannelUpdater);
-        }
-    }
-
-    private void queryLogger(SolarmanLoggerConnector solarmanLoggerConnector, SolarmanProtocol solarmanProtocol,
-            List<Request> mergedRequests, Map<ParameterItem, ChannelUID> paramToChannelMapping,
-            SolarmanChannelUpdater solarmanChannelUpdater) {
         try {
             SolarmanProcessResult solarmanProcessResult = solarmanChannelUpdater.fetchDataFromLogger(mergedRequests,
                     solarmanLoggerConnector, solarmanProtocol, paramToChannelMapping);
