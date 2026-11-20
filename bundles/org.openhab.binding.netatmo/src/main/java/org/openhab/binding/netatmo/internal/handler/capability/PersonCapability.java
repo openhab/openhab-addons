@@ -72,19 +72,18 @@ public class PersonCapability extends HomeSecurityThingCapability {
     }
 
     @Override
-    protected void internalSetNewData(Object newData) {
-        super.internalSetNewData(newData);
+    protected void afterNewData(Object newData) {
         if (newData instanceof Event event) {
             EventType eventType = event.getEventType();
             ZonedDateTime localLast = lastEventTime;
             ZonedDateTime eventTime = event.getTime();
-            if ((localLast != null && !eventTime.isAfter(localLast)) || !eventType.validFor(ModuleType.PERSON)) {
-                return; // ignore incoming events if they are deprecated
+            if (eventType.validFor(ModuleType.PERSON) && (localLast != null || eventTime.isAfter(localLast))) {
+                lastEventTime = eventTime;
+                handler.triggerChannel(GROUP_SECURITY_EVENT, CHANNEL_HOME_EVENT, Objects.requireNonNull(
+                        event.getSubTypeDescription().map(EventSubType::name).orElse(eventType.name())));
             }
-            lastEventTime = eventTime;
-            handler.triggerChannel(GROUP_SECURITY_EVENT, CHANNEL_HOME_EVENT, Objects.requireNonNull(
-                    event.getSubTypeDescription().map(EventSubType::name).orElse(event.getEventType().name())));
         }
+        super.afterNewData(newData);
     }
 
     @Override
