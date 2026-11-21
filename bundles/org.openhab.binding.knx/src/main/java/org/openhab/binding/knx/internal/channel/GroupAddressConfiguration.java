@@ -44,9 +44,11 @@ public class GroupAddressConfiguration {
     private final GroupAddress mainGA;
     private final Set<GroupAddress> listenGAs;
     private final Set<GroupAddress> readGAs;
+    private final @Nullable GroupAddress firstListenGA;
 
     private GroupAddressConfiguration(@Nullable String dpt, GroupAddress mainGA, Set<GroupAddress> listenGAs,
-            Set<GroupAddress> readGAs) {
+            Set<GroupAddress> readGAs, @Nullable GroupAddress firstListenGA) {
+        this.firstListenGA = firstListenGA;
         this.dpt = dpt;
         this.mainGA = mainGA;
         this.listenGAs = listenGAs;
@@ -83,6 +85,14 @@ public class GroupAddressConfiguration {
         return readGAs;
     }
 
+    /**
+     * Returns the first of the additional listening GAs as written (the one after the first "+" symbol), which is
+     * where the status GA of a channel stands; null without one.
+     */
+    public @Nullable GroupAddress getFirstListenGA() {
+        return firstListenGA;
+    }
+
     public static @Nullable GroupAddressConfiguration parse(@Nullable Object configuration) {
         if (!(configuration instanceof String)) {
             return null;
@@ -95,10 +105,15 @@ public class GroupAddressConfiguration {
             Matcher m2 = PATTERN_LISTEN_GA.matcher(input);
             Set<GroupAddress> listenGAs = new HashSet<>();
             Set<GroupAddress> readGAs = new HashSet<>();
+            @Nullable
+            GroupAddress firstListenGA = null;
             while (m2.find()) {
                 String ga = m2.group("GA");
                 try {
                     GroupAddress groupAddress = new GroupAddress(ga);
+                    if (firstListenGA == null) {
+                        firstListenGA = groupAddress;
+                    }
                     listenGAs.add(groupAddress);
                     if (m2.group("read") != null) {
                         readGAs.add(groupAddress);
@@ -128,7 +143,8 @@ public class GroupAddressConfiguration {
                             "Item with mainGA {} has more than one GA configured for read at startup, check configuration",
                             groupAddress);
                 }
-                return new GroupAddressConfiguration(matcher.group("dpt"), groupAddress, listenGAs, readGAs);
+                return new GroupAddressConfiguration(matcher.group("dpt"), groupAddress, listenGAs, readGAs,
+                        firstListenGA);
             } catch (KNXFormatException e) {
                 LOGGER.warn("Failed to create GroupAddress from {}", mainGA);
                 return null;

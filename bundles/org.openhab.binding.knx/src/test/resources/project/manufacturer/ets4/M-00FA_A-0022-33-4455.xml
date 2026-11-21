@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<KNX xmlns="http://knx.org/xml/project/11" CreatedBy="ETS4" ToolVersion="4.2.1001.7">
+  <ManufacturerData>
+    <Manufacturer RefId="M-00FA">
+      <ApplicationPrograms>
+        <ApplicationProgram Id="M-00FA_A-0022-33-4455" ApplicationNumber="34" ApplicationVersion="51" ProgramType="ApplicationProgram" MaskVersion="MV-0701" Name="Made-up switch program" DefaultLanguage="de-DE" LoadProcedureStyle="ProductProcedure" PeiType="0" DynamicTableManagement="false" Linkable="false">
+          <Static>
+            <Code>
+              <RelativeSegment Id="M-00FA_A-0022-33-4455_RS-04-00000" Name="Code" Offset="0" Size="16" LoadStateMachine="4" />
+            </Code>
+            <Parameters>
+              <Parameter Id="M-00FA_A-0022-33-4455_P-1" Name="Delay" ParameterType="M-00FA_A-0022-33-4455_PT-Delay" Text="Verzoegerung" Value="0" />
+            </Parameters>
+            <ParameterRefs>
+              <ParameterRef Id="M-00FA_A-0022-33-4455_P-1_R-1" RefId="M-00FA_A-0022-33-4455_P-1" />
+            </ParameterRefs>
+            <ComObjectTable CodeSegment="M-00FA_A-0022-33-4455_RS-04-00000" Offset="0">
+              <ComObject Id="M-00FA_A-0022-33-4455_O-0" Name="Switch" Text="Schalten" Number="0" FunctionText="Kanal A" ObjectSize="1 Bit" ReadFlag="Disabled" WriteFlag="Enabled" CommunicationFlag="Enabled" TransmitFlag="Disabled" UpdateFlag="Disabled" ReadOnInitFlag="Disabled" DatapointType="DPST-1-1" />
+              <ComObject Id="M-00FA_A-0022-33-4455_O-1" Name="Status" Text="Status" Number="1" FunctionText="Kanal A" ObjectSize="1 Bit" ReadFlag="Enabled" WriteFlag="Disabled" CommunicationFlag="Enabled" TransmitFlag="Enabled" UpdateFlag="Disabled" ReadOnInitFlag="Disabled" />
+              <ComObject Id="M-00FA_A-0022-33-4455_O-2" Name="Block" Text="Sperren" Number="2" FunctionText="Kanal A" ObjectSize="1 Bit" ReadFlag="Disabled" WriteFlag="Enabled" CommunicationFlag="Enabled" TransmitFlag="Disabled" UpdateFlag="Disabled" ReadOnInitFlag="Disabled" DatapointType="DPST-1-3" />
+            </ComObjectTable>
+            <ComObjectRefs>
+              <ComObjectRef Id="M-00FA_A-0022-33-4455_O-0_R-1" RefId="M-00FA_A-0022-33-4455_O-0" />
+              <ComObjectRef Id="M-00FA_A-0022-33-4455_O-1_R-2" RefId="M-00FA_A-0022-33-4455_O-1" Text="Status schalten" DatapointType="DPST-1-1" />
+              <ComObjectRef Id="M-00FA_A-0022-33-4455_O-2_R-3" RefId="M-00FA_A-0022-33-4455_O-2" />
+            </ComObjectRefs>
+            <AddressTable MaxEntries="16" />
+          </Static>
+          <Dynamic>
+            <ChannelIndependentBlock>
+              <ParameterBlock Id="M-00FA_A-0022-33-4455_PB-1" Text="Allgemein">
+                <ParameterRefRef RefId="M-00FA_A-0022-33-4455_P-1_R-1" />
+              </ParameterBlock>
+              <ComObjectRefRef RefId="M-00FA_A-0022-33-4455_O-0_R-1" />
+            </ChannelIndependentBlock>
+          </Dynamic>
+        </ApplicationProgram>
+      </ApplicationPrograms>
+      <Languages>
+        <Language Identifier="nl-NL">
+          <TranslationUnit RefId="M-00FA_A-0022-33-4455">
+            <TranslationElement RefId="M-00FA_A-0022-33-4455_O-0">
+              <Translation AttributeName="Text" Text="Schakelen" />
+            </TranslationElement>
+          </TranslationUnit>
+        </Language>
+      </Languages>
+    </Manufacturer>
+  </ManufacturerData>
+</KNX>

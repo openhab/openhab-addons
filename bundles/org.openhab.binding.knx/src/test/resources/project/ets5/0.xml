@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<KNX xmlns="http://knx.org/xml/project/20" CreatedBy="ETS5" ToolVersion="5.7.2002.3">
+  <Project Id="P-1C2D">
+    <Installations>
+      <Installation Name="Hoofdinstallatie" DefaultLine="P-1C2D-0_L-1" CompletionStatus="Undefined">
+        <Topology>
+          <Area Id="P-1C2D-0_A-1" Name="Woning" Address="2" Puid="1">
+            <Line Id="P-1C2D-0_L-1" Name="Gelijkvloers" Address="3" MediumTypeRefId="MT-0" Puid="2">
+              <DeviceInstance Id="P-1C2D-0_DI-1" Address="10" Description="Actor in de kast" ProductRefId="M-0083_H-12AB-1_P-SA.2F4.2E1" Hardware2ProgramRefId="M-0083_H-12AB-1_HP-00AA-11-B2C3" Puid="3">
+                <Security />
+                <ComObjectInstanceRefs>
+                  <ComObjectInstanceRef RefId="O-0_R-1" Links="GA-1 GA-2" DatapointType="DPST-1-1" />
+                  <ComObjectInstanceRef RefId="O-2_R-3" Links="GA-4  GA-1" DatapointType="DPST-5-1 DPST-5-4" Text="Uitgang A" FunctionText="Schakelen" Description="eerste kanaal" ChannelId="CH-1" UpdateFlag="Enabled" WriteFlag="Disabled" CommunicationFlag="Enabled" TransmitFlag="Disabled" ReadFlag="Disabled" ReadOnInitFlag="Enabled" />
+                  <ComObjectInstanceRef RefId="O-3_R-4" />
+                  <ComObjectInstanceRef RefId="MD-1_M-1_MI-1_O-1-1_R-1" Links="GA-3" ChannelId="MD-1_M-1_MI-1_CH-1" />
+                </ComObjectInstanceRefs>
+                <ParameterInstanceRefs>
+                  <ParameterInstanceRef RefId="M-0083_A-00AA-11-B2C3_P-1_R-1" Value="7" />
+                  <ParameterInstanceRef RefId="M-0083_A-00AA-11-B2C3_P-2_R-2" Value="" />
+                  <ParameterInstanceRef RefId="M-0083_A-00AA-11-B2C3_P-3_R-3" />
+                  <ParameterInstanceRef RefId="M-0083_A-00AA-11-B2C3_MD-1_M-1_MI-1_P-4_R-4" Value="Hal" />
+                </ParameterInstanceRefs>
+                <ModuleInstances>
+                  <ModuleInstance Id="MD-1_M-1_MI-1" RefId="MD-1_M-1" RepeatIndex="1x1">
+                    <Arguments>
+                      <Argument RefId="MD-1_A-1" Value="L-1" />
+                      <Argument RefId="MD-1_A-2" Value="Hal" />
+                    </Arguments>
+                  </ModuleInstance>
+                  <ModuleInstance Id="MD-1_M-1_MI-2" RefId="MD-1_M-1" RepeatIndex="2x1 3x4">
+                    <Arguments>
+                      <Argument RefId="MD-1_A-1" Value="L-1" />
+                      <Argument RefId="MD-1_M-1_SM-2_A-3" Value="5" />
+                    </Arguments>
+                  </ModuleInstance>
+                  <ModuleInstance Id="MD-1_M-1_MI-3" RefId="MD-1_M-1" />
+                </ModuleInstances>
+              </DeviceInstance>
+              <DeviceInstance Id="P-1C2D-0_DI-2" Name="Thermostaat" Address="11" ProductRefId="M-0083_H-12AC-1_P-TH.01" Hardware2ProgramRefId="M-0083_H-12AC-1_HP-00AB-12-0001" Puid="4" />
+            </Line>
+            <Line Id="P-1C2D-0_L-2" Name="Tuin" Address="4" MediumTypeRefId="MT-2" Puid="5" />
+          </Area>
+        </Topology>
+        <Locations>
+          <Space Id="P-1C2D-0_BP-1" Name="Appartement" Type="Building" Number="" Description="" Comment="" Puid="6">
+            <Space Id="P-1C2D-0_BP-2" Name="Keuken" Type="Room" Usage="SU-3" Puid="7">
+              <DeviceInstanceRef RefId="P-1C2D-0_DI-1" />
+              <DeviceInstanceRef RefId="P-1C2D-0_DI-99" />
+            </Space>
+            <Space Id="P-1C2D-0_BP-3" Name="Wasruimte" Type="Attic" Number="W1" Description="klein" Usage="SU-9" Puid="14" />
+          </Space>
+        </Locations>
+        <GroupAddresses>
+          <GroupRanges>
+            <GroupRange Id="P-1C2D-0_GR-1" Name="Licht" Description="Alle lampen" RangeStart="1" RangeEnd="2047" Puid="8">
+              <GroupAddress Id="P-1C2D-0_GA-1" Address="1" Name="Keuken" DatapointType="DPST-1-1" Puid="9" />
+              <GroupAddress Id="P-1C2D-0_GA-2" Address="2" Name="Keuken dimmen" DatapointType="DPST-5-1 DPST-5-4" Puid="10" />
+            </GroupRange>
+            <GroupRange Id="P-1C2D-0_GR-2" Name="Klimaat" RangeStart="4096" RangeEnd="6143" Puid="11">
+              <GroupAddress Id="P-1C2D-0_GA-3" Address="4101" Name="Temperatuur woonkamer" Description="gemeten aan de muur" DatapointType="DPT-9" Puid="12" />
+              <GroupAddress Id="P-1C2D-0_GA-4" Address="6143" Name="Reserve" Puid="13" />
+            </GroupRange>
+          </GroupRanges>
+        </GroupAddresses>
+      </Installation>
+    </Installations>
+  </Project>
+</KNX>

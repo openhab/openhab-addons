@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.knx.internal.handler;
 
+import static org.openhab.binding.knx.internal.KNXBindingConstants.OWN_ADDRESS;
+
 import java.io.File;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -19,6 +21,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.SortedMap;
@@ -30,6 +33,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.knx.internal.client.KNXClient;
 import org.openhab.binding.knx.internal.client.StatusUpdateCallback;
+import org.openhab.binding.knx.internal.monitor.TelegramMonitor;
+import org.openhab.binding.knx.internal.security.KeyringFacts;
+import org.openhab.binding.knx.internal.security.SecureSetupException;
 import org.openhab.core.OpenHAB;
 import org.openhab.core.common.ThreadPoolManager;
 import org.openhab.core.thing.Bridge;
@@ -38,6 +44,8 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.types.Command;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import io.calimero.GroupAddress;
 import io.calimero.IndividualAddress;
@@ -89,6 +97,10 @@ public abstract class KNXBridgeBaseThingHandler extends BaseBridgeHandler implem
     public record CommandExtensionData(SortedMap<String, Long> unknownGA) {
     }
 
+    private static final String TUNNEL_USER_ID_TEXT = "error.knx-tunnel-user-id-invalid";
+    private static final String TUNNEL_USER_ID_MESSAGE = "tunnelUserId must be a number from 1 to 127";
+
+    private final Logger logger = LoggerFactory.getLogger(KNXBridgeBaseThingHandler.class);
     private final ScheduledExecutorService knxScheduler = ThreadPoolManager.getScheduledPool("knx");
     private final ScheduledExecutorService backgroundScheduler = Executors.newSingleThreadScheduledExecutor();
     @Nullable
@@ -101,6 +113,10 @@ public abstract class KNXBridgeBaseThingHandler extends BaseBridgeHandler implem
     protected SecureRoutingConfig secureRouting;
     protected SecureTunnelConfig secureTunnel;
     private CommandExtensionData commandExtensionData;
+    private final TelegramMonitor telegramMonitor;
+    private volatile @Nullable KeyringFacts keyringFacts;
+    private volatile String keyringFileName = "";
+    private volatile boolean keyringSignatureValid = false;
 
     public KNXBridgeBaseThingHandler(Bridge bridge) {
         super(bridge);
@@ -109,12 +125,53 @@ public abstract class KNXBridgeBaseThingHandler extends BaseBridgeHandler implem
         secureRouting = new SecureRoutingConfig();
         secureTunnel = new SecureTunnelConfig();
         commandExtensionData = new CommandExtensionData(new TreeMap<>());
+        telegramMonitor = new TelegramMonitor();
     }
 
     protected abstract KNXClient getClient();
 
+    /** {@return the client of this bridge, to send through it the way a channel does} */
+    public KNXClient client() {
+        return getClient();
+    }
+
     public CommandExtensionData getCommandExtensionData() {
         return commandExtensionData;
+    }
+
+    /** {@return the group monitor of this bridge; it lives as long as this handler} */
+    public TelegramMonitor getTelegramMonitor() {
+        return telegramMonitor;
+    }
+
+    /** A size out of range must not stop the bus, so it is clamped and said once, not a configuration error. */
+    protected void applyMonitorBufferSize(int configured) {
+        int size = TelegramMonitor.clampBufferSize(configured);
+        if (size != configured) {
+            logger.warn("Bridge {}: monitorBufferSize {} is outside 0 to {}, using {}.", thing.getUID(), configured,
+                    TelegramMonitor.MAX_BUFFER_SIZE, size);
+        }
+        telegramMonitor.resize(size);
+    }
+
+    /** {@return the name of the keyring file as configured, empty if none is configured} */
+    public String getKeyringFileName() {
+        return keyringFileName;
+    }
+
+    /** {@return true if the loaded keyring's signature matches the configured keyring password} */
+    public boolean isKeyringSignatureValid() {
+        return keyringSignatureValid;
+    }
+
+    /** {@return the address openHAB sends from on the current connection, empty while not connected} */
+    public Optional<IndividualAddress> getOwnAddress() {
+        return getClient().ownAddress();
+    }
+
+    /** {@return what the loaded keyring says about interfaces and secured group addresses, null without a keyring} */
+    public @Nullable KeyringFacts getKeyringFacts() {
+        return keyringFacts;
     }
 
     /***
@@ -148,6 +205,9 @@ public abstract class KNXBridgeBaseThingHandler extends BaseBridgeHandler implem
             String cTunnelDevAuth, String cTunnelUser, String cTunnelPassword, String cTunnelSourceAddr)
             throws KnxSecureException {
         keyring = null;
+        keyringFacts = null;
+        keyringFileName = "";
+        keyringSignatureValid = false;
         keyringPassword = "";
         IndividualAddress secureTunnelSourceAddr = null;
         secureRouting = new SecureRoutingConfig();
@@ -189,10 +249,10 @@ public abstract class KNXBridgeBaseThingHandler extends BaseBridgeHandler implem
             try {
                 secureTunnel.user = Integer.decode(user);
             } catch (NumberFormatException e) {
-                throw new KnxSecureException("tunnelUser must be a number >0");
+                throw new SecureSetupException(TUNNEL_USER_ID_TEXT, TUNNEL_USER_ID_MESSAGE);
             }
-            if (secureTunnel.user <= 0) {
-                throw new KnxSecureException("tunnelUser must be a number >0");
+            if (secureTunnel.user < 1 || secureTunnel.user > 127) {
+                throw new SecureSetupException(TUNNEL_USER_ID_TEXT, TUNNEL_USER_ID_MESSAGE);
             }
             securityInitialized = true;
         }
@@ -202,7 +262,9 @@ public abstract class KNXBridgeBaseThingHandler extends BaseBridgeHandler implem
             // filename defined in config, start parsing
             try {
                 // load keyring file from config dir, folder misc
-                String keyringUri = OpenHAB.getConfigFolder() + File.separator + "misc" + File.separator + cKeyringFile;
+                String keyringUri = keyringLocation(
+                        OpenHAB.getConfigFolder() + File.separator + "misc" + File.separator + cKeyringFile,
+                        cKeyringFile);
                 try {
                     keyring = Keyring.load(keyringUri);
                 } catch (KNXMLException e) {
@@ -210,6 +272,15 @@ public abstract class KNXBridgeBaseThingHandler extends BaseBridgeHandler implem
                 }
                 if (keyring == null) {
                     throw new KnxSecureException("keyring file configured, but loading failed: " + keyringUri);
+                }
+
+                KeyringFacts facts = new KeyringFacts(Objects.requireNonNull(keyring));
+                keyringFacts = facts;
+                keyringFileName = cKeyringFile;
+                keyringSignatureValid = facts.signatureMatches(cKeyringPassword.toCharArray());
+                if (!keyringSignatureValid) {
+                    throw new SecureSetupException("error.knx-keyring-wrong-password",
+                            "keyring password does not match the keyring file");
                 }
 
                 // loading was successful, check signatures
@@ -281,6 +352,20 @@ public abstract class KNXBridgeBaseThingHandler extends BaseBridgeHandler implem
             secureTunnel = config.get();
         }
         return securityInitialized;
+    }
+
+    /**
+     * {@return the keyring in the config folder; if it is not there, one of that name the REST upload stored in
+     * {@code userdata/knx/keyring}, which is only looked for under a plain file name}
+     */
+    private static String keyringLocation(String inConfigFolder, String fileName) {
+        if (new File(inConfigFolder).exists() || fileName.contains("/") || fileName.contains("\\")
+                || ".".equals(fileName) || "..".equals(fileName)) {
+            return inConfigFolder;
+        }
+        File uploaded = new File(OpenHAB.getUserDataFolder() + File.separator + "knx" + File.separator + "keyring"
+                + File.separator + fileName);
+        return uploaded.isFile() ? uploaded.getPath() : inConfigFolder;
     }
 
     /***
@@ -411,10 +496,29 @@ public abstract class KNXBridgeBaseThingHandler extends BaseBridgeHandler implem
     @Override
     public void updateStatus(ThingStatus status) {
         super.updateStatus(status);
+        publishOwnAddress(status);
     }
 
     @Override
     public void updateStatus(ThingStatusDetail statusDetail, @Nullable String description) {
         super.updateStatus(statusDetail, description);
+    }
+
+    @Override
+    public void updateStatus(ThingStatus status, @Nullable String description) {
+        super.updateStatus(status, description);
+        publishOwnAddress(status);
+    }
+
+    /** The address openHAB sends from is known once the connection is up, and may change with a reconnect. */
+    private void publishOwnAddress(ThingStatus status) {
+        if (status != ThingStatus.ONLINE) {
+            return;
+        }
+        try {
+            getOwnAddress().ifPresent(address -> updateProperty(OWN_ADDRESS, address.toString()));
+        } catch (RuntimeException e) {
+            logger.debug("Bridge {} could not publish its own address: {}", thing.getUID(), e.toString());
+        }
     }
 }

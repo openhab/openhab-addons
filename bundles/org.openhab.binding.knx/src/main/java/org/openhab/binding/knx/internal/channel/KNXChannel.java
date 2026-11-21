@@ -16,6 +16,7 @@ import static java.util.stream.Collectors.toList;
 import static org.openhab.binding.knx.internal.KNXBindingConstants.*;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,6 +28,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.knx.internal.client.InboundSpec;
 import org.openhab.binding.knx.internal.client.OutboundSpec;
 import org.openhab.binding.knx.internal.dpt.DPTUtil;
+import org.openhab.binding.knx.internal.project.KnxConfiguredAddress;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -55,6 +57,7 @@ public abstract class KNXChannel {
     private final String channelType;
     private final ChannelUID channelUID;
     private final boolean isControl;
+    private final boolean isTrigger;
     private final Class<? extends Type> preferredType;
 
     KNXChannel(List<Class<? extends Type>> acceptedTypes, Channel channel) {
@@ -69,6 +72,7 @@ public abstract class KNXChannel {
         this.channelType = Objects.requireNonNull(channel.getChannelTypeUID()).getId();
         this.channelUID = channel.getUID();
         this.isControl = CONTROL_CHANNEL_TYPES.contains(channelType);
+        this.isTrigger = CHANNEL_TELEGRAM_TRIGGER.equals(channelType);
 
         // build map of ChannelConfigurations and GA lists
         Configuration configuration = channel.getConfiguration();
@@ -103,6 +107,11 @@ public abstract class KNXChannel {
 
     public boolean isControl() {
         return isControl;
+    }
+
+    /** {@return true for a channel that only fires events: it never reads, sends or answers} */
+    public boolean isTrigger() {
+        return isTrigger;
     }
 
     public Class<? extends Type> preferredType() {
@@ -173,6 +182,31 @@ public abstract class KNXChannel {
         return groupAddressConfigurations.entrySet().stream()
                 .map(entry -> new ReadResponseSpecImpl(entry.getValue(), getDefaultDPT(entry.getKey()), value))
                 .filter(spec -> spec.matchesDestination(groupAddress)).findFirst().orElse(null);
+    }
+
+    /**
+     * {@return per configured key the main address, then its other listening addresses in address order, each
+     * once; the type is the configured one or the key's default}
+     */
+    public final List<KnxConfiguredAddress> configuredAddresses() {
+        List<KnxConfiguredAddress> addresses = new ArrayList<>();
+        for (Map.Entry<String, GroupAddressConfiguration> entry : groupAddressConfigurations.entrySet()) {
+            GroupAddressConfiguration configuration = entry.getValue();
+            String dpt = Objects.requireNonNullElse(configuration.getDPT(), getDefaultDPT(entry.getKey()));
+            String label = getChannelUID() + " " + entry.getKey();
+            GroupAddress main = configuration.getMainGA();
+            GroupAddress first = configuration.getFirstListenGA();
+            GroupAddress status = main.equals(first) ? null : first;
+            List<GroupAddress> listed = new ArrayList<>(List.of(main));
+            configuration.getListenGAs().stream().filter(address -> !address.equals(main))
+                    .sorted(Comparator.comparingInt(GroupAddress::getRawAddress)).forEach(listed::add);
+            for (GroupAddress address : listed) {
+                addresses.add(new KnxConfiguredAddress(address.getRawAddress(), dpt,
+                        configuration.getReadGAs().contains(address), address.equals(main), address.equals(status),
+                        label));
+            }
+        }
+        return List.copyOf(addresses);
     }
 
     protected abstract String getDefaultDPT(String gaConfigKey);

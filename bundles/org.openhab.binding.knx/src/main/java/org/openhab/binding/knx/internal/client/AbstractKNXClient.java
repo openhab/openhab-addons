@@ -15,6 +15,7 @@ package org.openhab.binding.knx.internal.client;
 import static org.openhab.binding.knx.internal.dpt.DPTUtil.NORMALIZED_DPT;
 
 import java.time.Duration;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.CopyOnWriteArraySet;
@@ -22,7 +23,10 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -31,6 +35,19 @@ import org.openhab.binding.knx.internal.handler.GroupAddressListener;
 import org.openhab.binding.knx.internal.handler.KNXBridgeBaseThingHandler;
 import org.openhab.binding.knx.internal.handler.KNXBridgeBaseThingHandler.CommandExtensionData;
 import org.openhab.binding.knx.internal.i18n.KNXTranslationProvider;
+import org.openhab.binding.knx.internal.monitor.ConnectionKind;
+import org.openhab.binding.knx.internal.monitor.DataType;
+import org.openhab.binding.knx.internal.monitor.IncomingTap;
+import org.openhab.binding.knx.internal.monitor.MonitorDecoder;
+import org.openhab.binding.knx.internal.monitor.NotDecryptedReason;
+import org.openhab.binding.knx.internal.monitor.OwnSend;
+import org.openhab.binding.knx.internal.monitor.SecurityState;
+import org.openhab.binding.knx.internal.monitor.SendOutcome;
+import org.openhab.binding.knx.internal.monitor.TelegramMonitor;
+import org.openhab.binding.knx.internal.monitor.TelegramMonitor.NotDecryptedWarning;
+import org.openhab.binding.knx.internal.monitor.TelegramType;
+import org.openhab.binding.knx.internal.security.KeyringFacts;
+import org.openhab.binding.knx.internal.security.SecureSenderCheck;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingUID;
@@ -47,20 +64,23 @@ import io.calimero.IndividualAddress;
 import io.calimero.KNXAddress;
 import io.calimero.KNXException;
 import io.calimero.KNXIllegalArgumentException;
+import io.calimero.KNXTimeoutException;
 import io.calimero.cemi.CEMILData;
 import io.calimero.cemi.CemiTData;
 import io.calimero.datapoint.CommandDP;
 import io.calimero.datapoint.Datapoint;
 import io.calimero.device.ProcessCommunicationResponder;
+import io.calimero.dptxlator.TranslatorTypes;
+import io.calimero.link.KNXLinkClosedException;
 import io.calimero.link.KNXNetworkLink;
 import io.calimero.link.NetworkLinkListener;
+import io.calimero.link.medium.KNXMediumSettings;
 import io.calimero.mgmt.Destination;
 import io.calimero.mgmt.ManagementClient;
 import io.calimero.mgmt.ManagementProcedures;
 import io.calimero.mgmt.TransportLayerImpl;
 import io.calimero.process.ProcessCommunication;
 import io.calimero.process.ProcessCommunicator;
-import io.calimero.process.ProcessCommunicatorImpl;
 import io.calimero.process.ProcessEvent;
 import io.calimero.process.ProcessListener;
 import io.calimero.secure.KnxSecureException;
@@ -85,6 +105,8 @@ public abstract class AbstractKNXClient implements NetworkLinkListener, KNXClien
     private ClientState state = ClientState.INIT;
 
     private static final int MAX_SEND_ATTEMPTS = 2;
+    // TPCI + APCI + SCF + sequence number + one byte of APDU + MAC; shorter frames the library reports itself
+    private static final int SECURE_FRAME_MIN_LENGTH = 14;
 
     private final Logger logger = LoggerFactory.getLogger(AbstractKNXClient.class);
 
@@ -96,9 +118,12 @@ public abstract class AbstractKNXClient implements NetworkLinkListener, KNXClien
     private final StatusUpdateCallback statusUpdateCallback;
     private final ScheduledExecutorService knxScheduler;
     private final CommandExtensionData commandExtensionData;
+    private final TelegramMonitor telegramMonitor;
     protected final Security openhabSecurity;
+    private final Supplier<@Nullable KeyringFacts> keyringFacts;
 
-    private @Nullable ProcessCommunicator processCommunicator;
+    private volatile @Nullable SecureSenderCheck senderCheck;
+    private @Nullable ReadTrackingCommunicator processCommunicator;
     private @Nullable ProcessCommunicationResponder responseCommunicator;
     private @Nullable ManagementProcedures managementProcedures;
     private @Nullable ManagementClient managementClient;
@@ -106,6 +131,8 @@ public abstract class AbstractKNXClient implements NetworkLinkListener, KNXClien
     private @Nullable DeviceInfoClient deviceInfoClient;
     private @Nullable ScheduledFuture<?> busJob;
     private @Nullable ScheduledFuture<?> connectJob;
+    private @Nullable CustomSecureManagement tappedLayer;
+    private @Nullable IncomingTap incomingTap;
 
     private final Set<GroupAddressListener> groupAddressListeners = new CopyOnWriteArraySet<>();
     private final LinkedBlockingQueue<ReadDatapoint> readDatapoints = new LinkedBlockingQueue<>();
@@ -144,7 +171,8 @@ public abstract class AbstractKNXClient implements NetworkLinkListener, KNXClien
 
     public AbstractKNXClient(int autoReconnectPeriod, ThingUID thingUID, int responseTimeout, int readingPause,
             int readRetriesLimit, ScheduledExecutorService knxScheduler, CommandExtensionData commandExtensionData,
-            Security openhabSecurity, StatusUpdateCallback statusUpdateCallback) {
+            TelegramMonitor telegramMonitor, Security openhabSecurity, Supplier<@Nullable KeyringFacts> keyringFacts,
+            StatusUpdateCallback statusUpdateCallback) {
         this.autoReconnectPeriod = autoReconnectPeriod;
         this.thingUID = thingUID;
         this.responseTimeout = responseTimeout;
@@ -153,7 +181,9 @@ public abstract class AbstractKNXClient implements NetworkLinkListener, KNXClien
         this.knxScheduler = knxScheduler;
         this.statusUpdateCallback = statusUpdateCallback;
         this.commandExtensionData = commandExtensionData;
+        this.telegramMonitor = telegramMonitor;
         this.openhabSecurity = openhabSecurity;
+        this.keyringFacts = keyringFacts;
     }
 
     public void initialize() {
@@ -180,6 +210,18 @@ public abstract class AbstractKNXClient implements NetworkLinkListener, KNXClien
 
     protected abstract KNXNetworkLink establishConnection() throws KNXException, InterruptedException;
 
+    /** Gives the link of the previous connection a moment to go down; tests skip it. */
+    protected void pauseBeforeConnecting() throws InterruptedException {
+        Thread.sleep(1000);
+    }
+
+    /** {@return how this client reaches the bus, for the group monitor} */
+    protected abstract ConnectionKind connectionKind();
+
+    CustomSecureManagement newSecureManagement(TransportLayerImpl transportLayer) throws KNXLinkClosedException {
+        return new CustomSecureManagement(transportLayer, openhabSecurity);
+    }
+
     private synchronized boolean connectIfNotAutomatic() {
         if (!isConnected()) {
             return connectJob == null && connect();
@@ -205,12 +247,14 @@ public abstract class AbstractKNXClient implements NetworkLinkListener, KNXClien
             // Note that this will also kill this function in the following call to sleep in case of a
             // connection loss -> restart is via triggered via scheduledReconnect in handler for InterruptedException.
             releaseConnection();
-            Thread.sleep(1000);
+            pauseBeforeConnecting();
             logger.debug("Bridge {} is connecting to KNX bus", thingUID);
 
             // now establish (possibly encrypted) connection, according to settings (tunnel, routing, secure...)
             KNXNetworkLink link = establishConnection();
             this.link = link;
+            SecureSenderCheck senderCheck = newSenderCheck(link);
+            this.senderCheck = senderCheck;
 
             // one transport layer implementation, to be shared by all following classes
             TransportLayerImpl tl = new TransportLayerImpl(link);
@@ -220,7 +264,8 @@ public abstract class AbstractKNXClient implements NetworkLinkListener, KNXClien
             // Protected ctor using given TransportLayerImpl is available (custom class to be inherited)
             // which also copies the relevant content of the supplied SAL to a new SAL instance created
             // by SecureManagement ctor.
-            CustomSecureManagement sal = new CustomSecureManagement(tl, openhabSecurity);
+            CustomSecureManagement sal = newSecureManagement(tl);
+            attachTap(sal);
 
             logger.debug("GAs: {}  Send: {}, S={}", sal.security().groupKeys().size(),
                     sal.security().groupSenders().size(),
@@ -243,8 +288,7 @@ public abstract class AbstractKNXClient implements NetworkLinkListener, KNXClien
             deviceInfoClient = new DeviceInfoClientImpl(managementClient);
 
             // ProcessCommunicator provides main KNX communication (Calimero).
-            final boolean useGoDiagnostics = true;
-            ProcessCommunicator processCommunicator = new ProcessCommunicatorImpl(link, sal, useGoDiagnostics);
+            ReadTrackingCommunicator processCommunicator = newProcessCommunicator(link, sal);
             processCommunicator.responseTimeout(Duration.ofSeconds(responseTimeout));
             processCommunicator.addProcessListener(processListener);
             this.processCommunicator = processCommunicator;
@@ -260,8 +304,10 @@ public abstract class AbstractKNXClient implements NetworkLinkListener, KNXClien
             busJob = knxScheduler.scheduleWithFixedDelay(this::readNextQueuedDatapoint, 0, readingPause,
                     TimeUnit.MILLISECONDS);
 
-            statusUpdateCallback.updateStatus(ThingStatus.ONLINE);
+            publishOnline(senderCheck);
             connectJob = null;
+            telegramMonitor.useChannelTypes(address -> monitorDataType(groupAddressListeners, address));
+            telegramMonitor.connected(connectionKind(), ownAddressOf(link.getKNXMedium()));
 
             logger.info("Bridge {} connected to KNX bus", thingUID);
 
@@ -291,6 +337,72 @@ public abstract class AbstractKNXClient implements NetworkLinkListener, KNXClien
         }
     }
 
+    /**
+     * The address openHAB sends from: the one the router assigned to a tunnel, else the configured one (always the
+     * case in router mode).
+     */
+    static IndividualAddress ownAddressOf(KNXMediumSettings settings) {
+        try {
+            return settings.assignedAddress().orElseGet(settings::getDeviceAddress);
+        } catch (RuntimeException e) {
+            // the library's supplier throws when the gateway's connect response carried no tunnel address
+            return settings.getDeviceAddress();
+        }
+    }
+
+    private @Nullable SecureSenderCheck newSenderCheck(KNXNetworkLink link) {
+        KeyringFacts facts = keyringFacts.get();
+        if (facts == null || facts.securedGroupAddresses().isEmpty()) {
+            return null;
+        }
+        SecureSenderCheck check = new SecureSenderCheck(facts, ownAddressOf(link.getKNXMedium()));
+        if (check.ownAddressNotInKeyring()) {
+            logger.warn(
+                    "Bridge {}: the keyring has no interface {}. Devices will ignore what openHAB sends to secured "
+                            + "group addresses. Add it in ETS, download, and export the keyring again.",
+                    thingUID, check.ownAddress());
+        } else if (check.ownAddressLinkedToNothing()) {
+            logger.warn(
+                    "Bridge {}: ETS has not linked {} to any secured group address. Devices will ignore what "
+                            + "openHAB sends to them. Link it in ETS, download, and export the keyring again.",
+                    thingUID, check.ownAddress());
+        }
+        return check;
+    }
+
+    /** Sending is never held back: this only records what the telegram is about to do. */
+    private void noteSecuredSend(GroupAddress groupAddress) {
+        SecureSenderCheck check = senderCheck;
+        if (check != null && check.noteSend(groupAddress)) {
+            logger.warn(
+                    "Bridge {}: ETS has not linked {} to {}. Devices will ignore what openHAB sends there. Link it "
+                            + "in ETS, download, and export the keyring again.",
+                    thingUID, check.ownAddress(), groupAddress);
+            try {
+                publishOnline(check);
+            } catch (RuntimeException e) {
+                // an exception here would skip the telegram and, in the read job, end the job for every datapoint
+                logger.debug("Bridge {} could not publish the warning: {}", thingUID, e.getMessage());
+            }
+        }
+    }
+
+    /**
+     * Publishes ONLINE with whatever the check has found so far. Synchronized with connect and disconnect, so a
+     * telegram of an old connection cannot bring a warning back after it was released or lost.
+     */
+    private synchronized void publishOnline(@Nullable SecureSenderCheck check) {
+        if (check != null && (!check.equals(senderCheck) || !isConnected())) {
+            return;
+        }
+        String description = check == null ? null : check.statusDescription();
+        if (description == null) {
+            statusUpdateCallback.updateStatus(ThingStatus.ONLINE);
+        } else {
+            statusUpdateCallback.updateStatus(ThingStatus.ONLINE, description);
+        }
+    }
+
     private synchronized void disconnect(@Nullable Exception e) {
         disconnect(e, null);
     }
@@ -305,12 +417,118 @@ public abstract class AbstractKNXClient implements NetworkLinkListener, KNXClien
         }
     }
 
+    /** One listener on the secure layer of this connection feeds the group monitor with received telegrams. */
+    private void attachTap(CustomSecureManagement sal) {
+        telegramMonitor.resetNotDecrypted();
+        sal.onFailure(this::securityFailed);
+        IncomingTap tap = new IncomingTap(telegramMonitor, openhabSecurity.groupKeys()::containsKey);
+        sal.addListener(tap);
+        tappedLayer = sal;
+        incomingTap = tap;
+    }
+
+    private void detachTap() {
+        CustomSecureManagement sal = tappedLayer;
+        IncomingTap tap = incomingTap;
+        if (sal != null) {
+            sal.onFailure(null);
+            if (tap != null) {
+                sal.removeListener(tap);
+            }
+        }
+        tappedLayer = null;
+        incomingTap = null;
+        telegramMonitor.disconnected();
+    }
+
+    private void securityFailed(int errorType, IndividualAddress source, KNXAddress destination) {
+        reportNotDecrypted(source, destination, NotDecryptedReason.ofLibraryErrorType(errorType));
+    }
+
+    /**
+     * One row and one count for a secured telegram that was not decrypted; only group destinations other than 0/0/0.
+     */
+    private void reportNotDecrypted(IndividualAddress source, KNXAddress destination,
+            @Nullable NotDecryptedReason reason) {
+        if (!(destination instanceof GroupAddress group) || group.getRawAddress() == 0) {
+            return;
+        }
+        try {
+            NotDecryptedWarning warning = telegramMonitor.notDecrypted(source, group, reason, this::usedByChannel);
+            if (warning != null) {
+                logger.warn(
+                        "Bridge {}: secured telegrams to {} from {} could not be decrypted ({}). Update the sending "
+                                + "devices in ETS, download, and export the keyring again.",
+                        thingUID, group,
+                        warning.senders().stream().map(IndividualAddress::toString).collect(Collectors.joining(", ")),
+                        reason == null ? "unknown reason" : reason);
+            }
+        } catch (RuntimeException e) {
+            logger.debug("The group monitor could not record a secured telegram: {}", e.toString());
+        }
+    }
+
+    private boolean usedByChannel(GroupAddress address) {
+        return groupAddressListeners.stream().anyMatch(listener -> listener.listensTo(address));
+    }
+
+    /**
+     * Finds what the library drops without a word, from the raw frame, and in the order the library checks: frame
+     * length and control field belong to the library's own report; with no group key the library is silent; tool
+     * access on a group address is the library's again; then the sender list. It looks only at the frame, the keys
+     * and the sender list, never at a sequence number, so it does not matter which listener runs first. Must never
+     * throw: a listener that does is removed by the link.
+     */
+    private void checkRawSecuredFrame(CEMILData frame, GroupAddress destination, byte[] payload) {
+        try {
+            CustomSecureManagement sal = tappedLayer;
+            KNXNetworkLink tmpLink = link;
+            if (sal == null || tmpLink == null) {
+                return;
+            }
+            IndividualAddress own = tmpLink.getKNXMedium().getDeviceAddress();
+            IndividualAddress source = frame.getSource();
+            // the transport layer never hands the library a frame from our own address
+            if (source.equals(own) || payload.length < SECURE_FRAME_MIN_LENGTH) {
+                return;
+            }
+            int scf = payload[2] & 0xff;
+            boolean toolAccess = (scf & 0x80) != 0;
+            boolean systemBroadcast = (scf & 0x08) != 0;
+            int algorithm = (scf >> 4) & 0x7;
+            int service = scf & 0x7;
+            if (algorithm > 1 || service == 1 || service > 3 || (systemBroadcast && !toolAccess)) {
+                return;
+            }
+            // only a secure data PDU is a secured group telegram; sync services are not
+            if (service != 0) {
+                return;
+            }
+            Security security = sal.security();
+            if (!security.groupKeys().containsKey(destination)) {
+                reportNotDecrypted(source, destination, NotDecryptedReason.NO_KEY);
+                return;
+            }
+            if (toolAccess) {
+                return;
+            }
+            Set<IndividualAddress> senders = security.groupSenders(own).get(destination);
+            if (senders != null && !senders.isEmpty() && !senders.contains(source)) {
+                reportNotDecrypted(source, destination, NotDecryptedReason.SENDER_NOT_LISTED);
+            }
+        } catch (RuntimeException e) {
+            logger.debug("The group monitor could not check a secured frame: {}", e.toString());
+        }
+    }
+
     protected void releaseConnection() {
         logger.debug("Bridge {} is disconnecting from KNX bus", thingUID);
+        detachTap();
         var tmpLink = link;
         if (tmpLink != null) {
             tmpLink.removeLinkListener(this);
         }
+        senderCheck = null;
         readDatapoints.clear();
         busJob = nullify(busJob, j -> j.cancel(true));
         deviceInfoClient = null;
@@ -369,24 +587,24 @@ public abstract class AbstractKNXClient implements NetworkLinkListener, KNXClien
         if (!connectIfNotAutomatic()) {
             return;
         }
-        ProcessCommunicator processCommunicator = this.processCommunicator;
+        ReadTrackingCommunicator processCommunicator = this.processCommunicator;
         if (processCommunicator == null) {
             return;
         }
         ReadDatapoint datapoint = readDatapoints.poll();
         if (datapoint != null) {
-            // TODO #8872: allow write access, currently only listening mode
-            if (openhabSecurity.groupKeys().containsKey(datapoint.getDatapoint().getMainAddress())) {
-                logger.debug("outgoing secure communication not implemented, explicit read from GA '{}' skipped",
-                        datapoint.getDatapoint().getMainAddress());
-                return;
-            }
-
             datapoint.incrementRetries();
+            noteSecuredSend(datapoint.getDatapoint().getMainAddress());
+            // recorded before the call: the answer arrives while the call waits for it
+            OwnSend request = recordReadRequest(datapoint.getDatapoint());
+            AtomicBoolean requestWentOut = new AtomicBoolean();
+            SendOutcome outcome = SendOutcome.FAILED;
             try {
                 logger.trace("Sending a Group Read Request telegram for {}", datapoint.getDatapoint().getMainAddress());
-                processCommunicator.read(datapoint.getDatapoint());
+                processCommunicator.read(datapoint.getDatapoint(), () -> requestWentOut.set(true));
+                outcome = SendOutcome.SENT;
             } catch (KNXException e) {
+                outcome = readOutcome(e, requestWentOut.get());
                 // Note: KnxException does not cover KnxRuntimeException and subclasses KnxSecureException,
                 // KnxIllegalArgumentException
                 if (datapoint.getRetries() < datapoint.getLimit()) {
@@ -398,15 +616,88 @@ public abstract class AbstractKNXClient implements NetworkLinkListener, KNXClien
                             datapoint.getDatapoint().getMainAddress(), datapoint.getLimit());
                 }
             } catch (InterruptedException | CancellationException e) {
+                outcome = readOutcome(e, requestWentOut.get());
                 logger.debug("Interrupted sending KNX read request");
             } catch (Exception e) {
+                outcome = readOutcome(e, requestWentOut.get());
                 // Any other exception: Fail gracefully, i.e. notify user and continue reading next DP.
                 // Not catching this would end the scheduled read for all DPs in case of an error.
                 // Severity is warning as this is likely caused by a configuration error.
                 logger.warn("Error reading datapoint {}: {}", datapoint.getDatapoint().getMainAddress(),
                         e.getMessage());
+            } finally {
+                endSend(request, outcome);
             }
         }
+    }
+
+    /**
+     * The library sends the request and then waits for the answer in the same call (ProcessCommunicatorImpl
+     * readFromGroup), and both a missing confirmation of the request and a missing answer end in a
+     * KNXTimeoutException; only the moment the request went out tells them apart.
+     */
+    static SendOutcome readOutcome(Exception e, boolean requestWentOut) {
+        if (requestWentOut) {
+            return e instanceof KNXTimeoutException ? SendOutcome.NO_ANSWER : SendOutcome.SENT;
+        }
+        return confirmationTimedOut(e) ? SendOutcome.NOT_CONFIRMED : SendOutcome.FAILED;
+    }
+
+    /** The library turns an interrupted write into a KNXTimeoutException too, and sets the interrupt flag again. */
+    private static boolean confirmationTimedOut(Exception e) {
+        return e instanceof KNXTimeoutException && !Thread.currentThread().isInterrupted();
+    }
+
+    private IndividualAddress monitorSource() {
+        KNXNetworkLink tmpLink = link;
+        return tmpLink == null ? new IndividualAddress(0) : ownAddressOf(tmpLink.getKNXMedium());
+    }
+
+    private SecurityState monitorSecurity(GroupAddress destination) {
+        return openhabSecurity.groupKeys().containsKey(destination) ? SecurityState.SECURED : SecurityState.PLAIN;
+    }
+
+    private OwnSend recordReadRequest(Datapoint datapoint) {
+        try {
+            GroupAddress destination = datapoint.getMainAddress();
+            return telegramMonitor.sending(monitorSource(), destination, TelegramType.READ,
+                    datapoint.dptId().toString(), null, monitorSecurity(destination));
+        } catch (RuntimeException e) {
+            logger.debug("The group monitor could not record a read request: {}", e.toString());
+            return OwnSend.NONE;
+        }
+    }
+
+    private void endSend(OwnSend send, SendOutcome outcome) {
+        try {
+            send.ended(outcome);
+        } catch (RuntimeException e) {
+            logger.debug("The group monitor could not record an outcome: {}", e.toString());
+        }
+    }
+
+    private void recordSend(GroupAddress destination, TelegramType type, byte[] payload, String dpt, Type value,
+            SendOutcome outcome) {
+        try {
+            telegramMonitor.sent(monitorSource(), destination, type, payload, dpt, MonitorDecoder.text(value),
+                    monitorSecurity(destination), outcome);
+        } catch (RuntimeException e) {
+            logger.debug("The group monitor could not record a telegram: {}", e.toString());
+        }
+    }
+
+    /** {@return the value bytes the library builds for the frame, as it does inside write; empty if it cannot} */
+    private static byte[] payloadOf(Datapoint datapoint, String mappedValue) {
+        try {
+            return TranslatorTypes.createTranslator(datapoint.dptId(), mappedValue).getData();
+        } catch (KNXException | RuntimeException e) {
+            return new byte[0];
+        }
+    }
+
+    static ReadTrackingCommunicator newProcessCommunicator(KNXNetworkLink link, SecureApplicationLayer sal)
+            throws KNXLinkClosedException {
+        return new ReadTrackingCommunicator(link, sal);
     }
 
     public void dispose() {
@@ -423,6 +714,8 @@ public abstract class AbstractKNXClient implements NetworkLinkListener, KNXClien
             return;
         }
         if (!link.isOpen() && CloseEvent.USER_REQUEST != closeEvent.getInitiator()) {
+            // a send that is already under way must not report ONLINE for a link that is gone
+            senderCheck = null;
             final String reason = closeEvent.getReason();
             statusUpdateCallback.updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                     KNXTranslationProvider.I18N.get(reason));
@@ -460,6 +753,7 @@ public abstract class AbstractKNXClient implements NetworkLinkListener, KNXClien
                                             ga.getMiddleGroup(), ga.getSubGroup8());
                                     commandExtensionData.unknownGA().compute(key, (k, v) -> v == null ? 1 : v + 1);
                                 }
+                                checkRawSecuredFrame(f, ga, payload);
                             }
                         }
                     }
@@ -471,6 +765,12 @@ public abstract class AbstractKNXClient implements NetworkLinkListener, KNXClien
     @Override
     public void confirmation(@Nullable FrameEvent e) {
         // no-op
+    }
+
+    @Override
+    public Optional<IndividualAddress> ownAddress() {
+        KNXNetworkLink tmpLink = link;
+        return tmpLink == null ? Optional.empty() : Optional.of(ownAddressOf(tmpLink.getKNXMedium()));
     }
 
     @Override
@@ -508,12 +808,27 @@ public abstract class AbstractKNXClient implements NetworkLinkListener, KNXClien
     }
 
     @Override
+    public void readOnce(Datapoint datapoint) {
+        synchronized (this) {
+            // a read of the same address that waits in the queue already goes out in its place
+            ReadDatapoint once = new ReadDatapoint(datapoint, 1);
+            if (!readDatapoints.contains(once)) {
+                readDatapoints.add(once);
+            }
+        }
+    }
+
+    @Override
     public void readDatapoint(Datapoint datapoint) {
         synchronized (this) {
             ReadDatapoint retryDatapoint = new ReadDatapoint(datapoint, readRetriesLimit);
-            if (!readDatapoints.contains(retryDatapoint)) {
-                readDatapoints.add(retryDatapoint);
+            // a waiting read of the address with fewer tries (readOnce) gives way: this one goes out for both
+            if (!readDatapoints.removeIf(
+                    waiting -> waiting.equals(retryDatapoint) && waiting.getLimit() < retryDatapoint.getLimit())
+                    && readDatapoints.contains(retryDatapoint)) {
+                return;
             }
+            readDatapoints.add(retryDatapoint);
         }
     }
 
@@ -525,6 +840,19 @@ public abstract class AbstractKNXClient implements NetworkLinkListener, KNXClien
     @Override
     public final void unregisterGroupAddressListener(GroupAddressListener listener) {
         groupAddressListeners.remove(listener);
+    }
+
+    /** {@return the data type the first channel that uses the address gives it, null if none does} */
+    static @Nullable DataType monitorDataType(Iterable<GroupAddressListener> listeners, GroupAddress destination) {
+        for (GroupAddressListener listener : listeners) {
+            if (listener.listensTo(destination)) {
+                DataType dataType = listener.monitorDataType(destination);
+                if (dataType != null) {
+                    return dataType;
+                }
+            }
+        }
+        return null;
     }
 
     @Override
@@ -544,21 +872,22 @@ public abstract class AbstractKNXClient implements NetworkLinkListener, KNXClien
     }
 
     @Override
-    public void writeToKNX(OutboundSpec commandSpec) throws KNXException {
+    public boolean writeToKNX(OutboundSpec commandSpec) throws KNXException {
         ProcessCommunicator processCommunicator = this.processCommunicator;
         KNXNetworkLink link = this.link;
         if (processCommunicator == null || link == null) {
             logger.debug("Cannot write to KNX bus (processCommunicator: {}, link: {})",
                     processCommunicator == null ? "Not OK" : "OK",
                     link == null ? "Not OK" : (link.isOpen() ? "Open" : "Closed"));
-            return;
+            return false;
         }
         GroupAddress groupAddress = commandSpec.getGroupAddress();
 
         logger.trace("writeToKNX groupAddress '{}', commandSpec '{}:{} {}'", groupAddress, groupAddress,
                 commandSpec.getDPT(), commandSpec.getValue());
 
-        sendToKNX(processCommunicator, groupAddress, commandSpec.getDPT(), commandSpec.getValue());
+        return sendToKNX(processCommunicator, groupAddress, commandSpec.getDPT(), commandSpec.getValue(),
+                TelegramType.WRITE);
     }
 
     @Override
@@ -575,19 +904,14 @@ public abstract class AbstractKNXClient implements NetworkLinkListener, KNXClien
 
         logger.trace("respondToKNX groupAddress '{}', responseSpec '{}'", groupAddress, responseSpec);
 
-        sendToKNX(responseCommunicator, groupAddress, responseSpec.getDPT(), responseSpec.getValue());
+        sendToKNX(responseCommunicator, groupAddress, responseSpec.getDPT(), responseSpec.getValue(),
+                TelegramType.RESPONSE);
     }
 
-    private void sendToKNX(ProcessCommunication communicator, GroupAddress groupAddress, String dpt, Type type)
-            throws KNXException {
+    private boolean sendToKNX(ProcessCommunication communicator, GroupAddress groupAddress, String dpt, Type type,
+            TelegramType telegramType) throws KNXException {
         if (!connectIfNotAutomatic()) {
-            return;
-        }
-
-        // TODO #8872: allow write access, currently only listening mode
-        if (openhabSecurity.groupKeys().containsKey(groupAddress)) {
-            logger.debug("outgoing secure communication not implemented, write to GA '{}' skipped", groupAddress);
-            return;
+            return false;
         }
 
         Datapoint datapoint = new CommandDP(groupAddress, thingUID.toString(), 0,
@@ -596,16 +920,21 @@ public abstract class AbstractKNXClient implements NetworkLinkListener, KNXClien
         if (mappedValue == null) {
             logger.debug("Value '{}' of type '{}' cannot be mapped to datapoint '{}'", type, type.getClass(),
                     datapoint);
-            return;
+            return false;
         }
+        noteSecuredSend(groupAddress);
         logger.trace("sendToKNX mappedValue: '{}' groupAddress: '{}'", mappedValue, groupAddress);
+        byte[] payload = payloadOf(datapoint, mappedValue);
 
         for (int i = 0;; i++) {
+            SendOutcome outcome = SendOutcome.FAILED;
             try {
                 communicator.write(datapoint, mappedValue);
+                outcome = SendOutcome.SENT;
                 logger.debug("Wrote value '{}' to datapoint '{}' ({}. attempt).", type, datapoint, i);
                 break;
             } catch (KNXException e) {
+                outcome = confirmationTimedOut(e) ? SendOutcome.NOT_CONFIRMED : SendOutcome.FAILED;
                 if (i < MAX_SEND_ATTEMPTS - 1) {
                     logger.debug("Value '{}' could not be sent to KNX bus using datapoint '{}': {}. Will retry.", type,
                             datapoint, e.getLocalizedMessage());
@@ -614,7 +943,13 @@ public abstract class AbstractKNXClient implements NetworkLinkListener, KNXClien
                             type, datapoint, e.getLocalizedMessage());
                     throw e;
                 }
+            } catch (KnxSecureException e) {
+                // a missing key or sender is a configuration error, retrying does not help
+                throw new KNXException(e.getMessage(), e);
+            } finally {
+                recordSend(groupAddress, telegramType, payload, dpt, type, outcome);
             }
         }
+        return true;
     }
 }

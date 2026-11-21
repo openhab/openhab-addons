@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<KNX xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" CreatedBy="ETS4" ToolVersion="4.2.1001.7" xmlns="http://knx.org/xml/project/11">
+  <Project Id="P-0A1B">
+    <ProjectInformation Name="Testhuis Vier" GroupAddressStyle="ThreeLevel" ProjectId="4711" ProjectTracingLevel="None" Hide16BitGroupsFromLegacyPlugins="false" LastModified="2014-03-02T10:11:12.000Z" ProjectStart="2014-01-01T08:00:00.000Z" Comment="" CompletionStatus="Editing" />
+  </Project>
+</KNX>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<KNX xmlns="http://knx.org/xml/project/20" CreatedBy="ETS5" ToolVersion="5.7.1093.38570">
+  <ManufacturerData>
+    <Manufacturer RefId="M-0083">
+      <Hardware>
+        <Hardware Id="M-0083_H-12AB-1" Name="Made-up actuator" SerialNumber="MADEUP-HW-SERIAL-ACT" VersionNumber="2" BusCurrent="10" HasIndividualAddress="true" HasApplicationProgram="true">
+          <Products>
+            <Product Id="M-0083_H-12AB-1_P-SA.2F4.2E1" Text="Made-up switch actuator 4-fold" OrderNumber="MU SA.4.1" IsRailMounted="true" DefaultLanguage="en-US" Hash="MADEUP-PRODUCT-HASH" />
+          </Products>
+          <Hardware2Programs>
+            <Hardware2Program Id="M-0083_H-12AB-1_HP-00AA-11-B2C3" MediumTypes="MT-0" Hash="MADEUP-H2P-HASH">
+              <ApplicationProgramRef RefId="M-0083_A-00AA-11-B2C3" />
+            </Hardware2Program>
+          </Hardware2Programs>
+        </Hardware>
+        <Hardware Id="M-0083_H-12AC-1" Name="Made-up thermostat" SerialNumber="MADEUP-HW-SERIAL-THERMO" VersionNumber="1" BusCurrent="10" HasIndividualAddress="true" HasApplicationProgram="true">
+          <Products>
+            <Product Id="M-0083_H-12AC-1_P-TH.01" Text="Made-up room thermostat" OrderNumber="MU TH.01" IsRailMounted="false" DefaultLanguage="en-US" />
+          </Products>
+          <Hardware2Programs>
+            <Hardware2Program Id="M-0083_H-12AC-1_HP-00AB-12-0001" MediumTypes="MT-0">
+              <ApplicationProgramRef RefId="M-0083_A-00AB-12-0001" />
+            </Hardware2Program>
+          </Hardware2Programs>
+        </Hardware>
+      </Hardware>
+    </Manufacturer>
+  </ManufacturerData>
+</KNX>

@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<KNX xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" CreatedBy="ETS4" ToolVersion="4.2.1001.7" xmlns="http://knx.org/xml/project/11">
+  <Project Id="P-0A1B">
+    <Installations>
+      <Installation Name="" InstallationId="0" DefaultLine="P-0A1B-0_L-2" SplitType="None" IPRoutingMulticastAddress="224.0.23.12" CompletionStatus="Editing">
+        <Topology>
+          <Area Id="P-0A1B-0_A-1" Name="Hoofdlijn" Address="1" CompletionStatus="Editing">
+            <Line Id="P-0A1B-0_L-2" Name="Kelder" Address="1" MediumTypeRefId="MT-0" DomainAddress="" DomainAddressIsChecked="false" CompletionStatus="Editing">
+              <DeviceInstance Id="P-0A1B-0_DI-3" Name="Schakelaar gang" Address="5" ProductRefId="M-00FA_H-0011-1_P-1234.5" Hardware2ProgramRefId="M-00FA_H-0011-1_HP-0022-33-4455" CompletionStatus="Editing" IndividualAddressLoaded="true" ApplicationProgramLoaded="true">
+                <ComObjectInstanceRefs>
+                  <ComObjectInstanceRef RefId="M-00FA_A-0022-33-4455_O-0_R-1" IsActive="true">
+                    <Connectors>
+                      <Send GroupAddressRefId="P-0A1B-0_GA-1" />
+                      <Receive GroupAddressRefId="P-0A1B-0_GA-2" />
+                    </Connectors>
+                  </ComObjectInstanceRef>
+                  <ComObjectInstanceRef RefId="M-00FA_A-0022-33-4455_O-1_R-2" IsActive="true">
+                    <Connectors>
+                      <Receive GroupAddressRefId="P-0A1B-0_GA-3" />
+                      <Send GroupAddressRefId="P-0A1B-0_GA-2" />
+                    </Connectors>
+                  </ComObjectInstanceRef>
+                  <ComObjectInstanceRef RefId="M-00FA_A-0022-33-4455_O-2_R-3" IsActive="false" />
+                </ComObjectInstanceRefs>
+              </DeviceInstance>
+              <DeviceInstance Id="P-0A1B-0_DI-4" Address="12" ProductRefId="M-00FA_H-0012-1_P-1234.6" Hardware2ProgramRefId="M-00FA_H-0012-1_HP-0023-10-AB01" CompletionStatus="Editing" />
+            </Line>
+          </Area>
+        </Topology>
+        <Buildings>
+          <BuildingPart Id="P-0A1B-0_BP-1" Name="Huis" Type="Building" CompletionStatus="Editing">
+            <BuildingPart Id="P-0A1B-0_BP-2" Name="Kelder" Type="Floor" CompletionStatus="Editing">
+              <BuildingPart Id="P-0A1B-0_BP-3" Name="Gang" Type="Room" CompletionStatus="Editing">
+                <DeviceInstanceRef RefId="P-0A1B-0_DI-3" />
+              </BuildingPart>
+            </BuildingPart>
+          </BuildingPart>
+        </Buildings>
+        <GroupAddresses>
+          <GroupRanges>
+            <GroupRange Id="P-0A1B-0_GR-1" Name="Verlichting" RangeStart="2048" RangeEnd="4095">
+              <GroupRange Id="P-0A1B-0_GR-2" Name="Gelijkvloers" RangeStart="2048" RangeEnd="2303">
+                <GroupAddress Id="P-0A1B-0_GA-1" Address="2049" Name="Gang aan/uit" />
+                <GroupAddress Id="P-0A1B-0_GA-2" Address="2050" Name="Gang status" />
+              </GroupRange>
+              <GroupRange Id="P-0A1B-0_GR-3" Name="Kelder" RangeStart="2304" RangeEnd="2559">
+                <GroupAddress Id="P-0A1B-0_GA-3" Address="2304" Name="Kelder centraal" />
+              </GroupRange>
+            </GroupRange>
+          </GroupRanges>
+        </GroupAddresses>
+      </Installation>
+    </Installations>
+  </Project>
+</KNX>

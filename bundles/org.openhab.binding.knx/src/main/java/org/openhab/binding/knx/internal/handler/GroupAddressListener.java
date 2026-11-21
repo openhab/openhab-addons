@@ -13,7 +13,9 @@
 package org.openhab.binding.knx.internal.handler;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.knx.internal.client.BusMessageListener;
+import org.openhab.binding.knx.internal.monitor.DataType;
 
 import io.calimero.GroupAddress;
 
@@ -33,4 +35,14 @@ public interface GroupAddressListener extends BusMessageListener {
      * @param destination
      */
     boolean listensTo(GroupAddress destination);
+
+    /**
+     * Tells the group monitor how a channel decodes the given address. Called from the console thread.
+     *
+     * @param destination a group address this listener listens to
+     * @return the data type, null if no channel gives one
+     */
+    default @Nullable DataType monitorDataType(GroupAddress destination) {
+        return null;
+    }
 }

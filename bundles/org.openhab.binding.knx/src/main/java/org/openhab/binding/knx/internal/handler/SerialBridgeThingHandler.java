@@ -58,9 +58,11 @@ public class SerialBridgeThingHandler extends KNXBridgeBaseThingHandler {
         // create new instance using current configuration settings;
         // when a parameter change is done from UI, dispose() and initialize() are called
         SerialBridgeConfiguration config = getConfigAs(SerialBridgeConfiguration.class);
+        applyMonitorBufferSize(config.getMonitorBufferSize());
         client = new SerialClient(config.getAutoReconnectPeriod(), thing.getUID(), config.getResponseTimeout(),
                 config.getReadingPause(), config.getReadRetriesLimit(), getScheduler(), config.getSerialPort(),
-                config.useCemi(), serialPortManager, getCommandExtensionData(), openhabSecurity, this);
+                config.useCemi(), serialPortManager, getCommandExtensionData(), getTelegramMonitor(), openhabSecurity,
+                this);
 
         updateStatus(ThingStatus.UNKNOWN);
         // delay actual initialization, allow for longer runtime of actual initialization

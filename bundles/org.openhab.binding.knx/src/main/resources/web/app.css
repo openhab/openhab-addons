@@ -1,0 +1,2290 @@
+/* A dense desktop-tool look: a dark green top strip with the panel tabs, a workplace of panel (bar, tree, tabs, list)
+   and sidebar, a status bar. Light and dark by the viewer's choice or the system. Below 800px the tree slides in and
+   the sidebar goes under the list. */
+
+:root {
+    --row: 24px;
+    --tree-width: 280px;
+    --properties-width: 300px;
+    --second-height: 320px;
+    color-scheme: light dark;
+}
+
+/* The two themes. Every colour of the page is named here and nowhere else. The viewer's choice stands on the root
+   as data-theme; without one the system's setting decides. */
+
+:root,
+:root[data-theme="light"] {
+    --text: #1d232a;
+    --muted: #5b6672;
+    --back: #ffffff;
+    --frame: #eceff2;
+    --panel: #f5f6f8;
+    --line: #d3d8de;
+    --control-line: #7a8490;
+    --grid: #e6e9ed;
+    --accent: #0b5cad;
+    --on-accent: #ffffff;
+    --select: #cfe3f7;
+    --select-text: #0d2740;
+    --hover: #eef3f8;
+    --warn-back: #fff1e5;
+    --warn-text: #8a3b00;
+    --strip: #1f5a3d;
+    --strip-text: #ffffff;
+    --strip-muted: #cfe3d7;
+    --strip-line: #9fc5ae;
+    --strip-hover: #2a6e4c;
+    --tint-write: #eaf5ec;
+    --tint-read: #e8f0fb;
+    --tint-response: #fbf3df;
+    --shadow: #00000040;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root:not([data-theme]) {
+        --text: #e3e7eb;
+        --muted: #9aa5b1;
+        --back: #15191d;
+        --frame: #23292f;
+        --panel: #1c2126;
+        --line: #3a434c;
+        --control-line: #737e8a;
+        --grid: #2a3138;
+        --accent: #6cb0f5;
+        --on-accent: #0b1520;
+        --select: #1d4468;
+        --select-text: #e8f2fc;
+        --hover: #222b33;
+        --warn-back: #3a2414;
+        --warn-text: #ffc59a;
+        --strip: #173d2b;
+        --strip-text: #e6f0ea;
+        --strip-muted: #b5cbbd;
+        --strip-line: #7fa891;
+        --strip-hover: #1f5038;
+        --tint-write: #18261c;
+        --tint-read: #172230;
+        --tint-response: #2a2415;
+        --shadow: #00000080;
+    }
+}
+
+:root[data-theme="dark"] {
+    --text: #e3e7eb;
+    --muted: #9aa5b1;
+    --back: #15191d;
+    --frame: #23292f;
+    --panel: #1c2126;
+    --line: #3a434c;
+    --control-line: #737e8a;
+    --grid: #2a3138;
+    --accent: #6cb0f5;
+    --on-accent: #0b1520;
+    --select: #1d4468;
+    --select-text: #e8f2fc;
+    --hover: #222b33;
+    --warn-back: #3a2414;
+    --warn-text: #ffc59a;
+    --strip: #173d2b;
+    --strip-text: #e6f0ea;
+    --strip-muted: #b5cbbd;
+    --strip-line: #7fa891;
+    --strip-hover: #1f5038;
+    --tint-write: #18261c;
+    --tint-read: #172230;
+    --tint-response: #2a2415;
+    --shadow: #00000080;
+}
+
+:root[data-theme="light"] {
+    color-scheme: light;
+}
+
+:root[data-theme="dark"] {
+    color-scheme: dark;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    height: 100%;
+}
+
+html {
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    font-size: 13px;
+    line-height: 1.35;
+    color: var(--text);
+    background: var(--frame);
+}
+
+body {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+a {
+    color: var(--accent);
+}
+
+button,
+a.add {
+    font: inherit;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    min-height: var(--row);
+    padding: 2px 10px;
+    border: 1px solid var(--control-line);
+    border-radius: 3px;
+    background: var(--back);
+    color: var(--text);
+    cursor: pointer;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+button:hover,
+a.add:hover {
+    background: var(--hover);
+}
+
+button.upload,
+button.propose,
+button.confirm-create,
+button.create,
+button.sign-in,
+button.try-again,
+a.add {
+    border-color: var(--accent);
+    background: var(--accent);
+    color: var(--on-accent);
+}
+
+button.upload:hover,
+button.propose:hover,
+button.confirm-create:hover,
+button.create:hover,
+button.sign-in:hover,
+button.try-again:hover,
+a.add:hover {
+    background: var(--accent);
+    filter: brightness(1.1);
+}
+
+button:disabled {
+    opacity: 0.5;
+    cursor: default;
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+.splitter:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: -1px;
+}
+
+input,
+select,
+textarea {
+    font: inherit;
+    min-height: var(--row);
+    padding: 2px 6px;
+    border: 1px solid var(--control-line);
+    border-radius: 3px;
+    background: var(--back);
+    color: var(--text);
+}
+
+input[type="checkbox"],
+input[type="radio"] {
+    min-height: 0;
+}
+
+input[type="file"] {
+    max-width: 100%;
+}
+
+textarea {
+    width: 100%;
+    min-height: 7em;
+    font-family: ui-monospace, "Cascadia Mono", Menlo, Consolas, monospace;
+    font-size: 12px;
+    white-space: pre;
+    resize: vertical;
+}
+
+.icon {
+    width: 14px;
+    height: 14px;
+    flex: none;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.3;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    vertical-align: -2px;
+}
+
+/* The top strip */
+
+header {
+    flex: none;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: stretch;
+    gap: 0 14px;
+    padding: 0 8px;
+    background: var(--strip);
+    color: var(--strip-text);
+    border-bottom: 1px solid var(--line);
+}
+
+header > * {
+    display: flex;
+    align-items: center;
+    min-height: 30px;
+}
+
+header .brand {
+    font-weight: 700;
+    color: var(--strip-text);
+    text-decoration: none;
+}
+
+header a {
+    color: var(--strip-text);
+}
+
+header nav {
+    gap: 0;
+    flex-wrap: wrap;
+    align-items: stretch;
+}
+
+header nav a {
+    display: flex;
+    align-items: center;
+    padding: 0 12px;
+    text-decoration: none;
+    border: 1px solid transparent;
+    border-bottom: none;
+    white-space: nowrap;
+}
+
+header nav a:hover {
+    background: var(--strip-hover);
+}
+
+header nav a.current {
+    background: var(--back);
+    color: var(--text);
+    border-color: var(--line);
+    border-top: 2px solid var(--accent);
+    font-weight: 600;
+    margin-bottom: -1px;
+}
+
+header .bridge {
+    margin-left: auto;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+header .stream,
+header .user,
+header .status,
+header .kind {
+    color: var(--strip-muted);
+}
+
+header button {
+    align-self: center;
+    min-height: 22px;
+    border-color: var(--strip-line);
+    background: none;
+    color: var(--strip-text);
+}
+
+header button:hover {
+    background: var(--strip-hover);
+}
+
+header .theme {
+    gap: 0;
+}
+
+header .theme button {
+    border-radius: 0;
+    margin-left: -1px;
+}
+
+header .theme button[aria-pressed="true"] {
+    background: var(--back);
+    color: var(--text);
+}
+
+header a:focus-visible,
+header button:focus-visible {
+    outline-color: var(--strip-text);
+}
+
+.status,
+.kind {
+    color: var(--muted);
+}
+
+.filter-device,
+.removed {
+    margin-left: 6px;
+    padding: 0 5px;
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    color: var(--muted);
+    font-size: 12px;
+    white-space: nowrap;
+}
+
+.removed {
+    border-color: transparent;
+    background: var(--warn-back);
+    color: var(--warn-text);
+}
+
+#alert {
+    flex: none;
+    padding: 5px 10px;
+    background: var(--warn-back);
+    color: var(--warn-text);
+    border-bottom: 1px solid var(--line);
+}
+
+#alert:empty {
+    display: none;
+}
+
+/* The status bar */
+
+#status {
+    flex: none;
+    display: flex;
+    gap: 16px;
+    min-height: 22px;
+    padding: 2px 10px;
+    background: var(--frame);
+    border-top: 1px solid var(--line);
+    color: var(--muted);
+    font-size: 12px;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+#status:empty {
+    display: none;
+}
+
+#status .selection {
+    flex: 0 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+#status .count,
+#status .bridge-state {
+    flex: none;
+}
+
+#status .bridge-state {
+    margin-left: auto;
+}
+
+/* The place of a panel */
+
+main {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+main > .view {
+    flex: 1;
+    min-height: 0;
+    overflow: auto;
+    padding: 10px 12px;
+    background: var(--back);
+}
+
+main > .view.work {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    padding: 0;
+    background: var(--frame);
+}
+
+main > p.note {
+    padding: 10px 12px;
+}
+
+h2 {
+    margin: 0 0 8px;
+    font-size: 15px;
+}
+
+/* the wizard's line about a last run that can no longer be undone */
+
+p.run-gone {
+    flex: none;
+    margin: 0 0 8px;
+    padding: 6px 10px;
+    background: var(--warn-back);
+    color: var(--warn-text);
+}
+
+.view.work > p.run-gone {
+    margin: 0;
+}
+
+.view.work > h2 {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+}
+
+h3 {
+    margin: 0;
+    font-size: 13px;
+}
+
+h4,
+h5 {
+    margin: 8px 0 3px;
+    font-size: 12px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.note {
+    color: var(--muted);
+}
+
+.notes {
+    flex: none;
+    background: var(--back);
+}
+
+.notes > * {
+    margin: 0;
+    padding: 4px 10px;
+    border-bottom: 1px solid var(--grid);
+}
+
+.counters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2px 16px;
+    color: var(--muted);
+    font-size: 12px;
+}
+
+.counters:empty,
+.tree-note:empty,
+.stopped:empty,
+.fresh:empty,
+.copied:empty,
+.stale:empty {
+    display: none;
+}
+
+.stopped {
+    background: var(--warn-back);
+    color: var(--warn-text);
+}
+
+/* The Group Monitor's bar to read or write a group address */
+
+.send-bar p {
+    margin: 2px 0;
+}
+
+.send-fields {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px 6px;
+}
+
+.send-address-box {
+    position: relative;
+}
+
+.send-fields .send-dpt {
+    width: 8em;
+}
+
+.send-fields .send-value-box {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.send-fields .send-value-box input[type="number"] {
+    width: 8em;
+}
+
+.send-fields .unit {
+    color: var(--muted);
+}
+
+ul.send-suggestions {
+    position: absolute;
+    left: 0;
+    top: 100%;
+    z-index: 5;
+    min-width: 100%;
+    max-width: 32em;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    background: var(--back);
+    border: 1px solid var(--line);
+}
+
+ul.send-suggestions:empty {
+    display: none;
+}
+
+ul.send-suggestions button {
+    display: block;
+    width: 100%;
+    border: 0;
+    border-radius: 0;
+    background: none;
+    color: var(--text);
+    text-align: left;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+ul.send-suggestions button:hover,
+ul.send-suggestions button:focus-visible {
+    background: var(--hover);
+}
+
+.send-confirm {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px 8px;
+    padding: 4px 6px;
+    background: var(--warn-back);
+    color: var(--warn-text);
+}
+
+.send-confirm .send-words {
+    font-weight: 600;
+}
+
+.send-answer:empty {
+    display: none;
+}
+
+.send-answer.warn {
+    color: var(--warn-text);
+}
+
+/* The workplace: a panel (bar, tree, tabs, list) and the sidebar */
+
+.workplace {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    align-items: stretch;
+}
+
+.panel {
+    flex: 1 1 0;
+    min-width: 0;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.panel-body {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    align-items: stretch;
+}
+
+.pane {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    background: var(--back);
+}
+
+/* The side panes give way before the list does: it keeps 320px, whatever widths were set or kept */
+
+.tree-pane {
+    flex: 0 1 auto;
+    width: min(var(--tree-width), 40%);
+    overflow: auto;
+    padding: 2px 0;
+}
+
+.list-pane {
+    flex: 1 0 320px;
+}
+
+.sidebar {
+    flex: 0 1 auto;
+    width: min(var(--properties-width), 35%);
+    overflow: auto;
+}
+
+/* closed, the sidebar is a strip of its headings' drawings */
+
+.sidebar.closed {
+    flex: none;
+    width: 30px;
+    overflow: hidden;
+}
+
+.sidebar-closed > .properties-splitter,
+.sidebar.closed .container-body,
+.sidebar.closed .container-head .label {
+    display: none;
+}
+
+.splitter {
+    flex: none;
+    width: 5px;
+    background: var(--frame);
+    border-left: 1px solid var(--line);
+    border-right: 1px solid var(--line);
+    cursor: col-resize;
+    touch-action: none;
+}
+
+.splitter:hover,
+.splitter.dragging {
+    background: var(--select);
+}
+
+/* Two panels, one above the other, with the sidebar beside both. The upper one gives way last. */
+
+main > .view.split {
+    display: flex;
+    align-items: stretch;
+    overflow: hidden;
+    padding: 0;
+    background: var(--frame);
+}
+
+.halves {
+    flex: 1 1 0;
+    min-width: 0;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.halves > .view {
+    flex: 1 1 0;
+    min-height: 120px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    background: var(--frame);
+}
+
+.halves > .view.second {
+    flex: 0 1 var(--second-height);
+}
+
+.splitter.row-splitter {
+    width: auto;
+    height: 5px;
+    border-left: none;
+    border-right: none;
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+    cursor: row-resize;
+}
+
+/* the half that was used last, which the sidebar shows */
+
+.halves > .view.active .panel-bar {
+    border-bottom-color: var(--accent);
+}
+
+/* The Panels menu of the bar */
+
+.menu-box {
+    flex: none;
+    position: relative;
+}
+
+.menu {
+    display: none;
+    position: absolute;
+    top: 100%;
+    right: 0;
+    z-index: 5;
+    min-width: 12em;
+    padding: 2px;
+    flex-direction: column;
+    background: var(--back);
+    border: 1px solid var(--control-line);
+    box-shadow: 0 4px 12px var(--shadow);
+}
+
+.menu-box.open > .menu {
+    display: flex;
+}
+
+.menu > button {
+    border-color: transparent;
+    background: none;
+    text-align: left;
+    white-space: nowrap;
+}
+
+.menu > button:hover {
+    background: var(--hover);
+}
+
+/* The panel's bar: back, forward, the panel chooser, the path, the actions, the Panels menu and the find box */
+
+.tool-row {
+    flex: none;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    min-height: 30px;
+    padding: 3px 6px;
+    background: var(--panel);
+    border-bottom: 1px solid var(--line);
+}
+
+.panel-chooser {
+    flex: none;
+    font-weight: 600;
+}
+
+/* a long path gives way before the actions wrap */
+.crumbs {
+    flex: 1 1000 auto;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.crumb {
+    flex: 0 1 auto;
+    min-width: 2em;
+    min-height: 22px;
+    padding: 1px 4px;
+    border-color: transparent;
+    background: none;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: inline-block;
+}
+
+.crumb + .crumb::before {
+    content: "\203A";
+    margin-right: 8px;
+    color: var(--muted);
+}
+
+.crumb.current {
+    min-width: 4em;
+    font-weight: 600;
+    cursor: default;
+}
+
+.tools {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+}
+
+.tool-row > .tools {
+    flex: 0 1 auto;
+    min-width: 0;
+    margin-left: auto;
+    justify-content: flex-end;
+}
+
+.find-slot {
+    flex: 0 1 auto;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+}
+
+.find-slot:empty {
+    display: none;
+}
+
+.tool-row .find {
+    width: 14em;
+    max-width: 100%;
+}
+
+.subject-tools {
+    display: inline-flex;
+}
+
+.subject-tools:empty {
+    display: none;
+}
+
+button.tool {
+    padding: 2px 6px;
+}
+
+.tree-toggle {
+    display: none;
+}
+
+/* The tabs above the list, each with the number of its rows */
+
+.list-tabs {
+    flex: none;
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+    padding: 0 4px;
+    background: var(--frame);
+    border-bottom: 1px solid var(--line);
+    overflow-x: auto;
+    overflow-y: hidden;
+}
+
+.list-tabs:empty {
+    display: none;
+}
+
+.list-tab,
+.prop-tab {
+    min-height: 26px;
+    padding: 2px 12px;
+    border: 1px solid transparent;
+    border-bottom: none;
+    border-radius: 0;
+    background: none;
+    color: var(--text);
+}
+
+.list-tab.current,
+.prop-tab.current {
+    background: var(--back);
+    border-color: var(--line);
+    border-top: 2px solid var(--accent);
+    font-weight: 600;
+}
+
+/* the row of list tabs scrolls sideways and would cut a tab that reaches over its line */
+.prop-tab.current {
+    margin-bottom: -1px;
+}
+
+.list {
+    flex: 1;
+    min-height: 0;
+    overflow: auto;
+    /* a row scrolled to by the keyboard stops below the heading that stays in place */
+    scroll-padding-top: calc(var(--row) + 1px);
+    outline: none;
+}
+
+.list > h3,
+.list > .device-note > *,
+.list > p {
+    margin: 0;
+    padding: 5px 10px;
+}
+
+.list > h3 {
+    background: var(--panel);
+    border-bottom: 1px solid var(--line);
+    border-top: 1px solid var(--line);
+}
+
+.list > h3:first-child {
+    border-top: none;
+}
+
+.list > .more,
+.grid-box > .more,
+.channels-note > .more {
+    margin: 4px 10px;
+}
+
+.channels-note:empty {
+    display: none;
+}
+
+.unread {
+    padding: 0 10px 8px;
+}
+
+.unread ul,
+ul.uses {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+ul.uses li {
+    display: flex;
+    flex-direction: column;
+    padding: 4px 0;
+    border-bottom: 1px solid var(--grid);
+}
+
+.uses-state,
+.use-channel,
+.use-items {
+    color: var(--muted);
+}
+
+/* The sidebar's containers */
+
+.sidebar-head {
+    flex: none;
+    display: flex;
+    justify-content: flex-end;
+    padding: 3px;
+    background: var(--panel);
+    border-bottom: 1px solid var(--line);
+}
+
+.sidebar.closed .sidebar-head {
+    justify-content: center;
+}
+
+.sidebar-toggle .icon {
+    transition: transform 0.1s;
+}
+
+.sidebar.closed .sidebar-toggle .icon {
+    transform: rotate(180deg);
+}
+
+/* the open containers share the sidebar's height and scroll by themselves; a closed one is its heading row, so the
+   closed ones under the last open one stand at the bottom edge */
+
+.container {
+    flex: 1 1 0;
+    min-height: 84px;
+    display: flex;
+    flex-direction: column;
+    border-bottom: 1px solid var(--line);
+}
+
+.container.closed,
+.sidebar.closed .container {
+    flex: none;
+    min-height: 0;
+}
+
+.container > h3 {
+    flex: none;
+    margin: 0;
+}
+
+.container-head {
+    width: 100%;
+    min-height: 28px;
+    padding: 2px 8px;
+    justify-content: flex-start;
+    gap: 6px;
+    border: none;
+    border-radius: 0;
+    background: var(--panel);
+    font-weight: 600;
+}
+
+.container-head[aria-expanded="true"] {
+    border-bottom: 1px solid var(--grid);
+}
+
+.sidebar.closed .container-head {
+    justify-content: center;
+    padding: 2px 0;
+}
+
+.container.closed > .container-body {
+    display: none;
+}
+
+.container-body {
+    flex: 1 1 0;
+    min-height: 0;
+    overflow: auto;
+    padding: 6px 10px 10px;
+}
+
+.container-body > .properties {
+    padding: 0;
+}
+
+/* The tree, under a heading with its tools */
+
+.tree-head {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    padding: 0 4px 2px 6px;
+    position: sticky;
+    top: -2px;
+    z-index: 1;
+    background: var(--back);
+    border-bottom: 1px solid var(--line);
+}
+
+.tree-head .title {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 12px;
+    color: var(--muted);
+}
+
+/* the drawing of a kind of space, in the tree, the path and the lists */
+
+.kind-icon {
+    display: inline-flex;
+    vertical-align: middle;
+    margin-right: 4px;
+    color: var(--muted);
+}
+
+ul.tree .kind-icon {
+    margin-right: 0;
+}
+
+tr.selected .kind-icon,
+.crumb.current .kind-icon {
+    color: inherit;
+}
+
+ul.tree li.selected > .node > .kind-icon {
+    color: inherit;
+}
+
+ul.tree,
+ul.tree ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+ul.tree ul {
+    padding-left: 16px;
+}
+
+ul.tree li {
+    outline: none;
+}
+
+ul.tree .node {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    min-height: var(--row);
+    padding: 0 6px 0 2px;
+    white-space: nowrap;
+    cursor: default;
+}
+
+ul.tree .node:hover {
+    background: var(--hover);
+}
+
+ul.tree li.selected > .node {
+    background: var(--select);
+    color: var(--select-text);
+}
+
+ul.tree li:focus-visible > .node {
+    outline: 2px solid var(--accent);
+    outline-offset: -2px;
+}
+
+ul.tree .twisty {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    flex: none;
+    color: var(--muted);
+    cursor: pointer;
+}
+
+ul.tree .twisty .icon {
+    width: 12px;
+    height: 12px;
+    transition: transform 0.1s;
+}
+
+ul.tree li[aria-expanded="true"] > .node .twisty .icon {
+    transform: rotate(90deg);
+}
+
+ul.tree .node > .icon {
+    color: var(--muted);
+}
+
+ul.tree li.selected > .node > .icon,
+ul.tree li.selected > .node .kind {
+    color: inherit;
+}
+
+ul.tree .kind {
+    font-size: 12px;
+}
+
+.address {
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+
+/* The lists */
+
+table {
+    border-collapse: separate;
+    border-spacing: 0;
+    width: 100%;
+}
+
+th,
+td {
+    height: var(--row);
+    padding: 1px 8px;
+    text-align: left;
+    vertical-align: middle;
+    border-bottom: 1px solid var(--grid);
+    border-right: 1px solid var(--grid);
+}
+
+th {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    padding: 0;
+    background: var(--panel);
+    border-bottom: 1px solid var(--line);
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+th:not(:has(button)) {
+    padding: 1px 8px;
+}
+
+th button.sort {
+    width: 100%;
+    min-height: var(--row);
+    padding: 1px 8px;
+    border: none;
+    border-radius: 0;
+    background: none;
+    font-weight: 600;
+    justify-content: space-between;
+}
+
+th button.sort:hover {
+    background: var(--hover);
+}
+
+th {
+    overflow: hidden;
+}
+
+/* the right edge of a heading sets the column's width */
+th .col-resize {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 5px;
+    cursor: col-resize;
+    touch-action: none;
+}
+
+th .col-resize:hover {
+    background: var(--select);
+}
+
+.sized {
+    width: var(--col-width);
+    min-width: var(--col-width);
+    max-width: var(--col-width);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+tr.group-row td {
+    padding: 0;
+    background: var(--panel);
+    border-bottom: 1px solid var(--line);
+}
+
+button.fold {
+    width: 100%;
+    justify-content: flex-start;
+    border: none;
+    border-radius: 0;
+    background: none;
+    font-weight: 600;
+}
+
+button.fold .count {
+    color: var(--muted);
+    font-weight: normal;
+}
+
+button.fold .icon {
+    width: 12px;
+    height: 12px;
+    transition: transform 0.1s;
+}
+
+button.fold[aria-expanded="true"] .icon {
+    transform: rotate(90deg);
+}
+
+/* the Group Monitor's rows by type; hover and selection lie over the tint */
+table.grid tbody tr.type-write td {
+    background: var(--tint-write);
+}
+
+table.grid tbody tr.type-read td {
+    background: var(--tint-read);
+}
+
+table.grid tbody tr.type-response td {
+    background: var(--tint-response);
+}
+
+th[aria-sort] button.sort::after {
+    content: "";
+    width: 0;
+    height: 0;
+    border-left: 4px solid transparent;
+    border-right: 4px solid transparent;
+    border-bottom: 5px solid var(--muted);
+}
+
+th[aria-sort="descending"] button.sort::after {
+    border-bottom: none;
+    border-top: 5px solid var(--muted);
+}
+
+table.grid tbody tr {
+    cursor: default;
+    outline: none;
+}
+
+table.grid tbody tr:hover td {
+    background: var(--hover);
+}
+
+table.grid tbody tr.selected td {
+    background: var(--select);
+    color: var(--select-text);
+}
+
+table.grid tbody tr.selected a {
+    color: inherit;
+}
+
+/* a mark that takes no room: the focused row is as high as the others */
+table.grid tbody tr:focus-visible td {
+    box-shadow: inset 0 1px 0 var(--accent), inset 0 -1px 0 var(--accent);
+}
+
+table.grid tbody tr:focus-visible td:first-child {
+    box-shadow: inset 0 1px 0 var(--accent), inset 0 -1px 0 var(--accent), inset 2px 0 0 var(--accent);
+}
+
+/* the selection colour is made for the row's own text colour; a muted part on it would be too faint */
+table.grid tbody tr.selected td :is(.time, .clock, .name, .payload, .reason, .icon, .filter-device, .flag) {
+    color: inherit;
+}
+
+td.num,
+td.number,
+th.num,
+th.number {
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+
+td.address-cell,
+td.time,
+td.source,
+td.destination,
+td.type,
+td.dpt,
+td.service {
+    white-space: nowrap;
+}
+
+td.address-cell .icon {
+    margin-right: 4px;
+    color: var(--muted);
+}
+
+td.flag-cell,
+th.flag-cell,
+td.security {
+    text-align: center;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+th.flag-cell button.sort {
+    justify-content: center;
+    padding: 1px 4px;
+}
+
+.flag,
+.secured {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 14px;
+}
+
+.flag.off {
+    color: var(--muted);
+}
+
+td .link .name,
+td .link .value {
+    margin-left: 8px;
+}
+
+td .link .value {
+    font-weight: 600;
+}
+
+td.last .value,
+td .links .value {
+    font-weight: 600;
+}
+
+td.last .time,
+td .links .name {
+    margin-left: 8px;
+    color: var(--muted);
+}
+
+td .mark,
+li .mark {
+    margin-left: 6px;
+    padding: 0 5px;
+    border-radius: 3px;
+    background: var(--frame);
+    color: var(--muted);
+    font-size: 12px;
+    white-space: nowrap;
+}
+
+td .mark.warn,
+p.warn {
+    background: var(--warn-back);
+    color: var(--warn-text);
+}
+
+p.warn {
+    padding: 4px 8px;
+    border-radius: 3px;
+}
+
+.reason {
+    margin-left: 6px;
+    color: var(--muted);
+}
+
+.payload {
+    font-family: ui-monospace, "Cascadia Mono", Menlo, Consolas, monospace;
+    font-size: 12px;
+    color: var(--muted);
+}
+
+td.value .payload {
+    margin-left: 8px;
+}
+
+td.value .payload:first-child {
+    margin-left: 0;
+}
+
+tr.own td {
+    font-style: italic;
+}
+
+tr.not-decrypted td,
+tr.unused td,
+tr.note-only td {
+    color: var(--muted);
+}
+
+tr.marker td {
+    background: var(--panel);
+    color: var(--muted);
+    text-align: center;
+}
+
+ul.links {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+ul.links li {
+    white-space: nowrap;
+}
+
+.grid-box > .empty {
+    margin: 0;
+    padding: 8px 10px;
+}
+
+/* Properties, openHAB, Live and Find */
+
+.properties .subject {
+    margin: 0 0 4px;
+    font-weight: 600;
+    overflow-wrap: anywhere;
+}
+
+.prop-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 6px -10px 0;
+    padding: 0 6px;
+    border-bottom: 1px solid var(--line);
+}
+
+.prop-tab {
+    min-height: 24px;
+    padding: 2px 8px;
+}
+
+.tab-panel.off {
+    display: none;
+}
+
+.tab-panel > .group:first-child h4:first-child {
+    margin-top: 6px;
+}
+
+.properties .group {
+    margin-top: 6px;
+}
+
+.properties .group + .group {
+    border-top: 1px solid var(--grid);
+}
+
+dl.props,
+dl.facts {
+    display: grid;
+    grid-template-columns: minmax(6em, max-content) 1fr;
+    gap: 2px 10px;
+    margin: 0;
+}
+
+dl.props dt,
+dl.facts dt {
+    color: var(--muted);
+}
+
+dl.props dd,
+dl.facts dd {
+    margin: 0;
+    overflow-wrap: anywhere;
+}
+
+ul.ticks,
+ul.live-list,
+.find-results ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+label.tick {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    min-height: 20px;
+}
+
+.container-body a.add {
+    margin-top: 6px;
+}
+
+.properties .actions {
+    margin: 0 0 4px;
+}
+
+.container-body .tools {
+    margin-top: 4px;
+}
+
+ul.live-list li {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 8px;
+    padding: 2px 0;
+    border-bottom: 1px solid var(--grid);
+}
+
+ul.live-list .clock,
+ul.live-list .type {
+    color: var(--muted);
+}
+
+ul.live-list .value {
+    font-weight: 600;
+}
+
+.finder .find {
+    width: 100%;
+}
+
+button.found {
+    width: 100%;
+    justify-content: flex-start;
+    border-color: transparent;
+    background: none;
+    white-space: normal;
+    text-align: left;
+}
+
+button.found .kind {
+    flex: none;
+    font-size: 12px;
+}
+
+button.found .name {
+    overflow-wrap: anywhere;
+}
+
+/* Project, the wizard, the chooser and the login: sections with headings, in the same dress */
+
+.view.sections > h2,
+.view > h2 {
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--line);
+}
+
+section.part {
+    margin: 0 0 12px;
+    max-width: 110em;
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    background: var(--back);
+}
+
+section.part > h3 {
+    padding: 5px 10px;
+    background: var(--panel);
+    border-bottom: 1px solid var(--line);
+}
+
+section.part > .body,
+section.part > :not(h3):not(.body) {
+    margin: 8px 10px;
+}
+
+section.part table {
+    border-top: 1px solid var(--grid);
+    border-left: 1px solid var(--grid);
+    margin: 8px 0;
+    width: auto;
+    min-width: 50%;
+}
+
+section.part th {
+    position: static;
+}
+
+section.part .tools {
+    margin: 6px 0;
+}
+
+.removal p {
+    margin: 6px 0;
+}
+
+.note.help {
+    max-width: 70em;
+}
+
+ul.bridges {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    max-width: 60em;
+    border: 1px solid var(--line);
+    border-radius: 3px;
+}
+
+ul.bridges li {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px 12px;
+    min-height: 30px;
+    padding: 2px 10px;
+    border-bottom: 1px solid var(--grid);
+}
+
+ul.bridges li:last-child {
+    border-bottom: none;
+}
+
+.signed-out {
+    max-width: 30em;
+    margin: 40px auto;
+    padding: 16px 20px;
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    background: var(--back);
+    text-align: center;
+}
+
+.signed-out h2 {
+    border: none;
+}
+
+ul.pick,
+.pick ul {
+    list-style: none;
+    padding-left: 18px;
+    margin: 0;
+}
+
+.pick li {
+    min-height: var(--row);
+}
+
+.pick li > label,
+ul.pick li {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    min-height: var(--row);
+}
+
+.pick > ul,
+ul.pick.addresses {
+    padding-left: 0;
+    border: 1px solid var(--grid);
+}
+
+.pick > ul > li,
+ul.pick.addresses > li {
+    padding: 0 8px;
+    border-bottom: 1px solid var(--grid);
+}
+
+ul.pick.addresses {
+    max-height: 26em;
+    overflow-y: auto;
+}
+
+.pick .kind,
+.field .caption {
+    color: var(--muted);
+}
+
+.pick .address,
+.pick .kind,
+.created .kind,
+.run .kind {
+    margin-right: 6px;
+}
+
+.field .caption {
+    display: block;
+    font-size: 12px;
+}
+
+ul.problems,
+ul.steps,
+ul.facts,
+ul.read-list,
+ul.group-list,
+ul.open-things {
+    list-style: none;
+    padding-left: 0;
+    margin: 4px 0;
+}
+
+ul.steps li {
+    min-height: var(--row);
+    border-bottom: 1px solid var(--grid);
+}
+
+ul.problems li {
+    padding: 3px 8px;
+    margin: 2px 0;
+    border-radius: 3px;
+}
+
+ul.problems li.error {
+    background: var(--warn-back);
+    color: var(--warn-text);
+    font-weight: 600;
+}
+
+ul.problems li.warning {
+    background: var(--panel);
+}
+
+ul.problems .severity,
+ul.problems .detail {
+    margin-right: 6px;
+}
+
+ul.problems .detail {
+    font-weight: normal;
+}
+
+.state.failed {
+    color: var(--warn-text);
+    font-weight: 600;
+}
+
+.state.created,
+.state.removed {
+    color: var(--accent);
+}
+
+/* The wizard: choose, the plan as a workplace, the sheet that asks, the run */
+
+.choose-lists {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(18em, 1fr));
+    gap: 0 16px;
+    align-items: start;
+}
+
+.choose-list > .pick,
+.choose-list > ul.pick {
+    max-height: 26em;
+    overflow-y: auto;
+}
+
+.choose-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px 10px;
+}
+
+.choose-bar .ticked {
+    flex: 1 1 auto;
+    margin: 0;
+}
+
+.wizard-plan {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.plan-notes {
+    flex: none;
+    max-height: 5.5em;
+    overflow-y: auto;
+    padding: 2px 10px;
+    background: var(--back);
+    border-bottom: 1px solid var(--line);
+    font-size: 12px;
+}
+
+.plan-notes p {
+    margin: 1px 0;
+}
+
+.plan-summary {
+    flex: none;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px 12px;
+    padding: 4px 10px;
+    background: var(--panel);
+    border-top: 1px solid var(--line);
+}
+
+.plan-summary .summary-text {
+    flex: 1 1 24em;
+    min-width: 0;
+    margin: 0;
+}
+
+.plan-summary .tools {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin: 0;
+}
+
+.plan-summary button .icon {
+    margin-right: 4px;
+    vertical-align: -3px;
+}
+
+.problem-counts {
+    color: var(--muted);
+}
+
+.problem-counts.has-errors,
+.check-state {
+    color: var(--warn-text);
+    font-weight: 600;
+}
+
+/* the state of a node or a row: a small drawing of the page's own */
+
+.badge {
+    display: inline-flex;
+    align-items: center;
+    flex: none;
+    color: var(--muted);
+}
+
+.badge .icon {
+    width: 12px;
+    height: 12px;
+}
+
+.badge.state-new {
+    color: var(--accent);
+}
+
+.badge.state-warning,
+.badge.state-error {
+    color: var(--warn-text);
+}
+
+ul.tree li.selected > .node .badge {
+    color: inherit;
+}
+
+ul.tree li.left-out > .node .name,
+table.grid tbody tr.left-out td {
+    color: var(--muted);
+}
+
+table.grid tbody tr.left-out.selected td {
+    color: inherit;
+}
+
+/* a cell that can be changed shows a pencil when the pointer is on it or the row's mark stands on it */
+
+.can-edit {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    min-height: calc(var(--row) - 2px);
+    cursor: text;
+}
+
+.can-edit .value {
+    flex: 1 1 auto;
+    min-width: 1em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.can-edit .pencil {
+    flex: none;
+    display: inline-flex;
+    visibility: hidden;
+    color: var(--muted);
+}
+
+.can-edit .pencil .icon {
+    width: 12px;
+    height: 12px;
+}
+
+td:hover > .can-edit .pencil,
+tr:focus .can-edit.current .pencil,
+.can-edit.current .pencil {
+    visibility: visible;
+}
+
+.can-edit.current,
+button.split.current,
+input.current {
+    outline: 1px solid var(--accent);
+    outline-offset: 1px;
+}
+
+tr.selected .can-edit .pencil {
+    color: inherit;
+}
+
+.cell-editor {
+    width: 100%;
+    min-width: 6em;
+    height: calc(var(--row) - 2px);
+    padding: 0 4px;
+}
+
+table.grid td.col-state {
+    width: 22px;
+    text-align: center;
+}
+
+table.grid td.col-problems .problem {
+    display: block;
+    white-space: normal;
+}
+
+table.grid td.col-problems .problem.error {
+    color: var(--warn-text);
+    font-weight: 600;
+}
+
+table.grid td.col-problems .detail {
+    margin-left: 6px;
+    font-weight: normal;
+}
+
+table.grid td .key,
+table.grid td .address,
+table.grid td .kind,
+table.grid td .mark,
+table.grid td .note,
+table.grid td button.split {
+    margin-right: 6px;
+}
+
+table.grid td button.split {
+    height: calc(var(--row) - 4px);
+    padding: 0 6px;
+}
+
+.plan-text {
+    padding: 8px 10px;
+    overflow: auto;
+}
+
+.plan-text textarea {
+    width: 100%;
+    min-height: 12em;
+}
+
+/* the Text files tab: what the text is for, and per Thing the existing Thing its lines are for */
+
+.text-mode {
+    display: flex;
+    gap: 0;
+    padding: 6px 10px 2px;
+}
+
+.text-mode button {
+    border-radius: 0;
+}
+
+.text-mode button + button {
+    margin-left: -1px;
+}
+
+.text-mode button[aria-pressed="true"] {
+    background: var(--select);
+    color: var(--select-text);
+    border-color: var(--accent);
+    position: relative;
+}
+
+.lines-targets {
+    padding: 2px 10px;
+}
+
+.lines-targets p.note {
+    margin: 4px 0;
+}
+
+ul.targets {
+    list-style: none;
+    padding-left: 0;
+    margin: 4px 0;
+}
+
+ul.targets li {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px 8px;
+    padding: 2px 0;
+}
+
+ul.targets select,
+ul.targets input {
+    max-width: 100%;
+}
+
+.list > p.reads,
+.list > p.note {
+    margin: 0;
+    padding: 4px 10px;
+}
+
+/* the sidebar's form: the same fields with their labels and a help line */
+
+.form-field {
+    margin: 4px 0;
+}
+
+.form-field .field {
+    display: block;
+}
+
+.form-field input[type="text"],
+.form-field select {
+    width: 100%;
+}
+
+.form-field .help {
+    display: block;
+    font-size: 12px;
+    color: var(--muted);
+}
+
+fieldset.part {
+    margin: 6px 0;
+    padding: 2px 8px 4px;
+    border: 1px solid var(--line);
+    border-radius: 3px;
+}
+
+fieldset.part legend {
+    padding: 0 4px;
+    font-size: 12px;
+    color: var(--muted);
+}
+
+button.check {
+    display: block;
+    width: 100%;
+    height: auto;
+    padding: 0;
+    border: none;
+    background: none;
+    color: inherit;
+    font: inherit;
+    text-align: left;
+    white-space: normal;
+    cursor: pointer;
+}
+
+button.check:hover {
+    text-decoration: underline;
+}
+
+ul.facts li {
+    min-height: var(--row);
+    overflow-wrap: anywhere;
+}
+
+/* the sheet that asks before anything is made */
+
+.confirm-sheet {
+    position: fixed;
+    inset: 0;
+    z-index: 30;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    background: var(--shadow);
+}
+
+.confirm-sheet:focus {
+    outline: none;
+}
+
+.confirm-sheet .sheet {
+    max-width: 46em;
+    max-height: 100%;
+    overflow-y: auto;
+    padding: 12px 16px;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    background: var(--back);
+    color: var(--text);
+}
+
+.confirm-sheet .counts {
+    font-weight: 600;
+}
+
+ul.group-list {
+    max-height: 12em;
+    overflow-y: auto;
+}
+
+ul.group-list .in,
+ul.group-list .there {
+    color: var(--muted);
+}
+
+ul.read-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2px 12px;
+    max-height: 12em;
+    overflow-y: auto;
+    font-variant-numeric: tabular-nums;
+}
+
+.confirm-sheet .tools {
+    display: flex;
+    justify-content: flex-end;
+    gap: 6px;
+    margin-top: 10px;
+}
+
+.step-group > h4 .kind {
+    margin-left: 6px;
+    text-transform: none;
+    letter-spacing: 0;
+}
+
+.progress {
+    font-weight: 600;
+}
+
+/* Narrow screens: the tree slides in over the list, Properties goes under the list */
+
+@media (max-width: 800px) {
+    header {
+        gap: 0 8px;
+        padding: 0 4px;
+    }
+
+    header nav a {
+        padding: 0 8px;
+    }
+
+    header .bridge {
+        margin-left: 0;
+    }
+
+    /* the panel on top, the sidebar under it */
+    .workplace {
+        flex-direction: column;
+    }
+
+    .panel {
+        flex: 2 1 0;
+    }
+
+    .splitter {
+        display: none;
+    }
+
+    .tree-toggle {
+        display: inline-flex;
+    }
+
+    /* no room for two panels */
+    .menu-box {
+        display: none;
+    }
+
+    .tool-row {
+        flex-wrap: wrap;
+    }
+
+    /* tree and list share one place: the open tree lies over the list only, the bar with its button stays in reach */
+    .panel-body {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr);
+        grid-template-rows: minmax(0, 1fr);
+    }
+
+    .tree-pane {
+        display: none;
+        grid-row: 1;
+        grid-column: 1;
+        justify-self: start;
+        z-index: 3;
+        width: min(85%, 340px);
+        border-right: 1px solid var(--line);
+        box-shadow: 4px 0 12px var(--shadow);
+    }
+
+    .tree-open .tree-pane {
+        display: flex;
+    }
+
+    .list-pane {
+        grid-row: 1;
+        grid-column: 1;
+        min-height: 0;
+    }
+
+    .sidebar {
+        flex: 1 1 0;
+        width: auto;
+        min-height: 0;
+        border-top: 1px solid var(--line);
+    }
+
+    .sidebar.closed {
+        flex: none;
+        width: auto;
+        display: flex;
+        flex-direction: row;
+    }
+
+    .sidebar.closed .container {
+        border-bottom: none;
+    }
+
+    .sidebar.closed .container-head {
+        width: 30px;
+    }
+}

@@ -13,6 +13,7 @@
 package org.openhab.binding.knx.internal.config;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.knx.internal.monitor.TelegramMonitor;
 
 /**
  * {@link org.openhab.binding.knx.internal.handler.KNXBridgeBaseThingHandler} configuration
@@ -28,6 +29,8 @@ public class BridgeConfiguration {
     private int responseTimeout = 0;
     private String keyringFile = "";
     private String keyringPassword = "";
+    private int monitorBufferSize = TelegramMonitor.DEFAULT_BUFFER_SIZE;
+    private boolean groupMonitorSend = false;
 
     public int getAutoReconnectPeriod() {
         return autoReconnectPeriod;
@@ -55,5 +58,15 @@ public class BridgeConfiguration {
 
     public String getKeyringPassword() {
         return keyringPassword;
+    }
+
+    /** {@return the number of telegrams the group monitor keeps, as configured; not clamped yet} */
+    public int getMonitorBufferSize() {
+        return monitorBufferSize;
+    }
+
+    /** {@return whether an administrator may send group telegrams from the add-on's page} */
+    public boolean isGroupMonitorSend() {
+        return groupMonitorSend;
     }
 }

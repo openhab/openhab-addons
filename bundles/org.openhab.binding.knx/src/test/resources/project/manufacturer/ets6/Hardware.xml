@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<KNX xmlns="http://knx.org/xml/project/23" CreatedBy="ETS6" ToolVersion="6.4.7890.0">
+  <ManufacturerData>
+    <Manufacturer RefId="M-00C8">
+      <Hardware>
+        <Hardware Id="M-00C8_H-0001-2" Name="Made-up light actuator" SerialNumber="MADEUP-HW-SERIAL-LIGHT" VersionNumber="1" BusCurrent="10" HasIndividualAddress="true" HasApplicationProgram="true" IsCoupler="false">
+          <Products>
+            <Product Id="M-00C8_H-0001-2_P-ABC.12" Text="Made-up light actuator" OrderNumber="MU ABC.12" IsRailMounted="true" DefaultLanguage="en-US" VisibleDescription="made-up" Hash="MADEUP-PRODUCT-HASH-SIX" />
+          </Products>
+          <Hardware2Programs>
+            <Hardware2Program Id="M-00C8_H-0001-2_HP-0101-20-0F0F" MediumTypes="MT-0" Hash="MADEUP-H2P-HASH-SIX">
+              <ApplicationProgramRef RefId="M-00C8_A-0101-20-0F0F" />
+            </Hardware2Program>
+          </Hardware2Programs>
+        </Hardware>
+        <Hardware Id="M-00C8_H-0002-2" Name="Made-up push button" SerialNumber="MADEUP-HW-SERIAL-BUTTON" VersionNumber="1" BusCurrent="10" HasIndividualAddress="true" HasApplicationProgram="true">
+          <Products>
+            <Product Id="M-00C8_H-0002-2_P-DEF.34" Text="Made-up push button 2-fold" OrderNumber="MU DEF.34" IsRailMounted="false" DefaultLanguage="en-US" />
+          </Products>
+          <Hardware2Programs>
+            <Hardware2Program Id="M-00C8_H-0002-2_HP-0102-21-1A1A" MediumTypes="MT-0">
+              <ApplicationProgramRef RefId="M-00C8_A-0102-21-1A1A" />
+            </Hardware2Program>
+          </Hardware2Programs>
+        </Hardware>
+      </Hardware>
+    </Manufacturer>
+  </ManufacturerData>
+</KNX>

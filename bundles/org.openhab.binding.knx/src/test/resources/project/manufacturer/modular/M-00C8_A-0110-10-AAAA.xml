@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<KNX xmlns="http://knx.org/xml/project/23" CreatedBy="ETS6" ToolVersion="6.4.7890.0">
+  <ManufacturerData>
+    <Manufacturer RefId="M-00C8">
+      <ApplicationPrograms>
+        <ApplicationProgram Id="M-00C8_A-0110-10-AAAA" ApplicationNumber="272" ApplicationVersion="16" ProgramType="ApplicationProgram" MaskVersion="MV-07B0" Name="Made-up modular program" DefaultLanguage="en-US" IsSecureEnabled="false">
+          <Static>
+            <ComObjectTable>
+              <ComObject Id="M-00C8_A-0110-10-AAAA_O-1" Name="Central" Text="Central switch" Number="1" FunctionText="All channels" ObjectSize="1 Bit" ReadFlag="Disabled" WriteFlag="Enabled" CommunicationFlag="Enabled" TransmitFlag="Disabled" UpdateFlag="Disabled" ReadOnInitFlag="Disabled" DatapointType="DPST-1-1" />
+            </ComObjectTable>
+            <ComObjectRefs>
+              <ComObjectRef Id="M-00C8_A-0110-10-AAAA_O-1_R-1" RefId="M-00C8_A-0110-10-AAAA_O-1" />
+              <ComObjectRef Id="M-00C8_A-0110-10-AAAA_O-5_R-5" RefId="M-00C8_A-0110-10-AAAA_O-5" Text="Reference without object" />
+            </ComObjectRefs>
+            <Allocators>
+              <Allocator Id="M-00C8_A-0110-10-AAAA_L-1" Name="Channels" Start="1" maxInclusive="8" />
+            </Allocators>
+          </Static>
+          <ModuleDefs>
+            <ModuleDef Id="M-00C8_A-0110-10-AAAA_MD-1" Name="Channel">
+              <Arguments>
+                <Argument Id="M-00C8_A-0110-10-AAAA_MD-1_A-1" Name="name" />
+              </Arguments>
+              <Static>
+                <ComObjects>
+                  <ComObject Id="M-00C8_A-0110-10-AAAA_MD-1_O-2-1" Name="Output" Text="Output {{name}}" Number="2" FunctionText="Switch" ObjectSize="1 Bit" ReadFlag="Disabled" WriteFlag="Enabled" CommunicationFlag="Enabled" TransmitFlag="Disabled" UpdateFlag="Disabled" ReadOnInitFlag="Disabled" />
+                </ComObjects>
+                <ComObjectRefs>
+                  <ComObjectRef Id="M-00C8_A-0110-10-AAAA_MD-1_O-2-1_R-1" RefId="M-00C8_A-0110-10-AAAA_MD-1_O-2-1" />
+                </ComObjectRefs>
+              </Static>
+              <SubModuleDefs>
+                <ModuleDef Id="M-00C8_A-0110-10-AAAA_MD-1_SM-1" Name="Logic">
+                  <Static>
+                    <ComObjects>
+                      <ComObject Id="M-00C8_A-0110-10-AAAA_MD-1_SM-1_O-3-1" Name="Logic" Text="Logic input" Number="3" FunctionText="Logic" ObjectSize="1 Byte" ReadFlag="Disabled" WriteFlag="Enabled" CommunicationFlag="Enabled" TransmitFlag="Disabled" UpdateFlag="Enabled" ReadOnInitFlag="Disabled" DatapointType="DPST-5-10" />
+                    </ComObjects>
+                    <ComObjectRefs>
+                      <ComObjectRef Id="M-00C8_A-0110-10-AAAA_MD-1_SM-1_O-3-1_R-1" RefId="M-00C8_A-0110-10-AAAA_MD-1_SM-1_O-3-1" />
+                    </ComObjectRefs>
+                  </Static>
+                </ModuleDef>
+              </SubModuleDefs>
+            </ModuleDef>
+          </ModuleDefs>
+          <Dynamic>
+            <ChannelIndependentBlock>
+              <ComObjectRefRef RefId="M-00C8_A-0110-10-AAAA_O-1_R-1" />
+            </ChannelIndependentBlock>
+          </Dynamic>
+        </ApplicationProgram>
+      </ApplicationPrograms>
+    </Manufacturer>
+  </ManufacturerData>
+</KNX>

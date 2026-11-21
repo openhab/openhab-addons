@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.knx.internal.client;
 
+import java.util.Optional;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.knx.internal.handler.GroupAddressListener;
@@ -44,6 +46,13 @@ public interface KNXClient {
      * @throws KNXException on network or send errors
      */
     boolean isReachable(@Nullable IndividualAddress address) throws KNXException;
+
+    /**
+     * The address openHAB sends from on the current connection.
+     *
+     * @return the address, empty while there is no connection
+     */
+    Optional<IndividualAddress> ownAddress();
 
     /**
      * Get the {@link DeviceInfoClient} which allows further device inspection.
@@ -82,12 +91,22 @@ public interface KNXClient {
     void readDatapoint(Datapoint datapoint);
 
     /**
+     * Schedule one read request for the data point, in the same queue as {@link #readDatapoint(Datapoint)}: it is
+     * not sent again when no answer comes.
+     *
+     * @param datapoint the datapoint
+     */
+    void readOnce(Datapoint datapoint);
+
+    /**
      * Write a command to the KNX bus.
      *
      * @param commandSpec the outbound spec
+     * @return whether the telegram went out; {@code false} when there was no connection to send it on or the value
+     *         could not be encoded
      * @throws KNXException if any problem with the communication arises.
      */
-    void writeToKNX(OutboundSpec commandSpec) throws KNXException;
+    boolean writeToKNX(OutboundSpec commandSpec) throws KNXException;
 
     /**
      * Send a state as a read-response to the KNX bus.
