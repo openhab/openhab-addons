@@ -274,6 +274,8 @@ public class ApiBridgeHandler extends BaseBridgeHandler implements NetatmoHandle
         }
 >>>>>>> 46d6349 Review cloudWebhookServiceListener initialization
 
+        checkStartWebhook();
+
         updateStatus(ThingStatus.ONLINE);
     }
 
