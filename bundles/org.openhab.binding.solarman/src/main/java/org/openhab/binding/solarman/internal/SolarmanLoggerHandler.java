@@ -14,6 +14,7 @@ package org.openhab.binding.solarman.internal;
 
 import static org.openhab.binding.solarman.internal.SolarmanBindingConstants.DYNAMIC_CHANNEL;
 
+import java.time.Duration;
 import java.util.AbstractMap;
 import java.util.List;
 import java.util.Map;
@@ -39,6 +40,7 @@ import org.openhab.binding.solarman.internal.modbus.SolarmanProtocolFactory;
 import org.openhab.binding.solarman.internal.updater.SolarmanChannelUpdater;
 import org.openhab.binding.solarman.internal.updater.SolarmanProcessResult;
 import org.openhab.binding.solarman.internal.updater.SolarmanRegisterUpdater;
+import org.openhab.binding.solarman.internal.util.DebouncedTask;
 import org.openhab.binding.solarman.internal.util.ParserUtils;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -48,6 +50,7 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.types.Command;
+import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -59,6 +62,8 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class SolarmanLoggerHandler extends BaseThingHandler {
+    private static final Duration WRITE_REFRESH_DELAY = Duration.ofSeconds(2);
+
     private final Logger logger = LoggerFactory.getLogger(SolarmanLoggerHandler.class);
 
     private final DefinitionParser definitionParser;
@@ -67,6 +72,8 @@ public class SolarmanLoggerHandler extends BaseThingHandler {
     private volatile ScheduledFuture<?> scheduledFuture;
     @Nullable
     private SolarmanRegisterUpdater solarmanRegisterUpdater;
+    @Nullable
+    private volatile DebouncedTask writeRefresh;
 
     public SolarmanLoggerHandler(Thing thing) {
         super(thing);
@@ -82,6 +89,12 @@ public class SolarmanLoggerHandler extends BaseThingHandler {
             solarmanRegisterUpdater.updateLoggerRegisters(channelUID, command);
         } else {
             logger.error("SolarmanRegisterUpdater is not initialized yet");
+            return;
+        }
+
+        DebouncedTask writeRefresh = this.writeRefresh;
+        if (!(command instanceof RefreshType) && writeRefresh != null) {
+            writeRefresh.trigger();
         }
     }
 
@@ -125,14 +138,13 @@ public class SolarmanLoggerHandler extends BaseThingHandler {
                 solarmanProtocol);
         SolarmanChannelUpdater solarmanChannelUpdater = new SolarmanChannelUpdater(this::updateState);
 
-        scheduledFuture = scheduler
-                .scheduleWithFixedDelay(
-                        () -> queryLoggerAndUpdateState(solarmanLoggerConnector, solarmanProtocol, mergedRequests,
-                                paramToChannelMapping, solarmanChannelUpdater),
-                        0, config.refreshInterval, TimeUnit.SECONDS);
+        Runnable poll = () -> queryLogger(solarmanLoggerConnector, solarmanProtocol, mergedRequests,
+                paramToChannelMapping, solarmanChannelUpdater);
+        writeRefresh = new DebouncedTask(scheduler, poll, WRITE_REFRESH_DELAY);
+        scheduledFuture = scheduler.scheduleWithFixedDelay(poll, 0, config.refreshInterval, TimeUnit.SECONDS);
     }
 
-    private void queryLoggerAndUpdateState(SolarmanLoggerConnector solarmanLoggerConnector,
+    private synchronized void queryLogger(SolarmanLoggerConnector solarmanLoggerConnector,
             SolarmanProtocol solarmanProtocol, List<Request> mergedRequests,
             Map<ParameterItem, ChannelUID> paramToChannelMapping, SolarmanChannelUpdater solarmanChannelUpdater) {
         try {
@@ -221,6 +233,12 @@ public class SolarmanLoggerHandler extends BaseThingHandler {
     @Override
     public void dispose() {
         super.dispose();
+
+        DebouncedTask writeRefresh = this.writeRefresh;
+        if (writeRefresh != null) {
+            writeRefresh.cancel();
+            this.writeRefresh = null;
+        }
 
         ScheduledFuture<?> scheduledFuture = this.scheduledFuture;
         if (scheduledFuture != null) {

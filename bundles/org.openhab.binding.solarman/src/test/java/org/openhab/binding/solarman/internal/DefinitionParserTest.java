@@ -12,10 +12,12 @@
  */
 package org.openhab.binding.solarman.internal;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
@@ -36,6 +38,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.solarman.internal.defmodel.InverterDefinition;
+import org.openhab.binding.solarman.internal.defmodel.ParameterItem;
+import org.openhab.binding.solarman.internal.defmodel.Validation;
 
 /**
  * @author Catalin Sanda - Initial contribution
@@ -59,6 +63,18 @@ public class DefinitionParserTest {
             InverterDefinition inverterDefinition = definitionParser.parseDefinition(definitionId);
             assertNotNull(inverterDefinition, "Failed to parse inverter definition: " + definitionId);
         });
+    }
+
+    @Test
+    void testFractionalValidationBoundIsKept() {
+        InverterDefinition inverterDefinition = Objects.requireNonNull(definitionParser.parseDefinition("deye_2mppt"));
+        ParameterItem totalProduction = inverterDefinition.getParameters().stream()
+                .flatMap(parameter -> parameter.getItems().stream())
+                .filter(item -> "Total Production".equals(item.getName())).findFirst().orElseThrow();
+        Validation validation = Objects.requireNonNull(totalProduction.getValidation());
+
+        assertEquals(0, new BigDecimal("0.1").compareTo(Objects.requireNonNull(validation.getMin())));
+        assertEquals(null, validation.getMax());
     }
 
     public static List<String> extractDefinitionIdFromYamlFiles(List<String> yamlFiles) {
