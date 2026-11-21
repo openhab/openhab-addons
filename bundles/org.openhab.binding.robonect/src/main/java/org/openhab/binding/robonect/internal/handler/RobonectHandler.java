@@ -16,40 +16,50 @@ import static org.openhab.binding.robonect.internal.RobonectBindingConstants.*;
 
 import java.time.DateTimeException;
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.ReentrantLock;
+import java.util.function.BooleanSupplier;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.robonect.internal.RobonectClient;
 import org.openhab.binding.robonect.internal.RobonectCommunicationException;
 import org.openhab.binding.robonect.internal.RobonectEndpoint;
+import org.openhab.binding.robonect.internal.RobonectPushServlet;
 import org.openhab.binding.robonect.internal.config.JobChannelConfig;
 import org.openhab.binding.robonect.internal.config.RobonectConfig;
-import org.openhab.binding.robonect.internal.model.ErrorEntry;
-import org.openhab.binding.robonect.internal.model.ErrorList;
-import org.openhab.binding.robonect.internal.model.MowerInfo;
-import org.openhab.binding.robonect.internal.model.Name;
-import org.openhab.binding.robonect.internal.model.RobonectAnswer;
-import org.openhab.binding.robonect.internal.model.VersionInfo;
-import org.openhab.binding.robonect.internal.model.cmd.ModeCommand;
+import org.openhab.binding.robonect.internal.model.MowerStatus;
+import org.openhab.binding.robonect.internal.model.cmd.DirectCommand;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.library.types.DateTimeType;
-import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
-import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
-import org.openhab.core.library.unit.SIUnits;
-import org.openhab.core.library.unit.Units;
+import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
+import org.openhab.core.thing.binding.ThingHandlerService;
+import org.openhab.core.thing.binding.builder.ChannelBuilder;
+import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.thing.util.ThingWebClientUtil;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
@@ -67,29 +77,132 @@ import com.google.gson.JsonSyntaxException;
  * The channels are periodically updated by polling the mower via HTTP in a separate thread.
  *
  * @author Marco Meyer - Initial contribution
+ * @author Nico Brüttner - Endpoint dispatch, polling, push refresh, and mowing jobs
  */
+@NonNullByDefault
 public class RobonectHandler extends BaseThingHandler {
+
+    private static final ChannelTypeUID JOB_CHANNEL_TYPE = new ChannelTypeUID(BINDING_ID, "jobType");
+    private static final ChannelTypeUID DIRECT_CHANNEL_TYPE = new ChannelTypeUID(BINDING_ID, "directType");
 
     private final Logger logger = LoggerFactory.getLogger(RobonectHandler.class);
 
-    private ScheduledFuture<?> pollingJob;
+    private @Nullable ScheduledFuture<?> pollingJob;
+    private @Nullable ScheduledFuture<?> configPollingJob;
+    private @Nullable ScheduledFuture<?> detailedPollingJob;
+    private final ReentrantLock pollingLock = new ReentrantLock(true);
+    private volatile @Nullable PollingSession pollingSession;
+    private final ThreadLocal<@Nullable BooleanSupplier> sessionActive = new ThreadLocal<>();
+    private volatile @Nullable PushRefresh pushRefresh;
+    private final Map<String, CommandRefresh> commandRefreshJobs = new ConcurrentHashMap<>();
+    private final ThreadLocal<@Nullable BooleanSupplier> commandRefreshActive = new ThreadLocal<>();
+    private volatile boolean disposed;
 
     private HttpClient httpClient;
     private TimeZoneProvider timeZoneProvider;
 
-    private ZoneId timeZone;
+    private volatile ZoneId timeZone;
 
-    private RobonectClient robonectClient;
+    private @Nullable volatile RobonectDiagnosticsHandler diagnosticsHandler;
+    private @Nullable volatile RobonectMowerHandler mowerHandler;
+    private @Nullable volatile RobonectPushHandler pushHandler;
+    private @Nullable volatile RobonectTimerHandler timerHandler;
+    private @Nullable volatile RobonectRemoteStartHandler remoteStartHandler;
+    private @Nullable volatile RobonectWeatherHandler weatherHandler;
+    private final RobonectPushServlet pushServlet;
+    private boolean useAjaxApi;
+    private volatile boolean useWebApi;
 
-    public RobonectHandler(Thing thing, HttpClientFactory httpClientFactory, TimeZoneProvider timeZoneProvider) {
+    /**
+     * Creates a mower Thing handler.
+     *
+     * @param thing the mower Thing
+     * @param httpClientFactory factory for the mower HTTP client
+     * @param timeZoneProvider provider for the default time zone
+     * @param pushServlet servlet that delivers push notifications
+     */
+    public RobonectHandler(Thing thing, HttpClientFactory httpClientFactory, TimeZoneProvider timeZoneProvider,
+            RobonectPushServlet pushServlet) {
         super(thing);
         httpClient = httpClientFactory
                 .createHttpClient(ThingWebClientUtil.buildWebClientConsumerName(thing.getUID(), null));
         this.timeZoneProvider = timeZoneProvider;
+        timeZone = timeZoneProvider.getTimeZone();
+        this.pushServlet = pushServlet;
     }
 
+    /**
+     * Lists the services the framework should associate with this Thing handler.
+     *
+     * @return the Robonect Thing Action service class
+     */
+    @Override
+    public Collection<Class<? extends ThingHandlerService>> getServices() {
+        return Set.of(RobonectActions.class);
+    }
+
+    /**
+     * Submits a job from the Thing Action under the current polling session.
+     *
+     * @param settings the requested job settings
+     * @throws IllegalStateException if the polling session is unavailable or the mower rejects the job
+     */
+    void startJob(RobonectClient.JobSettings settings) {
+        PollingSession session = pollingSession;
+        RobonectMowerHandler mower = mowerHandler;
+        if (mower == null) {
+            throw new IllegalStateException("Robonect mower handler is not initialized");
+        }
+        if (session == null || disposed || !Objects.equals(session, pollingSession)) {
+            throw new IllegalStateException("Robonect Thing is not initialized");
+        }
+        sessionActive.set(() -> Objects.equals(session, pollingSession));
+        try {
+            if (!canPublishState()) {
+                throw new IllegalStateException("Robonect Thing session has ended");
+            }
+            cancelCommandRefresh("status");
+            if (!mower.startJob(null, settings).isSuccessful()) {
+                throw new IllegalStateException("Robonect rejected the mowing job");
+            }
+        } finally {
+            sessionActive.remove();
+        }
+    }
+
+    /**
+     * Sends a direct wheel command from the Thing Action.
+     *
+     * @param command the requested wheel values and timeout
+     * @throws IllegalStateException if the Thing is unavailable or the mower rejects the command
+     */
+    void drive(DirectCommand command) {
+        PollingSession session = pollingSession;
+        RobonectMowerHandler mower = mowerHandler;
+        if (mower == null) {
+            throw new IllegalStateException("Robonect mower handler is not initialized");
+        }
+        if (session == null || disposed || !Objects.equals(session, pollingSession)) {
+            throw new IllegalStateException("Robonect Thing is not initialized");
+        }
+        if (!mower.drive(command).isSuccessful()) {
+            throw new IllegalStateException("Robonect rejected the direct wheel command");
+        }
+    }
+
+    /**
+     * Routes refreshes and commands to endpoint handlers and reports communication failures.
+     *
+     * @param channelUID the channel identifier
+     * @param command the command received for the channel
+     */
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        if (disposed) {
+            return;
+        }
+        PollingSession session = pollingSession;
+        sessionActive.set(() -> Objects.equals(session, pollingSession));
         try {
             if (command instanceof RefreshType) {
                 refreshChannels(channelUID);
@@ -100,261 +213,529 @@ public class RobonectHandler extends BaseThingHandler {
         } catch (RobonectCommunicationException rce) {
             logger.debug("Failed to communicate with the mower. Taking it offline.", rce);
             updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, rce.getMessage());
+        } finally {
+            sessionActive.remove();
         }
     }
 
+    /**
+     * Routes a channel command to the component responsible for that endpoint.
+     *
+     * @param channelUID the channel identifier
+     * @param command the command received for the channel
+     */
     private void sendCommand(ChannelUID channelUID, Command command) {
+        RobonectMowerHandler mower = mowerHandler;
+        RobonectWeatherHandler weather = weatherHandler;
+        RobonectPushHandler push = pushHandler;
+        RobonectRemoteStartHandler remoteStart = remoteStartHandler;
+        RobonectTimerHandler timer = timerHandler;
+        if (mower == null || weather == null || push == null || remoteStart == null || timer == null) {
+            throw new IllegalStateException("Robonect handlers are not fully initialized");
+        }
         switch (channelUID.getId()) {
             case CHANNEL_MOWER_NAME:
-                if (command instanceof StringType stringCommand) {
-                    updateName(stringCommand);
-                } else {
-                    logger.debug("Got name update of type {} but StringType is expected.",
-                            command.getClass().getName());
-                }
+                mower.handleNameCommand(command);
                 break;
-
             case CHANNEL_STATUS_MODE:
-                if (command instanceof StringType) {
-                    setMowerMode(command);
-                } else {
-                    logger.debug("Got job remote start update of type {} but StringType is expected.",
-                            command.getClass().getName());
-                }
+                mower.handleModeCommand(command);
                 break;
-
             case CHANNEL_MOWER_START:
-                if (command instanceof OnOffType onOffCommand) {
-                    handleStartStop(onOffCommand);
-                } else {
-                    logger.debug("Got stopped update of type {} but OnOffType is expected.",
-                            command.getClass().getName());
-                }
+                mower.handleStartCommand(command);
                 break;
-
-            case CHANNEL_JOB:
-                if (command instanceof OnOffType) {
-                    handleJobCommand(channelUID, command);
-                } else {
-                    logger.debug("Got job update of type {} but OnOffType is expected.", command.getClass().getName());
+            case CHANNEL_RESET_ERROR:
+                mower.handleResetErrorCommand(command);
+                break;
+            case CHANNEL_SERVICE_OPERATION:
+                mower.handleServiceCommand(channelUID, command);
+                break;
+            case CHANNEL_DOOR_STATE:
+                mower.handleDoorCommand(command);
+                break;
+            case CHANNEL_WEATHER_ENABLED:
+            case CHANNEL_WEATHER_INTERVAL:
+            case CHANNEL_WEATHER_MAX_RAIN:
+            case CHANNEL_WEATHER_MIN_TEMPERATURE:
+            case CHANNEL_WEATHER_MAX_TEMPERATURE:
+            case CHANNEL_WEATHER_MIN_HUMIDITY:
+            case CHANNEL_WEATHER_MAX_HUMIDITY:
+            case CHANNEL_WEATHER_SKIP_DAY:
+            case CHANNEL_WEATHER_SKIP_NIGHT:
+            case CHANNEL_WEATHER_LOCATION_CITY_ID:
+            case CHANNEL_WEATHER_LOCATION_ZIP:
+                weather.handleCommand(channelUID.getId(), command);
+                break;
+            case CHANNEL_PUSH_URL:
+            case CHANNEL_PUSH_USERNAME:
+            case CHANNEL_PUSH_PASSWORD:
+            case CHANNEL_PUSH_INTERVAL:
+                push.handleCommand(channelUID.getId(), command);
+                break;
+            case CHANNEL_PUSH_MODE:
+                push.handleModeCommand(command);
+                break;
+            default:
+                String id = channelUID.getId();
+                Channel channel = getThing().getChannel(id);
+                if (channel != null && JOB_CHANNEL_TYPE.equals(channel.getChannelTypeUID())) {
+                    JobChannelConfig jobConfig = channel.getConfiguration().as(JobChannelConfig.class);
+                    mower.handleJobCommand(id, jobConfig, command);
+                } else if (channel != null && DIRECT_CHANNEL_TYPE.equals(channel.getChannelTypeUID())) {
+                    mower.handleDirectCommand(channel.getConfiguration(), command);
+                } else if (id.startsWith("remote-")) {
+                    remoteStart.handleCommand(id, command);
+                } else if (id.startsWith("timer-")) {
+                    timer.handleCommand(id, command);
+                } else if (id.startsWith("push-trigger-")) {
+                    push.handleTriggerCommand(id, command);
                 }
                 break;
         }
     }
 
-    private void handleJobCommand(ChannelUID channelUID, Command command) {
-        JobChannelConfig jobConfig = getThing().getChannel(channelUID.getId()).getConfiguration()
-                .as(JobChannelConfig.class);
-        if (command == OnOffType.ON) {
-            robonectClient.startJob(
-                    new RobonectClient.JobSettings().withAfterMode(ModeCommand.Mode.valueOf(jobConfig.getAfterMode()))
-                            .withRemoteStart(ModeCommand.RemoteStart.valueOf(jobConfig.getRemoteStart()))
-                            .withDuration(jobConfig.getDuration()));
-        } else if (command == OnOffType.OFF) {
-            robonectClient.stopJob(
-                    new RobonectClient.JobSettings().withAfterMode(ModeCommand.Mode.valueOf(jobConfig.getAfterMode())));
+    /**
+     * Creates a channel or updates the label while preserving an existing channel's configuration.
+     *
+     * @param id the channel identifier
+     * @param itemType the accepted Item type
+     * @param channelType the channel type identifier
+     * @param label the channel label
+     * @return the channel built with the requested type and label
+     */
+    Channel createChannel(String id, String itemType, String channelType, String label) {
+        Channel existing = getThing().getChannel(id);
+        if (existing != null) {
+            return ChannelBuilder.create(existing).withLabel(label).build();
+        }
+        return ChannelBuilder.create(new ChannelUID(getThing().getUID(), id), itemType)
+                .withType(new ChannelTypeUID(BINDING_ID, channelType)).withLabel(label).build();
+    }
+
+    /**
+     * Reconciles the channels matching a pattern with the desired channels and labels.
+     *
+     * @param channelPattern the pattern identifying channels to reconcile
+     * @param desiredChannels the channels to publish
+     */
+    void updateDynamicChannels(Pattern channelPattern, List<Channel> desiredChannels) {
+        List<Channel> existingChannels = getThing().getChannels();
+        Set<ChannelUID> current = existingChannels.stream()
+                .filter(channel -> channelPattern.matcher(channel.getUID().getId()).matches()).map(Channel::getUID)
+                .collect(Collectors.toSet());
+        Set<ChannelUID> desired = desiredChannels.stream().map(Channel::getUID).collect(Collectors.toSet());
+        if (current.equals(desired) && desiredChannels.stream().allMatch(channel -> {
+            Channel existing = getThing().getChannel(channel.getUID());
+            return existing != null && Objects.equals(existing.getLabel(), channel.getLabel());
+        })) {
+            return;
+        }
+        List<Channel> channels = new ArrayList<>(existingChannels.stream()
+                .filter(channel -> !channelPattern.matcher(channel.getUID().getId()).matches()).toList());
+        channels.addAll(desiredChannels);
+        updateThing(editThing().withChannels(channels).build());
+    }
+
+    /**
+     * Adds or relabels supplied dynamic channels without removing channels omitted by a partial response.
+     *
+     * @param desiredChannels the channels to publish
+     */
+    void addDynamicChannels(List<Channel> desiredChannels) {
+        List<Channel> channels = new ArrayList<>(getThing().getChannels());
+        boolean changed = false;
+        for (Channel channel : desiredChannels) {
+            Channel existing = getThing().getChannel(channel.getUID());
+            if (existing == null) {
+                channels.add(channel);
+                changed = true;
+            } else if (!Objects.equals(existing.getLabel(), channel.getLabel())) {
+                channels.set(channels.indexOf(existing), channel);
+                changed = true;
+            }
+        }
+        if (!changed) {
+            return;
+        }
+        updateThing(editThing().withChannels(channels).build());
+    }
+
+    /**
+     * Cancels the pending delayed refresh for an endpoint, if any.
+     *
+     * @param endpoint the endpoint key used to coalesce refreshes
+     */
+    void cancelCommandRefresh(String endpoint) {
+        CommandRefresh previous = commandRefreshJobs.remove(endpoint);
+        if (previous != null) {
+            previous.cancel();
         }
     }
 
+    /**
+     * Schedules a coalesced endpoint refresh after a specified delay.
+     *
+     * @param endpoint the endpoint key used to coalesce refreshes
+     * @param refresh the endpoint refresh to schedule
+     * @param delaySeconds the number of seconds to wait before executing the refresh
+     */
+    void scheduleCommandRefresh(String endpoint, Runnable refresh, int delaySeconds) {
+        PollingSession session = pollingSession;
+        if (!canPublishState()) {
+            return;
+        }
+        // Coalesce commands per endpoint by restarting the five-second delay after each command.
+        CommandRefresh pending = new CommandRefresh();
+        CommandRefresh previous = commandRefreshJobs.put(endpoint, pending);
+        if (previous != null) {
+            previous.cancel();
+        }
+        // Cancellation may not stop an in-flight HTTP request. canPublishState() uses this predicate via
+        // commandRefreshActive to discard responses after replacement or disposal.
+        BooleanSupplier active = () -> !disposed && Objects.equals(session, pollingSession)
+                && pending.equals(commandRefreshJobs.get(endpoint));
+        ScheduledFuture<?> job = scheduler.schedule(() -> {
+            commandRefreshActive.set(active);
+            try {
+                if (active.getAsBoolean()) {
+                    refresh.run();
+                }
+            } catch (RobonectCommunicationException e) {
+                logger.debug("Could not refresh {} after a command: {}", endpoint, e.getMessage());
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            } finally {
+                commandRefreshActive.remove();
+                // A newer command may already have replaced this task; leave its map entry intact.
+                commandRefreshJobs.remove(endpoint, pending);
+            }
+        }, delaySeconds, TimeUnit.SECONDS);
+        pending.job = job;
+        // Replacement or disposal may have cancelled pending before its future was assigned, when cancel()
+        // could not yet cancel the scheduled task. Close that race now that the future is available.
+        if (!active.getAsBoolean()) {
+            job.cancel(true);
+            commandRefreshJobs.remove(endpoint, pending);
+        }
+    }
+
+    private static class CommandRefresh {
+        private volatile @Nullable ScheduledFuture<?> job;
+
+        /** Cancels the scheduled refresh if its future has been assigned. */
+        private void cancel() {
+            ScheduledFuture<?> current = job;
+            if (current != null) {
+                current.cancel(true);
+            }
+        }
+    }
+
+    /**
+     * Checks whether the current poll or refresh is still authorized to publish.
+     *
+     * @return {@code true} if the current work may publish state, status, or Thing updates
+     */
+    boolean canPublishState() {
+        // Responses may finish after disposal, reinitialization, or a newer command superseding a delayed read.
+        BooleanSupplier active = commandRefreshActive.get();
+        BooleanSupplier session = sessionActive.get();
+        return !disposed && (active == null || active.getAsBoolean()) && (session == null || session.getAsBoolean());
+    }
+
+    /**
+     * Publishes a channel state only while the current work remains valid.
+     *
+     * @param channelUID the channel identifier
+     * @param state the state to publish
+     */
+    @Override
+    protected void updateState(ChannelUID channelUID, State state) {
+        if (canPublishState()) {
+            super.updateState(channelUID, state);
+        }
+    }
+
+    /**
+     * Publishes a state for a channel identifier through the lifecycle guard.
+     *
+     * @param channelId the channel identifier
+     * @param state the state to publish, or {@code null} if absent
+     * @param fullResponse whether an absent state should be published as undefined
+     */
+    void setState(String channelId, @Nullable State state, boolean fullResponse) {
+        if (fullResponse || state != null) {
+            updateState(new ChannelUID(getThing().getUID(), channelId), state == null ? UnDefType.UNDEF : state);
+        }
+    }
+
+    /**
+     * Turns off the other custom job switches before turning on the selected switch.
+     *
+     * @param activeChannelId the selected custom channel, or {@code null} to turn off all custom switches
+     */
+    void updateCustomJobChannels(@Nullable String activeChannelId) {
+        for (Channel channel : getThing().getChannels()) {
+            String id = channel.getUID().getId();
+            if (JOB_CHANNEL_TYPE.equals(channel.getChannelTypeUID()) && !CHANNEL_JOB.equals(id)
+                    && !id.equals(activeChannelId)) {
+                setState(id, OnOffType.OFF, true);
+            }
+        }
+        if (activeChannelId != null && !CHANNEL_JOB.equals(activeChannelId)) {
+            setState(activeChannelId, OnOffType.ON, true);
+        }
+    }
+
+    /**
+     * Returns editable Thing properties for an endpoint component.
+     *
+     * @return a mutable copy of the Thing properties
+     */
+    Map<String, String> editEndpointProperties() {
+        return editProperties();
+    }
+
+    /**
+     * Publishes Thing properties supplied by an endpoint component.
+     *
+     * @param properties the Thing properties to publish
+     */
+    void updateEndpointProperties(Map<String, String> properties) {
+        updateProperties(properties);
+    }
+
+    /**
+     * Returns the time zone currently used for mower data.
+     *
+     * @return the configured mower time zone
+     */
+    ZoneId getTimeZone() {
+        return timeZone;
+    }
+
+    /**
+     * Returns whether the localized Ajax interface may be used for job and mode state.
+     *
+     * @return {@code true} when Ajax UI scraping is enabled
+     */
+    boolean isAjaxApiEnabled() {
+        return useAjaxApi;
+    }
+
+    /**
+     * Returns whether optional web-interface API operations are enabled.
+     *
+     * @return {@code true} when unofficial API operations are enabled
+     */
+    boolean isWebApiEnabled() {
+        return useWebApi;
+    }
+
+    /**
+     * Applies Ajax scraping configuration and ensures the job-time channels exist.
+     *
+     * @param enabled whether to use Ajax for job status and times instead of the locally tracked job
+     */
+    void configureAjaxChannels(boolean enabled) {
+        useAjaxApi = enabled;
+        updateDynamicChannels(Pattern.compile(CHANNEL_JOB_START + "|" + CHANNEL_JOB_END),
+                List.of(createChannel(CHANNEL_JOB_START, "DateTime", "jobTimeType", "Mowing Job Start Time"),
+                        createChannel(CHANNEL_JOB_END, "DateTime", "jobTimeType", "Mowing Job End Time")));
+    }
+
+    /**
+     * Applies unofficial API configuration and reconciles the push-mode channel.
+     *
+     * @param enabled whether the feature is enabled
+     */
+    void configureUnofficialChannels(boolean enabled) {
+        useWebApi = enabled;
+        updateDynamicChannels(Pattern.compile(CHANNEL_PUSH_MODE),
+                enabled ? List.of(createChannel(CHANNEL_PUSH_MODE, "Number", "pushModeType", "Push Service Mode"))
+                        : List.of());
+    }
+
+    /**
+     * Publishes the reported switch value, or an undefined state if absent.
+     *
+     * @param channel the channel identifier
+     * @param value the reported switch value, or {@code null} if absent
+     * @param fullResponse whether an absent state should be published as undefined
+     */
+    void updateSwitch(String channel, @Nullable Boolean value, boolean fullResponse) {
+        setState(channel, value == null ? null : OnOffType.from(value), fullResponse);
+    }
+
+    /**
+     * Refreshes a requested channel, routing to its source endpoint when appropriate.
+     *
+     * @param channelUID the channel identifier
+     */
     private void refreshChannels(ChannelUID channelUID) {
-        switch (channelUID.getId()) {
+        String channelId = channelUID.getId();
+        Channel channel = getThing().getChannel(channelId);
+        if (channel != null && DIRECT_CHANNEL_TYPE.equals(channel.getChannelTypeUID())) {
+            return;
+        }
+        if (channelId.equals(CHANNEL_PUSH_PASSWORD)) {
+            updateState(CHANNEL_PUSH_PASSWORD, UnDefType.UNDEF);
+            return;
+        }
+        RobonectMowerHandler mower = mowerHandler;
+        RobonectWeatherHandler weather = weatherHandler;
+        RobonectPushHandler push = pushHandler;
+        RobonectRemoteStartHandler remoteStart = remoteStartHandler;
+        RobonectTimerHandler timer = timerHandler;
+        RobonectDiagnosticsHandler diagnostics = diagnosticsHandler;
+        if (mower == null || weather == null || push == null || remoteStart == null || timer == null
+                || diagnostics == null) {
+            throw new IllegalStateException("Robonect handlers are not fully initialized");
+        }
+        if (channelId.startsWith("weather-")) {
+            weather.refreshWeatherInfo();
+            return;
+        }
+        if (channel != null && JOB_CHANNEL_TYPE.equals(channel.getChannelTypeUID())) {
+            mower.refreshMowerInfo();
+            return;
+        }
+        if (channelId.startsWith("remote-")) {
+            remoteStart.refreshRemoteInfo();
+            return;
+        }
+        if (channelId.equals(CHANNEL_PUSH_MODE)) {
+            push.refreshPushMode();
+            return;
+        }
+        if (channelId.startsWith("timer-") && !channelId.equals(CHANNEL_TIMER_NEXT_TIMER)
+                && !channelId.equals(CHANNEL_TIMER_STATUS)) {
+            timer.refreshTimersInfo();
+            return;
+        }
+        if (channelId.startsWith("battery-")) {
+            diagnostics.refreshBatteryInfo();
+            return;
+        }
+        if (channelId.startsWith("wire-sensor-")) {
+            diagnostics.refreshWireInfo();
+            return;
+        }
+        if (channelId.startsWith("push-")) {
+            push.refreshPushInfo();
+            return;
+        }
+        if (channelId.startsWith("statistics-")) {
+            diagnostics.refreshHourInfo();
+            return;
+        }
+        if (channelId.startsWith("extension-")) {
+            push.refreshExtensionInfo();
+            return;
+        }
+        if (channelId.startsWith("left-drive-") || channelId.startsWith("right-drive-")
+                || channelId.startsWith("blade-motor-")) {
+            diagnostics.refreshMotorInfo();
+            return;
+        }
+        if (channelId.startsWith("portal-")) {
+            diagnostics.refreshPortalInfo();
+            return;
+        }
+        if (channelId.startsWith("wlan-") && !channelId.equals(CHANNEL_WLAN_SIGNAL)
+                && !channelId.equals(CHANNEL_WLAN_SIGNAL_STRENGTH)) {
+            diagnostics.refreshWlanInfo();
+            return;
+        }
+        switch (channelId) {
+            case CHANNEL_MOWER_ID:
             case CHANNEL_MOWER_NAME:
+            case CHANNEL_TIMESTAMP:
             case CHANNEL_STATUS_BATTERY:
             case CHANNEL_STATUS:
+            case CHANNEL_STATUS_PREVENT:
+            case CHANNEL_STATUS_HOME:
             case CHANNEL_STATUS_DURATION:
+            case CHANNEL_STATUS_DISTANCE:
             case CHANNEL_STATUS_HOURS:
+            case CHANNEL_HEALTH_TEMP:
+            case CHANNEL_HEALTH_HUM:
+            case CHANNEL_BLADES_QUALITY:
+            case CHANNEL_BLADES_REPL_DAYS:
+            case CHANNEL_BLADES_USAGE_HOURS:
             case CHANNEL_STATUS_MODE:
             case CHANNEL_MOWER_START:
             case CHANNEL_TIMER_NEXT_TIMER:
             case CHANNEL_TIMER_STATUS:
             case CHANNEL_WLAN_SIGNAL:
-            case CHANNEL_JOB:
-                refreshMowerInfo();
+            case CHANNEL_WLAN_SIGNAL_STRENGTH:
+            case CHANNEL_JOB_START:
+            case CHANNEL_JOB_END:
+            case CHANNEL_ERROR_CODE:
+            case CHANNEL_ERROR_DATE:
+            case CHANNEL_ERROR_MESSAGE:
+                mower.refreshMowerInfo();
                 break;
-            default:
+            case CHANNEL_JOB:
+                mower.refreshMowerInfo();
+                break;
+            case CHANNEL_DOOR_ENABLED:
+            case CHANNEL_DOOR_STATE:
+            case CHANNEL_DOOR_ARRESTED:
+                mower.refreshDoorInfo();
+                break;
             case CHANNEL_LAST_ERROR_CODE:
             case CHANNEL_LAST_ERROR_DATE:
             case CHANNEL_LAST_ERROR_MESSAGE:
-                refreshLastErrorInfo();
+                diagnostics.refreshLastErrorInfo();
+                break;
+            default:
                 break;
         }
     }
 
-    private void setMowerMode(Command command) {
-        String modeStr = command.toFullString();
-        ModeCommand.Mode newMode = ModeCommand.Mode.valueOf(modeStr.toUpperCase());
-        if (robonectClient.setMode(newMode).isSuccessful()) {
-            updateState(CHANNEL_STATUS_MODE, new StringType(newMode.name()));
-        } else {
-            refreshMowerInfo();
-        }
+    /**
+     * Represents a time of day on the Unix epoch date in the configured time zone.
+     *
+     * @param time the time of day to represent
+     * @return a date-time with the supplied time and epoch date in the configured time zone
+     */
+    DateTimeType toTimeOnlyDateTime(LocalTime time) {
+        return new DateTimeType(LocalDate.ofEpochDay(0).atTime(time).atZone(timeZone));
     }
 
-    private void logErrorFromResponse(RobonectAnswer result) {
-        if (!result.isSuccessful()) {
-            logger.debug("Could not send EOD Trigger. Robonect error message: {}", result.getErrorMessage());
-        }
-    }
-
-    private void handleStartStop(final OnOffType command) {
-        RobonectAnswer answer = null;
-        boolean currentlyStopped = robonectClient.getMowerInfo().getStatus().isStopped();
-        if (command == OnOffType.ON && currentlyStopped) {
-            answer = robonectClient.start();
-        } else if (command == OnOffType.OFF && !currentlyStopped) {
-            answer = robonectClient.stop();
-        }
-        if (answer != null) {
-            if (answer.isSuccessful()) {
-                updateState(CHANNEL_MOWER_START, command);
-            } else {
-                logErrorFromResponse(answer);
-                refreshMowerInfo();
-            }
-        }
-    }
-
-    private void updateName(StringType command) {
-        String newName = command.toFullString();
-        Name name = robonectClient.setName(newName);
-        if (name.isSuccessful()) {
-            updateState(CHANNEL_MOWER_NAME, new StringType(name.getName()));
-        } else {
-            logErrorFromResponse(name);
-            refreshMowerInfo();
-        }
-    }
-
-    private void refreshMowerInfo() {
-        MowerInfo info = robonectClient.getMowerInfo();
-        if (info.isSuccessful()) {
-            if (info.getError() != null) {
-                updateErrorInfo(info.getError());
-                refreshLastErrorInfo();
-            } else {
-                clearErrorInfo();
-            }
-            updateState(CHANNEL_MOWER_NAME, new StringType(info.getName()));
-            updateState(CHANNEL_STATUS_BATTERY, new DecimalType(info.getStatus().getBattery()));
-            updateState(CHANNEL_STATUS, new DecimalType(info.getStatus().getStatus().getStatusCode()));
-            updateState(CHANNEL_STATUS_DURATION, new QuantityType<>(info.getStatus().getDuration(), Units.SECOND));
-            updateState(CHANNEL_STATUS_DISTANCE, new QuantityType<>(info.getStatus().getDistance(), SIUnits.METRE));
-            updateState(CHANNEL_STATUS_HOURS, new QuantityType<>(info.getStatus().getHours(), Units.HOUR));
-            updateState(CHANNEL_STATUS_MODE, new StringType(info.getStatus().getMode().name()));
-            updateState(CHANNEL_MOWER_START, OnOffType.from(!info.getStatus().isStopped()));
-            if (info.getHealth() != null) {
-                updateState(CHANNEL_HEALTH_TEMP,
-                        new QuantityType<>(info.getHealth().getTemperature(), SIUnits.CELSIUS));
-                updateState(CHANNEL_HEALTH_HUM, new QuantityType<>(info.getHealth().getHumidity(), Units.PERCENT));
-            }
-            if (info.getBlades() != null) {
-                updateState(CHANNEL_BLADES_QUALITY, new QuantityType<>(info.getBlades().getQuality(), Units.PERCENT));
-                updateState(CHANNEL_BLADES_REPL_DAYS, new QuantityType<>(info.getBlades().getDays(), Units.DAY));
-                updateState(CHANNEL_BLADES_USAGE_HOURS, new QuantityType<>(info.getBlades().getHours(), Units.HOUR));
-            }
-            if (info.getTimer() != null) {
-                if (info.getTimer().getNext() != null) {
-                    updateNextTimer(info);
-                }
-                updateState(CHANNEL_TIMER_STATUS, new StringType(info.getTimer().getStatus().name()));
-            }
-            updateState(CHANNEL_WLAN_SIGNAL, new DecimalType(info.getWlan().getSignal()));
-            updateState(CHANNEL_JOB, OnOffType.from(robonectClient.isJobRunning()));
-        } else {
-            logger.error("Could not retrieve mower info. Robonect error response message: {}", info.getErrorMessage());
-        }
-    }
-
-    private void clearErrorInfo() {
-        updateState(CHANNEL_ERROR_DATE, UnDefType.UNDEF);
-        updateState(CHANNEL_ERROR_CODE, UnDefType.UNDEF);
-        updateState(CHANNEL_ERROR_MESSAGE, UnDefType.UNDEF);
-    }
-
-    private void updateErrorInfo(ErrorEntry error) {
-        if (error.getErrorMessage() != null) {
-            updateState(CHANNEL_ERROR_MESSAGE, new StringType(error.getErrorMessage()));
-        }
-        if (error.getErrorCode() != null) {
-            updateState(CHANNEL_ERROR_CODE, new DecimalType(error.getErrorCode().intValue()));
-        }
-        if (error.getDate() != null) {
-            State dateTime = convertUnixToDateTimeType(error.getUnix());
-            updateState(CHANNEL_ERROR_DATE, dateTime);
-        }
-    }
-
-    private void updateNextTimer(MowerInfo info) {
-        State dateTime = convertUnixToDateTimeType(info.getTimer().getNext().getUnix());
-        updateState(CHANNEL_TIMER_NEXT_TIMER, dateTime);
-    }
-
-    private State convertUnixToDateTimeType(String unixTimeSec) {
+    /**
+     * Interprets a mower local-clock Unix value using the configured time zone.
+     *
+     * @param unixTimeSec the mower timestamp as seconds since the Unix epoch
+     * @return the timestamp interpreted in the configured mower time zone
+     */
+    State convertUnixToDateTimeType(String unixTimeSec) {
         // the value in unixTimeSec represents the time on the robot in its configured timezone. However, it does not
         // provide which zone this is. Thus we have to add the zone information from the Thing configuration in order to
         // provide correct results.
-        Instant rawInstant = Instant.ofEpochMilli(Long.valueOf(unixTimeSec) * 1000);
+        Instant rawInstant = Instant.ofEpochSecond(Long.parseLong(unixTimeSec));
 
-        ZoneId timeZoneOfThing = timeZone;
-        if (timeZoneOfThing == null) {
-            timeZoneOfThing = timeZoneProvider.getTimeZone();
-        }
-        ZoneOffset offsetToConfiguredZone = timeZoneOfThing.getRules().getOffset(rawInstant);
+        ZoneOffset offsetToConfiguredZone = timeZone.getRules().getOffset(rawInstant);
         long adjustedTime = rawInstant.getEpochSecond() - offsetToConfiguredZone.getTotalSeconds();
-        Instant adjustedInstant = Instant.ofEpochMilli(adjustedTime * 1000);
+        Instant adjustedInstant = Instant.ofEpochSecond(adjustedTime);
 
         return new DateTimeType(adjustedInstant);
     }
 
-    private void refreshVersionInfo() {
-        VersionInfo info = robonectClient.getVersionInfo();
-        if (info.isSuccessful()) {
-            Map<String, String> properties = editProperties();
-            properties.put(Thing.PROPERTY_SERIAL_NUMBER, info.getRobonect().getSerial());
-            properties.put(Thing.PROPERTY_FIRMWARE_VERSION, info.getRobonect().getVersion());
-            properties.put(PROPERTY_COMPILED, info.getRobonect().getCompiled());
-            properties.put(PROPERTY_COMMENT, info.getRobonect().getComment());
-            updateProperties(properties);
-        } else {
-            logger.debug("Could not retrieve mower version info. Robonect error response message: {}",
-                    info.getErrorMessage());
-        }
-    }
-
-    private void refreshLastErrorInfo() {
-        ErrorList errorList = robonectClient.errorList();
-        if (errorList.isSuccessful()) {
-            List<ErrorEntry> errors = errorList.getErrors();
-            if (errors != null && !errors.isEmpty()) {
-                ErrorEntry lastErrorEntry = errors.get(0);
-                updateLastErrorChannels(lastErrorEntry);
-            }
-        } else {
-            logger.debug("Could not retrieve mower error list. Robonect error response message: {}",
-                    errorList.getErrorMessage());
-        }
-    }
-
-    private void updateLastErrorChannels(ErrorEntry error) {
-        if (error.getErrorMessage() != null) {
-            updateState(CHANNEL_LAST_ERROR_MESSAGE, new StringType(error.getErrorMessage()));
-        }
-        if (error.getErrorCode() != null) {
-            updateState(CHANNEL_LAST_ERROR_CODE, new DecimalType(error.getErrorCode().intValue()));
-        }
-        if (error.getDate() != null) {
-            State dateTime = convertUnixToDateTimeType(error.getUnix());
-            updateState(CHANNEL_LAST_ERROR_DATE, dateTime);
-        }
-    }
-
+    /** Configures the mower connection and starts polling for the current Thing configuration. */
     @Override
     public void initialize() {
+        cancelPushRefresh();
+        cancelPolling();
+        disposed = false;
+        updateState(CHANNEL_PUSH_PASSWORD, UnDefType.UNDEF);
         RobonectConfig robonectConfig = getConfigAs(RobonectConfig.class);
+        configureAjaxChannels(robonectConfig.isAjaxApiEnabled());
+        configureUnofficialChannels(robonectConfig.isWebApiEnabled());
         RobonectEndpoint endpoint = new RobonectEndpoint(robonectConfig.getHost(), robonectConfig.getUser(),
                 robonectConfig.getPassword());
 
         String timeZoneString = robonectConfig.getTimezone();
+        timeZone = timeZoneProvider.getTimeZone();
         try {
             if (timeZoneString != null) {
                 timeZone = ZoneId.of(timeZoneString);
@@ -374,20 +755,40 @@ public class RobonectHandler extends BaseThingHandler {
             throw new IllegalStateException("Could not create HttpClient");
         }
 
-        robonectClient = new RobonectClient(httpClient, endpoint);
-        Runnable runnable = new MowerChannelPoller(TimeUnit.SECONDS.toMillis(robonectConfig.getOfflineTimeout()));
-        int pollInterval = robonectConfig.getPollInterval();
-        pollingJob = scheduler.scheduleWithFixedDelay(runnable, 0, pollInterval, TimeUnit.SECONDS);
+        createEndpointHandlers(new RobonectClient(httpClient, endpoint));
+        PollingSession session = new PollingSession(robonectConfig);
+        pollingSession = session;
+        pollingJob = scheduler.scheduleWithFixedDelay(new MowerChannelPoller(session), 0,
+                Math.max(1, robonectConfig.getPollInterval()), TimeUnit.SECONDS);
+        int pollIntervalExtended = robonectConfig.getPollIntervalExtended();
+        if (pollIntervalExtended > 0) {
+            detailedPollingJob = scheduler.scheduleWithFixedDelay(new MowerExtendedChannelPoller(session), 0,
+                    pollIntervalExtended, TimeUnit.SECONDS);
+        }
+        int pollIntervalConfig = robonectConfig.getPollIntervalConfig();
+        if (pollIntervalConfig > 0) {
+            configPollingJob = scheduler.scheduleWithFixedDelay(new MowerConfigChannelPoller(session), 0,
+                    pollIntervalConfig, TimeUnit.SECONDS);
+        }
+        String pushUser = robonectConfig.getPushUser();
+        String pushPass = robonectConfig.getPushPass();
+        RobonectMowerHandler mower = mowerHandler;
+        if (pushUser != null && !pushUser.isBlank() && !pushUser.contains(":") && pushPass != null
+                && !pushPass.isBlank() && mower != null) {
+            PushRefresh refresh = new PushRefresh(mower);
+            pushRefresh = refresh;
+            pushServlet.registerHandler(getThing().getUID(), refresh, pushUser, pushPass);
+        }
     }
 
+    /** Cancels scheduled work and releases the handler connection and push registration. */
     @Override
     public void dispose() {
-        ScheduledFuture<?> pollingJob = this.pollingJob;
-        if (pollingJob != null) {
-            pollingJob.cancel(true);
-            this.pollingJob = null;
-        }
-
+        disposed = true;
+        cancelPushRefresh();
+        cancelPolling();
+        commandRefreshJobs.values().forEach(CommandRefresh::cancel);
+        commandRefreshJobs.clear();
         try {
             httpClient.stop();
         } catch (Exception e) {
@@ -395,56 +796,316 @@ public class RobonectHandler extends BaseThingHandler {
         }
     }
 
-    /**
-     * method to inject the robonect client to be used in test cases to allow mocking.
-     *
-     * @param robonectClient
-     */
-    protected void setRobonectClient(RobonectClient robonectClient) {
-        this.robonectClient = robonectClient;
+    /** Invalidates the current polling session and cancels the polling jobs. */
+    private void cancelPolling() {
+        pollingSession = null;
+        ScheduledFuture<?> normalJob = pollingJob;
+        pollingJob = null;
+        if (normalJob != null) {
+            normalJob.cancel(true);
+        }
+        ScheduledFuture<?> detailedJob = detailedPollingJob;
+        detailedPollingJob = null;
+        if (detailedJob != null) {
+            detailedJob.cancel(true);
+        }
+        ScheduledFuture<?> configJob = configPollingJob;
+        configPollingJob = null;
+        if (configJob != null) {
+            configJob.cancel(true);
+        }
     }
 
-    private class MowerChannelPoller implements Runnable {
+    /** Invalidates the push registration before unregistering it and cancelling queued work. */
+    private void cancelPushRefresh() {
+        PushRefresh refresh = pushRefresh;
+        pushRefresh = null;
+        if (refresh != null) {
+            pushServlet.unregisterHandler(getThing().getUID(), refresh);
+            refresh.cancel();
+        }
+    }
 
-        private long offlineSince;
-        private long offlineTriggerDelay;
+    private class PushRefresh implements Runnable {
+        private final RobonectMowerHandler mower;
+        private @Nullable ScheduledFuture<?> job;
+        private boolean reading;
+        private boolean followUp;
+
+        /**
+         * Creates a refresh callback bound to one mower handler.
+         *
+         * @param mower the endpoint handler for the current configuration
+         */
+        private PushRefresh(RobonectMowerHandler mower) {
+            this.mower = mower;
+        }
+
+        /** Coalesces a push notification with a queued read or requests a follow-up to an in-progress read. */
+        @Override
+        public synchronized void run() {
+            if (!isActive()) {
+                return;
+            }
+            if (reading) {
+                followUp = true;
+            } else if (job == null) {
+                schedule();
+            }
+        }
+
+        /**
+         * Checks whether this callback is still registered for the Thing.
+         *
+         * @return {@code true} if the registration remains current and the handler is active
+         */
+        private boolean isActive() {
+            return !disposed && equals(pushRefresh);
+        }
+
+        /** Queues the status read on the request scheduler so the push callback can return promptly. */
+        private void schedule() {
+            try {
+                job = scheduler.schedule(this::refresh, 0, TimeUnit.SECONDS);
+            } catch (RejectedExecutionException e) {
+                logger.debug("Could not schedule mower refresh after push notification", e);
+            }
+        }
+
+        /**
+         * Reads status for the current registration and schedules a follow-up if another push arrived during the read.
+         */
+        private void refresh() {
+            synchronized (this) {
+                if (!isActive()) {
+                    return;
+                }
+                reading = true;
+            }
+            sessionActive.set(this::isActive);
+            try {
+                if (canPublishState()) {
+                    mower.refreshMowerInfo();
+                }
+            } catch (RobonectCommunicationException e) {
+                logger.debug("Could not refresh mower state after push notification: {}", e.getMessage());
+            } finally {
+                sessionActive.remove();
+                synchronized (this) {
+                    reading = false;
+                    job = null;
+                    if (followUp && isActive()) {
+                        followUp = false;
+                        schedule();
+                    }
+                }
+            }
+        }
+
+        /** Cancels the scheduled read after its registration has been invalidated. */
+        private synchronized void cancel() {
+            ScheduledFuture<?> current = job;
+            if (current != null) {
+                current.cancel(true);
+            }
+        }
+    }
+
+    /**
+     * Creates endpoint handlers that retain the APIs belonging to the supplied client.
+     *
+     * @param client the client whose endpoint APIs are passed to the handlers
+     */
+    protected void createEndpointHandlers(RobonectClient client) {
+        RobonectDiagnosticsHandler diagnostics = new RobonectDiagnosticsHandler(this, client.diagnostics());
+        diagnosticsHandler = diagnostics;
+        mowerHandler = new RobonectMowerHandler(this, client.mower(), diagnostics);
+        pushHandler = new RobonectPushHandler(this, client.push());
+        timerHandler = new RobonectTimerHandler(this, client.timer());
+        remoteStartHandler = new RobonectRemoteStartHandler(this, client.remoteStart());
+        weatherHandler = new RobonectWeatherHandler(this, client.weather());
+    }
+
+    /**
+     * Allows tests to enable UI scraping without initializing a Thing configuration.
+     *
+     * @param useAjaxApi whether UI scraping is enabled
+     */
+    protected void setUseAjaxApi(boolean useAjaxApi) {
+        this.useAjaxApi = useAjaxApi;
+    }
+
+    private static class PollingSession {
+        private final long offlineTriggerDelay;
+        private boolean pollDriveDiagnosticsWhileMowing;
+        private long offlineSince = -1;
         private boolean offlineTimeoutTriggered;
         private boolean loadVersionInfo = true;
 
-        public MowerChannelPoller(long offlineTriggerDelay) {
-            offlineSince = -1;
-            this.offlineTriggerDelay = offlineTriggerDelay;
-            offlineTimeoutTriggered = false;
+        /**
+         * Creates a polling session with the configured offline timeout.
+         *
+         * @param config the Thing configuration for the polling session
+         */
+        private PollingSession(RobonectConfig config) {
+            offlineTriggerDelay = TimeUnit.SECONDS.toMillis(config.getOfflineTimeout());
+        }
+    }
+
+    private class MowerChannelPoller implements Runnable {
+        private final PollingSession session;
+        private final List<Runnable> refreshes;
+
+        /**
+         * Creates a poller for the normal endpoint refreshes of a session.
+         *
+         * @param session the polling session authorizing the work
+         */
+        private MowerChannelPoller(PollingSession session) {
+            this.session = session;
+            this.refreshes = List.of(() -> {
+                if (session.loadVersionInfo) {
+                    requireHandler(diagnosticsHandler).refreshVersionInfo();
+                    session.loadVersionInfo = false;
+                }
+            }, () -> {
+                session.pollDriveDiagnosticsWhileMowing = false;
+                MowerStatus status = requireHandler(mowerHandler).refreshMowerInfo();
+                session.pollDriveDiagnosticsWhileMowing = switch (status) {
+                    case MOWING, SEARCH_CHARGING_STATION, SEARCHING -> true;
+                    case null, default -> false;
+                };
+            }, () -> requireHandler(weatherHandler).refreshWeatherInfo(),
+                    () -> requireHandler(mowerHandler).refreshDoorInfo(), () -> {
+                        if (session.pollDriveDiagnosticsWhileMowing) {
+                            refreshDriveDiagnostics();
+                        }
+                    });
         }
 
+        /**
+         * Creates a poller for the given session and refresh operations.
+         *
+         * @param session the polling session authorizing the work
+         * @param refreshes the endpoint refreshes to run in order
+         */
+        private MowerChannelPoller(PollingSession session, List<Runnable> refreshes) {
+            this.session = session;
+            this.refreshes = List.copyOf(refreshes);
+        }
+
+        /** Serializes one polling cycle and updates connection status or offline timeout state. */
         @Override
-        public void run() {
+        public final void run() {
             try {
-                if (loadVersionInfo) {
-                    refreshVersionInfo();
-                    loadVersionInfo = false;
+                pollingLock.lockInterruptibly();
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                return;
+            }
+            sessionActive.set(() -> Objects.equals(session, pollingSession) && !Thread.currentThread().isInterrupted());
+            try {
+                if (!pollChannels()) {
+                    return;
                 }
-                refreshMowerInfo();
                 updateStatus(ThingStatus.ONLINE);
-                offlineSince = -1;
-                offlineTimeoutTriggered = false;
+                session.offlineSince = -1;
+                session.offlineTimeoutTriggered = false;
             } catch (RobonectCommunicationException rce) {
-                if (offlineSince < 0) {
-                    offlineSince = System.currentTimeMillis();
+                if (!canPublishState()) {
+                    return;
                 }
-                if (!offlineTimeoutTriggered && System.currentTimeMillis() - offlineSince > offlineTriggerDelay) {
-                    // trigger offline
+                if (session.offlineSince < 0) {
+                    session.offlineSince = System.currentTimeMillis();
+                }
+                if (!session.offlineTimeoutTriggered
+                        && System.currentTimeMillis() - session.offlineSince > session.offlineTriggerDelay) {
                     updateState(CHANNEL_MOWER_STATUS_OFFLINE_TRIGGER, new StringType("OFFLINE_TIMEOUT"));
-                    offlineTimeoutTriggered = true;
+                    session.offlineTimeoutTriggered = true;
                 }
                 logger.debug("Failed to communicate with the mower. Taking it offline.", rce);
                 updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, rce.getMessage());
-                loadVersionInfo = true;
+                session.loadVersionInfo = true;
             } catch (JsonSyntaxException jse) {
                 // the module sporadically sends invalid json responses. As this is usually recovered with the
                 // next poll interval, we just log it to debug here.
                 logger.debug("Failed to parse response.", jse);
+            } finally {
+                sessionActive.remove();
+                pollingLock.unlock();
             }
+        }
+
+        /**
+         * Runs the session refresh operations while their results remain publishable.
+         *
+         * @return {@code true} if the polling session remains active after the refreshes
+         */
+        private boolean pollChannels() {
+            for (Runnable refresh : refreshes) {
+                if (!canPublishState()) {
+                    return false;
+                }
+                refresh.run();
+            }
+            return canPublishState();
+        }
+    }
+
+    /**
+     * Builds the list of detailed endpoint refreshes enabled for this session.
+     *
+     * @param session the polling session that determines the diagnostic schedule
+     * @return the ordered endpoint refresh operations for detailed polling
+     */
+    private List<Runnable> createDetailedRefreshes(PollingSession session) {
+        return List.of(() -> {
+            if (!session.pollDriveDiagnosticsWhileMowing) {
+                refreshDriveDiagnostics();
+            }
+        }, () -> requireHandler(diagnosticsHandler).refreshHourInfo(),
+                () -> requireHandler(remoteStartHandler).refreshRemoteInfo());
+    }
+
+    private static <T> T requireHandler(@Nullable T handler) {
+        if (handler == null) {
+            throw new IllegalStateException("Robonect handler is not initialized");
+        }
+        return handler;
+    }
+
+    /** Refreshes battery, motor, and wire information while the polling session remains active. */
+    private void refreshDriveDiagnostics() {
+        RobonectDiagnosticsHandler diagnostics = requireHandler(diagnosticsHandler);
+        diagnostics.refreshBatteryInfo();
+        if (canPublishState()) {
+            diagnostics.refreshMotorInfo();
+        }
+        if (canPublishState()) {
+            diagnostics.refreshWireInfo();
+        }
+    }
+
+    private class MowerExtendedChannelPoller extends MowerChannelPoller {
+        /**
+         * Creates a poller for the detailed endpoint refreshes of a session.
+         *
+         * @param session the polling session authorizing the work
+         */
+        private MowerExtendedChannelPoller(PollingSession session) {
+            super(session, RobonectHandler.this.createDetailedRefreshes(session));
+        }
+    }
+
+    private class MowerConfigChannelPoller extends MowerChannelPoller {
+        private MowerConfigChannelPoller(PollingSession session) {
+            super(session,
+                    List.of(() -> requireHandler(diagnosticsHandler).refreshWlanInfo(),
+                            () -> requireHandler(diagnosticsHandler).refreshPortalInfo(),
+                            () -> requireHandler(timerHandler).refreshTimersInfo(),
+                            () -> requireHandler(pushHandler).refreshExtensionInfo(),
+                            () -> requireHandler(pushHandler).refreshPushInfo(),
+                            () -> requireHandler(pushHandler).refreshPushMode()));
         }
     }
 }

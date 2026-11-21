@@ -12,42 +12,72 @@
  */
 package org.openhab.binding.robonect.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.util.StringUtil;
 
 /**
- * The {@link RobonectEndpoint} is holds the information required to a Robonect endpoint.
+ * Connection details for a Robonect endpoint.
  * 
  * @author Marco Meyer - Initial contribution
  */
+@NonNullByDefault
 public class RobonectEndpoint {
 
     private final String ipAddress;
 
-    private final String user;
+    private final @Nullable String user;
 
-    private final String password;
+    private final @Nullable String password;
 
     private boolean useAuthentication = false;
 
-    public RobonectEndpoint(String ipAddress, String user, String password) {
+    /**
+     * Creates connection settings for a Robonect endpoint.
+     *
+     * @param ipAddress the endpoint address
+     * @param user the username
+     * @param password the password
+     */
+    public RobonectEndpoint(String ipAddress, @Nullable String user, @Nullable String password) {
         this.ipAddress = ipAddress;
         this.user = user;
         this.password = password;
         this.useAuthentication = StringUtil.isNotBlank(user) && StringUtil.isNotBlank(password);
     }
 
+    /**
+     * Returns the endpoint address.
+     *
+     * @return the configured address
+     */
     public String getIpAddress() {
         return ipAddress;
     }
 
-    public String getUser() {
+    /**
+     * Returns the endpoint username.
+     *
+     * @return the configured username
+     */
+    public @Nullable String getUser() {
         return user;
     }
 
-    public String getPassword() {
+    /**
+     * Returns the endpoint password.
+     *
+     * @return the configured password
+     */
+    public @Nullable String getPassword() {
         return password;
     }
 
+    /**
+     * Checks whether authentication is configured.
+     *
+     * @return {@code true} if both username and password are set
+     */
     public boolean isUseAuthentication() {
         return useAuthentication;
     }

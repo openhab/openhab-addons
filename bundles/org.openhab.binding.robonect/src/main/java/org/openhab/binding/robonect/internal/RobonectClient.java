@@ -12,79 +12,59 @@
  */
 package org.openhab.binding.robonect.internal;
 
-import java.net.URI;
-import java.nio.charset.StandardCharsets;
-import java.util.Base64;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
+import java.time.LocalTime;
+import java.time.format.DateTimeParseException;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.Authentication;
-import org.eclipse.jetty.client.api.AuthenticationStore;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.http.HttpHeader;
-import org.eclipse.jetty.http.HttpMethod;
-import org.openhab.binding.robonect.internal.model.ErrorList;
-import org.openhab.binding.robonect.internal.model.ModelParser;
-import org.openhab.binding.robonect.internal.model.MowerInfo;
-import org.openhab.binding.robonect.internal.model.MowerMode;
-import org.openhab.binding.robonect.internal.model.Name;
-import org.openhab.binding.robonect.internal.model.RobonectAnswer;
-import org.openhab.binding.robonect.internal.model.VersionInfo;
-import org.openhab.binding.robonect.internal.model.cmd.Command;
-import org.openhab.binding.robonect.internal.model.cmd.ErrorCommand;
 import org.openhab.binding.robonect.internal.model.cmd.ModeCommand;
-import org.openhab.binding.robonect.internal.model.cmd.NameCommand;
-import org.openhab.binding.robonect.internal.model.cmd.StartCommand;
-import org.openhab.binding.robonect.internal.model.cmd.StatusCommand;
-import org.openhab.binding.robonect.internal.model.cmd.StopCommand;
-import org.openhab.binding.robonect.internal.model.cmd.VersionCommand;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link RobonectClient} class is responsible to communicate with the robonect module via it's HTTP interface.
+ * Coordinates endpoint APIs sharing an HTTP transport for one Robonect module.
  *
- * @see <a href="http://robonect.de/viewtopic.php?f=10&t=37">
+ * @see <a href="http://robonect.de/viewtopic.php?f=10&amp;t=37">
  *      http://robonect.de/viewtopic.php?f=10&amp;t=37</a>. The API of the module is documented here.
  *
  * @author Marco Meyer - Initial contribution
+ * @author Nico Brüttner - Endpoint API refactor, web interface support, and job settings
  */
+@NonNullByDefault
 public class RobonectClient {
 
-    private final Logger logger = LoggerFactory.getLogger(RobonectClient.class);
-
-    private final String baseUrl;
-
-    private final HttpClient httpClient;
-
-    private final ModelParser parser;
-
-    private boolean jobRunning;
+    private final RobonectMowerApi mower;
+    private final RobonectDiagnosticsApi diagnostics;
+    private final RobonectPushApi push;
+    private final RobonectRemoteStartApi remoteStart;
+    private final RobonectTimerApi timer;
+    private final RobonectWeatherApi weather;
 
     /**
      * The {@link JobSettings} class holds the values required for starting a job.
      */
     public static class JobSettings {
 
-        private static final String TIME_REGEX = "^[012]\\d:\\d\\d$";
-
         private final Logger logger = LoggerFactory.getLogger(RobonectClient.class);
 
-        private ModeCommand.RemoteStart remoteStart;
-        private ModeCommand.Mode after;
-        private int duration;
+        private ModeCommand.@Nullable RemoteStart remoteStart;
+        private ModeCommand.@Nullable Mode after;
+        private @Nullable Integer duration;
+        private @Nullable String start;
+        private @Nullable String end;
+        private @Nullable LocalTime startLocalTime;
+        private @Nullable LocalTime endLocalTime;
 
         /**
-         * returns the 'remote start' setting for the job. See {@link ModeCommand.RemoteStart} for details.
+         * Returns the remote-start setting, defaulting to {@link ModeCommand.RemoteStart#STANDARD}.
          *
          * @return - the remote start settings for the job.
          */
         public ModeCommand.RemoteStart getRemoteStart() {
-            if (remoteStart != null) {
-                return remoteStart;
+            ModeCommand.@Nullable RemoteStart configuredRemoteStart = remoteStart;
+            if (configuredRemoteStart != null) {
+                return configuredRemoteStart;
             } else {
                 logger.debug("No explicit remote start set. Return STANDARD.");
                 return ModeCommand.RemoteStart.STANDARD;
@@ -94,9 +74,10 @@ public class RobonectClient {
         /**
          * Sets the desired 'remote start' settings for the job.
          *
-         * @param remoteStart - The 'remote start' settings. See {@link ModeCommand.RemoteStart} for the allowed modes.
+         * @param remoteStart the remote-start setting, or {@code null} to use the default
+         * @return this job settings instance
          */
-        public JobSettings withRemoteStart(ModeCommand.RemoteStart remoteStart) {
+        public JobSettings withRemoteStart(ModeCommand.@Nullable RemoteStart remoteStart) {
             this.remoteStart = remoteStart;
             return this;
         }
@@ -104,253 +85,197 @@ public class RobonectClient {
         /**
          * Returns the mode the mower should be set to after the job is complete.
          *
-         * @return - the mode after compleness of the job.
+         * @return the mode to select after the job, or {@code null} if unset
          */
-        public ModeCommand.Mode getAfterMode() {
+        public ModeCommand.@Nullable Mode getAfterMode() {
             return after;
         }
 
         /**
          * Sets the mode after the mower is complete with the job.
          *
-         * @param after - the desired mode after job completeness.
+         * @param after the mode to select after the job, or {@code null} to omit it
+         * @return this job settings instance
          */
-        public JobSettings withAfterMode(ModeCommand.Mode after) {
+        public JobSettings withAfterMode(ModeCommand.@Nullable Mode after) {
             this.after = after;
             return this;
         }
 
-        public int getDuration() {
+        /**
+         * Returns the requested job duration.
+         *
+         * @return the duration in minutes
+         */
+        public @Nullable Integer getDuration() {
             return duration;
         }
 
-        public JobSettings withDuration(int duration) {
+        /**
+         * Sets the requested job duration.
+         *
+         * @param duration the duration in minutes
+         * @return this job settings instance
+         */
+        public JobSettings withDuration(@Nullable Integer duration) {
             this.duration = duration;
             return this;
         }
-    }
 
-    private static class BasicResult implements Authentication.Result {
-
-        private final HttpHeader header;
-        private final URI uri;
-        private final String value;
-
-        public BasicResult(HttpHeader header, URI uri, String value) {
-            this.header = header;
-            this.uri = uri;
-            this.value = value;
+        /**
+         * Sets the job start time in {@code HH:mm} format.
+         *
+         * @param start the start time, or {@code null} to omit it from the command
+         * @return this job settings instance
+         */
+        public JobSettings withStart(@Nullable String start) {
+            this.startLocalTime = validateTime(start, "startTime");
+            this.start = start;
+            return this;
         }
 
-        @Override
-        public URI getURI() {
-            return this.uri;
+        /**
+         * Sets the job end time in {@code HH:mm} format.
+         *
+         * @param end the end time, or {@code null} to omit it from the command
+         * @return this job settings instance
+         */
+        public JobSettings withEnd(@Nullable String end) {
+            this.endLocalTime = validateTime(end, "endTime");
+            this.end = end;
+            return this;
         }
 
-        @Override
-        public void apply(Request request) {
-            request.header(this.header, this.value);
+        /**
+         * Returns the optional job start time.
+         *
+         * @return the time in {@code HH:mm} format, or {@code null} if unset
+         */
+        @Nullable
+        public String getStart() {
+            return start;
         }
 
-        @Override
-        public String toString() {
-            return String.format("Basic authentication result for %s", this.uri);
+        /**
+         * Returns the optional job end time.
+         *
+         * @return the time in {@code HH:mm} format, or {@code null} if unset
+         */
+        @Nullable
+        public String getEnd() {
+            return end;
+        }
+
+        /**
+         * Returns the optional job start time.
+         *
+         * @return the time as a {@link LocalTime}, or {@code null} if unset
+         */
+        @Nullable
+        public LocalTime getStartLocalTime() {
+            return startLocalTime;
+        }
+
+        /**
+         * Returns the optional job end time.
+         *
+         * @return the time as a {@link LocalTime}, or {@code null} if unset
+         */
+        @Nullable
+        public LocalTime getEndLocalTime() {
+            return endLocalTime;
+        }
+
+        /**
+         * Parses an optional command time in {@code HH:mm} format.
+         *
+         * @param value the configured time, or {@code null} if omitted
+         * @param parameter the input name to report when validation fails
+         * @return the parsed local time, or {@code null} if omitted
+         * @throws IllegalArgumentException if the supplied time is invalid
+         */
+        private static @Nullable LocalTime validateTime(@Nullable String value, String parameter) {
+            if (value == null) {
+                return null;
+            }
+            if (value.length() != 5) {
+                throw new IllegalArgumentException(parameter + " must use HH:mm");
+            }
+            try {
+                return LocalTime.parse(value);
+            } catch (DateTimeParseException e) {
+                throw new IllegalArgumentException(parameter + " must use HH:mm", e);
+            }
         }
     }
 
     /**
-     * Creates an instance of RobonectClient which allows to communicate with the specified endpoint via the passed
-     * httpClient instance.
+     * Creates the endpoint APIs using a shared HTTP transport.
      *
-     * @param httpClient - The HttpClient to use for the communication.
-     * @param endpoint - The endpoint information for connecting and issuing commands.
+     * @param httpClient the HTTP client to use for communication
+     * @param endpoint the endpoint details for connecting and issuing commands
      */
     public RobonectClient(HttpClient httpClient, RobonectEndpoint endpoint) {
-        this.httpClient = httpClient;
-        this.baseUrl = "http://" + endpoint.getIpAddress() + "/json";
-        this.parser = new ModelParser();
-
-        if (endpoint.isUseAuthentication()) {
-            addPreemptiveAuthentication(httpClient, endpoint);
-        }
-    }
-
-    private void addPreemptiveAuthentication(HttpClient httpClient, RobonectEndpoint endpoint) {
-        AuthenticationStore auth = httpClient.getAuthenticationStore();
-        URI uri = URI.create(baseUrl);
-        auth.addAuthenticationResult(
-                new BasicResult(HttpHeader.AUTHORIZATION, uri, "Basic " + Base64.getEncoder().encodeToString(
-                        (endpoint.getUser() + ":" + endpoint.getPassword()).getBytes(StandardCharsets.ISO_8859_1))));
+        RobonectTransport transport = new RobonectTransport(httpClient, endpoint);
+        mower = new RobonectMowerApi(transport);
+        diagnostics = new RobonectDiagnosticsApi(transport);
+        push = new RobonectPushApi(transport);
+        remoteStart = new RobonectRemoteStartApi(transport);
+        timer = new RobonectTimerApi(transport);
+        weather = new RobonectWeatherApi(transport);
     }
 
     /**
-     * returns general mower information. See {@link MowerInfo} for the detailed information.
+     * Returns the mower and job endpoint API.
      *
-     * @return - the general mower information including a general success status.
+     * @return the mower and job API
      */
-    public MowerInfo getMowerInfo() {
-        String responseString = sendCommand(new StatusCommand());
-        MowerInfo mowerInfo = parser.parse(responseString, MowerInfo.class);
-        if (jobRunning) {
-            // mode might have been changed on the mower. Also Mode JOB does not really exist on the mower, thus cannot
-            // be checked here
-            if (mowerInfo.getStatus().getMode() == MowerMode.AUTO
-                    || mowerInfo.getStatus().getMode() == MowerMode.HOME) {
-                jobRunning = false;
-            } else if (mowerInfo.getError() != null) {
-                jobRunning = false;
-            }
-        }
-        return mowerInfo;
+    public RobonectMowerApi mower() {
+        return mower;
     }
 
     /**
-     * sends a start command to the mower.
+     * Returns the diagnostic endpoint API.
      *
-     * @return - a general answer with success status.
+     * @return the diagnostic API
      */
-    public RobonectAnswer start() {
-        String responseString = sendCommand(new StartCommand());
-        return parser.parse(responseString, RobonectAnswer.class);
+    public RobonectDiagnosticsApi diagnostics() {
+        return diagnostics;
     }
 
     /**
-     * sends a stop command to the mower.
+     * Returns the push and extension endpoint API.
      *
-     * @return - a general answer with success status.
+     * @return the push and extension API
      */
-    public RobonectAnswer stop() {
-        String responseString = sendCommand(new StopCommand());
-        return parser.parse(responseString, RobonectAnswer.class);
+    public RobonectPushApi push() {
+        return push;
     }
 
     /**
-     * resets the errors on the mower.
+     * Returns the remote-start endpoint API.
      *
-     * @return - a general answer with success status.
+     * @return the remote-start API
      */
-    public RobonectAnswer resetErrors() {
-        String responseString = sendCommand(new ErrorCommand().withReset(true));
-        return parser.parse(responseString, RobonectAnswer.class);
+    public RobonectRemoteStartApi remoteStart() {
+        return remoteStart;
     }
 
     /**
-     * returns the list of all errors happened since last reset.
+     * Returns the timer endpoint API.
      *
-     * @return - the list of errors.
+     * @return the timer API
      */
-    public ErrorList errorList() {
-        String responseString = sendCommand(new ErrorCommand());
-        return parser.parse(responseString, ErrorList.class);
+    public RobonectTimerApi timer() {
+        return timer;
     }
 
     /**
-     * Sets the mode of the mower. See {@link ModeCommand.Mode} for details about the available modes. Not allowed is
-     * mode
-     * {@link ModeCommand.Mode#JOB}.
+     * Returns the weather endpoint API.
      *
-     * @param mode - the desired mower mode.
-     * @return - a general answer with success status.
+     * @return the weather API
      */
-    public RobonectAnswer setMode(ModeCommand.Mode mode) {
-        String responseString = sendCommand(createCommand(mode));
-        if (jobRunning) {
-            jobRunning = false;
-        }
-        return parser.parse(responseString, RobonectAnswer.class);
-    }
-
-    private ModeCommand createCommand(ModeCommand.Mode mode) {
-        return new ModeCommand(mode);
-    }
-
-    /**
-     * Returns the name of the mower.
-     *
-     * @return - The name including a general answer with success status.
-     */
-    public Name getName() {
-        String responseString = sendCommand(new NameCommand());
-        return parser.parse(responseString, Name.class);
-    }
-
-    /**
-     * Allows to set the name of the mower.
-     *
-     * @param name - the desired name.
-     * @return - The resulting name including a general answer with success status.
-     */
-    public Name setName(String name) {
-        String responseString = sendCommand(new NameCommand().withNewName(name));
-        return parser.parse(responseString, Name.class);
-    }
-
-    private String sendCommand(Command command) {
-        try {
-            if (logger.isDebugEnabled()) {
-                logger.debug("send HTTP GET to: {} ", command.toCommandURL(baseUrl));
-            }
-            ContentResponse response = httpClient.newRequest(command.toCommandURL(baseUrl)).method(HttpMethod.GET)
-                    .timeout(30000, TimeUnit.MILLISECONDS).send();
-            String responseString = null;
-
-            // jetty uses UTF-8 as default encoding. However, HTTP 1.1 specifies ISO_8859_1
-            if (response.getEncoding() == null || response.getEncoding().isBlank()) {
-                responseString = new String(response.getContent(), StandardCharsets.ISO_8859_1);
-            } else {
-                // currently v0.9e Robonect does not specifiy the encoding. But if later versions will
-                // add, it should work with the default method to get the content as string.
-                responseString = response.getContentAsString();
-            }
-
-            if (logger.isDebugEnabled()) {
-                logger.debug("Response body was: {} ", responseString);
-            }
-            return responseString;
-        } catch (ExecutionException | TimeoutException | InterruptedException e) {
-            throw new RobonectCommunicationException("Could not send command " + command.toCommandURL(baseUrl), e);
-        }
-    }
-
-    /**
-     * Retrieve the version information of the mower and module. See {@link VersionInfo} for details.
-     *
-     * @return - the Version Information including the successful status.
-     */
-    public VersionInfo getVersionInfo() {
-        String versionResponse = sendCommand(new VersionCommand());
-        return parser.parse(versionResponse, VersionInfo.class);
-    }
-
-    public boolean isJobRunning() {
-        return jobRunning;
-    }
-
-    public RobonectAnswer startJob(JobSettings settings) {
-        Command jobCommand = new ModeCommand(ModeCommand.Mode.JOB).withRemoteStart(settings.remoteStart)
-                .withAfter(settings.after).withDuration(settings.duration);
-        String responseString = sendCommand(jobCommand);
-        RobonectAnswer answer = parser.parse(responseString, RobonectAnswer.class);
-        if (answer.isSuccessful()) {
-            jobRunning = true;
-        } else {
-            jobRunning = false;
-        }
-        return answer;
-    }
-
-    public RobonectAnswer stopJob(JobSettings settings) {
-        RobonectAnswer answer = null;
-        if (jobRunning) {
-            answer = setMode(settings.after);
-            if (answer.isSuccessful()) {
-                jobRunning = false;
-            }
-        } else {
-            answer = new RobonectAnswer();
-            // this is not an error, thus return success
-            answer.setSuccessful(true);
-        }
-        return answer;
+    public RobonectWeatherApi weather() {
+        return weather;
     }
 }

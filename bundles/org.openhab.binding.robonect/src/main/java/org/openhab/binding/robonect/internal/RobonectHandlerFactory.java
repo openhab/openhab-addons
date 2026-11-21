@@ -44,25 +44,46 @@ public class RobonectHandlerFactory extends BaseThingHandlerFactory {
 
     private HttpClientFactory httpClientFactory;
     private TimeZoneProvider timeZoneProvider;
+    private RobonectPushServlet pushServlet;
 
+    /**
+     * Creates a handler factory with its required services.
+     *
+     * @param httpClientFactory the factory for HTTP clients
+     * @param timeZoneProvider the provider of the default time zone
+     * @param pushServlet the servlet receiving push notifications
+     */
     @Activate
     public RobonectHandlerFactory(@Reference HttpClientFactory httpClientFactory,
-            @Reference TimeZoneProvider timeZoneProvider) {
+            @Reference TimeZoneProvider timeZoneProvider, @Reference RobonectPushServlet pushServlet) {
         this.httpClientFactory = httpClientFactory;
         this.timeZoneProvider = timeZoneProvider;
+        this.pushServlet = pushServlet;
     }
 
+    /**
+     * Checks whether a Thing type is supported by this binding.
+     *
+     * @param thingTypeUID the Thing type identifier
+     * @return {@code true} if the type is supported
+     */
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
         return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
     }
 
+    /**
+     * Creates a handler for a supported Thing.
+     *
+     * @param thing the Thing requiring a handler
+     * @return the handler, or {@code null} for an unsupported type
+     */
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(THING_TYPE_AUTOMOWER)) {
-            return new RobonectHandler(thing, httpClientFactory, timeZoneProvider);
+            return new RobonectHandler(thing, httpClientFactory, timeZoneProvider, pushServlet);
         }
 
         return null;

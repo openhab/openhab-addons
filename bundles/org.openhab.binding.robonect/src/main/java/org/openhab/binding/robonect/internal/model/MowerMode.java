@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.robonect.internal.model;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The mower mode from the status information. Please note
  * that EOD and JOB from {@link org.openhab.binding.robonect.internal.model.cmd.ModeCommand.Mode}
@@ -19,6 +21,7 @@ package org.openhab.binding.robonect.internal.model;
  * 
  * @author Marco Meyer - Initial contribution
  */
+@NonNullByDefault
 public enum MowerMode {
 
     /**
@@ -42,6 +45,11 @@ public enum MowerMode {
     DEMO(3),
 
     /**
+     * The "End of day" mode. This mode is not officially supported by the mower status API but is used internally.
+     */
+    EOD(98),
+
+    /**
      * An unknown mode. Actually this mode should never be set but is there if for some reason an unexpected value
      * is returned from the module response.
      */
@@ -49,15 +57,20 @@ public enum MowerMode {
 
     private int code;
 
+    /**
+     * Creates a mode associated with a Robonect numeric code.
+     *
+     * @param code the mode code
+     */
     MowerMode(int code) {
         this.code = code;
     }
 
     /**
-     * Translate the numeric mode from the JSON response into enum values.
+     * Translates a numeric mode from the JSON response into an enum value.
      * 
-     * @param mode - the numeric value of the mode.
-     * @return - the enum value of the mode.
+     * @param mode the numeric mode code
+     * @return the matching mode, or {@link #UNKNOWN} if the code is not recognized
      */
     public static MowerMode fromMode(int mode) {
         for (MowerMode mowerMode : MowerMode.values()) {
@@ -69,7 +82,9 @@ public enum MowerMode {
     }
 
     /**
-     * @return - The numeric code of the mode.
+     * Returns the numeric code of the mode.
+     *
+     * @return The numeric code of the mode.
      */
     public int getCode() {
         return code;

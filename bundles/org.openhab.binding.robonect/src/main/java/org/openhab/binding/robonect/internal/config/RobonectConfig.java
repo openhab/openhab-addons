@@ -12,47 +12,146 @@
  */
 package org.openhab.binding.robonect.internal.config;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
- *
- * This class acts simply a structure for holding the thing configuration.
+ * Holds the mower Thing configuration.
  *
  * @author Marco Meyer - Initial contribution
+ * @author Nico Brüttner - Detailed polling, push credentials, and web interface settings
  */
+@NonNullByDefault
 public class RobonectConfig {
 
-    private String host;
+    private String host = "";
 
-    private String user;
+    private @Nullable String user;
 
-    private String password;
+    private @Nullable String password;
+
+    private @Nullable String pushUser;
+    private @Nullable String pushPass;
 
     private int pollInterval;
 
     private int offlineTimeout;
 
-    private String timezone;
+    private @Nullable String timezone;
 
+    private int pollIntervalExtended;
+
+    private int pollIntervalConfig;
+
+    private boolean useAjaxApi;
+
+    private boolean useWebApi;
+
+    /**
+     * Returns the configured mower host.
+     *
+     * @return the host address
+     */
     public String getHost() {
         return host;
     }
 
-    public String getUser() {
+    /**
+     * Returns the configured username.
+     *
+     * @return the username
+     */
+    public @Nullable String getUser() {
         return user;
     }
 
-    public String getPassword() {
+    /**
+     * Returns the configured password.
+     *
+     * @return the password
+     */
+    public @Nullable String getPassword() {
         return password;
     }
 
+    /**
+     * Returns the username expected on incoming push notifications.
+     *
+     * @return the configured push username, or {@code null} if unset
+     */
+    public @Nullable String getPushUser() {
+        return pushUser;
+    }
+
+    /**
+     * Returns the password expected on incoming push notifications.
+     *
+     * @return the configured push password, or {@code null} if unset
+     */
+    public @Nullable String getPushPass() {
+        return pushPass;
+    }
+
+    /**
+     * Returns the normal polling interval.
+     *
+     * @return the interval in seconds
+     */
     public int getPollInterval() {
         return pollInterval;
     }
 
+    /**
+     * Returns the configured offline timeout.
+     *
+     * @return the timeout in minutes
+     */
     public int getOfflineTimeout() {
         return offlineTimeout;
     }
 
-    public String getTimezone() {
+    /**
+     * Returns the mower time zone.
+     *
+     * @return the time zone identifier
+     */
+    public @Nullable String getTimezone() {
         return timezone;
+    }
+
+    /**
+     * Returns the detailed polling interval.
+     *
+     * @return the interval in seconds, or zero when disabled
+     */
+    public int getPollIntervalExtended() {
+        return pollIntervalExtended;
+    }
+
+    /**
+     * Returns the configuration polling interval.
+     *
+     * @return the interval in seconds, or zero when disabled
+     */
+    public int getPollIntervalConfig() {
+        return pollIntervalConfig;
+    }
+
+    /**
+     * Reports whether localized Ajax UI scraping is enabled.
+     *
+     * @return {@code true} if Ajax UI scraping is enabled
+     */
+    public boolean isAjaxApiEnabled() {
+        return useAjaxApi;
+    }
+
+    /**
+     * Reports whether unofficial web-interface operations are enabled.
+     *
+     * @return {@code true} if unofficial operations are enabled
+     */
+    public boolean isWebApiEnabled() {
+        return useWebApi;
     }
 }

@@ -12,34 +12,53 @@
  */
 package org.openhab.binding.robonect.internal.model;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * Answer object for holding version information.
  * 
  * @author Marco Meyer - Initial contribution
+ * @author Nico Brüttner - Version 1 firmware and hardware metadata
  */
+@NonNullByDefault
 public class VersionInfo extends RobonectAnswer {
 
+    public static final String NOT_AVAILABLE = "n/a";
+
     private static final RobonectVersion NA_VERSION = new RobonectVersion();
+
+    private @Nullable String serial;
+    private @Nullable VersionMower mower;
+    private @Nullable VersionDetail bootloader;
+    private @Nullable VersionWlan wlan;
+    private @Nullable VersionDetail application;
 
     /**
      * encapsulates the robonect version information.
      */
     public static class RobonectVersion {
 
-        private static final String NA = "n/a";
-
         private String serial;
-
         private String version;
-
         private String compiled;
-
         private String comment;
 
+        /**
+         * Creates Robonect module version information.
+         */
         public RobonectVersion() {
-            this(NA, NA, NA, NA);
+            this(NOT_AVAILABLE, NOT_AVAILABLE, NOT_AVAILABLE, NOT_AVAILABLE);
         }
 
+        /**
+         * Creates Robonect module version information.
+         *
+         * @param serial the serial
+         * @param version the version
+         * @param compiled the compilation timestamp
+         * @param comment the comment
+         */
         public RobonectVersion(String serial, String version, String compiled, String comment) {
             this.serial = serial;
             this.version = version;
@@ -48,6 +67,8 @@ public class VersionInfo extends RobonectAnswer {
         }
 
         /**
+         * Returns the serial number of the robonect module.
+         *
          * @return - The serial number of the robonect module.
          */
         public String getSerial() {
@@ -55,6 +76,8 @@ public class VersionInfo extends RobonectAnswer {
         }
 
         /**
+         * Returns the firmware version running on the robonect module.
+         *
          * @return - The firmware version running on the robonect module.
          */
         public String getVersion() {
@@ -62,6 +85,8 @@ public class VersionInfo extends RobonectAnswer {
         }
 
         /**
+         * Returns the date and time the firmware was compiled.
+         *
          * @return - The date and time the firmware was compiled.
          */
         public String getCompiled() {
@@ -69,35 +94,104 @@ public class VersionInfo extends RobonectAnswer {
         }
 
         /**
+         * Returns the comment added to this version.
+         *
          * @return - The comment added to this version.
          */
         public String getComment() {
             return comment;
         }
 
+        /**
+         * Sets the serial.
+         *
+         * @param serial the serial
+         */
         public void setSerial(String serial) {
             this.serial = serial;
         }
 
+        /**
+         * Sets the version.
+         *
+         * @param version the version
+         */
         public void setVersion(String version) {
             this.version = version;
         }
 
+        /**
+         * Sets the compilation timestamp.
+         *
+         * @param compiled the compilation timestamp
+         */
         public void setCompiled(String compiled) {
             this.compiled = compiled;
         }
 
+        /**
+         * Sets the comment.
+         *
+         * @param comment the comment
+         */
         public void setComment(String comment) {
             this.comment = comment;
         }
     }
 
-    private RobonectVersion robonect;
+    /**
+     * Returns the serial.
+     *
+     * @return the serial, or {@code null} if not reported
+     */
+    public @Nullable String getSerial() {
+        return serial;
+    }
 
     /**
-     * @return - the object encapsulating the version information. See {@link RobonectVersion}
+     * Returns the mower.
+     *
+     * @return the mower, or {@code null} if not reported
      */
-    public RobonectVersion getRobonect() {
+    public @Nullable VersionMower getMower() {
+        return mower;
+    }
+
+    /**
+     * Returns the bootloader.
+     *
+     * @return the bootloader, or {@code null} if not reported
+     */
+    public @Nullable VersionDetail getBootloader() {
+        return bootloader;
+    }
+
+    /**
+     * Returns the wlan.
+     *
+     * @return the wlan, or {@code null} if not reported
+     */
+    public @Nullable VersionWlan getWlan() {
+        return wlan;
+    }
+
+    /**
+     * Returns the application.
+     *
+     * @return the application, or {@code null} if not reported
+     */
+    public @Nullable VersionDetail getApplication() {
+        return application;
+    }
+
+    private @Nullable RobonectVersion robonect;
+
+    /**
+     * Returns the Robonect module version information, or the unavailable-value placeholder if absent.
+     *
+     * @return the Robonect module version information, or the unavailable-value placeholder if absent
+     */
+    public @Nullable RobonectVersion getRobonect() {
         if (robonect != null) {
             return robonect;
         } else {
@@ -105,6 +199,11 @@ public class VersionInfo extends RobonectAnswer {
         }
     }
 
+    /**
+     * Sets the robonect.
+     *
+     * @param robonect the robonect
+     */
     public void setRobonect(RobonectVersion robonect) {
         this.robonect = robonect;
     }

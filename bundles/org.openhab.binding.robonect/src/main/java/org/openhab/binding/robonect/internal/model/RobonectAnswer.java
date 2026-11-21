@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.robonect.internal.model;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -21,43 +24,50 @@ import com.google.gson.annotations.SerializedName;
  * 
  * @author Marco Meyer - Initial contribution
  */
+@NonNullByDefault
 public class RobonectAnswer {
 
     private boolean successful;
 
     @SerializedName("error_code")
-    private Integer errorCode;
+    private @Nullable Integer errorCode;
 
     @SerializedName("error_message")
-    private String errorMessage;
+    private @Nullable String errorMessage;
 
     /**
-     * @return - true if the request was successful, false otherwise.
+     * Reports whether the request was successful.
+     *
+     * @return - {@code true} if the request was successful, {@code false} otherwise.
      */
     public boolean isSuccessful() {
         return successful;
     }
 
     /**
-     * allows to set the successful status for testing.
+     * Sets whether the request succeeded.
      * 
-     * @param successful
+     * @param successful whether the request succeeded
      */
     public void setSuccessful(boolean successful) {
         this.successful = successful;
     }
 
     /**
-     * @return - in case of a not successful request, the error code, null otherwise.
+     * Returns the error code reported by the module.
+     *
+     * @return the error code reported by the module, or {@code null} if absent
      */
-    public Integer getErrorCode() {
+    public @Nullable Integer getErrorCode() {
         return errorCode;
     }
 
     /**
-     * @return - in case of a not successful request, the error message, null otherwise.
+     * Returns the error message reported by the module.
+     *
+     * @return the error message reported by the module, or {@code null} if absent
      */
-    public String getErrorMessage() {
+    public @Nullable String getErrorMessage() {
         return errorMessage;
     }
 }

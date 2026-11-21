@@ -12,15 +12,23 @@
  */
 package org.openhab.binding.robonect.internal.model.cmd;
 
-import org.openhab.binding.robonect.internal.model.VersionInfo;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Queries version information about the mower and the module. See {@link VersionInfo}
+ * Queries version information about the mower and the module. See
+ * {@link org.openhab.binding.robonect.internal.model.VersionInfo}
  * for more information.
  * 
  * @author Marco Meyer - Initial contribution
  */
+@NonNullByDefault
 public class VersionCommand implements Command {
+    /**
+     * Builds the version information URL for this {@link Command}.
+     *
+     * @param baseURL base URL to which the command parameters are appended
+     * @return the complete request URL
+     */
     @Override
     public String toCommandURL(String baseURL) {
         return baseURL + "?cmd=version";

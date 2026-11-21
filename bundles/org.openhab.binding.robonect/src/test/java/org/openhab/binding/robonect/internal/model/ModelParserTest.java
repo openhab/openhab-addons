@@ -15,56 +15,94 @@ package org.openhab.binding.robonect.internal.model;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Objects;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import com.google.gson.JsonParseException;
 
 /**
  * The goal of this class is to test the model parser to make sure the structures
  * returned from the module can be handled.
  *
  * @author Marco Meyer - Initial contribution
+ * @author Nico Brüttner - Push trigger and duration parsing tests
  */
 public class ModelParserTest {
-
-    private ModelParser subject;
-
-    @BeforeEach
-    public void setUp() {
-        subject = new ModelParser();
+    /** Rejects a JSON null response because endpoint APIs require a response model. */
+    @Test
+    public void shouldRejectNullResponse() {
+        assertThrows(JsonParseException.class, () -> ModelParser.parse("null", RobonectAnswer.class));
     }
 
+    /** Checks that a response containing only a success flag can be parsed. */
     @Test
     public void shouldParseSimpleSuccessModel() {
         String correctModel = "{\"successful\": true}";
-        RobonectAnswer answer = subject.parse(correctModel, RobonectAnswer.class);
+        RobonectAnswer answer = ModelParser.parse(correctModel, RobonectAnswer.class);
         assertTrue(answer.isSuccessful());
         assertNull(answer.getErrorMessage());
         assertNull(answer.getErrorCode());
     }
 
+    /** Checks that numbered trigger fields above the usual low indices are retained. */
+    @Test
+    public void shouldParseNumberedPushTriggersWithoutAnUpperLimit() {
+        PushInfo info = ModelParser.parse("""
+                {"successful":true,"push":{"trigger":{"interval":30,
+                "trigger0":{"name":"Parked","enter":true,"leave":false},
+                "trigger12":{"name":"Mowing","enter":false,"leave":true}}}}
+                """, PushInfo.class);
+        assertTrue(info.isSuccessful());
+        PushTriggers triggers = Objects.requireNonNull(Objects.requireNonNull(info.getPush()).getTrigger());
+        assertEquals(30, triggers.getInterval());
+        assertEquals(2, triggers.getTriggers().size());
+        assertEquals(Boolean.TRUE, Objects.requireNonNull(triggers.getTriggers().get("0")).getEnter());
+        assertEquals(Boolean.TRUE, Objects.requireNonNull(triggers.getTriggers().get("12")).getLeave());
+    }
+
+    /** Checks that mowing history and optional status flags are present in the parsed model. */
+    @Test
+    public void shouldParseRecentDurationsAndAdditionalStatusFields() {
+        HourInfo hours = ModelParser.parse("""
+                {"successful":true,"seek":[{"duration":2},{"duration":4}],
+                "mowing":[{"duration":7},{"duration":9}]}
+                """, HourInfo.class);
+        assertEquals(2, Objects.requireNonNull(hours.getSeek()).size());
+        assertEquals(4, Objects.requireNonNull(hours.getSeek()).get(1).getDuration());
+        assertEquals(9, Objects.requireNonNull(hours.getMowing()).get(1).getDuration());
+
+        MowerInfo status = ModelParser.parse("""
+                {"successful":true,"status":{"home":true,"prevent":3}}
+                """, MowerInfo.class);
+        assertEquals(Boolean.TRUE, Objects.requireNonNull(status.getStatus()).getHome());
+        assertEquals(3, Objects.requireNonNull(status.getStatus()).getPrevent());
+    }
+
+    /** Checks that common failure fields survive parsing into endpoint-specific response types. */
     @Test
     public void shouldParseErrorResponseOnAllResponseTypes() {
         String correctModel = "{\"successful\": false, \"error_code\": 7, \"error_message\": \"Automower already stopped\"}";
-        RobonectAnswer answer = subject.parse(correctModel, RobonectAnswer.class);
+        RobonectAnswer answer = ModelParser.parse(correctModel, RobonectAnswer.class);
         assertFalse(answer.isSuccessful());
         assertEquals(Integer.valueOf(7), answer.getErrorCode());
         assertEquals("Automower already stopped", answer.getErrorMessage());
 
-        MowerInfo info = subject.parse(correctModel, MowerInfo.class);
+        MowerInfo info = ModelParser.parse(correctModel, MowerInfo.class);
         assertFalse(info.isSuccessful());
         assertEquals(Integer.valueOf(7), info.getErrorCode());
         assertEquals("Automower already stopped", info.getErrorMessage());
     }
 
+    /** Checks the fields of a representative status response. */
     @Test
     public void shouldParseCorrectStatusModel() {
         String correctModel = "{\"successful\": true, \"name\": \"Mein Automower\", \"status\": {\"status\": 17, \"stopped\": false, \"duration\": 4359, \"mode\": 0, \"battery\": 100, \"hours\": 29}, \"timer\": {\"status\": 2, \"next\": {\"date\": \"01.05.2017\", \"time\": \"19:00:00\", \"unix\": 1493665200}}, \"wlan\": {\"signal\": -76}}";
-        MowerInfo mowerInfo = subject.parse(correctModel, MowerInfo.class);
+        MowerInfo mowerInfo = ModelParser.parse(correctModel, MowerInfo.class);
         assertTrue(mowerInfo.isSuccessful());
         assertEquals("Mein Automower", mowerInfo.getName());
         assertEquals(MowerStatus.SLEEPING, mowerInfo.getStatus().getStatus());
-        assertFalse(mowerInfo.getStatus().isStopped());
+        assertEquals(Boolean.FALSE, mowerInfo.getStatus().isStopped());
         assertEquals(4359, mowerInfo.getStatus().getDuration());
         assertEquals(MowerMode.AUTO, mowerInfo.getStatus().getMode());
         assertEquals(100, mowerInfo.getStatus().getBattery());
@@ -77,14 +115,15 @@ public class ModelParserTest {
         assertNull(mowerInfo.getError());
     }
 
+    /** Checks that optional temperature and humidity values survive status parsing. */
     @Test
     public void shouldParseCorrectStatusModelWithHealth() {
         String correctModel = "{ \"successful\": true, \"name\": \"Rosenlund Automower\", \"status\": { \"status\": 4, \"stopped\": false, \"duration\": 47493, \"mode\": 0, \"battery\": 20, \"hours\": 991 }, \"timer\": { \"status\": 2, \"next\": { \"date\": \"30.07.2017\", \"time\": \"13:00:00\", \"unix\": 1501419600 } }, \"blades\": {\"quality\": 9, \"hours\": 183, \"days\": 76}, \"wlan\": { \"signal\": -66 }, \"health\": { \"temperature\": 28, \"humidity\": 32 } }";
-        MowerInfo mowerInfo = subject.parse(correctModel, MowerInfo.class);
+        MowerInfo mowerInfo = ModelParser.parse(correctModel, MowerInfo.class);
         assertTrue(mowerInfo.isSuccessful());
         assertEquals("Rosenlund Automower", mowerInfo.getName());
         assertEquals(MowerStatus.CHARGING, mowerInfo.getStatus().getStatus());
-        assertFalse(mowerInfo.getStatus().isStopped());
+        assertEquals(Boolean.FALSE, mowerInfo.getStatus().isStopped());
         assertEquals(47493, mowerInfo.getStatus().getDuration());
         assertEquals(MowerMode.AUTO, mowerInfo.getStatus().getMode());
         assertEquals(20, mowerInfo.getStatus().getBattery());
@@ -104,46 +143,50 @@ public class ModelParserTest {
         // "health": { "temperature": 28, "humidity": 32 }
     }
 
+    /** Checks that accented text from the firmware is preserved. */
     @Test
     public void shouldParseISOEncodedStatusModel() {
         byte[] responseBytesISO88591 = "{\"successful\": true, \"name\": \"Mein Automower\", \"status\": {\"status\": 7, \"stopped\": true, \"duration\": 192, \"mode\": 1, \"battery\": 95, \"hours\": 41}, \"timer\": {\"status\": 2}, \"error\" : {\"error_code\": 15, \"error_message\": \"Utanför arbetsområdet\", \"date\": \"02.05.2017\", \"time\": \"20:36:43\", \"unix\": 1493757403}, \"wlan\": {\"signal\": -75}}"
                 .getBytes(StandardCharsets.ISO_8859_1);
-        MowerInfo mowerInfo = subject.parse(new String(responseBytesISO88591, StandardCharsets.ISO_8859_1),
+        MowerInfo mowerInfo = ModelParser.parse(new String(responseBytesISO88591, StandardCharsets.ISO_8859_1),
                 MowerInfo.class);
         assertEquals("Utanför arbetsområdet", mowerInfo.getError().getErrorMessage());
     }
 
+    /** Checks that the nested error code survives parsing of mower status. */
     @Test
     public void shouldParseCorrectStatusModelWithErrorCode() {
         String correctModel = "{\"successful\": true, \"name\": \"Grasi\", \"status\": {\"status\": 7, \"stopped\": true, \"duration\": 423, \"mode\": 0, \"battery\": 83, \"hours\": 55}, \"timer\": {\"status\": 2, \"next\": {\"date\": \"15.05.2017\", \"time\": \"19:00:00\", \"unix\": 1494874800}}, \"wlan\": {\"signal\": -76}, \"error\": {\"error_code\": 9, \"error_message\": \"Grasi ist eingeklemmt\", \"date\": \"13.05.2017\", \"time\": \"23:00:22\", \"unix\": 1494716422}}";
-        MowerInfo mowerInfo = subject.parse(correctModel, MowerInfo.class);
+        MowerInfo mowerInfo = ModelParser.parse(correctModel, MowerInfo.class);
         assertTrue(mowerInfo.isSuccessful());
         assertEquals("Grasi", mowerInfo.getName());
         assertEquals(MowerStatus.ERROR_STATUS, mowerInfo.getStatus().getStatus());
-        assertTrue(mowerInfo.getStatus().isStopped());
+        assertEquals(Boolean.TRUE, mowerInfo.getStatus().isStopped());
         assertEquals(9, mowerInfo.getError().getErrorCode().intValue());
         assertEquals("Grasi ist eingeklemmt", mowerInfo.getError().getErrorMessage());
     }
 
+    /** Checks decoding of a status response while the mower is mowing. */
     @Test
     public void shouldParseCorrectStatusModelMowing() {
         String correctModel = "{\"successful\": true, \"name\": \"Mein Automower\", \"status\": {\"status\": 2, \"stopped\": false, \"duration\": 192, \"mode\": 1, \"battery\": 95, \"hours\": 41}, \"timer\": {\"status\": 2}, \"wlan\": {\"signal\": -75}}";
-        MowerInfo mowerInfo = subject.parse(correctModel, MowerInfo.class);
+        MowerInfo mowerInfo = ModelParser.parse(correctModel, MowerInfo.class);
         assertTrue(mowerInfo.isSuccessful());
         assertEquals("Mein Automower", mowerInfo.getName());
         assertEquals(MowerStatus.MOWING, mowerInfo.getStatus().getStatus());
-        assertFalse(mowerInfo.getStatus().isStopped());
+        assertEquals(Boolean.FALSE, mowerInfo.getStatus().isStopped());
         assertEquals(MowerMode.MANUAL, mowerInfo.getStatus().getMode());
     }
 
+    /** Checks that the current error is represented in an error endpoint response. */
     @Test
     public void shouldParseCorrectErrorModelInErrorState() {
         String correctModel = "{\"successful\": true, \"name\": \"Mein Automower\", \"status\": {\"status\": 7, \"stopped\": true, \"duration\": 192, \"mode\": 1, \"battery\": 95, \"hours\": 41}, \"timer\": {\"status\": 2}, \"error\" : {\"error_code\": 15, \"error_message\": \"Mein Automower ist angehoben\", \"date\": \"02.05.2017\", \"time\": \"20:36:43\", \"unix\": 1493757403}, \"wlan\": {\"signal\": -75}}";
-        MowerInfo mowerInfo = subject.parse(correctModel, MowerInfo.class);
+        MowerInfo mowerInfo = ModelParser.parse(correctModel, MowerInfo.class);
         assertTrue(mowerInfo.isSuccessful());
         assertEquals("Mein Automower", mowerInfo.getName());
         assertEquals(MowerStatus.ERROR_STATUS, mowerInfo.getStatus().getStatus());
-        assertTrue(mowerInfo.getStatus().isStopped());
+        assertEquals(Boolean.TRUE, mowerInfo.getStatus().isStopped());
         assertNotNull(mowerInfo.getError());
         assertEquals("Mein Automower ist angehoben", mowerInfo.getError().getErrorMessage());
         assertEquals(Integer.valueOf(15), mowerInfo.getError().getErrorCode());
@@ -152,10 +195,11 @@ public class ModelParserTest {
         assertEquals("1493757403", mowerInfo.getError().getUnix());
     }
 
+    /** Checks that the error history retains its entries and their details. */
     @Test
     public void shouldParseErrorsList() {
         String errorsListResponse = "{\"errors\": [{\"error_code\": 15, \"error_message\": \"Grasi ist angehoben\", \"date\": \"02.05.2017\", \"time\": \"20:36:43\", \"unix\": 1493757403}, {\"error_code\": 33, \"error_message\": \"Grasi ist gekippt\", \"date\": \"26.04.2017\", \"time\": \"21:31:18\", \"unix\": 1493242278}, {\"error_code\": 13, \"error_message\": \"Kein Antrieb\", \"date\": \"21.04.2017\", \"time\": \"20:17:22\", \"unix\": 1492805842}, {\"error_code\": 10, \"error_message\": \"Grasi ist umgedreht\", \"date\": \"20.04.2017\", \"time\": \"20:14:37\", \"unix\": 1492719277}, {\"error_code\": 1, \"error_message\": \"Grasi hat Arbeitsbereich überschritten\", \"date\": \"12.04.2017\", \"time\": \"19:10:09\", \"unix\": 1492024209}, {\"error_code\": 33, \"error_message\": \"Grasi ist gekippt\", \"date\": \"10.04.2017\", \"time\": \"22:59:35\", \"unix\": 1491865175}, {\"error_code\": 1, \"error_message\": \"Grasi hat Arbeitsbereich überschritten\", \"date\": \"10.04.2017\", \"time\": \"21:21:55\", \"unix\": 1491859315}, {\"error_code\": 33, \"error_message\": \"Grasi ist gekippt\", \"date\": \"10.04.2017\", \"time\": \"20:26:13\", \"unix\": 1491855973}, {\"error_code\": 1, \"error_message\": \"Grasi hat Arbeitsbereich überschritten\", \"date\": \"09.04.2017\", \"time\": \"14:50:36\", \"unix\": 1491749436}, {\"error_code\": 33, \"error_message\": \"Grasi ist gekippt\", \"date\": \"09.04.2017\", \"time\": \"14:23:27\", \"unix\": 1491747807}], \"successful\": true}";
-        ErrorList errorList = subject.parse(errorsListResponse, ErrorList.class);
+        ErrorList errorList = ModelParser.parse(errorsListResponse, ErrorList.class);
         assertTrue(errorList.isSuccessful());
         assertEquals(10, errorList.getErrors().size());
         assertEquals(Integer.valueOf(15), errorList.getErrors().get(0).getErrorCode());
@@ -165,18 +209,20 @@ public class ModelParserTest {
         assertEquals("1493757403", errorList.getErrors().get(0).getUnix());
     }
 
+    /** Checks that the name endpoint response exposes the mower name. */
     @Test
     public void shouldParseName() {
         String nameResponse = "{\"name\": \"Grasi\", \"successful\": true}";
-        Name name = subject.parse(nameResponse, Name.class);
+        Name name = ModelParser.parse(nameResponse, Name.class);
         assertTrue(name.isSuccessful());
         assertEquals("Grasi", name.getName());
     }
 
+    /** Checks the version fields from the standard firmware response. */
     @Test
     public void shouldParseVersionInfo() {
         String versionResponse = "{\"robonect\": {\"serial\": \"05D92D32-38355048-43203030\", \"version\": \"V0.9\", \"compiled\": \"2017-03-25 20:10:00\", \"comment\": \"V0.9c\"}, \"successful\": true}";
-        VersionInfo versionInfo = subject.parse(versionResponse, VersionInfo.class);
+        VersionInfo versionInfo = ModelParser.parse(versionResponse, VersionInfo.class);
         assertTrue(versionInfo.isSuccessful());
         assertEquals("05D92D32-38355048-43203030", versionInfo.getRobonect().getSerial());
         assertEquals("V0.9", versionInfo.getRobonect().getVersion());
@@ -184,6 +230,7 @@ public class ModelParserTest {
         assertEquals("V0.9c", versionInfo.getRobonect().getComment());
     }
 
+    /** Checks how legacy version responses represent missing version details. */
     @Test
     public void shouldParseVersionInfoV1betaToNA() {
         String versionResponse = """
@@ -220,7 +267,7 @@ public class ModelParserTest {
                 successful: true
                 }\
                 """;
-        VersionInfo versionInfo = subject.parse(versionResponse, VersionInfo.class);
+        VersionInfo versionInfo = ModelParser.parse(versionResponse, VersionInfo.class);
         assertTrue(versionInfo.isSuccessful());
         assertEquals("n/a", versionInfo.getRobonect().getSerial());
         assertEquals("n/a", versionInfo.getRobonect().getVersion());

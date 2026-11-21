@@ -12,7 +12,8 @@
  */
 package org.openhab.binding.robonect.internal.model.cmd;
 
-import org.openhab.binding.robonect.internal.RobonectClient;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * 
@@ -22,14 +23,16 @@ import org.openhab.binding.robonect.internal.RobonectClient;
  * EOD (End Of Day): The mower is set into HOME mode until midnight. After midnight the module sets the mower in AUTO
  * mode
  * JOB: The JOB mode triggers a JOB and supports following additional parameter:
- * * remoteStart: where to start the job (STANDARD, REMOTE_1 or REMOTE_2)
+ * * remoteStart: where to start the job (STANDARD, DOCKING_STATION or REMOTE_1 through REMOTE_5)
  * * after: The mode to be set after the JOB is done. Allowed are all except JOB.
  * * start: the start time in the form HH:MM (H=Hour,M=Minute)
  * * end: the end time in the form HH:MM (H=Hour,M=Minute)
  * * duration: mowing time in minutes (in combination with start or end time)
  * 
  * @author Marco Meyer - Initial contribution
+ * @author Nico Brüttner - Docking station and expanded remote start options
  */
+@NonNullByDefault
 public class ModeCommand implements Command {
 
     /**
@@ -45,6 +48,12 @@ public class ModeCommand implements Command {
         int code;
         String cmd;
 
+        /**
+         * Creates a mower mode with its protocol values.
+         *
+         * @param code numeric mode code
+         * @param cmd mode command value
+         */
         Mode(int code, String cmd) {
             this.code = code;
             this.cmd = cmd;
@@ -61,18 +70,31 @@ public class ModeCommand implements Command {
          */
         STANDARD(0),
 
-        /**
-         * Start at the configured remote 1 location.
-         */
-        REMOTE_1(1),
+        /** Start at the docking station. */
+        DOCKING_STATION(1),
 
-        /**
-         * Start at the conifugred remote 2 location.
-         */
-        REMOTE_2(2);
+        /** Start at the configured remote 1 location. */
+        REMOTE_1(2),
+
+        /** Start at the configured remote 2 location. */
+        REMOTE_2(3),
+
+        /** Start at the configured remote 3 location. */
+        REMOTE_3(4),
+
+        /** Start at the configured remote 4 location. */
+        REMOTE_4(5),
+
+        /** Start at the configured remote 5 location. */
+        REMOTE_5(6);
 
         int code;
 
+        /**
+         * Creates a remote-start option with its protocol code.
+         *
+         * @param code numeric remote-start code
+         */
         RemoteStart(int code) {
             this.code = code;
         }
@@ -80,60 +102,65 @@ public class ModeCommand implements Command {
 
     private Mode mode;
 
-    private RemoteStart remoteStart;
+    private @Nullable RemoteStart remoteStart;
 
-    private Mode after;
+    private @Nullable Mode after;
 
-    private String start;
+    private @Nullable String start;
 
-    private String end;
+    private @Nullable String end;
 
-    private Integer duration;
+    private @Nullable Integer duration;
 
+    /**
+     * Creates a mode command.
+     *
+     * @param mode the requested mower mode
+     */
     public ModeCommand(Mode mode) {
         this.mode = mode;
     }
 
     /**
-     * sets the desired remoteStart option.
+     * Sets the desired remote-start option.
      * 
-     * @param remoteStart - the remoteStart option.
+     * @param remoteStart the desired remote-start option
      * @return - the command instance.
      */
-    public ModeCommand withRemoteStart(RemoteStart remoteStart) {
+    public ModeCommand withRemoteStart(@Nullable RemoteStart remoteStart) {
         this.remoteStart = remoteStart;
         return this;
     }
 
     /**
-     * set the mode after the job is done.
+     * Sets the mode after the job finishes.
      * 
      * @param afterMode - the desired mode after job execution.
      * @return - the command instance.
      */
-    public ModeCommand withAfter(Mode afterMode) {
+    public ModeCommand withAfter(@Nullable Mode afterMode) {
         this.after = afterMode;
         return this;
     }
 
     /**
-     * The desired start time in the format HH:MM (H=Hour, M=Minute)
+     * Sets the desired start time in {@code HH:mm} format.
      * 
      * @param startTime - the start time.
      * @return - the command instance.
      */
-    public ModeCommand withStart(String startTime) {
+    public ModeCommand withStart(@Nullable String startTime) {
         this.start = startTime;
         return this;
     }
 
     /**
-     * The desired end time in the format HH:MM (H=Hour, M=Minute)
+     * Sets the desired end time in {@code HH:mm} format.
      * 
      * @param endTime - the end time.
      * @return - the command instance.
      */
-    public ModeCommand withEnd(String endTime) {
+    public ModeCommand withEnd(@Nullable String endTime) {
         this.end = endTime;
         return this;
     }
@@ -144,20 +171,25 @@ public class ModeCommand implements Command {
      * @param durationInMinutes - the duration in minutes.
      * @return - the command instance.
      */
-    public ModeCommand withDuration(Integer durationInMinutes) {
+    public ModeCommand withDuration(@Nullable Integer durationInMinutes) {
         this.duration = durationInMinutes;
         return this;
     }
 
     /**
-     * {@inheritDoc}
-     * 
-     * @param baseURL - will be passed by the {@link RobonectClient} in the form
-     *            http://xxx.xxx.xxx/json?
-     * @return
+     * Builds the mower mode URL for this {@link Command}.
+     *
+     * @param baseURL base URL to which the command parameters are appended
+     * @return the complete request URL
      */
     @Override
     public String toCommandURL(String baseURL) {
+        RemoteStart rs = remoteStart;
+        Mode af = after;
+        String st = start;
+        String en = end;
+        Integer dur = duration;
+
         StringBuilder sb = new StringBuilder(baseURL);
         sb.append("?cmd=mode&mode=");
         sb.append(mode.cmd);
@@ -168,25 +200,25 @@ public class ModeCommand implements Command {
             case HOME:
                 break;
             case JOB:
-                if (remoteStart != null) {
+                if (rs != null) {
                     sb.append("&remotestart=");
-                    sb.append(remoteStart.code);
+                    sb.append(rs.code);
                 }
-                if (after != null) {
+                if (af != null) {
                     sb.append("&after=");
-                    sb.append(after.code);
+                    sb.append(af.code);
                 }
-                if (start != null) {
+                if (st != null) {
                     sb.append("&start=");
-                    sb.append(start);
+                    sb.append(st);
                 }
-                if (end != null) {
+                if (en != null) {
                     sb.append("&end=");
-                    sb.append(end);
+                    sb.append(en);
                 }
-                if (duration != null) {
+                if (dur != null) {
                     sb.append("&duration=");
-                    sb.append(duration);
+                    sb.append(dur);
                 }
                 break;
         }
