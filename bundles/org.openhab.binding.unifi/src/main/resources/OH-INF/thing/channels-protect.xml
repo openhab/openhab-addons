@@ -507,6 +507,17 @@
 		</state>
 	</channel-type>
 
+	<channel-type id="privacy-mode" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Privacy Mode</label>
+		<description>Enable or disable an openHAB-managed full-frame video mask without changing existing privacy zones,
+			audio, or recording settings</description>
+		<category>Camera</category>
+		<tags>
+			<tag>Control</tag>
+		</tags>
+	</channel-type>
+
 	<channel-type id="mic-enabled" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Microphone Enabled</label>

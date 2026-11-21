@@ -15,6 +15,7 @@ package org.openhab.binding.unifi.internal.protect.api.priv.client;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -50,14 +51,20 @@ import org.openhab.binding.unifi.internal.protect.api.priv.exception.Authenticat
 import org.openhab.binding.unifi.internal.protect.api.priv.exception.BadRequestException;
 import org.openhab.binding.unifi.internal.protect.api.priv.exception.NvrException;
 import org.openhab.binding.unifi.internal.protect.api.priv.exception.ThrottledException;
+import org.openhab.binding.unifi.internal.protect.util.PrivacyZoneHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 
 /**
  * Main client for UniFi Protect Private API
  * Provides async operations for all API endpoints
  *
  * @author Dan Cunningham - Initial contribution
+ * @author Joseph Matz - Serialized privacy-zone updates
  */
 @NonNullByDefault
 public class UniFiProtectPrivateClient {
@@ -79,6 +86,8 @@ public class UniFiProtectPrivateClient {
     private volatile @Nullable ScheduledFuture<?> bootstrapRefreshTask;
     private volatile @Nullable CompletableFuture<Bootstrap> inFlightBootstrapRefresh;
     private @Nullable CompletableFuture<Void> reauthInFlight;
+    private final Map<String, CompletableFuture<Camera>> privacyUpdates = new HashMap<>();
+    private volatile boolean privacyUpdatesClosed;
 
     /**
      * Create a new UniFi Protect private-API client using a session supplied by the parent
@@ -444,6 +453,76 @@ public class UniFiProtectPrivateClient {
      */
     public CompletableFuture<Camera> updateCamera(String cameraId, Object updates) {
         return updateDevice("camera", cameraId, updates, Camera.class);
+    }
+
+    /**
+     * Enable or disable openHAB privacy mode while preserving all existing Protect privacy zones.
+     *
+     * The camera is fetched as raw JSON immediately before the update so fields that are not modeled by the
+     * binding are copied back unchanged.
+     *
+     * @param cameraId The camera ID
+     * @param enabled True to add the openHAB full-frame privacy zone, false to remove it
+     * @return CompletableFuture with updated Camera
+     */
+    public CompletableFuture<Camera> setCameraPrivacyMode(String cameraId, boolean enabled) {
+        CompletableFuture<Boolean> start = new CompletableFuture<>();
+        CompletableFuture<Camera> update;
+        synchronized (privacyUpdates) {
+            if (privacyUpdatesClosed) {
+                return CompletableFuture.failedFuture(new IllegalStateException("Protect client is closed"));
+            }
+            CompletableFuture<Camera> previous = privacyUpdates.get(cameraId);
+            CompletableFuture<Boolean> ready = previous == null ? CompletableFuture.completedFuture(Boolean.TRUE)
+                    : previous.handle((camera, failure) -> Boolean.TRUE);
+            // Install the entire read-modify-write-read transaction before allowing it to start.
+            update = ready.thenCompose(ignored -> start)
+                    .thenCompose(ignored -> updateCameraPrivacyMode(cameraId, enabled));
+            privacyUpdates.put(cameraId, update);
+        }
+        update.whenComplete((camera, failure) -> {
+            synchronized (privacyUpdates) {
+                privacyUpdates.remove(cameraId, update);
+            }
+        });
+        // Network calls and completion callbacks must not run under the queue lock.
+        start.complete(Boolean.TRUE);
+        // Cancelling a caller's future must not release the next transaction while HTTP is still in flight.
+        return update.copy();
+    }
+
+    private CompletableFuture<Camera> updateCameraPrivacyMode(String cameraId, boolean enabled) {
+        if (privacyUpdatesClosed) {
+            return CompletableFuture.failedFuture(new IllegalStateException("Protect client is closed"));
+        }
+        return apiRequest(HttpMethod.GET, "cameras/" + cameraId, null, JsonObject.class).thenCompose(cameraJson -> {
+            if (privacyUpdatesClosed) {
+                return CompletableFuture.failedFuture(new IllegalStateException("Protect client is closed"));
+            }
+            JsonElement privacyZonesElement = cameraJson.get("privacyZones");
+            if (privacyZonesElement == null || !privacyZonesElement.isJsonArray()) {
+                return CompletableFuture.failedFuture(
+                        new IllegalStateException("Camera response did not contain a privacyZones array"));
+            }
+            JsonArray privacyZones = privacyZonesElement.getAsJsonArray();
+            JsonArray updatedPrivacyZones = PrivacyZoneHelper.updatePrivacyZones(privacyZones, enabled);
+
+            if (updatedPrivacyZones.equals(privacyZones)) {
+                return CompletableFuture.completedFuture(JsonUtil.getGson().fromJson(cameraJson, Camera.class));
+            }
+
+            return updateCamera(cameraId, Map.of("privacyZones", updatedPrivacyZones)).thenCompose(ignored -> {
+                if (privacyUpdatesClosed) {
+                    return CompletableFuture.failedFuture(new IllegalStateException("Protect client is closed"));
+                }
+                return apiRequest(HttpMethod.GET, "cameras/" + cameraId, null, Camera.class);
+            }).thenApply(camera -> {
+                if (camera.privacyZones == null) {
+                    throw new IllegalStateException("Camera read-back did not contain privacyZones");
+                }
+                return camera;
+            });
+        });
     }
 
     /**
@@ -1246,6 +1325,14 @@ public class UniFiProtectPrivateClient {
      */
     public void close() {
         logger.debug("Closing UniFi Protect client");
+
+        List<CompletableFuture<Camera>> pendingPrivacyUpdates;
+        synchronized (privacyUpdates) {
+            privacyUpdatesClosed = true;
+            pendingPrivacyUpdates = List.copyOf(privacyUpdates.values());
+            privacyUpdates.clear();
+        }
+        pendingPrivacyUpdates.forEach(update -> update.cancel(false));
 
         // Stop periodic bootstrap refresh
         stopPeriodicBootstrapRefresh();

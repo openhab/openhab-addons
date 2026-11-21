@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
@@ -50,6 +51,7 @@ import org.openhab.binding.unifi.internal.protect.config.UnifiProtectCameraConfi
 import org.openhab.binding.unifi.internal.protect.config.UnifiProtectSnapshotConfig;
 import org.openhab.binding.unifi.internal.protect.config.UnifiProtectSnapshotConfig.Sequence;
 import org.openhab.binding.unifi.internal.protect.media.UnifiMediaService;
+import org.openhab.binding.unifi.internal.protect.util.PrivacyZoneHelper;
 import org.openhab.binding.unifi.internal.protect.util.TranslationService;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -74,6 +76,7 @@ import com.google.gson.JsonNull;
  * Child handler for a UniFi Protect Camera.
  *
  * @author Dan Cunningham - Initial contribution
+ * @author Joseph Matz - Ordered privacy commands and state publication
  */
 @NonNullByDefault
 public class UnifiProtectCameraHandler extends UnifiProtectAbstractDeviceHandler<Camera> {
@@ -86,6 +89,10 @@ public class UnifiProtectCameraHandler extends UnifiProtectAbstractDeviceHandler
     // unifiprotect:* channel types, a canonical unifi:* thing needs unifi:* ones. Hardcoding the
     // binding id here would stamp unifi:* types onto legacy things, which the UI cannot resolve.
     private final String channelTypeNamespace;
+    private final Object privacyCommandLock = new Object();
+    private CompletableFuture<Void> privacyCommand = CompletableFuture.completedFuture(null);
+    private volatile boolean privacyDisposed;
+    private volatile long privacyGeneration;
 
     public UnifiProtectCameraHandler(Thing thing, UnifiMediaService media, TranslationService translationService,
             ThingTypeRegistry thingTypeRegistry) {
@@ -98,14 +105,54 @@ public class UnifiProtectCameraHandler extends UnifiProtectAbstractDeviceHandler
 
     @Override
     public void initialize() {
+        synchronized (privacyCommandLock) {
+            privacyDisposed = false;
+            privacyGeneration++;
+        }
         enableWebRTC = getConfigAs(UnifiProtectCameraConfiguration.class).enableWebRTC;
         super.initialize();
     }
 
     @Override
     public void dispose() {
+        CompletableFuture<Void> pendingPrivacyCommand;
+        synchronized (privacyCommandLock) {
+            privacyDisposed = true;
+            privacyGeneration++;
+            pendingPrivacyCommand = privacyCommand;
+            privacyCommand = CompletableFuture.completedFuture(null);
+        }
+        pendingPrivacyCommand.cancel(false);
         super.dispose();
         media.unregisterHandler(this);
+    }
+
+    private void setPrivacyMode(UniFiProtectHybridClient api, boolean enabled) {
+        CompletableFuture<Boolean> start = new CompletableFuture<>();
+        CompletableFuture<Void> update;
+        synchronized (privacyCommandLock) {
+            if (privacyDisposed) {
+                return;
+            }
+            long generation = privacyGeneration;
+            String cameraId = deviceId;
+            // Include state publication in the queue, not just the API request.
+            update = privacyCommand.handle((ignored, failure) -> Boolean.TRUE).thenCompose(ignored -> start)
+                    .thenCompose(ignored -> {
+                        if (privacyDisposed || generation != privacyGeneration || !api.equals(getApiClient())) {
+                            return CompletableFuture.completedFuture(null);
+                        }
+                        return api.getPrivateClient().setCameraPrivacyMode(cameraId, enabled).thenAccept(camera -> {
+                            if (!privacyDisposed && generation == privacyGeneration && api.equals(getApiClient())) {
+                                updateState(CHANNEL_PRIVACY_MODE,
+                                        OnOffType.from(PrivacyZoneHelper.isPrivacyModeEnabled(camera.privacyZones)));
+                            }
+                        });
+                    });
+            privacyCommand = update;
+        }
+        logOnFailure(update, "set privacy mode");
+        start.complete(Boolean.TRUE);
     }
 
     @Override
@@ -260,6 +307,11 @@ public class UnifiProtectCameraHandler extends UnifiProtectAbstractDeviceHandler
                             "set recording mode");
                 }
                 break;
+            case CHANNEL_PRIVACY_MODE:
+                if (command instanceof OnOffType enabled) {
+                    setPrivacyMode(api, enabled == OnOffType.ON);
+                }
+                break;
             case CHANNEL_SMART_DETECT_PERSON_ENABLED:
                 if (command instanceof OnOffType enabled) {
                     logOnFailure(api.getPrivateClient().setPersonDetection(deviceId, enabled == OnOffType.ON),
@@ -411,6 +463,9 @@ public class UnifiProtectCameraHandler extends UnifiProtectAbstractDeviceHandler
         }
         if (privCamera.videoMode != null) {
             updateStringChannel(CHANNEL_VIDEO_MODE, privCamera.videoMode.toString());
+        }
+        if (privCamera.privacyZones != null && hasChannel(CHANNEL_PRIVACY_MODE)) {
+            updateBooleanChannel(CHANNEL_PRIVACY_MODE, PrivacyZoneHelper.isPrivacyModeEnabled(privCamera.privacyZones));
         }
         if (privCamera.activePatrolSlot != null) {
             updateIntegerChannel(CHANNEL_ACTIVE_PATROL_SLOT, privCamera.activePatrolSlot);
@@ -907,6 +962,10 @@ public class UnifiProtectCameraHandler extends UnifiProtectAbstractDeviceHandler
 
         // Recording Mode
         addChannel(CHANNEL_RECORDING_MODE, STRING, CHANNEL_RECORDING_MODE, channelAdd, activeChannelIds);
+
+        if (Boolean.TRUE.equals(flags.hasPrivacyMask)) {
+            addChannel(CHANNEL_PRIVACY_MODE, SWITCH, CHANNEL_PRIVACY_MODE, channelAdd, activeChannelIds);
+        }
 
         if (flags.smartDetectTypes != null && !flags.smartDetectTypes.isEmpty()) {
             addTriggerChannel(CHANNEL_SMART_DETECT_ZONE_START, CHANNEL_SMART_DETECT_ZONE, channelAdd, activeChannelIds,

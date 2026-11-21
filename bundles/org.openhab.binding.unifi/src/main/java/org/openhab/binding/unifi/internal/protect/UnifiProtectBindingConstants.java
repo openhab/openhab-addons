@@ -98,6 +98,7 @@ public class UnifiProtectBindingConstants {
     public static final String CHANNEL_MIC_VOLUME = "mic-volume";
     public static final String CHANNEL_MIC_ENABLED = "mic-enabled";
     public static final String CHANNEL_RECORDING_MODE = "recording-mode";
+    public static final String CHANNEL_PRIVACY_MODE = "privacy-mode";
     public static final String CHANNEL_IR_MODE = "ir-mode";
     public static final String CHANNEL_MOTION_DETECTION_ENABLED = "motion-detection-enabled";
     public static final String CHANNEL_USE_GLOBAL_SETTINGS = "use-global-settings";
