@@ -268,11 +268,11 @@ public class PlugwiseHAController {
 
         if (localGatewayUpdateDateTime == null || localGatewayFullUpdateDateTime == null) {
             return getAndMergeDomainObjects();
-        } else if (localGatewayUpdateDateTime.isBefore(ZonedDateTime.now().minusSeconds(maxAgeSecondsRefresh))) {
-            return getUpdatedAndMergeDomainObjects(localGatewayUpdateDateTime.toEpochSecond());
         } else if (localGatewayFullUpdateDateTime
                 .isBefore(ZonedDateTime.now().minusMinutes(MAX_AGE_MINUTES_FULL_REFRESH))) {
             return getAndMergeDomainObjects();
+        } else if (localGatewayUpdateDateTime.isBefore(ZonedDateTime.now().minusSeconds(maxAgeSecondsRefresh))) {
+            return getUpdatedAndMergeDomainObjects(localGatewayUpdateDateTime.toEpochSecond());
         } else {
             return null;
         }
