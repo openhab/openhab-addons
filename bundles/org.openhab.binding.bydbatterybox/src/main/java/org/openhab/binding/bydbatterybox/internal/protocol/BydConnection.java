@@ -51,8 +51,6 @@ public class BydConnection implements AutoCloseable {
     }
 
     /**
-     * Opens a session.
-     *
      * @param timeoutMillis used for the TCP connect and for each reply
      */
     public static BydConnection open(String host, int port, int timeoutMillis) throws BydCommunicationException {

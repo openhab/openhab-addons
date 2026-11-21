@@ -22,16 +22,10 @@ import org.eclipse.jdt.annotation.Nullable;
  *
  * @param serialNumber system serial number as reported (24 characters, padded by the device)
  * @param bmuFirmwareA BMU firmware of section A, e.g. {@code 3.24}
- * @param bmuFirmwareB BMU firmware of section B
  * @param activeBmuSection {@code 'A'} or {@code 'B'}
  * @param bmsFirmware firmware of the active BMS section
  * @param activeBmsSection {@code 'A'} or {@code 'B'}
  * @param inverterType raw inverter index (the name tables of the references disagree)
- * @param towers number of towers, 1..3
- * @param modulesPerTower number of modules per tower
- * @param batteryType module type
- * @param batteryTypeCode raw module type code
- * @param application raw application code
  * @param clock BMU real-time clock, {@code null} if the reported value is not a valid date
  *
  * @author Michael Weger - Initial contribution

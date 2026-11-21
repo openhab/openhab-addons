@@ -28,7 +28,6 @@ public class BydBatteryBoxBindingConstants {
 
     public static final ThingTypeUID THING_TYPE_HV_PREMIUM = new ThingTypeUID(BINDING_ID, "hv-premium");
 
-    // static channel groups
     public static final String GROUP_STATUS = "status";
     public static final String GROUP_EVENTS = "events";
     public static final String GROUP_DIAGNOSTICS = "diagnostics";
@@ -42,7 +41,6 @@ public class BydBatteryBoxBindingConstants {
     public static final ChannelGroupTypeUID GROUP_TYPE_TOWER = new ChannelGroupTypeUID(BINDING_ID, "tower");
     public static final ChannelGroupTypeUID GROUP_TYPE_MODULE = new ChannelGroupTypeUID(BINDING_ID, "module");
 
-    // status, tower and module channels
     public static final String CHANNEL_STATE_OF_CHARGE = "state-of-charge";
     public static final String CHANNEL_STATE_OF_HEALTH = "state-of-health";
     public static final String CHANNEL_VOLTAGE = "voltage";
@@ -71,14 +69,12 @@ public class BydBatteryBoxBindingConstants {
     public static final String CHANNEL_CELL_VOLTAGE_PREFIX = "cell-voltage-";
     public static final String CHANNEL_CELL_TEMPERATURE_PREFIX = "cell-temperature-";
 
-    // event and diagnostics channels
     public static final String CHANNEL_LAST_EVENT = "last-event";
     public static final String CHANNEL_LAST_EVENT_TIME = "last-event-time";
     public static final String CHANNEL_EVENT = "event";
     public static final String CHANNEL_BMU_CLOCK_OFFSET = "bmu-clock-offset";
     public static final String CHANNEL_LAST_DETAIL_UPDATE = "last-detail-update";
 
-    // properties
     public static final String PROPERTY_BMU_FIRMWARE_A = "bmuFirmwareA";
     public static final String PROPERTY_BMU_FIRMWARE_B = "bmuFirmwareB";
     public static final String PROPERTY_BMS_FIRMWARE = "bmsFirmware";

@@ -28,11 +28,8 @@ import org.eclipse.jdt.annotation.Nullable;
  *
  * @author Michael Weger - Initial contribution
  *
- * @param min smallest value
  * @param minPosition 1-based position of the smallest value within the whole list
- * @param max largest value
  * @param maxPosition 1-based position of the largest value within the whole list
- * @param sum sum of all values in the range
  * @param average average, rounded to one decimal
  */
 @NonNullByDefault
