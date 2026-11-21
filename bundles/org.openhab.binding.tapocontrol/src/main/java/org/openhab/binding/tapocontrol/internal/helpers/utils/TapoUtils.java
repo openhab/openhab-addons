@@ -27,6 +27,7 @@ import org.openhab.core.thing.ThingTypeUID;
  * Utility Helper Functions
  *
  * @author Christian Wild - Initial Initial contribution
+ * @author Christopher Smith - Kasa vendor and dimmer plug labels
  */
 @NonNullByDefault
 public class TapoUtils {
@@ -157,6 +158,16 @@ public class TapoUtils {
     }
 
     /**
+     * Get the brand a device is sold under
+     *
+     * @param deviceUID ThingTypeUID of the device
+     * @return "Kasa" for Kasa devices, otherwise "Tapo"
+     */
+    public static String getDeviceVendor(ThingTypeUID deviceUID) {
+        return KASA_DEVICE_UIDS.contains(deviceUID) ? DEVICE_VENDOR_KASA : DEVICE_VENDOR;
+    }
+
+    /**
      * GET DEVICE LABEL
      *
      * @param device JsonObject with deviceData
@@ -187,13 +198,16 @@ public class TapoUtils {
                 deviceLabel = DEVICE_DESCRIPTION_MOTION_SENSOR;
             } else if (SUPPORTED_WEATHER_SENSORS.contains(deviceUID)) {
                 deviceLabel = DEVICE_DESCRIPTION_TEMP_SENSOR;
+            } else if (KP405_THING_TYPE.equals(deviceUID)) {
+                deviceLabel = DEVICE_DESCRIPTION_DIMMER_PLUG;
             } else if (SUPPORTED_LIGHT_SWITCH_UIDS.contains(deviceUID)) {
                 deviceLabel = DEVICE_DESCRIPTION_LIGHT_SWITCH;
             }
+            String vendor = getDeviceVendor(deviceUID);
             if (alias.length() > 0) {
-                return String.format("%s %s %s (%s)", DEVICE_VENDOR, deviceModel, deviceLabel, alias);
+                return String.format("%s %s %s (%s)", vendor, deviceModel, deviceLabel, alias);
             }
-            return String.format("%s %s %s", DEVICE_VENDOR, deviceModel, deviceLabel);
+            return String.format("%s %s %s", vendor, deviceModel, deviceLabel);
         } catch (Exception e) {
             return "";
         }

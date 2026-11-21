@@ -31,6 +31,7 @@ import org.openhab.core.thing.ThingTypeUID;
 @NonNullByDefault
 public class TapoThingConstants {
     public static final String DEVICE_VENDOR = "Tapo";
+    public static final String DEVICE_VENDOR_KASA = "Kasa";
 
     /*** LIST OF SUPPORTED DEVICE NAMES ***/
     public static final String DEVICE_BRIDGE = "bridge";
@@ -73,6 +74,7 @@ public class TapoThingConstants {
     public static final String DEVICE_DESCRIPTION_TEMP_SENSOR = "Temperature-Sensor";
     public static final String DEVICE_DESCRIPTION_SMART_SWITCH = "Smart-Switch";
     public static final String DEVICE_DESCRIPTION_LIGHT_SWITCH = "Light-Switch";
+    public static final String DEVICE_DESCRIPTION_DIMMER_PLUG = "Dimmer-Plug";
 
     /*** LIST OF SUPPORTED THING UIDS ***/
     public static final ThingTypeUID BRIDGE_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE_BRIDGE);
@@ -124,6 +126,8 @@ public class TapoThingConstants {
             KP405_THING_TYPE);
     public static final Set<ThingTypeUID> SUPPORTED_DIMMER_SWITCH_UIDS = Set.of(HS220_THING_TYPE, KP405_THING_TYPE);
     public static final Set<ThingTypeUID> SUPPORTED_CAMERA_UIDS = Set.of(CAMERA_THING_TYPE);
+    public static final Set<ThingTypeUID> KASA_DEVICE_UIDS = Set.of(HS200_THING_TYPE, HS220_THING_TYPE, EP10_THING_TYPE,
+            EP40_THING_TYPE, KP405_THING_TYPE);
 
     /*** SET OF ALL SUPPORTED THINGS ***/
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.unmodifiableSet(Stream

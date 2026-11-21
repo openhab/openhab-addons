@@ -40,13 +40,17 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.openhab.binding.tapocontrol.internal.api.TapoDeviceConnector;
+import org.openhab.binding.tapocontrol.internal.devices.dto.TapoBaseDeviceData;
 import org.openhab.binding.tapocontrol.internal.devices.dto.TapoChildDeviceData;
 import org.openhab.binding.tapocontrol.internal.devices.dto.TapoChildList;
 import org.openhab.binding.tapocontrol.internal.dto.TapoChildRequest;
+import org.openhab.binding.tapocontrol.internal.dto.TapoMultipleRequest;
 import org.openhab.binding.tapocontrol.internal.dto.TapoRequest;
 import org.openhab.binding.tapocontrol.internal.dto.TapoResponse;
 import org.openhab.binding.tapocontrol.internal.helpers.TapoCredentials;
@@ -98,6 +102,78 @@ class KasaXorProtocolTest {
                 .requireNonNull(GSON.fromJson(KasaXorProtocol.mapChildList(sysinfo).result(), TapoChildList.class));
 
         assertThat(childList.getChildDeviceList(), hasSize(0));
+    }
+
+    @Test
+    void mapsRssiToSignalStrengthLevel() throws TapoErrorHandler {
+        TapoBaseDeviceData data = Objects.requireNonNull(
+                GSON.fromJson(KasaXorProtocol.mapSysinfo(EP40_SYSINFO).result(), TapoBaseDeviceData.class));
+
+        assertThat(data.getSignalLevel(), is(4));
+        assertThat(KasaXorProtocol.signalLevel(-55), is(3));
+        assertThat(KasaXorProtocol.signalLevel(-65), is(2));
+        assertThat(KasaXorProtocol.signalLevel(-80), is(1));
+        assertThat(KasaXorProtocol.signalLevel(-90), is(0));
+        assertThat(KasaXorProtocol.signalLevel(0), is(0));
+    }
+
+    @Test
+    void keepsPlainAliasThatLooksLikeBase64() throws TapoErrorHandler {
+        String sysinfo = "{\"system\":{\"get_sysinfo\":{\"err_code\":0,\"alias\":\"Shed\",\"children\":["
+                + "{\"id\":\"C1\",\"alias\":\"Pool\",\"state\":1}]}}}";
+
+        TapoBaseDeviceData device = Objects
+                .requireNonNull(GSON.fromJson(KasaXorProtocol.mapSysinfo(sysinfo).result(), TapoBaseDeviceData.class));
+        TapoChildList children = Objects
+                .requireNonNull(GSON.fromJson(KasaXorProtocol.mapChildList(sysinfo).result(), TapoChildList.class));
+
+        assertThat(device.getNickname(), is("Shed"));
+        assertThat(children.getChildDeviceList().get(0).getNickname(), is("Pool"));
+    }
+
+    @Test
+    void readsSysinfoOnceForDeviceInfoAndChildListMultiRequest() throws Exception {
+        TapoDeviceConnector connector = mock(TapoDeviceConnector.class);
+        doAnswer(invocation -> {
+            invocation.getArgument(0, Runnable.class).run();
+            return null;
+        }).when(connector).executeAsync(any(Runnable.class));
+        AtomicInteger connections = new AtomicInteger();
+        ExecutorService serverExecutor = Executors.newSingleThreadExecutor();
+
+        try (ServerSocket serverSocket = new ServerSocket(0)) {
+            serverExecutor.submit(() -> {
+                while (!serverSocket.isClosed()) {
+                    try (Socket socket = serverSocket.accept();
+                            DataInputStream input = new DataInputStream(socket.getInputStream());
+                            DataOutputStream output = new DataOutputStream(socket.getOutputStream())) {
+                        connections.incrementAndGet();
+                        input.readFully(new byte[input.readInt()]);
+                        byte[] encrypted = KasaXorProtocol.encrypt(EP40_SYSINFO);
+                        output.writeInt(encrypted.length);
+                        output.write(encrypted);
+                    } catch (IOException e) {
+                        // server socket closed at the end of the test
+                    }
+                }
+            });
+            KasaXorProtocol protocol = new KasaXorProtocol(connector, "127.0.0.1", false, serverSocket.getLocalPort());
+            try {
+                protocol.login(new TapoCredentials());
+
+                protocol.sendAsyncRequest(new TapoMultipleRequest(new TapoRequest(DEVICE_CMD_GETINFO),
+                        new TapoRequest(DEVICE_CMD_GETCHILDDEVICELIST)));
+
+                ArgumentCaptor<TapoResponse> response = ArgumentCaptor.forClass(TapoResponse.class);
+                verify(connector).handleResponse(response.capture(), eq(DEVICE_CMD_MULTIPLE_REQ));
+                assertThat(response.getValue().responses(), hasSize(2));
+                assertThat(connections.get(), is(1));
+            } finally {
+                protocol.logout();
+            }
+        } finally {
+            serverExecutor.shutdownNow();
+        }
     }
 
     @Test
