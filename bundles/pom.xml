@@ -27,6 +27,7 @@
     <module>org.openhab.automation.pwm</module>
     <module>org.openhab.automation.pythonscripting</module>
     <!-- io -->
+    <module>org.openhab.io.eebus</module>
     <module>org.openhab.io.homekit</module>
     <module>org.openhab.io.hueemulation</module>
     <module>org.openhab.io.mcp</module>
