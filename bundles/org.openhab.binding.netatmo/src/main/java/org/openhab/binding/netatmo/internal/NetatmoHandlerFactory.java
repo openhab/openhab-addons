@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.netatmo.internal;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -52,6 +53,7 @@ import org.openhab.core.io.rest.WebhookService;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
+import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
@@ -76,6 +78,7 @@ import org.slf4j.LoggerFactory;
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.netatmo")
 public class NetatmoHandlerFactory extends BaseThingHandlerFactory {
     private final Logger logger = LoggerFactory.getLogger(NetatmoHandlerFactory.class);
+    private Map<ThingUID, ApiBridgeHandler> accounts = new HashMap<>();
 
     private final BindingConfiguration configuration = new BindingConfiguration();
     private final NetatmoDescriptionProvider stateDescriptionProvider;
@@ -84,7 +87,6 @@ public class NetatmoHandlerFactory extends BaseThingHandlerFactory {
     private final HttpService httpService;
     private final OAuthFactory oAuthFactory;
     private volatile @Nullable WebhookService webhookService;
-    private @Nullable ApiBridgeHandler apiBridge;
 
     @Activate
     public NetatmoHandlerFactory(final @Reference NetatmoDescriptionProvider stateDescriptionProvider,
@@ -106,20 +108,23 @@ public class NetatmoHandlerFactory extends BaseThingHandlerFactory {
         }
     }
 
+    @Override
+    public void unregisterHandler(Thing thing) {
+        if (thing.getHandler() instanceof ApiBridgeHandler) {
+            accounts.remove(thing.getUID());
+        }
+    }
+
     @Reference(cardinality = ReferenceCardinality.OPTIONAL, policy = ReferencePolicy.DYNAMIC)
     void setWebhookService(WebhookService service) {
         webhookService = service;
-        if (apiBridge != null) {
-            apiBridge.webhookServiceAvailable(webhookService);
-        }
+        accounts.values().forEach(account -> account.webhookServiceAvailable(webhookService));
     }
 
     void unsetWebhookService(WebhookService service) {
         if (Objects.equals(webhookService, service)) {
             webhookService = null;
-            if (apiBridge instanceof ApiBridgeHandler account) {
-                account.webhookServiceGone();
-            }
+            accounts.values().forEach(ApiBridgeHandler::webhookServiceGone);
         }
     }
 
@@ -142,7 +147,7 @@ public class NetatmoHandlerFactory extends BaseThingHandlerFactory {
             if (webhookService != null) {
                 account.webhookServiceAvailable(webhookService);
             }
-            this.apiBridge = account;
+            accounts.put(thing.getUID(), account);
             return account;
         }
         CommonInterface handler = moduleType.isABridge() ? new DeviceHandler((Bridge) thing) : new ModuleHandler(thing);

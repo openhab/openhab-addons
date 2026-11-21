@@ -48,6 +48,8 @@ public class ApiHandlerConfiguration {
             } catch (IllegalArgumentException | UriBuilderException e) {
                 return ConfigurationLevel.WEBHOOK_URL_SYNTAX_ERROR;
             }
+        } else if (!webHookPostfix.isBlank() && !webHookPostfix.startsWith("/")) {
+            return ConfigurationLevel.WEBHOOK_POSTFIX_ERROR;
         }
         return ConfigurationLevel.COMPLETED;
     }

@@ -79,7 +79,12 @@ public class CloudWebhookServlet extends WebhookServlet {
                 return;
             }
 
-            scheduleCloudWebhookRefresh(webhook.expiresAt());
+            cancelCloudWebhookRefresh();
+            long delaySeconds = Math.min(60,
+                    Duration.between(Instant.now(), webhook.expiresAt().minus(CLOUD_WEBHOOK_REFRESH_SAFETY_WINDOW))
+                            .getSeconds());
+            scheduleCloudWebhookTask(delaySeconds);
+
             cloudWebhookPath = path;
 
             logger.info("Registered Netatmo webhook through openHAB Cloud at {}", uri);
@@ -105,13 +110,6 @@ public class CloudWebhookServlet extends WebhookServlet {
         }
     }
 
-    private synchronized void scheduleCloudWebhookRefresh(Instant expiresAt) {
-        cancelCloudWebhookRefresh();
-        long delaySeconds = Math.max(60,
-                Duration.between(Instant.now(), expiresAt.minus(CLOUD_WEBHOOK_REFRESH_SAFETY_WINDOW)).getSeconds());
-        scheduleCloudWebhookTask(delaySeconds);
-    }
-
     private synchronized void scheduleCloudWebhookRetry() {
         if (!disposed) {
             cancelCloudWebhookRefresh();
@@ -131,7 +129,7 @@ public class CloudWebhookServlet extends WebhookServlet {
     private synchronized void cancelCloudWebhookRefresh() {
         ScheduledFuture<?> refreshJob = cloudWebhookRefreshJob;
         if (refreshJob != null) {
-            refreshJob.cancel(false);
+            refreshJob.cancel(true);
             cloudWebhookRefreshJob = null;
         }
     }
