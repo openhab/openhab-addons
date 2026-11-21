@@ -300,8 +300,6 @@ public class BydBatteryBoxHandler extends BaseThingHandler {
         updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/" + key);
     }
 
-    // ------------------------------------------------------------------------------------------ cell details
-
     /**
      * @return {@code true} if all towers were read
      */
@@ -403,8 +401,6 @@ public class BydBatteryBoxHandler extends BaseThingHandler {
         update(group, CHANNEL_CELL_VOLTAGE_SPREAD, new QuantityType<>(stats.spread(), MILLIVOLT));
     }
 
-    // ------------------------------------------------------------------------------------------ event logs
-
     /**
      * @return {@code true} if all units were read
      */
@@ -454,8 +450,6 @@ public class BydBatteryBoxHandler extends BaseThingHandler {
                     (record.isBmu() ? "BMU" : "BMS" + record.getUnit()) + ":" + record.getCode());
         }
     }
-
-    // ------------------------------------------------------------------------------------------ identity
 
     private void applyIdentity(PollContext context, SystemInfo info) {
         Map<String, String> properties = new HashMap<>(editProperties());
@@ -551,8 +545,6 @@ public class BydBatteryBoxHandler extends BaseThingHandler {
         return String.format("%02d", number);
     }
 
-    // ------------------------------------------------------------------------------------------ status
-
     private void publishStatus(SystemStatus status) {
         update(GROUP_STATUS, CHANNEL_STATE_OF_CHARGE, new QuantityType<>(status.stateOfCharge(), Units.PERCENT));
         update(GROUP_STATUS, CHANNEL_STATE_OF_HEALTH, new QuantityType<>(status.stateOfHealth(), Units.PERCENT));
@@ -582,8 +574,6 @@ public class BydBatteryBoxHandler extends BaseThingHandler {
         update(GROUP_STATUS, CHANNEL_ERRORS, new StringType(texts.systemErrors(status.errorBits())));
         updateProperty(PROPERTY_PARAMETER_TABLE, status.parameterTable());
     }
-
-    // ------------------------------------------------------------------------------------------ helpers
 
     private void update(String group, String channel, State state) {
         ChannelUID channelUID = new ChannelUID(thing.getUID(), group, channel);

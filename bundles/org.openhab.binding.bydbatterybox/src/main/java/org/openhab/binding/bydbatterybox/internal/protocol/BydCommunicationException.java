@@ -26,9 +26,6 @@ public class BydCommunicationException extends Exception {
 
     private static final long serialVersionUID = 1L;
 
-    /**
-     * Classification of a communication failure.
-     */
     public enum Reason {
         /** The TCP connection could not be established (refused, unreachable, connect timeout). */
         UNREACHABLE,

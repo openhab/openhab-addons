@@ -26,14 +26,10 @@ public class BydBatteryBoxConfiguration {
 
     public String hostname = "";
     public int port = 8080;
-    /** Status interval in seconds. */
     public int refreshInterval = 60;
-    /** Cell detail interval in seconds, 0 = disabled. */
     public int detailInterval = 600;
-    /** Event log interval in seconds, 0 = disabled. */
     public int eventLogInterval = 600;
     /** Read the cells beyond 128 in a second measurement pass, which needs the "DEBUG" write. */
     public boolean readExtendedCells = false;
-    /** Connect and reply timeout in seconds. */
     public int connectionTimeout = 5;
 }

@@ -32,8 +32,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * @param balancingCells number of cells currently balancing
  * @param cellVoltages cell voltages in mV, index 0 = cell 1; only the cells that were read
  * @param temperatures sensor temperatures in °C, index 0 = sensor 1
- * @param bmsFirmwareA BMS firmware of section A
- * @param bmsFirmwareB BMS firmware of section B
  * @param serialNumber serial number of the tower BMS as reported
  *
  * @author Michael Weger - Initial contribution
