@@ -21,7 +21,6 @@ import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
-import org.openhab.core.thing.CommonTriggerEvents;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
@@ -143,17 +142,10 @@ public class HwDimmerHandler extends BaseThingHandler {
     /**
      * Passes a tap on the dimmer's switch on to the {@code tap} channel.
      *
-     * @param action the message name: DBP, DBR, DBH or DBDT
+     * @param event a trigger event of {@link org.openhab.core.thing.CommonTriggerEvents}
      */
-    void handleTap(String action) {
-        String event = switch (action) {
-            case "DBP" -> CommonTriggerEvents.PRESSED;
-            case "DBR" -> CommonTriggerEvents.RELEASED;
-            case "DBH" -> CommonTriggerEvents.LONG_PRESSED;
-            case "DBDT" -> CommonTriggerEvents.DOUBLE_PRESSED;
-            default -> null;
-        };
-        if (event != null && thing.getChannel(CHANNEL_TAP) != null) {
+    void handleTap(String event) {
+        if (thing.getChannel(CHANNEL_TAP) != null) {
             triggerChannel(CHANNEL_TAP, event);
         }
     }

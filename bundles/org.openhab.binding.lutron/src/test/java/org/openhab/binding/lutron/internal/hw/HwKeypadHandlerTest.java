@@ -200,11 +200,11 @@ public class HwKeypadHandlerTest {
     public void buttonMessagesFireTriggerEvents() {
         handler.initialize();
 
-        handler.handleButton("KBP", 3);
-        handler.handleButton("KBH", 3);
-        handler.handleButton("KBDT", 3);
-        handler.handleButton("KBR", 3);
-        handler.handleButton("KBP", 99);
+        handler.handleButton(CommonTriggerEvents.PRESSED, 3);
+        handler.handleButton(CommonTriggerEvents.LONG_PRESSED, 3);
+        handler.handleButton(CommonTriggerEvents.DOUBLE_PRESSED, 3);
+        handler.handleButton(CommonTriggerEvents.RELEASED, 3);
+        handler.handleButton(CommonTriggerEvents.PRESSED, 99);
 
         ChannelUID button = channel("button3");
         verify(callback).channelTriggered(thing, button, CommonTriggerEvents.PRESSED);

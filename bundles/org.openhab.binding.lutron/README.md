@@ -1006,7 +1006,7 @@ Sending a state to an LED channel sets the LED.
 The processor ignores this for an LED that is programmed to follow a scene or a load; use the `press` channel to run the keypad's programming instead.
 
 ```java
-Type String : Keypad1_Led3 "Keypad LED 3" { channel="lutron:hwkeypad:keypad1:led3" }
+String Keypad1_Led3 "Keypad LED 3" { channel="lutron:hwkeypad:keypad1:led3" }
 ```
 
 ```javascript

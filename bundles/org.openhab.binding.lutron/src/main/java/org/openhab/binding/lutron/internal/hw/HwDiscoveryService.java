@@ -83,9 +83,9 @@ public class HwDiscoveryService extends AbstractThingHandlerDiscoveryService<HwB
 
         Map<String, Object> props = new HashMap<>();
 
-        props.put("address", address);
+        props.put(HwConstants.CONFIG_ADDRESS, address);
         DiscoveryResult result = DiscoveryResultBuilder.create(uid).withBridge(bridgeUID).withProperties(props)
-                .withRepresentationProperty("address").build();
+                .withRepresentationProperty(HwConstants.CONFIG_ADDRESS).build();
 
         thingDiscovered(result);
 
@@ -102,9 +102,9 @@ public class HwDiscoveryService extends AbstractThingHandlerDiscoveryService<HwB
         ThingUID uid = new ThingUID(HwConstants.THING_TYPE_HWKEYPAD, bridgeUID, addressUid);
 
         Map<String, Object> props = new HashMap<>();
-        props.put("address", address);
+        props.put(HwConstants.CONFIG_ADDRESS, address);
         DiscoveryResult result = DiscoveryResultBuilder.create(uid).withBridge(bridgeUID).withProperties(props)
-                .withRepresentationProperty("address").build();
+                .withRepresentationProperty(HwConstants.CONFIG_ADDRESS).build();
 
         thingDiscovered(result);
 

@@ -26,7 +26,6 @@ import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
-import org.openhab.core.thing.CommonTriggerEvents;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
@@ -207,18 +206,11 @@ public class HwKeypadHandler extends BaseThingHandler {
     /**
      * Passes a button message of the processor on to the trigger channel of the button.
      *
-     * @param action the L232 message name: KBP, KBR, KBH or KBDT
+     * @param event a trigger event of {@link org.openhab.core.thing.CommonTriggerEvents}
      * @param button the button number
      */
-    void handleButton(String action, int button) {
-        String event = switch (action) {
-            case "KBP" -> CommonTriggerEvents.PRESSED;
-            case "KBR" -> CommonTriggerEvents.RELEASED;
-            case "KBH" -> CommonTriggerEvents.LONG_PRESSED;
-            case "KBDT" -> CommonTriggerEvents.DOUBLE_PRESSED;
-            default -> null;
-        };
-        if (event != null && !support.trigger(KeypadConfigHw.buttonId(button), event)) {
+    void handleButton(String event, int button) {
+        if (!support.trigger(KeypadConfigHw.buttonId(button), event)) {
             logger.debug("Keypad {} has no button {}", address, button);
         }
     }

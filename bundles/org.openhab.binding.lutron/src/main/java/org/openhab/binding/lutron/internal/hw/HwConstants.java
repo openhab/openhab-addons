@@ -29,6 +29,8 @@ public class HwConstants {
     public static final ThingTypeUID THING_TYPE_HWDIMMER = new ThingTypeUID(BINDING_ID, "hwdimmer");
     public static final ThingTypeUID THING_TYPE_HWKEYPAD = new ThingTypeUID(BINDING_ID, "hwkeypad");
 
+    public static final String CONFIG_ADDRESS = "address";
+
     public static final String CHANNEL_TAP = "tap";
     public static final String CHANNEL_PRESS = "press";
 }

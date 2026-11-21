@@ -25,6 +25,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.CommonTriggerEvents;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.thing.binding.ThingHandler;
@@ -149,10 +150,11 @@ public abstract class HwBridgeHandler extends BaseBridgeHandler {
         String address = HwAddress.normalize(data[1]);
         int button = Integer.parseInt(data[2]);
         HwKeypadHandler handler = findHandler(HwKeypadHandler.class, address, HwKeypadHandler::getAddress);
+        String event = triggerEvent(data[0]);
         if (handler == null) {
             declareUnknownKeypad(address);
-        } else {
-            handler.handleButton(data[0], button);
+        } else if (event != null) {
+            handler.handleButton(event, button);
         }
     }
 
@@ -169,9 +171,21 @@ public abstract class HwBridgeHandler extends BaseBridgeHandler {
     private void handleDimmerTap(String[] data) {
         String address = HwAddress.normalize(data[1]);
         HwDimmerHandler handler = findHandler(HwDimmerHandler.class, address, HwDimmerHandler::getAddress);
-        if (handler != null) {
-            handler.handleTap(data[0]);
+        String event = triggerEvent(data[0]);
+        if (handler != null && event != null) {
+            handler.handleTap(event);
         }
+    }
+
+    // Keypad buttons (KB) and dimmer taps (DB) use the same suffixes: P, R, H (hold) and DT (double tap)
+    private static @Nullable String triggerEvent(String message) {
+        return switch (message.substring(2)) {
+            case "P" -> CommonTriggerEvents.PRESSED;
+            case "R" -> CommonTriggerEvents.RELEASED;
+            case "H" -> CommonTriggerEvents.LONG_PRESSED;
+            case "DT" -> CommonTriggerEvents.DOUBLE_PRESSED;
+            default -> null;
+        };
     }
 
     private void declareUnknownKeypad(String address) {
