@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.robonect.internal.model;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -19,74 +22,110 @@ import com.google.gson.annotations.SerializedName;
  * 
  * @author Marco Meyer - Initial contribution
  */
+@NonNullByDefault
 public class ErrorEntry {
 
-    private String date;
+    private @Nullable String date;
 
     @SerializedName("error_code")
-    private Integer errorCode;
+    private @Nullable Integer errorCode;
 
     @SerializedName("error_message")
-    private String errorMessage;
+    private @Nullable String errorMessage;
 
-    private String time;
+    private @Nullable String time;
 
-    private String unix;
+    private @Nullable String unix;
 
     /**
-     * @return - the date the error happend in the format "dd.MM.yy"
+     * Returns the date the error happened in the format {@code dd.MM.yy}.
+     *
+     * @return the date the error happened in the format {@code dd.MM.yy}
      */
-    public String getDate() {
+    public @Nullable String getDate() {
         return date;
     }
 
     /**
-     * @return - the error code. Some codes are documented here:
-     *         <a href="http://www.robonect.de/viewtopic.php?f=11&t=110">
+     * Returns the error code.
+     *
+     * @return the error code. Some codes are documented here:
+     *         <a href="http://www.robonect.de/viewtopic.php?f=11&amp;t=110">
      *         http://www.robonect.de/viewtopic.php?f=11&amp;t=110</a>
      */
-    public Integer getErrorCode() {
+    public @Nullable Integer getErrorCode() {
         return errorCode;
     }
 
     /**
-     * @return - The localized error message from the mower.
+     * Returns the localized error message from the mower.
+     *
+     * @return The localized error message from the mower.
      */
-    public String getErrorMessage() {
+    public @Nullable String getErrorMessage() {
         return errorMessage;
     }
 
     /**
-     * @return - The time the error happened in the format "HH:mm:ss"
+     * Returns the time the error happened in the format {@code HH:mm:ss}.
+     *
+     * @return The time the error happened in the format {@code HH:mm:ss}
      */
-    public String getTime() {
+    public @Nullable String getTime() {
         return time;
     }
 
     /**
-     * @return - The unix time when the error happened.
+     * Returns the unix time when the error happened.
+     *
+     * @return The unix time when the error happened.
      */
-    public String getUnix() {
+    public @Nullable String getUnix() {
         return unix;
     }
 
-    public void setDate(String date) {
+    /**
+     * Sets the error date.
+     *
+     * @param date the error date
+     */
+    public void setDate(@Nullable String date) {
         this.date = date;
     }
 
-    public void setErrorCode(Integer errorCode) {
+    /**
+     * Sets the error code.
+     *
+     * @param errorCode the error code
+     */
+    public void setErrorCode(@Nullable Integer errorCode) {
         this.errorCode = errorCode;
     }
 
-    public void setErrorMessage(String errorMessage) {
+    /**
+     * Sets the localized error message.
+     *
+     * @param errorMessage the localized error message
+     */
+    public void setErrorMessage(@Nullable String errorMessage) {
         this.errorMessage = errorMessage;
     }
 
-    public void setTime(String time) {
+    /**
+     * Sets the error time.
+     *
+     * @param time the error time
+     */
+    public void setTime(@Nullable String time) {
         this.time = time;
     }
 
-    public void setUnix(String unix) {
+    /**
+     * Sets the error timestamp in seconds.
+     *
+     * @param unix the error timestamp in seconds
+     */
+    public void setUnix(@Nullable String unix) {
         this.unix = unix;
     }
 }

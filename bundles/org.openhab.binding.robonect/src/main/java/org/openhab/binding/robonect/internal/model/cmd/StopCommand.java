@@ -12,21 +12,21 @@
  */
 package org.openhab.binding.robonect.internal.model.cmd;
 
-import org.openhab.binding.robonect.internal.RobonectClient;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * Stops the mower if it was started.
  * 
  * @author Marco Meyer - Initial contribution
  */
+@NonNullByDefault
 public class StopCommand implements Command {
 
     /**
-     * {@inheritDoc}
-     * 
-     * @param baseURL - will be passed by the {@link RobonectClient} in the form
-     *            http://xxx.xxx.xxx/json?
-     * @return
+     * Builds the stop URL for this {@link Command}.
+     *
+     * @param baseURL base URL to which the command parameters are appended
+     * @return the complete request URL
      */
     @Override
     public String toCommandURL(String baseURL) {

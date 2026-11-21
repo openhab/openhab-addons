@@ -12,29 +12,37 @@
  */
 package org.openhab.binding.robonect.internal.model;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * Health information from the mower. This information is just included if the robonect module runs the firmware
  * 1.0 beta or higher.
  * 
  * @author Marco Meyer - Initial contribution
  */
+@NonNullByDefault
 public class Health {
 
-    private int temperature;
+    private @Nullable Integer temperature;
 
-    private int humidity;
+    private @Nullable Integer humidity;
 
     /**
-     * @return - the temperature in °C measured in the mower.
+     * Returns the temperature in °C measured in the mower.
+     *
+     * @return the temperature in °C measured in the mower.
      */
-    public int getTemperature() {
+    public @Nullable Integer getTemperature() {
         return temperature;
     }
 
     /**
-     * @return - the humidity in % measured in the mower.
+     * Returns the humidity in % measured in the mower.
+     *
+     * @return the humidity in % measured in the mower.
      */
-    public int getHumidity() {
+    public @Nullable Integer getHumidity() {
         return humidity;
     }
 }

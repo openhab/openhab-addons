@@ -12,18 +12,34 @@
  */
 package org.openhab.binding.robonect.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * This exception is thrown if there was an error in communication with the mower. As a mower is a moving object, this
  * error is kind of expected and the error situation is handled in the handler.
  * 
  * @author Marco Meyer - Initial contribution
  */
+@NonNullByDefault
 public class RobonectCommunicationException extends RuntimeException {
 
+    private static final long serialVersionUID = 1L;
+
+    /**
+     * Creates a communication failure.
+     *
+     * @param message the failure description
+     */
     public RobonectCommunicationException(String message) {
         super(message);
     }
 
+    /**
+     * Creates a communication failure with its underlying cause.
+     *
+     * @param message the failure description
+     * @param cause the underlying cause
+     */
     public RobonectCommunicationException(String message, Throwable cause) {
         super(message, cause);
     }
