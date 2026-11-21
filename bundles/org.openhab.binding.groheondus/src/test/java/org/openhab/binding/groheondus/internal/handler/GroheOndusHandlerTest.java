@@ -13,18 +13,36 @@
 package org.openhab.binding.groheondus.internal.handler;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
+import static org.openhab.binding.groheondus.internal.GroheOndusBindingConstants.*;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.openhab.binding.groheondus.internal.api.GroheOndusApi;
+import org.openhab.binding.groheondus.internal.api.GroheOndusApiException;
 import org.openhab.binding.groheondus.internal.api.SenseSample;
 import org.openhab.binding.groheondus.internal.api.WaterWithdrawal;
+import org.openhab.core.config.core.Configuration;
+import org.openhab.core.i18n.TimeZoneProvider;
+import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
+import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingUID;
+import org.openhab.core.thing.binding.ThingHandlerCallback;
 import org.openhab.core.types.TimeSeries;
 
 /**
@@ -83,5 +101,85 @@ class GroheOndusHandlerTest {
         assertTrue(GroheOndusBaseHandler.isSilent(now.minus(maxAge).minusSeconds(1), now, maxAge));
         assertTrue(GroheOndusBaseHandler.isSilent(Instant.parse("2026-01-18T18:25:46Z"), now, maxAge));
         assertTrue(GroheOndusBaseHandler.isSilent(null, now, maxAge));
+    }
+
+    private static final ThingUID BRIDGE_UID = new ThingUID(THING_TYPE_BRIDGE_ACCOUNT, "account");
+    private static final ThingUID THING_UID = new ThingUID(THING_TYPE_SENSEGUARD, BRIDGE_UID, "guard");
+    private static final ChannelUID VALVE_CHANNEL = new ChannelUID(THING_UID, CHANNEL_VALVE_OPEN);
+    private static final ChannelUID PAUSE_CHANNEL = new ChannelUID(THING_UID, CHANNEL_PAUSE);
+
+    private final GroheOndusApi api = mock(GroheOndusApi.class);
+    private final List<Runnable> queuedCommands = new ArrayList<>();
+    private final GroheOndusSenseGuardHandler handler = createHandler();
+
+    private GroheOndusSenseGuardHandler createHandler() {
+        Thing thing = mock(Thing.class);
+        when(thing.getUID()).thenReturn(THING_UID);
+        when(thing.getBridgeUID()).thenReturn(BRIDGE_UID);
+        when(thing.getConfiguration()).thenReturn(new Configuration(Map.of("applianceId", "guard-1")));
+        when(thing.getChannels()).thenReturn(List.of());
+
+        GroheOndusAccountHandler accountHandler = mock(GroheOndusAccountHandler.class);
+        when(accountHandler.getApi()).thenReturn(api);
+        Bridge bridge = mock(Bridge.class);
+        when(bridge.getHandler()).thenReturn(accountHandler);
+        when(bridge.getStatus()).thenReturn(ThingStatus.ONLINE);
+        ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
+        when(callback.getBridge(BRIDGE_UID)).thenReturn(bridge);
+
+        // Large thing counter so that the first scheduled poll does not run during the test
+        GroheOndusSenseGuardHandler handler = new GroheOndusSenseGuardHandler(thing, 3600,
+                mock(TimeZoneProvider.class)) {
+            @Override
+            void submitCommand(Runnable task) {
+                queuedCommands.add(task);
+            }
+        };
+        handler.setCallback(callback);
+        return handler;
+    }
+
+    @BeforeEach
+    void initializeHandler() {
+        handler.initialize();
+    }
+
+    @AfterEach
+    void disposeHandler() {
+        handler.dispose();
+    }
+
+    private void runQueuedCommands() {
+        queuedCommands.forEach(Runnable::run);
+        queuedCommands.clear();
+    }
+
+    @Test
+    void valveCommandRunsWhileHandlerIsActive() throws GroheOndusApiException {
+        handler.handleCommand(VALVE_CHANNEL, OnOffType.ON);
+        runQueuedCommands();
+
+        verify(api).setValveOpen(any(), eq(true));
+    }
+
+    @Test
+    void queuedValveCommandIsDiscardedAfterDispose() throws GroheOndusApiException {
+        handler.handleCommand(VALVE_CHANNEL, OnOffType.ON);
+        handler.dispose();
+        runQueuedCommands();
+
+        verify(api, never()).setValveOpen(any(), anyBoolean());
+    }
+
+    @Test
+    void queuedCommandsAreDiscardedAfterReinitialize() throws GroheOndusApiException {
+        handler.handleCommand(VALVE_CHANNEL, OnOffType.ON);
+        handler.handleCommand(PAUSE_CHANNEL, new QuantityType<>(30, Units.MINUTE));
+        handler.dispose();
+        handler.initialize();
+        runQueuedCommands();
+
+        verify(api, never()).setValveOpen(any(), anyBoolean());
+        verify(api, never()).setPause(any(), anyInt());
     }
 }

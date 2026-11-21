@@ -95,6 +95,9 @@ public abstract class GroheOndusBaseHandler<S> extends BaseThingHandler {
     // Timestamp of the newest sample already sent as time series, to avoid resending the whole window on every poll
     private volatile @Nullable Instant lastPublishedSample;
 
+    // Changed on every initialize and dispose, so that commands queued under an earlier lifecycle are discarded
+    private volatile int commandGeneration;
+
     protected GroheOndusBaseHandler(Thing thing, int applianceType, int thingCounter,
             TimeZoneProvider timeZoneProvider) {
         super(thing);
@@ -105,6 +108,9 @@ public abstract class GroheOndusBaseHandler<S> extends BaseThingHandler {
 
     @Override
     public void initialize() {
+        synchronized (this) {
+            commandGeneration++;
+        }
         config = getConfigAs(GroheOndusApplianceConfiguration.class);
         if (config.applianceId.isBlank()) {
             updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.missing.applianceid");
@@ -120,6 +126,7 @@ public abstract class GroheOndusBaseHandler<S> extends BaseThingHandler {
     @Override
     public void dispose() {
         synchronized (this) {
+            commandGeneration++;
             ScheduledFuture<?> poller = this.poller;
             if (poller != null) {
                 poller.cancel(true);
@@ -397,10 +404,16 @@ public abstract class GroheOndusBaseHandler<S> extends BaseThingHandler {
     }
 
     /**
-     * Runs a command against the API on the scheduler so that command handling does not block.
+     * Runs a command against the API on the scheduler so that command handling does not block. The command is
+     * discarded if the handler is disposed or re-initialized before it runs.
      */
     protected void runApiCommand(ApiCommand command) {
-        scheduler.execute(() -> {
+        int generation = commandGeneration;
+        submitCommand(() -> {
+            if (generation != commandGeneration) {
+                logger.debug("Discarding command for {}, handler was disposed or re-initialized", thing.getUID());
+                return;
+            }
             GroheOndusApi api = getApi();
             if (api == null) {
                 logger.debug("Cannot send command for {}, bridge is not online", thing.getUID());
@@ -409,9 +422,15 @@ public abstract class GroheOndusBaseHandler<S> extends BaseThingHandler {
             try {
                 command.execute(api);
             } catch (GroheOndusApiException e) {
-                handleApiException(e);
+                if (generation == commandGeneration) {
+                    handleApiException(e);
+                }
             }
         });
+    }
+
+    void submitCommand(Runnable task) {
+        scheduler.execute(task);
     }
 
     protected @Nullable GroheOndusAccountHandler getAccountHandler() {
