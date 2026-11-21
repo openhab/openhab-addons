@@ -21,7 +21,9 @@ import java.net.InetAddress;
 import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -41,6 +43,7 @@ import org.slf4j.LoggerFactory;
  * Handler class for KLAP Session
  *
  * @author Christian Wild - Initial contribution
+ * @author Christopher Smith - Candidate credentials, session expiry fix
  */
 @NonNullByDefault
 public class KlapSession {
@@ -52,6 +55,7 @@ public class KlapSession {
     private byte[] remoteSeed = new byte[16];
     private byte[] serverHash = new byte[0];
     private byte[] authHash = new byte[0];
+    private List<byte[]> authHashCandidates = List.of();
     private byte[] localSeedAuthHash = new byte[0];
     private String sessionId = "";
     private long expireAt = 0L;
@@ -109,7 +113,7 @@ public class KlapSession {
             String cookie = header.split(";")[0].replace(TP_SESSION_COOKIE_NAME + "=", "");
             int timeout = Integer.parseInt(header.split(";")[1].replace(TP_SESSION_COOKIE_TIMEOUT + "=", ""));
             sessionId = cookie;
-            expireAt = System.currentTimeMillis() * timeout;
+            expireAt = System.currentTimeMillis() + timeout * 1000L;
             /* get seeds */
             byte[] responseContent = response.getContent();
             byte[] bRemoteSeed = truncateByteArray(responseContent, 0, 16); // get first 16 bytes
@@ -129,24 +133,23 @@ public class KlapSession {
     public boolean setSeed(byte[] remoteSeed, byte[] serverHash) throws TapoErrorHandler {
         logger.trace("({}) Init Session", uid);
         try {
-            logger.trace("remoteseed is '{}' / serverhash is '{}' authhash is '{}'", byteArrayToHex(localSeed),
-                    byteArrayToHex(remoteSeed), byteArrayToHex(authHash));
+            logger.trace("localseed is '{}' / remoteseed is '{}'", byteArrayToHex(localSeed),
+                    byteArrayToHex(remoteSeed));
 
-            byte[] concatByteArray = concatBytes(localSeed, remoteSeed, authHash);
-            byte[] bLocalSeedAuthHash = sha256Encode(concatByteArray);
-
-            if (Arrays.equals(bLocalSeedAuthHash, serverHash)) {
-                logger.trace("handshake1 successful");
-                this.remoteSeed = remoteSeed;
-                this.serverHash = serverHash;
-                this.localSeedAuthHash = bLocalSeedAuthHash;
-                return true;
-            } else {
-                logger.trace("handshake1 does not match {} / {}", byteArrayToHex(bLocalSeedAuthHash),
-                        byteArrayToHex(serverHash));
-                reset();
-                throw new TapoErrorHandler(ERR_API_HAND_SHAKE_FAILED);
+            for (byte[] candidate : authHashCandidates) {
+                byte[] bLocalSeedAuthHash = sha256Encode(concatBytes(localSeed, remoteSeed, candidate));
+                if (Arrays.equals(bLocalSeedAuthHash, serverHash)) {
+                    logger.trace("handshake1 successful");
+                    this.authHash = candidate;
+                    this.remoteSeed = remoteSeed;
+                    this.serverHash = serverHash;
+                    this.localSeedAuthHash = bLocalSeedAuthHash;
+                    return true;
+                }
             }
+            logger.trace("handshake1 does not match any credentials");
+            reset();
+            throw new TapoErrorHandler(ERR_API_HAND_SHAKE_FAILED);
         } catch (Exception e) {
             throw new TapoErrorHandler(ERR_API_HAND_SHAKE_FAILED);
         }
@@ -188,8 +191,20 @@ public class KlapSession {
      * Create Handshake
      */
     public boolean login(TapoCredentials credentials) throws TapoErrorHandler {
+        return login(List.of(credentials));
+    }
+
+    /**
+     * Create Handshake with the first of the given credentials that matches the device's handshake1 response
+     */
+    public boolean login(List<TapoCredentials> candidates) throws TapoErrorHandler {
         try {
-            authHash = generateAuthHash(credentials);
+            List<byte[]> hashes = new ArrayList<>();
+            for (TapoCredentials candidate : candidates) {
+                hashes.add(generateAuthHash(candidate));
+            }
+            authHashCandidates = List.copyOf(hashes);
+            authHash = hashes.isEmpty() ? new byte[0] : hashes.get(0);
             return login();
         } catch (TapoErrorHandler e) {
             throw e;

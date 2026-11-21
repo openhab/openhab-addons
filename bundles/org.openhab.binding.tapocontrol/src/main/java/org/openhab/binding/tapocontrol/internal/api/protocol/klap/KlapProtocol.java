@@ -19,6 +19,7 @@ import static org.openhab.binding.tapocontrol.internal.helpers.utils.ByteUtils.b
 import static org.openhab.binding.tapocontrol.internal.helpers.utils.JsonUtils.isValidJson;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -46,7 +47,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Christian Wild - Initial contribution
  * @author David Henshaw - Improvements to handle tapo device error states in send
- * @author Christopher Smith - Add raw payload exchange for the Kasa IOT protocol
+ * @author Christopher Smith - Add raw payload exchange and candidate credentials for the Kasa IOT protocol
  */
 @NonNullByDefault
 public class KlapProtocol implements org.openhab.binding.tapocontrol.internal.api.protocol.TapoProtocolInterface {
@@ -73,15 +74,26 @@ public class KlapProtocol implements org.openhab.binding.tapocontrol.internal.ap
     }
 
     @Override
-    public boolean login(TapoCredentials tapoCredentials) throws TapoErrorHandler {
+    public synchronized boolean login(TapoCredentials tapoCredentials) throws TapoErrorHandler {
+        return login(List.of(tapoCredentials));
+    }
+
+    /**
+     * Logs in with the first of the given credentials that the device accepts. All candidates are checked against a
+     * single handshake, so trying an alternative costs no extra round trip.
+     */
+    public synchronized boolean login(List<TapoCredentials> candidates) throws TapoErrorHandler {
         logger.trace("({}) login to device", uid);
         session.reset();
-        session.login(tapoCredentials);
+        session.login(candidates);
         return isLoggedIn();
     }
 
+    /*
+     * Synchronized with exchange() and sendRequestRetryable(), so the session is never reset while a request uses it.
+     */
     @Override
-    public void logout() {
+    public synchronized void logout() {
         session.reset();
         if (!executor.isShutdown()) {
             executor.shutdownNow();

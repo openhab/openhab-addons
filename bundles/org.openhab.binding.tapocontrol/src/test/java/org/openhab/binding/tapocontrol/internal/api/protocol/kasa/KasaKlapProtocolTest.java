@@ -16,18 +16,19 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 import static org.openhab.binding.tapocontrol.internal.TapoControlHandlerFactory.GSON;
 import static org.openhab.binding.tapocontrol.internal.constants.TapoComConstants.DEVICE_CMD_GETINFO;
 import static org.openhab.binding.tapocontrol.internal.constants.TapoErrorCode.ERR_API_HAND_SHAKE_FAILED;
 
+import java.util.List;
 import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
-import org.mockito.InOrder;
 import org.openhab.binding.tapocontrol.internal.api.TapoDeviceConnector;
 import org.openhab.binding.tapocontrol.internal.api.protocol.klap.KlapProtocol;
 import org.openhab.binding.tapocontrol.internal.devices.dto.TapoBaseDeviceData;
@@ -52,34 +53,19 @@ class KasaKlapProtocolTest {
     private final KasaKlapProtocol protocol = new KasaKlapProtocol(connector, false, klap);
 
     @Test
-    void logsInWithAccountPasswordFirst() throws TapoErrorHandler {
-        when(klap.login(ACCOUNT)).thenReturn(true);
+    void logsInWithAccountPasswordAndKasaSetupCandidates() throws TapoErrorHandler {
+        when(klap.login(List.of(ACCOUNT, KASA_SETUP))).thenReturn(true);
         when(klap.isLoggedIn()).thenReturn(true);
 
         assertThat(protocol.login(ACCOUNT), is(true));
 
-        verify(klap, never()).login(KASA_SETUP);
+        verify(klap).login(List.of(ACCOUNT, KASA_SETUP));
         assertThat(protocol.isLoggedIn(), is(true));
     }
 
     @Test
-    void fallsBackToKasaSetupPasswordAndPrefersItOnNextLogin() throws TapoErrorHandler {
-        when(klap.login(ACCOUNT)).thenThrow(new TapoErrorHandler(ERR_API_HAND_SHAKE_FAILED));
-        when(klap.login(KASA_SETUP)).thenReturn(true);
-
-        assertThat(protocol.login(ACCOUNT), is(true));
-        protocol.logout();
-        assertThat(protocol.login(ACCOUNT), is(true));
-
-        InOrder order = inOrder(klap);
-        order.verify(klap).login(ACCOUNT);
-        order.verify(klap, times(2)).login(KASA_SETUP);
-        order.verifyNoMoreInteractions();
-    }
-
-    @Test
     void reportsHandshakeErrorWhenNoCredentialsMatch() throws TapoErrorHandler {
-        when(klap.login(any())).thenThrow(new TapoErrorHandler(ERR_API_HAND_SHAKE_FAILED));
+        when(klap.login(anyList())).thenThrow(new TapoErrorHandler(ERR_API_HAND_SHAKE_FAILED));
 
         assertThrows(TapoErrorHandler.class, () -> protocol.login(ACCOUNT));
         assertThat(protocol.isLoggedIn(), is(false));
@@ -87,7 +73,7 @@ class KasaKlapProtocolTest {
 
     @Test
     void sendsIotSysinfoQueryOverKlap() throws TapoErrorHandler {
-        when(klap.login(ACCOUNT)).thenReturn(true);
+        when(klap.login(anyList())).thenReturn(true);
         when(klap.exchange("{\"system\":{\"get_sysinfo\":{}}}")).thenReturn("""
                 {"system":{"get_sysinfo":{"err_code":0,"model":"EP10(US)","relay_state":1,"rssi":-43,
                 "sw_ver":"1.1.1 Build 250908 Rel.112508","alias":"Elephants"}}}
@@ -108,7 +94,7 @@ class KasaKlapProtocolTest {
 
     @Test
     void doesNotSendAfterLogout() throws TapoErrorHandler {
-        when(klap.login(ACCOUNT)).thenReturn(true);
+        when(klap.login(anyList())).thenReturn(true);
         protocol.login(ACCOUNT);
         protocol.logout();
 

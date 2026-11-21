@@ -15,7 +15,6 @@ package org.openhab.binding.tapocontrol.internal.api.protocol.kasa;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.tapocontrol.internal.api.TapoDeviceConnector;
 import org.openhab.binding.tapocontrol.internal.api.protocol.klap.KlapProtocol;
 import org.openhab.binding.tapocontrol.internal.helpers.TapoCredentials;
@@ -36,7 +35,6 @@ public class KasaKlapProtocol extends KasaIotProtocol {
     static final String KASA_SETUP_PASSWORD = "kasaSetup";
 
     private final KlapProtocol klap;
-    private volatile boolean preferKasaSetupPassword;
 
     public KasaKlapProtocol(TapoDeviceConnector connector, boolean dimmer) {
         this(connector, dimmer, new KlapProtocol(connector));
@@ -49,25 +47,7 @@ public class KasaKlapProtocol extends KasaIotProtocol {
 
     @Override
     protected boolean connect(TapoCredentials credentials) throws TapoErrorHandler {
-        TapoCredentials kasaSetup = new TapoCredentials(credentials.username(), KASA_SETUP_PASSWORD);
-        List<TapoCredentials> candidates = preferKasaSetupPassword ? List.of(kasaSetup, credentials)
-                : List.of(credentials, kasaSetup);
-        @Nullable
-        TapoErrorHandler lastError = null;
-        for (TapoCredentials candidate : candidates) {
-            try {
-                if (klap.login(candidate)) {
-                    preferKasaSetupPassword = candidate.equals(kasaSetup);
-                    return true;
-                }
-            } catch (TapoErrorHandler e) {
-                lastError = e;
-            }
-        }
-        if (lastError != null) {
-            throw lastError;
-        }
-        return false;
+        return klap.login(List.of(credentials, new TapoCredentials(credentials.username(), KASA_SETUP_PASSWORD)));
     }
 
     @Override

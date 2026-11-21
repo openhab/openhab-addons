@@ -37,7 +37,7 @@ The Kasa devices HS200, HS220, EP10, EP40 and KP405 are controlled with the lega
 Newer TP-Link security firmware (for example EP10 1.1.1, EP40 1.1.0 and KP405 1.1.0) closes port 9999.
 Devices running it use the same Kasa commands over an authenticated KLAP connection (`protocol="KASA_KLAP"`), which UDP discovery selects when the device reports an `IOT.*` device type with KLAP encryption.
 The login uses the bridge's TP-Link account.
-Some devices set up in the Kasa app hold a key made from the account e-mail and the fixed password `kasaSetup` instead of the account password, so the binding tries that combination when the account password is rejected.
+Some devices set up in the Kasa app hold a key made from the account e-mail and the fixed password `kasaSetup` instead of the account password, so the binding accepts either key in the same login.
 After a firmware update, change the Thing's protocol from `KASA` to `KASA_KLAP` or discover the device again.
 
 ## Prerequisites
