@@ -464,8 +464,8 @@ public class ThreadBorderRouterManagementConverter extends GenericConverter<Thre
         builder.withAdvanced(true);
         params.add(builder.build());
 
-        handler.addConfigDescription((ConfigDescriptionBuilder.create(handler.getConfigDescriptionURI())
-                .withParameters(params).withParameterGroups(groups).build()));
+        handler.addConfigDescription(configDescriptionKey(), (ConfigDescriptionBuilder
+                .create(handler.getConfigDescriptionURI()).withParameters(params).withParameterGroups(groups).build()));
     }
 
     public void updateThreadConfiguration(String hexDataset) {

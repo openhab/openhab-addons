@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.matter.internal.controller.devices.converter;
 
+import java.math.BigDecimal;
+import java.util.Map;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -21,7 +24,11 @@ import org.openhab.binding.matter.internal.MatterConfigDescriptionProvider;
 import org.openhab.binding.matter.internal.MatterStateDescriptionOptionProvider;
 import org.openhab.binding.matter.internal.bridge.MatterBridgeClient;
 import org.openhab.binding.matter.internal.util.TranslationService;
+import org.openhab.core.config.core.Configuration;
+import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
+import org.openhab.core.thing.binding.builder.ChannelBuilder;
 
 /**
  * Base class for Matter converter tests
@@ -59,5 +66,13 @@ public abstract class BaseMatterConverterTest {
         mockHandler = Mockito.spy(
                 new TestMatterBaseThingHandler(mockBridgeClient, mockThingHandlerFactory, mockStateDescriptionProvider,
                         mockChannelTypeProvider, mockConfigDescriptionProvider, mockTranslationService));
+    }
+
+    protected void setChannelTransitionTime(ChannelUID channelUID, String seconds) {
+        Thing thing = Mockito.spy(mockHandler.getThing());
+        Mockito.doReturn(ChannelBuilder.create(channelUID)
+                .withConfiguration(new Configuration(Map.of("transitionTime", new BigDecimal(seconds)))).build())
+                .when(thing).getChannel(channelUID);
+        Mockito.doReturn(thing).when(mockHandler).getThing();
     }
 }

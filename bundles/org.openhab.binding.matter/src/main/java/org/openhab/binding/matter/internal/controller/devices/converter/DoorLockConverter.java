@@ -477,8 +477,8 @@ public class DoorLockConverter extends GenericConverter<DoorLockCluster> {
             addUserGroupsToConfig(params, groups);
         }
 
-        handler.addConfigDescription(ConfigDescriptionBuilder.create(handler.getConfigDescriptionURI())
-                .withParameters(params).withParameterGroups(groups).build());
+        handler.addConfigDescription(configDescriptionKey(), ConfigDescriptionBuilder
+                .create(handler.getConfigDescriptionURI()).withParameters(params).withParameterGroups(groups).build());
     }
 
     /**

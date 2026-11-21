@@ -437,6 +437,17 @@ Other device types may be supported, but with limited or missing functionality.
 | Battery Storage               | 0x0018           | Electrical Power Measurement (0x0090), Electrical Energy Measurement (0x0091), Power Source (0x002F)                                                  |
 | Thread Border Router          | 0x0091           | Thread Network Diagnostics (0x0035), Thread Border Router Management (0x0452)                                                                         |
 
+## Light Transition Time
+
+Transition times are in seconds.
+
+| Setting                        | Where                                                                              | Description                                                 |
+|--------------------------------|------------------------------------------------------------------------------------|-------------------------------------------------------------|
+| Device Default Transition Time | Thing config `defaultTransitionTime-<endpoint>`                                    | Stored on the device. Only shown if the device supports it. |
+| Transition Time                | Channel config `transitionTime` on the level, color and color temperature channels | Overrides the device default.                               |
+
+ON and OFF commands to lights always use the device default.
+
 ## Door Lock Management
 
 Matter door locks support user and credential management directly from openHAB.

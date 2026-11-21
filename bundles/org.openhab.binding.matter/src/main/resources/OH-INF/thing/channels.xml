@@ -49,6 +49,7 @@
 			<tag>Color</tag>
 		</tags>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
+		<config-description-ref uri="channel-type:matter:transition"/>
 	</channel-type>
 
 	<channel-type id="colorcontrol-temperature">
@@ -61,6 +62,7 @@
 			<tag>ColorTemperature</tag>
 		</tags>
 		<state pattern="%.0f %%" min="0" max="100"/>
+		<config-description-ref uri="channel-type:matter:transition"/>
 	</channel-type>
 
 	<channel-type id="colorcontrol-temperature-abs" advanced="true">
@@ -73,6 +75,7 @@
 			<tag>ColorTemperature</tag>
 		</tags>
 		<state pattern="%.0f %unit%"/>
+		<config-description-ref uri="channel-type:matter:transition"/>
 	</channel-type>
 
 	<channel-type id="onoffcontrol-onoff">
@@ -98,6 +101,7 @@
 		</tags>
 		<state min="0" max="100" pattern="%d %%"/>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
+		<config-description-ref uri="channel-type:matter:transition"/>
 	</channel-type>
 
 	<channel-type id="modeselect-mode">
