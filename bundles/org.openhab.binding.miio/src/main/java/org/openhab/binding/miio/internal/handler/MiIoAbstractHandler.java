@@ -426,14 +426,14 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
 
         if (!deviceId.isBlank() && (tokenCheckPass(configuration.token) || !getCloudServer().isBlank())) {
             final MiIoAsyncCommunication miioComF = new MiIoAsyncCommunication(configuration.host, token, deviceId,
-                    lastId, configuration.timeout, cloudConnector);
+                    lastId, configuration.timeout, cloudConnector, !getCloudServer().isBlank());
             miioComF.registerListener(this);
             this.miioCom = miioComF;
             return miioComF;
         } else {
             logger.debug("No deviceId defined. Retrieving Mi deviceId");
             final MiIoAsyncCommunication miioComF = new MiIoAsyncCommunication(configuration.host, token, "", lastId,
-                    configuration.timeout, cloudConnector);
+                    configuration.timeout, cloudConnector, !getCloudServer().isBlank());
             try {
                 Message miIoResponse = miioComF.sendPing(configuration.host);
                 if (miIoResponse != null) {
