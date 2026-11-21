@@ -26,7 +26,7 @@ public class BydBatteryBoxBindingConstants {
 
     public static final String BINDING_ID = "bydbatterybox";
 
-    public static final ThingTypeUID THING_TYPE_BATTERY = new ThingTypeUID(BINDING_ID, "battery");
+    public static final ThingTypeUID THING_TYPE_HV_PREMIUM = new ThingTypeUID(BINDING_ID, "hv-premium");
 
     // static channel groups
     public static final String GROUP_STATUS = "status";

@@ -11,11 +11,11 @@ For towers with more than 128 cells, a third command can be enabled, see [Cells 
 
 ## Supported Things
 
-| Thing Type | Description                                                                          |
-|------------|--------------------------------------------------------------------------------------|
-| `battery`  | One BYD Battery-Box Premium system, addressed through its BMU (battery control unit) |
+| Thing Type   | Description                                                                                  |
+|--------------|----------------------------------------------------------------------------------------------|
+| `hv-premium` | One BYD Battery-Box Premium HVS/HVM system, addressed through its BMU (battery control unit) |
 
-Towers and modules are not separate Things, but channel groups of the `battery` Thing.
+Towers and modules are not separate Things, but channel groups of the `hv-premium` Thing.
 Channel groups are defined for up to 3 towers with up to 8 modules each.
 After the first reading, the binding removes the channels of towers and modules the battery does not have.
 
@@ -62,7 +62,7 @@ Add the Thing manually with its hostname.
 
 ## Thing Configuration
 
-### `battery` Thing Configuration
+### `hv-premium` Thing Configuration
 
 | Name                | Type    | Description                                                                                     | Default | Required | Advanced |
 |---------------------|---------|-------------------------------------------------------------------------------------------------|---------|----------|----------|
@@ -208,7 +208,7 @@ The battery clock is not synchronized; the binding corrects the log times by the
 ### Thing Configuration
 
 ```java
-Thing bydbatterybox:battery:home "BYD Battery-Box" [ hostname="192.168.69.9", refreshInterval=60, detailInterval=600, eventLogInterval=600 ]
+Thing bydbatterybox:hv-premium:home "BYD Battery-Box" [ hostname="192.168.69.9", refreshInterval=60, detailInterval=600, eventLogInterval=600 ]
 ```
 
 ### Item Configuration
@@ -216,21 +216,21 @@ Thing bydbatterybox:battery:home "BYD Battery-Box" [ hostname="192.168.69.9", re
 ```java
 Group gBattery "Battery" ["Battery"]
 
-Number:Dimensionless     BYD_SoC          "State of Charge [%.0f %%]"     <batterylevel> (gBattery) ["Measurement", "StateOfCharge"] { channel="bydbatterybox:battery:home:status#state-of-charge" }
-Number:Dimensionless     BYD_SoH          "State of Health [%.0f %%]"                    (gBattery) ["Measurement"]                  { channel="bydbatterybox:battery:home:status#state-of-health" }
-Number:Power             BYD_Power        "Power [%.0f W]"                               (gBattery) ["Measurement", "Power"]         { channel="bydbatterybox:battery:home:status#power" }
-Switch                   BYD_Error        "Error"                                        (gBattery) ["Alarm"]                        { channel="bydbatterybox:battery:home:status#error" }
-String                   BYD_Errors       "Errors [%s]"                                  (gBattery) ["Status"]                       { channel="bydbatterybox:battery:home:status#errors" }
+Number:Dimensionless     BYD_SoC          "State of Charge [%.0f %%]"     <batterylevel> (gBattery) ["Measurement", "StateOfCharge"] { channel="bydbatterybox:hv-premium:home:status#state-of-charge" }
+Number:Dimensionless     BYD_SoH          "State of Health [%.0f %%]"                    (gBattery) ["Measurement"]                  { channel="bydbatterybox:hv-premium:home:status#state-of-health" }
+Number:Power             BYD_Power        "Power [%.0f W]"                               (gBattery) ["Measurement", "Power"]         { channel="bydbatterybox:hv-premium:home:status#power" }
+Switch                   BYD_Error        "Error"                                        (gBattery) ["Alarm"]                        { channel="bydbatterybox:hv-premium:home:status#error" }
+String                   BYD_Errors       "Errors [%s]"                                  (gBattery) ["Status"]                       { channel="bydbatterybox:hv-premium:home:status#errors" }
 
-Number:ElectricPotential BYD_CellSpread   "Cell Spread [%.0f mV]"                        (gBattery) ["Measurement", "Voltage"]       { channel="bydbatterybox:battery:home:tower-1#cell-voltage-spread", unit="mV" }
-Number:ElectricPotential BYD_CellMin      "Lowest Cell [%.0f mV]"                        (gBattery) ["Measurement", "Voltage"]       { channel="bydbatterybox:battery:home:tower-1#min-cell-voltage", unit="mV" }
-Number                   BYD_CellMinNo    "Lowest Cell No. [%d]"                         (gBattery)                                  { channel="bydbatterybox:battery:home:tower-1#min-cell-voltage-cell" }
-Number:ElectricPotential BYD_M1_Spread    "Module 1 Spread [%.0f mV]"                    (gBattery) ["Measurement", "Voltage"]       { channel="bydbatterybox:battery:home:tower-1-module-1#cell-voltage-spread", unit="mV" }
-Number:ElectricPotential BYD_M1_Cell01    "Module 1 Cell 1 [%.0f mV]"                    (gBattery) ["Measurement", "Voltage"]       { channel="bydbatterybox:battery:home:tower-1-module-1#cell-voltage-01", unit="mV" }
-Number:Temperature       BYD_M1_Temp01    "Module 1 Sensor 1 [%.0f °C]"                  (gBattery) ["Measurement", "Temperature"]   { channel="bydbatterybox:battery:home:tower-1-module-1#cell-temperature-01" }
+Number:ElectricPotential BYD_CellSpread   "Cell Spread [%.0f mV]"                        (gBattery) ["Measurement", "Voltage"]       { channel="bydbatterybox:hv-premium:home:tower-1#cell-voltage-spread", unit="mV" }
+Number:ElectricPotential BYD_CellMin      "Lowest Cell [%.0f mV]"                        (gBattery) ["Measurement", "Voltage"]       { channel="bydbatterybox:hv-premium:home:tower-1#min-cell-voltage", unit="mV" }
+Number                   BYD_CellMinNo    "Lowest Cell No. [%d]"                         (gBattery)                                  { channel="bydbatterybox:hv-premium:home:tower-1#min-cell-voltage-cell" }
+Number:ElectricPotential BYD_M1_Spread    "Module 1 Spread [%.0f mV]"                    (gBattery) ["Measurement", "Voltage"]       { channel="bydbatterybox:hv-premium:home:tower-1-module-1#cell-voltage-spread", unit="mV" }
+Number:ElectricPotential BYD_M1_Cell01    "Module 1 Cell 1 [%.0f mV]"                    (gBattery) ["Measurement", "Voltage"]       { channel="bydbatterybox:hv-premium:home:tower-1-module-1#cell-voltage-01", unit="mV" }
+Number:Temperature       BYD_M1_Temp01    "Module 1 Sensor 1 [%.0f °C]"                  (gBattery) ["Measurement", "Temperature"]   { channel="bydbatterybox:hv-premium:home:tower-1-module-1#cell-temperature-01" }
 
-String                   BYD_LastEvent    "Last Event [%s]"                              (gBattery) ["Status"]                       { channel="bydbatterybox:battery:home:events#last-event" }
-DateTime                 BYD_LastEventTime "Last Event Time [%1$tF %1$tR]"               (gBattery) ["Status", "Timestamp"]          { channel="bydbatterybox:battery:home:events#last-event-time" }
+String                   BYD_LastEvent    "Last Event [%s]"                              (gBattery) ["Status"]                       { channel="bydbatterybox:hv-premium:home:events#last-event" }
+DateTime                 BYD_LastEventTime "Last Event Time [%1$tF %1$tR]"               (gBattery) ["Status", "Timestamp"]          { channel="bydbatterybox:hv-premium:home:events#last-event-time" }
 ```
 
 To keep the history of every cell, link all `cell-voltage-*` and `cell-temperature-*` channels and persist them, e.g. with an `everyChange` strategy.
@@ -253,7 +253,7 @@ end
 
 rule "Battery event"
 when
-    Channel "bydbatterybox:battery:home:events#event" triggered
+    Channel "bydbatterybox:hv-premium:home:events#event" triggered
 then
     logInfo("battery", "Battery event {}: {}", receivedEvent, BYD_LastEvent.state)
 end

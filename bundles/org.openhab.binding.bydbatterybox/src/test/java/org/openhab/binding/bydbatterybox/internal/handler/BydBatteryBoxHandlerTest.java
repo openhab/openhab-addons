@@ -120,8 +120,8 @@ class BydBatteryBoxHandlerTest {
                 "refreshInterval", BigDecimal.valueOf(30), "eventLogInterval", BigDecimal.ZERO, "connectionTimeout",
                 BigDecimal.valueOf(2)));
         properties.putAll(parameters);
-        Thing thing = ThingBuilder.create(THING_TYPE_BATTERY, "test").withConfiguration(new Configuration(properties))
-                .withChannels(channels).build();
+        Thing thing = ThingBuilder.create(THING_TYPE_HV_PREMIUM, "test")
+                .withConfiguration(new Configuration(properties)).withChannels(channels).build();
         BydBatteryBoxHandler localHandler = new BydBatteryBoxHandler(thing, i18nProvider, localeProvider, bundle,
                 sleeper);
         localHandler.setCallback(callback);
@@ -216,7 +216,7 @@ class BydBatteryBoxHandlerTest {
     void channelsAreReducedToTheReportedTopology() throws Exception {
         FakeBattery localBattery = FakeBattery.start(64, Fixtures.frame("identity"), Fixtures.frame("status"));
         battery = localBattery;
-        ThingUID thingUID = new ThingUID(THING_TYPE_BATTERY, "test");
+        ThingUID thingUID = new ThingUID(THING_TYPE_HV_PREMIUM, "test");
         List<Channel> channels = Stream
                 .of("status#voltage", "tower-1#voltage", "tower-2#voltage", "tower-1-module-3#cell-voltage-32",
                         "tower-1-module-4#cell-voltage-01")

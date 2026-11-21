@@ -42,7 +42,7 @@ import org.osgi.service.component.annotations.Reference;
 @Component(configurationPid = "binding.bydbatterybox", service = ThingHandlerFactory.class)
 public class BydBatteryBoxHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_BATTERY);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_HV_PREMIUM);
 
     private final TranslationProvider i18nProvider;
     private final LocaleProvider localeProvider;
@@ -64,7 +64,7 @@ public class BydBatteryBoxHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
-        if (THING_TYPE_BATTERY.equals(thing.getThingTypeUID())) {
+        if (THING_TYPE_HV_PREMIUM.equals(thing.getThingTypeUID())) {
             return new BydBatteryBoxHandler(thing, i18nProvider, localeProvider, bundle);
         }
         return null;
