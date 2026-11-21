@@ -48,9 +48,9 @@ import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettings
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsDimmer;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsRoller;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor;
-import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceConfig.Shelly2GetConfigResult;
-import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult;
-import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2DeviceStatusEmData;
+import org.openhab.binding.shelly.internal.api2.dto.Shelly2ConfigJsonDTO.Shelly2DeviceConfig.Shelly2GetConfigResult;
+import org.openhab.binding.shelly.internal.api2.dto.Shelly2StatusJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult;
+import org.openhab.binding.shelly.internal.api2.dto.ShellyMeterJsonDTO.Shelly2DeviceStatusEmData;
 import org.openhab.binding.shelly.internal.config.ShellyApiConfiguration;
 import org.openhab.binding.shelly.internal.config.ShellyBindingConfiguration;
 import org.openhab.binding.shelly.internal.config.ShellyBindingRuntimeConfig;
@@ -765,7 +765,7 @@ public class Shelly2GetDeviceProfileTest {
         Shelly2DeviceStatusResult result = Objects
                 .requireNonNull(gson.fromJson(reserialised, Shelly2DeviceStatusResult.class));
         Shelly2DeviceStatusEmData emdata0 = result.emdata0;
-        assertThat(emdata0, is(notNullValue()));
+        assertNotNull(emdata0);
         assertThat(emdata0.totalActiveReturnedEnergySum, is(1.5));
     }
 
@@ -968,10 +968,8 @@ public class Shelly2GetDeviceProfileTest {
         Gson gson = new Gson();
         Shelly2GetConfigResult config = parseConfig(gson, "{\"sys\":{\"device\":{},\"location\":{}},\"wifi\":{},"
                 + "\"lora:100\":{\"id\":100,\"band_plan\":\"US915\",\"rx_enable\":false}}");
-        assertThat(config.lora100 != null, is(true));
-        if (config.lora100 != null) {
-            assertThat(config.lora100.bandPlan, is("US915"));
-        }
+        var lora100 = Objects.requireNonNull(config.lora100);
+        assertThat(lora100.bandPlan, is("US915"));
     }
 
     @ParameterizedTest(name = "{0} → isDimmer+hasRelays=true")

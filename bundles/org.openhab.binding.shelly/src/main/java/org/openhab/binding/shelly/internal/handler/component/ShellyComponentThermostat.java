@@ -28,10 +28,11 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.shelly.internal.api.ShellyApiException;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsStatus;
-import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult;
-import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusSys;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2RpcRequest;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiRpc;
+import org.openhab.binding.shelly.internal.api2.dto.Shelly2ConfigJsonDTO.Shelly2ConfigParms;
+import org.openhab.binding.shelly.internal.api2.dto.Shelly2StatusJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult;
+import org.openhab.binding.shelly.internal.api2.dto.Shelly2StatusJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusSys;
 import org.openhab.binding.shelly.internal.api2.dto.ShellyThermostatJsonDTO.Shelly2DeviceStatusThermostat;
 import org.openhab.binding.shelly.internal.api2.dto.ShellyThermostatJsonDTO.Shelly2DeviceStatusThermostat.Shelly2DeviceStatusThermostatSchedules;
 import org.openhab.binding.shelly.internal.api2.dto.ShellyThermostatJsonDTO.Shelly2ThermostatProfiles;
@@ -216,19 +217,20 @@ public class ShellyComponentThermostat {
             throw new ShellyApiException("Thermostat commands require a Gen2+ device");
         }
         Shelly2RpcRequest request = new Shelly2RpcRequest().withMethod(SHELLYRPC_METHOD_THERMOSTAT_SETCONFIG).withId(0);
-        request.params.withConfig();
+        var config = new Shelly2ConfigParms();
+        request.params.config = config;
         switch (channel) {
             case CHANNEL_THERMOSTAT_ENABLE:
-                request.params.config.enable = command == OnOffType.ON;
+                config.enable = command == OnOffType.ON;
                 break;
             case CHANNEL_CONTROL_SETTEMP:
-                request.params.config.targetC = command instanceof QuantityType<?> quantity
+                config.targetC = command instanceof QuantityType<?> quantity
                         && quantity.toUnit(SIUnits.CELSIUS) instanceof QuantityType<?> celsius ? celsius.doubleValue()
                                 : getNumber(command).doubleValue();
                 break;
             case CHANNEL_CONTROL_SCHEDULE:
                 request.withMethod(SHELLYRPC_METHOD_THERMOSTAT_SCHEDULE_SETCONFIG);
-                request.params.config.enable = command == OnOffType.ON;
+                config.enable = command == OnOffType.ON;
                 break;
             case CHANNEL_CONTROL_PROFILE:
                 Integer profileId = getProfileId(thingHandler.getProfile().thermostatProfiles, command.toString());
@@ -237,7 +239,7 @@ public class ShellyComponentThermostat {
                     return;
                 }
                 request.withMethod(SHELLYRPC_METHOD_THERMOSTAT_SCHEDULE_SETCONFIG);
-                request.params.config.profileId = profileId;
+                config.profileId = profileId;
                 break;
             default:
                 return;
