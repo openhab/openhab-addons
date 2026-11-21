@@ -22,6 +22,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.mqtt.generic.values.RollershutterValue;
 import org.openhab.binding.mqtt.generic.values.TextValue;
 import org.openhab.binding.mqtt.generic.values.Value;
 import org.openhab.core.io.transport.mqtt.MqttBrokerConnection;
@@ -31,6 +32,7 @@ import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StopMoveType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.types.UpDownType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.binding.generic.ChannelTransformation;
 import org.openhab.core.types.Command;
@@ -372,6 +374,12 @@ public class ChannelState implements MqttMessageSubscriber {
         }
 
         Command mqttCommandValue = cachedValue.parseCommand(command);
+        // UP/DOWN stay UpDownType only if an up/down command string is configured, otherwise they were
+        // converted to a percentage (0/100) and belong on the regular command topic. Endpoint percentages
+        // (0/100) are published as up/down strings if transformExtentsToString is set, so they count as well.
+        final boolean upDownCommand = cachedValue instanceof RollershutterValue rollershutterValue
+                ? rollershutterValue.isUpDownPublish(mqttCommandValue)
+                : mqttCommandValue instanceof UpDownType;
         Value mqttFormatter = cachedValue;
 
         // Outgoing transformations
@@ -418,6 +426,8 @@ public class ChannelState implements MqttMessageSubscriber {
         String commandTopic;
         if (command.equals(StopMoveType.STOP) && !config.stopCommandTopic.isEmpty()) {
             commandTopic = config.stopCommandTopic;
+        } else if (upDownCommand && !config.upDownCommandTopic.isEmpty()) {
+            commandTopic = config.upDownCommandTopic;
         } else {
             commandTopic = config.commandTopic;
         }
