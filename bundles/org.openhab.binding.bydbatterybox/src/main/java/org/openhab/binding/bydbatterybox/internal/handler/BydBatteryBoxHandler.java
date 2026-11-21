@@ -203,22 +203,23 @@ public class BydBatteryBoxHandler extends BaseThingHandler {
     private void poll(PollContext context) {
         if (context.skipCycles > 0) {
             context.skipCycles--;
+            logger.debug("Poll of {} skipped (backoff after {} failed cycle(s), {} more to skip)", getThing().getUID(),
+                    context.failures, context.skipCycles);
             return;
         }
         try {
             try {
-                readBattery(context);
+                attempt(context, "cycle");
             } catch (BydCommunicationException e) {
                 if (context.failures > 0 || !isTransient(e)) {
                     throw e;
                 }
                 // a battery without internet access stops answering for about 15 s every 100 s; retry once after
                 // such an outage instead of going offline (this is the binding's own pool, so blocking is acceptable)
-                logger.debug("Polling {} failed ({}): {}; retrying in {} s", getThing().getUID(), e.getReason(),
-                        e.getMessage(), RETRY_DELAY_MILLIS / 1000);
+                logger.debug("Retrying the poll of {} in {} s", getThing().getUID(), RETRY_DELAY_MILLIS / 1000);
                 sleeper.sleep(RETRY_DELAY_MILLIS);
                 if (isCurrent(context)) {
-                    readBattery(context);
+                    attempt(context, "retry");
                 }
             }
         } catch (BydCommunicationException e) {
@@ -229,6 +230,27 @@ public class BydBatteryBoxHandler extends BaseThingHandler {
             // keep the scheduled job alive; an unexpected error must not stop polling
             logger.warn("Unexpected error while polling {}", getThing().getUID(), e);
         }
+    }
+
+    /**
+     * Logs every connection attempt with its outcome and duration, to analyze when the battery is reachable.
+     * UNREACHABLE means the connection could not be opened, BUSY that it was closed before the first reply, TIMEOUT
+     * that a reply did not arrive in time.
+     */
+    private void attempt(PollContext context, String kind) throws BydCommunicationException, InterruptedException {
+        long start = System.nanoTime();
+        try {
+            readBattery(context);
+            logger.debug("Poll attempt ({}) of {}: OK in {} ms", kind, getThing().getUID(), elapsedMillis(start));
+        } catch (BydCommunicationException e) {
+            logger.debug("Poll attempt ({}) of {}: {} after {} ms: {}", kind, getThing().getUID(), e.getReason(),
+                    elapsedMillis(start), e.getMessage());
+            throw e;
+        }
+    }
+
+    private static long elapsedMillis(long startNanos) {
+        return TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - startNanos);
     }
 
     private static boolean isTransient(BydCommunicationException e) {
@@ -288,8 +310,8 @@ public class BydBatteryBoxHandler extends BaseThingHandler {
         context.failures++;
         long maxSkip = Math.max(0, MAX_BACKOFF_SECONDS / context.config.refreshInterval - 1);
         context.skipCycles = Math.min(maxSkip, (1L << Math.min(context.failures - 1, 16)) - 1);
-        logger.debug("Polling {} failed ({}): {}; next attempt in {} cycle(s)", getThing().getUID(), e.getReason(),
-                e.getMessage(), context.skipCycles + 1);
+        logger.debug("Polling {} failed {} time(s) in a row; next attempt in {} cycle(s)", getThing().getUID(),
+                context.failures, context.skipCycles + 1);
         String key = switch (e.getReason()) {
             case UNREACHABLE -> "offline.unreachable";
             case BUSY -> "offline.busy";
