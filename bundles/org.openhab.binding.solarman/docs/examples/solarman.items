@@ -1,0 +1,99 @@
+Group solarman "Solarman"
+
+Number:Temperature        AC_Temperature                  "AC Temperature [%.1f °C]"             (solarman)  {channel="solarman:logger:local:inverter-ac-temperature", unit="°C"}
+String                    Alert                           "Alert [%s]"                           (solarman)  {channel="solarman:logger:local:alert-alert"}
+Number:ElectricPotential  Battery_Absorption_V            "Battery Absorption V [%.2f V]"        (solarman)  {channel="solarman:logger:local:battery-battery-absorption-v", unit="V"}
+Number:ElectricCharge     Battery_Capacity                "Battery Capacity [%d Ah]"             (solarman)  {channel="solarman:logger:local:battery-battery-capacity", unit="Ah"}
+Number:ElectricCurrent    Battery_Current                 "Battery Current [%.1f A]"             (solarman)  {channel="solarman:logger:local:battery-battery-current", unit="A"}
+Number:Energy             Daily_Battery_Charge            "Daily Battery Charge [%.1f kWh]"      (solarman)  {channel="solarman:logger:local:battery-daily-battery-charge", unit="kWh"}
+Number:Energy             Daily_Battery_Discharge         "Daily Battery Discharge [%.1f kWh]"   (solarman)  {channel="solarman:logger:local:battery-daily-battery-discharge", unit="kWh"}
+Number:ElectricPotential  Battery_Empty_V                 "Battery Empty V [%.2f V]"             (solarman)  {channel="solarman:logger:local:battery-battery-empty-v", unit="V"}
+Number:ElectricPotential  Battery_Equalization_V          "Battery Equalization V [%.2f V]"      (solarman)  {channel="solarman:logger:local:battery-battery-equalization-v", unit="V"}
+Number:ElectricPotential  Battery_Float_V                 "Battery Float V [%.2f V]"             (solarman)  {channel="solarman:logger:local:battery-battery-float-v", unit="V"}
+Number:ElectricCurrent    Battery_Max_A_Charge            "Battery Max A Charge [%d A]"          (solarman)  {channel="solarman:logger:local:battery-battery-max-a-charge", unit="A"}
+Number:ElectricCurrent    Battery_Max_A_Discharge         "Battery Max A Discharge [%d A]"       (solarman)  {channel="solarman:logger:local:battery-battery-max-a-discharge", unit="A"}
+Number:Dimensionless      Battery_SOC                     "Battery SOC [%d %%]"                  (solarman)  {channel="solarman:logger:local:battery-battery-soc", unit="%"}
+Number:Power              Battery_Power                   "Battery Power [%d W]"                 (solarman)  {channel="solarman:logger:local:battery-battery-power", unit="W"}
+Number:Temperature        Battery_Temperature             "Battery Temperature [%.1f °C]"        (solarman)  {channel="solarman:logger:local:battery-battery-temperature", unit="°C"}
+Number:ElectricPotential  Battery_Voltage                 "Battery Voltage [%.2f V]"             (solarman)  {channel="solarman:logger:local:battery-battery-voltage", unit="V"}
+String                    Communication_Board_Version_No  "Communication Board Version No [%s]"  (solarman)  {channel="solarman:logger:local:inverter-communication-board-version-no-"}
+String                    Control_Board_Version_No        "Control Board Version No [%s]"        (solarman)  {channel="solarman:logger:local:inverter-control-board-version-no-"}
+Number:ElectricCurrent    Current_L1                      "Current L1 [%.1f A]"                  (solarman)  {channel="solarman:logger:local:inverter-current-l1", unit="A"}
+Number:ElectricCurrent    Current_L2                      "Current L2 [%.1f A]"                  (solarman)  {channel="solarman:logger:local:inverter-current-l2", unit="A"}
+Number:ElectricCurrent    Current_L3                      "Current L3 [%.1f A]"                  (solarman)  {channel="solarman:logger:local:inverter-current-l3", unit="A"}
+Number:Energy             Daily_Energy_Bought             "Daily Energy Bought [%d kWh]"         (solarman)  {channel="solarman:logger:local:grid-daily-energy-bought", unit="kWh"}
+Number:Energy             Daily_Energy_Sold               "Daily Energy Sold [%d Wh]"            (solarman)  {channel="solarman:logger:local:grid-daily-energy-sold", unit="Wh"}
+Number:Energy             Daily_Load_Consumption          "Daily Load Consumption [%.1f kWh]"    (solarman)  {channel="solarman:logger:local:upload-daily-load-consumption", unit="kWh"}
+Number:Energy             Daily_Production                "Daily Production [%.1f kWh]"          (solarman)  {channel="solarman:logger:local:solar-daily-production", unit="kWh"}
+Number:Temperature        DC_Temperature                  "DC Temperature [%.1f °C]"             (solarman)  {channel="solarman:logger:local:inverter-dc-temperature", unit="°C"}
+Number:Power              External_CT_L1_Power            "External CT L1 Power [%d W]"          (solarman)  {channel="solarman:logger:local:grid-external-ct-l1-power", unit="W"}
+Number:Power              External_CT_L2_Power            "External CT L2 Power [%d W]"          (solarman)  {channel="solarman:logger:local:grid-external-ct-l2-power", unit="W"}
+Number:Power              External_CT_L3_Power            "External CT L3 Power [%d W]"          (solarman)  {channel="solarman:logger:local:grid-external-ct-l3-power", unit="W"}
+Number:Power              Gen_Port_A_Phase_Power          "Phase Power of Gen Port A [%d W]"     (solarman)  {channel="solarman:logger:local:smartload-phase-power-of-gen-port-a", unit="W"}
+Number:Power              Gen_Port_B_Phase_Power          "Phase Power of Gen Port B [%d W]"     (solarman)  {channel="solarman:logger:local:smartload-phase-power-of-gen-port-b", unit="W"}
+Number:Power              Gen_Port_C_Phase_Power          "Phase Power of Gen Port C [%d W]"     (solarman)  {channel="solarman:logger:local:smartload-phase-power-of-gen-port-c", unit="W"}
+Number:ElectricPotential  Gen_Port_A_Phase_Voltage        "Phase Voltage of Gen Port A [%d V]"   (solarman)  {channel="solarman:logger:local:smartload-phase-voltage-of-gen-port-a", unit="V"}
+Number:ElectricPotential  Gen_Port_B_Phase_Voltage        "Phase Voltage of Gen Port B [%d V]"   (solarman)  {channel="solarman:logger:local:smartload-phase-voltage-of-gen-port-b", unit="V"}
+Number:ElectricPotential  Gen_Port_C_Phase_Voltage        "Phase Voltage of Gen Port C [%d V]"   (solarman)  {channel="solarman:logger:local:smartload-phase-voltage-of-gen-port-c", unit="V"}
+String                    Inverter_Id                     "Inverter Id [%s]"                     (solarman)  {channel="solarman:logger:local:inverter-inverter-id"}
+Number:Power              Inverter_L1_Power               "Inverter L1 Power [%d W]"             (solarman)  {channel="solarman:logger:local:inverter-inverter-l1-power", unit="W"}
+Number:Power              Inverter_L2_Power               "Inverter L2 Power [%d W]"             (solarman)  {channel="solarman:logger:local:inverter-inverter-l2-power", unit="W"}
+Number:Power              Inverter_L3_Power               "Inverter L3 Power [%d W]"             (solarman)  {channel="solarman:logger:local:inverter-inverter-l3-power", unit="W"}
+Number:Power              Internal_CT_L1_Power            "Internal CT L1 Power [%d W]"          (solarman)  {channel="solarman:logger:local:grid-internal-ct-l1-power", unit="W"}
+Number:Power              Internal_CT_L2_Power            "Internal CT L2 Power [%d W]"          (solarman)  {channel="solarman:logger:local:grid-internal-ct-l2-power", unit="W"}
+Number:Power              Internal_CT_L3_Power            "Internal CT L3 Power [%d W]"          (solarman)  {channel="solarman:logger:local:grid-internal-ct-l3-power", unit="W"}
+Number:ElectricPotential  Load_Voltage_L1                 "Load Voltage L1 [%d V]"               (solarman)  {channel="solarman:logger:local:upload-load-voltage-l1", unit="V"}
+Number:ElectricPotential  Load_Voltage_L2                 "Load Voltage L2 [%d V]"               (solarman)  {channel="solarman:logger:local:upload-load-voltage-l2", unit="V"}
+Number:ElectricPotential  Load_Voltage_L3                 "Load Voltage L3 [%d V]"               (solarman)  {channel="solarman:logger:local:upload-load-voltage-l3", unit="V"}
+Number:Power              Load_L1_Power                   "Load L1 Power [%d W]"                 (solarman)  {channel="solarman:logger:local:upload-load-l1-power", unit="W"}
+Number:Power              Load_L2_Power                   "Load L2 Power [%d W]"                 (solarman)  {channel="solarman:logger:local:upload-load-l2-power", unit="W"}
+Number:Power              Load_L3_Power                   "Load L3 Power [%d W]"                 (solarman)  {channel="solarman:logger:local:upload-load-l3-power", unit="W"}
+Number:ElectricPotential  Grid_Voltage_L1                 "Grid Voltage L1 [%d V]"               (solarman)  {channel="solarman:logger:local:grid-grid-voltage-l1", unit="V"}
+Number:ElectricPotential  Grid_Voltage_L2                 "Grid Voltage L2 [%d V]"               (solarman)  {channel="solarman:logger:local:grid-grid-voltage-l2", unit="V"}
+Number:ElectricPotential  Grid_Voltage_L3                 "Grid Voltage L3 [%d V]"               (solarman)  {channel="solarman:logger:local:grid-grid-voltage-l3", unit="V"}
+Number:Energy             Generator_Daily_Power_Generation "Generator Daily Power Generation [%.1f kWh]" (solarman) {channel="solarman:logger:local:smartload-generator-daily-power-generation", unit="kWh"}
+Number:Energy             Generator_Total_Power_Generation "Generator Total Power Generation [%.1f kWh]" (solarman) {channel="solarman:logger:local:smartload-generator-total-power-generation", unit="kWh"}
+String                    Smartload_Enable_Status         "Smartload Enable Status [%s]"         (solarman)  {channel="solarman:logger:local:smartload-smartload-enable-status"}
+Number:Energy             Total_Battery_Charge            "Total Battery Charge [%d kWh]"        (solarman)  {channel="solarman:logger:local:battery-total-battery-charge", unit="kWh"}
+Number:Energy             Total_Battery_Discharge         "Total Battery Discharge [%d kWh]"     (solarman)  {channel="solarman:logger:local:battery-total-battery-discharge", unit="kWh"}
+Number:Energy             Total_Energy_Bought             "Total Energy Bought [%d kWh]"         (solarman)  {channel="solarman:logger:local:grid-total-energy-bought", unit="kWh"}
+Number:Energy             Total_Energy_Sold               "Total Energy Sold [%d kWh]"           (solarman)  {channel="solarman:logger:local:grid-total-energy-sold", unit="kWh"}
+Number:Power              Total_Gen_Port_Power            "Total Power of Gen Port [%d W]"       (solarman)  {channel="solarman:logger:local:smartload-total-power-of-gen-port", unit="W"}
+Number:Power              Total_Grid_Power                "Total Instant Grid Power [%d W]"      (solarman)  {channel="solarman:logger:local:grid-total-grid-power", unit="W"}
+Number:Energy             Total_Grid_Production           "Total Grid Feed-in [%.1f kWh]"        (solarman)  {channel="solarman:logger:local:grid-total-grid-production", unit="kWh"}
+Number:Energy             Total_Load_Consumption          "Total Load Consumption [%d kWh]"      (solarman)  {channel="solarman:logger:local:upload-total-load-consumption", unit="kWh"}
+Number:Power              Total_Load_Power                "Total Load Power [%d W]"              (solarman)  {channel="solarman:logger:local:upload-total-load-power", unit="W"}
+Number:Energy             Total_Solar_Production          "Total Solar Production [%.1f kWh]"    (solarman)  {channel="solarman:logger:local:solar-total-production", unit="kWh"}
+Number:Power              PV1_Power                       "PV1 Power [%d W]"                     (solarman)  {channel="solarman:logger:local:solar-pv1-power", unit="W"}
+Number:ElectricCurrent    PV1_Current                     "PV1 Current [%.1f A]"                 (solarman)  {channel="solarman:logger:local:solar-pv1-current", unit="A"}
+Number:ElectricPotential  PV1_Voltage                     "PV1 Voltage [%d V]"                   (solarman)  {channel="solarman:logger:local:solar-pv1-voltage", unit="V"}
+Number:Power              PV2_Power                       "PV2 Power [%d W]"                     (solarman)  {channel="solarman:logger:local:solar-pv2-power", unit="W"}
+Number:ElectricCurrent    PV2_Current                     "PV2 Current [%.1f A]"                 (solarman)  {channel="solarman:logger:local:solar-pv2-current", unit="A"}
+Number:ElectricPotential  PV2_Voltage                     "PV2 Voltage [%d V]"                   (solarman)  {channel="solarman:logger:local:solar-pv2-voltage", unit="V"}
+
+String                    ToU_1_Time                      "ToU 1 Time [%s]"                      (solarman)  {channel="solarman:logger:local:time-of-use-tou-time-1"}
+Number:Dimensionless      ToU_1_Battery_SOC               "ToU 1 Battery SOC [%d %%]"            (solarman)  {channel="solarman:logger:local:time-of-use-tou-battery-soc-1", unit="%"}
+Number:Power              ToU_1_Power                     "ToU 1 Power [%d W]"                   (solarman)  {channel="solarman:logger:local:time-of-use-tou-power-1", unit="W"}
+String                    ToU_1_Chare_Enable              "ToU 1 Charge Enable [%s]"             (solarman)  {channel="solarman:logger:local:time-of-use-tou-charge-enable-1"}
+String                    ToU_2_Time                      "ToU 2 Time [%s]"                      (solarman)  {channel="solarman:logger:local:time-of-use-tou-time-2"}
+Number:Dimensionless      ToU_2_Battery_SOC               "ToU 2 Battery SOC [%d %%]"            (solarman)  {channel="solarman:logger:local:time-of-use-tou-battery-soc-2", unit="%"}
+Number:Power              ToU_2_Power                     "ToU 2 Power [%d W]"                   (solarman)  {channel="solarman:logger:local:time-of-use-tou-power-2", unit="W"}
+String                    ToU_2_Chare_Enable              "ToU 2 Charge Enable [%s]"             (solarman)  {channel="solarman:logger:local:time-of-use-tou-charge-enable-2"}
+String                    ToU_3_Time                      "ToU 3 Time [%s]"                      (solarman)  {channel="solarman:logger:local:time-of-use-tou-time-3"}
+Number:Dimensionless      ToU_3_Battery_SOC               "ToU 3 Battery SOC [%d %%]"            (solarman)  {channel="solarman:logger:local:time-of-use-tou-battery-soc-3", unit="%"}
+Number:Power              ToU_3_Power                     "ToU 3 Power [%d W]"                   (solarman)  {channel="solarman:logger:local:time-of-use-tou-power-3", unit="W"}
+String                    ToU_3_Chare_Enable              "ToU 3 Charge Enable [%s]"             (solarman)  {channel="solarman:logger:local:time-of-use-tou-charge-enable-3"}
+String                    ToU_4_Time                      "ToU 4 Time [%s]"                      (solarman)  {channel="solarman:logger:local:time-of-use-tou-time-4"}
+Number:Dimensionless      ToU_4_Battery_SOC               "ToU 4 Battery SOC [%d %%]"            (solarman)  {channel="solarman:logger:local:time-of-use-tou-battery-soc-4", unit="%"}
+Number:Power              ToU_4_Power                     "ToU 4 Power [%d W]"                   (solarman)  {channel="solarman:logger:local:time-of-use-tou-power-4", unit="W"}
+String                    ToU_4_Chare_Enable              "ToU 4 Charge Enable [%s]"             (solarman)  {channel="solarman:logger:local:time-of-use-tou-charge-enable-4"}
+String                    ToU_5_Time                      "ToU 5 Time [%s]"                      (solarman)  {channel="solarman:logger:local:time-of-use-tou-time-5"}
+Number:Dimensionless      ToU_5_Battery_SOC               "ToU 5 Battery SOC [%d %%]"            (solarman)  {channel="solarman:logger:local:time-of-use-tou-battery-soc-5", unit="%"}
+Number:Power              ToU_5_Power                     "ToU 5 Power [%d W]"                   (solarman)  {channel="solarman:logger:local:time-of-use-tou-power-5", unit="W"}
+String                    ToU_5_Chare_Enable              "ToU 5 Charge Enable [%s]"             (solarman)  {channel="solarman:logger:local:time-of-use-tou-charge-enable-5"}
+String                    ToU_6_Time                      "ToU 6 Time [%s]"                      (solarman)  {channel="solarman:logger:local:time-of-use-tou-time-6"}
+Number:Dimensionless      ToU_6_Battery_SOC               "ToU 6 Battery SOC [%d %%]"            (solarman)  {channel="solarman:logger:local:time-of-use-tou-battery-soc-6", unit="%"}
+Number:Power              ToU_6_Power                     "ToU 6 Power [%d W]"                   (solarman)  {channel="solarman:logger:local:time-of-use-tou-power-6", unit="W"}
+String                    ToU_6_Chare_Enable              "ToU 6 Charge Enable [%s]"             (solarman)  {channel="solarman:logger:local:time-of-use-tou-charge-enable-6"}
+
+Number:Frequency          Inverter_Frequency              "Inverter Frequency [%.2f Hz]"         (solarman)  {channel="solarman:logger:local:inverter-frequency", unit="Hz"}

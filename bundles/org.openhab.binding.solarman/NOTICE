@@ -11,3 +11,12 @@ https://www.eclipse.org/legal/epl-2.0/.
 == Source Code
 
 https://github.com/openhab/openhab-addons
+
+== Third-party Content
+
+kellerza/sunsynk register definitions
+* License: Apache License, Version 2.0
+* Project: https://github.com/kellerza/sunsynk
+* Source:  https://github.com/kellerza/sunsynk/tree/f1ecbc28e3ccf2b9f87b1ccee85a41628567da43
+
+Copyright the kellerza/sunsynk contributors, including Johann Kellerman.

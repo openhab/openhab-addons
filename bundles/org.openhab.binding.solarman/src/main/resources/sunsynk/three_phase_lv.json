@@ -1,0 +1,3651 @@
+[
+  {
+    "id": "pv_power",
+    "name": "PV power",
+    "kind": "PVDynamicTotalSensor",
+    "registers": [
+      0
+    ],
+    "unit": "W",
+    "factor": 1,
+    "mask": 0,
+    "writable": false,
+    "factors": [],
+    "source_ids": [
+      "pv1_power",
+      "pv2_power",
+      "pv3_power",
+      "pv4_power",
+      "pv5_power",
+      "pv6_power",
+      "pv7_power",
+      "pv8_power"
+    ]
+  },
+  {
+    "id": "inverter_l1_power",
+    "name": "Inverter L1 power",
+    "kind": "Sensor16",
+    "registers": [
+      633,
+      691
+    ],
+    "unit": "W",
+    "factor": -1,
+    "mask": 0,
+    "writable": false
+  },
+  {
+    "id": "inverter_l2_power",
+    "name": "Inverter L2 power",
+    "kind": "Sensor16",
+    "registers": [
+      634,
+      692
+    ],
+    "unit": "W",
+    "factor": -1,
+    "mask": 0,
+    "writable": false
+  },
+  {
+    "id": "inverter_l3_power",
+    "name": "Inverter L3 power",
+    "kind": "Sensor16",
+    "registers": [
+      635,
+      693
+    ],
+    "unit": "W",
+    "factor": -1,
+    "mask": 0,
+    "writable": false
+  },
+  {
+    "id": "inverter_power",
+    "name": "Inverter power",
+    "kind": "Sensor16",
+    "registers": [
+      636,
+      694
+    ],
+    "unit": "W",
+    "factor": -1,
+    "mask": 0,
+    "writable": false
+  },
+  {
+    "id": "inverter_l1_voltage",
+    "name": "Inverter L1 voltage",
+    "kind": "Sensor",
+    "registers": [
+      627
+    ],
+    "unit": "V",
+    "factor": 0.1,
+    "mask": 0,
+    "writable": false
+  },
+  {
+    "id": "inverter_l2_voltage",
+    "name": "Inverter L2 voltage",
+    "kind": "Sensor",
+    "registers": [
+      628
+    ],
+    "unit": "V",
+    "factor": 0.1,
+    "mask": 0,
+    "writable": false
+  },
+  {
+    "id": "inverter_l3_voltage",
+    "name": "Inverter L3 voltage",
+    "kind": "Sensor",
+    "registers": [
+      629
+    ],
+    "unit": "V",
+    "factor": 0.1,
+    "mask": 0,
+    "writable": false
+  },
+  {
+    "id": "inverter_l1_current",
+    "name": "Inverter L1 current",
+    "kind": "Sensor",
+    "registers": [
+      630
+    ],
+    "unit": "A",
+    "factor": -0.01,
+    "mask": 0,
+    "writable": false
+  },
+  {
+    "id": "inverter_l2_current",
+    "name": "Inverter L2 current",
+    "kind": "Sensor",
+    "registers": [
+      631
+    ],
+    "unit": "A",
+    "factor": -0.01,
+    "mask": 0,
+    "writable": false
+  },
+  {
+    "id": "inverter_l3_current",
+    "name": "Inverter L3 current",
+    "kind": "Sensor",
+    "registers": [
+      632
+    ],
+    "unit": "A",
+    "factor": -0.01,
+    "mask": 0,
+    "writable": false
+  },
+  {
+    "id": "inverter_frequency",
+    "name": "Inverter frequency",
+    "kind": "Sensor",
+    "registers": [
+      638
+    ],
+    "unit": "Hz",
+    "factor": 0.01,
+    "mask": 0,
+    "writable": false
+  },
+  {
+    "id": "grid_frequency",
+    "name": "Grid frequency",
+    "kind": "Sensor",
+    "registers": [
+      609
+    ],
+    "unit": "Hz",
+    "factor": 0.01,
+    "mask": 0,
+    "writable": false
+  },
+  {
+    "id": "grid_l1_power",
+    "name": "Grid L1 power",
+    "kind": "Sensor16",
+    "registers": [
+      622,
+      687
+    ],
+    "unit": "W",
+    "factor": -1,
+    "mask": 0,
+    "writable": false
+  },
+  {
+    "id": "grid_l2_power",
+    "name": "Grid L2 power",
+    "kind": "Sensor16",
+    "registers": [
+      623,
+      688
+    ],
+    "unit": "W",
+    "factor": -1,
+    "mask": 0,
+    "writable": false
+  },
+  {
+    "id": "grid_l3_power",
+    "name": "Grid L3 power",
+    "kind": "Sensor16",
+    "registers": [
+      624,
+      689
+    ],
+    "unit": "W",
+    "factor": -1,
+    "mask": 0,
+    "writable": false
+  },
+  {
+    "id": "grid_power",
+    "name": "Grid power",
+    "kind": "Sensor16",
+    "registers": [
+      625,
+      690
+    ],
+    "unit": "W",
+    "factor": -1,
+    "mask": 0,
+    "writable": false
+  },
+  {
+    "id": "grid_l1_voltage",
+    "name": "Grid L1 voltage",
+    "kind": "Sensor",
+    "registers": [
+      598
+    ],
+    "unit": "V",
+    "factor": 0.1,
+    "mask": 0,
+    "writable": false
+  },
+  {
+    "id": "grid_l2_voltage",
+    "name": "Grid L2 voltage",
+    "kind": "Sensor",
+    "registers": [
+      599
+    ],
+    "unit": "V",
+    "factor": 0.1,
+    "mask": 0,
+    "writable": false
+  },
+  {
+    "id": "grid_l3_voltage",
+    "name": "Grid L3 voltage",
+    "kind": "Sensor",
+    "registers": [
+      600
+    ],
+    "unit": "V",
+    "factor": 0.1,
+    "mask": 0,
+    "writable": false
+  },
+  {
+    "id": "grid_l1_inner_side_power",
+    "name": "Grid L1 inner side power",
+    "kind": "Sensor16",
+    "registers": [
+      604,
+      700
+    ],
+    "unit": "W",
+    "factor": -1,
+    "mask": 0,
+    "writable": false
+  },
+  {
+    "id": "grid_l2_inner_side_power",
+    "name": "Grid L2 inner side power",
+    "kind": "Sensor16",
+    "registers": [
+      605,
+      701
+    ],
+    "unit": "W",
+    "factor": -1,
+    "mask": 0,
+    "writable": false
+  },
+  {
+    "id": "grid_l3_inner_side_power",
+    "name": "Grid L3 inner side power",
+    "kind": "Sensor16",
+    "registers": [
+      606,
+      702
+    ],
+    "unit": "W",
+    "factor": -1,
+    "mask": 0,
+    "writable": false
+  },
+  {
+    "id": "total_active_power_from_side_to_side_of_the_grid",
+    "name": "Total Active Power from Side to Side of the Grid",
+    "kind": "Sensor16",
+    "registers": [
+      607,
+      703
+    ],
+    "unit": "W",
+    "factor": -1,
+    "mask": 0,
+    "writable": false
+  },
+  {
+    "id": "grid_side___inside_total_apparent_power",
+    "name": "Grid Side - Inside Total Apparent Power",
+    "kind": "Sensor16",
+    "registers": [
+      608,
+      704
+    ],
+    "unit": "W",
+    "factor": -1,
+    "mask": 0,
+    "writable": false
+  },
+  {
+    "id": "grid_current",
+    "name": "Grid current",
+    "kind": "MathSensor",
+    "registers": [
+      610,
+      611,
+      612
+    ],
+    "unit": "A",
+    "factor": 1,
+    "mask": 0,
+    "writable": false,
+    "factors": [
+      -0.01,
+      -0.01,
+      -0.01
+    ],
+    "absolute": false,
+    "no_negative": false
+  },
+  {
+    "id": "grid_ct_l1_power",
+    "name": "Grid CT L1 power",
+    "kind": "Sensor16",
+    "registers": [
+      616,
+      705
+    ],
+    "unit": "W",
+    "factor": -1,
+    "mask": 0,
+    "writable": false
+  },
+  {
+    "id": "grid_ct_l2_power",
+    "name": "Grid CT L2 power",
+    "kind": "Sensor16",
+    "registers": [
+      617,
+      706
+    ],
+    "unit": "W",
+    "factor": -1,
+    "mask": 0,
+    "writable": false
+  },
+  {
+    "id": "grid_ct_l3_power",
+    "name": "Grid CT L3 power",
+    "kind": "Sensor16",
+    "registers": [
+      618,
+      707
+    ],
+    "unit": "W",
+    "factor": -1,
+    "mask": 0,
+    "writable": false
+  },
+  {
+    "id": "grid_ct_power",
+    "name": "Grid CT power",
+    "kind": "Sensor16",
+    "registers": [
+      619,
+      708
+    ],
+    "unit": "W",
+    "factor": -1,
+    "mask": 0,
+    "writable": false
+  },
+  {
+    "id": "grid_ct_current",
+    "name": "Grid CT current",
+    "kind": "MathSensor",
+    "registers": [
+      613,
+      614,
+      615
+    ],
+    "unit": "A",
+    "factor": 1,
+    "mask": 0,
+    "writable": false,
+    "factors": [
+      -0.01,
+      -0.01,
+      -0.01
+    ],
+    "absolute": false,
+    "no_negative": false
+  },
+  {
+    "id": "load_l1_power",
+    "name": "Load L1 power",
+    "kind": "Sensor16",
+    "registers": [
+      650,
+      656
+    ],
+    "unit": "W",
+    "factor": -1,
+    "mask": 0,
+    "writable": false
+  },
+  {
+    "id": "load_l2_power",
+    "name": "Load L2 power",
+    "kind": "Sensor16",
+    "registers": [
+      651,
+      657
+    ],
+    "unit": "W",
+    "factor": -1,
+    "mask": 0,
+    "writable": false
+  },
+  {
+    "id": "load_l3_power",
+    "name": "Load L3 power",
+    "kind": "Sensor16",
+    "registers": [
+      652,
+      658
+    ],
+    "unit": "W",
+    "factor": -1,
+    "mask": 0,
+    "writable": false
+  },
+  {
+    "id": "load_power",
+    "name": "Load power",
+    "kind": "Sensor16",
+    "registers": [
+      653,
+      659
+    ],
+    "unit": "W",
+    "factor": -1,
+    "mask": 0,
+    "writable": false
+  },
+  {
+    "id": "load_l1_voltage",
+    "name": "Load L1 voltage",
+    "kind": "Sensor",
+    "registers": [
+      644
+    ],
+    "unit": "V",
+    "factor": 0.1,
+    "mask": 0,
+    "writable": false
+  },
+  {
+    "id": "load_l2_voltage",
+    "name": "Load L2 voltage",
+    "kind": "Sensor",
+    "registers": [
+      645
+    ],
+    "unit": "V",
+    "factor": 0.1,
+    "mask": 0,
+    "writable": false
+  },
+  {
+    "id": "load_l3_voltage",
+    "name": "Load L3 voltage",
+    "kind": "Sensor",
+    "registers": [
+      646
+    ],
+    "unit": "V",
+    "factor": 0.1,
+    "mask": 0,
+    "writable": false
+  },
+  {
+    "id": "load_frequency",
+    "name": "Load frequency",
+    "kind": "Sensor",
+    "registers": [
+      655
+    ],
+    "unit": "Hz",
+    "factor": 0.01,
+    "mask": 0,
+    "writable": false
+  },
+  {
+    "id": "aux_port_usage",
+    "name": "AUX port usage",
+    "kind": "SelectRWSensor",
+    "registers": [
+      133
+    ],
+    "unit": "",
+    "factor": 1,
+    "mask": 0,
+    "writable": true,
+    "options": {
+      "0": "Generator",
+      "1": "Smartload",
+      "2": "Micro Inverter"
+    }
+  },
+  {
+    "id": "generator_port_usage",
+    "name": "Generator Port Usage",
+    "kind": "SelectRWSensor",
+    "registers": [
+      133
+    ],
+    "unit": "",
+    "factor": 1,
+    "mask": 0,
+    "writable": true,
+    "options": {
+      "0": "Generator",
+      "1": "Smartload",
+      "2": "Micro Inverter"
+    }
+  },
+  {
+    "id": "gen_l1_power",
+    "name": "Gen L1 power",
+    "kind": "Sensor16",
+    "registers": [
+      664,
+      668
+    ],
+    "unit": "W",
+    "factor": -1,
+    "mask": 0,
+    "writable": false
+  },
+  {
+    "id": "aux_l1_power",
+    "name": "AUX L1 power",
+    "kind": "Sensor16",
+    "registers": [
+      664,
+      668
+    ],
+    "unit": "W",
+    "factor": -1,
+    "mask": 0,
+    "writable": false
+  },
+  {
+    "id": "gen_l2_power",
+    "name": "Gen L2 power",
+    "kind": "Sensor16",
+    "registers": [
+      665,
+      669
+    ],
+    "unit": "W",
+    "factor": -1,
+    "mask": 0,
+    "writable": false
+  },
+  {
+    "id": "aux_l2_power",
+    "name": "AUX L2 power",
+    "kind": "Sensor16",
+    "registers": [
+      665,
+      669
+    ],
+    "unit": "W",
+    "factor": -1,
+    "mask": 0,
+    "writable": false
+  },
+  {
+    "id": "gen_l3_power",
+    "name": "Gen L3 power",
+    "kind": "Sensor16",
+    "registers": [
+      666,
+      670
+    ],
+    "unit": "W",
+    "factor": -1,
+    "mask": 0,
+    "writable": false
+  },
+  {
+    "id": "aux_l3_power",
+    "name": "AUX L3 power",
+    "kind": "Sensor16",
+    "registers": [
+      666,
+      670
+    ],
+    "unit": "W",
+    "factor": -1,
+    "mask": 0,
+    "writable": false
+  },
+  {
+    "id": "gen_power",
+    "name": "Gen power",
+    "kind": "Sensor16",
+    "registers": [
+      667,
+      671
+    ],
+    "unit": "W",
+    "factor": -1,
+    "mask": 0,
+    "writable": false
+  },
+  {
+    "id": "aux_power",
+    "name": "AUX power",
+    "kind": "Sensor16",
+    "registers": [
+      667,
+      671
+    ],
+    "unit": "W",
+    "factor": -1,
+    "mask": 0,
+    "writable": false
+  },
+  {
+    "id": "gen_l1_voltage",
+    "name": "Gen L1 voltage",
+    "kind": "Sensor",
+    "registers": [
+      661
+    ],
+    "unit": "V",
+    "factor": 0.1,
+    "mask": 0,
+    "writable": false
+  },
+  {
+    "id": "aux_l1_voltage",
+    "name": "AUX L1 voltage",
+    "kind": "Sensor",
+    "registers": [
+      661
+    ],
+    "unit": "V",
+    "factor": 0.1,
+    "mask": 0,
+    "writable": false
+  },
+  {
+    "id": "gen_l2_voltage",
+    "name": "Gen L2 voltage",
+    "kind": "Sensor",
+    "registers": [
+      662
+    ],
+    "unit": "V",
+    "factor": 0.1,
+    "mask": 0,
+    "writable": false
+  },
+  {
+    "id": "aux_l2_voltage",
+    "name": "AUX L2 voltage",
+    "kind": "Sensor",
+    "registers": [
+      662
+    ],
+    "unit": "V",
+    "factor": 0.1,
+    "mask": 0,
+    "writable": false
+  },
+  {
+    "id": "gen_l3_voltage",
+    "name": "Gen L3 voltage",
+    "kind": "Sensor",
+    "registers": [
+      663
+    ],
+    "unit": "V",
+    "factor": 0.1,
+    "mask": 0,
+    "writable": false
+  },
+  {
+    "id": "aux_l3_voltage",
+    "name": "AUX L3 voltage",
+    "kind": "Sensor",
+    "registers": [
+      663
+    ],
+    "unit": "V",
+    "factor": 0.1,
+    "mask": 0,
+    "writable": false
+  },
+  {
+    "id": "ups_load_l1_power",
+    "name": "UPS Load L1 power",
+    "kind": "Sensor16",
+    "registers": [
+      640,
+      696
+    ],
+    "unit": "W",
+    "factor": 1,
+    "mask": 0,
+    "writable": false
+  },
+  {
+    "id": "ups_load_l2_power",
+    "name": "UPS Load L2 power",
+    "kind": "Sensor16",
+    "registers": [
+      641,
+      697
+    ],
+    "unit": "W",
+    "factor": 1,
+    "mask": 0,
+    "writable": false
+  },
+  {
+    "id": "ups_load_l3_power",
+    "name": "UPS Load L3 power",
+    "kind": "Sensor16",
+    "registers": [
+      642,
+      698
+    ],
+    "unit": "W",
+    "factor": 1,
+    "mask": 0,
+    "writable": false
+  },
+  {
+    "id": "ups_load_total_power",
+    "name": "UPS Load total power",
+    "kind": "Sensor16",
+    "registers": [
+      643,
+      699
+    ],
+    "unit": "W",
+    "factor": 1,
+    "mask": 0,
+    "writable": false
+  },
+  {
+    "id": "pv1_power",
+    "name": "PV1 power",
+    "kind": "Sensor",
+    "registers": [
+      672
+    ],
+    "unit": "W",
+    "factor": -1,
+    "mask": 0,
+    "writable": false
+  },
+  {
+    "id": "pv1_voltage",
+    "name": "PV1 voltage",
+    "kind": "Sensor",
+    "registers": [
+      676
+    ],
+    "unit": "V",
+    "factor": 0.1,
+    "mask": 0,
+    "writable": false
+  },
+  {
+    "id": "pv1_current",
+    "name": "PV1 current",
+    "kind": "Sensor",
+    "registers": [
+      677
+    ],
+    "unit": "A",
+    "factor": 0.1,
+    "mask": 0,
+    "writable": false
+  },
+  {
+    "id": "pv2_power",
+    "name": "PV2 power",
+    "kind": "Sensor",
+    "registers": [
+      673
+    ],
+    "unit": "W",
+    "factor": -1,
+    "mask": 0,
+    "writable": false
+  },
+  {
+    "id": "pv2_voltage",
+    "name": "PV2 voltage",
+    "kind": "Sensor",
+    "registers": [
+      678
+    ],
+    "unit": "V",
+    "factor": 0.1,
+    "mask": 0,
+    "writable": false
+  },
+  {
+    "id": "pv2_current",
+    "name": "PV2 current",
+    "kind": "Sensor",
+    "registers": [
+      679
+    ],
+    "unit": "A",
+    "factor": 0.1,
+    "mask": 0,
+    "writable": false
+  },
+  {
+    "id": "pv3_power",
+    "name": "PV3 power",
+    "kind": "Sensor",
+    "registers": [
+      674
+    ],
+    "unit": "W",
+    "factor": -1,
+    "mask": 0,
+    "writable": false
+  },
+  {
+    "id": "pv3_voltage",
+    "name": "PV3 voltage",
+    "kind": "Sensor",
+    "registers": [
+      680
+    ],
+    "unit": "V",
+    "factor": 0.1,
+    "mask": 0,
+    "writable": false
+  },
+  {
+    "id": "pv3_current",
+    "name": "PV3 current",
+    "kind": "Sensor",
+    "registers": [
+      681
+    ],
+    "unit": "A",
+    "factor": 0.1,
+    "mask": 0,
+    "writable": false
+  },
+  {
+    "id": "pv4_power",
+    "name": "PV4 power",
+    "kind": "Sensor",
+    "registers": [
+      675
+    ],
+    "unit": "W",
+    "factor": -1,
+    "mask": 0,
+    "writable": false
+  },
+  {
+    "id": "pv4_voltage",
+    "name": "PV4 voltage",
+    "kind": "Sensor",
+    "registers": [
+      682
+    ],
+    "unit": "V",
+    "factor": 0.1,
+    "mask": 0,
+    "writable": false
+  },
+  {
+    "id": "pv4_current",
+    "name": "PV4 current",
+    "kind": "Sensor",
+    "registers": [
+      683
+    ],
+    "unit": "A",
+    "factor": 0.1,
+    "mask": 0,
+    "writable": false
+  },
+  {
+    "id": "day_active_energy",
+    "name": "Day Active Energy",
+    "kind": "Sensor",
+    "registers": [
+      502
+    ],
+    "unit": "kWh",
+    "factor": -0.1,
+    "mask": 0,
+    "writable": false
+  },
+  {
+    "id": "day_battery_charge",
+    "name": "Day Battery Charge",
+    "kind": "Sensor",
+    "registers": [
+      514
+    ],
+    "unit": "kWh",
+    "factor": 0.1,
+    "mask": 0,
+    "writable": false
+  },
+  {
+    "id": "day_battery_discharge",
+    "name": "Day Battery discharge",
+    "kind": "Sensor",
+    "registers": [
+      515
+    ],
+    "unit": "kWh",
+    "factor": 0.1,
+    "mask": 0,
+    "writable": false
+  },
+  {
+    "id": "day_grid_export",
+    "name": "Day Grid Export",
+    "kind": "Sensor",
+    "registers": [
+      521
+    ],
+    "unit": "kWh",
+    "factor": 0.1,
+    "mask": 0,
+    "writable": false
+  },
+  {
+    "id": "day_grid_import",
+    "name": "Day Grid Import",
+    "kind": "Sensor",
+    "registers": [
+      520
+    ],
+    "unit": "kWh",
+    "factor": 0.1,
+    "mask": 0,
+    "writable": false
+  },
+  {
+    "id": "day_gen_energy",
+    "name": "Day Gen Energy",
+    "kind": "Sensor",
+    "registers": [
+      536
+    ],
+    "unit": "kWh",
+    "factor": 0.1,
+    "mask": 0,
+    "writable": false
+  },
+  {
+    "id": "day_load_energy",
+    "name": "Day Load Energy",
+    "kind": "Sensor",
+    "registers": [
+      526
+    ],
+    "unit": "kWh",
+    "factor": 0.1,
+    "mask": 0,
+    "writable": false
+  },
+  {
+    "id": "day_pv_energy",
+    "name": "Day PV Energy",
+    "kind": "Sensor",
+    "registers": [
+      529
+    ],
+    "unit": "kWh",
+    "factor": 0.1,
+    "mask": 0,
+    "writable": false
+  },
+  {
+    "id": "total_active_energy",
+    "name": "Total Active Energy",
+    "kind": "Sensor",
+    "registers": [
+      506,
+      507
+    ],
+    "unit": "kWh",
+    "factor": 0.1,
+    "mask": 0,
+    "writable": false
+  },
+  {
+    "id": "total_battery_charge",
+    "name": "Total Battery Charge",
+    "kind": "Sensor",
+    "registers": [
+      516,
+      517
+    ],
+    "unit": "kWh",
+    "factor": 0.1,
+    "mask": 0,
+    "writable": false
+  },
+  {
+    "id": "total_battery_discharge",
+    "name": "Total Battery Discharge",
+    "kind": "Sensor",
+    "registers": [
+      518,
+      519
+    ],
+    "unit": "kWh",
+    "factor": 0.1,
+    "mask": 0,
+    "writable": false
+  },
+  {
+    "id": "total_grid_export",
+    "name": "Total Grid Export",
+    "kind": "Sensor",
+    "registers": [
+      524,
+      525
+    ],
+    "unit": "kWh",
+    "factor": 0.1,
+    "mask": 0,
+    "writable": false
+  },
+  {
+    "id": "total_grid_import",
+    "name": "Total Grid Import",
+    "kind": "Sensor",
+    "registers": [
+      522,
+      523
+    ],
+    "unit": "kWh",
+    "factor": 0.1,
+    "mask": 0,
+    "writable": false
+  },
+  {
+    "id": "total_load_energy",
+    "name": "Total Load Energy",
+    "kind": "Sensor",
+    "registers": [
+      527,
+      528
+    ],
+    "unit": "kWh",
+    "factor": 0.1,
+    "mask": 0,
+    "writable": false
+  },
+  {
+    "id": "total_pv_energy",
+    "name": "Total PV Energy",
+    "kind": "Sensor",
+    "registers": [
+      534,
+      535
+    ],
+    "unit": "kWh",
+    "factor": 0.1,
+    "mask": 0,
+    "writable": false
+  },
+  {
+    "id": "rated_power",
+    "name": "Rated power",
+    "kind": "Sensor",
+    "registers": [
+      20,
+      21
+    ],
+    "unit": "W",
+    "factor": 0.1,
+    "mask": 0,
+    "writable": false
+  },
+  {
+    "id": "fault",
+    "name": "Fault",
+    "kind": "FaultSensor",
+    "registers": [
+      555,
+      556,
+      557,
+      558
+    ],
+    "unit": "",
+    "factor": 1,
+    "mask": 0,
+    "writable": false,
+    "faults": {
+      "13": "Working mode change",
+      "18": "AC over current",
+      "20": "DC over current",
+      "23": "AC leak current or transient over current",
+      "24": "DC insulation impedance",
+      "26": "DC busbar imbalanced",
+      "29": "Parallel comms cable",
+      "35": "No AC grid",
+      "42": "AC line low voltage",
+      "47": "AC freq high/low",
+      "56": "DC busbar voltage low",
+      "63": "ARC fault",
+      "64": "Heat sink tempfailure"
+    }
+  },
+  {
+    "id": "overall_state",
+    "name": "Overall state",
+    "kind": "InverterStateSensor",
+    "registers": [
+      500
+    ],
+    "unit": "",
+    "factor": 1,
+    "mask": 0,
+    "writable": false
+  },
+  {
+    "id": "dc_transformer_temperature",
+    "name": "DC transformer temperature",
+    "kind": "TempSensor",
+    "registers": [
+      540
+    ],
+    "unit": "°C",
+    "factor": 0.1,
+    "mask": 0,
+    "writable": false,
+    "offset": 100
+  },
+  {
+    "id": "radiator_temperature",
+    "name": "Radiator temperature",
+    "kind": "TempSensor",
+    "registers": [
+      541
+    ],
+    "unit": "°C",
+    "factor": 0.1,
+    "mask": 0,
+    "writable": false,
+    "offset": 100
+  },
+  {
+    "id": "date_time",
+    "name": "Date Time",
+    "kind": "SystemTimeRWSensor",
+    "registers": [
+      62,
+      63,
+      64
+    ],
+    "unit": "",
+    "factor": 1,
+    "mask": 0,
+    "writable": true,
+    "year_offset": 2000
+  },
+  {
+    "id": "inv_relay_status",
+    "name": "INV Relay Status",
+    "kind": "BinarySensor",
+    "registers": [
+      552
+    ],
+    "unit": "",
+    "factor": 1,
+    "mask": 1,
+    "writable": false,
+    "on": null,
+    "off": 0
+  },
+  {
+    "id": "undefined_load_relay_status",
+    "name": "Undefined Load Relay Status",
+    "kind": "BinarySensor",
+    "registers": [
+      552
+    ],
+    "unit": "",
+    "factor": 1,
+    "mask": 2,
+    "writable": false,
+    "on": null,
+    "off": 0
+  },
+  {
+    "id": "grid_connected",
+    "name": "Grid Connected",
+    "kind": "BinarySensor",
+    "registers": [
+      552
+    ],
+    "unit": "",
+    "factor": 1,
+    "mask": 4,
+    "writable": false,
+    "on": null,
+    "off": 0
+  },
+  {
+    "id": "grid_relay_status",
+    "name": "Grid Relay Status",
+    "kind": "BinarySensor",
+    "registers": [
+      552
+    ],
+    "unit": "",
+    "factor": 1,
+    "mask": 4,
+    "writable": false,
+    "on": null,
+    "off": 0
+  },
+  {
+    "id": "generator_relay_status",
+    "name": "Generator Relay Status",
+    "kind": "BinarySensor",
+    "registers": [
+      552
+    ],
+    "unit": "",
+    "factor": 1,
+    "mask": 8,
+    "writable": false,
+    "on": null,
+    "off": 0
+  },
+  {
+    "id": "grid_give_power_to_relay_status",
+    "name": "Grid Give Power to Relay Status",
+    "kind": "BinarySensor",
+    "registers": [
+      552
+    ],
+    "unit": "",
+    "factor": 1,
+    "mask": 16,
+    "writable": false,
+    "on": null,
+    "off": 0
+  },
+  {
+    "id": "dry_contact1_status",
+    "name": "Dry Contact1 Status",
+    "kind": "BinarySensor",
+    "registers": [
+      552
+    ],
+    "unit": "",
+    "factor": 1,
+    "mask": 32,
+    "writable": false,
+    "on": null,
+    "off": 0
+  },
+  {
+    "id": "dry_contact2_status",
+    "name": "Dry Contact2 Status",
+    "kind": "BinarySensor",
+    "registers": [
+      552
+    ],
+    "unit": "",
+    "factor": 1,
+    "mask": 64,
+    "writable": false,
+    "on": null,
+    "off": 0
+  },
+  {
+    "id": "inverter_enabled",
+    "name": "Inverter enabled",
+    "kind": "SwitchRWSensor",
+    "registers": [
+      80
+    ],
+    "unit": "",
+    "factor": 1,
+    "mask": 0,
+    "writable": true,
+    "on": 1,
+    "off": 0
+  },
+  {
+    "id": "off_grid_mode",
+    "name": "Off Grid mode",
+    "kind": "SwitchRWSensor",
+    "registers": [
+      179
+    ],
+    "unit": "",
+    "factor": 1,
+    "mask": 1,
+    "writable": true,
+    "on": 1,
+    "off": 0
+  },
+  {
+    "id": "grid_charge_battery_current",
+    "name": "Grid Charge Battery current",
+    "kind": "NumberRWSensor",
+    "registers": [
+      128
+    ],
+    "unit": "A",
+    "factor": 1,
+    "mask": 0,
+    "writable": true,
+    "min": 0,
+    "max": 185
+  },
+  {
+    "id": "grid_charge_start_battery_voltage",
+    "name": "Grid Charge Start Battery Voltage",
+    "kind": "NumberRWSensor",
+    "registers": [
+      126
+    ],
+    "unit": "V",
+    "factor": 0.01,
+    "mask": 0,
+    "writable": true,
+    "min": 0,
+    "max": 6300
+  },
+  {
+    "id": "grid_charge_start_battery_soc",
+    "name": "Grid Charge Start Battery SOC",
+    "kind": "NumberRWSensor",
+    "registers": [
+      127
+    ],
+    "unit": "%",
+    "factor": 1,
+    "mask": 0,
+    "writable": true,
+    "min": 0,
+    "max": 100
+  },
+  {
+    "id": "grid_charge_enabled",
+    "name": "Grid Charge enabled",
+    "kind": "SwitchRWSensor",
+    "registers": [
+      130
+    ],
+    "unit": "",
+    "factor": 1,
+    "mask": 0,
+    "writable": true,
+    "on": 1,
+    "off": 0
+  },
+  {
+    "id": "solar_export",
+    "name": "Solar Export",
+    "kind": "SwitchRWSensor",
+    "registers": [
+      145
+    ],
+    "unit": "",
+    "factor": 1,
+    "mask": 0,
+    "writable": true,
+    "on": 1,
+    "off": 0
+  },
+  {
+    "id": "export_limit_power",
+    "name": "Export Limit power",
+    "kind": "NumberRWSensor",
+    "registers": [
+      143
+    ],
+    "unit": "W",
+    "factor": 1,
+    "mask": 0,
+    "writable": true,
+    "min": 0,
+    "max": {
+      "sensor": "rated_power"
+    }
+  },
+  {
+    "id": "battery_max_charge_current",
+    "name": "Battery Max Charge current",
+    "kind": "NumberRWSensor",
+    "registers": [
+      108
+    ],
+    "unit": "A",
+    "factor": 1,
+    "mask": 0,
+    "writable": true,
+    "min": 0,
+    "max": 240
+  },
+  {
+    "id": "battery_max_discharge_current",
+    "name": "Battery Max Discharge current",
+    "kind": "NumberRWSensor",
+    "registers": [
+      109
+    ],
+    "unit": "A",
+    "factor": 1,
+    "mask": 0,
+    "writable": true,
+    "min": 0,
+    "max": 240
+  },
+  {
+    "id": "battery_capacity_current",
+    "name": "Battery Capacity current",
+    "kind": "NumberRWSensor",
+    "registers": [
+      102
+    ],
+    "unit": "A",
+    "factor": 1,
+    "mask": 0,
+    "writable": true,
+    "min": 0,
+    "max": 2000
+  },
+  {
+    "id": "grid_peak_shaving_power",
+    "name": "Grid Peak Shaving power",
+    "kind": "NumberRWSensor",
+    "registers": [
+      191
+    ],
+    "unit": "W",
+    "factor": 1,
+    "mask": 0,
+    "writable": true,
+    "min": 0,
+    "max": 100000
+  },
+  {
+    "id": "max_solar_power",
+    "name": "Max Solar POWER",
+    "kind": "NumberRWSensor",
+    "registers": [
+      340
+    ],
+    "unit": "W",
+    "factor": 1,
+    "mask": 0,
+    "writable": true,
+    "min": 0,
+    "max": 32000
+  },
+  {
+    "id": "battery_low_voltage",
+    "name": "Battery Low voltage",
+    "kind": "NumberRWSensor",
+    "registers": [
+      120
+    ],
+    "unit": "V",
+    "factor": 0.01,
+    "mask": 0,
+    "writable": true,
+    "min": {
+      "sensor": "battery_shutdown_voltage"
+    },
+    "max": {
+      "sensor": "battery_max_voltage"
+    }
+  },
+  {
+    "id": "system_zero_export_power",
+    "name": "System Zero Export power",
+    "kind": "NumberRWSensor",
+    "registers": [
+      104
+    ],
+    "unit": "W",
+    "factor": -1,
+    "mask": 0,
+    "writable": true,
+    "min": -500,
+    "max": 500
+  },
+  {
+    "id": "battery_equalization_days",
+    "name": "Battery Equalization Days",
+    "kind": "NumberRWSensor",
+    "registers": [
+      105
+    ],
+    "unit": "days",
+    "factor": -1,
+    "mask": 0,
+    "writable": true,
+    "min": 0,
+    "max": 100
+  },
+  {
+    "id": "battery_equalization_hours",
+    "name": "Battery Equalization Hours",
+    "kind": "NumberRWSensor",
+    "registers": [
+      106
+    ],
+    "unit": "h",
+    "factor": -1,
+    "mask": 0,
+    "writable": true,
+    "min": 0,
+    "max": 100
+  },
+  {
+    "id": "generator_charge_battery_current",
+    "name": "Generator Charge Battery current",
+    "kind": "NumberRWSensor",
+    "registers": [
+      125
+    ],
+    "unit": "A",
+    "factor": 1,
+    "mask": 0,
+    "writable": true,
+    "min": 0,
+    "max": 185
+  },
+  {
+    "id": "generator_charge_start_battery_voltage",
+    "name": "Generator Charge Start Battery Voltage",
+    "kind": "NumberRWSensor",
+    "registers": [
+      123
+    ],
+    "unit": "V",
+    "factor": 0.01,
+    "mask": 0,
+    "writable": true,
+    "min": 0,
+    "max": 6300
+  },
+  {
+    "id": "generator_charge_start_battery_soc",
+    "name": "Generator Charge Start Battery SOC",
+    "kind": "NumberRWSensor",
+    "registers": [
+      124
+    ],
+    "unit": "%",
+    "factor": 1,
+    "mask": 0,
+    "writable": true,
+    "min": 0,
+    "max": 100
+  },
+  {
+    "id": "generator_charge_enabled",
+    "name": "Generator Charge enabled",
+    "kind": "SwitchRWSensor",
+    "registers": [
+      129
+    ],
+    "unit": "",
+    "factor": 1,
+    "mask": 0,
+    "writable": true,
+    "on": null,
+    "off": 0
+  },
+  {
+    "id": "battery_type",
+    "name": "Battery Type",
+    "kind": "SelectRWSensor",
+    "registers": [
+      111
+    ],
+    "unit": "",
+    "factor": 1,
+    "mask": 0,
+    "writable": true,
+    "options": {
+      "0": "Use Battery Voltage",
+      "1": "Lithium (Use BMS)",
+      "2": "No Battery"
+    }
+  },
+  {
+    "id": "battery_wake_up",
+    "name": "Battery Wake Up",
+    "kind": "SelectRWSensor",
+    "registers": [
+      112
+    ],
+    "unit": "",
+    "factor": 1,
+    "mask": 1,
+    "writable": true,
+    "options": {
+      "0": "Disabled",
+      "1": "Enabled"
+    }
+  },
+  {
+    "id": "battery_resistance",
+    "name": "Battery Resistance",
+    "kind": "NumberRWSensor",
+    "registers": [
+      113
+    ],
+    "unit": "mΩ",
+    "factor": 1,
+    "mask": 0,
+    "writable": true,
+    "min": 0,
+    "max": 6000
+  },
+  {
+    "id": "battery_charge_efficiency",
+    "name": "Battery Charge Efficiency",
+    "kind": "Sensor",
+    "registers": [
+      114
+    ],
+    "unit": "%",
+    "factor": 0.1,
+    "mask": 0,
+    "writable": false
+  },
+  {
+    "id": "battery_min_voltage",
+    "name": "Battery min voltage",
+    "kind": "Constant",
+    "registers": [],
+    "unit": "V",
+    "factor": 1,
+    "mask": 0,
+    "writable": false,
+    "value": 41
+  },
+  {
+    "id": "battery_max_voltage",
+    "name": "Battery max voltage",
+    "kind": "Constant",
+    "registers": [],
+    "unit": "V",
+    "factor": 1,
+    "mask": 0,
+    "writable": false,
+    "value": 60
+  },
+  {
+    "id": "battery_equalization_voltage",
+    "name": "Battery Equalization voltage",
+    "kind": "NumberRWSensor",
+    "registers": [
+      99
+    ],
+    "unit": "V",
+    "factor": 0.01,
+    "mask": 0,
+    "writable": true,
+    "min": {
+      "sensor": "battery_min_voltage"
+    },
+    "max": {
+      "sensor": "battery_max_voltage"
+    }
+  },
+  {
+    "id": "battery_absorption_voltage",
+    "name": "Battery Absorption voltage",
+    "kind": "NumberRWSensor",
+    "registers": [
+      100
+    ],
+    "unit": "V",
+    "factor": 0.01,
+    "mask": 0,
+    "writable": true,
+    "min": {
+      "sensor": "battery_min_voltage"
+    },
+    "max": {
+      "sensor": "battery_max_voltage"
+    }
+  },
+  {
+    "id": "battery_float_voltage",
+    "name": "Battery Float voltage",
+    "kind": "NumberRWSensor",
+    "registers": [
+      101
+    ],
+    "unit": "V",
+    "factor": 0.01,
+    "mask": 0,
+    "writable": true,
+    "min": {
+      "sensor": "battery_min_voltage"
+    },
+    "max": {
+      "sensor": "battery_max_voltage"
+    }
+  },
+  {
+    "id": "battery_shutdown_capacity",
+    "name": "Battery Shutdown Capacity",
+    "kind": "NumberRWSensor",
+    "registers": [
+      115
+    ],
+    "unit": "%",
+    "factor": 1,
+    "mask": 0,
+    "writable": true,
+    "min": 0,
+    "max": {
+      "sensor": "battery_low_capacity"
+    }
+  },
+  {
+    "id": "battery_restart_capacity",
+    "name": "Battery Restart Capacity",
+    "kind": "NumberRWSensor",
+    "registers": [
+      116
+    ],
+    "unit": "%",
+    "factor": 1,
+    "mask": 0,
+    "writable": true,
+    "min": {
+      "sensor": "battery_low_capacity"
+    },
+    "max": 100
+  },
+  {
+    "id": "battery_low_capacity",
+    "name": "Battery Low Capacity",
+    "kind": "NumberRWSensor",
+    "registers": [
+      117
+    ],
+    "unit": "%",
+    "factor": 1,
+    "mask": 0,
+    "writable": true,
+    "min": {
+      "sensor": "battery_shutdown_capacity"
+    },
+    "max": {
+      "sensor": "battery_restart_capacity"
+    }
+  },
+  {
+    "id": "battery_shutdown_voltage",
+    "name": "Battery Shutdown voltage",
+    "kind": "NumberRWSensor",
+    "registers": [
+      118
+    ],
+    "unit": "V",
+    "factor": 0.01,
+    "mask": 0,
+    "writable": true,
+    "min": {
+      "sensor": "battery_min_voltage"
+    },
+    "max": {
+      "sensor": "battery_low_voltage"
+    }
+  },
+  {
+    "id": "battery_restart_voltage",
+    "name": "Battery Restart voltage",
+    "kind": "NumberRWSensor",
+    "registers": [
+      119
+    ],
+    "unit": "V",
+    "factor": 0.01,
+    "mask": 0,
+    "writable": true,
+    "min": {
+      "sensor": "battery_low_voltage"
+    },
+    "max": {
+      "sensor": "battery_max_voltage"
+    }
+  },
+  {
+    "id": "battery_1_bms_charging_voltage",
+    "name": "Battery 1 BMS charging voltage",
+    "kind": "Sensor",
+    "registers": [
+      210
+    ],
+    "unit": "V",
+    "factor": 0.01,
+    "mask": 0,
+    "writable": false
+  },
+  {
+    "id": "battery_1_bms_discharging_voltage",
+    "name": "Battery 1 BMS discharging voltage",
+    "kind": "Sensor",
+    "registers": [
+      211
+    ],
+    "unit": "V",
+    "factor": 0.01,
+    "mask": 0,
+    "writable": false
+  },
+  {
+    "id": "battery_1_bms_charging_current_limit",
+    "name": "Battery 1 BMS charging current limit",
+    "kind": "Sensor",
+    "registers": [
+      212
+    ],
+    "unit": "A",
+    "factor": 1,
+    "mask": 0,
+    "writable": false
+  },
+  {
+    "id": "battery_1_bms_discharging_current_limit",
+    "name": "Battery 1 BMS discharging current limit",
+    "kind": "Sensor",
+    "registers": [
+      213
+    ],
+    "unit": "A",
+    "factor": 1,
+    "mask": 0,
+    "writable": false
+  },
+  {
+    "id": "battery_1_bms_soc",
+    "name": "Battery 1 BMS SOC",
+    "kind": "Sensor",
+    "registers": [
+      214
+    ],
+    "unit": "%",
+    "factor": 1,
+    "mask": 0,
+    "writable": false
+  },
+  {
+    "id": "battery_1_bms_voltage",
+    "name": "Battery 1 BMS voltage",
+    "kind": "Sensor",
+    "registers": [
+      215
+    ],
+    "unit": "V",
+    "factor": 0.01,
+    "mask": 0,
+    "writable": false
+  },
+  {
+    "id": "battery_1_bms_current",
+    "name": "Battery 1 BMS current",
+    "kind": "Sensor",
+    "registers": [
+      216
+    ],
+    "unit": "A",
+    "factor": 0.01,
+    "mask": 0,
+    "writable": false
+  },
+  {
+    "id": "battery_1_bms_temperature",
+    "name": "Battery 1 BMS temperature",
+    "kind": "TempSensor",
+    "registers": [
+      217
+    ],
+    "unit": "°C",
+    "factor": 0.1,
+    "mask": 0,
+    "writable": false,
+    "offset": 100
+  },
+  {
+    "id": "battery_1_bms_max_charge_current_limit",
+    "name": "Battery 1 BMS max charge current limit",
+    "kind": "Sensor",
+    "registers": [
+      218
+    ],
+    "unit": "A",
+    "factor": 1,
+    "mask": 0,
+    "writable": false
+  },
+  {
+    "id": "battery_1_bms_max_discharge_current_limit",
+    "name": "Battery 1 BMS max discharge current limit",
+    "kind": "Sensor",
+    "registers": [
+      219
+    ],
+    "unit": "A",
+    "factor": 1,
+    "mask": 0,
+    "writable": false
+  },
+  {
+    "id": "battery_1_bms_alarm_flag",
+    "name": "Battery 1 BMS alarm flag",
+    "kind": "Sensor",
+    "registers": [
+      220
+    ],
+    "unit": "",
+    "factor": 1,
+    "mask": 0,
+    "writable": false
+  },
+  {
+    "id": "priority_load",
+    "name": "Priority Load",
+    "kind": "SwitchRWSensor",
+    "registers": [
+      141
+    ],
+    "unit": "",
+    "factor": 1,
+    "mask": 0,
+    "writable": true,
+    "on": null,
+    "off": 0
+  },
+  {
+    "id": "load_limit",
+    "name": "Load Limit",
+    "kind": "SelectRWSensor",
+    "registers": [
+      142
+    ],
+    "unit": "",
+    "factor": 1,
+    "mask": 0,
+    "writable": true,
+    "options": {
+      "0": "Allow Export",
+      "1": "Essentials",
+      "2": "Zero Export"
+    }
+  },
+  {
+    "id": "prog1_time",
+    "name": "Prog1 Time",
+    "kind": "TimeRWSensor",
+    "registers": [
+      148
+    ],
+    "unit": "",
+    "factor": 1,
+    "mask": 0,
+    "writable": true,
+    "min": {
+      "sensor": "prog6_time"
+    },
+    "max": {
+      "sensor": "prog2_time"
+    }
+  },
+  {
+    "id": "prog2_time",
+    "name": "Prog2 Time",
+    "kind": "TimeRWSensor",
+    "registers": [
+      149
+    ],
+    "unit": "",
+    "factor": 1,
+    "mask": 0,
+    "writable": true,
+    "min": {
+      "sensor": "prog1_time"
+    },
+    "max": {
+      "sensor": "prog3_time"
+    }
+  },
+  {
+    "id": "prog3_time",
+    "name": "Prog3 Time",
+    "kind": "TimeRWSensor",
+    "registers": [
+      150
+    ],
+    "unit": "",
+    "factor": 1,
+    "mask": 0,
+    "writable": true,
+    "min": {
+      "sensor": "prog2_time"
+    },
+    "max": {
+      "sensor": "prog4_time"
+    }
+  },
+  {
+    "id": "prog4_time",
+    "name": "Prog4 Time",
+    "kind": "TimeRWSensor",
+    "registers": [
+      151
+    ],
+    "unit": "",
+    "factor": 1,
+    "mask": 0,
+    "writable": true,
+    "min": {
+      "sensor": "prog3_time"
+    },
+    "max": {
+      "sensor": "prog5_time"
+    }
+  },
+  {
+    "id": "prog5_time",
+    "name": "Prog5 Time",
+    "kind": "TimeRWSensor",
+    "registers": [
+      152
+    ],
+    "unit": "",
+    "factor": 1,
+    "mask": 0,
+    "writable": true,
+    "min": {
+      "sensor": "prog4_time"
+    },
+    "max": {
+      "sensor": "prog6_time"
+    }
+  },
+  {
+    "id": "prog6_time",
+    "name": "Prog6 Time",
+    "kind": "TimeRWSensor",
+    "registers": [
+      153
+    ],
+    "unit": "",
+    "factor": 1,
+    "mask": 0,
+    "writable": true,
+    "min": {
+      "sensor": "prog5_time"
+    },
+    "max": {
+      "sensor": "prog1_time"
+    }
+  },
+  {
+    "id": "prog_time_of_use_enabled",
+    "name": "Prog Time Of Use Enabled",
+    "kind": "SwitchRWSensor",
+    "registers": [
+      146
+    ],
+    "unit": "",
+    "factor": 1,
+    "mask": 1,
+    "writable": true,
+    "on": 1,
+    "off": 0
+  },
+  {
+    "id": "use_timer",
+    "name": "Use Timer",
+    "kind": "SwitchRWSensor",
+    "registers": [
+      146
+    ],
+    "unit": "",
+    "factor": 1,
+    "mask": 1,
+    "writable": true,
+    "on": 1,
+    "off": 0
+  },
+  {
+    "id": "prog_monday_enabled",
+    "name": "Prog Monday Enabled",
+    "kind": "SwitchRWSensor",
+    "registers": [
+      146
+    ],
+    "unit": "",
+    "factor": 1,
+    "mask": 2,
+    "writable": true,
+    "on": 2,
+    "off": 0
+  },
+  {
+    "id": "prog_tuesday_enabled",
+    "name": "Prog Tuesday Enabled",
+    "kind": "SwitchRWSensor",
+    "registers": [
+      146
+    ],
+    "unit": "",
+    "factor": 1,
+    "mask": 4,
+    "writable": true,
+    "on": 4,
+    "off": 0
+  },
+  {
+    "id": "prog_wednesday_enabled",
+    "name": "Prog Wednesday Enabled",
+    "kind": "SwitchRWSensor",
+    "registers": [
+      146
+    ],
+    "unit": "",
+    "factor": 1,
+    "mask": 8,
+    "writable": true,
+    "on": 8,
+    "off": 0
+  },
+  {
+    "id": "prog_thursday_enabled",
+    "name": "Prog Thursday Enabled",
+    "kind": "SwitchRWSensor",
+    "registers": [
+      146
+    ],
+    "unit": "",
+    "factor": 1,
+    "mask": 16,
+    "writable": true,
+    "on": 16,
+    "off": 0
+  },
+  {
+    "id": "prog_friday_enabled",
+    "name": "Prog Friday Enabled",
+    "kind": "SwitchRWSensor",
+    "registers": [
+      146
+    ],
+    "unit": "",
+    "factor": 1,
+    "mask": 32,
+    "writable": true,
+    "on": 32,
+    "off": 0
+  },
+  {
+    "id": "prog_saturday_enabled",
+    "name": "Prog Saturday Enabled",
+    "kind": "SwitchRWSensor",
+    "registers": [
+      146
+    ],
+    "unit": "",
+    "factor": 1,
+    "mask": 64,
+    "writable": true,
+    "on": 64,
+    "off": 0
+  },
+  {
+    "id": "prog_sunday_enabled",
+    "name": "Prog Sunday Enabled",
+    "kind": "SwitchRWSensor",
+    "registers": [
+      146
+    ],
+    "unit": "",
+    "factor": 1,
+    "mask": 128,
+    "writable": true,
+    "on": 128,
+    "off": 0
+  },
+  {
+    "id": "prog1_power",
+    "name": "Prog1 power",
+    "kind": "NumberRWSensor",
+    "registers": [
+      154
+    ],
+    "unit": "W",
+    "factor": 1,
+    "mask": 0,
+    "writable": true,
+    "min": 0,
+    "max": {
+      "sensor": "rated_power"
+    }
+  },
+  {
+    "id": "prog2_power",
+    "name": "Prog2 power",
+    "kind": "NumberRWSensor",
+    "registers": [
+      155
+    ],
+    "unit": "W",
+    "factor": 1,
+    "mask": 0,
+    "writable": true,
+    "min": 0,
+    "max": {
+      "sensor": "rated_power"
+    }
+  },
+  {
+    "id": "prog3_power",
+    "name": "Prog3 power",
+    "kind": "NumberRWSensor",
+    "registers": [
+      156
+    ],
+    "unit": "W",
+    "factor": 1,
+    "mask": 0,
+    "writable": true,
+    "min": 0,
+    "max": {
+      "sensor": "rated_power"
+    }
+  },
+  {
+    "id": "prog4_power",
+    "name": "Prog4 power",
+    "kind": "NumberRWSensor",
+    "registers": [
+      157
+    ],
+    "unit": "W",
+    "factor": 1,
+    "mask": 0,
+    "writable": true,
+    "min": 0,
+    "max": {
+      "sensor": "rated_power"
+    }
+  },
+  {
+    "id": "prog5_power",
+    "name": "Prog5 power",
+    "kind": "NumberRWSensor",
+    "registers": [
+      158
+    ],
+    "unit": "W",
+    "factor": 1,
+    "mask": 0,
+    "writable": true,
+    "min": 0,
+    "max": {
+      "sensor": "rated_power"
+    }
+  },
+  {
+    "id": "prog6_power",
+    "name": "Prog6 power",
+    "kind": "NumberRWSensor",
+    "registers": [
+      159
+    ],
+    "unit": "W",
+    "factor": 1,
+    "mask": 0,
+    "writable": true,
+    "min": 0,
+    "max": {
+      "sensor": "rated_power"
+    }
+  },
+  {
+    "id": "prog1_capacity",
+    "name": "Prog1 Capacity",
+    "kind": "NumberRWSensor",
+    "registers": [
+      166
+    ],
+    "unit": "%",
+    "factor": 1,
+    "mask": 0,
+    "writable": true,
+    "min": {
+      "sensor": "battery_low_capacity"
+    },
+    "max": 100
+  },
+  {
+    "id": "prog2_capacity",
+    "name": "Prog2 Capacity",
+    "kind": "NumberRWSensor",
+    "registers": [
+      167
+    ],
+    "unit": "%",
+    "factor": 1,
+    "mask": 0,
+    "writable": true,
+    "min": {
+      "sensor": "battery_low_capacity"
+    },
+    "max": 100
+  },
+  {
+    "id": "prog3_capacity",
+    "name": "Prog3 Capacity",
+    "kind": "NumberRWSensor",
+    "registers": [
+      168
+    ],
+    "unit": "%",
+    "factor": 1,
+    "mask": 0,
+    "writable": true,
+    "min": {
+      "sensor": "battery_low_capacity"
+    },
+    "max": 100
+  },
+  {
+    "id": "prog4_capacity",
+    "name": "Prog4 Capacity",
+    "kind": "NumberRWSensor",
+    "registers": [
+      169
+    ],
+    "unit": "%",
+    "factor": 1,
+    "mask": 0,
+    "writable": true,
+    "min": {
+      "sensor": "battery_low_capacity"
+    },
+    "max": 100
+  },
+  {
+    "id": "prog5_capacity",
+    "name": "Prog5 Capacity",
+    "kind": "NumberRWSensor",
+    "registers": [
+      170
+    ],
+    "unit": "%",
+    "factor": 1,
+    "mask": 0,
+    "writable": true,
+    "min": {
+      "sensor": "battery_low_capacity"
+    },
+    "max": 100
+  },
+  {
+    "id": "prog6_capacity",
+    "name": "Prog6 Capacity",
+    "kind": "NumberRWSensor",
+    "registers": [
+      171
+    ],
+    "unit": "%",
+    "factor": 1,
+    "mask": 0,
+    "writable": true,
+    "min": {
+      "sensor": "battery_low_capacity"
+    },
+    "max": 100
+  },
+  {
+    "id": "prog1_charge",
+    "name": "Prog1 charge",
+    "kind": "SelectRWSensor",
+    "registers": [
+      172
+    ],
+    "unit": "",
+    "factor": 1,
+    "mask": 3,
+    "writable": true,
+    "options": {
+      "0": "No Grid or Gen",
+      "1": "Allow Grid",
+      "2": "Allow Gen",
+      "3": "Allow Grid & Gen"
+    }
+  },
+  {
+    "id": "prog2_charge",
+    "name": "Prog2 charge",
+    "kind": "SelectRWSensor",
+    "registers": [
+      173
+    ],
+    "unit": "",
+    "factor": 1,
+    "mask": 3,
+    "writable": true,
+    "options": {
+      "0": "No Grid or Gen",
+      "1": "Allow Grid",
+      "2": "Allow Gen",
+      "3": "Allow Grid & Gen"
+    }
+  },
+  {
+    "id": "prog3_charge",
+    "name": "Prog3 charge",
+    "kind": "SelectRWSensor",
+    "registers": [
+      174
+    ],
+    "unit": "",
+    "factor": 1,
+    "mask": 3,
+    "writable": true,
+    "options": {
+      "0": "No Grid or Gen",
+      "1": "Allow Grid",
+      "2": "Allow Gen",
+      "3": "Allow Grid & Gen"
+    }
+  },
+  {
+    "id": "prog4_charge",
+    "name": "Prog4 charge",
+    "kind": "SelectRWSensor",
+    "registers": [
+      175
+    ],
+    "unit": "",
+    "factor": 1,
+    "mask": 3,
+    "writable": true,
+    "options": {
+      "0": "No Grid or Gen",
+      "1": "Allow Grid",
+      "2": "Allow Gen",
+      "3": "Allow Grid & Gen"
+    }
+  },
+  {
+    "id": "prog5_charge",
+    "name": "Prog5 charge",
+    "kind": "SelectRWSensor",
+    "registers": [
+      176
+    ],
+    "unit": "",
+    "factor": 1,
+    "mask": 3,
+    "writable": true,
+    "options": {
+      "0": "No Grid or Gen",
+      "1": "Allow Grid",
+      "2": "Allow Gen",
+      "3": "Allow Grid & Gen"
+    }
+  },
+  {
+    "id": "prog6_charge",
+    "name": "Prog6 charge",
+    "kind": "SelectRWSensor",
+    "registers": [
+      177
+    ],
+    "unit": "",
+    "factor": 1,
+    "mask": 3,
+    "writable": true,
+    "options": {
+      "0": "No Grid or Gen",
+      "1": "Allow Grid",
+      "2": "Allow Gen",
+      "3": "Allow Grid & Gen"
+    }
+  },
+  {
+    "id": "prog1_mode",
+    "name": "Prog1 mode",
+    "kind": "SelectRWSensor",
+    "registers": [
+      172
+    ],
+    "unit": "",
+    "factor": 1,
+    "mask": 28,
+    "writable": true,
+    "options": {
+      "0": "None",
+      "4": "General",
+      "8": "Backup",
+      "12": "Charge"
+    }
+  },
+  {
+    "id": "prog2_mode",
+    "name": "Prog2 mode",
+    "kind": "SelectRWSensor",
+    "registers": [
+      173
+    ],
+    "unit": "",
+    "factor": 1,
+    "mask": 28,
+    "writable": true,
+    "options": {
+      "0": "None",
+      "4": "General",
+      "8": "Backup",
+      "12": "Charge"
+    }
+  },
+  {
+    "id": "prog3_mode",
+    "name": "Prog3 mode",
+    "kind": "SelectRWSensor",
+    "registers": [
+      174
+    ],
+    "unit": "",
+    "factor": 1,
+    "mask": 28,
+    "writable": true,
+    "options": {
+      "0": "None",
+      "4": "General",
+      "8": "Backup",
+      "12": "Charge"
+    }
+  },
+  {
+    "id": "prog4_mode",
+    "name": "Prog4 mode",
+    "kind": "SelectRWSensor",
+    "registers": [
+      175
+    ],
+    "unit": "",
+    "factor": 1,
+    "mask": 28,
+    "writable": true,
+    "options": {
+      "0": "None",
+      "4": "General",
+      "8": "Backup",
+      "12": "Charge"
+    }
+  },
+  {
+    "id": "prog5_mode",
+    "name": "Prog5 mode",
+    "kind": "SelectRWSensor",
+    "registers": [
+      176
+    ],
+    "unit": "",
+    "factor": 1,
+    "mask": 28,
+    "writable": true,
+    "options": {
+      "0": "None",
+      "4": "General",
+      "8": "Backup",
+      "12": "Charge"
+    }
+  },
+  {
+    "id": "prog6_mode",
+    "name": "Prog6 mode",
+    "kind": "SelectRWSensor",
+    "registers": [
+      177
+    ],
+    "unit": "",
+    "factor": 1,
+    "mask": 28,
+    "writable": true,
+    "options": {
+      "0": "None",
+      "4": "General",
+      "8": "Backup",
+      "12": "Charge"
+    }
+  },
+  {
+    "id": "prog1_voltage",
+    "name": "Prog1 voltage",
+    "kind": "NumberRWSensor",
+    "registers": [
+      160
+    ],
+    "unit": "V",
+    "factor": 0.01,
+    "mask": 0,
+    "writable": true,
+    "min": {
+      "sensor": "battery_low_voltage"
+    },
+    "max": {
+      "sensor": "battery_float_voltage"
+    }
+  },
+  {
+    "id": "prog2_voltage",
+    "name": "Prog2 voltage",
+    "kind": "NumberRWSensor",
+    "registers": [
+      161
+    ],
+    "unit": "V",
+    "factor": 0.01,
+    "mask": 0,
+    "writable": true,
+    "min": {
+      "sensor": "battery_low_voltage"
+    },
+    "max": {
+      "sensor": "battery_float_voltage"
+    }
+  },
+  {
+    "id": "prog3_voltage",
+    "name": "Prog3 voltage",
+    "kind": "NumberRWSensor",
+    "registers": [
+      162
+    ],
+    "unit": "V",
+    "factor": 0.01,
+    "mask": 0,
+    "writable": true,
+    "min": {
+      "sensor": "battery_low_voltage"
+    },
+    "max": {
+      "sensor": "battery_float_voltage"
+    }
+  },
+  {
+    "id": "prog4_voltage",
+    "name": "Prog4 voltage",
+    "kind": "NumberRWSensor",
+    "registers": [
+      163
+    ],
+    "unit": "V",
+    "factor": 0.01,
+    "mask": 0,
+    "writable": true,
+    "min": {
+      "sensor": "battery_low_voltage"
+    },
+    "max": {
+      "sensor": "battery_float_voltage"
+    }
+  },
+  {
+    "id": "prog5_voltage",
+    "name": "Prog5 voltage",
+    "kind": "NumberRWSensor",
+    "registers": [
+      164
+    ],
+    "unit": "V",
+    "factor": 0.01,
+    "mask": 0,
+    "writable": true,
+    "min": {
+      "sensor": "battery_low_voltage"
+    },
+    "max": {
+      "sensor": "battery_float_voltage"
+    }
+  },
+  {
+    "id": "prog6_voltage",
+    "name": "Prog6 voltage",
+    "kind": "NumberRWSensor",
+    "registers": [
+      165
+    ],
+    "unit": "V",
+    "factor": 0.01,
+    "mask": 0,
+    "writable": true,
+    "min": {
+      "sensor": "battery_low_voltage"
+    },
+    "max": {
+      "sensor": "battery_float_voltage"
+    }
+  },
+  {
+    "id": "prog1_sell",
+    "name": "Prog1 sell",
+    "kind": "SwitchRWSensor",
+    "registers": [
+      172
+    ],
+    "unit": "",
+    "factor": 1,
+    "mask": 32,
+    "writable": true,
+    "on": 32,
+    "off": 0
+  },
+  {
+    "id": "prog2_sell",
+    "name": "Prog2 sell",
+    "kind": "SwitchRWSensor",
+    "registers": [
+      173
+    ],
+    "unit": "",
+    "factor": 1,
+    "mask": 32,
+    "writable": true,
+    "on": 32,
+    "off": 0
+  },
+  {
+    "id": "prog3_sell",
+    "name": "Prog3 sell",
+    "kind": "SwitchRWSensor",
+    "registers": [
+      174
+    ],
+    "unit": "",
+    "factor": 1,
+    "mask": 32,
+    "writable": true,
+    "on": 32,
+    "off": 0
+  },
+  {
+    "id": "prog4_sell",
+    "name": "Prog4 sell",
+    "kind": "SwitchRWSensor",
+    "registers": [
+      175
+    ],
+    "unit": "",
+    "factor": 1,
+    "mask": 32,
+    "writable": true,
+    "on": 32,
+    "off": 0
+  },
+  {
+    "id": "prog5_sell",
+    "name": "Prog5 sell",
+    "kind": "SwitchRWSensor",
+    "registers": [
+      176
+    ],
+    "unit": "",
+    "factor": 1,
+    "mask": 32,
+    "writable": true,
+    "on": 32,
+    "off": 0
+  },
+  {
+    "id": "prog6_sell",
+    "name": "Prog6 sell",
+    "kind": "SwitchRWSensor",
+    "registers": [
+      177
+    ],
+    "unit": "",
+    "factor": 1,
+    "mask": 32,
+    "writable": true,
+    "on": 32,
+    "off": 0
+  },
+  {
+    "id": "microinverter_export_to_grid_cutoff",
+    "name": "Microinverter export to grid cutoff",
+    "kind": "SelectRWSensor",
+    "registers": [
+      178
+    ],
+    "unit": "",
+    "factor": 1,
+    "mask": 3,
+    "writable": true,
+    "options": {
+      "2": "Disable",
+      "3": "Enable"
+    }
+  },
+  {
+    "id": "gen_peak_shaving",
+    "name": "Gen peak-shaving",
+    "kind": "SelectRWSensor",
+    "registers": [
+      178
+    ],
+    "unit": "",
+    "factor": 1,
+    "mask": 12,
+    "writable": true,
+    "options": {
+      "8": "Disable",
+      "12": "Enable"
+    }
+  },
+  {
+    "id": "grid_peak_shaving",
+    "name": "Grid peak-shaving",
+    "kind": "SelectRWSensor",
+    "registers": [
+      178
+    ],
+    "unit": "",
+    "factor": 1,
+    "mask": 48,
+    "writable": true,
+    "options": {
+      "32": "Disable",
+      "48": "Enable"
+    }
+  },
+  {
+    "id": "on_grid_always_on",
+    "name": "On Grid always on",
+    "kind": "SelectRWSensor",
+    "registers": [
+      178
+    ],
+    "unit": "",
+    "factor": 1,
+    "mask": 192,
+    "writable": true,
+    "options": {
+      "128": "Disable",
+      "192": "Enable"
+    }
+  },
+  {
+    "id": "external_relay",
+    "name": "External relay",
+    "kind": "SelectRWSensor",
+    "registers": [
+      178
+    ],
+    "unit": "",
+    "factor": 1,
+    "mask": 768,
+    "writable": true,
+    "options": {
+      "512": "Disable",
+      "768": "Enable"
+    }
+  },
+  {
+    "id": "loss_of_lithium_battery_report_fault",
+    "name": "Loss of lithium battery report fault",
+    "kind": "SelectRWSensor",
+    "registers": [
+      178
+    ],
+    "unit": "",
+    "factor": 1,
+    "mask": 3072,
+    "writable": true,
+    "options": {
+      "2048": "Disable",
+      "3072": "Enable"
+    }
+  },
+  {
+    "id": "drm",
+    "name": "DRM",
+    "kind": "SelectRWSensor",
+    "registers": [
+      178
+    ],
+    "unit": "",
+    "factor": 1,
+    "mask": 12288,
+    "writable": true,
+    "options": {
+      "8192": "Disable",
+      "12288": "Enable"
+    }
+  },
+  {
+    "id": "us_version_grounding_fault",
+    "name": "US version grounding fault",
+    "kind": "SelectRWSensor",
+    "registers": [
+      178
+    ],
+    "unit": "",
+    "factor": 1,
+    "mask": 49152,
+    "writable": true,
+    "options": {
+      "32768": "Disable",
+      "49152": "Enable"
+    }
+  },
+  {
+    "id": "generator_ac_couple_frz_high",
+    "name": "Generator AC Couple Frz High",
+    "kind": "NumberRWSensor",
+    "registers": [
+      131
+    ],
+    "unit": "Hz",
+    "factor": 0.01,
+    "mask": 0,
+    "writable": true,
+    "min": 0,
+    "max": 100
+  },
+  {
+    "id": "generator_off_soc",
+    "name": "Generator Off SOC",
+    "kind": "NumberRWSensor",
+    "registers": [
+      135
+    ],
+    "unit": "%",
+    "factor": 1,
+    "mask": 0,
+    "writable": true,
+    "min": 0,
+    "max": 100
+  },
+  {
+    "id": "generator_on_soc",
+    "name": "Generator On SOC",
+    "kind": "NumberRWSensor",
+    "registers": [
+      137
+    ],
+    "unit": "%",
+    "factor": 1,
+    "mask": 0,
+    "writable": true,
+    "min": 0,
+    "max": 100
+  },
+  {
+    "id": "generator_max_operating_time",
+    "name": "Generator Max Operating Time",
+    "kind": "NumberRWSensor",
+    "registers": [
+      121
+    ],
+    "unit": "Hours",
+    "factor": 0.1,
+    "mask": 0,
+    "writable": true,
+    "min": 0,
+    "max": 100
+  },
+  {
+    "id": "generator_cooling_time",
+    "name": "Generator Cooling Time",
+    "kind": "NumberRWSensor",
+    "registers": [
+      122
+    ],
+    "unit": "Hours",
+    "factor": 0.1,
+    "mask": 0,
+    "writable": true,
+    "min": 0,
+    "max": 100
+  },
+  {
+    "id": "min_pv_power_for_gen_start",
+    "name": "Min PV Power for Gen Start",
+    "kind": "NumberRWSensor",
+    "registers": [
+      139
+    ],
+    "unit": "W",
+    "factor": 1,
+    "mask": 0,
+    "writable": true,
+    "min": 0,
+    "max": 100
+  },
+  {
+    "id": "grid_signal_on",
+    "name": "Grid Signal On",
+    "kind": "SwitchRWSensor",
+    "registers": [
+      140
+    ],
+    "unit": "",
+    "factor": 1,
+    "mask": 1,
+    "writable": true,
+    "on": 1,
+    "off": 0
+  },
+  {
+    "id": "gen_signal_on",
+    "name": "Gen Signal On",
+    "kind": "SwitchRWSensor",
+    "registers": [
+      140
+    ],
+    "unit": "",
+    "factor": 1,
+    "mask": 2,
+    "writable": true,
+    "on": 2,
+    "off": 0
+  },
+  {
+    "id": "force_on_generator_as_load_function",
+    "name": "Force on generator as load function",
+    "kind": "SwitchRWSensor",
+    "registers": [
+      132
+    ],
+    "unit": "",
+    "factor": 1,
+    "mask": 0,
+    "writable": true,
+    "on": 1,
+    "off": 0
+  },
+  {
+    "id": "generator_connected_to_grid_input",
+    "name": "Generator connected to grid input",
+    "kind": "SwitchRWSensor",
+    "registers": [
+      189
+    ],
+    "unit": "",
+    "factor": 1,
+    "mask": 0,
+    "writable": true,
+    "on": 1,
+    "off": 0
+  },
+  {
+    "id": "parallel_enable",
+    "name": "Parallel Enable",
+    "kind": "SwitchRWSensor",
+    "registers": [
+      336
+    ],
+    "unit": "",
+    "factor": 1,
+    "mask": 1,
+    "writable": true,
+    "on": 1,
+    "off": 0
+  },
+  {
+    "id": "parallel_mode",
+    "name": "Parallel Mode",
+    "kind": "SelectRWSensor",
+    "registers": [
+      336
+    ],
+    "unit": "",
+    "factor": 1,
+    "mask": 2,
+    "writable": true,
+    "options": {
+      "0": "Server",
+      "2": "Client"
+    }
+  },
+  {
+    "id": "parallel_phase",
+    "name": "Parallel Phase",
+    "kind": "SelectRWSensor",
+    "registers": [
+      336
+    ],
+    "unit": "",
+    "factor": 1,
+    "mask": 768,
+    "writable": true,
+    "options": {
+      "0": "Phase A",
+      "256": "Phase B",
+      "512": "Phase C",
+      "768": "Void"
+    }
+  },
+  {
+    "id": "parallel_modbus_sn",
+    "name": "Parallel Modbus SN",
+    "kind": "NumberRWSensor",
+    "registers": [
+      336
+    ],
+    "unit": "",
+    "factor": 1,
+    "mask": 64512,
+    "writable": true,
+    "min": 0,
+    "max": 63
+  },
+  {
+    "id": "grid_standard",
+    "name": "Grid Standard",
+    "kind": "SelectRWSensor",
+    "registers": [
+      182
+    ],
+    "unit": "",
+    "factor": 1,
+    "mask": 0,
+    "writable": true,
+    "options": {
+      "0": "Generic",
+      "1": "IEEE1547",
+      "2": "RULE21",
+      "3": "SRD_UL1741",
+      "4": "CEI_0_21",
+      "5": "EN50549_CZ",
+      "6": "AS4777_A",
+      "7": "AS4777_B",
+      "8": "AS4777_C",
+      "9": "AS4777_NewZealand",
+      "10": "VDE4105",
+      "11": "OVE_Directive_R25",
+      "12": "EN50549_CZ_PPDS_L16A"
+    }
+  },
+  {
+    "id": "configured_grid_frequency",
+    "name": "Configured Grid Frequency",
+    "kind": "SelectRWSensor",
+    "registers": [
+      183
+    ],
+    "unit": "",
+    "factor": 1,
+    "mask": 0,
+    "writable": true,
+    "options": {
+      "0": "50Hz",
+      "1": "60Hz"
+    }
+  },
+  {
+    "id": "configured_grid_phases",
+    "name": "Configured Grid Phases",
+    "kind": "SelectRWSensor",
+    "registers": [
+      184
+    ],
+    "unit": "",
+    "factor": 1,
+    "mask": 0,
+    "writable": true,
+    "options": {
+      "0": "Three Phase",
+      "1": "Single Phase",
+      "2": "Split Phase"
+    }
+  },
+  {
+    "id": "time_synchronization",
+    "name": "Time synchronization",
+    "kind": "SelectRWSensor",
+    "registers": [
+      228
+    ],
+    "unit": "",
+    "factor": 1,
+    "mask": 3,
+    "writable": true,
+    "options": {
+      "1": "No work",
+      "2": "Disable",
+      "3": "Enable"
+    }
+  },
+  {
+    "id": "beep",
+    "name": "Beep",
+    "kind": "SelectRWSensor",
+    "registers": [
+      228
+    ],
+    "unit": "",
+    "factor": 1,
+    "mask": 12,
+    "writable": true,
+    "options": {
+      "4": "No work",
+      "8": "Disable",
+      "12": "Enable"
+    }
+  },
+  {
+    "id": "am_pm",
+    "name": "AM PM",
+    "kind": "SelectRWSensor",
+    "registers": [
+      228
+    ],
+    "unit": "",
+    "factor": 1,
+    "mask": 48,
+    "writable": true,
+    "options": {
+      "16": "No work",
+      "32": "Disable",
+      "48": "Enable"
+    }
+  },
+  {
+    "id": "auto_dim",
+    "name": "Auto dim",
+    "kind": "SelectRWSensor",
+    "registers": [
+      228
+    ],
+    "unit": "",
+    "factor": 1,
+    "mask": 192,
+    "writable": true,
+    "options": {
+      "64": "No work",
+      "128": "Disable",
+      "192": "Enable"
+    }
+  },
+  {
+    "id": "allow_remote",
+    "name": "Allow Remote",
+    "kind": "SelectRWSensor",
+    "registers": [
+      228
+    ],
+    "unit": "",
+    "factor": 1,
+    "mask": 49152,
+    "writable": true,
+    "options": {
+      "16384": "No work",
+      "32768": "Disable",
+      "49152": "Enable"
+    }
+  },
+  {
+    "id": "track_grid_phase",
+    "name": "Track Grid Phase",
+    "kind": "SwitchRWSensor",
+    "registers": [
+      235
+    ],
+    "unit": "",
+    "factor": 1,
+    "mask": 0,
+    "writable": true,
+    "on": 1,
+    "off": 0
+  },
+  {
+    "id": "ups_delay_time",
+    "name": "UPS delay time",
+    "kind": "NumberRWSensor",
+    "registers": [
+      209
+    ],
+    "unit": "s",
+    "factor": 1,
+    "mask": 0,
+    "writable": true,
+    "min": 0,
+    "max": 100
+  },
+  {
+    "id": "drm0_code",
+    "name": "DRM0 Code",
+    "kind": "EnumSensor",
+    "registers": [
+      544
+    ],
+    "unit": "",
+    "factor": 1,
+    "mask": 1,
+    "writable": false,
+    "options": {
+      "0": "Not Active",
+      "1": "Shutdown Inverter"
+    },
+    "unknown": null
+  },
+  {
+    "id": "drm1_code",
+    "name": "DRM1 Code",
+    "kind": "EnumSensor",
+    "registers": [
+      544
+    ],
+    "unit": "",
+    "factor": 1,
+    "mask": 2,
+    "writable": false,
+    "options": {
+      "0": "Not Active",
+      "2": "No Power Consumption"
+    },
+    "unknown": null
+  },
+  {
+    "id": "drm2_code",
+    "name": "DRM2 Code",
+    "kind": "EnumSensor",
+    "registers": [
+      544
+    ],
+    "unit": "",
+    "factor": 1,
+    "mask": 4,
+    "writable": false,
+    "options": {
+      "0": "Not Active",
+      "4": "Max 50% Power Consumption"
+    },
+    "unknown": null
+  },
+  {
+    "id": "drm3_code",
+    "name": "DRM3 Code",
+    "kind": "EnumSensor",
+    "registers": [
+      544
+    ],
+    "unit": "",
+    "factor": 1,
+    "mask": 8,
+    "writable": false,
+    "options": {
+      "0": "Not Active",
+      "8": "Max 75% Power Consumption, Source Reactive Power"
+    },
+    "unknown": null
+  },
+  {
+    "id": "drm4_code",
+    "name": "DRM4 Code",
+    "kind": "EnumSensor",
+    "registers": [
+      544
+    ],
+    "unit": "",
+    "factor": 1,
+    "mask": 16,
+    "writable": false,
+    "options": {
+      "0": "Not Active",
+      "16": "Increase Power Consumption"
+    },
+    "unknown": null
+  },
+  {
+    "id": "drm5_code",
+    "name": "DRM5 Code",
+    "kind": "EnumSensor",
+    "registers": [
+      544
+    ],
+    "unit": "",
+    "factor": 1,
+    "mask": 32,
+    "writable": false,
+    "options": {
+      "0": "Not Active",
+      "32": "No Power Generation"
+    },
+    "unknown": null
+  },
+  {
+    "id": "drm6_code",
+    "name": "DRM6 Code",
+    "kind": "EnumSensor",
+    "registers": [
+      544
+    ],
+    "unit": "",
+    "factor": 1,
+    "mask": 64,
+    "writable": false,
+    "options": {
+      "0": "Not Active",
+      "64": "Max 50% Power Generation"
+    },
+    "unknown": null
+  },
+  {
+    "id": "drm7_code",
+    "name": "DRM7 Code",
+    "kind": "EnumSensor",
+    "registers": [
+      544
+    ],
+    "unit": "",
+    "factor": 1,
+    "mask": 128,
+    "writable": false,
+    "options": {
+      "0": "Not Active",
+      "128": "Max 75% Power Generation, Sink Reactive Power"
+    },
+    "unknown": null
+  },
+  {
+    "id": "drm8_code",
+    "name": "DRM8 Code",
+    "kind": "EnumSensor",
+    "registers": [
+      544
+    ],
+    "unit": "",
+    "factor": 1,
+    "mask": 256,
+    "writable": false,
+    "options": {
+      "0": "Not Active",
+      "256": "Increase Power Generation"
+    },
+    "unknown": null
+  },
+  {
+    "id": "battery_temperature",
+    "name": "Battery temperature",
+    "kind": "TempSensor",
+    "registers": [
+      586
+    ],
+    "unit": "°C",
+    "factor": 0.1,
+    "mask": 0,
+    "writable": false,
+    "offset": 100
+  },
+  {
+    "id": "battery_voltage",
+    "name": "Battery voltage",
+    "kind": "Sensor",
+    "registers": [
+      587
+    ],
+    "unit": "V",
+    "factor": 0.01,
+    "mask": 0,
+    "writable": false
+  },
+  {
+    "id": "battery_soc",
+    "name": "Battery SOC",
+    "kind": "Sensor",
+    "registers": [
+      588
+    ],
+    "unit": "%",
+    "factor": 1,
+    "mask": 0,
+    "writable": false
+  },
+  {
+    "id": "battery_power",
+    "name": "Battery power",
+    "kind": "Sensor",
+    "registers": [
+      590
+    ],
+    "unit": "W",
+    "factor": -1,
+    "mask": 0,
+    "writable": false
+  },
+  {
+    "id": "battery_current",
+    "name": "Battery current",
+    "kind": "Sensor",
+    "registers": [
+      591
+    ],
+    "unit": "A",
+    "factor": -0.01,
+    "mask": 0,
+    "writable": false
+  },
+  {
+    "id": "battery_2_soc",
+    "name": "Battery 2 SOC",
+    "kind": "Sensor",
+    "registers": [
+      589
+    ],
+    "unit": "%",
+    "factor": 1,
+    "mask": 0,
+    "writable": false
+  },
+  {
+    "id": "battery_2_voltage",
+    "name": "Battery 2 voltage",
+    "kind": "Sensor",
+    "registers": [
+      593
+    ],
+    "unit": "V",
+    "factor": 0.01,
+    "mask": 0,
+    "writable": false
+  },
+  {
+    "id": "battery_2_current",
+    "name": "Battery 2 current",
+    "kind": "Sensor",
+    "registers": [
+      594
+    ],
+    "unit": "A",
+    "factor": -0.01,
+    "mask": 0,
+    "writable": false
+  },
+  {
+    "id": "battery_2_power",
+    "name": "Battery 2 power",
+    "kind": "Sensor",
+    "registers": [
+      595
+    ],
+    "unit": "W",
+    "factor": -1,
+    "mask": 0,
+    "writable": false
+  },
+  {
+    "id": "battery_2_temperature",
+    "name": "Battery 2 temperature",
+    "kind": "TempSensor",
+    "registers": [
+      596
+    ],
+    "unit": "°C",
+    "factor": 0.1,
+    "mask": 0,
+    "writable": false,
+    "offset": 100
+  },
+  {
+    "id": "battery_1_manufacturer",
+    "name": "Battery 1 Manufacturer",
+    "kind": "SelectRWSensor",
+    "registers": [
+      229
+    ],
+    "unit": "",
+    "factor": 1,
+    "mask": 0,
+    "writable": true,
+    "options": {
+      "0": "HereYin",
+      "1": "PYLON",
+      "2": "SOLAX",
+      "3": "DYNESS_L",
+      "4": "CCGX",
+      "5": "Alpha_ESS",
+      "6": "SUNGO_CAN",
+      "7": "VISION_CAN",
+      "8": "WATTSONIC_CAN",
+      "9": "KUNLAN",
+      "10": "GSEnergy",
+      "11": "GS_HUB",
+      "12": "BYD_LV",
+      "13": "AOBO",
+      "14": "DEYE",
+      "15": "CFE",
+      "16": "DMEGC",
+      "17": "UZENERGY",
+      "18": "GROWATT"
+    }
+  }
+]
