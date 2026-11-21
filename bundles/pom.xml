@@ -551,6 +551,7 @@
     <module>org.openhab.voice.microwakewordks</module>
     <module>org.openhab.voice.mimictts</module>
     <module>org.openhab.voice.openaitts</module>
+    <module>org.openhab.voice.parakeetstt</module>
     <module>org.openhab.voice.picotts</module>
     <module>org.openhab.voice.pipertts</module>
     <module>org.openhab.voice.pollytts</module>
