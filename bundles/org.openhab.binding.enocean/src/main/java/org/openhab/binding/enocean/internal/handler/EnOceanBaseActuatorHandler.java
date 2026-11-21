@@ -469,9 +469,6 @@ public class EnOceanBaseActuatorHandler extends EnOceanBaseSensorHandler {
                 + "network of the gateway (see the binding documentation).", thing.getUID(), timedOutState);
     }
 
-    /**
-     * Sends the command again that the state machine remembered for a retry.
-     */
     private void resendRetryCommand() {
         STMStateMachine<?, ?> stateMachine = stm;
         if (stateMachine == null) {

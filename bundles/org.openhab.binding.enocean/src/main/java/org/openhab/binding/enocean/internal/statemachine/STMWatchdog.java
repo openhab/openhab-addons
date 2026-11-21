@@ -24,8 +24,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * @param states the states to supervise
  * @param timeoutAction the action applied when a supervised state is not left in time
  * @param timeoutMs the maximum time in milliseconds a supervised state may last
- * @param keepsStoredCommand true if a command stored for later processing survives the timeout, false if the timeout
- *            abandons it
+ * @param keepsStoredCommand true if a command stored for later processing survives the timeout
  * @author Sven Schad - Initial contribution
  */
 @NonNullByDefault

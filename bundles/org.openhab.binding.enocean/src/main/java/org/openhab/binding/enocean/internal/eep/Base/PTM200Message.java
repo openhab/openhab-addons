@@ -67,7 +67,6 @@ public class PTM200Message extends _RPSMessage {
     }
 
     private void updateEndAngle(STMStateMachine<BlindAction, BlindState> stm, Configuration config, PercentType angle) {
-        // a position request that waited for a calibration moves the blind again and sets the slats afterwards
         if (config.as(EnOceanChannelRollershutterConfig.class).getConfigMode() == ConfigMode.BLINDS
                 && !(CHANNEL_ROLLERSHUTTER.equals(stm.getStoredChannel())
                         && stm.getStoredCommand() instanceof PercentType)) {
@@ -109,7 +108,6 @@ public class PTM200Message extends _RPSMessage {
                                     break;
                                 case MOVEMENT_MANUAL_UP:
                                     blindStm.apply(BlindAction.MANUAL_DONE);
-                                    // the slats opened before the blind moved up
                                     updateEndAngle(blindStm, config, PercentType.ZERO);
                                     break;
                                 default:
@@ -140,7 +138,6 @@ public class PTM200Message extends _RPSMessage {
                                     break;
                                 case MOVEMENT_MANUAL_DOWN:
                                     blindStm.apply(BlindAction.MANUAL_DONE);
-                                    // the slats closed before the blind moved down
                                     updateEndAngle(blindStm, config, PercentType.HUNDRED);
                                     break;
                                 default:
@@ -155,7 +152,6 @@ public class PTM200Message extends _RPSMessage {
                         if (stm != null) {
                             @SuppressWarnings("unchecked")
                             STMStateMachine<BlindAction, BlindState> blindStm = (STMStateMachine<BlindAction, BlindState>) stm;
-                            // only has an effect when idle: movements requested by openHAB are already tracked
                             blindStm.apply(
                                     bytes[0] == START_UP ? BlindAction.MANUAL_START_UP : BlindAction.MANUAL_START_DOWN);
                         }

@@ -69,10 +69,10 @@ public class A5_3F_7F_EltakoFSB extends _4BSMessage implements StateMachineProvi
     // The FAM14 forwards feedback in its polling cycle (about 5.7 s observed), so allow for more than two cycles.
     static final long FEEDBACK_MARGIN_MS = 15000;
 
-    // A run of the actuator that ends earlier than requested, beyond this tolerance (100 ms units), was interrupted.
+    // in 100 ms units
     static final int INTERRUPTION_TOLERANCE = 10;
 
-    // The run time at the actuator is unknown to the binding and a wall switch runs until it elapses.
+    // a wall switch runs until the run time set at the actuator elapses
     static final long MANUAL_MOVEMENT_TIMEOUT_MS = 300000;
 
     public A5_3F_7F_EltakoFSB() {
@@ -94,7 +94,7 @@ public class A5_3F_7F_EltakoFSB extends _4BSMessage implements StateMachineProvi
 
         if (duration != 0) {
             setData(duration_msb, duration_lsb, direction, CMD_100MSEC);
-            // the gateway sometimes drops a telegram, the watchdog of the slat movement sends it once more
+            // the gateway sometimes drops a telegram
             stm.setRetryCommand(CHANNEL_DIMMER, new StringType(
                     HexUtils.bytesToHex(new byte[] { duration_msb, duration_lsb, direction, CMD_100MSEC })));
             stm.apply(BlindAction.SLATS_POS_REQUEST);
@@ -172,14 +172,12 @@ public class A5_3F_7F_EltakoFSB extends _4BSMessage implements StateMachineProvi
                     stm.apply(BlindAction.CALIBRATION_REQUEST_UP);
                     break;
                 case MOVEMENT_CALIBRATION_UP, MOVEMENT_CALIBRATION_DOWN:
-                    // the position is set first, the slats follow: the waiting slat request becomes the target angle
                     if (isDimmerRequestWaiting(stm) && stm.getStoredCommand() instanceof PercentType angle) {
                         setDimmerState(thing, angle);
                     }
                     stm.storeCommand(CHANNEL_ROLLERSHUTTER, percentCommand);
                     break;
                 case MOVEMENT_SLATS, MOVEMENT_SLATS_RETRY, POSITION_REACHED:
-                    // the slat adjustment finishes first, the position follows and the dimmer value is the target
                     stm.storeCommand(CHANNEL_ROLLERSHUTTER, percentCommand);
                     break;
                 case IDLE:
@@ -336,7 +334,6 @@ public class A5_3F_7F_EltakoFSB extends _4BSMessage implements StateMachineProvi
             if (stm != null) {
                 BlindState state = stm.getState();
                 if (state == BlindState.INVALID) {
-                    // the slats are unknown: calibrate first, the stored request sets the angle afterwards
                     byte shutTimeByte = (byte) Math.min(255,
                             Math.max(0, config.as(EnOceanChannelRollershutterConfig.class).shutTime));
                     stm.storeCommand(CHANNEL_DIMMER, decimalCommand);
@@ -376,7 +373,6 @@ public class A5_3F_7F_EltakoFSB extends _4BSMessage implements StateMachineProvi
             }
         } else if (command instanceof StringType retryTelegram && stm != null
                 && stm.getState() == BlindState.MOVEMENT_SLATS_RETRY) {
-            // the first slat telegram got no reaction: send the same data again
             setData(HexUtils.hexToBytes(retryTelegram.toString()));
         }
     }
@@ -427,7 +423,6 @@ public class A5_3F_7F_EltakoFSB extends _4BSMessage implements StateMachineProvi
                                 blindStm.storeCommand(CHANNEL_ROLLERSHUTTER, StopMoveType.MOVE);
                                 break;
                             case MOVEMENT_CALIBRATION_UP, MOVEMENT_CALIBRATION_DOWN:
-                                // a request that waited for the calibration moves the blind again and sets the slats
                                 if (c.getConfigMode() == ConfigMode.BLINDS && !isPositionRequestWaiting(blindStm)) {
                                     blindStm.updateChannel(CHANNEL_DIMMER,
                                             move_up ? PercentType.ZERO : PercentType.HUNDRED);
@@ -455,7 +450,6 @@ public class A5_3F_7F_EltakoFSB extends _4BSMessage implements StateMachineProvi
 
                     int direction = getDB1() == MOVE_UP ? -1 : 1;
                     if (current != null && c.shutTime != -1 && c.shutTime != 0) {
-                        // runtime is given in 100 ms, shutTime in s
                         int travelled = Math
                                 .round(runtime * (float) PercentType.HUNDRED.intValue() / (c.shutTime * 10));
                         PercentType newPosition = new PercentType(
@@ -464,7 +458,6 @@ public class A5_3F_7F_EltakoFSB extends _4BSMessage implements StateMachineProvi
                             switch (blindStm.getState()) {
                                 case MOVEMENT_POSITION_UP, MOVEMENT_POSITION_DOWN:
                                     if (isInterruptedByUser(blindStm, runtime)) {
-                                        // e.g. wall switch: do not adjust the slats, the user is in control
                                         blindStm.apply(BlindAction.POSITION_INTERRUPTED);
                                         return trackMovement(blindStm, c, getCurrentStateFunc, current, runtime,
                                                 direction > 0);
@@ -497,23 +490,10 @@ public class A5_3F_7F_EltakoFSB extends _4BSMessage implements StateMachineProvi
         return (shutTimeByte & 0xFF) * 10;
     }
 
-    /**
-     * Position and slat angle after a run that nobody requested through the binding.
-     *
-     * @param position the new position
-     * @param angle the new slat angle, null if it is not known
-     */
     record Travel(int position, @Nullable Integer angle) {
     }
 
-    /**
-     * Calculates the effect of a run on position and slats. When moving down the slats close first (angle 100) and
-     * only then the position changes, when moving up they open first (angle 0).
-     *
-     * @param runtime the driven time in 100 ms
-     * @param shutTime the travel time in s
-     * @param swapTime the time for turning the slats from one end to the other in 100 ms, 0 if there are no slats
-     */
+    /** Moving down the slats close first, moving up they open first. */
     static Travel travel(int position, @Nullable Integer angle, boolean down, int runtime, int shutTime, int swapTime) {
         int endAngle = down ? 100 : 0;
         int slatsTime = 0;
@@ -613,7 +593,6 @@ public class A5_3F_7F_EltakoFSB extends _4BSMessage implements StateMachineProvi
         watchdogs.add(new STMWatchdog<>(EnumSet.of(BlindState.MOVEMENT_MANUAL_UP, BlindState.MOVEMENT_MANUAL_DOWN),
                 BlindAction.MOVEMENT_TIMEOUT, MANUAL_MOVEMENT_TIMEOUT_MS));
         if (mode == ConfigMode.BLINDS) {
-            // a slat adjustment does not change the position: repeat it once, then give up without recalibration
             long slatsTimeoutMs = slatsTimeMs + FEEDBACK_MARGIN_MS;
             watchdogs.add(new STMWatchdog<>(EnumSet.of(BlindState.MOVEMENT_SLATS), BlindAction.SLATS_TIMEOUT,
                     slatsTimeoutMs, true));

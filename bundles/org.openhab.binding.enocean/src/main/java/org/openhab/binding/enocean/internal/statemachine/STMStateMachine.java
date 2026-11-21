@@ -119,23 +119,13 @@ public class STMStateMachine<A extends Enum<A>, S extends Enum<S>> {
         return this;
     }
 
-    /**
-     * Registers the callback used to update channel states that follow from the movements of the device.
-     *
-     * @param updater called with the channel ID and the new state
-     * @return this state machine for fluent configuration
-     */
+    /** Registers the callback used to update channel states that follow from device movements. */
     public STMStateMachine<A, S> registerChannelUpdater(BiConsumer<String, State> updater) {
         this.channelUpdater = updater;
         return this;
     }
 
-    /**
-     * Updates the state of a channel, if a callback is registered.
-     *
-     * @param channel the channel ID
-     * @param state the new state
-     */
+    /** Updates the state of a channel, if a callback is registered. */
     public void updateChannel(String channel, State state) {
         BiConsumer<String, State> updater = channelUpdater;
         if (updater != null) {
@@ -319,13 +309,7 @@ public class STMStateMachine<A extends Enum<A>, S extends Enum<S>> {
         this.storedCommand = null;
     }
 
-    /**
-     * Remembers the command that was sent to the device, so that it can be sent again if the device did not react.
-     * An earlier retry command is replaced.
-     *
-     * @param channel the channel ID for the command
-     * @param command the command to send again
-     */
+    /** Remembers the command sent to the device, so that it can be sent again. */
     public synchronized void setRetryCommand(String channel, Command command) {
         this.retryChannel = channel;
         this.retryCommand = command;
@@ -339,35 +323,20 @@ public class STMStateMachine<A extends Enum<A>, S extends Enum<S>> {
         return retryCommand;
     }
 
-    /**
-     * Remembers the movement requested from the device and forgets an earlier stop request.
-     *
-     * @param expectedRuntime the runtime the device is expected to report, in the unit of the device feedback
-     */
+    /** Remembers the runtime the device is expected to report for the requested movement. */
     public synchronized void startMovement(int expectedRuntime) {
         this.expectedRuntime = expectedRuntime;
         this.stopRequested = false;
     }
 
-    /**
-     * Remembers that the running movement was stopped on purpose.
-     */
     public synchronized void requestStop() {
         this.stopRequested = true;
     }
 
-    /**
-     * Gets the runtime of the movement requested last.
-     *
-     * @return the expected runtime, or 0 if unknown
-     */
     public synchronized int getExpectedRuntime() {
         return expectedRuntime;
     }
 
-    /**
-     * Tells whether the movement requested last was stopped on purpose.
-     */
     public synchronized boolean isStopRequested() {
         return stopRequested;
     }
