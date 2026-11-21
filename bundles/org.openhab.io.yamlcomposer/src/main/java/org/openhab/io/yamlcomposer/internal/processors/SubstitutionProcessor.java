@@ -12,12 +12,11 @@
  */
 package org.openhab.io.yamlcomposer.internal.processors;
 
-import java.util.regex.Pattern;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.io.yamlcomposer.internal.BufferedLogger;
 import org.openhab.io.yamlcomposer.internal.StringInterpolator;
+import org.openhab.io.yamlcomposer.internal.StringInterpolator.SubstitutionPattern;
 import org.openhab.io.yamlcomposer.internal.core.EvaluationContext;
 import org.openhab.io.yamlcomposer.internal.core.RecursiveTransformer;
 import org.openhab.io.yamlcomposer.internal.placeholders.SubstitutionPlaceholder;
@@ -67,12 +66,12 @@ public class SubstitutionProcessor implements PlaceholderProcessor<SubstitutionP
      * @return The processed value with substitutions applied
      */
     public @Nullable Object process(SubstitutionPlaceholder placeholder, EvaluationContext context) {
-        Pattern pattern = resolvePattern(placeholder, context);
+        SubstitutionPattern pattern = resolvePattern(placeholder, context);
         return StringInterpolator.interpolate(placeholder.value(), pattern, context, logger.getLogSession(),
                 placeholder.sourceLocation());
     }
 
-    private Pattern resolvePattern(SubstitutionPlaceholder placeholder, EvaluationContext context) {
+    private SubstitutionPattern resolvePattern(SubstitutionPlaceholder placeholder, EvaluationContext context) {
         String patternName = placeholder.patternName();
         if (patternName == null || patternName.isBlank()) {
             return StringInterpolator.DEFAULT_SUBSTITUTION_PATTERN;
@@ -85,7 +84,7 @@ public class SubstitutionProcessor implements PlaceholderProcessor<SubstitutionP
             return StringInterpolator.DEFAULT_SUBSTITUTION_PATTERN;
         }
 
-        Pattern compiled = StringInterpolator.compilePatternSpec(patternSpec);
+        SubstitutionPattern compiled = StringInterpolator.compilePatternSpec(patternSpec);
         if (compiled == null) {
             logger.warn("{} Invalid pattern specification '{}' in variable '{}' for !sub tag; using default pattern.",
                     placeholder.sourceLocation(), patternSpec, patternName);
