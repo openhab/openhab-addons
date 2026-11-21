@@ -178,12 +178,6 @@ public class ApiBridgeHandler extends BaseBridgeHandler implements NetatmoHandle
             return;
         }
 
-        if (configuration.useCloudWebhook) {
-            handlerFactory.registerCloudWebhookServiceListener(this);
-        } else {
-            handlerFactory.unregisterCloudWebhookServiceListener(this);
-        }
-
         oAuthClientService = oAuthFactory
                 .createOAuthClientService(this.getThing().getUID().getAsString(), AuthenticationApi.TOKEN_URI,
                         AuthenticationApi.AUTH_URI, configuration.clientId, configuration.clientSecret,
@@ -267,8 +261,18 @@ public class ApiBridgeHandler extends BaseBridgeHandler implements NetatmoHandle
         }
 =======
         freeWebhookServlet();
+<<<<<<< Upstream, based on main
         checkStartWebhook();
 >>>>>>> 566fb64 Review openhabCloud availability cycle
+=======
+
+        ApiHandlerConfiguration configuration = getConfiguration();
+        if (configuration.useCloudWebhook) {
+            handlerFactory.registerCloudWebhookServiceListener(this);
+        } else {
+            handlerFactory.unregisterCloudWebhookServiceListener(this);
+        }
+>>>>>>> 46d6349 Review cloudWebhookServiceListener initialization
 
         updateStatus(ThingStatus.ONLINE);
     }
