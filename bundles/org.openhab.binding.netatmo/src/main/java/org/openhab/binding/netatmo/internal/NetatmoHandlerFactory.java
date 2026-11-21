@@ -127,14 +127,14 @@ public class NetatmoHandlerFactory extends BaseThingHandlerFactory {
         }
     }
 
-    public synchronized void registerWebhookServiceListener(WebhookServiceListener listener) {
+    public synchronized void registerCloudWebhookServiceListener(WebhookServiceListener listener) {
         webhookServiceListeners.add(listener);
         if (webhookService instanceof WebhookService service) {
             listener.webhookServiceAvailable(service);
         }
     }
 
-    public synchronized void unregisterWebhookServiceListener(WebhookServiceListener listener) {
+    public synchronized void unregisterCloudWebhookServiceListener(WebhookServiceListener listener) {
         webhookServiceListeners.remove(listener);
     }
 

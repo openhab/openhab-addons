@@ -179,9 +179,9 @@ public class ApiBridgeHandler extends BaseBridgeHandler implements NetatmoHandle
         }
 
         if (configuration.useCloudWebhook) {
-            handlerFactory.registerWebhookServiceListener(this);
+            handlerFactory.registerCloudWebhookServiceListener(this);
         } else {
-            handlerFactory.unregisterWebhookServiceListener(this);
+            handlerFactory.unregisterCloudWebhookServiceListener(this);
         }
 
         oAuthClientService = oAuthFactory
@@ -360,10 +360,14 @@ public class ApiBridgeHandler extends BaseBridgeHandler implements NetatmoHandle
         freeWebhookServlet();
         freeGrantServlet();
 <<<<<<< Upstream, based on main
+<<<<<<< Upstream, based on main
 >>>>>>> 566fb64 Review openhabCloud availability cycle
 =======
         handlerFactory.unregisterWebhookServiceListener(this);
 >>>>>>> 1d4e37b Make ApiBridgeHandler a listener of NetatmoHandlerFactory
+=======
+        handlerFactory.unregisterCloudWebhookServiceListener(this);
+>>>>>>> 730a221 Make explicit we're working with openHAB cloud
 
         connectApi.dispose();
         freeConnectJob();
