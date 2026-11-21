@@ -80,7 +80,7 @@ public class CloudWebhookServlet extends WebhookServlet {
             }
 
             cancelCloudWebhookRefresh();
-            long delaySeconds = Math.min(60,
+            long delaySeconds = Math.max(60,
                     Duration.between(Instant.now(), webhook.expiresAt().minus(CLOUD_WEBHOOK_REFRESH_SAFETY_WINDOW))
                             .getSeconds());
             scheduleCloudWebhookTask(delaySeconds);
