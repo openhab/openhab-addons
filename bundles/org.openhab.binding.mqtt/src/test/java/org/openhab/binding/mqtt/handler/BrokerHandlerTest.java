@@ -14,12 +14,25 @@ package org.openhab.binding.mqtt.handler;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.security.KeyStore;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.AfterEach;
@@ -27,6 +40,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.io.TempDir;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -94,6 +108,147 @@ public class BrokerHandlerTest extends JavaTest {
         when(thingMock.getConfiguration()).thenReturn(config);
         handler.initialize();
         verify(handler).createBrokerConnection();
+    }
+
+    private BrokerHandlerConfig clientCertConfig(boolean secure, boolean hostnameValidated, boolean certificatePin,
+            boolean publicKeyPin) {
+        BrokerHandlerConfig config = new BrokerHandlerConfig();
+        config.secure = secure;
+        config.hostnameValidated = hostnameValidated;
+        config.certificatepin = certificatePin;
+        config.publickeypin = publicKeyPin;
+        config.clientKeystore = "/nonexistent/client.p12";
+        return config;
+    }
+
+    @Test
+    public void clientCertificateRefusedWithoutBrokerVerification() {
+        MqttBrokerConnection mockedConnection = mock(MqttBrokerConnection.class);
+        IllegalArgumentException e = assertThrows(IllegalArgumentException.class,
+                () -> handler.assignClientCertificate(clientCertConfig(true, false, false, false), mockedConnection));
+        assertTrue(e.getMessage().contains("requires hostname validation"));
+        verify(mockedConnection, never()).setKeyManagerFactory(any());
+    }
+
+    @Test
+    public void clientCertificateNotRefusedWithHostnameValidationOrPinning() {
+        MqttBrokerConnection mockedConnection = mock(MqttBrokerConnection.class);
+        // Not refused by the verification check: loading the (missing) keystore fails instead
+        BrokerHandlerConfig certificatePinned = clientCertConfig(true, false, true, false);
+        certificatePinned.certificate = PIN_HASH;
+        BrokerHandlerConfig publicKeyPinned = clientCertConfig(true, false, false, true);
+        publicKeyPinned.publickey = PIN_HASH;
+        for (BrokerHandlerConfig config : new BrokerHandlerConfig[] { clientCertConfig(true, true, false, false),
+                certificatePinned, publicKeyPinned }) {
+            IllegalArgumentException e = assertThrows(IllegalArgumentException.class,
+                    () -> handler.assignClientCertificate(config, mockedConnection));
+            assertTrue(e.getMessage().startsWith("Unable to load client keystore"));
+        }
+    }
+
+    private static final char[] KEYSTORE_PASSWORD = "changeit".toCharArray();
+    private static final String PIN_HASH = "SHA-256:00";
+
+    /** Creates a keystore with a fresh self-signed certificate for localhost (not trusted by any CA). */
+    private Path createSelfSignedKeystore(Path dir) throws IOException, InterruptedException {
+        Path keystore = dir.resolve("selfsigned.p12");
+        String keytool = Path.of(System.getProperty("java.home"), "bin", "keytool").toString();
+        Process process = new ProcessBuilder(keytool, "-genkeypair", "-alias", "test", "-keyalg", "RSA", "-keysize",
+                "2048", "-validity", "30", "-dname", "CN=localhost", "-ext", "san=dns:localhost", "-storetype",
+                "PKCS12", "-keystore", keystore.toString(), "-storepass", new String(KEYSTORE_PASSWORD))
+                .redirectErrorStream(true).redirectOutput(ProcessBuilder.Redirect.DISCARD).start();
+        try {
+            assertTrue(process.waitFor(60, TimeUnit.SECONDS), "keytool did not finish within 60 seconds");
+            assertThat(process.exitValue(), is(0));
+        } finally {
+            process.destroyForcibly();
+        }
+        return keystore;
+    }
+
+    private X509Certificate[] loadChain(Path keystore) throws Exception {
+        KeyStore keyStore = KeyStore.getInstance("PKCS12");
+        try (InputStream in = Files.newInputStream(keystore)) {
+            keyStore.load(in, KEYSTORE_PASSWORD);
+        }
+        return new X509Certificate[] { (X509Certificate) keyStore.getCertificate("test") };
+    }
+
+    private BrokerHandlerConfig realKeystoreConfig(Path keystore, boolean hostnameValidated, boolean certificatePin) {
+        BrokerHandlerConfig config = clientCertConfig(true, hostnameValidated, certificatePin, false);
+        config.clientKeystore = keystore.toString();
+        config.clientKeystorePassword = new String(KEYSTORE_PASSWORD);
+        return config;
+    }
+
+    @Test
+    public void clientCertificateWithHostnameValidationRejectsUntrustedServerCertificate(@TempDir Path dir)
+            throws Exception {
+        Path keystore = createSelfSignedKeystore(dir);
+        MqttBrokerConnection mockedConnection = mock(MqttBrokerConnection.class);
+
+        handler.assignClientCertificate(realKeystoreConfig(keystore, true, false), mockedConnection);
+
+        verify(mockedConnection).setKeyManagerFactory(any());
+        ArgumentCaptor<TrustManager[]> captor = ArgumentCaptor.forClass(TrustManager[].class);
+        verify(mockedConnection).setTrustManagers(captor.capture());
+        X509Certificate[] selfSignedChain = loadChain(keystore);
+        for (TrustManager trustManager : captor.getValue()) {
+            X509TrustManager x509TrustManager = (X509TrustManager) trustManager;
+            assertThrows(CertificateException.class, () -> x509TrustManager.checkServerTrusted(selfSignedChain, "RSA"));
+        }
+    }
+
+    @Test
+    public void clientCertificateWithPinningKeepsPinTrustManager(@TempDir Path dir) throws Exception {
+        Path keystore = createSelfSignedKeystore(dir);
+        MqttBrokerConnection mockedConnection = mock(MqttBrokerConnection.class);
+
+        BrokerHandlerConfig config = realKeystoreConfig(keystore, true, true);
+        config.certificate = PIN_HASH;
+
+        handler.assignClientCertificate(config, mockedConnection);
+
+        verify(mockedConnection).setKeyManagerFactory(any());
+        verify(mockedConnection, never()).setTrustManagers(any());
+    }
+
+    @Test
+    public void clientCertificateWithLearningPinUsesCaValidation(@TempDir Path dir) throws Exception {
+        Path keystore = createSelfSignedKeystore(dir);
+        MqttBrokerConnection mockedConnection = mock(MqttBrokerConnection.class);
+
+        // Pinning without a configured hash only learns the first certificate: CA validation must stay in place
+        handler.assignClientCertificate(realKeystoreConfig(keystore, true, true), mockedConnection);
+
+        verify(mockedConnection).setKeyManagerFactory(any());
+        ArgumentCaptor<TrustManager[]> captor = ArgumentCaptor.forClass(TrustManager[].class);
+        verify(mockedConnection).setTrustManagers(captor.capture());
+        X509Certificate[] selfSignedChain = loadChain(keystore);
+        for (TrustManager trustManager : captor.getValue()) {
+            X509TrustManager x509TrustManager = (X509TrustManager) trustManager;
+            assertThrows(CertificateException.class, () -> x509TrustManager.checkServerTrusted(selfSignedChain, "RSA"));
+        }
+    }
+
+    @Test
+    public void clientCertificateRefusedWithLearningPinWithoutHostnameValidation() {
+        MqttBrokerConnection mockedConnection = mock(MqttBrokerConnection.class);
+        for (BrokerHandlerConfig config : new BrokerHandlerConfig[] { clientCertConfig(true, false, true, false),
+                clientCertConfig(true, false, false, true) }) {
+            IllegalArgumentException e = assertThrows(IllegalArgumentException.class,
+                    () -> handler.assignClientCertificate(config, mockedConnection));
+            assertTrue(e.getMessage().contains("requires hostname validation"));
+        }
+        verify(mockedConnection, never()).setKeyManagerFactory(any());
+    }
+
+    @Test
+    public void clientCertificateIgnoredIfNotSecure() {
+        MqttBrokerConnection mockedConnection = mock(MqttBrokerConnection.class);
+        assertDoesNotThrow(
+                () -> handler.assignClientCertificate(clientCertConfig(false, false, false, false), mockedConnection));
+        verify(mockedConnection, never()).setKeyManagerFactory(any());
     }
 
     @Disabled("Temporarily disabled as broken since May 2022")
