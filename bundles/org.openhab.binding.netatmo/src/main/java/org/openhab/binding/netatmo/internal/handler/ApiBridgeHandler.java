@@ -63,6 +63,7 @@ import org.openhab.binding.netatmo.internal.api.WebhookApi;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.FeatureArea;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.Scope;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.ServiceError;
+import org.openhab.binding.netatmo.internal.NetatmoHandlerFactory;
 import org.openhab.binding.netatmo.internal.api.dto.HomeData;
 import org.openhab.binding.netatmo.internal.api.dto.HomeDataModule;
 import org.openhab.binding.netatmo.internal.api.dto.NAMain;
@@ -111,7 +112,7 @@ import com.google.gson.JsonParser;
  * @author Martin Littkovsky - Keep HTTP status and raw error code for unclassified errors
  */
 @NonNullByDefault
-public class ApiBridgeHandler extends BaseBridgeHandler {
+public class ApiBridgeHandler extends BaseBridgeHandler implements NetatmoHandlerFactory.WebhookServiceListener {
     private static final int TIMEOUT_S = 20;
     private static final int API_LIMIT_INTERVAL_S = 3600;
     private static final int MAX_REQUESTS_PER_SECOND = 5;
@@ -128,6 +129,7 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
     private final OAuthFactory oAuthFactory;
     private final NADeserializer deserializer;
     private final HttpService httpService;
+    private final NetatmoHandlerFactory handlerFactory;
     private final ChannelUID requestCountChannelUID;
     private final ChannelUID hookSetChannelUID;
     private final GrantServlet grantServlet;
@@ -142,7 +144,8 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
 >>>>>>> 566fb64 Review openhabCloud availability cycle
 
     public ApiBridgeHandler(Bridge bridge, HttpClient httpClient, NADeserializer deserializer,
-            BindingConfiguration configuration, HttpService httpService, OAuthFactory oAuthFactory) {
+            BindingConfiguration configuration, HttpService httpService, OAuthFactory oAuthFactory,
+            NetatmoHandlerFactory handlerFactory) {
         super(bridge);
         this.bindingConf = configuration;
         this.httpClient = httpClient;
@@ -150,11 +153,15 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
         this.httpService = httpService;
         this.oAuthFactory = oAuthFactory;
 <<<<<<< Upstream, based on main
+<<<<<<< Upstream, based on main
         this.grantServlet = new GrantServlet(this, httpService);
 
         this.webhookServiceSupplier = webhookServiceSupplier;
 =======
 >>>>>>> 566fb64 Review openhabCloud availability cycle
+=======
+        this.handlerFactory = handlerFactory;
+>>>>>>> 1d4e37b Make ApiBridgeHandler a listener of NetatmoHandlerFactory
         requestCountChannelUID = new ChannelUID(thing.getUID(), GROUP_MONITORING, CHANNEL_REQUEST_COUNT);
         hookSetChannelUID = new ChannelUID(thing.getUID(), GROUP_MONITORING, CHANNEL_HOOK_SET);
     }
@@ -169,6 +176,12 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
         if (!ConfigurationLevel.COMPLETED.equals(confLevel)) {
             updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, confLevel.message);
             return;
+        }
+
+        if (configuration.useCloudWebhook) {
+            handlerFactory.registerWebhookServiceListener(this);
+        } else {
+            handlerFactory.unregisterWebhookServiceListener(this);
         }
 
         oAuthClientService = oAuthFactory
@@ -346,7 +359,11 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
 =======
         freeWebhookServlet();
         freeGrantServlet();
+<<<<<<< Upstream, based on main
 >>>>>>> 566fb64 Review openhabCloud availability cycle
+=======
+        handlerFactory.unregisterWebhookServiceListener(this);
+>>>>>>> 1d4e37b Make ApiBridgeHandler a listener of NetatmoHandlerFactory
 
         connectApi.dispose();
         freeConnectJob();
@@ -656,11 +673,13 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
 >>>>>>> 7601187 Rebased after merge of 22187_2
     }
 
-    public void webhookServiceAvailable(@Nullable WebhookService webhookService) {
+    @Override
+    public void webhookServiceAvailable(WebhookService webhookService) {
         this.webhookService = webhookService;
         checkStartWebhook();
     }
 
+    @Override
     public void webhookServiceGone() {
         webhookService = null;
         if (webhookServlet instanceof CloudWebhookServlet) {
