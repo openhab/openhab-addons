@@ -23,9 +23,11 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.verisure.internal.VerisureSession;
+import org.openhab.binding.verisure.internal.dto.VerisureBatteryStatusDTO;
 import org.openhab.binding.verisure.internal.dto.VerisureSmartLockConfigurationDTO.Configuration;
 import org.openhab.binding.verisure.internal.dto.VerisureSmartLocksDTO;
 import org.openhab.binding.verisure.internal.dto.VerisureSmartLocksDTO.Doorlock;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Channel;
@@ -218,7 +220,8 @@ public class VerisureSmartLockThingHandler extends VerisureThingHandler<Verisure
                 getThing().getChannels().stream().map(Channel::getUID)
                         .filter(channelUID -> isLinked(channelUID) && !"timestamp".equals(channelUID.getId()))
                         .forEach(channelUID -> {
-                            State state = getValue(channelUID.getId(), doorlock, smartLockStatus, smartLockJSON);
+                            State state = getValue(channelUID.getId(), doorlock, smartLockStatus, smartLockJSON,
+                                    smartLocksJSON);
                             updateState(channelUID, state);
                         });
                 updateTimeStamp(doorlock.getEventTime());
@@ -232,8 +235,14 @@ public class VerisureSmartLockThingHandler extends VerisureThingHandler<Verisure
     }
 
     public State getValue(String channelId, Doorlock doorlock, String smartLockStatus,
-            @Nullable Configuration smartLockJSON) {
+            @Nullable Configuration smartLockJSON, VerisureSmartLocksDTO smartLocksJSON) {
         switch (channelId) {
+            case CHANNEL_BATTERY_STATUS:
+                return OnOffType.from(VerisureBatteryStatusDTO.isLowBattery(smartLocksJSON.getBatteryStatus()));
+            case CHANNEL_BATTERY_LEVEL:
+                Integer batteryLevel = smartLocksJSON.getBatteryLevel();
+                return batteryLevel != null ? new DecimalType(batteryLevel) : UnDefType.UNDEF;
+
             case CHANNEL_SMARTLOCK_STATUS:
                 if ("LOCKED".equals(smartLockStatus)) {
                     return OnOffType.ON;

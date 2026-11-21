@@ -52,6 +52,7 @@ import org.jsoup.nodes.Element;
 import org.openhab.binding.verisure.internal.dto.VerisureAlarmsDTO;
 import org.openhab.binding.verisure.internal.dto.VerisureBaseThingDTO.Gui;
 import org.openhab.binding.verisure.internal.dto.VerisureBatteryStatusDTO;
+import org.openhab.binding.verisure.internal.dto.VerisureBatteryStatusDTO.Battery;
 import org.openhab.binding.verisure.internal.dto.VerisureBroadbandConnectionsDTO;
 import org.openhab.binding.verisure.internal.dto.VerisureClimatesDTO;
 import org.openhab.binding.verisure.internal.dto.VerisureDoorWindowsDTO;
@@ -64,6 +65,7 @@ import org.openhab.binding.verisure.internal.dto.VerisureMiceDetectionDTO;
 import org.openhab.binding.verisure.internal.dto.VerisureSmartLockConfigurationDTO;
 import org.openhab.binding.verisure.internal.dto.VerisureSmartLocksDTO;
 import org.openhab.binding.verisure.internal.dto.VerisureSmartPlugsDTO;
+import org.openhab.binding.verisure.internal.dto.VerisureSystemHealthDTO;
 import org.openhab.binding.verisure.internal.dto.VerisureThingDTO;
 import org.openhab.binding.verisure.internal.dto.VerisureUserPresencesDTO;
 import org.openhab.binding.verisure.internal.handler.VerisureThingHandler;
@@ -97,6 +99,8 @@ public class VerisureSession {
     private final Map<BigDecimal, VerisureInstallation> verisureInstallations = new ConcurrentHashMap<>();
     private static final List<String> APISERVERLIST = Arrays.asList("https://mypages-api01.verisure.com",
             "https://mypages-api02.verisure.com");
+    private long climateRefreshIntervalMs = 0;
+    private final Map<BigDecimal, Long> lastClimateRefresh = new ConcurrentHashMap<>();
     private int apiServerInUseIndex = 0;
     private int numberOfEvents = 15;
     private static final int REQUEST_TIMEOUT_MS = 10_000;
@@ -790,9 +794,10 @@ public class VerisureSession {
             try {
                 configureInstallationInstance(installation.getInstallationId());
                 updateAlarmStatus(installation);
-                updateSmartLockStatus(installation);
+                Map<String, Battery> batteryStatus = getBatteryStatus(installation);
+                updateSmartLockStatus(installation, batteryStatus);
                 updateMiceDetectionStatus(installation);
-                Map<String, String> batteryStatus = getBatteryStatus(installation);
+                refreshClimateSensors(installation);
                 updateClimateStatus(installation, batteryStatus);
                 updateDoorWindowStatus(installation, batteryStatus);
                 updateUserPresenceStatus(installation);
@@ -828,8 +833,12 @@ public class VerisureSession {
         String queryQLAlarmStatus = createOperationJSON(operation, variables, query);
         logger.debug("Querying API for alarm status!");
         try {
-            VerisureThingDTO thing = postJSONVerisureAPI(url, queryQLAlarmStatus, VerisureAlarmsDTO.class);
+            VerisureAlarmsDTO thing = postJSONVerisureAPI(url, queryQLAlarmStatus, VerisureAlarmsDTO.class);
             logger.debug("REST Response ({})", thing);
+            VerisureSystemHealthDTO systemHealth = getSystemHealth(installation);
+            if (systemHealth != null) {
+                thing.setSystemHealth(systemHealth.getUrgency(), systemHealth.getAlertTypes());
+            }
             // Set unique deviceID
             String deviceId = "alarm" + installationId;
             thing.setDeviceId(deviceId);
@@ -839,7 +848,8 @@ public class VerisureSession {
         }
     }
 
-    private synchronized void updateSmartLockStatus(VerisureInstallation installation) {
+    private synchronized void updateSmartLockStatus(VerisureInstallation installation,
+            Map<String, Battery> batteryStatus) {
         BigDecimal installationId = installation.getInstallationId();
         String url = START_GRAPHQL;
         String operation = "DoorLock";
@@ -872,6 +882,7 @@ public class VerisureSession {
                         if (configuration != null) {
                             slThing.setConfiguration(configuration.getConfiguration(deviceId));
                         }
+                        slThing.setBattery(batteryStatus.get(VerisureThingConfiguration.normalizeDeviceId(deviceId)));
                         notifyListenersIfChanged(slThing, installation, deviceId);
                     }
                 });
@@ -938,25 +949,82 @@ public class VerisureSession {
         }
     }
 
-    private Map<String, String> getBatteryStatus(VerisureInstallation installation) {
-        String operation = "BatteryStatus";
+    private @Nullable VerisureSystemHealthDTO getSystemHealth(VerisureInstallation installation) {
+        String operation = "SystemHealth";
         String query = "query " + operation
-                + "($giid: String!) {\n installation(giid: $giid) {\n deviceBatteryLifeCycle {\n devices {\n device {\n deviceLabel\n __typename\n }\n status\n __typename\n }\n __typename\n }\n __typename\n }\n}\n";
+                + "($giid: String!) {\n installation(giid: $giid) {\n systemHealthAlerts {\n urgencyType\n alertType\n __typename\n }\n __typename\n }\n}\n";
+        logger.debug("Querying API for system health");
+
+        try {
+            return postJSONVerisureAPI(START_GRAPHQL_MYPAGES, createSingleOperationJSON(operation, installation, query),
+                    VerisureSystemHealthDTO.class);
+        } catch (ExecutionException | InterruptedException | TimeoutException | JsonSyntaxException
+                | PostToAPIException e) {
+            logger.debug("Failed to query for system health: {}", e.getMessage());
+            return null;
+        }
+    }
+
+    /**
+     * The /graphql/mypages endpoint answers a list with a list, so send a single operation.
+     */
+    private String createSingleOperationJSON(String operation, VerisureInstallation installation, String query) {
         VariablesDTO variables = new VariablesDTO();
         variables.setGiid(installation.getInstallationId().toString());
         OperationDTO operationJSON = new OperationDTO();
         operationJSON.setOperationName(operation);
         operationJSON.setVariables(variables);
         operationJSON.setQuery(query);
+        return gson.toJson(operationJSON);
+    }
+
+    /**
+     * @param minutes how often the climate sensors are asked to report fresh values, 0 to never ask
+     */
+    public void setClimateRefreshInterval(int minutes) {
+        climateRefreshIntervalMs = TimeUnit.MINUTES.toMillis(Math.max(0, minutes));
+    }
+
+    /**
+     * Asks the climate sensors of an installation to report fresh values if the configured interval has passed.
+     * The sensors answer asynchronously, so the values show up in a later refresh.
+     */
+    private void refreshClimateSensors(VerisureInstallation installation) {
+        long interval = climateRefreshIntervalMs;
+        if (interval <= 0) {
+            return;
+        }
+        BigDecimal installationId = installation.getInstallationId();
+        long now = System.currentTimeMillis();
+        Long last = lastClimateRefresh.get(installationId);
+        if (last != null && now - last < interval) {
+            return;
+        }
+        lastClimateRefresh.put(installationId, now);
+        String operation = "RefreshClimateSensorValues";
+        VariablesDTO variables = new VariablesDTO();
+        variables.setGiid(installationId.toString());
+        String query = "mutation " + operation + "($giid: String!) {\n ClimateRefreshSensorValues(giid: $giid)\n}\n";
+        logger.debug("Asking climate sensors to report fresh values");
+        int httpResultCode = postVerisureAPI(START_GRAPHQL, createOperationJSON(operation, variables, query),
+                GraphQLErrors.FAIL);
+        if (httpResultCode != HttpStatus.OK_200) {
+            logger.debug("Failed to refresh climate sensors, HTTP result code {}", httpResultCode);
+        }
+    }
+
+    private Map<String, Battery> getBatteryStatus(VerisureInstallation installation) {
+        String operation = "BatteryStatus";
+        String query = "query " + operation
+                + "($giid: String!) {\n installation(giid: $giid) {\n deviceBatteryLifeCycle {\n devices {\n device {\n deviceLabel\n __typename\n }\n status\n predictionData {\n estimatedBatteryPercentage\n __typename\n }\n __typename\n }\n __typename\n }\n __typename\n }\n}\n";
         logger.debug("Querying API for battery status");
 
         try {
-            // This endpoint answers a list with a list, so send a single operation
             VerisureBatteryStatusDTO batteryStatus = postJSONVerisureAPI(START_GRAPHQL_MYPAGES,
-                    gson.toJson(operationJSON), VerisureBatteryStatusDTO.class);
-            Map<String, String> result = new HashMap<>();
-            batteryStatus.getStatusByDeviceLabel().forEach((deviceLabel, status) -> result
-                    .put(VerisureThingConfiguration.normalizeDeviceId(deviceLabel), status));
+                    createSingleOperationJSON(operation, installation, query), VerisureBatteryStatusDTO.class);
+            Map<String, Battery> result = new HashMap<>();
+            batteryStatus.getBatteryByDeviceLabel().forEach((deviceLabel, battery) -> result
+                    .put(VerisureThingConfiguration.normalizeDeviceId(deviceLabel), battery));
             return result;
         } catch (ExecutionException | InterruptedException | TimeoutException | JsonSyntaxException
                 | PostToAPIException e) {
@@ -966,7 +1034,7 @@ public class VerisureSession {
     }
 
     private synchronized void updateClimateStatus(VerisureInstallation installation,
-            Map<String, String> batteryStatus) {
+            Map<String, Battery> batteryStatus) {
         BigDecimal installationId = installation.getInstallationId();
         String url = START_GRAPHQL;
         VariablesDTO variables = new VariablesDTO();
@@ -1012,8 +1080,7 @@ public class VerisureSession {
                     // Set unique deviceID
                     String deviceId = climate.getDevice().getDeviceLabel();
                     if (deviceId != null) {
-                        cThing.setBatteryStatus(
-                                batteryStatus.get(VerisureThingConfiguration.normalizeDeviceId(deviceId)));
+                        cThing.setBattery(batteryStatus.get(VerisureThingConfiguration.normalizeDeviceId(deviceId)));
                         // Set location
                         cThing.setLocation(climate.getDevice().getArea());
                         notifyListenersIfChanged(cThing, installation, deviceId);
@@ -1027,7 +1094,7 @@ public class VerisureSession {
     }
 
     private synchronized void updateDoorWindowStatus(VerisureInstallation installation,
-            Map<String, String> batteryStatus) {
+            Map<String, Battery> batteryStatus) {
         BigDecimal installationId = installation.getInstallationId();
         String url = START_GRAPHQL;
         String operation = "DoorWindow";
@@ -1054,8 +1121,7 @@ public class VerisureSession {
                     // Set unique deviceID
                     String deviceId = doorWindow.getDevice().getDeviceLabel();
                     if (deviceId != null) {
-                        dThing.setBatteryStatus(
-                                batteryStatus.get(VerisureThingConfiguration.normalizeDeviceId(deviceId)));
+                        dThing.setBattery(batteryStatus.get(VerisureThingConfiguration.normalizeDeviceId(deviceId)));
                         // Set location
                         dThing.setLocation(doorWindow.getDevice().getArea());
                         notifyListenersIfChanged(dThing, installation, deviceId);

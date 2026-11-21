@@ -21,6 +21,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.verisure.internal.dto.VerisureBatteryStatusDTO;
 import org.openhab.binding.verisure.internal.dto.VerisureDoorWindowsDTO;
 import org.openhab.binding.verisure.internal.dto.VerisureDoorWindowsDTO.DoorWindow;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.StringType;
@@ -85,6 +86,9 @@ public class VerisureDoorWindowThingHandler extends VerisureThingHandler<Verisur
                 return location != null ? new StringType(location) : UnDefType.UNDEF;
             case CHANNEL_BATTERY_STATUS:
                 return OnOffType.from(VerisureBatteryStatusDTO.isLowBattery(doorWindowJSON.getBatteryStatus()));
+            case CHANNEL_BATTERY_LEVEL:
+                Integer batteryLevel = doorWindowJSON.getBatteryLevel();
+                return batteryLevel != null ? new DecimalType(batteryLevel) : UnDefType.UNDEF;
         }
         return UnDefType.UNDEF;
     }
