@@ -14,254 +14,167 @@ package org.openhab.binding.groheondus.internal.handler;
 
 import static org.openhab.binding.groheondus.internal.GroheOndusBindingConstants.*;
 
-import java.io.IOException;
 import java.math.BigDecimal;
+import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.time.temporal.ChronoUnit;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
-
-import javax.measure.quantity.Volume;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.groheondus.internal.api.ApplianceInfo;
+import org.openhab.binding.groheondus.internal.api.GroheOndusApi;
+import org.openhab.binding.groheondus.internal.api.GroheOndusApiException;
+import org.openhab.binding.groheondus.internal.api.GuardData;
+import org.openhab.binding.groheondus.internal.api.GuardSample;
+import org.openhab.binding.groheondus.internal.api.WaterWithdrawal;
+import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
-import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
-import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.types.Command;
-import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.github.floriansw.ondus.api.OndusService;
-import io.github.floriansw.ondus.api.model.BaseApplianceCommand;
-import io.github.floriansw.ondus.api.model.BaseApplianceData;
-import io.github.floriansw.ondus.api.model.guard.Appliance;
-import io.github.floriansw.ondus.api.model.guard.ApplianceCommand;
-import io.github.floriansw.ondus.api.model.guard.ApplianceData;
-import io.github.floriansw.ondus.api.model.guard.ApplianceData.Data;
-import io.github.floriansw.ondus.api.model.guard.ApplianceData.Measurement;
-
 /**
+ * Handler for the GROHE Sense Guard water valve.
+ *
  * @author Florian Schmidt and Arne Wohlert - Initial contribution
+ * @author Arne Seime - Publish historic measurements as time series, use own API client
  */
 @NonNullByDefault
-public class GroheOndusSenseGuardHandler<T, M> extends GroheOndusBaseHandler<Appliance, Data> {
+public class GroheOndusSenseGuardHandler extends GroheOndusBaseHandler<GroheOndusSenseGuardHandler.Snapshot> {
     private static final int MIN_API_TIMEFRAME_DAYS = 1;
     private static final int MAX_API_TIMEFRAME_DAYS = 90;
     private static final int DEFAULT_TIMEFRAME_DAYS = 1;
+    // The Sense Guard transmits every 15 minutes by default
+    private static final Duration MAX_SILENCE = Duration.ofHours(6);
 
     private final Logger logger = LoggerFactory.getLogger(GroheOndusSenseGuardHandler.class);
 
-    public GroheOndusSenseGuardHandler(Thing thing, int thingCounter) {
-        super(thing, Appliance.TYPE, thingCounter);
+    record Snapshot(GuardData data, @Nullable Boolean valveOpen, ZoneId zone) {
+        @Nullable
+        GuardSample latest() {
+            List<GuardSample> measurements = data.measurements();
+            return measurements.isEmpty() ? null : measurements.get(measurements.size() - 1);
+        }
+    }
+
+    public GroheOndusSenseGuardHandler(Thing thing, int thingCounter, TimeZoneProvider timeZoneProvider) {
+        super(thing, ApplianceInfo.TYPE_SENSE_GUARD, thingCounter, timeZoneProvider);
     }
 
     @Override
-    protected int getPollingInterval(Appliance appliance) {
+    protected int getPollingInterval(ApplianceInfo appliance) {
         if (config.pollingInterval > 0) {
             return config.pollingInterval;
         }
-        return appliance.getConfig().getMeasurementTransmissionIntervall();
+        Integer transmissionInterval = appliance.measurementTransmissionInterval();
+        return transmissionInterval != null && transmissionInterval > 0 ? transmissionInterval
+                : DEFAULT_POLLING_INTERVAL;
     }
 
     @Override
-    protected void updateChannel(ChannelUID channelUID, Appliance appliance, Data dataPoint) {
-        String channelId = channelUID.getIdWithoutGroup();
-        State newState = UnDefType.UNDEF;
-        Measurement lastMeasurement = getLastMeasurement(dataPoint);
-        switch (channelId) {
-            case CHANNEL_NAME:
-                newState = new StringType(appliance.getName());
-                break;
-            case CHANNEL_PRESSURE:
-                newState = new QuantityType<>(lastMeasurement.getPressure(), Units.BAR);
-                break;
-            case CHANNEL_TEMPERATURE_GUARD:
-                newState = new QuantityType<>(lastMeasurement.getTemperatureGuard(), SIUnits.CELSIUS);
-                break;
-            case CHANNEL_PAUSE:
-                newState = getPauseState();
-                break;
-            case CHANNEL_VALVE_OPEN:
-                OnOffType valveOpenType = getValveOpenType(appliance);
-                if (valveOpenType != null) {
-                    newState = valveOpenType;
-                }
-                break;
-            case CHANNEL_WATERCONSUMPTION:
-                newState = sumWaterConsumption(dataPoint);
-                break;
-            case CHANNEL_WATERCONSUMPTION_SINCE_MIDNIGHT:
-                newState = sumWaterConsumptionSinceMidnight(dataPoint);
-                break;
-            default:
-                throw new IllegalArgumentException("Channel " + channelUID + " not supported.");
-        }
+    protected Snapshot fetch(GroheOndusApi api, ApplianceInfo appliance) throws GroheOndusApiException {
+        ZoneId zone = timeZoneProvider.getTimeZone();
+        LocalDate today = LocalDate.now(zone);
+        LocalDate from = today.minusDays(getTimeframeDays());
+        LocalDate to = today.plusDays(1);
+        logger.debug("Fetching data for {} from {} to {}", thing.getUID(), from, to);
+        GuardData data = api.getGuardData(appliance.ref(), from, to);
+        logger.debug("Received {} measurements and {} withdrawals for {}", data.measurements().size(),
+                data.withdrawals().size(), thing.getUID());
+        return new Snapshot(data, api.isValveOpen(appliance.ref()), zone);
+    }
+
+    @Override
+    protected void updateChannel(ChannelUID channelUID, ApplianceInfo appliance, Snapshot snapshot) {
+        GuardSample latest = snapshot.latest();
+        List<GuardSample> measurements = snapshot.data().measurements();
+        State newState = switch (channelUID.getIdWithoutGroup()) {
+            case CHANNEL_PRESSURE -> {
+                sendHistory(channelUID, measurements, GuardSample::timestamp, GuardSample::pressure, Units.BAR);
+                yield toState(latest == null ? null : latest.pressure(), Units.BAR);
+            }
+            case CHANNEL_TEMPERATURE_GUARD -> {
+                sendHistory(channelUID, measurements, GuardSample::timestamp, GuardSample::temperature,
+                        SIUnits.CELSIUS);
+                yield toState(latest == null ? null : latest.temperature(), SIUnits.CELSIUS);
+            }
+            case CHANNEL_PAUSE -> getPauseState();
+            case CHANNEL_VALVE_OPEN -> {
+                Boolean valveOpen = snapshot.valveOpen();
+                yield valveOpen == null ? UnDefType.UNDEF : OnOffType.from(valveOpen);
+            }
+            case CHANNEL_WATERCONSUMPTION -> sumWaterConsumption(snapshot.data().withdrawals(), Instant.MIN);
+            case CHANNEL_WATERCONSUMPTION_SINCE_MIDNIGHT -> sumWaterConsumption(snapshot.data().withdrawals(),
+                    LocalDate.now(snapshot.zone()).atStartOfDay(snapshot.zone()).toInstant());
+            default -> {
+                logger.debug("Channel {} not supported", channelUID);
+                yield UnDefType.UNDEF;
+            }
+        };
         updateState(channelUID, newState);
     }
 
-    private QuantityType<Volume> sumWaterConsumptionSinceMidnight(Data dataPoint) {
-        ZonedDateTime earliestWithdrawal = ZonedDateTime.now(ZoneId.systemDefault()).truncatedTo(ChronoUnit.DAYS);
-        ZonedDateTime latestWithdrawal = earliestWithdrawal.plus(1, ChronoUnit.DAYS);
-
-        Double waterConsumption = dataPoint.getWithdrawals().stream()
-                .filter(e -> earliestWithdrawal.isBefore(LocalDate.parse(e.date).atStartOfDay(ZoneId.systemDefault()))
-                        && latestWithdrawal.isAfter(LocalDate.parse(e.date).atStartOfDay(ZoneId.systemDefault())))
-                .mapToDouble(withdrawal -> withdrawal.getWaterconsumption()).sum();
-        return new QuantityType<>(waterConsumption, Units.LITRE);
-    }
-
-    private QuantityType<Volume> sumWaterConsumption(Data dataPoint) {
-        Double waterConsumption = dataPoint.getWithdrawals().stream()
-                .mapToDouble(withdrawal -> withdrawal.getWaterconsumption()).sum();
-        return new QuantityType<>(waterConsumption, Units.LITRE);
-    }
-
-    private Measurement getLastMeasurement(Data dataPoint) {
-        List<Measurement> measurementList = dataPoint.getMeasurement();
-        return measurementList.isEmpty() ? new Measurement() : measurementList.get(measurementList.size() - 1);
-    }
-
-    @Nullable
-    private OnOffType getValveOpenType(Appliance appliance) {
-        OndusService service = getOndusService();
-        if (service == null) {
-            return null;
-        }
-        Optional<BaseApplianceCommand> commandOptional;
-        try {
-            commandOptional = service.applianceCommand(appliance);
-        } catch (IOException e) {
-            logger.debug("Could not get appliance command", e);
-            return null;
-        }
-        if (commandOptional.isEmpty()) {
-            return null;
-        }
-        if (commandOptional.get().getType() != Appliance.TYPE) {
-            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.notsenseguard");
-            return null;
-        }
-        return OnOffType.from(((ApplianceCommand) commandOptional.get()).getCommand().getValveOpen());
+    static QuantityType<?> sumWaterConsumption(List<WaterWithdrawal> withdrawals, Instant since) {
+        // Sum as BigDecimal to keep the decimal values reported by the API exact
+        BigDecimal litres = withdrawals.stream().filter(withdrawal -> !withdrawal.timestamp().isBefore(since))
+                .map(withdrawal -> BigDecimal.valueOf(withdrawal.waterConsumption()))
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        return new QuantityType<>(litres, Units.LITRE);
     }
 
     @Override
-    protected Data getLastDataPoint(Appliance appliance) {
-        if (getOndusService() == null) {
-            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE, "@text/error.noservice");
-            return new Data();
-        }
-
-        ApplianceData applianceData = getApplianceData(appliance);
-        if (applianceData == null) {
-            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/error.empty.response");
-            return new Data();
-        }
-        Data data = applianceData.getData();
-        Collections.sort(data.measurement, Comparator.comparing(e -> e.date));
-        Collections.sort(data.withdrawals, Comparator.comparing(e -> e.date));
-        return data;
-    }
-
-    private @Nullable ApplianceData getApplianceData(Appliance appliance) {
-        Instant from = fromTime();
-        // Truncated to date only inside api package
-        Instant to = Instant.now().plus(1, ChronoUnit.DAYS);
-
-        OndusService service = getOndusService();
-        if (service == null) {
-            return null;
-        }
-        try {
-            logger.debug("Fetching data for {} from {} to {}", thing.getUID(), from, to);
-            BaseApplianceData applianceData = service.applianceData(appliance, from, to).orElse(null);
-            if (applianceData != null) {
-                if (applianceData.getType() != Appliance.TYPE) {
-                    updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.notsenseguard");
-                    return null;
-                }
-                return (ApplianceData) applianceData;
-            } else {
-                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/error.failedtoloaddata");
-            }
-        } catch (IOException e) {
-            logger.debug("Could not load appliance data for {}", thing.getUID(), e);
-        }
-        return null;
-    }
-
-    private Instant fromTime() {
-        Instant from = Instant.now().minus(DEFAULT_TIMEFRAME_DAYS, ChronoUnit.DAYS);
-        Channel waterconsumptionChannel = this.thing.getChannel(CHANNEL_WATERCONSUMPTION);
-        if (waterconsumptionChannel == null) {
-            return from;
-        }
-
-        Object timeframeConfig = waterconsumptionChannel.getConfiguration().get(CHANNEL_CONFIG_TIMEFRAME);
-        if (!(timeframeConfig instanceof BigDecimal)) {
-            return from;
-        }
-
-        int timeframe = ((BigDecimal) timeframeConfig).intValue();
-        if (timeframe < MIN_API_TIMEFRAME_DAYS && timeframe > MAX_API_TIMEFRAME_DAYS) {
-            logger.info(
-                    "timeframe configuration of waterconsumption channel needs to be a number between 1 to 90, got {}",
-                    timeframe);
-            return from;
-        }
-
-        return Instant.now().minus(timeframe, ChronoUnit.DAYS);
+    protected Duration getMaxSilence() {
+        return MAX_SILENCE;
     }
 
     @Override
-    public void handleCommand(ChannelUID channelUID, Command command) {
-        if (command instanceof RefreshType) {
-            updateChannels();
-            return;
-        }
+    protected @Nullable Instant getNewestSampleTime(Snapshot snapshot) {
+        GuardSample latest = snapshot.latest();
+        return latest == null ? null : latest.timestamp();
+    }
 
-        if (handlePauseCommand(channelUID, command)) {
-            return;
+    private int getTimeframeDays() {
+        Channel waterConsumptionChannel = thing.getChannel(CHANNEL_WATERCONSUMPTION);
+        if (waterConsumptionChannel == null) {
+            return DEFAULT_TIMEFRAME_DAYS;
         }
+        Object timeframeConfig = waterConsumptionChannel.getConfiguration().get(CHANNEL_CONFIG_TIMEFRAME);
+        if (!(timeframeConfig instanceof BigDecimal timeframeValue)) {
+            return DEFAULT_TIMEFRAME_DAYS;
+        }
+        int timeframe = timeframeValue.intValue();
+        if (timeframe < MIN_API_TIMEFRAME_DAYS || timeframe > MAX_API_TIMEFRAME_DAYS) {
+            logger.debug("Timeframe of the waterconsumption channel must be between {} and {} days, got {}",
+                    MIN_API_TIMEFRAME_DAYS, MAX_API_TIMEFRAME_DAYS, timeframe);
+            return DEFAULT_TIMEFRAME_DAYS;
+        }
+        return timeframe;
+    }
 
+    @Override
+    protected void handleApplianceCommand(ChannelUID channelUID, Command command) {
         if (!CHANNEL_VALVE_OPEN.equals(channelUID.getIdWithoutGroup())) {
+            super.handleApplianceCommand(channelUID, command);
             return;
         }
-        if (!(command instanceof OnOffType)) {
-            logger.debug("Invalid command received for channel. Expected OnOffType, received {}.",
+        if (!(command instanceof OnOffType onOffCommand)) {
+            logger.debug("Invalid command received for channel {}. Expected OnOffType, received {}.", channelUID,
                     command.getClass().getName());
             return;
         }
-        OnOffType openClosedCommand = (OnOffType) command;
-        boolean openState = openClosedCommand == OnOffType.ON;
-
-        OndusService service = getOndusService();
-        if (service == null) {
-            return;
-        }
-        Appliance appliance = getAppliance(service);
-        if (appliance == null) {
-            return;
-        }
-        try {
-            service.setValveOpen(appliance, openState);
-            updateChannels();
-        } catch (IOException e) {
-            logger.debug("Could not update valve open state", e);
-        }
+        runApiCommand(api -> {
+            api.setValveOpen(getApplianceRef(), onOffCommand == OnOffType.ON);
+            updateState(channelUID, onOffCommand);
+        });
     }
 }
