@@ -22,9 +22,15 @@ After the ojcloud bridge is successfully initialized all thermostats will be dis
 | userName              | user name from the OJElectronics App (required)                          |
 | password              | password from the OJElectronics App (required)                           |
 | apiKey                | API key. You get the key from your local distributor.                    |
-| apiUrl                | URL of the API endpoint. Optional, the default value should always work. |
-| customerId            | Customer ID. Optional, the default value should always work.             |
+| cloudVendor           | Cloud vendor preset. Optional, the default value should always work.     |
+| apiUrl                | URL of the API endpoint. Only used when `cloudVendor` is `Custom`.       |
+| customerId            | Customer ID. Only used when `cloudVendor` is `Custom`.                   |
 | softwareVersion       | Software version. Optional, the default value should always work.        |
+
+`cloudVendor` accepts `OJElectronics` (default), `SWATT`, `Schlueter`, `Microtemp` or `Custom`.
+For all but `Custom`, `apiUrl` and `customerId` are set automatically and the two fields above are
+ignored. Choose `Custom` to configure `apiUrl`/`customerId` manually. `apiKey` must always be
+provided by the user, regardless of the selected vendor.
 
 ### OJ Electronics OWD5/MWD5 Thermostat configuration (owd5)
 

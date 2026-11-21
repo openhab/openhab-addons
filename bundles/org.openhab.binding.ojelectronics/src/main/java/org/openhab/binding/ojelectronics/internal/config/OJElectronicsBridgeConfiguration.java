@@ -31,7 +31,7 @@ public class OJElectronicsBridgeConfiguration {
     /**
      * Customer-ID
      */
-    public int customerId = 1;
+    private int customerId = 1;
 
     /**
      * User Name
@@ -53,6 +53,16 @@ public class OJElectronicsBridgeConfiguration {
      */
     public int softwareVersion = 1060;
 
+    /**
+     * Cloud vendor preset. Defaults to {@link CloudVendor#CUSTOM} (pass-through to the fields
+     * above) rather than {@link CloudVendor#OJELECTRONICS}, so that a bridge configured before
+     * this parameter existed - which therefore has no stored value for it - keeps using its own
+     * {@link #apiUrl}/{@link #customerId} unchanged. The config description default shown for
+     * newly created bridges is {@link CloudVendor#OJELECTRONICS} instead, which is purely a UI
+     * convenience and behaviorally equivalent for a fresh bridge.
+     */
+    public String cloudVendor = CloudVendor.CUSTOM.name();
+
     private @Nullable String restApiUrl;
 
     /*
@@ -61,7 +71,8 @@ public class OJElectronicsBridgeConfiguration {
     public String getRestApiUrl() {
         String localRestApiUrl = restApiUrl;
         if (localRestApiUrl == null) {
-            localRestApiUrl = restApiUrl = apiUrl.replace("/api", "") + "/api";
+            String resolvedApiUrl = CloudVendor.valueOf(cloudVendor).resolveApiUrl(apiUrl);
+            localRestApiUrl = restApiUrl = resolvedApiUrl.replace("/api", "") + "/api";
         }
         return localRestApiUrl;
     }
@@ -74,8 +85,16 @@ public class OJElectronicsBridgeConfiguration {
     public String getSignalRUrl() {
         String localSignalRApiUrl = signalRApiUrl;
         if (localSignalRApiUrl == null) {
-            localSignalRApiUrl = signalRApiUrl = apiUrl.replace("/api", "") + "/ocd5notification";
+            String resolvedApiUrl = CloudVendor.valueOf(cloudVendor).resolveApiUrl(apiUrl);
+            localSignalRApiUrl = signalRApiUrl = resolvedApiUrl.replace("/api", "") + "/ocd5notification";
         }
         return localSignalRApiUrl;
+    }
+
+    /*
+     * Gets the Customer-ID
+     */
+    public int getCustomerId() {
+        return CloudVendor.valueOf(cloudVendor).resolveCustomerId(customerId);
     }
 }
