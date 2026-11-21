@@ -91,6 +91,13 @@ public class ZwaveJSNodeHandlerMock extends ZwaveJSNodeHandler {
 
     public static ZwaveJSNodeHandlerMock createAndInitHandler(final ThingHandlerCallback callback, final Thing thing,
             final String filename, boolean configAsChannel) {
+        ZwaveJSNodeHandlerMock handler = createHandler(callback, thing, filename, configAsChannel);
+        handler.initialize();
+        return handler;
+    }
+
+    public static ZwaveJSNodeHandlerMock createHandler(final ThingHandlerCallback callback, final Thing thing,
+            final String filename, boolean configAsChannel) {
         ZwaveJSChannelTypeProvider channelTypeProvider = new ZwaveJSChannelTypeInMemmoryProvider();
         ZwaveJSConfigDescriptionProvider configDescriptionProvider = new ZwaveJSConfigDescriptionProviderImpl();
         ZwaveJSTypeGenerator typeGenerator = new ZwaveJSTypeGeneratorImpl(channelTypeProvider,
@@ -100,8 +107,6 @@ public class ZwaveJSNodeHandlerMock extends ZwaveJSNodeHandler {
                 new ZwaveJSNodeHandlerMock(thing, typeGenerator, filename, configAsChannel));
 
         handler.setCallback(callback);
-        handler.initialize();
-
         return handler;
     }
 
