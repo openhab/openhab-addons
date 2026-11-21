@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
+	<config-description uri="persistence:victoriametrics">
+
+		<parameter-group name="connection">
+			<label>Connection</label>
+			<description>This group defines connection parameters.</description>
+			<advanced>false</advanced>
+		</parameter-group>
+
+		<parameter-group name="tags">
+			<label>Additional Tags</label>
+			<description>This group defines additional tags which can be added to your measurements.</description>
+			<advanced>false</advanced>
+		</parameter-group>
+
+		<parameter-group name="misc">
+			<label>Miscellaneous</label>
+			<description>This group defines miscellaneous parameters.</description>
+			<advanced>false</advanced>
+		</parameter-group>
+
+		<parameter name="url" type="text" required="true" groupName="connection">
+			<context>url</context>
+			<label>Database URL</label>
+			<description>The database URL, e.g. http://127.0.0.1:8428</description>
+			<default>http://127.0.0.1:8428</default>
+		</parameter>
+
+		<parameter name="user" type="text" required="false" groupName="connection">
+			<label>Username</label>
+			<description>Username for HTTP basic authentication, e.g. when VictoriaMetrics runs with -httpAuth.username or
+				behind
+				vmauth or a reverse proxy.</description>
+		</parameter>
+
+		<parameter name="password" type="text" required="false" groupName="connection">
+			<context>password</context>
+			<label>Database Password</label>
+			<description>Password for HTTP basic authentication.</description>
+		</parameter>
+
+		<parameter name="token" type="text" required="false" groupName="connection">
+			<label>Authentication Token</label>
+			<description>Bearer token to authenticate, e.g. for vmauth or a reverse proxy. Only used if no username is set.</description>
+		</parameter>
+
+		<parameter name="metricPrefix" type="text" required="false" groupName="misc">
+			<label>Metric Name Prefix</label>
+			<description>Prefix added to all metric names, e.g. "openhab_". Must be a valid metric name. If not set, the
+				metric
+				name starts with the item name.</description>
+		</parameter>
+
+		<parameter name="metricSuffix" type="text" required="false" groupName="misc">
+			<label>Metric Name Suffix</label>
+			<description>Suffix added to all metric names. Set to "_value" to use data written by the InfluxDB persistence
+				service to VictoriaMetrics or imported with vmctl.</description>
+		</parameter>
+
+		<parameter name="maxStringStates" type="integer" min="1" required="false" groupName="misc">
+			<label>Maximum String States</label>
+			<description>Maximum number of distinct string states stored per item. String states are only stored for items
+				with
+				the metadata stringStates="true". Further new states are not stored.</description>
+			<default>50</default>
+			<advanced>true</advanced>
+		</parameter>
+
+		<parameter name="addCategoryTag" type="boolean" required="true" groupName="tags">
+			<label>Add Category Tag</label>
+			<description>Should the category of the item be included as tag "category"? If no category is set, "n/a" is
+				used.
+			</description>
+			<default>false</default>
+		</parameter>
+
+		<parameter name="addTypeTag" type="boolean" required="true" groupName="tags">
+			<label>Add Type Tag</label>
+			<description>Should the item type be included as tag "type"?</description>
+			<default>false</default>
+		</parameter>
+
+		<parameter name="addLabelTag" type="boolean" required="true" groupName="tags">
+			<label>Add Label Tag</label>
+			<description>Should the item label be included as tag "label"? If no label is set, "n/a" is used.
+			</description>
+			<default>false</default>
+		</parameter>
+
+		<parameter name="addUnitTag" type="boolean" required="true" groupName="tags">
+			<label>Add Unit Tag</label>
+			<description>Should the unit of items with a dimension be included as tag "unit"?</description>
+			<default>false</default>
+		</parameter>
+
+	</config-description>
+</config-description:config-descriptions>
