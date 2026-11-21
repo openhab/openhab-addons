@@ -1,0 +1,312 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="bydbatterybox"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-group-type id="status">
+		<label>Status</label>
+		<description>System status, read every refresh interval.</description>
+		<channels>
+			<channel id="state-of-charge" typeId="state-of-charge"/>
+			<channel id="state-of-health" typeId="state-of-health"/>
+			<channel id="voltage" typeId="voltage">
+				<label>Battery Voltage</label>
+			</channel>
+			<channel id="output-voltage" typeId="voltage">
+				<label>Output Voltage</label>
+				<description>Voltage behind the main relay.</description>
+			</channel>
+			<channel id="current" typeId="current"/>
+			<channel id="power" typeId="power"/>
+			<channel id="max-cell-voltage" typeId="cell-voltage">
+				<label>Max Cell Voltage</label>
+				<description>Highest cell voltage, 10 mV resolution.</description>
+			</channel>
+			<channel id="min-cell-voltage" typeId="cell-voltage">
+				<label>Min Cell Voltage</label>
+				<description>Lowest cell voltage, 10 mV resolution.</description>
+			</channel>
+			<channel id="cell-voltage-spread" typeId="cell-voltage-calculated">
+				<label>Cell Voltage Spread</label>
+				<description>Difference between highest and lowest cell voltage, 10 mV resolution. The tower groups provide 1 mV
+					resolution.</description>
+			</channel>
+			<channel id="max-cell-temperature" typeId="temperature">
+				<label>Max Cell Temperature</label>
+			</channel>
+			<channel id="min-cell-temperature" typeId="temperature">
+				<label>Min Cell Temperature</label>
+			</channel>
+			<channel id="bmu-temperature" typeId="temperature">
+				<label>BMU Temperature</label>
+			</channel>
+			<channel id="charged-energy" typeId="energy">
+				<label>Charged Energy</label>
+				<description>Lifetime charged energy.</description>
+			</channel>
+			<channel id="discharged-energy" typeId="energy">
+				<label>Discharged Energy</label>
+				<description>Lifetime discharged energy.</description>
+			</channel>
+			<channel id="efficiency" typeId="efficiency"/>
+			<channel id="error" typeId="alarm">
+				<label>Error</label>
+				<description>ON while the battery reports at least one system error.</description>
+			</channel>
+			<channel id="errors" typeId="status-text">
+				<label>Errors</label>
+				<description>System errors reported by the battery.</description>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="tower">
+		<label>Tower</label>
+		<description>Cell measurement summary of one tower, read every cell detail interval.</description>
+		<channels>
+			<channel id="state-of-charge" typeId="state-of-charge"/>
+			<channel id="state-of-health" typeId="state-of-health"/>
+			<channel id="voltage" typeId="voltage">
+				<label>Tower Voltage</label>
+			</channel>
+			<channel id="output-voltage" typeId="voltage">
+				<label>Output Voltage</label>
+			</channel>
+			<channel id="current" typeId="current"/>
+			<channel id="charged-energy" typeId="energy">
+				<label>Charged Energy</label>
+				<description>Lifetime charged energy of the tower.</description>
+			</channel>
+			<channel id="discharged-energy" typeId="energy">
+				<label>Discharged Energy</label>
+				<description>Lifetime discharged energy of the tower.</description>
+			</channel>
+			<channel id="max-cell-voltage" typeId="cell-voltage">
+				<label>Max Cell Voltage</label>
+			</channel>
+			<channel id="max-cell-voltage-cell" typeId="cell-number">
+				<label>Max Voltage Cell</label>
+			</channel>
+			<channel id="min-cell-voltage" typeId="cell-voltage">
+				<label>Min Cell Voltage</label>
+			</channel>
+			<channel id="min-cell-voltage-cell" typeId="cell-number">
+				<label>Min Voltage Cell</label>
+			</channel>
+			<channel id="average-cell-voltage" typeId="cell-voltage-calculated">
+				<label>Average Cell Voltage</label>
+			</channel>
+			<channel id="cell-voltage-spread" typeId="cell-voltage-calculated">
+				<label>Cell Voltage Spread</label>
+				<description>Difference between highest and lowest cell voltage.</description>
+			</channel>
+			<channel id="max-cell-temperature" typeId="temperature">
+				<label>Max Cell Temperature</label>
+			</channel>
+			<channel id="max-cell-temperature-sensor" typeId="cell-number">
+				<label>Max Temperature Sensor</label>
+			</channel>
+			<channel id="min-cell-temperature" typeId="temperature">
+				<label>Min Cell Temperature</label>
+			</channel>
+			<channel id="min-cell-temperature-sensor" typeId="cell-number">
+				<label>Min Temperature Sensor</label>
+			</channel>
+			<channel id="balancing-cells" typeId="balancing-cells"/>
+			<channel id="warning" typeId="alarm">
+				<label>Warning</label>
+				<description>ON while the tower reports at least one warning.</description>
+			</channel>
+			<channel id="warnings" typeId="status-text">
+				<label>Warnings</label>
+				<description>Warnings reported by the tower.</description>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="module">
+		<label>Module</label>
+		<description>Cell voltages and temperatures of one module. HVS modules use 32 cells and 12 sensors, HVM modules the
+			first 16 cells and 8 sensors.</description>
+		<channels>
+			<channel id="voltage" typeId="voltage-calculated">
+				<label>Module Voltage</label>
+				<description>Sum of the cell voltages of the module.</description>
+			</channel>
+			<channel id="max-cell-voltage" typeId="cell-voltage">
+				<label>Max Cell Voltage</label>
+			</channel>
+			<channel id="min-cell-voltage" typeId="cell-voltage">
+				<label>Min Cell Voltage</label>
+			</channel>
+			<channel id="average-cell-voltage" typeId="cell-voltage-calculated">
+				<label>Average Cell Voltage</label>
+			</channel>
+			<channel id="cell-voltage-spread" typeId="cell-voltage-calculated">
+				<label>Cell Voltage Spread</label>
+				<description>Difference between highest and lowest cell voltage.</description>
+			</channel>
+			<channel id="cell-voltage-01" typeId="cell-voltage">
+				<label>Cell 01 Voltage</label>
+			</channel>
+			<channel id="cell-voltage-02" typeId="cell-voltage">
+				<label>Cell 02 Voltage</label>
+			</channel>
+			<channel id="cell-voltage-03" typeId="cell-voltage">
+				<label>Cell 03 Voltage</label>
+			</channel>
+			<channel id="cell-voltage-04" typeId="cell-voltage">
+				<label>Cell 04 Voltage</label>
+			</channel>
+			<channel id="cell-voltage-05" typeId="cell-voltage">
+				<label>Cell 05 Voltage</label>
+			</channel>
+			<channel id="cell-voltage-06" typeId="cell-voltage">
+				<label>Cell 06 Voltage</label>
+			</channel>
+			<channel id="cell-voltage-07" typeId="cell-voltage">
+				<label>Cell 07 Voltage</label>
+			</channel>
+			<channel id="cell-voltage-08" typeId="cell-voltage">
+				<label>Cell 08 Voltage</label>
+			</channel>
+			<channel id="cell-voltage-09" typeId="cell-voltage">
+				<label>Cell 09 Voltage</label>
+			</channel>
+			<channel id="cell-voltage-10" typeId="cell-voltage">
+				<label>Cell 10 Voltage</label>
+			</channel>
+			<channel id="cell-voltage-11" typeId="cell-voltage">
+				<label>Cell 11 Voltage</label>
+			</channel>
+			<channel id="cell-voltage-12" typeId="cell-voltage">
+				<label>Cell 12 Voltage</label>
+			</channel>
+			<channel id="cell-voltage-13" typeId="cell-voltage">
+				<label>Cell 13 Voltage</label>
+			</channel>
+			<channel id="cell-voltage-14" typeId="cell-voltage">
+				<label>Cell 14 Voltage</label>
+			</channel>
+			<channel id="cell-voltage-15" typeId="cell-voltage">
+				<label>Cell 15 Voltage</label>
+			</channel>
+			<channel id="cell-voltage-16" typeId="cell-voltage">
+				<label>Cell 16 Voltage</label>
+			</channel>
+			<channel id="cell-voltage-17" typeId="cell-voltage">
+				<label>Cell 17 Voltage</label>
+			</channel>
+			<channel id="cell-voltage-18" typeId="cell-voltage">
+				<label>Cell 18 Voltage</label>
+			</channel>
+			<channel id="cell-voltage-19" typeId="cell-voltage">
+				<label>Cell 19 Voltage</label>
+			</channel>
+			<channel id="cell-voltage-20" typeId="cell-voltage">
+				<label>Cell 20 Voltage</label>
+			</channel>
+			<channel id="cell-voltage-21" typeId="cell-voltage">
+				<label>Cell 21 Voltage</label>
+			</channel>
+			<channel id="cell-voltage-22" typeId="cell-voltage">
+				<label>Cell 22 Voltage</label>
+			</channel>
+			<channel id="cell-voltage-23" typeId="cell-voltage">
+				<label>Cell 23 Voltage</label>
+			</channel>
+			<channel id="cell-voltage-24" typeId="cell-voltage">
+				<label>Cell 24 Voltage</label>
+			</channel>
+			<channel id="cell-voltage-25" typeId="cell-voltage">
+				<label>Cell 25 Voltage</label>
+			</channel>
+			<channel id="cell-voltage-26" typeId="cell-voltage">
+				<label>Cell 26 Voltage</label>
+			</channel>
+			<channel id="cell-voltage-27" typeId="cell-voltage">
+				<label>Cell 27 Voltage</label>
+			</channel>
+			<channel id="cell-voltage-28" typeId="cell-voltage">
+				<label>Cell 28 Voltage</label>
+			</channel>
+			<channel id="cell-voltage-29" typeId="cell-voltage">
+				<label>Cell 29 Voltage</label>
+			</channel>
+			<channel id="cell-voltage-30" typeId="cell-voltage">
+				<label>Cell 30 Voltage</label>
+			</channel>
+			<channel id="cell-voltage-31" typeId="cell-voltage">
+				<label>Cell 31 Voltage</label>
+			</channel>
+			<channel id="cell-voltage-32" typeId="cell-voltage">
+				<label>Cell 32 Voltage</label>
+			</channel>
+			<channel id="cell-temperature-01" typeId="temperature">
+				<label>Sensor 01 Temperature</label>
+			</channel>
+			<channel id="cell-temperature-02" typeId="temperature">
+				<label>Sensor 02 Temperature</label>
+			</channel>
+			<channel id="cell-temperature-03" typeId="temperature">
+				<label>Sensor 03 Temperature</label>
+			</channel>
+			<channel id="cell-temperature-04" typeId="temperature">
+				<label>Sensor 04 Temperature</label>
+			</channel>
+			<channel id="cell-temperature-05" typeId="temperature">
+				<label>Sensor 05 Temperature</label>
+			</channel>
+			<channel id="cell-temperature-06" typeId="temperature">
+				<label>Sensor 06 Temperature</label>
+			</channel>
+			<channel id="cell-temperature-07" typeId="temperature">
+				<label>Sensor 07 Temperature</label>
+			</channel>
+			<channel id="cell-temperature-08" typeId="temperature">
+				<label>Sensor 08 Temperature</label>
+			</channel>
+			<channel id="cell-temperature-09" typeId="temperature">
+				<label>Sensor 09 Temperature</label>
+			</channel>
+			<channel id="cell-temperature-10" typeId="temperature">
+				<label>Sensor 10 Temperature</label>
+			</channel>
+			<channel id="cell-temperature-11" typeId="temperature">
+				<label>Sensor 11 Temperature</label>
+			</channel>
+			<channel id="cell-temperature-12" typeId="temperature">
+				<label>Sensor 12 Temperature</label>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="events">
+		<label>Events</label>
+		<description>Event logs of the BMU and the towers.</description>
+		<channels>
+			<channel id="last-event" typeId="status-text">
+				<label>Last Event</label>
+				<description>Newest entry of the event logs of the BMU and the towers.</description>
+			</channel>
+			<channel id="last-event-time" typeId="timestamp">
+				<label>Last Event Time</label>
+				<description>Time of the newest event, corrected by the offset of the battery clock.</description>
+			</channel>
+			<channel id="event" typeId="event"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="diagnostics">
+		<label>Diagnostics</label>
+		<channels>
+			<channel id="bmu-clock-offset" typeId="clock-offset"/>
+			<channel id="last-detail-update" typeId="timestamp">
+				<label>Last Cell Update</label>
+				<description>Time of the last successful cell measurement.</description>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+</thing:thing-descriptions>
