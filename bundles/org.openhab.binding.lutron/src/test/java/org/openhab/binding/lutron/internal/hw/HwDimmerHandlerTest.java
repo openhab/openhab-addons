@@ -135,4 +135,24 @@ public class HwDimmerHandlerTest {
 
         verify(bridgeHandler, never()).sendCommand(org.mockito.ArgumentMatchers.anyString());
     }
+
+    @Test
+    public void tapMessagesFireTriggerEventsOnlyWhenTheThingHasTheChannel() {
+        org.openhab.core.thing.ChannelUID tap = new org.openhab.core.thing.ChannelUID(THING_UID, "tap");
+        handler.handleTap("DBP");
+        verify(callback, never()).channelTriggered(org.mockito.ArgumentMatchers.any(),
+                org.mockito.ArgumentMatchers.any(), org.mockito.ArgumentMatchers.any());
+
+        when(thing.getChannel("tap")).thenReturn(org.openhab.core.thing.binding.builder.ChannelBuilder.create(tap)
+                .withKind(org.openhab.core.thing.type.ChannelKind.TRIGGER).build());
+        handler.handleTap("DBP");
+        handler.handleTap("DBR");
+        handler.handleTap("DBH");
+        handler.handleTap("DBDT");
+
+        verify(callback).channelTriggered(thing, tap, "PRESSED");
+        verify(callback).channelTriggered(thing, tap, "RELEASED");
+        verify(callback).channelTriggered(thing, tap, "LONG_PRESSED");
+        verify(callback).channelTriggered(thing, tap, "DOUBLE_PRESSED");
+    }
 }
