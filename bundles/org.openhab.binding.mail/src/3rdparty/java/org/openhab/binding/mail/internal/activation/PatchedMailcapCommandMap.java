@@ -17,8 +17,9 @@
  * under the License.
  */
 
-package javax.activation;
+package org.openhab.binding.mail.internal.activation;
 
+import javax.activation.*;
 import javax.mail.Session;
 import java.io.BufferedReader;
 import java.io.IOException;

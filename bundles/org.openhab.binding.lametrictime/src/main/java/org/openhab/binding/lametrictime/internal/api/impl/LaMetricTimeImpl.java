@@ -16,8 +16,6 @@ import static org.openhab.binding.lametrictime.internal.api.dto.ApiValue.raw;
 
 import java.util.Arrays;
 
-import javax.ws.rs.client.ClientBuilder;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.lametrictime.internal.api.Configuration;
@@ -50,6 +48,8 @@ import org.openhab.binding.lametrictime.internal.api.local.dto.UpdateAction;
 import org.openhab.binding.lametrictime.internal.api.local.dto.Widget;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import jakarta.ws.rs.client.ClientBuilder;
 
 /**
  * Implementation class for LaMetricTime interface.

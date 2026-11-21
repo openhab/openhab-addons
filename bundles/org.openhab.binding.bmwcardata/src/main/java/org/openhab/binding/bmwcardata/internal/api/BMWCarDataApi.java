@@ -24,10 +24,10 @@ import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
@@ -216,13 +216,14 @@ public class BMWCarDataApi {
                     LogRedaction.vins(path), budget.used(), budget.budget());
         }
         Request request = httpClient.newRequest(baseUrl + path).method(method)
-                .header(HttpHeader.AUTHORIZATION, "Bearer " + accessToken).header(HttpHeader.ACCEPT, accept)
-                .header("x-version", API_VERSION).timeout(TIMEOUT_SECONDS, TimeUnit.SECONDS);
+                .headers(headers -> headers.put(HttpHeader.AUTHORIZATION, "Bearer " + accessToken)
+                        .put(HttpHeader.ACCEPT, accept).put("x-version", API_VERSION))
+                .timeout(TIMEOUT_SECONDS, TimeUnit.SECONDS);
         if (containerId != null) {
             request.param("containerId", containerId);
         }
         if (jsonBody != null) {
-            request.content(new StringContentProvider("application/json", jsonBody, StandardCharsets.UTF_8));
+            request.body(new StringRequestContent("application/json", jsonBody, StandardCharsets.UTF_8));
             if (logger.isTraceEnabled()) {
                 logger.trace("BMW CarData request {} {} body: {}", method, LogRedaction.vins(path),
                         LogRedaction.payload(jsonBody));

@@ -21,8 +21,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.HttpResponseException;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.openhab.binding.visualcrossing.internal.api.VisualCrossingApiException;
 import org.openhab.binding.visualcrossing.internal.api.VisualCrossingAuthException;
 import org.openhab.binding.visualcrossing.internal.api.VisualCrossingRateException;
@@ -55,7 +55,7 @@ public class ApiClient implements RestClient {
             throws VisualCrossingApiException, VisualCrossingAuthException, VisualCrossingRateException {
         var request = client.POST(url);
         if (content != null) {
-            request.content(new StringContentProvider(content.body()), content.type());
+            request.body(new StringRequestContent(content.type(), content.body()));
         }
         return execute(request, headers, url);
     }
@@ -70,7 +70,7 @@ public class ApiClient implements RestClient {
                         continue;
                     }
                     for (var value : header.values()) {
-                        request.header(header.name(), value);
+                        request.headers(h -> h.add(header.name(), value));
                     }
                 }
             }

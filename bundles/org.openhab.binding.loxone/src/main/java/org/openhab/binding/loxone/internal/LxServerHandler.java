@@ -31,6 +31,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+import org.eclipse.jetty.client.transport.HttpClientTransportDynamic;
+import org.eclipse.jetty.io.ClientConnector;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
@@ -184,8 +186,13 @@ public class LxServerHandler extends BaseThingHandler implements LxServerHandler
             jettyThreadPool.setDaemon(true);
 
             socket = new LxWebSocket(debugId, this, bindingConfig, host);
-            wsClient = new WebSocketClient(new SslContextFactory.Client(true));
-            wsClient.setExecutor(jettyThreadPool);
+            SslContextFactory.Client sslContextFactory = new SslContextFactory.Client(true);
+            ClientConnector clientConnector = new ClientConnector();
+            clientConnector.setSslContextFactory(sslContextFactory);
+            org.eclipse.jetty.client.HttpClient internalHttpClient = new org.eclipse.jetty.client.HttpClient(
+                    new HttpClientTransportDynamic(clientConnector));
+            internalHttpClient.setExecutor(jettyThreadPool);
+            wsClient = new WebSocketClient(internalHttpClient);
             if (debugId > 1) {
                 reconnectDelay.set(0);
             }

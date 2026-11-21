@@ -33,8 +33,6 @@ import java.util.TreeMap;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import javax.validation.constraints.NotNull;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.salus.internal.cloud.rest.AuthToken;
@@ -45,6 +43,8 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
+
+import jakarta.validation.constraints.NotNull;
 
 /**
  * The GsonMapper class is responsible for mapping JSON data to Java objects using the Gson library. It provides methods

@@ -26,8 +26,8 @@ import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
@@ -111,7 +111,7 @@ public class TransitApiClient {
 
     private ContentResponse sendGetRequest(String url, String apiKey) throws IOException, InterruptedException {
         try {
-            return httpClient.newRequest(url).method(HttpMethod.GET).header(API_KEY_HEADER, apiKey)
+            return httpClient.newRequest(url).method(HttpMethod.GET).headers(h -> h.put(API_KEY_HEADER, apiKey))
                     .timeout(API_TIMEOUT_SECONDS, TimeUnit.SECONDS).send();
         } catch (TimeoutException e) {
             throw new IOException("Request to Transit API timed out", e);
