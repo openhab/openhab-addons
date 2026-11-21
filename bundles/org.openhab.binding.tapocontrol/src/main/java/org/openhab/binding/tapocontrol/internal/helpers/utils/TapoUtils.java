@@ -141,6 +141,11 @@ public class TapoUtils {
                 deviceModel = DEVICE_HS200;
             } else if (deviceModel.startsWith(DEVICE_HS220)) {
                 deviceModel = DEVICE_HS220;
+            } else if (deviceModel.startsWith(DEVICE_KP405)) {
+                deviceModel = DEVICE_KP405;
+            } else if (deviceModel.startsWith(DEVICE_EP40 + "M")) {
+                // EP40M is a different (Matter) device; keep it from being truncated to EP40
+                deviceModel = DEVICE_EP40 + "M";
             } else {
                 // Keep legacy behavior of only first 4 characters
                 deviceModel = deviceModel.substring(0, 4);

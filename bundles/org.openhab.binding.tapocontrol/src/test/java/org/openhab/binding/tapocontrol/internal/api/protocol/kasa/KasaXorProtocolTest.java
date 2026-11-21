@@ -14,21 +14,28 @@ package org.openhab.binding.tapocontrol.internal.api.protocol.kasa;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
-import static org.openhab.binding.tapocontrol.internal.constants.TapoComConstants.DEVICE_CMD_GETINFO;
+import static org.openhab.binding.tapocontrol.internal.TapoControlHandlerFactory.GSON;
+import static org.openhab.binding.tapocontrol.internal.constants.TapoComConstants.*;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.List;
+import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -37,8 +44,13 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.tapocontrol.internal.api.TapoDeviceConnector;
+import org.openhab.binding.tapocontrol.internal.devices.dto.TapoChildDeviceData;
+import org.openhab.binding.tapocontrol.internal.devices.dto.TapoChildList;
+import org.openhab.binding.tapocontrol.internal.dto.TapoChildRequest;
 import org.openhab.binding.tapocontrol.internal.dto.TapoRequest;
+import org.openhab.binding.tapocontrol.internal.dto.TapoResponse;
 import org.openhab.binding.tapocontrol.internal.helpers.TapoCredentials;
+import org.openhab.binding.tapocontrol.internal.helpers.TapoErrorHandler;
 
 import com.google.gson.JsonObject;
 
@@ -46,9 +58,110 @@ import com.google.gson.JsonObject;
  * Tests for {@link KasaXorProtocol}.
  *
  * @author Lee Ballard - Initial contribution
+ * @author Christopher Smith - Add Kasa power strip child tests
  */
 @NonNullByDefault
 class KasaXorProtocolTest {
+    // Based on python-kasa fixture EP40(US)_1.0_1.0.2.json
+    private static final String EP40_SYSINFO = """
+            {"system":{"get_sysinfo":{"alias":"Deck","child_num":2,"children":[
+            {"alias":"Deck 1","id":"8006ECEB66F1C56B848E40B81F70EC9F1EDAD09900","next_action":{"type":-1},
+            "on_time":120,"state":1},
+            {"alias":"Deck 2","id":"8006ECEB66F1C56B848E40B81F70EC9F1EDAD09901","next_action":{"type":-1},
+            "on_time":0,"state":0}],
+            "deviceId":"8006ECEB66F1C56B848E40B81F70EC9F1EDAD099","err_code":0,"hw_ver":"1.0","led_off":0,
+            "mac":"00:00:00:00:00:00","mic_type":"IOT.SMARTPLUGSWITCH","model":"EP40(US)","rssi":-47,
+            "sw_ver":"1.0.4 Build 240305 Rel.111944"}}}
+            """;
+
+    @Test
+    void mapsPowerStripChildrenToChildDeviceList() throws TapoErrorHandler {
+        TapoResponse response = KasaXorProtocol.mapChildList(EP40_SYSINFO);
+
+        assertThat(response.hasError(), is(false));
+        assertThat(response.method(), is(DEVICE_CMD_GETCHILDDEVICELIST));
+        TapoChildList childList = Objects.requireNonNull(GSON.fromJson(response.result(), TapoChildList.class));
+        List<TapoChildDeviceData> children = childList.getChildDeviceList();
+        assertThat(children, hasSize(2));
+        assertThat(children.get(0).getPosition(), is(1));
+        assertThat(children.get(0).getDeviceId(), is("8006ECEB66F1C56B848E40B81F70EC9F1EDAD09900"));
+        assertThat(children.get(0).isOn(), is(true));
+        assertThat(children.get(1).getPosition(), is(2));
+        assertThat(children.get(1).isOn(), is(false));
+    }
+
+    @Test
+    void mapsDeviceWithoutChildrenToEmptyChildDeviceList() throws TapoErrorHandler {
+        String sysinfo = "{\"system\":{\"get_sysinfo\":{\"err_code\":0,\"model\":\"EP10(US)\",\"relay_state\":1}}}";
+
+        TapoChildList childList = Objects
+                .requireNonNull(GSON.fromJson(KasaXorProtocol.mapChildList(sysinfo).result(), TapoChildList.class));
+
+        assertThat(childList.getChildDeviceList(), hasSize(0));
+    }
+
+    @Test
+    void buildsChildRelayCommand() {
+        assertThat(KasaXorProtocol.buildChildRelayCommand("CHILD01", true),
+                is("{\"context\":{\"child_ids\":[\"CHILD01\"]},\"system\":{\"set_relay_state\":{\"state\":1}}}"));
+    }
+
+    @Test
+    void sendsControlChildAsKasaRelayCommandWithChildContext() throws Exception {
+        TapoDeviceConnector connector = mock(TapoDeviceConnector.class);
+        CountDownLatch responseHandled = new CountDownLatch(1);
+        doAnswer(invocation -> {
+            invocation.getArgument(0, Runnable.class).run();
+            return null;
+        }).when(connector).executeAsync(any(Runnable.class));
+        doAnswer(invocation -> {
+            responseHandled.countDown();
+            return null;
+        }).when(connector).handleResponse(any(), anyString());
+        ExecutorService serverExecutor = Executors.newSingleThreadExecutor();
+
+        try (ServerSocket serverSocket = new ServerSocket(0)) {
+            CompletableFuture<String> received = CompletableFuture.supplyAsync(
+                    () -> respondOnce(serverSocket, "{\"system\":{\"set_relay_state\":{\"err_code\":0}}}"),
+                    serverExecutor);
+            KasaXorProtocol protocol = new KasaXorProtocol(connector, "127.0.0.1", false, serverSocket.getLocalPort());
+            try {
+                TapoChildDeviceData child = Objects.requireNonNull(
+                        GSON.fromJson("{\"device_id\":\"8006ECEB66F1C56B848E40B81F70EC9F1EDAD09901\",\"position\":2}",
+                                TapoChildDeviceData.class));
+                child.setDeviceOn(true);
+                protocol.login(new TapoCredentials());
+
+                protocol.sendAsyncRequest(new TapoChildRequest(child));
+
+                assertThat(received.get(2, TimeUnit.SECONDS), is(
+                        "{\"context\":{\"child_ids\":[\"8006ECEB66F1C56B848E40B81F70EC9F1EDAD09901\"]},\"system\":{\"set_relay_state\":{\"state\":1}}}"));
+                assertTrue(responseHandled.await(2, TimeUnit.SECONDS));
+                verify(connector).handleResponse(any(), eq(DEVICE_CMD_CONTROL_CHILD));
+                verify(connector, never()).handleError(any());
+            } finally {
+                protocol.logout();
+            }
+        } finally {
+            serverExecutor.shutdownNow();
+        }
+    }
+
+    private static String respondOnce(ServerSocket serverSocket, String response) {
+        try (Socket socket = serverSocket.accept();
+                DataInputStream input = new DataInputStream(socket.getInputStream());
+                DataOutputStream output = new DataOutputStream(socket.getOutputStream())) {
+            byte[] request = new byte[input.readInt()];
+            input.readFully(request);
+            byte[] encrypted = KasaXorProtocol.encrypt(response);
+            output.writeInt(encrypted.length);
+            output.write(encrypted);
+            output.flush();
+            return KasaXorProtocol.decrypt(request);
+        } catch (IOException e) {
+            throw new IllegalStateException(e);
+        }
+    }
 
     @Test
     void roundTripsUtf8Payload() {

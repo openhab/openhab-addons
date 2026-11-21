@@ -22,6 +22,7 @@ import org.junit.jupiter.api.Test;
  * Tests for {@link TapoUtils}.
  *
  * @author Lee Ballard - Initial contribution
+ * @author Christopher Smith - Add Kasa EP10, EP40 and KP405 models
  */
 @NonNullByDefault
 class TapoUtilsTest {
@@ -29,5 +30,17 @@ class TapoUtilsTest {
     @Test
     void preservesFiveCharacterKasaModel() {
         assertThat(TapoUtils.getDeviceModel("HS220(US)"), is("HS220"));
+    }
+
+    @Test
+    void mapsKasaPlugModels() {
+        assertThat(TapoUtils.getDeviceModel("EP10(US)"), is("EP10"));
+        assertThat(TapoUtils.getDeviceModel("EP40(US)"), is("EP40"));
+        assertThat(TapoUtils.getDeviceModel("KP405(US)"), is("KP405"));
+    }
+
+    @Test
+    void doesNotMapMatterEp40mToEp40() {
+        assertThat(TapoUtils.getDeviceModel("EP40M(US)"), is("EP40M"));
     }
 }
