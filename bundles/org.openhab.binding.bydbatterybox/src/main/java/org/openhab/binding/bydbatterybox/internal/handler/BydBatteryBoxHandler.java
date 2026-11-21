@@ -410,11 +410,10 @@ public class BydBatteryBoxHandler extends BaseThingHandler {
      */
     private boolean readEventLogs(PollContext context, BydClient client, SystemInfo info)
             throws BydCommunicationException, InterruptedException {
-        EventRecord newest = null;
+        Map<Integer, List<EventRecord>> logs = new LinkedHashMap<>();
         for (int unit = EventRecord.UNIT_BMU; unit <= info.towers(); unit++) {
-            List<EventRecord> records;
             try {
-                records = client.readEventLog(unit);
+                logs.put(unit, client.readEventLog(unit));
             } catch (BydCommunicationException e) {
                 if (e.getReason() != BydCommunicationException.Reason.NOT_READY) {
                     throw e;
@@ -425,21 +424,35 @@ public class BydBatteryBoxHandler extends BaseThingHandler {
             if (!isCurrent(context)) {
                 return false;
             }
-            for (EventRecord record : context.eventTracker.update(unit, records)) {
-                triggerChannel(new ChannelUID(thing.getUID(), GROUP_EVENTS, CHANNEL_EVENT),
-                        (record.isBmu() ? "BMU" : "BMS" + record.getUnit()) + ":" + record.getCode());
-            }
+        }
+        // the tracker only advances once all units were read, so that an aborted cycle loses no events
+        List<EventRecord> fresh = new ArrayList<>();
+        EventRecord newest = null;
+        for (Map.Entry<Integer, List<EventRecord>> log : logs.entrySet()) {
+            List<EventRecord> records = log.getValue();
+            fresh.addAll(context.eventTracker.update(log.getKey(), records));
             if (!records.isEmpty()
                     && (newest == null || records.getFirst().getTimestamp().isAfter(newest.getTimestamp()))) {
                 newest = records.getFirst();
             }
         }
+        publishEvents(fresh, newest, context.clockOffset);
+        return true;
+    }
+
+    /**
+     * Updates the last event channels before triggering, so that a rule triggered by an event already reads it there.
+     */
+    void publishEvents(List<EventRecord> fresh, @Nullable EventRecord newest, Duration clockOffset) {
         if (newest != null) {
             update(GROUP_EVENTS, CHANNEL_LAST_EVENT, new StringType(texts.event(newest)));
-            Instant time = newest.getTimestamp().toInstant(ZoneOffset.UTC).minus(context.clockOffset);
+            Instant time = newest.getTimestamp().toInstant(ZoneOffset.UTC).minus(clockOffset);
             update(GROUP_EVENTS, CHANNEL_LAST_EVENT_TIME, new DateTimeType(time));
         }
-        return true;
+        for (EventRecord record : fresh) {
+            triggerChannel(new ChannelUID(thing.getUID(), GROUP_EVENTS, CHANNEL_EVENT),
+                    (record.isBmu() ? "BMU" : "BMS" + record.getUnit()) + ":" + record.getCode());
+        }
     }
 
     // ------------------------------------------------------------------------------------------ identity
