@@ -1,0 +1,13 @@
+syntax = "proto2";
+option java_package = "org.openhab.binding.atv.internal.client.protocols.mrp.dto";
+
+import "atv/mrp/protobuf/ProtocolMessage.proto";
+import "atv/mrp/protobuf/NowPlayingClient.proto";
+
+extend ProtocolMessage {
+  optional RemoveClientMessage removeClientMessage = 57;
+}
+
+message RemoveClientMessage {
+  optional NowPlayingClient client = 1;
+}

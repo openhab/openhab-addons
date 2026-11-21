@@ -1,0 +1,37 @@
+syntax = "proto2";
+option java_package = "org.openhab.binding.atv.internal.client.protocols.mrp.dto";
+
+import "atv/mrp/protobuf/Common.proto";
+
+message CommandOptions {
+  optional string sourceId = 2;
+  optional string mediaType = 3;
+  optional bool externalPlayerCommand = 4;
+  optional float skipInterval = 5;
+  optional float playbackRate = 6;
+  optional float rating = 7;
+  optional bool negative = 8;
+  optional double playbackPosition = 9;
+  optional RepeatMode.Enum repeatMode = 10;
+  optional ShuffleMode.Enum shuffleMode = 11;
+  optional uint64 trackID = 12;
+  optional int64 radioStationID = 13;
+  optional string radioStationHash = 14;
+  optional bytes systemAppPlaybackQueueData = 15;
+  optional string destinationAppDisplayID = 16;
+  optional uint32 sendOptions = 17;
+  optional bool requestDefermentToPlaybackQueuePosition = 18;
+  optional string contextID = 19;
+  optional bool shouldOverrideManuallyCuratedQueue = 20;
+  optional string stationURL = 21;
+  optional bool shouldBeginRadioPlayback = 22;
+  optional int32 playbackQueueInsertionPosition = 23;
+  optional string contentItemID = 24;
+  optional int32 playbackQueueOffset = 25;
+  optional int32 playbackQueueDestinationOffset = 26;
+  optional bytes languageOption = 27;
+  optional bytes playbackQueueContext = 28;
+  optional string insertAfterContentItemID = 29;
+  optional string nowPlayingContentItemID = 30;
+  optional int32 replaceIntent = 31;
+}

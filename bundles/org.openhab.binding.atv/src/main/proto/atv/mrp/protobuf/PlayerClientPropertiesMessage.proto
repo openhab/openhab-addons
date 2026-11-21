@@ -1,0 +1,14 @@
+syntax = "proto2";
+option java_package = "org.openhab.binding.atv.internal.client.protocols.mrp.dto";
+
+import "atv/mrp/protobuf/ProtocolMessage.proto";
+import "atv/mrp/protobuf/PlayerPath.proto";
+
+extend ProtocolMessage {
+  optional PlayerClientPropertiesMessage playerClientPropertiesMessage = 86;
+}
+
+message PlayerClientPropertiesMessage {
+  optional PlayerPath playerPath = 1;
+  optional double lastPlayingTimestamp = 2;
+}

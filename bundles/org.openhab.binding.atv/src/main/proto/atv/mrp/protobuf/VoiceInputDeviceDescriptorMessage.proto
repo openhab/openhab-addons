@@ -1,0 +1,9 @@
+syntax = "proto2";
+option java_package = "org.openhab.binding.atv.internal.client.protocols.mrp.dto";
+
+import "atv/mrp/protobuf/AudioFormatSettingsMessage.proto";
+
+message VoiceInputDeviceDescriptor {
+  optional AudioFormatSettings defaultFormat = 1;
+  repeated AudioFormatSettings supportedFormats = 2;
+}

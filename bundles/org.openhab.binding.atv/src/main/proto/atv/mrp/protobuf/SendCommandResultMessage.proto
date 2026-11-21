@@ -1,0 +1,101 @@
+syntax = "proto2";
+option java_package = "org.openhab.binding.atv.internal.client.protocols.mrp.dto";
+
+import "atv/mrp/protobuf/ProtocolMessage.proto";
+import "atv/mrp/protobuf/PlayerPath.proto";
+
+extend ProtocolMessage {
+  optional SendCommandResultMessage sendCommandResultMessage = 7;
+}
+
+message SendError {
+  enum Enum {
+    NoError = 0;  // This is None in original message definitions (no-go with python)
+    ApplicationNotFound = 1;
+    ConnectionFailed = 2;
+    Ignored = 3;
+    CouldNotLaunchApplication = 4;
+    TimedOut = 5;
+    OriginDoesNotExist = 6;
+    InvalidOptions = 7;
+    NoCommandHandlers = 8;
+    ApplicationNotInstalled = 9;
+    NotSupported = 10;
+  }
+}
+
+message HandlerReturnStatus {
+  enum Enum {
+    Success = 0;
+    NoSuchContent = 1;
+    CommandFailed = 2;
+    NoActionableNowPlayingItem = 10;
+    DeviceNotFound = 20;
+    UIKitLegacy = 3;
+    SkipAdProhibited = 100;
+    QueueIsUserCurated = 101;
+    UserModifiedQueueDisabled = 102;
+    UserQueueModificationNotSupportedForCurrentItem = 103;
+    SubscriptionRequiredForSharedQueue = 104;
+    InsertionPositionNotSpecified = 105;
+    InvalidInsertionPosition = 106;
+    RequestParametersOutOfBounds = 107;
+    SkipLimitReached = 108;
+    AuthenticationFailure = 401;
+    MediaServiceUnavailable = 501;
+  }
+}
+
+message SendCommandStatusCode {
+  enum Enum {
+    Success = 0;
+    NoSuchContent = 1;
+    CommandFailed = 2;
+    NoActionableNowPlayingItem = 10;
+    DeviceNotFound = 20;
+    UIKitLegacy = 3;
+    SkipAdProhibited = 100;
+    QueueIsUserCurated = 101;
+    UserModifiedQueueDisabled = 102;
+    UserQueueModificationNotSupportedForCurrentItem = 103;
+    SubscriptionRequiredForSharedQueue = 104;
+    InsertionPositionNotSpecified = 105;
+    InvalidInsertionPosition = 106;
+    RequestParametersOutOfBounds = 107;
+    SkipLimitReached = 108;
+    AuthenticationFailure = 401;
+    MediaServiceUnavailable = 501;
+  }
+}
+
+message SendCommandResultType {
+  enum Enum {
+    Dialog = 1;
+    Error = 2;
+    Custom = 999;
+  }
+}
+
+message SendCommandResultStatus {
+  optional SendCommandStatusCode.Enum statusCode = 1;
+  optional SendCommandResultType.Enum type = 2;
+  // optional ... dialog = 3;
+  // optional ... error = 4;
+  optional bytes customData = 5;
+  optional string customDataType = 6;
+}
+
+message SendCommandResult {
+  optional PlayerPath playerPath = 1;
+  optional SendError.Enum sendError = 2;
+  repeated SendCommandResultStatus statuses = 3;
+}
+
+message SendCommandResultMessage {
+  optional SendError.Enum sendError = 1;
+  optional HandlerReturnStatus.Enum handlerReturnStatus = 2;
+  repeated bytes handlerReturnStatusDatas = 3;
+  optional string commandID = 4;
+  optional PlayerPath playerPath = 5;
+  optional SendCommandResult commandResult = 6;
+}

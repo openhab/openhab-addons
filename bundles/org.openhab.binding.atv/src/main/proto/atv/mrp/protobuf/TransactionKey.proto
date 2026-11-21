@@ -1,0 +1,7 @@
+syntax = "proto2";
+option java_package = "org.openhab.binding.atv.internal.client.protocols.mrp.dto";
+
+message TransactionKey {
+    optional string identifier = 1;
+    optional bytes userData = 2;
+}

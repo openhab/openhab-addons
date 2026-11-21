@@ -1,0 +1,39 @@
+syntax = "proto2";
+option java_package = "org.openhab.binding.atv.internal.client.protocols.mrp.dto";
+
+import "atv/mrp/protobuf/ProtocolMessage.proto";
+import "atv/mrp/protobuf/AudioFormatSettingsMessage.proto";
+
+extend ProtocolMessage {
+  optional SendVoiceInputMessage sendVoiceInputMessage = 36;
+}
+
+message AudioStreamPacketDescription {
+  optional int64 startOffset = 1;
+  optional uint32 variableFramesInPacket = 2;
+  optional uint32 dataByteSize = 3;
+}
+
+message AudioBuffer {
+  optional AudioFormatSettings formatSettings = 1;
+  optional int64 packetCapacity = 2;
+  optional int64 maximumPacketSize = 3;
+  optional int64 packetCount = 4;
+  optional bytes contents = 5;
+  repeated AudioStreamPacketDescription packetDescriptions = 6;
+}
+
+message AudioTime {
+  optional double timestamp = 1;
+  optional double sampleRate = 2;
+}
+
+message AudioDataBlock {
+  optional AudioBuffer buffer = 1; 
+  optional AudioTime time = 2;
+  optional double gain = 3;
+}
+
+message SendVoiceInputMessage {
+  optional AudioDataBlock dataBlock = 1;
+}

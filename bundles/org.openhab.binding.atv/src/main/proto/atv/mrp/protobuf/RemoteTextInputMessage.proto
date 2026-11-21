@@ -1,0 +1,14 @@
+syntax = "proto2";
+option java_package = "org.openhab.binding.atv.internal.client.protocols.mrp.dto";
+
+import "atv/mrp/protobuf/ProtocolMessage.proto";
+
+extend ProtocolMessage {
+  optional RemoteTextInputMessage remoteTextInputMessage = 71;
+}
+
+message RemoteTextInputMessage {
+  optional double timestamp = 1;
+  optional uint64 version = 2;
+  optional bytes data = 3;
+}

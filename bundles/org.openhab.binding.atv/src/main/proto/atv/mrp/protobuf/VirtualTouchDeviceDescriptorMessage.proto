@@ -1,0 +1,9 @@
+syntax = "proto2";
+option java_package = "org.openhab.binding.atv.internal.client.protocols.mrp.dto";
+
+message VirtualTouchDeviceDescriptor {
+  optional bool absolute = 1;
+  optional bool integratedDisplay = 2;
+  optional float screenSizeWidth = 3;
+  optional float screenSizeHeight = 4;
+}
