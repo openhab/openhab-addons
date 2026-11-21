@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -41,7 +42,6 @@ import org.openhab.core.thing.ThingStatusDetail;
 @NonNullByDefault
 public class EcowittHttpGatewayQueryService extends GatewayQueryService {
 
-    private static final int TIMEOUT_MS = 5000;
     private static final int MAX_SENSOR_PAGES = 8;
 
     private final EcowittDataParser parser = new EcowittDataParser();
@@ -58,21 +58,24 @@ public class EcowittHttpGatewayQueryService extends GatewayQueryService {
     }
 
     @Override
-    public Map<SensorGatewayBinding, SensorDevice> getRegisteredSensors() {
+    public @Nullable Map<SensorGatewayBinding, SensorDevice> getRegisteredSensors() {
         String version = get("get_version");
         if (version == null) {
-            return Map.of();
+            return null;
         }
         int pageCount = Math.min(parser.parseSensorPageCount(version), MAX_SENSOR_PAGES);
         @Nullable
         SystemInfo systemInfo = fetchSystemInfo();
-        boolean useWh24 = systemInfo != null && systemInfo.isUseWh24();
+        // null if unknown: then the outdoor unit at index 0 cannot be told apart (WH24 or WH65)
+        Boolean useWh24 = systemInfo == null ? null : systemInfo.isUseWh24();
         List<String> pages = new ArrayList<>();
         for (int page = 1; page <= pageCount; page++) {
             String response = get("get_sensors_info?page=" + page);
-            if (response != null) {
-                pages.add(response);
+            if (response == null) {
+                // a missing page would make its sensors look unpaired
+                return null;
             }
+            pages.add(response);
         }
         return parser.parseSensors(pages, useWh24);
     }
@@ -103,7 +106,7 @@ public class EcowittHttpGatewayQueryService extends GatewayQueryService {
     private @Nullable String get(String endpoint) {
         String url = "http://" + config.ip + "/" + endpoint;
         try {
-            String response = HttpUtil.executeUrl("GET", url, TIMEOUT_MS);
+            String response = HttpUtil.executeUrl("GET", url, (int) TimeUnit.SECONDS.toMillis(config.timeout));
             updateThingStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, null);
             logger.trace("GET {} -> {}", url, response);
             return response;

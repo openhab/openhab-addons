@@ -32,7 +32,7 @@ import org.openhab.core.types.State;
 /**
  * Reconciles a batch of {@link MeasuredValue}s against a Thing's current channels: it decides which dynamic
  * channels to create, which states to post, and which channels to remove once their value has been missing for
- * {@link #MISSING_VALUE_REMOVAL_THRESHOLD} consecutive reconcile passes. It is a pure planner - it never mutates a
+ * a configurable number of consecutive reconcile passes. It is a pure planner - it never mutates a
  * Thing or posts state itself; the calling handler applies the returned {@link Plan} with its own builder.
  *
  * <p>
@@ -46,6 +46,7 @@ import org.openhab.core.types.State;
  * protected and never removed, while every other - dynamic measurement - channel is removal-eligible).
  *
  * @author Andreas Berger - Initial contribution
+ * @author Christopher Smith - Configurable removal threshold, pausable missing-value count
  */
 @NonNullByDefault
 class DynamicChannelReconciler {
@@ -81,6 +82,7 @@ class DynamicChannelReconciler {
     }
 
     private final Set<String> protectedChannelIds;
+    private final int removalThreshold;
     private final Map<String, Integer> missingCounts = new HashMap<>();
 
     /**
@@ -89,7 +91,17 @@ class DynamicChannelReconciler {
      *            removal-eligible (gateway semantics).
      */
     DynamicChannelReconciler(Set<String> protectedChannelIds) {
+        this(protectedChannelIds, MISSING_VALUE_REMOVAL_THRESHOLD);
+    }
+
+    /**
+     * @param protectedChannelIds see {@link #DynamicChannelReconciler(Set)}
+     * @param removalThreshold the number of consecutive reconcile passes a value may be missing before its channel is
+     *            removed
+     */
+    DynamicChannelReconciler(Set<String> protectedChannelIds, int removalThreshold) {
         this.protectedChannelIds = protectedChannelIds;
+        this.removalThreshold = removalThreshold;
     }
 
     /** Clears the accumulated missing-value debounce state, e.g. when the owning handler re-initializes. */
@@ -99,6 +111,15 @@ class DynamicChannelReconciler {
 
     Plan reconcile(Collection<MeasuredValue> values, Collection<Channel> currentChannels,
             Function<MeasuredValue, String> channelIdResolver, ChannelFactory channelFactory) {
+        return reconcile(values, currentChannels, channelIdResolver, channelFactory, true);
+    }
+
+    /**
+     * @param countMissing whether values missing from this pass count towards the removal of their channels; pass
+     *            {@code false} when their absence is explained otherwise (e.g. the sensor is out of reach)
+     */
+    Plan reconcile(Collection<MeasuredValue> values, Collection<Channel> currentChannels,
+            Function<MeasuredValue, String> channelIdResolver, ChannelFactory channelFactory, boolean countMissing) {
         Map<String, Channel> currentById = new HashMap<>();
         for (Channel channel : currentChannels) {
             currentById.put(channel.getUID().getId(), channel);
@@ -141,9 +162,9 @@ class DynamicChannelReconciler {
             }
             if (reported.contains(id)) {
                 missingCounts.remove(id);
-            } else {
+            } else if (countMissing) {
                 Integer count = missingCounts.merge(id, 1, Integer::sum);
-                if (count != null && count >= MISSING_VALUE_REMOVAL_THRESHOLD) {
+                if (count != null && count >= removalThreshold) {
                     toRemove.add(channel);
                     missingCounts.remove(id);
                 }
