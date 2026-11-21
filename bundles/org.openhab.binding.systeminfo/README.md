@@ -168,6 +168,13 @@ This makes the channels in this group very flexible — they can change their PI
 
 The PID parameter has a default value of 0 — this is the PID of the System Idle process on Windows.
 
+## OSHI Configuration
+
+The binding reads the optional file `misc/oshi.properties` in the openHAB configuration folder (e.g. `/etc/openhab/misc/oshi.properties`) and passes its entries to the OSHI library before it is first used.
+If the file does not exist, the binding creates it from a template that contains all OSHI defaults as commented-out entries.
+To override a default, remove the leading `#` of the entry and change the value.
+OSHI caches many of these settings, so changes are applied after a restart of openHAB.
+
 ## Known issues and workarounds
 
 - Temperature readings are not well supported on standard Windows systems, run [OpenHardwareMonitor.exe](https://openhardwaremonitor.org) for the binding to get more reliable readings.
