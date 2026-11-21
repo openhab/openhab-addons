@@ -84,6 +84,7 @@ public class NetatmoHandlerFactory extends BaseThingHandlerFactory {
     private final HttpService httpService;
     private final OAuthFactory oAuthFactory;
     private volatile @Nullable WebhookService webhookService;
+    private @Nullable ApiBridgeHandler apiBridge;
 
     @Activate
     public NetatmoHandlerFactory(final @Reference NetatmoDescriptionProvider stateDescriptionProvider,
@@ -108,11 +109,17 @@ public class NetatmoHandlerFactory extends BaseThingHandlerFactory {
     @Reference(cardinality = ReferenceCardinality.OPTIONAL, policy = ReferencePolicy.DYNAMIC)
     void setWebhookService(WebhookService service) {
         webhookService = service;
+        if (apiBridge != null) {
+            apiBridge.webhookServiceAvailable(webhookService);
+        }
     }
 
     void unsetWebhookService(WebhookService service) {
         if (Objects.equals(webhookService, service)) {
             webhookService = null;
+            if (apiBridge instanceof ApiBridgeHandler account) {
+                account.webhookServiceGone();
+            }
         }
     }
 
@@ -130,8 +137,13 @@ public class NetatmoHandlerFactory extends BaseThingHandlerFactory {
 
     private BaseThingHandler buildHandler(Thing thing, ModuleType moduleType) {
         if (ModuleType.ACCOUNT.equals(moduleType)) {
-            return new ApiBridgeHandler((Bridge) thing, httpClient, deserializer, configuration, httpService,
-                    oAuthFactory, () -> webhookService);
+            ApiBridgeHandler account = new ApiBridgeHandler((Bridge) thing, httpClient, deserializer, configuration,
+                    httpService, oAuthFactory);
+            if (webhookService != null) {
+                account.webhookServiceAvailable(webhookService);
+            }
+            this.apiBridge = account;
+            return account;
         }
         CommonInterface handler = moduleType.isABridge() ? new DeviceHandler((Bridge) thing) : new ModuleHandler(thing);
 

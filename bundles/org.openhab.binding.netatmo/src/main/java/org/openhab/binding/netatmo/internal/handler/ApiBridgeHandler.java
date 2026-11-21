@@ -36,7 +36,6 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.function.BiFunction;
-import java.util.function.Supplier;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriBuilder;
@@ -129,7 +128,6 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
     private final OAuthFactory oAuthFactory;
     private final NADeserializer deserializer;
     private final HttpService httpService;
-    private final Supplier<@Nullable WebhookService> webhookServiceSupplier;
     private final ChannelUID requestCountChannelUID;
     private final ChannelUID hookSetChannelUID;
     private final GrantServlet grantServlet;
@@ -137,19 +135,26 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
     private @Nullable OAuthClientService oAuthClientService;
     private @Nullable ScheduledFuture<?> connectJob;
     private @Nullable WebhookServlet webhookServlet;
+<<<<<<< Upstream, based on main
+=======
+    private @Nullable GrantServlet grantServlet;
+    private @Nullable WebhookService webhookService;
+>>>>>>> 566fb64 Review openhabCloud availability cycle
 
     public ApiBridgeHandler(Bridge bridge, HttpClient httpClient, NADeserializer deserializer,
-            BindingConfiguration configuration, HttpService httpService, OAuthFactory oAuthFactory,
-            Supplier<@Nullable WebhookService> webhookServiceSupplier) {
+            BindingConfiguration configuration, HttpService httpService, OAuthFactory oAuthFactory) {
         super(bridge);
         this.bindingConf = configuration;
         this.httpClient = httpClient;
         this.deserializer = deserializer;
         this.httpService = httpService;
         this.oAuthFactory = oAuthFactory;
+<<<<<<< Upstream, based on main
         this.grantServlet = new GrantServlet(this, httpService);
 
         this.webhookServiceSupplier = webhookServiceSupplier;
+=======
+>>>>>>> 566fb64 Review openhabCloud availability cycle
         requestCountChannelUID = new ChannelUID(thing.getUID(), GROUP_MONITORING, CHANNEL_REQUEST_COUNT);
         hookSetChannelUID = new ChannelUID(thing.getUID(), GROUP_MONITORING, CHANNEL_HOOK_SET);
     }
@@ -185,7 +190,9 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
         }
 
         logger.debug("Connected to Netatmo API.");
+
         freeConnectJob();
+<<<<<<< Upstream, based on main
 
         ApiHandlerConfiguration configuration = getConfiguration();
 <<<<<<< Upstream, based on main
@@ -245,6 +252,10 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
             webhookServlet = servlet;
             servlet.startListening();
         }
+=======
+        freeWebhookServlet();
+        checkStartWebhook();
+>>>>>>> 566fb64 Review openhabCloud availability cycle
 
         updateStatus(ThingStatus.ONLINE);
     }
@@ -324,6 +335,7 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
     public void dispose() {
         logger.debug("Shutting down Netatmo API bridge handler.");
 
+<<<<<<< Upstream, based on main
         WebhookServlet webHookServlet = this.webhookServlet;
         if (webHookServlet != null) {
             webHookServlet.dispose();
@@ -331,6 +343,10 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
         this.webhookServlet = null;
 
         grantServlet.dispose();
+=======
+        freeWebhookServlet();
+        freeGrantServlet();
+>>>>>>> 566fb64 Review openhabCloud availability cycle
 
         connectApi.dispose();
         freeConnectJob();
@@ -638,5 +654,45 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
 >>>>>>> a1c653f Lolodomo code review
 =======
 >>>>>>> 7601187 Rebased after merge of 22187_2
+    }
+
+    public void webhookServiceAvailable(@Nullable WebhookService webhookService) {
+        this.webhookService = webhookService;
+        checkStartWebhook();
+    }
+
+    public void webhookServiceGone() {
+        webhookService = null;
+        if (webhookServlet instanceof CloudWebhookServlet) {
+            freeWebhookServlet();
+        }
+    }
+
+    private void checkStartWebhook() {
+        ApiHandlerConfiguration configuration = getConfiguration();
+        WebhookServlet servlet = null;
+        if (configuration.useCloudWebhook) {
+            if (webhookService != null) {
+                servlet = new CloudWebhookServlet(this, httpService, deserializer, webhookApi, webhookService,
+                        scheduler);
+            } else {
+                logger.info("Netatmo webhook will be set once openHAB Cloud WebhookService is available");
+            }
+        } else if (configuration.getWebhookUrlPattern() instanceof String urlPattern) {
+            servlet = new LocalWebhookServlet(this, httpService, deserializer, webhookApi, urlPattern);
+        }
+
+        if (servlet != null) {
+            this.webhookServlet = servlet;
+            servlet.startListening();
+        }
+    }
+
+    private void freeWebhookServlet() {
+        hookState(false);
+        if (webhookServlet instanceof WebhookServlet servlet) {
+            servlet.dispose();
+        }
+        this.webhookServlet = null;
     }
 }
