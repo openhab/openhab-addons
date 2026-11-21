@@ -672,9 +672,8 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
         ApiHandlerConfiguration configuration = getConfiguration();
         WebhookServlet servlet = null;
         if (configuration.useCloudWebhook) {
-            if (webhookService != null) {
-                servlet = new CloudWebhookServlet(this, httpService, deserializer, webhookApi, webhookService,
-                        scheduler);
+            if (webhookService instanceof WebhookService service) {
+                servlet = new CloudWebhookServlet(this, httpService, deserializer, webhookApi, service, scheduler);
             } else {
                 logger.info("Netatmo webhook will be set once openHAB Cloud WebhookService is available");
             }
