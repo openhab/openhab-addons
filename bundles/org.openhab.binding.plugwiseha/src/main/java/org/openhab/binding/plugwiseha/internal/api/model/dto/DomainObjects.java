@@ -37,6 +37,12 @@ public class DomainObjects {
         return gatewayInfo;
     }
 
+    public void mergeGatewayInfo(GatewayInfo updatedGatewayInfo) {
+        if (updatedGatewayInfo != null) {
+            gatewayInfo = updatedGatewayInfo;
+        }
+    }
+
     public Appliances getAppliances() {
         return appliances;
     }
