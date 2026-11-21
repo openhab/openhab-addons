@@ -20,6 +20,7 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -167,7 +168,7 @@ public enum ModuleType {
             Set.of(AlarmEventCapability.class, ChannelHelperCapability.class, ParentUpdateCapability.class),
             ChannelGroup.SIGNAL, ChannelGroup.TIMESTAMP, ChannelGroup.ALARM_LAST_EVENT);
 
-    public static final EnumSet<ModuleType> AS_SET = EnumSet.allOf(ModuleType.class);
+    public static final Stream<ModuleType> AS_STREAM = EnumSet.allOf(ModuleType.class).stream();
 
     private final @Nullable ModuleType bridgeType;
     public final Set<ChannelGroup> channelGroups;
@@ -195,7 +196,7 @@ public enum ModuleType {
     }
 
     public boolean isABridge() { // I am a bridge if any module references me as being so
-        return AS_SET.stream().anyMatch(mt -> equals(mt.getBridge()));
+        return AS_STREAM.anyMatch(mt -> equals(mt.getBridge()));
     }
 
     public List<String> getExtensions() {
@@ -227,7 +228,7 @@ public enum ModuleType {
     }
 
     public static ModuleType from(ThingTypeUID thingTypeUID) {
-        return AS_SET.stream().filter(mt -> mt.thingTypeUID.equals(thingTypeUID)).findFirst()
+        return AS_STREAM.filter(mt -> mt.thingTypeUID.equals(thingTypeUID)).findFirst()
                 .orElseThrow(() -> new IllegalArgumentException(
                         "No known ModuleType matched '%s'".formatted(thingTypeUID.toString())));
     }

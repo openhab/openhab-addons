@@ -42,7 +42,7 @@ public class NetatmoDiscoveryService extends AbstractThingHandlerDiscoveryServic
     private final Logger logger = LoggerFactory.getLogger(NetatmoDiscoveryService.class);
 
     public NetatmoDiscoveryService() {
-        super(ApiBridgeHandler.class, ModuleType.AS_SET.stream().filter(mt -> !mt.apiName.isBlank())
+        super(ApiBridgeHandler.class, ModuleType.AS_STREAM.filter(mt -> !mt.apiName.isBlank())
                 .map(mt -> mt.thingTypeUID).collect(Collectors.toSet()), DISCOVER_TIMEOUT_SECONDS);
     }
 
