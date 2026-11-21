@@ -21,6 +21,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -65,6 +66,8 @@ public class SolarmanLoggerHandler extends BaseThingHandler {
     private static final Duration WRITE_REFRESH_DELAY = Duration.ofSeconds(2);
 
     private final Logger logger = LoggerFactory.getLogger(SolarmanLoggerHandler.class);
+    // Incremented on initialize() and dispose(); polls of an earlier lifecycle must not touch the logger or the thing
+    private final AtomicInteger lifecycleGeneration = new AtomicInteger();
 
     private final DefinitionParser definitionParser;
     private final SolarmanChannelManager solarmanChannelManager;
@@ -100,6 +103,7 @@ public class SolarmanLoggerHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
+        final int generation = lifecycleGeneration.incrementAndGet();
         updateStatus(ThingStatus.UNKNOWN);
 
         SolarmanLoggerConfiguration config = getConfigAs(SolarmanLoggerConfiguration.class);
@@ -136,29 +140,47 @@ public class SolarmanLoggerHandler extends BaseThingHandler {
 
         solarmanRegisterUpdater = new SolarmanRegisterUpdater(paramToChannelMapping, solarmanLoggerConnector,
                 solarmanProtocol);
-        SolarmanChannelUpdater solarmanChannelUpdater = new SolarmanChannelUpdater(this::updateState);
+        SolarmanChannelUpdater solarmanChannelUpdater = new SolarmanChannelUpdater((channelUID, state) -> {
+            if (isCurrent(generation)) {
+                updateState(channelUID, state);
+            }
+        });
 
-        Runnable poll = () -> queryLogger(solarmanLoggerConnector, solarmanProtocol, mergedRequests,
+        Runnable poll = () -> queryLogger(generation, solarmanLoggerConnector, solarmanProtocol, mergedRequests,
                 paramToChannelMapping, solarmanChannelUpdater);
         writeRefresh = new DebouncedTask(scheduler, poll, WRITE_REFRESH_DELAY);
         scheduledFuture = scheduler.scheduleWithFixedDelay(poll, 0, config.refreshInterval, TimeUnit.SECONDS);
     }
 
-    private synchronized void queryLogger(SolarmanLoggerConnector solarmanLoggerConnector,
+    private synchronized void queryLogger(int generation, SolarmanLoggerConnector solarmanLoggerConnector,
             SolarmanProtocol solarmanProtocol, List<Request> mergedRequests,
             Map<ParameterItem, ChannelUID> paramToChannelMapping, SolarmanChannelUpdater solarmanChannelUpdater) {
+        // A poll that was already running or waiting for the monitor when the handler was disposed
+        if (!isCurrent(generation)) {
+            return;
+        }
+
         try {
             SolarmanProcessResult solarmanProcessResult = solarmanChannelUpdater.fetchDataFromLogger(mergedRequests,
                     solarmanLoggerConnector, solarmanProtocol, paramToChannelMapping);
 
+            if (!isCurrent(generation)) {
+                return;
+            }
             if (solarmanProcessResult.hasSuccessfulResponses()) {
                 updateStatus(ThingStatus.ONLINE);
             } else {
                 updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, solarmanProcessResult.toString());
             }
         } catch (Exception e) {
-            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            if (isCurrent(generation)) {
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            }
         }
+    }
+
+    private boolean isCurrent(int generation) {
+        return generation == lifecycleGeneration.get();
     }
 
     private <K, V> Map<K, V> mergeMaps(Map<K, V> map1, Map<K, V> map2) {
@@ -232,6 +254,7 @@ public class SolarmanLoggerHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
+        lifecycleGeneration.incrementAndGet();
         super.dispose();
 
         DebouncedTask writeRefresh = this.writeRefresh;
