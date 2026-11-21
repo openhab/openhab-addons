@@ -22,6 +22,8 @@ import java.io.UncheckedIOException;
 import java.math.BigDecimal;
 import java.net.InetAddress;
 import java.net.ServerSocket;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -38,12 +40,14 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import org.openhab.binding.bydbatterybox.internal.FakeBattery;
 import org.openhab.binding.bydbatterybox.internal.Fixtures;
+import org.openhab.binding.bydbatterybox.internal.dto.EventRecord;
 import org.openhab.binding.bydbatterybox.internal.protocol.BydClient;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.i18n.LocaleProvider;
@@ -247,6 +251,26 @@ class BydBatteryBoxHandlerTest {
         localHandler.handleCommand(stateOfCharge, RefreshType.REFRESH);
 
         verify(callback, never()).stateUpdated(any(), any());
+    }
+
+    @Test
+    void lastEventIsPublishedBeforeTheEventTriggers() {
+        BydBatteryBoxHandler localHandler = createHandler(1);
+        ThingUID thingUID = localHandler.getThing().getUID();
+        EventRecord older = new EventRecord(EventRecord.UNIT_BMU, 32, LocalDateTime.of(2026, 11, 16, 7, 42, 2),
+                new byte[23]);
+        EventRecord newer = new EventRecord(1, 38, LocalDateTime.of(2026, 11, 16, 7, 42, 4), new byte[23]);
+        ChannelUID lastEvent = new ChannelUID(thingUID, GROUP_EVENTS, CHANNEL_LAST_EVENT);
+        ChannelUID lastEventTime = new ChannelUID(thingUID, GROUP_EVENTS, CHANNEL_LAST_EVENT_TIME);
+        ChannelUID event = new ChannelUID(thingUID, GROUP_EVENTS, CHANNEL_EVENT);
+
+        localHandler.publishEvents(List.of(older, newer), newer, Duration.ZERO);
+
+        InOrder inOrder = inOrder(callback);
+        inOrder.verify(callback).stateUpdated(eq(lastEvent), argThat(state -> state.toString().startsWith("BMS 1: ")));
+        inOrder.verify(callback).stateUpdated(eq(lastEventTime), any());
+        inOrder.verify(callback).channelTriggered(any(), eq(event), eq("BMU:32"));
+        inOrder.verify(callback).channelTriggered(any(), eq(event), eq("BMS1:38"));
     }
 
     @Test
